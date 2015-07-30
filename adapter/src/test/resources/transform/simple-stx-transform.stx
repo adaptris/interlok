@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<stx:transform version="1.0" xmlns:stx="http://stx.sourceforge.net/2002/ns" xmlns:m="http://www.mediawiki.org/xml/export-0.3/" output-method="text">
+	
+    <stx:param name="world"/>
+  	
+	<stx:template match="message">
+		<stx:process-children />  
+	</stx:template>
+	
+	<stx:template match="payload">
+		<stx:copy>
+    		<stx:value-of select="." />
+    		<stx:value-of select="$world" />
+  		</stx:copy>	
+	</stx:template>
+	
+</stx:transform>

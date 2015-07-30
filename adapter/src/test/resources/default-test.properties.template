@@ -1,0 +1,44 @@
+# Settings that you might want to override that are specific to your
+# Environment.
+
+# adp-hosted-01 isn't accessible from where you are I suspect.
+default.ftp.tests.enabled=false
+# Technically all the SFTP tests are derived from these settings
+default.ftp.host=
+default.ftp.user=
+default.ftp.password=
+
+# For running JDBC Stored procedure tests.
+# Enable the tests if you have it all setup, otherwise let's not bother.
+default.jdbc.storedproc.tests.enabled=false
+default.jdbc.storedproc.url=
+default.jdbc.storedproc.driver=
+default.jdbc.storedproc.database=
+default.jdbc.storedproc.username=
+default.jdbc.storedproc.password=
+default.jdbc.storedproc.vendor=mysql
+default.jdbc.storedproc.teststatement=
+
+#SQL SERVER Example
+#default.jdbc.storedproc.url=jdbc:sqlserver://localhost:51340;databaseName=
+#default.jdbc.storedproc.driver=com.microsoft.sqlserver.jdbc.SQLServerDriver
+#default.jdbc.storedproc.database=AdapterTest2
+#default.jdbc.storedproc.username=sa
+#default.jdbc.storedproc.password=system
+#default.jdbc.storedproc.teststatement=
+# Currently supported vendors for testing; "mysql" / "sqlserver".
+#default.jdbc.storedproc.vendor=sqlserver
+
+#MYSQL Example
+#default.jdbc.storedproc.url=jdbc:mysql://localhost:3306/
+#default.jdbc.storedproc.driver=com.mysql.jdbc.Driver
+#default.jdbc.storedproc.database=test_empty
+#default.jdbc.storedproc.username=root
+#default.jdbc.storedproc.password=root99
+#default.jdbc.storedproc.vendor=mysql
+#default.jdbc.storedproc.teststatement=
+
+# If remote tests are enabled, then make sure that the following HTTP location
+# is enabled.
+default.security.remote.tests.enabled=false
+default.security.http.server.file.root=${build.dir}/security/

@@ -1,0 +1,376 @@
+package com.adaptris.core.mail;
+
+import java.util.Iterator;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotBlank;
+
+import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreConstants;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.MetadataCollection;
+import com.adaptris.core.MetadataElement;
+import com.adaptris.core.ProduceOnlyProducerImp;
+import com.adaptris.core.metadata.MetadataFilter;
+import com.adaptris.core.metadata.RegexMetadataFilter;
+import com.adaptris.core.metadata.RemoveAllMetadataFilter;
+import com.adaptris.mail.MailException;
+import com.adaptris.mail.SmtpClient;
+import com.adaptris.security.exc.PasswordException;
+import com.adaptris.security.password.Password;
+import com.adaptris.util.KeyValuePair;
+import com.adaptris.util.KeyValuePairSet;
+import com.adaptris.util.license.License;
+import com.adaptris.util.license.License.LicenseType;
+
+/**
+ * Abstract implementation of the AdaptrisMessageProducer interface for handling Email.
+ * <p>
+ * Because email is implicitly asynchronous, Request-Reply is invalid, and as such if the request method is used, an
+ * <code>UnsupportedOperationException</code> is thrown.
+ * </p>
+ * <p>
+ * The following metadata elements will change behaviour.
+ * <ul>
+ * <li>emailsubject - Override the configured subject with the value stored against this key.
+ * <li>emailcc - If this is set, this this comma separated list will override any configured CC list.</li>
+ * </ul>
+ * <p>
+ * It is possible to control the underlying behaviour of this producer through the use of various properties that will be passed to
+ * the <code>javax.mail.Session</code> instance. You need to refer to the javamail documentation to see a list of the available
+ * properties and meanings.
+ * </p>
+ * <p>
+ * You may also control the headers stored in the smtp client object. These are typically copied from the
+ * <code>AdaptrisMessage</code>, which you can filter so as only to copy a subset of the metadata values as headers. There are 2
+ * ways to do this; 1) Set the send-metadata-regexp value to a regular expression. 2) Set the metadata-filter to an implementation
+ * of {@link MetadataFilter} In either case the metadata from the AdaptrisMessage will be filtered to a subset before copied as
+ * headers.
+ * </p>
+ * 
+ * 
+ * @see CoreConstants#EMAIL_SUBJECT
+ * @see CoreConstants#EMAIL_CC_LIST
+ */
+public abstract class MailProducer extends ProduceOnlyProducerImp {
+
+  @NotBlank
+  private String smtpUrl = null;
+  private String subject = null;
+  private String ccList = null;
+  private String from = null;
+  private String bccList = null;
+  @NotNull
+  @Valid
+  @AutoPopulated
+  private KeyValuePairSet sessionProperties;
+  private Boolean sendMetadataAsHeaders;
+  private String sendMetadataRegexp = null;
+  @NotNull
+  @AutoPopulated
+  @Valid
+  private MetadataFilter metadataFilter;
+  @InputFieldHint(style = "PASSWORD")
+  private String password;
+  private String username;
+
+  /**
+   * @see Object#Object()
+   *
+   *
+   */
+  public MailProducer() {
+    sessionProperties = new KeyValuePairSet();
+    setMetadataFilter(new RemoveAllMetadataFilter());
+  }
+
+  /** @see com.adaptris.core.AdaptrisComponent#close() */
+  @Override
+  public void close() {
+  }
+
+  /** @see com.adaptris.core.AdaptrisComponent#init() */
+  @Override
+  public void init() throws CoreException {
+    if (smtpUrl == null) {
+      throw new CoreException("No Connection Configuration");
+    }
+    if (getSubject() == null) {
+      log.warn("No Subject configured, expecting metadata to override subject");
+    }
+    if (sendMetadataAsHeaders()) {
+      if (getSendMetadataRegexp() == null && getMetadataFilter() instanceof RemoveAllMetadataFilter) {
+        log.warn("No Metadata Regular expression configured, ignoring sendMetadataAsHeaders=true");
+        setSendMetadataAsHeaders(Boolean.FALSE);
+      }
+      else {
+        if (getSendMetadataRegexp() != null && getMetadataFilter() instanceof RemoveAllMetadataFilter) {
+          log.trace("Overriding metadata-filter with filter based on {}", getSendMetadataRegexp());
+          RegexMetadataFilter filter = new RegexMetadataFilter();
+          filter.addIncludePattern(getSendMetadataRegexp());
+          setMetadataFilter(filter);
+        }
+      }
+    }
+  }
+
+  /** @see com.adaptris.core.AdaptrisComponent#start() */
+  @Override
+  public void start() throws CoreException {
+  }
+
+  /** @see com.adaptris.core.AdaptrisComponent#stop() */
+  @Override
+  public void stop() {
+  }
+
+  /**
+   * @see com.adaptris.core.AdaptrisComponent#isEnabled(License)
+   */
+  @Override
+  public boolean isEnabled(License l) {
+    return l.isEnabled(LicenseType.Basic);
+  }
+
+  /**
+   * Set the SMTP url.
+   *
+   * @param url the url e.g. smtp://localhost:25/
+   */
+  public void setSmtpUrl(String url) {
+    smtpUrl = url;
+  }
+
+  /**
+   * Get the SMTP url.
+   *
+   * @return the url.
+   */
+  public String getSmtpUrl() {
+    return smtpUrl;
+  }
+
+  /**
+   * Set the list of CCs.
+   *
+   * @param ccList a comma separated list of CC addresses
+   */
+  public void setCcList(String ccList) {
+    this.ccList = ccList;
+  }
+
+  /**
+   * Get the list of CC's.
+   *
+   * @return the list of CC's
+   */
+  public String getCcList() {
+    return ccList;
+  }
+
+  /**
+   * Set the subject for the email.
+   *
+   * @param s the subject.
+   */
+  public void setSubject(String s) {
+    subject = s;
+  }
+
+  /**
+   * Get the subject of the email.
+   *
+   * @return the subject.
+   */
+  public String getSubject() {
+    return subject;
+  }
+
+  private String getSubject(AdaptrisMessage msg) {
+    return msg.containsKey(CoreConstants.EMAIL_SUBJECT) ? msg
+        .getMetadataValue(CoreConstants.EMAIL_SUBJECT) : getSubject();
+  }
+
+  private String getCC(AdaptrisMessage msg) {
+    return msg.containsKey(CoreConstants.EMAIL_CC_LIST) ? msg
+        .getMetadataValue(CoreConstants.EMAIL_CC_LIST) : getCcList();
+
+  }
+
+  protected SmtpClient getClient(AdaptrisMessage msg) throws MailException, PasswordException {
+    SmtpClient smtp = new SmtpClient(MailHelper.createURLName(getSmtpUrl(), getUsername(), getPassword()));
+    Iterator i = sessionProperties.getKeyValuePairs().iterator();
+    while (i.hasNext()) {
+      KeyValuePair kp = (KeyValuePair) i.next();
+      smtp.addSessionProperty(kp.getKey(), kp.getValue());
+    }
+    smtp.startSession();
+    smtp.setSubject(getSubject(msg));
+    String ccList = getCC(msg);
+    if (ccList != null) {
+      smtp.addCarbonCopy(ccList);
+    }
+    if (getBccList() != null) {
+      smtp.addBlindCarbonCopy(getBccList());
+    }
+    if (getFrom() != null) {
+      smtp.setFrom(getFrom());
+    }
+
+    MetadataCollection metadataSubset = getMetadataFilter().filter(msg);
+    for (MetadataElement element : metadataSubset) {
+      smtp.addMailHeader(element.getKey(), element.getValue());
+    }
+    return smtp;
+  }
+
+  /**
+   * Set the from address.
+   *
+   * @param fromAddress the from address
+   */
+  public void setFrom(String fromAddress) {
+    from = fromAddress;
+  }
+
+  /**
+   * Get the from address.
+   *
+   * @return the from address.
+   */
+  public String getFrom() {
+    return from;
+  }
+
+  /**
+   * Get the session properties used by this SMTP Producer.
+   *
+   * @return the properties.
+   */
+  public KeyValuePairSet getProperties() {
+    return sessionProperties;
+  }
+
+  /**
+   * Set the session properties to this SMTP Producer.
+   *
+   * @param kp the properties
+   */
+  public void setProperties(KeyValuePairSet kp) {
+    if (kp == null) {
+      throw new IllegalArgumentException("Illegal null Properties" + kp + "]");
+    }
+    sessionProperties = kp;
+  }
+
+  /**
+   * @return the bccList
+   */
+  public String getBccList() {
+    return bccList;
+  }
+
+  /**
+   * Comma separated list of email addresses to BCC.
+   *
+   * @param bcc the bccList to set
+   */
+  public void setBccList(String bcc) {
+    bccList = bcc;
+  }
+
+  /**
+   *
+   * @return the sendMetadataAsHeaders
+   */
+  public Boolean getSendMetadataAsHeaders() {
+    return sendMetadataAsHeaders;
+  }
+
+  /**
+   * Specify whether or not to send metadata as headers.
+   *
+   * @param b the sendMetadataAsHeaders to set
+   */
+  public void setSendMetadataAsHeaders(Boolean b) {
+    sendMetadataAsHeaders = b;
+  }
+
+  @Deprecated
+  public boolean sendMetadataAsHeaders() {
+    return getSendMetadataAsHeaders() != null ? getSendMetadataAsHeaders() : false;
+  }
+  /**
+   * @return the sendMetadataRegexp
+   */
+  public String getSendMetadataRegexp() {
+    return sendMetadataRegexp;
+  }
+
+  /**
+   * Set the regular expression on which metadata keys will be matched.
+   * 
+   * @param regexp the sendMetadataRegexp to set
+   * @see #setSendMetadataAsHeaders(Boolean)
+   * @deprecated since 3.0.2 use {@link #setMetadataFilter(MetadataFilter)} instead.
+   */
+  @Deprecated
+  public void setSendMetadataRegexp(String regexp) {
+    sendMetadataRegexp = regexp;
+  }
+
+  public MetadataFilter getMetadataFilter() {
+    return metadataFilter;
+  }
+
+  /**
+   * Specify the {@link AdaptrisMessage} metadata keys that will be sent as headers for the mail message.
+   * <p>
+   * Any metadata that is returned by this filter will be sent as headers.
+   * </p>
+   * 
+   * @param metadataFilter the filter defaults to {@link RemoveAllMetadataFilter}
+   * @see MetadataFilter
+   * @since 3.0.2
+   */
+  public void setMetadataFilter(MetadataFilter metadataFilter) {
+    if (metadataFilter == null) {
+      throw new IllegalArgumentException("Filter is null");
+    }
+    this.metadataFilter = metadataFilter;
+  }
+
+  public String getPassword() {
+    return password;
+  }
+
+  /**
+   * Set the password to be used with this producer implementation.
+   * <p>
+   * If you specify the username and password in the URL for the SMTP server then does not lend itself to being encrypted. Specify
+   * the password here if you wish to use {@link Password#decode(String)} to decode the password.
+   * </p>
+   *
+   * @param pw the password which will be overriden if a password is present in the URL.
+   */
+  public void setPassword(String pw) {
+    password = pw;
+  }
+
+  public String getUsername() {
+    return username;
+  }
+
+  /**
+   * Set the username to be used with this producer implementation.
+   *
+   * @param name the username which will be overriden if a username is present in the URL.
+   */
+  public void setUsername(String name) {
+    username = name;
+  }
+}

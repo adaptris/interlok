@@ -1,0 +1,13 @@
+junittransport.transport.socket.timeout=60000
+junittransport.transport.socket.listen.port=19000
+junittransport.transport.socket.blocksize=10
+junittransport.transport.socket.host=localhost
+junittransport.transport.socket.port=19000
+junittransport.transport.socket.ssl.always.trust=true
+junittransport.transport.socket.ssl.require.client.auth=false
+
+junittransport.transport.security.keystore.url=file:///${test.resources.dir}/transport/transport.keystore?keystoreType=JKS
+junittransport.transport.security.keystore.password=password
+junittransport.transport.security.keystore.private.key.password=privatepassword
+junittransport.simplesocketserver.client.string=ABCDEFGHIJ
+junittransport.simplesocketserver.server.string=1234567890

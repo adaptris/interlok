@@ -1,0 +1,117 @@
+package com.adaptris.core.services.jmx;
+
+import java.util.Date;
+
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.DefaultMessageFactory;
+
+import junit.framework.TestCase;
+
+public class ConstantValueTranslatorTest extends TestCase {
+  
+  private ConstantValueTranslator constantValueTranslator;
+  
+  private AdaptrisMessage message;
+  
+  public ConstantValueTranslatorTest() {
+    super();
+  }
+  
+  public void setUp() throws Exception {
+    constantValueTranslator = new ConstantValueTranslator();
+    message = DefaultMessageFactory.getDefaultInstance().newMessage();
+  }
+  
+  public void tearDown() throws Exception {
+  }
+  
+  public void testSetValueNoOverwrite() throws Exception {
+    String newValue = "NewValue";
+    String originalValue = "OriginalValue";
+    
+    constantValueTranslator.setAllowOverwrite(false);
+    constantValueTranslator.setType("java.lang.String");
+    constantValueTranslator.setValue(originalValue);
+    
+    constantValueTranslator.setValue(message, newValue);
+    
+    assertEquals(originalValue, constantValueTranslator.getValue());
+  }
+  
+  public void testSetValueWithOverwrite() throws Exception {
+    String newValue = "NewValue";
+    String originalValue = "OriginalValue";
+    
+    constantValueTranslator.setAllowOverwrite(true);
+    constantValueTranslator.setType("java.lang.String");
+    constantValueTranslator.setValue(originalValue);
+    
+    constantValueTranslator.setValue(message, newValue);
+    
+    assertEquals(newValue, constantValueTranslator.getValue());
+  }
+  
+  public void testGetValueDefaultType() throws Exception {
+    String originalValue = "OriginalValue";
+    
+    constantValueTranslator.setAllowOverwrite(true);
+    constantValueTranslator.setValue(originalValue);
+    
+    assertEquals(originalValue, constantValueTranslator.getValue(message));
+  }
+  
+  public void testGetValueDateType() throws Exception {
+    Date todaysDate = new Date();
+    String originalValue = Long.toString(todaysDate.getTime());
+    
+    constantValueTranslator.setAllowOverwrite(true);
+    constantValueTranslator.setType(Date.class.getName());
+    constantValueTranslator.setValue(originalValue);
+    
+    Object value = constantValueTranslator.getValue(message);
+    assertTrue(value instanceof Date);
+    assertEquals(originalValue, Long.toString(((Date)value).getTime()));
+  }
+  
+  public void testSetValueDateType() throws Exception {
+    Date todaysDate = new Date();
+    String originalValue = Long.toString(todaysDate.getTime());
+    
+    constantValueTranslator.setAllowOverwrite(true);
+    constantValueTranslator.setType(Date.class.getName());
+    constantValueTranslator.setValue(message, todaysDate);
+    
+    Object value = constantValueTranslator.getValue(message);
+    assertTrue(value instanceof Date);
+    assertEquals(originalValue, Long.toString(((Date)value).getTime()));
+  }
+  
+  public void testGetValueIntegerType() throws Exception {
+    String originalValue = "1";
+    
+    constantValueTranslator.setAllowOverwrite(true);
+    constantValueTranslator.setType(Integer.class.getName());
+    constantValueTranslator.setValue(originalValue);
+    
+    Object value = constantValueTranslator.getValue(message);
+    assertTrue(value instanceof Integer);
+    assertEquals(originalValue, value.toString());
+  }
+  
+  public void testGetValueInvalidType() throws Exception {
+    String originalValue = "1";
+    
+    constantValueTranslator.setAllowOverwrite(true);
+    constantValueTranslator.setType("MyInvalidType");
+    constantValueTranslator.setValue(originalValue);
+    
+    try {
+      constantValueTranslator.getValue(message);
+      fail("Should fail with a core exception");
+    } catch (CoreException ex) {
+      // expected
+    }
+  }
+
+}

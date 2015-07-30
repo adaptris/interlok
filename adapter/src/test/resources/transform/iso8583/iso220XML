@@ -1,0 +1,27 @@
+<record type="0220">
+  <field id="0" description="Header">024000073</field>
+  <field id="3" description="Processing code">002000</field>
+  <field id="4" description="Amount, transaction">000000002000</field>
+  <field id="7" description="Transmission date time">0731174751</field>
+  <field id="11" description="Systems trace audit number">005830</field>
+  <field id="12" description="Time, Local transaction">210055</field>
+  <field id="13" description="Date, Local transaction">0731</field>
+  <field id="17" description="Date, capture">0731</field>
+  <field id="25" description="Point of service condition code">00</field>
+  <field id="32" description="Acquiring institution identification code">41400000098</field>
+  <field id="35" description="Track 2 data">4507781104961938=1107126158319210    </field>
+  <field id="37" description="Retrieval reference number">000000002122</field>
+  <field id="38" description="Authorization identification response">840683</field>
+  <field id="39" description="Response code">00</field>
+  <field id="41" description="Card acceptor terminal identification">12605138        </field>
+  <field id="43" description="Card acceptor name/location">MASTORA SHOPPING CEN  AL-FARWANIA     KW</field>
+  <field id="48" description="Additional data - Private">916910008          00000000</field>
+  <field id="49" description="Currency code, transaction">414</field>
+  <field id="54" description="Additional amounts">            </field>
+  <field id="60" description="Advice/reason code (private reserved)">KFH PRO2+0000000</field>
+  <field id="61" description="Reserved Private">KFH1PRO100100000000</field>
+  <field id="100" description="Receiving institution identification code">414450778  </field>
+  <field id="102" description="Account identification 1">141050349712                </field>
+  <field id="120" description="Reserved for private use">                             </field>
+  <field id="126" description="Issuer trace id">336            000000060185           </field>
+</record>

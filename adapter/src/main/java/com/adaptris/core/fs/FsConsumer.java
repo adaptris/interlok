@@ -1,0 +1,217 @@
+package com.adaptris.core.fs;
+
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.net.URL;
+
+import org.apache.oro.io.Perl5FilenameFilter;
+import org.hibernate.validator.constraints.NotBlank;
+import org.perf4j.aop.Profiled;
+
+import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.ConsumeDestination;
+import com.adaptris.core.CoreException;
+import com.adaptris.fs.FsException;
+import com.adaptris.fs.FsFilenameExistsException;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+/**
+ * <p>
+ * File system implementation of <code>AdaptrisMessageConsumer</code> based on the <code>com.adaptris.fs</code> package.
+ * </p>
+ * <p>
+ * The configured <code>Destination</code> may return a string in one of two formats
+ * </p>
+ * <ul>
+ * <li>If a <code>file</code> based url is used. e.g. file:///c:/path/to/my/directory or file:////path/to/my/directory then the
+ * patch is considered to be fully qualified</li>
+ * <li>If just a path is returned, then it is considered to be relative to the current working directory. e.g. if /opt/fred is used,
+ * and the adapter is installed to /opt/adapter, then the fully qualified name is /opt/adapter/opt/fred.</li>
+ * </ul>
+ * <p>
+ * On windows based platforms, you should always use a file based url.
+ * </p>
+ * 
+ * @config fs-consumer
+ * @license BASIC
+ */
+@XStreamAlias("fs-consumer")
+public class FsConsumer extends FsConsumerImpl {
+
+  @NotBlank
+  @AutoPopulated
+  private String wipSuffix;
+  private Boolean resetWipFiles;
+
+  /**
+   * <p>
+   * Creates a new instance. Defaults to <code>NioWorker</code> and a work in progress suffix of <code>.wip</code>.
+   * </p>
+   */
+  public FsConsumer() {
+    super();
+    setWipSuffix(".wip");
+  }
+
+  public FsConsumer(ConsumeDestination d) {
+    this();
+    setDestination(d);
+  }
+
+  @Override
+  @Profiled(tag = "{$this.getClass().getSimpleName()}.processFile()", logger = "com.adaptris.perf4j.fs.TimingLogger")
+  protected int processFile(File originalFile) throws CoreException {
+    int rc = 0;
+    try {
+      if (originalFile.getName().endsWith(wipSuffix)) {
+        log.debug("ignoring part-processed file [" + originalFile.getName() + "]");
+
+      }
+      else {
+        if (checkModified(originalFile) && isFileAccessible(originalFile)) {
+          File fileToProcess = renameFile(originalFile);
+          AdaptrisMessage msg = createAdaptrisMessage(fileToProcess);
+          addStandardMetadata(msg, originalFile, fileToProcess);
+          retrieveAdaptrisMessageListener().onAdaptrisMessage(msg);
+          fsWorker.delete(fileToProcess);
+          rc++;
+        }
+        else {
+          log.trace(originalFile.getName() + " not deemed safe to process");
+        }
+      }
+    }
+    catch (FsException e) {
+      throw new CoreException(e);
+    }
+    catch (IOException e) {
+      throw new CoreException(e);
+    }
+    return rc;
+  }
+
+  protected File renameFile(File file) throws FsException {
+    File newFile = new File(file.getAbsolutePath() + wipSuffix);
+
+    try {
+      fsWorker.rename(file, newFile);
+    }
+    catch (FsFilenameExistsException e) {
+      newFile = new File(file.getParentFile(), System.currentTimeMillis() + "." + file.getName() + wipSuffix);
+      fsWorker.rename(file, newFile);
+    }
+    return newFile;
+  }
+
+  /**
+   * @see com.adaptris.core.AdaptrisComponent#init()
+   */
+  @Override
+  public void init() throws CoreException {
+    try {
+      if (resetWipFiles()) {
+        renameWipFiles();
+      }
+    }
+    catch (Exception e) {
+      if (CoreException.class.isAssignableFrom(e.getClass())) {
+        throw (CoreException) e;
+      }
+      else {
+        throw new CoreException(e);
+      }
+    }
+    super.init();
+  }
+
+  private void renameWipFiles() throws Exception {
+    URL urlDestination = FsHelper.createUrlFromString(getDestination().getDestination(), true);
+    File dir = FsHelper.createFileReference(urlDestination);
+    if (!dir.exists()) {
+      // No point because it doesn't exist.
+      return;
+    }
+    Perl5FilenameFilter p5 = new Perl5FilenameFilter(".*\\" + getWipSuffix());
+    File[] files = dir.listFiles((FilenameFilter) p5);
+    if (files == null) {
+      throw new CoreException("Failed to list files in " + dir.getCanonicalPath()
+          + ", incorrect permissions?. Cannot reset WIP files");
+    }
+    for (File f : files) {
+      File parent = f.getParentFile();
+      String name = f.getName().replaceAll(getWipSuffix().replaceAll("\\.", "\\\\."), "");
+      log.trace("Will Rename " + f.getName() + " back to " + name);
+      File newFile = new File(parent, name);
+      f.renameTo(newFile);
+    }
+  }
+
+  /**
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    StringBuffer result = new StringBuffer();
+    result.append(super.toString());
+    result.append("] wip suffix=[");
+    result.append(wipSuffix);
+    result.append("] reset wip files=[");
+    result.append(resetWipFiles());
+    result.append("]");
+    return result.toString();
+  }
+
+  /**
+   * <p>
+   * Sets the work-in-progress suffix to use. May not be null or empty. This suffix is added to the original file name while the
+   * file is being processed.
+   * </p>
+   *
+   * @param string the work-in-progress suffix to use
+   */
+  public void setWipSuffix(String string) {
+    if (string == null || "".equals(string)) {
+      throw new IllegalArgumentException();
+    }
+    wipSuffix = string;
+  }
+
+  /**
+   * <p>
+   * Returns the work-in-progress suffix being used.
+   * </p>
+   *
+   * @return the work-in-progress suffix being used
+   */
+  public String getWipSuffix() {
+    return wipSuffix;
+  }
+
+  /**
+   * @return the ResetWipFiles
+   */
+  public Boolean getResetWipFiles() {
+    return resetWipFiles;
+  }
+
+  /**
+   * Specify whether to rename files that are deemed to be in progress back to their original extension upon initialisation.
+   * <p>
+   * <strong>Note that if the workfile has been created with the current time in ms (due to file-conflicts upon a previous
+   * execution), then setting this to true will result in the current time in ms still being present and may not result in the
+   * re-processing of the files</strong>.
+   * </p>
+   *
+   * @param b the renameWorkFilesUponInitialisation to set
+   */
+  public void setResetWipFiles(Boolean b) {
+    resetWipFiles = b;
+  }
+
+  protected boolean resetWipFiles() {
+    return resetWipFiles != null ? resetWipFiles.booleanValue() : false;
+  }
+
+}

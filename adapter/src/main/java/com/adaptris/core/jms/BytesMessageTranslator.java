@@ -1,0 +1,166 @@
+/*
+ * $RCSfile: BytesMessageTranslator.java,v $
+ * $Revision: 1.12 $
+ * $Date: 2009/03/25 11:43:37 $
+ * $Author: lchan $
+ */
+package com.adaptris.core.jms;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import javax.jms.BytesMessage;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageEOFException;
+
+import org.apache.commons.io.IOUtils;
+
+import com.adaptris.core.AdaptrisMessage;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+/**
+ * <p>
+ * Translates between <code>AdaptrisMessage</code> and <code>javax.jms.BytesMessages</code>.
+ * </p>
+ * 
+ * @config bytes-message-translator
+ * @license BASIC
+ */
+@XStreamAlias("bytes-message-translator")
+public class BytesMessageTranslator extends MessageTypeTranslatorImp {
+
+  // Threshold of 50k size to switch to to using an OutputStream impl to copy stuff into the msg proper.
+  private static final long STREAM_THRESHOLD = 1024 * 50;
+  private transient long streamThreshold = STREAM_THRESHOLD;
+
+  /**
+   * <p>
+   * Translates an <code>AdaptrisMessage</code> into a <code>BytesMessage</code>.
+   * </p>
+   * 
+   * @param msg the <code>AdaptrisMessage</code> to translate
+   * @return a new <code>BytesMessage</code>
+   * @throws JMSException
+   */
+  public Message translate(AdaptrisMessage msg) throws JMSException {
+    BytesMessage jmsMsg = session.createBytesMessage();
+    if (msg.getSize() > streamThreshold()) {
+      try (InputStream in = msg.getInputStream(); OutputStream out = new BytesMessageOutputStream(jmsMsg)) {
+        IOUtils.copy(in, out);
+      }
+      catch (IOException e) {
+        JmsUtils.rethrowJMSException(e);
+      }
+    }
+    else {
+      jmsMsg.writeBytes(msg.getPayload());
+    }
+    return helper.moveMetadata(msg, jmsMsg);
+  }
+
+  /**
+   * <p>
+   * Translates a <code>BytesMessage</code> into an <code>AdaptrisMessage</code>.
+   * </p>
+   * 
+   * @param msg the <code>BytesMessage</code> to translate
+   * @return an <code>AdaptrisMessage</code>
+   * @throws JMSException
+   */
+  public AdaptrisMessage translate(Message msg) throws JMSException {
+    AdaptrisMessage result = currentMessageFactory().newMessage();
+    try (InputStream in = new BytesMessageInputStream((BytesMessage) msg); OutputStream out = result.getOutputStream()) {
+      IOUtils.copy(in, out);
+    }
+    catch (IOException e) {
+      JmsUtils.rethrowJMSException(e);
+    }
+    return helper.moveMetadata(msg, result);
+  }
+
+  long streamThreshold() {
+    return streamThreshold;
+  }
+
+  private class BytesMessageOutputStream extends OutputStream {
+    private final BytesMessage myMsg;
+    public BytesMessageOutputStream(BytesMessage message) {
+      this.myMsg = message;
+    }
+
+    public void write(byte b[]) throws IOException {
+      try {
+        myMsg.writeBytes(b);
+      }
+      catch (JMSException ex) {
+        throw new IOException(ex);
+      }
+    }
+
+    public void write(byte b[], int off, int len) throws IOException {
+      try {
+        myMsg.writeBytes(b, off, len);
+      }
+      catch (JMSException ex) {
+        throw new IOException(ex);
+      }
+    }
+
+    public void write(int b) throws IOException {
+      try {
+        myMsg.writeByte((byte) b);
+      }
+      catch (JMSException ex) {
+        throw new IOException(ex);
+      }
+    }
+  }
+
+  private class BytesMessageInputStream extends InputStream {
+    private final BytesMessage myMsg;
+
+    BytesMessageInputStream(BytesMessage message) {
+      this.myMsg = message;
+    }
+
+    @Override
+    public int read(byte b[]) throws IOException {
+      try {
+        return myMsg.readBytes(b);
+      }
+      catch (JMSException ex) {
+        throw new IOException(ex);
+      }
+    }
+
+    @Override
+    public int read(byte b[], int off, int len) throws IOException {
+      if (off == 0) {
+        try {
+          return myMsg.readBytes(b, len);
+        }
+        catch (JMSException ex) {
+          throw new IOException(ex);
+        }
+      }
+      else {
+        return super.read(b, off, len);
+      }
+    }
+
+    @Override
+    public int read() throws IOException {
+      try {
+        return myMsg.readByte();
+      }
+      catch (MessageEOFException ex) {
+        return -1;
+      }
+      catch (JMSException ex) {
+        throw new IOException(ex);
+      }
+    }
+  }
+}

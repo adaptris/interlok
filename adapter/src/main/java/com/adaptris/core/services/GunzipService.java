@@ -1,0 +1,79 @@
+package com.adaptris.core.services;
+
+import java.io.OutputStream;
+import java.util.zip.GZIPInputStream;
+
+import org.apache.commons.io.IOUtils;
+
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.ServiceException;
+import com.adaptris.core.ServiceImp;
+import com.adaptris.util.license.License;
+import com.adaptris.util.license.License.LicenseType;
+import com.adaptris.util.stream.StreamUtil;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+/**
+ * Unzip the given payload.
+ * <p>
+ * This simply uses <code>java.util.zip.GZIPInputStream</code> in order to extract the un-compressed bytes.
+ * </p>
+ * <p>
+ * If the payload is not considered compressed, then a ServiceException will be thrown.
+ * </p>
+ * 
+ * @config gunzip-service
+ * @license BASIC
+ */
+@XStreamAlias("gunzip-service")
+public class GunzipService extends ServiceImp {
+
+  /**
+   * @see com.adaptris.core.Service#doService(AdaptrisMessage)
+   */
+  @Override
+  public void doService(AdaptrisMessage msg) throws ServiceException {
+    GZIPInputStream in = null;
+    OutputStream out = null;
+
+    try {
+      out = msg.getOutputStream();
+      in  = new GZIPInputStream(msg.getInputStream());
+      StreamUtil.copyStream(in, out);
+    }
+    catch (Exception e) {
+      throw new ServiceException(e);
+    } finally {
+      IOUtils.closeQuietly(in);
+      IOUtils.closeQuietly(out);
+    }
+  }
+
+  /** @see java.lang.Object#toString() */
+  @Override
+  public String toString() {
+    StringBuffer result = new StringBuffer();
+
+    result.append("[");
+    result.append(this.getClass().getName());
+    result.append("]");
+
+    return result.toString();
+  }
+
+  /** @see com.adaptris.core.AdaptrisComponent#close() */
+  @Override
+  public void close() {
+  }
+
+  /** @see com.adaptris.core.AdaptrisComponent#init() */
+  @Override
+  public void init() {
+  }
+
+  @Override
+  public boolean isEnabled(License license) throws CoreException {
+    return license.isEnabled(LicenseType.Basic);
+  }
+}

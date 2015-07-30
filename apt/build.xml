@@ -1,0 +1,100 @@
+<project name="annotation-support" xmlns:interlok="uri:interlok"  xmlns:ivy="antlib:org.apache.ivy.ant"  default="jar" basedir=".">
+
+  <tstamp>
+    <format property="today" pattern="yyyy-MM-dd" locale="en"/>
+  </tstamp>
+
+  <property file="build.properties"/>
+  <import file="${basedir}/../ivy/ant-ivy-includes.xml"/>
+
+  <target name="init">
+    <property name="project.name" value="adp-core-apt"/>
+    <property name="project.jar.name" value="${project.name}.jar"/>
+    <property name="ivy.publish.bundle.type" value="jar"/>
+    <property name="ivy.publish.revision" value="3.0-SNAPSHOT"/>
+    <property name="ivy.dir" value="${basedir}/../ivy"/>
+    <property name="ivy.xml.file" value="${ivy.dir}/ivy-apt.xml"/>
+    <property name="ivy.artifact.publish.status" value="integration"/>
+
+    <property name="manifest.title" value="Interlok Annotation Support"/>
+    <property name="manifest.vendor" value="Adaptris Ltd"/>
+    <property name="manifest.section.name" value="com/adaptris/annotation"/>
+
+    <property name="adp-core-version" value="3.0-SNAPSHOT"/>
+
+    <property name="src.dir" value="${basedir}/src/main/java" />
+    <property name="build.dir" value="${basedir}/target" />
+    <property name="build.classes.dir" value="${build.dir}/classes" />
+    <property name="project.dist.dir" value="${build.dir}/dist"/>
+
+    <property name="xstream.annotation.processor" value="com.adaptris.annotation.XStreamAnnotationProcessor" />
+    <property name="xstream-implicit.annotation.processor" value="com.adaptris.annotation.XStreamImplicitAnnotationProcessor" />
+    <property name="cdata.annotation.processor" value="com.adaptris.annotation.CDataAnnotationProcessor" />
+    <property name="beaninfo.annotation.processor" value="com.adaptris.annotation.BeanInfoAnnotationProcessor" />
+    <property name="adapter.component.annotation.processor" value="com.adaptris.annotation.AdapterComponentAnnotationProcessor" />
+    <property name="resources.dir" value="${basedir}/src/main/resources"/>
+    <property name="javac.target.version"   value="1.7"/>
+
+    <mkdir dir="${ivy.dir}"/>
+
+  </target>
+
+  <target name="clean" depends="init" description="Clean up build artefacts">
+    <delete dir="${build.dir}"/>
+  </target>
+
+  <target name="compile" depends="init, prepare-ivy" description="Compile Annotation Processor">
+    <mkdir dir="${build.classes.dir}" />
+    <javac destdir="${build.classes.dir}" srcdir="${src.dir}" debug="on" debuglevel="source,lines,vars"
+           source="${javac.target.version}" target="${javac.target.version}" includeAntRuntime="true">
+      <classpath refid="main.classpath" />
+    </javac>
+  </target>
+
+  <target name="jar" depends="compile">
+    <copy file="${resources.dir}/velocity.properties" tofile="${build.classes.dir}/velocity.properties"/>
+    <copy file="${resources.dir}/beanInfo.vm" tofile="${build.classes.dir}/beanInfo.vm"/>
+    <mkdir dir="${build.classes.dir}/META-INF"/>
+    <propertyfile file="${build.classes.dir}/META-INF/adaptris-version">
+      <entry key="component.name" value="${manifest.title}"/>
+      <entry key="build.version" value="${ivy.publish.revision}"/>
+      <entry key="build.date" value="${today}"/>
+    </propertyfile>
+    <manifest file="${build.dir}/Manifest.mf">
+      <attribute name="Manifest-Version" value="1.0"/>
+      <attribute name="Build-Version" value="${ivy.publish.revision}"/>
+      <attribute name="Built-By" value="${user.name}"/>
+      <attribute name="Implementation-Vendor-Id" value="com.adaptris"/>
+      <attribute name="Implementation-Version" value="${ivy.publish.revision}"/>
+      <attribute name="Implementation-Title" value="${manifest.title}"/>
+      <attribute name="Implementation-Vendor" value="${manifest.vendor}"/>
+    </manifest>
+    <jar basedir="${build.classes.dir}" jarfile="${project.dist.dir}/${project.jar.name}" manifest="${build.dir}/Manifest.mf">
+      <service type="javax.annotation.processing.Processor">
+        <provider classname="${xstream.annotation.processor}"/>
+        <provider classname="${cdata.annotation.processor}"/>
+        <provider classname="${beaninfo.annotation.processor}"/>
+        <provider classname="${xstream-implicit.annotation.processor}"/>
+      	<provider classname="${adapter.component.annotation.processor}"/>
+      </service>
+    </jar>
+  </target>
+
+  <target name="macrodef.init" depends="ivy.macrodef"/>
+  
+  <target name="prepare-for-publish" depends="prepare-ivy, jar, macrodef.init">
+    <mkdir dir="${project.dist.dir}/${project.name}/pom"/>
+    <mkdir dir="${project.dist.dir}/${project.name}/jar"/>
+    <copy todir="${project.dist.dir}/${project.name}/jar" file="${project.dist.dir}/${project.jar.name}"/>
+    <ivy:makepom ivyfile="${ivy.xml.file}" pomfile="${project.dist.dir}/${project.name}/pom/${project.name}.pom"/>
+  </target>
+  
+  <target name="publish" depends="prepare-for-publish">
+    <interlok:publish-artifact resolver="${ivy.repo}" revision="${ivy.publish.revision}" artifact.basedir="${project.dist.dir}" ivy-config="${ivy.xml.file}"/>
+  </target>
+
+  <target name="test" depends="compile" description="Run Tests">
+    <echo message="Nothing to do"/>
+  </target>
+  
+</project>

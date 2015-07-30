@@ -1,0 +1,121 @@
+package com.adaptris.core.services.aggregator;
+
+import static com.adaptris.core.services.splitter.XpathSplitterTest.ENCODING_UTF8;
+import static com.adaptris.core.services.splitter.XpathSplitterTest.ENVELOPE_DOCUMENT;
+
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
+
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.NullService;
+import com.adaptris.core.services.LogMessageService;
+import com.adaptris.core.services.aggregator.IgnoreOriginalXmlDocumentAggregator;
+import com.adaptris.core.services.aggregator.XmlDocumentAggregator;
+import com.adaptris.core.services.splitter.SplitJoinService;
+import com.adaptris.core.services.splitter.SplitJoinServiceTest;
+import com.adaptris.core.services.splitter.SplitterCase;
+import com.adaptris.core.services.splitter.XpathMessageSplitter;
+import com.adaptris.core.stubs.DefectiveMessageFactory;
+import com.adaptris.core.util.XmlHelper;
+import com.adaptris.util.TimeInterval;
+import com.adaptris.util.text.xml.InsertNode;
+import com.adaptris.util.text.xml.XPath;
+
+public class IgnoreOriginalXmlAggregatorTest extends XmlAggregatorCase {
+
+  public IgnoreOriginalXmlAggregatorTest(String name) {
+    super(name);
+  }
+
+  @Override
+  protected void setUp() throws Exception {
+  }
+
+  @Override
+  protected void tearDown() throws Exception {
+  }
+
+
+  public void testSplitJoinService_WithExplicitDocumentEnoding() throws Exception {
+    // This is a XML doc with 3 iterable elements...
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(SplitterCase.XML_MESSAGE);
+    SplitJoinService service = new SplitJoinService();
+    // The service doesn't actually matter right now.
+    service.setService(SplitJoinServiceTest.wrap(new NullService()));
+    service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
+    service.setSplitter(new XpathMessageSplitter(ENVELOPE_DOCUMENT, ENCODING_UTF8));
+    IgnoreOriginalXmlDocumentAggregator aggr = new IgnoreOriginalXmlDocumentAggregator("<new/>", new InsertNode("/new"));
+    aggr.setDocumentEncoding("UTF-8");
+    service.setAggregator(aggr);
+    execute(service, msg);
+
+    // Should now be 3 document nodes
+    // because we ignore the original
+    XPath xpath = new XPath();
+    assertEquals(3, xpath.selectNodeList(XmlHelper.createDocument(msg, true), "/new/document").getLength());
+    assertEquals("UTF-8", msg.getCharEncoding());
+  }
+
+  public void testSplitJoinService_WithImplicitDocumentEnoding() throws Exception {
+    // This is a XML doc with 3 iterable elements...
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(SplitterCase.XML_MESSAGE, "ISO-8859-1");
+    SplitJoinService service = new SplitJoinService();
+    // The service doesn't actually matter right now.
+    service.setService(SplitJoinServiceTest.wrap(new NullService()));
+    service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
+    service.setSplitter(new XpathMessageSplitter(ENVELOPE_DOCUMENT, ENCODING_UTF8));
+    service.setAggregator(new IgnoreOriginalXmlDocumentAggregator("<new/>", new InsertNode("/new")));
+    execute(service, msg);
+    // Should now be 6 document nodes
+    XPath xpath = new XPath();
+    assertEquals(3, xpath.selectNodeList(XmlHelper.createDocument(msg, true), "/new/document").getLength());
+    assertEquals("ISO-8859-1", msg.getCharEncoding());
+  }
+
+  public void testJoinMessage_NoTemplate() throws Exception {
+    XmlDocumentAggregator aggr = new IgnoreOriginalXmlDocumentAggregator();
+    aggr.setMergeImplementation(new InsertNode(SplitJoinServiceTest.XPATH_ENVELOPE));
+    AdaptrisMessage original = AdaptrisMessageFactory.getDefaultInstance().newMessage("<envelope/>");
+    AdaptrisMessage splitMsg1 = AdaptrisMessageFactory.getDefaultInstance().newMessage("<document>hello</document>");
+    AdaptrisMessage splitMsg2 = new DefectiveMessageFactory().newMessage("<document>world</document>");
+    try {
+      aggr.joinMessage(original, Arrays.asList(new AdaptrisMessage[]
+      {
+          splitMsg1, splitMsg2
+      }));
+      fail();
+    }
+    catch (CoreException expected) {
+
+    }
+  }
+
+  @Override
+  protected String getExampleCommentHeader(Object o) {
+    return super.getExampleCommentHeader(o) + "\n<!-- \n The example document for this split/join process is\n"
+        + SplitterCase.XML_MESSAGE + "\n which would create 3 new messages.\n"
+        + "Once the services are executed; you would actually end up with 3 document elements as \n"
+        + "each of the split messages would be inserted back into a new document with a root element of <new>\n-->\n";
+  }
+
+  @Override
+  protected Object retrieveObjectForSampleConfig() {
+    SplitJoinService service = new SplitJoinService();
+    service.setService(SplitJoinServiceTest.wrap(new LogMessageService(), new NullService()));
+    service.setSplitter(new XpathMessageSplitter(ENVELOPE_DOCUMENT, ENCODING_UTF8));
+    service.setAggregator(new IgnoreOriginalXmlDocumentAggregator("<new/>", new InsertNode("/new")));
+    return service;
+  }
+
+  @Override
+  protected String createBaseFileName(Object object) {
+    return object.getClass().getName() + "-IgnoreOriginalXmlDocumentAggregator";
+  }
+
+  @Override
+  protected IgnoreOriginalXmlDocumentAggregator createAggregatorForTests() {
+    return new IgnoreOriginalXmlDocumentAggregator("<envelope/>");
+  }
+}

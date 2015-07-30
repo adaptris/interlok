@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<BESTELLDATEN>
+<ANFRAGEDATEN>
+  <DATUM value=""/>
+</ANFRAGEDATEN>
+<BESTELLUNG>
+  <MANDANT value="4911"/>
+  <BETRIEB value="6"/>
+  <BESTMDT value=""/>
+  <BESTBETR value="8172"/>
+  <UMGEBUNG value="62"/>
+  <KDNR value="775143"/>
+  <WARENKORB value="73926"/>
+  <NAME value="F4F_Test_1"/>
+  <DATUM value="2011-10-12 14:17:26.44649"/>
+  <KOMMENTAR value=""/>
+  <LIEFNAME value="Hund Katze Maus"/>
+  <LIEFSTR value="Hauptstr.145"/>
+  <LIEFLAND value="D"/>
+  <LIEFPLZ value="42579"/>
+  <LIEFORT value="Heiligenhaus"/>
+  <LIEFERTERMIN value=""/>
+<BA-ABHOLDATUM value=""/>
+<BA-LIEFERDATUM value="13.10.2011"/>
+  <ANSPRECHPARTNER value=""/>
+  <GESAMTPREIS value="56.25"/>
+  <BONUSPUNKTE value="0"/>
+  <LIEFERZAHLART value="Kundenkonto"/>
+  <LZBESCHREIBUNG value="Bei Unterschreitung eines Bestellwertes von 50,00 € berechnen wir Ihnen Frachtkosten in Höhe von 10,00 €"/>
+  <LZPREISART value="2"/>
+  <LZZAHLINFO value=""/>
+  <FRACHTKOSTEN value="10.00"/>
+  <FRACHTFREIAB value="50.00"/>
+  <BESTELLPOSITIONEN value="3"/>
+  <KUNDE>
+    <RECHNAME value="Hund Katze Maus"/>
+    <RECHSTR value="Hauptstr.145"/>
+    <RECHLAND value="D"/>
+    <RECHPLZ value="42579"/>
+    <RECHORT value="Heiligenhaus"/>
+    <LIEFNAME value="Hund Katze Maus"/>
+    <LIEFSTR value="Hauptstr.145"/>
+    <LIEFLAND value="D"/>
+    <LIEFPLZ value="42579"/>
+    <LIEFORT value="Heiligenhaus"/>
+    <TELEFON value=" 02056/599105 "/>
+    <FAX value=" 02056/599106 "/>
+    <EMAIL value=" HundKatzeMaus.Heiligenhaus@t-online.de "/>
+    <BONUSPUNKTE value="3"/>
+  </KUNDE>
+  <BESPOS>
+    <WKARTIKEL value="1361490"/>
+    <BEZEICHNUNG value="All. Dog Premium Hundekuchen Mini Hart &amp;"/>
+    <ZUSATZTEXT value=""/>
+    <ARTIKELGRP value="0"/>
+    <ARTIKELNR value="6207780"/>
+    <ARTIKELNRIP value="0"/>
+    <LIEFERANTMC value=""/>
+    <LAN value="348021"/>
+    <EAN value="4005784080213"/>
+    <PREIS value="18.85"/>
+    <ME value="ST"/>
+    <MENGE value="1"/>
+    <TEXT value=""/>
+    <PREISART value=""/>
+    <BONUSPUNKTE value=""/>
+  </BESPOS>
+  <BESPOS>
+    <WKARTIKEL value="1361492"/>
+    <BEZEICHNUNG value="Ani. Dog Chicken Sticks Geflügel 1Stück"/>
+    <ZUSATZTEXT value=""/>
+    <ARTIKELGRP value="0"/>
+    <ARTIKELNR value="6284966"/>
+    <ARTIKELNRIP value="0"/>
+    <LIEFERANTMC value=""/>
+    <LAN value="82902"/>
+    <EAN value="4017721829021"/>
+    <PREIS value="19.00"/>
+    <ME value="KAR"/>
+    <MENGE value="1"/>
+    <TEXT value=""/>
+    <PREISART value=""/>
+    <BONUSPUNKTE value=""/>
+  </BESPOS>
+  <BESPOS>
+    <WKARTIKEL value="1361496"/>
+    <BEZEICHNUNG value="Bre. Cat Trocken Rind,Lamm &amp; Pute 400g"/>
+    <ZUSATZTEXT value=""/>
+    <ARTIKELGRP value="0"/>
+    <ARTIKELNR value="30076"/>
+    <ARTIKELNRIP value="0"/>
+    <LIEFERANTMC value=""/>
+    <LAN value="845011"/>
+    <EAN value="4008429043918"/>
+    <PREIS value="8.40"/>
+    <ME value="KAR"/>
+    <MENGE value="1"/>
+    <TEXT value=""/>
+    <PREISART value=""/>
+    <BONUSPUNKTE value=""/>
+  </BESPOS>
+</BESTELLUNG>
+</BESTELLDATEN>

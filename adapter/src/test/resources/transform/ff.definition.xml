@@ -1,0 +1,33 @@
+<root encoding="iso-8859-1">
+<segment name="Document">
+  <segment name="Header">
+  <record length="0" separator="\n" rec_id="HDR" rec_id_start="1" rec_id_len="3" field_sep="" repetitions="0">
+    <field name = "RecordType" length = "3" separator = ""/>
+    <field name = "SourceCode" length = "3" separator = ""/>
+    <field name = "RunDate" length = "8" separator = ""/>
+    <field name = "Title" length = "16" separator = ""/>
+    <field name = "SourceDescription" length = "7" separator = ""/>
+    <field name = "DestDescription" length = "17" separator = ""/>
+    <field name = "Filler" length = "10" separator = ""/>
+  </record>
+  </segment>
+  <segment name="Details">
+    <record length="0" separator="\n" rec_id="DET" rec_id_start="1" rec_id_len="3" field_sep="" repetitions="0">
+      <field name = "RecordType" length = "3" separator = ""/>
+      <field name = "FieldOne" length = "12" separator = ""/>
+      <field name = "FieldTwo" length = "11" separator = ""/>
+      <field name = "FieldThree" length = "14" separator = ""/>
+      <field name = "CompletionDate" length = "8" separator = ""/>
+      <field name = "FieldFour" length = "12" separator = ""/>
+      <field name = "Filler" length = "6" separator = ""/>
+    </record>
+  </segment>
+  <segment name="Trailer">
+    <record length="0" separator="\n" rec_id="TRL" rec_id_start="1" rec_id_len="3" field_sep="" repetitions="0">
+      <field name = "RecordType" length = "3" separator = ""/>
+      <field name = "Total" length = "8" separator = ""/>
+      <field name = "Filler" length = "53" separator = ""/>
+    </record>
+  </segment>
+</segment>
+</root>

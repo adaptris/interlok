@@ -1,0 +1,66 @@
+package com.adaptris.core;
+
+
+/**
+ * <p>
+ * Specifies methods for components which manage state transitions.
+ * </p>
+ * 
+ * @see AdaptrisComponent
+ */
+public interface StateManagedComponent extends AdaptrisComponent {
+
+  /**
+   * <p>
+   * Returns the configured unique ID for this object.
+   * </p>
+   * @return the configured unique ID for this object
+   */
+  String getUniqueId();
+
+  /**
+   * <p>
+   * Returns the last recorde <code>ComponentState</code>.
+   * </p>
+   * @return the current <code>ComponentState</code>
+   */
+  ComponentState retrieveComponentState();
+  
+  /**
+   * <p>
+   * Updates the state for the component <code>ComponentState</code>.
+   * </p>
+   */
+  void changeState(ComponentState newState);
+
+  /**
+   * <p>
+   * Request this component is init'd.
+   * </p>
+   * @throws CoreException wrapping any underlying Exceptions
+   */
+  void requestInit() throws CoreException;
+
+  /**
+   * <p>
+   * Request this component is started.
+   * </p>
+   * @throws CoreException wrapping any underlying Exceptions
+   */
+  void requestStart() throws CoreException;
+
+  /**
+   * <p>
+   * Request this component is stopped.
+   * </p>
+   */
+  void requestStop();
+
+  /**
+   * <p>
+   * Request this component is closed.
+   * </p>
+   */
+  void requestClose();
+
+}

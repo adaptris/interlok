@@ -1,0 +1,66 @@
+package com.adaptris.http.legacy;
+
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
+import org.apache.commons.io.IOUtils;
+
+import com.adaptris.core.security.PrivateKeyPasswordProvider;
+import com.adaptris.http.Https;
+import com.adaptris.security.exc.PasswordException;
+import com.adaptris.security.password.Password;
+
+/**
+ * Legacy private key password provider based on the property file 'adp-http.properties'.
+ *
+ * <p>
+ * This retrieves the password from the file 'adp-http.properties' which is expected to be on the classpath; the property containing
+ * the private key is {@value com.adaptris.http.Https#CONFIG_PRIVATE_KEY_PW} within this file.
+ * </p>
+ ** <p>
+ * In the adapter configuration file this class is aliased as <b>http-legacy-private-key-password-provider</b> which is the preferred alternative to the
+ * fully qualified classname when building your configuration.
+ * </p>
+ 
+ * @author lchan
+ *
+ */
+@XStreamAlias("http-legacy-private-key-password-provider")
+public class HttpLegacyPrivateKeyPasswordProvider implements PrivateKeyPasswordProvider {
+
+  private char[] pkPassword;
+
+  public HttpLegacyPrivateKeyPasswordProvider() {
+
+  }
+
+  /**
+   * Return the private key password as a char[] array.
+   *
+   * @return the private key sourced from 'adp-http.properties' and decoded using {@link Password#decode(String)}
+   */
+  @Override
+  public char[] retrievePrivateKeyPassword() throws PasswordException {
+    if (pkPassword == null) {
+      InputStream is = this.getClass().getClassLoader().getResourceAsStream(Https.CONFIG_PROPERTY_FILE);
+      try {
+        if (is != null) {
+          Properties p = new Properties();
+          p.load(is);
+          pkPassword = Password.decode(p.getProperty(Https.CONFIG_PRIVATE_KEY_PW)).toCharArray();
+        }
+      }
+      catch (IOException e) {
+        throw new PasswordException(e);
+      }
+      finally {
+        IOUtils.closeQuietly(is);
+      }
+    }
+    return pkPassword;
+  }
+
+}

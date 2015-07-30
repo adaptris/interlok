@@ -1,0 +1,68 @@
+package com.adaptris.core.services.metadata;
+
+import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
+
+import com.adaptris.core.CoreException;
+import com.adaptris.util.text.ByteTranslator;
+import com.adaptris.util.text.CharsetByteTranslator;
+import com.adaptris.util.text.HexStringByteTranslator;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+/**
+ * This class will decode hex encoded metadata value(s) using the specified character encoding
+ * 
+ * @config hex-to-string-metadata-service
+ * 
+ * @license BASIC
+ * @see StringToHexService
+ */
+@XStreamAlias("hex-to-string-metadata-service")
+public class HexToStringService extends ReformatMetadata {
+
+  private String charset;
+  protected static final String UTF_8 = "UTF-8";
+
+  public HexToStringService() {
+    super();
+  }
+
+  public HexToStringService(String regex) {
+    super(regex);
+    setCharset(UTF_8);
+  }
+
+  @Override
+  public void close() {
+
+  }
+
+  @Override
+  public void init() throws CoreException {
+
+  }
+
+  public String getCharset() {
+    return charset;
+  }
+
+  /**
+   * The character encoding to be applied when decoding the hex string. If no encoding is specified, UTF8 will be used.
+   *
+   * @param encoding
+   */
+  public void setCharset(String encoding) {
+    charset = encoding;
+  }
+
+  protected String getCharacterEncoding() {
+    return defaultIfEmpty(getCharset(), UTF_8);
+  }
+
+  @Override
+  protected String reformat(String s, String msgCharset) throws Exception {
+    ByteTranslator hexToBytes = new HexStringByteTranslator();
+    ByteTranslator bytesToString = new CharsetByteTranslator(getCharacterEncoding());
+    return bytesToString.translate(hexToBytes.translate(s));
+  }
+
+}

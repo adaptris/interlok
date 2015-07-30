@@ -1,0 +1,131 @@
+package com.adaptris.core.services.aggregator;
+
+import static org.apache.commons.io.IOUtils.closeQuietly;
+import static org.apache.commons.lang.StringUtils.isEmpty;
+
+import java.io.OutputStream;
+import java.util.Collection;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
+import org.w3c.dom.Document;
+
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.core.util.XmlHelper;
+import com.adaptris.util.XmlUtils;
+import com.adaptris.util.text.xml.DocumentMerge;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+/**
+ * {@link MessageAggregator} implementation that creates single XML using each message that needs to be joined up.
+ * 
+ * <p>
+ * The original pre-split document forms the basis of the resulting document; each of the split documents is merged into the main
+ * document using the configured {@link DocumentMerge} function.
+ * </p>
+ * <p>
+ * Use {@link #setDocumentEncoding(String)} to force the encoding of the resulting XML document to the required value; if not set,
+ * then either the original {@link AdaptrisMessage#getCharEncoding()} (if set) or <code>UTF-8</code> will be used in that order.
+ * </p>
+ * 
+ * @config xml-document-aggregator
+ * @author lchan
+ * 
+ */
+@XStreamAlias("xml-document-aggregator")
+public class XmlDocumentAggregator extends MessageAggregatorImpl {
+
+  private String documentEncoding;
+  @NotNull
+  @Valid
+  private DocumentMerge mergeImplementation;
+
+  public XmlDocumentAggregator() {
+  }
+
+  public XmlDocumentAggregator(DocumentMerge merge) {
+    this();
+    setMergeImplementation(merge);
+  }
+
+  @Override
+  public void joinMessage(AdaptrisMessage original, Collection<AdaptrisMessage> messages) throws CoreException {
+    try {
+      Document resultDoc = XmlHelper.createDocument(original, true);
+      for (AdaptrisMessage m : messages) {
+        Document mergeDoc = XmlHelper.createDocument(m, true);
+        overwriteMetadata(m, original);
+        resultDoc = getMergeImplementation().merge(resultDoc, mergeDoc);
+      }
+      writeXmlDocument(resultDoc, original);
+    }
+    catch (Exception e) {
+      ExceptionHelper.rethrowCoreException(e);
+    }
+    finally {
+    }
+  }
+
+  private String evaluateEncoding(AdaptrisMessage msg) {
+    String encoding = "UTF-8";
+    if (!isEmpty(getDocumentEncoding())) {
+      encoding = getDocumentEncoding();
+    }
+    else if (!isEmpty(msg.getCharEncoding())) {
+      encoding = msg.getCharEncoding();
+    }
+    return encoding;
+  }
+
+  protected void writeXmlDocument(Document doc, AdaptrisMessage msg) throws Exception {
+    OutputStream out = null;
+    try {
+      String encoding = evaluateEncoding(msg);
+      out = msg.getOutputStream();
+      new XmlUtils().writeDocument(doc, out, encoding);
+      msg.setCharEncoding(encoding);
+    }
+    finally {
+      closeQuietly(out);
+    }
+  }
+
+  /**
+   * @return the documentEncoding
+   */
+  public String getDocumentEncoding() {
+    return documentEncoding;
+  }
+
+  /**
+   * Set the XML encoding for the resulting document.
+   * 
+   * @param s the documentEncoding to set (defaults to UTF-8).
+   */
+  public void setDocumentEncoding(String s) {
+    this.documentEncoding = s;
+  }
+
+  /**
+   * @return the mergeImplementation
+   */
+  public DocumentMerge getMergeImplementation() {
+    return mergeImplementation;
+  }
+
+  /**
+   * Set how to merge the split documents into the main XML document.
+   * 
+   * @param dm the mergeImplementation to set
+   */
+  public void setMergeImplementation(DocumentMerge dm) {
+    if (dm == null) {
+      throw new IllegalArgumentException("Merge implementation may not be null");
+    }
+    this.mergeImplementation = dm;
+  }
+
+}

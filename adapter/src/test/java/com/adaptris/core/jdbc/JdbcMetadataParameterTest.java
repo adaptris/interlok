@@ -1,0 +1,96 @@
+package com.adaptris.core.jdbc;
+
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.DefaultMessageFactory;
+import com.adaptris.core.MetadataElement;
+
+public class JdbcMetadataParameterTest extends NullableParameterCase {
+  
+  private static final String METADATA_VALUE = "PARAM_METADATA_VALUE";
+  private static final String METADATA_KEY = "PARAM_METADATA_KEY";
+  private AdaptrisMessage message;
+  private MetadataElement metadata;
+  
+  public void setUp() throws Exception {
+    metadata = new MetadataElement(METADATA_KEY, METADATA_VALUE);
+    
+    message = DefaultMessageFactory.getDefaultInstance().newMessage();
+    message.addMetadata(metadata);
+  }
+  
+  @Override
+  protected JdbcMetadataParameter createParameter() {
+    return new JdbcMetadataParameter();
+  }
+
+  public void testNoMetadataKeyForInputParam() throws Exception {
+    message.removeMetadata(metadata);
+    
+    JdbcMetadataParameter param = new JdbcMetadataParameter();
+    try {
+      param.applyInputParam(message);
+    } catch(JdbcParameterException ex) {
+      // expected, pass
+    }
+  }
+
+  public void testNoMetadataKeyForOutputParam() throws Exception {
+    message.removeMetadata(metadata);
+    
+    JdbcMetadataParameter param = new JdbcMetadataParameter();
+    try {
+      param.applyOutputParam(null, message);
+    } catch(JdbcParameterException ex) {
+      // expected, pass
+    }
+  }
+  
+  public void testMetadataDoesNotExistInputParam() throws Exception {
+    JdbcMetadataParameter param = new JdbcMetadataParameter();
+    param.setMetadataKey("DOES_NOT_EXIST_KEY");
+    try {
+      param.applyInputParam(message);
+    } catch(JdbcParameterException ex) {
+      // expected, pass
+    }
+  }
+  
+  public void testMetadataDoesNotExistOutputParam() throws Exception {
+    JdbcMetadataParameter param = new JdbcMetadataParameter();
+    param.setMetadataKey("DOES_NOT_EXIST_KEY");
+    param.applyOutputParam("BLAH", message);
+    // expected, pass
+  }
+  
+  public void testMetadataAlreadyExistsOutputParam() throws Exception {
+    assertEquals(message.getMetadataValue(METADATA_KEY), METADATA_VALUE);
+    
+    JdbcMetadataParameter param = new JdbcMetadataParameter();
+    param.setMetadataKey(METADATA_KEY);
+    
+    param.applyOutputParam("NEW_PARAM_METADATA_VALUE", message);
+    
+    assertEquals(message.getMetadataValue(METADATA_KEY), "NEW_PARAM_METADATA_VALUE");
+  }
+  
+  public void testMetadataAppliedInputParam() throws Exception {
+    JdbcMetadataParameter param = new JdbcMetadataParameter();
+    param.setMetadataKey(METADATA_KEY);
+    Object appliedInputParam = param.applyInputParam(message);
+    
+    assertEquals((String) appliedInputParam, METADATA_VALUE);
+  }
+  
+  public void testMetadataAppliedOutputParam() throws Exception {
+    message.removeMetadata(metadata);
+    assertFalse(message.containsKey(METADATA_KEY));
+    
+    JdbcMetadataParameter param = new JdbcMetadataParameter();
+    param.setMetadataKey(METADATA_KEY);
+    
+    param.applyOutputParam(METADATA_VALUE, message);
+    
+    assertTrue(message.containsKey(METADATA_KEY));
+    assertEquals(message.getMetadataValue(METADATA_KEY), METADATA_VALUE);
+  }
+}

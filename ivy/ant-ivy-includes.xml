@@ -1,0 +1,58 @@
+<project basedir="." default="prepare-ivy" name="IvyTasks" xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:interlok="uri:interlok" >
+
+  <target name="init-ivy" depends="init">
+    <property name="ivy.jar.file" value="${ivy.dir}/ivy.jar"/>
+  	<property name="ivy.install.version" value="2.3.0"/>
+  	<property name="ivy.repo" value="nexus-snapshots"/>
+  	<property name="ivy.xml.file" value="ivy.xml"/>
+  	<property name="ivy.logging" value="quiet"/>
+  	<property name="ivy.report.dir" value="${build.dir}/ivy-report"/>
+  	<property name="ivy.publish.bundle.type" value="jar"/>
+  </target>
+
+  <target name="download-ivy" depends="init-ivy" unless="skip.ivy.download">
+	<echo message="Downloading ivy..."/>
+	<get src="http://repo1.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar" dest="${ivy.jar.file}" usetimestamp="true"/>
+  </target>
+
+  <target name="install-ivy" depends="download-ivy" description="Install ivy">
+  	<path id="ivy.lib.path">
+  	  <pathelement location="${ivy.jar.file}"/>
+  	</path>
+  	<taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
+  </target>
+
+  <target name="prepare-ivy" depends="install-ivy" description="Loads all the ivy definitions and settings">
+  	<ivy:settings file="${basedir}/../ivy/ivy-settings.xml" />
+    <ivy:resolve file="${ivy.xml.file}" refresh="true" showprogress="false" log="${ivy.logging}"/>
+
+  	<!-- set up main compile classpath using ivy dependecny management -->
+    <ivy:cachepath pathid="classpath.ant-tools" conf="ant" type="jar,zip,bundle,hk2-jar,maven-plugin"/>
+    <ivy:cachepath pathid="main.classpath" conf="compile,runtime,test" type="jar,zip,bundle,hk2-jar,maven-plugin"/>
+    <typedef resource="net/sf/antcontrib/antlib.xml" classpathref="classpath.ant-tools" />
+    <typedef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml" classpathref="classpath.ant-tools"/>
+  </target>
+
+  <target name="ivy.macrodef" depends="prepare-ivy">
+
+    <macrodef name="publish-artifact" uri="uri:interlok">
+      <attribute name="resolver"/>
+      <attribute name="ivy-config"/>
+      <attribute name="revision"/>
+      <attribute name="status" default="${ivy.artifact.publish.status}"/>
+      <attribute name="artifact.basedir" default="${project.dist.dir}"/>
+      <sequential>
+        <ivy:resolve file="@{ivy-config}" refresh="true" log="${ivy.logging}"/>
+        <ivy:publish resolver="@{resolver}" revision="@{revision}" overwrite="true" status="@{status}" publishivy="true" >
+          <artifacts pattern="@{artifact.basedir}/[module]/[type]/[artifact].[ext]"/>
+        </ivy:publish>
+      </sequential>
+    </macrodef>
+  </target>
+
+  <target name="ivy-report" depends="prepare-ivy" description="Produce an IVY dependency report">
+    <mkdir dir="${ivy.report.dir}"/>
+    <ivy:report todir="${ivy.report.dir}" conf="compile,runtime" graph="false"/>
+  </target>
+
+</project>

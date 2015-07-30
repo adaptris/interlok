@@ -1,0 +1,49 @@
+<adapter>
+  <unique-id>SimpleAdapterTest</unique-id>
+  <channel-list>
+    <channel>
+      <unique-id>channel1</unique-id>
+      <consume-connection class="null-connection" />
+      <produce-connection class="null-connection" />
+      <workflow-list>
+        <standard-workflow>
+          <unique-id>workflow1</unique-id>
+          <consumer class="null-message-consumer">
+            <destination class="configured-consume-destination">
+              <destination>dummy</destination>
+            </destination>
+          </consumer>
+          <service-collection class="service-list">
+            <unique-id>serviceListID1</unique-id>
+            <services>
+              <service class="add-metadata-service">
+                <unique-id>serviceID1</unique-id>
+                <metadata-element>
+                  <key>key1</key>
+                  <value>val1</value>
+                </metadata-element>
+              </service>
+              <service class="xpath-metadata-service">
+                <unique-id>serviceID2</unique-id>
+                <xpath-query class="configured-xpath-query">
+                  <metadata-key>KeyA</metadata-key>
+                  <xpath-query>/a/b/c</xpath-query>
+                </xpath-query>
+              </service>
+              <service class="log-message-service">
+                <unique-id>serviceID3</unique-id>
+                <log-prefix></log-prefix>
+                <include-payload>true</include-payload>
+                <include-events>false</include-events>
+              </service>
+            </services>
+          </service-collection>
+          <producer class="null-message-producer" />
+          <send-events>true</send-events>
+          <log-payload>false</log-payload>
+          <produce-exception-handler class="null-produce-exception-handler" />
+        </standard-workflow>
+      </workflow-list>
+    </channel>
+  </channel-list>
+</adapter>

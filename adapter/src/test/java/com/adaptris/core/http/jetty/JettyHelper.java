@@ -1,0 +1,77 @@
+/*
+ * $RCSfile: JettyHelper.java,v $
+ * $Revision: 1.1 $
+ * $Date: 2008/05/13 15:38:36 $
+ * $Author: lchan $
+ */
+package com.adaptris.core.http.jetty;
+
+import java.net.HttpURLConnection;
+
+import com.adaptris.core.AdaptrisConnection;
+import com.adaptris.core.AdaptrisMessageProducer;
+import com.adaptris.core.Channel;
+import com.adaptris.core.ConfiguredConsumeDestination;
+import com.adaptris.core.DefaultEventHandler;
+import com.adaptris.core.EventHandler;
+import com.adaptris.core.NullProcessingExceptionHandler;
+import com.adaptris.core.Service;
+import com.adaptris.core.ServiceList;
+import com.adaptris.core.StandaloneProducer;
+import com.adaptris.core.StandardWorkflow;
+import com.adaptris.core.Workflow;
+import com.adaptris.core.stubs.MockChannel;
+
+/**
+ * @author lchan
+ *
+ */
+public class JettyHelper {
+
+  public static Channel createChannel(AdaptrisConnection connection, MessageConsumer consumer, AdaptrisMessageProducer producer)
+      throws Exception {
+    return createChannel(connection, createWorkflow(consumer, producer));
+  }
+
+  public static Channel createChannel(AdaptrisConnection connection, Workflow w) throws Exception {
+    Channel result = new MockChannel();
+    result.setUniqueId("channel");
+    result.registerEventHandler(createEventHandler());
+    result.setMessageErrorHandler(new NullProcessingExceptionHandler());
+    result.setConsumeConnection(connection);
+    result.getWorkflowList().add(w);
+    return result;
+  }
+
+  public static Workflow createWorkflow(MessageConsumer consumer, AdaptrisMessageProducer producer) {
+    return createWorkflow(consumer, producer, new ResponseProducer(HttpURLConnection.HTTP_OK));
+  }
+
+  public static Workflow createWorkflow(MessageConsumer consumer, AdaptrisMessageProducer producer, ResponseProducer responder) {
+    return createWorkflow(consumer, producer, new ServiceList(new Service[]
+    {
+      new StandaloneProducer(responder)
+    }));
+  }
+
+  public static Workflow createWorkflow(MessageConsumer consumer, AdaptrisMessageProducer producer, ServiceList list) {
+    StandardWorkflow wf = new StandardWorkflow();
+    wf.setConsumer(consumer);
+    wf.setProducer(producer);
+    wf.setServiceCollection(list);
+    return wf;
+  }
+
+  public static MessageConsumer createConsumer(String dest) {
+    MessageConsumer consumer = new MessageConsumer();
+    consumer.setAdditionalDebug(true);
+    consumer.setDestination(new ConfiguredConsumeDestination(dest));
+    return consumer;
+  }
+
+  private static EventHandler createEventHandler() throws Exception {
+    DefaultEventHandler sch = new DefaultEventHandler();
+    sch.requestStart();
+    return sch;
+  }
+}

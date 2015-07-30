@@ -1,0 +1,260 @@
+/*
+ * $Id: TestKeyValuePairSet.java,v 1.1 2003/10/23 23:04:52 hfraser Exp $
+ */
+package com.adaptris.util;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Properties;
+
+import junit.framework.TestCase;
+
+public abstract class KeyValuePairCollectionCase extends TestCase {
+
+  protected static final String KEY = "key";
+  protected static final String VALUE = "value";
+
+  protected static final String KEY1 = "key1";
+  protected static final String KEY2 = "key2";
+  protected static final String KEY3 = "key3";
+  protected static final String KEY4 = "key4";
+
+  protected static final String VALUE1 = "value1";
+  protected static final String VALUE2 = "value2";
+  protected static final String VALUE3 = "value3";
+  protected static final String VALUE4 = "value4";
+
+  public KeyValuePairCollectionCase(java.lang.String testName) {
+    super(testName);
+  }
+
+  @Override
+  public void setUp() throws Exception {
+    super.setUp();
+  }
+
+  @Override
+  public void tearDown() throws Exception {
+    super.tearDown();
+  }
+
+  protected abstract KeyValuePairBag createBag();
+
+  public void testGetKeyValuePair() {
+    KeyValuePairBag set = createWithEntries(3);
+
+    assertTrue(set.contains(new KeyValuePair(KEY1, VALUE1)));
+    assertTrue(new KeyValuePair(KEY1, VALUE1).equals(set.getKeyValuePair(KEY1)));
+  }
+
+  public void testGetValue() {
+    KeyValuePairBag set = createWithEntries(3);
+
+    assertTrue(VALUE1.equals(set.getValue(KEY1)));
+  }
+
+  public void testGetValueIgnoringKeyCase() {
+    KeyValuePairBag set = createWithEntries(3);
+
+    assertEquals(VALUE1, set.getValueIgnoringKeyCase("KEY1"));
+    set.addKeyValuePair(new KeyValuePair("Key1", "Value1"));
+    assertEquals(4, set.size());
+  }
+
+  public void testNullOperations() {
+    KeyValuePairBag set = createWithEntries(3);
+
+    try {
+      set.addKeyValuePair(null);
+      fail("Cannot not add null to a key value pair set");
+    }
+    catch (IllegalArgumentException e) {
+      ;// expected
+    }
+    assertNull(set.getValueIgnoringKeyCase(null));
+    set.removeKeyValuePair((KeyValuePair) null);
+    assertEquals(3, set.size());
+  }
+
+  public void testRemoveWithKeyValuePair() {
+    KeyValuePairBag set = createWithEntries(3);
+
+    set.removeKeyValuePair(new KeyValuePair(KEY1, VALUE1));
+    assertEquals(2, set.size());
+  }
+
+  public void testRemoveByKey() {
+    KeyValuePairBag set = createWithEntries(3);
+
+    set.removeKeyValuePair(KEY1);
+    assertEquals(2, set.size());
+    assertNull(set.getValue(KEY1));
+  }
+
+  public void testGetNonExistent() {
+    KeyValuePairBag set = createWithEntries(3);
+
+    assertNull(set.getKeyValuePair("ABCDEFG"));
+    assertNull(set.getValue("ABCDEFG"));
+    assertNull(set.getValueIgnoringKeyCase("ABCDEFG"));
+  }
+
+  public void testIterator() {
+    KeyValuePairBag set = createWithEntries(3);
+
+    assertNotNull(set.toString());
+    assertNotNull(set.iterator());
+    int count = 0;
+    for (Iterator<KeyValuePair> i = set.iterator(); i.hasNext();) {
+      KeyValuePair kvp = i.next();
+      count++;
+    }
+    assertEquals(3, count);
+  }
+
+  public void testGetKeyValuePairs() {
+    KeyValuePairBag set = createWithEntries(3);
+    Collection<KeyValuePair> col = set.getKeyValuePairs();
+    assertNotNull(col);
+    assertEquals(3, col.size());
+  }
+
+  public void testSetKeyValuePairs() {
+    KeyValuePairBag set = createBag();
+    Collection<KeyValuePair> col = Arrays.asList(new KeyValuePair[]
+    {
+        new KeyValuePair(KEY1, VALUE1), new KeyValuePair(KEY2, VALUE2), new KeyValuePair(KEY3, VALUE3)
+    });
+    set.setKeyValuePairs(col);
+    assertEquals(3, set.size());
+    assertEquals(3, set.getKeyValuePairs().size());
+    assertTrue(set.contains(new KeyValuePair(KEY1, VALUE1)));
+    assertTrue(new KeyValuePair(KEY1, VALUE1).equals(set.getKeyValuePair(KEY1)));
+  }
+
+  public void testAsProperties() {
+    KeyValuePairBag set = createWithEntries(3);
+
+    assertNotNull(set.toString());
+    Properties p = KeyValuePairSet.asProperties(set);
+    assertTrue(p.containsKey(KEY1));
+    assertEquals(VALUE1, p.getProperty(KEY1));
+    assertEquals(set.toString(), p.toString());
+  }
+
+  public void testEquals() {
+    KeyValuePairBag set = createWithEntries(3);
+    KeyValuePairBag set2 = createWithEntries(3);
+    assertTrue(set.equals(set));
+    assertTrue(set.equals(set2));
+    assertEquals(set.hashCode(), set2.hashCode());
+    set2.addKeyValuePair(new KeyValuePair(KEY4, VALUE4));
+    assertFalse(set.equals(set2));
+    assertFalse(set.equals(new KeyValuePairSet()));
+    assertFalse(set.equals(new KeyValuePairCollection()));
+    assertFalse(set.equals(new Object()));
+    assertFalse(set.equals(null));
+    KeyValuePairBag set3 = createBag();
+    set3.add(new KeyValuePair(KEY4, VALUE4));
+    set3.add(new KeyValuePair(KEY3, VALUE3));
+    set3.add(new KeyValuePair(KEY2, VALUE2));
+    assertFalse(set.equals(set3));
+  }
+
+  public void testSize() {
+    KeyValuePairBag bag1 = createWithEntries(3);
+    assertEquals(3, bag1.size());
+  }
+
+  public void testClear() {
+    KeyValuePairBag bag1 = createWithEntries(3);
+    bag1.clear();
+    assertEquals(0, bag1.size());
+  }
+
+  public void testAddAll() {
+    KeyValuePairBag bag1 = createWithEntries(3);
+    KeyValuePairBag bag2 = createBag();
+    bag2.add(new KeyValuePair(KEY4, VALUE4));
+    bag1.addAll(bag2);
+    assertEquals(4, bag1.size());
+  }
+
+  public void testContains() {
+    KeyValuePairBag bag1 = createWithEntries(5);
+    assertTrue(bag1.contains(new KeyValuePair(KEY1, VALUE1)));
+  }
+
+  public void testContainsAll() {
+    KeyValuePairBag bag1 = createWithEntries(5);
+    KeyValuePairBag bag2 = createBag();
+    bag2.add(new KeyValuePair(KEY1, VALUE1));
+    bag2.add(new KeyValuePair(KEY2, VALUE2));
+    assertTrue(bag1.containsAll(bag2));
+  }
+
+  public void testIsEmpty() {
+    KeyValuePairBag bag1 = createWithEntries(4);
+    bag1.clear();
+    assertTrue(bag1.isEmpty());
+  }
+
+  public void testRemove() {
+    KeyValuePairBag bag1 = createWithEntries(3);
+    bag1.remove(new KeyValuePair(KEY1, VALUE1));
+    assertEquals(2, bag1.size());
+  }
+
+  public void testRemoveAllSmaller() {
+    KeyValuePairBag bag1 = createWithEntries(3);
+    bag1.add(new KeyValuePair(KEY + 10, VALUE + 10));
+    KeyValuePairBag bag2 = createWithEntries(3);
+    bag1.removeAll(bag2);
+    assertEquals(1, bag1.size());
+    assertEquals(3, bag2.size());
+  }
+
+  public void testRemoveAllLarger() {
+    KeyValuePairBag bag1 = createWithEntries(3);
+    bag1.add(new KeyValuePair(KEY + 10, VALUE + 10));
+    KeyValuePairBag bag2 = createWithEntries(5);
+    bag1.removeAll(bag2);
+    assertEquals(1, bag1.size());
+    assertEquals(5, bag2.size());
+  }
+
+  public void testRetainAll() {
+    KeyValuePairBag bag1 = createWithEntries(3);
+    KeyValuePairBag bag2 = createBag();
+    bag2.add(new KeyValuePair(KEY1, VALUE2));
+    bag2.add(new KeyValuePair(KEY2, VALUE2));
+    bag1.retainAll(bag2);
+    assertEquals(2, bag1.size());
+  }
+
+  public void testToArray() {
+    KeyValuePairBag bag1 = createWithEntries(3);
+    assertEquals(3, bag1.toArray().length);
+  }
+
+  public void testToArrayWithRuntimeType() {
+    KeyValuePairBag bag1 = createWithEntries(3);
+    try {
+      bag1.toArray(new String[0]);
+      fail();
+    }
+    catch (ArrayStoreException expected) {
+    }
+    KeyValuePair[] pairs = bag1.toArray(new KeyValuePair[0]);
+    assertEquals(3, pairs.length);
+  }
+
+  protected KeyValuePairBag createWithEntries(int count) {
+    KeyValuePairBag set = createBag();
+    for (int i = 0; i < count; i++) {
+      set.addKeyValuePair(new KeyValuePair(KEY + i, VALUE + i));
+    }
+    return set;
+  }
+}

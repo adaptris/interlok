@@ -1,0 +1,315 @@
+package com.adaptris.core.ftp;
+
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.matches;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+
+import java.io.FileFilter;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.concurrent.TimeUnit;
+
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import com.adaptris.core.ConfiguredConsumeDestination;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.FixedIntervalPoller;
+import com.adaptris.core.StandaloneConsumer;
+import com.adaptris.core.stubs.MockEncoder;
+import com.adaptris.core.stubs.MockMessageListener;
+import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.filetransfer.FileTransferClient;
+import com.adaptris.filetransfer.FileTransferException;
+import com.adaptris.util.TimeInterval;
+
+public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
+  
+  private static final String DIR_ROOT = "/";
+  
+  private RelaxedFtpConsumer consumer;
+  private ConfiguredConsumeDestination consumeDestination;
+
+  @Mock private FtpConnection mockFtpConnection;
+  
+  @Mock private FileTransferClient mockFileTransferClient;
+  
+  private MockMessageListener messageListener;
+
+  private StandaloneConsumer standaloneConsumer;
+  
+  private GregorianCalendar calendarNow;
+  private GregorianCalendar calendarOneYearAgo;
+  
+  public RelaxedFtpConsumerTest(String name) {
+    super(name);
+  }
+  
+  public void setUp() throws Exception {
+    consumer = new RelaxedFtpConsumer();
+    
+    MockitoAnnotations.initMocks(this);
+    
+    consumeDestination = new ConfiguredConsumeDestination("myDestination");
+    consumer.setDestination(consumeDestination);
+    consumer.registerConnection(mockFtpConnection);
+    
+    consumer.setPoller(new FixedIntervalPoller(new TimeInterval(1L, TimeUnit.SECONDS)));
+    consumer.setReacquireLockBetweenMessages(true);
+    
+    messageListener = new MockMessageListener(10);
+    standaloneConsumer = new StandaloneConsumer(consumer);
+    standaloneConsumer.registerAdaptrisMessageListener(messageListener);
+    standaloneConsumer.setConnection(mockFtpConnection);
+    
+    when(mockFtpConnection.retrieveConnection(FileTransferConnection.class)).thenReturn(mockFtpConnection);
+    when(mockFtpConnection.connect(consumeDestination.getDestination())).thenReturn(mockFileTransferClient);
+    when(mockFtpConnection.getDirectoryRoot(consumeDestination.getDestination())).thenReturn(DIR_ROOT);
+    
+    calendarNow = new GregorianCalendar();
+    calendarOneYearAgo = new GregorianCalendar();
+    calendarOneYearAgo.add(Calendar.DAY_OF_YEAR, -1);
+  }
+  
+  public void tearDown() throws Exception {
+    LifecycleHelper.stop(consumer);
+    LifecycleHelper.close(consumer);
+  }
+  
+  /***********************************************************************************************
+   * 
+   * 
+   * TESTS
+   * 
+   * 
+   ***********************************************************************************************/
+  
+  public void testSingleFileConsume() throws Exception {
+    this.setFilesToConsume(
+        new String[] { "/MySingleFile.txt" }, 
+        new String[] { "My file payload" },
+        new long[] { calendarOneYearAgo.getTimeInMillis() }
+    );
+    
+    LifecycleHelper.init(consumer);
+    LifecycleHelper.start(consumer);
+    
+    this.waitForConsumer(1, 3000);
+    
+    assertEquals(1, messageListener.getMessages().size());
+  }
+  
+  public void testSingleFileWithWindozeWorkAroundConsume() throws Exception {
+    this.setFilesToConsume(
+        new String[] { "\\MySingleFile.txt" }, 
+        new String[] { "My file payload" },
+        new long[] { calendarOneYearAgo.getTimeInMillis() }
+    );
+    
+    when(mockFtpConnection.windowsWorkaround()).thenReturn(true);
+    
+    LifecycleHelper.init(consumer);
+    LifecycleHelper.start(consumer);
+    
+    this.waitForConsumer(1, 3000);
+    
+    assertEquals(1, messageListener.getMessages().size());
+  }
+  
+  public void testSingleFileWithEncoderConsume() throws Exception {
+    String payload = "My file payload";
+    
+    this.setFilesToConsume(
+        new String[] { "/MySingleFile.txt" }, 
+        new String[] { payload },
+        new long[] { calendarOneYearAgo.getTimeInMillis() }
+    );
+    
+    consumer.setEncoder(new MockEncoder());
+    
+    LifecycleHelper.init(consumer);
+    LifecycleHelper.start(consumer);
+    
+    this.waitForConsumer(1, 3000);
+    
+    assertEquals(1, messageListener.getMessages().size());
+    assertEquals(payload, messageListener.getMessages().get(0).getStringPayload());
+  }
+  
+  public void testMultipleFileConsume() throws Exception {
+    this.setFilesToConsume(
+        new String[] { "/MySingleFile.txt" , "/MySingleFile2.txt", "/MySingleFile3.txt" }, 
+        new String[] { "My file payload", "My file payload 2", "My file payload 3" },
+        new long[] { calendarOneYearAgo.getTimeInMillis(), calendarOneYearAgo.getTimeInMillis(), calendarOneYearAgo.getTimeInMillis() }
+    );
+    
+    LifecycleHelper.init(consumer);
+    LifecycleHelper.start(consumer);
+    
+    this.waitForConsumer(3, 5000);
+    
+    assertEquals(3, messageListener.getMessages().size());
+  }
+  
+  public void testSingleFileConsumeNotOldEnough() throws Exception {
+    this.setFilesToConsume(
+        new String[] { "/MySingleFile.txt" }, 
+        new String[] { "My file payload" },
+        new long[] { calendarNow.getTimeInMillis() + 100000 }
+    );
+    
+    consumer.setOlderThan(new TimeInterval(1L, TimeUnit.MILLISECONDS));
+    
+    LifecycleHelper.init(consumer);
+    LifecycleHelper.start(consumer);
+    
+    this.waitForConsumer(1, 1000);
+    
+    assertEquals(0, messageListener.getMessages().size());
+  }
+  
+  public void testSingleFileConsumeDeleteFails() throws Exception {
+    this.setFilesToConsume(
+        new String[] { "/MySingleFile.txt" }, 
+        new String[] { "My file payload" },
+        new long[] { calendarOneYearAgo.getTimeInMillis() }
+    );
+    
+    doThrow(new FileTransferException("expected")).when(mockFileTransferClient).delete(anyString());
+    
+    LifecycleHelper.init(consumer);
+    LifecycleHelper.start(consumer);
+    
+    this.waitForConsumer(1, 3000);
+    
+    assertEquals(1, messageListener.getMessages().size());
+  }
+  
+  public void testSingleFileConsumeDeleteFailsWithExceptionOnFail() throws Exception {
+    this.setFilesToConsume(
+        new String[] { "/MySingleFile.txt" }, 
+        new String[] { "My file payload" },
+        new long[] { calendarOneYearAgo.getTimeInMillis() }
+    );
+    
+    consumer.setFailOnDeleteFailure(true);
+    doThrow(new FileTransferException("expected")).when(mockFileTransferClient).delete(anyString());
+    
+    LifecycleHelper.init(consumer);
+    LifecycleHelper.start(consumer);
+    
+    this.waitForConsumer(1, 3000);
+    
+    assertEquals(1, messageListener.getMessages().size());
+  }
+  
+  public void testIncorrectPathConsume() throws Exception {
+    when(mockFtpConnection.connect(consumeDestination.getDestination())).thenThrow(new FileTransferException("Expected"));
+    
+    this.setFilesToConsume(
+        new String[] { "/MySingleFile.txt" }, 
+        new String[] { "My file payload" },
+        new long[] { calendarOneYearAgo.getTimeInMillis() }
+    );
+    
+    LifecycleHelper.init(consumer);
+    LifecycleHelper.start(consumer);
+    this.waitForConsumer(1, 1000);
+    assertEquals(0, messageListener.getMessages().size());
+  }
+  
+  public void testDirFailsIncorrectPathConsume() throws Exception {
+    this.setFilesToConsume(
+        new String[] { "/MySingleFile.txt" }, 
+        new String[] { "My file payload" },
+        new long[] { calendarOneYearAgo.getTimeInMillis() }
+    );
+    
+    when(mockFileTransferClient.dir(DIR_ROOT)).thenThrow(new FileTransferException("Expected"));
+    
+    LifecycleHelper.init(consumer);
+    LifecycleHelper.start(consumer);
+    this.waitForConsumer(1, 1000);
+    assertEquals(0, messageListener.getMessages().size());
+  }
+
+  public void testSingleFileWithFilterConsume() throws Exception {
+    when(mockFtpConnection.additionalDebug()).thenReturn(true); // just for coverage
+    
+    this.setFilesToConsume(
+        new String[] { "/MySingleFile.txt" }, 
+        new String[] { "My file payload" },
+        new long[] { calendarOneYearAgo.getTimeInMillis() }
+    );
+    
+    consumer.setDestination(new ConfiguredConsumeDestination("myDestination", "myFilter"));
+    consumer.setFileFilterImp("org.apache.oro.io.GlobFilenameFilter");
+    
+    LifecycleHelper.init(consumer);
+    LifecycleHelper.start(consumer);
+    
+    this.waitForConsumer(1, 3000);
+    
+    assertEquals(1, messageListener.getMessages().size());
+  }
+  
+  public void testWithIncorrectFilterConsume() throws Exception {
+    consumer.setDestination(new ConfiguredConsumeDestination("myDestination", "myFilter"));
+    consumer.setFileFilterImp("xxx");
+    
+    try {
+      LifecycleHelper.init(consumer);
+      fail("Should fail, cannot create the file filter.");
+    } catch (CoreException ex) {
+      // expected
+    }
+  }
+  
+  
+  /***********************************************************************************************
+   * 
+   * 
+   * PRIVATE METHODS
+   * 
+   * 
+   ***********************************************************************************************/
+  
+  private void setFilesToConsume(String[] fileNames, String[] filePayloads, long[] lastModified) throws Exception {
+    when(mockFileTransferClient.dir(DIR_ROOT)).thenReturn(fileNames);
+    when(mockFileTransferClient.dir(matches(DIR_ROOT), (FileFilter) anyObject())).thenReturn(fileNames);
+    int count = 0;
+    for(String fileName : fileNames) {
+      when(mockFileTransferClient.get("/" + fileName)).thenReturn(filePayloads[count].getBytes());
+      when(mockFileTransferClient.lastModified("/" + fileName)).thenReturn(lastModified[count]);
+      count ++;
+    }
+  }
+  
+  private void waitForConsumer(final int numMsgs, final int maxWaitTime) throws Exception {
+    final int waitInc = 100;
+    int waitTime = 0;
+    do {
+      Thread.sleep(waitInc);
+      waitTime += waitInc;
+    } while(messageListener.messageCount() < numMsgs && waitTime < maxWaitTime);
+
+    LifecycleHelper.stop(consumer);    
+  }
+
+  @Override
+  protected FtpConnection createConnectionForExamples() {
+    FtpConnection con = new FtpConnection();
+    con.setDefaultUserName("default-username-if-not-specified");
+    con.setDefaultPassword("default-password-if-not-specified");
+
+    con.setAdditionalDebug(false);
+    return con;
+  }
+
+  @Override
+  protected String getScheme() {
+    return "ftp";
+  }
+}

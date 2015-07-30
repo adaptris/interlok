@@ -1,0 +1,31 @@
+<KeyInfo xmlns="http://www.w3.org/2000/09/xmldsig#"
+xmlns:tns="http://www.oasis-open.org/committees/ebxml-cppa/schema/cpp-cpa-2_0.xsd">
+<KeyValue>
+<RSAKeyValue>
+<Modulus>4TmhrCzjsbtQQuq7MOzT3RUa5dFV6tc9+hY5fxgwiXXPaywczWowi3s04g5CpTIHDV
+9OEwnTSAM7QcjMiDQSKmDbH7rd7CqUiSQpxemZFpoMrzlAuVBn6MRr6xeLurkFJcR+ QzAqaHfi0VCNu+x+0aMinugQak9SG5Yyi25vLpk=</Modulus>
+<Exponent>AQAB</Exponent>
+</RSAKeyValue>
+</KeyValue>
+<X509Data>
+<X509IssuerSerial>
+<X509IssuerName>CN=Northside,O=BT Group Plc</X509IssuerName>
+<X509SerialNumber>144076108064759518656542817138884233900</X509SerialNumber>
+</X509IssuerSerial>
+<X509SubjectName>emailAddress=b2b.smpf.pem@bt.com,CN=BT Openreach,OU=company - BT,OU=Northside (client),O=BT Group
+Plc</X509SubjectName>
+<X509Certificate>MIIC0jCCAjugAwIBAgIQbGQMkHV//URA+MaalDBKrDANBgkqhkiG9w0BAQQFADArMRUwEwYDVQQK
+EwxCVCBHcm91cCBQbGMxEjAQBgNVBAMTCU5vcnRoc2lkZTAeFw0wNjAxMjAwMDAwMDBaFw0wNzAx
+MjAyMzU5NTlaMIGGMRUwEwYDVQQKFAxCVCBHcm91cCBQbGMxGzAZBgNVBAsUEk5vcnRoc2lkZSAo
+Y2xpZW50KTEVMBMGA1UECxQMY29tcGFueSAtIEJUMRUwEwYDVQQDEwxCVCBPcGVucmVhY2gxIjAg
+BgkqhkiG9w0BCQEWE2IyYi5zbXBmLnBlbUBidC5jb20wgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJ
+AoGBAOE5oaws47G7UELquzDs090VGuXRVerXPfoWOX8YMIl1z2ssHM1qMIt7NOIOQqUyBw1fThMJ
+00gDO0HIzIg0Eipg2x+63ewqlIkkKcXpmRaaDK85QLlQZ+jEa+sXi7q5BSXEfkMwKmh34tFQjbvs
+ftGjIp7oEGpPUhuWMotuby6ZAgMBAAGjgZowgZcwCQYDVR0TBAIwADALBgNVHQ8EBAMCBaAwEQYJ
+YIZIAYb4QgEBBAQDAgeAMFcGA1UdHwRQME4wTKBKoEiGRmh0dHA6Ly9vbnNpdGVjcmwudHJ1c3R3
+aXNlLmNvbS9CVEdyb3VwUGxjTm9ydGhzaWRlY2xpZW50L0xhdGVzdENSTC5jcmwwEQYKYIZIAYb4
+RQEGCQQDAQH/MA0GCSqGSIb3DQEBBAUAA4GBAF3dvFCtHFrUC4Hphz6YUrNQ/q5qMfg0jjkHxBX5
+y31IYVOOibn83IOMwXsgbvL7IUFzkFJqjJO10NTx8aWixKKwPdpbrIONL9gjduUehoNkPa7wBuFe
+DSVMbj+aZqU8lqmJKrkylEvy+jTkhD5DlqBDT4kV3Kt0Pg1xxYP7cBiW</X509Certificate>
+</X509Data>
+</KeyInfo>

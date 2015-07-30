@@ -1,0 +1,81 @@
+/*
+ * $RCSfile: ExampleErrorHandlerCase.java,v $
+ * $Revision: 1.4 $
+ * $Date: 2009/05/01 15:44:16 $
+ * $Author: lchan $
+ */
+package com.adaptris.core;
+
+import java.util.Arrays;
+
+import com.adaptris.core.stubs.MockMessageConsumer;
+import com.adaptris.core.stubs.StubEventHandler;
+
+/**
+ * <p>
+ * Extension to <code>BaseCase</code> for <code>Service</code>s which
+ * provides a method for marshaling sample XML config.
+ * </p>
+ */
+public abstract class ExampleErrorHandlerCase extends ExampleConfigCase {
+
+  /**
+   * Key in unit-test.properties that defines where example goes unless overriden {@link #setBaseDir(String)}.
+   * 
+   */
+  public static final String BASE_DIR_KEY = "ErrorHandlerCase.baseDir";
+
+  public ExampleErrorHandlerCase(String name) {
+    super(name);
+
+    if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
+      setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
+    }
+  }
+
+  @Override
+  protected String createExampleXml(Object object) throws Exception {
+    String result = getExampleCommentHeader(object);
+
+    Adapter w = (Adapter) object;
+
+    result = result + configMarshaller.marshal(w);
+    return result;
+  }
+
+  protected Object retrieveObjectForSampleConfig() {
+    Adapter result = null;
+    try {
+      result = new Adapter();
+      result.setUniqueId("dummy-adapter");
+      ProcessingExceptionHandler meh = createForExamples();
+      result.setMessageErrorHandler(meh);
+      result.setEventHandler(new StubEventHandler());
+      result.setChannelList(new ChannelList());
+    }
+    catch (CoreException e) {
+      throw new RuntimeException(e);
+    }
+    return result;
+  }
+
+  protected abstract ProcessingExceptionHandler createForExamples();
+
+  protected Channel createChannel(MockMessageConsumer consumer, ProcessingExceptionHandler ceh, ProcessingExceptionHandler weh,
+                                  Service... services) {
+    StandardWorkflow workflow = createWorkflow(consumer, weh, services);
+    Channel c = new Channel();
+    c.setMessageErrorHandler(ceh);
+    c.getWorkflowList().add(workflow);
+    return c;
+  }
+
+  protected StandardWorkflow createWorkflow(MockMessageConsumer consumer, ProcessingExceptionHandler errorHandler,
+                                            Service... services) {
+    StandardWorkflow workflow = new StandardWorkflow();
+    workflow.setMessageErrorHandler(errorHandler);
+    workflow.setConsumer(consumer);
+    workflow.getServiceCollection().addAll(Arrays.asList(services));
+    return workflow;
+  }
+}

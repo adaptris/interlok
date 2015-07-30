@@ -1,0 +1,73 @@
+package com.adaptris.core.ftp;
+
+import com.adaptris.filetransfer.FileTransferClient;
+import com.adaptris.ftp.FtpDataMode;
+import com.adaptris.ftp.TransferType;
+import com.adaptris.security.password.Password;
+
+public class FtpConnectionTest extends FtpPasswordConnectionCase {
+
+  public static final String CFG_HOST = "FtpConsumerTest.host";
+  public static final String CFG_USER = "FtpConsumerTest.username";
+  public static final String CFG_PASSWORD = "FtpConsumerTest.password";
+  public static final String CFG_REMOTE_DIR = "FtpConsumerTest.remotedir";
+
+  public FtpConnectionTest(String name) {
+    super(name);
+  }
+
+  @Override
+  protected FtpConnectionImp createConnection() {
+    FtpConnectionImp c = createConnectionObj();
+    c.setDefaultPassword(PROPERTIES.getProperty(CFG_PASSWORD));
+    c.setDefaultUserName(PROPERTIES.getProperty(CFG_USER));
+    c.setTransferType(TransferType.BINARY);
+    c.setFtpDataMode(FtpDataMode.PASSIVE);
+    c.setAdditionalDebug(true);
+    return c;
+  }
+
+  protected FtpConnectionImp createConnectionObj() {
+    return new FtpConnection();
+  }
+
+  public void testConnect_WithAccount() throws Exception {
+    if (areTestsEnabled()) {
+      FtpConnectionImp connection = createConnection();
+      connection.setDefaultAccount(getName());
+      try {
+        start(connection);
+        FileTransferClient client = connection.connect(getDestinationString());
+      }
+      finally {
+        stop(connection);
+      }
+    }
+  }
+
+  @Override
+  protected String getDestinationString() {
+    return getScheme() + "://" + PROPERTIES.getProperty(CFG_HOST) + "/" + PROPERTIES.getProperty(CFG_REMOTE_DIR);
+  }
+
+  @Override
+  protected String getDestinationStringWithOverrideUserOnly() throws Exception {
+    return getScheme() + "://" + PROPERTIES.getProperty(CFG_USER)
+        + "@" + PROPERTIES.getProperty(CFG_HOST) + "/" + PROPERTIES.getProperty(CFG_REMOTE_DIR);
+  }
+
+  @Override
+  protected String getDestinationStringWithOverride() throws Exception {
+    return getScheme() + "://" + PROPERTIES.getProperty(CFG_USER) + ":" + Password.decode(PROPERTIES.getProperty(CFG_PASSWORD))
+        + "@" + PROPERTIES.getProperty(CFG_HOST) + "/" + PROPERTIES.getProperty(CFG_REMOTE_DIR);
+  }
+
+  protected String getScheme() {
+    return "ftp";
+  }
+
+  protected void assertDefaultControlPort(int defaultControlPort) {
+    assertEquals(FtpConnectionImp.DEFAULT_FTP_CONTROL_PORT, defaultControlPort);
+  }
+
+}

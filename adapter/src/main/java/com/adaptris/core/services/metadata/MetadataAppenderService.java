@@ -1,0 +1,151 @@
+/*
+ * $RCSfile: MetadataAppenderService.java,v $
+ * $Revision: 1.1 $
+ * $Date: 2008/07/01 16:35:36 $
+ * $Author: lchan $
+ */
+package com.adaptris.core.services.metadata;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotBlank;
+
+import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.ServiceImp;
+import com.adaptris.util.license.License;
+import com.adaptris.util.license.License.LicenseType;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
+
+/**
+ * Service to append multiple metadata keys together to form a new key.
+ * <p>
+ * If any value associated with a metadata key is null, then that value will be ignored.
+ * </p>
+ * 
+ * @config metadata-appender-service
+ * 
+ * @license BASIC
+ */
+@XStreamAlias("metadata-appender-service")
+public class MetadataAppenderService extends ServiceImp {
+
+  @NotNull
+  @AutoPopulated
+  @XStreamImplicit(itemFieldName = "append-key")
+  private List<String> appendKeys;
+  @NotBlank
+  @AutoPopulated
+  private String resultKey;
+
+  /**
+   * <p>
+   * Creates a new instance.  Default key for result metatadata is
+   * 'metadata-appender-service'.
+   * </p>
+   */
+  public MetadataAppenderService() {
+    setAppendKeys(new ArrayList<String>());
+    resultKey = "metadata-appender-service"; // default
+  }
+
+  @Override
+  public void doService(AdaptrisMessage msg) {
+    StringBuffer result = new StringBuffer();
+    for (String key : appendKeys) {
+      if (msg.getMetadataValue(key) != null) {
+        result.append(msg.getMetadataValue(key));
+      }
+    }
+    msg.addMetadata(resultKey, result.toString());
+    log.debug("added metadata key [" + resultKey + "] value ["
+      + result.toString() + "]");
+  }
+
+  /**
+   * <p>
+   * Returns the <code>List</code> of metadata keys whose values are to be
+   * appended.
+   * </p>
+   * @return the <code>List</code> of metadata keys whose values are to be
+   * appended
+   */
+  public List<String> getAppendKeys() {
+    return appendKeys;
+  }
+
+  /**
+   * <p>
+   * Sets the <code>List</code> of metadata keys whose values are to be
+   * appended.
+   * </p>
+   * @param l the <code>List</code> of metadata keys whose values are to be
+   * appended
+   */
+  public void setAppendKeys(List<String> l) {
+    appendKeys = l;
+  }
+
+  /**
+   * <p>
+   * Adds a metadata key whose value to append.
+   * </p>
+   * @param string the metadata key whose value to append, may not be null or
+   * empty.
+   */
+  public void addAppendKey(String string) {
+    if (string == null || "".equals(string)) {
+      throw new IllegalArgumentException("param [" + string + "]");
+    }
+    appendKeys.add(string);
+  }
+
+  /**
+   * <p>
+   * Returns the metadata key that the concatenated metadata values will be
+   * stored against.
+   * </p>
+   * @return the metadata key that the concatenated metadata will be stored
+   * against
+   */
+  public String getResultKey() {
+    return resultKey;
+  }
+
+  /**
+   * <p>
+   * Sets the metadata key that the concatenated metadata values will be stored
+   * against.
+   * </p>
+   * @param string the metadata key that the concatenated metadata values will
+   * be stored against, may not be null or empty.
+   */
+  public void setResultKey(String string) {
+    if (string == null || "".equals(string)) {
+      throw new IllegalArgumentException("param [" + string + "]");
+    }
+    resultKey = string;
+  }
+
+  /** @see com.adaptris.core.AdaptrisComponent#init() */
+  @Override
+  public void init() throws CoreException {
+    // na
+  }
+
+  /** @see com.adaptris.core.AdaptrisComponent#close() */
+  @Override
+  public void close() {
+    // na
+  }
+
+  @Override
+  public boolean isEnabled(License license) throws CoreException {
+    return license.isEnabled(LicenseType.Basic);
+  }
+}

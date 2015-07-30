@@ -1,0 +1,174 @@
+/*
+ * $RCSfile: ConfiguredConsumeDestination.java,v $
+ * $Revision: 1.11 $
+ * $Date: 2008/01/31 16:50:34 $
+ * $Author: lchan $
+ */
+package com.adaptris.core;
+
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+/**
+ * <p>
+ * Basic implementation of <code>ConsumeDestination</code>. Equality (as used by <code>WorkflowList</code> to determine whether a
+ * duplicate <code>Workflow</code> may be added is based on the equality of <code>String</code> destination AND <code>String</code>
+ * filter.
+ * </p>
+ * 
+ * @config configured-consume-destination
+ */
+@XStreamAlias("configured-consume-destination")
+public final class ConfiguredConsumeDestination extends ConsumeDestinationImp {
+
+  private String destination;
+  private String filterExpression;
+
+  /**
+   * <p>
+   * Creates a new instance.
+   * </p>
+   */
+  public ConfiguredConsumeDestination() {
+  }
+
+  /**
+   * <p>
+   * Creates a new instance.
+   * </p>
+   *
+   * @param dest the destination name
+   */
+  public ConfiguredConsumeDestination(String dest) {
+    this();
+    this.setDestination(dest);
+  }
+
+  /**
+   * <p>
+   * Creates a new instance.
+   * </p>
+   *
+   * @param dest the destination name
+   * @param filter the filter expression
+   */
+  public ConfiguredConsumeDestination(String dest, String filter) {
+
+    this(dest);
+    this.setFilterExpression(filter);
+  }
+
+  public ConfiguredConsumeDestination(String dest, String filter, String threadname) {
+    this(dest);
+    this.setFilterExpression(filter);
+    setConfiguredThreadName(threadname);
+  }
+
+  /**
+   * <p>
+   * Semantic equality is based on equality of the underlying
+   * <code>String</code> destination name and <code>String</code> filter
+   * expressions.
+   * </p>
+   *
+   * @param obj the <code>Object</code> to test for equality
+   * @return true if <code>obj</code> is semantically equal
+   */
+  @Override
+  public boolean equals(Object obj) {
+    if (obj != null) { // changed from _destination
+      if (obj instanceof ConsumeDestination) {
+        ConsumeDestination dest = (ConsumeDestination) obj;
+        int count = 0;
+        count += areEqual(this.getDestination(), dest.getDestination()) ? 1 : 0;
+        count += areEqual(this.getFilterExpression(), dest.getFilterExpression()) ? 1 : 0;
+        return count == 2;
+      }
+    }
+
+    return false;
+  }
+
+  private static boolean areEqual(String s1, String s2) {
+    boolean result = false;
+
+    if (s1 == null) {
+      if (s2 == null) {
+        result = true;
+      }
+    }
+    else {
+      if (s1.equals(s2)) {
+        result = true;
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * <p>
+   * The hash code of instances of <code>ConsumeDestination</code> is the hash
+   * code of the underlying <code>String</code> destination name and
+   * <code>String</code> filter expression.
+   * </p>
+   *
+   * @return this instance's hash code
+   */
+  @Override
+  public int hashCode() {
+    int result = 0;
+
+    if (destination != null) {
+      result += destination.hashCode();
+    }
+
+    if (filterExpression != null) {
+      result += filterExpression.hashCode();
+    }
+
+    return result;
+  }
+
+  /** @see Object */
+  @Override
+  public String toString() {
+    StringBuffer result = new StringBuffer(super.toString());
+
+    result.append(" destination [");
+    result.append(destination);
+
+    if (notNull(getFilterExpression())) {
+      result.append("] filter [");
+      result.append(filterExpression);
+    }
+
+    result.append("]");
+
+    return result.toString();
+  }
+
+  /**
+   * @see com.adaptris.core.ConsumeDestination #setDestination(java.lang.String)
+   */
+  public void setDestination(String s) {
+    destination = s;
+  }
+
+  /** @see com.adaptris.core.ConsumeDestination#getDestination() */
+  public String getDestination() {
+    return destination;
+  }
+
+  /**
+   * @see com.adaptris.core.ConsumeDestination
+   *      #setFilterExpression(java.lang.String)
+   */
+  public void setFilterExpression(String s) {
+    filterExpression = s;
+  }
+
+  /** @see com.adaptris.core.ConsumeDestination#getFilterExpression() */
+  public String getFilterExpression() {
+    return filterExpression;
+  }
+}

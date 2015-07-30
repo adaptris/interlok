@@ -1,0 +1,517 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project basedir="." default="test" name="core" xmlns:interlok="uri:interlok" xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:jacoco="antlib:org.jacoco.ant">
+
+  <tstamp>
+    <format property="today" pattern="yyyy-MM-dd" locale="en"/>
+  </tstamp>
+
+  <property file="build.properties"/>
+  <property file="ivy.properties"/>
+  <import file="${basedir}/../ivy/ant-ivy-includes.xml"/>
+
+  <target name="init">
+    <!-- initialise properties -->
+    <property name="src.dir"                value="${basedir}/src/main/java"/>
+    <property name="testsrc.dir"            value="${basedir}/src/test/java"/>
+
+    <property name="build.dir"              value="${basedir}/target"/>
+    <property name="resources.dir"          value="${basedir}/src/main/resources"/>
+    <property name="test.resources.dir"     value="${basedir}/src/test/resources"/>
+    <property name="classes.build.dir"      value="${build.dir}/classes"/>
+    <property name="testclasses.build.dir"  value="${build.dir}/testclasses"/>
+    <property name="project.dist.dir"               value="${build.dir}/dist"/>
+    <property name="example-xml.build.dir"  value="${build.dir}/example-xml"/>
+    <property name="doc.dir"                value="${basedir}/docs"/>
+    <property name="api.doc.dir"            value="${build.dir}/api"/>
+    <property name="example-xml.zip"        value="${project.dist.dir}/adp-core-examples.zip"/>
+    <property name="tests.output.dir"       value="${build.dir}/testoutput"/>
+    <property name="html.tests.output.dir"  value="${tests.output.dir}/html"/>
+    <property name="junit.forkmode"         value="once"/>
+    <property name="junit.printsummary"     value="on"/>
+    <property name="junit.report.style.dir" value="${test.resources.dir}/junitreport/"/>
+
+    <property name="javac.target.version"   value="1.7"/>
+
+    <property name="execution.maxmem" value="1024m"/>
+
+    <property name="junit.test.classes"     value="**/*Test*.java" />
+    <patternset id="junit.exclude.tests">
+      <exclude name="**/stubs/*.java"/>
+    </patternset>
+
+    <!-- Apache Ivy -->
+    <property name="ivy.publish.revision"   value="3.0-SNAPSHOT"/>
+    <property name="ivy.artifact.publish.status" value="integration"/>
+    <property name="ivy.dir" value="${basedir}/../ivy"/>
+    <property name="ivy.xml.file" value="${ivy.dir}/ivy-core.xml"/>
+    <property name="ivy.core.xml"  value="${ivy.xml.file}"/>
+    <property name="ivy.stubs.xml" value="${ivy.dir}/ivy-stubs.xml"/>
+
+    <property name="manifest.title" value="Interlok Framework"/>
+    <property name="manifest.vendor" value="Adaptris Ltd"/>
+
+    <property name="jar.version"            value="${ivy.publish.revision}"/>
+    <property name="project.name"           value="adp-${ant.project.name}"/>
+    <property name="jar.name"               value="${project.name}.jar"/>
+    <property name="jar.stubs"               value="adp-stubs.jar"/>
+
+    <property name="database.user" value="user" />
+    <property name="database.password" value="password" />
+
+    <!-- For Running coverage reports -->
+    <property name="junit.with.coverage" value="true"/>
+    <property name="coverage.report.output.dir" value="${tests.output.dir}/coverage"/>
+    <property name="coverage.report.html.output.dir" value="${coverage.report.output.dir}/html"/>
+    <property name="coverage.build.dir" value="${build.dir}/coverage"/>
+    <property name="coverage.metadata.file" value="${basedir}/jacoco.exec"/>
+
+    <property environment="env"/>
+    <property name="env.COMPUTERNAME" value="${env.HOSTNAME}"/>
+
+    <condition property="junit.without.coverage" value="true" else="false">
+      <isfalse value="${junit.with.coverage}"/>
+    </condition>
+    <echo message="java=${ant.java.version},junit.without.coverage=${junit.without.coverage},junit.with.coverage=${junit.with.coverage}" />
+  </target>
+
+  <target name="clean" depends="init" description="remove build dirs">
+    <delete dir="${build.dir}" failonerror="false"/>
+    <delete dir="${classes.build.dir}" failonerror="false"/>
+    <delete dir="${testclasses.build.dir}" failonerror="false"/>
+    <delete dir="${project.dist.dir}" failonerror="false"/>
+    <delete dir="${example-xml.build.dir}" failonerror="false"/>
+    <delete dir="${api.doc.dir}" failonerror="false"/>
+    <delete dir="${tests.output.dir}" failonerror="false"/>
+    <delete dir="${basedir}/activemq-data" failonerror="false"/>
+    <delete failonerror="false">
+      <fileset dir="${basedir}">
+        <include name="junit*.properties"/>
+        <include name="junit.log"/>
+        <include name="tid.repository"/>
+        <include name="derby.log"/>
+        <include name="manifest.mf"/>
+      </fileset>
+      <fileset file="${coverage.metadata.file}"/>
+    </delete>
+  </target>
+
+  <target name="macrodef.init" depends="ivy.macrodef">
+    <!-- Macrodef to read in our property file with a .hostname extension if it's available -->
+    <macrodef name="property-source" uri="uri:interlok">
+      <attribute name="file" />
+      <sequential>
+        <echo message="Looking for @{file}.${env.COMPUTERNAME}"/>
+        <if>
+          <available file="@{file}.${env.COMPUTERNAME}" />
+          <then>
+            <echo message="Using @{file}.${env.COMPUTERNAME}"/>
+            <property file="@{file}.${env.COMPUTERNAME}"/>
+          </then>
+          <else>
+            <echo message="Using @{file}"/>
+            <property file="@{file}"/>
+          </else>
+        </if>
+      </sequential>
+    </macrodef>
+
+    <macrodef name="copy-template" uri="uri:interlok">
+      <attribute name="src" />
+      <attribute name="dest"/>
+      <sequential>
+        <if>
+          <not>
+            <available file="@{dest}"/>
+          </not>
+          <then>
+            <if>
+              <available file="@{src}.${env.COMPUTERNAME}" />
+              <then>
+                <copy file="@{src}.${env.COMPUTERNAME}" tofile="@{dest}"/>
+              </then>
+              <else>
+                <copy file="@{src}" tofile="@{dest}"/>
+              </else>
+            </if>
+          </then>
+        </if>
+      </sequential>
+    </macrodef>
+
+    <macrodef name="create-javadocs" uri="uri:interlok">
+      <sequential>
+        <javadoc author="false" destdir="${api.doc.dir}"  sourcepath="${src.dir}"
+          windowtitle="${manifest.title}" bottom="Copyright Adaptris"
+          access="protected" breakiterator="yes" verbose="no"
+          charset="ISO-8859-1" >
+          <arg value="-quiet"/>
+          <arg value="-Xdoclint:none"/>
+          <packageset dir="${src.dir}" defaultexcludes="yes"/>
+          <classpath>
+            <path refid="main.classpath"/>
+          </classpath>
+          <group title="Base Adapter Configuration" packages="com.adaptris.core:com.adaptris.core.*"/>
+          <group title="Standard Services" packages="com.adaptris.core.services:com.adaptris.core.services.*"/>
+          <group title="Data Transformation and Validation" packages="com.adaptris.core.transform:com.adaptris.core.transform.*:com.adaptris.transform*:com.adaptris.edi*"/>
+          <group title="Generic Filesystem" packages="com.adaptris.core.fs:com.adaptris.core.fs.*:com.adaptris.fs:com.adaptris.fs.*"/>
+          <group title="Connecting to JMS" packages="com.adaptris.core.jms:com.adaptris.core.jms.*"/>
+          <group title="Email" packages="com.adaptris.core.mail:com.adaptris.core.mail.*:com.adaptris.mail:com.adaptris.mail.*"/>
+          <group title="FTP / SFTP" packages="com.adaptris.core.ftp:com.adaptris.core.ftp.*:com.adaptris.filetransfer:com.adaptris.ftp:com.adaptris.sftp"/>
+          <group title="HTTP" packages="com.adaptris.core.http:com.adaptris.core.http.*:com.adaptris.http:com.adaptris.http.*"/>
+          <group title="JDBC" packages="com.adaptris.core.jdbc:com.adaptris.core.jdbc.*:com.adaptris.core.services.jdbc:com.adaptris.core.services.jdbc.*:com.adaptris.jdbc*"/>
+          <group title="OFTP" packages="com.adaptris.core.oftp:com.adaptris.core.oftp.*:com.adaptris.protocol.oftp:com.adaptris.protocol.oftp.*:"/>
+          <group title="Security" packages="com.adaptris.core.security:com.adaptris.core.security.*:com.adaptris.security:com.adaptris.security.*"/>
+          <group title="Utility classes" packages="com.adaptris.util:com.adaptris.util.*:com.adaptris.core.util:com.adaptris.core.util.*"/>
+          <group title="Raw Sockets" packages="com.adaptris.core.socket:com.adaptris.core.socket.*:com.adaptris.core.transport:com.adaptris.core.transport.*:com.adaptris.transport:com.adaptris.transport.*"/>
+          <group title="Adapter Management" packages="com.adaptris.core.management:com.adaptris.core.management.*:com.adaptris.failover:com.adaptris.core.runtime:com.adaptris.core.runtime.*"/>
+          <link offline="false" href="http://docs.oracle.com/javaee/7/api/" />
+          <link offline="false" href="http://docs.oracle.com/javase/7/docs/api/" />
+          <link offline="false" href="http://commons.apache.org/proper/commons-net/javadocs/api-3.3/"/>
+          <link offline="false" href="http://archive.eclipse.org/jetty/8.1.14.v20131031/apidocs"/>
+          <link offline="false" href="http://xml.apache.org/xalan-j/apidocs/"/>
+          <link offline="false" href="http://commons.apache.org/proper/commons-pool/api-1.6/"/>
+          <link offline="false" href="http://www.slf4j.org/apidocs/"/>
+          <link offline="false" href="http://www.quartz-scheduler.org/api/2.2.1/"/>
+          <taglet name="com.adaptris.taglet.ConfigTaglet">
+            <path refid="classpath.ant-tools"/>
+          </taglet>
+          <taglet name="com.adaptris.taglet.LicenseTaglet">
+            <path refid="classpath.ant-tools"/>
+          </taglet>
+        </javadoc>
+      </sequential>
+    </macrodef>
+  </target>
+
+  <target name="prepare" depends="init, prepare-ivy, macrodef.init">
+    <!-- check all build dirs exist -->
+    <mkdir dir="${build.dir}"/>
+    <mkdir dir="${classes.build.dir}"/>
+    <mkdir dir="${testclasses.build.dir}"/>
+    <mkdir dir="${project.dist.dir}"/>
+  </target>
+
+  <target name="compile" depends="prepare" description="Compile src tree">
+    <javac destdir="${classes.build.dir}" srcdir="${src.dir}" debug="true" debuglevel="source,lines,vars"
+           source="${javac.target.version}" target="${javac.target.version}" includeAntRuntime="true">
+      <classpath refid="main.classpath"/>
+    </javac>
+  </target>
+
+  <target name="jar.resources" depends="prepare">
+    <manifest file="${build.dir}/Manifest.mf">
+      <attribute name="Manifest-Version" value="1.0"/>
+      <attribute name="Main-Class" value="com.adaptris.core.management.StandardBootstrap"/>
+      <attribute name="Build-Version" value="${ivy.publish.revision}"/>
+      <attribute name="Built-By" value="${user.name}"/>
+      <attribute name="Implementation-Vendor-Id" value="com.adaptris"/>
+      <attribute name="Implementation-Version" value="${ivy.publish.revision}"/>
+      <attribute name="Implementation-Title" value="${manifest.title}"/>
+      <attribute name="Implementation-Vendor" value="${manifest.vendor}"/>
+    </manifest>
+    <manifest file="${build.dir}/Component-Manifest.mf">
+      <attribute name="Manifest-Version" value="1.0"/>
+      <attribute name="Build-Version" value="${ivy.publish.revision}"/>
+      <attribute name="Built-By" value="${user.name}"/>
+      <attribute name="Implementation-Vendor-Id" value="com.adaptris"/>
+      <attribute name="Implementation-Version" value="${ivy.publish.revision}"/>
+      <attribute name="Implementation-Vendor" value="${manifest.vendor}"/>
+    </manifest>
+    <copy todir="${classes.build.dir}/META-INF" overwrite="true">
+      <fileset dir="${resources.dir}/jar/META-INF"/>
+    </copy>
+    <propertyfile file="${classes.build.dir}/META-INF/adaptris-version">
+      <entry key="component.name" value="Base Interlok"/>
+      <entry key="build.version" value="${ivy.publish.revision}"/>
+      <entry key="build.date" value="${today}"/>
+    </propertyfile>
+  </target>
+
+  <target name="jar" depends="compile, jar.resources" description="Generate JAR file">
+    <jar jarfile="${project.dist.dir}/${jar.name}" manifest="${build.dir}/Manifest.mf">
+      <fileset dir="${classes.build.dir}"/>
+    </jar>
+  </target>
+
+  <target name="stubs.jar" depends="compile.tests" description="Build Stubs JAR">
+    <jar jarfile="${project.dist.dir}/${jar.stubs}" manifest="${build.dir}/Component-Manifest.mf">
+      <fileset dir="${testclasses.build.dir}">
+        <include name="**/core/BaseCase*"/>
+        <include name="**/core/Example*"/>
+        <include name="**/core/PortManager*"/>
+        <include name="**/core/ProducerCase*"/>
+        <include name="**/core/ConsumerCase*"/>
+        <include name="**/core/ServiceCase*"/>
+        <include name="**/core/ServiceCollection*"/>
+        <include name="**/core/MarshallingBaseCase*"/>
+        <include name="**/core/jms/JmsConsumerCase*"/>
+        <include name="**/core/jms/JmsProducerCase*"/>
+        <include name="**/core/jms/JmsProducerExample*"/>
+        <include name="**/core/jms/MockJmsConnectionErrorHandler*"/>
+        <include name="**/core/jms/MessageTypeTranslatorCase*"/>
+        <include name="**/core/jms/JmsConfig*"/>
+        <include name="**/core/jms/**/JndiImplementationCase*"/>
+        <include name="**/core/jms/ActiveJmsConnectionErrorHandlerCase*"/>
+        <include name="**/core/transform/TransformServiceExample*"/>
+        <include name="**/core/jdbc/JdbcServiceCase*"/>
+        <include name="**/core/runtime/ComponentManagerCase*"/>
+        <include name="**/stubs/**"/>
+        <include name="**/util/system/*"/>
+        <include name="META-INF/**"/>
+      </fileset>
+    </jar>
+  </target>
+
+
+  <target name="compile.tests" depends="compile, jar.resources">
+    <javac source="${javac.target.version}" target="${javac.target.version}" destdir="${testclasses.build.dir}" srcdir="${testsrc.dir}"
+      debug="on" debuglevel="source,lines,vars" includeAntRuntime="true">
+      <classpath id="classpath.compiletests">
+        <pathelement path="${classes.build.dir}"/>
+        <path refid="main.classpath"/>
+      </classpath>
+    </javac>
+  </target>
+
+  <target name="init.tests" depends="compile.tests">
+    <mkdir dir="${tests.output.dir}"/>
+    <mkdir dir="${html.tests.output.dir}"/>
+    <interlok:copy-template src="${test.resources.dir}/log4j.properties.template" dest="${test.resources.dir}/log4j.properties"/>
+    <copy todir="${testclasses.build.dir}">
+      <fileset dir="${testsrc.dir}" includes="**/*.xml"/>
+      <fileset dir="${testsrc.dir}" includes="**/*.properties"/>
+    </copy>
+
+    <!-- Source our test property files, relying on ant property immutability.
+    -->
+    <interlok:property-source file="${test.resources.dir}/default-test.properties.template"/>
+
+    <!-- Properties for standard unit tests
+    -->
+    <interlok:property-source file="${test.resources.dir}/unit-tests.properties.template"/>
+    <echoproperties destfile="${testclasses.build.dir}/unit-tests.properties" prefix="junit."/>
+    <replace file="${testclasses.build.dir}/unit-tests.properties" token="junit." value=""/>
+    <propertyfile file="${testclasses.build.dir}/security.properties" comment="privatekey password">
+      <entry key="adaptris.privatekey.password" value="${junit.security.password}"/>
+    </propertyfile>
+
+    <!-- Properties for Transport Tests
+    -->
+    <interlok:property-source file="${test.resources.dir}/transport-test.properties.template"/>
+    <echoproperties destfile="${testclasses.build.dir}/transport-test.properties" prefix="junittransport."/>
+    <replace file="${testclasses.build.dir}/transport-test.properties" token="junittransport." value=""/>
+
+    <!-- Properties for Security Tests
+    -->
+    <interlok:property-source file="${test.resources.dir}/security-test.properties.template"/>
+    <echoproperties destfile="${testclasses.build.dir}/security-test.properties" prefix="junitsecurity."/>
+    <replace file="${testclasses.build.dir}/security-test.properties" token="junitsecurity." value=""/>
+    <delete dir="${junitsecurity.test.cfg.root}"/>
+    <mkdir dir="${junitsecurity.test.cfg.root}"/>
+
+    <!-- Create database for JDBC StoredProc tests.
+    -->
+    <if>
+      <istrue value="${default.jdbc.storedproc.tests.enabled}"/>
+      <then>
+        <sql driver="${default.jdbc.storedproc.driver}" url="${default.jdbc.storedproc.url}"
+              userid="${default.jdbc.storedproc.username}" password="${default.jdbc.storedproc.password}"
+              classpathref="main.classpath" onerror="continue" print="false">
+          <transaction>drop database ${default.jdbc.storedproc.database};</transaction>
+          <transaction>create database ${default.jdbc.storedproc.database};</transaction>
+        </sql>
+        <sql driver="${default.jdbc.storedproc.driver}" url="${default.jdbc.storedproc.url}${default.jdbc.storedproc.database}"
+              userid="${default.jdbc.storedproc.username}" password="${default.jdbc.storedproc.password}"
+              classpathref="main.classpath" onerror="continue" print="false" delimiter="#">
+          <transaction src="${test.resources.dir}/jdbc/${default.jdbc.storedproc.vendor}_create_data_for_procedures_tests.sql"/>
+        </sql>
+
+        <!-- Write a new property to the unit-tests.properties file, which contains the actual connection string. -->
+        <!-- junit.jdbc.storedproc.url -->
+        <if>
+          <equals arg1="${default.jdbc.storedproc.vendor}" arg2="mysql"/>
+          <then>
+            <propertyfile file="${testclasses.build.dir}/unit-tests.properties">
+              <entry key="jdbc.storedproc.url" value="${default.jdbc.storedproc.url}${default.jdbc.storedproc.database}?user=${default.jdbc.storedproc.username}&amp;password=${default.jdbc.storedproc.password}"/>
+            </propertyfile>
+          </then>
+          <elseif>
+            <equals arg1="${default.jdbc.storedproc.vendor}" arg2="sqlserver"/>
+            <then>
+              <propertyfile file="${testclasses.build.dir}/unit-tests.properties">
+                <entry key="jdbc.storedproc.url" value="${default.jdbc.storedproc.url}${default.jdbc.storedproc.database}"/>
+              </propertyfile>
+            </then>
+          </elseif>
+          <else>
+            <fail message="Unknown JDBC vendor: ${default.jdbc.storedproc.vendor}"/>
+          </else>
+        </if>
+
+      </then>
+    </if>
+  </target>
+
+  <target name="execute-tests" depends="init.tests, junit, junit-coverage"/>
+
+  <target name="test-reports" depends="init, macrodef.init">
+    <if>
+      <istrue value="${junit.with.coverage}"/>
+      <then>
+        <mkdir dir="${coverage.report.output.dir}"/>
+        <mkdir dir="${coverage.report.html.output.dir}"/>
+        <jacoco:report>
+          <executiondata>
+            <file file="${coverage.metadata.file}"/>
+          </executiondata>
+          <structure name="Code Coverage Report">
+            <classfiles>
+              <fileset dir="${classes.build.dir}"/>
+            </classfiles>
+            <sourcefiles encoding="UTF-8">
+              <fileset dir="${src.dir}"/>
+            </sourcefiles>
+          </structure>
+          <html destdir="${coverage.report.html.output.dir}"/>
+          <csv destfile="${coverage.report.output.dir}/jacoco-report.csv"/>
+          <xml destfile="${coverage.report.output.dir}/jacoco-report.xml"/>
+        </jacoco:report>
+      </then>
+    </if>
+    <junitreport todir="${tests.output.dir}">
+      <fileset dir="${tests.output.dir}">
+        <include name="TEST-*.xml" />
+      </fileset>
+      <report format="frames" todir="${html.tests.output.dir}" styledir="${junit.report.style.dir}"/>
+    </junitreport>
+    <fail message="JUNIT tests failed, check output in ${tests.output.dir}" if="junit.failed"/>
+  </target>
+
+
+  <target name="test" depends="execute-tests, test-reports" description="Run the tests with some html reports">
+    <fail message="JUNIT tests failed, check output in ${tests.output.dir}" if="junit.failed"/>
+  </target>
+
+  <target name="test-no-reports" depends="execute-tests" description="Run the tests with no reports">
+    <fail message="JUNIT tests failed, check output in ${tests.output.dir}" if="junit.failed"/>
+  </target>
+
+  <target name="junit-coverage" depends="init.tests" if="${junit.with.coverage}">
+    <delete file="${coverage.metadata.file}" />
+    <jacoco:coverage  destfile="${coverage.metadata.file}">
+      <junit printsummary="${junit.printsummary}" fork="yes" forkmode="${junit.forkmode}" failureproperty="junit.failed">
+        <jvmarg value="-Xmx${execution.maxmem}"/>
+        <jvmarg value="-XX:+CMSClassUnloadingEnabled"/>
+        <jvmarg value="-XX:+UseConcMarkSweepGC"/>
+        <jvmarg value="-XX:+UseParNewGC"/>
+        <formatter type="xml" />
+        <batchtest todir="${tests.output.dir}">
+          <fileset dir="${testsrc.dir}">
+            <include name="${junit.test.classes}"/>
+            <patternset refid="junit.exclude.tests"/>
+          </fileset>
+        </batchtest>
+        <classpath id="classpath.runtests">
+          <dirset dir="${test.resources.dir}"/>
+          <path refid="main.classpath"/>
+          <pathelement path="${classes.build.dir}"/>
+          <pathelement path="${testclasses.build.dir}"/>
+          <!--dirset dir="${resources.dir}/config"/-->
+        </classpath>
+      </junit>
+    </jacoco:coverage>
+  </target>
+
+  <target name="junit" depends="init.tests" if="${run.without.coverage}">
+    <junit printsummary="${junit.printsummary}" fork="yes"  forkmode="${junit.forkmode}" failureproperty="junit.failed">
+      <jvmarg value="-Xmx${execution.maxmem}"/>
+      <jvmarg value="-XX:+CMSClassUnloadingEnabled"/>
+      <jvmarg value="-XX:+UseConcMarkSweepGC"/>
+      <jvmarg value="-XX:+UseParNewGC"/>
+      <formatter type="xml" />
+      <batchtest todir="${tests.output.dir}">
+        <fileset dir="${testsrc.dir}">
+          <include name="${junit.test.classes}"/>
+          <patternset refid="junit.exclude.tests"/>
+        </fileset>
+      </batchtest>
+      <classpath id="classpath.runtests">
+        <dirset dir="${test.resources.dir}"/>
+        <path refid="main.classpath"/>
+        <pathelement path="${classes.build.dir}"/>
+        <pathelement path="${testclasses.build.dir}"/>
+        <!--dirset dir="${resources.dir}/config"/-->
+      </classpath>
+    </junit>
+  </target>
+
+  <target name="javadoc" depends="macrodef.init" description="create javadocs">
+    <delete dir ="${api.doc.dir}" />
+    <mkdir dir ="${api.doc.dir}" />
+    <property name="echo.classpath" refid="main.classpath"/>
+    <interlok:create-javadocs/>
+  </target>
+
+  <target name="findbugs.init" depends="compile, jar.resources" if="findbugs.home">
+    <property name="findbugs.work.jar" value="findbugs-${project.name}.jar"/>
+    <property name="findbugs.work.dir" value="${build.dir}/findbugs"/>
+    <delete dir="${findbugs.work.dir}"/>
+    <mkdir dir="${findbugs.work.dir}"/>
+    <!-- We can't depend on the jar target, because we *might* obfuscate the jar file which will
+         most likely throw the bytecode analyzer off.
+    -->
+    <jar basedir="${classes.build.dir}" jarfile="${findbugs.work.dir}/${findbugs.work.jar}" manifest="${build.dir}/Manifest.mf" />
+    <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${findbugs.home}/lib/findbugs-ant.jar"/>
+  </target>
+
+  <target name="findbugs-xml" depends="findbugs.init" if="findbugs.home">
+    <findbugs home="${findbugs.home}"
+              jvmargs="-server -Xmx${execution.maxmem}"
+              output="xml" outputFile="${findbugs.work.dir}/findbugs.xml"
+              quietErrors="true" reportLevel="high" excludeFilter="${test.resources.dir}/findbugs-exclusion.xml">
+      <auxClasspath refid="main.classpath" />
+      <sourcePath path="${src.dir}" />
+      <class location="${findbugs.work.dir}/${findbugs.work.jar}"/>
+    </findbugs>
+  </target>
+
+  <target name="findbugs" depends="findbugs.init" if="findbugs.home">
+    <findbugs home="${findbugs.home}"
+              jvmargs="-server -Xmx${execution.maxmem}"
+              output="html" outputFile="${findbugs.work.dir}/findbugs.html"
+              stylesheet="fancy.xsl"
+              quietErrors="true" reportLevel="high" excludeFilter="${test.resources.dir}/findbugs-exclusion.xml">
+      <auxClasspath refid="main.classpath" />
+      <sourcePath path="${src.dir}" />
+      <class location="${findbugs.work.dir}/${findbugs.work.jar}"/>
+    </findbugs>
+  </target>
+
+  <target name="prepare-for-publish" depends="jar, stubs.jar, test-no-reports, javadoc">
+    <mkdir dir="${project.dist.dir}/adp-core/javadoc"/>
+    <mkdir dir="${project.dist.dir}/adp-core/examples"/>
+    <mkdir dir="${project.dist.dir}/adp-core/pom"/>
+    <mkdir dir="${project.dist.dir}/adp-core/jar"/>
+    <mkdir dir="${project.dist.dir}/adp-stubs/jar"/>
+    <mkdir dir="${project.dist.dir}/adp-stubs/pom"/>
+    <copy todir="${project.dist.dir}/adp-core/jar" file="${project.dist.dir}/${jar.name}"/>
+    <copy todir="${project.dist.dir}/adp-stubs/jar" file="${project.dist.dir}/${jar.stubs}"/>
+    <zip destfile="${project.dist.dir}/${project.name}/javadoc/${project.name}-javadoc.zip" compress="true" level="9">
+      <zipfileset dir="${api.doc.dir}" prefix="docs/Interlok-API"/>
+    </zip>
+    <jar jarfile="${project.dist.dir}/${project.name}/javadoc/${project.name}.jar">
+      <fileset dir="${api.doc.dir}"/>
+    </jar>
+    <zip destfile = "${project.dist.dir}/${project.name}/examples/${project.name}-examples.zip">
+      <zipfileset dir="${example-xml.build.dir}" prefix="example-xml/Interlok-Base"/>
+    </zip>
+    <ivy:makepom ivyfile="${ivy.core.xml}" pomfile="${project.dist.dir}/${project.name}/pom/${project.name}.pom"/>
+    <ivy:makepom ivyfile="${ivy.stubs.xml}" pomfile="${project.dist.dir}/adp-stubs/pom/adp-stubs.pom"/>
+  </target>
+
+  <target name="publish" depends="prepare-ivy, prepare-for-publish" description="publish a snapshot">
+    <interlok:publish-artifact resolver="${ivy.repo}" revision="${ivy.publish.revision}" artifact.basedir="${project.dist.dir}" ivy-config="${ivy.core.xml}"/>
+    <interlok:publish-artifact resolver="${ivy.repo}" revision="${ivy.publish.revision}" artifact.basedir="${project.dist.dir}" ivy-config="${ivy.stubs.xml}"/>
+  </target>
+
+</project>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<F4FOrder xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:f4f="http://www.first4farming.com/F4FXML/Schemas/v4_2_0/F4F.xsd"
+  xsi:noNamespaceSchemaLocation="http://www.first4farming.com/F4FXML/Schemas/v4_2_0/F4FOrd-v4_2_0.xsd" OrderType="Standalone Order" DocumentType="Acknowledgement">
+  <F4FDocumentHeader>
+    <SchemaVersion>4.2.0</SchemaVersion>
+    <DocumentCreated DateTimeType="Document Created">20051107 11:00:17</DocumentCreated>
+    <DocumentTrackingID>PO-0034750</DocumentTrackingID>
+    <DocumentRevisionNumber>1</DocumentRevisionNumber>
+    <SourcePartnerID>EEMTST</SourcePartnerID>
+    <SourceDivisionID>EEMTST</SourceDivisionID>
+    <DestinationPartnerID>BYATST</DestinationPartnerID>
+    <DestinationDivisionID>BYATST</DestinationDivisionID>
+  </F4FDocumentHeader>
+  <OrderHeader>
+    <DocumentReference AssignedBy="Buyer" ReferenceType="Purchase Order Number">PO-0034750</DocumentReference>
+    <DocumentDate DateTimeType="Purchase Order Date">20051107 00:00:00</DocumentDate>
+    <DocumentDate DateTimeType="Document Created">20051107 11:00:17</DocumentDate>
+    <TradingPartner PartnerType="Buyer">
+      <PartnerID AssignedBy="F4F" PartnerIDType="Partner ID">EEMTST</PartnerID>
+      <CompanyName>E.E. MUIR &amp; SONS PTY LTD</CompanyName>
+      <Address AddressType="Sold To">
+        <AddressID AssignedBy="Buyer" Type="Address Code">04</AddressID>
+        <Name NameType="Branch Name">E.E. MUIR &amp; SONS PTY LTD</Name>
+        <StreetAddress>879 DUNCANS ROAD</StreetAddress>
+        <CityName>WERRIBEE STH</CityName>
+        <CountyDistrictName>VIC</CountyDistrictName>
+        <PostalCode>3030</PostalCode>
+      </Address>
+      <Contact>
+        <ContactInfo Method="Primary Telephone">03 97421778000</ContactInfo>
+      </Contact>
+    </TradingPartner>
+    <TradingPartner PartnerType="Supplier">
+      <PartnerID AssignedBy="F4F" PartnerIDType="Partner ID">BYATST</PartnerID>
+      <PartnerID AssignedBy="Buyer" PartnerIDType="Partner ID">AU-2001320</PartnerID>
+      <CompanyName>BAYER CROPSCIENCE PTY LTD</CompanyName>
+      <Contact>
+        <ContactName>ELOISA/MAGARET FOX</ContactName>
+        <ContactInfo Method="Primary Telephone">02 93916040000</ContactInfo>
+        <ContactInfo Method="Facsimile">02 93916217000</ContactInfo>
+      </Contact>
+    </TradingPartner>
+  </OrderHeader>
+  <TransportDetails>
+    <Address AddressType="Deliver To">
+      <AddressID AssignedBy="Buyer" Type="Address Code">04</AddressID>
+      <Name NameType="Company Name">E.E. MUIR &amp; SONS PTY LTD</Name>
+      <StreetAddress/>
+      <StreetAddress/>
+      <StreetAddress/>
+      <CityName>WERRIBEE STH</CityName>
+      <CountyDistrictName>VIC</CountyDistrictName>
+      <PostalCode>3030</PostalCode>
+    </Address>
+    <ShipmentDetails ShipmentType="Delivery">
+      <ShipmentDate DateTimeType="Requested Delivery Date">20051107 00:00:00</ShipmentDate>
+      <ShipmentDate DateTimeType="Date Despatched">20051107 00:00:00</ShipmentDate>
+    </ShipmentDetails>
+  </TransportDetails>
+  <OrderLine LineNumber="1" Status="New">
+    <TransportDetails>
+      <ShipmentDetails ShipmentType="Delivery">
+        <ShipmentDate DateTimeType="Requested Delivery Date">20051107 00:00:00</ShipmentDate>
+      </ShipmentDetails>
+    </TransportDetails>
+    <ProductReference AssignedBy="Supplier" ReferenceType="Product Code">4207172</ProductReference>
+    <ProductDescription Sequence="001" AssignedBy="Buyer">ETHRAL 20L</ProductDescription>
+    <ProductValues>
+      <Quantity AssignedBy="Buyer" QuantityType="Ordered">
+        <Amount UOM="Unit">2.000</Amount>
+      </Quantity>
+      <ActualUnitPrice PriceUOM="Unit" UOMMultiplier="1">352.700</ActualUnitPrice>
+      <TotalLineNetValue>705.400</TotalLineNetValue>
+      <TotalLineTax>70.540</TotalLineTax>
+      <TotalLineGrossValue>775.940</TotalLineGrossValue>
+    </ProductValues>
+  </OrderLine>
+  <OrderLine LineNumber="2" Status="New">
+    <TransportDetails>
+      <ShipmentDetails ShipmentType="Delivery">
+        <ShipmentDate DateTimeType="Requested Delivery Date">20051107 00:00:00</ShipmentDate>
+      </ShipmentDetails>
+    </TransportDetails>
+    <ProductReference AssignedBy="Supplier" ReferenceType="Product Code">4207164</ProductReference>
+    <ProductDescription Sequence="001" AssignedBy="Buyer">ETHRAL 5L</ProductDescription>
+    <ProductValues>
+      <Quantity AssignedBy="Buyer" QuantityType="Ordered">
+        <Amount UOM="Unit">4.000</Amount>
+      </Quantity>
+      <ActualUnitPrice PriceUOM="Unit" UOMMultiplier="1">107.300</ActualUnitPrice>
+      <TotalLineNetValue>429.200</TotalLineNetValue>
+      <TotalLineTax>42.920</TotalLineTax>
+      <TotalLineGrossValue>472.120</TotalLineGrossValue>
+    </ProductValues>
+  </OrderLine>
+  <DocumentControlTotals>
+    <TotalNumberOfLines>2</TotalNumberOfLines>
+    <TotalQuantity>6.000</TotalQuantity>
+    <TotalNetValue>1134.600</TotalNetValue>
+    <TotalTaxAmount>113.460</TotalTaxAmount>
+    <TotalGrossValue>1248.060</TotalGrossValue>
+  </DocumentControlTotals>
+</F4FOrder>

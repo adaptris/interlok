@@ -1,0 +1,333 @@
+package com.adaptris.core.lifecycle;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import com.adaptris.core.Adapter;
+import com.adaptris.core.BaseCase;
+import com.adaptris.core.ClosedState;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.InitialisedState;
+import com.adaptris.core.StartedState;
+import com.adaptris.core.stubs.LicenseStub;
+import com.adaptris.core.stubs.MockConnection;
+
+public class FilteredSharedComponentStartTest extends BaseCase {
+
+  public FilteredSharedComponentStartTest(java.lang.String testName) {
+    super(testName);
+  }
+
+  @Override
+  public void setUp() throws Exception {
+  }
+
+  public void testConstructors() throws Exception {
+    FilteredSharedComponentStart starter = new FilteredSharedComponentStart();
+    assertFalse(starter.threadedStart());
+    assertNull(starter.getThreadedStart());
+    assertNotNull(starter.getIncludes());
+    assertEquals(0, starter.getIncludes().size());
+    assertNotNull(starter.getExcludes());
+    assertEquals(0, starter.getExcludes().size());
+
+    starter = new FilteredSharedComponentStart(true);
+    assertTrue(starter.threadedStart());
+    assertNotNull(starter.getThreadedStart());
+    assertNotNull(starter.getIncludes());
+    assertEquals(0, starter.getIncludes().size());
+    assertNotNull(starter.getExcludes());
+    assertEquals(0, starter.getExcludes().size());
+
+  }
+
+  public void testSetThreaded() throws Exception {
+    FilteredSharedComponentStart starter = new FilteredSharedComponentStart();
+    assertFalse(starter.threadedStart());
+    assertNull(starter.getThreadedStart());
+
+    starter.setThreadedStart(true);
+    assertTrue(starter.threadedStart());
+    assertEquals(Boolean.TRUE, starter.getThreadedStart());
+
+    starter.setThreadedStart(null);
+    assertFalse(starter.threadedStart());
+    assertNull(starter.getThreadedStart());
+
+  }
+
+  public void testSetIncludes() throws Exception {
+    FilteredSharedComponentStart starter = new FilteredSharedComponentStart();
+    assertNotNull(starter.getIncludes());
+    assertEquals(0, starter.getIncludes().size());
+
+    starter.setIncludes(new ArrayList(Arrays.asList("abcde")));
+    assertNotNull(starter.getIncludes());
+    assertEquals(1, starter.getIncludes().size());
+    assertEquals("abcde", starter.getIncludes().get(0));
+
+    starter.addInclude("xyz");
+    assertEquals(2, starter.getIncludes().size());
+    assertEquals("xyz", starter.getIncludes().get(1));
+
+    try {
+      starter.setIncludes(null);
+      fail();
+    }
+    catch (IllegalArgumentException expected) {
+
+    }
+    assertEquals(2, starter.getIncludes().size());
+    assertEquals("abcde", starter.getIncludes().get(0));
+    assertEquals("xyz", starter.getIncludes().get(1));
+  }
+
+  public void testSetExcludes() throws Exception {
+    FilteredSharedComponentStart starter = new FilteredSharedComponentStart();
+    assertNotNull(starter.getExcludes());
+    assertEquals(0, starter.getExcludes().size());
+
+    starter.setExcludes(new ArrayList(Arrays.asList("abcde")));
+    assertNotNull(starter.getExcludes());
+    assertEquals(1, starter.getExcludes().size());
+    assertEquals("abcde", starter.getExcludes().get(0));
+
+    starter.addExclude("xyz");
+    assertEquals(2, starter.getExcludes().size());
+    assertEquals("xyz", starter.getExcludes().get(1));
+
+    try {
+      starter.setExcludes(null);
+      fail();
+    }
+    catch (IllegalArgumentException expected) {
+
+    }
+    assertEquals(2, starter.getExcludes().size());
+    assertEquals("abcde", starter.getExcludes().get(0));
+    assertEquals("xyz", starter.getExcludes().get(1));
+  }
+
+  public void testFilteredStart_Includes() throws Exception {
+    Adapter adapter = new Adapter();
+    adapter.registerLicense(new LicenseStub());
+    adapter.setUniqueId(getName());
+    MockConnection sc1 = new MockConnection(getName() + "_1");
+    MockConnection sc2 = new MockConnection(getName() + "_2");
+    MockConnection sc3 = new MockConnection(getClass().getSimpleName() + "_1");
+    MockConnection sc4 = new MockConnection(getClass().getSimpleName() + "_2");
+    MockConnection sc5 = new MockConnection(getClass().getSimpleName() + "_3");
+
+    try {
+      adapter.getSharedComponents().addConnection(sc1);
+      adapter.getSharedComponents().addConnection(sc2);
+      adapter.getSharedComponents().addConnection(sc3);
+      adapter.getSharedComponents().addConnection(sc4);
+      adapter.getSharedComponents().addConnection(sc5);
+      assertEquals(5, adapter.getSharedComponents().getConnections().size());
+
+      FilteredSharedComponentStart starter = new FilteredSharedComponentStart();
+      starter.addInclude(".*" + getName() + ".*");
+      adapter.getSharedComponents().setLifecycleStrategy(starter);
+      adapter.requestInit();
+      assertEquals(InitialisedState.getInstance(), adapter.retrieveComponentState());
+      assertEquals(InitialisedState.getInstance(), sc1.retrieveComponentState());
+      assertEquals(InitialisedState.getInstance(), sc2.retrieveComponentState());
+      assertEquals(ClosedState.getInstance(), sc3.retrieveComponentState());
+      assertEquals(ClosedState.getInstance(), sc4.retrieveComponentState());
+      assertEquals(ClosedState.getInstance(), sc5.retrieveComponentState());
+      adapter.requestStart();
+      assertEquals(StartedState.getInstance(), adapter.retrieveComponentState());
+      assertEquals(StartedState.getInstance(), sc1.retrieveComponentState());
+      assertEquals(StartedState.getInstance(), sc2.retrieveComponentState());
+      assertEquals(ClosedState.getInstance(), sc3.retrieveComponentState());
+      assertEquals(ClosedState.getInstance(), sc4.retrieveComponentState());
+      assertEquals(ClosedState.getInstance(), sc5.retrieveComponentState());
+    }
+    finally {
+      stop(adapter);
+    }
+  }
+
+  public void testFilteredStart_Excludes() throws Exception {
+    Adapter adapter = new Adapter();
+    adapter.registerLicense(new LicenseStub());
+    adapter.setUniqueId(getName());
+    MockConnection sc1 = new MockConnection(getName() + "_1");
+    MockConnection sc2 = new MockConnection(getName() + "_2");
+    MockConnection sc3 = new MockConnection(getClass().getSimpleName() + "_1");
+    MockConnection sc4 = new MockConnection(getClass().getSimpleName() + "_2");
+    MockConnection sc5 = new MockConnection(getClass().getSimpleName() + "_3");
+
+    try {
+      adapter.getSharedComponents().addConnection(sc1);
+      adapter.getSharedComponents().addConnection(sc2);
+      adapter.getSharedComponents().addConnection(sc3);
+      adapter.getSharedComponents().addConnection(sc4);
+      adapter.getSharedComponents().addConnection(sc5);
+      assertEquals(5, adapter.getSharedComponents().getConnections().size());
+
+      FilteredSharedComponentStart starter = new FilteredSharedComponentStart();
+      starter.addExclude(".*" + getClass().getSimpleName() + ".*");
+      adapter.getSharedComponents().setLifecycleStrategy(starter);
+      adapter.requestInit();
+      assertEquals(InitialisedState.getInstance(), adapter.retrieveComponentState());
+      assertEquals(InitialisedState.getInstance(), sc1.retrieveComponentState());
+      assertEquals(InitialisedState.getInstance(), sc2.retrieveComponentState());
+      assertEquals(ClosedState.getInstance(), sc3.retrieveComponentState());
+      assertEquals(ClosedState.getInstance(), sc4.retrieveComponentState());
+      assertEquals(ClosedState.getInstance(), sc5.retrieveComponentState());
+      adapter.requestStart();
+      assertEquals(StartedState.getInstance(), adapter.retrieveComponentState());
+      assertEquals(StartedState.getInstance(), sc1.retrieveComponentState());
+      assertEquals(StartedState.getInstance(), sc2.retrieveComponentState());
+      assertEquals(ClosedState.getInstance(), sc3.retrieveComponentState());
+      assertEquals(ClosedState.getInstance(), sc4.retrieveComponentState());
+      assertEquals(ClosedState.getInstance(), sc5.retrieveComponentState());
+    }
+    finally {
+      stop(adapter);
+    }
+  }
+
+  public void testNonBlockingStart() throws Exception {
+    Adapter adapter = new Adapter();
+    adapter.registerLicense(new LicenseStub());
+    adapter.setUniqueId(getName());
+    TriggeredMockConnection sharedConnection = new TriggeredMockConnection(getName());
+    try {
+      adapter.getSharedComponents().addConnection(sharedConnection);
+      adapter.getSharedComponents().setLifecycleStrategy(new FilteredSharedComponentStart(true));
+      adapter.requestInit();
+      // Will return straight away.
+      assertEquals(InitialisedState.getInstance(), adapter.retrieveComponentState());
+      assertNotSame(InitialisedState.getInstance(), sharedConnection.retrieveComponentState());
+      sharedConnection.wakeup = true;
+      waitFor(sharedConnection, InitialisedState.getInstance());
+      assertEquals(InitialisedState.getInstance(), sharedConnection.retrieveComponentState());
+      sharedConnection.wakeup = false;
+
+      adapter.requestStart();
+      assertEquals(StartedState.getInstance(), adapter.retrieveComponentState());
+      assertNotSame(StartedState.getInstance(), sharedConnection.retrieveComponentState());
+      sharedConnection.wakeup = true;
+      waitFor(sharedConnection, StartedState.getInstance());
+      assertEquals(StartedState.getInstance(), sharedConnection.retrieveComponentState());
+
+      stop(adapter);
+
+      // Initialise again, to make sure that we can.
+      sharedConnection.wakeup = false;
+      adapter.requestInit();
+      // Will return straight away.
+      assertEquals(InitialisedState.getInstance(), adapter.retrieveComponentState());
+      assertNotSame(InitialisedState.getInstance(), sharedConnection.retrieveComponentState());
+      sharedConnection.wakeup = true;
+      waitFor(sharedConnection, InitialisedState.getInstance());
+      assertEquals(InitialisedState.getInstance(), sharedConnection.retrieveComponentState());
+    }
+    finally {
+      stop(adapter);
+    }
+  }
+
+  public void testNonBlockingStart_NoSharedConnection() throws Exception {
+    Adapter adapter = new Adapter();
+    adapter.registerLicense(new LicenseStub());
+    adapter.setUniqueId(getName());
+    try {
+      adapter.getSharedComponents().setLifecycleStrategy(new FilteredSharedComponentStart(true));
+      adapter.requestInit();
+      assertEquals(InitialisedState.getInstance(), adapter.retrieveComponentState());
+    }
+    finally {
+      stop(adapter);
+    }
+  }
+
+  public void testNonBlockingStart_WithException() throws Exception {
+    Adapter adapter = new Adapter();
+    adapter.registerLicense(new LicenseStub());
+    adapter.setUniqueId(getName());
+    TriggeredFailingMockConnection sharedConnection = new TriggeredFailingMockConnection(getName());
+    try {
+      adapter.getSharedComponents().addConnection(sharedConnection);
+      adapter.getSharedComponents().setLifecycleStrategy(new FilteredSharedComponentStart(true));
+      adapter.requestInit();
+      // Will return straight away.
+      assertEquals(InitialisedState.getInstance(), adapter.retrieveComponentState());
+      assertNotSame(InitialisedState.getInstance(), sharedConnection.retrieveComponentState());
+      sharedConnection.wakeup = true;
+      Thread.sleep(1000);
+      // The connection should never start.
+      assertEquals(ClosedState.getInstance(), sharedConnection.retrieveComponentState());
+    }
+    finally {
+      stop(adapter);
+    }
+  }
+
+  class TriggeredMockConnection extends MockConnection {
+    transient long sleepInterval = 100L;
+    transient boolean wakeup = false;
+
+    public TriggeredMockConnection(String uniqueId) {
+      super(uniqueId);
+    }
+
+    public TriggeredMockConnection(String uniqueId, long sleepTime) {
+      super(uniqueId, sleepTime);
+    }
+
+    @Override
+    protected void initConnection() throws CoreException {
+      super.initConnection();
+      sleepItOff();
+    }
+
+    @Override
+    protected void startConnection() throws CoreException {
+      super.startConnection();
+      sleepItOff();
+    }
+
+    @Override
+    protected void stopConnection() {
+      super.stopConnection();
+      sleepItOff();
+    }
+
+    @Override
+    protected void closeConnection() {
+      super.closeConnection();
+      sleepItOff();
+    }
+
+    protected void sleepItOff() {
+      while (!wakeup) {
+        try {
+          Thread.sleep(sleepInterval);
+        }
+        catch (InterruptedException e) {
+
+        }
+      }
+    }
+  }
+
+  class TriggeredFailingMockConnection extends TriggeredMockConnection {
+
+    public TriggeredFailingMockConnection(String uniqueId) {
+      super(uniqueId);
+    }
+
+    public TriggeredFailingMockConnection(String uniqueId, long sleepTime) {
+      super(uniqueId, sleepTime);
+    }
+
+    protected void sleepItOff() {
+      super.sleepItOff();
+      throw new RuntimeException();
+    }
+  }
+}

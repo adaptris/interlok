@@ -1,0 +1,209 @@
+package com.adaptris.core;
+
+import java.util.Iterator;
+
+import org.quartz.Scheduler;
+
+import com.adaptris.core.stubs.MockChannel;
+import com.adaptris.core.stubs.MockMessageProducer;
+
+public class QuartzCronPollerTest extends BaseCase {
+
+  private static final String PAYLOAD = "The Quick Brown Fox Jumps Over The Lazy Dog";
+
+  public QuartzCronPollerTest(java.lang.String testName) {
+    super(testName);
+  }
+
+  @Override
+  protected void tearDown() throws Exception {
+  }
+
+  public void testSchedulerGroup() throws Exception {
+    QuartzCronPoller p1 = new QuartzCronPoller();
+    p1.setCronExpression("*/5 * * * * ?");
+    p1.setSchedulerGroup("MYGROUP");
+    assertEquals("MYGROUP", p1.getSchedulerGroup());
+    p1.setSchedulerGroup(null);
+    assertNull(p1.getSchedulerGroup());
+    p1.setSchedulerGroup("");
+    assertEquals("", p1.getSchedulerGroup());
+  }
+
+
+  public void testGeneratedSchedulerGroup_hasId() throws Exception {
+    QuartzCronPoller p1 = new QuartzCronPoller();
+    p1.setCronExpression("*/5 * * * * ?");
+    p1.setSchedulerGroup("MYGROUP");
+    StandardWorkflow wf1 = createWorkflow(null, p1, new MockMessageProducer());
+    Channel channel = new MockChannel();
+    channel.getWorkflowList().add(wf1);
+    channel.prepare();
+    try {
+      channel.requestInit();
+      assertEquals("MYGROUP", p1.generateSchedulerGroup());
+    }
+    finally {
+      channel.requestClose();
+    }
+  }
+
+  public void testGeneratedSchedulerGroup_NoGroup() throws Exception {
+    QuartzCronPoller p1 = new QuartzCronPoller();
+    p1.setCronExpression("*/5 * * * * ?");
+    StandardWorkflow wf1 = createWorkflow(null, p1, new MockMessageProducer());
+    Channel channel = new MockChannel();
+    channel.getWorkflowList().add(wf1);
+    channel.prepare();
+    try {
+      channel.requestInit();
+      assertEquals(Scheduler.DEFAULT_GROUP, p1.generateSchedulerGroup());
+    }
+    finally {
+      channel.requestClose();
+    }
+  }
+
+  public void testQuartzId() throws Exception {
+    QuartzCronPoller p1 = new QuartzCronPoller();
+    p1.setCronExpression("*/5 * * * * ?");
+    p1.setQuartzId("quartzId");
+    assertEquals("quartzId", p1.getQuartzId());
+    p1.setQuartzId(null);
+    assertNull(p1.getQuartzId());
+    p1.setQuartzId("");
+    assertEquals("", p1.getQuartzId());
+  }
+
+  public void testGeneratedQuartzId_hasQuartzId() throws Exception {
+    QuartzCronPoller p1 = new QuartzCronPoller();
+    p1.setCronExpression("*/5 * * * * ?");
+    p1.setQuartzId("quartzId");
+    StandardWorkflow wf1 = createWorkflow(null, p1, new MockMessageProducer());
+    Channel channel = new MockChannel();
+    channel.getWorkflowList().add(wf1);
+    channel.prepare();
+    try {
+      channel.requestInit();
+      assertEquals("quartzId", p1.getName());
+    }
+    finally {
+      channel.requestClose();
+    }
+  }
+
+  public void testGeneratedQuartzId_NoDestination() throws Exception {
+    QuartzCronPoller p1 = new QuartzCronPoller();
+    p1.setCronExpression("*/5 * * * * ?");
+    StandardWorkflow wf1 = createWorkflow(null, p1, new MockMessageProducer());
+    Channel channel = new MockChannel();
+    channel.getWorkflowList().add(wf1);
+    channel.prepare();
+    try {
+      channel.requestInit();
+      assertTrue("No Destination Configured doesn't cause NPE", p1.getName().startsWith("NoDestination"));
+    }
+    finally {
+      channel.requestClose();
+    }
+  }
+
+  public void testGeneratedQuartzId_HasDestination() throws Exception {
+    QuartzCronPoller p1 = new QuartzCronPoller();
+    p1.setCronExpression("*/5 * * * * ?");
+    StandardWorkflow wf1 = createWorkflow(new ConfiguredConsumeDestination("MyDestination"), p1, new MockMessageProducer());
+    Channel channel = new MockChannel();
+    channel.getWorkflowList().add(wf1);
+    channel.prepare();
+    try {
+      channel.requestInit();
+      assertTrue("No Destination Configured doesn't cause NPE", p1.getName().startsWith("MyDestination"));
+    }
+    finally {
+      channel.requestClose();
+    }
+  }
+
+  public void testBug917() throws Exception {
+    QuartzCronPoller p1 = new QuartzCronPoller();
+    p1.setCronExpression("*/5 * * * * ?");
+    StandardWorkflow wf1 = createWorkflow(null, p1, new MockMessageProducer());
+    Channel channel = new MockChannel();
+    channel.getWorkflowList().add(wf1);
+    channel.prepare();
+    try {
+      channel.requestInit();
+      assertTrue("No Destination Configured doesn't cause NPE", p1.getName().startsWith("NoDestination"));
+    }
+    finally {
+      channel.requestClose();
+    }
+  }
+
+  public void testWithMessages() throws Exception {
+
+    MockMessageProducer mock1 = new MockMessageProducer();
+    MockMessageProducer mock2 = new MockMessageProducer();
+    StandardWorkflow wf1 = createWorkflow(new ConfiguredConsumeDestination("2Secs"), new QuartzCronPoller("*/2 * * * * ?"), mock1);
+    StandardWorkflow wf2 = createWorkflow(new ConfiguredConsumeDestination("VeryRare"), new QuartzCronPoller("0 00 00 31 * ?"),
+        mock2);
+    Channel channel = new MockChannel();
+    channel.getWorkflowList().add(wf1);
+    channel.getWorkflowList().add(wf2);
+    channel.prepare();
+    try {
+      channel.requestStart();
+      waitForMessages(mock1, 1);
+    }
+    finally {
+      channel.requestClose();
+    }
+    assertTrue("No. Produced Messages >=1", mock1.getMessages().size() >= 1);
+    for (Iterator i = mock1.getMessages().iterator(); i.hasNext();) {
+      AdaptrisMessage msg = (AdaptrisMessage) i.next();
+      assertEquals("Payloads", PAYLOAD, msg.getStringPayload());
+    }
+    assertEquals("No. Produced messages = 0", 0, mock2.getMessages().size());
+  }
+
+  public void testWithMessages_StandardThreadPool() throws Exception {
+
+    MockMessageProducer mock1 = new MockMessageProducer();
+    MockMessageProducer mock2 = new MockMessageProducer();
+    StandardWorkflow wf1 = createWorkflow(new ConfiguredConsumeDestination("2Secs"), new QuartzCronPoller("*/2 * * * * ?", false),
+        mock1);
+    StandardWorkflow wf2 = createWorkflow(new ConfiguredConsumeDestination("VeryRare"), new QuartzCronPoller("0 00 00 31 * ?", false),
+        mock2);
+    Channel channel = new MockChannel();
+    channel.getWorkflowList().add(wf1);
+    channel.getWorkflowList().add(wf2);
+    channel.prepare();
+    try {
+      channel.requestStart();
+      waitForMessages(mock1, 1);
+    }
+    finally {
+      channel.requestClose();
+    }
+    assertTrue("No. Produced Messages >=1", mock1.getMessages().size() >= 1);
+    for (Iterator i = mock1.getMessages().iterator(); i.hasNext();) {
+      AdaptrisMessage msg = (AdaptrisMessage) i.next();
+      assertEquals("Payloads", PAYLOAD, msg.getStringPayload());
+    }
+    assertEquals("No. Produced messages = 0", 0, mock2.getMessages().size());
+  }
+
+  private StandardWorkflow createWorkflow(ConsumeDestination d, QuartzCronPoller poller, AdaptrisMessageProducer prod) {
+    PollingTrigger trigger = new PollingTrigger();
+    trigger.setTemplate(PAYLOAD);
+    trigger.setPoller(poller);
+    if (d != null) {
+      trigger.setDestination(d);
+    }
+    StandardWorkflow result = new StandardWorkflow();
+    result.setConsumer(trigger);
+    result.setProducer(prod);
+    return result;
+
+  }
+}

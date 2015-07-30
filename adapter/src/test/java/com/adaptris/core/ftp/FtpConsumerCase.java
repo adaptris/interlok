@@ -1,0 +1,125 @@
+package com.adaptris.core.ftp;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import com.adaptris.core.ConfiguredConsumeDestination;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.FixedIntervalPoller;
+import com.adaptris.core.Poller;
+import com.adaptris.core.QuartzCronPoller;
+import com.adaptris.core.StandaloneConsumer;
+import com.adaptris.util.TimeInterval;
+
+public abstract class FtpConsumerCase extends FtpConsumerExample {
+
+  public FtpConsumerCase(String name) {
+    super(name);
+  }
+
+  @Override
+  protected Object retrieveObjectForSampleConfig() {
+    return null;
+  }
+
+  @Override
+  protected List retrieveObjectsForSampleConfig() {
+    return new ArrayList(Arrays.asList(new StandaloneConsumer[]
+    {
+        createConsumerExample(new FixedIntervalPoller()), createConsumerExample(new QuartzCronPoller("*/20 * * * * ?"))
+    }));
+  }
+
+  private StandaloneConsumer createConsumerExample(Poller pollingImp) {
+    FtpConsumer consumer = new FtpConsumer();
+    FileTransferConnection con = createConnectionForExamples();
+    consumer.setProcDirectory("/proc");
+    consumer.setDestination(new ConfiguredConsumeDestination(getScheme()
+        + "://overrideuser:overridepassword@hostname:port/path/to/directory", "*.xml"));
+    consumer.setPoller(pollingImp);
+    StandaloneConsumer result = new StandaloneConsumer();
+    result.setConnection(con);
+    result.setConsumer(consumer);
+    return result;
+  }
+
+  public void testSetQuietPeriod() throws Exception {
+    FtpConsumer consumer = new FtpConsumer();
+    TimeInterval defaultInterval = new TimeInterval(0L, TimeUnit.SECONDS);
+    assertNull(consumer.getQuietInterval());
+    assertEquals(defaultInterval.toMilliseconds(), consumer.olderThanMs());
+
+    TimeInterval interval = new TimeInterval(20L, TimeUnit.SECONDS);
+
+    consumer.setQuietInterval(interval);
+    assertEquals(interval, consumer.getQuietInterval());
+    assertEquals(interval.toMilliseconds(), consumer.olderThanMs());
+
+
+    consumer.setQuietInterval(null);
+    assertNull(consumer.getQuietInterval());
+    assertEquals(defaultInterval.toMilliseconds(), consumer.olderThanMs());
+  }
+
+  public void testInit_UnknownFileFilter() throws Exception {
+    FtpConsumer ftpConsumer = new FtpConsumer();
+    ftpConsumer.setDestination(new ConfiguredConsumeDestination(getDestinationString(), ".*", "testInit_UnknownFileFilter"));
+    ftpConsumer.setFileFilterImp("BlahDeBlahDeBlah");
+    ftpConsumer.setPoller(new QuartzCronPoller("*/1 * * * * ?"));
+    try {
+      ftpConsumer.init();
+      ftpConsumer.close();
+      fail();
+    }
+    catch (CoreException expected) {
+
+    }
+  }
+
+  public void testInit_WorkDir() throws Exception {
+    FtpConsumer ftpConsumer = new FtpConsumer();
+    ftpConsumer.setDestination(new ConfiguredConsumeDestination(getDestinationString(), null, "testInit_NoWorkDir"));
+    ftpConsumer.setWorkDirectory(null);
+    ftpConsumer.setPoller(new QuartzCronPoller("*/1 * * * * ?"));
+    try {
+      ftpConsumer.init();
+      ftpConsumer.close();
+      fail();
+    }
+    catch (CoreException expected) {
+
+    }
+    ftpConsumer.setWorkDirectory("work");
+    ftpConsumer.init();
+    ftpConsumer.close();
+    ftpConsumer.setWorkDirectory("/work");
+    ftpConsumer.init();
+    ftpConsumer.close();
+  }
+
+  public void testInit_ProcDir() throws Exception {
+    FtpConsumer ftpConsumer = new FtpConsumer();
+    ftpConsumer.setDestination(new ConfiguredConsumeDestination(getDestinationString(), null, "testInit_NoWorkDir"));
+    ftpConsumer.setWorkDirectory("/work");
+    ftpConsumer.setPoller(new QuartzCronPoller("*/1 * * * * ?"));
+    ftpConsumer.init();
+    ftpConsumer.close();
+    ftpConsumer.setProcDirectory("/proc");
+    ftpConsumer.init();
+    ftpConsumer.close();
+    ftpConsumer.setProcDirectory("proc");
+    ftpConsumer.init();
+    ftpConsumer.close();
+  }
+
+  protected abstract FileTransferConnection createConnectionForExamples();
+
+  protected abstract String getScheme();
+
+  protected String getDestinationString() {
+    return getScheme() + "://localhost" + EmbeddedFtpServer.DEFAULT_HOME_DIR;
+  }
+
+}

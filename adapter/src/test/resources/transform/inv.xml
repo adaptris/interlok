@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XML Spy v3.5 NT (http://www.xmlspy.com) by Stuart Ellidge (Adaptris Ltd) -->
+<F4FInvoice InvoiceType="Invoice" DocumentType="New">
+	<F4FDocumentHeader>
+		<SchemaVersion>1.0</SchemaVersion>
+		<SchemaStatus>Draft</SchemaStatus>
+		<DocumentCreated DateTimeType="Document Created">20010901</DocumentCreated>
+		<DocumentTrackingId>xxx123</DocumentTrackingId>
+		<DocumentRevisionNumber>1</DocumentRevisionNumber>
+	</F4FDocumentHeader>
+	<InvoiceHeader>
+		<InvoiceReference ReferenceType="Buyer Reference">ref01</InvoiceReference>
+		<InvoiceReference ReferenceType="Suppliers Order Number">001ord</InvoiceReference>
+		<InvoiceReference ReferenceType="Buyers Order Number">ord01</InvoiceReference>
+		<InvoiceDate DateTimeType="Invoice Date">20010901 14:00</InvoiceDate>
+		<TradingPartner PartnerType="Buyer">
+			<PartnerID PartnerIDType="Assigned by F4F">F4F0001</PartnerID>
+			<CompanyName>Partner A Ltd</CompanyName>
+		</TradingPartner>
+		<TradingPartner PartnerType="Supplier">
+			<PartnerID PartnerIDType="Assigned by F4F">F4F0002</PartnerID>
+			<CompanyName>Partner B Ltd</CompanyName>
+		</TradingPartner>
+		<InvoiceContact>
+			<ContactName>Mrs C Cookson</ContactName>
+			<ContactInfo Method="Primary Telephone">0987 654 321</ContactInfo>
+		</InvoiceContact>
+		<TermsAndConditions PaymentTerms="N140" PaymentMethod="Bank Transfer">
+			<Narrative>140 DAYS NET</Narrative>
+			<IncotermsCode>DDP</IncotermsCode>
+			<IncotermsText>Walmington-on-Sea Incoterms 2000</IncotermsText>
+		</TermsAndConditions>
+	</InvoiceHeader>
+	<TransportDetails>
+		<Address AddressType="Deliver To">
+			<AddressID AddressIDType="Assigned by Buyer">WHSE123456</AddressID>
+			<CompanyName>PARTNER A AG LTD</CompanyName>
+			<StreetAddress>145 Exeter Road</StreetAddress>
+			<CityName>Walmington-on-Sea</CityName>
+			<CountyDistrictName>Sussex</CountyDistrictName>
+			<PostalCode>WM1 9QQ</PostalCode>
+			<CountryCode>GB</CountryCode>
+		</Address>
+		<ShippingInstructions ShippingType="Delivery">
+			<ShippingDate DateTimeType="Dispatch Date">20010915 10:15</ShippingDate>
+		</ShippingInstructions>
+	</TransportDetails>
+	<InvoiceLine>
+		<ProductReference ReferenceType="Assigned By Supplier">PROD0001</ProductReference>
+		<ProductDescription Type="Defined by Supplier">500KG BAG AMMONIUM NITRATE FERTILIZER</ProductDescription>
+		<ProductValues Currency="GBP">
+			<Quantity QuantityType="Invoice Quantity" QuantityUOM="Bag">20</Quantity>
+			<UnitPrice PriceUOM="Bag">400.00</UnitPrice>
+			<LineTax Code="S" Percentage="17.5">1400.00</LineTax>
+			<NetValue>8000.00</NetValue>
+			<GrossValue>9400.00</GrossValue>
+		</ProductValues>
+	</InvoiceLine>
+	<TaxTrailer Currency="GBP" TaxCode="S" TaxPercentage="17.5">
+		<NumberOfLines>1</NumberOfLines>
+		<NetPrice>8000.00</NetPrice>
+		<TaxAmount>1400.00</TaxAmount>
+		<GrossValue>9400.00</GrossValue>
+	</TaxTrailer>
+	<InvoiceControlTotals>
+		<TotalNumberOfLines>1</TotalNumberOfLines>
+		<TotalQuantity>20</TotalQuantity>
+		<TotalNetValue>8000.00</TotalNetValue>
+		<TotalLineTax>1400.00</TotalLineTax>
+		<TotalGrossValue>9400.00</TotalGrossValue>
+	</InvoiceControlTotals>
+</F4FInvoice>

@@ -1,0 +1,7 @@
+{
+  "standalone-producer":
+  { "unique-id":"unique-id",
+    "connection": {"@class":"null-connection"},
+    "producer": {"@class":"null-message-producer"}
+  }
+}

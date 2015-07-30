@@ -1,0 +1,184 @@
+<Root id="ORDERS">
+  <Record id="UNB">
+    <Composite id="S001">
+      <Field id="0001">UNOA</Field>
+      <Field id="0002">2</Field>
+    </Composite>
+    <Composite id="S002">
+      <Field id="0004">8712423008458</Field>
+      <Field id="0007">14</Field>
+      <Field id="0008">VALKSOFTWARE</Field>
+    </Composite>
+    <Composite id="S003">
+      <Field id="0007">14</Field>
+      <Field id="0014">03</Field>
+    </Composite>
+    <Composite id="S004">
+      <Field id="0017">20070123</Field>
+      <Field id="0019">1420</Field>
+    </Composite>
+    <Field id="0020">87096</Field>
+  </Record>
+  <Segment id="Envelope">
+    <Record id="UNH">
+      <Field id="0062">1</Field>
+      <Composite id="S009">
+        <Field id="0065">ORDERS</Field>
+        <Field id="0052">D</Field>
+        <Field id="0054">96A</Field>
+        <Field id="0051">UN</Field>
+        <Field id="0057">EAN008</Field>
+      </Composite>
+    </Record>
+    <Record id="BGM">
+      <Composite id="C002">
+        <Field id="1001">220</Field>
+        <Field id="1131">9</Field>
+      </Composite>
+      <Field id="1004">204013</Field>
+      <Field id="1225">9</Field>
+      <Field id="4343">NA</Field>
+    </Record>
+    <Record id="DTM">
+      <Composite id="C507">
+        <Field id="2005">137</Field>
+        <Field id="2380">20070122</Field>
+        <Field id="2379">102</Field>
+      </Composite>
+    </Record>
+    <Record id="DTM">
+      <Composite id="C507">
+        <Field id="2005">2</Field>
+        <Field id="2380">20070122</Field>
+        <Field id="2379">102</Field>
+      </Composite>
+    </Record>
+    <Segment id="Segment Group 2">
+      <Record id="NAD">
+        <Field id="3035">BY</Field>
+        <Composite id="C082">
+          <Field id="3039">8714231420118</Field>
+          <Field id="3055">9</Field>
+        </Composite>
+      </Record>
+    </Segment>
+    <Segment id="Segment Group 2">
+      <Record id="NAD">
+        <Field id="3035">DP</Field>
+        <Composite id="C082">
+          <Field id="3039">8714231420118</Field>
+          <Field id="3055">9</Field>
+        </Composite>
+      </Record>
+    </Segment>
+    <Segment id="Segment Group 2">
+      <Record id="NAD">
+        <Field id="3035">SU</Field>
+        <Composite id="C082">
+          <Field id="3055">9</Field>
+        </Composite>
+      </Record>
+    </Segment>
+    <Segment id="Segment Group 25">
+      <Record id="LIN">
+        <Field id="1082">1</Field>
+        <Composite id="C212">
+          <Field id="7140">5410340110348</Field>
+          <Field id="7143">EN</Field>
+        </Composite>
+      </Record>
+      <Record id="PIA">
+        <Field id="4347">5</Field>
+        <Composite id="C212">
+          <Field id="7140">411034</Field>
+          <Field id="7143">SA</Field>
+        </Composite>
+      </Record>
+      <Record id="QTY">
+        <Composite id="C186">
+          <Field id="6063">21</Field>
+          <Field id="6060">1</Field>
+        </Composite>
+      </Record>
+      <Segment id="Segment group 28">
+        <Record id="PRI">
+          <Composite id="C509">
+            <Field id="5125">LBL</Field>
+            <Field id="5118">10.90</Field>
+          </Composite>
+        </Record>
+      </Segment>
+    </Segment>
+    <Segment id="Segment Group 25">
+      <Record id="LIN">
+        <Field id="1082">2</Field>
+        <Composite id="C212">
+          <Field id="7140">4000680031574</Field>
+          <Field id="7143">EN</Field>
+        </Composite>
+      </Record>
+      <Record id="PIA">
+        <Field id="4347">5</Field>
+        <Composite id="C212">
+          <Field id="7140">784509</Field>
+          <Field id="7143">SA</Field>
+        </Composite>
+      </Record>
+      <Record id="QTY">
+        <Composite id="C186">
+          <Field id="6063">21</Field>
+          <Field id="6060">12</Field>
+        </Composite>
+      </Record>
+      <Segment id="Segment group 28">
+        <Record id="PRI">
+          <Composite id="C509">
+            <Field id="5125">LBL</Field>
+            <Field id="5118">5.66</Field>
+          </Composite>
+        </Record>
+      </Segment>
+    </Segment>
+    <Segment id="Segment Group 25">
+      <Record id="LIN">
+        <Field id="1082">3</Field>
+        <Composite id="C212">
+          <Field id="7140">8712695009337</Field>
+          <Field id="7143">EN</Field>
+        </Composite>
+      </Record>
+      <Record id="PIA">
+        <Field id="4347">5</Field>
+        <Composite id="C212">
+          <Field id="7140">762541</Field>
+          <Field id="7143">SA</Field>
+        </Composite>
+      </Record>
+      <Record id="QTY">
+        <Composite id="C186">
+          <Field id="6063">21</Field>
+          <Field id="6060">1</Field>
+        </Composite>
+      </Record>
+      <Segment id="Segment group 28">
+        <Record id="PRI">
+          <Composite id="C509">
+            <Field id="5125">LBL</Field>
+            <Field id="5118">10.90</Field>
+          </Composite>
+        </Record>
+      </Segment>
+    </Segment>
+    <Record id="UNS">
+      <Field id="0081">S</Field>
+    </Record>
+    <Record id="UNT">
+      <Field id="0074">21</Field>
+      <Field id="0062">1</Field>
+    </Record>
+  </Segment>
+  <Record id="UNZ">
+    <Field id="0036">1</Field>
+    <Field id="0020">87096</Field>
+  </Record>
+</Root>

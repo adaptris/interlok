@@ -1,0 +1,130 @@
+package com.adaptris.core.jms.activemq;
+
+import static com.adaptris.core.jms.JmsProducerCase.assertMessages;
+import static com.adaptris.core.jms.JmsProducerCase.createMessage;
+import static com.adaptris.core.jms.activemq.ActiveMqPasPollingConsumerTest.shutdownQuietly;
+import static com.adaptris.core.jms.activemq.ActiveMqPasPollingConsumerTest.startAndStop;
+
+import java.util.concurrent.TimeUnit;
+
+import com.adaptris.core.BaseCase;
+import com.adaptris.core.ConfiguredConsumeDestination;
+import com.adaptris.core.ConfiguredProduceDestination;
+import com.adaptris.core.FixedIntervalPoller;
+import com.adaptris.core.Poller;
+import com.adaptris.core.StandaloneConsumer;
+import com.adaptris.core.StandaloneProducer;
+import com.adaptris.core.jms.JmsConnection;
+import com.adaptris.core.jms.JmsPollingConsumer;
+import com.adaptris.core.jms.JmsProducer;
+import com.adaptris.core.jms.activemq.ActiveMqPasPollingConsumerTest.Sometime;
+import com.adaptris.core.stubs.MockMessageListener;
+import com.adaptris.core.util.ManagedThreadFactory;
+import com.adaptris.util.TimeInterval;
+
+public class ActiveMqJmsPollingConsumerTest extends BaseCase {
+
+  private static final ManagedThreadFactory MY_THREAD_FACTORY = new ManagedThreadFactory();
+
+  public ActiveMqJmsPollingConsumerTest(String arg0) {
+    super(arg0);
+  }
+
+  @Override
+  protected void setUp() throws Exception {}
+
+  @Override
+  protected void tearDown() throws Exception {}
+
+  public void testTopic_NoSubscriptionId() throws Exception {
+    String rfc6167 = "jms:topic:" + getName();
+    final EmbeddedActiveMq broker = new EmbeddedActiveMq();
+    final StandaloneConsumer consumer = createStandaloneConsumer(broker, getName(), rfc6167);
+    try {
+      broker.start();
+      consumer.registerAdaptrisMessageListener(new MockMessageListener());
+      // This won't fail, but... there will be errors in the log file...
+      start(consumer);
+    } finally {
+      shutdownQuietly(null, consumer, broker);
+    }
+  }
+
+  public void testQueue_ProduceConsume() throws Exception {
+    int msgCount = 5;
+    String rfc6167 = "jms:queue:" + getName();
+    final EmbeddedActiveMq broker = new EmbeddedActiveMq();
+    final StandaloneProducer sender =
+        new StandaloneProducer(broker.getJmsConnection(), new JmsProducer(new ConfiguredProduceDestination(rfc6167)));
+    final StandaloneConsumer receiver = createStandaloneConsumer(broker, getName(), rfc6167);
+    try {
+      broker.start();
+      MockMessageListener jms = new MockMessageListener();
+      receiver.registerAdaptrisMessageListener(jms);
+      start(receiver);
+      start(sender);
+      for (int i = 0; i < msgCount; i++) {
+        sender.doService(createMessage());
+      }
+      long totalWaitTime = 0;
+      waitForMessages(jms, msgCount);
+      assertMessages(jms, msgCount);
+    } finally {
+      shutdownQuietly(sender, receiver, broker);
+    }
+  }
+
+  public void testTopic_ProduceConsume() throws Exception {
+    int msgCount = 5;
+    String rfc6167 = "jms:topic:" + getName() + "?subscriptionId=" + getName();
+    final EmbeddedActiveMq broker = new EmbeddedActiveMq();
+    final StandaloneProducer sender =
+        new StandaloneProducer(broker.getJmsConnection(), new JmsProducer(new ConfiguredProduceDestination(rfc6167)));
+    Sometime poller = new Sometime();
+    JmsPollingConsumer consumer = createConsumer(broker, getName(), rfc6167, poller);
+    final StandaloneConsumer receiver = new StandaloneConsumer(consumer);
+    try {
+      broker.start();
+      MockMessageListener jms = new MockMessageListener();
+      receiver.registerAdaptrisMessageListener(jms);
+
+      startAndStop(receiver);
+      start(receiver);
+      start(sender);
+      for (int i = 0; i < msgCount; i++) {
+        sender.doService(createMessage());
+      }
+      long totalWaitTime = 0;
+      waitForMessages(jms, msgCount);
+      assertMessages(jms, msgCount);
+    } finally {
+      shutdownQuietly(sender, receiver, broker);
+    }
+  }
+
+
+
+  private StandaloneConsumer createStandaloneConsumer(EmbeddedActiveMq broker, String threadName, String destinationName)
+      throws Exception {
+    return new StandaloneConsumer(createConsumer(broker, threadName, destinationName));
+  }
+
+  private JmsPollingConsumer createConsumer(EmbeddedActiveMq broker, String threadName, String destinationName, Poller poller) {
+    JmsPollingConsumer consumer = new JmsPollingConsumer(new ConfiguredConsumeDestination(destinationName, null, threadName));
+    consumer.setPoller(poller);
+    JmsConnection c = broker.getJmsConnection();
+    consumer.setClientId(c.configuredClientId());
+    consumer.setUserName(c.configuredUserName());
+    consumer.setPassword(c.configuredPassword());
+    consumer.setReacquireLockBetweenMessages(true);
+    consumer.setVendorImplementation(c.getVendorImplementation());
+    return consumer;
+  }
+
+
+  private JmsPollingConsumer createConsumer(EmbeddedActiveMq broker, String threadName, String destinationName) {
+    return createConsumer(broker, threadName, destinationName, new FixedIntervalPoller(
+        new TimeInterval(500L, TimeUnit.MILLISECONDS)));
+  }
+
+}

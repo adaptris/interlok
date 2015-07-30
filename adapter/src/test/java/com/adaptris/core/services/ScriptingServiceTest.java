@@ -1,0 +1,157 @@
+package com.adaptris.core.services;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import org.apache.commons.io.IOUtils;
+
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.GeneralServiceExample;
+import com.adaptris.core.ServiceException;
+import com.adaptris.core.util.LifecycleHelper;
+
+public class ScriptingServiceTest extends GeneralServiceExample {
+
+  private static final String KEY_SCRIPTING_BASEDIR = "scripting.basedir";
+  private static final String SCRIPT = "\nvalue = $message.getMetadataValue 'MyMetadataKey';"
+      + "\n$message.addMetadata('MyMetadataKey', value.reverse);";
+
+  private static final String MY_METADATA_VALUE = "MyMetadataValue";
+  private static final String MY_METADATA_KEY = "MyMetadataKey";
+
+  public ScriptingServiceTest(java.lang.String testName) {
+    super(testName);
+  }
+
+  private File writeScript(boolean working) throws IOException {
+    FileWriter fw = null;
+    File result = null;
+    try {
+      File dir = new File(PROPERTIES.getProperty(KEY_SCRIPTING_BASEDIR, "./build/scripting"));
+      dir.mkdirs();
+      result = File.createTempFile("junit", ".script", dir);
+      fw = new FileWriter(result);
+      fw.write(working ? SCRIPT : "This will fail");
+    }
+    finally {
+      IOUtils.closeQuietly(fw);
+    }
+    return result;
+  }
+
+  private void delete(File script) throws Exception {
+    if (script == null) {
+      return;
+    }
+    if (!script.delete()) {
+      throw new Exception("failed to delete file");
+    }
+  }
+  public void testService() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    msg.addMetadata(MY_METADATA_KEY, MY_METADATA_VALUE);
+    ScriptingService service = createService();
+    File script = writeScript(true);
+    service.setScriptFilename(script.getCanonicalPath());
+    execute(service, msg);
+    assertTrue(msg.containsKey(MY_METADATA_KEY));
+    assertNotSame(MY_METADATA_VALUE, msg.getMetadataValue(MY_METADATA_KEY));
+    assertEquals(new StringBuffer(MY_METADATA_VALUE).reverse().toString(), msg.getMetadataValue(MY_METADATA_KEY));
+    delete(script);
+  }
+
+  public void testInit() throws Exception {
+    ScriptingService service = new ScriptingService();
+    try {
+      service.init();
+      fail("Service initialised w/o a language");
+    }
+    catch (Exception expected) {
+      ;
+    }
+    service.setLanguage("");
+    try {
+      service.init();
+      fail("Service initialised w/o a ''");
+    }
+    catch (Exception expected) {
+      ;
+    }
+    service.setLanguage("BLAHBLAHBLAH");
+    try {
+      service.init();
+      fail("Service initialised BLAHBLAHBLAH");
+    }
+    catch (Exception expected) {
+      ;
+    }
+    service.setLanguage("jruby");
+    try {
+      service.init();
+      fail("Service initialised with no filename");
+    }
+    catch (Exception expected) {
+      ;
+    }
+    service.setScriptFilename("");
+    try {
+      service.init();
+      fail("Service initialised with no filename");
+    }
+    catch (Exception expected) {
+      ;
+    }
+    service.setScriptFilename("/BLAHBLAHBLAHBLAHBLAH/BLAHBLAHBLAHBLAH");
+    try {
+      service.init();
+      fail("Service initialised with no idiotic filename");
+    }
+    catch (Exception expected) {
+      ;
+    }
+    File script = writeScript(false);
+    service.setScriptFilename(script.getCanonicalPath());
+    LifecycleHelper.init(service);
+    LifecycleHelper.close(service);
+    delete(script);
+  }
+
+  public void testDoServiceWithFailingScript() throws Exception {
+    ScriptingService service = createService();
+    File script = writeScript(false);
+    service.setScriptFilename(script.getCanonicalPath());
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    try {
+      execute(service, msg);
+      fail("Service failure expected");
+    }
+    catch (ServiceException expected) {
+
+    }
+    delete(script);
+  }
+
+  @Override
+  protected Object retrieveObjectForSampleConfig() {
+    ScriptingService service = createService();
+    service.setScriptFilename("/path/to/script/you/want/to/execute");
+    return service;
+  }
+
+  private ScriptingService createService() {
+    ScriptingService result = new ScriptingService("scripting-service");
+    result.setLanguage("jruby");
+    return result;
+  }
+
+  @Override
+  protected String getExampleCommentHeader(Object o) {
+    return super.getExampleCommentHeader(o) + "<!--"
+        + "\nThis allows to embed scripts written in any language that supports JSR223 (e.g. jruby)."
+        + "\nThe script is executed and the AdaptrisMessage that is due to be processed is"
+        + "\nbound against the key 'message'. This can be used as a standard variable"
+ + "\nwithin the script. " + "\n-->\n";
+  }
+}

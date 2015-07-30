@@ -1,0 +1,140 @@
+/*
+ * ReplaceMetadata.java,v
+ * 1.1
+ * 2010/01/04 11:18:21
+ * lchan
+ */
+package com.adaptris.core.services.metadata;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.hibernate.validator.constraints.NotBlank;
+
+import com.adaptris.core.CoreException;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+/**
+ * <p>
+ * Implementation of <code>Service</code> that adds a performs a simple find and replace on the specified metadata value.
+ * </p>
+ * <p>
+ * Each matching metadata key from {@link ReformatMetadata#getMetadataKeyRegexp()} will taken and if the search-value matches, then
+ * the replacement-value will be used as the replacement.
+ * </p>
+ * *
+ * <p>
+ * It supports the special syntax of <code>{n}</code> as the replacement value. This indicates that the corresponding match group
+ * should be as part of the replacement value: This is available for legacy purposes, you can usually specify match-groups using the
+ * {@code $n} syntax instead.
+ * </p>
+ * 
+ * @config replace-metadata-value
+ * 
+ * @license BASIC
+ */
+@XStreamAlias("replace-metadata-value")
+public class ReplaceMetadataValue extends ReformatMetadata {
+
+  @NotBlank
+  private String searchValue;
+  @NotBlank
+  private String replacementValue;
+  private Boolean replaceAll;
+  private static final String MATCH_GROUP_REGEX = "(.*?)\\{([0-9]+?)\\}(.*)";
+  private transient Pattern matchGroupPattern;
+  private transient Pattern searchPattern;
+
+  public ReplaceMetadataValue() {
+    super();
+    setReplaceAll(false);
+  }
+
+  public ReplaceMetadataValue(String regexp, String searchFor, boolean all, String replacement) {
+    super(regexp);
+    setReplaceAll(all);
+    setSearchValue(searchFor);
+    setReplacementValue(replacement);
+  }
+
+  @Override
+  public void init() throws CoreException {
+    super.init();
+    if (getReplacementValue() == null) {
+      throw new CoreException("Replacement Value is 'null'");
+    }
+    if (getSearchValue() == null) {
+      throw new CoreException("Search Value is 'null'");
+    }
+    matchGroupPattern = Pattern.compile(MATCH_GROUP_REGEX);
+    searchPattern = Pattern.compile(getSearchValue());
+  }
+
+  @Override
+  protected String reformat(String src, String msgCharset) {
+    Matcher searchMatcher = searchPattern.matcher(src);
+    String replacement = buildReplacementValue(searchMatcher, getReplacementValue());
+    return replaceAll() ? searchMatcher.replaceAll(replacement) : searchMatcher.replaceFirst(replacement);
+  }
+
+  private String buildReplacementValue(Matcher metadataValue, String replacement) {
+    String result = replacement;
+    Matcher matchGroup = matchGroupPattern.matcher(replacement);
+    if (matchGroup.matches() && metadataValue.matches()) {
+      int group = Integer.valueOf(matchGroup.group(2)).intValue();
+      result = matchGroup.group(1) + metadataValue.group(group) + matchGroup.group(3);
+      if (matchGroupPattern.matcher(result).matches()) {
+        return buildReplacementValue(metadataValue, result);
+      }
+    }
+    return result;
+  }
+
+  public String getSearchValue() {
+    return searchValue;
+  }
+
+  /**
+   * The value to search for within the metadata value.
+   *
+   * @param s the regular expression to search for.
+   */
+  public void setSearchValue(String s) {
+    this.searchValue = s;
+  }
+
+  public String getReplacementValue() {
+    return replacementValue;
+  }
+
+  /**
+   * The replacement value.
+   * <p>
+   * It supports the special syntax of {n} which indicates that the
+   * corresponding match group should be used as the replacement value
+   * </p>
+   *
+   * @param s the replacement value.
+   */
+  public void setReplacementValue(String s) {
+    this.replacementValue = s;
+  }
+
+  public Boolean getReplaceAll() {
+    return replaceAll;
+  }
+
+  /**
+   * Specify whether or not to replace all occurences of
+   * {@link #setSearchValue(String)}
+   *
+   * @param s true to replace all occurences.
+   */
+  public void setReplaceAll(Boolean s) {
+    this.replaceAll = s;
+  }
+
+  boolean replaceAll() {
+    return getReplaceAll() != null ? getReplaceAll().booleanValue() : false;
+  }
+}

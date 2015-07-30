@@ -1,0 +1,340 @@
+package com.adaptris.core.http.jetty;
+
+import static com.adaptris.core.http.jetty.EmbeddedJettyHelper.URL_TO_POST_TO;
+import static com.adaptris.core.http.jetty.EmbeddedJettyHelper.XML_PAYLOAD;
+
+import java.net.HttpURLConnection;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.Channel;
+import com.adaptris.core.CoreConstants;
+import com.adaptris.core.NullConnection;
+import com.adaptris.core.PoolingWorkflow;
+import com.adaptris.core.StandaloneConsumer;
+import com.adaptris.core.StandaloneProducer;
+import com.adaptris.core.StandardWorkflow;
+import com.adaptris.core.Workflow;
+import com.adaptris.core.http.HttpConsumerExample;
+import com.adaptris.core.http.HttpProducer;
+import com.adaptris.core.http.JdkHttpProducer;
+import com.adaptris.core.services.WaitService;
+import com.adaptris.core.stubs.LicenseStub;
+import com.adaptris.core.stubs.MockMessageProducer;
+import com.adaptris.core.stubs.StaticMockMessageProducer;
+import com.adaptris.util.TimeInterval;
+
+public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
+
+  static final String METADATA_VALUE2 = "value2";
+  static final String METADATA_VALUE1 = "value1";
+  static final String IGNORED_METADATA = "WillNotBeSent";
+  static final String X_HTTP_KEY2 = "X-HTTP-Key2";
+  static final String X_HTTP_KEY1 = "X-HTTP-Key1";
+  static final String CONTENT_TYPE_METADATA_KEY = "content.type";
+
+  protected HttpProducer httpProducer;
+
+  public EmbeddedHttpConsumerTest(String name) {
+    super(name);
+  }
+
+  @Override
+  protected void setUp() throws Exception {
+    httpProducer = createProducer();
+  }
+
+  @Override
+  protected void tearDown() throws Exception {
+
+  }
+
+  public void testMaxStartupWaitTime() throws Exception {
+    EmbeddedConnection c = new EmbeddedConnection();
+    TimeInterval newInterval = new TimeInterval(10L, TimeUnit.SECONDS);
+    TimeInterval defaultInterval = new TimeInterval(600L, TimeUnit.SECONDS);
+    assertNull(c.getMaxStartupWait());
+    assertEquals(defaultInterval.toMilliseconds(), c.maxStartupWaitTimeMs());
+    c.setMaxStartupWait(newInterval);
+    assertEquals(newInterval, c.getMaxStartupWait());
+    assertEquals(newInterval.toMilliseconds(), c.maxStartupWaitTimeMs());
+    c.setMaxStartupWait(null);
+    assertNull(c.getMaxStartupWait());
+    assertEquals(defaultInterval.toMilliseconds(), c.maxStartupWaitTimeMs());
+  }
+
+
+  public void testBasicConsumeWorkflow_ConsumeDestinationContainsURL() throws Exception {
+    EmbeddedJettyHelper helper = new EmbeddedJettyHelper();
+    helper.startServer();
+
+    MockMessageProducer mockProducer = new MockMessageProducer();
+    Channel channel = JettyHelper.createChannel(new EmbeddedConnection(),
+        JettyHelper.createConsumer("http://localhost:8080" + URL_TO_POST_TO), mockProducer);
+    try {
+      channel.requestStart();
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
+      msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
+      start(httpProducer);
+      AdaptrisMessage reply = httpProducer.request(msg, helper.createProduceDestination());
+      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getStringPayload());
+      doAssertions(mockProducer);
+    }
+    finally {
+      stop(httpProducer);
+      channel.requestClose();
+      helper.stopServer();
+    }
+  }
+
+  public void testBasicConsumeWorkflow() throws Exception {
+    EmbeddedJettyHelper helper = new EmbeddedJettyHelper();
+    helper.startServer();
+
+    MockMessageProducer mockProducer = new MockMessageProducer();
+    Channel channel = JettyHelper.createChannel(new EmbeddedConnection(), JettyHelper.createConsumer(URL_TO_POST_TO), mockProducer);
+    try {
+      channel.requestStart();
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
+      msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
+      start(httpProducer);
+      AdaptrisMessage reply = httpProducer.request(msg, helper.createProduceDestination());
+      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getStringPayload());
+      doAssertions(mockProducer);
+    }
+    finally {
+      stop(httpProducer);
+      channel.requestClose();
+      helper.stopServer();
+    }
+  }
+
+  public void testBasicConsumeWorkflow_AcrossRestarts() throws Exception {
+    EmbeddedJettyHelper helper = new EmbeddedJettyHelper();
+    helper.startServer();
+
+    MockMessageProducer mockProducer = new MockMessageProducer();
+    Channel channel = JettyHelper.createChannel(new EmbeddedConnection(), JettyHelper.createConsumer(URL_TO_POST_TO), mockProducer);
+    try {
+      channel.requestStart();
+      channel.requestClose();
+      channel.requestStart();
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
+      msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
+      start(httpProducer);
+      AdaptrisMessage reply = httpProducer.request(msg, helper.createProduceDestination());
+      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getStringPayload());
+      doAssertions(mockProducer);
+    }
+    finally {
+      stop(httpProducer);
+      channel.requestClose();
+      helper.stopServer();
+    }
+  }
+
+  // INTERLOK-201
+  public void testBasicConsumeWorkflow_UpdatedConfig() throws Exception {
+    EmbeddedJettyHelper helper = new EmbeddedJettyHelper();
+    helper.startServer();
+
+    MockMessageProducer mockProducer = new MockMessageProducer();
+    MockMessageProducer mock2 = new MockMessageProducer();
+    Channel channel = JettyHelper.createChannel(new EmbeddedConnection(), JettyHelper.createConsumer(URL_TO_POST_TO), mockProducer);
+    Workflow workflow = JettyHelper.createWorkflow(JettyHelper.createConsumer(URL_TO_POST_TO), mock2);
+
+    try {
+      channel.requestStart();
+      channel.requestClose();
+
+      // Update the configuration.
+      channel.getWorkflowList().clear();
+      channel.getWorkflowList().add(workflow);
+      // Now restart
+      channel.requestStart();
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
+      msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
+      start(httpProducer);
+      AdaptrisMessage reply = httpProducer.request(msg, helper.createProduceDestination());
+      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getStringPayload());
+      doAssertions(mock2);
+    }
+    finally {
+      stop(httpProducer);
+      channel.requestClose();
+      helper.stopServer();
+    }
+  }
+
+  public void testChannelStarted_WorkflowStopped() throws Exception {
+    EmbeddedJettyHelper helper = new EmbeddedJettyHelper();
+    helper.startServer();
+
+    MessageConsumer consumer1 = JettyHelper.createConsumer(URL_TO_POST_TO);
+    StandardWorkflow workflow1 = new StandardWorkflow();
+    workflow1.setConsumer(consumer1);
+    workflow1.getServiceCollection().add(new StandaloneProducer(new ResponseProducer(HttpURLConnection.HTTP_OK)));
+    Channel channel = JettyHelper.createChannel(new EmbeddedConnection(), workflow1);
+    channel.isEnabled(new LicenseStub());
+    try {
+      channel.requestStart();
+      AdaptrisMessage msg1 = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
+      msg1.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
+      start(httpProducer);
+      AdaptrisMessage reply = httpProducer.request(msg1, helper.createProduceDestination());
+      assertEquals("200", reply.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
+      workflow1.requestClose();
+
+      AdaptrisMessage msg2 = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
+      msg1.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
+      AdaptrisMessage reply2 = httpProducer.request(msg2, helper.createProduceDestination());
+      assertEquals("404", reply2.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
+
+    }
+    finally {
+      stop(httpProducer);
+      channel.requestClose();
+      helper.stopServer();
+
+    }
+  }
+
+  public void testChannelStarted_MultipleWorkflows_OneWorkflowStopped() throws Exception {
+    EmbeddedJettyHelper helper = new EmbeddedJettyHelper();
+    helper.startServer();
+
+    MessageConsumer consumer1 = JettyHelper.createConsumer(URL_TO_POST_TO);
+    StandardWorkflow workflow1 = new StandardWorkflow();
+    workflow1.setConsumer(consumer1);
+    workflow1.getServiceCollection().add(new StandaloneProducer(new ResponseProducer(HttpURLConnection.HTTP_OK)));
+    Channel channel = JettyHelper.createChannel(new EmbeddedConnection(), workflow1);
+
+    MessageConsumer consumer2 = JettyHelper.createConsumer("/some/other/urlmapping/");
+    StandardWorkflow workflow2 = new StandardWorkflow();
+    workflow2.setConsumer(consumer2);
+    workflow2.getServiceCollection().add(new StandaloneProducer(new ResponseProducer(HttpURLConnection.HTTP_OK)));
+    channel.getWorkflowList().add(workflow2);
+
+    channel.isEnabled(new LicenseStub());
+    try {
+      channel.requestStart();
+      AdaptrisMessage msg1 = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
+      msg1.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
+      start(httpProducer);
+      AdaptrisMessage reply = httpProducer.request(msg1, helper.createProduceDestination());
+      assertEquals("200", reply.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
+      workflow2.requestClose();
+
+      // Stopping Workflow 2 means nothing, workflow1 should still be working!
+      AdaptrisMessage msg2 = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
+      msg1.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
+      AdaptrisMessage reply2 = httpProducer.request(msg2, helper.createProduceDestination());
+      assertEquals("200", reply2.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
+
+    }
+    finally {
+      stop(httpProducer);
+      channel.requestClose();
+      helper.stopServer();
+
+    }
+  }
+
+  public void testPoolingWorkflow_WithInterceptor() throws Exception {
+
+    EmbeddedJettyHelper helper = new EmbeddedJettyHelper();
+    helper.startServer();
+
+    MockMessageProducer mockProducer = new StaticMockMessageProducer();
+    mockProducer.getMessages().clear();
+    MessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
+    PoolingWorkflow workflow = new PoolingWorkflow();
+    ResponseProducer responder = new ResponseProducer(HttpURLConnection.HTTP_OK);
+    workflow.setConsumer(consumer);
+    workflow.getServiceCollection().add(new WaitService(new TimeInterval(1L, TimeUnit.SECONDS)));
+    workflow.getServiceCollection().add(new StandaloneProducer(mockProducer));
+    workflow.getServiceCollection().add(new StandaloneProducer(responder));
+    workflow.addInterceptor(new JettyPoolingWorkflowInterceptor());
+    Channel channel = JettyHelper.createChannel(new EmbeddedConnection(), workflow);
+    channel.isEnabled(new LicenseStub());
+    try {
+      channel.requestStart();
+
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
+      msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
+      start(httpProducer);
+      AdaptrisMessage reply = httpProducer.request(msg, helper.createProduceDestination());
+      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getStringPayload());
+      doAssertions(mockProducer);
+    }
+    finally {
+      stop(httpProducer);
+      channel.requestClose();
+      helper.stopServer();
+
+    }
+  }
+
+  public void testPoolingWorkflow_WithoutInterceptor() throws Exception {
+    EmbeddedJettyHelper helper = new EmbeddedJettyHelper();
+    helper.startServer();
+
+    MockMessageProducer mockProducer = new StaticMockMessageProducer();
+    mockProducer.getMessages().clear();
+    MessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
+    PoolingWorkflow workflow = new PoolingWorkflow();
+    workflow.setShutdownWaitTime(new TimeInterval(5L, TimeUnit.SECONDS));
+    ResponseProducer responder = new ResponseProducer(HttpURLConnection.HTTP_OK);
+    workflow.setConsumer(consumer);
+    workflow.getServiceCollection().add(new WaitService(new TimeInterval(1L, TimeUnit.SECONDS)));
+    workflow.getServiceCollection().add(new StandaloneProducer(mockProducer));
+    workflow.getServiceCollection().add(new StandaloneProducer(responder));
+    Channel channel = JettyHelper.createChannel(new EmbeddedConnection(), workflow);
+    channel.isEnabled(new LicenseStub());
+    try {
+      channel.requestStart();
+
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
+      msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
+      start(httpProducer);
+      AdaptrisMessage reply = httpProducer.request(msg, helper.createProduceDestination());
+      // Because of redmineID #4715 it should just "return immediatel" which flushes the stream so there's no content.
+      assertEquals("Reply Payloads", "", reply.getStringPayload());
+    }
+    finally {
+      stop(httpProducer);
+      channel.requestClose();
+      helper.stopServer();
+    }
+  }
+
+  protected void doAssertions(MockMessageProducer mockProducer) {
+    assertEquals("Only 1 message consumed", 1, mockProducer.getMessages().size());
+    assertEquals("Consumed Payload", XML_PAYLOAD, mockProducer.getMessages().get(0).getStringPayload());
+    Map objMetadata = mockProducer.getMessages().get(0).getObjectMetadata();
+    assertNotNull(objMetadata.get(CoreConstants.JETTY_REQUEST_KEY));
+    assertNotNull(objMetadata.get(CoreConstants.JETTY_RESPONSE_KEY));
+  }
+
+  protected HttpProducer createProducer() {
+    JdkHttpProducer p = new JdkHttpProducer();
+    p.setContentTypeKey("content.type");
+    p.setIgnoreServerResponseCode(true);
+    p.registerConnection(new NullConnection());
+    return p;
+  }
+
+  @Override
+  protected Object retrieveObjectForSampleConfig() {
+    MessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
+    StandaloneConsumer result = new StandaloneConsumer(new EmbeddedConnection(), consumer);
+    return result;
+  }
+
+  @Override
+  protected String createBaseFileName(Object object) {
+    return super.createBaseFileName(object) + "-EmbeddedConnection";
+  }
+}

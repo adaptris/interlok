@@ -1,0 +1,111 @@
+package com.adaptris.core;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.validation.constraints.NotNull;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
+
+/**
+ * Implementation of {@link ProduceDestination} which concatenates message metadata to create a dynamic destination name.
+ * 
+ * @config metadata-destination
+ */
+@XStreamAlias("metadata-destination")
+public class MetadataDestination implements ProduceDestination {
+
+  private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
+  @NotNull
+  @XStreamImplicit(itemFieldName = "key")
+  private List<String> keys;
+
+  /**
+   * <p>
+   * Creates a new instance.
+   * </p>
+   */
+  public MetadataDestination() {
+    keys = new ArrayList<String>();
+  }
+
+  /**
+   * <p>
+   * Adds a key to the end of the list of keys to look for in the metadata.
+   * </p>
+   * @param s a key to look for in the metadata
+   */
+  public void addKey(String s) {
+    keys.add(s);
+  }
+
+
+  /**
+   * <p>
+   * Returns the <code>List</code> of keys that are used to construct the destination name.
+   * </p>
+   *
+   * @return the <code>List</code> of keys that are used to construct the destination name
+   */
+  public List<String> getKeys() {
+    return keys;
+  }
+
+  /**
+   * <p>
+   * Sets the <code>List</code> of keys that are used to construct the destination name.
+   * </p>
+   *
+   * @param l the <code>List</code> of keys that are used to construct the destination name
+   */
+  public void setKeys(List<String> l) {
+    if (l == null) {
+      throw new IllegalArgumentException("metadata keys may not be null");
+    }
+    keys = l;
+  }
+
+  /**
+   * <p>
+   * Creates a new <code>ProduceDestination</code> by concatenating
+   * the values of configurable metadata from the <code>AdaptrisMessage</code>.
+   * </p>
+   * @param msg the message to process
+   * @return the <code>String</code> destination name
+   * @throws CoreException wrapping any underlying <code>Exception</code>s
+   */
+  public String getDestination(AdaptrisMessage msg) throws CoreException {
+
+    String destinationName = "";
+    for (String key : keys) {
+      if (msg.containsKey(key)) {
+        destinationName += StringUtils.defaultIfEmpty(msg.getMetadataValue(key), "");
+      }
+    }
+    if (StringUtils.isBlank(destinationName)) {
+      destinationName = null;
+    }
+    log.debug("dynamic destination [" + destinationName + "]");
+
+    return destinationName;
+  }
+
+  /** @see java.lang.Object#toString() */
+  @Override
+  public String toString() {
+    StringBuffer result = new StringBuffer();
+
+    result.append("[");
+    result.append(this.getClass().getName());
+    result.append("] keys [");
+    result.append(keys);
+    result.append("]");
+
+    return result.toString();
+  }
+}

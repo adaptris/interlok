@@ -1,0 +1,68 @@
+package com.adaptris.core.services.metadata;
+
+import javax.xml.namespace.NamespaceContext;
+
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.util.KeyValuePair;
+import com.adaptris.util.KeyValuePairSet;
+import com.adaptris.util.text.xml.SimpleNamespaceContext;
+
+public class AddNamespaceObjectMetadataTest extends MetadataServiceExample {
+
+  public AddNamespaceObjectMetadataTest(String name) {
+    super(name);
+  }
+
+  @Override
+  public void setUp() {
+
+  }
+
+  public void testService() throws Exception {
+    AddNamespaceObjectMetadata service = new AddNamespaceObjectMetadata(createContextEntries());
+    try {
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+      execute(service, msg);
+      assertTrue(msg.getObjectMetadata().containsKey(SimpleNamespaceContext.class.getCanonicalName()));
+      NamespaceContext ctx = (NamespaceContext) msg.getObjectMetadata().get(SimpleNamespaceContext.class.getCanonicalName());
+      // Configured NamespaceContext takes precendence.
+      assertNotSame(ctx, SimpleNamespaceContext.create(createContextEntries(), msg));
+      // If we have nothing configured, it should now be the same.
+      assertEquals(ctx, SimpleNamespaceContext.create(null, msg));
+    }
+    finally {
+
+    }
+  }
+
+  public void testService_NoNamespaceContext() throws Exception {
+    AddNamespaceObjectMetadata service = new AddNamespaceObjectMetadata();
+    try {
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+      execute(service, msg);
+      assertFalse(msg.getObjectMetadata().containsKey(SimpleNamespaceContext.class.getCanonicalName()));
+      assertNotNull(SimpleNamespaceContext.create(createContextEntries(), msg));
+    }
+    finally {
+
+    }
+  }
+
+
+  @Override
+  protected Object retrieveObjectForSampleConfig() {
+    return new AddNamespaceObjectMetadata(createContextEntries());
+  }
+
+  private KeyValuePairSet createContextEntries() {
+    KeyValuePairSet contextEntries = new KeyValuePairSet();
+    contextEntries.add(new KeyValuePair("svrl", "http://purl.oclc.org/dsdl/svrl"));
+    contextEntries.add(new KeyValuePair("xsd", "http://www.w3.org/2001/XMLSchema"));
+    contextEntries.add(new KeyValuePair("xs", "http://www.w3.org/2001/XMLSchema"));
+    contextEntries.add(new KeyValuePair("sch", "http://www.ascc.net/xml/schematron"));
+    contextEntries.add(new KeyValuePair("iso", "http://purl.oclc.org/dsdl/schematron"));
+    contextEntries.add(new KeyValuePair("dp", "http://www.dpawson.co.uk/ns#"));
+    return contextEntries;
+  }
+}
