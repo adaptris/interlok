@@ -50,7 +50,7 @@ public class DefaultSerializableMessageTranslator implements SerializableMessage
     }
     serializedMsg.setUniqueId(message.getUniqueId());
     serializedMsg.setPayloadEncoding(message.getCharEncoding());
-    serializedMsg.getMetadata().addAll(message.getMetadata());
+    serializedMsg.setMetadata(message.getMetadata());
     
     // do we have a failed/error'd message?
     if(message.getObjectMetadata().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION))

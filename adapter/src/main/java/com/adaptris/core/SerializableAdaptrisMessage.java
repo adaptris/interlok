@@ -7,6 +7,7 @@ import java.util.Set;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -96,12 +97,13 @@ public class SerializableAdaptrisMessage implements Serializable {
     this.addMetadata(new MetadataElement(key, value));
   }
 
-  /** @see AdaptrisMessage#addMetadata(MetadataElement) */
   public synchronized void addMetadata(MetadataElement e) {
     if (metadata.contains(e)) {
       removeMetadata(e);
     }
-    metadata.addKeyValuePair(e);
+    // Make sure that when we do the actual add, we turn it into a real key/value pair
+    // this avoids additional class="" when you serialize using XStream.
+    metadata.addKeyValuePair(new KeyValuePair(e.getKey(), e.getValue()));
   }
 
   public void removeMetadata(MetadataElement element) {
