@@ -6,6 +6,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.util.GuidGenerator;
 
 /**
@@ -24,8 +25,11 @@ public abstract class ServiceImp implements Service {
   
   private String uniqueId;
   private transient boolean isBranching; // defaults to false
+  @AdvancedConfig
   private Boolean continueOnFail;
+  @AdvancedConfig
   private Boolean isTrackingEndpoint;
+  @AdvancedConfig
   private Boolean isConfirmation;
 
   /**
