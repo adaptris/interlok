@@ -13,6 +13,7 @@ import java.util.List;
 import javax.mail.Header;
 import javax.mail.internet.MimeMessage;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -37,7 +38,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("default-mail-consumer")
 public class DefaultMailConsumer extends ParsingMailConsumerImpl {
 
+  @AdvancedConfig
   private boolean preserveHeaders;
+  @AdvancedConfig
   private String headerPrefix = "";
 
   /**

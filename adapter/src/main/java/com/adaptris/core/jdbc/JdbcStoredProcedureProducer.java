@@ -11,6 +11,7 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -100,6 +101,7 @@ public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
   @NotNull
   @Valid
   private ResultSetTranslator resultSetTranslator;
+  @AdvancedConfig
   private TimeInterval timeout;
 
   public JdbcStoredProcedureProducer() {

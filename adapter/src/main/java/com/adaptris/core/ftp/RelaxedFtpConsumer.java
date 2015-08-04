@@ -8,6 +8,7 @@ import java.lang.reflect.Constructor;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisPollingConsumer;
 import com.adaptris.core.CoreConstants;
@@ -49,9 +50,11 @@ public class RelaxedFtpConsumer extends AdaptrisPollingConsumer {
   private static final String FORWARD_SLASH = "/";
   private static final String BACK_SLASH = "\\";
 
+  @AdvancedConfig
   private String fileFilterImp;
-  private Long quietPeriod;
+  @AdvancedConfig
   private TimeInterval olderThan;
+  @AdvancedConfig
   private Boolean failOnDeleteFailure;
 
   private transient FileFilter fileFilter;

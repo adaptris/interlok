@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceDestination;
@@ -47,6 +48,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("large-fs-producer")
 public class LargeFsProducer extends FsProducer {
 
+  @AdvancedConfig
   private Boolean useRenameTo;
 
   public LargeFsProducer() {

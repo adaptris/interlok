@@ -13,6 +13,7 @@ import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.io.IOUtils;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.mail.MailException;
@@ -33,6 +34,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("raw-mail-consumer")
 public class RawMailConsumer extends MailConsumerImp {
 
+  @AdvancedConfig
   private Boolean useEmailMessageIdAsUniqueId;
 
   public RawMailConsumer() {

@@ -6,9 +6,12 @@ import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.license.License;
 
@@ -23,9 +26,14 @@ public abstract class AdaptrisMessageWorkerImp implements AdaptrisMessageWorker 
 
   private transient AdaptrisConnection connection;
 
+  @AdvancedConfig
+  @Valid
   private AdaptrisMessageEncoder encoder;
+  @AdvancedConfig
   private Boolean isTrackingEndpoint;
+  @AdvancedConfig
   private Boolean isConfirmation;
+  @AdvancedConfig
   private AdaptrisMessageFactory messageFactory;
   private String uniqueId;
 

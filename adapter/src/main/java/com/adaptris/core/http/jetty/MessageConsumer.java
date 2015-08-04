@@ -13,6 +13,7 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.io.IOUtils;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConsumeDestination;
@@ -52,16 +53,20 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("jetty-message-consumer")
 public class MessageConsumer extends BasicJettyConsumer {
 
+  @AdvancedConfig
   private String headerPrefix;
+  @AdvancedConfig
   private String paramPrefix;
   
   @AutoPopulated
   @Valid
   @NotNull
+  @AdvancedConfig
   private ParameterHandler parameterHandler;
   @AutoPopulated
   @Valid
   @NotNull
+  @AdvancedConfig
   private HeaderHandler headerHandler;
 
   public MessageConsumer() {

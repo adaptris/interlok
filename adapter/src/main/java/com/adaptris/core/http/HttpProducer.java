@@ -8,6 +8,7 @@ import java.util.Properties;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
@@ -45,11 +46,16 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
   private String userName = null;
   @InputFieldHint(style = "PASSWORD")
   private String password = null;
+  @AdvancedConfig
   private String contentTypeKey = null;
 
+  @AdvancedConfig
   private Boolean sendMetadataAsHeaders;
+  @AdvancedConfig
   private Boolean ignoreServerResponseCode;
+  @AdvancedConfig
   private Boolean handleRedirection;
+  @AdvancedConfig
   private String sendMetadataRegexp;
 
   @NotNull

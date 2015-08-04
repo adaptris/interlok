@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.validation.constraints.NotNull;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisPollingConsumer;
@@ -64,9 +65,13 @@ public class FtpConsumer extends AdaptrisPollingConsumer {
   @NotNull
   @AutoPopulated
   private String workDirectory = "/work";
+  @AdvancedConfig
   private String procDirectory;
+  @AdvancedConfig
   private String fileFilterImp;
+  @AdvancedConfig
   private String wipSuffix;
+  @AdvancedConfig
   private TimeInterval quietInterval;
 
   private transient FileFilter fileFilter;

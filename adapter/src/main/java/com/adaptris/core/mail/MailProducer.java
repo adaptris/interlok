@@ -7,6 +7,7 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
@@ -61,18 +62,24 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
   @NotBlank
   private String smtpUrl = null;
   private String subject = null;
+  @AdvancedConfig
   private String ccList = null;
   private String from = null;
+  @AdvancedConfig
   private String bccList = null;
   @NotNull
   @Valid
   @AutoPopulated
+  @AdvancedConfig
   private KeyValuePairSet sessionProperties;
+  @AdvancedConfig
   private Boolean sendMetadataAsHeaders;
+  @AdvancedConfig
   private String sendMetadataRegexp = null;
   @NotNull
   @AutoPopulated
   @Valid
+  @AdvancedConfig
   private MetadataFilter metadataFilter;
   @InputFieldHint(style = "PASSWORD")
   private String password;

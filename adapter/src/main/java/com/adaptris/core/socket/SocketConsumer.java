@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageConsumerImp;
 import com.adaptris.core.AdaptrisMessageListener;
@@ -38,11 +39,13 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("socket-consumer")
 public class SocketConsumer extends AdaptrisMessageConsumerImp {
+  @AdvancedConfig
   private Boolean sendImmediateReply;
   @NotBlank
   private String protocolImplementation;
   private transient Listener listener;
   private transient Thread listenThread;
+  @AdvancedConfig
   private int socketTimeout;
   private transient ManagedThreadFactory threadFactory = new ManagedThreadFactory();
 

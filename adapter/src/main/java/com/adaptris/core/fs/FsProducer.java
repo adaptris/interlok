@@ -12,6 +12,7 @@ import javax.validation.constraints.NotNull;
 
 import org.perf4j.aop.Profiled;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageProducer;
@@ -37,10 +38,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class FsProducer extends ProduceOnlyProducerImp {
 
   private Boolean createDirs;
+  @AdvancedConfig
   private String tempDirectory = null;
   @NotNull
   @Valid
   @AutoPopulated
+  @AdvancedConfig
   private FsWorker fsWorker;
   @NotNull
   @Valid

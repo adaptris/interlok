@@ -13,6 +13,7 @@ import javax.validation.constraints.NotNull;
 
 import org.perf4j.aop.Profiled;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConsumeDestination;
@@ -53,6 +54,7 @@ public class NonDeletingFsConsumer extends FsConsumerImpl {
   @NotNull
   @Valid
   @AutoPopulated
+  @AdvancedConfig
   private ProcessedItemCache processedItemCache;
   private transient ProcessedItemList filesDetected;
 

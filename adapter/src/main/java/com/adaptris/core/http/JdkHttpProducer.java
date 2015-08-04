@@ -29,6 +29,7 @@ import org.apache.commons.io.IOUtils;
 import org.hibernate.validator.constraints.NotBlank;
 import org.perf4j.aop.Profiled;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageProducerImp;
@@ -69,7 +70,9 @@ public class JdkHttpProducer extends HttpProducer {
   @NotBlank
   @AutoPopulated
   private String method;
+  @AdvancedConfig
   private Boolean replyHttpHeadersAsMetadata;
+  @AdvancedConfig
   private String replyMetadataPrefix;
 
   public JdkHttpProducer() {

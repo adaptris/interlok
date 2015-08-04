@@ -17,6 +17,7 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.io.IOUtils;
 import org.perf4j.aop.Profiled;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageProducerImp;
@@ -86,8 +87,11 @@ public class FtpProducer extends RequestReplyProducerImp {
 
   private String destDirectory;
   private String buildDirectory;
+  @AdvancedConfig
   private String replyDirectory = null;
+  @AdvancedConfig
   private String replyProcDirectory = null;
+  @AdvancedConfig
   private Boolean replyUsesEncoder;
   @NotNull
   @Valid

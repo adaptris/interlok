@@ -7,6 +7,7 @@ import javax.mail.internet.MimeMessage;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
@@ -63,12 +64,18 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
   private static final String FROM = "FROM";
 
   // marshalled
+  @AdvancedConfig
   private Boolean deleteOnReceive; // false
+  @AdvancedConfig
   private Boolean attemptConnectOnInit;
 
+  @AdvancedConfig
   private String fromFilter;
+  @AdvancedConfig
   private String subjectFilter;
+  @AdvancedConfig
   private String recipientFilter;
+  @AdvancedConfig
   private String regularExpressionStyle;
   @InputFieldHint(style = "PASSWORD")
   private String password;

@@ -12,6 +12,7 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.io.IOUtils;
 import org.perf4j.aop.Profiled;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageProducerImp;
@@ -54,16 +55,23 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
   private int httpResponseCode;
   @NotNull
   @AutoPopulated
+  @AdvancedConfig
   private KeyValuePairSet additionalHeaders;
+  @AdvancedConfig
   private String contentTypeKey = null;
+  @AdvancedConfig
   private String sendMetadataRegexp;
   private Boolean sendPayload;
+  @AdvancedConfig
   private Boolean sendMetadataAsHeaders;
+  @AdvancedConfig
   private Boolean flushBuffer;
+  @AdvancedConfig
   private Boolean forwardConnectionException;
   @NotNull
   @AutoPopulated
   @Valid
+  @AdvancedConfig
   private MetadataFilter metadataFilter;
 
   public ResponseProducer() {

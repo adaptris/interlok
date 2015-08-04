@@ -9,6 +9,7 @@ import org.apache.oro.io.Perl5FilenameFilter;
 import org.hibernate.validator.constraints.NotBlank;
 import org.perf4j.aop.Profiled;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConsumeDestination;
@@ -42,7 +43,9 @@ public class FsConsumer extends FsConsumerImpl {
 
   @NotBlank
   @AutoPopulated
+  @AdvancedConfig
   private String wipSuffix;
+  @AdvancedConfig
   private Boolean resetWipFiles;
 
   /**

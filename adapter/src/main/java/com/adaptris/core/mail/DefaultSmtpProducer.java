@@ -13,6 +13,7 @@ import javax.validation.constraints.Pattern;
 
 import org.perf4j.aop.Profiled;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
@@ -66,6 +67,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("default-smtp-producer")
 public class DefaultSmtpProducer extends MailProducer {
 
+  @AdvancedConfig
   private boolean isAttachment = false;
   @NotNull
   @AutoPopulated
@@ -76,7 +78,9 @@ public class DefaultSmtpProducer extends MailProducer {
   private String contentEncoding = "base64";
   @NotNull
   @AutoPopulated
+  @AdvancedConfig
   private String attachmentContentType = "application/octet-stream";
+  @AdvancedConfig
   private String contentTypeKey = null;
 
   /**

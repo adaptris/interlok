@@ -20,6 +20,7 @@ import javax.validation.constraints.NotNull;
 
 import org.perf4j.aop.Profiled;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisPollingConsumer;
@@ -44,13 +45,17 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
   private static final TimeInterval DEFAULT_OLDER_THAN = new TimeInterval(0L, TimeUnit.MILLISECONDS);
   private static final String DEFAULT_FILE_FILTER_IMP = "org.apache.oro.io.Perl5FilenameFilter";
   // marshalled
+  @AdvancedConfig
   private String fileFilterImp;
   private Boolean createDirs;
+  @AdvancedConfig
   private Boolean logAllExceptions;
+  @AdvancedConfig
   private TimeInterval quietInterval;
   @NotNull
   @Valid
   @AutoPopulated
+  @AdvancedConfig
   private FileSorter fileSorter;
 
   // not marshalled

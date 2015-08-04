@@ -3,6 +3,7 @@ package com.adaptris.core;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.FifoMutexLock;
@@ -21,6 +22,7 @@ public abstract class AdaptrisPollingConsumer
   @AutoPopulated
   @Valid
   private Poller poller;
+  @AdvancedConfig
   private Boolean reacquireLockBetweenMessages;
   // make logging from FML configurable (default false) when util is released
 
