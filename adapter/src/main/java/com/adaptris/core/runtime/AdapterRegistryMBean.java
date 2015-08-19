@@ -256,4 +256,19 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
   void reloadFromVersionControl() throws MalformedObjectNameException, CoreException, MalformedURLException, IOException,
       LicenseException;
 
+  /**
+   * Attempts to unmarshal the component within this target runtime unit.
+   * <p>
+   * This will verify that the component that was configured can be unmarshalled within the target
+   * runtime system. It is largely similar to the {@link #createAdapter(String)} method, however it
+   * does not try to register a new {@link AdapterManagerMBean} as part of the operation.
+   * </p>
+   * 
+   * @param config the String representation of a component.
+   * @return true if the config was successfully unmarshalled into an object.
+   * @since 3.0.5
+   * @see #createAdapter(String)
+   */
+  boolean validateConfig(String config);
+
 }

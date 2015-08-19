@@ -266,6 +266,19 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     assertEquals(1, registry.getAdapters().size());
   }
 
+
+  public void testValidateConfig_ValidXML() throws Exception {
+    String adapterName = this.getClass().getSimpleName() + "." + getName();
+    Adapter adapter = createAdapter(adapterName, 2, 2);
+    String xml = DefaultMarshaller.getDefaultMarshaller().marshal(adapter);
+    assertTrue(adapterRegistry.validateConfig(xml));
+  }
+
+  public void testValidateConfig_InvalidXML() throws Exception {
+    String xml = "ABCDEFG";
+    assertFalse(adapterRegistry.validateConfig(xml));
+  }
+
   public void testPersistAdapter_MBean_to_URL() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);

@@ -347,4 +347,18 @@ public class AdapterRegistry implements AdapterRegistryMBean {
     runtimeVCS = newVcs;
   }
 
+  @Override
+  public boolean validateConfig(String config) {
+    boolean result = false;
+    try {
+      assertNotNull(config, EXCEPTION_MSG_XML_NULL);
+      String xml = this.loadPreProcessors().process(config);
+      DefaultMarshaller.getDefaultMarshaller().unmarshal(xml);
+      result = true;
+    } catch (CoreException e) {
+      result = false;
+    }
+    return result;
+  }
+
 }
