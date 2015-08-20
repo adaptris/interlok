@@ -271,12 +271,16 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
     String xml = DefaultMarshaller.getDefaultMarshaller().marshal(adapter);
-    assertTrue(adapterRegistry.validateConfig(xml));
+    adapterRegistry.validateConfig(xml);
   }
 
   public void testValidateConfig_InvalidXML() throws Exception {
     String xml = "ABCDEFG";
-    assertFalse(adapterRegistry.validateConfig(xml));
+    try {
+      adapterRegistry.validateConfig(xml);
+      fail();
+    } catch (CoreException expected) {
+    }
   }
 
   public void testPersistAdapter_MBean_to_URL() throws Exception {

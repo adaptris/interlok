@@ -269,6 +269,6 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
    * @since 3.0.5
    * @see #createAdapter(String)
    */
-  boolean validateConfig(String config);
+  void validateConfig(String config) throws CoreException;
 
 }
