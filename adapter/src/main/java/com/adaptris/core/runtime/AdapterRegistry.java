@@ -349,9 +349,15 @@ public class AdapterRegistry implements AdapterRegistryMBean {
 
   @Override
   public void validateConfig(String config) throws CoreException {
-    assertNotNull(config, EXCEPTION_MSG_XML_NULL);
-    String xml = this.loadPreProcessors().process(config);
-    DefaultMarshaller.getDefaultMarshaller().unmarshal(xml);
+    try {
+      assertNotNull(config, EXCEPTION_MSG_XML_NULL);
+      String xml = this.loadPreProcessors().process(config);
+      DefaultMarshaller.getDefaultMarshaller().unmarshal(xml);
+    } catch (CoreException e) {
+      // We do this so that we don't have nested causes as it's possible that
+      // some exceptions may not be serializable for the UI.
+      throw new CoreException(e.getMessage());
+    }
   }
 
 }

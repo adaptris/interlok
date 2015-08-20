@@ -275,11 +275,12 @@ public class AdapterRegistryTest extends ComponentManagerCase {
   }
 
   public void testValidateConfig_InvalidXML() throws Exception {
-    String xml = "ABCDEFG";
+    String xml = "<adapter><hello-world/></adapter>";
     try {
       adapterRegistry.validateConfig(xml);
       fail();
     } catch (CoreException expected) {
+      System.err.println(expected.getMessage());
     }
   }
 
