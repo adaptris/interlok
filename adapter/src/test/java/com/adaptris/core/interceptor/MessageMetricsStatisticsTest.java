@@ -14,6 +14,7 @@ import com.adaptris.core.runtime.BaseComponentMBean;
 import com.adaptris.core.runtime.WorkflowManagerMBean;
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
+import com.adaptris.interlok.management.MessageProcessor;
 
 @SuppressWarnings("deprecation")
 public class MessageMetricsStatisticsTest extends StatisticsMBeanCase {
@@ -107,7 +108,7 @@ public class MessageMetricsStatisticsTest extends StatisticsMBeanCase {
       MessageMetricsStatisticsMBean stats = JMX.newMBeanProxy(mBeanServer, metricsObj, MessageMetricsStatisticsMBean.class);
       WorkflowManagerMBean workflow = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
       SerializableAdaptrisMessage msg = createMessageForInjection(null);
-      workflow.injectMessage(msg);
+      workflow.processAsync(msg);
       assertEquals(1, stats.getNumberOfMessagesForTimeSliceIndex(0));
     }
     finally {
@@ -129,7 +130,7 @@ public class MessageMetricsStatisticsTest extends StatisticsMBeanCase {
       WorkflowManagerMBean workflow = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
       SerializableAdaptrisMessage msg = createMessageForInjection(null);
       long now = System.currentTimeMillis();
-      workflow.injectMessage(msg);
+      workflow.processAsync(msg);
       // We can't check the real time so we check that the time is greater than now.
       assertTrue(now < stats.getEndMillisForTimeSliceIndex(0));
     }
@@ -151,7 +152,7 @@ public class MessageMetricsStatisticsTest extends StatisticsMBeanCase {
       ObjectName metricsObj = createMetricsObjectName(adapterName);
       MessageMetricsStatisticsMBean stats = JMX.newMBeanProxy(mBeanServer, metricsObj, MessageMetricsStatisticsMBean.class);
       WorkflowManagerMBean workflow = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
-      workflow.injectMessage(createMessageForInjection(payload));
+      workflow.processAsync(createMessageForInjection(payload));
       assertEquals(1, stats.getNumberOfMessagesForTimeSliceIndex(0));
       assertEquals(payload.getBytes().length, stats.getTotalSizeOfMessagesForTimeSliceIndex(0));
     }
@@ -173,8 +174,8 @@ public class MessageMetricsStatisticsTest extends StatisticsMBeanCase {
       ObjectName workflowObj = createWorkflowObjectName(adapterName);
       ObjectName metricsObj = createMetricsObjectName(adapterName, getName());
       MessageMetricsStatisticsMBean stats = JMX.newMBeanProxy(mBeanServer, metricsObj, MessageMetricsStatisticsMBean.class);
-      WorkflowManagerMBean workflow = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
-      workflow.injectMessage(createMessageForInjection(payload));
+      MessageProcessor workflow = JMX.newMBeanProxy(mBeanServer, workflowObj, MessageProcessor.class);
+      workflow.processAsync(createMessageForInjection(payload));
       
       assertEquals(1, stats.getStatistics().size());
       assertEquals(interceptor.getCacheArray().size(), stats.getStatistics().size());
@@ -209,9 +210,9 @@ public class MessageMetricsStatisticsTest extends StatisticsMBeanCase {
       ObjectName metricsObj = createMetricsObjectName(adapterName);
       MessageMetricsStatisticsMBean stats = JMX.newMBeanProxy(mBeanServer, metricsObj, MessageMetricsStatisticsMBean.class);
       WorkflowManagerMBean workflow = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
-      workflow.injectMessage(createMessageForInjection(payload1));
-      workflow.injectMessage(createMessageForInjection(payload2));
-      workflow.injectMessage(createMessageForInjection(payload3));
+      workflow.processAsync(createMessageForInjection(payload1));
+      workflow.processAsync(createMessageForInjection(payload2));
+      workflow.processAsync(createMessageForInjection(payload3));
       assertEquals(3, stats.getNumberOfMessagesForTimeSliceIndex(0));
       assertEquals(bytesExpected, stats.getTotalSizeOfMessagesForTimeSliceIndex(0));
     }
@@ -234,7 +235,7 @@ public class MessageMetricsStatisticsTest extends StatisticsMBeanCase {
       WorkflowManagerMBean workflow = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
       assertNotNull(stats.getTotalStringStats());
       SerializableAdaptrisMessage msg = createMessageForInjection(null);
-      workflow.injectMessage(msg);
+      workflow.processAsync(msg);
       assertNotNull(stats.getTotalStringStats());
     }
     finally {
@@ -258,7 +259,7 @@ public class MessageMetricsStatisticsTest extends StatisticsMBeanCase {
       MessageMetricsStatisticsMBean stats = JMX.newMBeanProxy(mBeanServer, metricsObj, MessageMetricsStatisticsMBean.class);
       WorkflowManagerMBean workflow = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
       SerializableAdaptrisMessage msg = createMessageForInjection(null);
-      workflow.injectMessage(msg);
+      workflow.processAsync(msg);
       assertEquals(1, stats.getNumberOfErrorMessagesForTimeSliceIndex(0));
       assertEquals(0, stats.getNumberOfErrorMessagesForTimeSliceIndex(10));
     }

@@ -24,11 +24,15 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultSerializableMessageTranslator;
 import com.adaptris.core.PoolingWorkflow;
 import com.adaptris.core.SerializableAdaptrisMessage;
+import com.adaptris.core.SerializableMessageTranslator;
 import com.adaptris.core.Workflow;
 import com.adaptris.core.WorkflowInterceptor;
 import com.adaptris.core.http.jetty.BasicJettyConsumer;
 import com.adaptris.core.http.jetty.JettyPoolingWorkflowInterceptor;
 import com.adaptris.core.interceptor.MessageMetricsInterceptor;
+import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.interlok.InterlokException;
+import com.adaptris.interlok.types.SerializableMessage;
 import com.adaptris.util.TimeInterval;
 
 /**
@@ -106,23 +110,53 @@ public class WorkflowManager extends ComponentManagerImpl<Workflow> implements W
   }
 
   @Override
-  public SerializableAdaptrisMessage injectMessageWithReply(SerializableAdaptrisMessage serialisedMessage) throws CoreException {
-    DefaultSerializableMessageTranslator translator = new DefaultSerializableMessageTranslator();
-    AdaptrisMessage adaptrisMessage = translator.translate(serialisedMessage);
-    if(injectInterceptor == null) // only create the interceptor if we need it.
-      this.testAndInjectCachingInterceptor();
-    
-    managedWorkflow.onAdaptrisMessage(adaptrisMessage);
-    return translator.translate(this.waitForInjectReply(adaptrisMessage));
+  public SerializableAdaptrisMessage injectMessageWithReply(SerializableAdaptrisMessage msgToProcess) throws CoreException {
+    SerializableAdaptrisMessage result = null;
+    try {
+      result = process(msgToProcess);
+    } catch (InterlokException e) {
+      ExceptionHelper.rethrowCoreException(e);
+    }
+    return result;
+  }
+
+  @Override
+  public boolean injectMessage(SerializableAdaptrisMessage msgToProcess) throws CoreException {
+    try {
+      processAsync(msgToProcess);
+    } catch (InterlokException e) {
+      ExceptionHelper.rethrowCoreException(e);
+    }
+    return true;
   }
 
 
   @Override
-  public boolean injectMessage(SerializableAdaptrisMessage serialisedMessage) throws CoreException {
+  public void processAsync(SerializableMessage msgToProcess) throws InterlokException {
     DefaultSerializableMessageTranslator translator = new DefaultSerializableMessageTranslator();
-    AdaptrisMessage adaptrisMessage = translator.translate(serialisedMessage);
-    managedWorkflow.onAdaptrisMessage(adaptrisMessage);
-    return true;
+    managedWorkflow.onAdaptrisMessage(toAdaptrisMessage(msgToProcess, translator));
+  }
+
+  @Override
+  public SerializableAdaptrisMessage process(SerializableMessage msgToProcess) throws InterlokException {
+    DefaultSerializableMessageTranslator translator = new DefaultSerializableMessageTranslator();
+    AdaptrisMessage msg = toAdaptrisMessage(msgToProcess, translator);
+    if (injectInterceptor == null) {
+      // only create the interceptor if we need it.
+      this.testAndInjectCachingInterceptor();
+    }
+    managedWorkflow.onAdaptrisMessage(msg);
+    return translator.translate(this.waitForInjectReply(msg));
+  }
+
+  private AdaptrisMessage toAdaptrisMessage(SerializableMessage msg, SerializableMessageTranslator translator) throws CoreException {
+    AdaptrisMessage result = null;
+    if (msg instanceof SerializableAdaptrisMessage) {
+      result = translator.translate((SerializableAdaptrisMessage) msg);
+    } else {
+      result = translator.translate(new SerializableAdaptrisMessage(msg));
+    }
+    return result;
   }
 
   /**
@@ -334,5 +368,6 @@ public class WorkflowManager extends ComponentManagerImpl<Workflow> implements W
     }
     return found;
   }
+
 
 }

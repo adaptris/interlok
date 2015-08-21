@@ -35,6 +35,8 @@ import com.adaptris.core.StoppedState;
 import com.adaptris.core.Workflow;
 import com.adaptris.core.XStreamMarshaller;
 import com.adaptris.core.util.JmxHelper;
+import com.adaptris.interlok.InterlokException;
+import com.adaptris.interlok.types.SerializableMessage;
 
 @SuppressWarnings("deprecation")
 public class ChannelManagerTest extends ComponentManagerCase {
@@ -1593,6 +1595,14 @@ public class ChannelManagerTest extends ComponentManagerCase {
 
     @Override
     protected String getNotificationType(ComponentNotificationType type) {
+      return null;
+    }
+
+    @Override
+    public void processAsync(SerializableMessage paramSerializableMessage) throws InterlokException {}
+
+    @Override
+    public SerializableMessage process(SerializableMessage paramSerializableMessage) throws InterlokException {
       return null;
     }
 

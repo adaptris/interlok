@@ -1,7 +1,8 @@
 package com.adaptris.core;
 
-import java.util.Iterator;
-import java.util.Properties;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -9,6 +10,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import com.adaptris.interlok.types.SerializableMessage;
 import com.adaptris.util.KeyValuePair;
+import com.adaptris.util.KeyValuePairBag;
 import com.adaptris.util.KeyValuePairSet;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -129,8 +131,7 @@ public class SerializableAdaptrisMessage implements SerializableMessage {
   public void setMetadata(Set<MetadataElement> set) {
     synchronized (metadata) {
       if (set != null) {
-        for (Iterator<MetadataElement> i = set.iterator(); i.hasNext();) {
-          MetadataElement e = i.next();
+        for (MetadataElement e : set) {
           addMetadata(e);
         }
       }
@@ -145,7 +146,7 @@ public class SerializableAdaptrisMessage implements SerializableMessage {
    * @param value the value
    * @see AdaptrisMessage#addMetadata(String, String)
    */
-  public synchronized void addMetadata(String key, String value) {
+  public void addMetadata(String key, String value) {
     this.addMetadata(new MetadataElement(key, value));
   }
 
@@ -155,13 +156,17 @@ public class SerializableAdaptrisMessage implements SerializableMessage {
    * @param e the metadata to add.
    */
   public void addMetadata(MetadataElement e) {
-    // Make sure that when we do the actual add, we turn it into a real key/value pair
-    // this avoids additional class="" when you serialize using XStream.
-    metadata.addKeyValuePair(new KeyValuePair(e.getKey(), e.getValue()));
+    synchronized (metadata) {
+      // Make sure that when we do the actual add, we turn it into a real key/value pair
+      // this avoids additional class="" when you serialize using XStream.
+      metadata.addKeyValuePair(new KeyValuePair(e.getKey(), e.getValue()));
+    }
   }
 
   public void removeMetadata(MetadataElement element) {
-    metadata.removeKeyValuePair(element);
+    synchronized (metadata) {
+      metadata.removeKeyValuePair(element);
+    }
   }
 
   public boolean containsKey(String key) {
@@ -181,12 +186,12 @@ public class SerializableAdaptrisMessage implements SerializableMessage {
   }
 
   @Override
-  public Properties getMessageHeaders() {
-    return KeyValuePairSet.asProperties(metadata);
+  public Map<String, String> getMessageHeaders() {
+    return Collections.unmodifiableMap(toMap(metadata));
   }
 
   @Override
-  public void setMessageHeaders(Properties arg0) {
+  public void setMessageHeaders(Map<String, String> arg0) {
     setMetadata(new KeyValuePairSet(arg0));
   }
 
@@ -221,4 +226,13 @@ public class SerializableAdaptrisMessage implements SerializableMessage {
     return new HashCodeBuilder(13, 17).append(getPayload()).append(getPayloadEncoding()).append(getUniqueId())
         .append(getMetadata()).toHashCode();
   }
+
+  private Map<String, String> toMap(KeyValuePairBag bag) {
+    Map<String, String> result = new HashMap<>(bag.size());
+    for (KeyValuePair kvp : bag) {
+      result.put(kvp.getKey(), kvp.getValue());
+    }
+    return result;
+  }
+
 }

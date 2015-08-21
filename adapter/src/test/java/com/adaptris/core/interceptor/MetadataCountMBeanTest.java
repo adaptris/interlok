@@ -38,7 +38,7 @@ public class MetadataCountMBeanTest extends MetadataStatisticsMBeanCase {
       MetadataStatisticsMBean stats = JMX.newMBeanProxy(mBeanServer, metricsObj, MetadataStatisticsMBean.class);
       WorkflowManagerMBean workflow = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
       SerializableAdaptrisMessage msg = createMessageForInjection(null);
-      workflow.injectMessage(msg);
+      workflow.processAsync(msg);
       assertEquals(10, stats.getTotal(0, COUNTER_1));
       assertEquals(10, stats.getTotal(0, COUNTER_2));
       assertEquals(0, stats.getTotal(0, "blah"));
@@ -62,7 +62,7 @@ public class MetadataCountMBeanTest extends MetadataStatisticsMBeanCase {
       MetadataStatisticsMBean stats = JMX.newMBeanProxy(mBeanServer, metricsObj, MetadataStatisticsMBean.class);
       WorkflowManagerMBean workflow = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
       SerializableAdaptrisMessage msg = createMessageForInjection(null);
-      workflow.injectMessage(msg);
+      workflow.processAsync(msg);
       assertEquals(2, stats.getMetadataKeys(0).size());
       assertEquals(0, stats.getMetadataKeys(1).size());
       assertEquals(new HashSet(Arrays.asList(new String[]
@@ -90,7 +90,7 @@ public class MetadataCountMBeanTest extends MetadataStatisticsMBeanCase {
       MetadataStatisticsMBean stats = JMX.newMBeanProxy(mBeanServer, metricsObj, MetadataStatisticsMBean.class);
       WorkflowManagerMBean workflow = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
       SerializableAdaptrisMessage msg = createMessageForInjection(null);
-      workflow.injectMessage(msg);
+      workflow.processAsync(msg);
 
       assertEquals(1, stats.getStatistics().size());
       assertEquals(interceptor.getStats().size(), stats.getStatistics().size());

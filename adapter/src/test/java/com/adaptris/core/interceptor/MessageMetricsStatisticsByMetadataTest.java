@@ -11,7 +11,7 @@ import com.adaptris.core.Adapter;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.SerializableAdaptrisMessage;
 import com.adaptris.core.runtime.BaseComponentMBean;
-import com.adaptris.core.runtime.WorkflowManagerMBean;
+import com.adaptris.interlok.management.MessageProcessor;
 
 public class MessageMetricsStatisticsByMetadataTest extends MessageMetricsStatisticsTest {
 
@@ -33,8 +33,8 @@ public class MessageMetricsStatisticsByMetadataTest extends MessageMetricsStatis
       ObjectName workflowObj = createWorkflowObjectName(adapterName);
       ObjectName metricsObj = createMetricsObjectName(adapterName, getName());
       MessageMetricsStatisticsMBean stats = JMX.newMBeanProxy(mBeanServer, metricsObj, MessageMetricsStatisticsMBean.class);
-      WorkflowManagerMBean workflow = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
-      workflow.injectMessage(createMessageForInjection(payload));
+      MessageProcessor workflow = JMX.newMBeanProxy(mBeanServer, workflowObj, MessageProcessor.class);
+      workflow.processAsync(createMessageForInjection(payload));
 
       assertEquals(1, stats.getStatistics().size());
       assertEquals(interceptor.getCacheArray().size(), stats.getStatistics().size());

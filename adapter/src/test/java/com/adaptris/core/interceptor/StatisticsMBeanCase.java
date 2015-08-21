@@ -132,7 +132,7 @@ public abstract class StatisticsMBeanCase extends BaseCase {
       WorkflowManagerMBean workflow = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
       long now = System.currentTimeMillis();
       SerializableAdaptrisMessage msg = createMessageForInjection(null);
-      workflow.injectMessage(msg);
+      workflow.processAsync(msg);
       // We can't check the real time so we check that the time is greater than now.
       assertTrue(now < stats.getEndMillisForTimeSliceIndex(0));
     }

@@ -1,10 +1,12 @@
 package com.adaptris.core;
 
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Properties;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
+import com.adaptris.core.stubs.StubSerializableMessage;
 import com.adaptris.interlok.types.SerializableMessage;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
@@ -42,49 +44,10 @@ public class SerializableAdaptrisMessageTest extends TestCase {
     assertEquals(0, message.getMetadata().size());
     assertEquals("my payload", message.getPayload());
     
-    message = new SerializableAdaptrisMessage(new SerializableMessage() {
-
-      @Override
-      public void addMessageHeader(String arg0, String arg1) {
-      }
-
-      @Override
-      public Properties getMessageHeaders() {
-        return new Properties();
-      }
-
-      @Override
-      public String getPayload() {
-        return "my payload";
-      }
-
-      @Override
-      public String getPayloadEncoding() {
-        return null;
-      }
-
-      @Override
-      public String getUniqueId() {
-        return getName();
-      }
-
-      @Override
-      public void setMessageHeaders(Properties arg0) {
-      }
-
-      @Override
-      public void setPayload(String arg0) {
-      }
-
-      @Override
-      public void setPayloadEncoding(String arg0) {
-      }
-
-      @Override
-      public void setUniqueId(String arg0) {
-      }
-      
-    });
+    SerializableMessage stub = new StubSerializableMessage();
+    stub.setUniqueId(getName());
+    stub.setPayload("my payload");
+    message = new SerializableAdaptrisMessage(stub);
     assertEquals(getName(), message.getUniqueId());
     assertEquals(0, message.getMetadata().size());
     assertEquals("my payload", message.getPayload());
@@ -160,7 +123,8 @@ public class SerializableAdaptrisMessageTest extends TestCase {
     message.addMetadata(KEY1, VALUE1);
     message.addMetadata(KEY2, VALUE2);
     message.addMetadata(KEY3, VALUE3);
-    assertEquals(VALUE1, message.getMessageHeaders().getProperty(KEY1));
+    assertEquals(VALUE1, message.getMetadataValue(KEY1));
+    assertNull(message.getMetadataValue(null));
   }
 
 
@@ -234,10 +198,10 @@ public class SerializableAdaptrisMessageTest extends TestCase {
 
   public void testSetMessageHeaders() throws Exception {
     SerializableAdaptrisMessage message = new SerializableAdaptrisMessage();
-    Properties p = new Properties();
-    p.setProperty(KEY1, VALUE1);
-    p.setProperty(KEY2, VALUE2);
-    p.setProperty(KEY3, VALUE3);
+    Map<String, String> p = new HashMap<>();
+    p.put(KEY1, VALUE1);
+    p.put(KEY2, VALUE2);
+    p.put(KEY3, VALUE3);
     message.setMessageHeaders(p);
     assertTrue(message.containsKey(KEY1));
     assertTrue(message.containsKey(KEY2));

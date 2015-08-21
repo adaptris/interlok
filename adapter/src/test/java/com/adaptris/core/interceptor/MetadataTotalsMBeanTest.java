@@ -14,6 +14,7 @@ import com.adaptris.core.MetadataElement;
 import com.adaptris.core.SerializableAdaptrisMessage;
 import com.adaptris.core.runtime.BaseComponentMBean;
 import com.adaptris.core.runtime.WorkflowManagerMBean;
+import com.adaptris.interlok.management.MessageProcessor;
 
 @SuppressWarnings("deprecation")
 public class MetadataTotalsMBeanTest extends MetadataStatisticsMBeanCase {
@@ -37,9 +38,9 @@ public class MetadataTotalsMBeanTest extends MetadataStatisticsMBeanCase {
       ObjectName workflowObj = createWorkflowObjectName(adapterName);
       ObjectName metricsObj = createMetricsObjectName(adapterName);
       MetadataStatisticsMBean stats = JMX.newMBeanProxy(mBeanServer, metricsObj, MetadataStatisticsMBean.class);
-      WorkflowManagerMBean workflow = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
+      MessageProcessor workflow = JMX.newMBeanProxy(mBeanServer, workflowObj, MessageProcessor.class);
       SerializableAdaptrisMessage msg = createMessageForInjection(null);
-      workflow.injectMessage(msg);
+      workflow.processAsync(msg);
       assertEquals(1, stats.getTotal(0, STATS_KEY));
       assertEquals(0, stats.getTotal(0, "blah"));
       assertEquals(0, stats.getTotal(5, STATS_KEY));
@@ -62,7 +63,7 @@ public class MetadataTotalsMBeanTest extends MetadataStatisticsMBeanCase {
       MetadataStatisticsMBean stats = JMX.newMBeanProxy(mBeanServer, metricsObj, MetadataStatisticsMBean.class);
       WorkflowManagerMBean workflow = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
       SerializableAdaptrisMessage msg = createMessageForInjection(null);
-      workflow.injectMessage(msg);
+      workflow.processAsync(msg);
       assertEquals(1, stats.getMetadataKeys(0).size());
       assertEquals(0, stats.getMetadataKeys(1).size());
       assertEquals(new HashSet(Arrays.asList(new String[]
@@ -90,7 +91,7 @@ public class MetadataTotalsMBeanTest extends MetadataStatisticsMBeanCase {
       MetadataStatisticsMBean stats = JMX.newMBeanProxy(mBeanServer, metricsObj, MetadataStatisticsMBean.class);
       WorkflowManagerMBean workflow = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
       SerializableAdaptrisMessage msg = createMessageForInjection(null);
-      workflow.injectMessage(msg);
+      workflow.processAsync(msg);
 
       assertEquals(1, stats.getStatistics().size());
       assertEquals(interceptor.getStats().size(), stats.getStatistics().size());

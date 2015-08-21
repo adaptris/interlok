@@ -7,7 +7,9 @@ import static com.adaptris.core.runtime.AdapterComponentMBean.NOTIF_MSG_STOPPED;
 import static com.adaptris.core.runtime.AdapterComponentMBean.NOTIF_TYPE_WORKFLOW_LIFECYCLE;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -22,6 +24,7 @@ import com.adaptris.core.Channel;
 import com.adaptris.core.ClosedState;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.InitialisedState;
+import com.adaptris.core.MetadataElement;
 import com.adaptris.core.PoolingWorkflow;
 import com.adaptris.core.SerializableAdaptrisMessage;
 import com.adaptris.core.StandardWorkflow;
@@ -33,7 +36,11 @@ import com.adaptris.core.http.jetty.JettyPoolingWorkflowInterceptor;
 import com.adaptris.core.http.jetty.MessageConsumer;
 import com.adaptris.core.interceptor.MessageMetricsInterceptor;
 import com.adaptris.core.interceptor.ThrottlingInterceptor;
+import com.adaptris.core.services.metadata.AddMetadataService;
 import com.adaptris.core.stubs.MockMessageProducer;
+import com.adaptris.core.stubs.StubSerializableMessage;
+import com.adaptris.interlok.management.MessageProcessor;
+import com.adaptris.interlok.types.SerializableMessage;
 import com.adaptris.util.GuidGenerator;
 
 @SuppressWarnings("deprecation")
@@ -1053,12 +1060,8 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     mBeans.add(adapterManager);
     mBeans.addAll(adapterManager.getAllDescendants());
 
-    SerializableAdaptrisMessage msg = new SerializableAdaptrisMessage();
     String msgUniqueId = new GuidGenerator().getUUID();
-    msg.setUniqueId(msgUniqueId);
-    msg.setPayload(PAYLOAD);
-    msg.setPayloadEncoding(PAYLOAD_ENCODING);
-    msg.addMetadata(METADATA_KEY, METADATA_VALUE);
+    SerializableAdaptrisMessage msg = createSAM(msgUniqueId);
     try {
       register(mBeans);
       WorkflowManagerMBean workflowManagerProxy = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
@@ -1075,8 +1078,129 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     finally {
       adapter.requestClose();
     }
-
   }
+
+  public void testInjectWithReply() throws Exception {
+    String adapterName = this.getClass().getSimpleName() + "." + getName();
+
+    Adapter adapter = createAdapter(adapterName);
+    AdapterManager adapterManager = new AdapterManager(adapter);
+    Channel channel = createChannel("c1");
+    ChannelManager channelManager = new ChannelManager(channel, adapterManager);
+    StandardWorkflow workflow = createWorkflow("w1");
+    workflow.getServiceCollection().add(new AddMetadataService(Arrays.asList(new MetadataElement(getName(), getName()))));
+
+    WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
+    ObjectName adapterObj = adapterManager.createObjectName();
+    ObjectName workflowObj = realWorkflowManager.createObjectName();
+    ObjectName channelObj = channelManager.createObjectName();
+
+    List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
+    mBeans.add(adapterManager);
+    mBeans.addAll(adapterManager.getAllDescendants());
+
+    String msgUniqueId = new GuidGenerator().getUUID();
+    SerializableAdaptrisMessage msg = createSAM(msgUniqueId);
+
+    try {
+      register(mBeans);
+      WorkflowManagerMBean workflowManagerProxy = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
+      adapterManager.requestStart();
+      SerializableAdaptrisMessage reply = workflowManagerProxy.injectMessageWithReply(msg);
+
+      assertEquals(msgUniqueId, reply.getUniqueId());
+      assertEquals(PAYLOAD, reply.getPayload());
+      assertEquals(PAYLOAD_ENCODING, reply.getPayloadEncoding());
+      assertTrue(reply.containsKey(METADATA_KEY));
+      assertEquals(METADATA_VALUE, reply.getMetadataValue(METADATA_KEY));
+      assertTrue(reply.containsKey(getName()));
+      assertEquals(getName(), reply.getMetadataValue(getName()));
+    } finally {
+      adapter.requestClose();
+    }
+  }
+
+
+  public void testProcessAsync() throws Exception {
+    String adapterName = this.getClass().getSimpleName() + "." + getName();
+
+    Adapter adapter = createAdapter(adapterName);
+    AdapterManager adapterManager = new AdapterManager(adapter);
+    Channel channel = createChannel("c1");
+    ChannelManager channelManager = new ChannelManager(channel, adapterManager);
+    StandardWorkflow workflow = createWorkflow("w1");
+    MockMessageProducer mockProducer = new MockMessageProducer();
+    workflow.setProducer(mockProducer);
+    WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
+    ObjectName adapterObj = adapterManager.createObjectName();
+    ObjectName workflowObj = realWorkflowManager.createObjectName();
+    ObjectName channelObj = channelManager.createObjectName();
+
+    List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
+    mBeans.add(adapterManager);
+    mBeans.addAll(adapterManager.getAllDescendants());
+
+    String msgUniqueId = new GuidGenerator().getUUID();
+    SerializableMessage msg = createSM(msgUniqueId);
+
+    try {
+      register(mBeans);
+      MessageProcessor workflowManagerProxy = JMX.newMBeanProxy(mBeanServer, workflowObj, MessageProcessor.class);
+      adapterManager.requestStart();
+      workflowManagerProxy.processAsync(msg);
+      assertEquals(1, mockProducer.getMessages().size());
+      AdaptrisMessage procMsg = mockProducer.getMessages().get(0);
+      assertEquals(msgUniqueId, procMsg.getUniqueId());
+      assertEquals(PAYLOAD, procMsg.getStringPayload());
+      assertEquals(PAYLOAD_ENCODING, procMsg.getCharEncoding());
+      assertTrue(procMsg.containsKey(METADATA_KEY));
+      assertEquals(METADATA_VALUE, procMsg.getMetadataValue(METADATA_KEY));
+    } finally {
+      adapter.requestClose();
+    }
+  }
+
+  public void testProcess() throws Exception {
+    String adapterName = this.getClass().getSimpleName() + "." + getName();
+
+    Adapter adapter = createAdapter(adapterName);
+    AdapterManager adapterManager = new AdapterManager(adapter);
+    Channel channel = createChannel("c1");
+    ChannelManager channelManager = new ChannelManager(channel, adapterManager);
+    StandardWorkflow workflow = createWorkflow("w1");
+    workflow.getServiceCollection().add(new AddMetadataService(Arrays.asList(new MetadataElement(getName(), getName()))));
+
+    WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
+    ObjectName adapterObj = adapterManager.createObjectName();
+    ObjectName workflowObj = realWorkflowManager.createObjectName();
+    ObjectName channelObj = channelManager.createObjectName();
+
+    List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
+    mBeans.add(adapterManager);
+    mBeans.addAll(adapterManager.getAllDescendants());
+
+    String msgUniqueId = new GuidGenerator().getUUID();
+    SerializableMessage msg = createSM(msgUniqueId);
+
+    try {
+      register(mBeans);
+      MessageProcessor workflowManagerProxy = JMX.newMBeanProxy(mBeanServer, workflowObj, MessageProcessor.class);
+      adapterManager.requestStart();
+      SerializableMessage reply = workflowManagerProxy.process(msg);
+
+      assertEquals(msgUniqueId, reply.getUniqueId());
+      assertEquals(PAYLOAD, reply.getPayload());
+      assertEquals(PAYLOAD_ENCODING, reply.getPayloadEncoding());
+      Map<String, String> headers = reply.getMessageHeaders();
+      assertTrue(headers.containsKey(METADATA_KEY));
+      assertEquals(METADATA_VALUE, headers.get(METADATA_KEY));
+      assertTrue(headers.containsKey(getName()));
+      assertEquals(getName(), headers.get(getName()));
+    } finally {
+      adapter.requestClose();
+    }
+  }
+
 
   public void testMBean_NotificationOnInit() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
@@ -1246,6 +1370,24 @@ public class WorkflowManagerTest extends ComponentManagerCase {
       adapterManager.requestClose();
       adapterManager.unregisterMBean();
     }
+  }
+
+  private SerializableAdaptrisMessage createSAM(String msgUniqueId) {
+    SerializableAdaptrisMessage  msg = new SerializableAdaptrisMessage();
+    msg.setUniqueId(msgUniqueId);
+    msg.setPayload(PAYLOAD);
+    msg.setPayloadEncoding(PAYLOAD_ENCODING);
+    msg.addMetadata(METADATA_KEY, METADATA_VALUE);
+    return msg;
+  }
+
+  private SerializableMessage createSM(String msgUniqueId) {
+    SerializableMessage msg = new StubSerializableMessage();
+    msg.setUniqueId(msgUniqueId);
+    msg.setPayload(PAYLOAD);
+    msg.setPayloadEncoding(PAYLOAD_ENCODING);
+    msg.addMessageHeader(METADATA_KEY, METADATA_VALUE);
+    return msg;
   }
 
   private class FailingWorkflowManager extends WorkflowManager {
