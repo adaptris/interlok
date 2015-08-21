@@ -43,8 +43,8 @@
     <property name="ivy.publish.revision"   value="3.0-SNAPSHOT"/>
     <property name="ivy.artifact.publish.status" value="integration"/>
     <property name="ivy.dir" value="${basedir}/../ivy"/>
-    <property name="ivy.xml.file" value="${ivy.dir}/ivy-core.xml"/>
-    <property name="ivy.core.xml"  value="${ivy.xml.file}"/>
+    <property name="ivy.xml.file" value="${ivy.dir}/ivy-adapter.xml"/>
+    <property name="ivy.adapter.xml"  value="${ivy.xml.file}"/>
     <property name="ivy.stubs.xml" value="${ivy.dir}/ivy-stubs.xml"/>
 
     <property name="manifest.title" value="Interlok Framework"/>
@@ -505,12 +505,12 @@
     <zip destfile = "${project.dist.dir}/${project.name}/examples/${project.name}-examples.zip">
       <zipfileset dir="${example-xml.build.dir}" prefix="example-xml/Interlok-Base"/>
     </zip>
-    <ivy:makepom ivyfile="${ivy.core.xml}" pomfile="${project.dist.dir}/${project.name}/pom/${project.name}.pom"/>
+    <ivy:makepom ivyfile="${ivy.adapter.xml}" pomfile="${project.dist.dir}/${project.name}/pom/${project.name}.pom"/>
     <ivy:makepom ivyfile="${ivy.stubs.xml}" pomfile="${project.dist.dir}/adp-stubs/pom/adp-stubs.pom"/>
   </target>
 
   <target name="publish" depends="prepare-ivy, prepare-for-publish" description="publish a snapshot">
-    <interlok:publish-artifact resolver="${ivy.repo}" revision="${ivy.publish.revision}" artifact.basedir="${project.dist.dir}" ivy-config="${ivy.core.xml}"/>
+    <interlok:publish-artifact resolver="${ivy.repo}" revision="${ivy.publish.revision}" artifact.basedir="${project.dist.dir}" ivy-config="${ivy.adapter.xml}"/>
     <interlok:publish-artifact resolver="${ivy.repo}" revision="${ivy.publish.revision}" artifact.basedir="${project.dist.dir}" ivy-config="${ivy.stubs.xml}"/>
   </target>
 
