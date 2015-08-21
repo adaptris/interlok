@@ -17,8 +17,6 @@
     <property name="ivy.artifact.publish.status" value="integration"/>
 
     <property name="manifest.title" value="Interlok Annotation Support"/>
-    <property name="manifest.vendor" value="Adaptris Ltd"/>
-    <property name="manifest.section.name" value="com/adaptris/annotation"/>
 
     <property name="adp-core-version" value="3.0-SNAPSHOT"/>
 
@@ -34,16 +32,17 @@
     <property name="adapter.component.annotation.processor" value="com.adaptris.annotation.AdapterComponentAnnotationProcessor" />
     <property name="resources.dir" value="${basedir}/src/main/resources"/>
     <property name="javac.target.version"   value="1.7"/>
-
-    <mkdir dir="${ivy.dir}"/>
-
   </target>
 
   <target name="clean" depends="init" description="Clean up build artefacts">
     <delete dir="${build.dir}"/>
+    <delete dir="${tests.output.dir}"/>
+    <delete>
+      <fileset file="${coverage.metadata.file}"/>
+    </delete>    
   </target>
 
-  <target name="compile" depends="init, prepare-ivy" description="Compile Annotation Processor">
+  <target name="compile" depends="init, prepare-ivy, macrodef.init" description="Compile Annotation Processor">
     <mkdir dir="${build.classes.dir}" />
     <javac destdir="${build.classes.dir}" srcdir="${src.dir}" debug="on" debuglevel="source,lines,vars"
            source="${javac.target.version}" target="${javac.target.version}" includeAntRuntime="true">
@@ -54,21 +53,9 @@
   <target name="jar" depends="compile">
     <copy file="${resources.dir}/velocity.properties" tofile="${build.classes.dir}/velocity.properties"/>
     <copy file="${resources.dir}/beanInfo.vm" tofile="${build.classes.dir}/beanInfo.vm"/>
-    <mkdir dir="${build.classes.dir}/META-INF"/>
-    <propertyfile file="${build.classes.dir}/META-INF/adaptris-version">
-      <entry key="component.name" value="${manifest.title}"/>
-      <entry key="build.version" value="${ivy.publish.revision}"/>
-      <entry key="build.date" value="${today}"/>
-    </propertyfile>
-    <manifest file="${build.dir}/Manifest.mf">
-      <attribute name="Manifest-Version" value="1.0"/>
-      <attribute name="Build-Version" value="${ivy.publish.revision}"/>
-      <attribute name="Built-By" value="${user.name}"/>
-      <attribute name="Implementation-Vendor-Id" value="com.adaptris"/>
-      <attribute name="Implementation-Version" value="${ivy.publish.revision}"/>
-      <attribute name="Implementation-Title" value="${manifest.title}"/>
-      <attribute name="Implementation-Vendor" value="${manifest.vendor}"/>
-    </manifest>
+    <interlok:create-version dir="${build.classes.dir}/META-INF" name="${manifest.title}"/>    
+    <interlok:create-manifest file="${build.dir}/Manifest.mf" title="${manifest.title}"/>
+    
     <jar basedir="${build.classes.dir}" jarfile="${project.dist.dir}/${project.jar.name}" manifest="${build.dir}/Manifest.mf">
       <service type="javax.annotation.processing.Processor">
         <provider classname="${xstream.annotation.processor}"/>

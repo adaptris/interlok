@@ -1,4 +1,4 @@
-<project basedir="." default="prepare-ivy" name="IvyTasks" xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:interlok="uri:interlok" >
+<project basedir="." default="prepare-ivy" name="IvyTasks" xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:interlok="uri:interlok" xmlns:jacoco="antlib:org.jacoco.ant">
 
   <target name="init-ivy" depends="init">
     <property name="ivy.jar.file" value="${ivy.dir}/ivy.jar"/>
@@ -8,6 +8,12 @@
   	<property name="ivy.logging" value="quiet"/>
   	<property name="ivy.report.dir" value="${build.dir}/ivy-report"/>
   	<property name="ivy.publish.bundle.type" value="jar"/>
+    
+    <property name="coverage.report.output.dir" value="${tests.output.dir}/coverage"/>
+    <property name="coverage.report.html.output.dir" value="${coverage.report.output.dir}/html"/>
+    <property name="coverage.build.dir" value="${build.dir}/coverage"/>
+    <property name="coverage.metadata.file" value="${basedir}/jacoco.exec"/>
+    
   </target>
 
   <target name="download-ivy" depends="init-ivy" unless="skip.ivy.download">
@@ -48,6 +54,235 @@
         </ivy:publish>
       </sequential>
     </macrodef>
+    
+    <macrodef name="create-manifest" uri="uri:interlok">
+      <attribute name="file" default="${build.dir}/Manifest.mf"/>
+      <attribute name="title"/>
+      <attribute name="vendor" default="Adaptris Ltd"/>
+      <attribute name="vendorId" default="com.adaptris"/>
+      <attribute name="version" default="${ivy.publish.revision}"/>
+      <sequential>
+        <manifest file="${build.dir}/Manifest.mf">
+          <attribute name="Manifest-Version" value="1.0"/>
+          <attribute name="Build-Version" value="@{version}"/>
+          <attribute name="Built-By" value="${user.name}"/>
+          <attribute name="Implementation-Vendor-Id" value="@{vendorId}"/>
+          <attribute name="Implementation-Version" value="@{version}"/>
+          <attribute name="Implementation-Title" value="@{title}"/>
+          <attribute name="Implementation-Vendor" value="@{vendor}"/>
+        </manifest>
+      </sequential>
+    </macrodef>
+
+    <macrodef name="create-version" uri="uri:interlok">
+      <attribute name="dir" default="${build.classes.dir}/META-INF"/>
+      <attribute name="name"/>
+      <attribute name="version" default="${ivy.publish.revision}"/>
+      <attribute name="date" default="${today}"/>      
+      <sequential>
+        <mkdir dir="@{dir}"/>
+        <propertyfile file="@{dir}/adaptris-version">
+          <entry key="component.name" value="${manifest.title}"/>
+          <entry key="build.version" value="@{version}"/>
+          <entry key="build.date" value="@{date}"/>
+        </propertyfile>
+      </sequential>
+    </macrodef>
+    
+    <macrodef name="execute-tests" uri="uri:interlok">
+      <attribute name="printsummary" default="true"/>
+      <attribute name="fork" default="yes"/>
+      <attribute name="showoutput" default="no"/>
+      <attribute name="forkmode" default="once"/>
+      <element name="test-filter" optional="true"/>
+      <sequential>
+        <if>
+          <istrue value="${no.coverage}"/>
+          <then>
+            <interlok:execute-tests-plain printsummary="@{printsummary}" fork="@{fork}" forkmode="@{forkmode}" showoutput="@{showoutput}">
+              <test-execution-filter>
+                <test-filter/>
+              </test-execution-filter>
+            </interlok:execute-tests-plain>
+          </then>
+          <else>
+            <interlok:execute-tests-coverage printsummary="@{printsummary}" fork="@{fork}" forkmode="@{forkmode}" showoutput="@{showoutput}">
+              <test-execution-filter>
+                <test-filter/>
+              </test-execution-filter>
+            </interlok:execute-tests-coverage>
+          </else>
+        </if>
+      </sequential>
+    </macrodef>
+
+    <macrodef name="execute-tests-plain" uri="uri:interlok">
+      <attribute name="printsummary" default="true"/>
+      <attribute name="fork" default="yes"/>
+      <attribute name="showoutput" default="no"/>
+      <attribute name="forkmode" default="once"/>
+      <element name="test-execution-filter" optional="true"/>
+
+      <sequential>
+        <interlok:execute-junit printsummary="@{printsummary}" fork="@{fork}" forkmode="@{forkmode}" showoutput="@{showoutput}">
+          <junit-execution-filter>
+            <test-execution-filter/>
+          </junit-execution-filter>
+        </interlok:execute-junit>
+      </sequential>
+    </macrodef>
+
+    <macrodef name="execute-tests-coverage" uri="uri:interlok">
+      <attribute name="printsummary" default="true"/>
+      <attribute name="fork" default="yes"/>
+      <attribute name="showoutput" default="no"/>
+      <attribute name="forkmode" default="once"/>
+      <element name="test-execution-filter" optional="true"/>
+      <element name="sysproperties" optional="true"/>
+      <element name="extra-classpath" optional="true"/>
+      <sequential>
+        <delete file="${coverage.metadata.file}" />
+        <jacoco:coverage  destfile="${coverage.metadata.file}">
+          <junit printsummary="@{printsummary}" fork="@{fork}" forkmode="@{forkmode}" showoutput="@{showoutput}" failureproperty="junit.failed">
+            <jvmarg value="-XX:-UseSplitVerifier"/>
+            <jvmarg value="-XX:+CMSClassUnloadingEnabled"/>
+            <jvmarg value="-XX:+UseConcMarkSweepGC"/>
+            <jvmarg value="-XX:+UseParNewGC"/>
+            <sysproperties/>
+            <formatter type="xml"/>
+            <batchtest todir="${tests.output.dir}">
+              <fileset dir="${testsrc.dir}">
+                <include name="${junit.test.classes}"/>
+                <test-execution-filter/>
+              </fileset>
+            </batchtest>
+            <classpath>
+              <path refid="main.classpath"/>
+              <pathelement path="${classes.build.dir}"/>
+              <pathelement path="${testclasses.build.dir}"/>
+              <dirset dir="${test.resources.dir}"/>
+              <extra-classpath/>
+            </classpath>
+          </junit>
+        </jacoco:coverage>
+      </sequential>
+    </macrodef>
+
+    <macrodef name="execute-junit" uri="uri:interlok">
+      <attribute name="printsummary" default="true"/>
+      <attribute name="fork" default="yes"/>
+      <attribute name="showoutput" default="no"/>
+      <attribute name="forkmode" default="once"/>
+      <element name="prependclasspath" optional="true"/>
+      <element name="appendclasspath" optional="true"/>
+      <element name="sysproperties" optional="true"/>
+      <element name="junit-execution-filter" optional="true"/>
+      <sequential>
+        <junit printsummary="@{printsummary}" fork="@{fork}" forkmode="@{forkmode}" showoutput="@{showoutput}" failureproperty="junit.failed">
+          <jvmarg value="-XX:-UseSplitVerifier"/>
+          <jvmarg value="-XX:+CMSClassUnloadingEnabled"/>
+          <jvmarg value="-XX:+UseConcMarkSweepGC"/>
+          <jvmarg value="-XX:+UseParNewGC"/>
+          <sysproperties/>
+          <formatter type="xml"/>
+          <batchtest todir="${tests.output.dir}">
+            <fileset dir="${testsrc.dir}">
+              <include name="${junit.test.classes}"/>
+              <junit-execution-filter/>
+            </fileset>
+          </batchtest>
+          <classpath>
+            <prependclasspath/>
+            <path refid="main.classpath"/>
+            <pathelement path="${classes.build.dir}"/>
+            <pathelement path="${testclasses.build.dir}"/>
+            <dirset dir="${test.resources.dir}"/>
+            <appendclasspath/>
+          </classpath>
+        </junit>
+      </sequential>
+    </macrodef>
+
+    <macrodef name="test-reports" uri="uri:interlok">
+      <attribute name="basedir"/>
+      <attribute name="reportdir"/>
+      <element name="coverage-filter" optional="true"/>
+      <sequential>
+        <if>
+          <isfalse value="${no.coverage}"/>
+          <then>
+            <mkdir dir="${coverage.report.output.dir}"/>
+            <mkdir dir="${coverage.report.html.output.dir}"/>
+            <jacoco:report>
+                <executiondata>
+                  <file file="${coverage.metadata.file}"/>
+                </executiondata>
+                <structure name="Code Coverage Report">
+                  <classfiles>
+                    <fileset dir="${classes.build.dir}">
+                      <include name="**/*.class"/>
+                      <coverage-filter/>
+                    </fileset>
+                  </classfiles>
+                  <sourcefiles encoding="UTF-8">
+                    <fileset dir="${src.dir}"/>
+                  </sourcefiles>
+                </structure>
+                <html destdir="${coverage.report.html.output.dir}"/>
+                <csv destfile="${coverage.report.output.dir}/jacoco-report.csv"/>
+                <xml destfile="${coverage.report.output.dir}/jacoco-report.xml"/>
+            </jacoco:report>
+          </then>
+        </if>
+        <junitreport todir="@{basedir}">
+          <fileset dir="@{basedir}">
+            <include name="TEST-*.xml" />
+          </fileset>
+          <report format="frames" todir="@{reportdir}"/>
+        </junitreport>
+      </sequential>
+    </macrodef>
+
+    <macrodef name="create-javadocs" uri="uri:interlok">
+      <attribute name="destdir" default="${api.doc.dir}"/>
+      <attribute name="sourcepath" default="${src.dir}"/>
+      <element name="grouping" optional="true"/>
+      <element name="packageset-filter" optional="true"/>
+      <sequential>
+        <javadoc author="false" destdir="@{destdir}"
+          windowtitle="Interlok Adapter Framework API" bottom="Copyright Adaptris"
+          access="protected" breakiterator="yes" verbose="no"
+          charset="ISO-8859-1" >
+          <arg value="-quiet"/>
+          <arg value="-Xdoclint:none"/>
+          <packageset dir="@{sourcepath}" defaultexcludes="yes">
+            <packageset-filter/>
+          </packageset>
+          <classpath>
+            <path refid="main.classpath"/>
+            <pathelement location="${ant.core.lib}"/>
+          </classpath>
+          <grouping/>
+          <link offline="false" href="http://docs.oracle.com/javaee/7/api/" />
+          <link offline="false" href="http://docs.oracle.com/javase/7/docs/api/" />
+          <link offline="false" href="http://commons.apache.org/proper/commons-net/javadocs/api-3.3/"/>
+          <link offline="false" href="http://archive.eclipse.org/jetty/8.1.14.v20131031/apidocs"/>
+          <link offline="false" href="http://xml.apache.org/xalan-j/apidocs/"/>
+          <link offline="false" href="http://commons.apache.org/proper/commons-pool/api-1.6/"/>
+          <link offline="false" href="http://mx4j.sourceforge.net/docs/api/"/>
+          <link offline="false" href="http://www.slf4j.org/apidocs/"/>
+          <link offline="false" href="http://development.adaptris.com/javadocs/v3-snapshot/Interlok-API/"/>
+          <link offline="false" href="http://www.swiftmq.com/products/router/swiftlets/sys_amqp/client/javadoc/"/>
+          <taglet name="com.adaptris.taglet.ConfigTaglet">
+            <path refid="classpath.ant-tools"/>
+          </taglet>
+          <taglet name="com.adaptris.taglet.LicenseTaglet">
+            <path refid="classpath.ant-tools"/>
+          </taglet>
+        </javadoc>
+      </sequential>
+    </macrodef>
+    
   </target>
 
   <target name="ivy-report" depends="prepare-ivy" description="Produce an IVY dependency report">
