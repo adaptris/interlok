@@ -18,6 +18,7 @@
 
   <target name="clean" depends="init" description="Clean build artifacts">
     <interlok:project-build target="clean" project="apt"/>
+    <interlok:project-build target="clean" project="common"/>
     <interlok:project-build target="clean" project="adapter"/>
     <delete dir="${basedir}/activemq-data" failonerror="false"/>
     <delete dir="${basedir}/build" failonerror="false"/>
@@ -44,6 +45,15 @@
         <property name="ivy.repo" value="${ivy.repo}"/>
       </ant-properties>
     </interlok:project-build>
+    <interlok:project-build target="publish" project="common">
+      <ant-properties>
+        <property name="adp-core-version" value="${tag.version}"/>
+        <property name="ivy.publish.revision" value="${tag.version}"/>
+        <property name="ivy.user" value="${ivy.user}"/>
+        <property name="ivy.password" value="${ivy.password}"/>
+        <property name="ivy.repo" value="${ivy.repo}"/>
+      </ant-properties>
+    </interlok:project-build>    
     <interlok:project-build target="publish" project="adapter">
       <ant-properties>
         <property name="adp-core-version" value="${tag.version}"/>
@@ -70,6 +80,14 @@
         <property name="ivy.publish.revision" value="3.0-SNAPSHOT"/>
       </ant-properties>
     </interlok:project-build>
+    <interlok:project-build target="publish" project="common">
+      <ant-properties>
+        <property name="ivy.user" value="${ivy.user}"/>
+        <property name="ivy.password" value="${ivy.password}"/>
+        <property name="adp-core-version" value="3.0-SNAPSHOT"/>
+        <property name="ivy.publish.revision" value="3.0-SNAPSHOT"/>
+      </ant-properties>
+    </interlok:project-build>    
     <interlok:project-build target="publish" project="adapter">
       <ant-properties>
         <property name="ivy.user" value="${ivy.user}"/>
