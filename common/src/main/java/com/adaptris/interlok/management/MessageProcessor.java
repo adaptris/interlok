@@ -1,10 +1,10 @@
 package com.adaptris.interlok.management;
 
 import com.adaptris.interlok.InterlokException;
-import com.adaptris.interlok.types.StandardMessage;
+import com.adaptris.interlok.types.SerializableMessage;
 
 public interface MessageProcessor {
-  void processAsync(StandardMessage sm) throws InterlokException;
+  void processAsync(SerializableMessage sm) throws InterlokException;
 
-  StandardMessage process(StandardMessage sm) throws InterlokException;
+  SerializableMessage process(SerializableMessage sm) throws InterlokException;
 }
