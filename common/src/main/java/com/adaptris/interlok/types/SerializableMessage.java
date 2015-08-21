@@ -3,7 +3,7 @@ package com.adaptris.interlok.types;
 import java.io.Serializable;
 import java.util.Properties;
 
-public interface StandardMessage extends Serializable {
+public interface SerializableMessage extends Serializable {
 
   public String getUniqueId();
 
