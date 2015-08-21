@@ -1558,9 +1558,9 @@ public class AdapterManagerTest extends ComponentManagerCase {
       register(mBeans);
       AdapterManagerMBean adapterManagerProxy = JMX.newMBeanProxy(mBeanServer, adapterObj, AdapterManagerMBean.class);
       assertNotNull(adapterManagerProxy.getModuleVersions());
-      // Should be 2 in the versions
-      // The version for adp-core-apt.jar and adp-core.jar
-      assertEquals(2, adapterManagerProxy.getModuleVersions().size());
+      // Should be 3 in the versions
+      // The version for adp-core-apt.jar and adp-core.jar and interlok-common.
+      assertEquals(3, adapterManagerProxy.getModuleVersions().size());
     }
     finally {
     }

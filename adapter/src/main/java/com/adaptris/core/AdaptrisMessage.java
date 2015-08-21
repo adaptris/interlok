@@ -226,14 +226,14 @@ public interface AdaptrisMessage {
   Set<MetadataElement> getMetadata();
 
   /**
+   * Adds all the passed metadata to this message's metadata.
    * <p>
-   * Adds all the passed metadata to this message's metadata. This <b>will</b>
-   * overwrite the values associated with any pre-existing keys.
+   * This will overwrite any pre-existing keys, but will not remove existing metadata
    * </p>
-   *
-   * @param metadata a <code>Set</code> of KeyValuePairs to add
+   * 
+   * @param metadata the metadata to add
    */
-  void setMetadata(Set metadata);
+  void setMetadata(Set<MetadataElement> metadata);
 
   /**
    * <p>

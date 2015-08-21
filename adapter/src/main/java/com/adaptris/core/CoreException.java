@@ -1,5 +1,7 @@
 package com.adaptris.core;
 
+import com.adaptris.interlok.InterlokException;
+
 
 /**
  * <p>
@@ -7,7 +9,7 @@ package com.adaptris.core;
  * and sub-packages.
  * </p>
  */
-public class CoreException extends Exception {
+public class CoreException extends InterlokException {
 
   /**
    * <code>serialVersionUID</code>

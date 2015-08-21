@@ -27,6 +27,7 @@
     <dependency org="org.codehaus.jettison" name="jettison" rev="1.2"  conf="compile->default"  transitive="false"/>
     <dependency org="org.apache.velocity" name="velocity" rev="1.7" conf="compile->default" transitive="false"/>
     <dependency org="com.adaptris" name="adp-core-apt" rev="${ivy.publish.revision}" conf="compile->default;ant->default" changing="true"/>
+    <dependency org="com.adaptris" name="interlok-common" rev="${ivy.publish.revision}" conf="compile->default" changing="true"/>
 
     <dependency org="javax.activation" name="activation" rev="1.1.1"  conf="compile->default" />
 

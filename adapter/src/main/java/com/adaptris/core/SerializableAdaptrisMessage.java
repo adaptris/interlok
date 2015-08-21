@@ -1,12 +1,13 @@
 package com.adaptris.core;
 
-import java.io.Serializable;
 import java.util.Iterator;
+import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+import com.adaptris.interlok.types.SerializableMessage;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -14,15 +15,17 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * The SerializableAdaptrisMessage simply represents an AdaptrisMessage that can be serialized.
  * <p>
- * Many of the AdaptrisMessage's class members have been removed to facilitate serialization, such as object metadata - considering
- * any object may be placed in object metadata, we could never be sure the message would serialize.
+ * Many of the AdaptrisMessage's class members have been removed to facilitate serialization, such
+ * as object metadata - considering any object may be placed in object metadata, we could never be
+ * sure the message would serialize. The semantics of each method will attempt to follow that
+ * defined by {@link AdaptrisMessage} even though it does not implement that interface.
  * </p>
  * 
  * @config serializable-adaptris-message
  * 
  */
 @XStreamAlias("serializable-adaptris-message")
-public class SerializableAdaptrisMessage implements Serializable {
+public class SerializableAdaptrisMessage implements SerializableMessage {
 
   private static final long serialVersionUID = 20121213141400L;
 
@@ -60,18 +63,22 @@ public class SerializableAdaptrisMessage implements Serializable {
     setPayload(payload);
   }
 
+  @Override
   public String getUniqueId() {
     return uniqueId;
   }
 
+  @Override
   public void setUniqueId(String uniqueId) {
     this.uniqueId = uniqueId;
   }
 
+  @Override
   public String getPayload() {
     return payload;
   }
 
+  @Override
   public void setPayload(String payload) {
     this.payload = payload;
   }
@@ -80,27 +87,62 @@ public class SerializableAdaptrisMessage implements Serializable {
     return metadata;
   }
 
+  /**
+   * Set the metadata for this message.
+   * <p>
+   * This overwrites all metadata in the message with the corresponding set; passing in null or an
+   * empty {@link KeyValuePairSet} will remove all metadata.
+   * </p>
+   * 
+   * @param metadata the metadata to set.
+   * 
+   */
   public void setMetadata(KeyValuePairSet metadata) {
-    this.metadata = metadata;
+    if (metadata == null) {
+      this.metadata = new KeyValuePairSet();
+    } else {
+      this.metadata = metadata;
+    }
   }
 
-  public synchronized void setMetadata(Set<MetadataElement> set) {
-    if (set != null) {
-      for (Iterator<MetadataElement> i = set.iterator(); i.hasNext();) {
-        MetadataElement e = i.next();
-        addMetadata(e);
+  /**
+   * Adds all the associated {@link MetadataElement} as metadata.
+   * <p>
+   * This will overwrite any pre-existing keys, but will not remove existing metadata
+   * </p>
+   * 
+   * @param set the metadata to add.
+   * @see AdaptrisMessage#setMetadata(Set)
+   */
+  public void setMetadata(Set<MetadataElement> set) {
+    synchronized (metadata) {
+      if (set != null) {
+        for (Iterator<MetadataElement> i = set.iterator(); i.hasNext();) {
+          MetadataElement e = i.next();
+          addMetadata(e);
+        }
       }
     }
   }
 
+
+  /**
+   * Add a single item of metadata.
+   * 
+   * @param key the key
+   * @param value the value
+   * @see AdaptrisMessage#addMetadata(String, String)
+   */
   public synchronized void addMetadata(String key, String value) {
     this.addMetadata(new MetadataElement(key, value));
   }
 
-  public synchronized void addMetadata(MetadataElement e) {
-    if (metadata.contains(e)) {
-      removeMetadata(e);
-    }
+  /**
+   * Add a single item of metadata.
+   * 
+   * @param e the metadata to add.
+   */
+  public void addMetadata(MetadataElement e) {
     // Make sure that when we do the actual add, we turn it into a real key/value pair
     // this avoids additional class="" when you serialize using XStream.
     metadata.addKeyValuePair(new KeyValuePair(e.getKey(), e.getValue()));
@@ -121,10 +163,27 @@ public class SerializableAdaptrisMessage implements Serializable {
     return null;
   }
 
+  @Override
+  public void addMessageHeader(String key, String value) {
+    addMetadata(new MetadataElement(key, value));
+  }
+
+  @Override
+  public Properties getMessageHeaders() {
+    return KeyValuePairSet.asProperties(metadata);
+  }
+
+  @Override
+  public void setMessageHeaders(Properties arg0) {
+    setMetadata(new KeyValuePairSet(arg0));
+  }
+
+  @Override
   public String getPayloadEncoding() {
     return payloadEncoding;
   }
 
+  @Override
   public void setPayloadEncoding(String payloadEncoding) {
     this.payloadEncoding = payloadEncoding;
   }
@@ -149,17 +208,5 @@ public class SerializableAdaptrisMessage implements Serializable {
   public int hashCode() {
     return new HashCodeBuilder(13, 17).append(getPayload()).append(getPayloadEncoding()).append(getUniqueId())
         .append(getMetadata()).toHashCode();
-  }
-
-  @Override
-  public String toString() {
-    StringBuffer buffer = new StringBuffer();
-
-    buffer.append("ID = " + getUniqueId() + "\n");
-    buffer.append("Payload Encoding = " + getPayloadEncoding() + "\n");
-    buffer.append("Payload = " + getPayload() + "\n");
-    buffer.append("Metadata = " + getMetadata().toString());
-
-    return buffer.toString();
   }
 }
