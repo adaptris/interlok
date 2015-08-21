@@ -1,7 +1,7 @@
 package com.adaptris.interlok.types;
 
 import java.io.Serializable;
-import java.util.Properties;
+import java.util.Map;
 
 public interface SerializableMessage extends Serializable {
 
@@ -13,9 +13,9 @@ public interface SerializableMessage extends Serializable {
 
   public void setPayload(String payload);
 
-  public Properties getMessageHeaders();
+  public Map<String, String> getMessageHeaders();
 
-  public void setMessageHeaders(Properties metadata);
+  public void setMessageHeaders(Map<String, String> metadata);
 
   public void addMessageHeader(String key, String value);
 
