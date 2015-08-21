@@ -52,6 +52,13 @@ public class SerializableAdaptrisMessage implements SerializableMessage {
     metadata = new KeyValuePairSet();
   }
 
+  public SerializableAdaptrisMessage(SerializableMessage orig) {
+    this();
+    setUniqueId(orig.getUniqueId());
+    setMessageHeaders(orig.getMessageHeaders());
+    setPayload(orig.getPayload(), orig.getPayloadEncoding());
+  }
+
   public SerializableAdaptrisMessage(String uniqueId) {
     this();
     setUniqueId(uniqueId);
@@ -81,6 +88,11 @@ public class SerializableAdaptrisMessage implements SerializableMessage {
   @Override
   public void setPayload(String payload) {
     this.payload = payload;
+  }
+
+  public void setPayload(String payload, String payloadEncoding) {
+    setPayload(payload);
+    setPayloadEncoding(payloadEncoding);
   }
 
   public KeyValuePairSet getMetadata() {

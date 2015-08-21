@@ -5,6 +5,7 @@ import java.util.Properties;
 
 import junit.framework.TestCase;
 
+import com.adaptris.interlok.types.SerializableMessage;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 
@@ -40,6 +41,55 @@ public class SerializableAdaptrisMessageTest extends TestCase {
     assertEquals(getName(), message.getUniqueId());
     assertEquals(0, message.getMetadata().size());
     assertEquals("my payload", message.getPayload());
+    
+    message = new SerializableAdaptrisMessage(new SerializableMessage() {
+
+      @Override
+      public void addMessageHeader(String arg0, String arg1) {
+      }
+
+      @Override
+      public Properties getMessageHeaders() {
+        return new Properties();
+      }
+
+      @Override
+      public String getPayload() {
+        return "my payload";
+      }
+
+      @Override
+      public String getPayloadEncoding() {
+        return null;
+      }
+
+      @Override
+      public String getUniqueId() {
+        return getName();
+      }
+
+      @Override
+      public void setMessageHeaders(Properties arg0) {
+      }
+
+      @Override
+      public void setPayload(String arg0) {
+      }
+
+      @Override
+      public void setPayloadEncoding(String arg0) {
+      }
+
+      @Override
+      public void setUniqueId(String arg0) {
+      }
+      
+    });
+    assertEquals(getName(), message.getUniqueId());
+    assertEquals(0, message.getMetadata().size());
+    assertEquals("my payload", message.getPayload());
+
+
   }
 
   public void testSetMetadata() throws Exception {
