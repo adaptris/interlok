@@ -196,6 +196,20 @@ public class SerializableAdaptrisMessageTest extends TestCase {
     assertFalse(message.containsKey(KEY4));
   }
 
+  public void testRemoveMessageHeader() throws Exception {
+    SerializableAdaptrisMessage message = new SerializableAdaptrisMessage();
+    message.addMessageHeader(KEY1, VALUE1);
+    message.addMessageHeader(KEY2, VALUE2);
+    message.addMessageHeader(KEY3, VALUE3);
+    message.removeMessageHeader(KEY3);
+    message.removeMessageHeader(getName());
+    assertEquals(2, message.getMessageHeaders().size());
+    assertTrue(message.containsKey(KEY1));
+    assertTrue(message.containsKey(KEY2));
+    assertFalse(message.containsKey(KEY3));
+  }
+
+
   public void testSetMessageHeaders() throws Exception {
     SerializableAdaptrisMessage message = new SerializableAdaptrisMessage();
     Map<String, String> p = new HashMap<>();

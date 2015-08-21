@@ -157,6 +157,9 @@ public class SerializableAdaptrisMessage implements SerializableMessage {
    */
   public void addMetadata(MetadataElement e) {
     synchronized (metadata) {
+      if (containsKey(e.getKey())) {
+        removeMetadata(e);
+      }
       // Make sure that when we do the actual add, we turn it into a real key/value pair
       // this avoids additional class="" when you serialize using XStream.
       metadata.addKeyValuePair(new KeyValuePair(e.getKey(), e.getValue()));
@@ -170,7 +173,7 @@ public class SerializableAdaptrisMessage implements SerializableMessage {
   }
 
   public boolean containsKey(String key) {
-    return metadata.contains(new MetadataElement(key, ""));
+    return metadata.contains(new KeyValuePair(key, ""));
   }
 
   public String getMetadataValue(String key) { // is case-sensitive
@@ -183,6 +186,11 @@ public class SerializableAdaptrisMessage implements SerializableMessage {
   @Override
   public void addMessageHeader(String key, String value) {
     addMetadata(new MetadataElement(key, value));
+  }
+
+  @Override
+  public void removeMessageHeader(String key) {
+    removeMetadata(new MetadataElement(key, ""));
   }
 
   @Override

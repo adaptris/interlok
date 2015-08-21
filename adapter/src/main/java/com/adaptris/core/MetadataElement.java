@@ -9,14 +9,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * A key-value pair of <code>String</code> metadata. Instances of this class are used by implementations of
- * <code>AdaptrisMessage</code> to store metadata. Semantic equality of <code>MetadataElement</code> s is based on the value of the
- * 'key' only.
+ * A key-value pair of <code>String</code> metadata. Instances of this class are used by
+ * implementations of <code>AdaptrisMessage</code> to store metadata. Semantic equality of
+ * <code>MetadataElement</code> s is based on the value of the 'key' only.
  * </p>
- * <p>
- * In the adapter configuration file this class is aliased as <b>metadata-element</b> which is the preferred alternative to the
- * fully qualified classname when building your configuration.
- * </p>
+ * 
+ * @config metadata-element
  */
 @XStreamAlias("metadata-element")
 @GenerateBeanInfo

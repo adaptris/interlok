@@ -22,6 +22,12 @@ public class StubSerializableMessage implements SerializableMessage {
     messageHeaders.put(key, value);
   }
 
+
+  @Override
+  public void removeMessageHeader(String key) {
+    messageHeaders.remove(key);
+  }
+
   @Override
   public String getUniqueId() {
     return uniqueId;
@@ -61,6 +67,7 @@ public class StubSerializableMessage implements SerializableMessage {
   public void setMessageHeaders(Map<String, String> hdrs) {
     this.messageHeaders = hdrs;
   }
+
 
 
 }
