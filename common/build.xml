@@ -85,7 +85,7 @@
   <target name="macrodef.init" depends="ivy.macrodef"/>
   
   <target name="javadoc" depends="prepare-ivy,macrodef.init" description="Create javadocs">
-    <interlok:create-javadocs sourcepath="${src.dir}" destdir="${api.doc.dir}">
+    <interlok:create-javadocs sourcepath="${src.dir}" destdir="${api.doc.dir}" title="${manifest.title}">
     </interlok:create-javadocs>
   </target>
   

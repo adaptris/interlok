@@ -265,7 +265,7 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
    * </p>
    * 
    * @param config the String representation of a component.
-   * @return true if the config was successfully unmarshalled into an object.
+   * @throws CoreException if there was an exception unmarshalling.
    * @since 3.0.5
    * @see #createAdapter(String)
    */

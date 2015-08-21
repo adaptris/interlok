@@ -246,11 +246,12 @@
     <macrodef name="create-javadocs" uri="uri:interlok">
       <attribute name="destdir" default="${api.doc.dir}"/>
       <attribute name="sourcepath" default="${src.dir}"/>
+      <attribute name="title" default="${manifest.title}"/>
       <element name="grouping" optional="true"/>
       <element name="packageset-filter" optional="true"/>
       <sequential>
         <javadoc author="false" destdir="@{destdir}"
-          windowtitle="Interlok Adapter Framework API" bottom="Copyright Adaptris"
+          windowtitle="@{title}" bottom="Copyright Adaptris"
           access="protected" breakiterator="yes" verbose="no"
           charset="ISO-8859-1" >
           <arg value="-quiet"/>
@@ -262,7 +263,7 @@
             <path refid="main.classpath"/>
             <pathelement location="${ant.core.lib}"/>
           </classpath>
-          <grouping/>
+          <grouping/>          
           <link offline="false" href="http://docs.oracle.com/javaee/7/api/" />
           <link offline="false" href="http://docs.oracle.com/javase/7/docs/api/" />
           <link offline="false" href="http://commons.apache.org/proper/commons-net/javadocs/api-3.3/"/>
@@ -273,6 +274,7 @@
           <link offline="false" href="http://www.slf4j.org/apidocs/"/>
           <link offline="false" href="http://development.adaptris.com/javadocs/v3-snapshot/Interlok-API/"/>
           <link offline="false" href="http://www.swiftmq.com/products/router/swiftlets/sys_amqp/client/javadoc/"/>
+          <link offline="false" href="http://www.quartz-scheduler.org/api/2.2.1/"/>
           <taglet name="com.adaptris.taglet.ConfigTaglet">
             <path refid="classpath.ant-tools"/>
           </taglet>

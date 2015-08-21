@@ -137,50 +137,6 @@
         </if>
       </sequential>
     </macrodef>
-
-    <macrodef name="create-javadocs" uri="uri:interlok">
-      <sequential>
-        <javadoc author="false" destdir="${api.doc.dir}"  sourcepath="${src.dir}"
-          windowtitle="${manifest.title}" bottom="Copyright Adaptris"
-          access="protected" breakiterator="yes" verbose="no"
-          charset="ISO-8859-1" >
-          <arg value="-quiet"/>
-          <arg value="-Xdoclint:none"/>
-          <packageset dir="${src.dir}" defaultexcludes="yes"/>
-          <classpath>
-            <path refid="main.classpath"/>
-          </classpath>
-          <group title="Base Adapter Configuration" packages="com.adaptris.core:com.adaptris.core.*"/>
-          <group title="Standard Services" packages="com.adaptris.core.services:com.adaptris.core.services.*"/>
-          <group title="Data Transformation and Validation" packages="com.adaptris.core.transform:com.adaptris.core.transform.*:com.adaptris.transform*:com.adaptris.edi*"/>
-          <group title="Generic Filesystem" packages="com.adaptris.core.fs:com.adaptris.core.fs.*:com.adaptris.fs:com.adaptris.fs.*"/>
-          <group title="Connecting to JMS" packages="com.adaptris.core.jms:com.adaptris.core.jms.*"/>
-          <group title="Email" packages="com.adaptris.core.mail:com.adaptris.core.mail.*:com.adaptris.mail:com.adaptris.mail.*"/>
-          <group title="FTP / SFTP" packages="com.adaptris.core.ftp:com.adaptris.core.ftp.*:com.adaptris.filetransfer:com.adaptris.ftp:com.adaptris.sftp"/>
-          <group title="HTTP" packages="com.adaptris.core.http:com.adaptris.core.http.*:com.adaptris.http:com.adaptris.http.*"/>
-          <group title="JDBC" packages="com.adaptris.core.jdbc:com.adaptris.core.jdbc.*:com.adaptris.core.services.jdbc:com.adaptris.core.services.jdbc.*:com.adaptris.jdbc*"/>
-          <group title="OFTP" packages="com.adaptris.core.oftp:com.adaptris.core.oftp.*:com.adaptris.protocol.oftp:com.adaptris.protocol.oftp.*:"/>
-          <group title="Security" packages="com.adaptris.core.security:com.adaptris.core.security.*:com.adaptris.security:com.adaptris.security.*"/>
-          <group title="Utility classes" packages="com.adaptris.util:com.adaptris.util.*:com.adaptris.core.util:com.adaptris.core.util.*"/>
-          <group title="Raw Sockets" packages="com.adaptris.core.socket:com.adaptris.core.socket.*:com.adaptris.core.transport:com.adaptris.core.transport.*:com.adaptris.transport:com.adaptris.transport.*"/>
-          <group title="Adapter Management" packages="com.adaptris.core.management:com.adaptris.core.management.*:com.adaptris.failover:com.adaptris.core.runtime:com.adaptris.core.runtime.*"/>
-          <link offline="false" href="http://docs.oracle.com/javaee/7/api/" />
-          <link offline="false" href="http://docs.oracle.com/javase/7/docs/api/" />
-          <link offline="false" href="http://commons.apache.org/proper/commons-net/javadocs/api-3.3/"/>
-          <link offline="false" href="http://archive.eclipse.org/jetty/8.1.14.v20131031/apidocs"/>
-          <link offline="false" href="http://xml.apache.org/xalan-j/apidocs/"/>
-          <link offline="false" href="http://commons.apache.org/proper/commons-pool/api-1.6/"/>
-          <link offline="false" href="http://www.slf4j.org/apidocs/"/>
-          <link offline="false" href="http://www.quartz-scheduler.org/api/2.2.1/"/>
-          <taglet name="com.adaptris.taglet.ConfigTaglet">
-            <path refid="classpath.ant-tools"/>
-          </taglet>
-          <taglet name="com.adaptris.taglet.LicenseTaglet">
-            <path refid="classpath.ant-tools"/>
-          </taglet>
-        </javadoc>
-      </sequential>
-    </macrodef>
   </target>
 
   <target name="prepare" depends="init, prepare-ivy, macrodef.init">
@@ -449,7 +405,24 @@
     <delete dir ="${api.doc.dir}" />
     <mkdir dir ="${api.doc.dir}" />
     <property name="echo.classpath" refid="main.classpath"/>
-    <interlok:create-javadocs/>
+    <interlok:create-javadocs sourcepath="${src.dir}" destdir="${api.doc.dir}" title="${manifest.title}">
+      <grouping>
+          <group title="Base Adapter Configuration" packages="com.adaptris.core:com.adaptris.core.*"/>
+          <group title="Standard Services" packages="com.adaptris.core.services:com.adaptris.core.services.*"/>
+          <group title="Data Transformation and Validation" packages="com.adaptris.core.transform:com.adaptris.core.transform.*:com.adaptris.transform*:com.adaptris.edi*"/>
+          <group title="Generic Filesystem" packages="com.adaptris.core.fs:com.adaptris.core.fs.*:com.adaptris.fs:com.adaptris.fs.*"/>
+          <group title="Connecting to JMS" packages="com.adaptris.core.jms:com.adaptris.core.jms.*"/>
+          <group title="Email" packages="com.adaptris.core.mail:com.adaptris.core.mail.*:com.adaptris.mail:com.adaptris.mail.*"/>
+          <group title="FTP / SFTP" packages="com.adaptris.core.ftp:com.adaptris.core.ftp.*:com.adaptris.filetransfer:com.adaptris.ftp:com.adaptris.sftp"/>
+          <group title="HTTP" packages="com.adaptris.core.http:com.adaptris.core.http.*:com.adaptris.http:com.adaptris.http.*"/>
+          <group title="JDBC" packages="com.adaptris.core.jdbc:com.adaptris.core.jdbc.*:com.adaptris.core.services.jdbc:com.adaptris.core.services.jdbc.*:com.adaptris.jdbc*"/>
+          <group title="OFTP" packages="com.adaptris.core.oftp:com.adaptris.core.oftp.*:com.adaptris.protocol.oftp:com.adaptris.protocol.oftp.*:"/>
+          <group title="Security" packages="com.adaptris.core.security:com.adaptris.core.security.*:com.adaptris.security:com.adaptris.security.*"/>
+          <group title="Utility classes" packages="com.adaptris.util:com.adaptris.util.*:com.adaptris.core.util:com.adaptris.core.util.*"/>
+          <group title="Raw Sockets" packages="com.adaptris.core.socket:com.adaptris.core.socket.*:com.adaptris.core.transport:com.adaptris.core.transport.*:com.adaptris.transport:com.adaptris.transport.*"/>
+          <group title="Adapter Management" packages="com.adaptris.core.management:com.adaptris.core.management.*:com.adaptris.failover:com.adaptris.core.runtime:com.adaptris.core.runtime.*"/>
+      </grouping>
+    </interlok:create-javadocs>    
   </target>
 
   <target name="findbugs.init" depends="compile, jar.resources" if="findbugs.home">
