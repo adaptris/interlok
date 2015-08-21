@@ -3,6 +3,7 @@ package com.adaptris.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -36,6 +37,10 @@ public class KeyValuePairCollection extends KeyValuePairBag {
     addAll(properties);
   }
 
+  public KeyValuePairCollection(Map<String, String> map) {
+    this();
+    addAll(map);
+  }
   @Override
   public Collection<KeyValuePair> getKeyValuePairs() {
     return collection;

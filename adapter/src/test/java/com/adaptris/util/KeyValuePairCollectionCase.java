@@ -5,7 +5,9 @@ package com.adaptris.util;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 
 import junit.framework.TestCase;
@@ -189,6 +191,15 @@ public abstract class KeyValuePairCollectionCase extends TestCase {
     assertEquals(4, bag2.size());
   }
 
+  public void testAddAll_Map() {
+    Map<String, String> p = toMap(createWithEntries(3));
+    KeyValuePairBag bag2 = createBag();
+    bag2.add(new KeyValuePair(KEY4, VALUE4));
+    bag2.addAll(p);
+    assertEquals(4, bag2.size());
+  }
+
+
   public void testContains() {
     KeyValuePairBag bag1 = createWithEntries(5);
     assertTrue(bag1.contains(new KeyValuePair(KEY1, VALUE1)));
@@ -264,5 +275,13 @@ public abstract class KeyValuePairCollectionCase extends TestCase {
       set.addKeyValuePair(new KeyValuePair(KEY + i, VALUE + i));
     }
     return set;
+  }
+  
+  protected Map<String, String> toMap(KeyValuePairBag bag) {
+    HashMap<String, String> result = new HashMap<>();
+    for (KeyValuePair kvp : bag) {
+      result.put(kvp.getKey(), kvp.getValue());
+    }
+    return result;
   }
 }

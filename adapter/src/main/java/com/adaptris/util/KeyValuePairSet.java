@@ -5,6 +5,7 @@ import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -47,6 +48,11 @@ public class KeyValuePairSet extends KeyValuePairBag implements Set<KeyValuePair
   public KeyValuePairSet(Properties properties) {
     this();
     addAll(properties);
+  }
+
+  public KeyValuePairSet(Map<String, String> map) {
+    this();
+    addAll(map);
   }
 
   @Override

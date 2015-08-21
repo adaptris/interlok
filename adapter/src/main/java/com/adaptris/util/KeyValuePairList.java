@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Properties;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -37,6 +38,13 @@ public class KeyValuePairList extends KeyValuePairBag implements List<KeyValuePa
     this();
     addAll(properties);
   }
+
+  public KeyValuePairList(Map<String, String> map) {
+    this();
+    addAll(map);
+  }
+
+
 
   @Override
   public List<KeyValuePair> getKeyValuePairs() {

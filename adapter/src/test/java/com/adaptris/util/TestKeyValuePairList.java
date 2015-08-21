@@ -4,6 +4,8 @@
 package com.adaptris.util;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 
@@ -42,6 +44,16 @@ public class TestKeyValuePairList extends KeyValuePairCollectionCase {
     assertEquals(set.hashCode(), set2.hashCode());
   }
 
+  public void testMapConstructor() {
+    Map<String, String> p = new HashMap<>();
+    p.put(KEY1, VALUE1);
+    p.put(KEY2, VALUE2);
+    KeyValuePairList set = new KeyValuePairList(p);
+    KeyValuePairList set2 = new KeyValuePairList(p);
+    assertEquals(2, set.size());
+    assertEquals(set, set2);
+    assertEquals(set.hashCode(), set2.hashCode());
+  }
 
   public void testAddAtIndex() {
     KeyValuePairList list = createBag();

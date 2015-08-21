@@ -229,4 +229,18 @@ public abstract class KeyValuePairBag extends AbstractCollection<KeyValuePair> {
       }
     }
   }
+
+  /**
+   * Convenience method to add the assocated mapto this collection
+   * 
+   * @param p collection of properties to add.
+   */
+  public void addAll(Map<String, String> map) {
+    for (Map.Entry<String, String> e : map.entrySet()) {
+      if (e.getKey() != null) {
+        addKeyValuePair(new KeyValuePair(e.getKey(), e.getValue() != null ? e.getValue() : null));
+      }
+    }
+  }
+
 }
