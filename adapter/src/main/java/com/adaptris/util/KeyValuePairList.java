@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Properties;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
@@ -30,6 +31,11 @@ public class KeyValuePairList extends KeyValuePairBag implements List<KeyValuePa
   public KeyValuePairList(Collection<KeyValuePair> pairs) {
     this();
     addAll(pairs);
+  }
+
+  public KeyValuePairList(Properties properties) {
+    this();
+    addAll(properties);
   }
 
   @Override

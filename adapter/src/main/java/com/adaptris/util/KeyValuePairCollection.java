@@ -3,6 +3,7 @@ package com.adaptris.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Properties;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
@@ -28,6 +29,11 @@ public class KeyValuePairCollection extends KeyValuePairBag {
   public KeyValuePairCollection(Collection<KeyValuePair> pairs) {
     this();
     addAll(pairs);
+  }
+
+  public KeyValuePairCollection(Properties properties) {
+    this();
+    addAll(properties);
   }
 
   @Override

@@ -3,6 +3,8 @@
  */
 package com.adaptris.util;
 
+import java.util.Properties;
+
 
 public class TestKeyValuePairSet extends KeyValuePairCollectionCase {
 
@@ -36,6 +38,18 @@ public class TestKeyValuePairSet extends KeyValuePairCollectionCase {
     assertEquals(set, set2);
     assertEquals(set.hashCode(), set2.hashCode());
   }
+
+  public void testPropertiesConstructor() {
+    Properties p = new Properties();
+    p.setProperty(KEY1, VALUE1);
+    p.setProperty(KEY2, VALUE2);
+    KeyValuePairSet set = new KeyValuePairSet(p);
+    KeyValuePairSet set2 = new KeyValuePairSet(p);
+    assertEquals(2, set.size());
+    assertEquals(set, set2);
+    assertEquals(set.hashCode(), set2.hashCode());
+  }
+
 
   @Override
   protected KeyValuePairBag createBag() {

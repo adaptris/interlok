@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -215,5 +216,17 @@ public abstract class KeyValuePairBag extends AbstractCollection<KeyValuePair> {
       result.setProperty(kvp.getKey(), kvp.getValue());
     }
     return result;
+  }
+
+  /**
+   * Convenience method to add all the associated properties to this collection
+   * @param p collection of properties to add.
+   */
+  public void addAll(Properties p) {
+    for (Map.Entry e : p.entrySet()) {
+      if (e.getKey() != null) {
+        addKeyValuePair(new KeyValuePair(e.getKey().toString(), e.getValue() != null ? e.getValue().toString() : null));
+      }
+    }
   }
 }

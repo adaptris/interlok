@@ -181,6 +181,14 @@ public abstract class KeyValuePairCollectionCase extends TestCase {
     assertEquals(4, bag1.size());
   }
 
+  public void testAddAll_Properties() {
+    Properties p = KeyValuePairBag.asProperties(createWithEntries(3));
+    KeyValuePairBag bag2 = createBag();
+    bag2.add(new KeyValuePair(KEY4, VALUE4));
+    bag2.addAll(p);
+    assertEquals(4, bag2.size());
+  }
+
   public void testContains() {
     KeyValuePairBag bag1 = createWithEntries(5);
     assertTrue(bag1.contains(new KeyValuePair(KEY1, VALUE1)));

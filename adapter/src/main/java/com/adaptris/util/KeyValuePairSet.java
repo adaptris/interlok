@@ -5,6 +5,7 @@ import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Properties;
 import java.util.Set;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -41,6 +42,11 @@ public class KeyValuePairSet extends KeyValuePairBag implements Set<KeyValuePair
   public KeyValuePairSet(Collection<KeyValuePair> pairs) {
     this();
     addAll(pairs);
+  }
+
+  public KeyValuePairSet(Properties properties) {
+    this();
+    addAll(properties);
   }
 
   @Override
