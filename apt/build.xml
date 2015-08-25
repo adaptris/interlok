@@ -39,7 +39,7 @@
     <delete dir="${tests.output.dir}"/>
     <delete>
       <fileset file="${coverage.metadata.file}"/>
-    </delete>    
+    </delete>
   </target>
 
   <target name="compile" depends="init, prepare-ivy, macrodef.init" description="Compile Annotation Processor">
@@ -53,9 +53,9 @@
   <target name="jar" depends="compile">
     <copy file="${resources.dir}/velocity.properties" tofile="${build.classes.dir}/velocity.properties"/>
     <copy file="${resources.dir}/beanInfo.vm" tofile="${build.classes.dir}/beanInfo.vm"/>
-    <interlok:create-version dir="${build.classes.dir}/META-INF" name="${manifest.title}"/>    
+    <interlok:create-version dir="${build.classes.dir}/META-INF" name="${manifest.title}"/>
     <interlok:create-manifest file="${build.dir}/Manifest.mf" title="${manifest.title}"/>
-    
+
     <jar basedir="${build.classes.dir}" jarfile="${project.dist.dir}/${project.jar.name}" manifest="${build.dir}/Manifest.mf">
       <service type="javax.annotation.processing.Processor">
         <provider classname="${xstream.annotation.processor}"/>
@@ -68,20 +68,23 @@
   </target>
 
   <target name="macrodef.init" depends="ivy.macrodef"/>
-  
+
   <target name="prepare-for-publish" depends="prepare-ivy, jar, macrodef.init">
     <mkdir dir="${project.dist.dir}/${project.name}/pom"/>
     <mkdir dir="${project.dist.dir}/${project.name}/jar"/>
     <copy todir="${project.dist.dir}/${project.name}/jar" file="${project.dist.dir}/${project.jar.name}"/>
     <ivy:makepom ivyfile="${ivy.xml.file}" pomfile="${project.dist.dir}/${project.name}/pom/${project.name}.pom"/>
   </target>
-  
+
   <target name="publish" depends="prepare-for-publish">
     <interlok:publish-artifact resolver="${ivy.repo}" revision="${ivy.publish.revision}" artifact.basedir="${project.dist.dir}" ivy-config="${ivy.xml.file}"/>
   </target>
 
-  <target name="test" depends="compile" description="Run Tests">
+  <target name="test" depends="init">
     <echo message="Nothing to do"/>
   </target>
-  
+
+  <target name="test-no-reports" depends="init">
+    <echo message="Nothing to do"/>
+  </target>
 </project>
