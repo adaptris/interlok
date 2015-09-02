@@ -2,7 +2,10 @@ package com.adaptris.core;
 
 import java.util.concurrent.TimeUnit;
 
+import javax.validation.constraints.NotNull;
+
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 import com.adaptris.util.license.License;
@@ -35,8 +38,12 @@ public class RequestReplyWorkflow extends StandardWorkflow {
   private static final TimeInterval DEFAULT_REPLY_TIMEOUT = new TimeInterval(30L, TimeUnit.SECONDS);
 
   @AdvancedConfig
-  private boolean retainUniqueId;
+  private Boolean retainUniqueId;
+  @NotNull
+  @AutoPopulated
   private ServiceCollection replyServiceCollection;
+  @NotNull
+  @AutoPopulated
   private AdaptrisMessageProducer replyProducer;
   @AdvancedConfig
   private TimeInterval replyTimeout;
@@ -49,7 +56,6 @@ public class RequestReplyWorkflow extends StandardWorkflow {
   public RequestReplyWorkflow() {
     replyServiceCollection = new ServiceList();
     replyProducer = new NullMessageProducer();
-    retainUniqueId = false;
   }
 
   /**
@@ -71,7 +77,7 @@ public class RequestReplyWorkflow extends StandardWorkflow {
     AdaptrisMessage reply = getProducer().request(msg, replyTimeout());
     msg.addEvent(getProducer(), true);
     if (reply != null) {
-      if (retainUniqueId) {
+      if (retainUniqueId()) {
         reply.setUniqueId(originalId);
       }
       try {
@@ -215,7 +221,7 @@ public class RequestReplyWorkflow extends StandardWorkflow {
    *
    * @param b true or false
    */
-  public void setRetainUniqueId(boolean b) {
+  public void setRetainUniqueId(Boolean b) {
     retainUniqueId = b;
   }
 
@@ -225,8 +231,12 @@ public class RequestReplyWorkflow extends StandardWorkflow {
    * @return true or false
    * @see #setRetainUniqueId(boolean)
    */
-  public boolean getRetainUniqueId() {
+  public Boolean getRetainUniqueId() {
     return retainUniqueId;
+  }
+
+  boolean retainUniqueId() {
+    return getRetainUniqueId() != null ? getRetainUniqueId().booleanValue() : false;
   }
 
   @Override

@@ -9,8 +9,12 @@ package com.adaptris.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
 import org.perf4j.aop.Profiled;
 
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.license.License;
 import com.adaptris.util.license.License.LicenseType;
@@ -31,8 +35,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("multi-producer-workflow")
 public class MultiProducerWorkflow extends StandardWorkflow {
 
+  @NotNull
+  @AutoPopulated
   private List<StandaloneProducer> standaloneProducers;
-  private boolean useProcessedMessage;
+  @AdvancedConfig
+  private Boolean useProcessedMessage;
 
   /**
    * <p>
@@ -104,7 +111,7 @@ public class MultiProducerWorkflow extends StandardWorkflow {
   private void sendProcessedMessage(AdaptrisMessage wip, AdaptrisMessage msg) {
     AdaptrisMessage msgToSend = msg;
 
-    if (getUseProcessedMessage()) {
+    if (useProcessedMessage()) {
       msgToSend = wip;
     }
     for (StandaloneProducer p : standaloneProducers) {
@@ -230,7 +237,7 @@ public class MultiProducerWorkflow extends StandardWorkflow {
    * @param useProc whether the processed message should be used by the
    *          processed message producer
    */
-  public void setUseProcessedMessage(boolean useProc) {
+  public void setUseProcessedMessage(Boolean useProc) {
     useProcessedMessage = useProc;
   }
 
@@ -243,8 +250,12 @@ public class MultiProducerWorkflow extends StandardWorkflow {
    * @return whether the processed message should be used by the processed
    *         message producer
    */
-  public boolean getUseProcessedMessage() {
+  public Boolean getUseProcessedMessage() {
     return useProcessedMessage;
+  }
+
+  boolean useProcessedMessage() {
+    return getUseProcessedMessage() != null ? getUseProcessedMessage().booleanValue() : false;
   }
 
   @Override
