@@ -6,9 +6,19 @@
  */
 package com.adaptris.core;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.UUID;
+
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import com.adaptris.core.services.metadata.AddMetadataService;
 import com.adaptris.core.stubs.EventHandlerAwareService;
@@ -25,6 +35,11 @@ public class BranchingServiceCollectionTest extends ServiceCollectionCase {
   private AddMetadataService lowService;
   private AddMetadataService highService;
   private static final String BASE_DIR_KEY = "BranchingServiceExamples.baseDir";
+  
+  @Mock
+  private Service mockFailingService;
+  @Mock
+  private OutOfStateHandler mockOutOfStateHandler;
 
   public BranchingServiceCollectionTest(String name) {
     super(name);
@@ -46,6 +61,7 @@ public class BranchingServiceCollectionTest extends ServiceCollectionCase {
     highService.setUniqueId(BRANCH_HIGH);
     highService.addMetadataElement("service-id", BRANCH_HIGH);
 
+    MockitoAnnotations.initMocks(this);
   }
 
   @Override
@@ -272,6 +288,60 @@ public class BranchingServiceCollectionTest extends ServiceCollectionCase {
 
     }
 
+  }
+  
+  public void testDoServiceFailsNoRestart() throws Exception {
+    doThrow(new ServiceException("Expected")).when(mockFailingService).doService(any(AdaptrisMessage.class));
+    when(mockFailingService.getUniqueId()).thenReturn(FIRST_SERVICE_ID);
+    when(mockFailingService.createName()).thenReturn(Service.class.getName());
+    
+    when(mockOutOfStateHandler.isInCorrectState(mockFailingService)).thenReturn(true);
+    
+    BranchingServiceCollection services = createServiceCollection();
+    services.setOutOfStateHandler(mockOutOfStateHandler);
+    
+    services.setFirstServiceId(FIRST_SERVICE_ID);
+    services.setRestartAffectedServiceOnException(false);
+    services.addService(mockFailingService);
+    
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    try {
+      services.doService(msg);
+      fail("Mock service should fail.");
+    }
+    catch (ServiceException expected) {
+      verify(mockFailingService, never()).requestStop();
+      verify(mockFailingService, never()).requestClose();
+      verify(mockFailingService, never()).requestInit();
+      verify(mockFailingService, never()).requestStart();
+    }
+  }
+  
+  public void testDoServiceFailsWithServiceRestart() throws Exception {
+    doThrow(new ServiceException("Expected")).when(mockFailingService).doService(any(AdaptrisMessage.class));
+    when(mockFailingService.getUniqueId()).thenReturn(FIRST_SERVICE_ID);
+    when(mockFailingService.createName()).thenReturn(Service.class.getName());
+    
+    when(mockOutOfStateHandler.isInCorrectState(mockFailingService)).thenReturn(true);
+    
+    BranchingServiceCollection services = createServiceCollection();
+    services.setOutOfStateHandler(mockOutOfStateHandler);
+    
+    services.setFirstServiceId(FIRST_SERVICE_ID);
+    services.setRestartAffectedServiceOnException(true);
+    services.addService(mockFailingService);
+    
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    try {
+      services.doService(msg);
+      fail("Mock service should fail.");
+    }
+    catch (ServiceException expected) {
+      verify(mockFailingService, times(1)).requestStop();
+      verify(mockFailingService, times(1)).requestClose();
+      verify(mockFailingService, times(1)).requestInit();
+      verify(mockFailingService, times(1)).requestStart();
+    }
   }
 
   @Override
