@@ -19,6 +19,7 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
@@ -38,7 +39,8 @@ public final class MapMessageTranslator extends MessageTypeTranslatorImp {
   @NotNull
   @NotBlank
   private String keyForPayload;
-  private boolean treatMetadataAsPartOfMessage;
+  @AdvancedConfig
+  private Boolean treatMetadataAsPartOfMessage;
 
   public MapMessageTranslator() {
     super();
@@ -74,7 +76,7 @@ public final class MapMessageTranslator extends MessageTypeTranslatorImp {
   public Message translate(AdaptrisMessage msg) throws JMSException {
     MapMessage jmsMsg = session.createMapMessage();
     jmsMsg.setString(getKeyForPayload(), msg.getStringPayload());
-    if (getTreatMetadataAsPartOfMessage()) {
+    if (treatMetadataAsPartOfMessage()) {
       Set metadata = msg.getMetadata();
       for (Iterator itr = metadata.iterator(); itr.hasNext();) {
         MetadataElement element = (MetadataElement) itr.next();
@@ -136,7 +138,7 @@ public final class MapMessageTranslator extends MessageTypeTranslatorImp {
    * @return the treatMetadataAsPartOfMessage
    * @see #setTreatMetadataAsPartOfMessage(boolean)
    */
-  public boolean getTreatMetadataAsPartOfMessage() {
+  public Boolean getTreatMetadataAsPartOfMessage() {
     return treatMetadataAsPartOfMessage;
   }
 
@@ -149,7 +151,11 @@ public final class MapMessageTranslator extends MessageTypeTranslatorImp {
    *
    * @param b true to force AdaptrisMessage metadata to be treated as part of the MapMessage rather as standard JMS properties.
    */
-  public void setTreatMetadataAsPartOfMessage(boolean b) {
+  public void setTreatMetadataAsPartOfMessage(Boolean b) {
     treatMetadataAsPartOfMessage = b;
+  }
+
+  boolean treatMetadataAsPartOfMessage() {
+    return getTreatMetadataAsPartOfMessage() != null ? getTreatMetadataAsPartOfMessage().booleanValue() : false;
   }
 }

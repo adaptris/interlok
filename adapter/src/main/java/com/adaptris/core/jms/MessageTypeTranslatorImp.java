@@ -7,6 +7,7 @@ import javax.jms.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.AdaptrisMessageTranslator;
@@ -41,9 +42,13 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
   /**
    * Set the filter that will be used return a subset of the messages metdata to be copied over during the translate.
    */
+  @AdvancedConfig
   private MetadataFilter metadataFilter;
+  @AdvancedConfig
   private Boolean moveMetadata;
+  @AdvancedConfig
   private Boolean moveJmsHeaders;
+  @AdvancedConfig
   private Boolean reportAllErrors;
 
   /**
