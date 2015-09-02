@@ -15,6 +15,7 @@ import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.interceptor.MessageMetricsInterceptor;
 import com.adaptris.core.util.LifecycleHelper;
@@ -49,17 +50,21 @@ public abstract class WorkflowImp implements Workflow {
   @Valid
   private AdaptrisMessageProducer producer;
 
+  @AdvancedConfig
   private Boolean disableDefaultMessageCount;
 
   // Could be null; if it is, then the real one gets injected in later.
   private ProcessingExceptionHandler messageErrorHandler; // configured
   // private EventHandler eventHandler;
 
+  @AdvancedConfig
   private Boolean sendEvents;
+  @AdvancedConfig
   private Boolean logPayload;
   @NotNull
   @AutoPopulated
   @Valid
+  @AdvancedConfig
   private ProduceExceptionHandler produceExceptionHandler;
   @NotNull
   @NotBlank
@@ -69,6 +74,7 @@ public abstract class WorkflowImp implements Workflow {
   private List<WorkflowInterceptor> interceptors;
 
   @Valid
+  @AdvancedConfig
   private TimeInterval channelUnavailableWaitInterval;
 
   // not marshalled
