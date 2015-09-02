@@ -19,6 +19,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.perf4j.aop.Profiled;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.FifoMutexLock;
@@ -91,9 +92,12 @@ public class PoolingWorkflow extends WorkflowImp {
   private Integer minIdle;
   private Integer maxIdle;
 
+  @AdvancedConfig
   private TimeInterval threadKeepAlive;
+  @AdvancedConfig
   private TimeInterval shutdownWaitTime;
 
+  @AdvancedConfig
   private Integer threadPriority;
 
   private transient ExecutorService threadPool;

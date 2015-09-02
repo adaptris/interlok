@@ -4,6 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.perf4j.aop.Profiled;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.GenerateBeanInfo;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageConsumer;
@@ -50,7 +51,9 @@ public final class JmsTransactedWorkflow extends StandardWorkflow {
     }
   };
 
+  @AdvancedConfig
   private Boolean strict;
+  @AdvancedConfig
   private TimeInterval waitPeriodAfterRollback;
   private static final TimeInterval DEFAULT_WAIT_PERIOD = new TimeInterval(30L, TimeUnit.SECONDS.name());
 

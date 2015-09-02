@@ -2,6 +2,7 @@ package com.adaptris.core;
 
 import java.util.concurrent.TimeUnit;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 import com.adaptris.util.license.License;
@@ -33,9 +34,11 @@ public class RequestReplyWorkflow extends StandardWorkflow {
 
   private static final TimeInterval DEFAULT_REPLY_TIMEOUT = new TimeInterval(30L, TimeUnit.SECONDS);
 
+  @AdvancedConfig
   private boolean retainUniqueId;
   private ServiceCollection replyServiceCollection;
   private AdaptrisMessageProducer replyProducer;
+  @AdvancedConfig
   private TimeInterval replyTimeout;
 
   /**
