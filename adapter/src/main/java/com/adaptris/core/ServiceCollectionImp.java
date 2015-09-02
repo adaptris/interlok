@@ -15,6 +15,7 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.FifoMutexLock;
@@ -33,15 +34,19 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
 
   private String uniqueId;
   private Boolean restartAffectedServiceOnException;
+  @AdvancedConfig
   private Boolean continueOnFail;
+  @AdvancedConfig
   private Boolean isTrackingEndpoint;
+  @AdvancedConfig
   private Boolean isConfirmation;
+  @AdvancedConfig
   private Boolean checkServiceState;
+  @AdvancedConfig
+  private OutOfStateHandler outOfStateHandler;
   @AutoPopulated
   @NotNull
   private List<Service> services;
-
-  private OutOfStateHandler outOfStateHandler;
   
   private transient FifoMutexLock lock = new FifoMutexLock();
   protected transient EventHandler eventHandler;
