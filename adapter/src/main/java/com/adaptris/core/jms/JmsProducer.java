@@ -53,7 +53,6 @@ public class JmsProducer extends JmsProducerImpl {
 
   public JmsProducer() {
     super();
-    setPerMessageProperties(true);
   }
 
   public JmsProducer(ProduceDestination d) {
@@ -165,6 +164,11 @@ public class JmsProducer extends JmsProducerImpl {
     return replyTo;
   }
   
+  @Override
+  protected boolean perMessageProperties() {
+    return getPerMessageProperties() != null ? getPerMessageProperties().booleanValue() : true;
+  }
+
   private class MyJmsDestination implements JmsDestination {
 
     private Destination destination;
