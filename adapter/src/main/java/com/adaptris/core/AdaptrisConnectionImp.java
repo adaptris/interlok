@@ -7,6 +7,7 @@ import java.util.WeakHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.util.LifecycleHelper;
 
 /**
@@ -19,8 +20,10 @@ public abstract class AdaptrisConnectionImp implements AdaptrisConnection, State
 
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
+  @AdvancedConfig
   private String lookupName;
   private ConnectionErrorHandler connectionErrorHandler;
+  @AdvancedConfig
   private Boolean workersFirstOnShutdown;
   private String uniqueId;
 

@@ -9,6 +9,7 @@ package com.adaptris.core.socket;
 import java.io.IOException;
 import java.net.ServerSocket;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.AdaptrisConnectionImp;
 import com.adaptris.core.CoreException;
 import com.adaptris.util.license.License;
@@ -22,8 +23,10 @@ import com.adaptris.util.license.License.LicenseType;
  */
 public abstract class ConsumeConnection extends AdaptrisConnectionImp {
 
+  @AdvancedConfig
   private int backlog;
   private int listenPort;
+  @AdvancedConfig
   private int timeout;
 
   /**

@@ -4,6 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.validation.Valid;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.util.TimeInterval;
 
 /**
@@ -30,8 +31,10 @@ import com.adaptris.util.TimeInterval;
  */
 public abstract class AllowsRetriesConnection extends AdaptrisConnectionImp {
 
+  @AdvancedConfig
   private Integer connectionAttempts;
   @Valid
+  @AdvancedConfig
   private TimeInterval connectionRetryInterval;
   private static final TimeInterval DEFAULT_CONNECTION_RETRY_INTERVAL = new TimeInterval(1L, TimeUnit.MINUTES);
   private static final Integer DEFAULT_CONNECTION_ATTEMPTS = Integer.valueOf(-1);

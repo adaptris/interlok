@@ -12,6 +12,7 @@ import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.nio.BlockingChannelConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
@@ -176,13 +177,17 @@ public class HttpConnection extends JettyConnection {
   }
 
   private int port;
+  @AdvancedConfig
   private Boolean sendDateHeader;
+  @AdvancedConfig
   private Boolean sendServerVersion;
   @Valid
+  @AdvancedConfig
   private SecurityHandlerWrapper securityHandler;
   @NotNull
   @Valid
   @AutoPopulated
+  @AdvancedConfig
   private KeyValuePairSet httpProperties;
 
   /**

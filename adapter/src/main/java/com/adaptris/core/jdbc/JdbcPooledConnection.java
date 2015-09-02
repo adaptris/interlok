@@ -16,6 +16,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.security.password.Password;
@@ -39,14 +40,20 @@ public class JdbcPooledConnection extends DatabaseConnection {
   @NotBlank
   private String connectUrl;
   
+  @AdvancedConfig
   private int minimumPoolSize;
+  @AdvancedConfig
   private int maximumPoolSize;
+  @AdvancedConfig
   private int acquireIncrement;
   @Valid
+  @AdvancedConfig
   private TimeInterval connectionAcquireWait;
   @Valid
+  @AdvancedConfig
   private TimeInterval idleConnectionTestPeriod;
   @Valid
+  @AdvancedConfig
   private TimeInterval maxIdleTime;
   
   public JdbcPooledConnection () {

@@ -10,6 +10,7 @@ import java.net.URLDecoder;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.NullConnection;
 import com.adaptris.filetransfer.FileTransferClient;
@@ -34,14 +35,20 @@ public abstract class FileTransferConnection extends NullConnection {
   protected static final int DEFAULT_MAX_CACHE_SIZE = 16;
   private static final String UTF_8 = "UTF-8";
 
+  private String defaultUserName;
+  @AdvancedConfig
+  private Integer defaultControlPort;
+  @AdvancedConfig
+  private Boolean forceRelativePath;
+  @AdvancedConfig
+  private Boolean additionalDebug;
+  @AdvancedConfig
+  private Boolean windowsWorkAround;
+  @AdvancedConfig
+  private Boolean cacheConnection;
+  @AdvancedConfig
   private Integer maxClientCacheSize;
 
-  private Boolean forceRelativePath;
-  private Integer defaultControlPort;
-  private String defaultUserName;
-  private Boolean additionalDebug;
-  private Boolean windowsWorkAround;
-  private Boolean cacheConnection;
 
   private transient SimpleCache cachedConnections;
 

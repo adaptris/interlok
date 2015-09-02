@@ -13,6 +13,7 @@ import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.ssl.SslSocketConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.security.password.Password;
@@ -316,6 +317,7 @@ public class HttpsConnection extends HttpConnection {
   @NotNull
   @Valid
   @AutoPopulated
+  @AdvancedConfig
   private KeyValuePairSet sslProperties;
 
   /**

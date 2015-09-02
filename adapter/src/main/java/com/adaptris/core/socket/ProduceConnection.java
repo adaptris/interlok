@@ -9,6 +9,7 @@ package com.adaptris.core.socket;
 import java.io.IOException;
 import java.net.Socket;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.NullConnection;
 
 /** Abstract ProduceConnection class for the Socket Adapter.
@@ -18,6 +19,7 @@ import com.adaptris.core.NullConnection;
  */
 public abstract class ProduceConnection extends NullConnection {
 
+  @AdvancedConfig
   private int socketTimeout;
   
   /** @see Object#Object()

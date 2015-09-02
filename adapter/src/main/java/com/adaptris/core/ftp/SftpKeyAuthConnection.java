@@ -8,6 +8,7 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.io.FileUtils;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
@@ -62,10 +63,12 @@ public class SftpKeyAuthConnection extends FileTransferConnection {
 
   private String privateKeyFilename;
   private String privateKeyPassword;
+  @AdvancedConfig
   private Integer socketTimeout;
   @Valid
   @NotNull
   @AutoPopulated
+  @AdvancedConfig
   private SftpConnectionBehaviour sftpConnectionBehaviour;
   // For sending keep alives every 60 seconds on the control port when downloading stuff.
   // Could make it configurable

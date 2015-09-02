@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
@@ -32,10 +33,12 @@ public class SftpConnection extends FileTransferConnectionUsingPassword {
   static final int DEFAULT_CONTROL_PORT = 22;
   private static final int DEFAULT_TIMEOUT = 60000;
 
+  @AdvancedConfig
   private Integer socketTimeout;
   @Valid
   @NotNull
   @AutoPopulated
+  @AdvancedConfig
   private SftpConnectionBehaviour sftpConnectionBehaviour;
   // For sending keep alives every 60 seconds on the control port when downloading stuff.
   // Could make it configurable

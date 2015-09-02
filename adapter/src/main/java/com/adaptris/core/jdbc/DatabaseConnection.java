@@ -17,6 +17,7 @@ import javax.validation.Valid;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisConnectionImp;
@@ -41,17 +42,22 @@ public abstract class DatabaseConnection extends AllowsRetriesConnection {
   @AutoPopulated
   @NotBlank
   @InputFieldHint(style = "SQL")
+  @AdvancedConfig
   private String testStatement;
   @NotBlank
   @AutoPopulated
   private String driverImp;
+  @AdvancedConfig
   private Boolean autoCommit;
+  @AdvancedConfig
   private Boolean debugMode;
+  @AdvancedConfig
   private Boolean alwaysValidateConnection;
   private String username;
   @InputFieldHint(style = "PASSWORD")
   private String password;
   @Valid
+  @AdvancedConfig
   private KeyValuePairSet connectionProperties;
 
   private transient DataSource wrapper;

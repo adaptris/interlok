@@ -8,6 +8,7 @@ import javax.jms.JMSException;
 import javax.jms.Session;
 import javax.validation.Valid;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AllowsRetriesConnection;
@@ -37,6 +38,7 @@ public class JmsConnection extends AllowsRetriesConnection implements JmsConnect
   @InputFieldHint(style = "PASSWORD")
   private String password;
   private String clientId;
+  @AdvancedConfig
   private Boolean additionalDebug;
   @Valid
   @AutoPopulated

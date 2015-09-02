@@ -5,6 +5,7 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 import java.io.IOException;
 import java.util.TimeZone;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.CoreException;
 import com.adaptris.filetransfer.FileTransferClient;
@@ -29,10 +30,13 @@ public abstract class FtpConnectionImp extends FileTransferConnectionUsingPasswo
   @AutoPopulated
   private TransferType transferType;
   @AutoPopulated
+  @AdvancedConfig
   private Integer socketTimeout;
+  @AdvancedConfig
   private String serverTimezone;
   @AutoPopulated
   private FtpDataMode ftpDataMode;
+  @AdvancedConfig
   private String defaultAccount;
   // For sending keep alives every 60 seconds on the control port when downloading stuff.
   // Could make it configurable
