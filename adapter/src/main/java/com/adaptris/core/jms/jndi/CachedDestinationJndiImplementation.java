@@ -8,6 +8,7 @@ import javax.jms.JMSException;
 import javax.jms.Queue;
 import javax.jms.Topic;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.jms.JmsActorConfig;
 import com.adaptris.core.jms.VendorImplementation;
@@ -33,6 +34,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("cached-destination-jndi-implementation")
 public class CachedDestinationJndiImplementation extends StandardJndiImplementation {
 
+  @AdvancedConfig
   private Integer maxDestinationCacheSize;
   private static final int DEFAULT_MAX_CACHE_SIZE = 16;
 

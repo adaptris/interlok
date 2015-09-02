@@ -14,6 +14,7 @@ import org.apache.activemq.ActiveMQPrefetchPolicy;
 import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.blob.BlobTransferPolicy;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
@@ -378,8 +379,11 @@ public class AdvancedActiveMqImplementation extends BasicActiveMqImplementation 
     abstract void applyProperty(ActiveMQConnectionFactory cf, String s);
   };
 
+  @AdvancedConfig
   private BlobTransferPolicyFactory blobTransferPolicy;
+  @AdvancedConfig
   private PrefetchPolicyFactory prefetchPolicy;
+  @AdvancedConfig
   private RedeliveryPolicyFactory redeliveryPolicy;
   @NotNull
   @AutoPopulated

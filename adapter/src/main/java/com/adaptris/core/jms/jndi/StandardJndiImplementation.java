@@ -19,6 +19,7 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.jms.JmsActorConfig;
 import com.adaptris.core.jms.JmsConnection;
@@ -49,19 +50,26 @@ public class StandardJndiImplementation extends VendorImplementationImp {
   @NotNull
   @AutoPopulated
   @Valid
+  @AdvancedConfig
   private KeyValuePairSet jndiParams;
   @NotNull
   @NotBlank
   private String jndiName;
+  @AdvancedConfig
   private Boolean useJndiForQueues;
+  @AdvancedConfig
   private Boolean useJndiForTopics;
   private transient volatile Context context = null;
+  @AdvancedConfig
   private Boolean enableEncodedPasswords;
+  @AdvancedConfig
   private String encodedPasswordKeys;
   @NotNull
   @AutoPopulated
   @Valid
+  @AdvancedConfig
   private ExtraFactoryConfiguration extraFactoryConfiguration;
+  @AdvancedConfig
   private Boolean newContextOnException;
 
   public StandardJndiImplementation() {
