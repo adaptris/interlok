@@ -50,7 +50,6 @@ public class StandardJndiImplementation extends VendorImplementationImp {
   @NotNull
   @AutoPopulated
   @Valid
-  @AdvancedConfig
   private KeyValuePairSet jndiParams;
   @NotNull
   @NotBlank
