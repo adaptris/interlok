@@ -77,7 +77,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
   private int priority;
   @Min(0)
   @AdvancedConfig
-  private long ttl;
+  private Long ttl;
 
   @AdvancedConfig
   private Boolean perMessageProperties;
@@ -133,7 +133,6 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
     setAcknowledgeMode(AcknowledgeMode.Mode.CLIENT_ACKNOWLEDGE.name());
     setDeliveryMode(DeliveryMode.Mode.PERSISTENT.name());
     setPriority(4);
-    setTimeToLive(0); // forever
     setMessageTranslator(new TextMessageTranslator());
     setPerMessageProperties(false);
     setCorrelationIdSource(new NullCorrelationIdSource());
@@ -246,7 +245,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
    */
   @Deprecated
   protected long calculateTimeToLive(AdaptrisMessage msg) throws JMSException {
-    return calculateTimeToLive(msg, getTimeToLive());
+    return calculateTimeToLive(msg, timeToLive());
   }
 
 
@@ -362,8 +361,19 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
    * 
    * @return the time to live
    */
+  public Long getTtl() {
+    return ttl;
+  }
+
+  /**
+   * @deprecated use {@link #getTtl()} instead.
+   */
   public long getTimeToLive() {
     return ttl;
+  }
+
+  protected long timeToLive() {
+    return getTtl() != null ? getTtl().longValue() : 0;
   }
 
   /**
@@ -373,7 +383,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
    * 
    * @param l the time to live
    */
-  public void setTimeToLive(long l) {
+  public void setTtl(Long l) {
     ttl = l;
   }
 

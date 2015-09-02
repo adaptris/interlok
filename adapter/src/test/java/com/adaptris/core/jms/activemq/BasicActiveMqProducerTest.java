@@ -245,7 +245,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
       PasProducer pasProducer = new PasProducer(new ConfiguredProduceDestination(getName()));
       pasProducer.setDeliveryMode(String.valueOf(DeliveryMode.PERSISTENT));
       pasProducer.setPriority(LOWEST_PRIORITY);
-      pasProducer.setTimeToLive(0);
+      pasProducer.setTtl(0L);
       pasProducer.setPerMessageProperties(false);
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
           pasProducer);
@@ -270,7 +270,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
       PasProducer pasProducer = new PasProducer(new ConfiguredProduceDestination(getName()));
       pasProducer.setDeliveryMode(String.valueOf(DeliveryMode.PERSISTENT));
       pasProducer.setPriority(LOWEST_PRIORITY);
-      pasProducer.setTimeToLive(0);
+      pasProducer.setTtl(0L);
       pasProducer.setPerMessageProperties(true);
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
           pasProducer);

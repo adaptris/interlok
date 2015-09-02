@@ -58,7 +58,7 @@ public abstract class ProducerSessionFactoryImpl implements ProducerSessionFacto
     if (!jmsP.perMessageProperties()) {
       producer.setDeliveryMode(com.adaptris.core.jms.DeliveryMode.getMode(jmsP.getDeliveryMode()));
       producer.setPriority(jmsP.getPriority());
-      producer.setTimeToLive(jmsP.getTimeToLive());
+      producer.setTimeToLive(jmsP.timeToLive());
     }
     return producer;
   }

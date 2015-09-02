@@ -184,7 +184,7 @@ public class JmsProducer extends JmsProducerImpl {
       destination = orig.getDestination();
       replyTo = orig.getReplyToDestination();
       deliveryMode = isEmpty(orig.deliveryMode()) ? getDeliveryMode() : orig.deliveryMode();
-      timeToLive = orig.timeToLive() != null ? orig.timeToLive() : getTimeToLive();
+      timeToLive = orig.timeToLive() != null ? orig.timeToLive() : timeToLive();
       priority = orig.priority() != null ? orig.priority() : getPriority();
       destType = orig.destinationType();
       noLocal = orig.noLocal();
@@ -194,7 +194,7 @@ public class JmsProducer extends JmsProducerImpl {
     MyJmsDestination(Destination d) {
       destination = d;
       deliveryMode = getDeliveryMode();
-      timeToLive = getTimeToLive();
+      timeToLive = timeToLive();
       priority = getPriority();
     }
 

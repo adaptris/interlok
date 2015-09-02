@@ -66,7 +66,7 @@ public abstract class JmsProducerCase extends JmsProducerExample {
     DefinedJmsProducer p = new DummyProducer();
     p.setDeliveryMode(com.adaptris.core.jms.DeliveryMode.Mode.PERSISTENT.toString());
     p.setPriority(1);
-    p.setTimeToLive(0);
+    p.setTtl(0L);
     return p;
   }
 
