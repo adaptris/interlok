@@ -25,6 +25,7 @@ import org.quartz.SchedulerFactory;
 import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.NonBlockingQuartzThreadPool;
 import com.adaptris.util.FifoMutexLock;
@@ -197,8 +198,11 @@ public class QuartzCronPoller extends PollerImp {
 
   // marshalled
   private String cronExpression;
+  @AdvancedConfig
   private String quartzId;
+  @AdvancedConfig
   private String schedulerGroup;
+  @AdvancedConfig
   private Boolean useCustomThreadPool;
 
   private static final transient FifoMutexLock lock = new FifoMutexLock();

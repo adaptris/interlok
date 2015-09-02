@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.validation.Valid;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.TimeInterval;
@@ -37,6 +38,7 @@ public class FixedIntervalPoller extends PollerImp {
   @Valid
   @AutoPopulated
   private TimeInterval pollInterval;
+  @AdvancedConfig
   private TimeInterval shutdownWaitTime;
 
   protected transient ScheduledExecutorService executor;

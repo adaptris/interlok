@@ -24,6 +24,7 @@ import javax.validation.constraints.Pattern;
 
 import org.slf4j.Logger;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageListener;
@@ -49,6 +50,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
   @NotNull
   @AutoPopulated
   @Pattern(regexp = "AUTO_ACKNOWLEDGE|CLIENT_ACKNOWLEDGE|DUPS_OK_ACKNOWLEDGE|[0-9]+")
+  @AdvancedConfig
   private String acknowledgeMode;
   @NotNull
   @AutoPopulated
@@ -57,25 +59,32 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
   @NotNull
   @AutoPopulated
   @Valid
+  @AdvancedConfig
   private CorrelationIdSource correlationIdSource;
 
+  @AdvancedConfig
   private Boolean captureOutgoingMessageDetails;
 
   @NotNull
   @AutoPopulated
   @Pattern(regexp = "PERSISTENT|NON_PERSISTENT|[0-9]+")
+  @AdvancedConfig
   private String deliveryMode;
 
   @Min(0)
   @Max(9)
+  @AdvancedConfig
   private int priority;
   @Min(0)
+  @AdvancedConfig
   private long ttl;
 
+  @AdvancedConfig
   private Boolean perMessageProperties;
   @AutoPopulated
   @NotNull
   @Valid
+  @AdvancedConfig
   private ProducerSessionFactory sessionFactory;
 
   protected transient ProducerSession producerSession;
