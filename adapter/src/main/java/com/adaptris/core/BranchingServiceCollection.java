@@ -86,7 +86,7 @@ public class BranchingServiceCollection extends ServiceCollectionImp {
       }
       catch (ServiceException e) {
         msg.addEvent(service, false);
-        throw e;
+        handleException(service, msg, e);
       }
 
       if (service.isBranching()) {

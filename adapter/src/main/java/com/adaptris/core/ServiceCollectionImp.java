@@ -408,8 +408,8 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
     if (isRestartAffectedServiceOnException()) {
       log.debug("Service restarts on error, restarting [" + serviceName + "]");
       restartService(service);
-    }
-    if (service.continueOnFailure()) {
+    } 
+    if ((service != null) && (service.continueOnFailure())) {
       log.debug("continue-on-fail is true, ignoring Exception [" + e.getMessage() + "] from [" + serviceName + "]");
     }
     else {
