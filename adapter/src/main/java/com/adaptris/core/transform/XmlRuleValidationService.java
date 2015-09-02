@@ -30,6 +30,8 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @Deprecated
 public class XmlRuleValidationService extends ServiceImp {
 
+  private static transient boolean warningLogged;
+
   @XStreamImplicit(itemFieldName = "validation-stage")
   @NotNull
   @AutoPopulated
@@ -38,8 +40,11 @@ public class XmlRuleValidationService extends ServiceImp {
   private transient XmlRuleValidator validator;
 
   public XmlRuleValidationService() {
-    log.warn("{} is deprecated use {} with a {} instead", this.getClass().getSimpleName(),
+    if (!warningLogged) {
+      log.warn("{} is deprecated use {} with a {} instead", this.getClass().getSimpleName(),
         XmlValidationService.class.getCanonicalName(), XmlRuleValidator.class.getSimpleName());
+      warningLogged = true;
+    }
   }
 
   public void doService(AdaptrisMessage msg) throws ServiceException {

@@ -9,6 +9,7 @@ package com.adaptris.core;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -23,12 +24,16 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @Deprecated
 @XStreamAlias("standard-file-name-creator")
 public class StandardFileNameCreator implements FileNameCreator {
-
+  private static transient boolean warningLogged = false;
   private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
+  @AdvancedConfig
   private String prefix;
+  @AdvancedConfig
   private String suffix;
+  @AdvancedConfig
   private boolean useMessageUniqueId;
+  @AdvancedConfig
   private boolean addTimeStamp;
 
   /**
@@ -38,7 +43,10 @@ public class StandardFileNameCreator implements FileNameCreator {
    * </p>
    */
   public StandardFileNameCreator() {
-    log.warn("StandardFilenameCreator is deprecated; use " + FormattedFilenameCreator.class.getCanonicalName() + " instead");
+    if (!warningLogged) {
+      log.warn("StandardFilenameCreator is deprecated; use {} instead", FormattedFilenameCreator.class.getCanonicalName());
+      warningLogged = true;
+    }
     // defaults...
     setPrefix("");
     setSuffix("");

@@ -280,7 +280,7 @@ public class XmlTransformService extends ServiceImp {
 
   /**
    * @return the useMetadataAsStylesheetParameters
-   * @deprecated since 3.0.0B10 - use a {@link XmlTransformParameter} implementation instead.
+   * @deprecated since 3.0.0 - use a {@link XmlTransformParameter} implementation instead.
    */
   @Deprecated
   public Boolean getUseMetadataAsStylesheetParameters() {
@@ -289,11 +289,13 @@ public class XmlTransformService extends ServiceImp {
 
   /**
    * <p>
-   * Sets whether to pass in the message's metadata as parameters to be used in the stylesheet. False by default.
+   * Sets whether to pass in the message's metadata as parameters to be used in the stylesheet.
+   * False by default.
    * </p>
    * 
-   * @param b the useMetadataAsStylesheetParameters to set, if not specified defaults to null (false)
-   * @deprecated since 3.0.0B10 - use a {@link XmlTransformParameter} implementation instead.
+   * @param b the useMetadataAsStylesheetParameters to set, if not specified defaults to null
+   *        (false)
+   * @deprecated since 3.0.0 - use a {@link XmlTransformParameter} implementation instead.
    */
   @Deprecated
   public void setUseMetadataAsStylesheetParameters(Boolean b) {

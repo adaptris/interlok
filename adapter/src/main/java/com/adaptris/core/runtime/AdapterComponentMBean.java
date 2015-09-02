@@ -181,7 +181,7 @@ public interface AdapterComponentMBean extends BaseComponentMBean {
    * Initialise this component.
    * 
    * @throws CoreException wrapping any underlying Exception
-   * @deprecated since 3.0.0B10, use {@link #requestInit(long)} instead.
+   * @deprecated since 3.0.0, use {@link #requestInit(long)} instead.
    */
   @Deprecated
   void requestInit() throws CoreException;
@@ -203,7 +203,7 @@ public interface AdapterComponentMBean extends BaseComponentMBean {
    * Start this component.
    * 
    * @throws CoreException wrapping any underlying Exception
-   * @deprecated since 3.0.0B10, use {@link #requestStart(long)} instead.
+   * @deprecated since 3.0.0, use {@link #requestStart(long)} instead.
    */
   @Deprecated
   void requestStart() throws CoreException;
@@ -225,7 +225,7 @@ public interface AdapterComponentMBean extends BaseComponentMBean {
    * stop this component.
    * 
    * @throws CoreException wrapping any underlying Exception
-   * @deprecated since 3.0.0B10, use {@link #requestStop(long)} instead.
+   * @deprecated since 3.0.0, use {@link #requestStop(long)} instead.
    */
   @Deprecated
   void requestStop() throws CoreException;
@@ -247,7 +247,7 @@ public interface AdapterComponentMBean extends BaseComponentMBean {
    * Close this component.
    * 
    * @throws CoreException wrapping any underlying Exception
-   * @deprecated since 3.0.0B10, use {@link #requestClose(long)} instead.
+   * @deprecated since 3.0.0, use {@link #requestClose(long)} instead.
    */
   @Deprecated
   void requestClose() throws CoreException;
@@ -272,7 +272,7 @@ public interface AdapterComponentMBean extends BaseComponentMBean {
    * </p>
    * 
    * @throws CoreException wrapping any underlying Exception
-   * @deprecated since 3.0.0B10, use {@link #requestRestart(long)} instead.
+   * @deprecated since 3.0.0, use {@link #requestRestart(long)} instead.
    */
   @Deprecated
   void requestRestart() throws CoreException;
