@@ -14,6 +14,7 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.util.Args;
 import com.adaptris.fs.FsException;
 import com.adaptris.fs.FsFilenameExistsException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -172,13 +173,10 @@ public class FsConsumer extends FsConsumerImpl {
    * file is being processed.
    * </p>
    *
-   * @param string the work-in-progress suffix to use
+   * @param s the work-in-progress suffix to use
    */
-  public void setWipSuffix(String string) {
-    if (string == null || "".equals(string)) {
-      throw new IllegalArgumentException();
-    }
-    wipSuffix = string;
+  public void setWipSuffix(String s) {
+    wipSuffix = Args.notBlank(s, "wip suffix");
   }
 
   /**

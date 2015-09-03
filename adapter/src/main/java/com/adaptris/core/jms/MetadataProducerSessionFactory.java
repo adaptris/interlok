@@ -1,13 +1,13 @@
 package com.adaptris.core.jms;
 
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
-import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import javax.jms.JMSException;
 
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.util.Args;
 import com.adaptris.util.license.License;
 import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -73,10 +73,7 @@ public class MetadataProducerSessionFactory extends ProducerSessionFactoryImpl {
    * @param key the metadata key, defaults to 'newJmsSession'
    */
   public void setMetadataKey(String key) {
-    if (isEmpty(key)) {
-      throw new IllegalArgumentException("metadata key may not be null");
-    }
-    this.metadataKey = key;
+    this.metadataKey = Args.notEmpty(key, "metadata key");
   }
 
 }

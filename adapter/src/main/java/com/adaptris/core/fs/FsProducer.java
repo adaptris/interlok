@@ -22,6 +22,7 @@ import com.adaptris.core.FormattedFilenameCreator;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ProduceOnlyProducerImp;
+import com.adaptris.core.util.Args;
 import com.adaptris.fs.FsWorker;
 import com.adaptris.fs.NioWorker;
 import com.adaptris.util.license.License;
@@ -241,10 +242,7 @@ public class FsProducer extends ProduceOnlyProducerImp {
    * @param fw the fsWorker implementation, default {@link NioWorker}
    */
   public void setFsWorker(FsWorker fw) {
-    if (fw == null) {
-      throw new IllegalArgumentException("fsWorker may not be null");
-    }
-    fsWorker = fw;
+    fsWorker = Args.notNull(fw, "fs worker");
   }
 
   public FileNameCreator getFilenameCreator() {
@@ -259,9 +257,6 @@ public class FsProducer extends ProduceOnlyProducerImp {
    * @param creator the {@link FileNameCreator} to use, default is {@link FormattedFilenameCreator}
    */
   public void setFilenameCreator(FileNameCreator creator) {
-    if (creator == null) {
-      throw new IllegalArgumentException("FileNameCreator may not be null");
-    }
-    filenameCreator = creator;
+    filenameCreator = Args.notNull(creator, "filename creator");
   }
 }

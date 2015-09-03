@@ -1,7 +1,5 @@
 package com.adaptris.core.jms.jndi;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -26,6 +24,7 @@ import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.JmsUtils;
 import com.adaptris.core.jms.VendorImplementation;
 import com.adaptris.core.jms.VendorImplementationImp;
+import com.adaptris.core.util.Args;
 import com.adaptris.security.password.Password;
 import com.adaptris.util.KeyValuePairBag;
 import com.adaptris.util.KeyValuePairSet;
@@ -185,10 +184,7 @@ public class StandardJndiImplementation extends VendorImplementationImp {
    * @param s the name to look up in the JNDI store that corresponds to a ConnectionFactory of the correct type.
    */
   public void setJndiName(String s) {
-    if (isEmpty(s)) {
-      throw new IllegalArgumentException("null or empty param");
-    }
-    jndiName = s;
+    jndiName = Args.notEmpty(s, "jndi name");
   }
 
   /**
@@ -214,10 +210,7 @@ public class StandardJndiImplementation extends VendorImplementationImp {
    * @param k a <code>KeyValuePairSet</code> of the parameters requires to connect to the JNDI store
    */
   public void setJndiParams(KeyValuePairSet k) {
-    if (k == null) {
-      throw new IllegalArgumentException("null param");
-    }
-    jndiParams = k;
+    jndiParams = Args.notNull(k, "jndi params");
   }
 
   /**
@@ -343,7 +336,7 @@ public class StandardJndiImplementation extends VendorImplementationImp {
     if (efc == null) {
       throw new IllegalArgumentException("Extra Factory Configuration may not be null");
     }
-    extraFactoryConfiguration = efc;
+    extraFactoryConfiguration = Args.notNull(efc, "extra factory configuration");
   }
 
   boolean newContextOnException() {

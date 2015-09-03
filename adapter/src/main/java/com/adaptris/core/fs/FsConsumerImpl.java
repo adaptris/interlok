@@ -28,6 +28,7 @@ import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.fs.enhanced.FileSorter;
 import com.adaptris.core.fs.enhanced.NoSorting;
+import com.adaptris.core.util.Args;
 import com.adaptris.fs.FsException;
 import com.adaptris.fs.FsWorker;
 import com.adaptris.fs.NioWorker;
@@ -362,10 +363,7 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
    * @param fs the sorter, default is {@link NoSorting}
    */
   public void setFileSorter(FileSorter fs) {
-    if (fs == null) {
-      throw new IllegalArgumentException("File Sorter implementation is null");
-    }
-    fileSorter = fs;
+    fileSorter = Args.notNull(fs, "file sorter");
   }
 
 
