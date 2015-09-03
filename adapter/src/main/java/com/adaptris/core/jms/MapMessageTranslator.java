@@ -120,24 +120,20 @@ public final class MapMessageTranslator extends MessageTypeTranslatorImp {
   }
 
   /**
-   * Specify the key of the map message that will be associated with the
-   * AdaptrisMessage Payload.
+   * Specify the key of the map message that will be associated with the AdaptrisMessage Payload.
    * <p>
-   * Other keys will be added as metadata when translating to AdaptrisMessage;
-   * behaviour when translating from AdaptrisMessage is defined by
-   * {@link #setTreatMetadataAsPartOfMessage(boolean)}.
+   * Other keys will be added as metadata when translating to AdaptrisMessage; behaviour when
+   * translating from AdaptrisMessage is defined by
+   * {@link #setTreatMetadataAsPartOfMessage(Boolean)}.
    * </p>
-   *
+   * 
    * @param s the keyForPayload to set
    */
   public void setKeyForPayload(String s) {
     keyForPayload = s;
   }
 
-  /**
-   * @return the treatMetadataAsPartOfMessage
-   * @see #setTreatMetadataAsPartOfMessage(boolean)
-   */
+
   public Boolean getTreatMetadataAsPartOfMessage() {
     return treatMetadataAsPartOfMessage;
   }

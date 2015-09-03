@@ -231,9 +231,9 @@ public abstract class KeyValuePairBag extends AbstractCollection<KeyValuePair> {
   }
 
   /**
-   * Convenience method to add the assocated mapto this collection
+   * Convenience method to add the associated map to this collection
    * 
-   * @param p collection of properties to add.
+   * @param map the map to add.
    */
   public void addAll(Map<String, String> map) {
     for (Map.Entry<String, String> e : map.entrySet()) {
