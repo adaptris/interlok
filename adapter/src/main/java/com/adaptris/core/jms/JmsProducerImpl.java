@@ -134,7 +134,6 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
     setDeliveryMode(DeliveryMode.Mode.PERSISTENT.name());
     setPriority(4);
     setMessageTranslator(new TextMessageTranslator());
-    setPerMessageProperties(false);
     setCorrelationIdSource(new NullCorrelationIdSource());
     setSessionFactory(new DefaultProducerSessionFactory());
   }

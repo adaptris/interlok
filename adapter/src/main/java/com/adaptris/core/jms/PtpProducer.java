@@ -49,9 +49,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * By convention, the {@link javax.jms.Message#getJMSPriority()},
  * {@link javax.jms.Message#getJMSDeliveryMode()}, and {@link javax.jms.Message#getJMSExpiration()}
  * are configured directly (expiration here is semantically equivalent to the element
- * {@link #setTimeToLive(long)} on the producer. It is possible to control it dynamically on a per
- * message basis using the element {@link #setPerMessageProperties(Boolean)}. If you opt to control
- * these fields on a per message basis then the following metadata keys are used :
+ * {@link #setTtl(Long)} on the producer. It is possible to control it dynamically on a per message
+ * basis using the element {@link #setPerMessageProperties(Boolean)}. If you opt to control these
+ * fields on a per message basis then the following metadata keys are used :
  * </p>
  * <ul>
  * <li>{@value com.adaptris.core.jms.JmsConstants#JMS_PRIORITY} - This overrides the priority of the

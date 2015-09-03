@@ -225,12 +225,7 @@ public class RequestReplyWorkflow extends StandardWorkflow {
     retainUniqueId = b;
   }
 
-  /**
-   * Get the retain uniqueid flag.
-   *
-   * @return true or false
-   * @see #setRetainUniqueId(boolean)
-   */
+
   public Boolean getRetainUniqueId() {
     return retainUniqueId;
   }
