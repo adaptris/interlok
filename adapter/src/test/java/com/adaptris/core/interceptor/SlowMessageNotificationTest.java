@@ -39,7 +39,7 @@ public class SlowMessageNotificationTest extends MessageNotificationCase {
 
   public void testNotification_SlowMessage_Success() throws Exception {
     SlowMessageNotification notif =
-        new SlowMessageNotification(getName(), new TimeInterval(100L, TimeUnit.MILLISECONDS));
+        new SlowMessageNotification(getName(), new TimeInterval(100L, TimeUnit.MILLISECONDS), new TimeInterval(1L, TimeUnit.MINUTES));
     StandardWorkflow workflow = createWorkflow(getName() + "_Workflow", notif);
     workflow.getServiceCollection().add(
         new WaitService(new TimeInterval(500L, TimeUnit.MILLISECONDS)));
