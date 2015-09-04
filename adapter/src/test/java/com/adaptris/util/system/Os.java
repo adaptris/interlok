@@ -41,6 +41,8 @@ public final class Os {
   public static final String WINDOWS_7 = "windows 7";
   /** Windows 8 */
   public static final String WINDOWS_8 = "windows 8";
+  /** Windows 10 */
+  public static final String WINDOWS_10 = "windows 10";
   /** Windows 2012 */
   public static final String WINDOWS_2012 = "windows 2012";
   /** Windows XP */
@@ -68,9 +70,8 @@ public final class Os {
       LINUX, SOLARIS, HPUX, MAC_OSX, UNIX_FAMILY
   };
 
-  private static String[] WINDOWS_NT_ARRAY =
-  {
-      WINDOWS_NT, WINDOWS_2K, WINDOWS_2003, WINDOWS_VISTA, WINDOWS_2008, WINDOWS_7, WINDOWS_8, WINDOWS_2012
+  private static String[] WINDOWS_NT_ARRAY = {
+      WINDOWS_NT, WINDOWS_2K, WINDOWS_2003, WINDOWS_VISTA, WINDOWS_2008, WINDOWS_7, WINDOWS_8, WINDOWS_2012, WINDOWS_10
   };
 
   private static String[] WINDOWS_9X_ARRAY =

@@ -6,27 +6,21 @@
  */
 package com.adaptris.util.system;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 /** Get environment variables from the system.
  * 
  * @author $Author: lchan $
  * @author lchan
  */
+@Deprecated
 public final class Environment {
 
   private static Environment procEnv = null;
-  private Properties env = null;
+  private Map<String, String> env = null;
 
   private Environment() {
-    initProperties(getEnv());
+    env = System.getenv();
   }
 
   /** Get the environment instance.
@@ -63,73 +57,6 @@ public final class Environment {
    * @return the environment stored as a Map
    */
   public Map getEnvironment() {
-    return (Properties) env.clone();
-  }
-
-  private List getEnv() {
-    List envList = new ArrayList();
-    try {
-      Process process = Runtime.getRuntime().exec(getCmd());
-      BufferedReader in =
-        new BufferedReader(new InputStreamReader(process.getInputStream()));
-
-      String var = null;
-      String line;
-      String lineSep = System.getProperty("line.separator");
-      while ((line = in.readLine()) != null) {
-        if (line.indexOf('=') == -1) {
-          if (var == null) {
-            var = lineSep + line;
-          }
-          else {
-            var += lineSep + line;
-          }
-        }
-        else {
-          if (var != null) {
-            envList.add(var);
-          }
-          var = line;
-        }
-      }
-      if (var != null) {
-        envList.add(var);
-      }
-    }
-    catch (IOException e) {
-      ;
-    }
-    return envList;
-  }
-
-  private void initProperties(List l) {
-    env = new Properties();
-    Iterator i = l.iterator();
-    while (i.hasNext()) {
-      String e = i.next().toString();
-      int pos = e.indexOf('=');
-      if (pos != -1) {
-        env.put(e.substring(0, pos).toUpperCase(), e.substring(pos + 1));
-      }
-    }
-  }
-
-  private String[] getCmd() {
-
-    if (Os.isOs(Os.OS2) || Os.isFamily(Os.WINDOWS_NT_FAMILY)) {
-      String[] cmd = { "cmd", "/c", "set" };
-      return cmd;
-    }
-    else if (Os.isFamily(Os.WINDOWS_9X_FAMILY)) {
-
-      String[] cmd = { "command.com", "/c", "set" };
-      return cmd;
-    }
-    else if (Os.isFamily(Os.UNIX_FAMILY)) {
-      String[] cmd = { "/bin/sh", "-c", "env" };
-      // String[] cmd = { "/usr/bin/env" };
-      return cmd;
-    }
-    return new String[0];
+    return env;
   }
 }
