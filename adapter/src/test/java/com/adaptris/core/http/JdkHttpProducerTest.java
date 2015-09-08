@@ -224,6 +224,34 @@ public class JdkHttpProducerTest extends HttpProducerExample {
     assertEquals(TEXT, msg.getStringPayload());
   }
 
+  public void testRequest_EmptyReply() throws Exception {
+    MockMessageProducer mock = new MockMessageProducer();
+    HttpConnection jc = createConnection();
+    MessageConsumer mc = createConsumer(URL_TO_POST_TO);
+    Channel c = createChannel(jc, createWorkflow(mc, mock, new ServiceList()));
+    StandardWorkflow workflow = (StandardWorkflow) c.getWorkflowList().get(0);
+    ResponseProducer responder = new ResponseProducer(200);
+    responder.setSendPayload(false);
+    workflow.getServiceCollection().add(new StandaloneProducer(responder));
+    JdkHttpProducer jdkHttp = new JdkHttpProducer(createProduceDestination(jc.getPort()));
+    jdkHttp.setMethod("POST");
+    StandaloneRequestor producer = new StandaloneRequestor(jdkHttp);
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
+    try {
+      start(c);
+      start(producer);
+      producer.doService(msg);
+      waitForMessages(mock, 1);
+    } finally {
+      stop(c);
+      stop(producer);
+    }
+    assertEquals(1, mock.messageCount());
+    AdaptrisMessage m2 = mock.getMessages().get(0);
+    assertEquals("POST", m2.getMetadataValue(CoreConstants.HTTP_METHOD));
+    assertEquals(0, msg.getSize());
+  }
+
   public void testRequest_GetMethod_NonZeroBytes() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     HttpConnection jc = createConnection();
