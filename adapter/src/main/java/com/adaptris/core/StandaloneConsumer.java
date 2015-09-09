@@ -1,9 +1,3 @@
-/*
- * $RCSfile: StandaloneConsumer.java,v $
- * $Revision: 1.19 $
- * $Date: 2009/01/19 11:11:20 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;

@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: EncryptException.java,v $
- * $Revision: 1.2 $
- * $Date: 2006/09/27 19:18:19 $
- */
 package com.adaptris.security.exc;
 
 

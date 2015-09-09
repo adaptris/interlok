@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: FileTransferClientImp.java,v $
- * $Revision: 1.6 $
- * $Date: 2009/07/08 13:38:10 $
- */
 package com.adaptris.filetransfer;
 
 import java.io.ByteArrayInputStream;

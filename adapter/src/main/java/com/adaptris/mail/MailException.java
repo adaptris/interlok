@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: MailException.java,v $
- * $Revision: 1.3 $
- * $Date: 2006/07/21 13:31:55 $
- */
 package com.adaptris.mail;
 
 /** This is the container class for any exceptions that occur

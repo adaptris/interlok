@@ -1,6 +1,3 @@
-/*
- * $Id: Justify.java,v 1.8 2004/07/19 13:59:39 lchan Exp $
- */
 package com.adaptris.util.text;
 
 

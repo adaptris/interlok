@@ -1,9 +1,3 @@
-/*
- * $RCSfile: DefaultMessageFactory.java,v $
- * $Revision: 1.8 $
- * $Date: 2009/03/27 13:42:43 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;

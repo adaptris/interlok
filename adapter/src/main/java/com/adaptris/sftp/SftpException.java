@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: SftpException.java,v $
- * $Revision: 1.1 $
- * $Date: 2006/08/08 14:43:02 $
- */
 package com.adaptris.sftp;
 
 import com.adaptris.filetransfer.FileTransferException;

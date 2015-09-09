@@ -1,6 +1,3 @@
-/*
- * $Id: DataStoreException.java,v 1.6 2005/07/01 10:30:41 lchan Exp $
- */
 package com.adaptris.util.datastore;
 
 

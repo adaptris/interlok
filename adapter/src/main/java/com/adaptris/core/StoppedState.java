@@ -1,9 +1,3 @@
-/*
- * $RCSfile: StoppedState.java,v $
- * $Revision: 1.5 $
- * $Date: 2005/09/23 00:56:55 $
- * $Author: hfraser $
- */
 package com.adaptris.core;
 
 /**

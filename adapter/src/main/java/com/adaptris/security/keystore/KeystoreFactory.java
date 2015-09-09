@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: KeystoreFactory.java,v $
- * $Revision: 1.9 $
- * $Date: 2006/10/30 13:35:33 $
- */
 package com.adaptris.security.keystore;
 
 import java.net.URI;

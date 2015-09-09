@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: CertificatePathVerifier.java,v $
- * $Revision: 1.2 $
- * $Date: 2007/07/02 10:08:34 $
- */
 package com.adaptris.security.certificate;
 
 import java.security.KeyStore;

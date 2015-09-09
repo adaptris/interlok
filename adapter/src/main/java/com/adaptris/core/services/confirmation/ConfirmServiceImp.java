@@ -1,9 +1,3 @@
-/*
- * $RCSfile: ConfirmServiceImp.java,v $
- * $Revision: 1.3 $
- * $Date: 2008/05/01 09:51:03 $
- * $Author: lchan $
- */
 package com.adaptris.core.services.confirmation;
 
 import com.adaptris.core.AdaptrisMessage;

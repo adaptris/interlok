@@ -1,9 +1,3 @@
-/*
- * $RCSfile: RegexpMetadataService.java,v $
- * $Revision: 1.2 $
- * $Date: 2008/07/02 15:47:32 $
- * $Author: lchan $
- */
 package com.adaptris.core.services.metadata;
 
 import java.util.ArrayList;

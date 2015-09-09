@@ -1,9 +1,3 @@
-/*
- * $RCSfile: NullService.java,v $
- * $Revision: 1.1 $
- * $Date: 2005/10/04 23:40:34 $
- * $Author: hfraser $
- */
 package com.adaptris.core;
 
 import com.adaptris.util.license.License;

@@ -1,9 +1,3 @@
-/*
- * $RCSfile: CloneMessageServiceList.java,v $
- * $Revision: 1.3 $
- * $Date: 2005/09/23 00:56:54 $
- * $Author: hfraser $
- */
 package com.adaptris.core;
 
 import static com.adaptris.core.util.LoggingHelper.friendlyName;

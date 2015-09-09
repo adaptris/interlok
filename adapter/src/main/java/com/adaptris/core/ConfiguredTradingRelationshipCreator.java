@@ -1,9 +1,3 @@
-/*
- * $RCSfile: ConfiguredTradingRelationshipCreator.java,v $
- * $Revision: 1.1 $
- * $Date: 2006/11/07 13:17:36 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;

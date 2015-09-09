@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: MessageParser.java,v $
- * $Revision: 1.4 $
- * $Date: 2005/04/18 17:58:23 $
- */
 package com.adaptris.mail;
 
 import java.io.ByteArrayOutputStream;

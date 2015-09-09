@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: X509Handler.java,v $
- * $Revision: 1.7 $
- * $Date: 2006/10/30 13:35:33 $
- */
 package com.adaptris.security.certificate;
 
 import java.io.ByteArrayInputStream;

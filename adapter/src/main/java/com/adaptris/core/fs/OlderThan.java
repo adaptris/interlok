@@ -1,9 +1,3 @@
-/*
- * $RCSfile: OlderThan.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/01/20 19:57:20 $
- * $Author: lchan $
- */
 package com.adaptris.core.fs;
 
 import java.io.File;

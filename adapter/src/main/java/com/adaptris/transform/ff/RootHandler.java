@@ -1,6 +1,3 @@
-/*
- * $Id: RootHandler.java,v 1.6 2006/06/12 07:50:12 lchan Exp $
- */
 package com.adaptris.transform.ff;
 
 import org.w3c.dom.Node;

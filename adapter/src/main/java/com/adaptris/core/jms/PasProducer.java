@@ -1,9 +1,3 @@
-/*
- * $RCSfile: PasProducer.java,v $
- * $Revision: 1.36 $
- * $Date: 2009/07/20 09:20:04 $
- * $Author: lchan $
- */
 package com.adaptris.core.jms;
 
 import javax.jms.Destination;

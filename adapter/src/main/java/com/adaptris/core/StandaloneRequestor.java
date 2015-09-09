@@ -1,9 +1,3 @@
-/*
- * $RCSfile: StandaloneRequestor.java,v $
- * $Revision: 1.2 $
- * $Date: 2008/07/14 09:57:10 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 import static com.adaptris.core.AdaptrisMessageImp.copyPayload;

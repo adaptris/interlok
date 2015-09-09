@@ -1,9 +1,3 @@
-/*
- * $RCSfile: FixedIntervalPoller.java,v $
- * $Revision: 1.9 $
- * $Date: 2008/10/28 13:34:11 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 import java.util.concurrent.Executors;

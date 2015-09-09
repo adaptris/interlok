@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: SecurityServiceFactory.java,v $
- * $Revision: 1.2 $
- * $Date: 2005/09/04 16:34:43 $
- */
 package com.adaptris.security;
 
 import org.slf4j.Logger;

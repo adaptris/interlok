@@ -1,8 +1,3 @@
-/*
- * $RCSfile: FifoMutexLock.java,v $
- * $Revision: 1.7 $
- * $Date: 2009/04/16 08:37:05 $
- */
 package com.adaptris.util;
 
 import java.util.concurrent.Semaphore;

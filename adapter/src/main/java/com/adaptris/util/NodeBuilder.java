@@ -1,6 +1,3 @@
-/*
- * $Id: NodeBuilder.java,v 1.2 2004/03/22 13:43:58 lchan Exp $
- */
 package com.adaptris.util;
 
 import java.util.ArrayList;

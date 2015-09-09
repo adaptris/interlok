@@ -1,6 +1,3 @@
-/*
- * $Id: Transport.java,v 1.5 2004/01/15 11:39:23 lchan Exp $
- */
 package com.adaptris.transport;
 
 import java.io.InterruptedIOException;

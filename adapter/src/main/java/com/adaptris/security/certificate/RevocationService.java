@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: RevocationService.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/01/27 09:25:12 $
- */
 package com.adaptris.security.certificate;
 
 import java.io.ByteArrayInputStream;

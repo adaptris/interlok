@@ -1,9 +1,3 @@
-/*
- * $RCSfile: SyntaxRoutingService.java,v $
- * $Revision: 1.8 $
- * $Date: 2007/01/12 12:33:00 $
- * $Author: lchan $
- */
 package com.adaptris.core.services.routing;
 
 import static org.apache.commons.lang.StringUtils.isBlank;

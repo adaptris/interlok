@@ -1,9 +1,3 @@
-/*
- * $RCSfile: NullConnection.java,v $
- * $Revision: 1.14 $
- * $Date: 2008/05/22 13:17:43 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 import com.adaptris.util.license.License;

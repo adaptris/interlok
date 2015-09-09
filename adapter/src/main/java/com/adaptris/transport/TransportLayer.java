@@ -1,6 +1,3 @@
-/*
- * $Id: TransportLayer.java,v 1.6 2006/10/06 16:04:44 lchan Exp $
- */
 package com.adaptris.transport;
 
 import java.io.InputStream;

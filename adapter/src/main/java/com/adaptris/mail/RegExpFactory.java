@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: RegExpFactory.java,v $
- * $Revision: 1.1 $
- * $Date: 2006/07/21 13:33:13 $
- */
 package com.adaptris.mail;
 
 import java.util.Collections;

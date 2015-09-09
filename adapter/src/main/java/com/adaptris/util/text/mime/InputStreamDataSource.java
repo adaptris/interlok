@@ -1,6 +1,3 @@
-/*
- * $Id: InputStreamDataSource.java,v 1.2 2003/10/16 07:29:33 lchan Exp $
- */
 package com.adaptris.util.text.mime;
 
 import java.io.ByteArrayOutputStream;

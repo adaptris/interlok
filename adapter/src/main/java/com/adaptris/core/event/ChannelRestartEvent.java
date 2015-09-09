@@ -1,9 +1,3 @@
-/*
- * $RCSfile: ChannelRestartEvent.java,v $
- * $Revision: 1.9 $
- * $Date: 2006/05/23 06:34:59 $
- * $Author: hfraser $
- */
 package com.adaptris.core.event;
 
 import com.adaptris.core.AdapterLifecycleEvent;

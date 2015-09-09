@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: MailboxClient.java,v $
- * $Revision: 1.8 $
- * $Date: 2008/10/23 15:15:09 $
- */
 package com.adaptris.mail;
 
 import java.util.ArrayList;

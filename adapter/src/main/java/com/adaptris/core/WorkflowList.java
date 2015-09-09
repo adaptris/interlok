@@ -1,9 +1,3 @@
-/*
- * $RCSfile: WorkflowList.java,v $
- * $Revision: 1.25 $
- * $Date: 2007/07/31 12:42:12 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 import static org.apache.commons.lang.StringUtils.isBlank;

@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: CertRequestHandler.java,v $
- * $Revision: 1.5 $
- * $Date: 2005/08/05 10:08:23 $
- */
 package com.adaptris.security.certificate;
 
 import java.io.ByteArrayOutputStream;

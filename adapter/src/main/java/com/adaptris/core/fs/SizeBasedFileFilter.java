@@ -1,9 +1,3 @@
-/*
- * $RCSfile: SizeBasedFileFilter.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/05/20 08:46:56 $
- * $Author: lchan $
- */
 package com.adaptris.core.fs;
 
 import java.io.FileFilter;

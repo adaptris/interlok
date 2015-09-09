@@ -1,9 +1,3 @@
-/*
- * $RCSfile: ChannelList.java,v $
- * $Revision: 1.21 $
- * $Date: 2009/01/22 09:52:45 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 import static org.apache.commons.lang.StringUtils.isBlank;

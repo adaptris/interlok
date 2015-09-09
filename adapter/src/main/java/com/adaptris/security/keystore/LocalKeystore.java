@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: LocalKeystore.java,v $
- * $Revision: 1.2 $
- * $Date: 2006/09/21 11:20:44 $
- */
 package com.adaptris.security.keystore;
 
 import java.io.File;

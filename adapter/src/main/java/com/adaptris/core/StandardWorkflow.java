@@ -1,9 +1,3 @@
-/*
- * $RCSfile: StandardWorkflow.java,v $
- * $Revision: 1.33 $
- * $Date: 2009/06/15 11:34:15 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 import org.perf4j.aop.Profiled;

@@ -1,9 +1,3 @@
-/*
- * $RCSfile: BytesMessageTranslator.java,v $
- * $Revision: 1.12 $
- * $Date: 2009/03/25 11:43:37 $
- * $Author: lchan $
- */
 package com.adaptris.core.jms;
 
 import java.io.IOException;

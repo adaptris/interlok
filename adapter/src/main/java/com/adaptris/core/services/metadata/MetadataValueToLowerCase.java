@@ -1,9 +1,3 @@
-/*
- * $RCSfile: MetadataValueToLowerCase.java,v $
- * $Revision: 1.1 $
- * $Date: 2007/11/29 10:26:56 $
- * $Author: lchan $
- */
 package com.adaptris.core.services.metadata;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;

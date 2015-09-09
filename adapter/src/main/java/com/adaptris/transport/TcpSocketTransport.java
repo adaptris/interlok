@@ -1,7 +1,3 @@
-/*
- * $Id: TcpSocketTransport.java,v 1.13 2006/10/06 16:04:44 lchan Exp $
- */
-
 package com.adaptris.transport;
 
 import java.io.InterruptedIOException;

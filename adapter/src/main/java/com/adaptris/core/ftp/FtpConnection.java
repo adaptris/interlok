@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: FtpConnection.java,v $
- * $Revision: 1.12 $
- * $Date: 2009/07/01 12:55:28 $
- */
 package com.adaptris.core.ftp;
 
 import java.io.IOException;

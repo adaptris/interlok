@@ -1,9 +1,3 @@
-/*
- * $RCSfile: XmlBodyHandler.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/05/01 15:42:33 $
- * $Author: lchan $
- */
 package com.adaptris.core.mail.attachment;
 
 import java.io.ByteArrayInputStream;

@@ -1,9 +1,3 @@
-/*
- * $RCSfile: DatabaseConnection.java,v $
- * $Revision: 1.16 $
- * $Date: 2009/06/11 11:11:27 $
- * $Author: lchan $
- */
 package com.adaptris.core.jdbc;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;

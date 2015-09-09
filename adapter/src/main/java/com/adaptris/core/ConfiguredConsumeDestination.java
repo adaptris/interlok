@@ -1,9 +1,3 @@
-/*
- * $RCSfile: ConfiguredConsumeDestination.java,v $
- * $Revision: 1.11 $
- * $Date: 2008/01/31 16:50:34 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;

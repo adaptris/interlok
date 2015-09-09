@@ -1,9 +1,3 @@
-/*
- * $RCSfile: PppTcpClientConnection.java,v $
- * $Revision: 1.3 $
- * $Date: 2005/09/23 00:56:56 $
- * $Author: hfraser $
- */
 package com.adaptris.core.transport;
 
 import com.adaptris.transport.Transport;

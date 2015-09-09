@@ -1,6 +1,3 @@
-/*
- * $Id :$
- */
 package com.adaptris.security.util;
 
 import java.security.Provider;

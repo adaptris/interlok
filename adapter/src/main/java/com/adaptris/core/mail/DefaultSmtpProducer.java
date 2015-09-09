@@ -1,9 +1,3 @@
-/*
- * $RCSfile: DefaultSmtpProducer.java,v $
- * $Revision: 1.3 $
- * $Date: 2009/03/10 13:30:59 $
- * $Author: lchan $
- */
 package com.adaptris.core.mail;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;

@@ -1,6 +1,3 @@
-/*
- * $Id: AdaptrisSecurityException.java,v 1.2 2006/09/27 19:18:19 lchan Exp $
- */
 package com.adaptris.security.exc;
 
 /**

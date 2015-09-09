@@ -1,9 +1,3 @@
-/*
- * $RCSfile: MleMarker.java,v $
- * $Revision: 1.14 $
- * $Date: 2006/05/11 23:09:03 $
- * $Author: hfraser $
- */
 package com.adaptris.core;
 
 import java.io.Serializable;

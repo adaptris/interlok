@@ -1,9 +1,3 @@
-/*
- * $RCSfile: SigningService.java,v $
- * $Revision: 1.11 $
- * $Date: 2008/07/30 08:16:46 $
- * $Author: lchan $
- */
 package com.adaptris.core.security;
 
 import com.adaptris.security.Output;

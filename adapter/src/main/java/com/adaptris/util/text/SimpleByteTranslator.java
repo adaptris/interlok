@@ -1,9 +1,3 @@
-/*
- * $RCSfile: SimpleByteTranslator.java,v $
- * $Revision: 1.3 $
- * $Date: 2008/07/24 11:12:55 $
- * $Author: lchan $
- */
 package com.adaptris.util.text;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;

@@ -1,9 +1,3 @@
-/*
- * $RCSfile: HeartbeatEvent.java,v $
- * $Revision: 1.13 $
- * $Date: 2006/05/23 06:34:59 $
- * $Author: hfraser $
- */
 package com.adaptris.core;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;

@@ -1,6 +1,3 @@
-/*
- * $Id: DesLicense.java,v 1.2 2009/04/28 13:39:28 lchan Exp $
- */
 package com.adaptris.util.license;
 
 import java.io.ByteArrayInputStream;

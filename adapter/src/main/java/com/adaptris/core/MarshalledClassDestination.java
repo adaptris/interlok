@@ -1,9 +1,3 @@
-/*
- * $RCSfile: MarshalledClassDestination.java,v $
- * $Revision: 1.5 $
- * $Date: 2009/04/15 12:34:32 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 import org.apache.commons.lang.StringUtils;

@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: PppSocketTransport.java,v $
- * $Revision: 1.3 $
- * $Date: 2004/02/05 15:32:32 $
- */
 package com.adaptris.transport.ppp;
 
 import java.io.BufferedReader;

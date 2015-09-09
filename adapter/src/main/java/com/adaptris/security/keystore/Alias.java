@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: Alias.java,v $
- * $Revision: 1.3 $
- * $Date: 2007/08/07 13:03:37 $
- */
 package com.adaptris.security.keystore;
 
 /**

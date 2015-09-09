@@ -1,7 +1,3 @@
-/*
- * $Id: TransportException.java,v 1.5 2006/10/06 16:04:44 lchan Exp $
- */
-
 package com.adaptris.transport;
 
 /** The Transport Exception container.

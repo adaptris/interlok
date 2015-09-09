@@ -1,9 +1,3 @@
-/*
- * $RCSfile: SocketProducer.java,v $
- * $Revision: 1.11 $
- * $Date: 2009/03/27 12:23:42 $
- * $Author: lchan $
- */
 package com.adaptris.core.socket;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;

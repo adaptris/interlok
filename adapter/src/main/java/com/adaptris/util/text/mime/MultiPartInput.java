@@ -1,6 +1,3 @@
-/*
- * $Id: MultiPartInput.java,v 1.9 2008/11/14 16:06:21 lchan Exp $
- */
 package com.adaptris.util.text.mime;
 
 import java.io.ByteArrayInputStream;

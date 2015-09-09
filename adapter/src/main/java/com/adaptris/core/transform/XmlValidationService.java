@@ -1,9 +1,3 @@
-/*
- * $RCSfile: XmlValidationService.java,v $
- * $Revision: 1.13 $
- * $Date: 2009/06/19 02:43:47 $
- * $Author: hfraser $
- */
 package com.adaptris.core.transform;
 
 import java.util.ArrayList;

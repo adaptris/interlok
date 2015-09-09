@@ -1,9 +1,3 @@
-/*
- * $RCSfile: DefaultFailedMessageRetrier.java,v $
- * $Revision: 1.5 $
- * $Date: 2006/10/24 05:08:06 $
- * $Author: hfraser $
- */
 package com.adaptris.core;
 
 import java.io.File;

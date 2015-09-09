@@ -1,6 +1,3 @@
-/*
- * $Id: SplitByMetadata.java,v 1.2 2009/03/27 12:24:29 lchan Exp $
- */
 package com.adaptris.core.services.splitter;
 
 import java.util.ArrayList;

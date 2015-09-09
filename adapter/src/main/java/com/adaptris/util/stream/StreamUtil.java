@@ -1,6 +1,3 @@
-/*
- * $Id: StreamUtil.java,v 1.6 2009/03/26 08:59:02 lchan Exp $
- */
 package com.adaptris.util.stream;
 
 import java.io.BufferedOutputStream;

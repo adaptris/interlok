@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: Mail.java,v $
- * $Revision: 1.3 $
- * $Date: 2004/09/21 13:49:33 $
- */
 package com.adaptris.mail;
 
 /** Mail Constants.

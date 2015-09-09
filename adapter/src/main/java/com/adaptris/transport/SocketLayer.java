@@ -1,7 +1,3 @@
-/*
- * $Id: SocketLayer.java,v 1.6 2004/01/13 13:22:08 lchan Exp $
- */
-
 package com.adaptris.transport;
 
 import java.io.ByteArrayInputStream;

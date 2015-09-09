@@ -1,9 +1,3 @@
-/*
- * $RCSfile: XpathProduceDestination.java,v $
- * $Revision: 1.2 $
- * $Date: 2007/11/23 16:28:31 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 import static com.adaptris.core.util.XmlHelper.createXmlUtils;

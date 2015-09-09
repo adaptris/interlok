@@ -1,9 +1,3 @@
-/*
- * $RCSfile: PoolingWorkflow.java,v $
- * $Revision: 1.26 $
- * $Date: 2009/06/15 11:34:15 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 import java.util.Iterator;

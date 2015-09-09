@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: CertificateHandler.java,v $
- * $Revision: 1.7 $
- * $Date: 2006/11/02 21:49:13 $
- */
 package com.adaptris.security.certificate;
 
 import java.security.PublicKey;

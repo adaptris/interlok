@@ -1,9 +1,3 @@
-/*
- * $RCSfile: InlineItemCache.java,v $
- * $Revision: 1.4 $
- * $Date: 2009/10/12 09:37:26 $
- * $Author: lchan $
- */
 package com.adaptris.core.fs;
 
 import java.util.HashMap;

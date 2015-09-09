@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: CertificateHandlerFactory.java,v $
- * $Revision: 1.4 $
- * $Date: 2006/09/26 15:39:04 $
- */
 package com.adaptris.security.certificate;
 
 import java.io.IOException;

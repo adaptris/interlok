@@ -1,9 +1,3 @@
-/*
- * $RCSfile: PtpConsumer.java,v $
- * $Revision: 1.25 $
- * $Date: 2009/07/03 09:39:33 $
- * $Author: lchan $
- */
 package com.adaptris.core.jms;
 
 import javax.jms.JMSException;

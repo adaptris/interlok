@@ -1,9 +1,3 @@
-/*
- * $RCSfile: NullCorrelationIdSource.java,v $
- * $Revision: 1.3 $
- * $Date: 2006/10/30 10:26:39 $
- * $Author: lchan $
- */
 package com.adaptris.core.jms;
 
 import javax.jms.JMSException;

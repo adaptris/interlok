@@ -1,4 +1,3 @@
-/* $Id: KeyValuePair.java,v 1.2 2004/01/13 09:58:22 lchan Exp $ */
 package com.adaptris.util;
 
 import java.io.Serializable;

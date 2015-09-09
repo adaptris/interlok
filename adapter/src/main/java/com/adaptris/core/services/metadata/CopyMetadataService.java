@@ -1,9 +1,3 @@
-/*
- * $RCSfile: CopyMetadataService.java,v $
- * $Revision: 1.6 $
- * $Date: 2009/01/28 15:49:52 $
- * $Author: lchan $
- */
 package com.adaptris.core.services.metadata;
 
 import javax.validation.constraints.NotNull;

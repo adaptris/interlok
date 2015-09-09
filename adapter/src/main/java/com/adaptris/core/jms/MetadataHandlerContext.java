@@ -1,9 +1,3 @@
-/*
- * $RCSfile: MetadataHandlerContext.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/03/25 11:43:13 $
- * $Author: lchan $
- */
 package com.adaptris.core.jms;
 
 import com.adaptris.core.metadata.MetadataFilter;

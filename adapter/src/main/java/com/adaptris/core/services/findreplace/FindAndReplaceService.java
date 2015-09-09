@@ -1,9 +1,3 @@
-/*
- * $RCSfile: FindAndReplaceService.java,v $
- * $Revision: 1.5 $
- * $Date: 2006/05/31 00:09:55 $
- * $Author: hfraser $
- */
 package com.adaptris.core.services.findreplace;
 
 import java.util.ArrayList;

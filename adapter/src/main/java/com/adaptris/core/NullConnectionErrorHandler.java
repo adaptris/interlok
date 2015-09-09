@@ -1,9 +1,3 @@
-/*
- * $RCSfile: NullConnectionErrorHandler.java,v $
- * $Revision: 1.11 $
- * $Date: 2009/03/27 12:18:56 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 import java.util.List;

@@ -1,9 +1,3 @@
-/*
- * $RCSfile: TextMessageTranslator.java,v $
- * $Revision: 1.11 $
- * $Date: 2009/03/25 11:43:37 $
- * $Author: lchan $
- */
 package com.adaptris.core.jms;
 
 import javax.jms.JMSException;

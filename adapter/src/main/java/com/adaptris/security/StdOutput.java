@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: StdOutput.java,v $
- * $Revision: 1.10 $
- * $Date: 2005/08/05 10:08:23 $
- */
 package com.adaptris.security;
 
 import java.io.ByteArrayInputStream;

@@ -1,9 +1,3 @@
-/*
- * $RCSfile: JmsConstants.java,v $
- * $Revision: 1.7 $
- * $Date: 2008/01/29 11:17:03 $
- * $Author: lchan $
- */
 package com.adaptris.core.jms;
 
 

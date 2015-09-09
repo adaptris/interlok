@@ -1,9 +1,3 @@
-/*
- * $RCSfile: CheckUniqueMetadataValueService.java,v $
- * $Revision: 1.7 $
- * $Date: 2006/11/15 15:12:41 $
- * $Author: phigginson $
- */
 package com.adaptris.core.services.metadata;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;

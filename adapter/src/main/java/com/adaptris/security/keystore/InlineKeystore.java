@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: InlineKeystore.java,v $
- * $Revision: 1.5 $
- * $Date: 2006/10/27 11:28:43 $
- */
 package com.adaptris.security.keystore;
 
 import java.util.Properties;

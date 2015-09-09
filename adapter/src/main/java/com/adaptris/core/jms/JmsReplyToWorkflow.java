@@ -1,9 +1,3 @@
-/*
- * $RCSfile: JmsReplyToWorkflow.java,v $
- * $Revision: 1.10 $
- * $Date: 2009/05/20 08:46:28 $
- * $Author: lchan $
- */
 package com.adaptris.core.jms;
 
 import javax.jms.Destination;

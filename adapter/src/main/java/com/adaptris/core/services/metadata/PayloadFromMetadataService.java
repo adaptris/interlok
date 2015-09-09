@@ -1,9 +1,3 @@
-/*
- * $RCSfile: PayloadFromMetadataService.java,v $
- * $Revision: 1.3 $
- * $Date: 2009/04/06 12:22:15 $
- * $Author: lchan $
- */
 package com.adaptris.core.services.metadata;
 
 import java.util.Iterator;

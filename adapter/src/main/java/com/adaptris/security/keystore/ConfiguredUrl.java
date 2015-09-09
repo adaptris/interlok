@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: ConfiguredUrl.java,v $
- * $Revision: 1.4 $
- * $Date: 2006/10/27 11:28:43 $
- */
 package com.adaptris.security.keystore;
 
 import com.adaptris.annotation.InputFieldHint;

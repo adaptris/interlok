@@ -1,9 +1,3 @@
-/*
- * $RCSfile: JdbcDataQueryService.java,v $
- * $Revision: 1.4 $
- * $Date: 2009/02/16 10:24:34 $
- * $Author: sellidge $
- */
 package com.adaptris.core.services.jdbc;
 
 import java.sql.Connection;

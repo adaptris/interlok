@@ -1,9 +1,3 @@
-/*
- * $RCSfile: LoggingOutputStream.java,v $
- * $Revision: 1.1 $
- * $Date: 2008/05/16 14:29:26 $
- * $Author: lchan $
- */
 package com.adaptris.util.stream;
 
 import java.io.IOException;

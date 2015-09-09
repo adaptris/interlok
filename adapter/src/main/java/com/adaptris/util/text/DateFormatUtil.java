@@ -1,6 +1,3 @@
-/*
- * $Id: DateFormatUtil.java,v 1.1 2008/07/24 10:12:47 lchan Exp $
- */
 package com.adaptris.util.text;
 
 import java.math.BigDecimal;

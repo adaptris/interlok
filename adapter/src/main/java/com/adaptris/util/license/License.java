@@ -1,6 +1,3 @@
-/*
- * $Id: License.java,v 1.1 2009/04/28 13:20:25 lchan Exp $
- */
 package com.adaptris.util.license;
 
 

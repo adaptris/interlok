@@ -1,9 +1,3 @@
-/*
- * $RCSfile: Utf8DetectingInputStream.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/08/10 10:16:13 $
- * $Author: lchan $
- */
 package com.adaptris.util.stream;
 
 import java.io.IOException;

@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: InlineKeystoreLocation.java,v $
- * $Revision: 1.2 $
- * $Date: 2006/10/20 13:56:16 $
- */
 package com.adaptris.security.keystore;
 
 import java.io.ByteArrayInputStream;

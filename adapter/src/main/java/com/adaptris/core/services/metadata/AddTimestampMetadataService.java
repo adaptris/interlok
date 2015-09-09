@@ -1,9 +1,3 @@
-/*
- * $RCSfile: AddTimestampMetadataService.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/06/03 19:51:49 $
- * $Author: lchan $
- */
 package com.adaptris.core.services.metadata;
 
 import static org.apache.commons.lang.StringUtils.isBlank;

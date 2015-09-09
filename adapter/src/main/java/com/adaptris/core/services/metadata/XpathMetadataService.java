@@ -1,9 +1,3 @@
-/*
- * $RCSfile: XpathMetadataService.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/06/04 08:03:01 $
- * $Author: hfraser $
- */
 package com.adaptris.core.services.metadata;
 
 import java.util.ArrayList;

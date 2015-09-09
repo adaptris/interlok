@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: EncryptionAlgorithm.java,v $
- * $Revision: 1.8 $
- * $Date: 2005/08/16 21:43:56 $
- */
 package com.adaptris.security;
 
 /**

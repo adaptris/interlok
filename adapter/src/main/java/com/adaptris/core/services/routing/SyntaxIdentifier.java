@@ -1,9 +1,3 @@
-/*
- * $RCSfile: SyntaxIdentifier.java,v $
- * $Revision: 1.4 $
- * $Date: 2006/11/10 11:36:34 $
- * $Author: phigginson $
- */
 package com.adaptris.core.services.routing;
 
 import java.util.List;

@@ -1,6 +1,3 @@
-/*
- * $Id: TransformFramework.java,v 1.4 2006/06/12 07:50:12 lchan Exp $
- */
 package com.adaptris.transform;
 
 //import com.adaptris.util.Log;

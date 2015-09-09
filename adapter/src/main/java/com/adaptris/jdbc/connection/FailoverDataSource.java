@@ -1,6 +1,3 @@
-/*
- * $Id: FailoverDataSource.java,v 1.2 2009/03/31 10:54:00 lchan Exp $
- */
 package com.adaptris.jdbc.connection;
 
 import java.io.PrintWriter;

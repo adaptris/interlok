@@ -1,9 +1,3 @@
-/*
- * $RCSfile: FileLogHandler.java,v $
- * $Revision: 1.10 $
- * $Date: 2006/09/26 07:09:56 $
- * $Author: hfraser $
- */
 package com.adaptris.core;
 
 import static org.apache.commons.lang.StringUtils.isBlank;

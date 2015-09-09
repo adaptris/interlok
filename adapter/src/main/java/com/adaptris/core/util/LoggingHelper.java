@@ -1,9 +1,3 @@
-/*
- * $RCSfile: MimeHelper.java,v $
- * $Revision: 1.1 $
- * $Date: 2008/11/12 10:26:54 $
- * $Author: lchan $
- */
 package com.adaptris.core.util;
 
 import static org.apache.commons.lang.StringUtils.isBlank;

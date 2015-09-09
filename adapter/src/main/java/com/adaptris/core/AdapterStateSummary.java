@@ -1,9 +1,3 @@
-/*
- * $RCSfile: AdapterStateSummary.java,v $
- * $Revision: 1.7 $
- * $Date: 2009/01/20 13:56:33 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;

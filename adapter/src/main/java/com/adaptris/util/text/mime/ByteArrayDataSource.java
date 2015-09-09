@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: ByteArrayDataSource.java,v $
- * $Revision: 1.1 $
- * $Date: 2007/09/17 12:30:58 $
- */
 package com.adaptris.util.text.mime;
 
 import java.io.ByteArrayInputStream;

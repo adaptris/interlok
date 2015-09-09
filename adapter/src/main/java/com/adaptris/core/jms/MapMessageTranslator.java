@@ -1,9 +1,3 @@
-/*
- * $RCSfile: MapMessageTranslator.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/03/25 11:43:37 $
- * $Author: lchan $
- */
 package com.adaptris.core.jms;
 
 import static com.adaptris.core.jms.MetadataHandler.isReserved;

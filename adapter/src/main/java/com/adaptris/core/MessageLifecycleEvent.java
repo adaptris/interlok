@@ -1,9 +1,3 @@
-/*
- * $RCSfile: MessageLifecycleEvent.java,v $
- * $Revision: 1.10 $
- * $Date: 2006/11/10 11:36:34 $
- * $Author: phigginson $
- */
 package com.adaptris.core;
 
 import java.io.Serializable;

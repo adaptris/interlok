@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: SimpleIdGenerator.java,v $
- * $Revision: 1.1 $
- * $Date: 2006/10/18 15:40:31 $
- */
 package com.adaptris.util;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;

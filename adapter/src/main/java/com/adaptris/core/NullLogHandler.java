@@ -1,9 +1,3 @@
-/*
- * $RCSfile: NullLogHandler.java,v $
- * $Revision: 1.7 $
- * $Date: 2005/09/23 00:56:54 $
- * $Author: hfraser $
- */
 package com.adaptris.core;
 
 import java.io.ByteArrayInputStream;

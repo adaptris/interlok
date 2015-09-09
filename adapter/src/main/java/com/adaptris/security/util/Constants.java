@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: Constants.java,v $
- * $Revision: 1.5 $
- * $Date: 2006/09/26 15:39:04 $
- */
 package com.adaptris.security.util;
 
 /** Constants.

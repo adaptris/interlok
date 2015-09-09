@@ -1,9 +1,3 @@
-/*
- * $RCSfile: MapMetadataService.java,v $
- * $Revision: 1.3 $
- * $Date: 2009/01/28 15:49:52 $
- * $Author: lchan $
- */
 package com.adaptris.core.services.metadata;
 
 import java.util.Iterator;

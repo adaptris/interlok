@@ -1,9 +1,3 @@
-/*
- * $RCSfile: DefaultServiceNameProvider.java,v $
- * $Revision: 1.3 $
- * $Date: 2005/09/23 00:56:55 $
- * $Author: hfraser $
- */
 package com.adaptris.core.services.dynamic;
 
 import com.adaptris.core.CoreException;

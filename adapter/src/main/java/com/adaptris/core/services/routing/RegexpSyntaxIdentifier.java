@@ -1,9 +1,3 @@
-/*
- * $RCSfile: RegexpSyntaxIdentifier.java,v $
- * $Revision: 1.7 $
- * $Date: 2009/01/28 17:18:11 $
- * $Author: lchan $
- */
 package com.adaptris.core.services.routing;
 
 import java.util.ArrayList;

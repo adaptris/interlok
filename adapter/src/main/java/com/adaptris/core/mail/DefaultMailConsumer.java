@@ -1,9 +1,3 @@
-/*
- * $RCSfile: DefaultMailConsumer.java,v $
- * $Revision: 1.1 $
- * $Date: 2008/10/27 19:48:22 $
- * $Author: lchan $
- */
 package com.adaptris.core.mail;
 
 import java.util.ArrayList;

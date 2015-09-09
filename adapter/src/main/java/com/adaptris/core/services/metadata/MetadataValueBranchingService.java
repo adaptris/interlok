@@ -1,9 +1,3 @@
-/*
- * $RCSfile: MetadataValueBranchingService.java,v $
- * $Revision: 1.1 $
- * $Date: 2008/07/01 16:35:36 $
- * $Author: lchan $
- */
 package com.adaptris.core.services.metadata;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;

@@ -1,9 +1,3 @@
-/*
- * $RCSfile: RegexpMetadataQuery.java,v $
- * $Revision: 1.3 $
- * $Date: 2008/11/13 11:27:34 $
- * $Author: lchan $
- */
 package com.adaptris.core.services.metadata;
 
 import java.util.regex.Matcher;

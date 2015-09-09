@@ -1,9 +1,3 @@
-/*
- * $RCSfile: ConsumeConnection.java,v $
- * $Revision: 1.4 $
- * $Date: 2008/05/22 13:17:43 $
- * $Author: lchan $
- */
 package com.adaptris.core.socket;
 
 import java.io.IOException;

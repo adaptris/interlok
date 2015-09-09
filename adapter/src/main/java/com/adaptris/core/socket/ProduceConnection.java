@@ -1,9 +1,3 @@
-/*
- * $RCSfile: ProduceConnection.java,v $
- * $Revision: 1.4 $
- * $Date: 2008/04/29 11:36:41 $
- * $Author: lchan $
- */
 package com.adaptris.core.socket;
 
 import java.io.IOException;

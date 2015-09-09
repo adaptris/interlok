@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: SingleEntryKeystoreProxy.java,v $
- * $Revision: 1.5 $
- * $Date: 2008/03/07 17:22:13 $
- */
 package com.adaptris.security.keystore;
 
 import java.io.File;

@@ -1,9 +1,3 @@
-/*
- * $RCSfile: TransportConfig.java,v $
- * $Revision: 1.6 $
- * $Date: 2006/05/23 06:35:00 $
- * $Author: hfraser $
- */
 package com.adaptris.core.transport;
 
 import org.slf4j.Logger;

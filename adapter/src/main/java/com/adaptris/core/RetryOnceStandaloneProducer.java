@@ -1,9 +1,3 @@
-/*
- * $RCSfile: RetryOnceStandaloneProducer.java,v $
- * $Revision: 1.5 $
- * $Date: 2009/06/22 05:37:33 $
- * $Author: hfraser $
- */
 package com.adaptris.core;
 
 import java.util.concurrent.TimeUnit;

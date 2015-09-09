@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: ConfiguredKeystore.java,v $
- * $Revision: 1.1 $
- * $Date: 2006/10/18 12:59:54 $
- */
 package com.adaptris.security.keystore;
 
 import java.io.IOException;

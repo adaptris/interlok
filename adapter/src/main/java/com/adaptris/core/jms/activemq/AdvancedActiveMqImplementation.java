@@ -1,9 +1,3 @@
-/*
- * $RCSfile: BasicSonicMqImplementation.java,v $
- * $Revision: 1.5 $
- * $Date: 2009/06/03 18:57:00 $
- * $Author: lchan $
- */
 package com.adaptris.core.jms.activemq;
 
 import javax.validation.Valid;

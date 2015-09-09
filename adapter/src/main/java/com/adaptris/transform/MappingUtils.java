@@ -1,6 +1,3 @@
-/*
- * $Id: MappingUtils.java,v 1.2 2005/11/03 10:10:32 lchan Exp $
- */
 package com.adaptris.transform;
 
 import java.text.SimpleDateFormat;

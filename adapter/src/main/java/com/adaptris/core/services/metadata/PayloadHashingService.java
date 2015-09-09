@@ -1,6 +1,3 @@
-/*
- * $Id: AlwaysFailService.java,v 1.1 2007/12/04 14:23:50 lchan Exp $
- */
 package com.adaptris.core.services.metadata;
 
 import java.io.InputStream;

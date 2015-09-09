@@ -1,9 +1,3 @@
-/*
- * $RCSfile: RestartProduceExceptionHandler.java,v $
- * $Revision: 1.7 $
- * $Date: 2007/11/29 13:14:27 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;

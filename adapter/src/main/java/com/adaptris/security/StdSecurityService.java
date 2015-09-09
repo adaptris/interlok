@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: StdSecurityService.java,v $
- * $Revision: 1.15 $
- * $Date: 2006/10/30 13:35:33 $
- */
 package com.adaptris.security;
 
 import java.security.NoSuchAlgorithmException;

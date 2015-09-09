@@ -1,9 +1,3 @@
-/*
- * $RCSfile: FtpProducer.java,v $
- * $Revision: 1.26 $
- * $Date: 2009/05/08 16:40:26 $
- * $Author: lchan $
- */
 package com.adaptris.core.ftp;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;

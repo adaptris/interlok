@@ -1,9 +1,3 @@
-/*
- * $RCSfile: DefaultChannelLifecycleStrategy.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/01/22 09:52:45 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 import java.util.ArrayList;

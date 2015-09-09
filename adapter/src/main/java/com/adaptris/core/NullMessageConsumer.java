@@ -1,9 +1,3 @@
-/*
- * $RCSfile: NullMessageConsumer.java,v $
- * $Revision: 1.7 $
- * $Date: 2006/04/03 07:40:34 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 import com.adaptris.util.license.License;

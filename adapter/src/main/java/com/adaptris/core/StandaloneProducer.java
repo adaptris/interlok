@@ -1,9 +1,3 @@
-/*
- * $RCSfile: StandaloneProducer.java,v $
- * $Revision: 1.15 $
- * $Date: 2008/07/01 17:36:07 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;

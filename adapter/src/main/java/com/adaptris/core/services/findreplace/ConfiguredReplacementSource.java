@@ -1,9 +1,3 @@
-/*
- * $RCSfile: ConfiguredReplacementSource.java,v $
- * $Revision: 1.2 $
- * $Date: 2005/09/23 00:56:55 $
- * $Author: hfraser $
- */
 package com.adaptris.core.services.findreplace;
 
 import com.adaptris.core.AdaptrisMessage;

@@ -1,9 +1,3 @@
-/*
- * $RCSfile: MetadataDestination.java,v $
- * $Revision: 1.16 $
- * $Date: 2007/08/01 15:16:05 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;

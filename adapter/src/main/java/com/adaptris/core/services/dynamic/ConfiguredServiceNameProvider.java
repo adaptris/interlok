@@ -1,9 +1,3 @@
-/*
- * $RCSfile: ConfiguredServiceNameProvider.java,v $
- * $Revision: 1.5 $
- * $Date: 2008/07/14 17:05:42 $
- * $Author: lchan $
- */
 package com.adaptris.core.services.dynamic;
 
 import java.util.HashSet;

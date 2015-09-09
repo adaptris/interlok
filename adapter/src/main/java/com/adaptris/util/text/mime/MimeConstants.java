@@ -1,6 +1,3 @@
-/*
- * $Id: MimeConstants.java,v 1.4 2004/01/13 09:58:22 lchan Exp $
- */
 package com.adaptris.util.text.mime;
 
 

@@ -1,6 +1,3 @@
-/*
- * $Id: ProcessorHandle.java,v 1.3 2006/06/12 07:50:12 lchan Exp $
- */
 package com.adaptris.transform;
 
 /**

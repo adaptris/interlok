@@ -1,6 +1,3 @@
-/*
- * $Id: SimpleDataStore.java,v 1.15 2006/07/19 08:38:39 lchan Exp $
- */
 package com.adaptris.util.datastore;
 
 import java.io.File;

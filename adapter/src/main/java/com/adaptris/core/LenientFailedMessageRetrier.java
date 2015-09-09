@@ -1,9 +1,3 @@
-/*
- * $RCSfile: LenientFailedMessageRetrier.java,v $
- * $Revision: 1.4 $
- * $Date: 2009/04/21 10:25:38 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;

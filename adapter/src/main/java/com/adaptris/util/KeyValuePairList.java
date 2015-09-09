@@ -1,4 +1,3 @@
-/* $Id: KeyValuePairSet.java,v 1.4 2008/08/07 12:57:45 lchan Exp $ */
 package com.adaptris.util;
 
 import java.util.ArrayList;

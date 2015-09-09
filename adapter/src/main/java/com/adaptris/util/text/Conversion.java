@@ -1,6 +1,3 @@
-/*
- * $Id: Conversion.java,v 1.8 2004/01/13 09:58:22 lchan Exp $
- */
 package com.adaptris.util.text;
 
 import java.io.IOException;

@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: Output.java,v $
- * $Revision: 1.8 $
- * $Date: 2005/08/05 10:08:23 $
- */
 package com.adaptris.security;
 
 import java.io.UnsupportedEncodingException;

@@ -1,9 +1,3 @@
-/*
- * $RCSfile: MessageFilter.java,v $
- * $Revision: 1.1 $
- * $Date: 2008/10/23 14:37:13 $
- * $Author: lchan $
- */
 package com.adaptris.mail;
 
 import javax.mail.Message;

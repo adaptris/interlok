@@ -1,9 +1,3 @@
-/*
- * $RCSfile: DynamicServiceLocator.java,v $
- * $Revision: 1.18 $
- * $Date: 2009/04/09 16:16:59 $
- * $Author: lchan $
- */
 package com.adaptris.core.services.dynamic;
 
 import static com.adaptris.core.util.LoggingHelper.friendlyName;
