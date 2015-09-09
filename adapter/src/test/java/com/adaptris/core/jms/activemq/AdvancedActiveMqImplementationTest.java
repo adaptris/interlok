@@ -1,9 +1,3 @@
-/*
- * $RCSfile: AdvancedSonicImplementationTest.java,v $
- * $Revision: 1.6 $
- * $Date: 2009/03/10 11:57:07 $
- * $Author: lchan $
- */
 package com.adaptris.core.jms.activemq;
 
 import org.apache.activemq.ActiveMQConnectionFactory;

@@ -1,9 +1,3 @@
-/*
- * $RCSfile: StubEventHandler.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/01/20 13:56:33 $
- * $Author: lchan $
- */
 package com.adaptris.core.stubs;
 
 import com.adaptris.core.ClosedState;

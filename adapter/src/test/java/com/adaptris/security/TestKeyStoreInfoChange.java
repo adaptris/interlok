@@ -1,7 +1,3 @@
-/*
- * $Id: TestKeyStoreInfoChange.java,v 1.7 2006/09/26 15:39:04 lchan Exp $
- */
-
 package com.adaptris.security;
 
 import java.security.cert.Certificate;

@@ -1,9 +1,3 @@
-/*
- * $RCSfile: PollingTriggerTest.java,v $
- * $Revision: 1.4 $
- * $Date: 2009/02/02 14:06:29 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 import java.util.ArrayList;

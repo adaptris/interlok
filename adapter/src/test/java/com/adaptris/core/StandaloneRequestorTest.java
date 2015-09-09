@@ -1,9 +1,3 @@
-/*
- * $RCSfile: StandaloneRequestorTest.java,v $
- * $Revision: 1.2 $
- * $Date: 2008/08/13 13:28:43 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 import java.util.concurrent.TimeUnit;

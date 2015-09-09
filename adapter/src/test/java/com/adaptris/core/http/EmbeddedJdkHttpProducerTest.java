@@ -1,9 +1,3 @@
-/*
- * $RCSfile: JdkHttpProducerTest.java,v $
- * $Revision: 1.3 $
- * $Date: 2008/05/22 14:11:00 $
- * $Author: lchan $
- */
 package com.adaptris.core.http;
 
 import com.adaptris.core.ConfiguredProduceDestination;

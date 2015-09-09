@@ -1,9 +1,3 @@
-/*
- * $RCSfile: AdaptrisMessageStub.java,v $
- * $Revision: 1.4 $
- * $Date: 2009/03/31 11:09:40 $
- * $Author: lchan $
- */
 package com.adaptris.core.stubs;
 
 import java.io.FilterInputStream;

@@ -1,6 +1,3 @@
-/*
- * $Id: SimpleHttpMsg.java,v 1.6 2007/09/06 07:59:08 lchan Exp $
- */
 package com.adaptris.http;
 
 import java.io.ByteArrayInputStream;

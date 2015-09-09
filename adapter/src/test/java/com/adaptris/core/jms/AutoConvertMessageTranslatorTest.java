@@ -1,9 +1,3 @@
-/*
- * $RCSfile: MultipartTranslatorTest.java,v $
- * $Revision: 1.4 $
- * $Date: 2009/04/29 09:20:37 $
- * $Author: lchan $
- */
 package com.adaptris.core.jms;
 
 import static com.adaptris.core.jms.ObjectMessageTranslatorTest.assertException;

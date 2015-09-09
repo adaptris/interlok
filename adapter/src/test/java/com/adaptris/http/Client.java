@@ -1,9 +1,3 @@
-/*
- * $RCSfile: Client.java,v $
- * $Revision: 1.2 $
- * $Date: 2007/09/06 07:59:08 $
- * $Author: lchan $
- */
 package com.adaptris.http;
 
 

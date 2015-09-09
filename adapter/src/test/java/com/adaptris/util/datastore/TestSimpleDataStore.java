@@ -1,7 +1,3 @@
-/*
- * $Id: TestSimpleDataStore.java,v 1.7 2004/01/05 15:07:15 lchan Exp $
- */
-
 package com.adaptris.util.datastore;
 
 import static org.junit.Assert.assertEquals;

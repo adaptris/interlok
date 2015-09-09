@@ -1,9 +1,3 @@
-/*
- * $RCSfile: HttpsConsumerTest.java,v $
- * $Revision: 1.5 $
- * $Date: 2009/04/15 12:01:30 $
- * $Author: lchan $
- */
 package com.adaptris.core.http.jetty;
 
 import static com.adaptris.core.security.JunitSecurityHelper.KEYSTORE_PATH;

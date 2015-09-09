@@ -1,9 +1,3 @@
-/*
- * $RCSfile: $
- * $Revision: $
- * $Date: $
- * $Author: $
- */
 package com.adaptris.core.socket;
 
 import java.io.ByteArrayInputStream;

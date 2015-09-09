@@ -1,9 +1,3 @@
-/*
- * $RCSfile: PostMethodProducer.java,v $
- * $Revision: 1.23 $
- * $Date: 2009/03/27 13:41:21 $
- * $Author: lchan $
- */
 package com.adaptris.http.legacy;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;

@@ -1,7 +1,3 @@
-/*
- * SingleEntryKeystoreBase.java,v 1.1 2008/03/27 15:33:01 lchan Exp
- */
-
 package com.adaptris.security;
 
 import java.io.File;

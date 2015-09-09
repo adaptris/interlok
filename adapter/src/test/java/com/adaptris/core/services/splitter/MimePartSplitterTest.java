@@ -1,9 +1,3 @@
-/*
- * $RCSfile: MimePartSplitterTest.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/01/28 10:01:53 $
- * $Author: lchan $
- */
 package com.adaptris.core.services.splitter;
 
 import static com.adaptris.core.services.mime.MimeJunitHelper.create;

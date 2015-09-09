@@ -1,9 +1,3 @@
-/*
- * $RCSfile: EmptyFileNameCreator.java,v $
- * $Revision: 1.6 $
- * $Date: 2008/07/22 10:48:37 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;

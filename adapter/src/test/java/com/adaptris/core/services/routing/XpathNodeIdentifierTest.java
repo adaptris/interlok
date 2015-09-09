@@ -1,9 +1,3 @@
-/*
- * $RCSfile: XpathSyntaxIdentifierTest.java,v $
- * $Revision: 1.3 $
- * $Date: 2005/10/17 04:14:10 $
- * $Author: hfraser $
- */
 package com.adaptris.core.services.routing;
 
 import com.adaptris.core.ServiceException;

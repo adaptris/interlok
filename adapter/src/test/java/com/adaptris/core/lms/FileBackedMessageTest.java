@@ -1,9 +1,3 @@
-/*
- * $RCSfile: FileBackedMessageTest.java,v $
- * $Revision: 1.6 $
- * $Date: 2009/07/01 13:06:03 $
- * $Author: lchan $
- */
 package com.adaptris.core.lms;
 
 import static org.junit.Assert.assertEquals;

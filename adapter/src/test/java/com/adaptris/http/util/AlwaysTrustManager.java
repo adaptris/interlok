@@ -1,6 +1,3 @@
-/* 
- * $Id: AlwaysTrustManager.java,v 1.2 2003/10/27 07:10:26 lchan Exp $
- */
 package com.adaptris.http.util;
 
 import java.security.cert.CertificateException;

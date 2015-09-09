@@ -1,6 +1,3 @@
-/*
- * $Id: HttpRequest.java,v 1.6 2004/11/18 07:25:06 hfraser Exp $
- */
 package com.adaptris.http;
 
 import java.io.IOException;

@@ -1,9 +1,3 @@
-/*
- * $RCSfile: TestSocketConsumer.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/08/14 08:57:09 $
- * $Author: lchan $
- */
 package com.adaptris.core.socket;
 
 import static com.adaptris.core.PortManager.nextUnusedPort;

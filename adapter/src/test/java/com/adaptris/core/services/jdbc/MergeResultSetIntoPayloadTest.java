@@ -1,9 +1,3 @@
-/*
- * $RCSfile: JdbcDataQueryServiceTest.java,v $
- * $Revision: 1.2 $
- * $Date: 2008/12/12 11:09:34 $
- * $Author: lchan $
- */
 package com.adaptris.core.services.jdbc;
 
 import java.util.List;

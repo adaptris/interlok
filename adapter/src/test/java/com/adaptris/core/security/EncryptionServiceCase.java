@@ -1,9 +1,3 @@
-/*
- * $RCSfile: EncryptionServiceCase.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/02/05 13:49:54 $
- * $Author: lchan $
- */
 package com.adaptris.core.security;
 
 import static com.adaptris.core.security.JunitSecurityHelper.SECURITY_ALIAS;

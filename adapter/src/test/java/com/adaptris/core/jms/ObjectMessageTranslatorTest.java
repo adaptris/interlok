@@ -1,9 +1,3 @@
-/*
- * $RCSfile: ObjectMessageTranslatorTest.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/04/17 07:56:38 $
- * $Author: lchan $
- */
 package com.adaptris.core.jms;
 
 import java.io.IOException;

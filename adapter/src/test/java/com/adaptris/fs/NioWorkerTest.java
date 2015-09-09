@@ -1,4 +1,3 @@
-/* $Id: NioWorkerTest.java,v 1.2 2006/11/21 14:39:37 lchan Exp $ */
 package com.adaptris.fs;
 
 import java.io.File;

@@ -1,9 +1,3 @@
-/*
- * $RCSfile: FsHelperTest.java,v $
- * $Revision: 1.2 $
- * $Date: 2008/07/08 12:31:15 $
- * $Author: lchan $
- */
 package com.adaptris.core.fs;
 
 import java.io.File;

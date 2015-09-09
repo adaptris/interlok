@@ -1,9 +1,3 @@
-/*
- * $RCSfile: ExampleServiceConfig.java,v $
- * $Revision: 1.1 $
- * $Date: 2005/10/17 04:14:09 $
- * $Author: hfraser $
- */
 package com.adaptris.core;
 
 import java.util.ArrayList;

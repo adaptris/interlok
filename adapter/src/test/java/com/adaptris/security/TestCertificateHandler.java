@@ -1,6 +1,3 @@
-/*
- * $Id: TestCertificateHandler.java,v 1.10 2008/06/13 06:55:26 lchan Exp $
- */
 package com.adaptris.security;
 
 import java.io.FileInputStream;

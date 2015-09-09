@@ -1,9 +1,3 @@
-/*
- * $RCSfile: DatabaseConnectionCase.java,v $
- * $Revision: 1.3 $
- * $Date: 2009/02/09 10:53:25 $
- * $Author: lchan $
- */
 package com.adaptris.core.jdbc;
 
 import java.sql.Connection;

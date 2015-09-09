@@ -1,9 +1,3 @@
-/*
- * $RCSfile: MockRequestReplyProducer.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/03/27 12:26:23 $
- * $Author: lchan $
- */
 package com.adaptris.core.stubs;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;

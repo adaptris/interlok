@@ -1,9 +1,3 @@
-/*
- * $RCSfile: SimpleRegexpMessageSplitterTest.java,v $
- * $Revision: 1.5 $
- * $Date: 2009/05/01 16:28:48 $
- * $Author: lchan $
- */
 package com.adaptris.core.services.splitter;
 
 import java.util.List;

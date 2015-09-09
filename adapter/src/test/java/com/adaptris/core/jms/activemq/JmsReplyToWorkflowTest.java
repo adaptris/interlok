@@ -1,9 +1,3 @@
-/*
- * $RCSfile: JmsReplyToWorkflowTest.java,v $
- * $Revision: 1.12 $
- * $Date: 2009/06/30 09:16:27 $
- * $Author: lchan $
- */
 package com.adaptris.core.jms.activemq;
 
 import java.util.concurrent.TimeUnit;

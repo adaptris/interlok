@@ -1,7 +1,3 @@
-/*
- * $Id: TestGetServiceByName.java,v 1.3 2003/10/16 07:29:33 lchan Exp $
- */
-
 package com.adaptris.util;
 
 import junit.framework.Test;

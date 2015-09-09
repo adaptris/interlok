@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: ItemCacheCase.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/10/12 09:37:26 $
- */
 package com.adaptris.core.fs;
 
 import java.util.Random;

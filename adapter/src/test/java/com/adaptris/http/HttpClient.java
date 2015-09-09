@@ -1,6 +1,3 @@
-/*
- * $Id: HttpClient.java,v 1.3 2007/09/05 14:42:17 lchan Exp $
- */
 package com.adaptris.http;
 
 import java.net.InetSocketAddress;

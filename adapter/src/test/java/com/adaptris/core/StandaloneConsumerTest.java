@@ -1,9 +1,3 @@
-/*
- * $RCSfile: StandaloneConsumerTest.java,v $
- * $Revision: 1.10 $
- * $Date: 2008/08/13 13:28:43 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 import com.adaptris.core.stubs.MockChannel;

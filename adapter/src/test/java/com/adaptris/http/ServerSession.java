@@ -1,6 +1,3 @@
-/*
- * $Id: ServerSession.java,v 1.8 2007/09/06 07:59:08 lchan Exp $
- */
 package com.adaptris.http;
 
 import java.io.ByteArrayOutputStream;

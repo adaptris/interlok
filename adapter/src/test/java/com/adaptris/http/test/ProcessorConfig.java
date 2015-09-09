@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: ProcessorConfig.java,v $
- * $Revision: 1.1 $
- * $Date: 2003/10/27 07:10:26 $
- */
 package com.adaptris.http.test;
 
 import java.util.Properties;

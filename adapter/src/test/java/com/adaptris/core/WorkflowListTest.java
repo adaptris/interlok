@@ -1,9 +1,3 @@
-/*
- * $RCSfile: WorkflowListTest.java,v $
- * $Revision: 1.14 $
- * $Date: 2007/07/31 12:42:13 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 import java.util.Arrays;

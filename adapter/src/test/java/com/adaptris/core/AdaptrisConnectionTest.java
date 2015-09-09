@@ -1,9 +1,3 @@
-/*
- * $RCSfile: AdaptrisConnectionTest.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/01/20 13:19:15 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 import java.lang.reflect.Method;

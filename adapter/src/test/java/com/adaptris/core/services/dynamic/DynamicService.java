@@ -1,9 +1,3 @@
-/*
- * $RCSfile: DynamicService.java,v $
- * $Revision: 1.2 $
- * $Date: 2008/03/04 10:20:57 $
- * $Author: lchan $
- */
 package com.adaptris.core.services.dynamic;
 
 import java.util.HashMap;

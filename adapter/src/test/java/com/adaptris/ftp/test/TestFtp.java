@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: TestFtp.java,v $
- * $Revision: 1.7 $
- * $Date: 2009/07/08 13:36:08 $
- */
 package com.adaptris.ftp.test;
 
 import java.io.FileFilter;

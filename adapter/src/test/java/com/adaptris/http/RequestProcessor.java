@@ -1,6 +1,3 @@
-/*
- * $Id: RequestProcessor.java,v 1.3 2003/10/29 00:15:27 lchan Exp $
- */
 package com.adaptris.http;
 
 import java.io.IOException;

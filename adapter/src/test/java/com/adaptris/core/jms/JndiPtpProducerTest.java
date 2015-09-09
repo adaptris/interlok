@@ -1,9 +1,3 @@
-/*
- * $RCSfile: JndiPtpProducerTest.java,v $
- * $Revision: 1.7 $
- * $Date: 2009/02/17 12:33:10 $
- * $Author: lchan $
- */
 package com.adaptris.core.jms;
 
 import javax.naming.Context;

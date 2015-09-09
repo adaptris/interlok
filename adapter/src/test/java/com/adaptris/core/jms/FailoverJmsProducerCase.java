@@ -1,9 +1,3 @@
-/*
- * $RCSfile: FailoverJmsProducerCase.java,v $
- * $Revision: 1.3 $
- * $Date: 2009/03/25 11:56:41 $
- * $Author: lchan $
- */
 package com.adaptris.core.jms;
 
 import java.util.ArrayList;

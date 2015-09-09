@@ -1,9 +1,3 @@
-/*
- * $RCSfile: SizeBasedBranchingServiceTest.java,v $
- * $Revision: 1.3 $
- * $Date: 2009/05/01 16:28:48 $
- * $Author: lchan $
- */
 package com.adaptris.core.services;
 
 import com.adaptris.core.AdaptrisMessage;

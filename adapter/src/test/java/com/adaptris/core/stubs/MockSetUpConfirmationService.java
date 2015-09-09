@@ -1,9 +1,3 @@
-/*
- * $RCSfile: ExampleSetUpConfirmationService.java,v $
- * $Revision: 1.1 $
- * $Date: 2006/05/12 05:10:37 $
- * $Author: hfraser $
- */
 package com.adaptris.core.stubs;
 
 import com.adaptris.core.AdaptrisMessage;

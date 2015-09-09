@@ -1,8 +1,3 @@
-/*
- * $RCSfile: TestHttpRequest.java,v $
- * $Revision: 1.1 $
- * $Date: 2006/07/24 16:25:23 $
- */
 package com.adaptris.http.test;
 
 import java.util.HashMap;

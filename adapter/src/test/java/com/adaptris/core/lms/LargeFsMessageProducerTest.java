@@ -1,9 +1,3 @@
-/*
- * $RCSfile: LargeFsMessageProducerTest.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/03/27 12:33:12 $
- * $Author: lchan $
- */
 package com.adaptris.core.lms;
 
 import static com.adaptris.core.fs.FsMessageProducerTest.BASE_KEY;

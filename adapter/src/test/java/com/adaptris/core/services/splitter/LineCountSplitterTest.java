@@ -1,9 +1,3 @@
-/*
- * $RCSfile: LineCountSplitterTest.java,v $
- * $Revision: 1.3 $
- * $Date: 2009/01/28 10:01:53 $
- * $Author: lchan $
- */
 package com.adaptris.core.services.splitter;
 
 import java.io.Reader;

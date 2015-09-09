@@ -1,6 +1,3 @@
-/*
- * $Id: TestMultipartOutput.java,v 1.1 2006/09/27 21:45:39 lchan Exp $
- */
 package com.adaptris.util;
 
 import java.io.ByteArrayOutputStream;

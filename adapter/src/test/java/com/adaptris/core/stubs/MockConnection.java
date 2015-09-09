@@ -1,9 +1,3 @@
-/*
- * $RCSfile: MockConnection.java,v $
- * $Revision: 1.5 $
- * $Date: 2008/05/22 13:17:42 $
- * $Author: lchan $
- */
 package com.adaptris.core.stubs;
 
 import com.adaptris.core.AdaptrisConnectionImp;

@@ -1,9 +1,3 @@
-/*
- * $RCSfile: FailFirstMockMessageProducer.java,v $
- * $Revision: 1.1 $
- * $Date: 2007/11/29 13:14:33 $
- * $Author: lchan $
- */
 package com.adaptris.core.stubs;
 
 import com.adaptris.core.AdaptrisMessage;

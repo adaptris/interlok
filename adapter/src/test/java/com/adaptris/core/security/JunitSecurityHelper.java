@@ -1,9 +1,3 @@
-/*
- * $RCSfile: JunitSecurityHelper.java,v $
- * $Revision: 1.2 $
- * $Date: 2007/08/23 19:35:22 $
- * $Author: lchan $
- */
 package com.adaptris.core.security;
 
 import java.io.File;

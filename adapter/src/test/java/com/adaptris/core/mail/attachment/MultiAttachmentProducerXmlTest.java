@@ -1,9 +1,3 @@
-/*
- * $RCSfile: MultiAttachmentProducerXmlTest.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/05/01 15:43:36 $
- * $Author: lchan $
- */
 package com.adaptris.core.mail.attachment;
 
 import com.adaptris.core.ConfiguredProduceDestination;

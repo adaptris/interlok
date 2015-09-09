@@ -1,9 +1,3 @@
-/*
- * $RCSfile: LargeMessageWorkflowTest.java,v $
- * $Revision: 1.3 $
- * $Date: 2009/06/05 16:44:32 $
- * $Author: lchan $
- */
 package com.adaptris.core.lms;
 
 import java.util.ArrayList;

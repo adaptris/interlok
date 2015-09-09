@@ -1,9 +1,3 @@
-/*
- * $RCSfile: ByteArrayDataSourceTest.java,v $
- * $Revision: 1.1 $
- * $Date: 2007/09/17 12:37:00 $
- * $Author: lchan $
- */
 package com.adaptris.util;
 
 import java.io.ByteArrayOutputStream;

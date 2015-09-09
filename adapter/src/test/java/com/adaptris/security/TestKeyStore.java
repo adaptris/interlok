@@ -1,7 +1,3 @@
-/*
- * $Id: TestKeyStore.java,v 1.13 2008/03/27 15:33:01 lchan Exp $
- */
-
 package com.adaptris.security;
 
 import java.security.PrivateKey;

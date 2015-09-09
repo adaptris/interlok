@@ -1,9 +1,3 @@
-/*
- * $RCSfile: ProduceOnlyProducerImpTest.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/04/17 15:24:05 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 import com.adaptris.core.fs.FsMessageProducerTest;

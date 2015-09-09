@@ -1,9 +1,3 @@
-/*
- * $RCSfile: RequestReplyWorkflowTest.java,v $
- * $Revision: 1.18 $
- * $Date: 2009/02/13 10:15:32 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 import java.util.concurrent.TimeUnit;

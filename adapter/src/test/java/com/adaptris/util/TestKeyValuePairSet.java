@@ -1,6 +1,3 @@
-/*
- * $Id: TestKeyValuePairSet.java,v 1.1 2003/10/23 23:04:52 hfraser Exp $
- */
 package com.adaptris.util;
 
 import java.util.HashMap;

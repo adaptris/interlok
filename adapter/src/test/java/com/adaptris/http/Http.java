@@ -1,6 +1,3 @@
-/*
- * $Id: Http.java,v 1.6 2003/10/30 05:13:18 lchan Exp $
- */
 package com.adaptris.http;
 
 import org.apache.commons.logging.Log;

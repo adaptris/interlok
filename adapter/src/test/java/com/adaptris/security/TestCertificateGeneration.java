@@ -1,6 +1,3 @@
-/*
- * $Id: TestCertificateGeneration.java,v 1.12 2008/03/27 15:33:01 lchan Exp $
- */
 package com.adaptris.security;
 
 import java.io.ByteArrayInputStream;

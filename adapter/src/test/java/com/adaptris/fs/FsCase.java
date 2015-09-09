@@ -1,10 +1,3 @@
-/*
- * FsSuite.java
- * JUnit based test
- *
- * Created on 16 September 2002, 13:32
- */
-
 package com.adaptris.fs;
 
 import java.io.IOException;

@@ -1,9 +1,3 @@
-/*
- * $RCSfile: AddTimestampMetadataServiceTest.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/06/03 19:05:02 $
- * $Author: lchan $
- */
 package com.adaptris.core.services.metadata;
 
 import java.text.ParseException;

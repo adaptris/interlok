@@ -1,9 +1,3 @@
-/*
- * $RCSfile: JettyHelper.java,v $
- * $Revision: 1.1 $
- * $Date: 2008/05/13 15:38:36 $
- * $Author: lchan $
- */
 package com.adaptris.core.http.jetty;
 
 import java.net.HttpURLConnection;

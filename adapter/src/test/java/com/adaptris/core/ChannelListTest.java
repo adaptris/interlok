@@ -1,9 +1,3 @@
-/*
- * $RCSfile: ChannelListTest.java,v $
- * $Revision: 1.15 $
- * $Date: 2005/10/04 23:40:33 $
- * $Author: hfraser $
- */
 package com.adaptris.core;
 
 import java.util.Arrays;

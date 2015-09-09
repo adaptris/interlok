@@ -1,9 +1,3 @@
-/*
- * $RCSfile: MailConsumerCase.java,v $
- * $Revision: 1.3 $
- * $Date: 2009/04/15 15:22:22 $
- * $Author: lchan $
- */
 package com.adaptris.core.mail;
 
 import java.io.IOException;

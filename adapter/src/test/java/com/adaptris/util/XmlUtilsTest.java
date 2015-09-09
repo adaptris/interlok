@@ -1,9 +1,3 @@
-/*
- * XmlUtilsTest.java JUnit based test
- *
- * Created on 19 July 2004, 14:09
- */
-
 package com.adaptris.util;
 
 import java.io.ByteArrayOutputStream;

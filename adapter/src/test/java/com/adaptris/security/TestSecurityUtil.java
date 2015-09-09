@@ -1,9 +1,3 @@
-/*
- * $RCSfile: TestSecurityUtil.java,v $
- * $Revision: 1.1 $
- * $Date: 2007/09/03 13:34:06 $
- * $Author: lchan $
- */
 package com.adaptris.security;
 
 import java.security.SecureRandom;

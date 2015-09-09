@@ -1,9 +1,3 @@
-/*
- * $RCSfile: CopyMetadataServiceTest.java,v $
- * $Revision: 1.6 $
- * $Date: 2008/08/13 13:28:42 $
- * $Author: lchan $
- */
 package com.adaptris.core.services.metadata;
 
 import java.util.Arrays;

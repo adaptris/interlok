@@ -1,9 +1,3 @@
-/*
- * $RCSfile: AdvancedSonicConsumerTest.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/02/13 15:40:40 $
- * $Author: lchan $
- */
 package com.adaptris.core.jms.activemq;
 
 import static com.adaptris.core.jms.activemq.AdvancedActiveMqImplementationTest.createImpl;

@@ -1,6 +1,3 @@
-/*
- * $RCSfile: ChannelTest.java,v $ $Revision: 1.14 $ $Date: 2008/04/25 13:08:38 $ $Author: lchan $
- */
 package com.adaptris.core;
 
 import javax.jms.ConnectionFactory;

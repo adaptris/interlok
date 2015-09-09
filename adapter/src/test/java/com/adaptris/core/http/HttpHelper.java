@@ -1,9 +1,3 @@
-/*
- * $RCSfile: HttpHelper.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/04/17 10:56:09 $
- * $Author: lchan $
- */
 package com.adaptris.core.http;
 
 import java.net.HttpURLConnection;

@@ -1,9 +1,3 @@
-/*
- * $RCSfile: JmsProducerCase.java,v $
- * $Revision: 1.4 $
- * $Date: 2009/02/17 12:33:10 $
- * $Author: lchan $
- */
 package com.adaptris.core.jms;
 
 import static com.adaptris.core.jms.JmsConfig.DEFAULT_PAYLOAD;

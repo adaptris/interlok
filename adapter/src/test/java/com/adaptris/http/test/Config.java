@@ -1,6 +1,3 @@
-/*
- * $Id: Config.java,v 1.3 2007/08/30 16:04:32 lchan Exp $
- */
 package com.adaptris.http.test;
 
 import java.io.InputStream;

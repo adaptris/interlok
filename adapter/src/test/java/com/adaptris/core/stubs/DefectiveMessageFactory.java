@@ -1,9 +1,3 @@
-/*
- * $RCSfile: StubMessageFactory.java,v $
- * $Revision: 1.1 $
- * $Date: 2008/08/14 13:40:52 $
- * $Author: lchan $
- */
 package com.adaptris.core.stubs;
 
 import com.adaptris.core.AdaptrisMessage;

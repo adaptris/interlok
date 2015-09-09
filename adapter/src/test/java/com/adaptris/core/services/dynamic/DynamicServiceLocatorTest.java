@@ -1,9 +1,3 @@
-/*
- * $RCSfile: DynamicServiceLocatorTest.java,v $
- * $Revision: 1.11 $
- * $Date: 2009/06/08 07:38:21 $
- * $Author: lchan $
- */
 package com.adaptris.core.services.dynamic;
 
 import java.io.File;

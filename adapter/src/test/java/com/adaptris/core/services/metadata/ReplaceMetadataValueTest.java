@@ -1,9 +1,3 @@
-/*
- * ReplaceMetadataTest.java,v
- * 1.1
- * 2010/01/04 11:18:21
- * lchan
- */
 package com.adaptris.core.services.metadata;
 
 import com.adaptris.core.AdaptrisMessage;

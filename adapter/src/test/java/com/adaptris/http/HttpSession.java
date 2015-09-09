@@ -1,6 +1,3 @@
-/*
- * $Id: HttpSession.java,v 1.6 2007/07/07 16:41:41 lchan Exp $
- */
 package com.adaptris.http;
 
 import java.net.Socket;

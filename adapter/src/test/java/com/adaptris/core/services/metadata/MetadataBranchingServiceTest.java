@@ -1,9 +1,3 @@
-/*
- * $RCSfile: MetadataBranchingServiceTest.java,v $
- * $Revision: 1.4 $
- * $Date: 2009/05/01 18:04:11 $
- * $Author: lchan $
- */
 package com.adaptris.core.services.metadata;
 
 import java.util.ArrayList;

@@ -1,6 +1,3 @@
-/*
- * $Id: Listener.java,v 1.3 2004/09/21 09:56:12 lchan Exp $
- */
 package com.adaptris.http;
 
 /** The basic Listener interface.

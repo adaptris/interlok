@@ -1,9 +1,3 @@
-/*
- * $RCSfile: PtpConsumerTest.java,v $
- * $Revision: 1.10 $
- * $Date: 2009/02/02 12:25:12 $
- * $Author: lchan $
- */
 package com.adaptris.core.jms;
 
 import com.adaptris.core.ConfiguredConsumeDestination;

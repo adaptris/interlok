@@ -1,9 +1,3 @@
-/*
- * $RCSfile: DefaultEventHandlerTest.java,v $
- * $Revision: 1.4 $
- * $Date: 2009/04/07 11:37:36 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 import com.adaptris.core.event.AdapterCloseEvent;

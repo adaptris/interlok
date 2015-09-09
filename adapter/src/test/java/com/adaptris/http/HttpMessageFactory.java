@@ -1,7 +1,3 @@
-/*
- * $Id: HttpMessageFactory.java,v 1.5 2007/09/06 07:59:08 lchan Exp $
- */
-
 package com.adaptris.http;
 
 /** The HttpMessageFactory.

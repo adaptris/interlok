@@ -1,9 +1,3 @@
-/*
- * $RCSfile: ByteTranslatorTest.java,v $
- * $Revision: 1.1 $
- * $Date: 2008/07/24 11:05:03 $
- * $Author: lchan $
- */
 package com.adaptris.util.text;
 
 import static org.junit.Assert.assertEquals;

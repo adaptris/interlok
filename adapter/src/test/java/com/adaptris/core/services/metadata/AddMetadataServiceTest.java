@@ -1,9 +1,3 @@
-/*
- * $RCSfile: AddMetadataServiceTest.java,v $
- * $Revision: 1.5 $
- * $Date: 2009/05/15 11:06:19 $
- * $Author: lchan $
- */
 package com.adaptris.core.services.metadata;
 
 import java.util.HashSet;

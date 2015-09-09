@@ -1,9 +1,3 @@
-/*
- * $RCSfile: DynamicFailingService.java,v $
- * $Revision: 1.1 $
- * $Date: 2008/03/03 16:47:12 $
- * $Author: lchan $
- */
 package com.adaptris.core.services.dynamic;
 
 import com.adaptris.core.AdaptrisMessage;

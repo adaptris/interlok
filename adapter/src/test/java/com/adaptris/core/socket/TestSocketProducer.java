@@ -1,9 +1,3 @@
-/*
- * $RCSfile: TestSocketProducer.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/08/14 09:46:34 $
- * $Author: lchan $
- */
 package com.adaptris.core.socket;
 
 import com.adaptris.core.ConfiguredProduceDestination;

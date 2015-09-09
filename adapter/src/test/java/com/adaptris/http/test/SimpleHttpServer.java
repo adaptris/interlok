@@ -1,6 +1,3 @@
-/*
- * $Id: SimpleHttpServer.java,v 1.5 2006/10/06 13:44:37 lchan Exp $
- */
 package com.adaptris.http.test;
 
 import static com.adaptris.core.PortManager.nextUnusedPort;

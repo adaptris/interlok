@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: Os.java,v $
- * $Revision: 1.6 $
- * $Date: 2008/11/11 14:37:07 $
- */
 package com.adaptris.util.system;
 
 import java.util.Arrays;

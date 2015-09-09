@@ -1,9 +1,3 @@
-/*
- * $RCSfile: CheckMetadataValueServiceTest.java,v $
- * $Revision: 1.7 $
- * $Date: 2009/05/01 16:28:48 $
- * $Author: lchan $
- */
 package com.adaptris.core.services.duplicate;
 
 import com.adaptris.core.AdaptrisMessage;

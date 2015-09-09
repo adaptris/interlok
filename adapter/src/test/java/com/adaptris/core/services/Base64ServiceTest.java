@@ -1,9 +1,3 @@
-/*
- * $RCSfile: Base64ServiceTest.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/02/03 07:50:27 $
- * $Author: lchan $
- */
 package com.adaptris.core.services;
 
 import java.util.ArrayList;

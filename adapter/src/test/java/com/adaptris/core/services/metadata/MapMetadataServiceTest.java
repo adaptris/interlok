@@ -1,9 +1,3 @@
-/*
- * $RCSfile: MapMetadataServiceTest.java,v $
- * $Revision: 1.6 $
- * $Date: 2008/08/21 14:20:32 $
- * $Author: lchan $
- */
 package com.adaptris.core.services.metadata;
 
 import com.adaptris.core.AdaptrisMessage;

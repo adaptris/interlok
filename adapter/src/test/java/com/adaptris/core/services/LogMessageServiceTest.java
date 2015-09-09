@@ -1,9 +1,3 @@
-/*
- * $RCSfile: LogMessageServiceTest.java,v $
- * $Revision: 1.3 $
- * $Date: 2007/08/06 08:07:59 $
- * $Author: lchan $
- */
 package com.adaptris.core.services;
 
 import com.adaptris.core.AdaptrisMessageFactory;

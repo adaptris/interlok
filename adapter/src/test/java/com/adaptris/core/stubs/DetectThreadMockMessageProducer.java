@@ -1,9 +1,3 @@
-/*
- * $RCSfile: DetectThreadMockMessageProducer.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/01/19 11:11:20 $
- * $Author: lchan $
- */
 package com.adaptris.core.stubs;
 
 import com.adaptris.core.AdaptrisMessage;

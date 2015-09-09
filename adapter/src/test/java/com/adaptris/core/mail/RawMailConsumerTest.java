@@ -1,9 +1,3 @@
-/*
- * $RCSfile: RawMailConsumerTest.java,v $
- * $Revision: 1.1 $
- * $Date: 2008/10/28 13:35:08 $
- * $Author: lchan $
- */
 package com.adaptris.core.mail;
 
 import java.io.ByteArrayOutputStream;

@@ -1,9 +1,3 @@
-/*
- * $RCSfile: SplitByMetadataTest.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/03/10 13:45:45 $
- * $Author: lchan $
- */
 package com.adaptris.core.services.splitter;
 
 import java.util.List;

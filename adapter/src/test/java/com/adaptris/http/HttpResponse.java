@@ -1,6 +1,3 @@
-/*
- * $Id: HttpResponse.java,v 1.4 2006/03/10 09:06:00 lchan Exp $
- */
 package com.adaptris.http;
 
 import java.io.IOException;

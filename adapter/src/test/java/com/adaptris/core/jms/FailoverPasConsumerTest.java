@@ -1,9 +1,3 @@
-/*
- * $RCSfile: FailoverPasConsumerTest.java,v $
- * $Revision: 1.3 $
- * $Date: 2009/02/03 13:30:44 $
- * $Author: lchan $
- */
 package com.adaptris.core.jms;
 
 import static com.adaptris.core.jms.FailoverPtpProducerTest.createFailoverConfigExample;

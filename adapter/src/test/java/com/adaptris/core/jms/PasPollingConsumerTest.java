@@ -1,9 +1,3 @@
-/*
- * $RCSfile: PasPollingConsumerTest.java,v $
- * $Revision: 1.14 $
- * $Date: 2009/02/17 14:51:16 $
- * $Author: lchan $
- */
 package com.adaptris.core.jms;
 
 import java.util.concurrent.TimeUnit;

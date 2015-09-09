@@ -1,7 +1,3 @@
-/*
- * $Id: TestURLName.java,v 1.1 2008/06/05 17:28:16 lchan Exp $
- */
-
 package com.adaptris.util;
 
 import javax.mail.URLName;

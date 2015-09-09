@@ -1,9 +1,3 @@
-/*
- * $RCSfile: MetadataTradingRelationshipCreatorTest.java,v $
- * $Revision: 1.4 $
- * $Date: 2008/08/13 13:28:43 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 public class ConfiguredTradingRelationshipCreatorTest extends BaseCase {

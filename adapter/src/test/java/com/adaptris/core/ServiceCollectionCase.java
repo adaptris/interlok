@@ -1,9 +1,3 @@
-/*
- * $RCSfile: ServiceListTest.java,v $
- * $Revision: 1.21 $
- * $Date: 2009/01/28 09:55:41 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 import java.util.Arrays;

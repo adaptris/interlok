@@ -1,9 +1,3 @@
-/*
- * $RCSfile: LargeFsConsumerTest.java,v $
- * $Revision: 1.4 $
- * $Date: 2009/04/24 09:16:49 $
- * $Author: lchan $
- */
 package com.adaptris.core.lms;
 
 import java.io.File;

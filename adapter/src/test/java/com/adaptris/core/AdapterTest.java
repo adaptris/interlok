@@ -1,9 +1,3 @@
-/*
- * $RCSfile: AdapterTest.java,v $
- * $Revision: 1.43 $
- * $Date: 2009/08/14 09:48:39 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 import java.io.IOException;

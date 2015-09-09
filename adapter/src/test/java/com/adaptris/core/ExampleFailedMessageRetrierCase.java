@@ -1,9 +1,3 @@
-/*
- * $RCSfile: ExampleFailedMessageRetrierCase.java,v $
- * $Revision: 1.3 $
- * $Date: 2009/05/01 15:44:16 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 /**

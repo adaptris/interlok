@@ -1,7 +1,3 @@
-/*
- * $Id: TestURLString.java,v 1.5 2008/06/05 17:25:33 lchan Exp $
- */
-
 package com.adaptris.util;
 
 import java.net.URL;

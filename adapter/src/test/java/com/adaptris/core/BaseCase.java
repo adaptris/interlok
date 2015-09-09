@@ -1,7 +1,3 @@
-/*
- * $RCSfile: BaseCase.java,v $ $Revision: 1.9 $ $Date: 2009/03/20 10:43:41 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 import java.io.File;

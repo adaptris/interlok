@@ -1,9 +1,3 @@
-/*
- * $RCSfile: FsMessageProducerTest.java,v $
- * $Revision: 1.16 $
- * $Date: 2008/11/04 14:45:20 $
- * $Author: lchan $
- */
 package com.adaptris.core.fs;
 
 import java.io.File;

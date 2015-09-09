@@ -1,9 +1,3 @@
-/*
- * $RCSfile: DefaultMailConsumerTest.java,v $
- * $Revision: 1.2 $
- * $Date: 2008/12/03 13:51:40 $
- * $Author: lchan $
- */
 package com.adaptris.core.mail;
 
 import java.io.FileInputStream;

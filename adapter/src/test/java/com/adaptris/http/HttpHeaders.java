@@ -1,6 +1,3 @@
-/*
- * $Id: HttpHeaders.java,v 1.7 2007/07/06 09:55:55 lchan Exp $
- */
 package com.adaptris.http;
 
 import java.io.InputStream;

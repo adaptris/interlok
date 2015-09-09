@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: DefaultProcessor.java,v $
- * $Revision: 1.2 $
- * $Date: 2007/07/07 16:41:41 $
- */
 package com.adaptris.http.test;
 
 import java.io.ByteArrayOutputStream;

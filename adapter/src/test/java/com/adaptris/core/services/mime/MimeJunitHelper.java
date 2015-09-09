@@ -1,9 +1,3 @@
-/*
- * $RCSfile: MimeJunitHelper.java,v $
- * $Revision: 1.1 $
- * $Date: 2008/11/12 10:26:54 $
- * $Author: lchan $
- */
 package com.adaptris.core.services.mime;
 
 import static com.adaptris.util.text.mime.MimeConstants.ENCODING_7BIT;

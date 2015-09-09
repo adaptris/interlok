@@ -1,9 +1,3 @@
-/*
- * $RCSfile: HttpConsumerTest.java,v $
- * $Revision: 1.7 $
- * $Date: 2009/04/15 12:01:30 $
- * $Author: lchan $
- */
 package com.adaptris.core.http.jetty;
 
 import java.io.FileNotFoundException;

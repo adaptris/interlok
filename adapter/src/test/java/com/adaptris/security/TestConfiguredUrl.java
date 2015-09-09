@@ -1,7 +1,3 @@
-/*
- * $Id: TestConfiguredUrl.java,v 1.1 2006/10/30 13:35:33 lchan Exp $
- */
-
 package com.adaptris.security;
 
 import java.util.Properties;

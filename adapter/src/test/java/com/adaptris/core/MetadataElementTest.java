@@ -1,9 +1,3 @@
-/*
- * $RCSfile: MetadataElementTest.java,v $
- * $Revision: 1.6 $
- * $Date: 2006/05/23 06:35:00 $
- * $Author: hfraser $
- */
 package com.adaptris.core;
 
 import junit.framework.TestCase;

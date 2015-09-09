@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: FtpCase.java,v $
- * $Revision: 1.5 $
- * $Date: 2009/07/06 12:40:20 $
- */
 package com.adaptris.filetransfer;
 
 import java.io.FileFilter;

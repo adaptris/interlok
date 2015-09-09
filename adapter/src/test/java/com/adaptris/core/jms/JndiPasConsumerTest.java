@@ -1,9 +1,3 @@
-/*
- * $RCSfile: JndiPasConsumerTest.java,v $
- * $Revision: 1.3 $
- * $Date: 2009/02/03 13:31:14 $
- * $Author: lchan $
- */
 package com.adaptris.core.jms;
 
 import static com.adaptris.core.jms.JndiPtpProducerTest.DEFAULT_FILE_SUFFIX;

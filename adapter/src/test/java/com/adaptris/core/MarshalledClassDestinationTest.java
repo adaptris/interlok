@@ -1,9 +1,3 @@
-/*
- * $RCSfile: MarshalledClassDestinationTest.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/04/15 12:34:32 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 import com.adaptris.core.event.AdapterCloseEvent;

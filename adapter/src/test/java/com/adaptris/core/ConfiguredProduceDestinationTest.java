@@ -1,9 +1,3 @@
-/*
- * $RCSfile: ConfiguredProduceDestinationTest.java,v $
- * $Revision: 1.4 $
- * $Date: 2007/07/31 12:42:13 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 public class ConfiguredProduceDestinationTest extends ExampleProduceDestinationCase {

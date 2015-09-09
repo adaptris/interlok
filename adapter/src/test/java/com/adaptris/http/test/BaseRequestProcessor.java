@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: BaseRequestProcessor.java,v $
- * $Revision: 1.3 $
- * $Date: 2004/09/21 09:56:12 $
- */
 package com.adaptris.http.test;
 
 import java.util.Properties;

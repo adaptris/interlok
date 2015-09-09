@@ -1,9 +1,3 @@
-/*
- * $RCSfile: FilePurge.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/06/05 19:29:15 $
- * $Author: lchan $
- */
 package com.adaptris.core.lms;
 
 import java.io.File;

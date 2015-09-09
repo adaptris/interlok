@@ -1,9 +1,3 @@
-/*
- * $RCSfile: PasswordOverride.java,v $
- * $Revision: 1.1 $
- * $Date: 2007/08/30 17:17:53 $
- * $Author: lchan $
- */
 package com.adaptris.http.legacy;
 
 import java.util.Arrays;

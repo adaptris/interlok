@@ -1,7 +1,3 @@
-/*
- * $Id: TestTcpSocketTransport.java,v 1.7 2006/07/19 11:02:11 lchan Exp $
- */
-
 package com.adaptris.transport;
 
 import static com.adaptris.transport.JunitSocketServer.SOCKET_PROPERTIES;

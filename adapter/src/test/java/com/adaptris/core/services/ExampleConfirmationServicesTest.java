@@ -1,9 +1,3 @@
-/*
- * $RCSfile: ExampleConfirmationServicesTest.java,v $
- * $Revision: 1.3 $
- * $Date: 2008/08/13 13:28:43 $
- * $Author: lchan $
- */
 package com.adaptris.core.services;
 
 import java.util.List;

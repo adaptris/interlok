@@ -1,7 +1,3 @@
-/*
- * $Id: SimpleSocketServer.java,v 1.5 2006/07/19 11:02:11 lchan Exp $
- */
-
 package com.adaptris.transport;
 
 import java.io.InputStream;

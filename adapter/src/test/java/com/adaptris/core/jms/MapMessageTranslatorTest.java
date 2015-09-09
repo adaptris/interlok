@@ -1,9 +1,3 @@
-/*
- * $RCSfile: MapMessageTranslatorTest.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/04/17 08:15:54 $
- * $Author: lchan $
- */
 package com.adaptris.core.jms;
 
 import javax.jms.MapMessage;

@@ -1,9 +1,3 @@
-/*
- * $RCSfile: EventHandlerWrapperStub.java,v $
- * $Revision: 1.10 $
- * $Date: 2008/07/01 16:36:09 $
- * $Author: lchan $
- */
 package com.adaptris.core.stubs;
 
 import com.adaptris.core.Adapter;

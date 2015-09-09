@@ -1,9 +1,3 @@
-/*
- * $RCSfile: HttpsProduceConnection.java,v $
- * $Revision: 1.11 $
- * $Date: 2009/04/17 10:53:43 $
- * $Author: lchan $
- */
 package com.adaptris.http.legacy;
 
 import com.adaptris.core.CoreException;

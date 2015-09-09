@@ -1,7 +1,3 @@
-/*
- * $Id: TestCompositeKeystore.java,v 1.8 2008/06/13 06:55:26 lchan Exp $
- */
-
 package com.adaptris.security;
 
 import java.io.File;

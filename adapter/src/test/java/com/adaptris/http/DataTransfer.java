@@ -1,6 +1,3 @@
-/*
- * $Id: DataTransfer.java,v 1.3 2003/10/27 07:10:26 lchan Exp $
- */
 package com.adaptris.http;
 
 import java.io.InputStream;

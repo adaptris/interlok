@@ -1,7 +1,3 @@
-/*
- * $Id: TestDefaultSecurityService.java,v 1.12 2007/07/02 10:08:34 lchan Exp $
- */
-
 package com.adaptris.security;
 
 import java.util.Properties;

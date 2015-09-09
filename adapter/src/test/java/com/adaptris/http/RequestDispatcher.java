@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: RequestDispatcher.java,v $
- * $Revision: 1.4 $
- * $Date: 2009/04/16 13:28:57 $
- */
 package com.adaptris.http;
 
 import java.net.HttpURLConnection;

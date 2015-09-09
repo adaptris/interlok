@@ -1,9 +1,3 @@
-/*
- * $RCSfile: ServiceNameMapperTest.java,v $
- * $Revision: 1.3 $
- * $Date: 2008/02/20 18:10:56 $
- * $Author: lchan $
- */
 package com.adaptris.core.services.dynamic;
 
 import junit.framework.TestCase;

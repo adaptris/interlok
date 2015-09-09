@@ -1,9 +1,3 @@
-/*
- * $RCSfile: DuplicateMessageRoutingServiceTest.java,v $
- * $Revision: 1.2 $
- * $Date: 2008/08/13 13:28:44 $
- * $Author: lchan $
- */
 package com.adaptris.core.services.duplicate;
 
 import java.io.File;

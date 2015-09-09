@@ -1,9 +1,3 @@
-/*
- * $RCSfile: AdaptrisMessageFactoryImplCase.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/03/20 10:44:34 $
- * $Author: lchan $
- */
 package com.adaptris.core;
 
 import static org.junit.Assert.assertEquals;

@@ -1,9 +1,3 @@
-/*
- * $RCSfile: MockEventHandlerWithState.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/03/10 13:44:39 $
- * $Author: lchan $
- */
 package com.adaptris.core.stubs;
 
 import com.adaptris.core.CoreException;

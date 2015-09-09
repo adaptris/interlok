@@ -1,9 +1,3 @@
-/*
- * $RCSfile: FileCleanupTest.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/06/05 17:55:10 $
- * $Author: lchan $
- */
 package com.adaptris.zz.cleanup;
 
 import org.junit.Test;

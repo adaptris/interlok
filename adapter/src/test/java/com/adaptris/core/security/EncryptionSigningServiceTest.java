@@ -1,9 +1,3 @@
-/*
- * $RCSfile: EncryptionSigningServiceTest.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/02/05 13:49:54 $
- * $Author: lchan $
- */
 package com.adaptris.core.security;
 
 /**

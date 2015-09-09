@@ -1,9 +1,3 @@
-/*
- * $RCSfile: MultiAttachmentProducerMimeTest.java,v $
- * $Revision: 1.1 $
- * $Date: 2008/12/03 15:15:30 $
- * $Author: lchan $
- */
 package com.adaptris.core.mail.attachment;
 
 import static com.adaptris.core.mail.attachment.MimeMailCreatorTest.create;

@@ -1,9 +1,3 @@
-/*
- * $RCSfile: TextMessageTranslatorTest.java,v $
- * $Revision: 1.7 $
- * $Date: 2009/04/15 15:22:06 $
- * $Author: lchan $
- */
 package com.adaptris.core.jms;
 
 import javax.jms.Message;

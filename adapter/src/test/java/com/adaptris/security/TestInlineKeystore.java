@@ -1,7 +1,3 @@
-/*
- * $Id: TestInlineKeystore.java,v 1.2 2008/03/27 15:33:01 lchan Exp $
- */
-
 package com.adaptris.security;
 
 import junit.framework.TestCase;

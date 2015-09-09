@@ -1,9 +1,3 @@
-/*
- * $RCSfile: ExampleBranchingService.java,v $
- * $Revision: 1.6 $
- * $Date: 2005/10/04 23:43:49 $
- * $Author: hfraser $
- */
 package com.adaptris.core.stubs;
 
 import com.adaptris.core.AdaptrisMessage;

@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: Environment.java,v $
- * $Revision: 1.3 $
- * $Date: 2005/07/01 10:30:41 $
- */
 package com.adaptris.util.system;
 
 import java.util.Map;

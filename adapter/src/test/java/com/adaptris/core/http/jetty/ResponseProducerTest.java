@@ -1,9 +1,3 @@
-/*
- * $RCSfile: ResponseProducerTest.java,v $
- * $Revision: 1.1 $
- * $Date: 2009/02/02 14:06:15 $
- * $Author: lchan $
- */
 package com.adaptris.core.http.jetty;
 
 import static com.adaptris.core.http.jetty.JettyHelper.createChannel;

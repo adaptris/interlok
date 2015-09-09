@@ -1,9 +1,3 @@
-/*
- * $RCSfile: SyntaxBranchingServiceTest.java,v $
- * $Revision: 1.2 $
- * $Date: 2009/05/01 08:44:49 $
- * $Author: lchan $
- */
 package com.adaptris.core.services.routing;
 
 import java.util.ArrayList;
