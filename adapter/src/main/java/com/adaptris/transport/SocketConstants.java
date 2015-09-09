@@ -1,18 +1,13 @@
-/*
- * $Id: SocketConstants.java,v 1.7 2006/10/06 16:04:44 lchan Exp $
- */
-
 package com.adaptris.transport;
 
 /**
  * Constants used in configuration.
  * <p>
- * All configuration exists in a Properties hashtable, this is expected to
- * contain some or all of the keys defined in this class. The values from these
- * keys will be used to configure the underlying <code>SocketTransport</code>
- * class
+ * All configuration exists in a Properties hashtable, this is expected to contain some or all of
+ * the keys defined in this class. The values from these keys will be used to configure the
+ * underlying <code>SocketTransport</code> class
  * 
- * @see Transport#setConfiguration(Properties)
+ * @see Transport#setConfiguration(java.util.Properties)
  * @see TcpSocketTransport
  * @see SSLSocketTransport
  */

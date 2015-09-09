@@ -107,12 +107,7 @@ public abstract class MailSenderImp implements MailSender {
     }
   }
 
-  /**
-   * Add some names to the TO list.
-   *
-   * @param address an array of InternetAddress[] representing email addresses
-   * @throws AddressException if the addresses could not be parsed.
-   */
+
   @Override
   public void addTo(InternetAddress[] address) throws MailException {
     checkSession();
@@ -124,12 +119,6 @@ public abstract class MailSenderImp implements MailSender {
     }
   }
 
-  /**
-   * Add some names to the TO list.
-   *
-   * @param address the email address name@company.com
-   * @throws AddressException if the addresses could not be parsed.
-   */
   @Override
   public void addTo(String address) throws MailException {
     try {
@@ -140,12 +129,6 @@ public abstract class MailSenderImp implements MailSender {
     }
   }
 
-  /**
-   * Add some names to the CC list.
-   *
-   * @param address an array of InternetAddress[] representing email addresses
-   * @throws AddressException if the addresses could not be parsed.
-   */
   @Override
   public void addCarbonCopy(InternetAddress[] address) throws MailException {
     checkSession();
@@ -157,12 +140,6 @@ public abstract class MailSenderImp implements MailSender {
     }
   }
 
-  /**
-   * Add some names to the CC list.
-   *
-   * @param address the email address name@company.com
-   * @throws AddressException if the addresses could not be parsed.
-   */
   @Override
   public void addCarbonCopy(String address) throws MailException {
     try {
@@ -173,12 +150,6 @@ public abstract class MailSenderImp implements MailSender {
     }
   }
 
-  /**
-   * Add some names to the BCC list.
-   *
-   * @param address an array of InternetAddress[] representing email addresses
-   * @throws AddressException if the addresses could not be parsed.
-   */
   @Override
   public void addBlindCarbonCopy(InternetAddress[] address) throws MailException {
     checkSession();
@@ -190,12 +161,7 @@ public abstract class MailSenderImp implements MailSender {
     }
   }
 
-  /**
-   * Add a name to the BCC list.
-   *
-   * @param address email address name@company.com
-   * @throws AddressException if the addresses could not be parsed.
-   */
+
   @Override
   public void addBlindCarbonCopy(String address) throws MailException {
     try {
@@ -206,12 +172,7 @@ public abstract class MailSenderImp implements MailSender {
     }
   }
 
-  /**
-   * Set the sender.
-   *
-   * @param from email address name@company.com
-   * @throws AddressException if the addresses could not be parsed.
-   */
+
   @Override
   public void setFrom(String from) throws MailException {
     try {
@@ -222,12 +183,7 @@ public abstract class MailSenderImp implements MailSender {
     }
   }
 
-  /**
-   * Set the sender.
-   *
-   * @param from InternetAddress container for name@company.com
-   * @throws AddressException if the addresses could not be parsed.
-   */
+
   @Override
   public void setFrom(InternetAddress from) throws MailException {
     checkSession();
@@ -239,11 +195,6 @@ public abstract class MailSenderImp implements MailSender {
     }
   }
 
-  /**
-   * Set the subject of the email.
-   *
-   * @param s the subject.
-   */
   @Override
   public void setSubject(String s) throws MailException {
     checkSession();
@@ -260,13 +211,6 @@ public abstract class MailSenderImp implements MailSender {
     addAttachment(new Attachment(bytes, filename, type, encoding));
   }
   
-  /**
-   * Add an attachment to the email.
-   *
-   * @param bytes the attachment;
-   * @param filename the filename to use for the attachment.
-   * @param type the content type to associate with this attachment
-   */
   @Override
   public void addAttachment(byte[] bytes, String filename, String type) throws MailException {
     addAttachment(new Attachment(bytes, filename, type, "base64"));
@@ -296,11 +240,6 @@ public abstract class MailSenderImp implements MailSender {
     }
   }
 
-  /**
-   * Set the message.
-   *
-   * @param bytes the message;
-   */
   @Override
   public void setMessage(byte[] bytes) throws MailException {
     setMessage(bytes, DEFAULT_CONTENT_TYPE);
@@ -326,14 +265,6 @@ public abstract class MailSenderImp implements MailSender {
     }
   }
 
-  /**
-   * Set the encoding type to use for the message type.
-   * <p>
-   * Valid types of encoding are those defined in RFC2045. They include "base64", "quoted-printable", "7bit", "8bit" and "binary".
-   * In addition, "uuencode" is also supported.
-   *
-   * @param enc the encoding type to use.
-   */
   @Override
   public void setEncoding(String enc) {
     encoding = enc;

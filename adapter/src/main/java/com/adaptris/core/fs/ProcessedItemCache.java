@@ -14,7 +14,6 @@ public interface ProcessedItemCache extends AdaptrisComponent {
    * Update the cache with the tracked item.
    *
    * @param i the tracked item.
-   * @throws Exception
    */
   void update(ProcessedItem i);
 
@@ -23,7 +22,6 @@ public interface ProcessedItemCache extends AdaptrisComponent {
    *
    * @param key the key
    * @return the TrackedItem or null if it does not exist.
-   * @throws Exception
    */
   ProcessedItem get(String key);
 
@@ -32,7 +30,6 @@ public interface ProcessedItemCache extends AdaptrisComponent {
    *
    * @param key the key
    * @return true if the item exists.
-   * @throws Exception
    */
   boolean contains(String key);
 
@@ -46,7 +43,6 @@ public interface ProcessedItemCache extends AdaptrisComponent {
   /**
    * Clear the cache.
    *
-   * @throws Exception
    */
   void clear();
 

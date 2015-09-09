@@ -135,9 +135,6 @@ public abstract class AbstractMarshaller implements AdaptrisMarshaller {
 
   }
 
-  /**
-   * @see com.adaptris.core.AdaptrisMarshaller#unmarshal (com.adaptris.util.URLString, java.lang.Class)
-   */
   @Override
   public Object unmarshal(URLString loc) throws CoreException {
     Object result = null;
@@ -162,9 +159,6 @@ public abstract class AbstractMarshaller implements AdaptrisMarshaller {
     return result;
   }
 
-  /**
-   * @see com.adaptris.core.AdaptrisMarshaller#unmarshal (java.io.InputStream, java.lang.Class)
-   */
   @Override
   public Object unmarshal(InputStream stream) throws CoreException {
     return this.unmarshal(new InputStreamReader(stream));

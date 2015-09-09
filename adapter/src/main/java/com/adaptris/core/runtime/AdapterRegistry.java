@@ -268,10 +268,11 @@ public class AdapterRegistry implements AdapterRegistryMBean {
   }
 
   /**
-   * Convenience method to close a set of adapter managers that uses {@link AdapterManagerMBean#requestClose()}
+   * Convenience method to close a set of adapter managers that uses
+   * {@link AdapterManagerMBean#requestClose()}
    *
    * @param adapterManagers set of managers.
-   * @throws CoreException.
+   * @throws CoreException wrapping other exceptions
    */
   public static void close(Set<ObjectName> adapterManagers) throws CoreException {
     for (ObjectName obj : adapterManagers) {
@@ -281,10 +282,11 @@ public class AdapterRegistry implements AdapterRegistryMBean {
   }
 
   /**
-   * Convenience method to close a set of adapter managers that uses {@link AdapterManagerMBean#requestStop()}
+   * Convenience method to close a set of adapter managers that uses
+   * {@link AdapterManagerMBean#requestStop()}
    *
    * @param adapterManagers set of managers.
-   * @throws CoreException.
+   * @throws CoreException wrapping other exceptions
    */
   public static void stop(Set<ObjectName> adapterManagers) throws CoreException {
     for (ObjectName obj : adapterManagers) {
@@ -294,10 +296,11 @@ public class AdapterRegistry implements AdapterRegistryMBean {
   }
 
   /**
-   * Convenience method to close a set of adapter managers that uses {@link AdapterManagerMBean#unregisterMBean()}
+   * Convenience method to close a set of adapter managers that uses
+   * {@link AdapterManagerMBean#unregisterMBean()}
    *
    * @param adapterManagers set of managers.
-   * @throws CoreException.
+   * @throws CoreException wrapping other exceptions
    */
   public static void unregister(Set<ObjectName> adapterManagers) throws CoreException {
     for (ObjectName obj : adapterManagers) {

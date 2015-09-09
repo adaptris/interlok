@@ -1,12 +1,10 @@
-/*
- * $Id: RecordHandler.java,v 1.4 2006/06/12 07:50:12 lchan Exp $
- */
 package com.adaptris.transform.ff;
+
+import java.io.PrintWriter;
+import java.util.ArrayList;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import java.util.ArrayList;
-import java.io.PrintWriter;
 
 /**
  *
@@ -30,9 +28,11 @@ public class RecordHandler extends Handler
   int rec_id_start = 0;
   int rec_id_len   = 0;
 
-  /** Constructor - creates a record parser based on file descriptor node
-    * @param node - the input description node
-    */
+  /**
+   * Constructor - creates a record parser based on file descriptor node
+   * 
+   * @param input - the input description node
+   */
 
   RecordHandler(Node input)
   {

@@ -147,8 +147,8 @@ public interface AdapterManagerMBean extends AdapterComponentMBean, ParentRuntim
   /**
    * Send an {@link AdapterLifecycleEvent} to any configured event handlers.
    * 
-   * @throws CoreException wrapping any exception
    * @param event the {@link AdapterLifecycleEvent} to send.
+   * @throws CoreException wrapping any exception
    */
   public void sendLifecycleEvent(AdapterLifecycleEvent event) throws CoreException;
 

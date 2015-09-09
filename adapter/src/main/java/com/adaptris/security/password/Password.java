@@ -85,7 +85,7 @@ public abstract class Password {
    *
    * @param type the type
    * @return the password implementation
-   * @throws Exception
+   * @throws PasswordException wrapping other exceptions.
    * @see #MSCAPI_STYLE
    * @see #NON_PORTABLE_PASSWORD
    * @see #PORTABLE_PASSWORD

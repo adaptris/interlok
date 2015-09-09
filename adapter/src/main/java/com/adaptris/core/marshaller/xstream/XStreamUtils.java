@@ -21,12 +21,12 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.core.AdapterXStreamMarshallerFactory;
+import com.thoughtworks.xstream.core.util.FastField;
+
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 import sun.reflect.generics.reflectiveObjects.TypeVariableImpl;
 import sun.reflect.generics.reflectiveObjects.WildcardTypeImpl;
-
-import com.adaptris.core.AdapterXStreamMarshallerFactory;
-import com.thoughtworks.xstream.core.util.FastField;
 
 /**
  * General Utilities used by various XStream related classes
@@ -440,9 +440,10 @@ public class XStreamUtils {
   
   /**
    * Given a genericType object, this method obtains the actual class from within it.
+   * 
    * @param genericType
-   * @param List to populate
-   * @return List<Class> that contains all type classes from with the genericType given
+   * @param resultClassList the list to populate
+   * @return a List<Class> that contains all type classes from with the genericType given
    */
   static List<Class<?>> getClassFromGenericType(Type genericType, List<Class<?>> resultClassList) {
     if (resultClassList == null)

@@ -1,6 +1,3 @@
-/*
- * $Id: ClientSession.java,v 1.10 2007/09/06 07:59:08 lchan Exp $
- */
 package com.adaptris.http;
 
 import java.io.ByteArrayOutputStream;
@@ -18,9 +15,7 @@ class ClientSession extends HttpSessionImp {
   public boolean allowsNoContentLength() {
     return true;
   }
-  /** 
-   *  @see com.adaptris.http.HttpSessionImp#initialise()
-   */
+
   protected void initialise() throws HttpException {
     requestMessage = httpMessageFactory.create();
     requestMessage.registerOwner(this);

@@ -217,10 +217,9 @@ class ControlSocket {
   }
 
   /**
-   * Request a data socket be created on the server, connect to it and return
-   * our connected socket.
+   * Request a data socket be created on the server, connect to it and return our connected socket.
    *
-   * @param active if true, create in active mode, else in passive mode
+   * @param connectMode the mode.
    * @return connected data socket
    */
   DataSocket createDataSocket(FtpDataMode connectMode) throws IOException, FileTransferException {

@@ -1,9 +1,3 @@
-/*
- * $Author: lchan $
- * $RCSfile: X509Builder.java,v $
- * $Revision: 1.6 $
- * $Date: 2006/10/30 13:35:33 $
- */
 package com.adaptris.security.certificate;
 
 import java.io.OutputStream;
@@ -39,7 +33,7 @@ import com.adaptris.security.util.SecurityUtil;
 /**
  * Concrete implementation of CertificateMaker.
  *
- * @see CertificateMaker
+ * @see CertificateBuilder
  * @author $Author: lchan $
  */
 final class X509Builder implements CertificateBuilder {

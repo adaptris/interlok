@@ -117,7 +117,6 @@ public class DuplicateMessageRoutingService extends ServiceImp {
    * </p>
    *
    * @param s a URI which must be in the form "file:///filepath"
-   * @throws CoreException wrapping any underlying Exception
    */
   public void setConfigLocation(String s) {
     configLocation = s;

@@ -41,7 +41,7 @@ class ShutdownHandler extends Thread {
    * Creates a new instance.
    * </p>
    *
-   * @param param the adapter to shut down
+   * @param controller the adapter to shut down
    */
   public ShutdownHandler(AdapterRegistryMBean controller) {
     mainThread = Thread.currentThread();

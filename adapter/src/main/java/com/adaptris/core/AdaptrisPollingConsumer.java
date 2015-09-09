@@ -90,7 +90,6 @@ public abstract class AdaptrisPollingConsumer
    * 
    * @return true if the lock was re-acquired, or if it was never necessary.
    * @see #getReacquireLockBetweenMessages()
-   * @see #reacquireLock()
    */
   public final boolean continueProcessingMessages() {
     if (!reacquireLockBetweenMessages()) {
@@ -114,9 +113,6 @@ public abstract class AdaptrisPollingConsumer
     catch (InterruptedException e) {
       log.warn("ignoring InterruptedException [" + e.getMessage() + "]");
     }
-
-    // log.debug("lock reacquired? [" + result + "]");
-
     return result;
   }
 
@@ -178,7 +174,6 @@ public abstract class AdaptrisPollingConsumer
    * </p>
    * 
    * @param b the lock flag
-   * @see #reacquireLock()
    */
   public void setReacquireLockBetweenMessages(Boolean b) {
     reacquireLockBetweenMessages = b;

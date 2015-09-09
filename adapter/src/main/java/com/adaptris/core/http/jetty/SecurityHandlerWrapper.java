@@ -17,7 +17,7 @@ public interface SecurityHandlerWrapper {
    * Create a security handler implementation.
    * 
    * @return a Jetty SecurityHandler implementation
-   * @throws Exception.
+   * @throws Exception wrapping other exceptions.
    */
   SecurityHandler createSecurityHandler() throws Exception;
 }

@@ -84,7 +84,6 @@ public abstract class MailClientImp implements MailReceiver {
    * This will purge messages if necessary and close folders & connections
    * </p>
    * 
-   * @throws MailException if the connection failed.
    */
   protected abstract void disconnectLocal();
 

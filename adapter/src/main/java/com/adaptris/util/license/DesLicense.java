@@ -42,11 +42,7 @@ final class DesLicense implements License {
   private String license;
   private boolean initialised = false;
 
-  /**
-   * Construct with the specified key.
-   *
-   * @param s the license key
-   */
+
   DesLicense(String s) throws LicenseException {
     license = s.replaceAll(" ", "");
     initialise();
@@ -57,17 +53,12 @@ final class DesLicense implements License {
     return false;
   }
 
-  /**
-   * @see License#isEnabled(int)
-   */
+
   public boolean isEnabled(int l) {
     return (l & components) > 0 ? true : false;
   }
 
-  /**
-   *
-   * @see com.adaptris.util.license.License#verify()
-   */
+
   public void verify() throws LicenseException {
     if (!isValid()) {
       throw new LicenseException("License is not valid for this machine");
@@ -77,33 +68,22 @@ final class DesLicense implements License {
     }
   }
 
-  /**
-   * @see License#isValid()
-   */
+
   public boolean isValid() throws LicenseException {
     return initialised;
   }
 
-  /**
-   * @see License#exceedsMaxChannels(int)
-   */
   public boolean exceedsMaxChannels(int channelCount) {
     return maxChannels == 0 ? false : maxChannels < channelCount;
   }
 
-  /**
-   *
-   * @see com.adaptris.util.license.License#hasExpired()
-   */
+
   public boolean hasExpired() throws LicenseException {
     Date today = new Date();
     return today.after(getExpiry());
   }
 
-  /**
-   *
-   * @see com.adaptris.util.license.License#getExpiry()
-   */
+
   public Date getExpiry() throws LicenseException {
     if (expiryDate == null) {
       return new Date(1);

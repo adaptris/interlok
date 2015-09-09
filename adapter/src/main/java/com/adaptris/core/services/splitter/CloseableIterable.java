@@ -22,10 +22,10 @@ public interface CloseableIterable<E> extends Closeable, Iterable<E> {
  */
 class CloseableIterableFactory {
   /**
-   * Make sure that the Iterable is Closeable. If it's already Closeable, just return it. 
+   * Make sure that the Iterable is Closeable. If it's already Closeable, just return it.
    * 
    * @param iter
-   * @return
+   * @return a Closeable wrapper around the Iterator
    */
   public <E> CloseableIterable<E> ensureCloseable(final Iterable<E> iter) {
     if(iter instanceof CloseableIterable) {

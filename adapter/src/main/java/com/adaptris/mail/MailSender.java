@@ -1,17 +1,21 @@
 package com.adaptris.mail;
 
-import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
 /**
- * An interface for an email sender client
+ * An interface for an email sender client.
  *
- * The javax.mail MimeMessage and Session objects are used at least to hold message data although the client implementation may not
- * necessarily use javax.mail system, in which case a conversion will be required to store data in the MimeMessage object.
- *
- * Expected usage:- construct client sender object add/remove session properties start session call newMessage method call setFrom,
- * addTo/cc/Bcc, setSubject, setMessage, addAttachments as required call send
- *
+ * <p>
+ * The javax.mail MimeMessage and Session objects are used at least to hold message data although
+ * the client implementation may not necessarily use javax.mail system, in which case a conversion
+ * will be required to store data in the MimeMessage object.
+ * </p>
+ * <p>
+ * Expected usage:- construct client sender object add/remove session properties start session call
+ * newMessage method call setFrom, addTo/cc/Bcc, setSubject, setMessage, addAttachments as required
+ * call send
+ * </p>
+ * 
  * @author Daniel
  *
  */
@@ -63,7 +67,7 @@ public interface MailSender {
    * Add some names to the TO list.
    *
    * @param address an array of InternetAddress[] representing email addresses
-   * @throws AddressException if the addresses could not be parsed.
+   * @throws MailException if the addresses could not be parsed.
    */
   public void addTo(InternetAddress[] address) throws MailException;
 
@@ -71,7 +75,7 @@ public interface MailSender {
    * Add some names to the TO list.
    *
    * @param address the email address name@company.com
-   * @throws AddressException if the addresses could not be parsed.
+   * @throws MailException if the addresses could not be parsed.
    */
   public void addTo(String address) throws MailException;
 
@@ -79,7 +83,7 @@ public interface MailSender {
    * Add some names to the CC list.
    *
    * @param cc an array of InternetAddress[] representing email addresses
-   * @throws AddressException if the addresses could not be parsed.
+   * @throws MailException if the addresses could not be parsed.
    */
   public void addCarbonCopy(InternetAddress[] cc) throws MailException;
 
@@ -87,7 +91,7 @@ public interface MailSender {
    * Add some names to the CC list.
    *
    * @param cc the email address name@company.com
-   * @throws AddressException if the addresses could not be parsed.
+   * @throws MailException if the addresses could not be parsed.
    */
   public void addCarbonCopy(String cc) throws MailException;
 
@@ -95,7 +99,7 @@ public interface MailSender {
    * Add some names to the BCC list.
    *
    * @param bcc an array of InternetAddress[] representing email addresses
-   * @throws AddressException if the addresses could not be parsed.
+   * @throws MailException if the addresses could not be parsed.
    */
   public void addBlindCarbonCopy(InternetAddress[] bcc) throws MailException;
 
@@ -103,7 +107,7 @@ public interface MailSender {
    * Add a name to the BCC list.
    *
    * @param bcc email address name@company.com
-   * @throws AddressException if the addresses could not be parsed.
+   * @throws MailException if the addresses could not be parsed.
    */
   public void addBlindCarbonCopy(String bcc) throws MailException;
 
@@ -111,7 +115,7 @@ public interface MailSender {
    * Set the sender.
    *
    * @param from email address name@company.com
-   * @throws AddressException if the addresses could not be parsed.
+   * @throws MailException if the addresses could not be parsed.
    */
   public void setFrom(String from) throws MailException;
 
@@ -119,7 +123,7 @@ public interface MailSender {
    * Set the sender.
    *
    * @param from InternetAddress container for name@company.com
-   * @throws AddressException if the addresses could not be parsed.
+   * @throws MailException if the addresses could not be parsed.
    */
   public void setFrom(InternetAddress from) throws MailException;
 

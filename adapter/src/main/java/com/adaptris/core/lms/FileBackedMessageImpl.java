@@ -186,9 +186,6 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
     return new FileFilteredOutputStream(fileOut);
   }
 
-  /**
-   * @see AdaptrisMessage#initialiseFrom(Object)
-   */
   @Override
   public void initialiseFrom(File sourceFile) throws IOException {
     if (sourceFile.exists() && sourceFile.isFile() && sourceFile.canRead()) {

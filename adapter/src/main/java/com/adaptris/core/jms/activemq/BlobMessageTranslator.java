@@ -1,9 +1,3 @@
-/*
- * $RCSfile: BytesMessageTranslator.java,v $
- * $Revision: 1.12 $
- * $Date: 2009/03/25 11:43:37 $
- * $Author: lchan $
- */
 package com.adaptris.core.jms.activemq;
 
 import java.io.IOException;
@@ -32,23 +26,26 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Translates between {@link AdaptrisMessage} and {@link org.apache.activemq.BlobMessage}.
  * </p>
  * <p>
- * In outbound scenarios (i.e. writing to ActiveMQ), there are two ways in which this translator works with the
- * {@link AdaptrisMessage}.
+ * In outbound scenarios (i.e. writing to ActiveMQ), there are two ways in which this translator
+ * works with the {@link AdaptrisMessage}.
  * </p>
  * <ol>
- * <li>If {@link #setMetadataUrlKey(String)} <strong>has been set</strong>, then the value associated with that metadata key is used
- * to create a URL object so that {@link ActiveMQSession#createBlobMessage(URL)} can be used. If you are intending to use this, then
- * the data will already have been written to this URL (by the adapter or otherwise). If the metadata key does not exist, then it
- * assumes the next scenario.</li>
- * <li>If {@link #setMetadataUrlKey(String)} <strong>has not been set</strong>, then the contents of the AdaptrisMessage object are
- * used to form the BlobMessage, either by using {@link ActiveMQSession#createBlobMessage(File)} or
- * {@link ActiveMQSession#createBlobMessage(InputStream)} depending on the underlying type of AdaptrisMessage. If you are intending
- * to use this, then you will have already configured ActiveMQ / underlying OS platform (e.g. for WebDAV/FTP) appropriately for
- * handling out of band transfers.</li>
+ * <li>If {@link #setMetadataUrlKey(String)} <strong>has been set</strong>, then the value
+ * associated with that metadata key is used to create a URL object so that
+ * {@link ActiveMQSession#createBlobMessage(URL)} can be used. If you are intending to use this,
+ * then the data will already have been written to this URL (by the adapter or otherwise). If the
+ * metadata key does not exist, then it assumes the next scenario.</li>
+ * <li>If {@link #setMetadataUrlKey(String)} <strong>has not been set</strong>, then the contents of
+ * the AdaptrisMessage object are used to form the BlobMessage, either by using
+ * {@link ActiveMQSession#createBlobMessage(java.io.File)} or
+ * {@link ActiveMQSession#createBlobMessage(InputStream)} depending on the underlying type of
+ * AdaptrisMessage. If you are intending to use this, then you will have already configured ActiveMQ
+ * / underlying OS platform (e.g. for WebDAV/FTP) appropriately for handling out of band transfers.
+ * </li>
  * </ol>
  * <p>
- * For inbound scenarios, {@link BlobMessage#getInputStream()} is used, this may create additional connections to remote servers
- * from the machine where the adapter is running.
+ * For inbound scenarios, {@link BlobMessage#getInputStream()} is used, this may create additional
+ * connections to remote servers from the machine where the adapter is running.
  * </p>
  * 
  * @config activemq-blob-message-translator
@@ -84,7 +81,7 @@ public final class BlobMessageTranslator extends MessageTypeTranslatorImp {
    * @return a new {@link org.apache.activemq.BlobMessage}
    * @throws JMSException on error.
    * @see ActiveMQSession#createBlobMessage(URL)
-   * @see ActiveMQSession#createBlobMessage(File)
+   * @see ActiveMQSession#createBlobMessage(java.io.File)
    * @see ActiveMQSession#createBlobMessage(InputStream)
    */
   @Override

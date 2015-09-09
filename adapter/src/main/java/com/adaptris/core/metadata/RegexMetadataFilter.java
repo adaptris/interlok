@@ -85,10 +85,11 @@ public class RegexMetadataFilter implements MetadataFilter {
   }
 
   /**
-   * Take a collection of metadata items and filter that collection based on the list of excluding regular expression patterns.
+   * Take a collection of metadata items and filter that collection based on the list of excluding
+   * regular expression patterns.
    *
-   * @param <code>MetadataCollection</code>
-   * @return <code>MetadataCollection</code> The resulting list after filtering.
+   * @param metadataCollection the <code>MetadataCollection</code>
+   * @return A new modified collection.
    */
   private MetadataCollection exclude(MetadataCollection metadataCollection) {
     if (getExcludePatterns().size() == 0) {
@@ -109,10 +110,11 @@ public class RegexMetadataFilter implements MetadataFilter {
   }
 
   /**
-   * Take a collection of metadata items and filter that collection based on the list of including regular expression patterns.
+   * Take a collection of metadata items and filter that collection based on the list of including
+   * regular expression patterns.
    *
-   * @param <code>MetadataCollection</code>
-   * @return <code>MetadataCollection</code> The resulting list after filtering.
+   * @param metadataCollection the <code>MetadataCollection</code>
+   * @return A new modified collection.
    */
   private MetadataCollection include(MetadataCollection metadataCollection) {
     if (getIncludePatterns().size() == 0) {
