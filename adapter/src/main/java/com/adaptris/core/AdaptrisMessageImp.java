@@ -322,13 +322,13 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   }
 
   private MleMarker getNextMleMarker(MessageEventGenerator meg, boolean successful, String confId) {
-    int seq = nextSequenceNumber();
+    long seq = nextSequenceNumber();
     this.addMetadata(CoreConstants.MLE_SEQUENCE_KEY, String.valueOf(seq));
     MleMarker mleMarker = new MleMarker(meg, successful, seq, guidGenerator.create(meg), confId);
     return mleMarker;
   }
 
-  private int nextSequenceNumber() {
+  private long nextSequenceNumber() {
     int result= 0;
     if (containsKey(CoreConstants.MLE_SEQUENCE_KEY)) {
       try {

@@ -2,6 +2,9 @@ package com.adaptris.core;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -26,7 +29,7 @@ public class MleMarker implements Cloneable, Serializable {
   private boolean wasSuccessful;
   private boolean isTrackingEndpoint;
   private boolean isConfirmation;
-  private int sequenceNumber;
+  private long sequenceNumber;
   private long creationTime;
 
   /**
@@ -42,7 +45,7 @@ public class MleMarker implements Cloneable, Serializable {
     setSequenceNumber(-1);
   }
 
-  public MleMarker(MessageEventGenerator meg, boolean success, int seq, String uniqueId, String confirmationId) {
+  public MleMarker(MessageEventGenerator meg, boolean success, long seq, String uniqueId, String confirmationId) {
     this();
     setName(meg.createName());
     setQualifier(meg.createQualifier());
@@ -64,7 +67,7 @@ public class MleMarker implements Cloneable, Serializable {
    * @param seq the sequence number
    * @param id the Unique id
    */
-  public MleMarker(String s, boolean b, int seq, String id) {
+  public MleMarker(String s, boolean b, long seq, String id) {
     this();
     setName(s);
     setWasSuccessful(b);
@@ -108,7 +111,7 @@ public class MleMarker implements Cloneable, Serializable {
    *
    * @param i the sequence number
    */
-  public void setSequenceNumber(int i) {
+  public void setSequenceNumber(long i) {
     sequenceNumber = i;
   }
 
@@ -117,7 +120,7 @@ public class MleMarker implements Cloneable, Serializable {
    *
    * @return the sequence number.
    */
-  public int getSequenceNumber() {
+  public long getSequenceNumber() {
     return sequenceNumber;
   }
 
@@ -200,22 +203,24 @@ public class MleMarker implements Cloneable, Serializable {
   /** @see java.lang.Object#equals(java.lang.Object) */
   @Override
   public boolean equals(Object o) {
-    if (!this.getClass().equals(o.getClass())) {
+    if (o == null) {
       return false;
     }
-    MleMarker m = (MleMarker) o;
-    int count = 0;
-    count += name.equals(m.getName()) ? 1 : 0;
-    count += qualifier.equals(m.getQualifier()) ? 1 : 0;
-    count += wasSuccessful == m.getWasSuccessful() ? 1 : 0;
-    count += sequenceNumber == m.getSequenceNumber() ? 1 : 0;
-    return count == 4;
+    if (o == this) {
+      return true;
+    }
+    if (o instanceof MleMarker) {
+      MleMarker rhs = (MleMarker) o;
+      return new EqualsBuilder().append(getName(), rhs.getName()).append(getQualifier(), rhs.getQualifier())
+          .append(getWasSuccessful(), rhs.getWasSuccessful()).append(getSequenceNumber(), rhs.getSequenceNumber()).isEquals();
+    }
+    return false;
   }
 
   @Override
   public int hashCode() {
-    return name.hashCode() + qualifier.hashCode() + Boolean.valueOf(getWasSuccessful()).hashCode()
-        + new Integer(getSequenceNumber()).hashCode();
+    return new HashCodeBuilder(13, 53).append(getName()).append(getQualifier()).append(getWasSuccessful())
+        .append(getSequenceNumber()).toHashCode();
   }
 
   /**
