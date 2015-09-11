@@ -33,13 +33,6 @@ public class JndiExtraConfigPasProducerTest extends JmsProducerCase {
     return super.createBaseFileName(object) + DEFAULT_FILE_SUFFIX;
   }
 
-  /**
-   * This is to spoof the round trip testing.
-   */
-  @Override
-  protected Object retrieveObjectForCastorRoundTrip() {
-    return new StandaloneProducer(new JmsConnection(), new PasProducer());
-  }
 
   @Override
   protected String getExampleCommentHeader(Object obj) {

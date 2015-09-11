@@ -44,8 +44,6 @@ public class JndiPtpProducerTest extends JmsProducerCase {
     kvps.addKeyValuePair(new KeyValuePair(Context.INITIAL_CONTEXT_FACTORY, "com.sonicsw.jndi.mfcontext.MFContextFactory"));
     jndi.getJndiParams().addKeyValuePair(new KeyValuePair(Context.PROVIDER_URL, "tcp://localhost:2506"));
     c.setVendorImplementation(jndi);
-    c.setUserName("BrokerUsername");
-    c.setPassword("BrokerPassword");
     c.setClientId(null);
     c.setConnectionErrorHandler(new JmsConnectionErrorHandler());
     return c;
@@ -60,14 +58,6 @@ public class JndiPtpProducerTest extends JmsProducerCase {
   @Override
   protected String createBaseFileName(Object object) {
     return super.createBaseFileName(object) + DEFAULT_FILE_SUFFIX;
-  }
-
-  /**
-   * This is to spoof the round trip testing.
-   */
-  @Override
-  protected Object retrieveObjectForCastorRoundTrip() {
-    return new StandaloneProducer(new JmsConnection(), new PtpProducer());
   }
 
   @Override

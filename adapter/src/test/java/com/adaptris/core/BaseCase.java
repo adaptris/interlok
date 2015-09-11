@@ -10,15 +10,23 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
-import junit.framework.TestCase;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.adaptris.core.stubs.MessageCounter;
 import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.core.util.LifecycleHelper;
+
+import junit.framework.TestCase;
 
 /**
  * <p>
@@ -57,7 +65,10 @@ public abstract class BaseCase extends TestCase {
     }
   }
 
+  protected ValidatorFactory vFactory = Validation.buildDefaultValidatorFactory();
+
   protected transient Log log = LogFactory.getLog(this.getClass().getName());
+  protected transient Logger slf4jLogger = LoggerFactory.getLogger(this.getClass());
 
   /**
    * <p>
@@ -199,8 +210,22 @@ public abstract class BaseCase extends TestCase {
       throw e;
     }
   }
+
   protected void assertRoundtripEquality(Object input, Object output) throws Exception {
     assertRoundtripEquality(input, output, new ArrayList<Class>());
+  }
+
+
+  protected void doJavaxValidation(Object... objs) {
+    for (Object o : objs) {
+      if (o == null) continue;
+      Validator validator = vFactory.getValidator();
+      Set<ConstraintViolation<Object>> violations = validator.validate(o);
+      for (ConstraintViolation<Object> v : violations) {
+        slf4jLogger.warn("ConstraintViolation: [{}]=[{}]", v.getPropertyPath(), v.getMessage());
+      }
+      assertEquals(0, violations.size());
+    }
   }
 
   private static List<Method> getObjectGetters(Class c) {

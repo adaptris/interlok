@@ -1,5 +1,7 @@
 package com.adaptris.core.jms;
 
+import java.util.UUID;
+
 import com.adaptris.core.Channel;
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.ExampleWorkflowCase;
@@ -28,9 +30,11 @@ public class JmsReplyToWorkflowTest extends ExampleWorkflowCase {
   @Override
   protected Object retrieveObjectForSampleConfig() {
     Channel c = new Channel();
-    c.setConsumeConnection(new JmsConnection());
-    c.setProduceConnection(new JmsConnection());
+    c.setUniqueId(UUID.randomUUID().toString());
+    c.setConsumeConnection(JmsTransactedWorkflowTest.configure(new JmsConnection()));
+    c.setProduceConnection(JmsTransactedWorkflowTest.configure(new JmsConnection()));
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
+    workflow.setUniqueId(UUID.randomUUID().toString());
     workflow.setProducer(new PtpProducer());
     workflow.setConsumer(new PtpConsumer(new ConfiguredConsumeDestination("Sample_Queue1")));
     c.getWorkflowList().add(workflow);
@@ -47,19 +51,6 @@ public class JmsReplyToWorkflowTest extends ExampleWorkflowCase {
     return new JmsReplyToWorkflow();
   }
 
-  // @Override
-  // public void testLicenseCombinations() throws Exception {
-  // super.testLicenseCombinations();
-  // assertEquals(false, createWorkflowLicenseCombo(true, true,
-  // true).isEnabled(new LicenseStub() {
-  // @Override
-  // public boolean isEnabled(int arg0) {
-  // if (arg0 == License.JMS) {
-  // return false;
-  // }
-  // return super.isEnabled(arg0);
-  // }
-  // }));
-  // }
+
 
 }

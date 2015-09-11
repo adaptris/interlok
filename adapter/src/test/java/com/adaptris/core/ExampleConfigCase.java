@@ -68,15 +68,19 @@ public abstract class ExampleConfigCase extends BaseCase {
     return result;
   }
 
-  public void testXmlRoundTrip() throws Exception {
+  public final void testXmlRoundTrip() throws Exception {
     Object input = retrieveObjectForCastorRoundTrip();
     if (input != null) {
-      assertRoundtripEquality(input, roundTrip(input, defaultMarshaller));
+      Object unmarshalled = roundTrip(input, defaultMarshaller);
+      doJavaxValidation(input, unmarshalled);
+      assertRoundtripEquality(input, unmarshalled);
     }
     else {
       List l = retrieveObjectsForSampleConfig();
       for (Object o : retrieveObjectsForSampleConfig()) {
-        assertRoundtripEquality(o, roundTrip(o, defaultMarshaller));
+        Object unmarshalled = roundTrip(o, defaultMarshaller);
+        doJavaxValidation(o, unmarshalled);
+        assertRoundtripEquality(o, unmarshalled);
       }
     }
   }
@@ -93,6 +97,7 @@ public abstract class ExampleConfigCase extends BaseCase {
       }
     }
   }
+
 
   private Object roundTrip(Object input, AdaptrisMarshaller m) throws Exception {
     String xml = m.marshal(input);

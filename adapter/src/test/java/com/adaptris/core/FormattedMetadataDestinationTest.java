@@ -189,20 +189,6 @@ public class FormattedMetadataDestinationTest extends ExampleProduceDestinationC
   }
 
   @Override
-  public void testXmlRoundTrip() throws Exception {
-    FormattedMetadataDestination input = new FormattedMetadataDestination();
-    input.addMetadataKey("key1");
-    input.addMetadataKey("key2");
-    input.addObjectMetadataKey("objectKey1");
-    input.addObjectMetadataKey("objectKey2");
-    input.setDestinationTemplate("Hello World");
-    AdaptrisMarshaller m = DefaultMarshaller.getDefaultMarshaller();
-    String xml = m.marshal(input);
-    FormattedMetadataDestination output = (FormattedMetadataDestination) m.unmarshal(xml);
-    assertRoundtripEquality(input, output);
-  }
-
-  @Override
   protected ProduceDestination createDestinationForExamples() {
     FormattedMetadataDestination input = new FormattedMetadataDestination();
     input.addMetadataKey("metadata_key1");

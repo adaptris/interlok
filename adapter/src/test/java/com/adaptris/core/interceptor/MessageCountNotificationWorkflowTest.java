@@ -1,5 +1,6 @@
 package com.adaptris.core.interceptor;
 
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import com.adaptris.core.Channel;
@@ -38,6 +39,8 @@ public class MessageCountNotificationWorkflowTest extends ExampleWorkflowCase {
     ti.setMessageCount(10);
     ti.setMaxNotifications(5);
     wf.addInterceptor(ti);
+    c.setUniqueId(UUID.randomUUID().toString());
+    wf.setUniqueId(UUID.randomUUID().toString());
     c.getWorkflowList().add(wf);
     return c;
   }

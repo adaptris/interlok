@@ -2,6 +2,7 @@ package com.adaptris.core.interceptor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import com.adaptris.core.Channel;
@@ -45,6 +46,8 @@ public class MetadataTotalsWorkflowTest extends ExampleWorkflowCase {
     ti.setUniqueId("Metrics_For_MyWorkflowName");
     ti.setTimesliceDuration(new TimeInterval(60L, TimeUnit.SECONDS));
     wf.addInterceptor(ti);
+    c.setUniqueId(UUID.randomUUID().toString());
+    wf.setUniqueId(UUID.randomUUID().toString());
     c.getWorkflowList().add(wf);
     return c;
   }

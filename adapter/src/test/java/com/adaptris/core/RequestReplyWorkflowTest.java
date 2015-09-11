@@ -1,5 +1,6 @@
 package com.adaptris.core;
 
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
@@ -228,6 +229,8 @@ public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
       workflow.setReplyProducer(new PtpProducer(new JmsReplyToDestination()));
       workflow.getReplyServiceCollection().addService(new Base64EncodeService());
       c.getWorkflowList().add(workflow);
+      c.setUniqueId(UUID.randomUUID().toString());
+      workflow.setUniqueId(UUID.randomUUID().toString());
     }
     catch (CoreException e) {
       throw new RuntimeException(e);

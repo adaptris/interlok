@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import com.adaptris.core.services.exception.ConfiguredException;
@@ -426,6 +427,7 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
   @Override
   protected Object retrieveObjectForSampleConfig() {
     Channel c = new Channel();
+    c.setUniqueId(UUID.randomUUID().toString());
     StandardWorkflow wf1 = createWorkflowForExampleConfig();
     wf1.setUniqueId("Unthrottled-Workflow");
     c.getWorkflowList().add(wf1);

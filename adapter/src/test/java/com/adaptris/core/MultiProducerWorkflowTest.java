@@ -376,7 +376,9 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
   @Override
   protected Object retrieveObjectForSampleConfig() {
     Channel c = new Channel();
+    c.setUniqueId(UUID.randomUUID().toString());
     MultiProducerWorkflow workflow = new MultiProducerWorkflow();
+    workflow.setUniqueId(UUID.randomUUID().toString());
     workflow.addStandaloneProducer(new StandaloneProducer(new NullMessageProducer(new ConfiguredProduceDestination("Producer2"))));
     workflow.addStandaloneProducer(new StandaloneProducer(new NullMessageProducer(new ConfiguredProduceDestination("Producer3"))));
     workflow.setProducer(new NullMessageProducer(new ConfiguredProduceDestination("Producer1")));

@@ -1,5 +1,7 @@
 package com.adaptris.core;
 
+import java.util.UUID;
+
 import com.adaptris.core.stubs.FailFirstMockMessageProducer;
 import com.adaptris.core.stubs.LicenseStub;
 import com.adaptris.core.stubs.MockChannel;
@@ -268,6 +270,7 @@ public abstract class FailedMessageRetrierCase extends ExampleFailedMessageRetri
       result.setFailedMessageRetrier(fmr);
       result.setChannelList(new ChannelList());
       result.setEventHandler(new StubEventHandler());
+      result.setUniqueId(UUID.randomUUID().toString());
     }
     catch (Exception e) {
       throw new RuntimeException(e);

@@ -11,7 +11,6 @@ import javax.jms.Queue;
 import javax.jms.Topic;
 import javax.naming.Context;
 import javax.naming.InitialContext;
-import javax.naming.spi.InitialContextFactory;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -20,7 +19,6 @@ import org.hibernate.validator.constraints.NotBlank;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.jms.JmsActorConfig;
-import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.JmsUtils;
 import com.adaptris.core.jms.VendorImplementation;
 import com.adaptris.core.jms.VendorImplementationImp;
@@ -73,6 +71,11 @@ public class StandardJndiImplementation extends VendorImplementationImp {
   public StandardJndiImplementation() {
     setJndiParams(new KeyValuePairSet());
     setExtraFactoryConfiguration(new NoOpFactoryConfiguration());
+  }
+
+  public StandardJndiImplementation(String jndiName) {
+    this();
+    setJndiName(jndiName);
   }
 
   @Override

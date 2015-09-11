@@ -1,5 +1,6 @@
 package com.adaptris.core.interceptor;
 
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import com.adaptris.core.Channel;
@@ -33,6 +34,8 @@ public class SlowMessageNotificationWorkflowTest extends ExampleWorkflowCase {
             TimeUnit.SECONDS));
     wf.addInterceptor(ti);
     c.getWorkflowList().add(wf);
+    c.setUniqueId(UUID.randomUUID().toString());
+    wf.setUniqueId(UUID.randomUUID().toString());
     return c;
   }
 

@@ -2,9 +2,12 @@ package com.adaptris.core;
 
 import static com.adaptris.core.CoreConstants.OBJ_METADATA_EXCEPTION;
 
+import javax.validation.constraints.NotNull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairCollection;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -21,6 +24,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class ExceptionDestination implements ProduceDestination {
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
+  @NotNull
+  @AutoPopulated
   private KeyValuePairCollection exceptionMapping;
   private String defaultDestination;
 

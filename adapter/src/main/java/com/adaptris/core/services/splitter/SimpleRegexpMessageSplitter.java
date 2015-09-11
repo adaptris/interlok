@@ -23,8 +23,6 @@ public class SimpleRegexpMessageSplitter extends StringPayloadSplitter {
   @NotNull
   @NotBlank
   private String splitPattern;
-  @NotNull
-  @NotBlank
   private String matchPattern;
   private Boolean compareToPreviousMatch;
   private Boolean ignoreFirstSubMessage;

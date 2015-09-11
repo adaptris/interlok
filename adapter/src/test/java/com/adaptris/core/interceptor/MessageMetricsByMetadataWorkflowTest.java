@@ -1,5 +1,6 @@
 package com.adaptris.core.interceptor;
 
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import com.adaptris.core.Channel;
@@ -41,6 +42,8 @@ public class MessageMetricsByMetadataWorkflowTest extends ExampleWorkflowCase {
     ti.setTimesliceDuration(new TimeInterval(60L, TimeUnit.SECONDS));
     wf.addInterceptor(ti);
     c.getWorkflowList().add(wf);
+    c.setUniqueId(UUID.randomUUID().toString());
+    wf.setUniqueId(UUID.randomUUID().toString());
     return c;
   }
 

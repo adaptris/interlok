@@ -1,5 +1,7 @@
 package com.adaptris.core;
 
+import java.util.UUID;
+
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 
@@ -28,6 +30,7 @@ public class ChannelTest extends ExampleChannelCase {
     ChannelList cl = new ChannelList();
     Channel c = new Channel();
     try {
+      c.setUniqueId(UUID.randomUUID().toString());
       c.getWorkflowList().add(createDefaultWorkflow());
       c.getWorkflowList().add(configureWorkflow(new PoolingWorkflow()));
       cl.addChannel(c);

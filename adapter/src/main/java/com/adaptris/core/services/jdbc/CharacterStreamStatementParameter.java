@@ -24,6 +24,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class CharacterStreamStatementParameter extends StatementParameter {
   
   public CharacterStreamStatementParameter() {
+    super();
+    setQueryType(QueryType.payload);
   }
 
   public CharacterStreamStatementParameter(String query, Class<?> clazz, QueryType type) {

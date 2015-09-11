@@ -29,13 +29,6 @@ public class JndiPasConsumerTest extends JmsConsumerCase {
     return super.createBaseFileName(object) + DEFAULT_FILE_SUFFIX;
   }
 
-  /**
-   * This is to spoof the round trip testing.
-   */
-  @Override
-  protected Object retrieveObjectForCastorRoundTrip() {
-    return new StandaloneConsumer(new JmsConnection(), new PasConsumer());
-  }
 
   @Override
   protected String getExampleCommentHeader(Object obj) {

@@ -1,5 +1,7 @@
 package com.adaptris.core;
 
+import java.util.UUID;
+
 import com.adaptris.core.fs.FsConsumer;
 import com.adaptris.core.stubs.MockMessageProducer;
 
@@ -67,7 +69,9 @@ public class LenientFailedMessageRetrierTest extends FailedMessageRetrierCase {
   }
 
   @Override
-  protected FailedMessageRetrier create() {
-    return new LenientFailedMessageRetrier();
+  protected LenientFailedMessageRetrier create() {
+    LenientFailedMessageRetrier r = new LenientFailedMessageRetrier();
+    r.setUniqueId(UUID.randomUUID().toString());
+    return r;
   }
 }

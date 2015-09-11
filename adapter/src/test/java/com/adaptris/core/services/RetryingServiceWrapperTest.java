@@ -13,6 +13,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.GeneralServiceExample;
 import com.adaptris.core.Service;
@@ -190,13 +191,11 @@ public class RetryingServiceWrapperTest extends GeneralServiceExample {
 
   protected Object retrieveObjectForSampleConfig() {
     JmsConnection connection = new JmsConnection();
-    connection.setVendorImplementation(new StandardJndiImplementation());
-    connection.setUserName("username");
-    connection.setPassword("password");
+    connection.setVendorImplementation(new StandardJndiImplementation("MyConnectionFactory"));
     
     StandaloneProducer wrappedService = new StandaloneProducer();
     wrappedService.setConnection(connection);
-    wrappedService.setProducer(new PtpProducer());
+    wrappedService.setProducer(new PtpProducer(new ConfiguredProduceDestination("MyQueueName")));
     
     RetryingServiceWrapper service = new RetryingServiceWrapper();
     service.setUniqueId("Retrying Service Wrapper");

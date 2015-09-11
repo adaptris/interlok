@@ -104,16 +104,6 @@ public class ExceptionDestinationTest extends ExampleProduceDestinationCase {
   }
 
   @Override
-  public void testXmlRoundTrip() throws Exception {
-    ExceptionDestination input = new ExceptionDestination();
-
-    AdaptrisMarshaller m = DefaultMarshaller.getDefaultMarshaller();
-    String xml = m.marshal(input);
-    ExceptionDestination output = (ExceptionDestination) m.unmarshal(xml);
-    assertRoundtripEquality(input, output);
-  }
-
-  @Override
   protected ProduceDestination createDestinationForExamples() {
     ExceptionDestination dest = new ExceptionDestination();
     KeyValuePairCollection kvps = new KeyValuePairCollection();

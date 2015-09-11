@@ -51,13 +51,6 @@ public class JndiExtraConfigPtpProducerTest extends JmsProducerCase {
     return super.createBaseFileName(object) + DEFAULT_FILE_SUFFIX;
   }
 
-  /**
-   * This is to spoof the round trip testing.
-   */
-  @Override
-  protected Object retrieveObjectForCastorRoundTrip() {
-    return new StandaloneProducer(new JmsConnection(), new PtpProducer());
-  }
 
   @Override
   protected String getExampleCommentHeader(Object obj) {

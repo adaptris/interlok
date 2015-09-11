@@ -65,14 +65,6 @@ public class MarshalledClassDestinationTest extends ExampleProduceDestinationCas
     assertEquals(DEFAULT_DESTINATION, s);
   }
 
-  @Override
-  public void testXmlRoundTrip() throws Exception {
-    MarshalledClassDestination input = createDestination();
-    String xml = marshaller.marshal(input);
-    Object output = marshaller.unmarshal(xml);
-    assertRoundtripEquality(input, output);
-  }
-
   private MarshalledClassDestination createDestination() {
     MarshalledClassDestination d = new MarshalledClassDestination();
     KeyValuePairSet kvps = new KeyValuePairSet();

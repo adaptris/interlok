@@ -2,6 +2,7 @@ package com.adaptris.core.jms;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
@@ -18,6 +19,7 @@ import com.adaptris.core.Service;
 import com.adaptris.core.fs.FsConsumer;
 import com.adaptris.core.fs.FsProducer;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
+import com.adaptris.core.jms.jndi.StandardJndiImplementation;
 import com.adaptris.core.services.WaitService;
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
@@ -159,8 +161,10 @@ public class JmsTransactedWorkflowTest extends ExampleWorkflowCase {
   protected Object retrieveObjectForSampleConfig() {
     Channel c = new Channel();
     try {
-      c.setConsumeConnection(new JmsConnection());
+      c.setUniqueId(UUID.randomUUID().toString());
+      c.setConsumeConnection(configure(new JmsConnection()));
       JmsTransactedWorkflow workflow = createWorkflow("Sample_Queue_1");
+      workflow.setUniqueId(UUID.randomUUID().toString());
       workflow.setWaitPeriodAfterRollback(new TimeInterval(30L, TimeUnit.SECONDS.name()));
       workflow.getServiceCollection().addService(new WaitService());
       workflow.getServiceCollection().addService(new ThrowExceptionService(new ConfiguredException("Fail")));
@@ -191,5 +195,13 @@ public class JmsTransactedWorkflowTest extends ExampleWorkflowCase {
   @Override
   protected JmsTransactedWorkflow createWorkflowForGenericTests() {
     return new JmsTransactedWorkflow();
+  }
+
+
+  static JmsConnection configure(JmsConnection c) {
+    StandardJndiImplementation jndi = new StandardJndiImplementation();
+    jndi.setJndiName("JNDI_Name_For_Connection_Factory");
+    c.setVendorImplementation(jndi);
+    return c;
   }
 }

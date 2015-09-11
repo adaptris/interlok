@@ -44,15 +44,6 @@ public class ConfiguredProduceDestinationTest extends ExampleProduceDestinationC
   }
 
   @Override
-  public void testXmlRoundTrip() throws Exception {
-    ConfiguredProduceDestination input = new ConfiguredProduceDestination("1");
-    AdaptrisMarshaller m = DefaultMarshaller.getDefaultMarshaller();
-    String xml = m.marshal(input);
-    ConfiguredProduceDestination output = (ConfiguredProduceDestination) m.unmarshal(xml);
-    assertRoundtripEquality(input, output);
-  }
-
-  @Override
   protected ProduceDestination createDestinationForExamples() {
     return new ConfiguredProduceDestination("The_Destination_String");
   }

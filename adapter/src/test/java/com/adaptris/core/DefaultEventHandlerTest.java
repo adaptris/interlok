@@ -1,8 +1,11 @@
 package com.adaptris.core;
 
+import java.util.UUID;
+
 import com.adaptris.core.event.AdapterCloseEvent;
 import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.PtpProducer;
+import com.adaptris.core.jms.jndi.StandardJndiImplementation;
 import com.adaptris.core.stubs.FailFirstMockMessageProducer;
 import com.adaptris.core.stubs.LicenseStub;
 import com.adaptris.core.stubs.MockMessageProducer;
@@ -33,6 +36,7 @@ public class DefaultEventHandlerTest extends ExampleEventHandlerCase {
   @Override
   protected DefaultEventHandler applyConfiguration(EventHandler eh) throws CoreException {
     DefaultEventHandler eventHandler = (DefaultEventHandler) eh;
+    eventHandler.setUniqueId(UUID.randomUUID().toString());
     eventHandler.setConnection(new NullConnection());
     eventHandler.setProducer(new MockMessageProducer());
     eventHandler.setMarshaller(DefaultMarshaller.getDefaultMarshaller());
@@ -103,15 +107,6 @@ public class DefaultEventHandlerTest extends ExampleEventHandlerCase {
     eh.send(e);
     eh.requestClose();
     doAssertions(eh, 0, e.getClass());
-  }
-
-  @Override
-  public void testXmlRoundTrip() throws Exception {
-    DefaultEventHandler input = applyConfiguration(newEventHandler("testXmlRoundTrip"));
-    AdaptrisMarshaller m = DefaultMarshaller.getDefaultMarshaller();
-    String xml = m.marshal(input);
-    DefaultEventHandler output = (DefaultEventHandler) m.unmarshal(xml);
-    assertRoundtripEquality(input, output);
   }
 
   public void testGettersWhenClosed() throws Exception {
@@ -224,13 +219,13 @@ public class DefaultEventHandlerTest extends ExampleEventHandlerCase {
       AdaptrisMessageProducer p = new PtpProducer();
       p.setDestination(new ConfiguredProduceDestination("publishEventsTo"));
       DefaultEventHandler eh = new DefaultEventHandler();
-      eh.setConnection(new JmsConnection());
+      eh.setConnection(new JmsConnection(new StandardJndiImplementation("MyConnectionFactoryName")));
       eh.setProducer(p);
       eh.setMarshaller(DefaultMarshaller.getDefaultMarshaller());
       result = new Adapter();
       result.setChannelList(new ChannelList());
       result.setEventHandler(eh);
-
+      result.setUniqueId(UUID.randomUUID().toString());
     }
     catch (Exception e) {
       throw new RuntimeException(e);

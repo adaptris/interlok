@@ -34,13 +34,6 @@ public class DestinationCacheJndiPtpConsumerTest extends JmsConsumerCase {
     return super.createBaseFileName(object) + DEFAULT_FILE_SUFFIX;
   }
 
-  /**
-   * This is to spoof the round trip testing.
-   */
-  @Override
-  protected Object retrieveObjectForCastorRoundTrip() {
-    return new StandaloneConsumer(new JmsConnection(), new PtpConsumer());
-  }
 
   @Override
   protected String getExampleCommentHeader(Object obj) {

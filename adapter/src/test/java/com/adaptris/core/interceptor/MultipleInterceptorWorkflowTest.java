@@ -1,5 +1,6 @@
 package com.adaptris.core.interceptor;
 
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import com.adaptris.core.Channel;
@@ -38,6 +39,8 @@ public class MultipleInterceptorWorkflowTest extends ExampleWorkflowCase {
     ti2.setCacheName("60msgsPerMinute");
     ti2.setTimeSliceInterval(new TimeInterval(1L, TimeUnit.MINUTES.name()));
     wf.addInterceptor(ti2);
+    c.setUniqueId(UUID.randomUUID().toString());
+    wf.setUniqueId(UUID.randomUUID().toString());
     c.getWorkflowList().add(wf);
     return c;
   }

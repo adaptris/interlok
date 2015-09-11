@@ -11,6 +11,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import com.adaptris.core.services.WaitService;
@@ -531,7 +532,9 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
   protected Object retrieveObjectForSampleConfig() {
     Channel c = new Channel();
     try {
+      c.setUniqueId(UUID.randomUUID().toString());
       PoolingWorkflow wf = new PoolingWorkflow();
+      wf.setUniqueId(UUID.randomUUID().toString());
       wf.getServiceCollection().add(createService());
       wf.getServiceCollection().add(createService());
       wf.setProducer(new NullMessageProducer());

@@ -2,6 +2,7 @@ package com.adaptris.core.lms;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.UUID;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -181,6 +182,8 @@ public class LargeMessageWorkflowTest extends StandardWorkflowTest {
     workflow.setConsumer(new LargeFsConsumer(new ConfiguredConsumeDestination("file:////path/to/consume/directory")));
     workflow.setProducer(new LargeFsProducer(new ConfiguredProduceDestination("file:////path/to/produce/directory")));
     c.getWorkflowList().add(workflow);
+    c.setUniqueId(UUID.randomUUID().toString());
+    workflow.setUniqueId(UUID.randomUUID().toString());
     return c;
   }
 

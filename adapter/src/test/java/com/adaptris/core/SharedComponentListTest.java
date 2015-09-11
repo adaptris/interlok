@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
+import java.util.UUID;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -97,7 +98,6 @@ public class SharedComponentListTest extends ExampleConfigCase {
     try {
       adapter = createAdapter();
       NullConnection nullConnection = new NullConnection("a-shared-null-connection");
-      nullConnection.setLookupName("nullConnection");
       adapter.getSharedComponents().addConnection(nullConnection);
       FtpConnection ftpConnection = new FtpConnection("a-shared-ftp-connection");
       ftpConnection.setLookupName("adapter:comp/env/ftpConnection");
@@ -476,6 +476,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
 
   private Adapter createAdapter() throws CoreException, PasswordException {
     Adapter adapter = new Adapter();
+    adapter.setUniqueId(UUID.randomUUID().toString());
     JmsConnection jmsConnection = createPtpConnection("jms-connection");
 
     // redmineID #4651 actually has massive ramifications due to the way that the GUI
@@ -489,6 +490,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
     // adapter.getSharedComponents().getInterceptors().add(metricsInterceptor);
 
     StandardWorkflow wf = new StandardWorkflow();
+    wf.setUniqueId(UUID.randomUUID().toString());
     wf.setConsumer(new PtpConsumer(new ConfiguredConsumeDestination("SampleQ1")));
     wf.setProducer(new NullMessageProducer());
     wf.getServiceCollection().add(
@@ -497,6 +499,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
     // wf.addInterceptor(unlicensedInterceptor);
     // wf.addInterceptor(metricsInterceptor);
     Channel channel = new Channel();
+    channel.setUniqueId(UUID.randomUUID().toString());
     channel.setConsumeConnection(new SharedConnection("jms-connection"));
     channel.getWorkflowList().add(wf);
     adapter.getChannelList().add(channel);
@@ -505,7 +508,9 @@ public class SharedComponentListTest extends ExampleConfigCase {
 
   private JmsConnection createPtpConnection(String uniqueId) throws PasswordException {
     JmsConnection c = new JmsConnection();
-    c.setVendorImplementation(new StandardJndiImplementation());
+    StandardJndiImplementation jndi = new StandardJndiImplementation();
+    jndi.setJndiName("MyJndiLookupName");
+    c.setVendorImplementation(jndi);
     if (!isEmpty(uniqueId)) {
       c.setUniqueId(uniqueId);
     }

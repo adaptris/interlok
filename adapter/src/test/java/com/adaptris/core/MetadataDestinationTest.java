@@ -61,18 +61,6 @@ public class MetadataDestinationTest extends ExampleProduceDestinationCase {
 
 
   @Override
-  public void testXmlRoundTrip() throws Exception {
-    MetadataDestination input = new MetadataDestination();
-    input.addKey("key1");
-    input.addKey("key2");
-
-    AdaptrisMarshaller m = DefaultMarshaller.getDefaultMarshaller();
-    String xml = m.marshal(input);
-    MetadataDestination output = (MetadataDestination) m.unmarshal(xml);
-    assertRoundtripEquality(input, output);
-  }
-
-  @Override
   protected ProduceDestination createDestinationForExamples() {
     MetadataDestination input = new MetadataDestination();
     input.addKey("metadata_key1");

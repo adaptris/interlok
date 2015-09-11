@@ -1,5 +1,7 @@
 package com.adaptris.core;
 
+import java.util.UUID;
+
 import com.adaptris.core.services.LogMessageService;
 import com.adaptris.core.services.metadata.AddMetadataService;
 
@@ -48,6 +50,7 @@ public abstract class ExampleChannelCase extends ExampleConfigCase {
   }
 
   protected Workflow configureWorkflow(WorkflowImp impl) throws CoreException {
+    impl.setUniqueId(UUID.randomUUID().toString());
     ConfiguredConsumeDestination dest = new ConfiguredConsumeDestination("dummy");
     AdaptrisMessageConsumer consumer = new NullMessageConsumer();
     consumer.setDestination(dest);
