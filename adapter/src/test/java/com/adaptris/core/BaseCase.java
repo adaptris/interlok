@@ -222,9 +222,11 @@ public abstract class BaseCase extends TestCase {
       Validator validator = vFactory.getValidator();
       Set<ConstraintViolation<Object>> violations = validator.validate(o);
       for (ConstraintViolation<Object> v : violations) {
-        slf4jLogger.warn("ConstraintViolation: [{}]=[{}]", v.getPropertyPath(), v.getMessage());
+        String logString = String.format("Constraint Violation: [%1$s]=[%2$s]", v.getPropertyPath(), v.getMessage());
+        log.warn(logString);
+        System.err.println(logString);
       }
-      assertEquals(0, violations.size());
+      assertEquals("Expected 0 Constraint Violations, got " + violations.size(), 0, violations.size());
     }
   }
 
