@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -19,6 +21,10 @@ import javax.management.JMX;
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -31,6 +37,7 @@ import com.adaptris.core.EventFactory;
 import com.adaptris.core.event.AdapterShutdownEvent;
 import com.adaptris.core.fs.FsHelper;
 import com.adaptris.core.management.BootstrapProperties;
+import com.adaptris.core.management.Constants;
 import com.adaptris.core.management.vcs.RuntimeVersionControl;
 import com.adaptris.core.management.vcs.RuntimeVersionControlLoader;
 import com.adaptris.core.util.JmxHelper;
@@ -53,6 +60,7 @@ public class AdapterRegistry implements AdapterRegistryMBean {
   private transient ConfigurationPreProcessorLoader configurationPreProcessorLoader;
   private transient Map<ObjectName, URL> configurationURLs;
   private transient RuntimeVersionControl runtimeVCS;
+  private transient ValidatorFactory validatorFactory = null;
 
   private AdapterRegistry() throws MalformedObjectNameException {
     registeredAdapters = new HashSet<ObjectName>();
@@ -68,6 +76,12 @@ public class AdapterRegistry implements AdapterRegistryMBean {
     runtimeVCS = RuntimeVersionControlLoader.getInstance().load();
     if (runtimeVCS != null) {
       runtimeVCS.setBootstrapProperties(config);
+    }
+    boolean enableValidation = Boolean.valueOf(
+        BootstrapProperties.getPropertyIgnoringCase(config, Constants.CFG_KEY_VALIDATE_CONFIG, Constants.DEFAULT_VALIDATE_CONFIG))
+        .booleanValue();
+    if (enableValidation) {
+      validatorFactory = Validation.buildDefaultValidatorFactory();
     }
   }
 
@@ -215,8 +229,9 @@ public class AdapterRegistry implements AdapterRegistryMBean {
   }
 
   private ObjectName register(Adapter adapter, URL configUrl) throws CoreException, MalformedObjectNameException, LicenseException {
-    adapter.registerLicense(config.getLicense());
-    AdapterManager manager = new AdapterManager(adapter);
+    Adapter adapterToRegister = validate(adapter);
+    adapterToRegister.registerLicense(config.getLicense());
+    AdapterManager manager = new AdapterManager(adapterToRegister);
     ObjectName adapterName = manager.createObjectName();
     addRegisteredAdapter(adapterName);
     manager.registerMBean();
@@ -224,6 +239,33 @@ public class AdapterRegistry implements AdapterRegistryMBean {
     return adapterName;
   }
 
+  private Adapter validate(Adapter adapter) throws CoreException {
+    if (validatorFactory == null) {
+      return adapter;
+    }
+    Validator validator = validatorFactory.getValidator();
+    checkViolations(validator.validate(adapter));
+    return adapter;
+  }
+  
+  private void checkViolations(Set<ConstraintViolation<Adapter>> violations) throws CoreException {
+    StringWriter writer = new StringWriter();
+    if (violations.size() == 0) {
+      return;
+    }
+    try (PrintWriter p = new PrintWriter(writer)) {
+      p.println();
+      for (ConstraintViolation v : violations) {
+        String logString = String.format("Adapter Validation Error: [%1$s]=[%2$s]", v.getPropertyPath(), v.getMessage());
+        p.println(logString);
+        log.warn(logString);
+      }
+    } finally {
+      IOUtils.closeQuietly(writer);
+    }
+    throw new CoreException(writer.toString());
+  }
+  
   @Override
   public void destroyAdapter(AdapterManagerMBean adapter) throws CoreException, MalformedObjectNameException {
     assertNotNull(adapter, EXCEPTION_MSG_MBEAN_NULL);

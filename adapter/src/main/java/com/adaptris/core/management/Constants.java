@@ -1,10 +1,5 @@
 package com.adaptris.core.management;
 
-import java.lang.management.ManagementFactory;
-
-import javax.management.remote.JMXConnectorServer;
-import javax.management.remote.JMXServiceURL;
-
 /**
  * Constants and lots of them.
  *
@@ -151,4 +146,16 @@ public final class Constants {
    */
   public static final String CFG_KEY_LOG4J12_URL = "log4j12Url";
 
+  /**
+   * Bootstrap property that enables validation of the adapter object post unmarshalling.
+   * 
+   * @since 3.0.6
+   */
+  public static final String CFG_KEY_VALIDATE_CONFIG = "validateConfig";
+
+  /**
+   * Default value for {@link #CFG_KEY_VALIDATE_CONFIG}.
+   * 
+   */
+  public static final String DEFAULT_VALIDATE_CONFIG = "false";
 }

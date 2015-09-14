@@ -34,6 +34,7 @@ import com.adaptris.core.StoppedState;
 import com.adaptris.core.event.AdapterShutdownEvent;
 import com.adaptris.core.management.AdapterConfigManager;
 import com.adaptris.core.management.BootstrapProperties;
+import com.adaptris.core.management.Constants;
 import com.adaptris.core.management.vcs.RuntimeVersionControl;
 import com.adaptris.core.management.vcs.VcsException;
 import com.adaptris.core.management.vcs.VersionControlSystem;
@@ -658,6 +659,25 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     assertEquals("MOCK", myAdapterRegistry.getVersionControl());
   }
 
+  public void testValidateAdapter() throws Exception {
+    Properties custom = new Properties();
+    custom.setProperty(Constants.CFG_KEY_VALIDATE_CONFIG, "true");
+    AdapterRegistry myAdapterRegistry = new AdapterRegistry(new JunitBootstrapProperties(custom));
+    Adapter adapter = new Adapter();
+    String xml = DefaultMarshaller.getDefaultMarshaller().marshal(adapter);
+    try {
+      myAdapterRegistry.createAdapter(xml);
+      fail();
+    } catch (CoreException expected) {
+      assertTrue(expected.getMessage().contains("uniqueId"));
+    }
+    adapter = createAdapter(getName());
+    xml = DefaultMarshaller.getDefaultMarshaller().marshal(adapter);
+    ObjectName objName = myAdapterRegistry.createAdapter(xml);
+    assertNotNull(objName);
+    myAdapterRegistry.destroyAdapter(objName);
+  }
+  
   private class MockRuntimeVersionControl implements RuntimeVersionControl {
 
     @Override
