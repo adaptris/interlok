@@ -47,7 +47,7 @@
 
   </target>
 
-  <target name="clean" depends="init" description="Clean up build artefacts">
+  <target name="clean" depends="init,init-ivy" description="Clean up build artefacts">
     <delete dir="${build.dir}"/>
     <delete dir="${tests.output.dir}"/>
     <delete>
