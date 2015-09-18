@@ -18,7 +18,7 @@ public class JmxLoggingEvent implements Serializable, Comparable<JmxLoggingEvent
 
   private Long timestamp;
   private String eventType;
-  private String formattedMessage;
+  private String message;
   private String source;
   private String loggerName;
   private String level;
@@ -42,7 +42,7 @@ public class JmxLoggingEvent implements Serializable, Comparable<JmxLoggingEvent
     Message {
       @Override
       void put(JmxLoggingEvent event, Map<String, Object> userData) {
-        userData.put(name(), event.getFormattedMessage());
+        userData.put(name(), event.getMessage());
       }
     },
     Source {
@@ -95,12 +95,12 @@ public class JmxLoggingEvent implements Serializable, Comparable<JmxLoggingEvent
     this.eventType = eventType;
   }
 
-  public String getFormattedMessage() {
-    return formattedMessage;
+  public String getMessage() {
+    return message;
   }
 
-  public void setFormattedMessage(String formattedMessage) {
-    this.formattedMessage = formattedMessage;
+  public void setMessage(String m) {
+    this.message = m;
   }
 
   public String getSource() {
@@ -142,7 +142,7 @@ public class JmxLoggingEvent implements Serializable, Comparable<JmxLoggingEvent
 
   public Notification buildDefaultNotification() {
     Notification note =
-        new Notification(getEventType(), getSource(), System.currentTimeMillis(), getTimestamp(), getFormattedMessage());
+        new Notification(getEventType(), getSource(), System.currentTimeMillis(), getTimestamp(), getMessage());
     note.setUserData(buildUserData());
     return note;
   }

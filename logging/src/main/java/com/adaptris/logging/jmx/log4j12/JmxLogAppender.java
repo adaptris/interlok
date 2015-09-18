@@ -101,7 +101,7 @@ public class JmxLogAppender extends AppenderSkeleton {
     event.setSource(objectName.toString());
     event.setLevel(log4jEvent.getLevel().toString());
     event.setLoggerName(log4jEvent.getLoggerName());
-    event.setFormattedMessage(layout.format(log4jEvent));
+    event.setMessage(layout.format(log4jEvent));
     event.setSourceThread(log4jEvent.getThreadName());
     return event;
   }
