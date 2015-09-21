@@ -18,7 +18,7 @@ public class JmxLogAppender extends AppenderSkeleton {
 
   private JmxLogger logger;
   private Layout defaultLayout = new PatternLayout("%d{ISO8601} %-5p [%t] [%c] %m%n");
-  private static final String OBJECT_NAME_STR = "com.adaptris:Type=Logging,id=%1s";
+  private static final String OBJECT_NAME_STR = "com.adaptris:type=Logging,id=%1s";
   private static final String DEFAULT_OBJECTNAME = JmxLogAppender.class.getSimpleName();
 
   private String loggerId;
