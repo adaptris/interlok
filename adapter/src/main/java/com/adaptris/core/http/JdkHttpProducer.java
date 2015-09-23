@@ -3,6 +3,7 @@ package com.adaptris.core.http;
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 import static com.adaptris.core.http.HttpConstants.CONTENT_TYPE;
 import static com.adaptris.core.http.HttpConstants.DEFAULT_SOCKET_TIMEOUT;
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -25,19 +26,22 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.io.IOUtils;
-import org.hibernate.validator.constraints.NotBlank;
 import org.perf4j.aop.Profiled;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisMessageProducerImp;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
+import com.adaptris.core.http.RequestMethodProvider.RequestMethod;
+import com.adaptris.core.util.Args;
 import com.adaptris.util.license.License;
 import com.adaptris.util.license.License.LicenseType;
 import com.adaptris.util.stream.StreamUtil;
@@ -62,14 +66,17 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class JdkHttpProducer extends HttpProducer {
 
   // Methods that allow doOutputUse; might not be the full list, we should probably check HTTP 1.1 specification.
-  private static final Collection<String> METHOD_ALLOWS_OUTPUT = Collections.synchronizedCollection(Arrays.asList(new String[]
-  {
-      "POST", "PUT"
-  }));
+  private static final Collection<RequestMethodProvider.RequestMethod> METHOD_ALLOWS_OUTPUT =
+      Collections.synchronizedCollection(Arrays.asList(new RequestMethod[] {RequestMethod.POST, RequestMethod.PUT}));
 
-  @NotBlank
-  @AutoPopulated
+  @Deprecated
   private String method;
+
+  @NotNull
+  @Valid
+  @AutoPopulated
+  private RequestMethodProvider methodProvider;
+
   @AdvancedConfig
   private Boolean replyHttpHeadersAsMetadata;
   @AdvancedConfig
@@ -77,7 +84,7 @@ public class JdkHttpProducer extends HttpProducer {
 
   public JdkHttpProducer() {
     super();
-    setMethod("POST");
+    setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethod.POST));
   }
 
   public JdkHttpProducer(ProduceDestination d) {
@@ -112,7 +119,7 @@ public class JdkHttpProducer extends HttpProducer {
         AdapterResourceAuthenticator.getInstance().addAuthenticator(myAuth);
       }
       HttpURLConnection http = (HttpURLConnection) url.openConnection();
-      http.setRequestMethod(getMethod());
+      http.setRequestMethod(methodToUse(msg).name());
       http.setInstanceFollowRedirects(handleRedirection());
       http.setDoInput(true);
       // ProxyUtil.applyBasicProxyAuthorisation(http);
@@ -147,9 +154,10 @@ public class JdkHttpProducer extends HttpProducer {
   }
 
   private void sendMessage(AdaptrisMessage src, HttpURLConnection dest) throws IOException, CoreException {
-    if (!METHOD_ALLOWS_OUTPUT.contains(getMethod())) {
+    RequestMethod methodToUse = methodToUse(src);
+    if (!METHOD_ALLOWS_OUTPUT.contains(methodToUse)) {
       if (src.getSize() > 0) {
-        log.trace("Ignoring payload with use of " + getMethod() + " method");
+        log.trace("Ignoring payload with use of {} method", methodToUse.name());
       }
       return;
     }
@@ -309,8 +317,9 @@ public class JdkHttpProducer extends HttpProducer {
 
   /**
    *
-   * @return the HTTP method.
+   * @deprecated since 3.0.6, use {@link #getMethodProvider()} instead.
    */
+  @Deprecated
   public String getMethod() {
     return method;
   }
@@ -319,10 +328,22 @@ public class JdkHttpProducer extends HttpProducer {
    * Set the HTTP method to be used.
    *
    * @param method
+   * @deprecated since 3.0.6, use {@link #setMethodProvider(RequestMethodProvider)} instead.
    */
-  public void setMethod(String method) {
-    this.method = method;
+  @Deprecated
+  public void setMethod(String s) {
+    log.warn("setMethod(String) is deprecated, use setMethodProvider() instead");
+    this.method = Args.notNull(s, "Method");
   }
+
+
+  RequestMethod methodToUse(AdaptrisMessage msg) {
+    if (!isBlank(getMethod())) {
+      return RequestMethod.valueOf(getMethod());
+    }
+    return getMethodProvider().getMethod(msg);
+  }
+
 
   public Boolean getReplyHttpHeadersAsMetadata() {
     return replyHttpHeadersAsMetadata;
@@ -375,5 +396,13 @@ public class JdkHttpProducer extends HttpProducer {
       }
       return null;
     }
+  }
+
+  public RequestMethodProvider getMethodProvider() {
+    return methodProvider;
+  }
+
+  public void setMethodProvider(RequestMethodProvider p) {
+    this.methodProvider = Args.notNull(p, "Method Provider");
   }
 }

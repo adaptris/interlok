@@ -13,7 +13,6 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageImp;
-import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataCollection;
 import com.adaptris.core.MetadataElement;
@@ -50,12 +49,14 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
   private String contentTypeKey = null;
 
   @AdvancedConfig
+  @Deprecated
   private Boolean sendMetadataAsHeaders;
   @AdvancedConfig
   private Boolean ignoreServerResponseCode;
   @AdvancedConfig
   private Boolean handleRedirection;
   @AdvancedConfig
+  @Deprecated
   private String sendMetadataRegexp;
 
   @NotNull
