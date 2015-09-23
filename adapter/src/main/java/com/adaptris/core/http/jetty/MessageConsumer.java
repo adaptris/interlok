@@ -1,6 +1,7 @@
 package com.adaptris.core.http.jetty;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -16,7 +17,6 @@ import org.apache.commons.io.IOUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.http.HeaderHandler;
 import com.adaptris.core.http.NoOpHeaderHandler;
@@ -54,8 +54,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class MessageConsumer extends BasicJettyConsumer {
 
   @AdvancedConfig
+  @Deprecated
   private String headerPrefix;
   @AdvancedConfig
+  @Deprecated
   private String paramPrefix;
   
   @AutoPopulated
@@ -81,7 +83,10 @@ public class MessageConsumer extends BasicJettyConsumer {
    * Set the header prefix for any stored headers.
    * 
    * @param s the header prefix
+   * @deprecated since 3.0.6, configure the behaviour on the {@link HeaderHandler} directly.
+   * 
    */
+  @Deprecated
   public void setHeaderPrefix(String s) {
     headerPrefix = s;
   }
@@ -90,25 +95,13 @@ public class MessageConsumer extends BasicJettyConsumer {
    * get the header prefix for any stored headers.
    *
    * @return the header prefix
+   * @deprecated since 3.0.6, configure the behaviour on the {@link HeaderHandler} directly.
    */
+  @Deprecated
   public String getHeaderPrefix() {
     return headerPrefix;
   }
 
-  /**
-   *
-   * @see java.lang.Object#toString()
-   */
-  @Override
-  public String toString() {
-    StringBuffer sb = new StringBuffer("[");
-    sb.append(this.getClass().getName());
-    sb.append(",parameterHandler=[").append(this.getParameterHandler().getClass().getSimpleName());
-    sb.append("],headerHandler=[").append(this.getHeaderHandler().getClass().getSimpleName());
-    sb.append("],headerPrefix=[").append(getHeaderPrefix());
-    sb.append("]]");
-    return sb.toString();
-  }
 
   @Override
   public AdaptrisMessage createMessage(HttpServletRequest request,
@@ -148,17 +141,29 @@ public class MessageConsumer extends BasicJettyConsumer {
     return msg;
   }
 
+  @SuppressWarnings("deprecation")
   private void addParamMetadata(AdaptrisMessage msg, HttpServletRequest request) {
-    this.getParameterHandler().handleParameters(msg, request, this.getParamPrefix());
+    if (!isBlank(getParamPrefix())) {
+      this.getParameterHandler().handleParameters(msg, request, this.getParamPrefix());
+    } else {
+      this.getParameterHandler().handleParameters(msg, request);
+    }
   }
 
+  @SuppressWarnings("deprecation")
   private void addHeaderMetadata(AdaptrisMessage msg, HttpServletRequest request) {
-    this.getHeaderHandler().handleHeaders(msg, request, this.getHeaderPrefix());
+    if (!isBlank(getHeaderPrefix())) {
+      this.getHeaderHandler().handleHeaders(msg, request, this.getHeaderPrefix());
+    } else {
+      this.getHeaderHandler().handleHeaders(msg, request);
+    }
   }
 
   /**
    * @return the paramPrefix
+   * @deprecated since 3.0.6, configure the behaviour on the {@link ParameterHandler} directly.
    */
+  @Deprecated
   public String getParamPrefix() {
     return paramPrefix;
   }
@@ -167,8 +172,9 @@ public class MessageConsumer extends BasicJettyConsumer {
    * Set the prefix for any parameters that are added as metadata.
    * 
    * @param s the paramPrefix to set, defaults to 'null'.
-   * @see #setHeaderPrefix(String)
+   * @deprecated since 3.0.6, configure the behaviour on the {@link ParameterHandler} directly.
    */
+  @Deprecated
   public void setParamPrefix(String s) {
     paramPrefix = s;
   }

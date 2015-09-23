@@ -19,4 +19,8 @@ public class NoOpHeaderHandler implements HeaderHandler {
     // No operation
   }
 
+  @Override
+  public void handleHeaders(AdaptrisMessage message, HttpServletRequest request) {
+  }
+
 }

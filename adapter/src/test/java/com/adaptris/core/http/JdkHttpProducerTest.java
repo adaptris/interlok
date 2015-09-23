@@ -159,29 +159,33 @@ public class JdkHttpProducerTest extends HttpProducerExample {
 
   public void testProduce_WithMetadataMethod() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
-    MessageConsumer mc = createConsumer(URL_TO_POST_TO);
-    mc.setHeaderHandler(new MetadataHeaderHandler());
-    mc.setHeaderPrefix("");
     HttpConnection jc = createConnection();
-
-    Channel c = createChannel(jc, createWorkflow(mc, mock, new ServiceList()));
+    MessageConsumer mc = createConsumer(URL_TO_POST_TO);
+    ServiceList sl = new ServiceList();
+    PayloadFromMetadataService pms = new PayloadFromMetadataService();
+    pms.setTemplate(TEXT);
+    sl.add(pms);
+    sl.add(new StandaloneProducer(new ResponseProducer(200)));
+    Channel c = createChannel(jc, createWorkflow(mc, mock, sl));
+    StandardWorkflow workflow = (StandardWorkflow) c.getWorkflowList().get(0);
     JdkHttpProducer jdkHttp = new JdkHttpProducer(createProduceDestination(jc.getPort()));
     jdkHttp.setMethodProvider(new MetadataRequestMethodProvider("httpMethod"));
-    StandaloneProducer producer = new StandaloneProducer(jdkHttp);
-    AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
-    msg.addMetadata("httpMethod", "POST");
+    StandaloneRequestor producer = new StandaloneRequestor(jdkHttp);
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage();
+    msg.addMetadata("httpMethod", "get");
     try {
-      c.requestStart();
+      start(c);
       start(producer);
       producer.doService(msg);
       waitForMessages(mock, 1);
     } finally {
-      c.requestClose();
+      stop(c);
       stop(producer);
-      PortManager.release(jc.getPort());
     }
     assertEquals(1, mock.messageCount());
     AdaptrisMessage m2 = mock.getMessages().get(0);
+    assertEquals("GET", m2.getMetadataValue(CoreConstants.HTTP_METHOD));
+    assertEquals(TEXT, msg.getStringPayload());
   }
 
 

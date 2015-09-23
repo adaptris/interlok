@@ -19,4 +19,7 @@ public class NoOpParameterHandler implements ParameterHandler {
     // No operation
   }
 
+  @Override
+  public void handleParameters(AdaptrisMessage message, HttpServletRequest request) {}
+
 }
