@@ -14,6 +14,7 @@ import com.adaptris.core.ServiceList;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandaloneRequestor;
 import com.adaptris.core.StandardWorkflow;
+import com.adaptris.core.http.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.http.jetty.HttpConnection;
 import com.adaptris.core.http.jetty.MessageConsumer;
 import com.adaptris.core.http.jetty.ResponseProducer;
@@ -165,7 +166,7 @@ public class JdkHttpProducerTest extends HttpProducerExample {
     PayloadFromMetadataService pms = new PayloadFromMetadataService();
     pms.setTemplate(TEXT);
     sl.add(pms);
-    sl.add(new StandaloneProducer(new ResponseProducer(200)));
+    sl.add(new StandaloneProducer(new ResponseProducer(HttpStatus.OK_200)));
     Channel c = createChannel(jc, createWorkflow(mc, mock, sl));
     StandardWorkflow workflow = (StandardWorkflow) c.getWorkflowList().get(0);
     JdkHttpProducer jdkHttp = new JdkHttpProducer(createProduceDestination(jc.getPort()));
@@ -197,7 +198,7 @@ public class JdkHttpProducerTest extends HttpProducerExample {
     PayloadFromMetadataService pms = new PayloadFromMetadataService();
     pms.setTemplate(TEXT);
     sl.add(pms);
-    sl.add(new StandaloneProducer(new ResponseProducer(200)));
+    sl.add(new StandaloneProducer(new ResponseProducer(HttpStatus.OK_200)));
     Channel c = createChannel(jc, createWorkflow(mc, mock, sl));
     StandardWorkflow workflow = (StandardWorkflow) c.getWorkflowList().get(0);
     JdkHttpProducer jdkHttp = new JdkHttpProducer(createProduceDestination(jc.getPort()));
@@ -229,7 +230,7 @@ public class JdkHttpProducerTest extends HttpProducerExample {
     PayloadFromMetadataService pms = new PayloadFromMetadataService();
     pms.setTemplate(TEXT);
     workflow.getServiceCollection().add(pms);
-    workflow.getServiceCollection().add(new StandaloneProducer(new ResponseProducer(200)));
+    workflow.getServiceCollection().add(new StandaloneProducer(new ResponseProducer(HttpStatus.OK_200)));
     JdkHttpProducer jdkHttp = new JdkHttpProducer(createProduceDestination(jc.getPort()));
     jdkHttp.setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethodProvider.RequestMethod.POST));
     StandaloneRequestor producer = new StandaloneRequestor(jdkHttp);
@@ -256,7 +257,7 @@ public class JdkHttpProducerTest extends HttpProducerExample {
     MessageConsumer mc = createConsumer(URL_TO_POST_TO);
     Channel c = createChannel(jc, createWorkflow(mc, mock, new ServiceList()));
     StandardWorkflow workflow = (StandardWorkflow) c.getWorkflowList().get(0);
-    ResponseProducer responder = new ResponseProducer(200);
+    ResponseProducer responder = new ResponseProducer(HttpStatus.OK_200);
     responder.setSendPayload(false);
     workflow.getServiceCollection().add(new StandaloneProducer(responder));
     JdkHttpProducer jdkHttp = new JdkHttpProducer(createProduceDestination(jc.getPort()));
@@ -285,7 +286,7 @@ public class JdkHttpProducerTest extends HttpProducerExample {
     MessageConsumer mc = createConsumer(URL_TO_POST_TO);
     Channel c = createChannel(jc, createWorkflow(mc, mock, new ServiceList()));
     StandardWorkflow workflow = (StandardWorkflow) c.getWorkflowList().get(0);
-    ResponseProducer responder = new ResponseProducer(200);
+    ResponseProducer responder = new ResponseProducer(HttpStatus.OK_200);
     responder.setSendPayload(false);
     workflow.getServiceCollection().add(new StandaloneProducer(responder));
     JdkHttpProducer jdkHttp = new JdkHttpProducer(createProduceDestination(jc.getPort()));
@@ -316,7 +317,7 @@ public class JdkHttpProducerTest extends HttpProducerExample {
     PayloadFromMetadataService pms = new PayloadFromMetadataService();
     pms.setTemplate(TEXT);
     workflow.getServiceCollection().add(pms);
-    workflow.getServiceCollection().add(new StandaloneProducer(new ResponseProducer(200)));
+    workflow.getServiceCollection().add(new StandaloneProducer(new ResponseProducer(HttpStatus.OK_200)));
     JdkHttpProducer jdkHttp = new JdkHttpProducer(createProduceDestination(jc.getPort()));
     jdkHttp.setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethodProvider.RequestMethod.GET));
     StandaloneRequestor producer = new StandaloneRequestor(jdkHttp);
@@ -345,7 +346,7 @@ public class JdkHttpProducerTest extends HttpProducerExample {
 
     ServiceList services = new ServiceList();
     services.add(new PayloadFromMetadataService(TEXT));
-    services.add(new StandaloneProducer(new ResponseProducer(401)));
+    services.add(new StandaloneProducer(new ResponseProducer(HttpStatus.UNAUTHORIZED_401)));
     Channel c = createChannel(jc, createWorkflow(mc, mock, services));
     JdkHttpProducer jdkHttp = new JdkHttpProducer(createProduceDestination(jc.getPort()));
     jdkHttp.setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethodProvider.RequestMethod.GET));

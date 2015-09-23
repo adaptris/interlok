@@ -13,7 +13,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
@@ -32,9 +32,9 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageConsumerImp;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.PoolingWorkflow;
 import com.adaptris.core.WorkflowImp;
 import com.adaptris.core.WorkflowInterceptor;
+import com.adaptris.core.http.RequestMethodProvider.RequestMethod;
 import com.adaptris.util.TimeInterval;
 import com.adaptris.util.license.License;
 import com.adaptris.util.license.License.LicenseType;
@@ -50,7 +50,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   private static final TimeInterval DEFAULT_MAX_WAIT_TIME = new TimeInterval(600L, TimeUnit.SECONDS);
   private static final TimeInterval DEFAULT_INTERMEDIATE_WAIT_TIME = new TimeInterval(1L, TimeUnit.SECONDS);
   private static final String COMMA = ",";
-  private static final List<String> HTTP_METHODS = Arrays.asList("GET", "POST", "HEAD", "OPTIONS", "PUT", "DELETE", "TRACE", "CONNECT");
+  private static final List<String> HTTP_METHODS;
   
   private transient Servlet jettyServlet;
   private transient ServletWrapper servletWrapper = null;
@@ -60,6 +60,14 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   private TimeInterval maxWaitTime;
 
   private long warnAfterMessageHangMillis = 20000;
+
+  static {
+    List<String> methods = new ArrayList<>();
+    for (RequestMethod m : RequestMethod.values()) {
+      methods.add(m.name());
+    }
+    HTTP_METHODS = Collections.unmodifiableList(methods);
+  }
 
   public BasicJettyConsumer() {
     super();

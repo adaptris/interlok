@@ -1,7 +1,5 @@
 package com.adaptris.core.http.jetty;
 
-import java.net.HttpURLConnection;
-
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessageProducer;
 import com.adaptris.core.Channel;
@@ -14,6 +12,7 @@ import com.adaptris.core.ServiceList;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.Workflow;
+import com.adaptris.core.http.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.stubs.MockChannel;
 
 /**
@@ -38,7 +37,7 @@ public class JettyHelper {
   }
 
   public static Workflow createWorkflow(MessageConsumer consumer, AdaptrisMessageProducer producer) {
-    return createWorkflow(consumer, producer, new ResponseProducer(HttpURLConnection.HTTP_OK));
+    return createWorkflow(consumer, producer, new ResponseProducer(HttpStatus.OK_200));
   }
 
   public static Workflow createWorkflow(MessageConsumer consumer, AdaptrisMessageProducer producer, ResponseProducer responder) {

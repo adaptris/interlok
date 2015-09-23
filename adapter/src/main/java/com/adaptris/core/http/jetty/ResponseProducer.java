@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -15,7 +14,6 @@ import org.perf4j.aop.Profiled;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisMessageProducerImp;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataCollection;
@@ -23,10 +21,15 @@ import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ProduceOnlyProducerImp;
-import com.adaptris.core.ServiceException;
+import com.adaptris.core.http.ConfiguredStatusProvider;
+import com.adaptris.core.http.HttpStatusBuilder;
+import com.adaptris.core.http.HttpStatusProvider;
+import com.adaptris.core.http.HttpStatusProvider.HttpStatus;
+import com.adaptris.core.http.HttpStatusProvider.Status;
 import com.adaptris.core.metadata.MetadataFilter;
 import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.metadata.RemoveAllMetadataFilter;
+import com.adaptris.core.util.Args;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.license.License;
@@ -52,7 +55,8 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
   private static final String DEFAULT_METADATA_REGEXP = "X-HTTP.*";
   private static final boolean DEFAULT_FORWARD_CONNECTION_EXCEPTION = false;
   
-  private int httpResponseCode;
+  @Deprecated
+  private Integer httpResponseCode;
   @NotNull
   @AutoPopulated
   @AdvancedConfig
@@ -60,9 +64,11 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
   @AdvancedConfig
   private String contentTypeKey = null;
   @AdvancedConfig
+  @Deprecated
   private String sendMetadataRegexp;
   private Boolean sendPayload;
   @AdvancedConfig
+  @Deprecated
   private Boolean sendMetadataAsHeaders;
   @AdvancedConfig
   private Boolean flushBuffer;
@@ -73,18 +79,28 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
   @Valid
   @AdvancedConfig
   private MetadataFilter metadataFilter;
+  @NotNull
+  @AutoPopulated
+  @Valid
+  private HttpStatusProvider statusProvider;
 
   public ResponseProducer() {
     super();
-    httpResponseCode = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
     setAdditionalHeaders(new KeyValuePairSet());
     setContentTypeKey(null);
     setMetadataFilter(new RemoveAllMetadataFilter());
+    setStatusProvider(new ConfiguredStatusProvider(HttpStatus.INTERNAL_ERROR_500));
   }
 
+  @Deprecated
   public ResponseProducer(int responseCode) {
     this();
     setHttpResponseCode(responseCode);
+  }
+
+  public ResponseProducer(HttpStatus status) {
+    this();
+    setStatusProvider(new ConfiguredStatusProvider(status));
   }
 
   /**
@@ -117,7 +133,7 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
       if (getContentTypeKey() != null && msg.containsKey(getContentTypeKey())) {
         response.setContentType(msg.getMetadataValue(getContentTypeKey()));
       }
-      response.setStatus(getHttpResponseCode());
+      response.setStatus(getStatus(msg).getCode());
       if (sendPayload()) {
         if (getEncoder() != null) {
           getEncoder().writeMessage(msg, response);
@@ -228,23 +244,22 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
    * Get the HTTP Response code.
    *
    * @return the http response code.
+   * @deprecated since 3.0.6 use {@link #getStatusProvider()} instead.
    */
-  public int getHttpResponseCode() {
+  @Deprecated
+  public Integer getHttpResponseCode() {
     return httpResponseCode;
   }
 
   /**
    * Set the HTTP Response code.
-   * <p>
-   * Valid HTTP response codes are beyond the scope of this javadoc. You should
-   * read the appropriate internet RFC
-   * </p>
    *
-   * @see java.net.HttpURLConnection
-   * @see HttpServletResponse
-   * @param c
+   * @param c the status code.
+   * @deprecated since 3.0.6 use {@link #getStatusProvider()} instead.
    */
-  public void setHttpResponseCode(int c) {
+  @Deprecated
+  public void setHttpResponseCode(Integer c) {
+    log.warn("setHttpResponseCode(Integer) is deprecated, use #setStatusProvider() instead");
     httpResponseCode = c;
   }
 
@@ -273,19 +288,6 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
     contentTypeKey = s;
   }
 
-  /**
-   *
-   * @see java.lang.Object#toString()
-   */
-  @Override
-  public String toString() {
-    StringBuffer sb = new StringBuffer("[");
-    sb.append(this.getClass().getName());
-    sb.append(",additionalHeaders=[").append(getAdditionalHeaders());
-    sb.append("],responseCode=").append(getHttpResponseCode());
-    sb.append("]]");
-    return sb.toString();
-  }
 
   /**
    * @return the sendPayload
@@ -326,6 +328,7 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
    */
   @Deprecated
   public void setSendMetadataAsHeaders(Boolean b) {
+    log.warn("setSendMetadataAsHeaders(Boolean) is deprecated, use #setMetadataFilter() instead");
     sendMetadataAsHeaders = b;
   }
 
@@ -361,11 +364,8 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
    */
   @Deprecated
   public void setSendMetadataRegexp(String regexp) {
-    if (regexp == null) {
-      throw new IllegalArgumentException("Illegal Metadata Regexp [" + regexp
-          + "]");
-    }
-    sendMetadataRegexp = regexp;
+    log.warn("setSendMetadataRegexp(String) is deprecated, use #setMetadataFilter() instead");
+    sendMetadataRegexp = Args.notNull(regexp, "Send Metadata Regexp");
   }
 
   public Boolean getFlushBuffer() {
@@ -424,5 +424,20 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
       throw new IllegalArgumentException("Filter is null");
     }
     this.metadataFilter = metadataFilter;
+  }
+
+  public HttpStatusProvider getStatusProvider() {
+    return statusProvider;
+  }
+
+  public void setStatusProvider(HttpStatusProvider sp) {
+    this.statusProvider = Args.notNull(sp, "Status Provider");
+  }
+
+  private Status getStatus(AdaptrisMessage msg) {
+    if (getHttpResponseCode() != null) {
+      return new HttpStatusBuilder().withCode(getHttpResponseCode()).build();
+    }
+    return getStatusProvider().getStatus(msg);
   }
 }
