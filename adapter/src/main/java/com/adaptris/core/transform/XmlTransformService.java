@@ -48,6 +48,7 @@ public class XmlTransformService extends ServiceImp {
 
   private Boolean cacheTransforms;
   private Boolean allowOverride;
+  @Deprecated
   private Boolean useMetadataAsStylesheetParameters;
 
   // Default to null is fine

@@ -22,7 +22,6 @@ import com.adaptris.core.metadata.RemoveAllMetadataFilter;
 import com.adaptris.mail.MailException;
 import com.adaptris.mail.SmtpClient;
 import com.adaptris.security.exc.PasswordException;
-import com.adaptris.security.password.Password;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.license.License;
@@ -73,8 +72,10 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
   @AdvancedConfig
   private KeyValuePairSet sessionProperties;
   @AdvancedConfig
+  @Deprecated
   private Boolean sendMetadataAsHeaders;
   @AdvancedConfig
+  @Deprecated
   private String sendMetadataRegexp = null;
   @NotNull
   @AutoPopulated
@@ -302,7 +303,9 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
    * Specify whether or not to send metadata as headers.
    *
    * @param b the sendMetadataAsHeaders to set
+   * @deprecated since 3.0.2 use {@link #setMetadataFilter(MetadataFilter)} instead.
    */
+  @Deprecated
   public void setSendMetadataAsHeaders(Boolean b) {
     sendMetadataAsHeaders = b;
   }
@@ -311,9 +314,12 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
   public boolean sendMetadataAsHeaders() {
     return getSendMetadataAsHeaders() != null ? getSendMetadataAsHeaders() : false;
   }
+  
   /**
    * @return the sendMetadataRegexp
+   * @deprecated since 3.0.2 use {@link #setMetadataFilter(MetadataFilter)} instead.
    */
+  @Deprecated
   public String getSendMetadataRegexp() {
     return sendMetadataRegexp;
   }

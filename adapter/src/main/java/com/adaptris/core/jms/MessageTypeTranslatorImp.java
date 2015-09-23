@@ -10,12 +10,10 @@ import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.AdaptrisMessageTranslator;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.metadata.MetadataFilter;
 import com.adaptris.core.metadata.NoOpMetadataFilter;
-import com.adaptris.core.metadata.RemoveAllMetadataFilter;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.license.License;
 import com.adaptris.util.license.License.LicenseType;
@@ -45,6 +43,7 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
   @AdvancedConfig
   private MetadataFilter metadataFilter;
   @AdvancedConfig
+  @Deprecated
   private Boolean moveMetadata;
   @AdvancedConfig
   private Boolean moveJmsHeaders;
