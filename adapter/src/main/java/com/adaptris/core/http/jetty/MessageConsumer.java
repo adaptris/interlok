@@ -144,6 +144,7 @@ public class MessageConsumer extends BasicJettyConsumer {
   @SuppressWarnings("deprecation")
   private void addParamMetadata(AdaptrisMessage msg, HttpServletRequest request) {
     if (!isBlank(getParamPrefix())) {
+      log.warn("Deprecated Config Warning:: configured using setParamPrefix(), configure the handler instead.");
       this.getParameterHandler().handleParameters(msg, request, this.getParamPrefix());
     } else {
       this.getParameterHandler().handleParameters(msg, request);
@@ -153,6 +154,7 @@ public class MessageConsumer extends BasicJettyConsumer {
   @SuppressWarnings("deprecation")
   private void addHeaderMetadata(AdaptrisMessage msg, HttpServletRequest request) {
     if (!isBlank(getHeaderPrefix())) {
+      log.warn("Deprecated Config Warning:: configured using setHeaderPrefix(), configure the handler instead.");
       this.getHeaderHandler().handleHeaders(msg, request, this.getHeaderPrefix());
     } else {
       this.getHeaderHandler().handleHeaders(msg, request);
