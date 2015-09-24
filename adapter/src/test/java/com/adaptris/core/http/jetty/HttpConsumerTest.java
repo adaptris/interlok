@@ -27,11 +27,11 @@ import com.adaptris.core.http.HttpConsumerExample;
 import com.adaptris.core.http.HttpProducer;
 import com.adaptris.core.http.JdkHttpProducer;
 import com.adaptris.core.http.jetty.HttpConnection.HttpProperty;
+import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.http.server.MetadataHeaderHandler;
 import com.adaptris.core.http.server.MetadataParameterHandler;
 import com.adaptris.core.http.server.ObjectMetadataHeaderHandler;
 import com.adaptris.core.http.server.ObjectMetadataParameterHandler;
-import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.services.WaitService;
 import com.adaptris.core.stubs.AdaptrisMessageStub;
@@ -52,10 +52,10 @@ public class HttpConsumerTest extends HttpConsumerExample {
   static final String X_HTTP_KEY1 = "X-HTTP-Key1";
   static final String CONTENT_TYPE_METADATA_KEY = "content.type";
 
-  private static final String JETTY_HTTP_PORT = "jetty.http.port";
-  private static final String JETTY_USER_REALM = "jetty.user.realm.properties";
-  private static final String URL_TO_POST_TO = "/url/to/post/to";
-  private static final String XML_PAYLOAD = "<root><document>value</document></root>";
+  public static final String JETTY_HTTP_PORT = "jetty.http.port";
+  public static final String JETTY_USER_REALM = "jetty.user.realm.properties";
+  public static final String URL_TO_POST_TO = "/url/to/post/to";
+  public static final String XML_PAYLOAD = "<root><document>value</document></root>";
 
   protected HttpProducer httpProducer;
 
