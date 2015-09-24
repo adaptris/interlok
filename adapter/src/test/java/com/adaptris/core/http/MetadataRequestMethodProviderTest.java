@@ -8,7 +8,8 @@ import org.junit.Test;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
-import com.adaptris.core.http.RequestMethodProvider.RequestMethod;
+import com.adaptris.core.http.client.MetadataRequestMethodProvider;
+import com.adaptris.core.http.client.RequestMethodProvider.RequestMethod;
 
 public class MetadataRequestMethodProviderTest {
 

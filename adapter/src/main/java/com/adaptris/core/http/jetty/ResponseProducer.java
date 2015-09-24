@@ -177,6 +177,7 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
   @Override
   public void init() throws CoreException {
     if (sendMetadataAsHeaders()) {
+      log.warn("Deprecated Config Warning:: configured using setHttpResponseCode(), use #setMetadataFilter() instead.");
       if (getSendMetadataRegexp() == null && getMetadataFilter() instanceof RemoveAllMetadataFilter) {
         log.warn("No Metadata Regular expression configured, ignoring sendMetadataAsHeaders=true");
         setSendMetadataAsHeaders(Boolean.FALSE);
@@ -436,7 +437,7 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
 
   private Status getStatus(AdaptrisMessage msg) {
     if (getHttpResponseCode() != null) {
-      log.warn("Configured using deprecated setHttpResponseCode(), configure using #setStatusProvider() instead.");
+      log.warn("Deprecated Config Warning:: configured using setHttpResponseCode(), use #setStatusProvider() instead.");
       return new HttpStatusBuilder().withCode(getHttpResponseCode()).build();
     }
     return getStatusProvider().getStatus(msg);

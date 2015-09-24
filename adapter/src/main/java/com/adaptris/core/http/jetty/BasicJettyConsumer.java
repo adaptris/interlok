@@ -34,7 +34,7 @@ import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.WorkflowImp;
 import com.adaptris.core.WorkflowInterceptor;
-import com.adaptris.core.http.RequestMethodProvider.RequestMethod;
+import com.adaptris.core.http.client.RequestMethodProvider.RequestMethod;
 import com.adaptris.util.TimeInterval;
 import com.adaptris.util.license.License;
 import com.adaptris.util.license.License.LicenseType;

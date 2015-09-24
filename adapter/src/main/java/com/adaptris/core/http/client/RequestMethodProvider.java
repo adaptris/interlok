@@ -1,4 +1,4 @@
-package com.adaptris.core.http;
+package com.adaptris.core.http.client;
 
 import com.adaptris.core.AdaptrisMessage;
 

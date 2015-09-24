@@ -40,7 +40,9 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
-import com.adaptris.core.http.RequestMethodProvider.RequestMethod;
+import com.adaptris.core.http.client.ConfiguredRequestMethodProvider;
+import com.adaptris.core.http.client.RequestMethodProvider;
+import com.adaptris.core.http.client.RequestMethodProvider.RequestMethod;
 import com.adaptris.core.util.Args;
 import com.adaptris.util.license.License;
 import com.adaptris.util.license.License.LicenseType;
@@ -339,7 +341,8 @@ public class JdkHttpProducer extends HttpProducer {
 
   RequestMethod methodToUse(AdaptrisMessage msg) {
     if (!isBlank(getMethod())) {
-      return RequestMethod.valueOf(getMethod());
+      log.warn("Deprecated Config Warning:: configured using setMethod(), configure using #setMethodProvider() instead.");
+      return RequestMethod.valueOf(getMethod().toUpperCase());
     }
     return getMethodProvider().getMethod(msg);
   }
