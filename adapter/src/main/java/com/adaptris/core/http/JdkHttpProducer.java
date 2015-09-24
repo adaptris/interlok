@@ -63,8 +63,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config jdk-http-producer
  * @license BASIC
  * @see HttpURLConnection
+ * @deprecated since 3.0.6 use {@link com.adaptris.core.http.client.net.StandardHttpProducer} instead.
  */
 @XStreamAlias("jdk-http-producer")
+@Deprecated
 public class JdkHttpProducer extends HttpProducer {
 
   // Methods that allow doOutputUse; might not be the full list, we should probably check HTTP 1.1 specification.
