@@ -8,6 +8,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import com.adaptris.core.http.ResourceAuthenticator.ResourceTarget;
+import com.adaptris.core.util.Args;
 
 /**
  * Responsible for authenticating against network resources when requested.
@@ -69,10 +70,13 @@ public class AdapterResourceAuthenticator extends Authenticator {
   }
 
   public boolean addAuthenticator(ResourceAuthenticator a) {
-    return configuredAuthenticators.add(a);
+    return configuredAuthenticators.add(Args.notNull(a, "Authenticator"));
   }
 
   public boolean removeAuthenticator(ResourceAuthenticator a) {
+    if (a == null) {
+      return false;
+    }
     return configuredAuthenticators.remove(a);
   }
 
