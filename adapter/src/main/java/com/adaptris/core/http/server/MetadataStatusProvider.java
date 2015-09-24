@@ -1,4 +1,4 @@
-package com.adaptris.core.http;
+package com.adaptris.core.http.server;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isNumeric;

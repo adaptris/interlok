@@ -18,10 +18,10 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.http.HeaderHandler;
-import com.adaptris.core.http.NoOpHeaderHandler;
-import com.adaptris.core.http.NoOpParameterHandler;
-import com.adaptris.core.http.ParameterHandler;
+import com.adaptris.core.http.server.HeaderHandler;
+import com.adaptris.core.http.server.NoOpHeaderHandler;
+import com.adaptris.core.http.server.NoOpParameterHandler;
+import com.adaptris.core.http.server.ParameterHandler;
 import com.adaptris.util.stream.StreamUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 

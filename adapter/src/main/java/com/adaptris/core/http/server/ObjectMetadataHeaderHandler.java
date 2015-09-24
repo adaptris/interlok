@@ -1,4 +1,4 @@
-package com.adaptris.core.http;
+package com.adaptris.core.http.server;
 
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 
@@ -10,36 +10,38 @@ import com.adaptris.core.AdaptrisMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * {@link HeaderHandler} implementation that stores HTTP headers as standard metadata.
+ * {@link HeaderHandler} implementation stores HTTP headers as object metadata.
  * 
- * @config http-headers-as-metadata
+ * @config http-headers-as-object-metadata
  * 
  */
-@XStreamAlias("http-headers-as-metadata")
-public class MetadataHeaderHandler extends HeaderHandlerImpl {
+@XStreamAlias("http-headers-as-object-metadata")
+public class ObjectMetadataHeaderHandler extends HeaderHandlerImpl {
 
-  public MetadataHeaderHandler() {
+  public ObjectMetadataHeaderHandler() {
+
   }
 
-  public MetadataHeaderHandler(String prefix) {
+  public ObjectMetadataHeaderHandler(String prefix) {
     this();
     setHeaderPrefix(prefix);
   }
 
+
   @Override
   public void handleHeaders(AdaptrisMessage message, HttpServletRequest request, String itemPrefix) {
     String prefix = defaultIfEmpty(itemPrefix, "");
+    
     for (Enumeration<String> e = request.getHeaderNames(); e.hasMoreElements();) {
       String key = (String) e.nextElement();
       String value = request.getHeader(key);
-      message.addMetadata(prefix + key, value);
+      message.addObjectMetadata(prefix + key, value);
     }
   }
-  
+
+
   @Override
   public void handleHeaders(AdaptrisMessage msg, HttpServletRequest request) {
     handleHeaders(msg, request, headerPrefix());
   }
-
-
 }

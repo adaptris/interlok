@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
+import com.adaptris.core.http.server.MetadataStatusProvider;
 
 public class MetadataStatusProviderTest {
 

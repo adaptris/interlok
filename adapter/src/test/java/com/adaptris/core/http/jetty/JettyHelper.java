@@ -12,7 +12,7 @@ import com.adaptris.core.ServiceList;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.Workflow;
-import com.adaptris.core.http.HttpStatusProvider.HttpStatus;
+import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.stubs.MockChannel;
 
 /**

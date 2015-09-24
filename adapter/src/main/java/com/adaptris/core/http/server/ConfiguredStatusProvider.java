@@ -1,4 +1,4 @@
-package com.adaptris.core.http;
+package com.adaptris.core.http.server;
 
 import javax.validation.constraints.NotNull;
 

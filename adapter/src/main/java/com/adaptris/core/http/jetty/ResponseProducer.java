@@ -21,11 +21,11 @@ import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ProduceOnlyProducerImp;
-import com.adaptris.core.http.ConfiguredStatusProvider;
-import com.adaptris.core.http.HttpStatusBuilder;
-import com.adaptris.core.http.HttpStatusProvider;
-import com.adaptris.core.http.HttpStatusProvider.HttpStatus;
-import com.adaptris.core.http.HttpStatusProvider.Status;
+import com.adaptris.core.http.server.ConfiguredStatusProvider;
+import com.adaptris.core.http.server.HttpStatusBuilder;
+import com.adaptris.core.http.server.HttpStatusProvider;
+import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
+import com.adaptris.core.http.server.HttpStatusProvider.Status;
 import com.adaptris.core.metadata.MetadataFilter;
 import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.metadata.RemoveAllMetadataFilter;
@@ -436,6 +436,7 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
 
   private Status getStatus(AdaptrisMessage msg) {
     if (getHttpResponseCode() != null) {
+      log.warn("Configured using deprecated setHttpResponseCode(), configure using #setStatusProvider() instead.");
       return new HttpStatusBuilder().withCode(getHttpResponseCode()).build();
     }
     return getStatusProvider().getStatus(msg);

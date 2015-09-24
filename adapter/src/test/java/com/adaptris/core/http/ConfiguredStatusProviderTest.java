@@ -9,7 +9,8 @@ import org.junit.Test;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
-import com.adaptris.core.http.HttpStatusProvider.HttpStatus;
+import com.adaptris.core.http.server.ConfiguredStatusProvider;
+import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 
 public class ConfiguredStatusProviderTest {
 

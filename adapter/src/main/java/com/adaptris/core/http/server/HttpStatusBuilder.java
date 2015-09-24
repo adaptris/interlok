@@ -1,10 +1,10 @@
-package com.adaptris.core.http;
+package com.adaptris.core.http.server;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 import java.net.HttpURLConnection;
 
-import com.adaptris.core.http.HttpStatusProvider.Status;
+import com.adaptris.core.http.server.HttpStatusProvider.Status;
 
 /**
  * Builder class for a {@link HttpStatusProvider.Status}.
