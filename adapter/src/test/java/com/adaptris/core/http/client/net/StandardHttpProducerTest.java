@@ -13,6 +13,7 @@ import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.NullConnection;
+import com.adaptris.core.ProduceException;
 import com.adaptris.core.ServiceList;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandaloneRequestor;
@@ -422,6 +423,47 @@ public class StandardHttpProducerTest extends HttpProducerExample {
       Thread.currentThread().setName(threadName);
     }
   }
+
+
+
+  public void testProduce_WithUsernamePassword_BadCredentials() throws Exception {
+    String threadName = Thread.currentThread().getName();
+    Thread.currentThread().setName(getName());
+    HashUserRealmProxy hr = new HashUserRealmProxy();
+    hr.setFilename(PROPERTIES.getProperty(HttpConsumerTest.JETTY_USER_REALM));
+
+    SecurityConstraint securityConstraint = new SecurityConstraint();
+    securityConstraint.setMustAuthenticate(true);
+    securityConstraint.setRoles("user");
+
+    hr.setSecurityConstraints(Arrays.asList(securityConstraint));
+    HttpConnection jc = HttpHelper.createConnection();
+    jc.setSecurityHandler(hr);
+    MockMessageProducer mockProducer = new MockMessageProducer();
+    MessageConsumer consumer = JettyHelper.createConsumer(HttpHelper.URL_TO_POST_TO);
+    Channel channel = JettyHelper.createChannel(jc, consumer, mockProducer);
+
+    StandardHttpProducer stdHttp = new StandardHttpProducer();
+    stdHttp.setIgnoreServerResponseCode(false);
+    stdHttp.registerConnection(new NullConnection());
+    try {
+      start(channel);
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
+      stdHttp.setUsername(getName());
+      stdHttp.setPassword(getName());
+      start(stdHttp);
+      AdaptrisMessage reply = stdHttp.request(msg, HttpHelper.createProduceDestination(channel));
+      fail();
+    } catch (ProduceException expected) {
+
+    } finally {
+      stop(stdHttp);
+      HttpHelper.stopChannelAndRelease(channel);
+      assertEquals(0, AdapterResourceAuthenticator.getInstance().currentAuthenticators().size());
+      Thread.currentThread().setName(threadName);
+    }
+  }
+
 
 
   @Override

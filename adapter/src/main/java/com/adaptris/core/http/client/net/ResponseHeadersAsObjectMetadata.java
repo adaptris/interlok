@@ -1,16 +1,9 @@
 package com.adaptris.core.http.client.net;
 
-import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
-
-import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.http.client.ResponseHeaderHandler;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -30,11 +23,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("http-response-headers-as-object-metadata")
-public class ResponseHeadersAsObjectMetadata implements ResponseHeaderHandler<HttpURLConnection> {
-
-  private transient Logger log = LoggerFactory.getLogger(this.getClass());
-
-  private String metadataPrefix;
+public class ResponseHeadersAsObjectMetadata extends ResponseHeadersAsMetadata {
 
   public ResponseHeadersAsObjectMetadata() {
 
@@ -45,26 +34,7 @@ public class ResponseHeadersAsObjectMetadata implements ResponseHeaderHandler<Ht
     setMetadataPrefix(prefix);
   }
 
-  @Override
-  public AdaptrisMessage handle(HttpURLConnection src, AdaptrisMessage msg) {
-    addMetadata(src.getHeaderFields(), msg);
-    return msg;
-  }
-
-  private String generateKey(String header) {
-    return defaultIfEmpty(getMetadataPrefix(), "") + header;
-  }
-
-  public String getMetadataPrefix() {
-    return metadataPrefix;
-  }
-
-  public void setMetadataPrefix(String metadataPrefix) {
-    this.metadataPrefix = metadataPrefix;
-  }
-
-
-  private void addMetadata(Map<String, List<String>> headers, AdaptrisMessage reply) {
+  protected void addMetadata(Map<String, List<String>> headers, AdaptrisMessage reply) {
     for (String key : headers.keySet()) {
       List<String> list = headers.get(key);
       log.trace("key = " + key);

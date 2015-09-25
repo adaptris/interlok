@@ -30,7 +30,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("http-response-headers-as-metadata")
 public class ResponseHeadersAsMetadata implements ResponseHeaderHandler<HttpURLConnection> {
 
-  private transient Logger log = LoggerFactory.getLogger(this.getClass());
+  protected transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   private String metadataPrefix;
 
@@ -45,11 +45,11 @@ public class ResponseHeadersAsMetadata implements ResponseHeaderHandler<HttpURLC
 
   @Override
   public AdaptrisMessage handle(HttpURLConnection src, AdaptrisMessage msg) {
-    addReplyMetadata(src.getHeaderFields(), msg);
+    addMetadata(src.getHeaderFields(), msg);
     return msg;
   }
 
-  private String generateKey(String header) {
+  protected String generateKey(String header) {
     return defaultIfEmpty(getMetadataPrefix(), "") + header;
   }
 
@@ -62,7 +62,7 @@ public class ResponseHeadersAsMetadata implements ResponseHeaderHandler<HttpURLC
   }
 
 
-  private void addReplyMetadata(Map<String, List<String>> headers, AdaptrisMessage reply) {
+  protected void addMetadata(Map<String, List<String>> headers, AdaptrisMessage reply) {
     for (String key : headers.keySet()) {
       List<String> list = headers.get(key);
       log.trace("key = " + key);
