@@ -131,7 +131,7 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
   }
 
   /**
-   * Set the RFC 2617 password.
+   * Set the password.
    * <p>
    * In additional to plain text passwords, the passwords can also be encoded using the appropriate {@link Password}
    * </p>
@@ -262,6 +262,11 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
     return methodProvider;
   }
 
+  /**
+   * Specify how the HTTP Request Method is generated.
+   * 
+   * @param p the request method provider.
+   */
   public void setMethodProvider(RequestMethodProvider p) {
     this.methodProvider = Args.notNull(p, "Method Provider");
   }
