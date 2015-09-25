@@ -3,7 +3,6 @@ package com.adaptris.core.http;
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 import static com.adaptris.core.http.HttpConstants.CONTENT_TYPE;
 import static com.adaptris.core.http.HttpConstants.DEFAULT_SOCKET_TIMEOUT;
-import static org.apache.commons.lang.StringUtils.isBlank;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -26,10 +25,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
 import org.apache.commons.io.IOUtils;
+import org.hibernate.validator.constraints.NotBlank;
 import org.perf4j.aop.Profiled;
 
 import com.adaptris.annotation.AdvancedConfig;
@@ -40,7 +37,6 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
-import com.adaptris.core.http.client.ConfiguredRequestMethodProvider;
 import com.adaptris.core.http.client.RequestMethodProvider;
 import com.adaptris.core.http.client.RequestMethodProvider.RequestMethod;
 import com.adaptris.core.util.Args;
@@ -73,13 +69,9 @@ public class JdkHttpProducer extends HttpProducer {
   private static final Collection<RequestMethodProvider.RequestMethod> METHOD_ALLOWS_OUTPUT =
       Collections.synchronizedCollection(Arrays.asList(new RequestMethod[] {RequestMethod.POST, RequestMethod.PUT}));
 
-  @Deprecated
-  private String method;
-
-  @NotNull
-  @Valid
   @AutoPopulated
-  private RequestMethodProvider methodProvider;
+  @NotBlank
+  private String method;
 
   @AdvancedConfig
   private Boolean replyHttpHeadersAsMetadata;
@@ -88,7 +80,7 @@ public class JdkHttpProducer extends HttpProducer {
 
   public JdkHttpProducer() {
     super();
-    setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethod.POST));
+    setMethod(RequestMethod.POST.name());
   }
 
   public JdkHttpProducer(ProduceDestination d) {
@@ -319,11 +311,6 @@ public class JdkHttpProducer extends HttpProducer {
     // }
   }
 
-  /**
-   *
-   * @deprecated since 3.0.6, use {@link #getMethodProvider()} instead.
-   */
-  @Deprecated
   public String getMethod() {
     return method;
   }
@@ -332,21 +319,14 @@ public class JdkHttpProducer extends HttpProducer {
    * Set the HTTP method to be used.
    *
    * @param method
-   * @deprecated since 3.0.6, use {@link #setMethodProvider(RequestMethodProvider)} instead.
    */
-  @Deprecated
   public void setMethod(String s) {
-    log.warn("setMethod(String) is deprecated, use setMethodProvider() instead");
     this.method = Args.notNull(s, "Method");
   }
 
 
   RequestMethod methodToUse(AdaptrisMessage msg) {
-    if (!isBlank(getMethod())) {
-      log.warn("Deprecated Config Warning:: configured using setMethod(), configure using #setMethodProvider() instead.");
-      return RequestMethod.valueOf(getMethod().toUpperCase());
-    }
-    return getMethodProvider().getMethod(msg);
+    return RequestMethod.valueOf(getMethod().toUpperCase());
   }
 
 
@@ -401,13 +381,5 @@ public class JdkHttpProducer extends HttpProducer {
       }
       return null;
     }
-  }
-
-  public RequestMethodProvider getMethodProvider() {
-    return methodProvider;
-  }
-
-  public void setMethodProvider(RequestMethodProvider p) {
-    this.methodProvider = Args.notNull(p, "Method Provider");
   }
 }
