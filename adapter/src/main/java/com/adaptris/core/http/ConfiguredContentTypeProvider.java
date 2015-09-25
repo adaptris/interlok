@@ -1,5 +1,9 @@
 package com.adaptris.core.http;
+import org.hibernate.validator.constraints.NotBlank;
+
+import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -15,10 +19,17 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("http-configured-content-type-provider")
 public class ConfiguredContentTypeProvider extends ContentTypeProviderImpl {
 
+  @NotBlank
+  @AutoPopulated
   private String mimeType;
 
   public ConfiguredContentTypeProvider() {
     setMimeType("text/plain");
+  }
+
+  public ConfiguredContentTypeProvider(String type) {
+    this();
+    setMimeType(type);
   }
 
   @Override
@@ -34,10 +45,10 @@ public class ConfiguredContentTypeProvider extends ContentTypeProviderImpl {
   /**
    * Set the base content type.
    * 
-   * @param contentType the base content type; defaults to text/plain
+   * @param type the base content type; defaults to text/plain
    */
-  public void setMimeType(String contentType) {
-    this.mimeType = contentType;
+  public void setMimeType(String type) {
+    this.mimeType = Args.notBlank(type, "Mime Type");
   }
 
 }
