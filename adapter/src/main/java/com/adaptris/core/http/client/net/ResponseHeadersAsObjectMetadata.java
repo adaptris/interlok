@@ -3,7 +3,6 @@ package com.adaptris.core.http.client.net;
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 
 import java.net.HttpURLConnection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -16,36 +15,39 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Concrete implementation of {@link ResponseHeaderHandler} which adds all the HTTP headers from the
- * response as metadata to the {@link AdaptrisMessage}.
- *
+ * response as object metadata to the {@link AdaptrisMessage}.
+ * 
+ * <p>Because {@link HttpURLConnection} exposes header fields as a {@code List<String>}; this is the object that will be added to
+ * object metadata for each header field. In most situations there will only be a single entry in the list, but that's just how
+ * it is.
+ * </p>
  * <p>This will include header fields where the key is {@code null}; this will end up as the string {@code "null"}. {@link
  * HttpURLConnection} exposes the HTTP status line (e.g. {@code 200 HTTP/1.1 OK} as a header field with no key so this will
- * generally be what is associated with {@code "null"}.
+ * generally be the object metadata associated with {@code "null"}.
  * </p>
- * 
- * @config http-response-headers-as-metadata
+ * @config http-response-headers-as-object-metadata
  * @author lchan
  * 
  */
-@XStreamAlias("http-response-headers-as-metadata")
-public class ResponseHeadersAsMetadata implements ResponseHeaderHandler<HttpURLConnection> {
+@XStreamAlias("http-response-headers-as-object-metadata")
+public class ResponseHeadersAsObjectMetadata implements ResponseHeaderHandler<HttpURLConnection> {
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   private String metadataPrefix;
 
-  public ResponseHeadersAsMetadata() {
+  public ResponseHeadersAsObjectMetadata() {
 
   }
 
-  public ResponseHeadersAsMetadata(String prefix) {
+  public ResponseHeadersAsObjectMetadata(String prefix) {
     this();
     setMetadataPrefix(prefix);
   }
 
   @Override
   public AdaptrisMessage handle(HttpURLConnection src, AdaptrisMessage msg) {
-    addReplyMetadata(src.getHeaderFields(), msg);
+    addMetadata(src.getHeaderFields(), msg);
     return msg;
   }
 
@@ -62,19 +64,12 @@ public class ResponseHeadersAsMetadata implements ResponseHeaderHandler<HttpURLC
   }
 
 
-  private void addReplyMetadata(Map<String, List<String>> headers, AdaptrisMessage reply) {
+  private void addMetadata(Map<String, List<String>> headers, AdaptrisMessage reply) {
     for (String key : headers.keySet()) {
       List<String> list = headers.get(key);
       log.trace("key = " + key);
       log.trace("Values = " + list);
-      String metadataValue = "";
-      for (Iterator<String> i = list.iterator(); i.hasNext();) {
-        metadataValue += i.next();
-        if (i.hasNext()) {
-          metadataValue += "\t";
-        }
-      }
-      reply.addMetadata(generateKey(key), metadataValue);
+      reply.getObjectMetadata().put(generateKey(key), list);
     }
   }
 

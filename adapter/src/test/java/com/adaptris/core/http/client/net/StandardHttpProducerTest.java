@@ -271,6 +271,55 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     assertTrue(msg.containsKey("Server"));
   }
 
+
+  public void testRequest_ObjectMetadataResponseHeaders() throws Exception {
+    MockMessageProducer mock = new MockMessageProducer();
+    Channel c = HttpHelper.createAndStartChannel(mock);
+    StandardHttpProducer stdHttp = new StandardHttpProducer(HttpHelper.createProduceDestination(c));
+    stdHttp.setContentTypeProvider(new MetadataContentTypeProvider(HttpHelper.CONTENT_TYPE));
+    stdHttp.setResponseHeaderHandler(new ResponseHeadersAsObjectMetadata());
+    StandaloneRequestor producer = new StandaloneRequestor(stdHttp);
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
+    msg.addMetadata(HttpHelper.CONTENT_TYPE, "text/complicated");
+    assertFalse(msg.containsKey("Server"));
+    try {
+      c.requestStart();
+      start(producer);
+      producer.doService(msg);
+      waitForMessages(mock, 1);
+    } finally {
+      HttpHelper.stopChannelAndRelease(c);
+      stop(producer);
+    }
+    assertFalse(msg.containsKey("Server"));
+    assertTrue(msg.getObjectMetadata().containsKey("Server"));
+  }
+
+  public void testRequest_CompositeMetadataResponseHeaders() throws Exception {
+    MockMessageProducer mock = new MockMessageProducer();
+    Channel c = HttpHelper.createAndStartChannel(mock);
+    StandardHttpProducer stdHttp = new StandardHttpProducer(HttpHelper.createProduceDestination(c));
+    stdHttp.setContentTypeProvider(new MetadataContentTypeProvider(HttpHelper.CONTENT_TYPE));
+    stdHttp.setResponseHeaderHandler(
+        new CompositeResponseHeaderHandler(new ResponseHeadersAsMetadata(), new ResponseHeadersAsObjectMetadata()));
+    StandaloneRequestor producer = new StandaloneRequestor(stdHttp);
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
+    msg.addMetadata(HttpHelper.CONTENT_TYPE, "text/complicated");
+    assertFalse(msg.containsKey("Server"));
+    try {
+      c.requestStart();
+      start(producer);
+      producer.doService(msg);
+      waitForMessages(mock, 1);
+    } finally {
+      HttpHelper.stopChannelAndRelease(c);
+      stop(producer);
+    }
+    assertTrue(msg.containsKey("Server"));
+    assertTrue(msg.getObjectMetadata().containsKey("Server"));
+  }
+
+
   public void testRequest_GetMethod_NonZeroBytes() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     HttpConnection jc = HttpHelper.createConnection();
