@@ -9,7 +9,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * Implementation of {@link RequestHeaderHandler} that adds no additional headers
  * 
- * @config apache-http-no-request-headers
+ * @config http-no-request-headers
  * @author lchan
  * 
  */

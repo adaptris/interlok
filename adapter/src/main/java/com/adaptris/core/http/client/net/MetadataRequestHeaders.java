@@ -17,7 +17,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Implementation of {@link RequestHeaderHandler} that applies {@link AdaptrisMessage} metadata as
- * headers using a {@link MetadataFilter}.
+ * headers to a {@link HttpURLConnection}.
  * 
  * @config http-metadata-request-headers
  * 
@@ -50,8 +50,13 @@ public class MetadataRequestHeaders implements RequestHeaderProvider<HttpURLConn
     return filter;
   }
 
-  public void setFilter(MetadataFilter filter) {
-    this.filter = Args.notNull(filter, "metadata filter");
+  /**
+   * Set the filter to be applied to metadata before adding as request properties.
+   * 
+   * @param mf the filter.
+   */
+  public void setFilter(MetadataFilter mf) {
+    this.filter = Args.notNull(mf, "metadata filter");
   }
 
 }

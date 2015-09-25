@@ -1,7 +1,6 @@
 package com.adaptris.core.http.client.net;
 
 import java.net.HttpURLConnection;
-import java.net.URLConnection;
 
 import javax.validation.constraints.NotNull;
 
@@ -14,7 +13,8 @@ import com.adaptris.util.KeyValuePairSet;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Implementation of {@link RequestHeaderHandler} that applies static configured values as headers.
+ * Implementation of {@link RequestHeaderHandler} that applies configured values as headers to a {@link
+ * HttpURLConnection}.
  * 
  * @config http-configured-request-headers
  * 

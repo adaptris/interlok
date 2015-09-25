@@ -35,12 +35,16 @@ import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Default {@link HttpProducer} implementation.
+ * Default {@link HttpProducer} implementation that uses {@link HttpURLConnection} available in a standard java runtime.
+ * 
+ * <p>This is designed mostly as a drop-in replacement for {@link com.adaptris.core.http.JdkHttpProducer} but uses the new
+ * {@code com.adaptris.core.http.client} interfaces to manage request and response headers. The behaviour should be functionally
+ * equivalent and a {@link com.adaptris.core.NullConnection} is the appropriate connection type.
+ * </p>
  * 
  * @config standard-http-producer
  * @license BASIC
  * @author lchan
- *
  */
 @XStreamAlias("standard-http-producer")
 public class StandardHttpProducer extends HttpProducer {
