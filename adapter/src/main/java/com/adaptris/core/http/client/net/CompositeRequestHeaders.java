@@ -14,7 +14,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
- * Implementation of {@link RequestHeaderHandler} that uses nested providers to add headers to a {@link
+ * Implementation of {@link RequestHeaderProvider} that uses nested providers to add headers to a {@link
  * HttpURLConnection}.
  * 
  * <p>This implementation is primarily so that you can mix and match both static and metadata driven headers; the order in which
