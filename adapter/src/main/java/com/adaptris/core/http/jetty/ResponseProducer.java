@@ -2,6 +2,7 @@ package com.adaptris.core.http.jetty;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.util.Iterator;
 
 import javax.servlet.http.HttpServletResponse;
@@ -21,9 +22,7 @@ import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ProduceOnlyProducerImp;
-import com.adaptris.core.http.server.ConfiguredStatusProvider;
 import com.adaptris.core.http.server.HttpStatusBuilder;
-import com.adaptris.core.http.server.HttpStatusProvider;
 import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.http.server.HttpStatusProvider.Status;
 import com.adaptris.core.metadata.MetadataFilter;
@@ -54,9 +53,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class ResponseProducer extends ProduceOnlyProducerImp {
   private static final String DEFAULT_METADATA_REGEXP = "X-HTTP.*";
   private static final boolean DEFAULT_FORWARD_CONNECTION_EXCEPTION = false;
+  private static final int DEFAULT_RESPONSE_CODE = HttpURLConnection.HTTP_INTERNAL_ERROR;
   
-  @Deprecated
-  private Integer httpResponseCode;
+  private int httpResponseCode;
+
   @NotNull
   @AutoPopulated
   @AdvancedConfig
@@ -79,17 +79,13 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
   @Valid
   @AdvancedConfig
   private MetadataFilter metadataFilter;
-  @NotNull
-  @AutoPopulated
-  @Valid
-  private HttpStatusProvider statusProvider;
 
   public ResponseProducer() {
     super();
     setAdditionalHeaders(new KeyValuePairSet());
     setContentTypeKey(null);
     setMetadataFilter(new RemoveAllMetadataFilter());
-    setStatusProvider(new ConfiguredStatusProvider(HttpStatus.INTERNAL_ERROR_500));
+    setHttpResponseCode(DEFAULT_RESPONSE_CODE);
   }
 
   @Deprecated
@@ -98,9 +94,10 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
     setHttpResponseCode(responseCode);
   }
 
+  @Deprecated
   public ResponseProducer(HttpStatus status) {
     this();
-    setStatusProvider(new ConfiguredStatusProvider(status));
+    setHttpResponseCode(status.getStatusCode());
   }
 
   /**
@@ -245,10 +242,8 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
    * Get the HTTP Response code.
    *
    * @return the http response code.
-   * @deprecated since 3.0.6 use {@link #getStatusProvider()} instead.
    */
-  @Deprecated
-  public Integer getHttpResponseCode() {
+  public int getHttpResponseCode() {
     return httpResponseCode;
   }
 
@@ -256,11 +251,8 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
    * Set the HTTP Response code.
    *
    * @param c the status code.
-   * @deprecated since 3.0.6 use {@link #getStatusProvider()} instead.
    */
-  @Deprecated
-  public void setHttpResponseCode(Integer c) {
-    log.warn("setHttpResponseCode(Integer) is deprecated, use #setStatusProvider() instead");
+  public void setHttpResponseCode(int c) {
     httpResponseCode = c;
   }
 
@@ -427,19 +419,7 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
     this.metadataFilter = metadataFilter;
   }
 
-  public HttpStatusProvider getStatusProvider() {
-    return statusProvider;
-  }
-
-  public void setStatusProvider(HttpStatusProvider sp) {
-    this.statusProvider = Args.notNull(sp, "Status Provider");
-  }
-
   private Status getStatus(AdaptrisMessage msg) {
-    if (getHttpResponseCode() != null) {
-      log.warn("Deprecated Config Warning:: configured using setHttpResponseCode(), use #setStatusProvider() instead.");
-      return new HttpStatusBuilder().withCode(getHttpResponseCode()).build();
-    }
-    return getStatusProvider().getStatus(msg);
+    return new HttpStatusBuilder().withCode(getHttpResponseCode()).build();
   }
 }

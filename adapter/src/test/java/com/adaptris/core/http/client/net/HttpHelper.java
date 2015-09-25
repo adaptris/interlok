@@ -9,10 +9,14 @@ import com.adaptris.core.ComponentLifecycle;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.PortManager;
+import com.adaptris.core.Service;
 import com.adaptris.core.ServiceList;
+import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.http.jetty.HttpConnection;
 import com.adaptris.core.http.jetty.MessageConsumer;
-import com.adaptris.core.http.server.MetadataHeaderHandler;
+import com.adaptris.core.http.jetty.MetadataHeaderHandler;
+import com.adaptris.core.http.jetty.StandardResponseProducer;
+import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.KeyValuePair;
@@ -30,7 +34,8 @@ public class HttpHelper {
     MessageConsumer mc = createConsumer(URL_TO_POST_TO);
     mc.setHeaderHandler(new MetadataHeaderHandler());
     HttpConnection jc = createConnection();
-    Channel c = createChannel(jc, createWorkflow(mc, mock, new ServiceList()));
+    Channel c = createChannel(jc, createWorkflow(mc, mock,
+        new ServiceList(new Service[] {new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200))})));
     start(c);
     return c;
   }

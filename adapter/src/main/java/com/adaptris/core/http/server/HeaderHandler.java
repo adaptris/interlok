@@ -1,7 +1,5 @@
 package com.adaptris.core.http.server;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.adaptris.core.AdaptrisMessage;
 
 /**
@@ -9,7 +7,7 @@ import com.adaptris.core.AdaptrisMessage;
  * 
  * 
  */
-public interface HeaderHandler {
+public interface HeaderHandler<T> {
   
   /**
    * Handle the headers from the {@link HttpServletRequest}.
@@ -20,7 +18,7 @@ public interface HeaderHandler {
    * @deprecated since 3.0.6, concrete implementations of this interface can decide what to do with prefixes.
    */
   @Deprecated
-  public void handleHeaders(AdaptrisMessage message, HttpServletRequest request, String itemPrefix);
+  public void handleHeaders(AdaptrisMessage message, T request, String itemPrefix);
 
   /**
    * Handle the headers from the {@link HttpServletRequest}.
@@ -28,6 +26,6 @@ public interface HeaderHandler {
    * @param message the target {@link AdaptrisMessage}
    * @param request the request
    */
-  void handleHeaders(AdaptrisMessage message, HttpServletRequest request);
+  void handleHeaders(AdaptrisMessage message, T request);
 
 }

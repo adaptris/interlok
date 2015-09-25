@@ -1,6 +1,10 @@
-package com.adaptris.core.http.server;
+package com.adaptris.core.http.jetty;
 
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
+
+import javax.servlet.http.HttpServletRequest;
+
+import com.adaptris.core.http.server.ParameterHandler;
 
 /**
  * Abstract {@link ParameterHandler} implementation that provides a prefix.
@@ -8,7 +12,7 @@ import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
  * @author lchan
  *
  */
-public abstract class ParameterHandlerImpl implements ParameterHandler {
+public abstract class ParameterHandlerImpl implements ParameterHandler<HttpServletRequest> {
 
   private String parameterPrefix;
 

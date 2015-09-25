@@ -1,44 +1,29 @@
 package com.adaptris.core.http.server;
 
-import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.Enumeration;
-
-import javax.servlet.http.HttpServletRequest;
-
-import com.adaptris.core.AdaptrisMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * {@link ParameterHandler} implementation stores HTTP headers as object metadata.
  * 
  * @config http-parameters-as-object-metadata
- * 
+ * @deprecated since 3.0.6 use {@link com.adaptris.core.http.jetty.ObjectMetadataParameterHandler} instead.
  */
 @XStreamAlias("http-parameters-as-object-metadata")
-public class ObjectMetadataParameterHandler extends ParameterHandlerImpl {
+@Deprecated
+public class ObjectMetadataParameterHandler extends com.adaptris.core.http.jetty.ObjectMetadataParameterHandler {
+
+  private static transient boolean warningLogged;
+  private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   public ObjectMetadataParameterHandler() {
-  }
-
-  public ObjectMetadataParameterHandler(String prefix) {
-    this();
-    setParameterPrefix(prefix);
-  }
-
-  @Override
-  public void handleParameters(AdaptrisMessage message, HttpServletRequest request, String itemPrefix) {
-    String prefix = defaultIfEmpty(itemPrefix, "");
-    
-    for (Enumeration<String> e = request.getParameterNames(); e.hasMoreElements();) {
-      String key = e.nextElement();
-      String value = request.getParameter(key);
-      message.addObjectMetadata(prefix + key, value);
-    } 
-  }
-
-  @Override
-  public void handleParameters(AdaptrisMessage message, HttpServletRequest request) {
-    handleParameters(message, request, parameterPrefix());
+    super();
+    if (!warningLogged) {
+      log.warn("[{}] is deprecated, use [{}] instead", this.getClass().getSimpleName(),
+          com.adaptris.core.http.jetty.ObjectMetadataParameterHandler.class.getName());
+      warningLogged = true;
+    }
   }
 }

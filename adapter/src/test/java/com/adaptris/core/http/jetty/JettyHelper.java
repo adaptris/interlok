@@ -37,7 +37,7 @@ public class JettyHelper {
   }
 
   public static Workflow createWorkflow(MessageConsumer consumer, AdaptrisMessageProducer producer) {
-    return createWorkflow(consumer, producer, new ResponseProducer(HttpStatus.OK_200));
+    return createWorkflow(consumer, producer, new StandardResponseProducer(HttpStatus.OK_200));
   }
 
   public static Workflow createWorkflow(MessageConsumer consumer, AdaptrisMessageProducer producer, ResponseProducer responder) {
@@ -46,6 +46,12 @@ public class JettyHelper {
       new StandaloneProducer(responder)
     }));
   }
+
+  public static Workflow createWorkflow(MessageConsumer consumer, AdaptrisMessageProducer producer,
+      StandardResponseProducer responder) {
+    return createWorkflow(consumer, producer, new ServiceList(new Service[] {new StandaloneProducer(responder)}));
+  }
+
 
   public static Workflow createWorkflow(MessageConsumer consumer, AdaptrisMessageProducer producer, ServiceList list) {
     StandardWorkflow wf = new StandardWorkflow();

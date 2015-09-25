@@ -19,8 +19,6 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.http.server.HeaderHandler;
-import com.adaptris.core.http.server.NoOpHeaderHandler;
-import com.adaptris.core.http.server.NoOpParameterHandler;
 import com.adaptris.core.http.server.ParameterHandler;
 import com.adaptris.util.stream.StreamUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -64,12 +62,12 @@ public class MessageConsumer extends BasicJettyConsumer {
   @Valid
   @NotNull
   @AdvancedConfig
-  private ParameterHandler parameterHandler;
+  private ParameterHandler<HttpServletRequest> parameterHandler;
   @AutoPopulated
   @Valid
   @NotNull
   @AdvancedConfig
-  private HeaderHandler headerHandler;
+  private HeaderHandler<HttpServletRequest> headerHandler;
 
   public MessageConsumer() {
     super();
@@ -181,19 +179,19 @@ public class MessageConsumer extends BasicJettyConsumer {
     paramPrefix = s;
   }
 
-  public ParameterHandler getParameterHandler() {
+  public ParameterHandler<HttpServletRequest> getParameterHandler() {
     return parameterHandler;
   }
 
-  public void setParameterHandler(ParameterHandler parameterHandler) {
+  public void setParameterHandler(ParameterHandler<HttpServletRequest> parameterHandler) {
     this.parameterHandler = parameterHandler;
   }
 
-  public HeaderHandler getHeaderHandler() {
+  public HeaderHandler<HttpServletRequest> getHeaderHandler() {
     return headerHandler;
   }
 
-  public void setHeaderHandler(HeaderHandler headerHandler) {
+  public void setHeaderHandler(HeaderHandler<HttpServletRequest> headerHandler) {
     this.headerHandler = headerHandler;
   }
 }

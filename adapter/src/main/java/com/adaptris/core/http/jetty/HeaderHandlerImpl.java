@@ -1,6 +1,10 @@
-package com.adaptris.core.http.server;
+package com.adaptris.core.http.jetty;
 
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
+
+import javax.servlet.http.HttpServletRequest;
+
+import com.adaptris.core.http.server.HeaderHandler;
 
 /**
  * Abstract {@link HeaderHandler} implementation that provides a prefix.
@@ -8,7 +12,7 @@ import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
  * @author lchan
  *
  */
-public abstract class HeaderHandlerImpl implements HeaderHandler {
+public abstract class HeaderHandlerImpl implements HeaderHandler<HttpServletRequest> {
 
   private String headerPrefix;
 

@@ -1,7 +1,5 @@
 package com.adaptris.core.http.server;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.adaptris.core.AdaptrisMessage;
 
 /**
@@ -9,7 +7,7 @@ import com.adaptris.core.AdaptrisMessage;
  * 
  * 
  */
-public interface ParameterHandler {
+public interface ParameterHandler<T> {
 
   /**
    * Handle the parameters from the HTTP request.
@@ -20,7 +18,7 @@ public interface ParameterHandler {
    * @deprecated since 3.0.6, concrete implementations of this interface can decide what to do with prefixes.
    */
   @Deprecated
-  public void handleParameters(AdaptrisMessage message, HttpServletRequest request, String itemPrefix);
+  public void handleParameters(AdaptrisMessage message, T request, String itemPrefix);
   
   /**
    * Handle the parameters from the HTTP request.
@@ -28,7 +26,7 @@ public interface ParameterHandler {
    * @param message the target {@link AdaptrisMessage}.
    * @param request the request.
    */
-  public void handleParameters(AdaptrisMessage message, HttpServletRequest request);
+  public void handleParameters(AdaptrisMessage message, T request);
 
 
 }

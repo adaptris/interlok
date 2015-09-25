@@ -1,45 +1,30 @@
 package com.adaptris.core.http.server;
 
-import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.Enumeration;
-
-import javax.servlet.http.HttpServletRequest;
-
-import com.adaptris.core.AdaptrisMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * {@link HeaderHandler} implementation that stores HTTP headers as standard metadata.
  * 
  * @config http-headers-as-metadata
+ * @deprecated since 3.0.6 use {@link com.adaptris.core.http.jetty.MetadataHeaderHandler} instead.
  * 
  */
 @XStreamAlias("http-headers-as-metadata")
-public class MetadataHeaderHandler extends HeaderHandlerImpl {
+@Deprecated
+public class MetadataHeaderHandler extends com.adaptris.core.http.jetty.MetadataHeaderHandler {
+
+  private static transient boolean warningLogged;
+  private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   public MetadataHeaderHandler() {
-  }
-
-  public MetadataHeaderHandler(String prefix) {
-    this();
-    setHeaderPrefix(prefix);
-  }
-
-  @Override
-  public void handleHeaders(AdaptrisMessage message, HttpServletRequest request, String itemPrefix) {
-    String prefix = defaultIfEmpty(itemPrefix, "");
-    for (Enumeration<String> e = request.getHeaderNames(); e.hasMoreElements();) {
-      String key = (String) e.nextElement();
-      String value = request.getHeader(key);
-      message.addMetadata(prefix + key, value);
+    super();
+    if (!warningLogged) {
+      log.warn("[{}] is deprecated, use [{}] instead", this.getClass().getSimpleName(),
+          com.adaptris.core.http.jetty.MetadataHeaderHandler.class.getName());
+      warningLogged = true;
     }
   }
-  
-  @Override
-  public void handleHeaders(AdaptrisMessage msg, HttpServletRequest request) {
-    handleHeaders(msg, request, headerPrefix());
-  }
-
-
 }
