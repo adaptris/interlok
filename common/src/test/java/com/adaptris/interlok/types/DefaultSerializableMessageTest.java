@@ -43,8 +43,8 @@ public class DefaultSerializableMessageTest {
         new DefaultSerializableMessage().withUniqueId(testName.getMethodName()).withMessageHeaders(hdrs)
             .withPayload(testName.getMethodName()).withPayloadEncoding(testName.getMethodName());
     assertEquals(testName.getMethodName(), msg.getUniqueId());
-    assertEquals(testName.getMethodName(), msg.getPayload());
-    assertEquals(testName.getMethodName(), msg.getPayloadEncoding());
+    assertEquals(testName.getMethodName(), msg.getContent());
+    assertEquals(testName.getMethodName(), msg.getContentEncoding());
     assertEquals(1, msg.getMessageHeaders().size());
     assertEquals(testName.getMethodName(), msg.getMessageHeaders().get(testName.getMethodName()));
   }
@@ -119,17 +119,17 @@ public class DefaultSerializableMessageTest {
   @Test
   public void testPayload() {
     DefaultSerializableMessage msg = new DefaultSerializableMessage();
-    assertNull(msg.getPayload());
-    msg.setPayload(testName.getMethodName());
-    assertEquals(testName.getMethodName(), msg.getPayload());
+    assertNull(msg.getContent());
+    msg.setContent(testName.getMethodName());
+    assertEquals(testName.getMethodName(), msg.getContent());
   }
 
   @Test
   public void testPayloadEncoding() {
     DefaultSerializableMessage msg = new DefaultSerializableMessage();
-    assertNull(msg.getPayloadEncoding());
-    msg.setPayloadEncoding(testName.getMethodName());
-    assertEquals(testName.getMethodName(), msg.getPayloadEncoding());
+    assertNull(msg.getContentEncoding());
+    msg.setContentEncoding(testName.getMethodName());
+    assertEquals(testName.getMethodName(), msg.getContentEncoding());
   }
 
 }

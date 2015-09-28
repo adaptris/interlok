@@ -14,9 +14,9 @@ public interface SerializableMessage extends Serializable {
 
   public void setUniqueId(String uniqueId);
 
-  public String getPayload();
+  public String getContent();
 
-  public void setPayload(String payload);
+  public void setContent(String payload);
 
   /**
    * Returns a view of all the existing headers associated with the message.
@@ -45,8 +45,8 @@ public interface SerializableMessage extends Serializable {
 
   public void removeMessageHeader(String key);
 
-  public String getPayloadEncoding();
+  public String getContentEncoding();
 
-  public void setPayloadEncoding(String payloadEncoding);
+  public void setContentEncoding(String payloadEncoding);
 
 }

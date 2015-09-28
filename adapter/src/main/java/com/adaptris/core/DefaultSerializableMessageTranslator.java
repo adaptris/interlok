@@ -43,13 +43,13 @@ public class DefaultSerializableMessageTranslator implements SerializableMessage
     SerializableAdaptrisMessage serializedMsg = new SerializableAdaptrisMessage();
     // It's a file message; arbitrarily too large?
     if (message instanceof FileBackedMessage && message.getSize() > DEFAULT_LMS_BOUNDARY) {
-      serializedMsg.setPayload(buildFileDetails(((FileBackedMessage) message).currentSource()));
+      serializedMsg.setContent(buildFileDetails(((FileBackedMessage) message).currentSource()));
     }
     else {
-      serializedMsg.setPayload(message.getStringPayload());
+      serializedMsg.setContent(message.getStringPayload());
     }
     serializedMsg.setUniqueId(message.getUniqueId());
-    serializedMsg.setPayloadEncoding(message.getCharEncoding());
+    serializedMsg.setContentEncoding(message.getCharEncoding());
     serializedMsg.setMetadata(message.getMetadata());
     
     // do we have a failed/error'd message?
@@ -63,11 +63,11 @@ public class DefaultSerializableMessageTranslator implements SerializableMessage
   public AdaptrisMessage translate(SerializableAdaptrisMessage message) throws CoreException {
     try {
       AdaptrisMessage adaptrisMessage = null;
-      if (StringUtils.isEmpty(message.getPayloadEncoding())) {
-        adaptrisMessage = messageFactory.newMessage(message.getPayload(), convertKeyValuePairs(message.getMetadata()));
+      if (StringUtils.isEmpty(message.getContentEncoding())) {
+        adaptrisMessage = messageFactory.newMessage(message.getContent(), convertKeyValuePairs(message.getMetadata()));
       }
       else {
-        adaptrisMessage = messageFactory.newMessage(message.getPayload(), message.getPayloadEncoding(),
+        adaptrisMessage = messageFactory.newMessage(message.getContent(), message.getContentEncoding(),
             convertKeyValuePairs(message.getMetadata()));
       }
       if(StringUtils.isEmpty(message.getUniqueId()))

@@ -58,7 +58,7 @@ public class SerializableAdaptrisMessage implements SerializableMessage {
     this();
     setUniqueId(orig.getUniqueId());
     setMessageHeaders(orig.getMessageHeaders());
-    setPayload(orig.getPayload(), orig.getPayloadEncoding());
+    setPayload(orig.getContent(), orig.getContentEncoding());
   }
 
   public SerializableAdaptrisMessage(String uniqueId) {
@@ -69,7 +69,7 @@ public class SerializableAdaptrisMessage implements SerializableMessage {
   public SerializableAdaptrisMessage(String uniqueId, String payload) {
     this();
     setUniqueId(uniqueId);
-    setPayload(payload);
+    setContent(payload);
   }
 
   @Override
@@ -83,18 +83,18 @@ public class SerializableAdaptrisMessage implements SerializableMessage {
   }
 
   @Override
-  public String getPayload() {
+  public String getContent() {
     return payload;
   }
 
   @Override
-  public void setPayload(String payload) {
+  public void setContent(String payload) {
     this.payload = payload;
   }
 
   public void setPayload(String payload, String payloadEncoding) {
-    setPayload(payload);
-    setPayloadEncoding(payloadEncoding);
+    setContent(payload);
+    setContentEncoding(payloadEncoding);
   }
 
   public KeyValuePairSet getMetadata() {
@@ -204,12 +204,12 @@ public class SerializableAdaptrisMessage implements SerializableMessage {
   }
 
   @Override
-  public String getPayloadEncoding() {
+  public String getContentEncoding() {
     return payloadEncoding;
   }
 
   @Override
-  public void setPayloadEncoding(String payloadEncoding) {
+  public void setContentEncoding(String payloadEncoding) {
     this.payloadEncoding = payloadEncoding;
   }
 
@@ -225,13 +225,13 @@ public class SerializableAdaptrisMessage implements SerializableMessage {
       return false;
     }
     SerializableAdaptrisMessage rhs = (SerializableAdaptrisMessage) object;
-    return new EqualsBuilder().append(getPayload(), rhs.getPayload()).append(getPayloadEncoding(), rhs.getPayloadEncoding())
+    return new EqualsBuilder().append(getContent(), rhs.getContent()).append(getContentEncoding(), rhs.getContentEncoding())
         .append(getUniqueId(), rhs.getUniqueId()).append(getMetadata(), rhs.getMetadata()).isEquals();
   }
 
   @Override
   public int hashCode() {
-    return new HashCodeBuilder(13, 17).append(getPayload()).append(getPayloadEncoding()).append(getUniqueId())
+    return new HashCodeBuilder(13, 17).append(getContent()).append(getContentEncoding()).append(getUniqueId())
         .append(getMetadata()).toHashCode();
   }
 

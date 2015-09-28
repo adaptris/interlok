@@ -37,20 +37,20 @@ public class SerializableAdaptrisMessageTest extends TestCase {
     SerializableAdaptrisMessage message = new SerializableAdaptrisMessage(getName());
     assertEquals(getName(), message.getUniqueId());
     assertEquals(0, message.getMetadata().size());
-    assertNull(message.getPayload());
+    assertNull(message.getContent());
 
     message = new SerializableAdaptrisMessage(getName(), "my payload");
     assertEquals(getName(), message.getUniqueId());
     assertEquals(0, message.getMetadata().size());
-    assertEquals("my payload", message.getPayload());
+    assertEquals("my payload", message.getContent());
     
     SerializableMessage stub = new StubSerializableMessage();
     stub.setUniqueId(getName());
-    stub.setPayload("my payload");
+    stub.setContent("my payload");
     message = new SerializableAdaptrisMessage(stub);
     assertEquals(getName(), message.getUniqueId());
     assertEquals(0, message.getMetadata().size());
-    assertEquals("my payload", message.getPayload());
+    assertEquals("my payload", message.getContent());
 
 
   }
@@ -130,11 +130,11 @@ public class SerializableAdaptrisMessageTest extends TestCase {
 
   public void testSerializePayload() throws Exception {
     SerializableAdaptrisMessage message = new SerializableAdaptrisMessage();
-    message.setPayload("SomePayload");
+    message.setContent("SomePayload");
     
     SerializableAdaptrisMessage unmarshalledMessage = roundTrip(message);
     
-    assertTrue(message.getPayload().equals(unmarshalledMessage.getPayload()));
+    assertTrue(message.getContent().equals(unmarshalledMessage.getContent()));
   }
   
   public void testSerializeID() throws Exception {
@@ -160,18 +160,18 @@ public class SerializableAdaptrisMessageTest extends TestCase {
   public void testSerializeAll() throws Exception {
     SerializableAdaptrisMessage message = new SerializableAdaptrisMessage();
     message.setUniqueId("MyUniqueID");
-    message.setPayload("SomePayload");
+    message.setContent("SomePayload");
     message.addMetadata(KEY1, VALUE1);
     message.addMetadata(KEY2, VALUE2);
     message.addMetadata(KEY3, VALUE3);
-    message.setPayloadEncoding("SomeEncoding");
+    message.setContentEncoding("SomeEncoding");
     
     SerializableAdaptrisMessage unmarshalledMessage = roundTrip(message);
     
     assertTrue(message.getUniqueId().equals(unmarshalledMessage.getUniqueId()));
-    assertTrue(message.getPayload().equals(unmarshalledMessage.getPayload()));
+    assertTrue(message.getContent().equals(unmarshalledMessage.getContent()));
     assertTrue(message.getMetadata().equals(unmarshalledMessage.getMetadata()));
-    assertTrue(message.getPayloadEncoding().equals(unmarshalledMessage.getPayloadEncoding()));
+    assertTrue(message.getContentEncoding().equals(unmarshalledMessage.getContentEncoding()));
   }
   
   public void testMessageHeaders() throws Exception {
@@ -226,11 +226,11 @@ public class SerializableAdaptrisMessageTest extends TestCase {
   public void testEquals() throws Exception {
     SerializableAdaptrisMessage message = new SerializableAdaptrisMessage();
     message.setUniqueId("MyUniqueID");
-    message.setPayload("SomePayload");
+    message.setContent("SomePayload");
     message.addMetadata(KEY1, VALUE1);
     message.addMetadata(KEY2, VALUE2);
     message.addMetadata(KEY3, VALUE3);
-    message.setPayloadEncoding("SomeEncoding");
+    message.setContentEncoding("SomeEncoding");
     assertFalse(message.equals(null));
     assertFalse(message.equals(new Object()));
     assertTrue(message.equals(message));

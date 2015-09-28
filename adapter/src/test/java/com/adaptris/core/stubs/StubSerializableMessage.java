@@ -39,22 +39,22 @@ public class StubSerializableMessage implements SerializableMessage {
   }
 
   @Override
-  public String getPayload() {
+  public String getContent() {
     return payload;
   }
 
   @Override
-  public void setPayload(String payload) {
+  public void setContent(String payload) {
     this.payload = payload;
   }
 
   @Override
-  public String getPayloadEncoding() {
+  public String getContentEncoding() {
     return payloadEncoding;
   }
 
   @Override
-  public void setPayloadEncoding(String payloadEncoding) {
+  public void setContentEncoding(String payloadEncoding) {
     this.payloadEncoding = payloadEncoding;
   }
 

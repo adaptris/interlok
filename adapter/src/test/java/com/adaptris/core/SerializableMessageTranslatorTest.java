@@ -36,7 +36,7 @@ public class SerializableMessageTranslatorTest extends TestCase {
     assertEquals("MetaValue1", serialisableAdaptrisMessage.getMetadataValue("MetaKey1"));
     assertEquals("MetaValue2", serialisableAdaptrisMessage.getMetadataValue("MetaKey2"));
     assertEquals(adaptrisMessage.getUniqueId(), serialisableAdaptrisMessage.getUniqueId());
-    assertEquals("Some Payload", serialisableAdaptrisMessage.getPayload());
+    assertEquals("Some Payload", serialisableAdaptrisMessage.getContent());
   }
 
   public void testSerialize_FileBackedMessage_TooLarge() throws Exception {
@@ -54,7 +54,7 @@ public class SerializableMessageTranslatorTest extends TestCase {
     assertEquals("MetaValue2", serialisableAdaptrisMessage.getMetadataValue("MetaKey2"));
     assertEquals(adaptrisMessage.getUniqueId(), serialisableAdaptrisMessage.getUniqueId());
 
-    assertTrue(serialisableAdaptrisMessage.getPayload().contains("Size=7 MB"));
+    assertTrue(serialisableAdaptrisMessage.getContent().contains("Size=7 MB"));
   }
 
   public void testSerialize() throws Exception {
@@ -67,13 +67,13 @@ public class SerializableMessageTranslatorTest extends TestCase {
     
     assertEquals("MetaValue1", serialisableAdaptrisMessage.getMetadataValue("MetaKey1"));
     assertEquals("MetaValue2", serialisableAdaptrisMessage.getMetadataValue("MetaKey2"));
-    assertEquals("Some Payload", serialisableAdaptrisMessage.getPayload());
+    assertEquals("Some Payload", serialisableAdaptrisMessage.getContent());
     assertEquals("uuid", serialisableAdaptrisMessage.getUniqueId());
   }
   
   public void testUnserialize() throws Exception {
     SerializableAdaptrisMessage serialisableAdaptrisMessage = new SerializableAdaptrisMessage();
-    serialisableAdaptrisMessage.setPayload("Some Payload");
+    serialisableAdaptrisMessage.setContent("Some Payload");
     serialisableAdaptrisMessage.setUniqueId("uuid2");
     serialisableAdaptrisMessage.addMetadata("MetaKey3", "MetaValue3");
     serialisableAdaptrisMessage.addMetadata("MetaKey4", "MetaValue4");
@@ -88,9 +88,9 @@ public class SerializableMessageTranslatorTest extends TestCase {
 
   public void testUnserialize_WithEncoding() throws Exception {
     SerializableAdaptrisMessage serialisableAdaptrisMessage = new SerializableAdaptrisMessage();
-    serialisableAdaptrisMessage.setPayload("Some Payload");
+    serialisableAdaptrisMessage.setContent("Some Payload");
     serialisableAdaptrisMessage.setUniqueId("uuid2");
-    serialisableAdaptrisMessage.setPayloadEncoding("UTF-8");
+    serialisableAdaptrisMessage.setContentEncoding("UTF-8");
     serialisableAdaptrisMessage.addMetadata("MetaKey3", "MetaValue3");
     serialisableAdaptrisMessage.addMetadata("MetaKey4", "MetaValue4");
 

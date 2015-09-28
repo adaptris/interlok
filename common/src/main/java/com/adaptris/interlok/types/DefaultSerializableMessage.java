@@ -75,22 +75,22 @@ public class DefaultSerializableMessage implements SerializableMessage {
   }
 
   @Override
-  public String getPayload() {
+  public String getContent() {
     return payload;
   }
 
   @Override
-  public void setPayload(String payload) {
+  public void setContent(String payload) {
     this.payload = payload;
   }
 
   @Override
-  public String getPayloadEncoding() {
+  public String getContentEncoding() {
     return payloadEncoding;
   }
 
   @Override
-  public void setPayloadEncoding(String payloadEncoding) {
+  public void setContentEncoding(String payloadEncoding) {
     this.payloadEncoding = payloadEncoding;
   }
 
@@ -101,10 +101,10 @@ public class DefaultSerializableMessage implements SerializableMessage {
    * 
    * @param payload the payload
    * @return the current DefaultSerializableMessage object for method chaining
-   * @see #setPayload(String)
+   * @see #setContent(String)
    */
   public DefaultSerializableMessage withPayload(String payload) {
-    setPayload(payload);
+    setContent(payload);
     return this;
   }
 
@@ -127,7 +127,7 @@ public class DefaultSerializableMessage implements SerializableMessage {
    * @return the current DefaultSerializableMessage object for method chaining
    */
   public DefaultSerializableMessage withPayloadEncoding(String enc) {
-    setPayloadEncoding(enc);
+    setContentEncoding(enc);
     return this;
   }
 

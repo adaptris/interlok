@@ -32,7 +32,7 @@ public class DefaultSerializableMessageTranslatorTest extends TestCase {
     DefaultSerializableMessageTranslator translator = new DefaultSerializableMessageTranslator();
     SerializableAdaptrisMessage translated = translator.translate(message);
     
-    assertEquals("SomePayload", translated.getPayload());
+    assertEquals("SomePayload", translated.getContent());
   }
   
   public void testUniqueId() throws Exception {
@@ -51,7 +51,7 @@ public class DefaultSerializableMessageTranslatorTest extends TestCase {
     DefaultSerializableMessageTranslator translator = new DefaultSerializableMessageTranslator();
     SerializableAdaptrisMessage translated = translator.translate(message);
     
-    assertEquals(message.getCharEncoding(), translated.getPayloadEncoding());
+    assertEquals(message.getCharEncoding(), translated.getContentEncoding());
   }
   
   public void testExceptionMessage() throws Exception {

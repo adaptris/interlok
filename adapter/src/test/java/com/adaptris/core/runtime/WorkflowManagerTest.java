@@ -1109,8 +1109,8 @@ public class WorkflowManagerTest extends ComponentManagerCase {
       SerializableAdaptrisMessage reply = workflowManagerProxy.injectMessageWithReply(msg);
 
       assertEquals(msgUniqueId, reply.getUniqueId());
-      assertEquals(PAYLOAD, reply.getPayload());
-      assertEquals(PAYLOAD_ENCODING, reply.getPayloadEncoding());
+      assertEquals(PAYLOAD, reply.getContent());
+      assertEquals(PAYLOAD_ENCODING, reply.getContentEncoding());
       assertTrue(reply.containsKey(METADATA_KEY));
       assertEquals(METADATA_VALUE, reply.getMetadataValue(METADATA_KEY));
       assertTrue(reply.containsKey(getName()));
@@ -1189,8 +1189,8 @@ public class WorkflowManagerTest extends ComponentManagerCase {
       SerializableMessage reply = workflowManagerProxy.process(msg);
 
       assertEquals(msgUniqueId, reply.getUniqueId());
-      assertEquals(PAYLOAD, reply.getPayload());
-      assertEquals(PAYLOAD_ENCODING, reply.getPayloadEncoding());
+      assertEquals(PAYLOAD, reply.getContent());
+      assertEquals(PAYLOAD_ENCODING, reply.getContentEncoding());
       Map<String, String> headers = reply.getMessageHeaders();
       assertTrue(headers.containsKey(METADATA_KEY));
       assertEquals(METADATA_VALUE, headers.get(METADATA_KEY));
@@ -1375,8 +1375,8 @@ public class WorkflowManagerTest extends ComponentManagerCase {
   private SerializableAdaptrisMessage createSAM(String msgUniqueId) {
     SerializableAdaptrisMessage  msg = new SerializableAdaptrisMessage();
     msg.setUniqueId(msgUniqueId);
-    msg.setPayload(PAYLOAD);
-    msg.setPayloadEncoding(PAYLOAD_ENCODING);
+    msg.setContent(PAYLOAD);
+    msg.setContentEncoding(PAYLOAD_ENCODING);
     msg.addMetadata(METADATA_KEY, METADATA_VALUE);
     return msg;
   }
@@ -1384,8 +1384,8 @@ public class WorkflowManagerTest extends ComponentManagerCase {
   private SerializableMessage createSM(String msgUniqueId) {
     SerializableMessage msg = new StubSerializableMessage();
     msg.setUniqueId(msgUniqueId);
-    msg.setPayload(PAYLOAD);
-    msg.setPayloadEncoding(PAYLOAD_ENCODING);
+    msg.setContent(PAYLOAD);
+    msg.setContentEncoding(PAYLOAD_ENCODING);
     msg.addMessageHeader(METADATA_KEY, METADATA_VALUE);
     return msg;
   }
