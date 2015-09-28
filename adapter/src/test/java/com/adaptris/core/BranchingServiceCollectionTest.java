@@ -238,13 +238,41 @@ public class BranchingServiceCollectionTest extends ServiceCollectionCase {
     assertTrue("msg " + msg, msg.getMetadataValue("service-id").equals(BRANCH_LOW));
     assertEquals(2, msg.getMessageLifecycleEvent().getMleMarkers().size());
 
-    services.setCheckServiceState(false); // this time run without checking states.
+    services.setOutOfStateHandler(new NullOutOfStateHandler());
     AdaptrisMessage msg2 = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     services.doService(msg2);
     assertTrue(msg2.getMetadataValue("service-id").equals(BRANCH_HIGH));
     assertEquals(2, msg.getMessageLifecycleEvent().getMleMarkers().size());
   }
   
+
+  @SuppressWarnings("deprecation")
+  public void testDoService_Legacy() throws Exception {
+    BranchingServiceCollection services = createServiceCollection();
+    branchService.changeState(StartedState.getInstance());
+    lowService.changeState(StartedState.getInstance());
+    highService.changeState(StartedState.getInstance());
+
+    services.addService(branchService);
+    services.addService(lowService);
+    services.addService(highService);
+
+    services.setFirstServiceId(FIRST_SERVICE_ID);
+
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    execute(services, msg);
+
+    assertTrue("msg " + msg, msg.getMetadataValue("service-id").equals(BRANCH_LOW));
+    assertEquals(2, msg.getMessageLifecycleEvent().getMleMarkers().size());
+
+    services.setCheckServiceState(false); // this time run without checking states.
+    AdaptrisMessage msg2 = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    services.doService(msg2);
+    assertTrue(msg2.getMetadataValue("service-id").equals(BRANCH_HIGH));
+    assertEquals(2, msg.getMessageLifecycleEvent().getMleMarkers().size());
+  }
+
+
   public void testDoServiceOutOfState() throws Exception {
     BranchingServiceCollection services = createServiceCollection();
     services.addService(branchService);

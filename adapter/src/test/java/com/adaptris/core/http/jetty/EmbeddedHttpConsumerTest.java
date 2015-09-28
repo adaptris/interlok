@@ -17,8 +17,8 @@ import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.Workflow;
 import com.adaptris.core.http.HttpConsumerExample;
-import com.adaptris.core.http.HttpProducer;
-import com.adaptris.core.http.JdkHttpProducer;
+import com.adaptris.core.http.MetadataContentTypeProvider;
+import com.adaptris.core.http.client.net.StandardHttpProducer;
 import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.services.WaitService;
 import com.adaptris.core.stubs.LicenseStub;
@@ -35,7 +35,7 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
   static final String X_HTTP_KEY1 = "X-HTTP-Key1";
   static final String CONTENT_TYPE_METADATA_KEY = "content.type";
 
-  protected HttpProducer httpProducer;
+  protected StandardHttpProducer httpProducer;
 
   public EmbeddedHttpConsumerTest(String name) {
     super(name);
@@ -318,9 +318,9 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
     assertNotNull(objMetadata.get(CoreConstants.JETTY_RESPONSE_KEY));
   }
 
-  protected HttpProducer createProducer() {
-    JdkHttpProducer p = new JdkHttpProducer();
-    p.setContentTypeKey("content.type");
+  protected StandardHttpProducer createProducer() {
+    StandardHttpProducer p = new StandardHttpProducer();
+    p.setContentTypeProvider(new MetadataContentTypeProvider("content.type"));
     p.setIgnoreServerResponseCode(true);
     p.registerConnection(new NullConnection());
     return p;

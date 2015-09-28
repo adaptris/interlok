@@ -19,6 +19,7 @@ import com.adaptris.core.FileLogHandler;
 import com.adaptris.core.FileLogHandlerJmxMBean;
 import com.adaptris.core.LogHandlerTest;
 
+@SuppressWarnings("deprecation")
 public class FileLogHandlerJmxTest extends ComponentManagerCase {
 
   private static final String LOG_STATS = "stats.log";

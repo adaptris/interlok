@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.zip.GZIPOutputStream;
 
+@Deprecated
 public class DummyCompressedLogHandler extends MockLogHandler {
 
   private byte[] compressedBytes;

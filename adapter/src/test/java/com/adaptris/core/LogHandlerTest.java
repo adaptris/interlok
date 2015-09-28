@@ -27,6 +27,7 @@ import org.junit.Test;
 
 import com.adaptris.core.LogHandler.LogFileType;
 
+@SuppressWarnings("deprecation")
 public class LogHandlerTest {
 
   public static final String LOG_ENTRY = "TRACE [main] [PingEvent.handleRequest()] ping event handled\n"

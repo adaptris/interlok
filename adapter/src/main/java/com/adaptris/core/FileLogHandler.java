@@ -54,20 +54,19 @@ public class FileLogHandler extends LogHandlerImp {
   private transient Map<LogFileType, String> logFiles;
 
   private String logDirectory;
-  private String statisticsLogFile;
   private String logFile;
+  @Deprecated
+  private String statisticsLogFile;
+  @Deprecated
   private String statisticsGraphLogFile;
 
   private transient Logger logR = LoggerFactory.getLogger(this.getClass().getName());
+  @Deprecated
   private Boolean useCompression;
   static {
     RuntimeInfoComponentFactory.registerComponentFactory(new JmxFactory());
   }
-  /**
-   * @see Object#Object()
-   *
-   *
-   */
+
   public FileLogHandler() {
     period = 30;
     logFiles = new HashMap<LogFileType, String>();
@@ -212,7 +211,9 @@ public class FileLogHandler extends LogHandlerImp {
    * Get the compression flag.
    *
    * @return true if compression is currently enabled.
+   * @deprecated since 3.0.6 this has no meaning as {@link FileLogHandler} never returns you the logfile.
    */
+  @Deprecated
   public Boolean getUseCompression() {
     return useCompression;
   }
@@ -221,15 +222,27 @@ public class FileLogHandler extends LogHandlerImp {
    * Force the file to be returned compressed.
    *
    * @param b true to use compression.
+   * @deprecated since 3.0.6 this has no meaning as {@link FileLogHandler} never returns you the logfile.
    */
+  @Deprecated
   public void setUseCompression(Boolean b) {
     useCompression = b;
   }
 
+  /**
+   * 
+   * @deprecated since 3.0.6; there is no replacement.
+   */
+  @Deprecated
   public String getStatisticsLogFile() {
     return logFiles.get(LogFileType.Statistics);
   }
 
+  /**
+   * 
+   * @deprecated since 3.0.6; there is no replacement.
+   */
+  @Deprecated
   public void setStatisticsLogFile(String s) {
     if (isBlank(s)) {
       throw new IllegalArgumentException("Empty Statistics Log file");
@@ -239,10 +252,20 @@ public class FileLogHandler extends LogHandlerImp {
 
   }
 
+  /**
+   * 
+   * @deprecated since 3.0.6; there is no replacement.
+   */
+  @Deprecated
   public String getStatisticsGraphLogFile() {
     return logFiles.get(LogFileType.Graphing);
   }
 
+  /**
+   * 
+   * @deprecated since 3.0.6; there is no replacement.
+   */
+  @Deprecated
   public void setStatisticsGraphLogFile(String s) {
     if (isBlank(s)) {
       throw new IllegalArgumentException("Empty Statistics Graphing Log file");

@@ -29,7 +29,9 @@ public interface LogHandler extends AdaptrisComponent {
    * @return the log file.
    * @param type the Logfile type
    * @throws IOException if the input stream could not be returned.
+   * @deprecated since 3.0.6; there is no replacement.
    */
+  @Deprecated
   InputStream retrieveLog(LogFileType type) throws IOException;
 
   /**
@@ -43,6 +45,8 @@ public interface LogHandler extends AdaptrisComponent {
    * Get the compression status for the log file.
    *
    * @return the compression flag.
+   * @deprecated since 3.0.6; there is no replacement.
    */
+  @Deprecated
   boolean isCompressed();
 }
