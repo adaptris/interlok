@@ -17,7 +17,7 @@ public class MessageEventGeneratorTest extends BaseCase {
     Service s2 = new NullService();
 
     ServiceList services = new ServiceList();
-    services.setCheckServiceState(false);
+    services.setOutOfStateHandler(new NullOutOfStateHandler());
     
     services.addService(s2);
     services.doService(msg);
@@ -35,7 +35,7 @@ public class MessageEventGeneratorTest extends BaseCase {
     Service s2 = new NullService();
 
     ServiceList services = new ServiceList();
-    services.setCheckServiceState(false);
+    services.setOutOfStateHandler(new NullOutOfStateHandler());
     
     services.addService(s2);
     services.doService(msg);
@@ -53,7 +53,7 @@ public class MessageEventGeneratorTest extends BaseCase {
     Service s2 = new NullService();
 
     ServiceList services = new ServiceList();
-    services.setCheckServiceState(false);
+    services.setOutOfStateHandler(new NullOutOfStateHandler());
     
     services.addService(s2);
     services.doService(msg);
@@ -70,7 +70,7 @@ public class MessageEventGeneratorTest extends BaseCase {
 
     Service s2 = new NullService();
     ServiceList services = new ServiceList();
-    services.setCheckServiceState(false);
+    services.setOutOfStateHandler(new NullOutOfStateHandler());
     
     services.addService(s2);
     services.doService(msg);

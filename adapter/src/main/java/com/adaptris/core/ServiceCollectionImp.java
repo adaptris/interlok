@@ -41,6 +41,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   @AdvancedConfig
   private Boolean isConfirmation;
   @AdvancedConfig
+  @Deprecated
   private Boolean checkServiceState;
   @AdvancedConfig
   private OutOfStateHandler outOfStateHandler;
@@ -204,8 +205,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   public final void doService(AdaptrisMessage msg) throws ServiceException {
     try {
       lock.acquire();
-      if(this.checkServiceState())
-        this.checkServiceStates();
+      this.checkServiceStates();
       applyServices(msg);
     }
     catch (InterruptedException e) {
@@ -220,19 +220,16 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   }
 
   private void checkServiceStates() throws OutOfStateException {
+    OutOfStateHandler handler = outOfStateHandler();
     for(Service service : this.getServices()) {
       try {
-        if (!outOfStateHandler().isInCorrectState(service)) {
-          this.outOfStateHandler().handleOutOfState(service);
+        if (!handler.isInCorrectState(service)) {
+          handler.handleOutOfState(service);
         }
       } catch (OutOfStateException ex) {
         throw new OutOfStateException("Service (" + service.getUniqueId() + ") cannot be run, it is not in the correct state - " + service.retrieveComponentState().getClass().getSimpleName());
       }
     }
-  }
-
-  private boolean checkServiceState() {
-    return this.getCheckServiceState() != null ? this.getCheckServiceState() : true;
   }
 
   /**
@@ -439,21 +436,6 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
     }
   }
 
-  /** @see java.lang.Object#toString() */
-  @Override
-  public String toString() {
-    StringBuffer result = new StringBuffer();
-
-    result.append("[");
-    result.append(this.getClass().getName());
-    result.append("]");
-    for (int i = 0; i < services.size(); i++) {
-      result.append(" service [" + (i + 1) + "] ");
-      result.append(services.get(i));
-    }
-    return result.toString();
-  }
-
   private boolean isRestartAffectedServiceOnException() {
     return getRestartAffectedServiceOnException() == null ? false : getRestartAffectedServiceOnException().booleanValue();
   }
@@ -583,10 +565,20 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
     return collection;
   }
 
+  /**
+   * 
+   * @deprecated since 3.0.6 configure an explicit {@link OutOfStateHandler} using {@link #setOutOfStateHandler(OutOfStateHandler)).
+   */
+  @Deprecated
   public Boolean getCheckServiceState() {
     return checkServiceState;
   }
 
+  /**
+   * 
+   * @deprecated since 3.0.6 configure an explicit {@link OutOfStateHandler} using {@link #setOutOfStateHandler(OutOfStateHandler)).
+   */
+  @Deprecated
   public void setCheckServiceState(Boolean checkServiceState) {
     this.checkServiceState = checkServiceState;
   }
@@ -595,11 +587,25 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
     return outOfStateHandler;
   }
 
-  public void setOutOfStateHandler(OutOfStateHandler outOfStateHandler) {
-    this.outOfStateHandler = outOfStateHandler;
+  /**
+   * Set the behaviour when internal services are not in the correct state.
+   * 
+   * @param handler if not specified defaults to {@link RaiseExceptionOutOfStateHandler}.
+   */
+  public void setOutOfStateHandler(OutOfStateHandler handler) {
+    this.outOfStateHandler = handler;
   }
 
   private OutOfStateHandler outOfStateHandler() {
-    return getOutOfStateHandler() != null ? getOutOfStateHandler() : DEFAULT_STATE_HANDLER;
+    OutOfStateHandler result = getOutOfStateHandler() != null ? getOutOfStateHandler() : DEFAULT_STATE_HANDLER;
+    if (getCheckServiceState() != null) {
+      log.warn("setCheckService() is deprecated; explicitly configure using #setOutOfStateHandler() instead");
+      // They've asked for no service-state checking; and OOSH isn't configured...
+      if (Boolean.FALSE.equals(getCheckServiceState()) && result == DEFAULT_STATE_HANDLER) {
+        result = new NullOutOfStateHandler();
+      }
+    }
+    return result;
   }
+
 }

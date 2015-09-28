@@ -7,6 +7,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.core.util.Args;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -104,16 +105,16 @@ public class WaitingOutOfStateHandler extends OutOfStateHandlerImp {
     return maximumWaitTime;
   }
 
-  public void setMaximumWaitTime(TimeInterval maximumWaitTime) {
-    this.maximumWaitTime = maximumWaitTime;
+  public void setMaximumWaitTime(TimeInterval max) {
+    this.maximumWaitTime = Args.notNull(max, "Max Wait Time");
   }
 
   public TimeInterval getIntervalToCheck() {
     return intervalToCheck;
   }
 
-  public void setIntervalToCheck(TimeInterval intervalToCheck) {
-    this.intervalToCheck = intervalToCheck;
+  public void setIntervalToCheck(TimeInterval interval) {
+    this.intervalToCheck = Args.notNull(interval, "Check interval");
   }
 
 }

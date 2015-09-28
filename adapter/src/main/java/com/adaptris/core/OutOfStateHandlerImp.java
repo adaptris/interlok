@@ -39,7 +39,7 @@ public abstract class OutOfStateHandlerImp implements OutOfStateHandler {
     return correctState;
   }
 
-  public void setCorrectState(ConfiguredComponentState correctState) {
-    this.correctState = correctState;
+  public void setCorrectState(ConfiguredComponentState state) {
+    this.correctState = state;
   }
 }
