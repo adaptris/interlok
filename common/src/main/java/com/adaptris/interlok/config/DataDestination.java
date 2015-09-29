@@ -1,12 +1,12 @@
 package com.adaptris.interlok.config;
 
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
+import com.adaptris.interlok.InterlokException;
+import com.adaptris.interlok.types.InterlokMessage;
 
 public interface DataDestination {
   
-  public Object getData(AdaptrisMessage message) throws CoreException;
+  public Object getData(InterlokMessage message) throws InterlokException;
   
-  public void setData(AdaptrisMessage message, Object data) throws CoreException;
+  public void setData(InterlokMessage message, Object data) throws InterlokException;
 
 }

@@ -1,6 +1,6 @@
 package com.adaptris.interlok.config;
 
-import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.interlok.types.InterlokMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XStreamAlias("metadata-data-destination")
@@ -15,13 +15,13 @@ public class MetadataDataDestination implements DataDestination {
   }
   
   @Override
-  public Object getData(AdaptrisMessage message) {
-    return message.getMetadataValue(this.getMetadataKey());
+  public Object getData(InterlokMessage message) {
+    return message.getMessageHeaders().get(this.getMetadataKey());
   }
 
   @Override
-  public void setData(AdaptrisMessage message, Object data) {
-    message.addMetadata(this.getMetadataKey(), (String) data);
+  public void setData(InterlokMessage message, Object data) {
+    message.addMessageHeader(this.getMetadataKey(), (String) data);
   }
 
   public String getMetadataKey() {

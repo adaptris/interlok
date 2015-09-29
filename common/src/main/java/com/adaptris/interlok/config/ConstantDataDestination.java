@@ -1,5 +1,8 @@
 package com.adaptris.interlok.config;
 
+import com.adaptris.interlok.InterlokException;
+import com.adaptris.interlok.types.InterlokMessage;
+
 public class ConstantDataDestination implements DataDestination {
 
   private String value;
@@ -8,13 +11,13 @@ public class ConstantDataDestination implements DataDestination {
   }
   
   @Override
-  public Object getData(AdaptrisMessage message) throws CoreException {
+  public Object getData(InterlokMessage message) throws InterlokException {
     return this.getValue();
   }
 
   @Override
-  public void setData(AdaptrisMessage message, Object data) throws CoreException {
-    throw new CoreException("setData not supported for " + this.getClass().getName());
+  public void setData(InterlokMessage message, Object data) throws InterlokException {
+    throw new InterlokException("setData not supported for " + this.getClass().getName());
   }
 
   public String getValue() {

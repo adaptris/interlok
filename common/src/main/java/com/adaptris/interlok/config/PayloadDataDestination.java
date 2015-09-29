@@ -1,6 +1,6 @@
 package com.adaptris.interlok.config;
 
-import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.interlok.types.InterlokMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XStreamAlias("payload-data-destination")
@@ -11,13 +11,13 @@ public class PayloadDataDestination implements DataDestination {
   }
   
   @Override
-  public Object getData(AdaptrisMessage message) {
-    return message.getStringPayload();
+  public Object getData(InterlokMessage message) {
+    return message.getContent();
   }
 
   @Override
-  public void setData(AdaptrisMessage message, Object data) {
-    message.setStringPayload((String) data, message.getCharEncoding());
+  public void setData(InterlokMessage message, Object data) {
+    message.setContent((String) data);
   }
 
 }
