@@ -85,7 +85,7 @@ junit.SequenceNumberServiceExamples.baseDir=${junit.ServiceCase.baseDir}/sequenc
 junit.SyntaxRoutingServiceExamples.baseDir=${junit.ServiceCase.baseDir}/routing-messages
 junit.CacheServiceExamples.baseDir=${junit.ServiceCase.baseDir}/cache
 junit.AggregatingServiceExamples.baseDir=${junit.ServiceCase.baseDir}/aggregator
-
+junit.XmlServiceExamples.baseDir=${junit.ServiceCase.baseDir}/xml
 
 
 
