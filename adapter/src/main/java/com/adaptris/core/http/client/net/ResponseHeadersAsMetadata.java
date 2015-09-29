@@ -65,8 +65,6 @@ public class ResponseHeadersAsMetadata implements ResponseHeaderHandler<HttpURLC
   protected void addMetadata(Map<String, List<String>> headers, AdaptrisMessage reply) {
     for (String key : headers.keySet()) {
       List<String> list = headers.get(key);
-      log.trace("key = " + key);
-      log.trace("Values = " + list);
       String metadataValue = "";
       for (Iterator<String> i = list.iterator(); i.hasNext();) {
         metadataValue += i.next();
@@ -74,6 +72,8 @@ public class ResponseHeadersAsMetadata implements ResponseHeaderHandler<HttpURLC
           metadataValue += "\t";
         }
       }
+      String metadataKey = generateKey(key);
+      log.trace("{}:{}", metadataKey, metadataValue);
       reply.addMetadata(generateKey(key), metadataValue);
     }
   }

@@ -37,8 +37,8 @@ public class ResponseHeadersAsObjectMetadata extends ResponseHeadersAsMetadata {
   protected void addMetadata(Map<String, List<String>> headers, AdaptrisMessage reply) {
     for (String key : headers.keySet()) {
       List<String> list = headers.get(key);
-      log.trace("key = " + key);
-      log.trace("Values = " + list);
+      String metadataKey = generateKey(key);
+      log.trace("{}:{}", metadataKey, list);
       reply.getObjectMetadata().put(generateKey(key), new URLConnectionHeaderField(key, list));
     }
   }

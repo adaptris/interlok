@@ -6,6 +6,9 @@ import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -17,6 +20,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("jetty-http-headers-as-metadata")
 public class MetadataHeaderHandler extends HeaderHandlerImpl {
+  protected transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   public MetadataHeaderHandler() {
   }
@@ -32,6 +36,8 @@ public class MetadataHeaderHandler extends HeaderHandlerImpl {
     for (Enumeration<String> e = request.getHeaderNames(); e.hasMoreElements();) {
       String key = (String) e.nextElement();
       String value = request.getHeader(key);
+      String metadataKey = prefix + key;
+      log.trace("Adding Header {}:{}", metadataKey, value);
       message.addMetadata(prefix + key, value);
     }
   }
