@@ -45,7 +45,7 @@ public class MetadataRequestHeaders implements RequestHeaderProvider<HttpURLConn
     Map<String, String> result = new HashMap<>();
     MetadataCollection metadataSubset = getFilter().filter(msg);
     for (MetadataElement me : metadataSubset) {
-      log.trace("Adding Request Property [{}:{}]", me.getKey(), me.getValue());
+      log.trace("Adding Request Property [{}: {}]", me.getKey(), me.getValue());
       target.addRequestProperty(me.getKey(), me.getValue());
     }
     return target;

@@ -4,6 +4,9 @@ import java.net.HttpURLConnection;
 
 import javax.validation.constraints.NotNull;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.http.client.RequestHeaderProvider;
@@ -21,6 +24,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("http-configured-request-headers")
 public class ConfiguredRequestHeaders implements RequestHeaderProvider<HttpURLConnection> {
+  protected transient Logger log = LoggerFactory.getLogger(this.getClass());
   @NotNull
   @AutoPopulated
   private KeyValuePairSet headers;
@@ -33,6 +37,7 @@ public class ConfiguredRequestHeaders implements RequestHeaderProvider<HttpURLCo
   @Override
   public HttpURLConnection addHeaders(AdaptrisMessage msg, HttpURLConnection target) {
     for (KeyValuePair k : getHeaders()) {
+      log.trace("Adding Request Property [{}: {}]", k.getKey(), k.getValue());
       target.addRequestProperty(k.getKey(), k.getValue());
     }
     return target;
