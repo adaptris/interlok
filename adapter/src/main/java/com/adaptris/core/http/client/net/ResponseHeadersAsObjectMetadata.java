@@ -23,7 +23,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("http-response-headers-as-object-metadata")
-public class ResponseHeadersAsObjectMetadata extends ResponseHeadersAsMetadata {
+public class ResponseHeadersAsObjectMetadata extends MetadataResponseHeaderImpl {
 
   public ResponseHeadersAsObjectMetadata() {
 
@@ -38,7 +38,7 @@ public class ResponseHeadersAsObjectMetadata extends ResponseHeadersAsMetadata {
     for (String key : headers.keySet()) {
       List<String> list = headers.get(key);
       String metadataKey = generateKey(key);
-      log.trace("{}:{}", metadataKey, list);
+      log.trace("Adding Object Metadata [{}: {}]", metadataKey, list);
       reply.getObjectMetadata().put(generateKey(key), new URLConnectionHeaderField(key, list));
     }
   }

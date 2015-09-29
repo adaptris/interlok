@@ -251,7 +251,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     Channel c = HttpHelper.createAndStartChannel(mock);
     StandardHttpProducer stdHttp = new StandardHttpProducer(HttpHelper.createProduceDestination(c));
     stdHttp.setContentTypeProvider(new MetadataContentTypeProvider(HttpHelper.CONTENT_TYPE));
-    stdHttp.setResponseHeaderHandler(new ResponseHeadersAsMetadata());
+    stdHttp.setResponseHeaderHandler(new ResponseHeadersAsMetadata("", "|"));
     StandaloneRequestor producer = new StandaloneRequestor(stdHttp);
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
     msg.addMetadata(HttpHelper.CONTENT_TYPE, "text/complicated");

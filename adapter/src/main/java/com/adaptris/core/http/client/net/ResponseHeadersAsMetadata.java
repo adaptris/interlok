@@ -1,23 +1,20 @@
 package com.adaptris.core.http.client.net;
 
-import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
-
-import java.net.HttpURLConnection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.http.client.ResponseHeaderHandler;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Concrete implementation of {@link ResponseHeaderHandler} which adds all the HTTP headers from the
  * response as metadata to the {@link AdaptrisMessage}.
  *
+ * <p>Because {@link HttpURLConnection} exposes headers as a {@code List<String>}; {@code #setMetadataSeparator(String)} is used
+ * as a separator between multiple items in the list to flatten the list into a single metadata value. The default value is the
+ * tab character ("\t").</p>
  * <p>This will include header fields where the key is {@code null}; this will end up as the string {@code "null"}. {@link
  * HttpURLConnection} exposes the HTTP status line (e.g. {@code 200 HTTP/1.1 OK} as a header field with no key so this will
  * generally be what is associated with {@code "null"}.
@@ -28,37 +25,25 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("http-response-headers-as-metadata")
-public class ResponseHeadersAsMetadata implements ResponseHeaderHandler<HttpURLConnection> {
+public class ResponseHeadersAsMetadata extends MetadataResponseHeaderImpl {
 
-  protected transient Logger log = LoggerFactory.getLogger(this.getClass());
+  private static final String DEFAULT_SEPARATOR_CHAR = "\t";
 
-  private String metadataPrefix;
+  @AdvancedConfig
+  private String metadataSeparator;
 
   public ResponseHeadersAsMetadata() {
 
   }
 
   public ResponseHeadersAsMetadata(String prefix) {
+    this(prefix, null);
+  }
+
+  public ResponseHeadersAsMetadata(String prefix, String separator) {
     this();
     setMetadataPrefix(prefix);
-  }
-
-  @Override
-  public AdaptrisMessage handle(HttpURLConnection src, AdaptrisMessage msg) {
-    addMetadata(src.getHeaderFields(), msg);
-    return msg;
-  }
-
-  protected String generateKey(String header) {
-    return defaultIfEmpty(getMetadataPrefix(), "") + header;
-  }
-
-  public String getMetadataPrefix() {
-    return metadataPrefix;
-  }
-
-  public void setMetadataPrefix(String metadataPrefix) {
-    this.metadataPrefix = metadataPrefix;
+    setMetadataSeparator(separator);
   }
 
 
@@ -69,13 +54,35 @@ public class ResponseHeadersAsMetadata implements ResponseHeaderHandler<HttpURLC
       for (Iterator<String> i = list.iterator(); i.hasNext();) {
         metadataValue += i.next();
         if (i.hasNext()) {
-          metadataValue += "\t";
+          metadataValue += metadataSeparator();
         }
       }
       String metadataKey = generateKey(key);
-      log.trace("{}:{}", metadataKey, metadataValue);
+      log.trace("Adding Metadata [{}: {}]", metadataKey, metadataValue);
       reply.addMetadata(generateKey(key), metadataValue);
     }
   }
 
+  public String getMetadataSeparator() {
+    return metadataSeparator;
+  }
+
+  /**
+   * Set the separator to be used when multiple headers should be associated with the same key.
+   * 
+   * <p>
+   * Because {@link HttpURLConnection} exposes headers as a {@code List<String>}; {@code #setMetadataSeparator(String)} is used
+   * as a separator between multiple items in the list to flatten the list into a single metadata value. The default value is the
+   * tab character ("\t").
+   * </p>
+   * 
+   * @param s the separator (default if not specified is "\t");
+   */
+  public void setMetadataSeparator(String s) {
+    this.metadataSeparator = s;
+  }
+
+  String metadataSeparator() {
+    return getMetadataSeparator() != null ? getMetadataSeparator() : DEFAULT_SEPARATOR_CHAR;
+  }
 }
