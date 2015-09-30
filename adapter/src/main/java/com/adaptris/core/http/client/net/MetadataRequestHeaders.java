@@ -7,6 +7,9 @@ import java.util.Map;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.MetadataCollection;
 import com.adaptris.core.MetadataElement;
@@ -24,6 +27,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("http-metadata-request-headers")
 public class MetadataRequestHeaders implements RequestHeaderProvider<HttpURLConnection> {
+  protected transient Logger log = LoggerFactory.getLogger(this.getClass());
   @NotNull
   @Valid
   private MetadataFilter filter;
@@ -41,6 +45,7 @@ public class MetadataRequestHeaders implements RequestHeaderProvider<HttpURLConn
     Map<String, String> result = new HashMap<>();
     MetadataCollection metadataSubset = getFilter().filter(msg);
     for (MetadataElement me : metadataSubset) {
+      log.trace("Adding Request Property [{}: {}]", me.getKey(), me.getValue());
       target.addRequestProperty(me.getKey(), me.getValue());
     }
     return target;

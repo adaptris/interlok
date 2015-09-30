@@ -4,6 +4,9 @@ import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.adaptris.core.http.server.HeaderHandler;
 
 /**
@@ -13,6 +16,7 @@ import com.adaptris.core.http.server.HeaderHandler;
  *
  */
 public abstract class HeaderHandlerImpl implements HeaderHandler<HttpServletRequest> {
+  protected transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   private String headerPrefix;
 

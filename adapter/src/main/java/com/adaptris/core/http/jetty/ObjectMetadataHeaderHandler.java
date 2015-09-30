@@ -35,7 +35,9 @@ public class ObjectMetadataHeaderHandler extends HeaderHandlerImpl {
     for (Enumeration<String> e = request.getHeaderNames(); e.hasMoreElements();) {
       String key = (String) e.nextElement();
       String value = request.getHeader(key);
-      message.addObjectMetadata(prefix + key, value);
+      String metadataKey = prefix + key;
+      log.trace("Adding Object Metadata [{}: {}]", metadataKey, value);
+      message.addObjectMetadata(metadataKey, value);
     }
   }
 
