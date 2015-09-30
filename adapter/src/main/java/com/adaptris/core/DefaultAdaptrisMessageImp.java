@@ -37,7 +37,7 @@ public class DefaultAdaptrisMessageImp extends AdaptrisMessageImp {
 
     if (areEqual(getUniqueId(), other.getUniqueId())) {
       if (Arrays.equals(getPayload(), other.getPayload())) {
-        if (areEqual(getCharEncoding(), other.getCharEncoding())) {
+        if (areEqual(getContentEncoding(), other.getCharEncoding())) {
           if (this.getMetadata().equals(other.getMetadata())) {
             result = true;
           }
@@ -107,7 +107,7 @@ public class DefaultAdaptrisMessageImp extends AdaptrisMessageImp {
         else {
           payload = payloadString.getBytes();
         }
-        setCharEncoding(charEnc);
+        setContentEncoding(charEnc);
       }
       catch (UnsupportedEncodingException e) {
         throw new RuntimeException(e);
@@ -115,7 +115,7 @@ public class DefaultAdaptrisMessageImp extends AdaptrisMessageImp {
     }
     else {
       payload = new byte[0];
-      setCharEncoding(charEnc);
+      setContentEncoding(charEnc);
     }
   }
   
@@ -131,12 +131,12 @@ public class DefaultAdaptrisMessageImp extends AdaptrisMessageImp {
   @Override
   public String getContent() {
     if (payload != null) {
-      if (isEmpty(getCharEncoding())) {
+      if (isEmpty(getContentEncoding())) {
         return new String(payload);
       }
       else {
         try { // want this to be runtime Exc.
-          return new String(payload, getCharEncoding());
+          return new String(payload, getContentEncoding());
         }
         catch (UnsupportedEncodingException e) {
           throw new RuntimeException(e);
