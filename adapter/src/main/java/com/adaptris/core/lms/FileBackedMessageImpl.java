@@ -114,7 +114,10 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
     setStringPayload(s, null);
   }
 
-  /** @see AdaptrisMessage#setStringPayload(String, String) */
+  /** @see AdaptrisMessage#setStringPayload(String, String) 
+   * @deprecated Since 3.0.6 use setContent(String, String). 
+   **/
+  @Deprecated
   public void setStringPayload(String payloadString, String charEnc) {
     // If we don't have a file and we're setting the payload to be empty, don't do anything
     if(inputFile == null && StringUtils.isEmpty(payloadString)) {
@@ -139,10 +142,44 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
       IOUtils.closeQuietly(p);
     }
   }
+  
+  @Override
+  public void setContent(String content, String charEncoding) {
+    // If we don't have a file and we're setting the payload to be empty, don't do anything
+    if(inputFile == null && StringUtils.isEmpty(content)) {
+      return;
+    }
 
-  /** @see AdaptrisMessage#getStringPayload() */
+    PrintStream p = null;
+    try {
+      if (!isEmpty(charEncoding)) {
+        p = new PrintStream(getOutputStream(), true, charEncoding);
+      }
+      else {
+        p = new PrintStream(getOutputStream(), true);
+      }
+      p.print(content != null ? content : "");
+      setContentEncoding(charEncoding);
+    }
+    catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+    finally {
+      IOUtils.closeQuietly(p);
+    }
+  }
+
+  /** @see AdaptrisMessage#getStringPayload() 
+   * @deprecated Since 3.0.6 use getContent(). 
+   **/
+  @Deprecated
   @Override
   public String getStringPayload() {
+    return this.getContent();
+  }
+  
+  @Override
+  public String getContent() {
     long size = getSize(); // getSize() could be expensive in subclasses, so don't call it twice if we don't have to
     if (size >= maxSizeBeforeException) {
       throw new RuntimeException("Payload is > " + maxSizeBeforeException + ", use getInputStream()");
@@ -152,7 +189,7 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
     try(ByteArrayOutputStream out = new ByteArrayOutputStream((int) size);
         InputStream in = getInputStream();) {
       IOUtils.copyLarge(in, out, new byte[bufferSize]);
-      result = getCharEncoding() != null ? out.toString(getCharEncoding()) : out.toString();
+      result = getContentEncoding() != null ? out.toString(getContentEncoding()) : out.toString();
     }
     catch (Exception e) {
       throw new RuntimeException(e);
@@ -310,4 +347,5 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
       openStreams.remove(this);
     }
   }
+
 }

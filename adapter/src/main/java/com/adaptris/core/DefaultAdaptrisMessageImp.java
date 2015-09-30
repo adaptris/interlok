@@ -94,7 +94,11 @@ public class DefaultAdaptrisMessageImp extends AdaptrisMessageImp {
   /** @see AdaptrisMessage#setStringPayload(String, String) */
   @Override
   public void setStringPayload(String payloadString, String charEnc) {
-
+    this.setContent(payloadString, charEnc);
+  }
+  
+  /** @see AdaptrisMessage#setContent(String, String) */
+  public void setContent(String payloadString, String charEnc) {
     if (payloadString != null) {
       try {
         if (!isEmpty(charEnc)) {
@@ -114,10 +118,18 @@ public class DefaultAdaptrisMessageImp extends AdaptrisMessageImp {
       setCharEncoding(charEnc);
     }
   }
+  
+  
 
   /** @see AdaptrisMessage#getStringPayload() */
   @Override
   public String getStringPayload() {
+    return this.getContent();
+  }
+  
+  /** @see AdaptrisMessage#getContent() */
+  @Override
+  public String getContent() {
     if (payload != null) {
       if (isEmpty(getCharEncoding())) {
         return new String(payload);
@@ -179,4 +191,5 @@ public class DefaultAdaptrisMessageImp extends AdaptrisMessageImp {
       payload = ((ByteArrayOutputStream) super.out).toByteArray();
     }
   }
+
 }

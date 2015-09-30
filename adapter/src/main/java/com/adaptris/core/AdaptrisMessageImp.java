@@ -43,7 +43,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   // persistent fields
   private String uniqueId;
   private KeyValuePairSet metadata;
-  private String charEncoding;
+  private String contentEncoding;
 
   // in memory only e.g. lost on send or persist
   private MessageLifecycleEvent messageLifeCycle;
@@ -81,27 +81,62 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     return factory;
   }
 
-  /** @see AdaptrisMessage#setCharEncoding(String) */
+  /** @see AdaptrisMessage#setCharEncoding(String) 
+   * @deprecated Since 3.0.6 use setContentEncoding(String). 
+   **/
+  @Deprecated
   @Override
   public void setCharEncoding(String charEnc) {
-      charEncoding = charEnc;
+      contentEncoding = charEnc;
   }
 
-  /** @see AdaptrisMessage#getCharEncoding() */
+  /** @see AdaptrisMessage#getCharEncoding() 
+   * @deprecated Since 3.0.6 use getContentEncoding(). 
+   **/
+  @Deprecated
   @Override
   public String getCharEncoding() {
-    return charEncoding;
+    return contentEncoding;
+  }
+  
+  /** @see AdaptrisMessage#setContentEncoding(String) */
+  @Override
+  public void setContentEncoding(String charEnc) {
+      contentEncoding = charEnc;
   }
 
-  /** @see AdaptrisMessage#containsKey(String) */
+  /** @see AdaptrisMessage#getContentEncoding() */
+  @Override
+  public String getContentEncoding() {
+    return contentEncoding;
+  }
+
+  /** @see AdaptrisMessage#containsKey(String) 
+   * @deprecated Since 3.0.6 use headersContainsKey(String). 
+   **/
+  @Deprecated
   @Override
   public boolean containsKey(String key) {
     return metadata.contains(new KeyValuePair(key, ""));
   }
+  
+  /** @see AdaptrisMessage#headersContainsKey(String)*/
+  @Override
+  public boolean headersContainsKey(String key) {
+    return metadata.contains(new KeyValuePair(key, ""));
+  }
 
-  /** @see AdaptrisMessage#addMetadata(String, String) */
+  /** @see AdaptrisMessage#addMetadata(String, String) 
+   * @deprecated Since 3.0.6 use addMessageHeader(String, String). 
+   **/
+  @Deprecated
   @Override
   public synchronized void addMetadata(String key, String value) {
+    this.addMessageHeader(key, value);
+  }
+  
+  @Override
+  public void addMessageHeader(String key, String value) {
     this.addMetadata(new MetadataElement(key, value));
   }
 
@@ -119,6 +154,12 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   public void removeMetadata(MetadataElement element) {
     metadata.removeKeyValuePair(element);
   }
+  
+  /** @see AdaptrisMessage#removeMessageHeader(String) */
+  @Override
+  public void removeMessageHeader(String key) {
+    metadata.remove(key);
+  }
 
   /** @see AdaptrisMessage#setMetadata(Set) */
   @Override
@@ -128,6 +169,13 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
         MetadataElement e = (MetadataElement) i.next();
         addMetadata(e);
       }
+    }
+  }
+  
+  @Override
+  public void setMessageHeaders(Map<String, String> metadata) {
+    for(String key : metadata.values()) {
+      this.addMessageHeader(key, metadata.get(key));
     }
   }
 
@@ -154,8 +202,21 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     }
     return null;
   }
+  
+  @Override
+  public Map<String, String> getMessageHeaders() {
+    Map<String, String> newSet = new HashMap<String, String>();
+    for (Iterator<KeyValuePair> i = metadata.getKeyValuePairs().iterator(); i.hasNext();) {
+      KeyValuePair kp = i.next();
+      newSet.put(kp.getKey(), kp.getValue());
+    }
+    return newSet;
+  }
 
-  /** @see AdaptrisMessage#getMetadata() */
+  /** @see AdaptrisMessage#getMessageHeaders() 
+   * @deprecated Since 3.0.6 use getMessageHeaders(). 
+   **/
+  @Deprecated
   @Override
   public Set<MetadataElement> getMetadata() {
     Set<MetadataElement> newSet = new HashSet<MetadataElement>();
@@ -181,13 +242,13 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
   @Override
   public Reader getReader() throws IOException {
-    return getCharEncoding() != null ? new InputStreamReader(getInputStream(), getCharEncoding()) : new InputStreamReader(
+    return getContentEncoding() != null ? new InputStreamReader(getInputStream(), getContentEncoding()) : new InputStreamReader(
         getInputStream());
   }
 
   @Override
   public Writer getWriter() throws IOException {
-    return getCharEncoding() != null ? new OutputStreamWriter(getOutputStream(), getCharEncoding()) : new OutputStreamWriter(
+    return getContentEncoding() != null ? new OutputStreamWriter(getOutputStream(), getContentEncoding()) : new OutputStreamWriter(
         getOutputStream());
   }
 
@@ -195,7 +256,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   public Writer getWriter(String encoding) throws IOException {
     Writer result;
     if (!isEmpty(encoding)) {
-      setCharEncoding(encoding);
+      setContentEncoding(encoding);
       result = new OutputStreamWriter(getOutputStream(), encoding);
     }
     else {
@@ -256,16 +317,39 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
   /**
    * @see AdaptrisMessage#addObjectMetadata(String,Object)
+   * @deprecated Since 3.0.6 use addObjectHeader(key, object)
    */
+  @Deprecated
   @Override
   public void addObjectMetadata(String key, Object object) {
     objectMetadata.put(key, object);
-
+  }
+  
+  /**
+   * <p>
+   * Adds an <code>Object</code> to this message as metadata. Object metadata is
+   * intended to be used within a single <code>Workflow</code> only and will not
+   * be encoded or otherwise transported between Workflows.
+   * </p>
+   *
+   * @param object the <code>Object</code> to set as metadata
+   * @param key the key to store this object against.
+   */
+  public void addObjectHeader(String key, Object object) {
+    objectMetadata.put(key, object);
   }
 
-  /** @see AdaptrisMessage#getObjectMetadata() */
+  /** @see AdaptrisMessage#getObjectMetadata() 
+   * @deprecated Since 3.0.6 use getObjectHeaders()
+   **/
+  @Deprecated
   @Override
   public Map getObjectMetadata() {
+    return objectMetadata;
+  }
+  
+  @Override
+  public Map<?, ?> getObjectheaders() {
     return objectMetadata;
   }
 

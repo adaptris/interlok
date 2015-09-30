@@ -9,13 +9,39 @@ import java.util.Map;
 
 public interface InterlokMessage {
   
+  /**
+   * <p>
+   * Returns a unique identifier for this message. The uniqueness of this
+   * identifier is dependent on the implementation.
+   * </p>
+   * <p>
+   * This is generally considered to be a system level identifier. Each time a
+   * message is created a new unique id should be created. If an application of
+   * the framework requires a unique id that spans multiple messages (e.g. F4F
+   * request-reply) it would be better to create an instance of
+   * <code>AddMetadataService</code> that assigns a higher level application
+   * unique id.
+   * </p>
+   *
+   * @return a unique identifier for this message
+   */
   public String getUniqueId();
 
+  /**
+   * <p>
+   * Sets this message's unique id. This is necessary to allow
+   * <code>AdaptrisMessageFactory</code> to set unique ids, the downside is that
+   * it makes unique ids mutable. Could get round this by putting unique id
+   * stuff in the message imp rather than the factory if required.
+   * </p>
+   *
+   * @param uniqueId the unique identifier for the message
+   */
   public void setUniqueId(String uniqueId);
 
   public String getContent();
 
-  public void setContent(String payload);
+  public void setContent(String payload, String encoding);
 
   /**
    * Returns a view of all the existing headers associated with the message.
@@ -122,7 +148,7 @@ public interface InterlokMessage {
    * @param object the <code>Object</code> to set as metadata
    * @param key the key to store this object against.
    */
-  void addObjectMetadata(String key, Object object);
+  void addObjectHeader(String key, Object object);
 
   /**
    * <p>
