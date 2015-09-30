@@ -349,7 +349,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   }
   
   @Override
-  public Map<?, ?> getObjectheaders() {
+  public Map<?, ?> getObjectHeaders() {
     return objectMetadata;
   }
 
