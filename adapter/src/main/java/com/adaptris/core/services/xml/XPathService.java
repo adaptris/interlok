@@ -24,14 +24,17 @@ import org.xml.sax.SAXException;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.DataDestination;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.interlok.config.DataDestination;
 import com.adaptris.util.license.License;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
+ * <p>
+ * This service allows you to configure an xpath expression
+ * </p>
  * 
  * @author amcgrath
  * @config xpath-service

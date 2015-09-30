@@ -4,14 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ConstantDataDestination;
 import com.adaptris.core.DefaultMessageFactory;
-import com.adaptris.core.MetadataDataDestination;
-import com.adaptris.core.PayloadDataDestination;
 import com.adaptris.core.ServiceCase;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.services.xml.Execution;
-import com.adaptris.core.services.xml.XPathService;
+import com.adaptris.interlok.config.ConstantDataDestination;
+import com.adaptris.interlok.config.MetadataDataDestination;
+import com.adaptris.interlok.config.PayloadDataDestination;
 
 public class XPathServiceTest extends ServiceCase {
 

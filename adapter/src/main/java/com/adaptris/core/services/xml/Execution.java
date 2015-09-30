@@ -1,6 +1,6 @@
 package com.adaptris.core.services.xml;
 
-import com.adaptris.core.DataDestination;
+import com.adaptris.interlok.config.DataDestination;
 
 public class Execution {
   
