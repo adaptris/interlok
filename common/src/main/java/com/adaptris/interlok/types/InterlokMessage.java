@@ -157,7 +157,7 @@ public interface InterlokMessage {
    *
    * @return the <code>Map</code> of <code>Object</code> metadata
    */
-  Map<?,?> getObjectheaders();
+  Map<?,?> getObjectHeaders();
   
   /**
    * <p>
