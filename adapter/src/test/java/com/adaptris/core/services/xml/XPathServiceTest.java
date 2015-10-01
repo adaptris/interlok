@@ -10,6 +10,8 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.interlok.config.ConstantDataDestination;
 import com.adaptris.interlok.config.MetadataDataDestination;
 import com.adaptris.interlok.config.PayloadDataDestination;
+import com.adaptris.util.KeyValuePair;
+import com.adaptris.util.KeyValuePairSet;
 
 public class XPathServiceTest extends ServiceCase {
 
@@ -39,7 +41,7 @@ public class XPathServiceTest extends ServiceCase {
   }
   
   public void testPayloadSimpleValueXPathIntoMetadata() throws Exception {
-    message.setStringPayload(sampleXml, message.getCharEncoding());
+    message.setContent(sampleXml, message.getCharEncoding());
     
     MetadataDataDestination metadataDataDestination1 = new MetadataDataDestination();
     metadataDataDestination1.setMetadataKey("targetMetadataKey");
@@ -62,7 +64,7 @@ public class XPathServiceTest extends ServiceCase {
   }
   
   public void testForCoveragePurposesInvalidXml() throws Exception {
-    message.setStringPayload("not valid xml!", message.getCharEncoding());
+    message.setContent("not valid xml!", message.getCharEncoding());
     
     MetadataDataDestination metadataDataDestination1 = new MetadataDataDestination();
     metadataDataDestination1.setMetadataKey("targetMetadataKey");
@@ -87,7 +89,7 @@ public class XPathServiceTest extends ServiceCase {
   }
   
   public void testPayloadSimpleValueXPathIntoPayload() throws Exception {
-    message.setStringPayload(sampleXml, message.getCharEncoding());
+    message.setContent(sampleXml, message.getCharEncoding());
     message.addMetadata("sourceXpathMetadataKey", "//some/random/xml/node1/text()");
     
     MetadataDataDestination metadataDataDestination1 = new MetadataDataDestination();
@@ -104,11 +106,11 @@ public class XPathServiceTest extends ServiceCase {
     service.setExecutions(executions);
     service.doService(message);
     
-    assertEquals("value1", message.getStringPayload());
+    assertEquals("value1", message.getContent());
   }
   
   public void testPayloadComplexValueXPathIntoMetadata() throws Exception {
-    message.setStringPayload(sampleXml, message.getCharEncoding());
+    message.setContent(sampleXml, message.getCharEncoding());
     
     MetadataDataDestination metadataDataDestination1 = new MetadataDataDestination();
     metadataDataDestination1.setMetadataKey("targetMetadataKey");
@@ -131,7 +133,7 @@ public class XPathServiceTest extends ServiceCase {
   }
   
   public void testPayloadSimpleValueXPathIntoMultipleMetadataExecutions() throws Exception {
-    message.setStringPayload(sampleXml, message.getCharEncoding());
+    message.setContent(sampleXml, message.getCharEncoding());
     
     MetadataDataDestination metadataDataDestination1 = new MetadataDataDestination();
     metadataDataDestination1.setMetadataKey("targetMetadataKey1");
@@ -173,6 +175,56 @@ public class XPathServiceTest extends ServiceCase {
     assertEquals("value2", message.getMetadataValue("targetMetadataKey2"));
     assertEquals("value3", message.getMetadataValue("targetMetadataKey3"));
   }
+  
+  public void testPayloadSimpleValueXPathIntoPayloadWithNamespace() throws Exception {
+    message.setContent(sampleXmlWithInternalNamespaces, message.getCharEncoding());
+    message.addMetadata("sourceXpathMetadataKey", "//some/random/xml/node1/text()");
+    
+    MetadataDataDestination metadataDataDestination1 = new MetadataDataDestination();
+    metadataDataDestination1.setMetadataKey("sourceXpathMetadataKey");
+    
+    Execution execution = new Execution();
+    execution.setSourceXpathExpression(metadataDataDestination1);
+    execution.setTargetDataDestination(new PayloadDataDestination());
+    
+    List<Execution> executions = new ArrayList<>();
+    executions.add(execution);
+    
+    service.setSourceXmlDestination(new PayloadDataDestination());
+    service.setExecutions(executions);
+    service.doService(message);
+    
+    assertEquals("value1", message.getContent());
+  }
+  
+  public void testPayloadSimpleValueXPathIntoPayloadWithHeaderNamespaces() throws Exception {
+    message.setContent(sampleXmlWithHeaderNamespaces, message.getCharEncoding());
+    message.addMetadata("sourceXpathMetadataKey", "//some:some/random/xml/n1:node1/text()");
+    
+    MetadataDataDestination metadataDataDestination1 = new MetadataDataDestination();
+    metadataDataDestination1.setMetadataKey("sourceXpathMetadataKey");
+    
+    Execution execution = new Execution();
+    execution.setSourceXpathExpression(metadataDataDestination1);
+    execution.setTargetDataDestination(new PayloadDataDestination());
+    
+    List<Execution> executions = new ArrayList<>();
+    executions.add(execution);
+    
+    // Add the namespace mappings
+    KeyValuePairSet namespaceMappings = new KeyValuePairSet();
+    namespaceMappings.addKeyValuePair(new KeyValuePair("some", "http://adaptris.com/xml/some"));
+    namespaceMappings.addKeyValuePair(new KeyValuePair("n1", "http://adaptris.com/xml/n1"));
+    namespaceMappings.addKeyValuePair(new KeyValuePair("n2", "http://adaptris.com/xml/n2"));
+    namespaceMappings.addKeyValuePair(new KeyValuePair("n3", "http://adaptris.com/xml/n3"));
+    
+    service.setNamespaceContext(namespaceMappings);
+    service.setSourceXmlDestination(new PayloadDataDestination());
+    service.setExecutions(executions);
+    service.doService(message);
+    
+    assertEquals("value1", message.getContent());
+  }
 
   @Override
   protected Object retrieveObjectForSampleConfig() {
@@ -197,6 +249,14 @@ public class XPathServiceTest extends ServiceCase {
     executions.add(execution1);
     executions.add(execution2);
     
+    KeyValuePairSet namespaceMappings = new KeyValuePairSet();
+    namespaceMappings.addKeyValuePair(new KeyValuePair("some", "http://adaptris.com/xml/some"));
+    namespaceMappings.addKeyValuePair(new KeyValuePair("n1", "http://adaptris.com/xml/n1"));
+    namespaceMappings.addKeyValuePair(new KeyValuePair("n2", "http://adaptris.com/xml/n2"));
+    namespaceMappings.addKeyValuePair(new KeyValuePair("n3", "http://adaptris.com/xml/n3"));
+    
+    service.setNamespaceContext(namespaceMappings);
+    
     service.setSourceXmlDestination(new PayloadDataDestination());
     service.setExecutions(executions);
     
@@ -213,5 +273,30 @@ public class XPathServiceTest extends ServiceCase {
           + "</xml>"
         + "</random>"
       + "</some>";
+  
+  private String sampleXmlWithInternalNamespaces = ""
+      + "<some xmlns:some=\"http://adaptris.com/xml/some\">"
+        + "<random>"
+          + "<xml>"
+            + "<node1 xmlns:n1=\"http://adaptris.com/xml/n1\">value1</node1>"
+            + "<node2 xmlns:n1=\"http://adaptris.com/xml/n2\">value2</node2>"
+            + "<node3 xmlns:n1=\"http://adaptris.com/xml/n3\">value3</node3>"
+          + "</xml>"
+        + "</random>"
+      + "</some>";
+  
+  private String sampleXmlWithHeaderNamespaces = ""
+      + "<some:some xmlns:some=\"http://adaptris.com/xml/some\""
+                    + " xmlns:n1=\"http://adaptris.com/xml/n1\""
+                    + " xmlns:n2=\"http://adaptris.com/xml/n2\""
+                    + " xmlns:n3=\"http://adaptris.com/xml/n3\">"
+        + "<random>"
+          + "<xml>"
+            + "<n1:node1>value1</n1:node1>"
+            + "<n2:node2>value2</n2:node2>"
+            + "<n3:node3>value3</n3:node3>"
+          + "</xml>"
+        + "</random>"
+      + "</some:some>";
 
 }
