@@ -143,7 +143,9 @@ public interface AdaptrisMessage extends InterlokMessage {
    *
    * @param key the key to look for
    * @return true if the message contains a metadata against the passed key
+   * @deprecated since 3.0.6 use {@link #headersContainsKey(String)} instead.
    */
+  @Deprecated
   boolean containsKey(String key);
 
   /**
@@ -264,7 +266,9 @@ public interface AdaptrisMessage extends InterlokMessage {
    *
    * @param object the <code>Object</code> to set as metadata
    * @param key the key to store this object against.
+   * @deprecated since 3.0.6 use {@link #addObjectHeader(String, Object)} instead.
    */
+  @Deprecated
   void addObjectMetadata(String key, Object object);
 
   /**
@@ -273,6 +277,7 @@ public interface AdaptrisMessage extends InterlokMessage {
    * </p>
    *
    * @return the <code>Map</code> of <code>Object</code> metadata
+   * @deprecated since 3.0.6 use {@link #getObjectHeaders()} instead.
    */
   Map getObjectMetadata();
 

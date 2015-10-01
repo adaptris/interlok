@@ -81,19 +81,12 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     return factory;
   }
 
-  /** @see AdaptrisMessage#setCharEncoding(String) 
-   * @deprecated Since 3.0.6 use setContentEncoding(String). 
-   **/
-  @Deprecated
+
   @Override
   public void setCharEncoding(String charEnc) {
       contentEncoding = charEnc;
   }
 
-  /** @see AdaptrisMessage#getCharEncoding() 
-   * @deprecated Since 3.0.6 use getContentEncoding(). 
-   **/
-  @Deprecated
   @Override
   public String getCharEncoding() {
     return contentEncoding;
@@ -111,10 +104,6 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     return contentEncoding;
   }
 
-  /** @see AdaptrisMessage#containsKey(String) 
-   * @deprecated Since 3.0.6 use headersContainsKey(String). 
-   **/
-  @Deprecated
   @Override
   public boolean containsKey(String key) {
     return metadata.contains(new KeyValuePair(key, ""));
@@ -126,10 +115,6 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     return metadata.contains(new KeyValuePair(key, ""));
   }
 
-  /** @see AdaptrisMessage#addMetadata(String, String) 
-   * @deprecated Since 3.0.6 use addMessageHeader(String, String). 
-   **/
-  @Deprecated
   @Override
   public synchronized void addMetadata(String key, String value) {
     this.addMessageHeader(key, value);
@@ -213,10 +198,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     return newSet;
   }
 
-  /** @see AdaptrisMessage#getMessageHeaders() 
-   * @deprecated Since 3.0.6 use getMessageHeaders(). 
-   **/
-  @Deprecated
+
   @Override
   public Set<MetadataElement> getMetadata() {
     Set<MetadataElement> newSet = new HashSet<MetadataElement>();
@@ -227,13 +209,11 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     return newSet;
   }
 
-  /** @see AdaptrisMessage#getUniqueId() */
   @Override
   public String getUniqueId() {
     return uniqueId;
   }
 
-  /** @see AdaptrisMessage#setUniqueId(String) */
   @Override
   public void setUniqueId(String s) {
     uniqueId = s;
@@ -265,7 +245,6 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     return result;
   }
 
-  /** @see AdaptrisMessage#addEvent(MessageEventGenerator, boolean) */
   @Override
   public void addEvent(MessageEventGenerator meg, boolean wasSuccessful) {
     String confirmationId = (String) getObjectMetadata().get(MessageEventGenerator.CONFIRMATION_ID_KEY);
@@ -315,11 +294,6 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     return getPayload();
   }
 
-  /**
-   * @see AdaptrisMessage#addObjectMetadata(String,Object)
-   * @deprecated Since 3.0.6 use addObjectHeader(key, object)
-   */
-  @Deprecated
   @Override
   public void addObjectMetadata(String key, Object object) {
     objectMetadata.put(key, object);
@@ -339,10 +313,6 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     objectMetadata.put(key, object);
   }
 
-  /** @see AdaptrisMessage#getObjectMetadata() 
-   * @deprecated Since 3.0.6 use getObjectHeaders()
-   **/
-  @Deprecated
   @Override
   public Map getObjectMetadata() {
     return objectMetadata;
