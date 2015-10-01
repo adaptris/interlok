@@ -2,7 +2,9 @@ package com.adaptris.interlok.config;
 
 import com.adaptris.interlok.InterlokException;
 import com.adaptris.interlok.types.InterlokMessage;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+@XStreamAlias("constant-data-destination")
 public class ConstantDataDestination implements DataDestination {
 
   private String value;
