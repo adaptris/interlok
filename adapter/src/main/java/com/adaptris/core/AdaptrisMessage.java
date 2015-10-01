@@ -62,7 +62,7 @@ public interface AdaptrisMessage extends InterlokMessage {
    *
    * @param payload the payload
    * @param charEncoding the character encoding used by the payload
-   * @deprecated Since 3.0.6 Use setContent(String, String).
+   * @deprecated since 3.0.6 Use setContent(String, String).
    */
   @Deprecated
   void setStringPayload(String payload, String charEncoding);
@@ -77,10 +77,36 @@ public interface AdaptrisMessage extends InterlokMessage {
    * </p>
    *
    * @return a <code>String</code> representation of the payload
-   * @deprecated Since 3.0.6 Use getContent()
+   * @deprecated since 3.0.6 use {{@link #getCotent()} instead.
    */
   @Deprecated
   String getStringPayload();
+
+
+  /**
+   * <p>
+   * Sets the character encoding associated with the payload. If a character
+   * encoding is not explicitly set using this method, implementations are
+   * expected to use the default platform character encoding.
+   * </p>
+   *
+   * @param charEncoding the character encoding associated with the payload.
+   * @deprecated since 3.0.6 use {{@link #setContentEncoding(String)} instead.
+   */
+  void setCharEncoding(String charEncoding);
+
+  /**
+   * <p>
+   * Returns this message's character encoding, if one has been explicitly set,
+   * otherwise <code>null</code>.
+   * </p>
+   *
+   * @return this message's character encoding, if one has been explicitly set,
+   * otherwise <code>null</code>
+   * @deprecated since 3.0.6 use {{@link #getContentEncoding()} instead.
+   */
+  @Deprecated
+  String getCharEncoding();
 
   /**
    * <p>

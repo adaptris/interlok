@@ -17,7 +17,7 @@ public class PayloadDataDestination implements DataDestination {
 
   @Override
   public void setData(InterlokMessage message, Object data) {
-    message.setContent((String) data, message.getCharEncoding());
+    message.setContent((String) data, message.getContentEncoding());
   }
 
 }

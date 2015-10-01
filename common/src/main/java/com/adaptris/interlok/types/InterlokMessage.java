@@ -116,27 +116,6 @@ public interface InterlokMessage {
    */
   OutputStream getOutputStream() throws IOException;
 
-  /**
-   * <p>
-   * Sets the character encoding associated with the payload. If a character
-   * encoding is not explicitly set using this method, implementations are
-   * expected to use the default platform character encoding.
-   * </p>
-   *
-   * @param charEncoding the character encoding associated with the payload.
-   */
-  void setCharEncoding(String charEncoding);
-
-  /**
-   * <p>
-   * Returns this message's character encoding, if one has been explicitly set,
-   * otherwise <code>null</code>.
-   * </p>
-   *
-   * @return this message's character encoding, if one has been explicitly set,
-   *         otherwise <code>null</code>
-   */
-  String getCharEncoding();
   
   /**
    * <p>
