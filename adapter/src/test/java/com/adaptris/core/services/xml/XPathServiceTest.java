@@ -7,9 +7,9 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.ServiceCase;
 import com.adaptris.core.ServiceException;
-import com.adaptris.interlok.config.ConstantDataDestination;
-import com.adaptris.interlok.config.MetadataDataDestination;
-import com.adaptris.interlok.config.PayloadDataDestination;
+import com.adaptris.core.common.ConstantDataDestination;
+import com.adaptris.core.common.MetadataDataDestination;
+import com.adaptris.core.common.PayloadDataDestination;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 
