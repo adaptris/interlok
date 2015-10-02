@@ -12,16 +12,16 @@ import com.adaptris.interlok.types.InterlokMessage;
  * Please check the service documentation to make sure that service supports DataDestinations.
  * </p>
  * <p>
- * A typical use might be for something like the {@link XPathService}, which allows you ti use DataDestinations
+ * A typical use might be for something like the {@link XPathService}, which allows you to use DataDestinations
  * to specify the location of the source xml, xpath expression and the target destination for any results returned.
  * </p>
  * @author Aaron
  *
  */
-public interface DataDestination {
+public interface DataDestination<T> {
   
-  public Object getData(InterlokMessage message) throws InterlokException;
+  public T getData(InterlokMessage message) throws InterlokException;
   
-  public void setData(InterlokMessage message, Object data) throws InterlokException;
+  public void setData(InterlokMessage message, T data) throws InterlokException;
 
 }
