@@ -45,7 +45,7 @@ public class MetadataContentTypeProvider extends ContentTypeProviderImpl {
 
   @Override
   public String getContentType(AdaptrisMessage msg) throws CoreException {
-    return build(extract(msg), msg.getCharEncoding());
+    return build(extract(msg), msg.getContentEncoding());
   }
 
   private String extract(AdaptrisMessage msg) throws CoreException {

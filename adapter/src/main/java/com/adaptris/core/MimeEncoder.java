@@ -82,11 +82,11 @@ public class MimeEncoder extends AdaptrisMessageEncoderImp {
       output.addPart(msg.getPayload(), payloadEncoding, PAYLOAD_CONTENT_ID);
       output.addPart(MimeEncoder.getMetadata(msg), metadataEncoding,
           METADATA_CONTENT_ID);
-      if (msg.getObjectMetadata().containsKey(
+      if (msg.getObjectHeaders().containsKey(
           CoreConstants.OBJ_METADATA_EXCEPTION)) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         PrintStream pout = new PrintStream(out);
-        Exception e = (Exception) msg.getObjectMetadata().get(
+        Exception e = (Exception) msg.getObjectHeaders().get(
             CoreConstants.OBJ_METADATA_EXCEPTION);
         e.printStackTrace(pout);
         pout.flush();

@@ -247,7 +247,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
   @Override
   public void addEvent(MessageEventGenerator meg, boolean wasSuccessful) {
-    String confirmationId = (String) getObjectMetadata().get(MessageEventGenerator.CONFIRMATION_ID_KEY);
+    String confirmationId = (String) getObjectHeaders().get(MessageEventGenerator.CONFIRMATION_ID_KEY);
     if (meg == null) {
       messageLifeCycle.addMleMarker(getNextMleMarker(new MessageEventGenerator() {
         @Override
@@ -442,7 +442,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     ((AdaptrisMessageImp) result).messageLifeCycle = copy;
 
     Map objMdCopy = new HashMap();
-    objMdCopy.putAll(getObjectMetadata());
+    objMdCopy.putAll(getObjectHeaders());
     ((AdaptrisMessageImp) result).objectMetadata = objMdCopy;
 
     return result;

@@ -22,9 +22,9 @@ public abstract class StringPayloadSplitter extends MessageSplitterImp {
     List<AdaptrisMessage> result = new ArrayList<AdaptrisMessage>();
     try {
       AdaptrisMessageFactory factory = selectFactory(msg);
-      List<String> payloads = split(msg.getStringPayload());
+      List<String> payloads = split(msg.getContent());
       for (String payload : payloads) {
-        AdaptrisMessage splitMsg = factory.newMessage(payload, msg.getCharEncoding());
+        AdaptrisMessage splitMsg = factory.newMessage(payload, msg.getContentEncoding());
         copyMetadata(msg, splitMsg);
         result.add(splitMsg);
       }

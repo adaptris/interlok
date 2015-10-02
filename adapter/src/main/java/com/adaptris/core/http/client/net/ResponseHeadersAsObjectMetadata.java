@@ -39,7 +39,7 @@ public class ResponseHeadersAsObjectMetadata extends MetadataResponseHeaderImpl 
       List<String> list = headers.get(key);
       String metadataKey = generateKey(key);
       log.trace("Adding Object Metadata [{}: {}]", metadataKey, list);
-      reply.getObjectMetadata().put(generateKey(key), new URLConnectionHeaderField(key, list));
+      reply.addObjectHeader(generateKey(key), new URLConnectionHeaderField(key, list));
     }
   }
 

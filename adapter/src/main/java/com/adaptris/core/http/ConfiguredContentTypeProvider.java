@@ -34,7 +34,7 @@ public class ConfiguredContentTypeProvider extends ContentTypeProviderImpl {
 
   @Override
   public String getContentType(AdaptrisMessage msg) {
-    return build(getMimeType(), msg.getCharEncoding());
+    return build(getMimeType(), msg.getContentEncoding());
   }
 
 

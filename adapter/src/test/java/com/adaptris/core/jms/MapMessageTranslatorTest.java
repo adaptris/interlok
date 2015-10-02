@@ -67,7 +67,7 @@ public class MapMessageTranslatorTest extends MessageTypeTranslatorCase {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
 
       addMetadata(msg);
-      msg.setStringPayload(TEXT);
+      msg.setContent(TEXT, msg.getContentEncoding());
 
       t.setKeyForPayload(BODY_KEY1);
       start(t, session);
@@ -91,7 +91,7 @@ public class MapMessageTranslatorTest extends MessageTypeTranslatorCase {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
 
       addMetadata(msg);
-      msg.setStringPayload(TEXT);
+      msg.setContent(TEXT, msg.getContentEncoding());
 
       t.setKeyForPayload(BODY_KEY1);
       t.setTreatMetadataAsPartOfMessage(true);

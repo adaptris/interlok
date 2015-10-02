@@ -120,7 +120,7 @@ public class SizeBasedBranchingServiceTest extends BranchingServiceExample {
       else {
         m = new SizeMessage(uniqueIdGenerator, this, msgSize);
         if (getDefaultCharEncoding() != null && !"".equals(getDefaultCharEncoding())) {
-          m.setCharEncoding(getDefaultCharEncoding());
+          m.setContentEncoding(getDefaultCharEncoding());
         }
       }
       return m;

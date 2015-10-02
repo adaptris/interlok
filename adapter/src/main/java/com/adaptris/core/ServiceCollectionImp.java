@@ -405,7 +405,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
 
   @Override
   public void handleException(Service service, AdaptrisMessage msg, Exception e) throws ServiceException {
-    msg.getObjectMetadata().put(CoreConstants.OBJ_METADATA_EXCEPTION, e);
+    msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, e);
     String serviceName = friendlyName(service);
     if (isRestartAffectedServiceOnException()) {
       log.debug("Service restarts on error, restarting [" + serviceName + "]");

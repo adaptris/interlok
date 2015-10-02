@@ -111,7 +111,7 @@ public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExce
 
   private boolean shouldFail(AdaptrisMessage msg) {
     int count;
-    Map md = msg.getObjectMetadata();
+    Map md = msg.getObjectHeaders();
     if (md.containsKey(IS_RETRY_KEY)) {
       count = Integer.parseInt((String) md.get(RETRY_COUNT_KEY));
       count++;
@@ -249,8 +249,8 @@ public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExce
 
   private void failMessage(AdaptrisMessage msg) {
     log.error("Message [" + msg.getUniqueId() + "] deemed to have failed");
-    if (msg.getObjectMetadata().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION)) {
-      Exception e = (Exception) msg.getObjectMetadata().get(CoreConstants.OBJ_METADATA_EXCEPTION);
+    if (msg.getObjectHeaders().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION)) {
+      Exception e = (Exception) msg.getObjectHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION);
       log.error(e.getMessage(), e);
     }
     super.handleProcessingException(msg);

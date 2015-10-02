@@ -74,7 +74,7 @@ public class XpathDocumentCopier extends MessageSplitterImp {
       AdaptrisMessageFactory fac = selectFactory(msg);
       for (int i = 0; i < size; i++) {
         AdaptrisMessage splitMsg = fac.newMessage(msg.getPayload());
-        splitMsg.setCharEncoding(msg.getCharEncoding());
+        splitMsg.setContentEncoding(msg.getContentEncoding());
         copyMetadata(msg, splitMsg);
         result.add(splitMsg);
       }

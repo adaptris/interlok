@@ -26,9 +26,9 @@ public abstract class AdaptrisMessageFactoryImplCase {
     encodedMF.setDefaultCharEncoding("ISO-8859-1");
 
     AdaptrisMessage m1 = encodedMF.newMessage(TEST_PAYLOAD);
-    assertNotNull(m1.getCharEncoding());
-    assertEquals(m1.getCharEncoding(), "ISO-8859-1");
-    assertTrue(m1.getStringPayload().equals(TEST_PAYLOAD));
+    assertNotNull(m1.getContentEncoding());
+    assertEquals(m1.getContentEncoding(), "ISO-8859-1");
+    assertTrue(m1.getContent().equals(TEST_PAYLOAD));
 
     // encodedMF.setDefaultCharEncoding("");
     // AdaptrisMessage m2 = encodedMF.newMessage(TEST_PAYLOAD);
@@ -36,7 +36,7 @@ public abstract class AdaptrisMessageFactoryImplCase {
 
     encodedMF.setDefaultCharEncoding(null);
     AdaptrisMessage m3 = encodedMF.newMessage(TEST_PAYLOAD);
-    assertNull(m3.getCharEncoding());
+    assertNull(m3.getContentEncoding());
   }
 
   @Test
@@ -81,7 +81,7 @@ public abstract class AdaptrisMessageFactoryImplCase {
 
     AdaptrisMessage msg = getMessageFactory().newMessage(pld, mtd);
 
-    assertTrue(msg.getStringPayload().equals(pld));
+    assertTrue(msg.getContent().equals(pld));
     assertTrue(msg.getMetadata().equals(mtd));
   }
 
@@ -90,7 +90,7 @@ public abstract class AdaptrisMessageFactoryImplCase {
     String pld = TEST_PAYLOAD;
 
     AdaptrisMessage msg = getMessageFactory().newMessage(pld);
-    assertTrue(msg.getStringPayload().equals(pld));
+    assertTrue(msg.getContent().equals(pld));
   }
 
   @Test
@@ -166,8 +166,8 @@ public abstract class AdaptrisMessageFactoryImplCase {
     assertEquals(0, dest.getPayload().length);
     assertEquals("Metadata Key Values", orig.getMetadataValue("key1"), dest
         .getMetadataValue("key1"));
-    assertFalse(orig.containsKey("key3"));
-    assertFalse(dest.containsKey("key3"));
+    assertFalse(orig.headersContainsKey("key3"));
+    assertFalse(dest.headersContainsKey("key3"));
     assertEquals("MessageId", orig.getUniqueId(), dest.getUniqueId());
     assertEquals("Mle MessageId", orig.getMessageLifecycleEvent()
         .getMessageUniqueId(), dest.getMessageLifecycleEvent()

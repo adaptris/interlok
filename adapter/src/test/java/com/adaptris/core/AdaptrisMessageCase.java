@@ -110,30 +110,30 @@ public abstract class AdaptrisMessageCase {
   public void testGetStringPayload() throws Exception {
     AdaptrisMessage msg1 = createMessage();
 
-    assertEquals(PAYLOAD, msg1.getStringPayload());
+    assertEquals(PAYLOAD, msg1.getContent());
   }
 
   @Test
   public void testSetStringPayload() throws Exception {
     AdaptrisMessage msg1 = createMessage();
-    msg1.setStringPayload(PAYLOAD2);
-    assertEquals(PAYLOAD2, msg1.getStringPayload());
+    msg1.setContent(PAYLOAD2, msg1.getContentEncoding());
+    assertEquals(PAYLOAD2, msg1.getContent());
     // with spec. char enc.
     String enc = "ISO-8859-1";
     String payload2 = new String(PAYLOAD2.getBytes(), enc);
 
-    msg1.setStringPayload(payload2, enc);
-    assertEquals(payload2, msg1.getStringPayload());
+    msg1.setContent(payload2, enc);
+    assertEquals(payload2, msg1.getContent());
   }
 
   @Test
   public void testSetStringPayload_RemovesEncoding() throws Exception {
     AdaptrisMessage msg1 = createMessage();
-    msg1.setCharEncoding("ISO-8859-1");
-    assertEquals("ISO-8859-1", msg1.getCharEncoding());
+    msg1.setContentEncoding("ISO-8859-1");
+    assertEquals("ISO-8859-1", msg1.getContentEncoding());
     msg1.setStringPayload(PAYLOAD2);
-    assertEquals(PAYLOAD2, msg1.getStringPayload());
-    assertNull(msg1.getCharEncoding());
+    assertEquals(PAYLOAD2, msg1.getContent());
+    assertNull(msg1.getContentEncoding());
   }
 
   @Test
@@ -167,8 +167,8 @@ public abstract class AdaptrisMessageCase {
   public void testContainsKey() throws Exception {
     AdaptrisMessage msg1 = createMessage();
 
-    assertTrue(msg1.containsKey("key1"));
-    assertTrue(!msg1.containsKey("key3"));
+    assertTrue(msg1.headersContainsKey("key1"));
+    assertTrue(!msg1.headersContainsKey("key3"));
   }
 
   @Test
@@ -225,9 +225,9 @@ public abstract class AdaptrisMessageCase {
   public void testSetCharEncoding() throws Exception {
     AdaptrisMessage msg1 = createMessage();
 
-    msg1.setCharEncoding("ISO-8859-1");
+    msg1.setContentEncoding("ISO-8859-1");
 
-    assertTrue(msg1.getCharEncoding().equals("ISO-8859-1"));
+    assertTrue(msg1.getContentEncoding().equals("ISO-8859-1"));
   }
 
   @Test
@@ -265,9 +265,9 @@ public abstract class AdaptrisMessageCase {
     AdaptrisMessage msg1 = createMessage();
 
     Object metadata2 = new Object();
-    msg1.addObjectMetadata("key", metadata2);
+    msg1.addObjectHeader("key", metadata2);
 
-    java.util.Map objectMetadata = msg1.getObjectMetadata();
+    java.util.Map<?,?> objectMetadata = msg1.getObjectHeaders();
 
     assertTrue(objectMetadata.keySet().size() == 1);
     assertTrue(metadata2.equals(objectMetadata.get("key")));
@@ -298,20 +298,20 @@ public abstract class AdaptrisMessageCase {
 
     AdaptrisMessage msg2 = (AdaptrisMessage) msg1.clone();
     assertTrue(msg2.equivalentForTracking(msg1));
-    msg2.setCharEncoding(null);
-    msg1.setCharEncoding(null);
+    msg2.setContentEncoding(null);
+    msg1.setContentEncoding(null);
     assertTrue(msg2.equivalentForTracking(msg1));
-    msg2.setCharEncoding(null);
-    msg1.setCharEncoding("UTF-8");
+    msg2.setContentEncoding(null);
+    msg1.setContentEncoding("UTF-8");
     assertFalse(msg2.equivalentForTracking(msg1));
 
-    msg2.setCharEncoding("ISO-8859-1");
+    msg2.setContentEncoding("ISO-8859-1");
     assertFalse(msg2.equivalentForTracking(msg1));
-    msg1.setCharEncoding(null);
+    msg1.setContentEncoding(null);
     assertFalse(msg2.equivalentForTracking(msg1));
 
-    msg2.setCharEncoding("UTF-8");
-    msg1.setCharEncoding("UTF-8");
+    msg2.setContentEncoding("UTF-8");
+    msg1.setContentEncoding("UTF-8");
     assertTrue(msg2.equivalentForTracking(msg1));
 
   }

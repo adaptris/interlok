@@ -49,6 +49,8 @@ public class WorkflowManagerTest extends ComponentManagerCase {
   private static final String PAYLOAD_ENCODING = "UTF-8";
   private static final String METADATA_KEY = "my-key";
   private static final String METADATA_VALUE = "myvalue";
+  
+  private static final long TIMEOUT_MILLIS = 60000;
 
   public WorkflowManagerTest(String name) {
     super(name);
@@ -63,7 +65,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     ChannelManager channelManager = new ChannelManager(channel, adapterManager);
     PoolingWorkflow workflow = new PoolingWorkflow("w1");
     workflow.setConsumer(new MessageConsumer());
-    WorkflowManager workflowManager = new WorkflowManager(workflow, channelManager);
+    new WorkflowManager(workflow, channelManager);
     assertEquals(2, workflow.getInterceptors().size());
     assertEquals(MessageMetricsInterceptor.class, workflow.getInterceptors().get(0).getClass());
     assertEquals(JettyPoolingWorkflowInterceptor.class, workflow.getInterceptors().get(1).getClass());
@@ -78,7 +80,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     PoolingWorkflow workflow = new PoolingWorkflow("w1");
     workflow.addInterceptor(new JettyPoolingWorkflowInterceptor());
     workflow.setConsumer(new MessageConsumer());
-    WorkflowManager workflowManager = new WorkflowManager(workflow, channelManager);
+    new WorkflowManager(workflow, channelManager);
 
     assertEquals(2, workflow.getInterceptors().size());
 
@@ -95,7 +97,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     ChannelManager channelManager = new ChannelManager(channel, adapterManager);
     StandardWorkflow workflow = createWorkflow("w1");
     workflow.setConsumer(new MessageConsumer());
-    WorkflowManager workflowManager = new WorkflowManager(workflow, channelManager);
+    new WorkflowManager(workflow, channelManager);
     assertEquals(1, workflow.getInterceptors().size());
     assertEquals(MessageMetricsInterceptor.class, workflow.getInterceptors().get(0).getClass());
   }
@@ -107,7 +109,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     Channel channel = createChannel("c1");
     ChannelManager channelManager = new ChannelManager(channel, adapterManager);
     Workflow workflow = createWorkflow("w1");
-    WorkflowManager workflowManager = new WorkflowManager(workflow, channelManager);
+    new WorkflowManager(workflow, channelManager);
     assertEquals(1, workflow.getInterceptors().size());
     assertEquals(MessageMetricsInterceptor.class, workflow.getInterceptors().get(0).getClass());
   }
@@ -120,7 +122,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     ChannelManager channelManager = new ChannelManager(channel, adapterManager);
     Workflow workflow = createWorkflow("w1");
     workflow.getInterceptors().add(new MessageMetricsInterceptor(getName(), null));
-    WorkflowManager workflowManager = new WorkflowManager(workflow, channelManager);
+    new WorkflowManager(workflow, channelManager);
     assertEquals(1, workflow.getInterceptors().size());
     assertEquals(MessageMetricsInterceptor.class, workflow.getInterceptors().get(0).getClass());
     assertEquals(getName(), workflow.getInterceptors().get(0).getUniqueId());
@@ -134,7 +136,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     ChannelManager channelManager = new ChannelManager(channel, adapterManager);
     StandardWorkflow workflow = createWorkflow("w1");
     workflow.setDisableDefaultMessageCount(true);
-    WorkflowManager workflowManager = new WorkflowManager(workflow, channelManager);
+    new WorkflowManager(workflow, channelManager);
     assertEquals(0, workflow.getInterceptors().size());
   }
 
@@ -175,7 +177,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     workflow.setDisableDefaultMessageCount(true);
     WorkflowManager workflowManager = new WorkflowManager(workflow, channelManager);
     WorkflowChild child = new WorkflowChild(workflowManager);
-    WorkflowChild child2 = new WorkflowChild(workflowManager);
+    new WorkflowChild(workflowManager);
     assertTrue(workflowManager.addChildJmxComponent(child));
     assertFalse(workflowManager.addChildJmxComponent(child));
     try {
@@ -276,7 +278,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
     AdapterManager adapterManager = new AdapterManager(adapter);
-    AdapterManager adapterManager2 = new AdapterManager(createAdapter(adapterName));
+    new AdapterManager(createAdapter(adapterName));
     Channel channel = createChannel("c1");
     ChannelManager channelManager = new ChannelManager(channel, adapterManager);
     Workflow workflow = createWorkflow("w1");
@@ -291,7 +293,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
     AdapterManager adapterManager = new AdapterManager(adapter);
-    AdapterManager adapterManager2 = new AdapterManager(createAdapter(adapterName));
+    new AdapterManager(createAdapter(adapterName));
     Channel channel = createChannel("c1");
     ChannelManager channelManager = new ChannelManager(channel, adapterManager);
     Workflow workflow = createWorkflow("w1");
@@ -311,7 +313,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     Workflow workflow = createWorkflow("w1");
     WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
     List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
-    ObjectName adapterObj = adapterManager.createObjectName();
+    adapterManager.createObjectName();
     ObjectName workflowObj = realWorkflowManager.createObjectName();
 
     mBeans.add(adapterManager);
@@ -335,7 +337,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     Workflow workflow = createWorkflow("w1");
     WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
     List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
-    ObjectName adapterObj = adapterManager.createObjectName();
+    adapterManager.createObjectName();
     ObjectName workflowObj = realWorkflowManager.createObjectName();
 
     mBeans.add(adapterManager);
@@ -359,7 +361,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     Workflow workflow = createWorkflow("w1");
     WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
     List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
-    ObjectName adapterObj = adapterManager.createObjectName();
+    adapterManager.createObjectName();
     ObjectName workflowObj = realWorkflowManager.createObjectName();
 
     mBeans.add(adapterManager);
@@ -369,7 +371,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
       WorkflowManagerMBean workflowManagerProxy = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
       adapterManager.requestStart();
       assertEquals(StartedState.getInstance(), workflowManagerProxy.getComponentState());
-      workflowManagerProxy.requestClose();
+      workflowManagerProxy.requestClose(TIMEOUT_MILLIS);
       assertEquals(ClosedState.getInstance(), workflowManagerProxy.getComponentState());
     }
     finally {
@@ -386,7 +388,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     Workflow workflow = createWorkflow("w1");
     WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
     List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
-    ObjectName adapterObj = adapterManager.createObjectName();
+    adapterManager.createObjectName();
     ObjectName workflowObj = realWorkflowManager.createObjectName();
 
     mBeans.add(adapterManager);
@@ -396,7 +398,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
       WorkflowManagerMBean workflowManagerProxy = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
       adapterManager.requestStart();
       assertEquals(StartedState.getInstance(), workflowManagerProxy.getComponentState());
-      workflowManagerProxy.requestStop();
+      workflowManagerProxy.requestStop(TIMEOUT_MILLIS);
       assertEquals(StoppedState.getInstance(), workflowManagerProxy.getComponentState());
     }
     finally {
@@ -413,7 +415,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     Workflow workflow = createWorkflow("w1");
     WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
     List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
-    ObjectName adapterObj = adapterManager.createObjectName();
+    adapterManager.createObjectName();
     ObjectName workflowObj = realWorkflowManager.createObjectName();
 
     mBeans.add(adapterManager);
@@ -423,9 +425,9 @@ public class WorkflowManagerTest extends ComponentManagerCase {
       WorkflowManagerMBean workflowManagerProxy = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
       adapterManager.requestStart();
       assertEquals(StartedState.getInstance(), workflowManagerProxy.getComponentState());
-      workflowManagerProxy.requestStop();
+      workflowManagerProxy.requestStop(TIMEOUT_MILLIS);
       assertEquals(StoppedState.getInstance(), workflowManagerProxy.getComponentState());
-      workflowManagerProxy.requestStart();
+      workflowManagerProxy.requestStart(TIMEOUT_MILLIS);
       assertEquals(StartedState.getInstance(), workflowManagerProxy.getComponentState());
     }
     finally {
@@ -442,7 +444,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     Workflow workflow = createWorkflow("w1");
     WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
     List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
-    ObjectName adapterObj = adapterManager.createObjectName();
+    adapterManager.createObjectName();
     ObjectName workflowObj = realWorkflowManager.createObjectName();
 
     mBeans.add(adapterManager);
@@ -452,9 +454,9 @@ public class WorkflowManagerTest extends ComponentManagerCase {
       WorkflowManagerMBean workflowManagerProxy = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
       adapterManager.requestStart();
       assertEquals(StartedState.getInstance(), workflowManagerProxy.getComponentState());
-      workflowManagerProxy.requestClose();
+      workflowManagerProxy.requestClose(TIMEOUT_MILLIS);
       assertEquals(ClosedState.getInstance(), workflowManagerProxy.getComponentState());
-      workflowManagerProxy.requestInit();
+      workflowManagerProxy.requestInit(TIMEOUT_MILLIS);
       assertEquals(InitialisedState.getInstance(), workflowManagerProxy.getComponentState());
     }
     finally {
@@ -472,7 +474,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     Workflow workflow = createWorkflow("w1");
     WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
     List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
-    ObjectName adapterObj = adapterManager.createObjectName();
+    adapterManager.createObjectName();
     ObjectName workflowObj = realWorkflowManager.createObjectName();
 
     mBeans.add(adapterManager);
@@ -482,9 +484,9 @@ public class WorkflowManagerTest extends ComponentManagerCase {
       WorkflowManagerMBean workflowManagerProxy = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
       adapterManager.requestStart();
       assertEquals(StartedState.getInstance(), workflowManagerProxy.getComponentState());
-      workflowManagerProxy.requestStop();
+      workflowManagerProxy.requestStop(TIMEOUT_MILLIS);
       assertEquals(StoppedState.getInstance(), workflowManagerProxy.getComponentState());
-      workflowManagerProxy.requestRestart();
+      workflowManagerProxy.requestRestart(TIMEOUT_MILLIS);
       assertEquals(StartedState.getInstance(), workflowManagerProxy.getComponentState());
     }
     finally {
@@ -502,7 +504,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     Workflow workflow = createWorkflow("w1");
     WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
     List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
-    ObjectName adapterObj = adapterManager.createObjectName();
+    adapterManager.createObjectName();
     ObjectName workflowObj = realWorkflowManager.createObjectName();
 
     mBeans.add(adapterManager);
@@ -528,7 +530,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     Workflow workflow = createWorkflow("w1");
     WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
     List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
-    ObjectName adapterObj = adapterManager.createObjectName();
+    adapterManager.createObjectName();
     ObjectName workflowObj = realWorkflowManager.createObjectName();
 
     mBeans.add(adapterManager);
@@ -556,7 +558,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     Workflow workflow = createWorkflow("w1");
     WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
     List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
-    ObjectName adapterObj = adapterManager.createObjectName();
+    adapterManager.createObjectName();
     ObjectName workflowObj = realWorkflowManager.createObjectName();
     ObjectName channelObj = channelManager.createObjectName();
 
@@ -566,9 +568,9 @@ public class WorkflowManagerTest extends ComponentManagerCase {
       register(mBeans);
       WorkflowManagerMBean workflowManagerProxy = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
       ChannelManagerMBean channelManagerProxy = JMX.newMBeanProxy(mBeanServer, channelObj, ChannelManagerMBean.class);
-      channelManagerProxy.requestClose();
+      channelManagerProxy.requestClose(TIMEOUT_MILLIS);
       try {
-        workflowManagerProxy.requestInit();
+        workflowManagerProxy.requestInit(TIMEOUT_MILLIS);
         fail();
       }
       catch (CoreException e) {
@@ -589,7 +591,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     Workflow workflow = createWorkflow("w1");
     WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
     List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
-    ObjectName adapterObj = adapterManager.createObjectName();
+    adapterManager.createObjectName();
     ObjectName workflowObj = realWorkflowManager.createObjectName();
     ObjectName channelObj = channelManager.createObjectName();
 
@@ -600,9 +602,9 @@ public class WorkflowManagerTest extends ComponentManagerCase {
       WorkflowManagerMBean workflowManagerProxy = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
       ChannelManagerMBean channelManagerProxy = JMX.newMBeanProxy(mBeanServer, channelObj, ChannelManagerMBean.class);
       adapterManager.requestStart();
-      channelManagerProxy.requestClose();
+      channelManagerProxy.requestClose(TIMEOUT_MILLIS);
       try {
-        workflowManagerProxy.requestStart();
+        workflowManagerProxy.requestStart(TIMEOUT_MILLIS);
         fail();
       }
       catch (CoreException e) {
@@ -623,7 +625,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     Workflow workflow = createWorkflow("w1");
     WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
     List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
-    ObjectName adapterObj = adapterManager.createObjectName();
+    adapterManager.createObjectName();
     ObjectName workflowObj = realWorkflowManager.createObjectName();
     ObjectName channelObj = channelManager.createObjectName();
 
@@ -634,9 +636,9 @@ public class WorkflowManagerTest extends ComponentManagerCase {
       WorkflowManagerMBean workflowManagerProxy = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
       ChannelManagerMBean channelManagerProxy = JMX.newMBeanProxy(mBeanServer, channelObj, ChannelManagerMBean.class);
       adapterManager.requestStart();
-      channelManagerProxy.requestClose();
+      channelManagerProxy.requestClose(TIMEOUT_MILLIS);
       try {
-        workflowManagerProxy.requestStop();
+        workflowManagerProxy.requestStop(TIMEOUT_MILLIS);
         fail();
       }
       catch (CoreException e) {
@@ -657,7 +659,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     Workflow workflow = createWorkflow("w1");
     WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
     List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
-    ObjectName adapterObj = adapterManager.createObjectName();
+    adapterManager.createObjectName();
     ObjectName workflowObj = realWorkflowManager.createObjectName();
     ObjectName channelObj = channelManager.createObjectName();
 
@@ -668,8 +670,8 @@ public class WorkflowManagerTest extends ComponentManagerCase {
       WorkflowManagerMBean workflowManagerProxy = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
       ChannelManagerMBean channelManagerProxy = JMX.newMBeanProxy(mBeanServer, channelObj, ChannelManagerMBean.class);
       adapterManager.requestStart();
-      channelManagerProxy.requestClose();
-      workflowManagerProxy.requestClose();
+      channelManagerProxy.requestClose(TIMEOUT_MILLIS);
+      workflowManagerProxy.requestClose(TIMEOUT_MILLIS);
     }
     finally {
       adapter.requestClose();
@@ -685,7 +687,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     Workflow workflow = createWorkflow("w1");
     WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
     List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
-    ObjectName adapterObj = adapterManager.createObjectName();
+    adapterManager.createObjectName();
     ObjectName workflowObj = realWorkflowManager.createObjectName();
     ObjectName channelObj = channelManager.createObjectName();
 
@@ -694,11 +696,11 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     try {
       register(mBeans);
       WorkflowManagerMBean workflowManagerProxy = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
-      ChannelManagerMBean channelManagerProxy = JMX.newMBeanProxy(mBeanServer, channelObj, ChannelManagerMBean.class);
+      JMX.newMBeanProxy(mBeanServer, channelObj, ChannelManagerMBean.class);
       adapterManager.requestStart();
       channelManager.requestClose();
       channelManager.requestInit();
-      workflowManagerProxy.requestInit();
+      workflowManagerProxy.requestInit(TIMEOUT_MILLIS);
     }
     finally {
       adapter.requestClose();
@@ -714,7 +716,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     Workflow workflow = createWorkflow("w1");
     WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
     List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
-    ObjectName adapterObj = adapterManager.createObjectName();
+    adapterManager.createObjectName();
     ObjectName workflowObj = realWorkflowManager.createObjectName();
     ObjectName channelObj = channelManager.createObjectName();
 
@@ -723,12 +725,12 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     try {
       register(mBeans);
       WorkflowManagerMBean workflowManagerProxy = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
-      ChannelManagerMBean channelManagerProxy = JMX.newMBeanProxy(mBeanServer, channelObj, ChannelManagerMBean.class);
+      JMX.newMBeanProxy(mBeanServer, channelObj, ChannelManagerMBean.class);
       adapterManager.requestStart();
       channelManager.requestClose();
       channelManager.requestInit();
       try {
-        workflowManagerProxy.requestStart();
+        workflowManagerProxy.requestStart(TIMEOUT_MILLIS);
         fail();
       }
       catch (CoreException e) {
@@ -749,7 +751,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     Workflow workflow = createWorkflow("w1");
     WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
     List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
-    ObjectName adapterObj = adapterManager.createObjectName();
+    adapterManager.createObjectName();
     ObjectName workflowObj = realWorkflowManager.createObjectName();
     ObjectName channelObj = channelManager.createObjectName();
 
@@ -758,12 +760,12 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     try {
       register(mBeans);
       WorkflowManagerMBean workflowManagerProxy = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
-      ChannelManagerMBean channelManagerProxy = JMX.newMBeanProxy(mBeanServer, channelObj, ChannelManagerMBean.class);
+      JMX.newMBeanProxy(mBeanServer, channelObj, ChannelManagerMBean.class);
       adapterManager.requestStart();
       channelManager.requestClose();
       channelManager.requestInit();
       try {
-        workflowManagerProxy.requestStop();
+        workflowManagerProxy.requestStop(TIMEOUT_MILLIS);
         fail();
       }
       catch (CoreException e) {
@@ -784,7 +786,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     Workflow workflow = createWorkflow("w1");
     WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
     List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
-    ObjectName adapterObj = adapterManager.createObjectName();
+    adapterManager.createObjectName();
     ObjectName workflowObj = realWorkflowManager.createObjectName();
     ObjectName channelObj = channelManager.createObjectName();
 
@@ -793,11 +795,11 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     try {
       register(mBeans);
       WorkflowManagerMBean workflowManagerProxy = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
-      ChannelManagerMBean channelManagerProxy = JMX.newMBeanProxy(mBeanServer, channelObj, ChannelManagerMBean.class);
+      JMX.newMBeanProxy(mBeanServer, channelObj, ChannelManagerMBean.class);
       adapterManager.requestStart();
       channelManager.requestClose();
       channelManager.requestInit();
-      workflowManagerProxy.requestClose();
+      workflowManagerProxy.requestClose(TIMEOUT_MILLIS);
     }
     finally {
       adapter.requestClose();
@@ -813,7 +815,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     Workflow workflow = createWorkflow("w1");
     WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
     List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
-    ObjectName adapterObj = adapterManager.createObjectName();
+    adapterManager.createObjectName();
     ObjectName workflowObj = realWorkflowManager.createObjectName();
     ObjectName channelObj = channelManager.createObjectName();
 
@@ -822,10 +824,10 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     try {
       register(mBeans);
       WorkflowManagerMBean workflowManagerProxy = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
-      ChannelManagerMBean channelManagerProxy = JMX.newMBeanProxy(mBeanServer, channelObj, ChannelManagerMBean.class);
+      JMX.newMBeanProxy(mBeanServer, channelObj, ChannelManagerMBean.class);
       adapterManager.requestStart();
-      workflowManagerProxy.requestClose();
-      workflowManagerProxy.requestInit();
+      workflowManagerProxy.requestClose(TIMEOUT_MILLIS);
+      workflowManagerProxy.requestInit(TIMEOUT_MILLIS);
     }
     finally {
       adapter.requestClose();
@@ -841,7 +843,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     Workflow workflow = createWorkflow("w1");
     WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
     List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
-    ObjectName adapterObj = adapterManager.createObjectName();
+    adapterManager.createObjectName();
     ObjectName workflowObj = realWorkflowManager.createObjectName();
     ObjectName channelObj = channelManager.createObjectName();
 
@@ -850,9 +852,9 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     try {
       register(mBeans);
       WorkflowManagerMBean workflowManagerProxy = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
-      ChannelManagerMBean channelManagerProxy = JMX.newMBeanProxy(mBeanServer, channelObj, ChannelManagerMBean.class);
+      JMX.newMBeanProxy(mBeanServer, channelObj, ChannelManagerMBean.class);
       adapterManager.requestStart();
-      workflowManagerProxy.requestStart();
+      workflowManagerProxy.requestStart(TIMEOUT_MILLIS);
     }
     finally {
       adapter.requestClose();
@@ -868,7 +870,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     Workflow workflow = createWorkflow("w1");
     WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
     List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
-    ObjectName adapterObj = adapterManager.createObjectName();
+    adapterManager.createObjectName();
     ObjectName workflowObj = realWorkflowManager.createObjectName();
     ObjectName channelObj = channelManager.createObjectName();
 
@@ -877,9 +879,9 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     try {
       register(mBeans);
       WorkflowManagerMBean workflowManagerProxy = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
-      ChannelManagerMBean channelManagerProxy = JMX.newMBeanProxy(mBeanServer, channelObj, ChannelManagerMBean.class);
+      JMX.newMBeanProxy(mBeanServer, channelObj, ChannelManagerMBean.class);
       adapterManager.requestStart();
-      workflowManagerProxy.requestStop();
+      workflowManagerProxy.requestStop(TIMEOUT_MILLIS);
     }
     finally {
       adapter.requestClose();
@@ -896,7 +898,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     Workflow workflow = createWorkflow("w1");
     WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
     List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
-    ObjectName adapterObj = adapterManager.createObjectName();
+    adapterManager.createObjectName();
     ObjectName workflowObj = realWorkflowManager.createObjectName();
     ObjectName channelObj = channelManager.createObjectName();
 
@@ -905,9 +907,9 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     try {
       register(mBeans);
       WorkflowManagerMBean workflowManagerProxy = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
-      ChannelManagerMBean channelManagerProxy = JMX.newMBeanProxy(mBeanServer, channelObj, ChannelManagerMBean.class);
+      JMX.newMBeanProxy(mBeanServer, channelObj, ChannelManagerMBean.class);
       adapterManager.requestStart();
-      workflowManagerProxy.requestClose();
+      workflowManagerProxy.requestClose(TIMEOUT_MILLIS);
     }
     finally {
       adapter.requestClose();
@@ -923,7 +925,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     Workflow workflow = createWorkflow("w1");
     WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
     List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
-    ObjectName adapterObj = adapterManager.createObjectName();
+    adapterManager.createObjectName();
     ObjectName workflowObj = realWorkflowManager.createObjectName();
     ObjectName channelObj = channelManager.createObjectName();
 
@@ -932,11 +934,11 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     try {
       register(mBeans);
       WorkflowManagerMBean workflowManagerProxy = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
-      ChannelManagerMBean channelManagerProxy = JMX.newMBeanProxy(mBeanServer, channelObj, ChannelManagerMBean.class);
+      JMX.newMBeanProxy(mBeanServer, channelObj, ChannelManagerMBean.class);
       adapterManager.requestStart();
       channelManager.requestStop();
       try {
-        workflowManagerProxy.requestInit();
+        workflowManagerProxy.requestInit(TIMEOUT_MILLIS);
         fail();
       }
       catch (CoreException e) {
@@ -958,7 +960,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     Workflow workflow = createWorkflow("w1");
     WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
     List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
-    ObjectName adapterObj = adapterManager.createObjectName();
+    adapterManager.createObjectName();
     ObjectName workflowObj = realWorkflowManager.createObjectName();
     ObjectName channelObj = channelManager.createObjectName();
 
@@ -967,11 +969,11 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     try {
       register(mBeans);
       WorkflowManagerMBean workflowManagerProxy = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
-      ChannelManagerMBean channelManagerProxy = JMX.newMBeanProxy(mBeanServer, channelObj, ChannelManagerMBean.class);
+      JMX.newMBeanProxy(mBeanServer, channelObj, ChannelManagerMBean.class);
       adapterManager.requestStart();
       channelManager.requestStop();
       try {
-        workflowManagerProxy.requestStart();
+        workflowManagerProxy.requestStart(TIMEOUT_MILLIS);
         fail();
       }
       catch (CoreException e) {
@@ -993,7 +995,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     Workflow workflow = createWorkflow("w1");
     WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
     List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
-    ObjectName adapterObj = adapterManager.createObjectName();
+    adapterManager.createObjectName();
     ObjectName workflowObj = realWorkflowManager.createObjectName();
     ObjectName channelObj = channelManager.createObjectName();
 
@@ -1002,10 +1004,10 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     try {
       register(mBeans);
       WorkflowManagerMBean workflowManagerProxy = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
-      ChannelManagerMBean channelManagerProxy = JMX.newMBeanProxy(mBeanServer, channelObj, ChannelManagerMBean.class);
+      JMX.newMBeanProxy(mBeanServer, channelObj, ChannelManagerMBean.class);
       adapterManager.requestStart();
       channelManager.requestStop();
-      workflowManagerProxy.requestStop();
+      workflowManagerProxy.requestStop(TIMEOUT_MILLIS);
     }
     finally {
       adapter.requestClose();
@@ -1021,7 +1023,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     ChannelManager channelManager = new ChannelManager(channel, adapterManager);
     Workflow workflow = createWorkflow("w1");
     WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
-    ObjectName adapterObj = adapterManager.createObjectName();
+    adapterManager.createObjectName();
     ObjectName workflowObj = realWorkflowManager.createObjectName();
     ObjectName channelObj = channelManager.createObjectName();
 
@@ -1031,10 +1033,10 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     try {
       register(mBeans);
       WorkflowManagerMBean workflowManagerProxy = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
-      ChannelManagerMBean channelManagerProxy = JMX.newMBeanProxy(mBeanServer, channelObj, ChannelManagerMBean.class);
+      JMX.newMBeanProxy(mBeanServer, channelObj, ChannelManagerMBean.class);
       adapterManager.requestStart();
       channelManager.requestStop();
-      workflowManagerProxy.requestClose();
+      workflowManagerProxy.requestClose(TIMEOUT_MILLIS);
     }
     finally {
       adapter.requestClose();
@@ -1052,9 +1054,9 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     MockMessageProducer mockProducer = new MockMessageProducer();
     workflow.setProducer(mockProducer);
     WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
-    ObjectName adapterObj = adapterManager.createObjectName();
+    adapterManager.createObjectName();
     ObjectName workflowObj = realWorkflowManager.createObjectName();
-    ObjectName channelObj = channelManager.createObjectName();
+    channelManager.createObjectName();
 
     List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
     mBeans.add(adapterManager);
@@ -1066,13 +1068,13 @@ public class WorkflowManagerTest extends ComponentManagerCase {
       register(mBeans);
       WorkflowManagerMBean workflowManagerProxy = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
       adapterManager.requestStart();
-      workflowManagerProxy.injectMessage(msg);
+      workflowManagerProxy.processAsync(msg);
       assertEquals(1, mockProducer.getMessages().size());
       AdaptrisMessage procMsg = mockProducer.getMessages().get(0);
       assertEquals(msgUniqueId, procMsg.getUniqueId());
-      assertEquals(PAYLOAD, procMsg.getStringPayload());
-      assertEquals(PAYLOAD_ENCODING, procMsg.getCharEncoding());
-      assertTrue(procMsg.containsKey(METADATA_KEY));
+      assertEquals(PAYLOAD, procMsg.getContent());
+      assertEquals(PAYLOAD_ENCODING, procMsg.getContentEncoding());
+      assertTrue(procMsg.headersContainsKey(METADATA_KEY));
       assertEquals(METADATA_VALUE, procMsg.getMetadataValue(METADATA_KEY));
     }
     finally {
@@ -1091,9 +1093,9 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     workflow.getServiceCollection().add(new AddMetadataService(Arrays.asList(new MetadataElement(getName(), getName()))));
 
     WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
-    ObjectName adapterObj = adapterManager.createObjectName();
+    adapterManager.createObjectName();
     ObjectName workflowObj = realWorkflowManager.createObjectName();
-    ObjectName channelObj = channelManager.createObjectName();
+    channelManager.createObjectName();
 
     List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
     mBeans.add(adapterManager);
@@ -1106,7 +1108,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
       register(mBeans);
       WorkflowManagerMBean workflowManagerProxy = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
       adapterManager.requestStart();
-      SerializableAdaptrisMessage reply = workflowManagerProxy.injectMessageWithReply(msg);
+      SerializableAdaptrisMessage reply = (SerializableAdaptrisMessage) workflowManagerProxy.process(msg);
 
       assertEquals(msgUniqueId, reply.getUniqueId());
       assertEquals(PAYLOAD, reply.getContent());
@@ -1132,9 +1134,9 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     MockMessageProducer mockProducer = new MockMessageProducer();
     workflow.setProducer(mockProducer);
     WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
-    ObjectName adapterObj = adapterManager.createObjectName();
+    adapterManager.createObjectName();
     ObjectName workflowObj = realWorkflowManager.createObjectName();
-    ObjectName channelObj = channelManager.createObjectName();
+    channelManager.createObjectName();
 
     List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
     mBeans.add(adapterManager);
@@ -1151,9 +1153,9 @@ public class WorkflowManagerTest extends ComponentManagerCase {
       assertEquals(1, mockProducer.getMessages().size());
       AdaptrisMessage procMsg = mockProducer.getMessages().get(0);
       assertEquals(msgUniqueId, procMsg.getUniqueId());
-      assertEquals(PAYLOAD, procMsg.getStringPayload());
-      assertEquals(PAYLOAD_ENCODING, procMsg.getCharEncoding());
-      assertTrue(procMsg.containsKey(METADATA_KEY));
+      assertEquals(PAYLOAD, procMsg.getContent());
+      assertEquals(PAYLOAD_ENCODING, procMsg.getContentEncoding());
+      assertTrue(procMsg.headersContainsKey(METADATA_KEY));
       assertEquals(METADATA_VALUE, procMsg.getMetadataValue(METADATA_KEY));
     } finally {
       adapter.requestClose();
@@ -1171,9 +1173,9 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     workflow.getServiceCollection().add(new AddMetadataService(Arrays.asList(new MetadataElement(getName(), getName()))));
 
     WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
-    ObjectName adapterObj = adapterManager.createObjectName();
+    adapterManager.createObjectName();
     ObjectName workflowObj = realWorkflowManager.createObjectName();
-    ObjectName channelObj = channelManager.createObjectName();
+    channelManager.createObjectName();
 
     List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
     mBeans.add(adapterManager);
@@ -1210,7 +1212,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     ChannelManager channelManager = new ChannelManager(channel, adapterManager);
     Workflow workflow = createWorkflow("w1");
     WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
-    ObjectName adapterObj = adapterManager.createObjectName();
+    adapterManager.createObjectName();
     ObjectName workflowObj = realWorkflowManager.createObjectName();    
     SimpleNotificationListener listener = new SimpleNotificationListener();
     try {
@@ -1221,8 +1223,8 @@ public class WorkflowManagerTest extends ComponentManagerCase {
       WorkflowManagerMBean workflowManagerProxy = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
 
       
-      workflowManagerProxy.requestClose();
-      workflowManagerProxy.requestInit();
+      workflowManagerProxy.requestClose(TIMEOUT_MILLIS);
+      workflowManagerProxy.requestInit(TIMEOUT_MILLIS);
       assertEquals(InitialisedState.getInstance(), workflowManagerProxy.getComponentState());
       listener.waitForMessages(2);
       assertEquals(2, listener.getNotifications().size());
@@ -1245,7 +1247,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     ChannelManager channelManager = new ChannelManager(channel, adapterManager);
     Workflow workflow = createWorkflow("w1");
     WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
-    ObjectName adapterObj = adapterManager.createObjectName();
+    adapterManager.createObjectName();
     ObjectName workflowObj = realWorkflowManager.createObjectName();
     SimpleNotificationListener listener = new SimpleNotificationListener();
     try {
@@ -1255,8 +1257,8 @@ public class WorkflowManagerTest extends ComponentManagerCase {
       mBeanServer.addNotificationListener(workflowObj, listener, null, null);
       WorkflowManagerMBean workflowManagerProxy = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
 
-      workflowManagerProxy.requestClose();
-      workflowManagerProxy.requestStart();
+      workflowManagerProxy.requestClose(TIMEOUT_MILLIS);
+      workflowManagerProxy.requestStart(TIMEOUT_MILLIS);
       assertEquals(StartedState.getInstance(), workflowManagerProxy.getComponentState());
       listener.waitForMessages(2);
       assertEquals(2, listener.getNotifications().size());
@@ -1279,7 +1281,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     ChannelManager channelManager = new ChannelManager(channel, adapterManager);
     Workflow workflow = createWorkflow("w1");
     WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
-    ObjectName adapterObj = adapterManager.createObjectName();
+    adapterManager.createObjectName();
     ObjectName workflowObj = realWorkflowManager.createObjectName();
     SimpleNotificationListener listener = new SimpleNotificationListener();
     try {
@@ -1289,7 +1291,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
       mBeanServer.addNotificationListener(workflowObj, listener, null, null);
       WorkflowManagerMBean workflowManagerProxy = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
 
-      workflowManagerProxy.requestStop();
+      workflowManagerProxy.requestStop(TIMEOUT_MILLIS);
       assertEquals(StoppedState.getInstance(), workflowManagerProxy.getComponentState());
       listener.waitForMessages(1);
       assertEquals(1, listener.getNotifications().size());
@@ -1312,7 +1314,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     ChannelManager channelManager = new ChannelManager(channel, adapterManager);
     Workflow workflow = createWorkflow("w1");
     WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
-    ObjectName adapterObj = adapterManager.createObjectName();
+    adapterManager.createObjectName();
     ObjectName workflowObj = realWorkflowManager.createObjectName();
     SimpleNotificationListener listener = new SimpleNotificationListener();
     try {
@@ -1322,7 +1324,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
       mBeanServer.addNotificationListener(workflowObj, listener, null, null);
       WorkflowManagerMBean workflowManagerProxy = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
 
-      workflowManagerProxy.requestClose();
+      workflowManagerProxy.requestClose(TIMEOUT_MILLIS);
       assertEquals(ClosedState.getInstance(), workflowManagerProxy.getComponentState());
       listener.waitForMessages(1);
       assertEquals(1, listener.getNotifications().size());
@@ -1345,7 +1347,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     ChannelManager channelManager = new ChannelManager(channel, adapterManager);
     Workflow workflow = createWorkflow("w1");
     WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
-    ObjectName adapterObj = adapterManager.createObjectName();
+    adapterManager.createObjectName();
     ObjectName workflowObj = realWorkflowManager.createObjectName();
     SimpleNotificationListener listener = new SimpleNotificationListener();
     try {
@@ -1355,7 +1357,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
       mBeanServer.addNotificationListener(workflowObj, listener, null, null);
       WorkflowManagerMBean workflowManagerProxy = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
 
-      workflowManagerProxy.requestRestart();
+      workflowManagerProxy.requestRestart(TIMEOUT_MILLIS);
       assertEquals(StartedState.getInstance(), workflowManagerProxy.getComponentState());
       // restart generated 3 notificates 1-close 2-start 3-restart
       // Timing issue on Jenkins, doesn't happen locally.

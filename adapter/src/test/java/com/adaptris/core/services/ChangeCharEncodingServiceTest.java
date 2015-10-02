@@ -29,9 +29,9 @@ public class ChangeCharEncodingServiceTest extends GeneralServiceExample {
     ChangeCharEncodingService srv = new ChangeCharEncodingService();
     srv.setCharEncoding("iso-8859-1");
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("Hello");
-    assertNull(msg.getCharEncoding());
+    assertNull(msg.getContentEncoding());
     execute(srv, msg);
-    assertEquals("iso-8859-1", msg.getCharEncoding());
+    assertEquals("iso-8859-1", msg.getContentEncoding());
   }
 
 }

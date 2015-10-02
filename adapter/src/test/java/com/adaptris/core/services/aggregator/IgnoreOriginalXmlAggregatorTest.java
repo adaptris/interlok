@@ -55,7 +55,7 @@ public class IgnoreOriginalXmlAggregatorTest extends XmlAggregatorCase {
     // because we ignore the original
     XPath xpath = new XPath();
     assertEquals(3, xpath.selectNodeList(XmlHelper.createDocument(msg, true), "/new/document").getLength());
-    assertEquals("UTF-8", msg.getCharEncoding());
+    assertEquals("UTF-8", msg.getContentEncoding());
   }
 
   public void testSplitJoinService_WithImplicitDocumentEnoding() throws Exception {
@@ -71,7 +71,7 @@ public class IgnoreOriginalXmlAggregatorTest extends XmlAggregatorCase {
     // Should now be 6 document nodes
     XPath xpath = new XPath();
     assertEquals(3, xpath.selectNodeList(XmlHelper.createDocument(msg, true), "/new/document").getLength());
-    assertEquals("ISO-8859-1", msg.getCharEncoding());
+    assertEquals("ISO-8859-1", msg.getContentEncoding());
   }
 
   public void testJoinMessage_NoTemplate() throws Exception {

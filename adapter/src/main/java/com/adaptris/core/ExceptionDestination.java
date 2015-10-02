@@ -42,8 +42,8 @@ public class ExceptionDestination implements ProduceDestination {
   @Override
   public String getDestination(AdaptrisMessage msg) throws CoreException {
     String destinationName = defaultDestination;
-    if (msg.getObjectMetadata().containsKey(OBJ_METADATA_EXCEPTION)) {
-      Exception e = (Exception) msg.getObjectMetadata().get(OBJ_METADATA_EXCEPTION);
+    if (msg.getObjectHeaders().containsKey(OBJ_METADATA_EXCEPTION)) {
+      Exception e = (Exception) msg.getObjectHeaders().get(OBJ_METADATA_EXCEPTION);
       Throwable exc = e;
       do {
         if (exceptionMapping.contains(new KeyValuePair(exc.getClass().getName(), ""))) {

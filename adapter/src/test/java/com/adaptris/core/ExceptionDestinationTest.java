@@ -64,7 +64,7 @@ public class ExceptionDestinationTest extends ExampleProduceDestinationCase {
   public void testFirstMatchedException() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     Exception e = new CoreException(new ProduceException());
-    msg.getObjectMetadata().put(OBJ_METADATA_EXCEPTION, e);
+    msg.addObjectHeader(OBJ_METADATA_EXCEPTION, e);
     ExceptionDestination ed = new ExceptionDestination(DEFAULT_DEST, createExceptionMappings());
     String dest = ed.getDestination(msg);
     assertEquals(ed.toString(), CoreException.class.getName(), dest);
@@ -73,7 +73,7 @@ public class ExceptionDestinationTest extends ExampleProduceDestinationCase {
   public void testNestedException() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     Exception e = new Exception(new CoreException());
-    msg.getObjectMetadata().put(OBJ_METADATA_EXCEPTION, e);
+    msg.addObjectHeader(OBJ_METADATA_EXCEPTION, e);
     ExceptionDestination ed = new ExceptionDestination(DEFAULT_DEST, createExceptionMappings());
     String dest = ed.getDestination(msg);
     assertEquals(ed.toString(), CoreException.class.getName(), dest);
@@ -82,7 +82,7 @@ public class ExceptionDestinationTest extends ExampleProduceDestinationCase {
   public void testExceptionNotFound() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     Exception e = new Exception(new NullPointerException());
-    msg.getObjectMetadata().put(OBJ_METADATA_EXCEPTION, e);
+    msg.addObjectHeader(OBJ_METADATA_EXCEPTION, e);
     ExceptionDestination ed = new ExceptionDestination(DEFAULT_DEST, createExceptionMappings());
     String dest = ed.getDestination(msg);
     assertEquals(ed.toString(), DEFAULT_DEST, dest);

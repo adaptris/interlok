@@ -126,8 +126,8 @@ public class XpathSplitterTest extends SplitterCase {
 
   public void testSplit() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_MESSAGE);
-    Object obj = "ABCDEFG";
-    msg.getObjectMetadata().put(obj, obj);
+    String obj = "ABCDEFG";
+    msg.addObjectHeader(obj, obj);
     XpathMessageSplitter splitter = new XpathMessageSplitter(ENVELOPE_DOCUMENT, ENCODING_UTF8);
     List<AdaptrisMessage> result = splitter.splitMessage(msg);
     assertEquals("Number of messages", 3, result.size());
@@ -138,8 +138,8 @@ public class XpathSplitterTest extends SplitterCase {
 
   public void testSplit_AlternativeMessageFactory() throws Exception {
     AdaptrisMessage msg = new StubMessageFactory().newMessage(XML_MESSAGE);
-    Object obj = "ABCDEFG";
-    msg.getObjectMetadata().put(obj, obj);
+    String obj = "ABCDEFG";
+    msg.addObjectHeader(obj, obj);
     XpathMessageSplitter splitter = new XpathMessageSplitter(ENVELOPE_DOCUMENT, ENCODING_UTF8);
     List<AdaptrisMessage> result = splitter.splitMessage(msg);
     assertEquals("Number of messages", 3, result.size());
@@ -150,21 +150,21 @@ public class XpathSplitterTest extends SplitterCase {
 
   public void testSplitWithObjectMetadata() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_MESSAGE);
-    Object obj = "ABCDEFG";
-    msg.getObjectMetadata().put(obj, obj);
+    String obj = "ABCDEFG";
+    msg.addObjectHeader(obj, obj);
     XpathMessageSplitter splitter = new XpathMessageSplitter(ENVELOPE_DOCUMENT, ENCODING_UTF8);
     splitter.setCopyObjectMetadata(true);
     List<AdaptrisMessage> result = splitter.splitMessage(msg);
     assertEquals("Number of messages", 3, result.size());
     for (AdaptrisMessage m : result) {
-      assertTrue("Object Metadata", m.getObjectMetadata().containsKey(obj));
-      assertEquals(obj, m.getObjectMetadata().get(obj));
+      assertTrue("Object Metadata", m.getObjectHeaders().containsKey(obj));
+      assertEquals(obj, m.getObjectHeaders().get(obj));
     }
   }
 
   public void testSplitThrowsException() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_MESSAGE);
-    msg.setStringPayload(XML_MESSAGE);
+    msg.setContent(XML_MESSAGE, msg.getContentEncoding());
     XpathMessageSplitter splitter = new XpathMessageSplitter(ENVELOPE_DOCUMENT, ENCODING_UTF8);
     splitter.setMessageFactory(new DefectiveMessageFactory());
     try {

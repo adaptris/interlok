@@ -49,7 +49,7 @@ public class ZipFileBackedMessageFactory extends FileBackedMessageFactory {
         new File(getTempDirectory()), getDefaultBufferSize(), getMaxMemorySizeBytes(), getCompressionMode());
     
     if (!isEmpty(getDefaultCharEncoding())) {
-      m.setCharEncoding(getDefaultCharEncoding());
+      m.setContentEncoding(getDefaultCharEncoding());
     }
     
     return m;

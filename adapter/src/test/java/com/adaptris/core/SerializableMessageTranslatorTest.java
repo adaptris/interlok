@@ -82,7 +82,7 @@ public class SerializableMessageTranslatorTest extends TestCase {
     
     assertEquals("MetaValue3", adaptrisMessage.getMetadataValue("MetaKey3"));
     assertEquals("MetaValue4", adaptrisMessage.getMetadataValue("MetaKey4"));
-    assertEquals("Some Payload", adaptrisMessage.getStringPayload());
+    assertEquals("Some Payload", adaptrisMessage.getContent());
     assertEquals("uuid2", adaptrisMessage.getUniqueId());
   }
 
@@ -98,9 +98,9 @@ public class SerializableMessageTranslatorTest extends TestCase {
 
     assertEquals("MetaValue3", adaptrisMessage.getMetadataValue("MetaKey3"));
     assertEquals("MetaValue4", adaptrisMessage.getMetadataValue("MetaKey4"));
-    assertEquals("Some Payload", adaptrisMessage.getStringPayload());
+    assertEquals("Some Payload", adaptrisMessage.getContent());
     assertEquals("uuid2", adaptrisMessage.getUniqueId());
-    assertEquals("UTF-8", adaptrisMessage.getCharEncoding());
+    assertEquals("UTF-8", adaptrisMessage.getContentEncoding());
   }
 
 }

@@ -64,7 +64,7 @@ public class StandaloneRequestor extends StandaloneProducer {
   private void copy(AdaptrisMessage src, AdaptrisMessage dest)
       throws CoreException {
     try {
-      dest.setCharEncoding(src.getCharEncoding());
+      dest.setContentEncoding(src.getContentEncoding());
       copyPayload(src, dest);
       dest.getObjectMetadata().putAll(src.getObjectMetadata());
       // Well the thing we shouldn't need to do is set the unique Id I guess.

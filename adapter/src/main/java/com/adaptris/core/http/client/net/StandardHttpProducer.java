@@ -84,7 +84,6 @@ public class StandardHttpProducer extends HttpProducer {
   }
 
   private HttpURLConnection configure(HttpURLConnection http, AdaptrisMessage msg) throws Exception {
-    HttpURLConnection request = http;
     RequestMethod rm = getMethod(msg);
     log.trace("HTTP Request Method is : [{}]", rm);
     http.setRequestMethod(rm.name());

@@ -98,8 +98,8 @@ public abstract class RequestReplyProducerImp extends AdaptrisMessageProducerImp
       }
       msg.getObjectMetadata().putAll(reply.getObjectMetadata());
     }
-    if (reply.getCharEncoding() != null) {
-      msg.setCharEncoding(reply.getCharEncoding());
+    if (reply.getContentEncoding() != null) {
+      msg.setContentEncoding(reply.getContentEncoding());
     }
     return msg;
   }

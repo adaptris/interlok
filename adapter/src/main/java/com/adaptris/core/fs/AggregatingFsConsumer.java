@@ -63,7 +63,6 @@ public class AggregatingFsConsumer extends AggregatingConsumerImpl<AggregatingFs
   private AdaptrisMessageEncoder encoder;
 
   private transient FsWorker fsWorker = new NioWorker();
-  private static FileCleaningTracker fileTracker = new FileCleaningTracker();
 
   public AggregatingFsConsumer() {
 
@@ -92,7 +91,7 @@ public class AggregatingFsConsumer extends AggregatingConsumerImpl<AggregatingFs
 
   private void deleteAggregatedFiles(List<AdaptrisMessage> msgs) {
     for (AdaptrisMessage m : msgs) {
-      Map objectMetadata = m.getObjectMetadata();
+      Map<?,?> objectMetadata = m.getObjectHeaders();
       if (objectMetadata.containsKey(OBJ_METADATA_KEY_FILE)) {
         log.trace("Deleting aggregated file : " + objectMetadata.get(OBJ_METADATA_KEY_FILENAME));
         ((File) objectMetadata.get(OBJ_METADATA_KEY_FILE)).delete();
@@ -141,8 +140,8 @@ public class AggregatingFsConsumer extends AggregatingConsumerImpl<AggregatingFs
       log.trace("Reading " + src.getCanonicalPath());
       File wipFile = FsHelper.renameFile(src, wipSuffix(), fsWorker);
       msg = decode(fsWorker.get(wipFile), factory);
-      msg.getObjectMetadata().put(OBJ_METADATA_KEY_FILE, wipFile);
-      msg.getObjectMetadata().put(OBJ_METADATA_KEY_FILENAME, src.getCanonicalPath());
+      msg.addObjectHeader(OBJ_METADATA_KEY_FILE, wipFile);
+      msg.addObjectHeader(OBJ_METADATA_KEY_FILENAME, src.getCanonicalPath());
     }
     catch (Exception e) {
       rethrowServiceException(e);

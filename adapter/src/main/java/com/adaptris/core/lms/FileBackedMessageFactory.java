@@ -120,7 +120,7 @@ public class FileBackedMessageFactory extends DefaultMessageFactory {
         new File(getTempDirectory()), getDefaultBufferSize(),
         getMaxMemorySizeBytes());
     if (!isEmpty(getDefaultCharEncoding())) {
-      m.setCharEncoding(getDefaultCharEncoding());
+      m.setContentEncoding(getDefaultCharEncoding());
     }
     return m;
   }

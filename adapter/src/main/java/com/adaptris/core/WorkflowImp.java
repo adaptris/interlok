@@ -816,7 +816,7 @@ public abstract class WorkflowImp implements Workflow {
     else {
       log.error(logMsg, e);
     }
-    msg.getObjectMetadata().put(CoreConstants.OBJ_METADATA_EXCEPTION, e);
+    msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, e);
     handleBadMessage(msg);
   }
 

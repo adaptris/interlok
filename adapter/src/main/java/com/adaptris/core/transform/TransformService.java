@@ -105,7 +105,7 @@ public abstract class TransformService extends ServiceImp {
 
       Source currentRule = configuredRule;
 
-      if (allowOverride() && msg.containsKey(getMetadataKey())) {
+      if (allowOverride() && msg.headersContainsKey(getMetadataKey())) {
         String url = msg.getMetadataValue(getMetadataKey());
         log.debug("Metadata transform override : " + url);
         currentRule = new Source(url);

@@ -67,7 +67,7 @@ public abstract class ReformatMetadata extends ServiceImp {
       Set<MetadataElement> modifiedMetadata = new HashSet<MetadataElement>();
       for (MetadataElement e : metadata) {
         if (e.getKey().matches(metadataKeyRegexp)) {
-          e.setValue(reformat(e.getValue(), msg.getCharEncoding()));
+          e.setValue(reformat(e.getValue(), msg.getContentEncoding()));
           modifiedMetadata.add(e);
         }
       }

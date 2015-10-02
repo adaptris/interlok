@@ -105,17 +105,17 @@ public class DefaultSmtpProducer extends MailProducer {
         String template = msg
             .getMetadataValue(CoreConstants.EMAIL_TEMPLATE_BODY);
         if (template != null) {
-          if (msg.getCharEncoding() != null) {
-            smtp.setMessage(template.getBytes(msg.getCharEncoding()), contentType);
+          if (msg.getContentEncoding() != null) {
+            smtp.setMessage(template.getBytes(msg.getContentEncoding()), contentType);
           } else {
             smtp.setMessage(template.getBytes(), contentType);
           }
         }
-        String fname = msg.containsKey(CoreConstants.EMAIL_ATTACH_FILENAME)
+        String fname = msg.headersContainsKey(CoreConstants.EMAIL_ATTACH_FILENAME)
             ? msg.getMetadataValue(CoreConstants.EMAIL_ATTACH_FILENAME)
             : msg.getUniqueId();
 
-        String type = msg.containsKey(CoreConstants.EMAIL_ATTACH_CONTENT_TYPE)
+        String type = msg.headersContainsKey(CoreConstants.EMAIL_ATTACH_CONTENT_TYPE)
             ? msg.getMetadataValue(CoreConstants.EMAIL_ATTACH_CONTENT_TYPE)
             : getAttachmentContentType();
 
@@ -124,7 +124,7 @@ public class DefaultSmtpProducer extends MailProducer {
       else {
         String payloadContent = contentType;
         if (contentTypeKey != null) {
-          if (msg.containsKey(contentTypeKey)) {
+          if (msg.headersContainsKey(contentTypeKey)) {
             String s = msg.getMetadataValue(contentTypeKey);
             if (!isEmpty(s)) {
               log.debug(contentTypeKey + " overrides configured content type");

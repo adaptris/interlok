@@ -116,7 +116,7 @@ public class XmlTransformService extends ServiceImp {
   String obtainUrlToUse(AdaptrisMessage msg) throws ServiceException {
     String result = getUrl(); // maybe null
 
-    if (allowOverride() && msg.containsKey(getMetadataKey())) {
+    if (allowOverride() && msg.headersContainsKey(getMetadataKey())) {
       result = isEmpty(msg.getMetadataValue(getMetadataKey())) ? getUrl() : msg.getMetadataValue(getMetadataKey());
     }
     if (isEmpty(result)) {

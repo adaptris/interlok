@@ -292,7 +292,7 @@ public class PoolingWorkflow extends WorkflowImp {
       }
     }
     catch (Exception e) {
-      msg.getObjectMetadata().put(CoreConstants.OBJ_METADATA_EXCEPTION, e);
+      msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, e);
       handleBadMessage(msg);
     } finally {
       lock.unlock();
@@ -316,7 +316,7 @@ public class PoolingWorkflow extends WorkflowImp {
     else {
       log.error(logMsg, e);
     }
-    msg.getObjectMetadata().put(CoreConstants.OBJ_METADATA_EXCEPTION, e);
+    msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, e);
     handleBadMessage(msg);
   }
 

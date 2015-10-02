@@ -49,7 +49,7 @@ public class XmlAggregatorTest extends XmlAggregatorCase {
     // Should now be 6 document nodes
     XPath xpath = new XPath();
     assertEquals(6, xpath.selectNodeList(XmlHelper.createDocument(msg, true), ENVELOPE_DOCUMENT).getLength());
-    assertEquals("UTF-8", msg.getCharEncoding());
+    assertEquals("UTF-8", msg.getContentEncoding());
   }
 
   public void testSplitJoinService_WithImplicitDocumentEnoding() throws Exception {
@@ -65,7 +65,7 @@ public class XmlAggregatorTest extends XmlAggregatorCase {
     // Should now be 6 document nodes
     XPath xpath = new XPath();
     assertEquals(6, xpath.selectNodeList(XmlHelper.createDocument(msg, true), ENVELOPE_DOCUMENT).getLength());
-    assertEquals("ISO-8859-1", msg.getCharEncoding());
+    assertEquals("ISO-8859-1", msg.getContentEncoding());
   }
 
   @Override

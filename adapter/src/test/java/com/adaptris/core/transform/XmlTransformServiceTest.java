@@ -112,7 +112,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     service.setOutputMessageEncoding("ISO-8859-1");
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_WITH_NAMESPACE, "UTF-8");
     execute(service, msg);
-    log.debug(msg.getStringPayload());
+    log.debug(msg.getContent());
   }
 
   public void testSetUrl() {
@@ -358,8 +358,8 @@ public class XmlTransformServiceTest extends TransformServiceExample {
       start(service);
       service.doService(m1);
       service.doService(m2);
-      assertEquals("payload " + m1.getStringPayload(), PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m1.getStringPayload());
-      assertEquals("payload " + m2.getStringPayload(), PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m2.getStringPayload());
+      assertEquals("payload " + m1.getContent(), PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m1.getContent());
+      assertEquals("payload " + m2.getContent(), PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m2.getContent());
     }
     finally {
       stop(service);
@@ -377,8 +377,8 @@ public class XmlTransformServiceTest extends TransformServiceExample {
       start(service);
       service.doService(m1);
       service.doService(m2);
-      assertEquals("payload " + m1.getStringPayload(), PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m1.getStringPayload());
-      assertEquals("payload " + m2.getStringPayload(), PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m2.getStringPayload());
+      assertEquals("payload " + m1.getContent(), PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m1.getContent());
+      assertEquals("payload " + m2.getContent(), PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m2.getContent());
     }
     finally {
       stop(service);
@@ -390,7 +390,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     XmlTransformService service = new XmlTransformService();
     service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL));
     execute(service, m1);
-    assertEquals("payload " + m1.getStringPayload(), PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m1.getStringPayload());
+    assertEquals("payload " + m1.getContent(), PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m1.getContent());
   }
 
   public void testSTXOutput() throws Exception {
@@ -401,7 +401,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     service.setXmlTransformerFactory(new StxTransformerFactory());
 
     execute(service, m1);
-    assertEquals("payload " + m1.getStringPayload(), PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m1.getStringPayload());
+    assertEquals("payload " + m1.getContent(), PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m1.getContent());
   }
   
   public void testXSLTError() throws Exception {
@@ -449,28 +449,28 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL));
     service.setTransformParameter(new StringMetadataParameter());
     execute(service, msg);
-    assertTrue("payload " + msg.getStringPayload(),
-        msg.getStringPayload().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
+    assertTrue("payload " + msg.getContent(),
+        msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
 
   }
 
   public void testObjectMetadataParameter_XSLTOutput() throws Exception {
     AdaptrisMessage msg = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
-    msg.getObjectMetadata().put("myDocumentObject", XmlHelper.createDocument("<data>World</data>"));
-    msg.getObjectMetadata().put("anotherDocument", XmlHelper.createDocument("<data>GoodBye</data>"));
+    msg.addObjectHeader("myDocumentObject", XmlHelper.createDocument("<data>World</data>"));
+    msg.addObjectHeader("anotherDocument", XmlHelper.createDocument("<data>GoodBye</data>"));
     XmlTransformService service = new XmlTransformService();
     service.setUrl(PROPERTIES.getProperty(KEY_XML_NODE_TRANSFORM_URL));
     service.setTransformParameter(new ObjectMetadataParameter(".*my.*"));
     execute(service, msg);
-    assertTrue("payload " + msg.getStringPayload(),
-        msg.getStringPayload().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
+    assertTrue("payload " + msg.getContent(),
+        msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
 
   }
 
   public void testObjectMetadataParameter_NoRegexp() throws Exception {
     AdaptrisMessage msg = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
-    msg.getObjectMetadata().put("myDocumentObject", XmlHelper.createDocument("<data>World</data>"));
-    msg.getObjectMetadata().put("anotherDocument", XmlHelper.createDocument("<data>GoodBye</data>"));
+    msg.addObjectHeader("myDocumentObject", XmlHelper.createDocument("<data>World</data>"));
+    msg.addObjectHeader("anotherDocument", XmlHelper.createDocument("<data>GoodBye</data>"));
     XmlTransformService service = new XmlTransformService();
     service.setUrl(PROPERTIES.getProperty(KEY_XML_NODE_TRANSFORM_URL));
     service.setTransformParameter(new ObjectMetadataParameter());
@@ -491,21 +491,21 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     service.setTransformParameter(new XmlTransformParameterBuilder(new IgnoreMetadataParameter(), new StringMetadataParameter()));
     execute(service, msg);
 
-    assertTrue("payload " + msg.getStringPayload(),
-        msg.getStringPayload().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
+    assertTrue("payload " + msg.getContent(),
+        msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
   }
 
   public void testParameterBuilder_ObjectMetadata_XSLTOutput() throws Exception {
     AdaptrisMessage msg = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     msg.addMetadata("key", "value");
-    msg.getObjectMetadata().put("myDocumentObject", XmlHelper.createDocument("<data>World</data>"));
+    msg.addObjectHeader("myDocumentObject", XmlHelper.createDocument("<data>World</data>"));
     XmlTransformService service = new XmlTransformService();
     service.setUrl(PROPERTIES.getProperty(KEY_XML_NODE_TRANSFORM_URL));
     service.setTransformParameter(new XmlTransformParameterBuilder(new IgnoreMetadataParameter(), new StringMetadataParameter(),
         new ObjectMetadataParameter(".*")));
     execute(service, msg);
-    assertTrue("payload " + msg.getStringPayload(),
-        msg.getStringPayload().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
+    assertTrue("payload " + msg.getContent(),
+        msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
   }
 
   @SuppressWarnings("deprecation")
@@ -518,7 +518,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     service.setUseMetadataAsStylesheetParameters(true);
     execute(service, msg);
     assertTrue("payload " + msg.getStringPayload(),
-        msg.getStringPayload().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
+        msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
   }
 
   public void testSingleParameter_STXOutput() throws Exception {
@@ -529,8 +529,8 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     service.setXmlTransformerFactory(new StxTransformerFactory());
     service.setTransformParameter(new StringMetadataParameter());
     execute(service, msg);
-    assertTrue("payload " + msg.getStringPayload(),
-        msg.getStringPayload().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
+    assertTrue("payload " + msg.getContent(),
+        msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
   }
 
   @SuppressWarnings("deprecation")
@@ -548,7 +548,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     execute(service, msg);
 
     assertTrue("payload " + msg.getStringPayload(),
-        msg.getStringPayload().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
+        msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
   }
 
   public void testMultipleParameters_XSLTOutput() throws Exception {
@@ -563,8 +563,8 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL));
     service.setTransformParameter(new StringMetadataParameter());
     execute(service, msg);
-    assertTrue("payload " + msg.getStringPayload(),
-        msg.getStringPayload().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
+    assertTrue("payload " + msg.getContent(),
+        msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
   }
 
   @SuppressWarnings("deprecation")
@@ -585,7 +585,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     execute(service, msg);
 
     assertTrue("payload " + msg.getStringPayload(),
-        msg.getStringPayload().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
+        msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
   }
 
   public void testMultipleParameters_STXOutput() throws Exception {
@@ -600,8 +600,8 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     service.setXmlTransformerFactory(new StxTransformerFactory());
     service.setTransformParameter(new StringMetadataParameter());
     execute(service, msg);
-    assertTrue("payload " + msg.getStringPayload(),
-        msg.getStringPayload().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
+    assertTrue("payload " + msg.getContent(),
+        msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
   }
 
   public void testIssue2641() throws Exception {
@@ -611,14 +611,14 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     Document srcXml = createDocument(msg.getPayload());
     XPath srcXpath = new XPath();
     String srcValue = srcXpath.selectSingleTextItem(srcXml, ISSUE2641_SRC_XPATH);
-    assertEquals("ISO-8859-1", msg.getCharEncoding());
+    assertEquals("ISO-8859-1", msg.getContentEncoding());
 
     XmlTransformService service = new XmlTransformService();
     service.setUrl(PROPERTIES.getProperty(KEY_ISSUE2641_TRANSFORM_URL));
     service.setOutputMessageEncoding("UTF-8");
     execute(service, msg);
 
-    assertEquals("UTF-8", msg.getCharEncoding());
+    assertEquals("UTF-8", msg.getContentEncoding());
     Document destXml = createDocument(msg.getPayload());
 
     XPath destXpath = new XPath();
@@ -635,16 +635,16 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     DefaultMessageFactory factory = new DefaultMessageFactory();
     factory.setDefaultCharEncoding("ISO-8859-1");
     AdaptrisMessage msg = TransformHelper.createMessage(factory, PROPERTIES.getProperty(KEY_ISSUE2641_INPUT));
-    Document srcXml = createDocument(msg.getPayload());
-    assertEquals("ISO-8859-1", msg.getCharEncoding());
+    createDocument(msg.getPayload());
+    assertEquals("ISO-8859-1", msg.getContentEncoding());
 
     XmlTransformService service = new XmlTransformService();
     service.setUrl(PROPERTIES.getProperty(KEY_ISSUE2641_TRANSFORM_URL));
     execute(service, msg);
 
-    assertEquals("ISO-8859-1", msg.getCharEncoding());
+    assertEquals("ISO-8859-1", msg.getContentEncoding());
     try {
-      Document destXml = createDocument(msg.getPayload());
+      createDocument(msg.getPayload());
       // Should fail.
       fail("Really should have failed, UTF-8 should allow you to do this.");
     }

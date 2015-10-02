@@ -41,7 +41,7 @@ public class MetadataContentTypeProviderTest {
     MetadataContentTypeProvider provider = new MetadataContentTypeProvider(testName.getMethodName());
 
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("");
-    msg.setCharEncoding("UTF-8");
+    msg.setContentEncoding("UTF-8");
     msg.addMetadata(testName.getMethodName(), "text/complicated");
 
     String contentType = provider.getContentType(msg);
@@ -65,7 +65,7 @@ public class MetadataContentTypeProviderTest {
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("");
     msg.addMetadata(testName.getMethodName(), "text/complicated");
     try {
-      String contentType = provider.getContentType(msg);
+      provider.getContentType(msg);
       fail();
     } catch (CoreException expected) {
 

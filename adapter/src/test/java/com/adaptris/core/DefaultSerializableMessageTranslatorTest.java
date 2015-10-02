@@ -46,17 +46,17 @@ public class DefaultSerializableMessageTranslatorTest extends TestCase {
   
   public void testCharEncoding() throws Exception {
     AdaptrisMessage message = DefaultMessageFactory.getDefaultInstance().newMessage("SomePayload");
-    message.setCharEncoding("UTF-8");
+    message.setContentEncoding("UTF-8");
     
     DefaultSerializableMessageTranslator translator = new DefaultSerializableMessageTranslator();
     SerializableAdaptrisMessage translated = translator.translate(message);
     
-    assertEquals(message.getCharEncoding(), translated.getContentEncoding());
+    assertEquals(message.getContentEncoding(), translated.getContentEncoding());
   }
   
   public void testExceptionMessage() throws Exception {
     AdaptrisMessage message = DefaultMessageFactory.getDefaultInstance().newMessage();
-    message.addObjectMetadata(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("An Error Happened"));
+    message.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("An Error Happened"));
 
     DefaultSerializableMessageTranslator translator = new DefaultSerializableMessageTranslator();
     SerializableAdaptrisMessage translated = translator.translate(message);

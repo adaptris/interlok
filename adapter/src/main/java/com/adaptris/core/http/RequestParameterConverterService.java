@@ -83,7 +83,7 @@ public class RequestParameterConverterService extends ServiceImp {
   public void doService(AdaptrisMessage msg) throws ServiceException {
     String charset = "UTF-8";
     try {
-      if (!msg.containsKey(contentTypeKey)) {
+      if (!msg.headersContainsKey(contentTypeKey)) {
         log.debug(contentTypeKey + " not found in metadata, ignoring");
         return;
       }
@@ -98,12 +98,12 @@ public class RequestParameterConverterService extends ServiceImp {
       if (contentType.getParameter(CONTENT_TYPE_CHARSET) != null) {
         charset = contentType.getParameter(CONTENT_TYPE_CHARSET);
       }
-      Properties p = formDataToProperties(msg.getStringPayload(), charset);
+      Properties p = formDataToProperties(msg.getContent(), charset);
       for (Iterator i = p.entrySet().iterator(); i.hasNext();) {
         Map.Entry e = (Map.Entry) i.next();
         if (getParameterForPayload() != null
             && getParameterForPayload().equalsIgnoreCase((String) e.getKey())) {
-          msg.setStringPayload((String) e.getValue(), charset);
+          msg.setContent((String) e.getValue(), charset);
         }
         else {
           msg.addMetadata((String) e.getKey(), (String) e.getValue());

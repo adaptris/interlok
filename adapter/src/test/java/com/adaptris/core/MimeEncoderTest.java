@@ -57,7 +57,7 @@ public class MimeEncoderTest extends TestCase {
     ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
     AdaptrisMessage result = mimeEncoder.readMessage(in);
     assertEquals(METADATA_VALUE, result.getMetadataValue(METADATA_KEY));
-    assertEquals(STANDARD_PAYLOAD, result.getStringPayload());
+    assertEquals(STANDARD_PAYLOAD, result.getContent());
     assertTrue(MessageDigest.isEqual(STANDARD_PAYLOAD.getBytes(), result.getPayload()));
   }
 
@@ -90,22 +90,22 @@ public class MimeEncoderTest extends TestCase {
     ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
     AdaptrisMessage result = mimeEncoder.readMessage(in);
     assertEquals(METADATA_VALUE, result.getMetadataValue(METADATA_KEY));
-    assertEquals(STANDARD_PAYLOAD_NON_JUST_ALPHA, result.getStringPayload());
+    assertEquals(STANDARD_PAYLOAD_NON_JUST_ALPHA, result.getContent());
     assertTrue(MessageDigest.isEqual(STANDARD_PAYLOAD_NON_JUST_ALPHA.getBytes(), result.getPayload()));
   }
 
   public void testRoundTrip_WithException() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD);
     msg.addMetadata(METADATA_KEY, METADATA_VALUE);
-    msg.getObjectMetadata().put(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception(getName()));
+    msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception(getName()));
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     mimeEncoder.writeMessage(msg, out);
     ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
     AdaptrisMessage result = mimeEncoder.readMessage(in);
     assertEquals(METADATA_VALUE, result.getMetadataValue(METADATA_KEY));
-    assertEquals(STANDARD_PAYLOAD, result.getStringPayload());
+    assertEquals(STANDARD_PAYLOAD, result.getContent());
     assertTrue(MessageDigest.isEqual(STANDARD_PAYLOAD.getBytes(), result.getPayload()));
-    assertFalse(result.getObjectMetadata().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION));
+    assertFalse(result.getObjectHeaders().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION));
   }
 
   public void testRoundTrip_Encoded() throws Exception {
@@ -119,7 +119,7 @@ public class MimeEncoderTest extends TestCase {
     ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
     AdaptrisMessage result = mimeEncoder.readMessage(in);
     assertEquals(METADATA_VALUE, result.getMetadataValue(METADATA_KEY));
-    assertEquals(STANDARD_PAYLOAD, result.getStringPayload());
+    assertEquals(STANDARD_PAYLOAD, result.getContent());
     assertTrue(MessageDigest.isEqual(STANDARD_PAYLOAD.getBytes(), result.getPayload()));
   }
 
@@ -135,7 +135,7 @@ public class MimeEncoderTest extends TestCase {
     ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
     AdaptrisMessage result = roundtripper.readMessage(in);
     assertEquals(METADATA_VALUE, result.getMetadataValue(METADATA_KEY));
-    assertEquals(STANDARD_PAYLOAD, result.getStringPayload());
+    assertEquals(STANDARD_PAYLOAD, result.getContent());
     assertTrue(MessageDigest.isEqual(STANDARD_PAYLOAD.getBytes(), result.getPayload()));
   }
 
@@ -179,14 +179,14 @@ public class MimeEncoderTest extends TestCase {
     msg.addMetadata(METADATA_KEY, METADATA_VALUE);
     AdaptrisMessage result = mimeEncoder.decode(mimeEncoder.encode(msg));
     assertEquals(METADATA_VALUE, result.getMetadataValue(METADATA_KEY));
-    assertEquals(STANDARD_PAYLOAD, result.getStringPayload());
+    assertEquals(STANDARD_PAYLOAD, result.getContent());
     assertTrue(MessageDigest.isEqual(STANDARD_PAYLOAD.getBytes(), result.getPayload()));
   }
 
   public void testDecode_IgnoreExtraParts() throws Exception {
     AdaptrisMessage result = mimeEncoder.decode(createMimeOutput(true, true));
     assertEquals(METADATA_VALUE, result.getMetadataValue(METADATA_KEY));
-    assertEquals(STANDARD_PAYLOAD, result.getStringPayload());
+    assertEquals(STANDARD_PAYLOAD, result.getContent());
     assertTrue(MessageDigest.isEqual(STANDARD_PAYLOAD.getBytes(), result.getPayload()));
   }
 

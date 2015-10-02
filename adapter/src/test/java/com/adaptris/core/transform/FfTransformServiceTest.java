@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
-import java.security.MessageDigest;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -21,7 +20,6 @@ import com.adaptris.core.lms.FileBackedMessageFactory;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.text.xml.XPath;
 
-@SuppressWarnings("deprecation")
 public class FfTransformServiceTest extends TransformServiceExample {
 
   private static final String ISO_8859_1 = "ISO-8859-1";
@@ -66,7 +64,7 @@ public class FfTransformServiceTest extends TransformServiceExample {
   }
 
   public void testDoServiceWithCache() throws Exception {
-    String inputFile = PROPERTIES.getProperty(KEY_FF_TEST_INPUT);
+    PROPERTIES.getProperty(KEY_FF_TEST_INPUT);
     AdaptrisMessage m1 = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_FF_TEST_INPUT));
     AdaptrisMessage m2 = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_FF_TEST_INPUT));
     FfTransformService service = createService();
@@ -75,7 +73,7 @@ public class FfTransformServiceTest extends TransformServiceExample {
       start(service);
       service.doService(m1);
       service.doService(m2);
-      assertEquals(m1.getStringPayload(), m2.getStringPayload());
+      assertEquals(m1.getContent(), m2.getContent());
       assertXml(m1);
       assertXml(m2);
     }
@@ -85,7 +83,7 @@ public class FfTransformServiceTest extends TransformServiceExample {
   }
 
   public void testDoServiceWithCacheDisabled() throws Exception {
-    String inputFile = PROPERTIES.getProperty(KEY_FF_TEST_INPUT);
+    PROPERTIES.getProperty(KEY_FF_TEST_INPUT);
     AdaptrisMessage m1 = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_FF_TEST_INPUT));
     AdaptrisMessage m2 = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_FF_TEST_INPUT));
     FfTransformService service = createService();
@@ -94,7 +92,7 @@ public class FfTransformServiceTest extends TransformServiceExample {
       start(service);
       service.doService(m1);
       service.doService(m2);
-      assertEquals(m1.getStringPayload(), m2.getStringPayload());
+      assertEquals(m1.getContent(), m2.getContent());
       assertXml(m1);
     }
     finally {
@@ -144,7 +142,7 @@ public class FfTransformServiceTest extends TransformServiceExample {
       start(service);
       service.doService(m1);
       service.doService(m2);
-      assertEquals(m1.getStringPayload(), m2.getStringPayload());
+      assertEquals(m1.getContent(), m2.getContent());
       assertXml(m1);
       assertXml(m2);
     }
@@ -172,9 +170,9 @@ public class FfTransformServiceTest extends TransformServiceExample {
     factory.setDefaultCharEncoding(UTF_8);
     AdaptrisMessage msg = TransformHelper.createMessage(factory, PROPERTIES.getProperty(KEY_FF_TEST_INPUT_ISO));
     execute(service, msg);
-    Document doc = XmlHelper.createDocument(msg);
+    Document doc = XmlHelper.createDocument(msg, false);
     XPath xp = new XPath();
-    String srcDest = xp.selectSingleTextItem(doc, XPATH_HDR_SOURCE_DESCRIPTION);
+    xp.selectSingleTextItem(doc, XPATH_HDR_SOURCE_DESCRIPTION);
     assertNotSame(createISOString(7), xp.selectSingleTextItem(doc, XPATH_HDR_SOURCE_DESCRIPTION));
 
   }
@@ -185,9 +183,9 @@ public class FfTransformServiceTest extends TransformServiceExample {
     factory.setDefaultCharEncoding(ISO_8859_1);
     AdaptrisMessage msg = TransformHelper.createMessage(factory, PROPERTIES.getProperty(KEY_FF_TEST_INPUT_ISO));
     execute(service, msg);
-    Document doc = XmlHelper.createDocument(msg);
+    Document doc = XmlHelper.createDocument(msg, false);
     XPath xp = new XPath();
-    String srcDest = xp.selectSingleTextItem(doc, XPATH_HDR_SOURCE_DESCRIPTION);
+    xp.selectSingleTextItem(doc, XPATH_HDR_SOURCE_DESCRIPTION);
     assertEquals(createISOString(7), xp.selectSingleTextItem(doc, XPATH_HDR_SOURCE_DESCRIPTION));
   }
 
@@ -201,7 +199,7 @@ public class FfTransformServiceTest extends TransformServiceExample {
 
     execute(service, msg);
     String srcValue = createExpectedValueFor2661();
-    assertEquals(UTF_8, msg.getCharEncoding());
+    assertEquals(UTF_8, msg.getContentEncoding());
 
     Document destXml = createDocument(msg.getPayload());
     XPath xpath = new XPath();
@@ -217,11 +215,11 @@ public class FfTransformServiceTest extends TransformServiceExample {
     AdaptrisMessage msg = TransformHelper.createMessage(factory, PROPERTIES.getProperty(KEY_ISSUE_2661_INPUT));
 
     execute(service, msg);
-    String srcValue = createExpectedValueFor2661();
+    createExpectedValueFor2661();
 
-    assertEquals(ISO_8859_1, msg.getCharEncoding());
+    assertEquals(ISO_8859_1, msg.getContentEncoding());
     try {
-      Document destXml = createDocument(msg.getPayload());
+      createDocument(msg.getPayload());
       // Should fail.
       fail("Really should have failed, UTF-8 should allow you to do this.");
     }
@@ -253,16 +251,10 @@ public class FfTransformServiceTest extends TransformServiceExample {
   }
 
   private void assertXml(AdaptrisMessage msg) throws Exception {
-    Document doc = XmlHelper.createDocument(msg);
+    Document doc = XmlHelper.createDocument(msg, false);
     XPath xp = new XPath();
     assertEquals("HDR", xp.selectSingleTextItem(doc, XPATH_HDR_RECORD_TYPE));
     assertEquals("TRL", xp.selectSingleTextItem(doc, XPATH_TRL_RECORD_TYPE));
-  }
-
-  // Compare the byte array we have against an array of 0xFC
-  private boolean compareExpected(byte[] b1, int checkSize) {
-    byte[] b2 = createUmlaut_U(checkSize);
-    return MessageDigest.isEqual(b1, b2);
   }
 
   private String createISOString(int size) {

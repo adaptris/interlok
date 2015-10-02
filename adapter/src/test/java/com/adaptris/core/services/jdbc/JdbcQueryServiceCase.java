@@ -304,7 +304,7 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
     ResultSetTranslator t = createTranslatorForConfig();
     s.setResultSetTranslator(t);
     AdaptrisMessage msg = createMessage(entry);
-    msg.setStringPayload(STRING_PAYLOAD);
+    msg.setContent(STRING_PAYLOAD, msg.getContentEncoding());
     try {
       execute(s, msg);
       assertFalse(msg.containsKey(JdbcDataQueryService.class.getCanonicalName()));

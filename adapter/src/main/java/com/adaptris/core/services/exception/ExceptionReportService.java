@@ -68,13 +68,13 @@ public class ExceptionReportService extends ServiceImp {
   public void doService(AdaptrisMessage msg) throws ServiceException {
     OutputStream out = null;
     try {
-      if (msg.getObjectMetadata().containsKey(OBJ_METADATA_EXCEPTION)) {
-        Exception e = (Exception) msg.getObjectMetadata().get(OBJ_METADATA_EXCEPTION);
+      if (msg.getObjectHeaders().containsKey(OBJ_METADATA_EXCEPTION)) {
+        Exception e = (Exception) msg.getObjectHeaders().get(OBJ_METADATA_EXCEPTION);
         Document newDoc = getExceptionGenerator().create(e);
         Document result = getDocumentMerge().merge(XmlHelper.createDocument(msg, true), newDoc);
         out = msg.getOutputStream();
         new XmlUtils().writeDocument(result, out, getXmlEncoding());
-        msg.setCharEncoding(getXmlEncoding());
+        msg.setContentEncoding(getXmlEncoding());
       }
       else {
         log.debug("No Exception in object metadata, nothing to do.");

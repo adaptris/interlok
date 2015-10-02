@@ -72,7 +72,7 @@ public class PayloadFromMetadataService extends ServiceImp {
         log.trace(kvp.getKey() + " returns no value; no substitution");
       }
     }
-    msg.setStringPayload(payload, msg.getCharEncoding());
+    msg.setContent(payload, msg.getContentEncoding());
   }
   
 

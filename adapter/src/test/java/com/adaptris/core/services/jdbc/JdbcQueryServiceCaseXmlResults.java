@@ -67,7 +67,7 @@ public abstract class JdbcQueryServiceCaseXmlResults extends JdbcQueryServiceCas
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
     logMessage(getName(), msg);
-    assertEquals("UTF-8", msg.getCharEncoding());
+    assertEquals("UTF-8", msg.getContentEncoding());
   }
 
   public void testDoService_WithEncodingUnspecified() throws Exception {
@@ -82,7 +82,7 @@ public abstract class JdbcQueryServiceCaseXmlResults extends JdbcQueryServiceCas
     execute(s, msg);
     logMessage(getName(), msg);
 
-    assertEquals("UTF-8", msg.getCharEncoding());
+    assertEquals("UTF-8", msg.getContentEncoding());
   }
 
   public void testDoService_WithEncodingFromMsgFactory() throws Exception {
@@ -98,7 +98,7 @@ public abstract class JdbcQueryServiceCaseXmlResults extends JdbcQueryServiceCas
     AdaptrisMessage msg = createMessage(mf, null, entry);
     execute(s, msg);
     logMessage(getName(), msg);
-    assertEquals("UTF-8", msg.getCharEncoding());
+    assertEquals("UTF-8", msg.getContentEncoding());
   }
 
   private void logMessage(String prefix, AdaptrisMessage msg) throws Exception {
@@ -195,7 +195,7 @@ public abstract class JdbcQueryServiceCaseXmlResults extends JdbcQueryServiceCas
     execute(s, msg);
     logMessage(getName(), msg);
     try {
-      XmlUtils xu = XmlHelper.createXmlUtils(msg);
+      XmlHelper.createXmlUtils(msg, null);
       fail();
     }
     catch (CoreException e) {
@@ -216,7 +216,7 @@ public abstract class JdbcQueryServiceCaseXmlResults extends JdbcQueryServiceCas
     execute(s, msg);
     logMessage(getName(), msg);
     // Illegals should have been stripped, so this should be OK for a given range of "OK"
-    XmlUtils xu = XmlHelper.createXmlUtils(msg);
+    XmlHelper.createXmlUtils(msg, null);
   }
 
   public void testDoService_IllegalElementNames_ColumnHasSpaces() throws Exception {
@@ -233,7 +233,7 @@ public abstract class JdbcQueryServiceCaseXmlResults extends JdbcQueryServiceCas
     execute(s, msg);
     logMessage(getName(), msg);
     // Illegals should have been stripped, so this should be OK for a given range of "OK"
-    XmlUtils xu = XmlHelper.createXmlUtils(msg);
+    XmlHelper.createXmlUtils(msg, null);
   }
 
   public void testDoService_IllegalElementNames_BlankElementName() throws Exception {
@@ -251,7 +251,7 @@ public abstract class JdbcQueryServiceCaseXmlResults extends JdbcQueryServiceCas
     execute(s, msg);
     logMessage(getName(), msg);
     // Illegals should have been stripped, so this should be OK for a given range of "OK"
-    XmlUtils xu = XmlHelper.createXmlUtils(msg);
+    XmlHelper.createXmlUtils(msg, null);
   }
 
   protected static List<AdapterTypeVersion> generateWithXmlColumn(int max) throws Exception {
@@ -259,7 +259,7 @@ public abstract class JdbcQueryServiceCaseXmlResults extends JdbcQueryServiceCas
     String tagStart = "<xml-tag>";
     String tagEnd = "</xml-tag>";
     List<AdapterTypeVersion> result = new ArrayList<AdapterTypeVersion>(max);
-    String illegal = new String(new byte[]
+    new String(new byte[]
     {
       0x02
     });

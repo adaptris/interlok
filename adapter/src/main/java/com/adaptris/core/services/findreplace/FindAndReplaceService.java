@@ -57,12 +57,12 @@ public class FindAndReplaceService extends ServiceImp {
     // Standard AdaptrisMessages provide Null Production for msgs.getStringPayload()
     String result = null;
     if (replaceFirstOnly()) {
-      result = msg.getStringPayload().replaceFirst(toReplace, replaceWith);
+      result = msg.getContent().replaceFirst(toReplace, replaceWith);
     }
     else {
-      result = msg.getStringPayload().replaceAll(toReplace, replaceWith);
+      result = msg.getContent().replaceAll(toReplace, replaceWith);
     }
-    msg.setStringPayload(result, msg.getCharEncoding());
+    msg.setContent(result, msg.getContentEncoding());
   }
 
   /** @see com.adaptris.core.AdaptrisComponent#init() */

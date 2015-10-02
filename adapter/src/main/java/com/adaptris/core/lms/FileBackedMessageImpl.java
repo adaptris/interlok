@@ -119,28 +119,7 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
    **/
   @Deprecated
   public void setStringPayload(String payloadString, String charEnc) {
-    // If we don't have a file and we're setting the payload to be empty, don't do anything
-    if(inputFile == null && StringUtils.isEmpty(payloadString)) {
-      return;
-    }
-
-    PrintStream p = null;
-    try {
-      if (!isEmpty(charEnc)) {
-        p = new PrintStream(getOutputStream(), true, charEnc);
-      }
-      else {
-        p = new PrintStream(getOutputStream(), true);
-      }
-      p.print(payloadString != null ? payloadString : "");
-      setCharEncoding(charEnc);
-    }
-    catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-    finally {
-      IOUtils.closeQuietly(p);
-    }
+    this.setContent(payloadString, charEnc);
   }
   
   @Override
@@ -241,7 +220,7 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
     boolean result = false;
 
     if (areEqual(getUniqueId(), other.getUniqueId())) {
-      if (areEqual(getCharEncoding(), other.getCharEncoding())) {
+      if (areEqual(getContentEncoding(), other.getContentEncoding())) {
         if (this.getMetadata().equals(other.getMetadata())) {
           result = true;
         }

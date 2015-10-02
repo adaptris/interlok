@@ -50,7 +50,7 @@ public class RegexpMetadataServiceTest extends MetadataServiceExample {
     RegexpMetadataService service = createService();
     execute(service, msg);
     try {
-      msg.setStringPayload(ALTERNATE_PAYLOAD);
+      msg.setContent(ALTERNATE_PAYLOAD, msg.getContentEncoding());
       execute(service, msg);
       fail("Expected serviceException");
     }

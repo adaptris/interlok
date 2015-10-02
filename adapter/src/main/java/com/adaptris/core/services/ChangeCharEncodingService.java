@@ -41,7 +41,7 @@ public class ChangeCharEncodingService extends ServiceImp {
    */
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    msg.setCharEncoding(getCharEncoding());
+    msg.setContentEncoding(getCharEncoding());
   }
 
   /** @see com.adaptris.core.AdaptrisComponent#init() */

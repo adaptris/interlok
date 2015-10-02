@@ -124,7 +124,7 @@ public abstract class XmlPayloadTranslatorImpl extends ResultSetTranslatorImp {
   protected static XmlUtils createXmlUtils(AdaptrisMessage msg) {
     XmlUtils xu = null;
     try {
-      xu = XmlHelper.createXmlUtils(msg, (NamespaceContext) msg.getObjectMetadata().get(JdbcDataQueryService.KEY_NAMESPACE_CTX));
+      xu = XmlHelper.createXmlUtils(msg, (NamespaceContext) msg.getObjectHeaders().get(JdbcDataQueryService.KEY_NAMESPACE_CTX));
     }
     catch (CoreException e) {
       xu = new XmlUtils();
@@ -260,8 +260,8 @@ public abstract class XmlPayloadTranslatorImpl extends ResultSetTranslatorImp {
     if (!isEmpty(getOutputMessageEncoding())) {
       encoding = getOutputMessageEncoding();
     }
-    else if (!isEmpty(msg.getCharEncoding())) {
-      encoding = msg.getCharEncoding();
+    else if (!isEmpty(msg.getContentEncoding())) {
+      encoding = msg.getContentEncoding();
     }
     return encoding;
   }
@@ -279,7 +279,7 @@ public abstract class XmlPayloadTranslatorImpl extends ResultSetTranslatorImp {
       String encoding = evaluateEncoding(msg);
       out = msg.getOutputStream();
       new XmlUtils().writeDocument(doc, out, encoding);
-      msg.setCharEncoding(encoding);
+      msg.setContentEncoding(encoding);
     }
     finally {
       IOUtils.closeQuietly(out);

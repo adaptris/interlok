@@ -48,7 +48,7 @@ public class RequestParameterConverterServiceTest extends HttpServiceExample {
     start(service);
 
     service.doService(msg);
-    assertEquals("Payload should be ignored", payload, msg.getStringPayload());
+    assertEquals("Payload should be ignored", payload, msg.getContent());
     assertTrue("Metadata size = 0", msg.getMetadata().size() == 0);
   }
 
@@ -59,7 +59,7 @@ public class RequestParameterConverterServiceTest extends HttpServiceExample {
     msg.addMetadata(Http.CONTENT_TYPE, "application/xml");
     start(service);
     service.doService(msg);
-    assertEquals("Payload should be ignored", payload, msg.getStringPayload());
+    assertEquals("Payload should be ignored", payload, msg.getContent());
     assertEquals("Metadata Count", 1, msg.getMetadata().size());
   }
 
@@ -73,7 +73,7 @@ public class RequestParameterConverterServiceTest extends HttpServiceExample {
     start(service);
 
     service.doService(msg);
-    assertEquals("Payload Equality", TEST_VALUE, msg.getStringPayload());
+    assertEquals("Payload Equality", TEST_VALUE, msg.getContent());
     assertEquals("Metadata Count", 11, msg.getMetadata().size());
   }
 
@@ -87,7 +87,7 @@ public class RequestParameterConverterServiceTest extends HttpServiceExample {
     start(service);
 
     service.doService(msg);
-    assertEquals("Payload Equality", XML_VALUE, msg.getStringPayload());
+    assertEquals("Payload Equality", XML_VALUE, msg.getContent());
     assertEquals("Metadata Count", 11, msg.getMetadata().size());
   }
 
@@ -99,7 +99,7 @@ public class RequestParameterConverterServiceTest extends HttpServiceExample {
     start(service);
 
     service.doService(msg);
-    assertEquals("Payload Equality", payload, msg.getStringPayload());
+    assertEquals("Payload Equality", payload, msg.getContent());
     assertEquals("Metadata Count", 12, msg.getMetadata().size());
     assertEquals("Metadata value", TEST_VALUE, msg.getMetadataValue(SAVE_PARAM));
   }
@@ -114,9 +114,9 @@ public class RequestParameterConverterServiceTest extends HttpServiceExample {
     start(service);
 
     service.doService(msg);
-    assertEquals("Payload Equality", TEST_VALUE, msg.getStringPayload());
+    assertEquals("Payload Equality", TEST_VALUE, msg.getContent());
     assertEquals("Metadata Count", 11, msg.getMetadata().size());
-    assertEquals("Message Encoding", "ISO-8859-1", msg.getCharEncoding());
+    assertEquals("Message Encoding", "ISO-8859-1", msg.getContentEncoding());
   }
 
   private Properties createProperties() {

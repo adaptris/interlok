@@ -93,7 +93,7 @@ public class LineCountSplitterTest extends SplitterCase {
 
   public void testDefaultSplit_WithCharEncoding() throws Exception {
     LineCountSplitter s = new LineCountSplitter();
-    msg.setCharEncoding(System.getProperty("file.encoding"));
+    msg.setContentEncoding(System.getProperty("file.encoding"));
     List<AdaptrisMessage> msgs = toList(s.splitMessage(msg));
     assertEquals("10 split messages", 10, msgs.size());
   }
@@ -122,26 +122,26 @@ public class LineCountSplitterTest extends SplitterCase {
   }
 
   public void testSplitMessage() throws Exception {
-    Object obj = "ABCDEFG";
-    msg.getObjectMetadata().put(obj, obj);
+    String obj = "ABCDEFG";
+    msg.addObjectHeader(obj, obj);
     LineCountSplitter s = new LineCountSplitter();
     List<AdaptrisMessage> result = toList(s.splitMessage(msg));
     assertEquals("10 split messages", 10, result.size());
     for (AdaptrisMessage m : result) {
-      assertFalse("Should not contain object metadata", m.getObjectMetadata().containsKey(obj));
+      assertFalse("Should not contain object metadata", m.getObjectHeaders().containsKey(obj));
     }
   }
 
   public void testSplitMessageWithObjectMetadata() throws Exception {
-    Object obj = "ABCDEFG";
-    msg.getObjectMetadata().put(obj, obj);
+    String obj = "ABCDEFG";
+    msg.addObjectHeader(obj, obj);
     LineCountSplitter s = new LineCountSplitter();
     s.setCopyObjectMetadata(true);
     List<AdaptrisMessage> result = toList(s.splitMessage(msg));
     assertEquals("10 split messages", 10, result.size());
     for (AdaptrisMessage m : result) {
-      assertTrue("Should contain object metadata", m.getObjectMetadata().containsKey(obj));
-      assertEquals(obj, m.getObjectMetadata().get(obj));
+      assertTrue("Should contain object metadata", m.getObjectHeaders().containsKey(obj));
+      assertEquals(obj, m.getObjectHeaders().get(obj));
     }
   }
   

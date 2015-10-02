@@ -46,15 +46,15 @@ public class DefaultSerializableMessageTranslator implements SerializableMessage
       serializedMsg.setContent(buildFileDetails(((FileBackedMessage) message).currentSource()));
     }
     else {
-      serializedMsg.setContent(message.getStringPayload());
+      serializedMsg.setContent(message.getContent());
     }
     serializedMsg.setUniqueId(message.getUniqueId());
-    serializedMsg.setContentEncoding(message.getCharEncoding());
+    serializedMsg.setContentEncoding(message.getContentEncoding());
     serializedMsg.setMetadata(message.getMetadata());
     
     // do we have a failed/error'd message?
-    if(message.getObjectMetadata().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION))
-      serializedMsg.addMetadata(CoreConstants.OBJ_METADATA_EXCEPTION, ((Throwable) message.getObjectMetadata().get(CoreConstants.OBJ_METADATA_EXCEPTION)).getMessage());
+    if(message.getObjectHeaders().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION))
+      serializedMsg.addMetadata(CoreConstants.OBJ_METADATA_EXCEPTION, ((Throwable) message.getObjectHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION)).getMessage());
       
     return serializedMsg;
   }

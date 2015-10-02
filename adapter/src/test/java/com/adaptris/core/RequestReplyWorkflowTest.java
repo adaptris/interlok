@@ -3,9 +3,6 @@ package com.adaptris.core;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.JmsReplyToDestination;
 import com.adaptris.core.jms.PtpConsumer;
@@ -32,8 +29,6 @@ public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
   // private MockMessageConsumer consumer;
   // private MockRequestReplyProducer producer;
   // private MockMessageProducer replyProducer;
-
-  private static Log logR = LogFactory.getLog(RequestReplyWorkflowTest.class);
 
   public RequestReplyWorkflowTest(java.lang.String testName) {
     super(testName);
@@ -88,7 +83,7 @@ public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
       submitMessages(workflow, 1);
       doDefaultAssertions(requestor, replier);
       AdaptrisMessage replyMsg = replier.getMessages().get(0);
-      assertTrue("Request Metadata", replyMsg.containsKey(REQUEST_METADATA_KEY));
+      assertTrue("Request Metadata", replyMsg.headersContainsKey(REQUEST_METADATA_KEY));
     }
     finally {
       stop(channel);
@@ -106,7 +101,7 @@ public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
       submitMessages(workflow, 1);
       doDefaultAssertions(requestor, replier);
       AdaptrisMessage replyMsg = replier.getMessages().get(0);
-      assertTrue("Request Metadata", replyMsg.containsKey(REQUEST_METADATA_KEY));
+      assertTrue("Request Metadata", replyMsg.headersContainsKey(REQUEST_METADATA_KEY));
     }
     finally {
       stop(channel);
@@ -128,7 +123,7 @@ public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
       submitMessages(workflow, 1);
       doDefaultAssertions(requestor, replier);
       AdaptrisMessage replyMsg = replier.getMessages().get(0);
-      assertTrue("Request Metadata", replyMsg.containsKey(REQUEST_METADATA_KEY));
+      assertTrue("Request Metadata", replyMsg.headersContainsKey(REQUEST_METADATA_KEY));
       assertEquals(1, interceptor.messageCount());
     }
     finally {
@@ -146,13 +141,13 @@ public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
       start(channel);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx");
       msg.addMetadata(REQUEST_METADATA_KEY, REQUEST_METADATA_VALUE);
-      msg.getObjectMetadata().put(REQUEST_OBJ_METADATA_KEY, this);
+      msg.addObjectHeader(REQUEST_OBJ_METADATA_KEY, this);
       MockMessageConsumer m = (MockMessageConsumer) workflow.getConsumer();
       m.submitMessage(msg);
       doDefaultAssertions(requestor, replier);
       AdaptrisMessage replyMsg = replier.getMessages().get(0);
-      assertTrue("Request Metadata", replyMsg.containsKey(REQUEST_METADATA_KEY));
-      assertTrue("Contains object metadata", replyMsg.getObjectMetadata().containsKey(REQUEST_OBJ_METADATA_KEY));
+      assertTrue("Request Metadata", replyMsg.headersContainsKey(REQUEST_METADATA_KEY));
+      assertTrue("Contains object metadata", replyMsg.getObjectHeaders().containsKey(REQUEST_OBJ_METADATA_KEY));
     }
     finally {
       stop(channel);
@@ -171,8 +166,8 @@ public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
       submitMessages(workflow, 1);
       doDefaultAssertions(requestor, replier);
       AdaptrisMessage reply = replier.getMessages().get(0);
-      assertTrue("Contains Request Metadata key", reply.containsKey(REQUEST_METADATA_KEY));
-      assertFalse("Reply Metadata key", reply.containsKey(MockRequestReplyProducer.REPLY_METADATA_KEY));
+      assertTrue("Contains Request Metadata key", reply.headersContainsKey(REQUEST_METADATA_KEY));
+      assertFalse("Reply Metadata key", reply.headersContainsKey(MockRequestReplyProducer.REPLY_METADATA_KEY));
     }
     finally {
       stop(channel);
@@ -191,8 +186,8 @@ public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
       submitMessages(workflow, 1);
       doDefaultAssertions(requestor, replier);
       AdaptrisMessage reply = replier.getMessages().get(0);
-      assertTrue("Contains Request Metadata key", reply.containsKey(REQUEST_METADATA_KEY));
-      assertTrue("Reply Metadata key", reply.containsKey(MockRequestReplyProducer.REPLY_METADATA_KEY));
+      assertTrue("Contains Request Metadata key", reply.headersContainsKey(REQUEST_METADATA_KEY));
+      assertTrue("Reply Metadata key", reply.headersContainsKey(MockRequestReplyProducer.REPLY_METADATA_KEY));
     }
     finally {
       stop(channel);

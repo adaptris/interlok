@@ -25,7 +25,7 @@ public class FormattedMetadataDestinationTest extends ExampleProduceDestinationC
     FormattedMetadataDestination dest = new FormattedMetadataDestination();
     dest.addMetadataKey("key1");
     dest.addMetadataKey("key2");
-    List keys = new ArrayList();
+    List<String> keys = new ArrayList<>();
     keys.add("key1");
     keys.add("key2");
 
@@ -36,7 +36,7 @@ public class FormattedMetadataDestinationTest extends ExampleProduceDestinationC
     FormattedMetadataDestination dest = new FormattedMetadataDestination();
     dest.addMetadataKey("key1");
     dest.addMetadataKey("key2");
-    List keys = new ArrayList();
+    List<String> keys = new ArrayList<>();
     keys.add("key1");
     keys.add("key2");
     dest.setMetadataKeys(keys);
@@ -62,7 +62,7 @@ public class FormattedMetadataDestinationTest extends ExampleProduceDestinationC
     FormattedMetadataDestination dest = new FormattedMetadataDestination();
     dest.addObjectMetadataKey("key1");
     dest.addObjectMetadataKey("key2");
-    List keys = new ArrayList();
+    List<String> keys = new ArrayList<>();
     keys.add("key1");
     keys.add("key2");
 
@@ -71,7 +71,7 @@ public class FormattedMetadataDestinationTest extends ExampleProduceDestinationC
 
   public void testSetObjectMetadataKeys() {
     FormattedMetadataDestination dest = new FormattedMetadataDestination();
-    List keys = new ArrayList();
+    List<String> keys = new ArrayList<>();
     keys.add("key1");
     keys.add("key2");
     dest.setObjectMetadataKeys(keys);
@@ -110,7 +110,7 @@ public class FormattedMetadataDestinationTest extends ExampleProduceDestinationC
     dest.addMetadataKey("key1");
     dest.addMetadataKey("key2");
     dest.setDestinationTemplate("/%1$s/%2$s");
-    Set metadata = new HashSet();
+    Set<MetadataElement> metadata = new HashSet<>();
     metadata.add(new MetadataElement("key1", "val1"));
     metadata.add(new MetadataElement("key2", "val2"));
 
@@ -124,7 +124,7 @@ public class FormattedMetadataDestinationTest extends ExampleProduceDestinationC
     dest.addMetadataKey("key1");
     dest.addMetadataKey("key2");
     dest.setDestinationTemplate("/%1$s/%2$s");
-    Set metadata = new HashSet();
+    Set<MetadataElement> metadata = new HashSet<>();
     metadata.add(new MetadataElement("key1", "val1"));
 
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("payload", metadata);
@@ -139,7 +139,7 @@ public class FormattedMetadataDestinationTest extends ExampleProduceDestinationC
     String expectedDate = String.format("%1$tF", d);
     dest.addObjectMetadataKey("timestamp");
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("payload");
-    msg.getObjectMetadata().put("timestamp", d);
+    msg.addObjectHeader("timestamp", d);
     assertEquals(expectedDate, dest.getDestination(msg));
   }
 
@@ -157,12 +157,12 @@ public class FormattedMetadataDestinationTest extends ExampleProduceDestinationC
     dest.addMetadataKey("key1");
     dest.addObjectMetadataKey("timestamp");
     dest.setDestinationTemplate("/%1$s/%2$tF");
-    Set metadata = new HashSet();
+    Set<MetadataElement> metadata = new HashSet<>();
     metadata.add(new MetadataElement("key1", "val1"));
     metadata.add(new MetadataElement("key2", "val2"));
 
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("payload", metadata);
-    msg.getObjectMetadata().put("timestamp", d);
+    msg.addObjectHeader("timestamp", d);
     assertTrue(expectedValue.equals(dest.getDestination(msg)));
 
   }
@@ -174,7 +174,7 @@ public class FormattedMetadataDestinationTest extends ExampleProduceDestinationC
     dest.addMetadataKey("key1");
     dest.addMetadataKey("key2");
     dest.setDestinationTemplate("/%1$s/%2$tF");
-    Set metadata = new HashSet();
+    Set<MetadataElement> metadata = new HashSet<>();
     metadata.add(new MetadataElement("key1", "val1"));
     metadata.add(new MetadataElement("key2", "val2"));
 

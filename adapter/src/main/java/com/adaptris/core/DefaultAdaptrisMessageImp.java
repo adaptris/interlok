@@ -37,7 +37,7 @@ public class DefaultAdaptrisMessageImp extends AdaptrisMessageImp {
 
     if (areEqual(getUniqueId(), other.getUniqueId())) {
       if (Arrays.equals(getPayload(), other.getPayload())) {
-        if (areEqual(getContentEncoding(), other.getCharEncoding())) {
+        if (areEqual(getContentEncoding(), other.getContentEncoding())) {
           if (this.getMetadata().equals(other.getMetadata())) {
             result = true;
           }

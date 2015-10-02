@@ -80,8 +80,8 @@ public class XpathDocumentCopierTest extends SplitterCase {
 
   public void testSplit() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_MESSAGE);
-    Object obj = "ABCDEFG";
-    msg.getObjectMetadata().put(obj, obj);
+    String obj = "ABCDEFG";
+    msg.addObjectHeader(obj, obj);
     XpathDocumentCopier splitter = new XpathDocumentCopier(XPATH_DOCUMENT_COUNT);
     List<AdaptrisMessage> result = splitter.splitMessage(msg);
     assertEquals(3, result.size());
@@ -92,8 +92,8 @@ public class XpathDocumentCopierTest extends SplitterCase {
 
   public void testSplit_EmptyXPath() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_MESSAGE);
-    Object obj = "ABCDEFG";
-    msg.getObjectMetadata().put(obj, obj);
+    String obj = "ABCDEFG";
+    msg.addObjectHeader(obj, obj);
     XpathDocumentCopier splitter = new XpathDocumentCopier("XXXX");
     List<AdaptrisMessage> result = splitter.splitMessage(msg);
     assertEquals(0, result.size());
@@ -101,8 +101,8 @@ public class XpathDocumentCopierTest extends SplitterCase {
 
   public void testSplitWithObjectMetadata() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_MESSAGE);
-    Object obj = "ABCDEFG";
-    msg.getObjectMetadata().put(obj, obj);
+    String obj = "ABCDEFG";
+    msg.addObjectHeader(obj, obj);
     XpathDocumentCopier splitter = new XpathDocumentCopier(XPATH_DOCUMENT_COUNT);
     splitter.setCopyObjectMetadata(true);
     List<AdaptrisMessage> result = splitter.splitMessage(msg);
@@ -115,7 +115,7 @@ public class XpathDocumentCopierTest extends SplitterCase {
 
   public void testSplitThrowsException() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_MESSAGE);
-    msg.setStringPayload(XML_MESSAGE);
+    msg.setContent(XML_MESSAGE, msg.getContentEncoding());
     XpathDocumentCopier splitter = new XpathDocumentCopier("/document/envelope[");
     try {
       List<AdaptrisMessage> result = splitter.splitMessage(msg);

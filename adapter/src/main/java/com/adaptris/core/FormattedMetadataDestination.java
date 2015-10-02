@@ -108,13 +108,13 @@ public class FormattedMetadataDestination implements ProduceDestination {
     List<Object> result = new ArrayList<>();
     for (String key : metadataKeys) {
       String param = "";
-      if (msg.containsKey(key)) {
+      if (msg.headersContainsKey(key)) {
         param = defaultIfEmpty(msg.getMetadataValue(key), "");
       }
       log.trace("Adding Metadata [{}]=[{}]", key, param);
       result.add(param);
     }
-    Map objectMetadata = msg.getObjectMetadata();
+    Map<?,?> objectMetadata = msg.getObjectHeaders();
     for (String key : objectMetadataKeys) {
       log.trace("Adding Object Metadata [{}]=[{}]", key, objectMetadata.get(key));
       result.add(objectMetadata.get(key));

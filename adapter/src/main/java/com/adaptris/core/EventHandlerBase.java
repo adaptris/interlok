@@ -67,7 +67,7 @@ public abstract class EventHandlerBase implements EventHandler {
     Event result = null;
 
     try {
-      result = (Event) currentMarshaller().unmarshal(msg.getStringPayload());
+      result = (Event) currentMarshaller().unmarshal(msg.getContent());
     }
     catch (Exception e) {
       if (e instanceof CoreException) {

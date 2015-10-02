@@ -39,7 +39,7 @@ public class ConfiguredContentTypeProviderTest {
     ConfiguredContentTypeProvider provider = new ConfiguredContentTypeProvider("text/complicated");
 
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("");
-    msg.setCharEncoding("UTF-8");
+    msg.setContentEncoding("UTF-8");
     String contentType = provider.getContentType(msg);
     assertEquals("text/complicated; charset=UTF-8", contentType);
   }

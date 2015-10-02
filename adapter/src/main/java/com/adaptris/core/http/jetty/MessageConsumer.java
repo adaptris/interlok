@@ -124,7 +124,7 @@ public class MessageConsumer extends BasicJettyConsumer {
         }
         out.flush();
       }
-      msg.setCharEncoding(request.getCharacterEncoding());
+      msg.setContentEncoding(request.getCharacterEncoding());
       addParamMetadata(msg, request);
       addHeaderMetadata(msg, request);
     }

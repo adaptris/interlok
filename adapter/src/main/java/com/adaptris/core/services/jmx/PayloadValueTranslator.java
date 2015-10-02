@@ -31,12 +31,12 @@ public class PayloadValueTranslator implements ValueTranslator {
   
   @Override
   public Object getValue(AdaptrisMessage message) {
-    return message.getStringPayload();
+    return message.getContent();
   }
 
   @Override
   public void setValue(AdaptrisMessage message, Object object) {
-    message.setStringPayload((String) object, message.getCharEncoding());
+    message.setContent((String) object, message.getContentEncoding());
   }
 
   public String getType() {

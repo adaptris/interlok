@@ -185,8 +185,8 @@ public class XpathMessageSplitter extends MessageSplitterImp {
     if (!isEmpty(getEncoding())) {
       encoding = getEncoding();
     }
-    else if (!isEmpty(msg.getCharEncoding())) {
-      encoding = msg.getCharEncoding();
+    else if (!isEmpty(msg.getContentEncoding())) {
+      encoding = msg.getContentEncoding();
     }
     return encoding;
   }

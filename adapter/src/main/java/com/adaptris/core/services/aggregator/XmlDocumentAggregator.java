@@ -74,8 +74,8 @@ public class XmlDocumentAggregator extends MessageAggregatorImpl {
     if (!isEmpty(getDocumentEncoding())) {
       encoding = getDocumentEncoding();
     }
-    else if (!isEmpty(msg.getCharEncoding())) {
-      encoding = msg.getCharEncoding();
+    else if (!isEmpty(msg.getContentEncoding())) {
+      encoding = msg.getContentEncoding();
     }
     return encoding;
   }
@@ -86,7 +86,7 @@ public class XmlDocumentAggregator extends MessageAggregatorImpl {
       String encoding = evaluateEncoding(msg);
       out = msg.getOutputStream();
       new XmlUtils().writeDocument(doc, out, encoding);
-      msg.setCharEncoding(encoding);
+      msg.setContentEncoding(encoding);
     }
     finally {
       closeQuietly(out);

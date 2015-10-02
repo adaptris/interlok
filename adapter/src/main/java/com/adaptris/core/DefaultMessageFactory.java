@@ -46,7 +46,7 @@ public class DefaultMessageFactory extends AdaptrisMessageFactory {
   @Override
   public AdaptrisMessage newMessage(String payload, Set metadata) {
     AdaptrisMessage result = newMessage();
-    result.setStringPayload(payload, getDefaultCharEncoding());
+    result.setContent(payload, getDefaultCharEncoding());
     result.setMetadata(metadata);
 
     return result;
@@ -55,7 +55,7 @@ public class DefaultMessageFactory extends AdaptrisMessageFactory {
   @Override
   public AdaptrisMessage newMessage(String payload) {
     AdaptrisMessage result = newMessage();
-    result.setStringPayload(payload, getDefaultCharEncoding());
+    result.setContent(payload, getDefaultCharEncoding());
     return result;
   }
 
@@ -64,7 +64,7 @@ public class DefaultMessageFactory extends AdaptrisMessageFactory {
                                     Set metadata)
       throws UnsupportedEncodingException {
     AdaptrisMessage result = newMessage();
-    result.setStringPayload(payload, charEncoding);
+    result.setContent(payload, charEncoding);
     result.setMetadata(metadata);
 
     return result;
@@ -85,7 +85,7 @@ public class DefaultMessageFactory extends AdaptrisMessageFactory {
     result.setUniqueId(source.getUniqueId());
     for (Iterator i = metadataKeysToPreserve.iterator(); i.hasNext();) {
       String key = (String) i.next();
-      if (source.containsKey(key)) {
+      if (source.headersContainsKey(key)) {
         result.addMetadata(key, source.getMetadataValue(key));
       }
     }
@@ -104,7 +104,7 @@ public class DefaultMessageFactory extends AdaptrisMessageFactory {
   public AdaptrisMessage newMessage() {
     AdaptrisMessage m = new DefaultAdaptrisMessageImp(uniqueIdGenerator, this);
     if (!isEmpty(getDefaultCharEncoding())) {
-      m.setCharEncoding(getDefaultCharEncoding());
+      m.setContentEncoding(getDefaultCharEncoding());
     }
     return m;
   }

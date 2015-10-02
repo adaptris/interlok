@@ -41,7 +41,7 @@ public class XPathServiceTest extends ServiceCase {
   }
   
   public void testPayloadSimpleValueXPathIntoMetadata() throws Exception {
-    message.setContent(sampleXml, message.getCharEncoding());
+    message.setContent(sampleXml, message.getContentEncoding());
     
     MetadataDataDestination metadataDataDestination1 = new MetadataDataDestination();
     metadataDataDestination1.setMetadataKey("targetMetadataKey");
@@ -64,7 +64,7 @@ public class XPathServiceTest extends ServiceCase {
   }
   
   public void testForCoveragePurposesInvalidXml() throws Exception {
-    message.setContent("not valid xml!", message.getCharEncoding());
+    message.setContent("not valid xml!", message.getContentEncoding());
     
     MetadataDataDestination metadataDataDestination1 = new MetadataDataDestination();
     metadataDataDestination1.setMetadataKey("targetMetadataKey");
@@ -89,7 +89,7 @@ public class XPathServiceTest extends ServiceCase {
   }
   
   public void testPayloadSimpleValueXPathIntoPayload() throws Exception {
-    message.setContent(sampleXml, message.getCharEncoding());
+    message.setContent(sampleXml, message.getContentEncoding());
     message.addMetadata("sourceXpathMetadataKey", "//some/random/xml/node1/text()");
     
     MetadataDataDestination metadataDataDestination1 = new MetadataDataDestination();
@@ -110,7 +110,7 @@ public class XPathServiceTest extends ServiceCase {
   }
   
   public void testPayloadComplexValueXPathIntoMetadata() throws Exception {
-    message.setContent(sampleXml, message.getCharEncoding());
+    message.setContent(sampleXml, message.getContentEncoding());
     
     MetadataDataDestination metadataDataDestination1 = new MetadataDataDestination();
     metadataDataDestination1.setMetadataKey("targetMetadataKey");
@@ -133,7 +133,7 @@ public class XPathServiceTest extends ServiceCase {
   }
   
   public void testPayloadSimpleValueXPathIntoMultipleMetadataExecutions() throws Exception {
-    message.setContent(sampleXml, message.getCharEncoding());
+    message.setContent(sampleXml, message.getContentEncoding());
     
     MetadataDataDestination metadataDataDestination1 = new MetadataDataDestination();
     metadataDataDestination1.setMetadataKey("targetMetadataKey1");
@@ -177,7 +177,7 @@ public class XPathServiceTest extends ServiceCase {
   }
   
   public void testPayloadSimpleValueXPathIntoPayloadWithNamespace() throws Exception {
-    message.setContent(sampleXmlWithInternalNamespaces, message.getCharEncoding());
+    message.setContent(sampleXmlWithInternalNamespaces, message.getContentEncoding());
     message.addMetadata("sourceXpathMetadataKey", "//some/random/xml/node1/text()");
     
     MetadataDataDestination metadataDataDestination1 = new MetadataDataDestination();
@@ -198,7 +198,7 @@ public class XPathServiceTest extends ServiceCase {
   }
   
   public void testPayloadSimpleValueXPathIntoPayloadWithHeaderNamespaces() throws Exception {
-    message.setContent(sampleXmlWithHeaderNamespaces, message.getCharEncoding());
+    message.setContent(sampleXmlWithHeaderNamespaces, message.getContentEncoding());
     message.addMetadata("sourceXpathMetadataKey", "//some:some/random/xml/n1:node1/text()");
     
     MetadataDataDestination metadataDataDestination1 = new MetadataDataDestination();
