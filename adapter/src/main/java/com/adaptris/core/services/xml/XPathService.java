@@ -29,13 +29,11 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.ServiceImp;
 import com.adaptris.core.common.PayloadDataDestination;
 import com.adaptris.interlok.config.DataDestination;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.license.License;
 import com.adaptris.util.text.xml.SimpleNamespaceContext;
-import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
@@ -158,8 +156,9 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * @config xpath-service
  * @license BASIC
  */
-@XStreamAlias("xpath-service")
-public class XPathService extends ServiceImp {
+// @XStreamAlias("xpath-service")
+// class XPathService extends ServiceImp {
+class XPathService {
   
   @NotNull
   @AutoPopulated
@@ -171,8 +170,6 @@ public class XPathService extends ServiceImp {
   @XStreamImplicit(itemFieldName="xpath-execution")
   private List<Execution> executions;
   
-  @Valid
-  @AutoPopulated
   private KeyValuePairSet namespaceContext;
   
   public XPathService() {
@@ -180,7 +177,7 @@ public class XPathService extends ServiceImp {
     this.setSourceXmlDestination(new PayloadDataDestination());
   }
 
-  @Override
+  // @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     NamespaceContext namespaceContext = SimpleNamespaceContext.create(getNamespaceContext(), msg);
     try {
@@ -217,16 +214,16 @@ public class XPathService extends ServiceImp {
     return xmlOutput.getWriter().toString();
   }
   
-  @Override
+  // @Override
   public boolean isEnabled(License license) throws CoreException {
     return true;
   }
 
-  @Override
+  // @Override
   public void init() throws CoreException {
   }
 
-  @Override
+  // @Override
   public void close() {
   }
 

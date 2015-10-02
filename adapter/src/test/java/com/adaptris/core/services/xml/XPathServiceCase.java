@@ -13,7 +13,7 @@ import com.adaptris.core.common.PayloadDataDestination;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 
-public class XPathServiceTest extends ServiceCase {
+public class XPathServiceCase extends ServiceCase {
 
   private AdaptrisMessage message;
   private XPathService service;
@@ -24,7 +24,7 @@ public class XPathServiceTest extends ServiceCase {
    */
   public static final String BASE_DIR_KEY = "XmlServiceExamples.baseDir";
 
-  public XPathServiceTest(String name) {
+  public XPathServiceCase(String name) {
     super(name);
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));

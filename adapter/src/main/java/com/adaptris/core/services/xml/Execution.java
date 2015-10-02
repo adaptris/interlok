@@ -2,7 +2,7 @@ package com.adaptris.core.services.xml;
 
 import com.adaptris.interlok.config.DataDestination;
 
-public class Execution {
+class Execution {
   
   private DataDestination sourceXpathExpression;
   
