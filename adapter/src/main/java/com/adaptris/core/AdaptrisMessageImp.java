@@ -47,7 +47,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
   // in memory only e.g. lost on send or persist
   private MessageLifecycleEvent messageLifeCycle;
-  private Map objectMetadata;
+  private Map<Object, Object> objectMetadata;
   private String nextServiceId;
   private AdaptrisMessageFactory factory;
 
@@ -66,7 +66,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     this();
     factory = fac;
     metadata = new KeyValuePairSet();
-    objectMetadata = new HashMap();
+    objectMetadata = new HashMap<>();
     guidGenerator = guid;
     messageLifeCycle = new MessageLifecycleEvent();
     messageLifeCycle.setCreationTime(System.currentTimeMillis());
@@ -309,7 +309,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
    * @param object the <code>Object</code> to set as metadata
    * @param key the key to store this object against.
    */
-  public void addObjectHeader(String key, Object object) {
+  public void addObjectHeader(Object key, Object object) {
     objectMetadata.put(key, object);
   }
 
@@ -319,7 +319,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   }
   
   @Override
-  public Map<?, ?> getObjectHeaders() {
+  public Map<Object, Object> getObjectHeaders() {
     return objectMetadata;
   }
 
