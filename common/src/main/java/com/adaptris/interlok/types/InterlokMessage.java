@@ -127,7 +127,7 @@ public interface InterlokMessage {
    * @param object the <code>Object</code> to set as metadata
    * @param key the key to store this object against.
    */
-  void addObjectHeader(String key, Object object);
+  void addObjectHeader(Object key, Object object);
 
   /**
    * <p>
@@ -136,7 +136,7 @@ public interface InterlokMessage {
    *
    * @return the <code>Map</code> of <code>Object</code> metadata
    */
-  Map<?,?> getObjectHeaders();
+  Map<Object,Object> getObjectHeaders();
   
   /**
    * <p>
