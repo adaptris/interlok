@@ -4,13 +4,13 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.util.Args;
-import com.adaptris.interlok.config.DataDestination;
+import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * This {@link DataDestination} is used when you want to source/target data to/from the {@link AdaptrisMessage}'s metadata.
+ * This {@link DataInputParameter} is used when you want to source data from the {@link AdaptrisMessage} metadata.
  * </p>
  * <p>
  * An example might be specifying that the XPath expression required for the {@link XPathService} can be found in
@@ -18,11 +18,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @author amcgrath
- * @config metadata-data-destination
+ * @config metadata-data-input-parameter
  * @license BASIC
  */
-@XStreamAlias("metadata-data-destination")
-public class MetadataDataDestination implements DataDestination<String> {
+@XStreamAlias("metadata-data-input-parameter")
+public class MetadataDataInputParameter implements DataInputParameter<String> {
   
   private static final String DEFAULT_METADATA_KEY = "destinationKey";
 
@@ -30,18 +30,18 @@ public class MetadataDataDestination implements DataDestination<String> {
   @AutoPopulated
   private String metadataKey;
   
-  public MetadataDataDestination() {
+  public MetadataDataInputParameter() {
     this.setMetadataKey(DEFAULT_METADATA_KEY);
   }
   
-  @Override
-  public String getData(InterlokMessage message) {
-    return message.getMessageHeaders().get(this.getMetadataKey());
+  public MetadataDataInputParameter(String key) {
+    this();
+    setMetadataKey(key);
   }
 
   @Override
-  public void setData(InterlokMessage message, String data) {
-    message.addMessageHeader(this.getMetadataKey(), data);
+  public String extract(InterlokMessage message) {
+    return message.getMessageHeaders().get(this.getMetadataKey());
   }
 
   public String getMetadataKey() {

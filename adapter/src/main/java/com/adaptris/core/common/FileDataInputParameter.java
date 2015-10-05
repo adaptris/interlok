@@ -2,10 +2,8 @@ package com.adaptris.core.common;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.StringWriter;
 import java.net.URL;
 import java.net.URLConnection;
@@ -14,40 +12,27 @@ import org.apache.commons.io.IOUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.core.CoreException;
-import com.adaptris.interlok.config.DataDestination;
+import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
 import com.adaptris.util.URLString;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
-@XStreamAlias("file-data-destination")
-public class FileDataDestination implements DataDestination<String> {
+@XStreamAlias("file-data-input-parameter")
+public class FileDataInputParameter implements DataInputParameter<String> {
 
   @NotBlank
   private String url;
 
-  public FileDataDestination() {
+  public FileDataInputParameter() {
 
   }
 
   @Override
-  public String getData(InterlokMessage message) throws CoreException {
+  public String extract(InterlokMessage message) throws CoreException {
     try {
       return this.load(new URLString(this.getUrl()), message.getContentEncoding());
     } catch (IOException ex) {
       throw new CoreException(ex);
-    }
-  }
-
-  @Override
-  public void setData(InterlokMessage message, String data) throws CoreException {
-    OutputStream outputStream = null;
-    try {
-      outputStream = this.connectToOutputUrl(new URLString(this.getUrl()));
-      IOUtils.write((String) data, outputStream, message.getContentEncoding());
-    } catch (IOException e) {
-      throw new CoreException(e);
-    } finally {
-      IOUtils.closeQuietly(outputStream);
     }
   }
 
@@ -93,29 +78,4 @@ public class FileDataDestination implements DataDestination<String> {
     }
     return in;
   }
-
-  private OutputStream connectToOutputUrl(URLString loc) throws IOException {
-    if (loc.getProtocol() == null || "file".equals(loc.getProtocol())) {
-      return connectToOutputFile(loc.getFile());
-    }
-    URL url = new URL(loc.toString());
-    URLConnection conn = url.openConnection();
-    return conn.getOutputStream();
-  }
-
-  private OutputStream connectToOutputFile(String localFile) throws IOException {
-    OutputStream out = null;
-    File f = new File(localFile);
-    if (f.exists()) {
-      out = new FileOutputStream(f);
-    } else {
-      ClassLoader c = this.getClass().getClassLoader();
-      URL u = c.getResource(localFile);
-      if (u != null) {
-        out = new FileOutputStream(new File(u.getPath()));
-      }
-    }
-    return out;
-  }
-
 }

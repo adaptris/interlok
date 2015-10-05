@@ -96,7 +96,7 @@ public interface InterlokMessage {
    * @param encoding the encoding for the writer, which will also be used to change the character encoding of the message.
    * @return an Writer that can be used to access the payload.
    * @throws IOException if the Writer could not be created.
-   * @see #setCharEncoding(String)
+   * @see #setContentEncoding(String)
    */
   Writer getWriter(String encoding) throws IOException;
 

@@ -29,11 +29,14 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.common.PayloadDataDestination;
-import com.adaptris.interlok.config.DataDestination;
+import com.adaptris.core.ServiceImp;
+import com.adaptris.core.common.StringPayloadDataInputParameter;
+import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.license.License;
+import com.adaptris.util.license.License.LicenseType;
 import com.adaptris.util.text.xml.SimpleNamespaceContext;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
@@ -156,36 +159,35 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * @config xpath-service
  * @license BASIC
  */
-// @XStreamAlias("xpath-service")
-// class XPathService extends ServiceImp {
-class XPathService {
+@XStreamAlias("xpath-service")
+public class XPathService extends ServiceImp {
   
   @NotNull
   @AutoPopulated
   @Valid
-  private DataDestination sourceXmlDestination;
+  private DataInputParameter<String> xmlSource;
   
   @NotNull
   @Valid
   @XStreamImplicit(itemFieldName="xpath-execution")
-  private List<Execution> executions;
+  private List<XpathExecution> executions;
   
   private KeyValuePairSet namespaceContext;
   
   public XPathService() {
-    this.setExecutions(new ArrayList<Execution>());
-    this.setSourceXmlDestination(new PayloadDataDestination());
+    this.setExecutions(new ArrayList<XpathExecution>());
+    this.setSourceXmlDestination(new StringPayloadDataInputParameter());
   }
 
   // @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     NamespaceContext namespaceContext = SimpleNamespaceContext.create(getNamespaceContext(), msg);
     try {
-      for(Execution execution: this.getExecutions()) {
-        com.adaptris.util.text.xml.XPath xPathHandler = new com.adaptris.util.text.xml.XPath(namespaceContext);
-        
-        Document document = buildDocument((String) this.getSourceXmlDestination().getData(msg));
-        execution.getTargetDataDestination().setData(msg, this.serializeNode(xPathHandler.selectNodeList(document, (String) execution.getSourceXpathExpression().getData(msg))));
+      Document document = buildDocument(this.getXmlSource().extract(msg));
+      com.adaptris.util.text.xml.XPath xPathHandler = new com.adaptris.util.text.xml.XPath(namespaceContext);
+      for(XpathExecution execution: this.getExecutions()) {
+        String result = this.serializeNode(xPathHandler.selectNodeList(document, execution.getSource().extract(msg)));
+        execution.getTarget().insert(result, msg);
       }
     } catch (Exception ex) {
       throw new ServiceException(ex);
@@ -214,32 +216,32 @@ class XPathService {
     return xmlOutput.getWriter().toString();
   }
   
-  // @Override
+  @Override
   public boolean isEnabled(License license) throws CoreException {
-    return true;
+    return license.isEnabled(LicenseType.Basic);
   }
 
-  // @Override
+  @Override
   public void init() throws CoreException {
   }
 
-  // @Override
+  @Override
   public void close() {
   }
 
-  public DataDestination getSourceXmlDestination() {
-    return sourceXmlDestination;
+  public DataInputParameter<String> getXmlSource() {
+    return xmlSource;
   }
 
-  public void setSourceXmlDestination(DataDestination sourceDestination) {
-    this.sourceXmlDestination = sourceDestination;
+  public void setSourceXmlDestination(DataInputParameter<String> sourceDestination) {
+    this.xmlSource = sourceDestination;
   }
 
-  public List<Execution> getExecutions() {
+  public List<XpathExecution> getExecutions() {
     return executions;
   }
 
-  public void setExecutions(List<Execution> executions) {
+  public void setExecutions(List<XpathExecution> executions) {
     this.executions = executions;
   }
 
