@@ -30,6 +30,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.common.Execution;
 import com.adaptris.core.common.StringPayloadDataInputParameter;
 import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.util.KeyValuePairSet;
@@ -170,12 +171,12 @@ public class XPathService extends ServiceImp {
   @NotNull
   @Valid
   @XStreamImplicit(itemFieldName="xpath-execution")
-  private List<XpathExecution> executions;
+  private List<Execution> executions;
   
   private KeyValuePairSet namespaceContext;
   
   public XPathService() {
-    this.setExecutions(new ArrayList<XpathExecution>());
+    this.setExecutions(new ArrayList<Execution>());
     this.setSourceXmlDestination(new StringPayloadDataInputParameter());
   }
 
@@ -185,7 +186,7 @@ public class XPathService extends ServiceImp {
     try {
       Document document = buildDocument(this.getXmlSource().extract(msg));
       com.adaptris.util.text.xml.XPath xPathHandler = new com.adaptris.util.text.xml.XPath(namespaceContext);
-      for(XpathExecution execution: this.getExecutions()) {
+      for (Execution execution : this.getExecutions()) {
         String result = this.serializeNode(xPathHandler.selectNodeList(document, execution.getSource().extract(msg)));
         execution.getTarget().insert(result, msg);
       }
@@ -237,11 +238,11 @@ public class XPathService extends ServiceImp {
     this.xmlSource = sourceDestination;
   }
 
-  public List<XpathExecution> getExecutions() {
+  public List<Execution> getExecutions() {
     return executions;
   }
 
-  public void setExecutions(List<XpathExecution> executions) {
+  public void setExecutions(List<Execution> executions) {
     this.executions = executions;
   }
 

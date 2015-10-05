@@ -1,4 +1,4 @@
-package com.adaptris.core.services.xml;
+package com.adaptris.core.common;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -8,8 +8,8 @@ import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.interlok.config.DataOutputParameter;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
-@XStreamAlias("xpath-execution")
-public class XpathExecution {
+@XStreamAlias("standard-execution")
+public class Execution {
   
   @NotNull
   @Valid
@@ -19,11 +19,11 @@ public class XpathExecution {
   @Valid
   private DataOutputParameter<String> target;
   
-  public XpathExecution() {
+  public Execution() {
     
   }
 
-  public XpathExecution(DataInputParameter<String> src, DataOutputParameter<String> t) {
+  public Execution(DataInputParameter<String> src, DataOutputParameter<String> t) {
     this();
     setSource(src);
     setTarget(t);

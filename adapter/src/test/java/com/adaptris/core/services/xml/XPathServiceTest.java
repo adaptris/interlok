@@ -8,6 +8,7 @@ import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.ServiceCase;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.common.ConstantDataInputParameter;
+import com.adaptris.core.common.Execution;
 import com.adaptris.core.common.MetadataDataInputParameter;
 import com.adaptris.core.common.MetadataDataOutputParameter;
 import com.adaptris.core.common.StringPayloadDataInputParameter;
@@ -49,9 +50,9 @@ public class XPathServiceTest extends ServiceCase {
     
     ConstantDataInputParameter constantDataDestination = new ConstantDataInputParameter("//some/random/xml/node1/text()");
     
-    XpathExecution execution = new XpathExecution(constantDataDestination, metadataDataDestination1);
+    Execution execution = new Execution(constantDataDestination, metadataDataDestination1);
     
-    List<XpathExecution> executions = new ArrayList<>();
+    List<Execution> executions = new ArrayList<>();
     executions.add(execution);
     
     service.setSourceXmlDestination(new StringPayloadDataInputParameter());
@@ -68,10 +69,10 @@ public class XPathServiceTest extends ServiceCase {
     
     ConstantDataInputParameter constantDataDestination = new ConstantDataInputParameter("//some/random/xml/node1/text()");
     
-    XpathExecution execution = new XpathExecution(constantDataDestination, metadataDataDestination1);
+    Execution execution = new Execution(constantDataDestination, metadataDataDestination1);
 
     
-    List<XpathExecution> executions = new ArrayList<>();
+    List<Execution> executions = new ArrayList<>();
     executions.add(execution);
     
     service.setSourceXmlDestination(new StringPayloadDataInputParameter());
@@ -89,9 +90,9 @@ public class XPathServiceTest extends ServiceCase {
     
     MetadataDataInputParameter metadataDataDestination1 = new MetadataDataInputParameter("sourceXpathMetadataKey");
     
-    XpathExecution execution = new XpathExecution(metadataDataDestination1, new StringPayloadDataOutputParameter());
+    Execution execution = new Execution(metadataDataDestination1, new StringPayloadDataOutputParameter());
     
-    List<XpathExecution> executions = new ArrayList<>();
+    List<Execution> executions = new ArrayList<>();
     executions.add(execution);
     
     service.setSourceXmlDestination(new StringPayloadDataInputParameter());
@@ -108,9 +109,9 @@ public class XPathServiceTest extends ServiceCase {
     
     ConstantDataInputParameter constantDataDestination = new ConstantDataInputParameter("//some/random/xml/node1");
     
-    XpathExecution execution = new XpathExecution(constantDataDestination, metadataDataDestination1);
+    Execution execution = new Execution(constantDataDestination, metadataDataDestination1);
     
-    List<XpathExecution> executions = new ArrayList<>();
+    List<Execution> executions = new ArrayList<>();
     executions.add(execution);
     
     service.setSourceXmlDestination(new StringPayloadDataInputParameter());
@@ -132,13 +133,13 @@ public class XPathServiceTest extends ServiceCase {
     MetadataDataOutputParameter metadataDataDestination3 = new MetadataDataOutputParameter("targetMetadataKey3");
     ConstantDataInputParameter constantDataDestination3 = new ConstantDataInputParameter("//some/random/xml/node3/text()");
     
-    XpathExecution execution = new XpathExecution(constantDataDestination1, metadataDataDestination1);
+    Execution execution = new Execution(constantDataDestination1, metadataDataDestination1);
     
-    XpathExecution execution2 = new XpathExecution(constantDataDestination2, metadataDataDestination2);
+    Execution execution2 = new Execution(constantDataDestination2, metadataDataDestination2);
     
-    XpathExecution execution3 = new XpathExecution(constantDataDestination3, metadataDataDestination3);
+    Execution execution3 = new Execution(constantDataDestination3, metadataDataDestination3);
     
-    List<XpathExecution> executions = new ArrayList<>();
+    List<Execution> executions = new ArrayList<>();
     executions.add(execution);
     executions.add(execution2);
     executions.add(execution3);
@@ -158,9 +159,9 @@ public class XPathServiceTest extends ServiceCase {
     
     MetadataDataInputParameter metadataDataDestination1 = new MetadataDataInputParameter("sourceXpathMetadataKey");
     
-    XpathExecution execution = new XpathExecution(metadataDataDestination1, new StringPayloadDataOutputParameter());
+    Execution execution = new Execution(metadataDataDestination1, new StringPayloadDataOutputParameter());
     
-    List<XpathExecution> executions = new ArrayList<>();
+    List<Execution> executions = new ArrayList<>();
     executions.add(execution);
     
     service.setSourceXmlDestination(new StringPayloadDataInputParameter());
@@ -176,9 +177,9 @@ public class XPathServiceTest extends ServiceCase {
     
     MetadataDataInputParameter metadataDataDestination1 = new MetadataDataInputParameter("sourceXpathMetadataKey");
     
-    XpathExecution execution = new XpathExecution(metadataDataDestination1, new StringPayloadDataOutputParameter());
+    Execution execution = new Execution(metadataDataDestination1, new StringPayloadDataOutputParameter());
     
-    List<XpathExecution> executions = new ArrayList<>();
+    List<Execution> executions = new ArrayList<>();
     executions.add(execution);
     
     // Add the namespace mappings
@@ -205,15 +206,15 @@ public class XPathServiceTest extends ServiceCase {
     ConstantDataInputParameter constantDataDestination = new ConstantDataInputParameter("//my/xpath/expression");
     constantDataDestination.setValue("//my/xpath/expression");
     
-    XpathExecution execution1 = new XpathExecution();
+    Execution execution1 = new Execution();
     execution1.setSource(constantDataDestination);
     execution1.setTarget(metadataDataDestination1);
     
-    XpathExecution execution2 = new XpathExecution();
+    Execution execution2 = new Execution();
     execution2.setSource(metadataDataDestination2);
     execution2.setTarget(new MetadataDataOutputParameter("targetMetadataKey2"));
 
-    List<XpathExecution> executions = new ArrayList<XpathExecution>();
+    List<Execution> executions = new ArrayList<Execution>();
     executions.add(execution1);
     executions.add(execution2);
     
