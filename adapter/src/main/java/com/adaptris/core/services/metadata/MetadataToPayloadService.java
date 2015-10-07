@@ -170,7 +170,7 @@ public class MetadataToPayloadService extends ServiceImp {
   /**
    * Specify the encoding of the metadata.
    * 
-   * @param enc the encoding, defaults to {@link Encoding#NONE}.
+   * @param enc the encoding, defaults to {@link Encoding#None}.
    */
   public void setEncoding(Encoding enc) {
     this.encoding = enc;

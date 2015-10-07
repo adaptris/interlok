@@ -83,7 +83,7 @@ public final class Constants {
   public static final String DEFAULT_XSTREAM_RESOURCE_NAME = "adapter.xml";
 
   /**
-   * Bootstrap Property telling us whether to use {@link ManagementFactory} to find the platform MBeanServer.
+   * Bootstrap Property telling us whether to use {@link java.lang.management.ManagementFactory} to find the platform MBeanServer.
    */
   public static final String CFG_KEY_USE_MANAGEMENT_FACTORY_FOR_JMX = "useJavaLangManagementFactory";
 
@@ -117,9 +117,11 @@ public final class Constants {
   public static final String CFG_JMX_LOCAL_ADAPTER_UID = "jmxLocalAdapterUid";
 
   /**
-   * Bootstrap property key that defines whether a java remote management {@link JMXConnectorServer} is created or not.
+   * Bootstrap property key that defines whether a java remote management {@link javax.management.remote.JMXConnectorServer} is
+   * created or not.
    * <p>
-   * If {@value} is specified in the properties file, then a {@link JMXServiceURL} is created from the property key.
+   * If {@value} is specified in the properties file, then a {@link javax.management.remote.JMXServiceURL} is created from the
+   * property key.
    * </p>
    */
   public static final String CFG_KEY_JMX_SERVICE_URL_KEY = "jmxserviceurl";

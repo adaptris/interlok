@@ -89,8 +89,9 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
    * 
    * @param b whether to move metadata to JMS properties and vice versa
    * @see MetadataHandlerContext#moveMetadata()
-   * @deprecated since 3.0.2 use {@link #setMetadataFilter(MetadataFilter)} with a {@link RemoveAllMetadataFilter} to stop JMS
-   *             properties being propagated.
+   * @deprecated since 3.0.2 use {@link #setMetadataFilter(com.adaptris.core.metadata.MetadataFilter)} with a {@link
+   * com.adaptris.core.metadata.RemoveAllMetadataFilter} to stop JMS
+   * properties being propagated.
    */
   @Deprecated
   public void setMoveMetadata(Boolean b) {
@@ -104,8 +105,8 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
    * 
    * @return whether to move metadata to JMS properties and vice versa
    * @see MetadataHandlerContext#moveMetadata()
-   * @deprecated since 3.0.2 use {@link #setMetadataFilter(MetadataFilter)} with a {@link RemoveAllMetadataFilter} to stop JMS
-   *             properties being propagated.
+   * @deprecated since 3.0.2 use {@link #setMetadataFilter(com.adaptris.core.metadata.MetadataFilter)} with a {@link
+   * com.adaptris.core.metadata.RemoveAllMetadataFilter} to stop JMS properties being propagated.
    */
   @Deprecated
   public Boolean getMoveMetadata() {
@@ -115,7 +116,7 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
   /**
    * Return the current metadata filter.
    *
-   * @return {@link MetadataFilter}
+   * @return {@link com.adaptris.core.metadata.MetadataFilter}
    * @see MetadataHandlerContext#metadataFilter()
    */
   public MetadataFilter getMetadataFilter() {
@@ -125,7 +126,7 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
   /**
    * Set the {@link MetadataFilter} to be used when converting between JMS messages and AdaptrisMessage objects
    * 
-   * @param mf the metadata filter implementation, default is {@link NoOpMetadataFilter}
+   * @param mf the metadata filter implementation, default is {@link com.adaptris.core.metadata.NoOpMetadataFilter}
    * @see MetadataHandlerContext#metadataFilter()
    * @since 3.0.2
    */
@@ -234,19 +235,12 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
     reportAllErrors = b;
   }
 
-  /**
-   *
-   * @see AdaptrisMessageTranslator#registerMessageFactory(AdaptrisMessageFactory)
-   */
+
   @Override
   public void registerMessageFactory(AdaptrisMessageFactory f) {
     messageFactoryToUse = f;
   }
 
-  /**
-   *
-   * @see AdaptrisMessageTranslator#currentMessageFactory()
-   */
   @Override
   public AdaptrisMessageFactory currentMessageFactory() {
     return messageFactoryToUse;

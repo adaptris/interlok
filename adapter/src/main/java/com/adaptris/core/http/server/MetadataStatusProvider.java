@@ -107,7 +107,7 @@ public class MetadataStatusProvider implements HttpStatusProvider {
   /**
    * Set the default status in the event that it cannot be derived from metadata.
    * 
-   * @param status the default status, which defaults to {@value HttpStatusProvider.HttpStatus#INTERNAL_ERROR_500}.
+   * @param status the default status, which defaults to {@link HttpStatusProvider.HttpStatus#INTERNAL_ERROR_500}.
    */
   public void setDefaultStatus(HttpStatus status) {
     this.defaultStatus = status;

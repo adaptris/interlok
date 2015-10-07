@@ -365,7 +365,7 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
    * Set the password to be used with this producer implementation.
    * <p>
    * If you specify the username and password in the URL for the SMTP server then does not lend itself to being encrypted. Specify
-   * the password here if you wish to use {@link Password#decode(String)} to decode the password.
+   * the password here if you wish to use {@link com.adaptris.security.password.Password#decode(String)} to decode the password.
    * </p>
    *
    * @param pw the password which will be overriden if a password is present in the URL.

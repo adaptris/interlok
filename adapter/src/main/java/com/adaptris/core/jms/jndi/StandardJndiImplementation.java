@@ -31,7 +31,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * {@link VendorImplementation} that gets a <code>ConnectionFactory</code> from the configured JNDI Store.
  * <p>
- * This implementation <b>ignores</b> any broker configuration in {@link JmsConnection}.
+ * This implementation <b>ignores</b> any broker configuration in {@link com.adaptris.core.jms.JmsConnection}.
  * </p>
  * <p>
  * Depending on your configuration you will need have additional jars available to the Adapter that handles the specific
@@ -353,10 +353,10 @@ public class StandardJndiImplementation extends VendorImplementationImp {
   /**
    * Whether or not to create a new JNDI context on exception.
    * <p>
-   * In some instances, the {@link InitialContextFactory} implementation may be badly behaved, and not re-initialise nicely when
-   * error situations occur. By setting this to true, we create a new {@link InitialContext} when any exception is encountered. This
-   * will of course have a performance hit if you are constantly resetting the connection for things like a missing JNDI entry; but
-   * might help with rare events like recovery after a network outage.
+   * In some instances, the {@link javax.naming.spi.InitialContextFactory} implementation may be badly behaved, and not
+   * re-initialise nicely when error situations occur. By setting this to true, we create a new {@link InitialContext} when any
+   * exception is encountered. This will of course have a performance hit if you are constantly resetting the connection for things
+   * like a missing JNDI entry; but might help with rare events like recovery after a network outage.
    * </p>
    *
    * @param b true or false, default false.

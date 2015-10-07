@@ -50,7 +50,7 @@ public class ConfiguredStatusProvider implements HttpStatusProvider {
   /**
    * Set the HTTP Status to use.
    * 
-   * @param status the status, which defaults to {@value HttpStatusProvider.HttpStatus#INTERNAL_ERROR_500}
+   * @param status the status, which defaults to {@link HttpStatusProvider.HttpStatus#INTERNAL_ERROR_500}
    */
   public void setStatus(HttpStatus status) {
     this.status = Args.notNull(status, "Status Code");
@@ -70,7 +70,8 @@ public class ConfiguredStatusProvider implements HttpStatusProvider {
    * completeness, a sensible default will be made available based on the {@link HttpStatusProvider.HttpStatus} selected.
    * </p>
    * 
-   * @param txt the text to be sent (e.g. {@code OK}, if the status code is {@link HttpStatusProvider.HttpStatus#OK_200}).
+   * @param txt the text to be sent (e.g. {@code OK}, if the status code is {@link
+   * com.adaptris.core.http.server.HttpStatusProvider.HttpStatus#OK_200}).
    */
   public void setText(String txt) {
     this.text = txt;

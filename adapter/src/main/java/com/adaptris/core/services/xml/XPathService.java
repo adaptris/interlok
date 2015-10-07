@@ -32,6 +32,7 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.common.Execution;
 import com.adaptris.core.common.StringPayloadDataInputParameter;
+import com.adaptris.core.util.Args;
 import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.license.License;
@@ -42,84 +43,89 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
  * <p>
- * This service allows you to configure an xpath expression which will be executed on source xml, the result of which can be saved to multiple locations.
+ * This service allows you to configure an xpath expression which will be executed on source xml, the result of which can be saved 
+ * to multiple locations.
  * </p>
  * <p>
- * To specify where the source xml, source xpath expression and the result of the xpath execution should be saved, you will use {@link DataDestination} for each.
+ * To specify where the source xml, source xpath expression and the result of the xpath execution should be saved, you shoud
+ * use {@link DataInputParameter} or {@link com.adaptris.interlok.config.DataOutputParameter}.
  * <br />
- * For example you can specify the source xml can be found in the {@link AdaptrisMessage} payload, by using {@link PayloadDataDestination} like this;
+ * For example you can specify the source xml can be found in the {@link AdaptrisMessage} payload, by using 
+ * {@link StringPayloadDataInputParameter} like this :
  * <pre>
  * {@code
  * <xpath-service>
- *   <source-xml-destination class="payload-data-destination"/>
+ *   <xml-source class="string-payload-data-input-parameter"/>
  *   ...
  * }
  * </pre>
  * 
- * And perhaps the source xpath expression will be configured directly in Interlok config, using {@link ConstantDataDestination};
+ * And perhaps the source xpath expression will be configured directly in Interlok config, using 
+ * {@link com.adaptris.core.common.ConstantDataInputParameter};
  * 
  * <pre>
  * {@code
  * <xpath-service>
  *   <xpath-execution>
- *     <source-xpath-expression class="constant-data-destination">
+ *     <source class="constant-data-input-parameter">
  *       <value>//my/xpath/expression</value>
- *     </source-xpath-expression>
+ *     </source>
  *   ...
  * }
  * </pre>
  * 
- * And then maybe the result of the xpath execution is to be saved in {@link AdaptrisMessage} metadata, using {@link MetadataDataDestination};
+ * And then maybe the result of the xpath execution is to be saved in {@link AdaptrisMessage} metadata, using 
+ * {@link com.adaptris.core.common.MetadataDataOutputParameter};
  * 
  * <pre>
  * {@code
  * <xpath-service>
  *   <xpath-execution>
- *     <target-data-destination class="metadata-data-destination">
+ *     <target class="metadata-data-output-parameter">
  *       <metadata-key>targetMetadataKey</metadata-key>
- *     </target-data-destination>
+ *     </target>
  *   ...
  * }
  * </pre>
  * </p>
  * <p>
- * While you may only specify a single source xml destination, you may if you wish apply multiple XPath expressions, each of which saves the result to a different location.
- * <br />
- * To do this, simply configure multiple executions.  Take the following example, where we specify the payload containing the source xml and 3 XPath expressions will be executed
- * each of which will store the result in 3 different metadata items;
+ * While you may only specify a single source xml destination, you may if you wish apply multiple XPath expressions, 
+ * each of which saves the result to a different location. To do this, simply configure multiple executions.  Take the following 
+ * example, where we specify the payload containing the source xml and 3 XPath expressions will be executed each of which will 
+ * store the result in 3 different metadata items;
  * <pre>
  * {@code
  * <xpath-service>
- *   <source-xml-destination class="payload-data-destination"/>
+ *   <xml-source class="string-payload-data-input-parameter"/>
  * 
  *   <xpath-execution>
- *     <source-xpath-expression class="constant-data-destination">
+ *     <source class="constant-data-input-parameter">
  *       <value>//my/first/xpath/expression</value>
- *     </source-xpath-expression>
+ *     </source>
  *     
- *     <target-data-destination class="metadata-data-destination">
+ *     <target class="metadata-data-output-parameter">
  *       <metadata-key>targetMetadataKey1</metadata-key>
- *     </target-data-destination>
+ *     </target>
  *   </xpath-execution>
  *   
  *   <xpath-execution>
- *     <source-xpath-expression class="constant-data-destination">
+ *     <source class="constant-data-input-parameter">
  *       <value>//my/second/xpath/expression</value>
- *     </source-xpath-expression>
+ *     </source>
  *     
- *     <target-data-destination class="metadata-data-destination">
+ *     <target class="metadata-data-output-parameter">
  *       <metadata-key>targetMetadataKey2</metadata-key>
- *     </target-data-destination>
+ *     </target>
  *   </xpath-execution>
  *   
  *   <xpath-execution>
- *     <source-xpath-expression class="constant-data-destination">
+ *     <source class="constant-data-input-parameter">
  *       <value>//my/third/xpath/expression</value>
- *     </source-xpath-expression>
+ *     </source>
  *     
- *     <target-data-destination class="metadata-data-destination">
+ *     <target class="metadata-data-output-parameter">
  *       <metadata-key>targetMetadataKey3</metadata-key>
- *     </target-data-destination>
+ *     </target>
  *   </xpath-execution>
  * 
  * </xpath-service>
@@ -156,6 +162,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * </pre>
  * </p>
  * 
+ * @since 3.0.6
  * @author amcgrath
  * @config xpath-service
  * @license BASIC
@@ -170,6 +177,7 @@ public class XPathService extends ServiceImp {
   
   @NotNull
   @Valid
+  @AutoPopulated
   @XStreamImplicit(itemFieldName="xpath-execution")
   private List<Execution> executions;
   
@@ -235,15 +243,15 @@ public class XPathService extends ServiceImp {
   }
 
   public void setSourceXmlDestination(DataInputParameter<String> sourceDestination) {
-    this.xmlSource = sourceDestination;
+    this.xmlSource = Args.notNull(sourceDestination, "source-xml");
   }
 
   public List<Execution> getExecutions() {
     return executions;
   }
 
-  public void setExecutions(List<Execution> executions) {
-    this.executions = executions;
+  public void setExecutions(List<Execution> list) {
+    this.executions = Args.notNull(list, "xpath executions");
   }
 
   public KeyValuePairSet getNamespaceContext() {
