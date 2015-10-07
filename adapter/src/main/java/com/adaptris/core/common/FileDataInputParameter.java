@@ -10,7 +10,7 @@ import com.adaptris.util.URLString;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * {@link DataInputParameter} implementation that reads from a file.
+ * {@code DataInputParameter} implementation that reads from a file.
  * 
  * @config file-data-input-parameter
  *

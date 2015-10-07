@@ -16,7 +16,7 @@ import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * {@link ParameterHandler} implementation that providers HTTP response headers from metadata.
+ * {@link ResponseHeaderProvider} implementation that providers HTTP response headers from metadata.
  * 
  * @config jetty-metadata-response-headers
  * 

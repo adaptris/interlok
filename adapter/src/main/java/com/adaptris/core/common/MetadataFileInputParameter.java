@@ -12,7 +12,7 @@ import com.adaptris.util.URLString;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * {@link com.adaptris.interlok.config.DataInputParameter} implementation that reads a file specified by a metadata key.
+ * {@code DataInputParameter} implementation that reads a file specified by a metadata key.
  * @config metadata-file-input-parameter
  *
  */

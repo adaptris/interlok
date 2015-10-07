@@ -10,7 +10,7 @@ import com.adaptris.core.AdaptrisMessage;
 public interface HeaderHandler<T> {
   
   /**
-   * Handle the headers from the {@link HttpServletRequest}.
+   * Handle the headers from the request.
    * 
    * @param message the target {@link AdaptrisMessage}
    * @param request the request
@@ -21,7 +21,7 @@ public interface HeaderHandler<T> {
   public void handleHeaders(AdaptrisMessage message, T request, String itemPrefix);
 
   /**
-   * Handle the headers from the {@link HttpServletRequest}.
+   * Handle the headers from the request..
    * 
    * @param message the target {@link AdaptrisMessage}
    * @param request the request

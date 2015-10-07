@@ -83,7 +83,7 @@ public interface HttpStatusProvider {
    * Get the method that should be used with the HTTP request.
    * 
    * @param msg the {@link AdaptrisMessage} if required to derive the method.
-   * @return the {@link ResponseCodeProvider.Status}.
+   * @return the {@link HttpStatusProvider.Status}.
    * 
    */
   Status getStatus(AdaptrisMessage msg);

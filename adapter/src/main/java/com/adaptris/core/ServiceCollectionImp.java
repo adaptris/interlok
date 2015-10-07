@@ -55,11 +55,6 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   
   private transient ComponentState serviceListState;
 
-  /**
-   * <p>
-   * Creates a new instance.
-   * </p>
-   */
   public ServiceCollectionImp() {
     setServices(new ArrayList<Service>());
     setUniqueId(new GuidGenerator().getUUID());
@@ -567,7 +562,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
 
   /**
    * 
-   * @deprecated since 3.0.6 configure an explicit {@link OutOfStateHandler} using {@link #setOutOfStateHandler(OutOfStateHandler)).
+   * @deprecated since 3.0.6 configure an explicit {@link OutOfStateHandler} using {@link #setOutOfStateHandler(OutOfStateHandler)}.
    */
   @Deprecated
   public Boolean getCheckServiceState() {
@@ -576,7 +571,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
 
   /**
    * 
-   * @deprecated since 3.0.6 configure an explicit {@link OutOfStateHandler} using {@link #setOutOfStateHandler(OutOfStateHandler)).
+   * @deprecated since 3.0.6 configure an explicit {@link OutOfStateHandler} using {@link #setOutOfStateHandler(OutOfStateHandler)}.
    */
   @Deprecated
   public void setCheckServiceState(Boolean checkServiceState) {

@@ -7,10 +7,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * This {@link DataInputParameter} is used when you want to configure data directly in the Interlok configuration.
+ * This {@code DataInputParameter} is used when you want to configure data directly in the Interlok configuration.
  * </p>
  * <p>
- * An example might be configuring the XPath expression directly in Interlok configuration used for the {@link XPathService}.
+ * An example might be configuring the XPath expression directly in Interlok configuration used for the {@link
+ * com.adaptris.core.services.xml.XPathService}.
  * </p>
  * 
  * @author amcgrath

@@ -13,7 +13,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * {@link ParameterHandler} implementation stores HTTP headers as object metadata.
+ * {@link com.adaptris.core.http.server.ParameterHandler} implementation stores HTTP headers as object metadata.
  * 
  * @config jetty-http-parameters-as-object-metadata
  * 

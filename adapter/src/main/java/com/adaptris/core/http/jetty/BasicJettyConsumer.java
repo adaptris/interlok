@@ -206,9 +206,9 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   /**
    * Set the max wait time for an individual worker in a workflow to finish.
    * <p>
-   * This setting only has an impact if the consumer is the entry point for a {@link PoolingWorkflow} instance. In the event that
-   * the wait time is exceeded, then the internal {@link HttpServlet} instance commits the response in its current state and returns
-   * control back to the Jetty engine.
+   * This setting only has an impact if the consumer is the entry point for a {@link com.adaptris.core.PoolingWorkflow} instance. In
+   * the event that the wait time is exceeded, then the internal {@link javax.servlet.http.HttpServlet} instance commits the
+   * response in its current state and returns control back to the Jetty engine.
    * </p>
    * <p>
    * </p>

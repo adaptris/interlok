@@ -19,7 +19,7 @@ import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Implementation of {@link RequestHeaderHandler} that applies {@link AdaptrisMessage} metadata as
+ * Implementation of {@link RequestHeaderProvider} that applies {@link AdaptrisMessage} metadata as
  * headers to a {@link HttpURLConnection}.
  * 
  * @config http-metadata-request-headers

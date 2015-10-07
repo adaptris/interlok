@@ -7,15 +7,15 @@ import com.adaptris.core.AdaptrisMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Concrete implementation of {@link ResponseHeaderHandler} which adds all the HTTP headers from the
+ * Concrete implementation of {@link com.adaptris.core.http.client.ResponseHeaderHandler} which adds all the HTTP headers from the
  * response as object metadata to the {@link AdaptrisMessage}.
  * 
  * <p>For each header field that exists, there will be a corresponding {@link URLConnectionHeaderField} in object metadata.
- * Note that {@link HttpURLConnection} exposes header fields as a {@code List<String>} so this is reflected in the {@link
+ * Note that {@link java.net.HttpURLConnection} exposes header fields as a {@code List<String>} so this is reflected in the {@link
  * URLConnectionHeaderField}. In most situations there will only be a single entry in the list.
  * </p>
  * <p>This will include header fields where the key is {@code null}; this will end up as the string {@code "null"}. {@link
- * HttpURLConnection} exposes the HTTP status line (e.g. {@code 200 HTTP/1.1 OK} as a header field with no key so this will
+ * java.net.HttpURLConnection} exposes the HTTP status line (e.g. {@code 200 HTTP/1.1 OK} as a header field with no key so this will
  * generally be the object metadata associated with {@code "null"}.
  * </p>
  * @config http-response-headers-as-object-metadata

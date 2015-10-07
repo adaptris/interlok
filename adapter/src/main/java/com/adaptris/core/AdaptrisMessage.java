@@ -62,7 +62,7 @@ public interface AdaptrisMessage extends InterlokMessage {
    *
    * @param payload the payload
    * @param charEncoding the character encoding used by the payload
-   * @deprecated since 3.0.6 Use setContent(String, String).
+   * @deprecated since 3.0.6 Use {@link #setContent(String, String)}
    */
   @Deprecated
   void setStringPayload(String payload, String charEncoding);
@@ -77,7 +77,7 @@ public interface AdaptrisMessage extends InterlokMessage {
    * </p>
    *
    * @return a <code>String</code> representation of the payload
-   * @deprecated since 3.0.6 use {{@link #getCotent()} instead.
+   * @deprecated since 3.0.6 use {{@link #getContent()} instead.
    */
   @Deprecated
   String getStringPayload();
@@ -266,7 +266,7 @@ public interface AdaptrisMessage extends InterlokMessage {
    *
    * @param object the <code>Object</code> to set as metadata
    * @param key the key to store this object against.
-   * @deprecated since 3.0.6 use {@link #addObjectHeader(String, Object)} instead.
+   * @deprecated since 3.0.6 use {@link #addObjectHeader(Object, Object)} instead.
    */
   @Deprecated
   void addObjectMetadata(String key, Object object);

@@ -249,10 +249,11 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
    * to use. If that's the case, make sure this flag is true. It defaults to false.
    * </p>
    * <p>
-   * In all cases the metadata key {@link CoreConstants#HTTP_PRODUCER_RESPONSE_CODE} is populated with the last server response.
+   * In all cases the metadata key {@link com.adaptris.core.CoreConstants#HTTP_PRODUCER_RESPONSE_CODE} is populated with the last
+   * server response.
    * </p>
    * 
-   * @see CoreConstants#HTTP_PRODUCER_RESPONSE_CODE
+   * @see com.adaptris.core.CoreConstants#HTTP_PRODUCER_RESPONSE_CODE
    * @param b true
    */
   public void setIgnoreServerResponseCode(Boolean b) {

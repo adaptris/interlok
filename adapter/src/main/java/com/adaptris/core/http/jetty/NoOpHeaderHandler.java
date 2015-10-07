@@ -7,7 +7,7 @@ import com.adaptris.core.http.server.HeaderHandler;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * {@link ParameterHandler} implementation that ignores HTTP headers.
+ * {@link HeaderHandler} implementation that ignores HTTP headers.
  * 
  * @config jetty-http-ignore-headers
  * 

@@ -60,10 +60,10 @@ public class RawStatusProvider implements HttpStatusProvider {
    * 
    * <p>Note that for {@link com.adaptris.core.http.jetty.ResponseProducer} any values configured here will be ignored as
    * that will use {@link javax.servlet.http.HttpServletResponse#setStatus(int)} method only. This field is included only for
-   * completeness, a sensible default will be made available based on the {@link HttpStatus} selected.
+   * completeness, a sensible default will be made available based on the {@link HttpStatusProvider.HttpStatus} selected.
    * </p>
    * 
-   * @param statusText the text to be sent (e.g. {@code OK}, if the status code is {@value HttpURLConnection#HTTP_OK}).
+   * @param txt the text to be sent (e.g. {@code OK}, if the status code is {@value java.net.HttpURLConnection##HTTP_OK}).
    */
   public void setText(String txt) {
     this.text = txt;

@@ -10,7 +10,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * {@link ParameterHandler} implementation that stores headers as standard metadata.
+ * {@link com.adaptris.core.http.server.ParameterHandler} implementation that stores headers as standard metadata.
  * 
  * @config jetty-http-parameters-as-metadata
  * 

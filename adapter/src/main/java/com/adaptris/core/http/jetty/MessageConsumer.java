@@ -27,10 +27,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * This is the standard class that receives documents via HTTP.
  * <p>
  * You should configure the {@link #setDestination(com.adaptris.core.ConsumeDestination)} to contain the URI that should trigger
- * this consumer (e.g. {@code /path/to/my/workflow}). The value from {@link ConsumeDestination#getFilterExpression()} is used to
- * determine which HTTP methods are appropriate for this consumer and should be a comma separated list. In the event that the filter
- * expression is empty / null then all HTTP methods are acceptable (
- * {@code "GET", "POST", "HEAD", "OPTIONS", "PUT", "DELETE", "TRACE", "CONNECT"}).
+ * this consumer (e.g. {@code /path/to/my/workflow}). The value from {@link
+ * com.adaptris.core.ConsumeDestination#getFilterExpression()} is used to determine which HTTP methods are appropriate for this
+ * consumer and should be a comma separated list. In the event that the filter
+ * expression is empty / null then all HTTP methods are acceptable ({@code "GET", "POST", "HEAD", "OPTIONS", "PUT", "DELETE",
+ * "TRACE", "CONNECT"}).
  * <p>
  * If you want to preserve the http request headers or parameters simply configure a handler for either or both the headers and
  * parameters.
@@ -42,7 +43,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <li>{@link HeaderHandler header-handler}</li>
  * </ul>
  * </p>
- * 
+ * <p>Note that if you intend for this class to be consumer withing a {@link com.adaptris.core.PoolingWorkflow} then you should
+ * consider configuring a {@link JettyPoolingWorkflowInterceptor} as part of that workflow.
+ * </p>
  * @config jetty-message-consumer
  * @license BASIC
  * @author lchan

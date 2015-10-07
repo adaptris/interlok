@@ -46,10 +46,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config jetty-response-producer
  * @license BASIC
+ * @deprecated since 3.0.6; use {@link StandardResponseProducer} instead.
  * @author lchan
  * @author $Author: lchan $
  */
 @XStreamAlias("jetty-response-producer")
+@Deprecated
 public class ResponseProducer extends ProduceOnlyProducerImp {
   private static final String DEFAULT_METADATA_REGEXP = "X-HTTP.*";
   private static final boolean DEFAULT_FORWARD_CONNECTION_EXCEPTION = false;
@@ -100,10 +102,6 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
     setHttpResponseCode(status.getStatusCode());
   }
 
-  /**
-   * @see AdaptrisMessageProducerImp#produce(AdaptrisMessage,
-   *      ProduceDestination)
-   */
   @Override
   @Profiled(tag = "{$this.getClass().getSimpleName()}.produce()", logger = "com.adaptris.perf4j.http.jetty.TimingLogger")
   public void produce(AdaptrisMessage msg, ProduceDestination destination)
@@ -366,7 +364,7 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
   }
 
   /**
-   * Whether or not to execute {@link ServletResponse#flushBuffer()} at the end of the produce method.
+   * Whether or not to execute {@link javax.servlet.ServletResponse#flushBuffer()} at the end of the produce method.
    *
    * @param b (defaults true).
    */
@@ -387,7 +385,8 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
    * 
    * <p>
    * When producing the reply to a client; it may be that they have already terminated the connection. By default client
-   * disconnections will not generate a {@link ServiceException} so normal processing continues. Set this to be true if you want
+   * disconnections will not generate a {@link com.adaptris.core.ServiceException} so normal processing continues. Set this to be
+   * true if you want
    * error handling to be triggered in this situation.
    * </p>
    * 

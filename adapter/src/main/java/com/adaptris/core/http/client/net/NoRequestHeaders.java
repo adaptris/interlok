@@ -7,7 +7,7 @@ import com.adaptris.core.http.client.RequestHeaderProvider;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Implementation of {@link RequestHeaderHandler} that adds no additional headers
+ * Implementation of {@link RequestHeaderProvider} that adds no additional headers
  * 
  * @config http-no-request-headers
  * @author lchan

@@ -73,7 +73,8 @@ public abstract class ResponseProducerImpl extends ProduceOnlyProducerImp {
    * 
    * <p>
    * When producing the reply to a client; it may be that they have already terminated the connection. By default client
-   * disconnections will not generate a {@link ServiceException} so normal processing continues. Set this to be true if you want
+   * disconnections will not generate a {@link com.adaptris.core.ServiceException} so normal processing continues. Set this to be
+   * true if you want
    * error handling to be triggered in this situation.
    * </p>
    * 

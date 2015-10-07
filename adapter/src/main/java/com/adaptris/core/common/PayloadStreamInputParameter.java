@@ -10,9 +10,7 @@ import com.adaptris.interlok.types.InterlokMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * <p>
- * This {@link DataInputParameter} is used when you want to source/target data to/from the {@link AdaptrisMessage} payload.
- * </p>
+ * This {@code DataInputParameter} is used when you want to source data from the {@link com.adaptris.core.AdaptrisMessage} payload.
  * 
  * 
  * @author amcgrath

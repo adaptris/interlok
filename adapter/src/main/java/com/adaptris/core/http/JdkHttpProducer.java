@@ -88,19 +88,12 @@ public class JdkHttpProducer extends HttpProducer {
     setDestination(d);
   }
 
-  /**
-   *
-   * @see com.adaptris.core.RequestReplyProducerImp#defaultTimeout()
-   */
+
   @Override
   protected long defaultTimeout() {
     return DEFAULT_SOCKET_TIMEOUT;
   }
 
-  /**
-   * @see AdaptrisMessageProducerImp #request(AdaptrisMessage,
-   *      ProduceDestination, long)
-   */
   @Override
   @Profiled(tag = "{$this.getClass().getSimpleName()}.request()", logger = "com.adaptris.perf4j.http.TimingLogger")
   protected AdaptrisMessage doRequest(AdaptrisMessage msg, ProduceDestination destination, long timeout) throws ProduceException {
@@ -318,7 +311,7 @@ public class JdkHttpProducer extends HttpProducer {
   /**
    * Set the HTTP method to be used.
    *
-   * @param method
+   * @param s the method.
    */
   public void setMethod(String s) {
     this.method = Args.notNull(s, "Method");

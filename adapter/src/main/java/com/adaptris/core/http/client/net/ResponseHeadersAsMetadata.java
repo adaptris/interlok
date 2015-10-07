@@ -9,14 +9,15 @@ import com.adaptris.core.AdaptrisMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Concrete implementation of {@link ResponseHeaderHandler} which adds all the HTTP headers from the
+ * Concrete implementation of {@link com.adaptris.core.http.client.ResponseHeaderHandler} which adds all the HTTP headers from the
  * response as metadata to the {@link AdaptrisMessage}.
  *
- * <p>Because {@link HttpURLConnection} exposes headers as a {@code List<String>}; {@code #setMetadataSeparator(String)} is used
+ * <p>Because {@link java.net.HttpURLConnection} exposes headers as a {@code List<String>}; {@code #setMetadataSeparator(String)} is
+ * used
  * as a separator between multiple items in the list to flatten the list into a single metadata value. The default value is the
  * tab character ("\t").</p>
  * <p>This will include header fields where the key is {@code null}; this will end up as the string {@code "null"}. {@link
- * HttpURLConnection} exposes the HTTP status line (e.g. {@code 200 HTTP/1.1 OK} as a header field with no key so this will
+ * java.net.HttpURLConnection} exposes the HTTP status line (e.g. {@code 200 HTTP/1.1 OK} as a header field with no key so this will
  * generally be what is associated with {@code "null"}.
  * </p>
  * 
@@ -71,9 +72,9 @@ public class ResponseHeadersAsMetadata extends MetadataResponseHeaderImpl {
    * Set the separator to be used when multiple headers should be associated with the same key.
    * 
    * <p>
-   * Because {@link HttpURLConnection} exposes headers as a {@code List<String>}; {@code #setMetadataSeparator(String)} is used
-   * as a separator between multiple items in the list to flatten the list into a single metadata value. The default value is the
-   * tab character ("\t").
+   * Because {@link java.net.HttpURLConnection} exposes headers as a {@code List<String>}; {@code #setMetadataSeparator(String)} is
+   * used as a separator between multiple items in the list to flatten the list into a single metadata value. The default value is
+   * the tab character ("\t").
    * </p>
    * 
    * @param s the separator (default if not specified is "\t");

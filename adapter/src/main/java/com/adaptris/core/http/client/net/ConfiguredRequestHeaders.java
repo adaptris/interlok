@@ -16,7 +16,7 @@ import com.adaptris.util.KeyValuePairSet;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Implementation of {@link RequestHeaderHandler} that applies configured values as headers to a {@link
+ * Implementation of {@link RequestHeaderProvider} that applies configured values as headers to a {@link
  * HttpURLConnection}.
  * 
  * @config http-configured-request-headers

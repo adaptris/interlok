@@ -66,7 +66,7 @@ public class MetadataRequestMethodProvider implements RequestMethodProvider {
   /**
    * Set the default method.
    * 
-   * @param m the default method ({@link RequestMethod#POST}).
+   * @param m the default method ({@link RequestMethodProvider.RequestMethod#POST}).
    */
   public void setDefaultMethod(RequestMethod m) {
     this.defaultMethod = Args.notNull(m, "Default HTTP Method");

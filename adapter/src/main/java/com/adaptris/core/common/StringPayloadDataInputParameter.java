@@ -6,11 +6,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * This {@link DataInputParameter} is used when you want to source data from the {@link AdaptrisMessage} payload.
+ * This {@code DataInputParameter} is used when you want to source data from the {@link com.adaptris.core.AdaptrisMessage} payload.
  * </p>
  * <p>
- * An example might be specifying that the XML content required for the {@link XPathService} can be found in
- * the payload of an {@link AdaptrisMessage}.
+ * An example might be specifying that the XML content required for the {@link com.adaptris.core.services.xml.XPathService} can be
+ * found in
+ * the payload of an {@link com.adaptris.core.AdaptrisMessage}.
  * </p>
  * 
  * @author amcgrath

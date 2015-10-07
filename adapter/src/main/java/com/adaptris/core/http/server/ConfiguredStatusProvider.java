@@ -8,7 +8,7 @@ import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Static implementation of {@link HttpStatusProvider} that uses {@link HttpStatus} to derive the correct code.
+ * Static implementation of {@link HttpStatusProvider} that uses {@link HttpStatusProvider.HttpStatus} to derive the correct code.
  * 
  * <p>If you are configuring a static HTTP status, then you could use {@link RawStatusProvider} and the actual numeric
  * code if that makes more sense to you. This class is provided so that a typesafe enum can be used to derive the correct status
@@ -50,7 +50,7 @@ public class ConfiguredStatusProvider implements HttpStatusProvider {
   /**
    * Set the HTTP Status to use.
    * 
-   * @param status the status, which defaults to {@value HttpStatus#INTERNAL_ERROR}
+   * @param status the status, which defaults to {@value HttpStatusProvider.HttpStatus#INTERNAL_ERROR_500}
    */
   public void setStatus(HttpStatus status) {
     this.status = Args.notNull(status, "Status Code");
@@ -67,10 +67,10 @@ public class ConfiguredStatusProvider implements HttpStatusProvider {
    * 
    * <p>Note that for {@link com.adaptris.core.http.jetty.ResponseProducer} any values configured here will be ignored as
    * that will use {@link javax.servlet.http.HttpServletResponse#setStatus(int)} method only. This field is included only for
-   * completeness, a sensible default will be made available based on the {@link HttpStatus} selected.
+   * completeness, a sensible default will be made available based on the {@link HttpStatusProvider.HttpStatus} selected.
    * </p>
    * 
-   * @param statusText the text to be sent (e.g. {@code OK}, if the status code is {@link HttpStatus#OK}).
+   * @param txt the text to be sent (e.g. {@code OK}, if the status code is {@link HttpStatusProvider.HttpStatus#OK_200}).
    */
   public void setText(String txt) {
     this.text = txt;

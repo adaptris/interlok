@@ -9,9 +9,8 @@ import com.adaptris.interlok.types.InterlokMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * <p>
- * This {@link DataOutputParameter} is used when you want to write some data to the {@link AdaptrisMessage}'s metadata.
- * </p>
+ * This {@code DataOutputParameter} is used when you want to write some data to the {@link com.adaptris.core.AdaptrisMessage}
+ * metadata.
  * 
  * @author amcgrath
  * @config metadata-data-output-parameter

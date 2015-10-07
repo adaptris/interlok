@@ -15,7 +15,7 @@ import com.adaptris.interlok.types.InterlokMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * {@link DataOutputParameter} implementation that writes to a file.
+ * {@code DataInputParameter} implementation that writes to a file.
  * 
  * @config file-data-output-parameter
  */
