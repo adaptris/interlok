@@ -8,12 +8,12 @@
   	<property name="ivy.logging" value="quiet"/>
   	<property name="ivy.report.dir" value="${build.dir}/ivy-report"/>
   	<property name="ivy.publish.bundle.type" value="jar"/>
-    
+
     <property name="coverage.report.output.dir" value="${tests.output.dir}/coverage"/>
     <property name="coverage.report.html.output.dir" value="${coverage.report.output.dir}/html"/>
     <property name="coverage.build.dir" value="${build.dir}/coverage"/>
     <property name="coverage.metadata.file" value="${basedir}/jacoco.exec"/>
-    
+
   </target>
 
   <target name="download-ivy" depends="init-ivy" unless="skip.ivy.download">
@@ -54,7 +54,7 @@
         </ivy:publish>
       </sequential>
     </macrodef>
-    
+
     <macrodef name="create-manifest" uri="uri:interlok">
       <attribute name="file" default="${build.dir}/Manifest.mf"/>
       <attribute name="title"/>
@@ -78,7 +78,7 @@
       <attribute name="dir" default="${build.classes.dir}/META-INF"/>
       <attribute name="name"/>
       <attribute name="version" default="${ivy.publish.revision}"/>
-      <attribute name="date" default="${today}"/>      
+      <attribute name="date" default="${today}"/>
       <sequential>
         <mkdir dir="@{dir}"/>
         <propertyfile file="@{dir}/adaptris-version">
@@ -88,7 +88,7 @@
         </propertyfile>
       </sequential>
     </macrodef>
-    
+
     <macrodef name="execute-tests" uri="uri:interlok">
       <attribute name="printsummary" default="true"/>
       <attribute name="fork" default="yes"/>
@@ -263,7 +263,7 @@
             <path refid="main.classpath"/>
             <pathelement location="${ant.core.lib}"/>
           </classpath>
-          <grouping/>          
+          <grouping/>
           <link offline="false" href="http://docs.oracle.com/javaee/7/api/" />
           <link offline="false" href="http://docs.oracle.com/javase/7/docs/api/" />
           <link offline="false" href="http://commons.apache.org/proper/commons-net/javadocs/api-3.3/"/>
@@ -275,6 +275,7 @@
           <link offline="false" href="http://development.adaptris.com/javadocs/v3-snapshot/Interlok-API/"/>
           <link offline="false" href="http://www.swiftmq.com/products/router/swiftlets/sys_amqp/client/javadoc/"/>
           <link offline="false" href="http://www.quartz-scheduler.org/api/2.2.1/"/>
+          <link offline="false" href="http://development.adaptris.net/javadocs/v3-snapshot/Interlok-Common/"/>
           <taglet name="com.adaptris.taglet.ConfigTaglet">
             <path refid="classpath.ant-tools"/>
           </taglet>
@@ -284,7 +285,7 @@
         </javadoc>
       </sequential>
     </macrodef>
-    
+
   </target>
 
   <target name="ivy-report" depends="prepare-ivy" description="Produce an IVY dependency report">

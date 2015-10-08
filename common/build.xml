@@ -99,6 +99,9 @@
     <mkdir dir="${project.dist.dir}/${project.name}/jar"/>
     <mkdir dir="${project.dist.dir}/${project.name}/javadoc"/>
     <copy todir="${project.dist.dir}/${project.name}/jar" file="${project.dist.dir}/${project.jar.name}"/>
+    <zip destfile="${project.dist.dir}/${project.name}/javadoc/${project.name}-javadoc.zip" compress="true" level="9">
+      <zipfileset dir="${api.doc.dir}" prefix="docs/Interlok-Common"/>
+    </zip>
     <jar jarfile="${project.dist.dir}/${project.name}/javadoc/${project.name}.jar">
       <fileset dir="${api.doc.dir}"/>
     </jar>
