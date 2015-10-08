@@ -59,6 +59,8 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
   
   private int httpResponseCode;
 
+  private static transient boolean warningLogged;
+
   @NotNull
   @AutoPopulated
   @AdvancedConfig
@@ -88,6 +90,10 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
     setContentTypeKey(null);
     setMetadataFilter(new RemoveAllMetadataFilter());
     setHttpResponseCode(DEFAULT_RESPONSE_CODE);
+    if (!warningLogged) {
+      log.warn("[{}] is deprecated, use [{}] instead", this.getClass().getSimpleName(), StandardResponseProducer.class.getName());
+      warningLogged = true;
+    }
   }
 
   @Deprecated

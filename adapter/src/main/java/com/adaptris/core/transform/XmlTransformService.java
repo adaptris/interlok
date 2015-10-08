@@ -91,6 +91,9 @@ public class XmlTransformService extends ServiceImp {
     if (isEmpty(getUrl()) && isEmpty(getMetadataKey())) {
       throw new CoreException("metadata-key & url are both empty, cannot initialise");
     }
+    if (useMetadataAsStylesheetParameters() && getTransformParameter() == null) {
+      log.warn("Configured with deprecated 'useMetadataAsStylesheetParameters'; use #setTransformParameter() instead.");
+    }
   }
 
   /**
@@ -354,6 +357,7 @@ public class XmlTransformService extends ServiceImp {
     }
     else {
       if (useMetadataAsStylesheetParameters()) {
+        log.warn("Configured with deprecated 'useMetadataAsStylesheetParameters'; use #setTransformParameter() instead.");
         builder = new StringMetadataParameter();
       }
     }

@@ -39,6 +39,7 @@ import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.http.client.RequestMethodProvider;
 import com.adaptris.core.http.client.RequestMethodProvider.RequestMethod;
+import com.adaptris.core.http.client.net.StandardHttpProducer;
 import com.adaptris.core.util.Args;
 import com.adaptris.util.license.License;
 import com.adaptris.util.license.License.LicenseType;
@@ -64,6 +65,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("jdk-http-producer")
 @Deprecated
 public class JdkHttpProducer extends HttpProducer {
+  private static transient boolean warningLogged;
 
   // Methods that allow doOutputUse; might not be the full list, we should probably check HTTP 1.1 specification.
   private static final Collection<RequestMethodProvider.RequestMethod> METHOD_ALLOWS_OUTPUT =
@@ -81,6 +83,10 @@ public class JdkHttpProducer extends HttpProducer {
   public JdkHttpProducer() {
     super();
     setMethod(RequestMethod.POST.name());
+    if (!warningLogged) {
+      log.warn("[{}] is deprecated, use [{}] instead", this.getClass().getSimpleName(), StandardHttpProducer.class.getName());
+      warningLogged = true;
+    }
   }
 
   public JdkHttpProducer(ProduceDestination d) {

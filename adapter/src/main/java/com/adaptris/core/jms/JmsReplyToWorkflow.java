@@ -7,12 +7,9 @@ import javax.jms.Topic;
 import org.perf4j.aop.Profiled;
 
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandardWorkflow;
 import com.adaptris.util.license.License;
 import com.adaptris.util.license.License.LicenseType;
@@ -46,12 +43,18 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("jms-reply-to-workflow")
 @Deprecated
 public final class JmsReplyToWorkflow extends StandardWorkflow {
+  private static transient boolean warningLogged;
 
   // not marshalled
   private transient boolean isPas;
 
   public JmsReplyToWorkflow() {
     super();
+    if (!warningLogged) {
+      log.warn("[{}] is deprecated, use StandardWorkflow+StandaloneProducer+JmsReplyToDestination instead",
+          this.getClass().getSimpleName());
+      warningLogged = true;
+    }
   }
 
   /**
