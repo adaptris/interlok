@@ -16,29 +16,29 @@ import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Extension of {@link StandardWorkflow} for use with JMS consumers and producers.
+ * Extension of {@link com.adaptris.core.StandardWorkflow} for use with JMS consumers and producers.
  * 
  * <p>
- * Generally it is preferred that you configure a {@link StandardWorkflow} and make use the
+ * Generally it is preferred that you configure a {@link com.adaptris.core.StandardWorkflow} and make use the
  * appropriate {@link JmsProducerImpl} implementation with a {@link JmsReplyToDestination} instead.
  * </p>
  * <p>
- * Key differences to {@link StandardWorkflow} are
+ * Key differences to {@link com.adaptris.core.StandardWorkflow} are
  * <ul>
- * <li>Any configured {@link ProduceDestination} is ignored the configured producer; the appropriate
+ * <li>Any configured {@link com.adaptris.core.ProduceDestination} is ignored; the appropriate
  * destination is derived from object metadata</li>
  * <li>The {@link JmsProducerImpl} implementations must correspond to the associated
  * {@link JmsConsumerImpl} implementation; i.e. {@link PtpProducer} must be used with
  * {@link PtpConsumer}.</li>
- * <li>Does not obey the use of {@link CoreConstants#KEY_WORKFLOW_SKIP_PRODUCER}, the producer is
+ * <li>Does not obey the use of {@link com.adaptris.core.CoreConstants#KEY_WORKFLOW_SKIP_PRODUCER}, the producer is
  * always triggered.
  * </ul>
  * </p>
  * 
  * @config jms-reply-to-workflow
  * @license STANDARD
- * @deprecated Use a {@link StandardWorkflow} with a {@link StandaloneProducer} with a
- *             {@link JmsReplyToDestination}.
+ * @deprecated Use a {@link com.adaptris.core.StandardWorkflow} with a {@link com.adaptris.core.StandaloneProducer} with a
+ * {@link JmsReplyToDestination}.
  */
 @XStreamAlias("jms-reply-to-workflow")
 @Deprecated
@@ -57,16 +57,6 @@ public final class JmsReplyToWorkflow extends StandardWorkflow {
     }
   }
 
-  /**
-   * <p>
-   * If the configured <code>AdaptrisMessageConsumer</code> and
-   * <code>AdaptrisMessageProducer</code> are JMS, calls <code>super.init
-   * </code>, otherwise
-   * throws Exception. Sets isPas flagged based on domain of producer.
-   * </p>
-   *
-   * @see com.adaptris.core.WorkflowImp#initialiseWorkflow()
-   */
   @Override
   protected void initialiseWorkflow() throws CoreException {
 
@@ -79,12 +69,6 @@ public final class JmsReplyToWorkflow extends StandardWorkflow {
     }
   }
 
-  /**
-   * <p>
-   * Verifies that the configured consumer and producer are JMS, set producer
-   * type flag.
-   * </p>
-   */
   private boolean verifyConfig() {
     boolean result = false;
 
@@ -114,18 +98,6 @@ public final class JmsReplyToWorkflow extends StandardWorkflow {
     }
   }
 
-  /**
-   * <p>
-   * Attempts to obtain a JMS <code>Destination</code> object from
-   * <code>AdaptrisMessage</code> metadata. If this object is not null, and its
-   * type matches the <code>isPas</code> flag, <code>msg</code> is sent directly
-   * to the <code>Destination</code>. Otherwise a <code>ProduceException</code>
-   * is thrown.
-   * </p>
-   *
-   * @see com.adaptris.core.Workflow#doProduce
-   *      (com.adaptris.core.AdaptrisMessage)
-   */
   @Override
   public void doProduce(AdaptrisMessage msg) throws ServiceException,
       ProduceException {
@@ -147,12 +119,6 @@ public final class JmsReplyToWorkflow extends StandardWorkflow {
     }
   }
 
-  /**
-   * <p>
-   * Verifies that the the JMS reply to Destination obtained from
-   * AdaptrisMessage metadata is not null and its domain matches the isPas flag.
-   * </p>
-   */
   private boolean verifyDestinationDomain(Destination jmsDestination) {
     boolean result = false;
 
