@@ -149,7 +149,7 @@ public class XpathMetadataServiceTest extends MetadataServiceExample {
         + "\nThis is a set of key value pairs, where the key is the prefix, and the value" + "\nis the namespace URI" + "\n-->\n\n";
   }
 
-  private KeyValuePairSet createContextEntries() {
+  public static KeyValuePairSet createContextEntries() {
     KeyValuePairSet contextEntries = new KeyValuePairSet();
     contextEntries.add(new KeyValuePair("svrl", "http://purl.oclc.org/dsdl/svrl"));
     contextEntries.add(new KeyValuePair("xsd", "http://www.w3.org/2001/XMLSchema"));

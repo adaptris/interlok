@@ -14,6 +14,7 @@ import org.xml.sax.InputSource;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.services.metadata.XpathMetadataServiceTest;
 import com.adaptris.core.stubs.DefectiveMessageFactory;
 import com.adaptris.core.stubs.MessageHelper;
 import com.adaptris.core.stubs.MockMessageProducer;
@@ -199,6 +200,15 @@ public class XpathSplitterTest extends SplitterCase {
     msg.addMetadata("key", "value");
     execute(service, msg);
     assertEquals("Number of messages", 3, producer.getMessages().size());
+  }
+
+  public void testXmlSplitter_Namespace() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XpathMetadataServiceTest.XML_WITH_NAMESPACE);
+    XpathMessageSplitter splitter = new XpathMessageSplitter("/svrl:schematron-output/svrl:failed-assert", "UTF-8");
+    splitter.setNamespaceContext(XpathMetadataServiceTest.createContextEntries());
+    List<AdaptrisMessage> result = splitter.splitMessage(msg);
+    // Should be 2 splits
+    assertEquals("Number of messages", 2, result.size());
   }
 
   private Document createDocument(byte[] bytes) throws Exception {
