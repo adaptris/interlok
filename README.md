@@ -24,7 +24,7 @@ cd ./adapter
 ant jar
 # You will see if you have setup your environment properly.
 ant test
-# This will take about 10 minutes, and at the end there will be a ./adapter/testoutput/html directory that contains the test output.
+# This will take about 10 minutes, and at the end there will be a ./adapter/target/testoutput/html directory that contains the test output.
 ```
 ### Fixing your build ###
 
