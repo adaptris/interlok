@@ -11,7 +11,7 @@
     <property name="project.name" value="interlok-common"/>
     <property name="project.jar.name" value="${project.name}.jar"/>
     <property name="ivy.publish.bundle.type" value="jar"/>
-    <property name="ivy.publish.revision" value="3.0-SNAPSHOT"/>
+    <property name="ivy.publish.revision" value="3.1-SNAPSHOT"/>
     <property name="ivy.dir" value="${basedir}/../ivy"/>
     <property name="ivy.xml.file" value="${ivy.dir}/ivy-common.xml"/>
     <property name="ivy.artifact.publish.status" value="integration"/>
@@ -19,8 +19,6 @@
     <property name="manifest.title" value="Interlok Common Classes"/>
     <property name="manifest.vendor" value="Adaptris Ltd"/>
     <property name="manifest.section.name" value="com/adaptris/interlok"/>
-
-    <property name="adp-core-version" value="3.0-SNAPSHOT"/>
 
     <property name="src.dir"      value="${basedir}/src/main/java" />
     <property name="testsrc.dir"  value="${basedir}/src/test/java"/>
