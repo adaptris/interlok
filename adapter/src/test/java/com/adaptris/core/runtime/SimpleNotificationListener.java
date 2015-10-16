@@ -18,6 +18,8 @@ package com.adaptris.core.runtime;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.management.Notification;
@@ -39,11 +41,26 @@ public class SimpleNotificationListener implements NotificationListener, Seriali
     return new ArrayList(notifications);
   }
 
+  public List<Notification> notificationsSortedBySeqNo() {
+    List<Notification> result = new ArrayList(notifications);
+    Collections.sort(result, new SortBySeqNo());
+    return result;
+  }
+
   public void waitForMessages(int count) throws Exception {
     long totalWaitTime = 0;
-    while (getNotifications().size() < count && totalWaitTime < MAX_WAIT) {
+    while (notifications.size() < count && totalWaitTime < MAX_WAIT) {
       Thread.sleep(DEFAULT_WAIT_INTERVAL);
       totalWaitTime += DEFAULT_WAIT_INTERVAL;
     }
+  }
+
+  private static class SortBySeqNo implements Comparator<Notification> {
+
+    @Override
+    public int compare(Notification o1, Notification o2) {
+      return Long.compare(o1.getSequenceNumber(), o2.getSequenceNumber());
+    }
+
   }
 }

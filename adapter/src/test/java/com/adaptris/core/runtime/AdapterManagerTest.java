@@ -1658,7 +1658,9 @@ public class AdapterManagerTest extends ComponentManagerCase {
       assertEquals(StoppedState.getInstance(), manager.getComponentState());
       listener.waitForMessages(2);
       assertEquals(2, listener.getNotifications().size());
-      Notification n = listener.getNotifications().get(1);
+
+      // Get the last notification by sorting it.
+      Notification n = listener.notificationsSortedBySeqNo().get(1);
       assertEquals(NOTIF_TYPE_ADAPTER_LIFECYCLE, n.getType());
       assertEquals(NOTIF_MSG_STOPPED, n.getMessage());
       assertEquals(StoppedState.getInstance(), n.getUserData());
@@ -1688,7 +1690,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
       assertEquals(ClosedState.getInstance(), manager.getComponentState());
       listener.waitForMessages(2);
       assertEquals(2, listener.getNotifications().size());
-      Notification n = listener.getNotifications().get(1);
+      Notification n = listener.notificationsSortedBySeqNo().get(1);
       assertEquals(NOTIF_TYPE_ADAPTER_LIFECYCLE, n.getType());
       assertEquals(NOTIF_MSG_CLOSED, n.getMessage());
       assertEquals(ClosedState.getInstance(), n.getUserData());
@@ -2082,5 +2084,4 @@ public class AdapterManagerTest extends ComponentManagerCase {
       return new ArrayList(exceptionList);
     }
   }
-
 }
