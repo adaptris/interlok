@@ -50,7 +50,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <ul>
  * <li>jms:queue:MyQueueName</li>
  * <li>jms:topic:MyTopicName</li>
- * <li>jms:queue:MyQueueName?replyToName=StaticReplyTo&amp;prority=1&amp;timeToLive=1234</li>
+ * <li>jms:queue:MyQueueName?replyToName=StaticReplyTo&amp;priority=1&amp;timeToLive=1234</li>
  * <li>jms:topic:MyTopicName?replyToName=StaticReplyTo</li>
  * </ul>
  * </p>
@@ -61,7 +61,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config jms-producer
  * @license BASIC, additional license requirements from the chosen {@link MessageTypeTranslator} and
- *          {@link ProducerSessionFactory}
+ * {@link ProducerSessionFactory}
  */
 @XStreamAlias("jms-producer")
 public class JmsProducer extends JmsProducerImpl {
