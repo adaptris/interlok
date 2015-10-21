@@ -22,8 +22,6 @@ import java.io.InputStream;
 import java.net.URL;
 
 import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -60,7 +58,6 @@ public class XmlSchemaValidator extends MessageValidatorImpl {
   private String schemaMetadataKey;
 
   // transient
-  private transient DocumentBuilder parser;
   private transient SchemaFactory schemaFactory;
   private transient Schema schemaObject;
 
@@ -101,8 +98,6 @@ public class XmlSchemaValidator extends MessageValidatorImpl {
       }
     }
     try {
-      this.parser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-      this.parser.setErrorHandler(new ErrorHandlerImp());
       schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
       if (this.getSchema() != null) {
         this.schemaObject = schemaFactory.newSchema(new URL(this.getSchema()));

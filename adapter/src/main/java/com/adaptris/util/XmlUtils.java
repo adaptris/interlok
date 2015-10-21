@@ -205,9 +205,11 @@ public class XmlUtils {
   /**
    * Method which transforms the source document, using the stylesheet found at the system id specified.
    * 
+   * @deprecated since 3.1.0 with no replacement.
    * @param xsl the style sheet
    * @throws Exception if there was a failure to create a transformer.
    */
+  @Deprecated
   public void transform(String xsl) throws Exception {
     Transformer transformer = xmlTransformerFactory.createTransformer(xsl, entityResolver);
     new XmlTransformerImpl().transform(transformer, (new DOMSource(currentDoc)), out, xsl);
@@ -739,7 +741,10 @@ public class XmlUtils {
    *
    * @throws Exception on error.
    * @return a node representing the Document.
+   * @deprecated since 3.1.0 with no replacement.
+   * 
    */
+  @Deprecated
   public static Node createDocument() throws Exception {
     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     DocumentBuilder db = dbf.newDocumentBuilder();
