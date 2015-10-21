@@ -20,6 +20,7 @@ import org.w3c.dom.Document;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.XmlHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -38,7 +39,7 @@ public class XmlBasicValidator extends MessageValidatorImpl {
   @Override
   public void validate(AdaptrisMessage msg) throws CoreException {
     try {
-      Document d = XmlHelper.createDocument(msg, null);
+      Document d = XmlHelper.createDocument(msg, new DocumentBuilderFactoryBuilder());
     }
     catch (Exception e) {
       ExceptionHelper.rethrowCoreException(e);

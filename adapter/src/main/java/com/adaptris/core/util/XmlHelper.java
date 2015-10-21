@@ -73,6 +73,7 @@ public class XmlHelper {
   private static final String ELEM_REPL_VALUE = "_";
 
   private transient static Logger log = LoggerFactory.getLogger(XmlHelper.class);
+  private static final DocumentBuilderFactoryBuilder DEFAULT_BUILDER = new DocumentBuilderFactoryBuilder();
 
   /**
    * Create an XMLUtils class from an AdaptrisMessage.
@@ -136,61 +137,70 @@ public class XmlHelper {
 
   /**
    * Create a document from an AdaptrisMessage.
-   *
+   * @deprecated since 3.1.0 use {{@link #createDocument(AdaptrisMessage, DocumentBuilderFactoryBuilder)} instead.
    * @param msg the AdaptrisMessage
    * @param namespaceAware whether or not the document builder factory used will be namespace aware.
    * @return the Document element
-   * @throws ParserConfigurationException
-   * @throws IOException
-   * @throws SAXException
    */
+  @Deprecated
   public static Document createDocument(AdaptrisMessage msg, boolean namespaceAware)
+      throws ParserConfigurationException, IOException, SAXException {
+    return createDocument(msg, new DocumentBuilderFactoryBuilder().withNamespaceAware(namespaceAware));
+  }
+
+  /**
+   * Create a document from an AdaptrisMessage.
+   * @param msg the AdaptrisMessage
+   * @param builder configuration for the underlying {@link DocumentBuilderFactory} instance..
+   * @return the Document element
+   */
+  public static Document createDocument(AdaptrisMessage msg, DocumentBuilderFactoryBuilder builder)
       throws ParserConfigurationException, IOException, SAXException {
     Document result = null;
     InputStream in = null;
     try {
       in = msg.getInputStream();
-      result = newDocumentBuilder(namespaceAware).parse(new InputSource(in));
-    }
-    finally {
+      result = newDocumentBuilder(builder).parse(new InputSource(in));
+    } finally {
       IOUtils.closeQuietly(in);
     }
     return result;
   }
 
+
   /**
    * Convenience method to create a document from an AdaptrisMessage.
-   *
+   * @deprecated since 3.1.0 use {{@link #createDocument(AdaptrisMessage, DocumentBuilderFactoryBuilder)} instead.
    * @param msg the AdaptrisMessage
    * @param namespaceContext the name space context, if null, then we will not be namespace aware.
    * @return the Document element
-   * @throws ParserConfigurationException
-   * @throws IOException
-   * @throws SAXException
    */
+  @Deprecated
   public static Document createDocument(AdaptrisMessage msg, NamespaceContext namespaceContext)
       throws ParserConfigurationException, IOException, SAXException {
     return createDocument(msg, namespaceContext != null ? true : false);
   }
 
-  private static DocumentBuilder newDocumentBuilder(boolean namespaceAware) throws ParserConfigurationException {
-    DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
-    domFactory.setNamespaceAware(namespaceAware);
+  private static DocumentBuilder newDocumentBuilder(DocumentBuilderFactoryBuilder cfg) throws ParserConfigurationException {
+    DocumentBuilderFactoryBuilder b = defaultIfNull(cfg);
+    DocumentBuilderFactory domFactory = b.configure(DocumentBuilderFactory.newInstance());
     DocumentBuilder builder = domFactory.newDocumentBuilder();
     builder.setErrorHandler(new DefaultErrorHandler());
     return builder;
   }
 
+  private static DocumentBuilderFactoryBuilder defaultIfNull(DocumentBuilderFactoryBuilder b) {
+    return b != null ? b : DEFAULT_BUILDER;
+  }
+
   /**
    * Create a document from a String.
    *
+   * @deprecated since 3.1.0 use {{@link #createDocument(String, DocumentBuilderFactoryBuilder)} instead.
    * @param s the string containing XML
    * @return the Document element
-   * @throws ParserConfigurationException
-   * @throws IOException
-   * @throws SAXException
-   * @see #createDocument(String, boolean)
    */
+  @Deprecated
   public static Document createDocument(String s) throws ParserConfigurationException, IOException, SAXException {
     return createDocument(s, false);
   }
@@ -198,14 +208,12 @@ public class XmlHelper {
   /**
    * Convenience method to create a document from an AdaptrisMessage.
    *
+   * @deprecated since 3.1.0 use {{@link #createDocument(String, DocumentBuilderFactoryBuilder)} instead.
    * @param s the string containing XML
    * @param namespaceContext the namespace context, if null, then we will not be namespace aware.
    * @return the Document element
-   * @throws ParserConfigurationException
-   * @throws IOException
-   * @throws SAXException
-   * @see #createDocument(String, boolean)
    */
+  @Deprecated
   public static Document createDocument(String s, NamespaceContext namespaceContext)
       throws ParserConfigurationException, IOException, SAXException {
     return createDocument(s, namespaceContext != null ? true : false);
@@ -214,26 +222,34 @@ public class XmlHelper {
   /**
    * Create a document from a String.
    *
+   * @deprecated since 3.1.0 use {{@link #createDocument(String, DocumentBuilderFactoryBuilder)} instead.
    * @param s the string containing XML
    * @param namespaceAware whether or not the document builder factory used will be namespace aware.
    * @return the Document element
-   * @throws ParserConfigurationException
-   * @throws IOException
-   * @throws SAXException
    */
+  @Deprecated
   public static Document createDocument(String s, boolean namespaceAware)
+      throws ParserConfigurationException, IOException, SAXException {
+    return createDocument(s, new DocumentBuilderFactoryBuilder().withNamespaceAware(namespaceAware));
+  }
+
+  /**
+   * Create a document from an AdaptrisMessage.
+   * @param s the string containing XML
+   * @param builder configuration for the underlying {@link DocumentBuilderFactory} instance..
+   * @return the Document element
+   */
+  public static Document createDocument(String s, DocumentBuilderFactoryBuilder builder)
       throws ParserConfigurationException, IOException, SAXException {
     Document result = null;
     StringReader in = new StringReader(s);
     try {
-      result = newDocumentBuilder(namespaceAware).parse(new InputSource(in));
-    }
-    finally {
+      result = newDocumentBuilder(builder).parse(new InputSource(in));
+    } finally {
       IOUtils.closeQuietly(in);
     }
     return result;
   }
-
   /**
    * Make a safe element name by stripping out illegal XML characters and illegal element characters.
    * 
