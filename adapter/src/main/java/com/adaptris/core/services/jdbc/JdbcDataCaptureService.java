@@ -30,10 +30,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.text.xml.SimpleNamespaceContext;
@@ -54,8 +56,6 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @XStreamAlias("jdbc-data-capture-service")
 public class JdbcDataCaptureService extends JdbcDataCaptureServiceImpl {
   private String iterationXpath = null;
-  private KeyValuePairSet namespaceContext;
-
   private Boolean iterates = null;
 
   @NotNull
@@ -63,6 +63,10 @@ public class JdbcDataCaptureService extends JdbcDataCaptureServiceImpl {
   @Valid
   @XStreamImplicit
   private StatementParameterList statementParameters = null;
+  @AdvancedConfig
+  private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
+  @AdvancedConfig
+  private KeyValuePairSet namespaceContext;
 
   /**
    * <p>
@@ -170,12 +174,16 @@ public class JdbcDataCaptureService extends JdbcDataCaptureServiceImpl {
     Connection conn = null;
     NamespaceContext namespaceCtx = SimpleNamespaceContext.create(getNamespaceContext(), msg);
     try {
+      DocumentBuilderFactoryBuilder builder = documentFactoryBuilder();
+      if (namespaceCtx != null) {
+        builder.setNamespaceAware(true);
+      }
       XPath xpath = new XPath(namespaceCtx);
       configureActor(msg);
       conn = actor.getSqlConnection();
-      Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+      Document doc = builder.configure(DocumentBuilderFactory.newInstance()).newDocumentBuilder().newDocument();
       try {
-        doc = createDocument(msg, namespaceCtx);
+        doc = createDocument(msg, builder);
       }
       catch (Exception e) {
         // do nothing - it is acceptable to get a non-xml document
@@ -269,5 +277,19 @@ public class JdbcDataCaptureService extends JdbcDataCaptureServiceImpl {
    */
   public void setNamespaceContext(KeyValuePairSet kvps) {
     this.namespaceContext = kvps;
+  }
+
+  public DocumentBuilderFactoryBuilder getXmlDocumentFactoryConfig() {
+    return xmlDocumentFactoryConfig;
+  }
+
+
+  public void setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder xml) {
+    this.xmlDocumentFactoryConfig = xml;
+  }
+
+  DocumentBuilderFactoryBuilder documentFactoryBuilder() {
+    return getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig()
+        : DocumentBuilderFactoryBuilder.newInstance().withNamespaceAware(true);
   }
 }

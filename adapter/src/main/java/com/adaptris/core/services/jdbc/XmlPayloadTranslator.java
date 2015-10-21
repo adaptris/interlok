@@ -28,6 +28,7 @@ import org.w3c.dom.Node;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.jdbc.JdbcResult;
 import com.adaptris.jdbc.JdbcResultSet;
 import com.adaptris.util.XmlUtils;
@@ -95,7 +96,9 @@ public class XmlPayloadTranslator extends XmlPayloadTranslatorImpl {
 
   private Document toDocument(JdbcResult rs, AdaptrisMessage msg) throws Exception {
     XmlUtils xu = createXmlUtils(msg);
-    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    DocumentBuilderFactoryBuilder factoryBuilder =
+        (DocumentBuilderFactoryBuilder) msg.getObjectHeaders().get(JdbcDataQueryService.KEY_DOCBUILDER_FAC);
+    DocumentBuilderFactory factory = factoryBuilder.configure(DocumentBuilderFactory.newInstance());
     DocumentBuilder builder = factory.newDocumentBuilder();
     Document doc = builder.newDocument();
     ColumnStyle elementNameStyle = getColumnNameStyle();

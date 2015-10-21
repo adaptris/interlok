@@ -37,8 +37,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.XmlUtils;
 import com.adaptris.util.text.xml.SimpleNamespaceContext;
@@ -78,7 +80,10 @@ public class XpathMessageSplitter extends MessageSplitterImp {
   @NotBlank
   private String xpath = null;
   private String encoding = null;
+  @AdvancedConfig
   private KeyValuePairSet namespaceContext;
+  @AdvancedConfig
+  private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 
   public XpathMessageSplitter() {
     this(null, null);
@@ -98,12 +103,16 @@ public class XpathMessageSplitter extends MessageSplitterImp {
     List<AdaptrisMessage> result = new ArrayList<AdaptrisMessage>();
     try {
       NamespaceContext namespaceCtx = SimpleNamespaceContext.create(getNamespaceContext(), msg);
-      DocumentBuilder builder = createDocumentBuilder(namespaceCtx);
-      XmlUtils xml = new XmlUtils(namespaceCtx);
-      NodeList list = resolveXpath(msg, namespaceCtx);
+      DocumentBuilderFactoryBuilder factoryBuilder = documentFactoryBuilder();
+      if (namespaceCtx != null) {
+        factoryBuilder = documentFactoryBuilder().withNamespaceAware(true);
+      }
+      DocumentBuilder docBuilder = factoryBuilder.configure(DocumentBuilderFactory.newInstance()).newDocumentBuilder();
+      XmlUtils xml = new XmlUtils(namespaceCtx, factoryBuilder.configure(DocumentBuilderFactory.newInstance()));
+      NodeList list = resolveXpath(msg, namespaceCtx, factoryBuilder);
       String encodingToUse = evaluateEncoding(msg);
       for (int i = 0; i < list.getLength(); i++) {
-        Document splitXmlDoc = builder.newDocument();
+        Document splitXmlDoc = docBuilder.newDocument();
         Node e = list.item(i);
         Node dup = splitXmlDoc.importNode(e, true);
         splitXmlDoc.appendChild(dup);
@@ -125,19 +134,15 @@ public class XpathMessageSplitter extends MessageSplitterImp {
   }
 
   // Consider making this namespace aware; we could follow what XpathMetadataQuery does.
-  private NodeList resolveXpath(AdaptrisMessage msg, NamespaceContext namespaceCtx) throws ParserConfigurationException,
+  private NodeList resolveXpath(AdaptrisMessage msg, NamespaceContext namespaceCtx, DocumentBuilderFactoryBuilder builder)
+      throws ParserConfigurationException,
       IOException, SAXException,
       XPathExpressionException {
-    Document d = createDocument(msg, namespaceCtx);
+    Document d = createDocument(msg, builder);
     XPath xp = new XPath(namespaceCtx);
     return xp.selectNodeList(d, getXpath());
   }
 
-  private DocumentBuilder createDocumentBuilder(NamespaceContext namespaceCtx) throws ParserConfigurationException {
-    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    factory.setValidating(namespaceCtx != null ? true : false);
-    return factory.newDocumentBuilder();
-  }
 
   /**
    * Set the XPath to use to extract the individual messages
@@ -205,5 +210,18 @@ public class XpathMessageSplitter extends MessageSplitterImp {
       encoding = msg.getContentEncoding();
     }
     return encoding;
+  }
+
+  public DocumentBuilderFactoryBuilder getXmlDocumentFactoryConfig() {
+    return xmlDocumentFactoryConfig;
+  }
+
+
+  public void setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder xml) {
+    this.xmlDocumentFactoryConfig = xml;
+  }
+
+  DocumentBuilderFactoryBuilder documentFactoryBuilder() {
+    return getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig() : DocumentBuilderFactoryBuilder.newInstance();
   }
 }

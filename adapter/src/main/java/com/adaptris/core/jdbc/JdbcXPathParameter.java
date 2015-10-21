@@ -20,11 +20,13 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import javax.validation.constraints.NotNull;
 import javax.xml.namespace.NamespaceContext;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.jdbc.ParameterValueType;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.XmlUtils;
 import com.adaptris.util.text.xml.SimpleNamespaceContext;
@@ -51,18 +53,23 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("jdbc-xpath-parameter")
 public class JdbcXPathParameter extends NullableParameter {
-  
+
   @NotNull
   @NotBlank
   private String xpath;
+  @AdvancedConfig
   private KeyValuePairSet namespaceContext;
+  @AdvancedConfig
+  private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
+
+
 
   @Override
   public Object applyInputParam(AdaptrisMessage msg) throws JdbcParameterException {
     this.checkXPath();
     NamespaceContext ctx = SimpleNamespaceContext.create(namespaceContext, msg);
-    XmlUtils xmlUtility = new XmlUtils(ctx);
     try {
+      XmlUtils xmlUtility = new XmlUtils(ctx, documentFactoryBuilder().configure(DocumentBuilderFactory.newInstance()));
       xmlUtility.setSource(msg.getInputStream());
       String textItem = new XPath(ctx).selectSingleTextItem(xmlUtility.getCurrentDoc(), xpath);
       return normalize(textItem);
@@ -109,5 +116,19 @@ public class JdbcXPathParameter extends NullableParameter {
    */
   public void setNamespaceContext(KeyValuePairSet kvps) {
     this.namespaceContext = kvps;
+  }
+
+
+  public DocumentBuilderFactoryBuilder getXmlDocumentFactoryConfig() {
+    return xmlDocumentFactoryConfig;
+  }
+
+
+  public void setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder xml) {
+    this.xmlDocumentFactoryConfig = xml;
+  }
+
+  DocumentBuilderFactoryBuilder documentFactoryBuilder() {
+    return getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig() : DocumentBuilderFactoryBuilder.newInstance();
   }
 }

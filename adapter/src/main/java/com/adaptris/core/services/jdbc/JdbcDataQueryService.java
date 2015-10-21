@@ -26,12 +26,14 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.xml.namespace.NamespaceContext;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.jdbc.JdbcService;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.XmlHelper;
@@ -59,6 +61,7 @@ public class JdbcDataQueryService extends JdbcService {
 
   static final String KEY_XML_UTILS = "XmlUtils_" + JdbcDataQueryService.class.getCanonicalName();
   static final String KEY_NAMESPACE_CTX = "NamespaceCtx_" + JdbcDataQueryService.class.getCanonicalName();
+  static final String KEY_DOCBUILDER_FAC = "DocBuilderFactoryBuilder_" + JdbcDataQueryService.class.getCanonicalName();
 
   @NotNull
   @InputFieldHint(style = "SQL")
@@ -72,10 +75,15 @@ public class JdbcDataQueryService extends JdbcService {
   @AutoPopulated
   @Valid
   private ResultSetTranslator resultSetTranslator;
+  @AdvancedConfig
   private KeyValuePairSet namespaceContext;
+  @AdvancedConfig
+  private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
+
   @NotNull
   @AutoPopulated
   @Valid
+  @AdvancedConfig
   private ParameterApplicator parameterApplicator;
 
   private transient DatabaseActor actor;
@@ -156,8 +164,13 @@ public class JdbcDataQueryService extends JdbcService {
   @SuppressWarnings("unchecked")
   private void initXmlHelper(AdaptrisMessage msg) throws CoreException {
     NamespaceContext namespaceCtx = SimpleNamespaceContext.create(getNamespaceContext(), msg);
+    DocumentBuilderFactoryBuilder builder = documentFactoryBuilder();
+    if (namespaceCtx != null) {
+      builder = builder.withNamespaceAware(true);
+    }
+    msg.getObjectMetadata().put(KEY_DOCBUILDER_FAC, builder);
     if (containsXpath(getStatementParameters())) {
-      XmlUtils xml = XmlHelper.createXmlUtils(msg, namespaceCtx);
+      XmlUtils xml = XmlHelper.createXmlUtils(msg, namespaceCtx, builder);
       msg.getObjectMetadata().put(KEY_XML_UTILS, xml);
     }
     if (namespaceCtx != null) {
@@ -271,6 +284,20 @@ public class JdbcDataQueryService extends JdbcService {
   public void setParameterApplicator(ParameterApplicator parameterApplicator) {
     this.parameterApplicator = parameterApplicator;
   }
+
+  public DocumentBuilderFactoryBuilder getXmlDocumentFactoryConfig() {
+    return xmlDocumentFactoryConfig;
+  }
+
+
+  public void setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder xml) {
+    this.xmlDocumentFactoryConfig = xml;
+  }
+
+  DocumentBuilderFactoryBuilder documentFactoryBuilder() {
+    return getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig() : DocumentBuilderFactoryBuilder.newInstance();
+  }
+
 
   private class DatabaseActor {
     private PreparedStatement queryStatement = null;

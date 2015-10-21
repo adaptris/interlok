@@ -40,6 +40,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.adaptris.security.exc.KeystoreException;
 
@@ -86,7 +87,7 @@ class XmlKeyInfoKeystoreProxy extends SingleEntryKeystoreProxy {
 
     InputStream in = getKeystoreLocation().openInput();
     try {
-      DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+      DocumentBuilderFactory dbf = DocumentBuilderFactoryBuilder.newInstance().configure(DocumentBuilderFactory.newInstance());
       dbf.setNamespaceAware(true);
       Document doc = dbf.newDocumentBuilder().parse(in);
       loadCertificates(doc);

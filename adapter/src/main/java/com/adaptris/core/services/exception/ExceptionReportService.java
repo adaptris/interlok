@@ -27,12 +27,13 @@ import org.apache.commons.io.IOUtils;
 import org.hibernate.validator.constraints.NotBlank;
 import org.w3c.dom.Document;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.XmlUtils;
 import com.adaptris.util.license.License;
@@ -70,6 +71,8 @@ public class ExceptionReportService extends ServiceImp {
   @NotBlank
   @AutoPopulated
   private String xmlEncoding;
+  @AdvancedConfig
+  private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 
   public ExceptionReportService() {
     setXmlEncoding("UTF-8");
@@ -87,7 +90,7 @@ public class ExceptionReportService extends ServiceImp {
       if (msg.getObjectHeaders().containsKey(OBJ_METADATA_EXCEPTION)) {
         Exception e = (Exception) msg.getObjectHeaders().get(OBJ_METADATA_EXCEPTION);
         Document newDoc = getExceptionGenerator().create(e);
-        Document result = getDocumentMerge().merge(XmlHelper.createDocument(msg, true), newDoc);
+        Document result = getDocumentMerge().merge(XmlHelper.createDocument(msg, documentFactoryBuilder()), newDoc);
         out = msg.getOutputStream();
         new XmlUtils().writeDocument(result, out, getXmlEncoding());
         msg.setContentEncoding(getXmlEncoding());
@@ -168,5 +171,19 @@ public class ExceptionReportService extends ServiceImp {
    */
   public void setXmlEncoding(String encoding) {
     xmlEncoding = encoding;
+  }
+
+  public DocumentBuilderFactoryBuilder getXmlDocumentFactoryConfig() {
+    return xmlDocumentFactoryConfig;
+  }
+
+
+  public void setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder xml) {
+    this.xmlDocumentFactoryConfig = xml;
+  }
+
+  DocumentBuilderFactoryBuilder documentFactoryBuilder() {
+    return getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig()
+        : DocumentBuilderFactoryBuilder.newInstance().withNamespaceAware(true);
   }
 }

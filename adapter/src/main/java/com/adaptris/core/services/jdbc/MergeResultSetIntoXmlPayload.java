@@ -29,6 +29,7 @@ import org.w3c.dom.Element;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.jdbc.JdbcResult;
 import com.adaptris.jdbc.JdbcResultSet;
@@ -65,9 +66,10 @@ public class MergeResultSetIntoXmlPayload extends XmlPayloadTranslatorImpl {
       throw new ServiceException("No Document Merge implementation configured.");
     }
     try {
-      Document resultSet = createDocument(source);
-      Document original = XmlHelper.createDocument(target,
-          target.getObjectMetadata().get(JdbcDataQueryService.KEY_NAMESPACE_CTX) != null ? true : false);
+      DocumentBuilderFactoryBuilder builder =
+          (DocumentBuilderFactoryBuilder) target.getObjectHeaders().get(JdbcDataQueryService.KEY_DOCBUILDER_FAC);
+      Document resultSet = createDocument(source, builder);
+      Document original = XmlHelper.createDocument(target, builder);
       Document result = mergeImplementation.merge(original, resultSet);
       writeXmlDocument(result, target);
     }
@@ -81,8 +83,8 @@ public class MergeResultSetIntoXmlPayload extends XmlPayloadTranslatorImpl {
     }
   }
 
-  private Document createDocument(JdbcResult rs) throws Exception {
-    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+  private Document createDocument(JdbcResult rs, DocumentBuilderFactoryBuilder builderFactory) throws Exception {
+    DocumentBuilderFactory factory = builderFactory.configure(DocumentBuilderFactory.newInstance());
     DocumentBuilder builder = factory.newDocumentBuilder();
     Document doc = builder.newDocument();
 

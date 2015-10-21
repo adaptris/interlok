@@ -41,6 +41,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -49,6 +50,7 @@ import com.adaptris.core.ServiceImp;
 import com.adaptris.core.common.Execution;
 import com.adaptris.core.common.StringPayloadDataInputParameter;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.license.License;
@@ -197,7 +199,10 @@ public class XPathService extends ServiceImp {
   @XStreamImplicit(itemFieldName="xpath-execution")
   private List<Execution> executions;
   
+  @AdvancedConfig
   private KeyValuePairSet namespaceContext;
+  @AdvancedConfig
+  private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
   
   public XPathService() {
     this.setExecutions(new ArrayList<Execution>());
@@ -220,7 +225,7 @@ public class XPathService extends ServiceImp {
   }
 
   private Document buildDocument(String xmlData) throws ParserConfigurationException, SAXException, IOException {
-    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    DocumentBuilderFactory factory = documentFactoryBuilder().configure(DocumentBuilderFactory.newInstance());
     DocumentBuilder builder = factory.newDocumentBuilder();
     return builder.parse(new InputSource(new StringReader(xmlData)));
   }
@@ -276,6 +281,20 @@ public class XPathService extends ServiceImp {
 
   public void setNamespaceContext(KeyValuePairSet namespaceContext) {
     this.namespaceContext = namespaceContext;
+  }
+
+  public DocumentBuilderFactoryBuilder getXmlDocumentFactoryConfig() {
+    return xmlDocumentFactoryConfig;
+  }
+
+
+  public void setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder xml) {
+    this.xmlDocumentFactoryConfig = xml;
+  }
+
+  DocumentBuilderFactoryBuilder documentFactoryBuilder() {
+    return getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig()
+        : DocumentBuilderFactoryBuilder.newInstance().withNamespaceAware(true);
   }
 
 }

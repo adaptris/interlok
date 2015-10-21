@@ -34,6 +34,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.transform.ProcessorHandle;
 import com.adaptris.transform.Source;
 import com.adaptris.transform.Target;
@@ -284,7 +285,7 @@ public class FfTransform extends TransformFramework {
   // (passed to the transform method) into its optimised format.
   private DocumentBuilder _getDocumentBuilder() throws Exception {
     try {
-      DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+      DocumentBuilderFactory dbf = DocumentBuilderFactoryBuilder.newInstance().configure(DocumentBuilderFactory.newInstance());
       return dbf.newDocumentBuilder();
     } catch (Exception e) {
       throw new Exception(e.getMessage());

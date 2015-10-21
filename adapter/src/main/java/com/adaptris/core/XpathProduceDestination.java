@@ -26,6 +26,8 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.XmlUtils;
 import com.adaptris.util.text.xml.SimpleNamespaceContext;
@@ -53,7 +55,11 @@ public class XpathProduceDestination implements ProduceDestination {
   @NotNull
   @NotBlank
   private String defaultDestination;
+
+  @AdvancedConfig
   private KeyValuePairSet namespaceContext;
+  @AdvancedConfig
+  private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 
   private transient Logger logR = LoggerFactory.getLogger(this.getClass().getName());
   private transient NamespaceContext namespaceCtx;
@@ -120,7 +126,12 @@ public class XpathProduceDestination implements ProduceDestination {
   public String getDestination(AdaptrisMessage msg) {
     String result = defaultDestination;
     try {
-      XmlUtils xml = createXmlUtils(msg, SimpleNamespaceContext.create(getNamespaceContext(), msg));
+      NamespaceContext ctx = SimpleNamespaceContext.create(getNamespaceContext(), msg);
+      DocumentBuilderFactoryBuilder builder = documentFactoryBuilder();
+      if (ctx != null) {
+        builder.setNamespaceAware(true);
+      }
+      XmlUtils xml = createXmlUtils(msg, ctx, builder);
       String s = xml.getSingleTextItem(xpath);
       if (isBlank(s)) {
         logR.warn(xpath + " returned no results");
@@ -199,4 +210,18 @@ public class XpathProduceDestination implements ProduceDestination {
   public void setNamespaceContext(KeyValuePairSet kvps) {
     this.namespaceContext = kvps;
   }
+
+  public DocumentBuilderFactoryBuilder getXmlDocumentFactoryConfig() {
+    return xmlDocumentFactoryConfig;
+  }
+
+
+  public void setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder xml) {
+    this.xmlDocumentFactoryConfig = xml;
+  }
+
+  DocumentBuilderFactoryBuilder documentFactoryBuilder() {
+    return getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig() : DocumentBuilderFactoryBuilder.newInstance();
+  }
+
 }

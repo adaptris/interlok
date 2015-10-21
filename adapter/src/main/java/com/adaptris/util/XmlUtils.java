@@ -69,13 +69,20 @@ public class XmlUtils {
 
   private EntityResolver entityResolver = null;
   private URIResolver uriResolver = null;
+  private DocumentBuilderFactory docBuilderFactory;
+
 
   public XmlUtils() {
     this(new Resolver(), new Resolver());
   }
 
+  @Deprecated
   public XmlUtils(NamespaceContext ctx) {
     this(new Resolver(), new Resolver(), ctx);
+  }
+
+  public XmlUtils(NamespaceContext ctx, DocumentBuilderFactory f) {
+    this(new Resolver(), new Resolver(), ctx, f);
   }
 
   public XmlUtils(EntityResolver er, URIResolver ur) {
@@ -83,11 +90,25 @@ public class XmlUtils {
   }
 
   public XmlUtils(EntityResolver er, URIResolver ur, NamespaceContext ctx) {
+    this(er, ur, ctx, DocumentBuilderFactory.newInstance());
+  }
+
+
+  public XmlUtils(EntityResolver er, URIResolver ur, NamespaceContext ctx, DocumentBuilderFactory dbf) {
     entityResolver = er;
     uriResolver = ur;
     namespaceCtx = ctx;
     xpath = new XPath(namespaceCtx);
     xmlTransformerFactory = new XsltTransformerFactory();
+    if (dbf == null) {
+      docBuilderFactory = DocumentBuilderFactory.newInstance();
+      if (ctx != null) {
+        docBuilderFactory.setNamespaceAware(true);
+      }
+    } else {
+      docBuilderFactory = dbf;
+    }
+
   }
 
 
@@ -126,9 +147,7 @@ public class XmlUtils {
         }
       }
       else {
-        DocumentBuilderFactory fac = DocumentBuilderFactory.newInstance();
-        fac.setNamespaceAware(namespaceCtx != null ? true : false);
-        currentDoc = fac.newDocumentBuilder().parse(xml);
+        currentDoc = docBuilderFactory.newDocumentBuilder().parse(xml);
       }
       isValid = true;
     }

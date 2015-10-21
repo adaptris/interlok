@@ -124,6 +124,9 @@ public class DocumentBuilderFactoryBuilder {
     features = new HashMap<>();
   }
 
+  public static final DocumentBuilderFactoryBuilder newInstance() {
+    return new DocumentBuilderFactoryBuilder();
+  }
 
   public DocumentBuilderFactory configure(DocumentBuilderFactory f) throws ParserConfigurationException {
     for (FactoryConfiguration c : FactoryConfiguration.values()) {

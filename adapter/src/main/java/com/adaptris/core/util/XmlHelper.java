@@ -73,7 +73,6 @@ public class XmlHelper {
   private static final String ELEM_REPL_VALUE = "_";
 
   private transient static Logger log = LoggerFactory.getLogger(XmlHelper.class);
-  private static final DocumentBuilderFactoryBuilder DEFAULT_BUILDER = new DocumentBuilderFactoryBuilder();
 
   /**
    * Create an XMLUtils class from an AdaptrisMessage.
@@ -90,17 +89,37 @@ public class XmlHelper {
   /**
    * Create an XMLUtils class from an AdaptrisMessage.
    * 
+   * @deprecated since 3.1.0 use {{@link #createDocument(AdaptrisMessage, DocumentBuilderFactoryBuilder)} instead.
    * @param msg the Adaptris message
    * @param ctx the NamespaceContext.
    * @return an XxmlUtils instance
    * @throws CoreException if the msg does not contain valid XML.
    */
+  @Deprecated
   public static XmlUtils createXmlUtils(AdaptrisMessage msg, NamespaceContext ctx) throws CoreException {
+    return createXmlUtils(msg, ctx, DocumentBuilderFactoryBuilder.newInstance());
+  }
+
+  /**
+   * Create an XMLUtils class from an AdaptrisMessage.
+   * 
+   * @param msg the Adaptris message
+   * @param ctx the NamespaceContext.
+   * @param builder configuration for the underlying {@link DocumentBuilderFactory} instance..
+   * @return an XmlUtils instance
+   * @throws CoreException if the msg does not contain valid XML.
+   */
+  public static XmlUtils createXmlUtils(AdaptrisMessage msg, NamespaceContext ctx, DocumentBuilderFactoryBuilder builder)
+      throws CoreException {
     XmlUtils result = null;
     DivertConsoleOutput dc = new DivertConsoleOutput();
     InputStream input = null;
     try {
-      result = new XmlUtils(ctx);
+      DocumentBuilderFactory dbf = builder.configure(DocumentBuilderFactory.newInstance());
+      if (ctx != null) {
+        dbf.setNamespaceAware(true);
+      }
+      result = new XmlUtils(ctx, dbf);
       input = msg.getInputStream();
       InputSource in = new InputSource(input);
       // Well what we're going to do here is annoyingly bad, but I want to eat
@@ -108,22 +127,18 @@ public class XmlHelper {
       // "[Fatal Error] :1:1: Content is not allowed in prolog"
       dc.divert();
       result.setSource(in);
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       result = null;
-    }
-    finally {
+    } finally {
       dc.resume();
       IOUtils.closeQuietly(input);
     }
     if (dc.consoleOutput().contains("[Fatal Error]") || result == null) {
-      throw new CoreException("Document " + msg.getUniqueId() + " does not appear to be an XML Document, error was ["
-          + dc.consoleOutput() + "]");
+      throw new CoreException(
+          "Document " + msg.getUniqueId() + " does not appear to be an XML Document, error was [" + dc.consoleOutput() + "]");
     }
     return result;
-
   }
-
   /**
    * Create a document from an AdaptrisMessage.
    * 
@@ -145,7 +160,7 @@ public class XmlHelper {
   @Deprecated
   public static Document createDocument(AdaptrisMessage msg, boolean namespaceAware)
       throws ParserConfigurationException, IOException, SAXException {
-    return createDocument(msg, new DocumentBuilderFactoryBuilder().withNamespaceAware(namespaceAware));
+    return createDocument(msg, DocumentBuilderFactoryBuilder.newInstance().withNamespaceAware(namespaceAware));
   }
 
   /**
@@ -190,7 +205,7 @@ public class XmlHelper {
   }
 
   private static DocumentBuilderFactoryBuilder defaultIfNull(DocumentBuilderFactoryBuilder b) {
-    return b != null ? b : DEFAULT_BUILDER;
+    return b != null ? b : DocumentBuilderFactoryBuilder.newInstance();
   }
 
   /**

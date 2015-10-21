@@ -27,8 +27,10 @@ import javax.validation.constraints.NotNull;
 
 import org.w3c.dom.Document;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.XmlUtils;
@@ -58,6 +60,8 @@ public class XmlDocumentAggregator extends MessageAggregatorImpl {
   @NotNull
   @Valid
   private DocumentMerge mergeImplementation;
+  @AdvancedConfig
+  private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 
   public XmlDocumentAggregator() {
   }
@@ -70,9 +74,9 @@ public class XmlDocumentAggregator extends MessageAggregatorImpl {
   @Override
   public void joinMessage(AdaptrisMessage original, Collection<AdaptrisMessage> messages) throws CoreException {
     try {
-      Document resultDoc = XmlHelper.createDocument(original, true);
+      Document resultDoc = XmlHelper.createDocument(original, documentFactoryBuilder());
       for (AdaptrisMessage m : messages) {
-        Document mergeDoc = XmlHelper.createDocument(m, true);
+        Document mergeDoc = XmlHelper.createDocument(m, documentFactoryBuilder());
         overwriteMetadata(m, original);
         resultDoc = getMergeImplementation().merge(resultDoc, mergeDoc);
       }
@@ -144,4 +148,17 @@ public class XmlDocumentAggregator extends MessageAggregatorImpl {
     this.mergeImplementation = dm;
   }
 
+  public DocumentBuilderFactoryBuilder getXmlDocumentFactoryConfig() {
+    return xmlDocumentFactoryConfig;
+  }
+
+
+  public void setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder xml) {
+    this.xmlDocumentFactoryConfig = xml;
+  }
+
+  DocumentBuilderFactoryBuilder documentFactoryBuilder() {
+    return getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig()
+        : DocumentBuilderFactoryBuilder.newInstance().withNamespaceAware(true);
+  }
 }

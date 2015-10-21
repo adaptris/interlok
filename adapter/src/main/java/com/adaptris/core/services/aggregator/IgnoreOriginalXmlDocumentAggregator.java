@@ -22,8 +22,10 @@ import java.util.Collection;
 
 import org.w3c.dom.Document;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.text.xml.DocumentMerge;
@@ -49,6 +51,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class IgnoreOriginalXmlDocumentAggregator extends XmlDocumentAggregator {
 
   private String template;
+  @AdvancedConfig
+  private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 
   public IgnoreOriginalXmlDocumentAggregator() {
   }
@@ -72,7 +76,7 @@ public class IgnoreOriginalXmlDocumentAggregator extends XmlDocumentAggregator {
       }
       Document resultDoc = XmlHelper.createDocument(getTemplate());
       for (AdaptrisMessage m : messages) {
-        Document mergeDoc = XmlHelper.createDocument(m, true);
+        Document mergeDoc = XmlHelper.createDocument(m, documentFactoryBuilder());
         overwriteMetadata(m, original);
         resultDoc = getMergeImplementation().merge(resultDoc, mergeDoc);
       }
@@ -99,4 +103,17 @@ public class IgnoreOriginalXmlDocumentAggregator extends XmlDocumentAggregator {
     this.template = s;
   }
 
+  public DocumentBuilderFactoryBuilder getXmlDocumentFactoryConfig() {
+    return xmlDocumentFactoryConfig;
+  }
+
+
+  public void setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder xml) {
+    this.xmlDocumentFactoryConfig = xml;
+  }
+
+  DocumentBuilderFactoryBuilder documentFactoryBuilder() {
+    return getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig()
+        : DocumentBuilderFactoryBuilder.newInstance().withNamespaceAware(true);
+  }
 }

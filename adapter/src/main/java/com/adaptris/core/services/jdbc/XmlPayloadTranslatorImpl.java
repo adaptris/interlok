@@ -36,6 +36,7 @@ import org.xml.sax.InputSource;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.jdbc.JdbcResultRow;
 import com.adaptris.jdbc.JdbcResultSet;
@@ -140,9 +141,11 @@ public abstract class XmlPayloadTranslatorImpl extends ResultSetTranslatorImp {
   protected static XmlUtils createXmlUtils(AdaptrisMessage msg) {
     XmlUtils xu = null;
     try {
-      xu = XmlHelper.createXmlUtils(msg, (NamespaceContext) msg.getObjectHeaders().get(JdbcDataQueryService.KEY_NAMESPACE_CTX));
-    }
-    catch (CoreException e) {
+      NamespaceContext ctx = (NamespaceContext) msg.getObjectHeaders().get(JdbcDataQueryService.KEY_NAMESPACE_CTX);
+      DocumentBuilderFactoryBuilder builder =
+          (DocumentBuilderFactoryBuilder) msg.getObjectHeaders().get(JdbcDataQueryService.KEY_DOCBUILDER_FAC);
+      xu = XmlHelper.createXmlUtils(msg, ctx, builder);
+    } catch (CoreException e) {
       xu = new XmlUtils();
     }
     return xu;

@@ -27,7 +27,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.mail.MailException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -44,6 +46,8 @@ public class XmlMailCreator implements MailContentCreator {
   private AttachmentHandler attachmentHandler;
   private BodyHandler bodyHandler;
   private transient Logger logR = LoggerFactory.getLogger(this.getClass());
+  @AdvancedConfig
+  private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 
   public XmlMailCreator() {
   }
@@ -61,8 +65,7 @@ public class XmlMailCreator implements MailContentCreator {
     InputStream in = null;
     try {
       in = msg.getInputStream();
-      Document d = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-          .parse(in);
+      Document d = documentFactoryBuilder().configure(DocumentBuilderFactory.newInstance()).newDocumentBuilder().parse(in);
       result = attachmentHandler.resolve(d);
     }
     catch (Exception e) {
@@ -86,8 +89,7 @@ public class XmlMailCreator implements MailContentCreator {
     InputStream in = null;
     try {
       in = msg.getInputStream();
-      Document d = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-          .parse(in);
+      Document d = documentFactoryBuilder().configure(DocumentBuilderFactory.newInstance()).newDocumentBuilder().parse(in);
       result = bodyHandler.resolve(d);
     }
     catch (Exception e) {
@@ -131,4 +133,17 @@ public class XmlMailCreator implements MailContentCreator {
     bodyHandler = b;
   }
 
+  public DocumentBuilderFactoryBuilder getXmlDocumentFactoryConfig() {
+    return xmlDocumentFactoryConfig;
+  }
+
+
+  public void setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder xml) {
+    this.xmlDocumentFactoryConfig = xml;
+  }
+
+  DocumentBuilderFactoryBuilder documentFactoryBuilder() {
+    return getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig()
+        : DocumentBuilderFactoryBuilder.newInstance().withNamespaceAware(true);
+  }
 }

@@ -32,6 +32,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.IdGenerator;
 import com.adaptris.util.KeyValuePairSet;
@@ -55,6 +56,7 @@ public class XmlAttachmentHandler implements AttachmentHandler {
   private String filenameXpath;
   private String encodingXpath;
   private transient IdGenerator idGenerator = null;
+  @AdvancedConfig
   private KeyValuePairSet namespaceContext;
 
   private transient Logger logR = LoggerFactory.getLogger(this.getClass().getName());
