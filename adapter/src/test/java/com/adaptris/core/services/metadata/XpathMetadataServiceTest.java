@@ -29,6 +29,7 @@ import com.adaptris.core.services.metadata.xpath.MetadataXpathQuery;
 import com.adaptris.core.services.metadata.xpath.MultiItemConfiguredXpathQuery;
 import com.adaptris.core.services.metadata.xpath.MultiItemMetadataXpathQuery;
 import com.adaptris.core.services.metadata.xpath.XpathQuery;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 
@@ -49,6 +50,10 @@ public class XpathMetadataServiceTest extends MetadataServiceExample {
       + "<svrl:failed-assert test=\"string-length(.) = 5\" location=\"/SageData[1]/JoinedData[1]/AF_NUMBER[1]\">\n"
       + "<svrl:text>Error: Anglia Farmer's Supplier Number must be 5 digits long. (Current Value: 62826123)</svrl:text>\n"
       + "</svrl:failed-assert>\n" + "</svrl:schematron-output>";
+
+  public static final String XML_WITH_DOCTYPE = "<?xml version=\"1.0\"?>\n" + "<!DOCTYPE document [\n"
+      + "<!ENTITY LOCAL_ENTITY 'entity'>\n" + "<!ENTITY % StandardInfo SYSTEM \"../StandardInfo.dtd\">\n" + "%StandardInfo;\n"
+      + "]>\n" + "<document>\n" + "</document>\n";
 
   public XpathMetadataServiceTest(String name) {
     super(name);
@@ -108,6 +113,22 @@ public class XpathMetadataServiceTest extends MetadataServiceExample {
     assertEquals("2", msg.getMetadataValue("failureCount"));
   }
 
+  public void testDoService_DisableDocType() throws CoreException {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_WITH_DOCTYPE);
+    XpathMetadataService service = new XpathMetadataService();
+    // Shouldn't matter what the query actually is.
+    service.setXpathQueries(new ArrayList<XpathQuery>(Arrays.asList(new ConfiguredXpathQuery("source",
+        "//source-id"), new ConfiguredXpathQuery("destination", "//destination-id"))));
+    DocumentBuilderFactoryBuilder builder = new DocumentBuilderFactoryBuilder();
+    builder.getFeatures().add(new KeyValuePair("http://apache.org/xml/features/disallow-doctype-decl", "true"));
+    service.setXmlDocumentFactoryConfig(builder);
+    try {
+      execute(service, msg);
+      fail();
+    } catch (ServiceException expected) {
+      assertTrue(expected.getMessage().contains("DOCTYPE is disallowed"));
+    }
+  }
   public void testSetXpathQueryList() {
     XpathMetadataService service = new XpathMetadataService();
     assertEquals(0, service.getXpathQueries().size());

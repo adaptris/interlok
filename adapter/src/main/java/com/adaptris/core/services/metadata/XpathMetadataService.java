@@ -27,14 +27,15 @@ import javax.xml.namespace.NamespaceContext;
 
 import org.w3c.dom.Document;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
-import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.services.metadata.xpath.XpathQuery;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.license.License;
@@ -55,12 +56,15 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @XStreamAlias("xpath-metadata-service")
 public class XpathMetadataService extends ServiceImp {
 
-  private KeyValuePairSet namespaceContext;
   @NotNull
   @AutoPopulated
   @Valid
   @XStreamImplicit(itemFieldName = "xpath-query")
   private List<XpathQuery> xpathQueries;
+  @AdvancedConfig
+  private KeyValuePairSet namespaceContext;
+  @AdvancedConfig
+  private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 
   private transient List<XpathQuery> queriesToExecute;
 
@@ -88,7 +92,11 @@ public class XpathMetadataService extends ServiceImp {
     Set<MetadataElement> metadataElements = new HashSet<MetadataElement>();
     NamespaceContext namespaceCtx = SimpleNamespaceContext.create(getNamespaceContext(), msg);
     try {
-      Document doc = XmlHelper.createDocument(msg, namespaceCtx);
+      DocumentBuilderFactoryBuilder builder = documentFactoryBuilder();
+      if (namespaceCtx != null) {
+        builder.setNamespaceAware(true);
+      }
+      Document doc = XmlHelper.createDocument(msg, builder);
       for (XpathQuery query : queriesToExecute) {
         metadataElements.add(query.resolveXpath(doc, namespaceCtx, query.createXpathQuery(msg)));
       }
@@ -149,5 +157,20 @@ public class XpathMetadataService extends ServiceImp {
   @Override
   public boolean isEnabled(License license) throws CoreException {
     return license.isEnabled(LicenseType.Basic);
+  }
+
+
+  public DocumentBuilderFactoryBuilder getXmlDocumentFactoryConfig() {
+    return xmlDocumentFactoryConfig;
+  }
+
+
+  public void setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder xml) {
+    this.xmlDocumentFactoryConfig = xml;
+  }
+
+  DocumentBuilderFactoryBuilder documentFactoryBuilder() {
+    return getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig()
+ : DocumentBuilderFactoryBuilder.newInstance();
   }
 }
