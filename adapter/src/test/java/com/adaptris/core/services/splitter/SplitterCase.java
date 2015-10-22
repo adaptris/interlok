@@ -47,6 +47,11 @@ public abstract class SplitterCase extends SplitterServiceExample {
       + System.getProperty("line.separator") + "</envelope>";
   public static final String LINE = "The quick brown fox jumps over the lazy dog";
 
+
+  public static final String XML_WITH_DOCTYPE = "<?xml version=\"1.0\"?>\n" + "<!DOCTYPE document [\n"
+      + "<!ENTITY LOCAL_ENTITY 'entity'>\n" + "<!ENTITY % StandardInfo SYSTEM \"../StandardInfo.dtd\">\n" + "%StandardInfo;\n"
+      + "]>\n" + "<document>\n" + "</document>\n";
+
   public SplitterCase(String name) {
     super(name);
   }

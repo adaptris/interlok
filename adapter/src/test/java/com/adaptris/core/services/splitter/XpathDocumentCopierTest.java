@@ -25,6 +25,8 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.stubs.MockMessageProducer;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
+import com.adaptris.util.KeyValuePair;
 
 @SuppressWarnings("deprecation")
 public class XpathDocumentCopierTest extends SplitterCase {
@@ -139,6 +141,22 @@ public class XpathDocumentCopierTest extends SplitterCase {
     }
     catch (CoreException expected) {
 
+    }
+  }
+
+
+  public void testSplit_DocTypeNotAllowed() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    msg.setContent(XML_WITH_DOCTYPE, msg.getContentEncoding());
+    XpathDocumentCopier splitter = new XpathDocumentCopier(XPATH_DOCUMENT_COUNT);
+    DocumentBuilderFactoryBuilder builder = new DocumentBuilderFactoryBuilder();
+    builder.getFeatures().add(new KeyValuePair("http://apache.org/xml/features/disallow-doctype-decl", "true"));
+    splitter.setXmlDocumentFactoryConfig(builder);
+    try {
+      List<AdaptrisMessage> result = splitter.splitMessage(msg);
+      fail();
+    } catch (CoreException expected) {
+      assertTrue(expected.getMessage().contains("DOCTYPE is disallowed"));
     }
   }
 

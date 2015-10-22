@@ -35,6 +35,7 @@ import com.adaptris.core.stubs.DefectiveMessageFactory;
 import com.adaptris.core.stubs.MessageHelper;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.stubs.StubMessageFactory;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.text.xml.XPath;
@@ -225,6 +226,21 @@ public class XpathSplitterTest extends SplitterCase {
     List<AdaptrisMessage> result = splitter.splitMessage(msg);
     // Should be 2 splits
     assertEquals("Number of messages", 2, result.size());
+  }
+
+  public void testSplit_DocTypeNotAllowed() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    msg.setContent(XML_WITH_DOCTYPE, msg.getContentEncoding());
+    XpathMessageSplitter splitter = new XpathMessageSplitter(ENVELOPE_DOCUMENT, ENCODING_UTF8);
+    DocumentBuilderFactoryBuilder builder = new DocumentBuilderFactoryBuilder();
+    builder.getFeatures().add(new KeyValuePair("http://apache.org/xml/features/disallow-doctype-decl", "true"));
+    splitter.setXmlDocumentFactoryConfig(builder);
+    try {
+      List<AdaptrisMessage> result = splitter.splitMessage(msg);
+      fail();
+    } catch (CoreException expected) {
+      assertTrue(expected.getMessage().contains("DOCTYPE is disallowed"));
+    }
   }
 
   private Document createDocument(byte[] bytes) throws Exception {

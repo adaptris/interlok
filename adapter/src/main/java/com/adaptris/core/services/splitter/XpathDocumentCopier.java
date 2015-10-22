@@ -32,9 +32,11 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.text.xml.SimpleNamespaceContext;
 import com.adaptris.util.text.xml.XPath;
@@ -72,7 +74,10 @@ public class XpathDocumentCopier extends MessageSplitterImp {
   @NotNull
   @NotBlank
   private String xpath = null;
+  @AdvancedConfig
   private KeyValuePairSet namespaceContext;
+  @AdvancedConfig
+  private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 
   public XpathDocumentCopier() {
   }
@@ -108,7 +113,11 @@ public class XpathDocumentCopier extends MessageSplitterImp {
   private String resolveXpath(AdaptrisMessage msg) throws ParserConfigurationException, IOException, SAXException,
       XPathExpressionException {
     NamespaceContext ctx = SimpleNamespaceContext.create(getNamespaceContext(), msg);
-    Document d = createDocument(msg, ctx);
+    DocumentBuilderFactoryBuilder builder = documentFactoryBuilder();
+    if (ctx != null) {
+      builder.setNamespaceAware(true);
+    }
+    Document d = createDocument(msg, builder);
     XPath xp = new XPath(ctx);
     return xp.selectSingleTextItem(d, getXpath());
   }
@@ -157,5 +166,18 @@ public class XpathDocumentCopier extends MessageSplitterImp {
    */
   public void setNamespaceContext(KeyValuePairSet kvps) {
     this.namespaceContext = kvps;
+  }
+
+  public DocumentBuilderFactoryBuilder getXmlDocumentFactoryConfig() {
+    return xmlDocumentFactoryConfig;
+  }
+
+
+  public void setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder xml) {
+    this.xmlDocumentFactoryConfig = xml;
+  }
+
+  DocumentBuilderFactoryBuilder documentFactoryBuilder() {
+    return getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig() : DocumentBuilderFactoryBuilder.newInstance();
   }
 }
