@@ -1,14 +1,19 @@
 package com.adaptris.core.util;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.lang.BooleanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.util.KeyValuePair;
+import com.adaptris.util.KeyValuePairSet;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -24,7 +29,7 @@ public class DocumentBuilderFactoryBuilder {
   @NotNull
   @AutoPopulated
   @AdvancedConfig
-  private Map<String, Boolean> features;
+  private KeyValuePairSet features;
   @AdvancedConfig
   private Boolean validating;
   @AdvancedConfig
@@ -40,6 +45,7 @@ public class DocumentBuilderFactoryBuilder {
   @AdvancedConfig
   private Boolean xincludeAware;
 
+  private static final Logger log = LoggerFactory.getLogger(DocumentBuilderFactoryBuilder.class);
 
   private static enum FactoryConfiguration {
     Validating() {
@@ -112,8 +118,10 @@ public class DocumentBuilderFactoryBuilder {
 
       @Override
       void applyConfig(DocumentBuilderFactoryBuilder b, DocumentBuilderFactory f) throws ParserConfigurationException {
-        for (Map.Entry<String, Boolean> entry : b.getFeatures().entrySet()) {
-          f.setFeature(entry.getKey(), entry.getValue());
+        log.debug("{} additional features", b.getFeatures().size());
+        for (KeyValuePair entry : b.getFeatures()) {
+          f.setFeature(entry.getKey(), BooleanUtils.toBoolean(entry.getValue()));
+          // log.debug("{} is now {}", entry.getKey(), f.getFeature(entry.getKey()));
         }
       }
     };
@@ -121,7 +129,7 @@ public class DocumentBuilderFactoryBuilder {
   }
 
   public DocumentBuilderFactoryBuilder() {
-    features = new HashMap<>();
+    features = new KeyValuePairSet();
   }
 
   public static final DocumentBuilderFactoryBuilder newInstance() {
@@ -129,6 +137,7 @@ public class DocumentBuilderFactoryBuilder {
   }
 
   public DocumentBuilderFactory configure(DocumentBuilderFactory f) throws ParserConfigurationException {
+    log.debug("Document Builder Factory is {}", f.getClass());
     for (FactoryConfiguration c : FactoryConfiguration.values()) {
       c.applyConfig(this, f);
     }
@@ -136,7 +145,7 @@ public class DocumentBuilderFactoryBuilder {
   }
 
 
-  public Map<String, Boolean> getFeatures() {
+  public KeyValuePairSet getFeatures() {
     return features;
   }
 
@@ -146,13 +155,23 @@ public class DocumentBuilderFactoryBuilder {
    * 
    * @param features the features.
    */
-  public void setFeatures(Map<String, Boolean> features) {
+  public void setFeatures(KeyValuePairSet features) {
     this.features = Args.notNull(features, "Features");;
   }
 
 
   public DocumentBuilderFactoryBuilder withFeatures(Map<String, Boolean> f) {
-    setFeatures(f);
+    Map<String, Boolean> featureList = Args.notNull(f, "features");
+    KeyValuePairSet newFeatures = new KeyValuePairSet();
+    for (Map.Entry<String, Boolean> entry : featureList.entrySet()) {
+      newFeatures.add(new KeyValuePair(entry.getKey(), String.valueOf(entry.getValue())));
+    }
+    setFeatures(newFeatures);
+    return this;
+  }
+
+  public DocumentBuilderFactoryBuilder withFeatures(KeyValuePairSet v) {
+    setFeatures(v);
     return this;
   }
 

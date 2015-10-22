@@ -35,8 +35,10 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.XmlHelper;
+import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.text.xml.StxTransformerFactory;
 import com.adaptris.util.text.xml.XPath;
 import com.adaptris.util.text.xml.XmlTransformerFactory;
@@ -74,7 +76,16 @@ public class XmlTransformServiceTest extends TransformServiceExample {
       + "</svrl:failed-assert>\n" + "</svrl:schematron-output>";
 
   private enum FactoryConfig {
-    STX(new StxTransformerFactory()), XSLT(new XsltTransformerFactory());
+    STX(new StxTransformerFactory()),
+    XSLT(new XsltTransformerFactory()) {
+      XmlTransformService configure(XmlTransformService s) {
+        DocumentBuilderFactoryBuilder dbfb = new DocumentBuilderFactoryBuilder();
+        dbfb.getFeatures().add(new KeyValuePair("http://xml.org/sax/features/external-general-entities", "false"));
+        ((XsltTransformerFactory) factory).setXmlDocumentFactoryConfig(dbfb);
+        s.setXmlTransformerFactory(factory);
+        return s;
+      }
+    };
 
     XmlTransformerFactory factory;
 

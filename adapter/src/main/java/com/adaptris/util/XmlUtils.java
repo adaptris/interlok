@@ -44,7 +44,7 @@ import com.adaptris.util.text.xml.Resolver;
 import com.adaptris.util.text.xml.Validator;
 import com.adaptris.util.text.xml.XPath;
 import com.adaptris.util.text.xml.XmlTransformerFactory;
-import com.adaptris.util.text.xml.XmlTransformerImpl;
+import com.adaptris.util.text.xml.XmlTransformer;
 import com.adaptris.util.text.xml.XsltTransformerFactory;
 
 /**
@@ -231,7 +231,7 @@ public class XmlUtils {
   @Deprecated
   public void transform(String xsl) throws Exception {
     Transformer transformer = xmlTransformerFactory.createTransformer(xsl, entityResolver);
-    new XmlTransformerImpl().transform(transformer, (new DOMSource(currentDoc)), out, xsl);
+    new XmlTransformer().transform(transformer, (new DOMSource(currentDoc)), out, xsl);
   }
 
   /**

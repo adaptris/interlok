@@ -20,11 +20,11 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamSource;
 
-import net.sf.joost.trax.TransformerFactoryImpl;
-
 import org.xml.sax.EntityResolver;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+import net.sf.joost.trax.TransformerFactoryImpl;
 
 /**
  * <p>
@@ -54,6 +54,11 @@ public class StxTransformerFactory implements XmlTransformerFactory {
   @Override
   public Transformer createTransformer(String url, EntityResolver entityResolver) throws Exception {
     return this.createTransformer(url);
+  }
+
+  @Override
+  public XmlTransformer configure(XmlTransformer xmlTransformer) throws Exception {
+    return xmlTransformer;
   }
 
 }

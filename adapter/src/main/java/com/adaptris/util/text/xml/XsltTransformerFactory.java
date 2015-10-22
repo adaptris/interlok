@@ -26,8 +26,6 @@ import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 
-import com.adaptris.annotation.AdvancedConfig;
-import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -44,16 +42,14 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 
 @XStreamAlias("xslt-transformer-factory")
-public class XsltTransformerFactory implements XmlTransformerFactory {
-  @AdvancedConfig
-  private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
+public class XsltTransformerFactory extends XmlTransformerFactoryImpl {
 
   public Transformer createTransformer(String url) throws Exception {
     return this.createTransformer(url, null);
   }
 
   public Transformer createTransformer(String url, EntityResolver entityResolver) throws Exception {
-    DocumentBuilderFactory dfactory = documentFactoryBuilder().configure(DocumentBuilderFactory.newInstance());
+    DocumentBuilderFactory dfactory = DocumentBuilderFactory.newInstance();
     dfactory.setCoalescing(true);
     dfactory.setNamespaceAware(true);
 
@@ -64,21 +60,6 @@ public class XsltTransformerFactory implements XmlTransformerFactory {
     Document xmlDoc = docBuilder.parse(new InputSource(url));
 
     return TransformerFactory.newInstance().newTransformer(new DOMSource(xmlDoc, url));
-  }
-
-
-  public DocumentBuilderFactoryBuilder getXmlDocumentFactoryConfig() {
-    return xmlDocumentFactoryConfig;
-  }
-
-
-  public void setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder xml) {
-    this.xmlDocumentFactoryConfig = xml;
-  }
-
-  DocumentBuilderFactoryBuilder documentFactoryBuilder() {
-    return getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig()
-        : DocumentBuilderFactoryBuilder.newInstance().withNamespaceAware(true);
   }
 
 }

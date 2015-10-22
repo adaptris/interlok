@@ -26,4 +26,5 @@ public interface XmlTransformerFactory {
   
   Transformer createTransformer(String transformUrl, EntityResolver entityResolver) throws Exception;
   
+  XmlTransformer configure(XmlTransformer xmlTransformer) throws Exception;
 }

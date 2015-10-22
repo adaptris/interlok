@@ -35,8 +35,8 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.util.license.License;
 import com.adaptris.util.license.License.LicenseType;
+import com.adaptris.util.text.xml.XmlTransformer;
 import com.adaptris.util.text.xml.XmlTransformerFactory;
-import com.adaptris.util.text.xml.XmlTransformerImpl;
 import com.adaptris.util.text.xml.XsltTransformerFactory;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -148,7 +148,7 @@ public class XmlTransformService extends ServiceImp {
   }
 
   private void doTransform(AdaptrisMessage msg, String urlToUse) throws ServiceException {
-    XmlTransformerImpl xmlTransformerImpl = new XmlTransformerImpl();
+    XmlTransformer xmlTransformerImpl = new XmlTransformer();
     Transformer transformer = null;
 
     try {
@@ -158,6 +158,7 @@ public class XmlTransformService extends ServiceImp {
       else {
         transformer = this.getXmlTransformerFactory().createTransformer(urlToUse);
       }
+      getXmlTransformerFactory().configure(xmlTransformerImpl);
     }
     catch (Exception ex) {
       throw new ServiceException(ex);
