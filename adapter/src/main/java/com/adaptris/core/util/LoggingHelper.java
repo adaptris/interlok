@@ -78,8 +78,9 @@ public final class LoggingHelper {
       if (url == null) {
         url = Loader.getResource("log4j.properties");
       }
-    }
-    catch (Exception ignored) {
+    } catch (Exception ignored) {
+
+    } catch (NoClassDefFoundError ignored) {
 
     }
     return url;
