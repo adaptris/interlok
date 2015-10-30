@@ -20,7 +20,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
 
-import com.adaptris.core.util.LoggingHelper;
+import com.adaptris.core.management.logging.LoggingConfigurator;
 
 /**
  * Entry point into an adapter from the commandline.
@@ -64,10 +64,7 @@ public class StandardBootstrap extends CmdLineBootstrap {
   }
 
   protected void standardBoot() throws Exception {
-    // Copied from BootstrapLoader and moved log4jAvailable() to LoggingHelper
-    if (LoggingHelper.log4jAvailable()) {
-      Log4jInit.configure();
-    }
+    LoggingConfigurator.newConfigurator().defaultInitialisation();
     BootstrapProperties bootProperties = new BootstrapProperties(getBootstrapResource());
     SystemPropertiesUtil.addSystemProperties(bootProperties);
     SystemPropertiesUtil.addJndiProperties(bootProperties);

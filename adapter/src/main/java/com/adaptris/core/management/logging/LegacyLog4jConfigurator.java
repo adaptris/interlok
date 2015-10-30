@@ -14,7 +14,7 @@
  * limitations under the License.
 */
 
-package com.adaptris.core.management;
+package com.adaptris.core.management.logging;
 
 import static com.adaptris.core.management.Constants.DBG;
 import static com.adaptris.core.management.Constants.ENABLE_JUL_LOGGING_BRIDGE;
@@ -25,11 +25,9 @@ import java.net.URI;
 import java.net.URL;
 
 import org.apache.log4j.PropertyConfigurator;
+import org.apache.log4j.helpers.Loader;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.slf4j.bridge.SLF4JBridgeHandler;
-
-import com.adaptris.core.fs.FsHelper;
-import com.adaptris.core.util.LoggingHelper;
 
 /**
  * Configure dynamic reload of log4j configuration.
@@ -43,16 +41,16 @@ import com.adaptris.core.util.LoggingHelper;
  * @author lchan
  * @author $Author: lchan $
  */
-public final class Log4jInit {
+final class LegacyLog4jConfigurator extends LoggingConfigurator {
 
-  private Log4jInit() {
+  LegacyLog4jConfigurator() {
   }
 
-  public static void configure() {
-    configure(LoggingHelper.findLog4jConfiguration());
+  public void defaultInitialisation() {
+    initialiseFrom(findLog4jConfiguration());
   }
 
-  public static boolean configure(URL url) {
+  public boolean initialiseFrom(URL url) {
     boolean result = false;
     try {
       if (url != null) {
@@ -87,7 +85,7 @@ public final class Log4jInit {
     return result;
   }
 
-  private static String resolve(URL url) throws IOException {
+  private String resolve(URL url) throws IOException {
     String result = null;
     result = tryResolveURI(url.toExternalForm());
     if (result == null) {
@@ -102,7 +100,7 @@ public final class Log4jInit {
     return result;
   }
 
-  private static String tryResolveURI(String url) {
+  private String tryResolveURI(String url) {
     String result = null;
     try {
       result = new File(new URI(url)).getCanonicalPath();
@@ -113,14 +111,30 @@ public final class Log4jInit {
     return result;
   }
 
-  private static String tryResolveFsHelper(URL url) {
+  private String tryResolveFsHelper(URL url) {
     String result = null;
     try {
-      result = FsHelper.createFileReference(url).getCanonicalPath();
+      result = createFileReference(url, null).getCanonicalPath();
     }
     catch (Exception e) {
 
     }
     return result;
+  }
+
+  private static URL findLog4jConfiguration() {
+    String resource = System.getProperty("log4j.configuration", "log4j.xml");
+    URL url = null;
+    try {
+      url = Loader.getResource(resource);
+      if (url == null) {
+        url = Loader.getResource("log4j.properties");
+      }
+    } catch (Exception ignored) {
+
+    } catch (NoClassDefFoundError ignored) {
+
+    }
+    return url;
   }
 }

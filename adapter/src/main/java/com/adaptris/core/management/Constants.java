@@ -161,8 +161,18 @@ public final class Constants {
    * Bootstrap Property specifying the log4j12 URL.
    * 
    * @since 3.0.2
+   * @deprecated since 3.1.0 use {@value #CFG_KEY_LOGGING_URL}
    */
+  @Deprecated
   public static final String CFG_KEY_LOG4J12_URL = "log4j12Url";
+
+  /**
+   * Bootstrap Property specifying the logging configuration URL.
+   * 
+   * @since 3.1.0
+   */
+  public static final String CFG_KEY_LOGGING_URL = "loggingConfigUrl";
+
 
   /**
    * Bootstrap property that enables validation of the adapter object post unmarshalling.

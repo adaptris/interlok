@@ -34,7 +34,7 @@
 
   	<!-- set up main compile classpath using ivy dependecny management -->
     <ivy:cachepath pathid="classpath.ant-tools" conf="ant" type="jar,zip,bundle,hk2-jar,maven-plugin"/>
-    <ivy:cachepath pathid="main.classpath" conf="compile,runtime,test" type="jar,zip,bundle,hk2-jar,maven-plugin"/>
+    <ivy:cachepath pathid="main.classpath" conf="compile,runtime,test,optional" type="jar,zip,bundle,hk2-jar,maven-plugin"/>
     <typedef resource="net/sf/antcontrib/antlib.xml" classpathref="classpath.ant-tools" />
     <typedef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml" classpathref="classpath.ant-tools"/>
   </target>

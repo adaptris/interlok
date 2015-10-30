@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.core.Adapter;
 import com.adaptris.core.DefaultMarshaller;
+import com.adaptris.core.management.logging.LoggingConfigurator;
 import com.adaptris.util.URLString;
 import com.adaptris.util.license.License;
 import com.adaptris.util.license.LicenseException;
@@ -315,11 +316,12 @@ public class BootstrapProperties extends Properties {
 
   public void reconfigureLogging() {
     try {
-      String log4jUrl = getProperty(Constants.CFG_KEY_LOG4J12_URL, "");
-      if (!StringUtils.isEmpty(log4jUrl)) {
-        log.debug("Attempting Logging reconfiguration using {}", log4jUrl);
-        if (Log4jInit.configure(new URLString(log4jUrl).getURL())) {
-          log.debug("Sucessfully reconfigured logging using {}", log4jUrl);
+      // Default to log4j12Url for backwards compat.
+      String loggingUrl = getProperty(Constants.CFG_KEY_LOGGING_URL, getProperty(Constants.CFG_KEY_LOG4J12_URL, ""));
+      if (!StringUtils.isEmpty(loggingUrl)) {
+        log.error("Attempting Logging reconfiguration using {}", loggingUrl);
+        if (LoggingConfigurator.newConfigurator().initialiseFrom(new URLString(loggingUrl).getURL())) {
+          log.error("Sucessfully reconfigured logging using {}", loggingUrl);
         }
       }
     }
