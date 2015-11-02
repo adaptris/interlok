@@ -29,7 +29,8 @@ import javax.management.Notification;
  *
  */
 public class JmxLoggingEvent implements Serializable, Comparable<JmxLoggingEvent> {
-
+  public static final String OBJECT_NAME_STR = "com.adaptris:type=Logging,id=%1s";
+  public static final String DEFAULT_OBJECTNAME = "JmxLogAppender";
   private static final long serialVersionUID = 2015091801L;
 
   private Long timestamp;

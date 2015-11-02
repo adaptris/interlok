@@ -16,6 +16,9 @@
 
 package com.adaptris.logging.jmx.log4j12;
 
+import static com.adaptris.logging.jmx.JmxLoggingEvent.DEFAULT_OBJECTNAME;
+import static com.adaptris.logging.jmx.JmxLoggingEvent.OBJECT_NAME_STR;
+
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
@@ -34,8 +37,6 @@ public class JmxLogAppender extends AppenderSkeleton {
 
   private JmxLogger logger;
   private Layout defaultLayout = new PatternLayout("%d{ISO8601} %-5p [%t] [%c] %m%n");
-  private static final String OBJECT_NAME_STR = "com.adaptris:type=Logging,id=%1s";
-  private static final String DEFAULT_OBJECTNAME = JmxLogAppender.class.getSimpleName();
 
   private String loggerId;
   private ObjectName objectName;
