@@ -48,12 +48,22 @@ public class JmxLogAppender extends AppenderSkeleton {
     super.setThreshold(level);
   }
 
+  /**
+   * 
+   * @param objName the name that forms the id part of the resulting {@link ObjectName}
+   * @deprecated {link {@link #setName(String)} is used by default.
+   */
+  @Deprecated
   public void setLoggerId(String objName) {
     loggerId = objName;
   }
 
   public String getLoggerId() {
     return loggerId;
+  }
+
+  private String loggerId() {
+    return getLoggerId() != null ? getLoggerId() : (getName() != null) ? getName() : DEFAULT_OBJECTNAME;
   }
 
   @Override
@@ -124,7 +134,7 @@ public class JmxLogAppender extends AppenderSkeleton {
   }
 
   private ObjectName buildObjectName() throws MalformedObjectNameException {
-    String name = String.format(OBJECT_NAME_STR, getLoggerId() != null ? getLoggerId() : DEFAULT_OBJECTNAME);
+    String name = String.format(OBJECT_NAME_STR, loggerId());
     return ObjectName.getInstance(name);
   }
 
