@@ -118,7 +118,7 @@ public class DocumentBuilderFactoryBuilder {
 
       @Override
       void applyConfig(DocumentBuilderFactoryBuilder b, DocumentBuilderFactory f) throws ParserConfigurationException {
-        log.debug("{} additional features", b.getFeatures().size());
+        log.trace("{} additional features", b.getFeatures().size());
         for (KeyValuePair entry : b.getFeatures()) {
           f.setFeature(entry.getKey(), BooleanUtils.toBoolean(entry.getValue()));
           // log.debug("{} is now {}", entry.getKey(), f.getFeature(entry.getKey()));
@@ -137,7 +137,6 @@ public class DocumentBuilderFactoryBuilder {
   }
 
   public DocumentBuilderFactory configure(DocumentBuilderFactory f) throws ParserConfigurationException {
-    log.debug("Document Builder Factory is {}", f.getClass());
     for (FactoryConfiguration c : FactoryConfiguration.values()) {
       c.applyConfig(this, f);
     }

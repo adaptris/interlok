@@ -319,9 +319,9 @@ public class BootstrapProperties extends Properties {
       // Default to log4j12Url for backwards compat.
       String loggingUrl = getProperty(Constants.CFG_KEY_LOGGING_URL, getProperty(Constants.CFG_KEY_LOG4J12_URL, ""));
       if (!StringUtils.isEmpty(loggingUrl)) {
-        log.error("Attempting Logging reconfiguration using {}", loggingUrl);
+        log.trace("Attempting Logging reconfiguration using {}", loggingUrl);
         if (LoggingConfigurator.newConfigurator().initialiseFrom(new URLString(loggingUrl).getURL())) {
-          log.error("Sucessfully reconfigured logging using {}", loggingUrl);
+          log.trace("Successfully reconfigured logging using {}", loggingUrl);
         }
       }
     }
