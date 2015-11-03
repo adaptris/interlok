@@ -38,7 +38,7 @@ final class Log4jConfigurator extends LoggingConfigurator {
 
   @Override
   public void defaultInitialisation() {
-    // Do Nothing, and let Log4J2 do its thing.
+    bridgeJavaUtilLogging();
   }
 
   public boolean initialiseFrom(URL url) {
@@ -63,6 +63,7 @@ final class Log4jConfigurator extends LoggingConfigurator {
     }
     catch (Exception ignored) {
     }
+    bridgeJavaUtilLogging();
     return result;
   }
 

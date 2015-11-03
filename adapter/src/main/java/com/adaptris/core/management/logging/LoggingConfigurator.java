@@ -1,9 +1,14 @@
 package com.adaptris.core.management.logging;
 
+import static com.adaptris.core.management.Constants.DBG;
+import static com.adaptris.core.management.Constants.ENABLE_JUL_LOGGING_BRIDGE;
+
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
+
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 public abstract class LoggingConfigurator {
 
@@ -84,6 +89,16 @@ public abstract class LoggingConfigurator {
 
   public abstract boolean initialiseFrom(URL url);
 
+  protected void bridgeJavaUtilLogging() {
+    if (ENABLE_JUL_LOGGING_BRIDGE) {
+      if (!SLF4JBridgeHandler.isInstalled()) {
+        if (DBG) {
+          System.err.println("(Info) LoggingConfigurator : java.util.logging -> slf4j bridge installed");
+        }
+        SLF4JBridgeHandler.install();
+      }
+    }
+  }
 
   public static synchronized LoggingConfigurator newConfigurator() {
     if (configurator == null) {

@@ -17,7 +17,6 @@
 package com.adaptris.core.management.logging;
 
 import static com.adaptris.core.management.Constants.DBG;
-import static com.adaptris.core.management.Constants.ENABLE_JUL_LOGGING_BRIDGE;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +26,6 @@ import java.net.URL;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.helpers.Loader;
 import org.apache.log4j.xml.DOMConfigurator;
-import org.slf4j.bridge.SLF4JBridgeHandler;
 
 /**
  * Configure dynamic reload of log4j configuration.
@@ -76,12 +74,7 @@ final class LegacyLog4jConfigurator extends LoggingConfigurator {
     catch (Exception ignored) {
       ;
     }
-    if (ENABLE_JUL_LOGGING_BRIDGE) {
-      if (DBG) {
-        System.err.println("(Info) Log4jInit.configure() : java.util.logging now logs to log4j");
-      }
-      SLF4JBridgeHandler.install();
-    }
+    bridgeJavaUtilLogging();
     return result;
   }
 
