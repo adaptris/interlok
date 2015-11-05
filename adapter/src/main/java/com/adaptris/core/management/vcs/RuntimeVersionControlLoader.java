@@ -29,6 +29,7 @@ public class RuntimeVersionControlLoader {
 
   private transient Logger log = LoggerFactory.getLogger(RuntimeVersionControlLoader.class);
   private ServiceLoader<RuntimeVersionControl> runtimeVersionControls;
+  private transient RuntimeVersionControl usableVersionControl = null;
 
   private RuntimeVersionControlLoader() {
     runtimeVersionControls = ServiceLoader.load(RuntimeVersionControl.class);
@@ -41,13 +42,20 @@ public class RuntimeVersionControlLoader {
     return INSTANCE;
   }
 
-  public RuntimeVersionControl load() {
+  public synchronized RuntimeVersionControl load() {
+    if (usableVersionControl == null) {
+      usableVersionControl = firstLoad();
+    }
+    return usableVersionControl;
+  }
+
+  private RuntimeVersionControl firstLoad() {
     RuntimeVersionControl returnedVersionControlSystem = null;
 
     int systemsFound = 0;
     for(RuntimeVersionControl vcs : runtimeVersionControls) {
       systemsFound ++;
-      log.info("Found version control system for " + vcs.getImplementationName());
+      log.info("Found version control system for [{}]", vcs.getImplementationName());
       returnedVersionControlSystem = vcs;
     }
 
@@ -57,7 +65,7 @@ public class RuntimeVersionControlLoader {
     } else if(systemsFound == 1) {
       return returnedVersionControlSystem;
     } else {
-      log.info("Multiple version control systems found, using " + returnedVersionControlSystem.getImplementationName());
+      log.info("Multiple version control systems found, using [{}]", returnedVersionControlSystem.getImplementationName());
       return returnedVersionControlSystem;
     }
   }
