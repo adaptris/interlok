@@ -197,8 +197,8 @@ public final class JmsTransactedWorkflow extends StandardWorkflow {
   }
 
   @Override
-  public void prepare() throws CoreException {
-  }
+  protected void prepareWorkflow() throws CoreException {}
+
 
 
 }

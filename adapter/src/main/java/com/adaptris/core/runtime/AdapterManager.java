@@ -337,7 +337,6 @@ public class AdapterManager extends ComponentManagerImpl<Adapter> implements Ada
   public ObjectName addChannel(String xml) throws CoreException, MalformedObjectNameException {
     // ensureState(ClosedState.getInstance());
     Channel newChannel = (Channel) DefaultMarshaller.getDefaultMarshaller().unmarshal(xml);
-    newChannel.prepare();
     ChannelManager channelManager = new ChannelManager(newChannel, this);
     // We don't need to "store" the XML at this point, as channelManager will eventually call
     // addChild() and that's when that happens.

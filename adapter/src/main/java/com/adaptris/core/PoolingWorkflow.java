@@ -547,6 +547,9 @@ public class PoolingWorkflow extends WorkflowImp {
     return ((ThreadPoolExecutor) threadPool).getPoolSize();
   }
 
+  protected void prepareWorkflow() throws CoreException {}
+
+
   private class WorkerThreadFactory extends ManagedThreadFactory {
 
     private transient ThreadGroup threadGroup;

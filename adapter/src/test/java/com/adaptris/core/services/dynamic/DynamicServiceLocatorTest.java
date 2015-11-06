@@ -283,8 +283,7 @@ public class DynamicServiceLocatorTest extends DynamicServiceExample {
 
   public void testServicePrepareFails() throws Exception {
     writeServiceList(new DynamicFailingService(WhenToFail.ON_PREPARE),
-        new TradingRelationship(DEFAULT_SRC, DEFAULT_DEST,
-        DEFAULT_TYPE), tempDir);
+        new TradingRelationship(DEFAULT_SRC, DEFAULT_DEST, DEFAULT_TYPE), tempDir);
     DynamicServiceLocator service = createLocator();
     service.setServiceNameProvider(new DefaultServiceNameProvider());
 
@@ -292,11 +291,9 @@ public class DynamicServiceLocatorTest extends DynamicServiceExample {
     try {
       service.doService(AdaptrisMessageFactory.getDefaultInstance().newMessage());
       fail("Expected ServiceException");
-    }
-    catch (ServiceException e) {
-      assertTrue(e.getMessage().matches(".*contains components that are not enabled for the current license.*"));
-    }
-    finally {
+    } catch (ServiceException e) {
+      assertTrue(e.getMessage().matches(".*ON_PREPARE.*"));
+    } finally {
       stop(service);
     }
   }

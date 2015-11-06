@@ -245,8 +245,7 @@ public class RequestReplyWorkflow extends StandardWorkflow {
   }
 
   @Override
-  public void prepare() throws CoreException {
-    super.prepare();
+  protected void prepareWorkflow() throws CoreException {
     getReplyProducer().prepare();
     getReplyServiceCollection().prepare();
   }

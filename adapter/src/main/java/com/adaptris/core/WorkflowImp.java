@@ -146,7 +146,7 @@ public abstract class WorkflowImp implements Workflow {
   }
 
   @Override
-  public void prepare() throws CoreException {
+  public final void prepare() throws CoreException {
     LifecycleHelper.registerEventHandler(getProducer(), eventHandler);
     LifecycleHelper.registerEventHandler(getConsumer(), eventHandler);
     LifecycleHelper.registerEventHandler(getServiceCollection(), eventHandler);
@@ -158,9 +158,12 @@ public abstract class WorkflowImp implements Workflow {
     getProducer().prepare();
     getConsumer().prepare();
     getServiceCollection().prepare();
+    prepareWorkflow();
     prepared = true;
   }
 
+  protected abstract void prepareWorkflow() throws CoreException;
+  
   /**
    * <p>
    * Because the order in which concrete workflows may need to init their components, this method simply ensures that the

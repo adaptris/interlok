@@ -120,9 +120,6 @@ public class StandardWorkflow extends WorkflowImp {
   }
 
   @Override
-  public void prepare() throws CoreException {
-    getProducer().prepare();
-    getConsumer().prepare();
-    getServiceCollection().prepare();
-  }
+  protected void prepareWorkflow() throws CoreException {}
+
 }

@@ -256,8 +256,7 @@ public class MultiProducerWorkflow extends StandardWorkflow {
   }
 
   @Override
-  public void prepare() throws CoreException {
-    super.prepare();
+  protected void prepareWorkflow() throws CoreException {
     for (StandaloneProducer p : getStandaloneProducers()) {
       p.prepare();
     }
