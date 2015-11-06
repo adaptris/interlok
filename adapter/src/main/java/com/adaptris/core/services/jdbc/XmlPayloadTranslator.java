@@ -96,8 +96,7 @@ public class XmlPayloadTranslator extends XmlPayloadTranslatorImpl {
 
   private Document toDocument(JdbcResult rs, AdaptrisMessage msg) throws Exception {
     XmlUtils xu = createXmlUtils(msg);
-    DocumentBuilderFactoryBuilder factoryBuilder =
-        (DocumentBuilderFactoryBuilder) msg.getObjectHeaders().get(JdbcDataQueryService.KEY_DOCBUILDER_FAC);
+    DocumentBuilderFactoryBuilder factoryBuilder = documentFactoryBuilder(msg);
     DocumentBuilderFactory factory = factoryBuilder.configure(DocumentBuilderFactory.newInstance());
     DocumentBuilder builder = factory.newDocumentBuilder();
     Document doc = builder.newDocument();
@@ -115,9 +114,8 @@ public class XmlPayloadTranslator extends XmlPayloadTranslatorImpl {
       }
       else {
         // Not XML, so let's add it in as a CDATA node.
-        originalMessage.appendChild(createTextNode(doc, msg.getStringPayload(), true));
+        originalMessage.appendChild(createTextNode(doc, msg.getContent(), true));
       }
-
       results.appendChild(originalMessage);
     }
     for(JdbcResultSet rSet : rs.getResulSets()) {
@@ -127,6 +125,12 @@ public class XmlPayloadTranslator extends XmlPayloadTranslatorImpl {
       }
     }
     return doc;
+  }
+
+  private DocumentBuilderFactoryBuilder documentFactoryBuilder(AdaptrisMessage msg) {
+    DocumentBuilderFactoryBuilder factoryBuilder =
+        (DocumentBuilderFactoryBuilder) msg.getObjectHeaders().get(JdbcDataQueryService.KEY_DOCBUILDER_FAC);
+    return factoryBuilder != null ? factoryBuilder : DocumentBuilderFactoryBuilder.newInstance();
   }
 
   private boolean isPreserveOriginalMessage() {
