@@ -378,7 +378,7 @@
     </jacoco:coverage>
   </target>
 
-  <target name="junit" depends="init.tests" if="${run.without.coverage}">
+  <target name="junit" depends="init.tests" if="${junit.without.coverage}">
     <junit printsummary="${junit.printsummary}" fork="yes"  forkmode="${junit.forkmode}" failureproperty="junit.failed">
       <jvmarg value="-Xmx${execution.maxmem}"/>
       <jvmarg value="-XX:+CMSClassUnloadingEnabled"/>
