@@ -34,11 +34,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
-import com.adaptris.core.services.dynamic.DynamicServiceExecutor;
-import com.adaptris.core.services.dynamic.DynamicServiceLocator;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -148,8 +144,7 @@ public class SystemCommandExecutorService extends ServiceImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Standard);
+  public void prepare() throws CoreException {
   }
 
   /**

@@ -25,11 +25,7 @@ import javax.jms.Queue;
 import javax.jms.Topic;
 
 import com.adaptris.annotation.AdvancedConfig;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.jms.JmsActorConfig;
-import com.adaptris.core.jms.VendorImplementation;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -117,11 +113,6 @@ public class CachedDestinationJndiImplementation extends StandardJndiImplementat
 
   public int maxDestinationCacheSize() {
     return getMaxDestinationCacheSize() != null ? getMaxDestinationCacheSize().intValue() : DEFAULT_MAX_CACHE_SIZE;
-  }
-
-  @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Standard);
   }
 
   private class FixedSizeMap<K, V> extends LinkedHashMap<K, V> {

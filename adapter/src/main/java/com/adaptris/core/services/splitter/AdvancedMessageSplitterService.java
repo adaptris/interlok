@@ -21,17 +21,13 @@ import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.EventHandler;
 import com.adaptris.core.EventHandlerAware;
 import com.adaptris.core.NullService;
 import com.adaptris.core.Service;
-import com.adaptris.core.ServiceCollection;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -169,7 +165,8 @@ public class AdvancedMessageSplitterService extends MessageSplitterServiceImp im
   }
 
   @Override
-  public boolean isEnabled(License l) throws CoreException {
-    return l.isEnabled(LicenseType.Standard) && getService().isEnabled(l);
+  public void prepare() throws CoreException {
+    getService().prepare();
   }
+
 }

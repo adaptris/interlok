@@ -18,7 +18,6 @@ package com.adaptris.core.services.metadata;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.xml.datatype.DatatypeFactory;
@@ -31,8 +30,6 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.adaptris.util.text.DateFormatUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -268,7 +265,7 @@ public class AddTimestampMetadataService extends ServiceImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
   }
+
 }

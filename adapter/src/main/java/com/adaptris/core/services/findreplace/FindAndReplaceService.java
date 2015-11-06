@@ -23,8 +23,6 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -130,7 +128,6 @@ public class FindAndReplaceService extends ServiceImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
   }
 }

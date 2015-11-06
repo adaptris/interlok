@@ -22,7 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.adaptris.core.BaseCase;
-import com.adaptris.core.stubs.LicenseStub;
 
 /**
  * @author lchan
@@ -37,11 +36,6 @@ public abstract class ItemCacheCase extends BaseCase {
   protected transient Log logR = LogFactory.getLog(this.getClass());
 
   protected static final String CACHE_PREFIX = "CacheEntry_";
-
-  public void testLicense() throws Exception {
-    ProcessedItemCache cache = createCache();
-    assertTrue(cache.isEnabled(new LicenseStub()));
-  }
 
   public void testCache() throws Exception {
     String oldName = Thread.currentThread().getName();

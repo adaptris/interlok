@@ -30,7 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.util.license.License;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -124,11 +123,6 @@ public class SharedConnection implements AdaptrisConnection {
     if(compositeName.size() == 1) // no sub contexts
       jndiName = new CompositeName("comp/env/" + jndiName).toString();
     return jndiName;
-  }
-
-  @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return true;
   }
 
   @Override

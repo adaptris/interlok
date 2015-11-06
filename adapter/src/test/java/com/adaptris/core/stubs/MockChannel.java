@@ -23,13 +23,11 @@ import com.adaptris.core.EventHandler;
 import com.adaptris.core.NullProcessingExceptionHandler;
 import com.adaptris.core.Workflow;
 import com.adaptris.util.PlainIdGenerator;
-import com.adaptris.util.license.License;
 
 public class MockChannel extends Channel {
 
   private EventHandler eh;
   private int startCount = 0, initCount = 0, stopCount = 0, closeCount = 0;
-  private License myLicense = new LicenseStub();
 
   public MockChannel() throws Exception {
     super();
@@ -54,7 +52,6 @@ public class MockChannel extends Channel {
         workflow.registerActiveMsgErrorHandler(getMessageErrorHandler());
       }
     }
-    super.isEnabled(myLicense);
   }
 
   public EventHandler obtainEventHandler() {

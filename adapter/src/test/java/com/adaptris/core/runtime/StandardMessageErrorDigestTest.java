@@ -46,7 +46,6 @@ import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.Workflow;
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
-import com.adaptris.core.stubs.LicenseStub;
 
 public class StandardMessageErrorDigestTest extends ComponentManagerCase {
 
@@ -191,7 +190,6 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
     channel1.getWorkflowList().add(workflow1);
     channel1.getWorkflowList().add(workflow2);
     adapter.getChannelList().add(channel1);
-    adapter.registerLicense(new LicenseStub());
     List<BaseComponentMBean> mBeans = createJmxManagers(adapter);
 
     try {

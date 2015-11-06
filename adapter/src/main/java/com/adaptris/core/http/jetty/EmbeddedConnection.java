@@ -20,17 +20,12 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jetty.server.handler.ContextHandler;
-
-import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisConnectionImp;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.management.webserver.JettyServerManager;
 import com.adaptris.core.management.webserver.ServerManager;
 import com.adaptris.core.management.webserver.WebServerManagementUtil;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -105,12 +100,8 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
   protected void stopConnection() {
   }
 
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled(License)
-   */
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
+  protected void prepareConnection() throws CoreException {
   }
 
   public String getHost() {

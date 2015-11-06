@@ -18,7 +18,6 @@ package com.adaptris.http.legacy;
 
 import com.adaptris.core.CoreException;
 import com.adaptris.core.NullConnection;
-import com.adaptris.core.security.ConfiguredPrivateKeyPasswordProvider;
 import com.adaptris.core.security.PrivateKeyPasswordProvider;
 import com.adaptris.http.HttpClientTransport;
 import com.adaptris.http.HttpException;
@@ -28,8 +27,6 @@ import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.adaptris.security.keystore.KeystoreFactory;
 import com.adaptris.security.keystore.KeystoreLocation;
 import com.adaptris.security.password.Password;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -169,14 +166,6 @@ public class HttpsProduceConnection extends NullConnection implements HttpClient
     }
     client.setAlwaysTrust(alwaysTrust);
     return client;
-  }
-
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled(License)
-   */
-  @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
   }
 
   public PrivateKeyPasswordProvider getPrivateKeyPasswordProvider() {

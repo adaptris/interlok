@@ -26,7 +26,6 @@ import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 
 import com.adaptris.annotation.AutoPopulated;
-import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.EventHandler;
@@ -35,9 +34,8 @@ import com.adaptris.core.NullService;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -181,9 +179,10 @@ public class Perf4jTimingService extends ServiceImp implements EventHandlerAware
   }
 
   @Override
-  public boolean isEnabled(License l) throws CoreException {
-    return l.isEnabled(LicenseType.Basic) && service.isEnabled(l);
+  public void prepare() throws CoreException {
+    getService().prepare();
   }
+
 
   /**
    * Set the service that will have it's performance tracked.
@@ -191,10 +190,7 @@ public class Perf4jTimingService extends ServiceImp implements EventHandlerAware
    * @param wrappedService the service.
    */
   public void setService(Service wrappedService) {
-    if (wrappedService == null) {
-      throw new IllegalArgumentException("wrappedService is null");
-    }
-    service = wrappedService;
+    service = Args.notNull(wrappedService, "service");
   }
 
   public String getTag() {

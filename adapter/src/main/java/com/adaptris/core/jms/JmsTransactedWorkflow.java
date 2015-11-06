@@ -29,16 +29,12 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.NullMessageConsumer;
 import com.adaptris.core.NullProcessingExceptionHandler;
 import com.adaptris.core.NullProduceExceptionHandler;
-import com.adaptris.core.ProcessingExceptionHandler;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ProduceExceptionHandler;
 import com.adaptris.core.RetryMessageErrorHandler;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandardWorkflow;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -201,8 +197,8 @@ public final class JmsTransactedWorkflow extends StandardWorkflow {
   }
 
   @Override
-  protected boolean workflowIsEnabled(License l) {
-    return l.isEnabled(LicenseType.Standard);
+  public void prepare() throws CoreException {
   }
+
 
 }

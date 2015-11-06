@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.GenerateBeanInfo;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -98,14 +97,14 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
   public void prepare() throws CoreException {
     produceConnection.addExceptionListener(this); // set back ref.
     consumeConnection.addExceptionListener(this); // set back ref.
-    consumeConnection.prepare();
-    produceConnection.prepare();
     EventHandler ehToUse = eventHandler();
     for (Workflow w : workflowList) {
       w.registerChannel(this);
       w.registerEventHandler(ehToUse);
-      w.prepare();
     }
+    consumeConnection.prepare();
+    produceConnection.prepare();
+    workflowList.prepare();
     prepared = true;
   }
 
@@ -178,22 +177,6 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
       LifecycleHelper.close(workflowList);
       LifecycleHelper.close(messageErrorHandler);
     }
-  }
-
-  /**
-   * @see com.adaptris.core.AdaptrisComponent #isEnabled(com.adaptris.util.license.License)
-   */
-  @Override
-  public boolean isEnabled(License license) throws CoreException {
-    boolean meh = true;
-    if (getMessageErrorHandler() != null) {
-      meh = getMessageErrorHandler().isEnabled(license);
-    }
-    boolean consume = consumeConnection.isEnabled(license);
-    boolean produce = produceConnection.isEnabled(license);
-    boolean workflows = workflowList.isEnabled(license);
-
-    return consume && produce && workflows && meh;
   }
 
   /**

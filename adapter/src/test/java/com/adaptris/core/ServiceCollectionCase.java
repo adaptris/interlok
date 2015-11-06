@@ -18,7 +18,6 @@ package com.adaptris.core;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -26,10 +25,7 @@ import java.util.UUID;
 
 import com.adaptris.core.services.WaitService;
 import com.adaptris.core.stubs.EventHandlerAwareService;
-import com.adaptris.core.stubs.LicenseStub;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 
 public abstract class ServiceCollectionCase extends ServiceCollectionExample {
 
@@ -124,18 +120,6 @@ public abstract class ServiceCollectionCase extends ServiceCollectionExample {
     LifecycleHelper.init(sc);
     assertNotNull(s.retrieveEventHandler());
     assertEquals(eh, s.retrieveEventHandler());
-  }
-
-  public void testLicense() throws Exception {
-    ServiceCollectionImp sc = createServiceCollection();
-    sc.add(new NullService(UUID.randomUUID().toString()) {
-      @Override
-      public boolean isEnabled(License l) {
-        return l.isEnabled(LicenseType.Enterprise);
-      }
-    });
-    assertEquals(false, sc.isEnabled(new LicenseStub(EnumSet.of(LicenseType.Basic))));
-    assertEquals(true, sc.isEnabled(new LicenseStub()));
   }
 
   public void testAddService() throws Exception {

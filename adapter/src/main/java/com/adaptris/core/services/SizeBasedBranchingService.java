@@ -123,4 +123,7 @@ public class SizeBasedBranchingService extends BranchingServiceImp {
     sizeCriteriaBytes = l;
   }
 
+  @Override
+  public void prepare() throws CoreException {
+  }
 }

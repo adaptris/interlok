@@ -19,8 +19,6 @@ package com.adaptris.core;
 import org.perf4j.aop.Profiled;
 
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -122,7 +120,9 @@ public class StandardWorkflow extends WorkflowImp {
   }
 
   @Override
-  protected boolean workflowIsEnabled(License l) {
-    return l.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
+    getProducer().prepare();
+    getConsumer().prepare();
+    getServiceCollection().prepare();
   }
 }

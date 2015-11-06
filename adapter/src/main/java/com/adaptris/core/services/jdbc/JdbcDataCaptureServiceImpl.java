@@ -213,6 +213,10 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcService {
     this.parameterApplicator = p;
   }
 
+
+  @Override
+  protected void prepareService() throws CoreException {}
+
   protected class DatabaseActor {
     private PreparedStatement insertStatement = null;
     private Connection sqlConnection;

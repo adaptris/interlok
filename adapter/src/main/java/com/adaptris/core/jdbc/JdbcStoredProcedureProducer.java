@@ -19,7 +19,6 @@ package com.adaptris.core.jdbc;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,18 +38,13 @@ import com.adaptris.core.services.jdbc.ResultSetTranslator;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.jdbc.CallableStatementCreator;
 import com.adaptris.jdbc.CallableStatementExecutor;
-import com.adaptris.jdbc.ConfiguredStatementCreator;
 import com.adaptris.jdbc.DefaultStatementCreator;
 import com.adaptris.jdbc.ExecuteCallableStatementExecutor;
 import com.adaptris.jdbc.JdbcResult;
-import com.adaptris.jdbc.MysqlStatementCreator;
-import com.adaptris.jdbc.OracleStatementCreator;
 import com.adaptris.jdbc.ParameterType;
 import com.adaptris.jdbc.StoredProcedure;
 import com.adaptris.jdbc.StoredProcedureParameter;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -277,8 +271,7 @@ public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Standard);
+  public void prepare() throws CoreException {
   }
 
   public InParameters getInParameters() {

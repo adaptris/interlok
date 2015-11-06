@@ -21,7 +21,6 @@ import com.adaptris.core.stubs.MockMessageConsumer;
 import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.core.stubs.MockStandaloneConsumer;
 import com.adaptris.core.stubs.StateManagedStandaloneConsumer;
-import com.adaptris.util.license.License;
 
 public class ConnectionErrorHandlerTest extends BaseCase {
 
@@ -269,10 +268,10 @@ public class ConnectionErrorHandlerTest extends BaseCase {
       ;
     }
 
-    /** @see AdaptrisComponent */
-    public boolean isEnabled(License license) throws CoreException {
-      return true; // always enabled
+    @Override
+    protected void prepareConnection() throws CoreException {
     }
+
 
   }
 

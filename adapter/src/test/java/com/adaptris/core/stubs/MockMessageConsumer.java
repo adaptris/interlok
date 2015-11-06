@@ -27,7 +27,6 @@ import com.adaptris.core.InitialisedState;
 import com.adaptris.core.StartedState;
 import com.adaptris.core.StateManagedComponent;
 import com.adaptris.core.StoppedState;
-import com.adaptris.util.license.License;
 
 /**
  * <p>
@@ -69,13 +68,8 @@ public class MockMessageConsumer extends AdaptrisMessageConsumerImp implements S
     retrieveAdaptrisMessageListener().onAdaptrisMessage(msg);
   }
 
-  /**
-   *
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled(License)
-   */
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return true;
+  public void prepare() throws CoreException {
   }
 
   public void requestInit() throws CoreException {

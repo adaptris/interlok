@@ -16,7 +16,6 @@
 
 package com.adaptris.core.services.jdbc;
 
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,12 +27,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AutoPopulated;
-import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.services.jdbc.types.ColumnTranslator;
 import com.adaptris.jdbc.JdbcResultRow;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
@@ -108,11 +104,6 @@ public abstract class ResultSetTranslatorImp implements ResultSetTranslator {
 
   @Override
   public void stop() {
-  }
-
-  @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Standard);
   }
 
   private String getValue(JdbcResultRow rs, int column) {
@@ -233,4 +224,7 @@ public abstract class ResultSetTranslatorImp implements ResultSetTranslator {
     }
     columnTranslators.add(ct);
   }
+
+  @Override
+  public void prepare() throws CoreException {}
 }

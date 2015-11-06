@@ -38,8 +38,6 @@ import com.adaptris.core.services.metadata.xpath.XpathQuery;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.KeyValuePairSet;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.adaptris.util.text.xml.SimpleNamespaceContext;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
@@ -155,8 +153,7 @@ public class XpathMetadataService extends ServiceImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
   }
 
 

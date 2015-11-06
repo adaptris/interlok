@@ -292,4 +292,5 @@ public class JdbcDataCaptureService extends JdbcDataCaptureServiceImpl {
     return getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig()
         : DocumentBuilderFactoryBuilder.newInstance().withNamespaceAware(true);
   }
+
 }

@@ -26,7 +26,6 @@ import com.adaptris.core.services.exception.ThrowExceptionService;
 import com.adaptris.core.stubs.ChannelRestartConnectionErrorHandler;
 import com.adaptris.core.stubs.EventHandlerAwareService;
 import com.adaptris.core.stubs.FailFirstMockMessageProducer;
-import com.adaptris.core.stubs.LicenseStub;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockConnection;
 import com.adaptris.core.stubs.MockMessageConsumer;
@@ -34,7 +33,6 @@ import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.SimpleIdGenerator;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
 
 public class RetryMessageErrorHandlerTest extends ExampleErrorHandlerCase {
 
@@ -365,7 +363,6 @@ public class RetryMessageErrorHandlerTest extends ExampleErrorHandlerCase {
       channel.getProduceConnection().setConnectionErrorHandler(new ChannelRestartConnectionErrorHandler());
 
       Adapter adapter = new Adapter();
-      adapter.registerLicense(new LicenseStub());
       adapter.setUniqueId(new SimpleIdGenerator().create(this));
       adapter.setMessageErrorHandler(meh);
       adapter.getChannelList().addChannel(channel);
@@ -426,9 +423,9 @@ public class RetryMessageErrorHandlerTest extends ExampleErrorHandlerCase {
     }
 
     @Override
-    public boolean isEnabled(License license) throws CoreException {
-      return true;
+    public void prepare() throws CoreException {
     }
+
 
   }
 

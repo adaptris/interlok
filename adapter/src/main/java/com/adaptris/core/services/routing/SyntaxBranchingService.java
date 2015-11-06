@@ -24,6 +24,7 @@ import javax.validation.constraints.NotNull;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.BranchingServiceImp;
+import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
@@ -111,4 +112,8 @@ public class SyntaxBranchingService extends BranchingServiceImp {
   public void close() {
     // Nothing
   }
+
+  @Override
+  public void prepare() throws CoreException {}
+
 }

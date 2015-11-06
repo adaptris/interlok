@@ -213,4 +213,9 @@ public class MessageConsumer extends BasicJettyConsumer {
   public void setHeaderHandler(HeaderHandler<HttpServletRequest> headerHandler) {
     this.headerHandler = headerHandler;
   }
+
+  @Override
+  public void prepare() throws CoreException {
+  }
+
 }

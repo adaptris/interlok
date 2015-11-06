@@ -33,8 +33,6 @@ import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.adaptris.util.text.xml.XmlTransformer;
 import com.adaptris.util.text.xml.XmlTransformerFactory;
 import com.adaptris.util.text.xml.XsltTransformerFactory;
@@ -121,9 +119,9 @@ public class XmlTransformService extends ServiceImp {
   }
 
   @Override
-  public boolean isEnabled(License l) {
-    return l.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
   }
+
 
   /**
    * <p>

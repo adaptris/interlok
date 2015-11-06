@@ -371,4 +371,8 @@ public class CheckUniqueMetadataValueService extends BranchingServiceImp {
     }
     this.nextServiceIdIfUnique = s;
   }
+
+  @Override
+  public void prepare() throws CoreException {}
+
 }

@@ -31,8 +31,6 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairList;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -169,7 +167,7 @@ public class MapMetadataService extends ServiceImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
   }
+
 }

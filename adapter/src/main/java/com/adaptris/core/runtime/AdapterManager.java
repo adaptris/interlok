@@ -337,7 +337,7 @@ public class AdapterManager extends ComponentManagerImpl<Adapter> implements Ada
   public ObjectName addChannel(String xml) throws CoreException, MalformedObjectNameException {
     // ensureState(ClosedState.getInstance());
     Channel newChannel = (Channel) DefaultMarshaller.getDefaultMarshaller().unmarshal(xml);
-    newChannel.isEnabled(getWrappedComponent().currentLicense());
+    newChannel.prepare();
     ChannelManager channelManager = new ChannelManager(newChannel, this);
     // We don't need to "store" the XML at this point, as channelManager will eventually call
     // addChild() and that's when that happens.
@@ -375,7 +375,7 @@ public class AdapterManager extends ComponentManagerImpl<Adapter> implements Ada
   public void setMessageErrorHandler(String xml) throws CoreException {
     ensureState(ClosedState.getInstance());
     ProcessingExceptionHandler obj = (ProcessingExceptionHandler) DefaultMarshaller.getDefaultMarshaller().unmarshal(xml);
-    obj.isEnabled(getWrappedComponent().currentLicense());
+    obj.prepare();
     getWrappedComponent().setMessageErrorHandler(obj);
     registerChildRuntime(obj);
     marshalAndSendNotification();
@@ -386,7 +386,7 @@ public class AdapterManager extends ComponentManagerImpl<Adapter> implements Ada
   public void setFailedMessageRetrier(String xml) throws CoreException {
     ensureState(ClosedState.getInstance());
     FailedMessageRetrier obj = (FailedMessageRetrier) DefaultMarshaller.getDefaultMarshaller().unmarshal(xml);
-    obj.isEnabled(getWrappedComponent().currentLicense());
+    obj.prepare();
     getWrappedComponent().setFailedMessageRetrier(obj);
     registerChildRuntime(obj);
     marshalAndSendNotification();
@@ -419,11 +419,6 @@ public class AdapterManager extends ComponentManagerImpl<Adapter> implements Ada
   public void childUpdated() throws CoreException {
     marshalAndSendNotification();
 
-  }
-
-  @Override
-  public void checkLicense() throws CoreException {
-    adapter.checkLicense();
   }
 
   @Override

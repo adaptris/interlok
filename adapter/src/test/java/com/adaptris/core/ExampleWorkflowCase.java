@@ -20,12 +20,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-import com.adaptris.core.stubs.LicenseStub;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockWorkflowInterceptor;
 import com.adaptris.core.stubs.StubAdapterStartUpEvent;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
 
 /**
  * <p>
@@ -207,34 +205,6 @@ public abstract class ExampleWorkflowCase extends ExampleConfigCase {
 
   }
 
-
-  public void testLicenseCombinations() throws Exception {
-    assertEquals(false, createWorkflowLicenseCombo(false, true, true).isEnabled(new LicenseStub()));
-    assertEquals(false, createWorkflowLicenseCombo(false, true, false).isEnabled(new LicenseStub()));
-    assertEquals(false, createWorkflowLicenseCombo(false, false, true).isEnabled(new LicenseStub()));
-    assertEquals(false, createWorkflowLicenseCombo(false, false, false).isEnabled(new LicenseStub()));
-
-    assertEquals(true, createWorkflowLicenseCombo(true, true, true).isEnabled(new LicenseStub()));
-    assertEquals(false, createWorkflowLicenseCombo(true, true, false).isEnabled(new LicenseStub()));
-    assertEquals(false, createWorkflowLicenseCombo(true, false, false).isEnabled(new LicenseStub()));
-    assertEquals(false, createWorkflowLicenseCombo(true, false, true).isEnabled(new LicenseStub()));
-
-    assertEquals(true, createWorkflowLicenseCombo(true, true, true, true).isEnabled(new LicenseStub()));
-    assertEquals(false, createWorkflowLicenseCombo(false, true, true, true).isEnabled(new LicenseStub()));
-    assertEquals(false, createWorkflowLicenseCombo(false, false, true, true).isEnabled(new LicenseStub()));
-    assertEquals(false, createWorkflowLicenseCombo(false, false, false, true).isEnabled(new LicenseStub()));
-    assertEquals(false, createWorkflowLicenseCombo(false, false, false, false).isEnabled(new LicenseStub()));
-    assertEquals(false, createWorkflowLicenseCombo(false, true, false, true).isEnabled(new LicenseStub()));
-    assertEquals(false, createWorkflowLicenseCombo(false, true, false, false).isEnabled(new LicenseStub()));
-    assertEquals(false, createWorkflowLicenseCombo(false, true, true, false).isEnabled(new LicenseStub()));
-    assertEquals(false, createWorkflowLicenseCombo(true, false, true, true).isEnabled(new LicenseStub()));
-    assertEquals(false, createWorkflowLicenseCombo(true, false, false, true).isEnabled(new LicenseStub()));
-    assertEquals(false, createWorkflowLicenseCombo(true, false, false, false).isEnabled(new LicenseStub()));
-    assertEquals(false, createWorkflowLicenseCombo(true, true, false, true).isEnabled(new LicenseStub()));
-    assertEquals(false, createWorkflowLicenseCombo(true, true, false, false).isEnabled(new LicenseStub()));
-    assertEquals(false, createWorkflowLicenseCombo(true, true, true, false).isEnabled(new LicenseStub()));
-  }
-
   public void testSetInterceptors() throws Exception {
     WorkflowImp wf = createWorkflowForGenericTests();
     wf.setInterceptors(new ArrayList(Arrays.asList(new WorkflowInterceptor[]
@@ -259,60 +229,11 @@ public abstract class ExampleWorkflowCase extends ExampleConfigCase {
     assertEquals(2, wf.getInterceptors().size());
   }
 
-  protected WorkflowImp createWorkflowLicenseCombo(boolean consumerLicensed, boolean producerLicensed, boolean servicesLicensed,
-                                       boolean messageErrorHandlerLicensed) throws Exception {
-    WorkflowImp wf = createWorkflowLicenseCombo(consumerLicensed, producerLicensed, servicesLicensed);
-    if (!messageErrorHandlerLicensed) {
-      wf.setMessageErrorHandler(new StandardProcessingExceptionHandler() {
-        @Override
-        public boolean isEnabled(License l) {
-          return false;
-        }
-      });
-
-    }
-    else {
-      wf.setMessageErrorHandler(new StandardProcessingExceptionHandler());
-    }
-    return wf;
-  }
-
-  protected WorkflowImp createWorkflowLicenseCombo(boolean consumerLicensed, boolean producerLicensed, boolean servicesLicensed)
-      throws Exception {
-    WorkflowImp wf = createWorkflowForGenericTests();
-    if (!consumerLicensed) {
-      wf.setConsumer(new NullMessageConsumer() {
-        @Override
-        public boolean isEnabled(License l) {
-          return false;
-        }
-      });
-    }
-    if (!producerLicensed) {
-      wf.setProducer(new NullMessageProducer() {
-        @Override
-        public boolean isEnabled(License l) {
-          return false;
-        }
-      });
-    }
-    if (!servicesLicensed) {
-      wf.setServiceCollection(new ServiceList() {
-        @Override
-        public boolean isEnabled(License l) {
-          return false;
-        }
-      });
-    }
-    return wf;
-  }
-
   protected Adapter createAdapter(String uniqueId, Channel... channels) throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(uniqueId);
     adapter.getChannelList().addAll(new ArrayList(Arrays.asList(channels)));
     adapter.setStartUpEventImp(StubAdapterStartUpEvent.class.getCanonicalName());
-    adapter.registerLicense(new LicenseStub());
     return adapter;
   }
 

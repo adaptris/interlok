@@ -27,8 +27,6 @@ import java.util.List;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 
 /**
  * <p>
@@ -176,9 +174,10 @@ public abstract class DuplicateMetadataValueService extends ServiceImp {
     storeFileUrl = s;
   }
 
+
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Standard);
+  public void prepare() throws CoreException {
   }
+
 
 }

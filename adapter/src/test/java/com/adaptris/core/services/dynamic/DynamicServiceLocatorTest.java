@@ -39,7 +39,6 @@ import com.adaptris.core.TradingRelationship;
 import com.adaptris.core.TradingRelationshipCreator;
 import com.adaptris.core.XpathTradingRelationshipCreator;
 import com.adaptris.core.services.dynamic.DynamicFailingService.WhenToFail;
-import com.adaptris.core.stubs.LicenseStub;
 import com.adaptris.core.util.LifecycleHelper;
 
 public class DynamicServiceLocatorTest extends DynamicServiceExample {
@@ -157,7 +156,6 @@ public class DynamicServiceLocatorTest extends DynamicServiceExample {
     store.setFileNameSuffix(".xml");
     service.setServiceStore(store);
     service.registerEventHandler(eventHandler);
-    service.isEnabled(new LicenseStub());
     return service;
   }
 
@@ -283,8 +281,9 @@ public class DynamicServiceLocatorTest extends DynamicServiceExample {
     execute(service, AdaptrisMessageFactory.getDefaultInstance().newMessage());
   }
 
-  public void testServiceLicenseNotEnabled() throws Exception {
-    writeServiceList(new DynamicFailingService(WhenToFail.ON_LICENSE), new TradingRelationship(DEFAULT_SRC, DEFAULT_DEST,
+  public void testServicePrepareFails() throws Exception {
+    writeServiceList(new DynamicFailingService(WhenToFail.ON_PREPARE),
+        new TradingRelationship(DEFAULT_SRC, DEFAULT_DEST,
         DEFAULT_TYPE), tempDir);
     DynamicServiceLocator service = createLocator();
     service.setServiceNameProvider(new DefaultServiceNameProvider());

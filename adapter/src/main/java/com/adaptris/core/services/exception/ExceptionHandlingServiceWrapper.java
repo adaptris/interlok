@@ -32,8 +32,6 @@ import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -201,8 +199,8 @@ public class ExceptionHandlingServiceWrapper extends ServiceImp implements Event
   }
 
   @Override
-  public boolean isEnabled(License l) throws CoreException {
-    return l.isEnabled(LicenseType.Standard) && getExceptionHandlingService().isEnabled(l) && getService().isEnabled(l);
+  public void prepare() throws CoreException {
+    getExceptionHandlingService().prepare();
+    getService().prepare();
   }
-
 }

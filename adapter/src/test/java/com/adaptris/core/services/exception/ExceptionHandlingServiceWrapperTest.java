@@ -20,14 +20,10 @@ import java.util.Arrays;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.Service;
-import com.adaptris.core.ServiceImp;
 import com.adaptris.core.ServiceList;
 import com.adaptris.core.services.metadata.AddMetadataService;
-import com.adaptris.core.stubs.LicenseStub;
-import com.adaptris.util.license.License;
 
 public class ExceptionHandlingServiceWrapperTest extends ExceptionServiceExample {
 
@@ -66,17 +62,6 @@ public class ExceptionHandlingServiceWrapperTest extends ExceptionServiceExample
     assertNull(msg.getMetadataValue("exceptionServiceTriggered"));
   }
 
-  public void testBug2431() throws Exception {
-    ExceptionHandlingServiceWrapper service = create();
-    Bug2431 s = new Bug2431();
-    Bug2431 s2 = new Bug2431();
-    service.setService(s);
-    service.setExceptionHandlingService(s2);
-    LicenseStub license = new LicenseStub();
-    assertTrue(service.isEnabled(license));
-    assertEquals(license, s.registeredLicense);
-    assertEquals(license, s2.registeredLicense);
-  }
 
   @Override
   protected Object retrieveObjectForSampleConfig() {
@@ -107,25 +92,4 @@ public class ExceptionHandlingServiceWrapperTest extends ExceptionServiceExample
         + "\n-->\n";
   }
 
-  private class Bug2431 extends ServiceImp {
-
-    private License registeredLicense;
-    @Override
-    public void doService(AdaptrisMessage msg) {
-    }
-
-    @Override
-    public void init() throws CoreException {
-    }
-
-    @Override
-    public void close() {
-    }
-
-    @Override
-    public boolean isEnabled(License l) throws CoreException {
-      registeredLicense = l;
-      return true;
-    }
-  }
 }

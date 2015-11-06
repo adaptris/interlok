@@ -30,7 +30,6 @@ import com.adaptris.core.ProduceOnlyProducerImp;
 import com.adaptris.core.StartedState;
 import com.adaptris.core.StateManagedComponent;
 import com.adaptris.core.StoppedState;
-import com.adaptris.util.license.License;
 
 /**
  * <p>
@@ -53,14 +52,10 @@ public class MockMessageProducer extends ProduceOnlyProducerImp implements
     producedMessages = new ArrayList<AdaptrisMessage>();
   }
 
-  /**
-   *
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled(License)
-   */
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return true;
+  public void prepare() throws CoreException {
   }
+
 
   /**
    * @see com.adaptris.core.AdaptrisMessageProducer#produce

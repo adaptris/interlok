@@ -27,7 +27,6 @@ import com.adaptris.http.RequestProcessor;
 import com.adaptris.security.password.Password;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
-import com.adaptris.util.license.License;
 
 /**
  * This class is thee base class that all Http Consume Connections extend.
@@ -149,13 +148,10 @@ public abstract class ConsumeConnection extends AdaptrisConnectionImp {
    */
   abstract Listener initialiseListener() throws HttpException;
 
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled(License)
-   */
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return true;
+  protected void prepareConnection() throws CoreException {
   }
+
 
   /**
    * Return the set of configured passwords.

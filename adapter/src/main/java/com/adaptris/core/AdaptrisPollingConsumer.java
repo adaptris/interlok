@@ -21,6 +21,7 @@ import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.FifoMutexLock;
 
@@ -221,7 +222,16 @@ public abstract class AdaptrisPollingConsumer
    * @param s the poller
    */
   public void setPoller(Poller s) {
-    poller = s;
+    poller = Args.notNull(s, "poller");
     poller.registerConsumer(this);
   }
+
+
+  @Override
+  public final void prepare() throws CoreException {
+    getPoller().prepare();
+  }
+  
+  protected abstract void prepareConsumer() throws CoreException;
+    
 }

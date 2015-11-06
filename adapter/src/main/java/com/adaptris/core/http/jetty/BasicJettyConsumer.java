@@ -52,8 +52,6 @@ import com.adaptris.core.WorkflowImp;
 import com.adaptris.core.WorkflowInterceptor;
 import com.adaptris.core.http.client.RequestMethodProvider.RequestMethod;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 
 /**
  * This is the abstract class for all implementations that make use of Jetty to receive messages.
@@ -90,13 +88,6 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
     jettyServlet = new BasicServlet();
   }
 
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled(License)
-   */
-  @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
-  }
 
   /**
    * Create an AdaptrisMessage from the incoming servlet request and response.

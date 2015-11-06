@@ -21,7 +21,7 @@ package com.adaptris.core;
  *
  * @author lchan
  */
-public interface WorkflowInterceptor extends AdaptrisComponent {
+public interface WorkflowInterceptor extends AdaptrisComponent, ComponentLifecycleExtension {
 
   /**
    * Mark the start of a workflow.

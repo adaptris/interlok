@@ -86,11 +86,6 @@ abstract class CmdLineBootstrap {
       Runtime.getRuntime().addShutdownHook(new ShutdownHandler(bootProperties.getConfigManager().getAdapterRegistry()));
       launchAdapter(bootstrap, startQuietly);
     }
-    else {
-      System.err.println("Adapter configuration appears valid, checking license");
-      adapter.checkLicense();
-    }
-
   }
 
   private void parseCommandline() throws Exception {

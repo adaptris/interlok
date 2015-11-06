@@ -38,8 +38,6 @@ import org.slf4j.LoggerFactory;
 import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.jms.JmsDestination.DestinationType;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 
 /**
  * <p>
@@ -146,13 +144,9 @@ public abstract class VendorImplementationImp implements VendorImplementation {
     return result.toString();
   }
 
-  /**
-   * 
-   * @see com.adaptris.core.LicensedComponent#isEnabled(License)
-   */
+
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
   }
 
 

@@ -19,7 +19,6 @@ package com.adaptris.core.services.dynamic;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
-import com.adaptris.util.license.License;
 
 /**
  * <p>
@@ -30,7 +29,10 @@ import com.adaptris.util.license.License;
 public class DynamicFailingService extends DynamicService {
 
   public enum WhenToFail {
-    NEVER, ON_INIT, ON_START, ON_LICENSE
+    NEVER,
+    ON_INIT,
+    ON_START,
+    ON_PREPARE;
   };
 
   private WhenToFail whenToFail = WhenToFail.NEVER;
@@ -61,11 +63,10 @@ public class DynamicFailingService extends DynamicService {
   }
 
   @Override
-  public boolean isEnabled(License l) {
-    if (whenToFail.equals(WhenToFail.ON_LICENSE)) {
-      return false;
+  public void prepare() throws CoreException {
+    if (whenToFail.equals(WhenToFail.ON_PREPARE)) {
+      throw new CoreException(WhenToFail.ON_PREPARE.name());
     }
-    return true;
   }
 
   /**

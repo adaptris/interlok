@@ -21,7 +21,6 @@ import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
-import com.adaptris.util.license.License;
 
 public class MockSkipProducerService extends ServiceImp {
 
@@ -38,8 +37,8 @@ public class MockSkipProducerService extends ServiceImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return true;
+  public void prepare() throws CoreException {
   }
+
 
 }

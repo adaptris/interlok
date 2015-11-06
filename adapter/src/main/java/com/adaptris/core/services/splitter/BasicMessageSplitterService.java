@@ -30,8 +30,6 @@ import com.adaptris.core.NullMessageProducer;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -174,7 +172,9 @@ public class BasicMessageSplitterService extends MessageSplitterServiceImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic) && getConnection().isEnabled(license) && getProducer().isEnabled(license);
+  public void prepare() throws CoreException {
+    getConnection().prepare();
+    getProducer().prepare();
   }
+
 }

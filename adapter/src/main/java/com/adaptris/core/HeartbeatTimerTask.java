@@ -48,7 +48,6 @@ class HeartbeatTimerTask extends TimerTask {
       heartbeat.extractState(adapter);
       log.trace("Heartbeat created=" + heartbeatEventImp);
       adapter.getEventHandler().send(heartbeat);
-      adapter.generateLicenseExpiryEvent();
     }
     catch (Exception e) {
       log.trace("exception sending heartbeat Event; logging only", e);

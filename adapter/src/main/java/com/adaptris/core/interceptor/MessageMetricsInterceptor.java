@@ -27,8 +27,6 @@ import com.adaptris.core.runtime.RuntimeInfoComponent;
 import com.adaptris.core.runtime.RuntimeInfoComponentFactory;
 import com.adaptris.core.runtime.WorkflowManager;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -79,10 +77,6 @@ public class MessageMetricsInterceptor extends MessageMetricsInterceptorImpl {
       currentTimeSlice.setTotalMessageErrorCount(currentTimeSlice.getTotalMessageErrorCount() + 1);
     }
     updateCurrentTimeSlice(currentTimeSlice);
-  }
-
-  public boolean isEnabled(License license) {
-    return license.isEnabled(LicenseType.Basic);
   }
 
   private static class JmxFactory extends RuntimeInfoComponentFactory {

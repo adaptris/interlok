@@ -32,8 +32,6 @@ import com.adaptris.core.ServiceImp;
 import com.adaptris.transform.Source;
 import com.adaptris.transform.Target;
 import com.adaptris.transform.TransformFramework;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 
 /**
  * <p>
@@ -165,13 +163,10 @@ public abstract class TransformService extends ServiceImp {
     }
   }
 
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled(License)
-   */
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
   }
+
 
   /** @see java.lang.Object#toString() */
   @Override

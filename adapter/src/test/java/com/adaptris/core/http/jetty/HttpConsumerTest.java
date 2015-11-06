@@ -47,7 +47,6 @@ import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.services.WaitService;
 import com.adaptris.core.stubs.AdaptrisMessageStub;
-import com.adaptris.core.stubs.LicenseStub;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.stubs.StaticMockMessageProducer;
 import com.adaptris.core.stubs.StubMessageFactory;
@@ -133,7 +132,6 @@ public class HttpConsumerTest extends HttpConsumerExample {
     workflow1.setConsumer(consumer1);
     workflow1.getServiceCollection().add(new StandaloneProducer(new ResponseProducer(HttpStatus.OK_200)));
     Channel channel = JettyHelper.createChannel(connection, workflow1);
-    channel.isEnabled(new LicenseStub());
     try {
       channel.requestStart();
       AdaptrisMessage msg1 = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
@@ -169,7 +167,6 @@ public class HttpConsumerTest extends HttpConsumerExample {
     workflow2.getServiceCollection().add(new StandaloneProducer(new ResponseProducer(HttpStatus.OK_200)));
     channel.getWorkflowList().add(workflow2);
 
-    channel.isEnabled(new LicenseStub());
     try {
       channel.requestStart();
       AdaptrisMessage msg1 = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
@@ -204,7 +201,6 @@ public class HttpConsumerTest extends HttpConsumerExample {
     workflow.getServiceCollection().add(new StandaloneProducer(responder));
     workflow.addInterceptor(new JettyPoolingWorkflowInterceptor());
     Channel channel = JettyHelper.createChannel(connection, workflow);
-    channel.isEnabled(new LicenseStub());
     try {
       channel.requestStart();
 
@@ -234,7 +230,6 @@ public class HttpConsumerTest extends HttpConsumerExample {
     workflow.getServiceCollection().add(new StandaloneProducer(mockProducer));
     workflow.getServiceCollection().add(new StandaloneProducer(responder));
     Channel channel = JettyHelper.createChannel(connection, workflow);
-    channel.isEnabled(new LicenseStub());
     try {
       channel.requestStart();
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);

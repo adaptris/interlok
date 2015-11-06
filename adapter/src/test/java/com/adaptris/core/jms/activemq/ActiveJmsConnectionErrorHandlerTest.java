@@ -38,7 +38,6 @@ import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.PasConsumer;
 import com.adaptris.core.jms.PasProducer;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
-import com.adaptris.core.stubs.LicenseStub;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.util.TimeInterval;
@@ -176,7 +175,6 @@ public class ActiveJmsConnectionErrorHandlerTest extends ActiveJmsConnectionErro
     MockChannel channel = createChannel(activeMqBroker, new SharedConnection(getName()), getName());
     MockMessageProducer producer = (MockMessageProducer) channel.getWorkflowList().get(0).getProducer();
     adapter.getChannelList().add(channel);
-    adapter.registerLicense(new LicenseStub());
     try {
       activeMqBroker.start();
       adapter.requestStart();
@@ -221,7 +219,6 @@ public class ActiveJmsConnectionErrorHandlerTest extends ActiveJmsConnectionErro
     MockMessageProducer producer = (MockMessageProducer) started.getWorkflowList().get(0).getProducer();
     adapter.getChannelList().add(started);
     adapter.getChannelList().add(neverStarted);
-    adapter.registerLicense(new LicenseStub());
     try {
       activeMqBroker.start();
       adapter.requestStart();

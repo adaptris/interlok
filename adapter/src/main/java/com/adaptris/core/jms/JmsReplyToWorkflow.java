@@ -27,8 +27,6 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.StandardWorkflow;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -153,8 +151,8 @@ public final class JmsReplyToWorkflow extends StandardWorkflow {
   }
 
   @Override
-  protected boolean workflowIsEnabled(License l) {
-    return l.isEnabled(LicenseType.Standard);
+  public void prepare() throws CoreException {
   }
+
 
 }

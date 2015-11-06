@@ -31,10 +31,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.NullConnection;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
-import com.adaptris.ftp.FtpException;
 import com.adaptris.security.password.Password;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 
 /**
  * Class containing common configuration for all FTP Connection types.
@@ -214,11 +211,6 @@ public abstract class FileTransferConnection extends NullConnection {
 
   public boolean cacheConnection() {
     return getCacheConnection() != null ? getCacheConnection().booleanValue() : false;
-  }
-
-  @Override
-  public boolean isEnabled(License l) throws CoreException {
-    return l.isEnabled(LicenseType.Basic);
   }
 
   /**

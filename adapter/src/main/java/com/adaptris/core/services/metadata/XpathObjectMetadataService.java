@@ -28,7 +28,6 @@ import javax.xml.namespace.NamespaceContext;
 import org.w3c.dom.Document;
 
 import com.adaptris.annotation.AutoPopulated;
-import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
@@ -38,8 +37,6 @@ import com.adaptris.core.services.metadata.xpath.XpathObjectQuery;
 import com.adaptris.core.services.metadata.xpath.XpathQuery;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.KeyValuePairSet;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.adaptris.util.text.xml.SimpleNamespaceContext;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
@@ -145,7 +142,7 @@ public class XpathObjectMetadataService extends ServiceImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
   }
+
 }

@@ -101,4 +101,8 @@ public class ExampleBranchingService extends BranchingServiceImp {
   public void setLowerServiceId(String string) {
     lowerServiceId = string;
   }
+
+  @Override
+  public void prepare() throws CoreException {}
+
 }

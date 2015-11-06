@@ -48,8 +48,6 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.RequestReplyProducerImp;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 
 public abstract class JmsProducerImpl extends RequestReplyProducerImp implements JmsActorConfig {
 
@@ -159,14 +157,10 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
     setDestination(d);
   }
 
-  /**
-   * 
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled(License)
-   */
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic) && getMessageTranslator().isEnabled(license)
-        && getSessionFactory().isEnabled(license);
+  public void prepare() throws CoreException {
+    getMessageTranslator().prepare();
+    getSessionFactory().prepare();
   }
 
   @Override

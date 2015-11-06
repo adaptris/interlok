@@ -23,7 +23,6 @@ import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -113,13 +112,12 @@ public class StandaloneProducer extends ServiceImp implements AdaptrisMessageSen
     LifecycleHelper.close(connection);
   }
 
-  /**
-   * @see com.adaptris.core.AdaptrisComponent #isEnabled(com.adaptris.util.license.License)
-   */
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return getConnection().isEnabled(license) && getProducer().isEnabled(license);
+  public void prepare() throws CoreException {
+    getConnection().prepare();
+    getProducer().prepare();
   }
+
 
   /** @see java.lang.Object#toString() */
   @Override

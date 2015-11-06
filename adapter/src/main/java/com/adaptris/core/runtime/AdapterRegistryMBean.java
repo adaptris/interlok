@@ -26,8 +26,8 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
 import com.adaptris.core.CoreException;
-import com.adaptris.core.management.vcs.RuntimeVersionControl;
-import com.adaptris.util.license.LicenseException;
+
+import net.sf.saxon.trans.LicenseException;
 
 /**
  * A registry of Adapters that are available for management.
@@ -120,9 +120,8 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
    * @throws IOException an error accessing the URL.
    * @throws CoreException an error creating the underlying adapter.
    * @throws MalformedObjectNameException if there was a problem
-   * @throws LicenseException if there was an error with the license.
    */
-  ObjectName createAdapter(URL url) throws IOException, MalformedObjectNameException, CoreException, LicenseException;
+  ObjectName createAdapter(URL url) throws IOException, MalformedObjectNameException, CoreException;
 
   /**
    * Get the URL that was used to create the adapter associated with that ObjectName.

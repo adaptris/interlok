@@ -20,7 +20,6 @@ import java.util.Date;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.PoolingWorkflow;
 import com.adaptris.core.interceptor.WorkflowInterceptorImpl;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 

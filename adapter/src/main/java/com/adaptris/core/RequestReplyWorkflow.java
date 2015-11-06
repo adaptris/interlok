@@ -24,8 +24,6 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -160,10 +158,6 @@ public class RequestReplyWorkflow extends StandardWorkflow {
     c.getConsumeConnection().addMessageProducer(getReplyProducer());
   }
 
-  @Override
-  protected boolean doAdditionalLicenseChecks(License l) throws CoreException {
-    return getReplyProducer().isEnabled(l) && getReplyServiceCollection().isEnabled(l);
-  }
 
   /**
    * <p>
@@ -251,7 +245,9 @@ public class RequestReplyWorkflow extends StandardWorkflow {
   }
 
   @Override
-  protected boolean workflowIsEnabled(License l) {
-    return l.isEnabled(LicenseType.Standard);
+  public void prepare() throws CoreException {
+    super.prepare();
+    getReplyProducer().prepare();
+    getReplyServiceCollection().prepare();
   }
 }

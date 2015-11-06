@@ -22,7 +22,6 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
 
 /**
  * Service that does nothing, but does have a connection.
@@ -48,9 +47,10 @@ public class MockServiceWithConnection extends ServiceImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return true;
+  public void prepare() throws CoreException {
+    connection.prepare();
   }
+
 
   @Override
   public void init() throws CoreException {

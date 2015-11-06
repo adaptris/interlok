@@ -29,12 +29,8 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisPollingConsumer;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.fs.CompositeFileFilter;
-import com.adaptris.core.fs.SizeGreaterThan;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -241,9 +237,9 @@ public class RelaxedFtpConsumer extends AdaptrisPollingConsumer {
   }
 
   @Override
-  public boolean isEnabled(License l) throws CoreException {
-    return l.isEnabled(LicenseType.Basic);
+  protected void prepareConsumer() throws CoreException {
   }
+
 
   /**
    * @return Returns the fileFilterImp.

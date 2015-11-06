@@ -19,8 +19,6 @@ package com.adaptris.core.stubs;
 import java.util.Properties;
 
 import com.adaptris.core.management.BootstrapProperties;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.LicenseException;
 
 public class JunitBootstrapProperties extends BootstrapProperties {
 
@@ -33,8 +31,4 @@ public class JunitBootstrapProperties extends BootstrapProperties {
     super(p);
   }
 
-  @Override
-  public License getLicense() throws LicenseException {
-    return new LicenseStub();
-  }
 }

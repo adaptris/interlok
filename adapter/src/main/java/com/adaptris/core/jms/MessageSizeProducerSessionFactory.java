@@ -20,8 +20,6 @@ import javax.jms.JMSException;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -54,10 +52,6 @@ public class MessageSizeProducerSessionFactory extends ProducerSessionFactoryImp
     setMaxSizeBytes(max);
   }
 
-  @Override
-  public boolean isEnabled(License l) {
-    return l.isEnabled(LicenseType.Standard);
-  }
 
   @Override
   public ProducerSession createProducerSession(JmsProducerImpl producer, AdaptrisMessage msg)

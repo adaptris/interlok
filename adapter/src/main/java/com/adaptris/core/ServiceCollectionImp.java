@@ -36,7 +36,6 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.FifoMutexLock;
 import com.adaptris.util.GuidGenerator;
-import com.adaptris.util.license.License;
 
 /**
  * <p>
@@ -402,16 +401,6 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
    */
   public void requestClose() {
     serviceListState.requestClose(this);
-  }
-  
-  @Override
-  public boolean isEnabled(License license) throws CoreException {
-    for (Service s : this) {
-      if (!s.isEnabled(license)) {
-        return false;
-      }
-    }
-    return true;
   }
 
   @Override

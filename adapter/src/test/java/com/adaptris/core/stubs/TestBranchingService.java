@@ -52,4 +52,8 @@ public class TestBranchingService extends BranchingServiceImp {
   public void close() {
     // na
   }
+
+  @Override
+  public void prepare() throws CoreException {}
+
 }

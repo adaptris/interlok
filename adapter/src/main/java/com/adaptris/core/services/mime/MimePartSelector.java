@@ -36,8 +36,6 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.util.MimeHelper;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.adaptris.util.stream.StreamUtil;
 import com.adaptris.util.text.mime.MultiPartInput;
 import com.adaptris.util.text.mime.PartSelector;
@@ -259,8 +257,8 @@ public class MimePartSelector extends ServiceImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
   }
+
 
 }

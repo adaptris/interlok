@@ -25,11 +25,7 @@ import java.io.Reader;
 
 import org.hibernate.validator.constraints.NotBlank;
 
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.BranchingServiceCollection;
 import com.adaptris.core.CoreException;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -103,8 +99,7 @@ public class ScriptingService extends ScriptingServiceImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Standard);
+  public void prepare() throws CoreException {
   }
 
 }

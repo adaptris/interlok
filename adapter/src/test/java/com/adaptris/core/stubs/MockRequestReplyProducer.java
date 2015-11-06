@@ -27,7 +27,6 @@ import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.RequestReplyProducerImp;
-import com.adaptris.util.license.License;
 
 /**
  * <p>
@@ -51,14 +50,10 @@ public class MockRequestReplyProducer extends RequestReplyProducerImp {
     producedMessages = new ArrayList();
   }
 
-  /**
-   *
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled(License)
-   */
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return true;
+  public void prepare() throws CoreException {
   }
+
 
   /**
    * <p>

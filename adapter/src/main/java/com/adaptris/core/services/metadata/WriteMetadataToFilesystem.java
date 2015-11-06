@@ -40,14 +40,11 @@ import com.adaptris.core.FormattedFilenameCreator;
 import com.adaptris.core.MetadataCollection;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ProduceDestination;
-import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.fs.FsHelper;
 import com.adaptris.core.metadata.MetadataFilter;
 import com.adaptris.core.metadata.NoOpMetadataFilter;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -249,7 +246,7 @@ public class WriteMetadataToFilesystem extends ServiceImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
   }
+
 }

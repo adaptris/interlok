@@ -47,8 +47,6 @@ import com.adaptris.core.metadata.RemoveAllMetadataFilter;
 import com.adaptris.core.util.Args;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.adaptris.util.stream.StreamUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -229,15 +227,6 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
    */
   @Override
   public void close() {
-  }
-
-  /**
-   *
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled(License)
-   */
-  @Override
-  public boolean isEnabled(License l) throws CoreException {
-    return l.isEnabled(LicenseType.Basic);
   }
 
   /**
@@ -443,4 +432,9 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
   private Status getStatus(AdaptrisMessage msg) {
     return new HttpStatusBuilder().withCode(getHttpResponseCode()).build();
   }
+
+  @Override
+  public void prepare() throws CoreException {
+  }
+
 }

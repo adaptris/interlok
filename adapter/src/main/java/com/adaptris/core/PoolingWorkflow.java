@@ -34,8 +34,6 @@ import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.FifoMutexLock;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -213,6 +211,7 @@ public class PoolingWorkflow extends WorkflowImp {
       setPoolSize(maxIdle());
     }
     marshalledServiceCollection = cloneServiceCollection(getServiceCollection());
+    marshalledServiceCollection.prepare();
     LifecycleHelper.init(getProducer());
     getConsumer().registerAdaptrisMessageListener(this);
     LifecycleHelper.init(getConsumer());
@@ -288,11 +287,6 @@ public class PoolingWorkflow extends WorkflowImp {
   @Override
   protected void resubmitMessage(AdaptrisMessage msg) {
     onMessage(msg);
-  }
-
-  @Override
-  protected boolean workflowIsEnabled(License l) {
-    return l.isEnabled(LicenseType.Standard);
   }
 
   private void onMessage(AdaptrisMessage msg) {
@@ -539,9 +533,6 @@ public class PoolingWorkflow extends WorkflowImp {
     LifecycleHelper.registerEventHandler(result, eventHandler);
     for (Iterator i = result.getServices().iterator(); i.hasNext();) {
       Service s = (Service) i.next();
-      if (!s.isEnabled(license)) {
-        throw new CoreException("License is not valid for " + s.getClass());
-      }
     }
     return result;
   }

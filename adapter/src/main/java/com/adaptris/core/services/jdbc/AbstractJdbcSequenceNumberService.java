@@ -439,6 +439,10 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
     return getCreateDatabase() != null ? getCreateDatabase().booleanValue() : false;
   }
 
+  @Override
+  public void prepareService() throws CoreException {
+  }
+
   private class DatabaseActor {
     private PreparedStatement select = null, insert = null, update = null, reset = null;
     private Connection sqlConnection;

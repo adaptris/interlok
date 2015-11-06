@@ -19,7 +19,6 @@ package com.adaptris.core.stubs;
 import com.adaptris.core.AdaptrisConnectionImp;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.StateManagedComponent;
-import com.adaptris.util.license.License;
 
 /**
  * <p>
@@ -89,13 +88,10 @@ public class MockConnection extends AdaptrisConnectionImp implements StateManage
     return closeCount;
   }
 
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled
-   *      (com.adaptris.util.license.License)
-   */
-  public boolean isEnabled(License license) throws CoreException {
-    return true;
+  @Override
+  protected void prepareConnection() throws CoreException {
   }
+
 
   private void waitQuietly() {
     if (sleepTime > 0) {

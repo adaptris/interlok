@@ -28,7 +28,6 @@ import com.adaptris.core.stubs.CheckComponentStateService;
 import com.adaptris.core.stubs.MockStopProcessingService;
 import com.adaptris.util.PlainIdGenerator;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
 
 public class ServiceListTest extends ServiceCollectionCase {
 
@@ -275,8 +274,7 @@ public class ServiceListTest extends ServiceCollectionCase {
     }
 
     @Override
-    public boolean isEnabled(License license) throws CoreException {
-      return true;
+    public void prepare() throws CoreException {
     }
 
   }

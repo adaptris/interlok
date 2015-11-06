@@ -20,7 +20,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import com.adaptris.util.license.License;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -61,9 +60,7 @@ public class NullLogHandler extends LogHandlerImp {
   public boolean isCompressed() {
     return false;
   }
-
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return true;
+  public void prepare() throws CoreException {
   }
 }

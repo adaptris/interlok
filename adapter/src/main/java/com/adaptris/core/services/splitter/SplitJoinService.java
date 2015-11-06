@@ -40,8 +40,6 @@ import com.adaptris.core.ServiceImp;
 import com.adaptris.core.services.aggregator.MessageAggregator;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -84,7 +82,6 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware {
   private transient ExecutorService executors;
   private transient AdaptrisMarshaller marshaller = null;
   private transient EventHandler eventHandler;
-  private transient License license;
 
   public SplitJoinService() {
     super();
@@ -196,18 +193,16 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware {
     }
   }
 
-  public boolean isEnabled(License l) throws CoreException {
-    license = l;
-    return l.isEnabled(LicenseType.Standard) && service.isEnabled(l);
+  @Override
+  public void prepare() throws CoreException {
+    getService().prepare();
   }
 
   private Service cloneService(Service original) throws ServiceException {
     Service result = null;
     try {
       result = (Service) marshaller.unmarshal(marshaller.marshal(original));
-      if (!result.isEnabled(license)) {
-        throw new CoreException("License not enabled on service");
-      }
+      result.prepare();
     }
     catch (CoreException e) {
       rethrowServiceException(e);

@@ -16,8 +16,8 @@
 
 package com.adaptris.core;
 
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -52,13 +52,6 @@ public class DefaultEventHandler extends EventHandlerBase {
   public DefaultEventHandler(AdaptrisConnection connection, AdaptrisMessageProducer producer) throws CoreException {
     setConnection(connection);
     setProducer(producer);
-  }
-
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled (com.adaptris.util.license.License)
-   */
-  public boolean isEnabled(License license) throws CoreException {
-    return getConnection().isEnabled(license) && getProducer().isEnabled(license);
   }
 
   @Override
@@ -104,13 +97,10 @@ public class DefaultEventHandler extends EventHandlerBase {
    * @param c the <code>AdaptrisConnection</code> to use
    */
   public void setConnection(AdaptrisConnection c) {
-    if (c == null) {
-      throw new IllegalArgumentException("null param");
-    }
     if (!retrieveComponentState().equals(ClosedState.getInstance())) {
       throw new IllegalStateException("Attempt to set the connection when already initialised");
     }
-    connection = c;
+    connection = Args.notNull(c, "connection");
   }
 
   /**
@@ -132,13 +122,10 @@ public class DefaultEventHandler extends EventHandlerBase {
    * @param p the <code>AdaptrisMessageProducer</code> to use
    */
   public void setProducer(AdaptrisMessageProducer p) {
-    if (p == null) {
-      throw new IllegalArgumentException("null param");
-    }
     if (!retrieveComponentState().equals(ClosedState.getInstance())) {
       throw new IllegalStateException("Attempt to set the producer when already initialised");
     }
-    producer = p;
+    producer = Args.notNull(p, "producer");
   }
 
   /**
@@ -150,6 +137,12 @@ public class DefaultEventHandler extends EventHandlerBase {
    */
   public AdaptrisMessageProducer getProducer() {
     return producer;
+  }
+
+  @Override
+  public void prepare() throws CoreException {
+    getConnection().prepare();
+    getProducer().prepare();
   }
 
 }

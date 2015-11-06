@@ -22,7 +22,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AutoPopulated;
-import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.EventHandler;
@@ -32,8 +31,6 @@ import com.adaptris.core.ServiceCollectionImp;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -197,9 +194,12 @@ public class StatelessServiceWrapper extends ServiceImp implements EventHandlerA
   }
 
   @Override
-  public boolean isEnabled(License l) throws CoreException {
-    return l.isEnabled(LicenseType.Basic) && (getService() != null ? getService().isEnabled(l) : true);
+  public void prepare() throws CoreException {
+    if (getService() != null) {
+      getService().prepare();
+    }
   }
+
 
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {

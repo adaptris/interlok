@@ -18,10 +18,8 @@ package com.adaptris.core.management;
 
 import static com.adaptris.core.management.Constants.CFG_KEY_CONFIG_MANAGER;
 import static com.adaptris.core.management.Constants.CFG_KEY_CONFIG_URL;
-import static com.adaptris.core.management.Constants.CFG_KEY_LICENSE_URL;
 import static com.adaptris.core.management.Constants.DBG;
 import static com.adaptris.core.management.Constants.DEFAULT_CONFIG_MANAGER;
-import static com.adaptris.core.management.Constants.DEFAULT_LICENSE_URL;
 import static com.adaptris.core.management.Constants.DEFAULT_PROPS_RESOURCE;
 import static com.adaptris.core.management.Constants.PROTOCOL_FILE;
 
@@ -45,9 +43,6 @@ import com.adaptris.core.Adapter;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.management.logging.LoggingConfigurator;
 import com.adaptris.util.URLString;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.LicenseException;
-import com.adaptris.util.license.LicenseFactory;
 
 /**
  * This class holds the necessary information for startup and provides a extra method for getting the available adapter
@@ -117,7 +112,6 @@ public class BootstrapProperties extends Properties {
     // First of all make sure the the config manager has made the default marshaller correct.
     getConfigManager();
     Adapter result = (Adapter) DefaultMarshaller.getDefaultMarshaller().unmarshal(new URLString(findAdapterResource()));
-    result.registerLicense(getLicense());
     log.info("Adapter created");
     return result;
 
@@ -299,19 +293,6 @@ public class BootstrapProperties extends Properties {
       configManager.configure(this);
     }
     return configManager;
-  }
-
-  /**
-   * Get the license URL.
-   * 
-   * @return the license url.
-   */
-  public String getLicenseUrl() {
-    return getPropertyIgnoringCase(this, CFG_KEY_LICENSE_URL, DEFAULT_LICENSE_URL);
-  }
-
-  public License getLicense() throws LicenseException {
-    return LicenseFactory.getLicense(getLicenseUrl());
   }
 
   public void reconfigureLogging() {

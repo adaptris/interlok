@@ -37,9 +37,6 @@ import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.security.keystore.Alias;
 import com.adaptris.security.keystore.ConfiguredKeystore;
-import com.adaptris.security.keystore.KeystoreFactory;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
@@ -279,9 +276,9 @@ public abstract class CoreSecurityService extends ServiceImp {
   }
 
   @Override
-  public final boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
   }
+
 
   final Alias retrieveLocalPartner() {
     return localPartnerAlias;

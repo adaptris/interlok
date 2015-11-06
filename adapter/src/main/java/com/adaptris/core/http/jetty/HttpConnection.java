@@ -30,6 +30,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.core.CoreException;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -337,5 +338,8 @@ public class HttpConnection extends JettyConnection {
     securityHandler = s;
   }
 
+  @Override
+  protected void prepareConnection() throws CoreException {
+  }
 
 }

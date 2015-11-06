@@ -30,21 +30,16 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
-import org.apache.commons.io.FileCleaningTracker;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageEncoder;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.services.aggregator.AggregatingConsumer;
 import com.adaptris.core.services.aggregator.AggregatingConsumerImpl;
 import com.adaptris.core.services.aggregator.ConsumeDestinationGenerator;
 import com.adaptris.fs.FsWorker;
 import com.adaptris.fs.NioWorker;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -165,10 +160,6 @@ public class AggregatingFsConsumer extends AggregatingConsumerImpl<AggregatingFs
     return msg;
   }
 
-  @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Standard);
-  }
 
   String fileFilterImp() {
     return getFileFilterImp() != null ? getFileFilterImp() : DEFAULT_FILE_FILTER_IMP;
@@ -252,5 +243,8 @@ public class AggregatingFsConsumer extends AggregatingConsumerImpl<AggregatingFs
   String wipSuffix() {
     return !isEmpty(getWipSuffix()) ? getWipSuffix() : DEFAULT_WIP_SUFFIX;
   }
+
+  @Override
+  public void prepare() throws CoreException {}
 
 }

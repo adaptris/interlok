@@ -22,7 +22,6 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.Event;
 import com.adaptris.core.EventHandler;
 import com.adaptris.core.ProduceDestination;
-import com.adaptris.util.license.License;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -67,8 +66,7 @@ public class StubEventHandler implements EventHandler {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return false;
+  public void prepare() throws CoreException {
   }
 
   @Override

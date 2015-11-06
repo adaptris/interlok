@@ -24,8 +24,6 @@ import javax.jms.JMSException;
 import com.adaptris.core.jms.MockJmsConnection;
 import com.adaptris.core.jms.MockNoOpConnectionErrorHandler;
 import com.adaptris.core.jms.UrlVendorImplementation;
-import com.adaptris.core.stubs.LicenseStub;
-import com.adaptris.util.license.License;
 
 
 public class ChannelTest extends ExampleChannelCase {
@@ -146,83 +144,6 @@ public class ChannelTest extends ExampleChannelCase {
     assertEquals(StartedState.getInstance(), workflow.retrieveComponentState());
   }
 
-  public void testLicenseCombinations() throws Exception {
-    // OMG, there must be a better way of doing this...
-    // Too much possibility of missing a possible options out of the matrix
-    assertEquals(false, createChannel(false, true, true).isEnabled(new LicenseStub()));
-    assertEquals(false, createChannel(false, true, false).isEnabled(new LicenseStub()));
-    assertEquals(false, createChannel(false, false, true).isEnabled(new LicenseStub()));
-    assertEquals(false, createChannel(false, false, false).isEnabled(new LicenseStub()));
-
-    assertEquals(true, createChannel(true, true, true).isEnabled(new LicenseStub()));
-    assertEquals(false, createChannel(true, true, false).isEnabled(new LicenseStub()));
-    assertEquals(false, createChannel(true, false, false).isEnabled(new LicenseStub()));
-    assertEquals(false, createChannel(true, false, true).isEnabled(new LicenseStub()));
-
-    assertEquals(true, createChannel(true, true, true, true).isEnabled(new LicenseStub()));
-    assertEquals(false, createChannel(false, true, true, true).isEnabled(new LicenseStub()));
-    assertEquals(false, createChannel(false, false, true, true).isEnabled(new LicenseStub()));
-    assertEquals(false, createChannel(false, false, false, true).isEnabled(new LicenseStub()));
-    assertEquals(false, createChannel(false, false, false, false).isEnabled(new LicenseStub()));
-    assertEquals(false, createChannel(false, true, false, true).isEnabled(new LicenseStub()));
-    assertEquals(false, createChannel(false, true, false, false).isEnabled(new LicenseStub()));
-    assertEquals(false, createChannel(false, true, true, false).isEnabled(new LicenseStub()));
-    assertEquals(false, createChannel(true, false, true, true).isEnabled(new LicenseStub()));
-    assertEquals(false, createChannel(true, false, false, true).isEnabled(new LicenseStub()));
-    assertEquals(false, createChannel(true, false, false, false).isEnabled(new LicenseStub()));
-    assertEquals(false, createChannel(true, true, false, true).isEnabled(new LicenseStub()));
-    assertEquals(false, createChannel(true, true, false, false).isEnabled(new LicenseStub()));
-    assertEquals(false, createChannel(true, true, true, false).isEnabled(new LicenseStub()));
-
-  }
-
-  private Channel createChannel(boolean consumeLicensed, boolean produceLicensed,
-      boolean workflowLicensed, boolean messageErrorHandlerLicensed) throws Exception {
-    Channel c = createChannel(consumeLicensed, produceLicensed, workflowLicensed);
-    if (!messageErrorHandlerLicensed) {
-      c.setMessageErrorHandler(new StandardProcessingExceptionHandler() {
-        @Override
-        public boolean isEnabled(License l) {
-          return false;
-        }
-      });
-
-    } else {
-      c.setMessageErrorHandler(new StandardProcessingExceptionHandler());
-    }
-    return c;
-  }
-
-  private Channel createChannel(boolean consumeLicensed, boolean produceLicensed,
-      boolean workflowLicensed) throws Exception {
-    Channel c = new Channel();
-    c.getWorkflowList().add(createDefaultWorkflow());
-    if (!consumeLicensed) {
-      c.setConsumeConnection(new NullConnection() {
-        @Override
-        public boolean isEnabled(License l) {
-          return false;
-        }
-      });
-    }
-    if (!produceLicensed) {
-      c.setProduceConnection(new NullConnection() {
-        @Override
-        public boolean isEnabled(License l) {
-          return false;
-        }
-      });
-    }
-    if (!workflowLicensed) {
-      c.getWorkflowList().add(new StandardWorkflow() {
-        @Override
-        protected boolean doAdditionalLicenseChecks(License l) {
-          return false;
-        }
-      });
-    }
-    return c;
-  }
 
   public void testSetConsumeConnection() {
     Channel c = new Channel();
@@ -370,7 +291,6 @@ public class ChannelTest extends ExampleChannelCase {
   public void testConnectionEqualityCheck_SharedConnectionSameBroker() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(getName());
-    adapter.registerLicense(new LicenseStub());
     Channel channel = new Channel();
 
     adapter.getSharedComponents().addConnection(createMockJmsConnection(getName(), "b1"));
@@ -391,7 +311,6 @@ public class ChannelTest extends ExampleChannelCase {
 
     Adapter adapter = new Adapter();
     adapter.setUniqueId(getName());
-    adapter.registerLicense(new LicenseStub());
     Channel channel = new Channel();
 
     adapter.getSharedComponents().addConnection(createMockJmsConnection(getName(), "b1"));
@@ -414,7 +333,6 @@ public class ChannelTest extends ExampleChannelCase {
   public void testConnectionEqualityCheck_MultipleSharedConnections_SameBroker() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(getName());
-    adapter.registerLicense(new LicenseStub());
     Channel channel = new Channel();
 
     adapter.getSharedComponents().addConnection(createMockJmsConnection(getName(), "b1"));

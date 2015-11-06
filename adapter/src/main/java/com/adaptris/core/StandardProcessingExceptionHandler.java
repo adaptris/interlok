@@ -22,7 +22,6 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -105,8 +104,10 @@ public class StandardProcessingExceptionHandler extends RootProcessingExceptionH
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return getProcessingExceptionService() != null ? getProcessingExceptionService().isEnabled(license) : true;
+  public void prepare() throws CoreException {
+    if (getProcessingExceptionService() != null) {
+      getProcessingExceptionService().prepare();
+    }
   }
 
 
