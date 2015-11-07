@@ -246,9 +246,6 @@ junit.sftp.get.filename=${junit.ftp.get.filename}
 junit.sftp.put.filename=${junit.ftp.put.filename}
 junit.sftp.get.filter=${junit.ftp.get.filter}
 
-junit.license.file=file:///${test.resources.dir}/license.properties
-junit.license.url=http://testbed.adaptris.net/unittests/licensev3.properties
-
 junit.event.basedir=${build.dir}/events
 junit.scripting.basedir=${build.dir}/scripting
 
