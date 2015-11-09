@@ -41,15 +41,10 @@ public abstract class SetUpConfirmationServiceImp extends ServiceImp {
       (MessageEventGenerator.CONFIRMATION_ID_KEY, confirmationId);
   }
   
-  /** @see com.adaptris.core.AdaptrisComponent#init() */
   @Override
-  public void init() throws CoreException {
-    // n/a...  
+  protected void initService() throws CoreException {
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
   @Override
-  public void close() {
-    // n/a
-  }
+  protected void closeService() {}
 }

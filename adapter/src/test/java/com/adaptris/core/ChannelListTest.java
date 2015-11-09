@@ -21,8 +21,6 @@ import java.util.ListIterator;
 
 import org.apache.log4j.Logger;
 
-import com.adaptris.core.jms.JmsConnection;
-import com.adaptris.core.stubs.LicenseStub;
 import com.adaptris.util.IdGenerator;
 import com.adaptris.util.PlainIdGenerator;
 
@@ -423,24 +421,6 @@ public class ChannelListTest extends BaseCase {
     catch (ArrayIndexOutOfBoundsException expected) {
       ;
     }
-  }
-
-  public void testLicense() throws Exception {
-    ChannelList list = new ChannelList();
-    Channel testChannel = new Channel();
-    testChannel.setConsumeConnection(new JmsConnection());
-    list.setChannels(Arrays.asList(new Channel[]
-    {
-      testChannel
-    }));
-    assertTrue(list.isEnabled(new LicenseStub()));
-    assertEquals(false, list.isEnabled(new LicenseStub() {
-      @Override
-      public boolean isEnabled(LicenseType type) {
-        return false;
-      }
-    }));
-
   }
 
   public void testChannelAutoStartFalse() throws Exception {

@@ -231,4 +231,6 @@ public class FsConsumer extends FsConsumerImpl {
     return resetWipFiles != null ? resetWipFiles.booleanValue() : false;
   }
 
+  @Override
+  protected void prepareConsumer() throws CoreException {}
 }

@@ -31,10 +31,9 @@ import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.StartedState;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -119,8 +118,8 @@ public class RetryingServiceWrapper extends ServiceImp implements EventHandlerAw
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic) && getService().isEnabled(license);
+  public void prepare() throws CoreException {
+    getService().prepare();
   }
 
   private void stopAndCloseQuietly() {
@@ -142,17 +141,18 @@ public class RetryingServiceWrapper extends ServiceImp implements EventHandlerAw
       // still try to use it, which will cause another failure and so the loop continues.
     }
   }
-  
+
   @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
     LifecycleHelper.registerEventHandler(this.getService(), eventHandler);
     LifecycleHelper.init(this.getService());
   }
 
   @Override
-  public void close() {
+  protected void closeService() {
     LifecycleHelper.close(this.getService());
   }
+
   
   @Override
   public void start() throws CoreException {
@@ -169,7 +169,7 @@ public class RetryingServiceWrapper extends ServiceImp implements EventHandlerAw
   }
 
   public void setService(Service service) {
-    this.service = service;
+    this.service = Args.notNull(service, "service");
   }
 
   public Integer getNumRetries() {

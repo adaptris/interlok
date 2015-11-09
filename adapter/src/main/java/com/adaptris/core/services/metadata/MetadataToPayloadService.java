@@ -36,8 +36,6 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -146,16 +144,19 @@ public class MetadataToPayloadService extends ServiceImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
+  }
+
+
+
+  @Override
+  protected void initService() throws CoreException {
+
   }
 
   @Override
-  public void init() throws CoreException {
-  }
+  protected void closeService() {
 
-  @Override
-  public void close() {
   }
 
   public MetadataSource getMetadataSource() {

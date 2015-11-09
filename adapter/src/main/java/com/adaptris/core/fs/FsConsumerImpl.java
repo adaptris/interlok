@@ -40,7 +40,6 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisPollingConsumer;
-import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.fs.enhanced.FileSorter;
 import com.adaptris.core.fs.enhanced.NoSorting;
@@ -49,8 +48,6 @@ import com.adaptris.fs.FsException;
 import com.adaptris.fs.FsWorker;
 import com.adaptris.fs.NioWorker;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 
 /**
  * <p>
@@ -81,11 +78,6 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
 
   public FsConsumerImpl() {
     setFileSorter(new NoSorting());
-  }
-
-  @Override
-  public boolean isEnabled(License l) throws CoreException {
-    return l.isEnabled(LicenseType.Basic);
   }
 
   /**

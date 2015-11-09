@@ -42,8 +42,6 @@ import com.adaptris.core.jms.jndi.StandardJndiImplementation;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.security.password.Password;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 
 /**
  * Abstract implementation of {@link AdaptrisPollingConsumer} for queues and topics.
@@ -109,9 +107,9 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic) && getVendorImplementation().isEnabled(license)
-        && getMessageTranslator().isEnabled(license);
+  public void prepareConsumer() throws CoreException {
+    getMessageTranslator().prepare();
+    getVendorImplementation().prepare();
   }
 
   @Override

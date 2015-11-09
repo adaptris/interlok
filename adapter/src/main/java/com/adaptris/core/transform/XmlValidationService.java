@@ -29,8 +29,6 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -56,9 +54,17 @@ public class XmlValidationService extends ServiceImp {
     setValidators(new ArrayList(Arrays.asList(validators)));
   }
 
-  public void init() throws CoreException {
+  @Override
+  protected void initService() throws CoreException {
     for (MessageValidator v : getValidators()) {
       LifecycleHelper.init(v);
+    }
+  }
+
+  @Override
+  protected void closeService() {
+    for (MessageValidator v : getValidators()) {
+      LifecycleHelper.close(v);
     }
   }
 
@@ -76,12 +82,6 @@ public class XmlValidationService extends ServiceImp {
     super.stop();
   }
 
-  public void close() {
-    for (MessageValidator v : getValidators()) {
-      LifecycleHelper.close(v);
-    }
-  }
-
   public void doService(AdaptrisMessage msg) throws ServiceException {
     try {
       for (MessageValidator v : getValidators()) {
@@ -94,14 +94,10 @@ public class XmlValidationService extends ServiceImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    int expected = validators.size() + 1;
-    int count = 0;
-    count += license.isEnabled(LicenseType.Basic) ? 1 : 0;
+  public void prepare() throws CoreException {
     for (MessageValidator v : getValidators()) {
-      count += v.isEnabled(license) ? 1 : 0;
+      v.prepare();
     }
-    return expected == count;
   }
 
   public List<MessageValidator> getValidators() {

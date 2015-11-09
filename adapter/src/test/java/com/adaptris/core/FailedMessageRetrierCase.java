@@ -19,7 +19,6 @@ package com.adaptris.core;
 import java.util.UUID;
 
 import com.adaptris.core.stubs.FailFirstMockMessageProducer;
-import com.adaptris.core.stubs.LicenseStub;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageConsumer;
 import com.adaptris.core.stubs.MockMessageProducer;
@@ -64,11 +63,6 @@ public abstract class FailedMessageRetrierCase extends ExampleFailedMessageRetri
     }
     catch (IllegalArgumentException expected) {
     }
-  }
-
-  public void testIsEnabled() throws Exception {
-    FailedMessageRetrier retrier = create();
-    assertTrue("retrier is enabled", retrier.isEnabled(new LicenseStub()));
   }
 
   public void testRegisteredWorkflowIds() throws Exception {
@@ -228,7 +222,6 @@ public abstract class FailedMessageRetrierCase extends ExampleFailedMessageRetri
     AdaptrisMarshaller marshaller = DefaultMarshaller.getDefaultMarshaller();
     Adapter adapter = (Adapter) marshaller.unmarshal(marshaller.marshal(createAdapterForRetry(create(),
         new StandardProcessingExceptionHandler(new StandaloneProducer(new MockMessageProducer())))));
-    adapter.registerLicense(new LicenseStub());
     FailedMessageRetrier retrier = adapter.getFailedMessageRetrier();
     MockMessageProducer errProd = getErrorHandler(adapter);
     try {

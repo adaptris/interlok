@@ -23,12 +23,7 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
 import com.adaptris.core.AdapterLifecycleEvent;
-import com.adaptris.core.AdaptrisConnection;
-import com.adaptris.core.AllowsRetriesConnection;
-import com.adaptris.core.Channel;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.FailedMessageRetrier;
-import com.adaptris.core.ProcessingExceptionHandler;
 
 /**
  * MBean specification that allows control of a single adapter.
@@ -138,13 +133,6 @@ public interface AdapterManagerMBean extends AdapterComponentMBean, ParentRuntim
    * @throws IllegalStateException if the state of the adapter is not "Closed"
    */
   void setFailedMessageRetrier(String xmlString) throws CoreException;
-
-  /**
-   * Validate the license associated with this adapter.
-   * 
-   * @throws CoreException indicating any errors.
-   */
-  void checkLicense() throws CoreException;
 
   /**
    * Get the adapter build version.

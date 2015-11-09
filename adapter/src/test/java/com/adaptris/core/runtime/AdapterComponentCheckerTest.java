@@ -23,7 +23,6 @@ import static com.adaptris.core.runtime.AdapterComponentMBean.ID_PREFIX;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.List;
 
 import javax.management.JMX;
@@ -40,8 +39,6 @@ import com.adaptris.core.MetadataElement;
 import com.adaptris.core.SerializableAdaptrisMessage;
 import com.adaptris.core.services.jdbc.JdbcServiceList;
 import com.adaptris.core.services.metadata.AddMetadataService;
-import com.adaptris.core.stubs.LicenseStub;
-import com.adaptris.util.license.License.LicenseType;
 
 public class AdapterComponentCheckerTest extends ComponentManagerCase {
 
@@ -69,23 +66,6 @@ public class AdapterComponentCheckerTest extends ComponentManagerCase {
     register(mBeans);
     AdapterComponentCheckerMBean manager = JMX.newMBeanProxy(mBeanServer, objectName, AdapterComponentCheckerMBean.class);
     manager.checkInitialise(createServiceForTests());
-  }
-
-  public void testCheckInitialised_NotLicensed() throws Exception {
-    String adapterName = this.getClass().getSimpleName() + "." + getName();
-    Adapter adapter = createAdapter(adapterName, 2, 2);
-    adapter.registerLicense(new LicenseStub(EnumSet.of(LicenseType.Basic)));
-    List<BaseComponentMBean> mBeans = createJmxManagers(adapter);
-    ObjectName objectName = createComponentCheckerObjectName(adapterName);
-    register(mBeans);
-    AdapterComponentCheckerMBean manager = JMX.newMBeanProxy(mBeanServer, objectName, AdapterComponentCheckerMBean.class);
-    try {
-      manager.checkInitialise(createLicensedService());
-      fail();
-    }
-    catch (CoreException expected) {
-
-    }
   }
 
   public void testCheckInitialised_NotComponent() throws Exception {
@@ -127,24 +107,6 @@ public class AdapterComponentCheckerTest extends ComponentManagerCase {
     SerializableAdaptrisMessage msg = createSerializableMessage();
     try {
       manager.applyService("<Document/>", msg);
-      fail();
-    }
-    catch (CoreException expected) {
-
-    }
-  }
-
-  public void testApplyService_NotLicensed() throws Exception {
-    String adapterName = this.getClass().getSimpleName() + "." + getName();
-    Adapter adapter = createAdapter(adapterName, 2, 2);
-    adapter.registerLicense(new LicenseStub(EnumSet.of(LicenseType.Basic)));
-    List<BaseComponentMBean> mBeans = createJmxManagers(adapter);
-    ObjectName objectName = createComponentCheckerObjectName(adapterName);
-    register(mBeans);
-    AdapterComponentCheckerMBean manager = JMX.newMBeanProxy(mBeanServer, objectName, AdapterComponentCheckerMBean.class);
-    SerializableAdaptrisMessage msg = createSerializableMessage();
-    try {
-      manager.applyService(createLicensedService(), msg);
       fail();
     }
     catch (CoreException expected) {

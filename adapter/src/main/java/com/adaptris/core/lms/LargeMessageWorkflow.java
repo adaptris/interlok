@@ -19,12 +19,8 @@ package com.adaptris.core.lms;
 import org.perf4j.aop.Profiled;
 
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisMessageListener;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.StandardWorkflow;
-import com.adaptris.core.WorkflowImp;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -97,7 +93,6 @@ public class LargeMessageWorkflow extends StandardWorkflow {
   }
 
   @Override
-  protected boolean workflowIsEnabled(License l) {
-    return l.isEnabled(LicenseType.Standard);
-  }
+  protected void prepareWorkflow() throws CoreException {}
+
 }

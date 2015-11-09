@@ -16,9 +16,6 @@
 
 package com.adaptris.core.services.metadata;
 
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AutoPopulated;
@@ -82,13 +79,15 @@ public class ReformatDateService extends ReformatMetadata {
   }
 
   @Override
-  public void init() throws CoreException {
-    super.init();
+  protected void initService() throws CoreException {
+    super.initService();
   }
 
   @Override
-  public void close() {
+  protected void closeService() {
+    super.closeService();
   }
+
 
   /**
    * @return the sourceDateFormat

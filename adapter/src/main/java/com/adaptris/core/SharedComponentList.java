@@ -40,7 +40,6 @@ import com.adaptris.annotation.GenerateBeanInfo;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.JndiHelper;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -109,15 +108,6 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
     doAddConnections(l);
   }
 
-  @Override
-  public boolean isEnabled(License license) throws CoreException {
-    for (AdaptrisConnection c : connections) {
-      if (!c.isEnabled(license)) {
-        return false;
-      }
-    }
-    return true;
-  }
 
   @Override
   public void init() throws CoreException {
@@ -145,6 +135,9 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
   @Override
   public void prepare() throws CoreException {
     bindNotYetBound();
+    for (AdaptrisConnection c : connections) {
+      c.prepare();
+    }
   }
 
   private synchronized void bindNotYetBound() throws CoreException {

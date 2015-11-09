@@ -30,8 +30,6 @@ import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.fs.FsConsumer;
 import com.adaptris.fs.FsException;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -97,9 +95,9 @@ public class LargeFsConsumer extends FsConsumer {
   }
 
   @Override
-  public boolean isEnabled(License l) throws CoreException {
-    return l.isEnabled(LicenseType.Standard);
+  public void prepareConsumer() throws CoreException {
   }
+
 
   @Override
   @Profiled(tag = "{$this.getClass().getSimpleName()}.processFile()", logger = "com.adaptris.perf4j.lms.TimingLogger")

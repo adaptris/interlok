@@ -65,7 +65,6 @@ import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.stubs.MockSkipProducerService;
 import com.adaptris.core.stubs.MockWorkflowInterceptor;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
 
 /**
  * Tests for JmsTransactedWorkflow that don't rely on Sonic.
@@ -614,16 +613,17 @@ public class ActiveMqJmsTransactedWorkflowTest extends BaseCase {
       }
     }
 
-    public void close() {
-    }
+    @Override
+    protected void initService() throws CoreException {
 
-    public void init() {
     }
 
     @Override
-    public boolean isEnabled(License license) throws CoreException {
-      return true;
+    protected void closeService() {
+
     }
+    @Override
+    public void prepare() throws CoreException {}
 
   }
 }

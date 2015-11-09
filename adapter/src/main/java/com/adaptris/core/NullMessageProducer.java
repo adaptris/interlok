@@ -16,7 +16,6 @@
 
 package com.adaptris.core;
 
-import com.adaptris.util.license.License;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -116,13 +115,10 @@ public class NullMessageProducer extends AdaptrisMessageProducerImp {
   public String createName() {
     return this.getClass().getName();
   }
-  /**
-   *
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled(License)
-   */
+
+
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return true;
+  public void prepare() throws CoreException {
   }
 
 }

@@ -25,13 +25,10 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.MarshallingCDATA;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -101,19 +98,16 @@ public class PayloadFromMetadataService extends ServiceImp {
     return result;
   }
 
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#close()
-   */
-  public void close() {
-  }
-
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#init()
-   */
-  public void init() throws CoreException {
+  @Override
+  protected void initService() throws CoreException {
     if (getTemplate() == null) {
       throw new CoreException("Template is null");
     }
+  }
+
+  @Override
+  protected void closeService() {
+
   }
 
   /**
@@ -177,8 +171,8 @@ public class PayloadFromMetadataService extends ServiceImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
   }
+
 
 }

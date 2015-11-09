@@ -25,8 +25,6 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.adaptris.util.stream.StreamUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -66,30 +64,16 @@ public class GunzipService extends ServiceImp {
     }
   }
 
-  /** @see java.lang.Object#toString() */
   @Override
-  public String toString() {
-    StringBuffer result = new StringBuffer();
-
-    result.append("[");
-    result.append(this.getClass().getName());
-    result.append("]");
-
-    return result.toString();
-  }
-
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
-  @Override
-  public void close() {
-  }
-
-  /** @see com.adaptris.core.AdaptrisComponent#init() */
-  @Override
-  public void init() {
+  protected void initService() throws CoreException {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
+  protected void closeService() {
   }
+
+  @Override
+  public void prepare() throws CoreException {
+  }
+
 }

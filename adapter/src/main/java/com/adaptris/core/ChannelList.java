@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.util.CastorizedList;
-import com.adaptris.util.license.License;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -175,37 +174,6 @@ public class ChannelList extends AbstractCollection<Channel> implements Adaptris
     }
     cls.close(channels);
   }
-
-  /**
-   * @see com.adaptris.core.AdaptrisComponent #isEnabled(com.adaptris.util.license.License)
-   */
-  @Override
-  public boolean isEnabled(License license) throws CoreException {
-    for (Channel c : channels) {
-      if (!c.isEnabled(license)) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  // /** @see java.lang.Object#toString() */
-  // @Override
-  // public String toString() {
-  // StringBuffer result = new StringBuffer();
-  //
-  // result.append("[");
-  // result.append(this.getClass().getName());
-  // result.append("] ");
-  //
-  // result.append("count [" + channels.size() + "]");
-  // for (int i = 0; i < channels.size(); i++) {
-  // result.append("\n\nchannel [" + (i + 1) + "] ");
-  // result.append(channels.get(i));
-  // }
-  //
-  // return result.toString();
-  // }
 
   /**
    * <p>

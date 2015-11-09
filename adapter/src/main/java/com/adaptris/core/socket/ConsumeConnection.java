@@ -22,8 +22,6 @@ import java.net.ServerSocket;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.AdaptrisConnectionImp;
 import com.adaptris.core.CoreException;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 
 /**
  * Basic ConsumeConnection class for the Socket Adapter.
@@ -75,13 +73,10 @@ public abstract class ConsumeConnection extends AdaptrisConnectionImp {
   protected void stopConnection() {
   }
 
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled(License)
-   */
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Standard);
+  public void prepareConnection() throws CoreException {
   }
+
 
   /**
    * Create the server socket that will be used by Socket consumers.

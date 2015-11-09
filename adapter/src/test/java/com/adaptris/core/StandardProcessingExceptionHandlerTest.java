@@ -24,7 +24,6 @@ import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
 import com.adaptris.core.services.metadata.AddMetadataService;
 import com.adaptris.core.stubs.EventHandlerAwareService;
-import com.adaptris.core.stubs.LicenseStub;
 import com.adaptris.core.stubs.MockMessageConsumer;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
@@ -248,21 +247,6 @@ public class StandardProcessingExceptionHandlerTest extends ExampleErrorHandlerC
     finally {
       stop(meh);
     }
-
-  }
-
-  public void testLicenseNoService() throws Exception {
-    StandardProcessingExceptionHandler meh = new StandardProcessingExceptionHandler();
-    assertTrue(meh.isEnabled(new LicenseStub()));
-  }
-
-  public void testLicenseEmbeddedService() throws Exception {
-    StandardProcessingExceptionHandler meh = new StandardProcessingExceptionHandler();
-    meh.setProcessingExceptionService(new ServiceList(Arrays.asList(new Service[]
-    {
-      new StandaloneProducer()
-    })));
-    assertTrue(meh.isEnabled(new LicenseStub()));
 
   }
 

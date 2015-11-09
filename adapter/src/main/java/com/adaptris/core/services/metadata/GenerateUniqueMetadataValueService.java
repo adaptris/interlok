@@ -27,8 +27,6 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.IdGenerator;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -64,9 +62,15 @@ public class GenerateUniqueMetadataValueService extends ServiceImp {
     setGenerator(generator);
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#init() */
+
   @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
+
+  }
+
+  @Override
+  protected void closeService() {
+
   }
 
   @Override
@@ -75,11 +79,6 @@ public class GenerateUniqueMetadataValueService extends ServiceImp {
     String metadataValue = getGenerator().create(msg);
     log.trace("Adding [" + metadataValue + "] to metadata key [" + metadataKey + "]");
     msg.addMetadata(metadataKey, metadataValue);
-  }
-
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
-  @Override
-  public void close() {
   }
 
   /**
@@ -124,7 +123,7 @@ public class GenerateUniqueMetadataValueService extends ServiceImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
   }
+
 }

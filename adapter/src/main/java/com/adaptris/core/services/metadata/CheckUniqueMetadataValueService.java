@@ -103,8 +103,8 @@ public class CheckUniqueMetadataValueService extends BranchingServiceImp {
     // this.setNextServiceIdIfDuplicate(DEFAULT_SERVICE_ID_DUPLICATE);
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#init() */
-  public void init() throws CoreException {
+  @Override
+  protected void initService() throws CoreException {
     if (this.getMetadataKeyToCheck() == null) {
       throw new CoreException("metadataKeyToCheck must be set");
     }
@@ -116,6 +116,12 @@ public class CheckUniqueMetadataValueService extends BranchingServiceImp {
       previousValuesStore = new ArrayList<Object>();
     }
   }
+
+  @Override
+  protected void closeService() {
+
+  }
+
 
   private void createStoreFile() throws CoreException {
     if (this.getStoreFileUrl() == null) {
@@ -221,11 +227,6 @@ public class CheckUniqueMetadataValueService extends BranchingServiceImp {
         throw new CoreException(e);
       }
     }
-  }
-
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
-  public void close() {
-    // do nothing...
   }
 
   int storeSize() {
@@ -371,4 +372,8 @@ public class CheckUniqueMetadataValueService extends BranchingServiceImp {
     }
     this.nextServiceIdIfUnique = s;
   }
+
+  @Override
+  public void prepare() throws CoreException {}
+
 }

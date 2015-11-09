@@ -25,7 +25,7 @@ import java.util.Collection;
  * originally.
  * </p>
  */
-public interface FailedMessageRetrier extends AdaptrisComponent, AdaptrisMessageListener {
+public interface FailedMessageRetrier extends AdaptrisComponent, AdaptrisMessageListener, ComponentLifecycleExtension {
 
   /**
    * Add a {@linkplain Workflow} to the internal register of workflows

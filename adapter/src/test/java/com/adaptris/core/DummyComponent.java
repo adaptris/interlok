@@ -16,16 +16,12 @@
 
 package com.adaptris.core;
 
-import com.adaptris.util.license.License;
-
 public class DummyComponent implements StateManagedComponent {
 
   private ComponentState state;
   
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return true;
-  }
+  public void prepare() throws CoreException {}
 
   @Override
   public void init() throws CoreException {}

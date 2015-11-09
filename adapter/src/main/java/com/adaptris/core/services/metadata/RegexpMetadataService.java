@@ -28,8 +28,6 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -126,19 +124,17 @@ public class RegexpMetadataService extends ServiceImp {
     regexpMetadataQueries = l;
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
-  public void close() {
-    // nothing to do
-  }
-
-  /** @see com.adaptris.core.AdaptrisComponent#init() */
-  public void init() throws CoreException {
-    // nothing to do
+  @Override
+  protected void initService() throws CoreException {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
+  protected void closeService() {
+
+  }
+
+  @Override
+  public void prepare() throws CoreException {
   }
 
 }

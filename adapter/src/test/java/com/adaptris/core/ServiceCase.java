@@ -19,9 +19,7 @@ package com.adaptris.core;
 import java.util.List;
 
 import com.adaptris.core.services.confirmation.ConfirmServiceImp;
-import com.adaptris.core.stubs.LicenseStub;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
 
 /**
  * <p>
@@ -60,8 +58,7 @@ public abstract class ServiceCase extends ExampleConfigCase {
     return result;
   }
 
-  public static void execute(Service s, AdaptrisMessage msg, License license) throws CoreException {
-    s.isEnabled(license);
+  public static void execute(Service s, AdaptrisMessage msg) throws CoreException {
     start(s);
     try {
       s.doService(msg);
@@ -69,10 +66,6 @@ public abstract class ServiceCase extends ExampleConfigCase {
     finally {
       stop(s);
     }
-  }
-
-  public static void execute(Service s, AdaptrisMessage msg) throws CoreException {
-    execute(s, msg, new LicenseStub());
   }
 
   public static void executeWithoutStarting(Service s, AdaptrisMessage msg) throws CoreException {

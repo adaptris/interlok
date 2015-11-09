@@ -33,12 +33,9 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
-import com.adaptris.core.interceptor.MessageMetricsInterceptor;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.PlainIdGenerator;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
@@ -97,7 +94,6 @@ public abstract class WorkflowImp implements Workflow {
   private transient Channel channel;
   private transient ProcessingExceptionHandler activeErrorHandler;
   private transient ComponentState state;
-  protected transient License license;
   protected transient EventHandler eventHandler;
   protected transient Date startTime;
   protected transient Date stopTime;
@@ -150,17 +146,24 @@ public abstract class WorkflowImp implements Workflow {
   }
 
   @Override
-  public void prepare() throws CoreException {
+  public final void prepare() throws CoreException {
     LifecycleHelper.registerEventHandler(getProducer(), eventHandler);
     LifecycleHelper.registerEventHandler(getConsumer(), eventHandler);
     LifecycleHelper.registerEventHandler(getServiceCollection(), eventHandler);
     for (WorkflowInterceptor wi : getInterceptors()) {
       wi.registerParentChannel(obtainChannel());
       wi.registerParentWorkflow(this);
+      wi.prepare();
     }
+    getProducer().prepare();
+    getConsumer().prepare();
+    getServiceCollection().prepare();
+    prepareWorkflow();
     prepared = true;
   }
 
+  protected abstract void prepareWorkflow() throws CoreException;
+  
   /**
    * <p>
    * Because the order in which concrete workflows may need to init their components, this method simply ensures that the
@@ -448,57 +451,6 @@ public abstract class WorkflowImp implements Workflow {
       }
     }
     return uniqueId;
-  }
-
-  @Override
-  public final boolean isEnabled(License l) throws CoreException {
-    license = l;
-    handleRestrictedLicense();
-    boolean meh = true;
-    if (getMessageErrorHandler() != null) {
-      meh = getMessageErrorHandler().isEnabled(license);
-    }
-    return workflowIsEnabled(l) && getProducer().isEnabled(l) && getConsumer().isEnabled(l) && serviceCollection.isEnabled(l)
-        && meh && doAdditionalLicenseChecks(license);
-  }
-
-  /**
-   * Is the workflow itself enabled for this license key.
-   * 
-   * @param l the license.
-   * @return true if the workflow is enabled.
-   */
-  protected abstract boolean workflowIsEnabled(License l);
-
-  /**
-   * Perform any additional License Checks that may be required by other concrete workflow implementations.
-   * 
-   * @param l the license obj
-   * @return true of the license checks succeeded, false otherwise.
-   */
-  protected boolean doAdditionalLicenseChecks(License l) throws CoreException {
-    return true;
-  }
-
-  private void handleRestrictedLicense() {
-    if (license.isEnabled(LicenseType.Restricted)) {
-      log.warn("License is Restricted, throttling performance for this workflow [" + generateId() + "]");
-      if (!containsUnlicensedThrottler()) {
-        UnlicensedThrottlingInterceptor unlicensedInterceptor = new UnlicensedThrottlingInterceptor();
-        addInterceptor(unlicensedInterceptor);
-      }
-    }
-  }
-
-  private boolean containsUnlicensedThrottler() {
-    boolean result = false;
-    for (WorkflowInterceptor wi : getInterceptors()) {
-      if (wi instanceof UnlicensedThrottlingInterceptor) {
-        result = true;
-        break;
-      }
-    }
-    return result;
   }
 
   /**

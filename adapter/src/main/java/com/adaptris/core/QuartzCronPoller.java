@@ -45,8 +45,6 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.NonBlockingQuartzThreadPool;
 import com.adaptris.util.FifoMutexLock;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -252,8 +250,7 @@ public class QuartzCronPoller extends PollerImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
   }
 
   /** @see com.adaptris.core.AdaptrisComponent#init() */

@@ -32,7 +32,6 @@ import com.adaptris.core.Workflow;
 import com.adaptris.core.WorkflowInterceptor;
 import com.adaptris.core.runtime.AdapterManager;
 import com.adaptris.core.runtime.BaseComponentMBean;
-import com.adaptris.core.stubs.LicenseStub;
 import com.adaptris.core.util.JmxHelper;
 
 public abstract class MessageNotificationCase extends BaseCase {
@@ -85,7 +84,6 @@ public abstract class MessageNotificationCase extends BaseCase {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(uid);
     adapter.getChannelList().add(createChannel(uid + "_Channel", workflows));
-    adapter.registerLicense(new LicenseStub());
     return adapter;
   }
 

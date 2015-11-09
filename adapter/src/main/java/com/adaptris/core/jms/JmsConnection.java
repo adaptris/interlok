@@ -31,8 +31,6 @@ import com.adaptris.core.AllowsRetriesConnection;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
 import com.adaptris.security.password.Password;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -218,12 +216,9 @@ public class JmsConnection extends AllowsRetriesConnection implements JmsConnect
     }
   }
 
-  /**
-   * @see com.adaptris.core.AdaptrisComponent #isEnabled(com.adaptris.util.license.License)
-   */
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic) && getVendorImplementation().isEnabled(license);
+  protected void prepareConnection() throws CoreException {
+    getVendorImplementation().prepare();
   }
 
   public boolean connectionEquals(JmsConnection connection) {

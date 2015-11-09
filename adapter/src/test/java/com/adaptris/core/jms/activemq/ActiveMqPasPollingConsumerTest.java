@@ -41,7 +41,6 @@ import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.SafeGuidGenerator;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
 
 public class ActiveMqPasPollingConsumerTest extends BaseCase {
 
@@ -198,10 +197,7 @@ public class ActiveMqPasPollingConsumerTest extends BaseCase {
     }
 
     @Override
-    public boolean isEnabled(License license) throws CoreException {
-      return true;
-    }
-
+    public void prepare() throws CoreException {}
     boolean hasTriggered() {
       return polly.hasTriggered;
     }

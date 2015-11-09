@@ -54,22 +54,16 @@ public class SizeBasedBranchingService extends BranchingServiceImp {
     setSizeCriteriaBytes(1024 * 1024 * 10);
   }
 
-  /**
-   * 
-   * @see com.adaptris.core.AdaptrisComponent#init()
-   */
+
   @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
     if (getGreaterThanServiceId() == null || getSmallerThanServiceId() == null) {
       throw new CoreException("Service id's may not be null");
     }
   }
 
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#close()
-   */
   @Override
-  public void close() {
+  protected void closeService() {
   }
 
   @Override
@@ -123,4 +117,7 @@ public class SizeBasedBranchingService extends BranchingServiceImp {
     sizeCriteriaBytes = l;
   }
 
+  @Override
+  public void prepare() throws CoreException {
+  }
 }

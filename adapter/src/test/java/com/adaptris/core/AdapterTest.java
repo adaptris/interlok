@@ -17,30 +17,23 @@
 package com.adaptris.core;
 
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import com.adaptris.core.event.AdapterCloseEvent;
 import com.adaptris.core.event.AdapterInitEvent;
 import com.adaptris.core.event.AdapterStartEvent;
 import com.adaptris.core.event.AdapterStopEvent;
-import com.adaptris.core.event.LicenseExpiryWarningEvent;
 import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.PtpProducer;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
 import com.adaptris.core.runtime.AdapterManager;
 import com.adaptris.core.stubs.DummyLogHandler;
-import com.adaptris.core.stubs.LicenseStub;
 import com.adaptris.core.stubs.MockMessageConsumer;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.stubs.StubAdapterStartUpEvent;
 import com.adaptris.core.stubs.StubEventHandler;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.LicenseException;
-import com.adaptris.util.license.LicenseFactory;
 
 public class AdapterTest extends BaseCase {
 
@@ -74,54 +67,6 @@ public class AdapterTest extends BaseCase {
     assertEquals("testSetUniqueId", a.getUniqueId());
   }
 
-  public void testRegisterLicense() throws Exception {
-    Adapter a = new Adapter();
-    a.setUniqueId("testRegisterLicense");
-    License l = new LicenseStub();
-    a.registerLicense(l);
-    assertEquals(l, a.currentLicense());
-    try {
-      a.registerLicense(null);
-      fail();
-    }
-    catch (IllegalArgumentException e) {
-
-    }
-    assertEquals(l, a.currentLicense());
-  }
-
-  public void testCheckLicense() throws Exception {
-    Adapter a = new Adapter();
-    a.setUniqueId("testCheckLicense");
-    a.registerLicense(new LicenseStub() {
-      @Override
-      public void verify() throws LicenseException {
-        throw new LicenseException();
-      }
-    });
-    try {
-      a.checkLicense(); // throws an excepction because it doesn't verify.
-      fail();
-    }
-    catch (CoreException expected) {
-
-    }
-    a.registerLicense(new LicenseStub());
-    a.getChannelList().add(new Channel() {
-      @Override
-      public boolean isEnabled(License l) {
-        return false;
-      }
-    });
-    try {
-      a.checkLicense(); // should throw an exception because the channelList
-                        // isn't enabled.
-      fail();
-    }
-    catch (CoreException expected) {
-
-    }
-  }
 
   public void testAdapterInit() throws Exception {
     Adapter a = new Adapter();
@@ -136,7 +81,6 @@ public class AdapterTest extends BaseCase {
     }
     a = new Adapter();
     a.setUniqueId("testAdapterInit");
-    a.registerLicense(new LicenseStub());
     a.requestInit();
     a.requestInit();
     a.requestClose();
@@ -148,7 +92,6 @@ public class AdapterTest extends BaseCase {
   public void testAdapterStart() throws Exception {
     Adapter a = new Adapter();
     a.setUniqueId("testAdapterStart");
-    a.registerLicense(new LicenseStub());
     a.requestStart();
     a.requestStart();
     a.requestClose();
@@ -157,7 +100,6 @@ public class AdapterTest extends BaseCase {
   public void testAdapterStop() throws Exception {
     Adapter a = new Adapter();
     a.setUniqueId("testAdapterStart");
-    a.registerLicense(new LicenseStub());
     a.requestStart();
     a.requestStop();
     a.requestStop();
@@ -167,7 +109,6 @@ public class AdapterTest extends BaseCase {
   public void testAdapterClose() throws Exception {
     Adapter a = new Adapter();
     a.setUniqueId("testAdapterStart");
-    a.registerLicense(new LicenseStub());
     a.requestStart();
     a.requestClose();
     a.requestClose();
@@ -188,31 +129,10 @@ public class AdapterTest extends BaseCase {
     assertEquals(new TimeInterval(15L, TimeUnit.MINUTES.name()).toMilliseconds(), a.heartbeatInterval());
   }
 
-  public void testAdapter_RestrictedLicense() throws Exception {
-    Adapter adapter = new Adapter();
-    adapter.setUniqueId(getName());
-    Channel channel = new Channel();
-    StandardWorkflow workflow = new StandardWorkflow();
-    workflow.setDisableDefaultMessageCount(true);
-    channel.getWorkflowList().add(workflow);
-    adapter.getChannelList().add(channel);
-    // Creates a restricted license
-    adapter.registerLicense(LicenseFactory.create(null));
-    adapter.requestStart();
-    // Having started the adapter we should have an interceptor
-    assertEquals(1, workflow.getInterceptors().size());
-    assertEquals(UnlicensedThrottlingInterceptor.class, workflow.getInterceptors().get(0).getClass());
-    UnlicensedThrottlingInterceptor interceptor = (UnlicensedThrottlingInterceptor) workflow.getInterceptors().get(0);
-    assertEquals(1, interceptor.getLimitedInterceptor().getMaximumMessages());
-    TimeInterval oneHour = new TimeInterval(60L, TimeUnit.MINUTES.name());
-    assertEquals(oneHour.toMilliseconds(), interceptor.getLimitedInterceptor().getTimeSliceInterval().toMilliseconds());
-    adapter.requestClose();
-  }
 
   public void testAdapter_StateManagedComponentContainerInit() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId("testAdapter_StateManagedComponentContainerInit");
-    adapter.registerLicense(new LicenseStub());
     Channel channel = new Channel();
     channel.setUniqueId("channel");
     adapter.getChannelList().add(channel);
@@ -231,7 +151,6 @@ public class AdapterTest extends BaseCase {
   public void testAdapter_StateManagedComponentContainerStart() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId("testAdapter_StateManagedComponentContainerStart");
-    adapter.registerLicense(new LicenseStub());
     Channel channel = new Channel();
     channel.setUniqueId("channel");
     adapter.getChannelList().add(channel);
@@ -249,7 +168,6 @@ public class AdapterTest extends BaseCase {
   public void testAdapter_StateManagedComponentContainerStop() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId("testAdapter_StateManagedComponentContainerStop");
-    adapter.registerLicense(new LicenseStub());
     Channel channel = new Channel();
     channel.setUniqueId("channel");
     adapter.getChannelList().add(channel);
@@ -268,7 +186,6 @@ public class AdapterTest extends BaseCase {
   public void testAdapter_StateManagedComponentContainerClose() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId("testAdapter_StateManagedComponentContainerClose");
-    adapter.registerLicense(new LicenseStub());
     Channel channel = new Channel();
     channel.setUniqueId("channel");
     adapter.getChannelList().add(channel);
@@ -367,55 +284,9 @@ public class AdapterTest extends BaseCase {
     a.prepare();
   }
 
-  public void testAdapterSendLicenseExpiryEvent() throws Exception {
-    MockMessageProducer mockEventProducer = new MockMessageProducer();
-    Adapter a = createAdapter("testAdapterSendLicenseExpiryEvent", new DefaultEventHandler(mockEventProducer));
-    a.registerLicense(new LicenseStub() {
-      @Override
-      public Date getExpiry() throws LicenseException {
-        Calendar c = Calendar.getInstance();
-        c.add(Calendar.DAY_OF_YEAR, 1);
-        return c.getTime();
-      }
-    });
-    a.getChannelList().add(new Channel());
-    a.requestInit();
-    // Expecting AdapterInitEvent,
-    // LicenseExpiryWarningEvent
-    // AdapterStartUpEvent in that order.
-    waitForMessages(mockEventProducer, 3);
-    assertEquals(3, mockEventProducer.messageCount());
-    Event event = ((EventHandlerBase) a.getEventHandler()).createEvent(mockEventProducer.getMessages().get(1));
-    assertEquals(LicenseExpiryWarningEvent.class, event.getClass());
-    assertEquals(true, ((LicenseExpiryWarningEvent) event).getWasSuccessful());
-    a.requestClose();
-
-  }
-
-  public void testAdapterSendLicenseExpiryEventFails() throws Exception {
-    MockMessageProducer mockEventProducer = new MockMessageProducer();
-    Adapter a = createAdapter("testAdapterSendLicenseExpiryEventFails", new DefaultEventHandler(mockEventProducer));
-    a.registerLicense(new LicenseStub() {
-      @Override
-      public Date getExpiry() throws LicenseException {
-        throw new LicenseException();
-      }
-    });
-    a.getChannelList().add(new Channel());
-    a.requestInit();
-    // Expecting
-    // AdapterInitEvent,LicenseExpiryWarningEvent
-    // (which fails, so we don't get it).
-    // AdapterStartUpEvent in that order.
-    waitForMessages(mockEventProducer, 2);
-    assertEquals(2, mockEventProducer.messageCount());
-    a.requestClose();
-  }
-
   public void testDuplicateWorkflowsForRetrier() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId("testDuplicateWorkflowsForRetrier");
-    adapter.registerLicense(new LicenseStub());
     DefaultFailedMessageRetrier retrier = new DefaultFailedMessageRetrier();
     adapter.setFailedMessageRetrier(retrier);
     Channel c1 = new Channel();
@@ -539,7 +410,6 @@ public class AdapterTest extends BaseCase {
     Adapter adapter = new Adapter();
     adapter.setUniqueId("1234");
     adapter.setMessageErrorHandler(new StandardProcessingExceptionHandler());
-    adapter.registerLicense(new LicenseStub());
     Channel c1 = new Channel();
     c1.setUniqueId("c1");
     c1.setMessageErrorHandler(new RetryMessageErrorHandler());
@@ -630,27 +500,8 @@ public class AdapterTest extends BaseCase {
 
   }
 
-  public void testBug1368() throws Exception {
-    // This is an expired "Sonic" License from 2007 should should "expire"
-    log.debug("testBug1368");
-    License l = LicenseFactory.create("ROq1xIbZkgwtHBypIQXAaA==");
-    Date now = new Date();
-    assertTrue("License has Expired", now.after(l.getExpiry()));
-    Adapter a = createAdapter(getName());
-    a.registerLicense(l);
-    try {
-      a.requestInit();
-      fail("Expired License with Adapter.init()");
-    }
-    catch (CoreException e) {
-      assertNotNull("CoreException Cause != null)", e.getCause());
-      assertEquals("Wrapped Exception is a license Exception", LicenseException.class, e.getCause().getClass());
-    }
-  }
-
   public void testBug2049_Init() throws Exception {
     Adapter a = createAdapter("testBug2049_Init");
-    a.registerLicense(new LicenseStub());
     try {
       a.getChannelList().addChannel(new Channel() {
         @Override
@@ -671,7 +522,6 @@ public class AdapterTest extends BaseCase {
 
   public void testBug2049_Start() throws Exception {
     Adapter a = createAdapter("testBug2049_Start");
-    a.registerLicense(new LicenseStub());
     try {
       a.getChannelList().addChannel(new Channel() {
         @Override
@@ -692,7 +542,6 @@ public class AdapterTest extends BaseCase {
 
   public void testSetters() throws Exception {
     Adapter a = createAdapter("testHeartbeatTimerTask");
-    a.registerLicense(new LicenseStub());
     try {
       a.setChannelList(null);
       fail();
@@ -762,7 +611,6 @@ public class AdapterTest extends BaseCase {
 
   public void testHeartbeatTimerTask() throws Exception {
     Adapter a = createAdapter("testHeartbeatTimerTask");
-    a.registerLicense(new LicenseStub());
     MockMessageProducer mock = new MockMessageProducer();
     DefaultEventHandler sce = new DefaultEventHandler(mock);
     a.setEventHandler(sce);
@@ -783,7 +631,6 @@ public class AdapterTest extends BaseCase {
 
   public void testHeartbeatTimerTask_Deprecated() throws Exception {
     Adapter a = createAdapter("testHeartbeatTimerTask_Deprecated");
-    a.registerLicense(new LicenseStub());
     MockMessageProducer mock = new MockMessageProducer();
     DefaultEventHandler sce = new DefaultEventHandler(mock);
     a.setEventHandler(sce);
@@ -830,7 +677,6 @@ public class AdapterTest extends BaseCase {
     channel.setUniqueId(uniqueId + "_channel1");
     channel.getWorkflowList().add(workflow1);
     result.getChannelList().add(channel);
-    result.registerLicense(new LicenseStub());
     result.setUniqueId(uniqueId);
     return result;
   }
@@ -865,7 +711,6 @@ public class AdapterTest extends BaseCase {
 
     result = new Adapter();
     result.setChannelList(channels);
-    result.registerLicense(new LicenseStub());
     result.setUniqueId(uniqueId);
     return result;
   }
@@ -881,7 +726,6 @@ public class AdapterTest extends BaseCase {
       cl.addChannel(c);
     }
     result.setChannelList(cl);
-    result.registerLicense(new LicenseStub());
     result.setUniqueId(uniqueId);
     return result;
 

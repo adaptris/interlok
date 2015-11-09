@@ -16,7 +16,6 @@
 
 package com.adaptris.core;
 
-import com.adaptris.util.license.License;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -71,9 +70,8 @@ public class NullConnection extends AdaptrisConnectionImp {
     ;
   }
 
-
-  /** @see AdaptrisComponent */
-  public boolean isEnabled(License license) throws CoreException {
-    return true; // always enabled
+  @Override
+  protected void prepareConnection() throws CoreException {
   }
+
 }

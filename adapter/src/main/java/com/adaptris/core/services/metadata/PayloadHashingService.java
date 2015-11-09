@@ -30,8 +30,6 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.security.util.SecurityUtil;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.adaptris.util.stream.DevNullOutputStream;
 import com.adaptris.util.text.Base64ByteTranslator;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -84,10 +82,8 @@ public class PayloadHashingService extends ServiceImp {
     }
   }
 
-  public void close() {
-  }
-
-  public void init() throws CoreException {
+  @Override
+  protected void initService() throws CoreException {
     if (getHashAlgorithm() == null || "".equals(getHashAlgorithm())) {
       throw new CoreException("hash-algorithm is null");
     }
@@ -96,11 +92,16 @@ public class PayloadHashingService extends ServiceImp {
     }
     try {
       MessageDigest d = MessageDigest.getInstance(getHashAlgorithm());
-    }
-    catch (NoSuchAlgorithmException e) {
+    } catch (NoSuchAlgorithmException e) {
       throw new CoreException(e.getMessage(), e);
     }
   }
+
+  @Override
+  protected void closeService() {
+
+  }
+
 
   public String getHashAlgorithm() {
     return hashAlgorithm;
@@ -129,8 +130,8 @@ public class PayloadHashingService extends ServiceImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
   }
+
 
 }

@@ -38,10 +38,8 @@ import com.adaptris.core.ServiceList;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
-import com.adaptris.core.stubs.LicenseStub;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
 
 public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServiceTest {
 
@@ -215,22 +213,6 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
     }
   }
 
-  public void testIsEnabledUsesEmbeddedService() throws Exception {
-    AdvancedMessageSplitterService service = new AdvancedMessageSplitterService();
-    assertTrue(service.isEnabled(new LicenseStub()));
-    service.setService(new ServiceList() {
-      @Override
-      public boolean isEnabled(License license) throws CoreException {
-        return false;
-      }
-    });
-    assertFalse(service.isEnabled(new LicenseStub()));
-  }
-
-  public void testRedmine1004() throws Exception {
-    testIsEnabledUsesEmbeddedService();
-  }
-
   @Override
   protected AdvancedMessageSplitterService createServiceImpl(MessageSplitter splitter, MockMessageProducer producer) {
     AdvancedMessageSplitterService service = new AdvancedMessageSplitterService();
@@ -270,16 +252,15 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
     }
 
     @Override
-    public void init() throws CoreException {
+    protected void initService() throws CoreException {
+
     }
 
     @Override
-    public void close() {
+    protected void closeService() {
     }
 
     @Override
-    public boolean isEnabled(License license) throws CoreException {
-      return true;
-    }
+    public void prepare() throws CoreException {}
   }
 }

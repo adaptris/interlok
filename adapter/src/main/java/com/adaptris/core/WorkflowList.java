@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.util.CastorizedList;
-import com.adaptris.util.license.License;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -105,18 +104,12 @@ public final class WorkflowList extends AbstractCollection<Workflow> implements 
     lifecycleStrategy().close(workflows);
   }
 
-  /**
-   * @see com.adaptris.core.AdaptrisComponent
-   *      #isEnabled(com.adaptris.util.license.License)
-   */
+
   @Override
-  public boolean isEnabled(License license) throws CoreException {
+  public void prepare() throws CoreException {
     for (Workflow w : workflows) {
-      if (!w.isEnabled(license)) {
-        return false;
-      }
+      w.prepare();
     }
-    return true;
   }
 
   public WorkflowLifecycleStrategy getLifecycleStrategy() {

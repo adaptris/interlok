@@ -19,8 +19,6 @@ package com.adaptris.core.jms;
 import javax.jms.JMSException;
 
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -37,11 +35,6 @@ public class PerMessageProducerSessionFactory extends ProducerSessionFactoryImpl
 
   public PerMessageProducerSessionFactory() {
     super();
-  }
-
-  @Override
-  public boolean isEnabled(License l) {
-    return l.isEnabled(LicenseType.Basic);
   }
 
   @Override

@@ -29,8 +29,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
 
 /**
  * <p>
@@ -136,13 +136,6 @@ public abstract class FailedMessageRetrierImp implements FailedMessageRetrier {
     LifecycleHelper.close(standaloneConsumer);
   }
 
-  /**
-   * @see com.adaptris.core.AdaptrisComponent #isEnabled(com.adaptris.util.license.License)
-   */
-  @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return standaloneConsumer.isEnabled(license);
-  }
 
   /**
    * Add a <code>Workflow</code>.
@@ -160,18 +153,6 @@ public abstract class FailedMessageRetrierImp implements FailedMessageRetrier {
   @Override
   public void clearWorkflows() {
     getWorkflows().clear();
-  }
-
-  /** @see java.lang.Object#toString() */
-  @Override
-  public String toString() {
-    StringBuffer result = new StringBuffer();
-    result.append("[");
-    result.append(this.getClass().getName());
-    result.append("] ");
-    result.append(standaloneConsumer);
-    result.append("] Workflow IDs: " + registeredWorkflowIds());
-    return result.toString();
   }
 
   @Override
@@ -199,11 +180,7 @@ public abstract class FailedMessageRetrierImp implements FailedMessageRetrier {
    * @param consumer the <code>StandaloneConsumer</code> to use
    */
   public void setStandaloneConsumer(StandaloneConsumer consumer) {
-    if (consumer == null) {
-      throw new IllegalArgumentException("Null Consumer not allowed");
-    }
-
-    standaloneConsumer = consumer;
+    standaloneConsumer = Args.notNull(consumer, "consumer");
     standaloneConsumer.registerAdaptrisMessageListener(this);
   }
 
@@ -224,4 +201,11 @@ public abstract class FailedMessageRetrierImp implements FailedMessageRetrier {
   public void setUniqueId(String uniqueId) {
     this.uniqueId = uniqueId;
   }
+
+  @Override
+  public void prepare() throws CoreException {
+    getStandaloneConsumer().prepare();
+  }
+
+
 }

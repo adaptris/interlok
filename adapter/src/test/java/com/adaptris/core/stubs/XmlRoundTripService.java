@@ -20,6 +20,7 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.BranchingServiceImp;
+import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.util.GuidGenerator;
 
@@ -37,12 +38,6 @@ public class XmlRoundTripService extends BranchingServiceImp {
     uniqueIdentity = new GuidGenerator().getUUID();
   }
 
-  @Override
-  public void init() {
-    if (isEmpty(marshalledIdentity)) {
-      setServiceIdentity(uniqueIdentity);
-    }
-  }
 
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
@@ -51,10 +46,17 @@ public class XmlRoundTripService extends BranchingServiceImp {
     }
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
+
   @Override
-  public void close() {
-    // na
+  protected void initService() throws CoreException {
+    if (isEmpty(marshalledIdentity)) {
+      setServiceIdentity(uniqueIdentity);
+    }
+  }
+
+  @Override
+  protected void closeService() {
+
   }
 
   public String getServiceIdentity() {
@@ -64,5 +66,9 @@ public class XmlRoundTripService extends BranchingServiceImp {
   public void setServiceIdentity(String serviceIdentity) {
     marshalledIdentity = serviceIdentity;
   }
+
+  @Override
+  public void prepare() throws CoreException {}
+
 
 }

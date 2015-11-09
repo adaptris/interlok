@@ -17,7 +17,6 @@
 package com.adaptris.core.services.jdbc;
 
 import java.sql.Connection;
-import java.sql.Savepoint;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -28,18 +27,13 @@ import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.Service;
-import com.adaptris.core.ServiceCollection;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceList;
-import com.adaptris.core.SharedConnection;
 import com.adaptris.core.jdbc.DatabaseConnection;
 import com.adaptris.core.jdbc.JdbcConstants;
 import com.adaptris.core.jdbc.JdbcService;
-import com.adaptris.core.services.jdbc.raw.JdbcRawDataCaptureService;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -175,8 +169,11 @@ public class JdbcServiceList extends ServiceList {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Standard) && super.isEnabled(license);
+  public void prepare() throws CoreException {
+    super.prepare();
+    if (databaseConnection != null) {
+      databaseConnection.retrieveConnection(DatabaseConnection.class).prepare();
+    }
   }
 
   /**

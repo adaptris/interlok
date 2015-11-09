@@ -27,14 +27,12 @@ import java.util.Properties;
 import org.perf4j.aop.Profiled;
 
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisMessageProducerImp;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.http.HttpProducer;
-import com.adaptris.core.http.JdkHttpProducer;
 import com.adaptris.http.Http;
 import com.adaptris.http.HttpClientTransport;
 import com.adaptris.http.HttpException;
@@ -42,8 +40,6 @@ import com.adaptris.http.HttpHeaders;
 import com.adaptris.http.HttpMessage;
 import com.adaptris.http.HttpMessageFactory;
 import com.adaptris.http.HttpSession;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.adaptris.util.stream.StreamUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -194,15 +190,10 @@ public class SimpleHttpProducer extends HttpProducer {
     return socketTimeout;
   }
 
-  /**
-   * This producer requires an HTTP license.
-   *
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled(License)
-   */
   @Override
-  public boolean isEnabled(License l) throws CoreException {
-    return l.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
   }
+
 
   /**
    *

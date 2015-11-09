@@ -16,7 +16,6 @@
 
 package com.adaptris.core;
 
-import com.adaptris.util.license.License;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -57,8 +56,8 @@ public class NullProcessingExceptionHandler extends RootProcessingExceptionHandl
   public synchronized void close() {
   }
 
-  public boolean isEnabled(License license) throws CoreException {
-    return true;
+  @Override
+  public void prepare() throws CoreException {
   }
 
   public boolean hasConfiguredBehaviour() {

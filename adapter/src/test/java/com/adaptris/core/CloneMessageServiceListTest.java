@@ -134,9 +134,9 @@ public class CloneMessageServiceListTest extends ServiceCollectionCase {
     }
 
     @Override
-    public void init() throws CoreException {
+    protected void initService() throws CoreException {
       initCount++;
-      super.init();
+      super.initService();
     }
 
     int getInitCount() {

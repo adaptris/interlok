@@ -21,8 +21,6 @@ import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 import com.adaptris.annotation.GenerateBeanInfo;
 import com.adaptris.annotation.MarshallingCDATA;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -45,10 +43,8 @@ public class PollingTrigger extends AdaptrisPollingConsumer {
 
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
+  protected void prepareConsumer() throws CoreException {
   }
-
 
   /**
    * <p>

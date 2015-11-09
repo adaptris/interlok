@@ -34,8 +34,6 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -274,29 +272,25 @@ public class DuplicateMessageRoutingService extends ServiceImp {
     }
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
   @Override
-  public void close() {
+  protected void initService() throws CoreException {
+    file = initialiseFile();
+    try {
+      load();
+    } catch (Exception e) {
+      throw new CoreException("Failed to initialise DuplicateMessageRoutingService successfully", e);
+    }
+  }
+
+  @Override
+  protected void closeService() {
     try {
       store();
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       log.trace("Failed to shutdown component cleanly, logging exception for informational purposes only", e);
     }
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#init() */
-  @Override
-  public void init() throws CoreException {
-    file = initialiseFile();
-    try {
-      load();
-    }
-    catch (Exception e) {
-      throw new CoreException(
-          "Failed to initialise DuplicateMessageRoutingService successfully", e);
-    }
-  }
 
   private File initialiseFile() throws CoreException {
     File result = null;
@@ -350,7 +344,5 @@ public class DuplicateMessageRoutingService extends ServiceImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Standard);
-  }
+  public void prepare() throws CoreException {}
 }

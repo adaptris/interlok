@@ -24,15 +24,15 @@ import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.Topic;
 
+import com.adaptris.core.ComponentLifecycleExtension;
 import com.adaptris.core.ConsumeDestination;
-import com.adaptris.core.LicensedComponent;
 
 /**
  * <p>
  * Abstract factory that insulates vendor-specific code from the rest of the <code>com.adaptris.core.jms</code> package.
  * </p>
  */
-public interface VendorImplementation extends LicensedComponent, ConnectionComparator<VendorImplementation> {
+public interface VendorImplementation extends ComponentLifecycleExtension, ConnectionComparator<VendorImplementation> {
 
   /**
    * <p>

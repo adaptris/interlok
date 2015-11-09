@@ -22,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -34,7 +33,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config standalone-consumer
  */
 @XStreamAlias("standalone-consumer")
-public class StandaloneConsumer implements AdaptrisMessageConsumer, StateManagedComponent {
+public class StandaloneConsumer implements AdaptrisMessageConsumer, StateManagedComponent, ComponentLifecycleExtension {
   private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
   private AdaptrisConnection connection;
@@ -288,14 +287,12 @@ public class StandaloneConsumer implements AdaptrisMessageConsumer, StateManaged
     return getConsumer().decode(bytes);
   }
 
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled
-   *      (com.adaptris.util.license.License)
-   */
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return getConsumer().isEnabled(license) && retrieveConnection(AdaptrisConnection.class).isEnabled(license);
+  public void prepare() throws CoreException {
+    getConnection().prepare();
+    getConsumer().prepare();
   }
+
 
   /**
    * @see com.adaptris.core.MessageEventGenerator#createName()

@@ -43,7 +43,6 @@ import com.adaptris.core.runtime.AdapterManager;
 import com.adaptris.core.runtime.BaseComponentMBean;
 import com.adaptris.core.runtime.ChildRuntimeInfoComponent;
 import com.adaptris.core.runtime.WorkflowManagerMBean;
-import com.adaptris.core.stubs.LicenseStub;
 import com.adaptris.core.util.JmxHelper;
 import com.adaptris.util.GuidGenerator;
 
@@ -203,7 +202,6 @@ public abstract class StatisticsMBeanCase extends BaseCase {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(uid);
     adapter.getChannelList().add(createSingleWorkflowChannel("channel1", interceptors));
-    adapter.registerLicense(new LicenseStub());
     return adapter;
   }
 
@@ -213,7 +211,6 @@ public abstract class StatisticsMBeanCase extends BaseCase {
     for (int i = 0; i < channels; i++) {
       adapter.getChannelList().add(createChannel("channel" + (i + 1), workflows));
     }
-    adapter.registerLicense(new LicenseStub());
     return adapter;
   }
 

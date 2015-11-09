@@ -26,8 +26,6 @@ import com.adaptris.core.StateManagedComponent;
 import com.adaptris.core.Workflow;
 import com.adaptris.core.WorkflowInterceptor;
 import com.adaptris.util.GuidGenerator;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 
 /**
  * Abstract WorkflowInterceptor implementation.
@@ -116,8 +114,8 @@ public abstract class WorkflowInterceptorImpl implements WorkflowInterceptor, St
     return state;
   }
 
-  public boolean isEnabled(License license) {
-    return license.isEnabled(LicenseType.Standard);
+  @Override
+  public void prepare() throws CoreException {
   }
 
   protected static boolean wasSuccessful(AdaptrisMessage... msgs) {

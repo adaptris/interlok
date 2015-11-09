@@ -23,10 +23,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.NullConnection;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.services.aggregator.AggregatingConsumeService;
 import com.adaptris.core.services.aggregator.AggregatingConsumeServiceImpl;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -48,8 +45,8 @@ public class AggregatingFsConsumeService extends AggregatingConsumeServiceImpl<N
   }
 
   @Override
-  public void init() throws CoreException {
-    super.init();
+  protected void initService() throws CoreException {
+    super.initService();
     if (fsConsumer == null) throw new CoreException("FS Consumer is null");
   }
 
@@ -78,8 +75,12 @@ public class AggregatingFsConsumeService extends AggregatingConsumeServiceImpl<N
     this.fsConsumer = fsConsumer;
   }
 
+
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Standard) && (getFsConsumer() != null ? getFsConsumer().isEnabled(license) : true);
+  public void prepare() throws CoreException {
+    if (getFsConsumer() != null) {
+      getFsConsumer().prepare();
+    }
   }
+
 }

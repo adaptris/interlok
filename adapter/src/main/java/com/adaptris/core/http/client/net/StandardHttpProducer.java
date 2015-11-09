@@ -46,8 +46,6 @@ import com.adaptris.core.http.ResourceAuthenticator;
 import com.adaptris.core.http.client.RequestMethodProvider;
 import com.adaptris.core.http.client.RequestMethodProvider.RequestMethod;
 import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -158,12 +156,8 @@ public class StandardHttpProducer extends HttpProducer {
     }
   }
 
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled(License)
-   */
   @Override
-  public boolean isEnabled(License l) throws CoreException {
-    return l.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
   }
 
   private class HttpAuthenticator implements ResourceAuthenticator {

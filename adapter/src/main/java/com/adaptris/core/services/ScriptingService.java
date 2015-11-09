@@ -25,11 +25,7 @@ import java.io.Reader;
 
 import org.hibernate.validator.constraints.NotBlank;
 
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.BranchingServiceCollection;
 import com.adaptris.core.CoreException;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -86,7 +82,7 @@ public class ScriptingService extends ScriptingServiceImp {
   }
 
   @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
     if (isEmpty(getScriptFilename())) {
       throw new CoreException("script filename is null");
     }
@@ -94,7 +90,7 @@ public class ScriptingService extends ScriptingServiceImp {
     if (!f.exists() || !f.isFile() || !f.canRead()) {
       throw new CoreException(getScriptFilename() + " is not accessible");
     }
-    super.init();
+    super.initService();
   }
 
   @Override
@@ -103,8 +99,7 @@ public class ScriptingService extends ScriptingServiceImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Standard);
+  public void prepare() throws CoreException {
   }
 
 }

@@ -33,8 +33,6 @@ import com.adaptris.core.ServiceImp;
 import com.adaptris.core.TradingRelationship;
 import com.adaptris.core.TradingRelationshipCreator;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -64,7 +62,6 @@ public class DynamicServiceLocator extends ServiceImp implements EventHandlerAwa
   private ServiceStore serviceStore;
   private Boolean treatNotFoundAsError;
 
-  private transient License license;
   private transient EventHandler eventHandler;
 
   /**
@@ -132,12 +129,8 @@ public class DynamicServiceLocator extends ServiceImp implements EventHandlerAwa
   private void execute(String matchedName, Service dynamicService, AdaptrisMessage msg) throws CoreException {
     String serviceName = friendlyName(dynamicService);
 
-    if (!dynamicService.isEnabled(license)) {
-      throw new ServiceException(serviceName + " in " + matchedName
-          + " contains components that are not enabled for the current license.");
-    }
+    dynamicService.prepare();
     log.debug("Applying service [" + serviceName + "] from [" + matchedName + "]");
-
     LifecycleHelper.registerEventHandler(dynamicService, eventHandler);
     try {
       start(dynamicService);
@@ -165,16 +158,12 @@ public class DynamicServiceLocator extends ServiceImp implements EventHandlerAwa
     LifecycleHelper.close(c);
   }
 
-  /**
-   * <p>
-   * Initialisation will fail unless <code>tradingRelationshipCreator</code>,
-   * <code>serviceNameProvider</code>, and <code>serviceStore</code> have been
-   * set.
-   * </p>
-   *
-   * @see com.adaptris.core.AdaptrisComponent#init()
-   */
-  public void init() throws CoreException {
+  @Override
+  public void prepare() throws CoreException {
+  }
+
+  @Override
+  protected void initService() throws CoreException {
     if (getTradingRelationshipCreator() == null || getServiceNameProvider() == null || getServiceStore() == null) {
 
       throw new CoreException("invalid config");
@@ -183,19 +172,8 @@ public class DynamicServiceLocator extends ServiceImp implements EventHandlerAwa
     getServiceStore().validate();
   }
 
-  /**
-   *
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled(License)
-   */
   @Override
-  public boolean isEnabled(License l) {
-    license = l;
-    return l.isEnabled(LicenseType.Standard);
-  }
-
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
-  public void close() {
-    // na...
+  protected void closeService() {
   }
 
   // getters & setters...

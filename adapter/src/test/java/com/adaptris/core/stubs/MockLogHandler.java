@@ -20,7 +20,6 @@ import java.io.IOException;
 
 import com.adaptris.core.CoreException;
 import com.adaptris.core.LogHandlerImp;
-import com.adaptris.util.license.License;
 
 public abstract class MockLogHandler extends LogHandlerImp {
 
@@ -37,8 +36,7 @@ public abstract class MockLogHandler extends LogHandlerImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return true;
+  public void prepare() throws CoreException {
   }
 
 }

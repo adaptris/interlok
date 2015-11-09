@@ -97,12 +97,6 @@ public class StoreMetadataValueService extends DuplicateMetadataValueService {
     }
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
-  @Override
-  public void close() {
-    // do nothing...
-  }
-
   @Override
   int storeSize() {
     return previousValuesStore.size();

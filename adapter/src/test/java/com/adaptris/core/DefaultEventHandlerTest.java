@@ -23,10 +23,8 @@ import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.PtpProducer;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
 import com.adaptris.core.stubs.FailFirstMockMessageProducer;
-import com.adaptris.core.stubs.LicenseStub;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
 
 public class DefaultEventHandlerTest extends ExampleEventHandlerCase {
 
@@ -75,43 +73,6 @@ public class DefaultEventHandlerTest extends ExampleEventHandlerCase {
     catch (IllegalArgumentException expected) {
 
     }
-  }
-
-  public void testLicenseCombinations() throws Exception {
-    assertEquals(true, createEventHandler(true, true).isEnabled(new LicenseStub()));
-    assertEquals(false, createEventHandler(false, true).isEnabled(new LicenseStub()));
-    assertEquals(false, createEventHandler(false, false).isEnabled(new LicenseStub()));
-    assertEquals(false, createEventHandler(true, false).isEnabled(new LicenseStub()));
-  }
-
-  private EventHandler createEventHandler(boolean connectionEnabled, boolean producerEnabled)
-      throws Exception {
-    DefaultEventHandler eventHandler = new DefaultEventHandler();
-    if (connectionEnabled) {
-      eventHandler.setConnection(new NullConnection());
-    }
-    else {
-      eventHandler.setConnection(new NullConnection() {
-        @Override
-        public boolean isEnabled(License l) {
-          return false;
-        }
-      });
-
-    }
-    if (producerEnabled) {
-      eventHandler.setProducer(new MockMessageProducer());
-    }
-    else {
-      eventHandler.setProducer(new MockMessageProducer() {
-        @Override
-        public boolean isEnabled(License l) {
-          return false;
-        }
-      });
-    }
-    eventHandler.setMarshaller(DefaultMarshaller.getDefaultMarshaller());
-    return eventHandler;
   }
 
 

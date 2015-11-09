@@ -23,7 +23,6 @@ import com.adaptris.core.InitialisedState;
 import com.adaptris.core.StartedState;
 import com.adaptris.core.StateManagedComponent;
 import com.adaptris.core.StoppedState;
-import com.adaptris.util.license.License;
 
 /**
  * <p>
@@ -37,13 +36,10 @@ public class MockStateManagedComponent implements StateManagedComponent {
 
   }
 
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled
-   *      (com.adaptris.util.license.License)
-   */
-  public boolean isEnabled(License license) throws CoreException {
-    return true;
+  @Override
+  public void prepare() throws CoreException {
   }
+
 
   public String getUniqueId() {
     return null;

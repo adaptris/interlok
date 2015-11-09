@@ -35,8 +35,6 @@ import com.adaptris.core.AdaptrisMessageListener;
 import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 
 /**
  * <p>
@@ -241,14 +239,11 @@ public abstract class JmsConsumerImpl extends AdaptrisMessageConsumerImp impleme
     return acknowledgeMode;
   }
 
-  /**
-   * 
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled(License)
-   */
   @Override
-  public boolean isEnabled(License l) throws CoreException {
-    return l.isEnabled(LicenseType.Basic) && getMessageTranslator().isEnabled(l);
+  public void prepare() throws CoreException {
+    getMessageTranslator().prepare();
   }
+
 
   /**
    * <p>

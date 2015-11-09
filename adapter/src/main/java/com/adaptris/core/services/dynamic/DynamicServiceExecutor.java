@@ -38,8 +38,6 @@ import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -62,7 +60,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("dynamic-service-executor")
 public class DynamicServiceExecutor extends ServiceImp implements EventHandlerAware {
 
-  private transient License license;
   private transient EventHandler eventHandler;
 
   @NotNull
@@ -96,10 +93,8 @@ public class DynamicServiceExecutor extends ServiceImp implements EventHandlerAw
   }
 
   private void prepare(Service service) throws CoreException {
-    if (!service.isEnabled(license)) {
-      throw new ServiceException("License not valid for service [" + friendlyName(service) + "]");
-    }
     LifecycleHelper.registerEventHandler(service, eventHandler);
+    service.prepare();
   }
 
   private static void start(AdaptrisComponent c) throws CoreException {
@@ -131,22 +126,17 @@ public class DynamicServiceExecutor extends ServiceImp implements EventHandlerAw
   }
 
   @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
   }
 
   @Override
-  public void close() {
+  protected void closeService() {
   }
 
-  /**
-   * 
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled(License)
-   */
   @Override
-  public boolean isEnabled(License l) {
-    license = l;
-    return license.isEnabled(LicenseType.Standard);
+  public void prepare() throws CoreException {
   }
+
 
   @Override
   public void registerEventHandler(EventHandler eh) {

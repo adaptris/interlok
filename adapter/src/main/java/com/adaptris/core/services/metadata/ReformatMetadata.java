@@ -28,8 +28,6 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 
 /**
  * <p>
@@ -59,12 +57,13 @@ public abstract class ReformatMetadata extends ServiceImp {
   }
 
   @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
   }
 
   @Override
-  public void close() {
+  protected void closeService() {
   }
+
 
   /**
    * <p>
@@ -114,8 +113,8 @@ public abstract class ReformatMetadata extends ServiceImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
   }
+
 
 }

@@ -20,7 +20,6 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.confirmation.ConfirmServiceImp;
-import com.adaptris.util.license.License;
 
 /**
  * <p>
@@ -37,8 +36,7 @@ public class MockConfirmService extends ConfirmServiceImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return true;
+  public void prepare() throws CoreException {
   }
 
 }

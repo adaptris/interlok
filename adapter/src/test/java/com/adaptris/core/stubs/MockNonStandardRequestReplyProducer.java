@@ -31,7 +31,6 @@ import com.adaptris.core.ProduceException;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.IdGenerator;
 import com.adaptris.util.PlainIdGenerator;
-import com.adaptris.util.license.License;
 
 /**
  * <p>
@@ -67,14 +66,10 @@ public class MockNonStandardRequestReplyProducer extends
     producedMessages = new ArrayList();
   }
 
-  /**
-   *
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled(License)
-   */
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return true;
+  public void prepare() throws CoreException {
   }
+
 
   /**
    * <p>

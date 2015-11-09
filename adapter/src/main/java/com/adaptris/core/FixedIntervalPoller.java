@@ -27,8 +27,6 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -117,14 +115,6 @@ public class FixedIntervalPoller extends PollerImp {
     shutdownExecutor();
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#isEnabled
-   *   (com.adaptris.util.license.License) */
-  @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
-  }
-
-
   /**
    * <p>
    * Implementation of <code>TimerTask</code> to do the actual polling.
@@ -182,4 +172,7 @@ public class FixedIntervalPoller extends PollerImp {
   public void setShutdownWaitTime(TimeInterval interval) {
     shutdownWaitTime = interval;
   }
+
+  @Override
+  public void prepare() throws CoreException {}
 }

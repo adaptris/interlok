@@ -25,8 +25,6 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairCollection;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -71,23 +69,17 @@ public class CopyMetadataService extends ServiceImp {
     }
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @see com.adaptris.core.AdaptrisComponent#init()
-   */
-  public void init() throws CoreException {
-    // na
+
+  @Override
+  protected void initService() throws CoreException {
+
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @see com.adaptris.core.AdaptrisComponent#close()
-   */
-  public void close() {
-    // na
+  @Override
+  protected void closeService() {
+
   }
+
 
   /**
    * <p>
@@ -127,7 +119,7 @@ public class CopyMetadataService extends ServiceImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
   }
+
 }

@@ -29,11 +29,8 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageListener;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.services.aggregator.AggregatingConsumeService;
 import com.adaptris.core.services.aggregator.AggregatingConsumeServiceImpl;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -60,7 +57,7 @@ public class AggregatingJmsConsumeService extends AggregatingConsumeServiceImpl<
   }
 
   @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
     if (connection == null) {
       throw new CoreException("Null Connection");
     }
@@ -89,14 +86,18 @@ public class AggregatingJmsConsumeService extends AggregatingConsumeServiceImpl<
   }
 
   @Override
-  public void close() {
+  protected void closeService() {
     LifecycleHelper.close(connection);
   }
 
   @Override
-  public boolean isEnabled(License l) throws CoreException {
-    return l.isEnabled(LicenseType.Standard) && (getConnection() != null ? getConnection().isEnabled(l) : true)
-        && (getJmsConsumer() != null ? getJmsConsumer().isEnabled(l) : true);
+  public void prepare() throws CoreException {
+    if (getConnection() != null) {
+      getConnection().prepare();
+    }
+    if (getJmsConsumer() != null) {
+      getJmsConsumer().prepare();
+    }
   }
 
   @Override

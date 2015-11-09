@@ -29,7 +29,6 @@ import com.adaptris.core.ServiceImp;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.transform.validate.ValidationStage;
 import com.adaptris.util.KeyValuePairSet;
-import com.adaptris.util.license.License;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -76,17 +75,24 @@ public class XmlRuleValidationService extends ServiceImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return new XmlRuleValidator().isEnabled(license);
+  public void prepare() throws CoreException {
   }
 
   @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
     validator = new XmlRuleValidator();
     validator.setNamespaceContext(getNamespaceContext());
     validator.setValidationStages(getValidationStages());
+    validator.prepare();
     LifecycleHelper.init(validator);
   }
+
+  @Override
+  protected void closeService() {
+    LifecycleHelper.close(validator);
+  }
+
+
 
   @Override
   public void start() throws CoreException {
@@ -98,10 +104,6 @@ public class XmlRuleValidationService extends ServiceImp {
   public void stop() {
     super.stop();
     LifecycleHelper.stop(validator);
-  }
-
-  public void close() {
-    LifecycleHelper.close(validator);
   }
 
   public void addValidationStage(ValidationStage vs) {

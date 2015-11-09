@@ -20,6 +20,6 @@ package com.adaptris.core;
 /**
  * Base interface for components in the framework.
  */
-public interface AdaptrisComponent extends LicensedComponent, ComponentLifecycle {
+public interface AdaptrisComponent extends ComponentLifecycle, ComponentLifecycleExtension {
 
 }

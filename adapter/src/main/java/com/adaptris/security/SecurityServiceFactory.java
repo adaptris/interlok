@@ -19,6 +19,8 @@ package com.adaptris.security;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.core.ComponentLifecycleExtension;
+import com.adaptris.core.CoreException;
 import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.adaptris.security.util.SecurityUtil;
 
@@ -28,7 +30,7 @@ import com.adaptris.security.util.SecurityUtil;
  * @see Output
  * @author $Author: lchan $
  */
-public abstract class SecurityServiceFactory {
+public abstract class SecurityServiceFactory implements ComponentLifecycleExtension {
 
   protected transient static final Logger log = LoggerFactory.getLogger(SecurityServiceFactory.class.getName());
   
@@ -74,5 +76,8 @@ public abstract class SecurityServiceFactory {
     public SecurityService createService() throws AdaptrisSecurityException {
       return new StdSecurityService();
     }
+
+    @Override
+    public void prepare() throws CoreException {}
   }
 }

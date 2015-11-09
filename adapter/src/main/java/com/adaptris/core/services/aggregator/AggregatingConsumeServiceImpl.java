@@ -52,7 +52,7 @@ public abstract class AggregatingConsumeServiceImpl<E extends AdaptrisConnection
   }
 
   @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
   }
 
   @Override
@@ -66,6 +66,6 @@ public abstract class AggregatingConsumeServiceImpl<E extends AdaptrisConnection
   }
 
   @Override
-  public void close() {
+  protected void closeService() {
   }
 }

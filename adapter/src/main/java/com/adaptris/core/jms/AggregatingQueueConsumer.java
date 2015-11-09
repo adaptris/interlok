@@ -33,12 +33,9 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.services.aggregator.AggregatingConsumer;
 import com.adaptris.core.services.aggregator.AggregatingConsumerImpl;
 import com.adaptris.core.services.aggregator.ConsumeDestinationGenerator;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -121,8 +118,7 @@ public class AggregatingQueueConsumer extends AggregatingConsumerImpl<Aggregatin
   }
 
   @Override
-  public boolean isEnabled(License l) throws CoreException {
-    return l.isEnabled(LicenseType.Standard);
+  public void prepare() throws CoreException {
   }
 
   /**

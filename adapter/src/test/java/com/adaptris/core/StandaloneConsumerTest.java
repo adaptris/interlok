@@ -21,7 +21,6 @@ import com.adaptris.core.stubs.MockMessageConsumer;
 import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
 
 public class StandaloneConsumerTest extends BaseCase {
 
@@ -71,8 +70,7 @@ public class StandaloneConsumerTest extends BaseCase {
     AdaptrisPollingConsumer consumer1 = new AdaptrisPollingConsumer() {
 
       @Override
-      public boolean isEnabled(License l) throws CoreException {
-        return true;
+      public void prepareConsumer() throws CoreException {
       }
 
       @Override
