@@ -251,6 +251,7 @@ public abstract class CoreSecurityService extends ServiceImp {
       if (factory == null) {
         factory = SecurityServiceFactory.defaultInstance();
       }
+      factory.prepare();
       service = factory.createService();
       for (Iterator i = keystoreUrls.iterator(); i.hasNext();) {
         ConfiguredKeystore url = (ConfiguredKeystore) i.next();
@@ -276,6 +277,7 @@ public abstract class CoreSecurityService extends ServiceImp {
 
   @Override
   public void prepare() throws CoreException {
+
   }
 
 
