@@ -47,12 +47,14 @@ public class DynamicFailingService extends DynamicService {
   }
 
   @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
     if (whenToFail.equals(WhenToFail.ON_INIT)) {
       throw new CoreException(WhenToFail.ON_INIT + " failure specified");
     }
-    super.init();
+    super.initService();
   }
+
+
 
   @Override
   public void start() throws CoreException {

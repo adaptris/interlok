@@ -65,15 +65,11 @@ public class GzipService extends ServiceImp {
   }
 
 
-  /** @see com.adaptris.core.AdaptrisComponent#close()
-   */
   @Override
-  public void close() {
+  protected void initService() throws CoreException {
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#init()
-   */
   @Override
-  public void init() {
+  protected void closeService() {
   }
 }

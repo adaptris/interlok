@@ -77,14 +77,7 @@ public class StandaloneProducer extends ServiceImp implements AdaptrisMessageSen
     getProducer().produce(msg, dest);
   }
 
-  /**
-   * <p>
-   * Initialises the object.
-   * </p>
-   *
-   * @throws CoreException wrapping any underlying <code>Exception</code>
-   */
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
     connection.addExceptionListener(this);
     connection.addMessageProducer(producer);
     LifecycleHelper.init(connection);
@@ -106,8 +99,7 @@ public class StandaloneProducer extends ServiceImp implements AdaptrisMessageSen
 
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
-  public void close() {
+  protected void closeService() {
     LifecycleHelper.close(producer);
     LifecycleHelper.close(connection);
   }

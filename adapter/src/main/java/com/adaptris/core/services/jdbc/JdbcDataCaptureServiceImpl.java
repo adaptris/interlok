@@ -62,7 +62,7 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcService {
   }
 
   @Override
-  protected void initService() throws CoreException {
+  protected void initJdbcService() throws CoreException {
 
   }
 
@@ -77,7 +77,7 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcService {
   }
 
   @Override
-  protected void closeService() {
+  protected void closeJdbcService() {
   }
 
   /**

@@ -130,15 +130,15 @@ public class AddMetadataService extends ServiceImp {
     log.debug("metadata added " + addedMetadata);
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#init() */
-  public void init() throws CoreException {
-    // na
+  @Override
+  protected void initService() throws CoreException {
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
-  public void close() {
-    // na
+  @Override
+  protected void closeService() {
+
   }
+
 
   /** @see java.lang.Object#toString() */
   @Override

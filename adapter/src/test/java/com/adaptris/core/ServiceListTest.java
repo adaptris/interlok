@@ -248,10 +248,11 @@ public class ServiceListTest extends ServiceCollectionCase {
     }
 
     @Override
-    public void init() throws CoreException {
+    protected void initService() throws CoreException {
       initCount++;
-      super.init();
+      super.initService();
     }
+
 
     int getInitCount() {
       return initCount;
@@ -265,12 +266,13 @@ public class ServiceListTest extends ServiceCollectionCase {
     public void doService(AdaptrisMessage msg) throws ServiceException {
       hasTriggered = true;
     }
-
-    public void close() {
-      hasTriggered = false;
+    @Override
+    protected void initService() throws CoreException {
     }
 
-    public void init() throws CoreException {
+    @Override
+    protected void closeService() {
+      hasTriggered = false;
     }
 
     @Override

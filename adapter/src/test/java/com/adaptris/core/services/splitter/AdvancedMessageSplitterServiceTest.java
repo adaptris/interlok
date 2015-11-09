@@ -252,11 +252,12 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
     }
 
     @Override
-    public void init() throws CoreException {
+    protected void initService() throws CoreException {
+
     }
 
     @Override
-    public void close() {
+    protected void closeService() {
     }
 
     @Override

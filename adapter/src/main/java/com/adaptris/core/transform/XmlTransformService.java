@@ -90,15 +90,8 @@ public class XmlTransformService extends ServiceImp {
     transforms = new HashMap<String, Transformer>();
   }
 
-  /**
-   * <p>
-   * If a <code>URL</code> is not configured, <code>allowOverride</code> is set to true, regardless of configuration.
-   * </p>
-   * 
-   * @see com.adaptris.core.AdaptrisComponent#init()
-   */
   @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
     if (getUrl() == null) {
       overrideAllowOverride = Boolean.TRUE;
     }
@@ -108,6 +101,10 @@ public class XmlTransformService extends ServiceImp {
     if (useMetadataAsStylesheetParameters() && getTransformParameter() == null) {
       log.warn("Configured with deprecated 'useMetadataAsStylesheetParameters'; use #setTransformParameter() instead.");
     }
+  }
+
+  @Override
+  protected void closeService() {
   }
 
   /**
@@ -177,12 +174,6 @@ public class XmlTransformService extends ServiceImp {
       this.transforms.put(urlToUse, transformer);
       return transformer;
     }
-  }
-
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
-  @Override
-  public void close() {
-    // do nothing...
   }
 
   // properties...

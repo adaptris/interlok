@@ -69,14 +69,18 @@ public class XpathObjectMetadataService extends ServiceImp {
     setXpathQueries(new ArrayList<XpathObjectQuery>());
   }
 
-  /** @see AdaptrisComponent */
   @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
     for (XpathObjectQuery query : xpathQueries) {
       query.verify();
     }
     queriesToExecute = new ArrayList<XpathObjectQuery>();
     queriesToExecute.addAll(getXpathQueries());
+  }
+
+  @Override
+  protected void closeService() {
+
   }
 
   public void doService(AdaptrisMessage msg) throws ServiceException {
@@ -113,10 +117,6 @@ public class XpathObjectMetadataService extends ServiceImp {
     this.namespaceContext = namespaceContext;
   }
 
-  /** @see AdaptrisComponent */
-  @Override
-  public void close() { /* na */
-  }
 
   public List<XpathObjectQuery> getXpathQueries() {
     return xpathQueries;

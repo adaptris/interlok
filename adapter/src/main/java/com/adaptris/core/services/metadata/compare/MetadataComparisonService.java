@@ -66,7 +66,8 @@ public class MetadataComparisonService extends ServiceImp {
     msg.addMetadata(getComparator().compare(msg.getMetadata(getFirstKey()), msg.getMetadata(getSecondKey())));
   }
 
-  public void init() throws CoreException {
+  @Override
+  protected void initService() throws CoreException {
     if (isBlank(getFirstKey())) {
       throw new CoreException("1st Metadata Key is blank");
     }
@@ -78,8 +79,9 @@ public class MetadataComparisonService extends ServiceImp {
     }
   }
 
-  public void close() {
-    // na
+  @Override
+  protected void closeService() {
+
   }
 
   @Override

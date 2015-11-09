@@ -70,7 +70,7 @@ public abstract class ScriptingServiceImp extends ServiceImp {
   protected abstract Reader createReader() throws IOException;
 
   @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
     if (language == null) {
       throw new CoreException("Language may not be null");
     }
@@ -82,8 +82,9 @@ public abstract class ScriptingServiceImp extends ServiceImp {
   }
 
   @Override
-  public void close() {
+  protected void closeService() {
   }
+
 
   @Override
   public void start() throws CoreException {

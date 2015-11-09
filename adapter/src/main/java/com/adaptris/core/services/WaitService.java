@@ -86,16 +86,12 @@ public class WaitService extends ServiceImp {
     }
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#init() */
   @Override
-  public void init() {
-    // na
+  protected void initService() {
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
   @Override
-  public void close() {
-    // na
+  protected void closeService() {
   }
 
   long waitMs() {

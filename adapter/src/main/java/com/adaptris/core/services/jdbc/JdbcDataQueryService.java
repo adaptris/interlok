@@ -94,7 +94,7 @@ public class JdbcDataQueryService extends JdbcService {
   }
 
   @Override
-  public void initService() throws CoreException {
+  protected void initJdbcService() throws CoreException {
     LifecycleHelper.init(resultSetTranslator);
   }
 
@@ -110,7 +110,7 @@ public class JdbcDataQueryService extends JdbcService {
   }
 
   @Override
-  public void closeService() {
+  protected void closeJdbcService() {
     LifecycleHelper.close(resultSetTranslator);
   }
 

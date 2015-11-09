@@ -51,12 +51,12 @@ public abstract class JdbcService extends ServiceImp {
   }
 
   @Override
-  public final void init() throws CoreException {
+  public final void initService() throws CoreException {
     if (connection != null) {
       connection.addExceptionListener(this);
     }
     LifecycleHelper.init(connection);
-    initService();
+    initJdbcService();
   }
 
   @Override
@@ -69,19 +69,12 @@ public abstract class JdbcService extends ServiceImp {
 
   protected abstract void prepareService() throws CoreException;
 
-  /**
-   * Do any initialisation required for the concrete service.
-   * <p>
-   * This is called after the connection is initialised
-   * </p>
-   *
-   * @throws CoreException
-   */
-  protected abstract void initService() throws CoreException;
+
+  protected abstract void initJdbcService() throws CoreException;
 
   @Override
-  public final void close() {
-    closeService();
+  public final void closeService() {
+    closeJdbcService();
     LifecycleHelper.close(connection);
   }
 
@@ -91,7 +84,7 @@ public abstract class JdbcService extends ServiceImp {
    * This is called before the connection is closed
    * </p>
    */
-  protected abstract void closeService();
+  protected abstract void closeJdbcService();
 
   @Override
   public void start() throws CoreException {

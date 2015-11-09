@@ -28,23 +28,17 @@ import com.adaptris.core.ServiceImp;
  * </p>
  */
 public abstract class ConfirmServiceImp extends ServiceImp {
-
-  /**
-   * <p>
-   * Verifies that a metadata key to obtain the confirmation ID from has been
-   * set, and that <code>getIsConfirmation</code> returns true. We could
-   * hard code <code>isConfirmation</code> to true, but I think that is 
-   * potentially more confusing. 
-   * </p> 
-   *  @see com.adaptris.core.AdaptrisComponent#init() 
-   */
+  
   @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
     if (!isConfirmation()) {
       throw new CoreException("isConfirmation must be true");
     }
   }
-  
+
+  @Override
+  protected void closeService() {}
+
   /**
    * <p>
    * Sets the passed <code>confirmationId</code> against the configured key.
@@ -54,10 +48,5 @@ public abstract class ConfirmServiceImp extends ServiceImp {
     msg.addObjectMetadata
       (MessageEventGenerator.CONFIRMATION_ID_KEY, confirmationId);
   }
-  
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
-  @Override
-  public void close() {
-    // n/a
-  }
+
 }

@@ -79,15 +79,15 @@ public class FindAndReplaceService extends ServiceImp {
     msg.setContent(result, msg.getContentEncoding());
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#init() */
-  public void init() throws CoreException {
-    // na
+  @Override
+  protected void initService() throws CoreException {
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
-  public void close() {
-    // na
+  @Override
+  protected void closeService() {
+
   }
+
 
   // getters and setters
 

@@ -57,7 +57,7 @@ public class AggregatingJmsConsumeService extends AggregatingConsumeServiceImpl<
   }
 
   @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
     if (connection == null) {
       throw new CoreException("Null Connection");
     }
@@ -86,7 +86,7 @@ public class AggregatingJmsConsumeService extends AggregatingConsumeServiceImpl<
   }
 
   @Override
-  public void close() {
+  protected void closeService() {
     LifecycleHelper.close(connection);
   }
 

@@ -188,10 +188,16 @@ public class Perf4jTimingServiceTest extends GeneralServiceExample {
       whenToFail = wtf;
     }
 
-    public void init() throws CoreException {
+    @Override
+    protected void initService() throws CoreException {
       if (whenToFail.equals(WhenToFail.ON_INIT)) {
         throw new CoreException(WhenToFail.ON_INIT + " failure specified");
       }
+    }
+
+    @Override
+    protected void closeService() {
+
     }
 
     @Override
@@ -202,8 +208,6 @@ public class Perf4jTimingServiceTest extends GeneralServiceExample {
       super.start();
     }
 
-    public void close() {
-    }
 
     @Override
     public void prepare() throws CoreException {

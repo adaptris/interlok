@@ -613,10 +613,14 @@ public class ActiveMqJmsTransactedWorkflowTest extends BaseCase {
       }
     }
 
-    public void close() {
+    @Override
+    protected void initService() throws CoreException {
+
     }
 
-    public void init() {
+    @Override
+    protected void closeService() {
+
     }
     @Override
     public void prepare() throws CoreException {}

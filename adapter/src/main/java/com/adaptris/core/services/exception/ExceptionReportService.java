@@ -105,7 +105,8 @@ public class ExceptionReportService extends ServiceImp {
     }
   }
 
-  public void init() throws CoreException {
+  @Override
+  protected void initService() throws CoreException {
     if (documentMerge == null) {
       throw new CoreException("No documentMerge");
     }
@@ -115,6 +116,13 @@ public class ExceptionReportService extends ServiceImp {
   }
 
   @Override
+  protected void closeService() {
+
+  }
+
+
+
+  @Override
   public void start() throws CoreException {
     super.start();
   }
@@ -122,9 +130,6 @@ public class ExceptionReportService extends ServiceImp {
   @Override
   public void stop() {
     super.stop();
-  }
-
-  public void close() {
   }
 
   @Override

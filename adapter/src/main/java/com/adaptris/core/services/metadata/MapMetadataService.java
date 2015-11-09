@@ -101,14 +101,15 @@ public class MapMetadataService extends ServiceImp {
     return result;
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#init() */
-  public void init() throws CoreException {
-    ;
+
+  @Override
+  protected void initService() throws CoreException {
+
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
-  public void close() {
-    ;
+  @Override
+  protected void closeService() {
+
   }
 
   /**

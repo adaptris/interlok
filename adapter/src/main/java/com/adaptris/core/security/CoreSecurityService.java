@@ -228,7 +228,7 @@ public abstract class CoreSecurityService extends ServiceImp {
   }
 
   @Override
-  public final void init() throws CoreException {
+  protected final void initService() throws CoreException {
     try {
       pkPassword = getPrivateKeyPasswordProvider().retrievePrivateKeyPassword();
     }
@@ -269,9 +269,8 @@ public abstract class CoreSecurityService extends ServiceImp {
     }
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
   @Override
-  public void close() {
+  protected void closeService() {
     return;
   }
 

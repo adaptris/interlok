@@ -109,22 +109,13 @@ public class SystemCommandExecutorService extends ServiceImp {
   }
   
 
-  /**
-   * @see com.adaptris.core.ComponentLifecycle#close()
-   */
   @Override
-  public void close() {
-    //Nothing to do
+  protected void initService() throws CoreException {
   }
 
-  /**
-   * @see com.adaptris.core.ComponentLifecycle#init()
-   */
   @Override
-  public void init() throws CoreException {
-    //Nothing to do
+  protected void closeService() {
   }
-
 
   public CommandBuilder getCommandBuilder() {
     return commandBuilder;

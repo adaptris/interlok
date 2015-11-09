@@ -85,12 +85,17 @@ public class AdvancedMessageSplitterService extends MessageSplitterServiceImp im
     }
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#init() */
   @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
     LifecycleHelper.registerEventHandler(service, eventHandler);
-    super.init();
+    super.initService();
     LifecycleHelper.init(service);
+  }
+
+  @Override
+  protected void closeService() {
+    LifecycleHelper.stop(service);
+    super.closeService();
   }
 
   /** @see com.adaptris.core.AdaptrisComponent#start() */
@@ -106,11 +111,6 @@ public class AdvancedMessageSplitterService extends MessageSplitterServiceImp im
   public void stop() {
     LifecycleHelper.stop(service);
     super.stop();
-  }
-
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
-  public void close() {
-    LifecycleHelper.stop(service);
   }
 
   /**

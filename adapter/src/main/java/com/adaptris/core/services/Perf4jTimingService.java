@@ -144,19 +144,18 @@ public class Perf4jTimingService extends ServiceImp implements EventHandlerAware
   }
 
   @Override
-  public void close() {
-    handleLifecycle(Lifecycle.close);
-  }
-
-  @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
     try {
       LifecycleHelper.registerEventHandler(service, eventHandler);
       handleLifecycle(Lifecycle.init);
-    }
-    catch (LifecycleException e) {
+    } catch (LifecycleException e) {
       throw (CoreException) e.getCause();
     }
+  }
+
+  @Override
+  protected void closeService() {
+    handleLifecycle(Lifecycle.close);
   }
 
   @Override

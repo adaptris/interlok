@@ -98,19 +98,16 @@ public class PayloadFromMetadataService extends ServiceImp {
     return result;
   }
 
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#close()
-   */
-  public void close() {
-  }
-
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#init()
-   */
-  public void init() throws CoreException {
+  @Override
+  protected void initService() throws CoreException {
     if (getTemplate() == null) {
       throw new CoreException("Template is null");
     }
+  }
+
+  @Override
+  protected void closeService() {
+
   }
 
   /**

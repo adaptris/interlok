@@ -45,8 +45,8 @@ public class AggregatingFsConsumeService extends AggregatingConsumeServiceImpl<N
   }
 
   @Override
-  public void init() throws CoreException {
-    super.init();
+  protected void initService() throws CoreException {
+    super.initService();
     if (fsConsumer == null) throw new CoreException("FS Consumer is null");
   }
 

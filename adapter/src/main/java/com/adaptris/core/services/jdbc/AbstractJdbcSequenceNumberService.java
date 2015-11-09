@@ -146,7 +146,7 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
   }
 
   @Override
-  protected void initService() throws CoreException {
+  protected void initJdbcService() throws CoreException {
     if (getMetadataKey() == null) {
       throw new CoreException("MetadataKey to set the " + "sequence number against is null");
     }
@@ -164,7 +164,7 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
   }
 
   @Override
-  protected void closeService() {
+  protected void closeJdbcService() {
 
   }
 

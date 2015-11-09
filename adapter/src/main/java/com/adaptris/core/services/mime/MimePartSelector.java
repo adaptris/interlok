@@ -122,21 +122,16 @@ public class MimePartSelector extends ServiceImp {
     return hdrs;
   }
 
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#close()
-   */
   @Override
-  public void close() {
-  }
-
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#init()
-   */
-  @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
     if (selector == null) {
       throw new CoreException("Mime part Selector may not be null");
     }
+  }
+
+  @Override
+  protected void closeService() {
+
   }
 
   /**

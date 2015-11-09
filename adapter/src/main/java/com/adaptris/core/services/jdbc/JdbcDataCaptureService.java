@@ -160,8 +160,8 @@ public class JdbcDataCaptureService extends JdbcDataCaptureServiceImpl {
     return getIterates() != null ? getIterates().booleanValue() : false;
   }
 
-  protected void initService() throws CoreException {
-    super.initService();
+  protected void initJdbcService() throws CoreException {
+    super.initJdbcService();
   }
 
   /**

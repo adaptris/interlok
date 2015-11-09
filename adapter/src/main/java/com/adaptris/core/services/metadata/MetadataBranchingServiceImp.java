@@ -44,16 +44,15 @@ public abstract class MetadataBranchingServiceImp extends BranchingServiceImp {
     setMetadataKeys(new ArrayList<String>());
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#init() */
+
   @Override
-  public void init() throws CoreException {
-    // do nothing
+  protected void initService() throws CoreException {
+
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
   @Override
-  public void close() {
-    // do nothing
+  protected void closeService() {
+
   }
 
   /**

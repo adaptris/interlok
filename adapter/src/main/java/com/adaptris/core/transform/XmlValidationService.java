@@ -54,9 +54,17 @@ public class XmlValidationService extends ServiceImp {
     setValidators(new ArrayList(Arrays.asList(validators)));
   }
 
-  public void init() throws CoreException {
+  @Override
+  protected void initService() throws CoreException {
     for (MessageValidator v : getValidators()) {
       LifecycleHelper.init(v);
+    }
+  }
+
+  @Override
+  protected void closeService() {
+    for (MessageValidator v : getValidators()) {
+      LifecycleHelper.close(v);
     }
   }
 
@@ -72,12 +80,6 @@ public class XmlValidationService extends ServiceImp {
       LifecycleHelper.stop(v);
     }
     super.stop();
-  }
-
-  public void close() {
-    for (MessageValidator v : getValidators()) {
-      LifecycleHelper.close(v);
-    }
   }
 
   public void doService(AdaptrisMessage msg) throws ServiceException {

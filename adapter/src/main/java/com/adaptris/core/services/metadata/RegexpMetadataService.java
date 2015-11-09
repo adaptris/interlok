@@ -124,14 +124,13 @@ public class RegexpMetadataService extends ServiceImp {
     regexpMetadataQueries = l;
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
-  public void close() {
-    // nothing to do
+  @Override
+  protected void initService() throws CoreException {
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#init() */
-  public void init() throws CoreException {
-    // nothing to do
+  @Override
+  protected void closeService() {
+
   }
 
   @Override

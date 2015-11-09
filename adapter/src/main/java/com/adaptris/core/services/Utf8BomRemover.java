@@ -78,10 +78,12 @@ public class Utf8BomRemover extends ServiceImp {
     }
   }
 
-  public void close() {
+  @Override
+  protected void initService() {
   }
 
-  public void init() {
+  @Override
+  protected void closeService() {
   }
 
 

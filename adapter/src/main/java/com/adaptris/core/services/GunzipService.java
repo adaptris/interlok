@@ -64,26 +64,12 @@ public class GunzipService extends ServiceImp {
     }
   }
 
-  /** @see java.lang.Object#toString() */
   @Override
-  public String toString() {
-    StringBuffer result = new StringBuffer();
-
-    result.append("[");
-    result.append(this.getClass().getName());
-    result.append("]");
-
-    return result.toString();
+  protected void initService() throws CoreException {
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
   @Override
-  public void close() {
-  }
-
-  /** @see com.adaptris.core.AdaptrisComponent#init() */
-  @Override
-  public void init() {
+  protected void closeService() {
   }
 
   @Override

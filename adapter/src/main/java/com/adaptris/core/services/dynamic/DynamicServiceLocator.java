@@ -158,16 +158,12 @@ public class DynamicServiceLocator extends ServiceImp implements EventHandlerAwa
     LifecycleHelper.close(c);
   }
 
-  /**
-   * <p>
-   * Initialisation will fail unless <code>tradingRelationshipCreator</code>,
-   * <code>serviceNameProvider</code>, and <code>serviceStore</code> have been
-   * set.
-   * </p>
-   *
-   * @see com.adaptris.core.AdaptrisComponent#init()
-   */
-  public void init() throws CoreException {
+  @Override
+  public void prepare() throws CoreException {
+  }
+
+  @Override
+  protected void initService() throws CoreException {
     if (getTradingRelationshipCreator() == null || getServiceNameProvider() == null || getServiceStore() == null) {
 
       throw new CoreException("invalid config");
@@ -176,14 +172,8 @@ public class DynamicServiceLocator extends ServiceImp implements EventHandlerAwa
     getServiceStore().validate();
   }
 
-
   @Override
-  public void prepare() throws CoreException {
-  }
-
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
-  public void close() {
-    // na...
+  protected void closeService() {
   }
 
   // getters & setters...

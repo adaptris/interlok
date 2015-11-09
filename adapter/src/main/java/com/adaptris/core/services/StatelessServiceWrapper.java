@@ -183,15 +183,15 @@ public class StatelessServiceWrapper extends ServiceImp implements EventHandlerA
   }
 
   @Override
-  public void close() {
-  }
-
-  @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
     if (getService() == null) {
       throw new CoreException("No wrapped service");
     }
   }
+
+  @Override
+  protected void closeService() {}
+
 
   @Override
   public void prepare() throws CoreException {

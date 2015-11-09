@@ -77,12 +77,17 @@ public class ConvertObjectMetadataService extends ServiceImp {
     log.trace("metadata added " + metadataToAdd);
   }
 
-  public void init() throws CoreException {
+  @Override
+  protected void initService() throws CoreException {
     objectMetadataKeyPattern = Pattern.compile(getObjectMetadataKeyRegexp());
+
   }
 
-  public void close() {
+  @Override
+  protected void closeService() {
+
   }
+
 
   public String getObjectMetadataKeyRegexp() {
     return objectMetadataKeyRegexp;

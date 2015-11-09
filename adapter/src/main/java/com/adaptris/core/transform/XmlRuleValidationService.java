@@ -75,17 +75,24 @@ public class XmlRuleValidationService extends ServiceImp {
   }
 
   @Override
-  public void prepare() throws CoreException {}
-
+  public void prepare() throws CoreException {
+  }
 
   @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
     validator = new XmlRuleValidator();
     validator.setNamespaceContext(getNamespaceContext());
     validator.setValidationStages(getValidationStages());
     validator.prepare();
     LifecycleHelper.init(validator);
   }
+
+  @Override
+  protected void closeService() {
+    LifecycleHelper.close(validator);
+  }
+
+
 
   @Override
   public void start() throws CoreException {
@@ -97,10 +104,6 @@ public class XmlRuleValidationService extends ServiceImp {
   public void stop() {
     super.stop();
     LifecycleHelper.stop(validator);
-  }
-
-  public void close() {
-    LifecycleHelper.close(validator);
   }
 
   public void addValidationStage(ValidationStage vs) {

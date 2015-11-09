@@ -30,9 +30,6 @@ import java.util.Set;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -132,23 +129,18 @@ public class ReadMetadataFromFilesystem extends ServiceImp {
     }
   }
 
+
   @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
     if (getDestination() == null) {
       throw new CoreException("Null Destination");
     }
   }
 
   @Override
-  public void close() {
+  protected void closeService() {
   }
 
-  @Override
-  public String toString() {
-    return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("InputStyle", getInputStyle())
-        .append("OverwriteExistingMetadata", getOverwriteExistingMetadata()).append("ProduceDestination", getDestination())
-        .append("FilenameCreator", getFileNameCreator()).toString();
-  }
 
   public InputStyle getInputStyle() {
     return inputStyle;

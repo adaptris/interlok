@@ -63,13 +63,15 @@ public class MetadataValueBranchingService extends MetadataBranchingServiceImp {
     metadataToServiceIdMappings = new KeyValuePairSet();
   }
 
+
   @Override
-  public void init() throws CoreException {
-    super.init();
+  protected void initService() throws CoreException {
+    super.initService();
     if (valueMatcher == null) {
       throw new CoreException("ValueMatcher is null; cannot continue");
     }
   }
+
 
   /**
    * <p>

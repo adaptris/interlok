@@ -82,7 +82,7 @@ public class ScriptingService extends ScriptingServiceImp {
   }
 
   @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
     if (isEmpty(getScriptFilename())) {
       throw new CoreException("script filename is null");
     }
@@ -90,7 +90,7 @@ public class ScriptingService extends ScriptingServiceImp {
     if (!f.exists() || !f.isFile() || !f.canRead()) {
       throw new CoreException(getScriptFilename() + " is not accessible");
     }
-    super.init();
+    super.initService();
   }
 
   @Override

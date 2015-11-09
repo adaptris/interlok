@@ -136,16 +136,8 @@ public class AddTimestampMetadataService extends ServiceImp {
     return timestamp;
   }
 
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#close()
-   */
-  public void close() {
-  }
-
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#init()
-   */
-  public void init() throws CoreException {
+  @Override
+  protected void initService() throws CoreException {
     if (isBlank(getMetadataKey())) {
       throw new CoreException("No Metadata key specified for timestamp");
     }
@@ -153,6 +145,12 @@ public class AddTimestampMetadataService extends ServiceImp {
       throw new CoreException("No date format specified");
     }
   }
+
+  @Override
+  protected void closeService() {
+
+  }
+
 
   /**
    * @return the metadataKey

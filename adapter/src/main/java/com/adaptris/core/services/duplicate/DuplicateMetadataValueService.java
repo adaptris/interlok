@@ -48,15 +48,8 @@ public abstract class DuplicateMetadataValueService extends ServiceImp {
   protected transient List<Object> previousValuesStore;
   protected transient File store;
 
-  /**
-   * <p>
-   * Checks that a metadata key and store file URL are configured.
-   * </p>
-   *
-   * @see com.adaptris.core.AdaptrisComponent#init()
-   */
   @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
     if (getMetadataKey() == null) {
       throw new CoreException("metadataKeyToCheck must be set");
     }
@@ -68,6 +61,10 @@ public abstract class DuplicateMetadataValueService extends ServiceImp {
       previousValuesStore = new ArrayList<Object>();
     }
   }
+
+  @Override
+  protected void closeService() {}
+
 
   private void createStoreFile() throws CoreException {
     if (getStoreFileUrl() == null) {
@@ -101,12 +98,6 @@ public abstract class DuplicateMetadataValueService extends ServiceImp {
         throw new ServiceException(e);
       }
     }
-  }
-
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
-  @Override
-  public void close() {
-    // do nothing...
   }
 
   int storeSize() {

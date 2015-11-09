@@ -68,13 +68,16 @@ public class ThrowExceptionService extends ServiceImp {
     }
   }
 
-  public void init() throws CoreException {
+
+  @Override
+  protected void initService() throws CoreException {
     if (exceptionGenerator == null) {
       throw new CoreException("No Exception Generator configured");
     }
   }
 
-  public void close() {
+  @Override
+  protected void closeService() {
   }
 
   public ExceptionGenerator getExceptionGenerator() {

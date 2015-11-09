@@ -57,12 +57,13 @@ public abstract class ReformatMetadata extends ServiceImp {
   }
 
   @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
   }
 
   @Override
-  public void close() {
+  protected void closeService() {
   }
+
 
   /**
    * <p>

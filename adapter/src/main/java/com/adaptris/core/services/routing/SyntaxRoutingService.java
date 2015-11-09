@@ -132,16 +132,16 @@ public class SyntaxRoutingService extends ServiceImp {
     return routingKey;
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#init() */
-  public void init() throws CoreException {
+  @Override
+  protected void initService() throws CoreException {
     if (isBlank(routingKey)) {
       throw new CoreException("No Routing Key defined");
     }
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
-  public void close() {
-    // do nothing
+  @Override
+  protected void closeService() {
+
   }
 
   @Override

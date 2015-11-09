@@ -52,13 +52,12 @@ public class AlwaysFailService extends ServiceImp {
   }
 
   @Override
-  public void close() {
+  protected void initService() throws CoreException {
   }
 
   @Override
-  public void init() throws CoreException {
+  protected void closeService() {
   }
-
   @Override
   public void prepare() throws CoreException {
   }

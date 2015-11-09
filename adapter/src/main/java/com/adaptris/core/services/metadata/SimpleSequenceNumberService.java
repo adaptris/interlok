@@ -103,9 +103,8 @@ public class SimpleSequenceNumberService extends ServiceImp {
     setNumberFormat("0");
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#init() */
   @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
     if (isEmpty(getMetadataKey())) {
       throw new CoreException("MetadataKey to set the sequence number against is null/empty");
     }
@@ -113,6 +112,11 @@ public class SimpleSequenceNumberService extends ServiceImp {
       throw new CoreException("File containing the sequence number is null/empty");
     }
   }
+
+  @Override
+  protected void closeService() {
+  }
+
 
   @Override
   public void start() throws CoreException {
@@ -124,9 +128,6 @@ public class SimpleSequenceNumberService extends ServiceImp {
     super.stop();
   }
 
-  @Override
-  public void close() {
-  }
 
   /**
    * @see com.adaptris.core.Service#doService(com.adaptris.core.AdaptrisMessage)

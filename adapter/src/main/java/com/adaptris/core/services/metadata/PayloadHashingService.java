@@ -82,10 +82,8 @@ public class PayloadHashingService extends ServiceImp {
     }
   }
 
-  public void close() {
-  }
-
-  public void init() throws CoreException {
+  @Override
+  protected void initService() throws CoreException {
     if (getHashAlgorithm() == null || "".equals(getHashAlgorithm())) {
       throw new CoreException("hash-algorithm is null");
     }
@@ -94,11 +92,16 @@ public class PayloadHashingService extends ServiceImp {
     }
     try {
       MessageDigest d = MessageDigest.getInstance(getHashAlgorithm());
-    }
-    catch (NoSuchAlgorithmException e) {
+    } catch (NoSuchAlgorithmException e) {
       throw new CoreException(e.getMessage(), e);
     }
   }
+
+  @Override
+  protected void closeService() {
+
+  }
+
 
   public String getHashAlgorithm() {
     return hashAlgorithm;

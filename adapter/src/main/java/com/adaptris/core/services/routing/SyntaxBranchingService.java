@@ -103,14 +103,12 @@ public class SyntaxBranchingService extends BranchingServiceImp {
     syntaxIdentifiers = l;
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#init() */
-  public void init() {
-    // Nothing
+  @Override
+  protected void initService() throws CoreException {
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
-  public void close() {
-    // Nothing
+  @Override
+  protected void closeService() {
   }
 
   @Override

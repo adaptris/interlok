@@ -51,12 +51,17 @@ public class MockServiceWithConnection extends ServiceImp {
     connection.prepare();
   }
 
-
   @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
     getConnection().addExceptionListener(this);
     LifecycleHelper.init(getConnection());
   }
+
+  @Override
+  protected void closeService() {
+    LifecycleHelper.close(getConnection());
+  }
+
 
   @Override
   public void start() throws CoreException {
@@ -67,12 +72,6 @@ public class MockServiceWithConnection extends ServiceImp {
   @Override
   public void stop() {
     LifecycleHelper.stop(getConnection());
-  }
-
-  @Override
-  public void close() {
-    LifecycleHelper.close(getConnection());
-
   }
 
   public AdaptrisConnection getConnection() {

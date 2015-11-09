@@ -38,6 +38,7 @@ import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.services.aggregator.MessageAggregator;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -166,7 +167,7 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware {
   }
 
   @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
     if (getSplitter() == null) {
       throw new CoreException("Null MessageSplitter implementation");
     }
@@ -181,21 +182,22 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware {
   }
 
   @Override
-  public void close() {
+  protected void closeService() {
     executors.shutdown();
     try {
       if (!executors.awaitTermination(60, TimeUnit.SECONDS)) {
         executors.shutdownNow();
       }
-    }
-    catch (InterruptedException e) {
+    } catch (InterruptedException e) {
       log.warn("Failed to shutdown execution pool");
     }
   }
 
   @Override
   public void prepare() throws CoreException {
-    getService().prepare();
+    if (getService() != null) {
+      getService().prepare();
+    }
   }
 
   private Service cloneService(Service original) throws ServiceException {
@@ -304,7 +306,7 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware {
    * @param s the service to set
    */
   public void setService(Service s) {
-    this.service = s;
+    this.service = Args.notNull(s, "service");
   }
 
   /**
@@ -320,7 +322,7 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware {
    * @param ms the messageSplitter to set
    */
   public void setSplitter(MessageSplitter ms) {
-    this.splitter = ms;
+    this.splitter = Args.notNull(ms, "splitter");
   }
 
   /**
@@ -336,7 +338,7 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware {
    * @param mj the messageJoiner to set
    */
   public void setAggregator(MessageAggregator mj) {
-    this.aggregator = mj;
+    this.aggregator = Args.notNull(mj, "aggregator");
   }
 
 }

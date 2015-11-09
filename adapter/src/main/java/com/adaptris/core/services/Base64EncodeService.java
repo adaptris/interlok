@@ -60,16 +60,12 @@ public class Base64EncodeService extends ServiceImp {
     }
   }
 
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#close()
-   */
-  public void close() {
+  @Override
+  protected void initService() throws CoreException {
   }
 
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#init()
-   */
-  public void init() throws CoreException {
+  @Override
+  protected void closeService() {
   }
 
   @Override

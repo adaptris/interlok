@@ -115,14 +115,13 @@ public class LogMessageService extends ServiceImp {
     getLogger(getLogLevel()).log(log, defaultIfEmpty(getLogPrefix(), "") + msg.toString(includePayload(), includeEvents()));
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#init() */
-  public void init() throws CoreException {
-    // na
+
+  @Override
+  protected void initService() throws CoreException {
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
-  public void close() {
-    // na
+  @Override
+  protected void closeService() {
   }
 
   public String getLogPrefix() {

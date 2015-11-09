@@ -83,14 +83,20 @@ public class BasicMessageSplitterService extends MessageSplitterServiceImp {
     }
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#init() */
   @Override
-  public void init() throws CoreException {
-    super.init();
+  protected void initService() throws CoreException {
+    super.initService();
     connection.addExceptionListener(this); // back ref
     connection.addMessageProducer(producer);
     LifecycleHelper.init(connection);
     LifecycleHelper.init(producer);
+  }
+
+  @Override
+  protected void closeService() {
+    LifecycleHelper.stop(producer);
+    LifecycleHelper.stop(connection);
+    super.closeService();
   }
 
   /** @see com.adaptris.core.AdaptrisComponent#start() */
@@ -105,12 +111,6 @@ public class BasicMessageSplitterService extends MessageSplitterServiceImp {
   public void stop() {
     LifecycleHelper.stop(producer);
     LifecycleHelper.stop(connection);
-  }
-
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
-  public void close() {
-    LifecycleHelper.close(producer);
-    LifecycleHelper.close(connection);
   }
 
   /**

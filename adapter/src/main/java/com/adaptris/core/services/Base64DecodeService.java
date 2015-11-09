@@ -61,20 +61,12 @@ public class Base64DecodeService extends ServiceImp {
     }
   }
 
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#close()
-   */
-  public void close() {
-    // TODO Auto-generated method stub
-
+  @Override
+  protected void initService() throws CoreException {
   }
 
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#init()
-   */
-  public void init() throws CoreException {
-    // TODO Auto-generated method stub
-
+  @Override
+  protected void closeService() {
   }
 
   @Override

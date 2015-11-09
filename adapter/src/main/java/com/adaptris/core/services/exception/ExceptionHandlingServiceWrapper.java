@@ -104,11 +104,18 @@ public class ExceptionHandlingServiceWrapper extends ServiceImp implements Event
     }
   }
 
-  public void init() throws CoreException {
+  @Override
+  protected void initService() throws CoreException {
     LifecycleHelper.registerEventHandler(exceptionHandlingService, eventHandler);
     LifecycleHelper.registerEventHandler(service, eventHandler);
     LifecycleHelper.init(exceptionHandlingService);
     LifecycleHelper.init(service);
+  }
+
+  @Override
+  protected void closeService() {
+    LifecycleHelper.close(service);
+    LifecycleHelper.close(exceptionHandlingService);
   }
 
 
@@ -125,12 +132,6 @@ public class ExceptionHandlingServiceWrapper extends ServiceImp implements Event
     LifecycleHelper.stop(exceptionHandlingService);
     LifecycleHelper.stop(service);
     super.stop();
-  }
-
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
-  public void close() {
-    LifecycleHelper.close(service);
-    LifecycleHelper.close(exceptionHandlingService);
   }
 
   // properties

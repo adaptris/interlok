@@ -141,17 +141,18 @@ public class RetryingServiceWrapper extends ServiceImp implements EventHandlerAw
       // still try to use it, which will cause another failure and so the loop continues.
     }
   }
-  
+
   @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
     LifecycleHelper.registerEventHandler(this.getService(), eventHandler);
     LifecycleHelper.init(this.getService());
   }
 
   @Override
-  public void close() {
+  protected void closeService() {
     LifecycleHelper.close(this.getService());
   }
+
   
   @Override
   public void start() throws CoreException {

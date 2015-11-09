@@ -65,16 +65,16 @@ public class MetadataFilterService extends ServiceImp {
     log.trace(filteredKeys.toString());
   }
 
+
   @Override
-  public void init() throws CoreException {
-    // na
+  protected void initService() throws CoreException {
+
   }
 
   @Override
-  public void close() {
-    // na
-  }
+  protected void closeService() {
 
+  }
   public MetadataFilter getFilter() {
     return filter;
   }

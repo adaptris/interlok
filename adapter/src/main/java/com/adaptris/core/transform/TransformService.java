@@ -65,16 +65,8 @@ public abstract class TransformService extends ServiceImp {
     cachedRules = new ArrayList<Source>();
   }
 
-  /**
-   * <p>
-   * Initialises the transform framework.  If no rule is explicitly configured
-   * using <code>setUrl</code>, the <code>Service</code> is deemed to implicitly
-   * <code>allowOverride</code>.
-   * </p>
-   * @see com.adaptris.core.AdaptrisComponent#init()
-   */
   @Override
-  public final void init() throws CoreException {
+  protected final void initService() throws CoreException {
     try {
       tf = createFramework();
 
@@ -84,15 +76,21 @@ public abstract class TransformService extends ServiceImp {
           tf.addRule(configuredRule);
           cachedRules.add(configuredRule);
         }
-      }
-      else {
-        log.info("No configured URL, implicit #setAllowOverride(true): "
-            + "transform must be specified by metadata");
+      } else {
+        log.info("No configured URL, implicit #setAllowOverride(true): " + "transform must be specified by metadata");
         setAllowOverride(true);
       }
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       throw new CoreException(e);
+    }
+  }
+
+  @Override
+  protected final void closeService() {
+    Iterator i = cachedRules.iterator();
+    while (i.hasNext()) {
+      Source src = (Source) i.next();
+      tf.removeRule(src);
     }
   }
 
@@ -148,20 +146,6 @@ public abstract class TransformService extends ServiceImp {
     }
   }
 
-  /**
-   * <p>
-   * Removes cahed rules from the transform framework.
-   * </p>
-   * @see com.adaptris.core.AdaptrisComponent#close()
-   */
-  @Override
-  public final void close() {
-    Iterator i = cachedRules.iterator();
-    while (i.hasNext()) {
-      Source src = (Source) i.next();
-      tf.removeRule(src);
-    }
-  }
 
   @Override
   public void prepare() throws CoreException {

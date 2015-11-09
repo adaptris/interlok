@@ -57,11 +57,15 @@ public class AddNamespaceObjectMetadata extends ServiceImp {
     if (ctx != null) msg.getObjectMetadata().put(OBJECT_METADATA_KEY, ctx);
   }
 
-  public void init() throws CoreException {
+  @Override
+  protected void initService() throws CoreException {
   }
 
-  public void close() {
+  @Override
+  protected void closeService() {
+
   }
+
 
   /**
    * @return the namespaceContext

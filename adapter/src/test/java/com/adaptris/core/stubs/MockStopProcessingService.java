@@ -46,14 +46,14 @@ public class MockStopProcessingService extends ServiceImp {
   }
 
   
-  /** @see com.adaptris.core.AdaptrisComponent#init() */
-  public void init() { 
-    // na
+
+  @Override
+  protected void initService() throws CoreException {
   }
-  
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
-  public void close() { 
-    // na
+
+  @Override
+  protected void closeService() {
+
   }
 
   /** @see java.lang.Object#toString() */

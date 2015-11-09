@@ -46,16 +46,16 @@ public class DynamicService extends ServiceImp {
     ;
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#init() */
-  public void init() throws CoreException {
+  @Override
+  protected void initService() throws CoreException {
     SERVICE_STATE_MAP.put(this.getClass(), State.INIT);
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
-  public void close() {
+  @Override
+  protected void closeService() {
     SERVICE_STATE_MAP.put(this.getClass(), State.CLOSE);
   }
-  
+
   public void start() throws CoreException {
     SERVICE_STATE_MAP.put(this.getClass(), State.STARTED);
   }
