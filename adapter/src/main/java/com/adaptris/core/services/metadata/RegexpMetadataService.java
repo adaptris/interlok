@@ -39,7 +39,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * 
  * @config regexp-metadata-service
  * 
- * @license BASIC
+ * 
  */
 @XStreamAlias("regexp-metadata-service")
 public class RegexpMetadataService extends ServiceImp {

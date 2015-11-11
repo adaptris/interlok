@@ -39,7 +39,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config message-metrics-interceptor
- * @license BASIC
+ * 
  */
 @XStreamAlias("message-metrics-interceptor")
 public class MessageMetricsInterceptor extends MessageMetricsInterceptorImpl {

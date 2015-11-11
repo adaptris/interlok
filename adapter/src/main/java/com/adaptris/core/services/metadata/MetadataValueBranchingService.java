@@ -42,7 +42,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config metadata-value-branching-service
- * @license STANDARD
+ * 
  */
 @XStreamAlias("metadata-value-branching-service")
 public class MetadataValueBranchingService extends MetadataBranchingServiceImp {

@@ -35,7 +35,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config gzip-service
  * 
- * @license BASIC
+ * 
  */
 @XStreamAlias("gzip-service")
 public class GzipService extends ServiceImp {

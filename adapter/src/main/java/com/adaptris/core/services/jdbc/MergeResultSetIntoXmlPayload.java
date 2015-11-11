@@ -41,7 +41,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config jdbc-merge-into-xml-payload
  * 
- * @license STANDARD
+ * 
  * @author lchan
  * 
  */

@@ -58,7 +58,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config split-join-service
  * 
- * @license STANDARD
+ * 
  * @author lchan
  * 
  */

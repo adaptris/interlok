@@ -66,7 +66,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config sftp-key-auth-connection
- * @license BASIC
+ * 
  * @author dsefton
  */
 @XStreamAlias("sftp-key-auth-connection")

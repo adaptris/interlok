@@ -82,7 +82,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config jms-queue-producer
  * 
- * @license BASIC, additional license requirements from the chosen {@link MessageTypeTranslator} and
+ * 
  *          {@link ProducerSessionFactory}
  */
 @XStreamAlias("jms-queue-producer")

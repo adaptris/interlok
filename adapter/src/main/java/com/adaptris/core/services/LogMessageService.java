@@ -33,7 +33,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config log-message-service
- * @license BASIC
+ * 
  */
 @XStreamAlias("log-message-service")
 public class LogMessageService extends ServiceImp {

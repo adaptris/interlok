@@ -41,7 +41,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config jdbc-metadata-sequence-number-service
  * 
- * @license STANDARD
+ * 
  * @author lchan
  * 
  */

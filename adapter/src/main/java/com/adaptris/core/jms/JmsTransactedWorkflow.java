@@ -50,7 +50,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config jms-transacted-workflow
- * @license STANDARD
+ * 
  */
 @XStreamAlias("jms-transacted-workflow")
 @GenerateBeanInfo

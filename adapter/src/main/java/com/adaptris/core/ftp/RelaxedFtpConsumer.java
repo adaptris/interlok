@@ -50,7 +50,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config relaxed-ftp-consumer
- * @license BASIC
+ * 
  * @see FtpConnection
  * @see SftpConnection
  * @see FileTransferConnection

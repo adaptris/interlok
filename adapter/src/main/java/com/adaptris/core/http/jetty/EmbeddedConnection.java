@@ -43,7 +43,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config jetty-embedded-connection
- * @license BASIC
+ * 
  */
 @XStreamAlias("jetty-embedded-connection")
 public class EmbeddedConnection extends AdaptrisConnectionImp implements JettyServletRegistrar {

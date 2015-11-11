@@ -34,7 +34,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config size-based-branching-service
- * @license STANDARD
+ * 
  */
 @XStreamAlias("size-based-branching-service")
 public class SizeBasedBranchingService extends BranchingServiceImp {

@@ -27,7 +27,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config tcp-consume-connection
  * 
- * @license STANDARD
+ * 
  * @author lchan
  * @author $Author: lchan $
  */

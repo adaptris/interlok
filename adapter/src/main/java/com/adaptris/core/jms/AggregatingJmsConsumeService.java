@@ -38,7 +38,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * criteria.
  * 
  * @config aggregating-jms-consume-service
- * @license STANDARD
+ * 
  */
 @XStreamAlias("aggregating-jms-consume-service")
 public class AggregatingJmsConsumeService extends AggregatingConsumeServiceImpl<JmsConnection> implements JmsActorConfig {

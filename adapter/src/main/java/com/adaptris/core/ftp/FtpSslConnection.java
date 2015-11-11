@@ -46,7 +46,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config ftp-ssl-connection
- * @license BASIC
+ * 
  */
 @XStreamAlias("ftp-ssl-connection")
 public class FtpSslConnection extends FtpConnectionImp {

@@ -50,7 +50,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * 
  * @config jdbc-data-query-service
  * 
- * @license STANDARD
+ * 
  * @author sellidge
  * @author $Author: sellidge $
  */

@@ -26,7 +26,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * 
  * @config jms-per-message-producer-session
- * @license BASIC
+ * 
  * @author lchan
  * 
  */

@@ -43,7 +43,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config add-timestamp-metadata-service
  * @see com.adaptris.util.text.DateFormatUtil.CustomDateFormat
- * @license BASIC
+ * 
  * @author lchan
  * @author $Author: lchan $
  */

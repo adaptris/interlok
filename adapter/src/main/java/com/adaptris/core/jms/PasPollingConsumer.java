@@ -34,7 +34,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config jms-topic-poller
- * @license BASIC, additional license requirements from the chosen MessageTypeTranslator and VendorImplementation
+ * 
  */
 @XStreamAlias("jms-topic-poller")
 public class PasPollingConsumer extends JmsPollingConsumerImpl {

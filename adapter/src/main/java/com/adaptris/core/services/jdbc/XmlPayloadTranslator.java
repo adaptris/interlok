@@ -65,7 +65,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config jdbc-xml-payload-translator
- * @license STANDARD
+ * 
  * @author lchan
  * 
  */

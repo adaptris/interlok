@@ -26,7 +26,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * encoding
  * 
  * @config string-to-hex-metadata-service
- * @license BASIC
+ * 
  * @see HexToStringService
  * 
  */

@@ -32,7 +32,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @author amcgrath
  * @config constant-data-input-parameter
- * @license BASIC
+ * 
  */
 @XStreamAlias("constant-data-input-parameter")
 public class ConstantDataInputParameter implements DataInputParameter<String> {

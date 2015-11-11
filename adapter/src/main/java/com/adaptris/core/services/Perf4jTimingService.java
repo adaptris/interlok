@@ -48,7 +48,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config perf4j-timing-service
  * 
- * @license BASIC
+ * 
  * @see Log4JStopWatch
  */
 @XStreamAlias("perf4j-timing-service")

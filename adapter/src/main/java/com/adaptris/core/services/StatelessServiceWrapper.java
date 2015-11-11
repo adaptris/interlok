@@ -45,7 +45,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @author lchan
  * @config stateless-service-wrapper
- * @license BASIC
+ * 
  */
 @XStreamAlias("stateless-service-wrapper")
 public class StatelessServiceWrapper extends ServiceImp implements EventHandlerAware {

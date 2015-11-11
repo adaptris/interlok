@@ -58,7 +58,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config ftp-consumer
- * @license BASIC
+ * 
  * @see FtpConnection
  * @see SftpConnection
  * @see FileTransferConnection

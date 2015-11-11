@@ -80,7 +80,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </pre>
  * 
  * @config message-count-notification
- * @license STANDARD
+ * 
  * @since 3.0.4
  */
 @XStreamAlias("message-count-notification")

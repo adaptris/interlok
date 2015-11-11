@@ -37,7 +37,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config large-message-workflow
- * @license STANDARD
+ * 
  */
 @XStreamAlias("large-message-workflow")
 public class LargeMessageWorkflow extends StandardWorkflow {

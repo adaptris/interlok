@@ -40,7 +40,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config cached-destination-jndi-implementation
- * @license STANDARD
+ * 
  * @see StandardJndiImplementation
  */
 @XStreamAlias("cached-destination-jndi-implementation")

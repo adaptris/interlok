@@ -38,7 +38,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config reformat-date-service
  * 
- * @license BASIC
+ * 
  * @see SimpleDateFormat
  * @see com.adaptris.util.text.DateFormatUtil.CustomDateFormat
  * 

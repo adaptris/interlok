@@ -50,7 +50,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * 
  * @config jdbc-data-capture-service
  * 
- * @license STANDARD
+ * 
  * @author sellidge
  */
 @XStreamAlias("jdbc-data-capture-service")

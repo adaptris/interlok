@@ -34,7 +34,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config jmx-submit-message-interceptor
- * @license BASIC
+ * 
  * @since 3.0.4
  */
 @XStreamAlias("jmx-submit-message-interceptor")

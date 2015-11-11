@@ -47,7 +47,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config metadata-to-payload
- * @license BASIC
+ * 
  * @author lchan
  *
  */

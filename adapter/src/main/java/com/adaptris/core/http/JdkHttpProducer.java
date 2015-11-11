@@ -72,7 +72,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config jdk-http-producer
- * @license BASIC
+ * 
  * @see HttpURLConnection
  * @deprecated since 3.0.6 use {@link com.adaptris.core.http.client.net.StandardHttpProducer} instead.
  */

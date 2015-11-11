@@ -65,7 +65,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config activemq-blob-message-translator
- * @license BASIC
+ * 
  */
 @SuppressWarnings("deprecation")
 @XStreamAlias("activemq-blob-message-translator")

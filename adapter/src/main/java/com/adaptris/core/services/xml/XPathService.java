@@ -181,7 +181,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * @since 3.0.6
  * @author amcgrath
  * @config xpath-service
- * @license BASIC
+ * 
  */
 @XStreamAlias("xpath-service")
 public class XPathService extends ServiceImp {

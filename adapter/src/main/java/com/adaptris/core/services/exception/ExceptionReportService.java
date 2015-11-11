@@ -51,7 +51,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config exception-report-service
- * @license STANDARD
+ * 
  * @see ExceptionReportGenerator
  * @see DocumentMerge
  * @author lchan

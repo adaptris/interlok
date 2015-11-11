@@ -33,7 +33,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config metadata-exists-branching-service
- * @license STANDARD
+ * 
  */
 @XStreamAlias("metadata-exists-branching-service")
 public class MetadataExistsBranchingService 

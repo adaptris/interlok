@@ -35,7 +35,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Service which validates an input XML document.
  * 
  * @config xml-validation-service
- * @license BASIC
+ * 
  */
 @XStreamAlias("xml-validation-service")
 public class XmlValidationService extends ServiceImp {

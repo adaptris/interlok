@@ -38,7 +38,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * You can control the limit of the internal queue by configuring "max-messages".
  * </p>
  * @config lru-bounded-message-cache
- * @license BASIC
+ * 
  * @author Aaron McGrath
  *
  */

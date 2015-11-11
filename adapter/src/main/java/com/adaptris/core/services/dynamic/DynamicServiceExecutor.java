@@ -53,7 +53,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config dynamic-service-executor
- * @license STANDARD
+ * 
  * @author lchan
  * @see ServiceExtractor
  */

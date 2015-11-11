@@ -32,7 +32,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config change-char-encoding-service
  * 
- * @license BASIC
+ * 
  */
 @XStreamAlias("change-char-encoding-service")
 public class ChangeCharEncodingService extends ServiceImp {

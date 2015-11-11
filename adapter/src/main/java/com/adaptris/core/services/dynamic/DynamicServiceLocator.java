@@ -42,7 +42,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config dynamic-service-locator
- * @license STANDARD
+ * 
  */
 @XStreamAlias("dynamic-service-locator")
 public class DynamicServiceLocator extends ServiceImp implements EventHandlerAware {

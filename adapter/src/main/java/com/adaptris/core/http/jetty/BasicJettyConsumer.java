@@ -56,7 +56,7 @@ import com.adaptris.util.TimeInterval;
 /**
  * This is the abstract class for all implementations that make use of Jetty to receive messages.
  * 
- * @license BASIC
+ * 
  * @author lchan
  * @author $Author: lchan $
  */

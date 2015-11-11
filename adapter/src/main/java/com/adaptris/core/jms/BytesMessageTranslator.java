@@ -36,7 +36,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config bytes-message-translator
- * @license BASIC
+ * 
  */
 @XStreamAlias("bytes-message-translator")
 public class BytesMessageTranslator extends MessageTypeTranslatorImp {

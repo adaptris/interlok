@@ -36,7 +36,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config traversing-fs-consumer
- * @license STANDARD
+ * 
  */
 @XStreamAlias("traversing-fs-consumer")
 public class TraversingFsConsumer extends FsConsumer {

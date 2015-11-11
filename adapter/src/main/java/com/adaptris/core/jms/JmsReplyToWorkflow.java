@@ -50,7 +50,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config jms-reply-to-workflow
- * @license STANDARD
+ * 
  * @deprecated Use a {@link com.adaptris.core.StandardWorkflow} with a {@link com.adaptris.core.StandaloneProducer} with a
  * {@link JmsReplyToDestination}.
  */

@@ -55,7 +55,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config standard-jndi-implementation
- * @license BASIC
+ * 
  */
 @XStreamAlias("standard-jndi-implementation")
 public class StandardJndiImplementation extends VendorImplementationImp {

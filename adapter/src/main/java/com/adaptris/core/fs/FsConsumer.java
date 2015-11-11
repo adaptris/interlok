@@ -53,7 +53,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config fs-consumer
- * @license BASIC
+ * 
  */
 @XStreamAlias("fs-consumer")
 public class FsConsumer extends FsConsumerImpl {

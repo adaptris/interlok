@@ -36,7 +36,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * </p>
  * 
  * @config validate-metadata-service
- * @license BASIC
+ * 
  */
 @XStreamAlias("validate-metadata-service")
 public class ValidateMetadataService extends ServiceImp {

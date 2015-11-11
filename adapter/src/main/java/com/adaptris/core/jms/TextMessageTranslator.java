@@ -33,7 +33,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config text-message-translator
- * @license BASIC
+ * 
  */
 @XStreamAlias("text-message-translator")
 public final class TextMessageTranslator extends MessageTypeTranslatorImp {

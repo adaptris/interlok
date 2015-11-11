@@ -33,7 +33,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config stop-processing-service
- * @license BASIC
+ * 
  */
 @XStreamAlias("stop-processing-service")
 public class StopProcessingService extends ServiceImp {

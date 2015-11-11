@@ -57,7 +57,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config standard-http-producer
- * @license BASIC
+ * 
  * @author lchan
  */
 @XStreamAlias("standard-http-producer")

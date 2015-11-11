@@ -43,7 +43,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config basic-message-splitter-service
  * 
- * @license BASIC
+ * 
  */
 @GenerateBeanInfo
 @XStreamAlias("basic-message-splitter-service")

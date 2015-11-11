@@ -38,7 +38,7 @@ import com.adaptris.core.ServiceImp;
  * to modify.
  * </p>
  * 
- * @license BASIC
+ * 
  * @see ReformatDateService
  * @see TrimMetadataService
  * @see ReplaceMetadataValue

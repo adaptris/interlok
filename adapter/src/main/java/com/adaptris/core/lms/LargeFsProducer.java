@@ -57,7 +57,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </ul>
  * 
  * @config large-fs-producer
- * @license STANDARD
+ * 
  */
 @XStreamAlias("large-fs-producer")
 public class LargeFsProducer extends FsProducer {

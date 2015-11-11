@@ -37,7 +37,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * 
  * @config syntax-branching-service
  * 
- * @license STANDARD
+ * 
  * @see SyntaxIdentifier
  * @see SyntaxRoutingService
  */

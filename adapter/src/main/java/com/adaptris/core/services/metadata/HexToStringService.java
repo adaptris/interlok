@@ -29,7 +29,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config hex-to-string-metadata-service
  * 
- * @license BASIC
+ * 
  * @see StringToHexService
  */
 @XStreamAlias("hex-to-string-metadata-service")

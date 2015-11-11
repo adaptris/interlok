@@ -26,7 +26,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config default-event-handler
- * @license dependent on underlying connection and producer.
+ * 
  */
 @XStreamAlias("default-event-handler")
 public class DefaultEventHandler extends EventHandlerBase {

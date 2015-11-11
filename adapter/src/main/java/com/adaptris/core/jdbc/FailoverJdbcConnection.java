@@ -41,7 +41,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * </p>
  * 
  * @config failover-jdbc-connection
- * @license STANDARD
+ * 
  * @author lchan
  * @see com.adaptris.jdbc.connection.FailoverConnection
  */

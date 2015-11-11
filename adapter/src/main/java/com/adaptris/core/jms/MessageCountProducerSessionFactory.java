@@ -30,7 +30,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config jms-message-count-producer-session
- * @license STANDARD
+ * 
  * @author lchan
  * 
  */

@@ -41,7 +41,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config metadata-hashing-service
  * 
- * @license BASIC
+ * 
  * 
  */
 @XStreamAlias("metadata-hashing-service")

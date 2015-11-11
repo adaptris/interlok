@@ -34,7 +34,7 @@ import com.adaptris.core.CoreException;
  * instances of this class point to the same persistentStore then results are undefined.
  * </p>
  * 
- * @license BASIC
+ * 
  * @author lchan
  * @author $Author: lchan $
  */

@@ -51,7 +51,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config xml-transform-service
- * @license BASIC
+ * 
  */
 @XStreamAlias("xml-transform-service")
 public class XmlTransformService extends ServiceImp {

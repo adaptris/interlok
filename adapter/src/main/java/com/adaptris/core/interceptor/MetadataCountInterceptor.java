@@ -41,7 +41,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config metadata-count-interceptor
- * @license STANDARD
+ * 
  */
 @XStreamAlias("metadata-count-interceptor")
 public class MetadataCountInterceptor extends MetadataMetricsInterceptorImpl {

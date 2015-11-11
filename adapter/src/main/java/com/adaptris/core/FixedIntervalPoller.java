@@ -35,7 +35,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config fixed-interval-poller
- * @license BASIC
+ * 
  */
 @XStreamAlias("fixed-interval-poller")
 public class FixedIntervalPoller extends PollerImp {

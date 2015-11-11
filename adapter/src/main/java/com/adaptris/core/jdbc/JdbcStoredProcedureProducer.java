@@ -79,7 +79,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config jdbc-stored-procedure-producer
- * @license STANDARD
+ * 
  * @author Aaron McGrath
  * 
  */

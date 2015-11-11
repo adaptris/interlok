@@ -44,7 +44,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config convert-object-metadata-service
  * 
- * @license BASIC
+ * 
  */
 @XStreamAlias("convert-object-metadata-service")
 public class ConvertObjectMetadataService extends ServiceImp {

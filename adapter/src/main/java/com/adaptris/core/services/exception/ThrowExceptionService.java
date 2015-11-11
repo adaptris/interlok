@@ -35,7 +35,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config throw-exception-service
  * 
- * @license BASIC
+ * 
  * @see ExceptionGenerator
  * 
  */

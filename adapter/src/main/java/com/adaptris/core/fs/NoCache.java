@@ -23,7 +23,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * {@link ProcessedItemCache} implementation that doesn't cache.
  * 
  * @config fs-no-processed-item-cache
- * @license BASIC
+ * 
  * @author lchan
  * @author $Author: lchan $
  */

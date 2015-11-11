@@ -63,7 +63,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config jdbc-service-list
- * @license STANDARD
+ * 
  * 
  * @see JdbcConstants#OBJ_METADATA_DATABASE_CONNECTION_KEY
  * 

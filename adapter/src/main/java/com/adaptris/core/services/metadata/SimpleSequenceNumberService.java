@@ -57,7 +57,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config simple-sequence-number-service
  * 
- * @license BASIC
+ * 
  * @author lchan
  * 
  */

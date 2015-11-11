@@ -59,7 +59,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @author Aaron McGrath
- * @license BASIC 
+ * 
  *
  */
 @XStreamAlias("retrying-service-wrapper")

@@ -48,7 +48,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config jdbc-all-rows-metadata-translator
  * 
  * 
- * @license STANDARD
+ * 
  * @author lchan
  * 
  */

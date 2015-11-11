@@ -56,7 +56,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config exception-handling-service-wrapper
  * 
- * @license STANDARD
+ * 
  */
 @XStreamAlias("exception-handling-service-wrapper")
 public class ExceptionHandlingServiceWrapper extends ServiceImp implements EventHandlerAware {

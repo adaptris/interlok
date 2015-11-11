@@ -38,7 +38,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config gunzip-service
- * @license BASIC
+ * 
  */
 @XStreamAlias("gunzip-service")
 public class GunzipService extends ServiceImp {

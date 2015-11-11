@@ -32,7 +32,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @author amcgrath
  * @config string-payload-data-output-parameter
- * @license BASIC
+ * 
  */
 @XStreamAlias("string-payload-data-output-parameter")
 public class StringPayloadDataOutputParameter implements DataOutputParameter<String> {

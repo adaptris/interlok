@@ -31,7 +31,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * criteria.
  * 
  * @config aggregating-fs-consume-service
- * @license STANDARD
+ * 
  */
 @XStreamAlias("aggregating-fs-consume-service")
 public class AggregatingFsConsumeService extends AggregatingConsumeServiceImpl<NullConnection> {

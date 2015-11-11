@@ -34,7 +34,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Base 64 Encode the message.
  * 
  * @config base64-encode-service
- * @license BASIC
+ * 
  */
 @XStreamAlias("base64-encode-service")
 public class Base64EncodeService extends ServiceImp {

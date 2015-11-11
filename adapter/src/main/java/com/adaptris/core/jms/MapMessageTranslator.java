@@ -41,7 +41,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config map-message-translator
- * @license BASIC
+ * 
  */
 @XStreamAlias("map-message-translator")
 public final class MapMessageTranslator extends MessageTypeTranslatorImp {

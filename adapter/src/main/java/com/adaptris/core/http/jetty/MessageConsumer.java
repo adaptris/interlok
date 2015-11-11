@@ -63,7 +63,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * consider configuring a {@link JettyPoolingWorkflowInterceptor} as part of that workflow.
  * </p>
  * @config jetty-message-consumer
- * @license BASIC
+ * 
  * @author lchan
  * @author $Author: lchan $
  */

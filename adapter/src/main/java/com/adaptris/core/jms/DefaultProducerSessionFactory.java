@@ -29,7 +29,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config jms-default-producer-session
- * @license BASIC
+ * 
  * @author lchan
  * 
  */

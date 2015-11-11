@@ -37,7 +37,7 @@ import com.adaptris.core.ServiceImp;
  * alternative to the fully qualified classname when building your configuration.
  * </p>
  * 
- * @license STANDARD
+ * 
  */
 public abstract class DuplicateMetadataValueService extends ServiceImp {
 

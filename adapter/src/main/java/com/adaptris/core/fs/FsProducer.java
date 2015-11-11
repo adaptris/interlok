@@ -46,7 +46,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * {@link AdaptrisMessageProducer} implementation that writes to the file system.
  * 
  * @config fs-producer
- * @license BASIC
+ * 
  */
 @XStreamAlias("fs-producer")
 public class FsProducer extends ProduceOnlyProducerImp {

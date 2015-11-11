@@ -38,7 +38,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config multi-producer-workflow.
  * 
- * @license STANDARD
+ * 
  */
 @XStreamAlias("multi-producer-workflow")
 public class MultiProducerWorkflow extends StandardWorkflow {

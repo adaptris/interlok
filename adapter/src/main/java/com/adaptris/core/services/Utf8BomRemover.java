@@ -44,7 +44,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config utf8-bom-remover
  * 
- * @license BASIC
+ * 
  * @author $Author: lchan $
  */
 @XStreamAlias("utf8-bom-remover")

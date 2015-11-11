@@ -35,7 +35,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config base64-decode-service
  * 
- * @license BASIC
+ * 
  */
 @XStreamAlias("base64-decode-service")
 public class Base64DecodeService extends ServiceImp {

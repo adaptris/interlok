@@ -41,7 +41,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config jms-connection
- * @license BASIC, additional license requirements from the chosen VendorImplementation
+ * 
  */
 @XStreamAlias("jms-connection")
 public class JmsConnection extends AllowsRetriesConnection implements JmsConnectionConfig, ConnectionComparator<JmsConnection> {

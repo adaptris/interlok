@@ -33,7 +33,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * In memory cache of items that have been processed.
  * 
  * @config fs-inline-processed-item-cache
- * @license BASIC
+ * 
  * @author lchan
  * @author $Author: lchan $
  */

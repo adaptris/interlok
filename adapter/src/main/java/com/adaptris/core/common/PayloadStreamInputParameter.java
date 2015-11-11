@@ -31,7 +31,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @author amcgrath
  * @config stream-payload-input-parameter
- * @license BASIC
+ * 
  */
 @XStreamAlias("stream-payload-input-parameter")
 public class PayloadStreamInputParameter implements DataInputParameter<InputStream> {

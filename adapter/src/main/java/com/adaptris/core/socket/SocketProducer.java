@@ -37,7 +37,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config socket-producer
  * 
- * @license STANDARD
+ * 
  * @author lchan
  * @author $Author: lchan $
  */

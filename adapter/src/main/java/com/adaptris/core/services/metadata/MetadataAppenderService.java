@@ -38,7 +38,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * 
  * @config metadata-appender-service
  * 
- * @license BASIC
+ * 
  */
 @XStreamAlias("metadata-appender-service")
 public class MetadataAppenderService extends ServiceImp {

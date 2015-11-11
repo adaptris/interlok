@@ -62,7 +62,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config pooling-workflow
  * 
- * @license STANDARD
+ * 
  * @author lchan
  * @author $Author: lchan $
  * @see ProcessingExceptionHandler

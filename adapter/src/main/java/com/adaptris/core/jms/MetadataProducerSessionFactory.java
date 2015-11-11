@@ -34,7 +34,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config jms-metadata-producer-session
- * @license STANDARD
+ * 
  * @author lchan
  * 
  */

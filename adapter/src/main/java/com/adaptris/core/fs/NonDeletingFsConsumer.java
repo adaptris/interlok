@@ -54,7 +54,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config non-deleting-fs-consumer
- * @license STANDARD
+ * 
  */
 @XStreamAlias("non-deleting-fs-consumer")
 public class NonDeletingFsConsumer extends FsConsumerImpl {

@@ -47,7 +47,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config failover-jms-connection
- * @license STANDARD
+ * 
  * @author sellidge
  * @author $Author: lchan $
  */

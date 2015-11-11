@@ -46,7 +46,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config map-metadata-service
  * 
- * @license BASIC
+ * 
  * @see Pattern
  * @author lchan
  * @author $Author: lchan $

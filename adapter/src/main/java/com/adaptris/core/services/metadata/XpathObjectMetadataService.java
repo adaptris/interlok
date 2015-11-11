@@ -46,7 +46,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * 
  * @config xpath-object-metadata-service
  * 
- * @license BASIC
+ * 
  */
 @XStreamAlias("xpath-object-metadata-service")
 public class XpathObjectMetadataService extends ServiceImp {

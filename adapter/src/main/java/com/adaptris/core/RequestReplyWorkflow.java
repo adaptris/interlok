@@ -44,7 +44,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config request-reply-workflow
  * 
- * @license STANDARD
+ * 
  */
 @XStreamAlias("request-reply-workflow")
 public class RequestReplyWorkflow extends StandardWorkflow {

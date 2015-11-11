@@ -59,7 +59,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config jetty-response-producer
- * @license BASIC
+ * 
  * @deprecated since 3.0.6; use {@link StandardResponseProducer} instead.
  * @author lchan
  * @author $Author: lchan $

@@ -53,7 +53,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config read-metadata-from-filesystem
  * 
- * @license BASIC
+ * 
  * @see WriteMetadataToFilesystem
  */
 @XStreamAlias("read-metadata-from-filesystem")

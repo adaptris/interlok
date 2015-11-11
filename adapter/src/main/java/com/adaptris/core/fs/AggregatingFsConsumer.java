@@ -59,7 +59,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config aggregating-fs-consumer
- * @license STANDARD
+ * 
  */
 @XStreamAlias("aggregating-fs-consumer")
 public class AggregatingFsConsumer extends AggregatingConsumerImpl<AggregatingFsConsumeService> {

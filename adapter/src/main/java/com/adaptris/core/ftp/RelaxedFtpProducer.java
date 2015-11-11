@@ -60,7 +60,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config relaxed-ftp-producer
- * @license BASIC
+ * 
  * @see FileNameCreator
  * @see FtpConnection
  * @see SftpConnection

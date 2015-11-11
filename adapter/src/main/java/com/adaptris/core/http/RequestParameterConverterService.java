@@ -56,7 +56,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config http-request-parameter-converter-service
- * @license BASIC
+ * 
  * @author lchan
  */
 @XStreamAlias("http-request-parameter-converter-service")

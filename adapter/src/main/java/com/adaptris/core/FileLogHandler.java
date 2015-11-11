@@ -56,7 +56,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config file-log-handler
  * 
- * @license BASIC
+ * 
  */
 @XStreamAlias("file-log-handler")
 @GenerateBeanInfo

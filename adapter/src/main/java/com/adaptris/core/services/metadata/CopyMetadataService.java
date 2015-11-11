@@ -42,7 +42,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config copy-metadata-service
  * 
- * @license BASIC
+ * 
  */
 @XStreamAlias("copy-metadata-service")
 public class CopyMetadataService extends ServiceImp {

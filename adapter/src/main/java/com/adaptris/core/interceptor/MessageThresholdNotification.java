@@ -44,7 +44,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config message-threshold-notification
- * @license STANDARD
+ * 
  * @since 3.0.4
  */
 @XStreamAlias("message-threshold-notification")

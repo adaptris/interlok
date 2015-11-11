@@ -33,7 +33,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config add-namespace-object-metadata
  * 
- * @license BASIC
+ * 
  */
 @XStreamAlias("add-namespace-object-metadata")
 public class AddNamespaceObjectMetadata extends ServiceImp {

@@ -41,7 +41,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config replace-metadata-value
  * 
- * @license BASIC
+ * 
  */
 @XStreamAlias("replace-metadata-value")
 public class ReplaceMetadataValue extends ReformatMetadata {

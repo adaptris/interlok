@@ -28,7 +28,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config always-fail-service
  * 
- * @license BASIC
+ * 
  * @author lchan
  * @deprecated consider using {@link ThrowExceptionService} instead (since 2.6.2) which wil give you a better exception message.
  */

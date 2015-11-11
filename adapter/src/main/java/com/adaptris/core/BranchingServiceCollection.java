@@ -37,7 +37,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config branching-service-collection
  * 
- * @license STANDARD
+ * 
  */
 @XStreamAlias("branching-service-collection")
 public class BranchingServiceCollection extends ServiceCollectionImp {

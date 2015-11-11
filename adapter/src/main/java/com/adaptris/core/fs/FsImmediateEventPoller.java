@@ -57,7 +57,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config fs-immediate-event-poller
- * @license STANDARD
+ * 
  */
 @XStreamAlias("fs-immediate-event-poller")
 public class FsImmediateEventPoller extends PollerImp {

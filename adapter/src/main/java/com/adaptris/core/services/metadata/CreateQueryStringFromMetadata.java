@@ -36,7 +36,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * Service that creates a URL query string from the specified metadata keys.
  * 
  * @config create-query-string-from-metadata
- * @license BASIC
+ * 
  * @author sellidge
  */
 @XStreamAlias("create-query-string-from-metadata")

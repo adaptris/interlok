@@ -60,7 +60,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config jetty-http-connection
- * @license STANDARD
+ * 
  * @author lchan
  */
 @XStreamAlias("jetty-http-connection")

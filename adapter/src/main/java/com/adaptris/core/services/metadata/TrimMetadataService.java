@@ -29,7 +29,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config trim-metadata-service
  * 
  * @author lchan
- * @license BASIC
+ * 
  */
 @XStreamAlias("trim-metadata-service")
 public class TrimMetadataService extends ReformatMetadata {

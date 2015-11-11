@@ -35,7 +35,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * </p>
  * 
  * @config find-and-replace-service
- * @license BASIC
+ * 
  * @see ConfiguredReplacementSource
  * @see MetadataReplacementSource
  */

@@ -66,7 +66,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config multi-attachment-smtp-producer
- * @license STANDARD
+ * 
  * @see MailProducer
  * @see CoreConstants#EMAIL_SUBJECT
  * @see CoreConstants#EMAIL_CC_LIST

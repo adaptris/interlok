@@ -43,7 +43,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config socket-consumer
  * 
- * @license STANDARD
+ * 
  */
 @XStreamAlias("socket-consumer")
 public class SocketConsumer extends AdaptrisMessageConsumerImp {

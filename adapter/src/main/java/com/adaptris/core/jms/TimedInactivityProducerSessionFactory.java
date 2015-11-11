@@ -36,7 +36,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config jms-timed-inactivity-producer-session
- * @license STANDARD
+ * 
  * @author lchan
  * 
  */

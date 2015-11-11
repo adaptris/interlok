@@ -28,7 +28,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config flat-file-transform-service
  * 
- * @license BASIC
+ * 
  * @author sellidge
  */
 @XStreamAlias("flat-file-transform-service")

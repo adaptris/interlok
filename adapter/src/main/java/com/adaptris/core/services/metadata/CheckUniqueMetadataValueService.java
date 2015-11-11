@@ -56,7 +56,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config check-unique-metadata-value-service
  * 
- * @license STANDARD
+ * 
  */
 @XStreamAlias("check-unique-metadata-value-service")
 public class CheckUniqueMetadataValueService extends BranchingServiceImp {

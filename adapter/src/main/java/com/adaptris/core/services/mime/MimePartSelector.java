@@ -46,7 +46,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config mime-part-selector-service
  * 
- * @license BASIC
+ * 
  * @author lchan
  * @author $Author: lchan $
  */

@@ -25,7 +25,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Perform Signing.
  * 
  * @config signing-service
- * @license BASIC
+ * 
  * @author lchan / $Author: lchan $
  */
 @XStreamAlias("signing-service")

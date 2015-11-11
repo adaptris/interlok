@@ -38,7 +38,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * </p>
  * 
  * @config xml-rule-validation-service
- * @license BASIC
+ * 
  * @deprecated use {@link XmlValidationService} with an {@link XmlRuleValidator} instead.
  */
 @XStreamAlias("xml-rule-validation-service")

@@ -29,7 +29,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config tcp-produce-connection
  * 
- * @license STANDARD
+ * 
  * @author lchan
  * @author $Author: hfraser $
  */

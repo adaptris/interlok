@@ -41,7 +41,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * </p>
  * 
  * @config syntax-routing-service
- * @license STANDARD
+ * 
  * @author sellidge
  */
 @XStreamAlias("syntax-routing-service")

@@ -30,7 +30,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config polling-trigger
  * 
- * @license BASIC
+ * 
  */
 @XStreamAlias("polling-trigger")
 @GenerateBeanInfo

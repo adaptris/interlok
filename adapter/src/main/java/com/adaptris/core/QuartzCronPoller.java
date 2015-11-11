@@ -198,7 +198,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config quartz-cron-poller
  * 
- * @license Basic
+ * 
  */
 @XStreamAlias("quartz-cron-poller")
 public class QuartzCronPoller extends PollerImp {

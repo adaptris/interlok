@@ -47,7 +47,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * </p>
  * 
  * @config metadata-totals-interceptor
- * @license STANDARD
+ * 
  */
 @XStreamAlias("metadata-totals-interceptor")
 public class MetadataTotalsInterceptor extends MetadataMetricsInterceptorImpl {

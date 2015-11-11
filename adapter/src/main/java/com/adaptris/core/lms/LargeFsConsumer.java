@@ -60,7 +60,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </ul>
  * 
  * @config large-fs-consumer
- * @license STANDARD
+ * 
  */
 @XStreamAlias("large-fs-consumer")
 public class LargeFsConsumer extends FsConsumer {

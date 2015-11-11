@@ -39,7 +39,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config generate-unique-metadata-value-service
- * @license BASIC
+ * 
  */
 @XStreamAlias("generate-unique-metadata-value-service")
 public class GenerateUniqueMetadataValueService extends ServiceImp {

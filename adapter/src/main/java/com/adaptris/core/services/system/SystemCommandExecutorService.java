@@ -55,7 +55,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config system-command-executor
- * @license STANDARD
+ * 
  */
 @XStreamAlias("system-command-executor")
 public class SystemCommandExecutorService extends ServiceImp {

@@ -25,7 +25,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Perform encryption only.
  * 
  * @config encrypt-only-service
- * @license BASIC
+ * 
  * @author lchan / $Author: lchan $
  */
 @XStreamAlias("encrypt-only-service")

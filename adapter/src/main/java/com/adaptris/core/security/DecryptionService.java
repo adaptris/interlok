@@ -27,7 +27,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Perform decryption.
  * 
  * @config decryption-service
- * @license BASIC
+ * 
  * @author lchan / $Author: lchan $
  */
 @XStreamAlias("decryption-service")

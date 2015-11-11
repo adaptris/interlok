@@ -32,7 +32,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config wait-service
- * @license BASIC
+ * 
  */
 @XStreamAlias("wait-service")
 public class WaitService extends ServiceImp {

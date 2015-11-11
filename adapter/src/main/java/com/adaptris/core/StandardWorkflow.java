@@ -31,7 +31,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config standard-workflow
  * 
- * @license BASIC
+ * 
  */
 @XStreamAlias("standard-workflow")
 public class StandardWorkflow extends WorkflowImp {

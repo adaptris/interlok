@@ -78,7 +78,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config ftp-producer
- * @license BASIC
+ * 
  * @see CoreConstants#FTP_REPLYTO_NAME
  * @see FileNameCreator
  * @see FtpConnection

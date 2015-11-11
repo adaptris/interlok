@@ -48,7 +48,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config duplicate-message-routing-service
- * @license STANDARD
+ * 
  */
 @XStreamAlias("duplicate-message-routing-service")
 public class DuplicateMessageRoutingService extends ServiceImp {

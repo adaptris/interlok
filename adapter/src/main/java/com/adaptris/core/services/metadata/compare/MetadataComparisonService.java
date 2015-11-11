@@ -38,7 +38,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config metadata-comparison-service
  * 
- * @license BASIC
+ * 
  */
 @XStreamAlias("metadata-comparison-service")
 public class MetadataComparisonService extends ServiceImp {

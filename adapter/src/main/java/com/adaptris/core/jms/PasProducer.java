@@ -81,7 +81,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </ul>
  * 
  * @config jms-topic-producer
- * @license BASIC, additional license requirements from the chosen {@link MessageTypeTranslator} and
+ * 
  *          {@link ProducerSessionFactory}
  */
 @XStreamAlias("jms-topic-producer")

@@ -41,7 +41,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config advanced-message-splitter-service
  * 
- * @license STANDARD
+ * 
  */
 @XStreamAlias("advanced-message-splitter-service")
 public class AdvancedMessageSplitterService extends MessageSplitterServiceImp implements EventHandlerAware {

@@ -49,7 +49,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config scripting-service
  * 
- * @license STANDARD
+ * 
  * @author lchan
  * 
  */

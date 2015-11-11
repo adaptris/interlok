@@ -36,7 +36,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config metadata-filter-service
  * 
- * @license BASIC
+ * 
  * @see java.util.regex.Pattern
  */
 @XStreamAlias("metadata-filter-service")

@@ -40,7 +40,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config clone-message-service-list
- * @license STANDARD
+ * 
  */
 @XStreamAlias("clone-message-service-list")
 public class CloneMessageServiceList extends ServiceCollectionImp {

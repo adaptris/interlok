@@ -45,7 +45,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config jetty-standard-response-producer
- * @license BASIC
+ * 
  * @author lchan
  *
  */

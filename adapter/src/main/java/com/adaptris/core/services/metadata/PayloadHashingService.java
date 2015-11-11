@@ -39,7 +39,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config payload-hashing-service
  * 
- * @license BASIC
+ * 
  * @author lchan
  */
 @XStreamAlias("payload-hashing-service")

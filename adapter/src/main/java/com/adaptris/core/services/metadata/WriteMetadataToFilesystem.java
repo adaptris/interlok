@@ -58,7 +58,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config write-metadata-to-filesystem
  * 
- * @license BASIC
+ * 
  */
 @XStreamAlias("write-metadata-to-filesystem")
 public class WriteMetadataToFilesystem extends ServiceImp {
