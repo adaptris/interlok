@@ -99,7 +99,6 @@ public abstract class DatabaseConnection extends AllowsRetriesConnection {
    * </p>
    * 
    * @throws CoreException if the driver implementation was not available.
-   * @see AdaptrisConnectionImp#initConnection()
    */
   @Override
   protected final void initConnection() throws CoreException {

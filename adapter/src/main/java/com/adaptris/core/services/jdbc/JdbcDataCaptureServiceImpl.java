@@ -34,7 +34,7 @@ import com.adaptris.core.jdbc.JdbcService;
 import com.adaptris.core.util.JdbcUtil;
 
 /**
- * Base implementation for capturing data from an {@linkplain AdaptrisMessage} and storing it in a jdbc database.
+ * Base implementation for capturing data from an {@linkplain com.adaptris.core.AdaptrisMessage} and storing it in a jdbc database.
  *
  */
 public abstract class JdbcDataCaptureServiceImpl extends JdbcService {

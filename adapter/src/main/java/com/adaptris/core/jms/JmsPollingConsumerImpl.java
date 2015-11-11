@@ -307,7 +307,7 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
    * </p>
    * <p>
    * In additional to plain text passwords, the passwords can also be encrypted
-   * using the appropriate {@link Password}
+   * using the appropriate {@link com.adaptris.security.password.Password}
    * </p>
    *
    * @param s the password for the specified user

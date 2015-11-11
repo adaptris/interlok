@@ -48,10 +48,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * <p>
  * This service splits a message according to the configured {@link MessageSplitter} implementation, executes the configured
- * {@link Service} and subsequently joins all the messages back using the configured {@link MessageAggregator} implementation
+ * {@link com.adaptris.core.Service} and subsequently joins all the messages back using the configured {@link MessageAggregator} implementation
  * <p>
  * <p>
- * For simplicity a new (cloned) instance of the underlying {@link Service} is created for every split message, and executed in its
+ * For simplicity a new (cloned) instance of the underlying {@link com.adaptris.core.Service} is created for every split message, and executed in its
  * own thread; this means that where there is a high cost of initialisation for the service, then you may get better performance
  * aggregating the messages in a different way.
  * </p>
@@ -301,7 +301,7 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware {
   }
 
   /**
-   * The {@link Service} to execute over all the split messages.
+   * The {@link com.adaptris.core.Service} to execute over all the split messages.
    * 
    * @param s the service to set
    */

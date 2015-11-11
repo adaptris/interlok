@@ -352,7 +352,7 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
   }
 
   /**
-   * Specify the {@link AdaptrisMessage} metadata keys that will be sent as headers for the mail message.
+   * Specify the {@link com.adaptris.core.AdaptrisMessage} metadata keys that will be sent as headers for the mail message.
    * <p>
    * Any metadata that is returned by this filter will be sent as headers.
    * </p>

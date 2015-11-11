@@ -57,7 +57,7 @@ public class HttpLegacyPrivateKeyPasswordProvider implements PrivateKeyPasswordP
   /**
    * Return the private key password as a char[] array.
    *
-   * @return the private key sourced from 'adp-http.properties' and decoded using {@link Password#decode(String)}
+   * @return the private key sourced from 'adp-http.properties' and decoded using {@link com.adaptris.security.password.Password#decode(String)}
    */
   @Override
   public char[] retrievePrivateKeyPassword() throws PasswordException {

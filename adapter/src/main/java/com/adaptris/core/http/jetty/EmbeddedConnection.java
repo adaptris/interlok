@@ -125,7 +125,6 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
    * Set the jetty connector against which to register any consumers.
    *
    * @param name - the connector name, defaults to null.
-   * @see ContextHandler#setConnectorNames(String[])
    */
   public void setConnectorName(String name) {
     connectorName = name;
@@ -211,7 +210,7 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
    * Specify the maximum wait time for the underlying Jetty Server instance to startup.
    * <p>
    * The adapter cannot be fully initialised until the underlying {@link org.eclipse.jetty.server.Server} is ready to receive
-   * messages. We need to ensure that the {@link AdaptrisConnection#init()} method blocks until the server is ready for registration
+   * messages. We need to ensure that the {@link com.adaptris.core.AdaptrisConnection#init()} method blocks until the server is ready for registration
    * of servlets and also ready for incoming HTTP requests. This value controls how long we wait for the server to start up before
    * throwing an exception.
    * </p>

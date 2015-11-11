@@ -25,7 +25,7 @@ package com.adaptris.core;
  * is applicable where the container requires to be informed of 
  * <code>Exception</code>s.
  * </p>
- * @see Service
+ * @see com.adaptris.core.Service
  */
 public interface AdaptrisMessageListener {
 

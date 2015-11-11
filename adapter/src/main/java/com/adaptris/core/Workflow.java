@@ -123,7 +123,7 @@ public interface Workflow extends AdaptrisMessageListener, StateManagedComponent
 
   /**
    * <p>
-   * Returns the {@link ProcessingExceptionHandler} to use.
+   * Returns the {@link com.adaptris.core.ProcessingExceptionHandler} to use.
    * </p>
    *
    * @return the ProcessingExceptionHandler to use
@@ -132,7 +132,7 @@ public interface Workflow extends AdaptrisMessageListener, StateManagedComponent
 
   /**
    * <p>
-   * Sets the {@link ProcessingExceptionHandler} to use.
+   * Sets the {@link com.adaptris.core.ProcessingExceptionHandler} to use.
    * </p>
    *
    * @param meh the ProcessingExceptionHandler to use

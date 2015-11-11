@@ -79,7 +79,7 @@ public class JmxOperationCallService extends ServiceImp {
   private String username;
   
   /**
-   * JMX password.  Also supports encoded passwords with {@link Password}
+   * JMX password.  Also supports encoded passwords with {@link com.adaptris.security.password.Password}
    */
   private String password;
   

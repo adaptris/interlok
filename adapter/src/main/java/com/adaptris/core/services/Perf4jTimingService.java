@@ -47,11 +47,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config perf4j-timing-service
- * 
- * 
  * @see Log4JStopWatch
+ * @deprecated since 3.1.0 consider using profiling instead.
  */
 @XStreamAlias("perf4j-timing-service")
+@Deprecated
 public class Perf4jTimingService extends ServiceImp implements EventHandlerAware {
 
   @NotNull
@@ -219,7 +219,7 @@ public class Perf4jTimingService extends ServiceImp implements EventHandlerAware
 
   /**
    * Set this to true if you wish to track the performance of the individual
-   * {@link AdaptrisComponent} lifecycle methods.
+   * {@link com.adaptris.core.AdaptrisComponent} lifecycle methods.
    * <p>
    * Setting this to true will generate the additional tags "{@link #getTag()}
    * .init", "{@link #getTag()}.start", "{@link #getTag()}.stop", "

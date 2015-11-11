@@ -30,7 +30,7 @@ import java.util.Arrays;
 import com.adaptris.util.IdGenerator;
 
 /**
- * {@link AdaptrisMessage} implementation created by {@link DefaultMessageFactory}
+ * {@link com.adaptris.core.AdaptrisMessage} implementation created by {@link DefaultMessageFactory}
  *
  * @author lchan
  * @author $Author: lchan $

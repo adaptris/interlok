@@ -121,7 +121,7 @@ public class ConfiguredUrl extends ConfiguredKeystore {
   /**
    * Set the password to be associated with this keystore.
    * <p>
-   * In additional to plain text passwords, the passwords can also be encoded using the appropriate {@link Password}
+   * In additional to plain text passwords, the passwords can also be encoded using the appropriate {@link com.adaptris.security.password.Password}
    * </p>
    *
    * @param keystorePassword the password.

@@ -33,7 +33,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * Implementation of {@link Service} that copies Object metadata to standard metadata, overwriting standard metadata.
+ * Implementation of {@link com.adaptris.core.Service} that copies Object metadata to standard metadata, overwriting standard metadata.
  * </p>
  * <p>
  * Object Metadata values are not easily translated to Strings; {@link Object#toString()} is used to perform the string conversion;

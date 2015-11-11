@@ -20,7 +20,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 
 /**
- * Interface for generating an exception from an {@link AdaptrisMessage} object.
+ * Interface for generating an exception from an {@link com.adaptris.core.AdaptrisMessage} object.
  *
  * @author lchan
  * 

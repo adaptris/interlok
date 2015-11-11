@@ -176,7 +176,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
    * public.
    * </p>
    * 
-   * @see AdaptrisComponent
+   * @see com.adaptris.core.AdaptrisComponent
    */
   @Override
   public void init() throws CoreException {
@@ -332,7 +332,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
     }
   }
 
-  /** @see AdaptrisComponent */
+  /** @see com.adaptris.core.AdaptrisComponent */
   @Override
   public void stop() {
     lastStopTime = new Date();
@@ -354,7 +354,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
     LifecycleHelper.stop(getSharedComponents());
   }
 
-  /** @see AdaptrisComponent */
+  /** @see com.adaptris.core.AdaptrisComponent */
   @Override
   public void close() {
     LifecycleHelper.close(failedMessageRetrier);
@@ -452,7 +452,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
 
   /**
    * <p>
-   * Sets the configured {@link ProcessingExceptionHandler} for the Adapter level. May not be null, but need not be configured at
+   * Sets the configured {@link com.adaptris.core.ProcessingExceptionHandler} for the Adapter level. May not be null, but need not be configured at
    * this level.
    * </p>
    * 

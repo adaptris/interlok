@@ -36,7 +36,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * Adds timestamp information as metadata.
  * <p>
- * In addition to supporting all the patterns allowed by {@link SimpleDateFormat}, this service also supports the special values
+ * In addition to supporting all the patterns allowed by {@link  java.text.SimpleDateFormat}, this service also supports the special values
  * {@code SECONDS_SINCE_EPOCH} and {@code MILLISECONDS_SINCE_EPOCH} which describe the number of seconds and milliseconds since
  * midnight Jan 1, 1970 UTC respectively. If specified as the format, then the long value associated will be emitted.
  * </p>

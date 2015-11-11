@@ -33,7 +33,7 @@ import com.adaptris.jdbc.JdbcResultRow;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
- * Base implementation for converting a {@linkplain ResultSet} into an {@linkplain AdaptrisMessage}.
+ * Base implementation for converting a {@linkplain java.sql.ResultSet} into an {@linkplain com.adaptris.core.AdaptrisMessage}.
  * 
  * @author lchan
  * 

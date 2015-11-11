@@ -154,7 +154,7 @@ public abstract class JdbcService extends ServiceImp {
   }
 
   /**
-   * Get the {@link Connection} either from the {@link AdaptrisMessage} object or from configuration.
+   * Get the {@link Connection} either from the {@link com.adaptris.core.AdaptrisMessage} object or from configuration.
    * 
    * @param msg the adaptrisMessage object
    * @return the connection either from the adaptris message or from configuration.

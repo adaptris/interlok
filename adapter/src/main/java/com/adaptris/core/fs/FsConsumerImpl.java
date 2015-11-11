@@ -51,7 +51,7 @@ import com.adaptris.util.TimeInterval;
 
 /**
  * <p>
- * Abstract implementation of <code>AdaptrisMessageConsumer</code> based on the <code>com.adaptris.fs</code> package.
+ * Abstract implementation of {@link com.adaptris.core.AdaptrisMessageConsumer} based on the <code>com.adaptris.fs</code> package.
  * </p>
  */
 public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
@@ -281,9 +281,9 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
    * Set the filename filter
    * 
    * @param string the classname of the {@link FileFilter} implementation to use, if not specified, then it defaults to
-   *          "org.apache.oro.io.Perl5FilenameFilter" which uses the jakarta oro package implementation of a Perl regular expression
-   *          filename filter.
-   * @see ConsumeDestination#getFilterExpression()
+   * "org.apache.oro.io.Perl5FilenameFilter" which uses the jakarta oro package implementation of a Perl regular expression
+   * filename filter.
+   * @see com.adaptris.core.ConsumeDestination#getFilterExpression()
    */
   public void setFileFilterImp(String string) {
     fileFilterImp = string;

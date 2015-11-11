@@ -115,7 +115,7 @@ public class HttpsConsumeConnection extends ConsumeConnection {
   /**
    * Set the password to access the keystore.
    * <p>
-   * In additional to plain text passwords, the passwords can also be encoded using the appropriate {@link Password}
+   * In additional to plain text passwords, the passwords can also be encoded using the appropriate {@link com.adaptris.security.password.Password}
    * </p>
    *
    * @param password the password, defaults to null as the password may be embedded in {@link #setKeystore(String)}

@@ -46,7 +46,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <p>
  * Additionally, this workflow may not be configured with any {@link ProduceExceptionHandler} as this will not allow the transaction
  * to rolled back correctly. In order to get behaviour similiar to {@link ProduceExceptionHandler}, you should use
- * {@link StandaloneProducer} as part of the service collection in order to produce the payload to the required destination.
+ * {@link com.adaptris.core.StandaloneProducer} as part of the service collection in order to produce the payload to the required destination.
  * </p>
  * 
  * @config jms-transacted-workflow
@@ -162,8 +162,8 @@ public final class JmsTransactedWorkflow extends StandardWorkflow {
    * <p>
    * When strict mode is enabled, then any exception will cause a rollback on
    * the session; when strict is false, then if a
-   * {@link ProcessingExceptionHandler} is configured that is not
-   * {@link NullProcessingExceptionHandler}, the session will not be rolled
+   * {@link com.adaptris.core.ProcessingExceptionHandler} is configured that is not
+   * {@link com.adaptris.core.NullProcessingExceptionHandler}, the session will not be rolled
    * back.
    * </p>
    *

@@ -37,7 +37,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * Implementation of {@link Service} which dynamically obtains and applies a {@link Service} to an {@link AdaptrisMessage} based on
+ * Implementation of {@link com.adaptris.core.Service} which dynamically obtains and applies a {@link com.adaptris.core.Service} to an {@link com.adaptris.core.AdaptrisMessage} based on
  * its {@link TradingRelationship}.
  * </p>
  * 
@@ -86,7 +86,7 @@ public class DynamicServiceLocator extends ServiceImp implements EventHandlerAwa
    * applies the configured {@link MatchingStrategy} to obtain a list of other
    * {@link TradingRelationship} to look for in the event of no exact match,
    * obtains the logical name to look for from the {@link ServiceNameProvider},
-   * retrieves the {@link Service} stored against this name in the
+   * retrieves the {@link com.adaptris.core.Service} stored against this name in the
    * {@link ServiceStore}, and then applies the service against the message.
    * </p>
    *
@@ -291,7 +291,7 @@ public class DynamicServiceLocator extends ServiceImp implements EventHandlerAwa
    *
    * @param b if true then a ServiceException is thrown if the
    *          <code>ServiceStore.obtain(String)</code> returns null
-   * @see ServiceStore#obtain(String)
+   * @see com.adaptris.core.ServiceStore#obtain(String)
    */
   public void setTreatNotFoundAsError(Boolean b) {
     treatNotFoundAsError = b;

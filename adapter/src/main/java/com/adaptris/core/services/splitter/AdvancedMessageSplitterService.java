@@ -32,10 +32,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * Splits incoming {@link AdaptrisMessage}s into several using an implementation of {@link MessageSplitter}.
+ * Splits incoming {@link com.adaptris.core.AdaptrisMessage}s into several using an implementation of {@link MessageSplitter}.
  * </p>
  * <p>
- * Rather than directly producing the message to a producer, this allows the use of a {@link ServiceCollection} as the target for
+ * Rather than directly producing the message to a producer, this allows the use of a {@link com.adaptris.core.ServiceCollection} as the target for
  * the resulting split messages.
  * </p>
  * 
@@ -147,7 +147,7 @@ public class AdvancedMessageSplitterService extends MessageSplitterServiceImp im
    * Note that even if this is set to true, because each child message has its
    * own unique id, you will have to externally correlate the message lifecycle
    * events together. Child messages will always have the metadata
-   * {@link CoreConstants#PARENT_UNIQUE_ID_KEY} set with the originating message
+   * {@link com.adaptris.core.CoreConstants#PARENT_UNIQUE_ID_KEY} set with the originating message
    * id.
    * </p>
    *

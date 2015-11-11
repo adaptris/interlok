@@ -81,7 +81,7 @@ public class SimpleHttpProducer extends HttpProducer {
   private String method = "POST";
 
   /**
-   * @see AdaptrisMessageProducerImp#AdaptrisMessageProducerImp()
+   * @see com.adaptris.core.AdaptrisMessageProducerImp#AdaptrisMessageProducerImp()
    *
    *
    */
@@ -96,7 +96,7 @@ public class SimpleHttpProducer extends HttpProducer {
   }
 
   /**
-   * @see AdaptrisMessageProducerImp #request(AdaptrisMessage,
+   * @see com.adaptris.core.AdaptrisMessageProducerImp #request(AdaptrisMessage,
    *      ProduceDestination, long)
    */
   @Override

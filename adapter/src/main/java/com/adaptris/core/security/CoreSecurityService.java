@@ -142,7 +142,6 @@ public abstract class CoreSecurityService extends ServiceImp {
    * @param url an individual url
    * @see #getKeystoreUrls()
    * @see ConfiguredKeystore
-   * @see KeystoreFactory#create(String)
    */
   public void addKeystoreUrl(ConfiguredKeystore url) {
     keystoreUrls.add(url);

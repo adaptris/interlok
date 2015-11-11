@@ -31,7 +31,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * Implementation of {@link Service} that filters metadata keys based on a {@link MetadataFilter}.
+ * Implementation of {@link com.adaptris.core.Service} that filters metadata keys based on a {@link MetadataFilter}.
  * </p>
  * 
  * @config metadata-filter-service

@@ -23,7 +23,7 @@ import java.util.Collection;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Implementation of {@linkplain ServiceCollection} that creates a new clone of {@linkplain AdaptrisMessage} for each configured
+ * Implementation of {@linkplain ServiceCollection} that creates a new clone of {@linkplain com.adaptris.core.AdaptrisMessage} for each configured
  * service.
  * <p>
  * The expected use case for this {@linkplain ServiceCollection} is that you have a number of services that have to process exactly

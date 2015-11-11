@@ -29,7 +29,7 @@ public interface ReplacementSource {
    * Obtains a replacement value for {@link FindAndReplaceService} based on the passed configured value.
    * </p>
    * 
-   * @param msg the {@link AdaptrisMessage} being processed
+   * @param msg the {@link com.adaptris.core.AdaptrisMessage} being processed
    * @return the String to be used as the replacement.
    */
   String obtainValue(AdaptrisMessage msg) throws ServiceException;

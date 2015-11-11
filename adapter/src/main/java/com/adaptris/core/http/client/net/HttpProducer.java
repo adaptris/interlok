@@ -149,7 +149,7 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
   /**
    * Set the password.
    * <p>
-   * In additional to plain text passwords, the passwords can also be encoded using the appropriate {@link Password}
+   * In additional to plain text passwords, the passwords can also be encoded using the appropriate {@link com.adaptris.security.password.Password}
    * </p>
    * 
    * @param s the password

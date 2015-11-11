@@ -102,7 +102,7 @@ public class HttpResponseProducer extends ProduceOnlyProducerImp {
   }
 
   /**
-   * @see AdaptrisMessageProducerImp#produce(AdaptrisMessage,
+   * @see com.adaptris.core.AdaptrisMessageProducerImp#produce(AdaptrisMessage,
    *      ProduceDestination)
    */
   @Override

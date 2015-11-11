@@ -40,9 +40,9 @@ public interface XpathMetadataQuery {
   public void verify() throws CoreException;
 
   /**
-   * Create an Xpath from the {@link AdaptrisMessage} object.
+   * Create an Xpath from the {@link com.adaptris.core.AdaptrisMessage} object.
    * 
-   * @param msg the {@link AdaptrisMessage} that will be queried.
+   * @param msg the {@link com.adaptris.core.AdaptrisMessage} that will be queried.
    * @return the xpath.
    */
   String createXpathQuery(AdaptrisMessage msg) throws Exception;

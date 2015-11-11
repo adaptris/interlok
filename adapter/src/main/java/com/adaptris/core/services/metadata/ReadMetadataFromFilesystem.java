@@ -44,7 +44,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * Implementation of {@link Service} that reads metadata from the filesystem.
+ * Implementation of {@link com.adaptris.core.Service} that reads metadata from the filesystem.
  * </p>
  * <p>
  * Used in conjunction with {@link WriteMetadataToFilesystem} to allow preservation of metadata across integration points that make

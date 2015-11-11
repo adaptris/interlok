@@ -255,7 +255,7 @@ public class RelaxedFtpConsumer extends AdaptrisPollingConsumer {
    * </p>
    * <p>
    * Note that because we working against a remote server, support for additional file attributes such as size (e.g. via
-   * {@link SizeGreaterThan}) or last modified may not be supported. Stick to filtering by filename only
+   * {@link com.adaptris.core.fs.SizeGreaterThan}) or last modified may not be supported. Stick to filtering by filename only
    * </p>
    *
    * @param s The fileFilterImp to set.
@@ -289,7 +289,7 @@ public class RelaxedFtpConsumer extends AdaptrisPollingConsumer {
    * 
    * @param interval the quietPeriod to set (default to 0)
    * @see FtpConnection#setServerTimezone(String)
-   * @see CompositeFileFilter
+   * @see com.adaptris.core.fs.CompositeFileFilter
    * @see #setFileFilterImp(String)
    */
   public void setOlderThan(TimeInterval interval) {

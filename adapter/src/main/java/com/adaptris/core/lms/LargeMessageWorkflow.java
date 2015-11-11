@@ -61,13 +61,7 @@ public class LargeMessageWorkflow extends StandardWorkflow {
     super.stopWorkflow();
   }
 
-  /**
-   * <p>
-   * This method is <code>synchronized</code> in case client code is multi-threaded.
-   * </p>
-   *
-   * @see AdaptrisMessageListener#onAdaptrisMessage(AdaptrisMessage)
-   */
+
   @Override
   @Profiled(tag = "{$this.getClass().getSimpleName()}({$this.getConsumer().getDestination().getDeliveryThreadName()})", logger = "com.adaptris.perf4j.lms.TimingLogger")
   public synchronized void onAdaptrisMessage(AdaptrisMessage msg) {
@@ -79,9 +73,6 @@ public class LargeMessageWorkflow extends StandardWorkflow {
     }
   }
 
-  /**
-   * @see WorkflowImp#resubmitMessage(com.adaptris.core.AdaptrisMessage)
-   */
   @Override
   protected void resubmitMessage(AdaptrisMessage msg) {
     handleMessage(msg, false);

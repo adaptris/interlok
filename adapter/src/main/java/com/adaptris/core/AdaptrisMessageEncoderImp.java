@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * <p>
- * Partial implementation of behaviour commom to all {@link AdaptrisMessageEncoder} instances.
+ * Partial implementation of behaviour commom to all {@link com.adaptris.core.AdaptrisMessageEncoder} instances.
  * </p>
  */
 public abstract class AdaptrisMessageEncoderImp implements AdaptrisMessageEncoder {

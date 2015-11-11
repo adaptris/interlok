@@ -19,7 +19,7 @@ package com.adaptris.core;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Implementation of {@link ProduceExceptionHandler} which attempts to restart the parent {@link Channel} of the {@code Workflow}
+ * Implementation of {@link ProduceExceptionHandler} which attempts to restart the parent {@link com.adaptris.core.Channel} of the {@code Workflow}
  * that had the failure.
  * 
  * 

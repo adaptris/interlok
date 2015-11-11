@@ -59,7 +59,7 @@ public class LegacyPrivateKeyPasswordProvider implements PrivateKeyPasswordProvi
   /**
    * Return the private key password as a char[] array.
    * 
-   * @return the private key password sourced from 'security.properties' and decoded using {@link Password#decode(String)}
+   * @return the private key password sourced from 'security.properties' and decoded using {@link com.adaptris.security.password.Password#decode(String)}
    */
   @Override
   public char[] retrievePrivateKeyPassword() throws PasswordException {

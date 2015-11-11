@@ -263,7 +263,7 @@ public class JmsConnection extends AllowsRetriesConnection implements JmsConnect
    * Sets the broker password.
    * </p>
    * <p>
-   * In additional to plain text passwords, the passwords can also be encoded using the appropriate {@link Password}
+   * In additional to plain text passwords, the passwords can also be encoded using the appropriate {@link com.adaptris.security.password.Password}
    * </p>
    * 
    * @param s the broker password

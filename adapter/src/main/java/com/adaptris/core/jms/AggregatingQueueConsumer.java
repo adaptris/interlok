@@ -39,7 +39,7 @@ import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * {@link AggregatingConsumer} implementation that allows you to read a separate message(s) from a queue that need to be aggregated
+ * {@link com.adaptris.core.services.aggregator.AggregatingConsumer} implementation that allows you to read a separate message(s) from a queue that need to be aggregated
  * with the current message.
  * <p>
  * The JMS Queue and message selector are created from the generated {@link ConsumeDestination#getDestination()} and

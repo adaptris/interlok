@@ -69,7 +69,7 @@ public class PayloadFromMetadataService extends ServiceImp {
   }
 
   /**
-   * @see Service#doService(com.adaptris.core.AdaptrisMessage)
+   * @see com.adaptris.core.Service#doService(com.adaptris.core.AdaptrisMessage)
    */
   public void doService(AdaptrisMessage msg) throws ServiceException {
     String payload = template;

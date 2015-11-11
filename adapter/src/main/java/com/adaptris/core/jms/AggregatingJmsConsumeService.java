@@ -34,7 +34,7 @@ import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Implentation of {@link AggregatingConsumeService} that allows you to consume a related message from a queue based on some
+ * Implentation of {@link com.adaptris.core.services.aggregator.AggregatingConsumeService} that allows you to consume a related message from a queue based on some
  * criteria.
  * 
  * @config aggregating-jms-consume-service

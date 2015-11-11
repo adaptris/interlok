@@ -25,9 +25,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * Stored Procedure parameter implementation, can be used for all IN, INOUT and OUT Stored Procedure parameters.
  * <p>
- * If this implementation is used for an IN or an INOUT parameter, then the metadata will be pulled from the {@link AdaptrisMessage}
+ * If this implementation is used for an IN or an INOUT parameter, then the metadata will be pulled from the {@link com.adaptris.core.AdaptrisMessage}
  * and used as the parameter value. If this implementation is used for an OUT or an INOUT parameter, then the value of the matching
- * parameter after the Stored Procedure has run, will be reapplied into the {@link AdaptrisMessage} as metadata. You will simply set
+ * parameter after the Stored Procedure has run, will be reapplied into the {@link com.adaptris.core.AdaptrisMessage} as metadata. You will simply set
  * the metadataKey, to both retrieve a value or to set a new value as above.
  * </p>
  * <p>

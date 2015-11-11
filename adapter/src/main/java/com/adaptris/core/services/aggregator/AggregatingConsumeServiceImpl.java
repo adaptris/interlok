@@ -25,7 +25,7 @@ import com.adaptris.core.util.LifecycleHelper;
 
 
 /**
- * Base class for {@link AggregatingConsumeService} implementations providing common functionality.
+ * Base class for {@link com.adaptris.core.services.aggregator.AggregatingConsumeService} implementations providing common functionality.
  * 
  * @author lchan
  * 

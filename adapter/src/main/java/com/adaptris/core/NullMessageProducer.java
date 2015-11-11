@@ -37,13 +37,13 @@ public class NullMessageProducer extends AdaptrisMessageProducerImp {
     setDestination(p);
   }
 
-  /** @see AdaptrisMessageProducer */
+  /** @see com.adaptris.core.AdaptrisMessageProducer */
   @Override
   public void produce(AdaptrisMessage msg) throws ProduceException {
     // do nothing...
   }
 
-  /** @see AdaptrisMessageProducer */
+  /** @see com.adaptris.core.AdaptrisMessageProducer */
   @Override
   public void produce(AdaptrisMessage msg, ProduceDestination overload)
     throws ProduceException {
@@ -51,37 +51,37 @@ public class NullMessageProducer extends AdaptrisMessageProducerImp {
     // do nothing...
   }
 
-  /** @see AdaptrisMessageProducer */
+  /** @see com.adaptris.core.AdaptrisMessageProducer */
   @Override
   public void init() throws CoreException {
     // do nothing...
   }
 
-  /** @see AdaptrisMessageProducer */
+  /** @see com.adaptris.core.AdaptrisMessageProducer */
   @Override
   public void start() throws CoreException {
     // do nothing...
   }
 
-  /** @see AdaptrisMessageProducer */
+  /** @see com.adaptris.core.AdaptrisMessageProducer */
   @Override
   public void stop() {
     // do nothing...
   }
 
-  /** @see AdaptrisMessageProducer */
+  /** @see com.adaptris.core.AdaptrisMessageProducer */
   @Override
   public void close() {
     // do nothing...
   }
 
-  /** @see AdaptrisMessageProducer */
+  /** @see com.adaptris.core.AdaptrisMessageProducer */
   @Override
   public AdaptrisMessage request(AdaptrisMessage msg) throws ProduceException {
     return null; // do nothing...
   }
 
-  /** @see AdaptrisMessageProducer */
+  /** @see com.adaptris.core.AdaptrisMessageProducer */
   @Override
   public AdaptrisMessage request(AdaptrisMessage msg, long timeout)
     throws ProduceException {
@@ -89,7 +89,7 @@ public class NullMessageProducer extends AdaptrisMessageProducerImp {
     return null; // do nothing...
   }
 
-  /** @see AdaptrisMessageProducer */
+  /** @see com.adaptris.core.AdaptrisMessageProducer */
   @Override
   public AdaptrisMessage request(
     AdaptrisMessage msg,
@@ -99,7 +99,7 @@ public class NullMessageProducer extends AdaptrisMessageProducerImp {
     return null; // do nothing...
   }
 
-  /** @see AdaptrisMessageProducer */
+  /** @see com.adaptris.core.AdaptrisMessageProducer */
   @Override
   public AdaptrisMessage request(
     AdaptrisMessage msg,

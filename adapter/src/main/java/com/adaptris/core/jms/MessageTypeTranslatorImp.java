@@ -277,7 +277,7 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
   }
 
   /**
-   * Convenience method to translate a {@link Message} into a {@link AdaptrisMessage}.
+   * Convenience method to translate a {@link Message} into a {@link com.adaptris.core.AdaptrisMessage}.
    *
    * <p>
    * If translation fails, then an attempt is made to use an {@link AutoConvertMessageTranslator} instance to attempt to translate

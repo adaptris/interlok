@@ -140,7 +140,7 @@ public class LargeFsProducer extends FsProducer {
 
   /**
    * Set to true to simply use {@link File#renameTo(File)} when producing an
-   * {@link AdaptrisMessage} that is an instance of {@link FileBackedMessage}
+   * {@link com.adaptris.core.AdaptrisMessage} that is an instance of {@link FileBackedMessage}
    *
    * @param b true to use {@link File#renameTo(File)}
    */

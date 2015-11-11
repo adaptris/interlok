@@ -25,7 +25,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * <p>
  * This implementation of {@link ValueTranslator} will pull the string payload value from the
- * {@link AdaptrisMessage} to be used as a Jmx operation parameter. Conversely we can also take a
+ * {@link com.adaptris.core.AdaptrisMessage} to be used as a Jmx operation parameter. Conversely we can also take a
  * string result from a Jmx operation call and overwrite the payload with the new value.
  * </p>
  * 

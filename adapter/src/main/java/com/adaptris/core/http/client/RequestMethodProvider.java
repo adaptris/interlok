@@ -44,7 +44,7 @@ public interface RequestMethodProvider {
   /**
    * Get the method that should be used with the HTTP request.
    * 
-   * @param msg the {@link AdaptrisMessage} if required to derive the method.
+   * @param msg the {@link com.adaptris.core.AdaptrisMessage} if required to derive the method.
    * @return the method.
    */
   RequestMethod getMethod(AdaptrisMessage msg);

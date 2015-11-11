@@ -49,7 +49,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * pooled takes a significant amount of time to become ready to use (e.g. multiple database connections/JMS connections over a WAN).
  * By making a pool size fixed you only pay the cost of initialisation once when the workflow is first started. Of course, using a
  * fixed size pool can cause its own problems if long-lived connections are terminated silently by the remote system. If you are
- * using {@link SharedConnection} within the service-collection, then it is advised that you use a fixed size pool; otherwise as
+ * using {@link com.adaptris.core.SharedConnection} within the service-collection, then it is advised that you use a fixed size pool; otherwise as
  * workers are deactivated then this could cause the underlying connection instance to be closed, which will cause issues for other
  * objects sharing the connection.
  * </p>
@@ -57,7 +57,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * If <code>stop()</code> is invoked then any messages that are currently being processed will be allowed to finish, however any new
  * messages that enter the workflow via <code>onAdaptrisMessage(AdaptrisMessage)</code> before the
  * <code>AdaptrisMessageConsumer</code> is succesfully stopped will be treated as <b>bad</b> messages and sent directly to the
- * configured {@link ProcessingExceptionHandler}.
+ * configured {@link com.adaptris.core.ProcessingExceptionHandler}.
  * </p>
  * 
  * @config pooling-workflow

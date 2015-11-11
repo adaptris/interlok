@@ -28,7 +28,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * <p>
  * Although there is nothing to stop you from having a plain text private key password configured in adapter configuration using
- * this provider; it is strongly discouraged. You should consider using the {@link Password#encode(String, String)} method to
+ * this provider; it is strongly discouraged. You should consider using the {@link com.adaptris.security.password.Password#encode(String, String)} method to
  * generate an encoded password for inserting into configuration.
  * </p>
  * 
@@ -55,7 +55,7 @@ public class ConfiguredPrivateKeyPasswordProvider implements PrivateKeyPasswordP
   /**
    * Return the private key password as a char[] array.
    * 
-   * @return the configured private key, decoded using {@link Password#decode(String)}
+   * @return the configured private key, decoded using {@link com.adaptris.security.password.Password#decode(String)}
    */
   @Override
   public char[] retrievePrivateKeyPassword() throws PasswordException {

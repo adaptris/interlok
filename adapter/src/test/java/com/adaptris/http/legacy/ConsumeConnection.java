@@ -157,7 +157,7 @@ public abstract class ConsumeConnection extends AdaptrisConnectionImp {
    * Return the set of configured passwords.
    * <p>
    * In additional to plain text passwords, the passwords can also be encrypted
-   * using the appropriate {@link Password}
+   * using the appropriate {@link com.adaptris.security.password.Password}
    * </p>
    *
    * @return the set.
@@ -171,7 +171,7 @@ public abstract class ConsumeConnection extends AdaptrisConnectionImp {
    * Set the ACL list for this connection.
    * <p>
    * In additional to plain text passwords, the passwords can also be encrypted
-   * using the appropriate {@link Password}
+   * using the appropriate {@link com.adaptris.security.password.Password}
    * </p>
    *
    * @param kps a keyvalue pair set that contains user and password combinations

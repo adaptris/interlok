@@ -27,7 +27,7 @@ import com.adaptris.core.services.aggregator.AggregatingConsumeServiceImpl;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Implentation of {@link AggregatingConsumeService} that allows you to consume a related message from a directory based on some
+ * Implentation of {@link com.adaptris.core.services.aggregator.AggregatingConsumeService} that allows you to consume a related message from a directory based on some
  * criteria.
  * 
  * @config aggregating-fs-consume-service

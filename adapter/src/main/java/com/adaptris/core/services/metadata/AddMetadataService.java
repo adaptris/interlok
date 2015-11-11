@@ -33,7 +33,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
  * <p>
- * Implementation of {@link Service} that adds static metadata to be added to a message.
+ * Implementation of {@link com.adaptris.core.Service} that adds static metadata to be added to a message.
  * </p>
  * <p>
  * Each metadata-element is added in sequence to the message, overwriting any existing metadata.

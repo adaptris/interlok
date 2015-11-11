@@ -43,7 +43,7 @@ import com.adaptris.fs.NioWorker;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * {@link AdaptrisMessageProducer} implementation that writes to the file system.
+ * {@link com.adaptris.core.AdaptrisMessageProducer} implementation that writes to the file system.
  * 
  * @config fs-producer
  * 

@@ -25,7 +25,7 @@ import com.adaptris.core.AdaptrisMessage;
  */
 public interface CommandArgument {
   /**
-   * @param msg the {@link AdaptrisMessage}
+   * @param msg the {@link com.adaptris.core.AdaptrisMessage}
    * @return the value for this argument
    */
   public String retrieveValue(AdaptrisMessage msg);

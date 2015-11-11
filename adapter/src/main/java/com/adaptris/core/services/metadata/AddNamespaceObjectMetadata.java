@@ -28,7 +28,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * Implementation of {@link Service} that adds a static NamespaceContext to object metadata for use by other services.
+ * Implementation of {@link com.adaptris.core.Service} that adds a static NamespaceContext to object metadata for use by other services.
  * </p>
  * 
  * @config add-namespace-object-metadata

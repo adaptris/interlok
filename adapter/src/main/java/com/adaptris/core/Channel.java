@@ -35,7 +35,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * Links two {@link AdaptrisConnection} implementations and has a {@link WorkflowList}
+ * Links two {@link com.adaptris.core.AdaptrisConnection} implementations and has a {@link WorkflowList}
  * </p>
  * <p>
  * 

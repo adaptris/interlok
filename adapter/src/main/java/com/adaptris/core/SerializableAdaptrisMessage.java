@@ -36,7 +36,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Many of the AdaptrisMessage's class members have been removed to facilitate serialization, such
  * as object metadata - considering any object may be placed in object metadata, we could never be
  * sure the message would serialize. The semantics of each method will attempt to follow that
- * defined by {@link AdaptrisMessage} even though it does not implement that interface.
+ * defined by {@link com.adaptris.core.AdaptrisMessage} even though it does not implement that interface.
  * </p>
  * 
  * @config serializable-adaptris-message

@@ -23,7 +23,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * MessageErrorHandler implementation that allows automatic retries for a problem message.
  * 
  * <p>
- * This implementation keeps the {@link AdaptrisMessage} that was consumed in memory, and periodically retries the message in the
+ * This implementation keeps the {@link com.adaptris.core.AdaptrisMessage} that was consumed in memory, and periodically retries the message in the
  * workflow that failed; the retry schedule and maximum number of retries is determined by {@link #setRetryInterval(TimeInterval)}
  * and {@link #setRetryLimit(Integer)} respectively. If the retry count exceeds the maximum number of retries then the message is
  * deemed to have failed, and passed off to any configured {@link #getProcessingExceptionService()}.
@@ -35,7 +35,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * <p>
  * Note that messages are not guaranteed to be in order (even if they were originally) once a message has entered retry mode. Also
- * note that if a RetryMessageErrorHandler is configured as a direct child of {@link Channel} or {@link Workflow} then an exception
+ * note that if a RetryMessageErrorHandler is configured as a direct child of {@link com.adaptris.core.Channel} or {@link Workflow} then an exception
  * that causes a restart of the entire channel will force all messages to 'fail' as this implementation will be stopped as part of
  * the parent component restart.
  * </p>

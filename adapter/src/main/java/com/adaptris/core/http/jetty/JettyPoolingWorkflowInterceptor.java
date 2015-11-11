@@ -24,7 +24,7 @@ import com.adaptris.core.interceptor.WorkflowInterceptorImpl;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * WorkflowInterceptor implementation that allows a Jetty Consumer to be part of a {@link PoolingWorkflow}.
+ * WorkflowInterceptor implementation that allows a Jetty Consumer to be part of a {@link com.adaptris.core.PoolingWorkflow}.
  * 
  * @config jetty-pooling-workflow-interceptor
  * 

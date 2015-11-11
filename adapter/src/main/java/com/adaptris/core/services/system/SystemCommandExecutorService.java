@@ -42,7 +42,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * <p>
  * Note that no checking is peformed on the command to be executed; it will be executed as-is. If used in combination with
- * {@link DynamicServiceExecutor} or {@link DynamicServiceLocator} then you might have a large security hole if it is improperly
+ * {@link com.adaptris.core.services.dynamic.DynamicServiceExecutor} or {@link
+ * com.adaptris.core.services.dynamic.DynamicServiceLocator} then you might have a large security hole if it is improperly
  * configured or validated.
  * </p>
  * <p>
@@ -50,7 +51,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <ul>
  * <li>The exitcode is stored against the metadata key {@value #COMMAND_RETURN_VALUE_METADATA_KEY} if the service does not throw an
  * exception.</li>
- * <li>If a timeout occurs then a ServiceException is thrown, output that was captured before the timeout should still be available</li>
+ * <li>If a timeout occurs then a ServiceException is thrown, output that was captured before the timeout should still be
+ * available</li>
  * </ul>
  * </p>
  * 

@@ -29,7 +29,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * <p>
  * What happens will be dependent on the parent workflow and parent service collection implementation. See
- * {@link CoreConstants#STOP_PROCESSING_KEY} and {@link CoreConstants#KEY_WORKFLOW_SKIP_PRODUCER} for more information.
+ * {@link com.adaptris.core.CoreConstants#STOP_PROCESSING_KEY} and {@link com.adaptris.core.CoreConstants#KEY_WORKFLOW_SKIP_PRODUCER} for more information.
  * </p>
  * 
  * @config stop-processing-service

@@ -30,7 +30,7 @@ import com.adaptris.core.ServiceImp;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Implementation of {@link Service} that compares two items of metadata.
+ * Implementation of {@link com.adaptris.core.Service} that compares two items of metadata.
  * 
  * <p>
  * Sometimes you just want to compare two metadata values and store the result against a 3rd metadata key. Well this does that.

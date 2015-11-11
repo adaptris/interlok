@@ -24,7 +24,7 @@ import java.util.Set;
  * </p>
  * <p>
  * It is generally the responsibility of implementations of this interface to to deliver messages to
- * registered {@link AdaptrisMessageConsumer} instances.
+ * registered {@link com.adaptris.core.AdaptrisMessageConsumer} instances.
  * </p>
  * 
  * @since 3.0.3 extends {@link ComponentLifecycleExtension} to satisfy any underlying

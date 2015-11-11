@@ -202,7 +202,7 @@ public final class SSLSocketTransport extends TcpSocketTransport {
    *
    * <p>
    * In additional to plain text passwords, the passwords can also be encoded
-   * using the appropriate {@link Password}
+   * using the appropriate {@link com.adaptris.security.password.Password}
    * </p>
    *
    * @param pw the password, defaults to null as the password may be embedded in
@@ -225,7 +225,7 @@ public final class SSLSocketTransport extends TcpSocketTransport {
    * Set the private key password *
    * <p>
    * In additional to plain text passwords, the passwords can also be encoded
-   * using the appropriate {@link Password}
+   * using the appropriate {@link com.adaptris.security.password.Password}
    * </p>
    *
    * @param pw the password

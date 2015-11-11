@@ -28,44 +28,44 @@ package com.adaptris.core;
 public interface AdaptrisMessageProducer extends AdaptrisMessageWorker, AdaptrisMessageSender {
 
   /**
-   * Produce the {@link AdaptrisMessage} to the configured destination and blocks indefinitely for a reply.
+   * Produce the {@link com.adaptris.core.AdaptrisMessage} to the configured destination and blocks indefinitely for a reply.
    *
-   * @param msg the {@link AdaptrisMessage} to produce
-   * @return a reply {@link AdaptrisMessage} which is generally the same as supplied parameter
+   * @param msg the {@link com.adaptris.core.AdaptrisMessage} to produce
+   * @return a reply {@link com.adaptris.core.AdaptrisMessage} which is generally the same as supplied parameter
    * @throws ProduceException wrapping any underlying Exceptions
    */
   AdaptrisMessage request(AdaptrisMessage msg) throws ProduceException;
 
   /**
-   * Produces the {@link AdaptrisMessage} to the passed supplied {@link ProduceDestination} and blocks indefinitely for a reply.
+   * Produces the {@link com.adaptris.core.AdaptrisMessage} to the passed supplied {@link ProduceDestination} and blocks indefinitely for a reply.
    *
-   * @param msg the {@link AdaptrisMessage} to produce
+   * @param msg the {@link com.adaptris.core.AdaptrisMessage} to produce
    * @param destination the {@link ProduceDestination} to produce to
-   * @return a reply {@link AdaptrisMessage} which is generally the same as supplied parameter
+   * @return a reply {@link com.adaptris.core.AdaptrisMessage} which is generally the same as supplied parameter
    * @throws ProduceException wrapping any underlying Exceptions
    */
   AdaptrisMessage request(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException;
 
   /**
-   * Produces the {@link AdaptrisMessage} to the passed supplied {@link ProduceDestination} and blocks for the specified timeout for
+   * Produces the {@link com.adaptris.core.AdaptrisMessage} to the passed supplied {@link ProduceDestination} and blocks for the specified timeout for
    * a reply.
    *
    *
-   * @param msg the {@link AdaptrisMessage} to produce
+   * @param msg the {@link com.adaptris.core.AdaptrisMessage} to produce
    * @param destination the {@link ProduceDestination} to produce to
    * @param timeoutMs the time to wait for a reply in milliseconds
-   * @return a reply {@link AdaptrisMessage} which is generally the same as supplied parameter
+   * @return a reply {@link com.adaptris.core.AdaptrisMessage} which is generally the same as supplied parameter
    * @throws ProduceException wrapping any underlying Exceptions
    */
   AdaptrisMessage request(AdaptrisMessage msg, ProduceDestination destination, long timeoutMs) throws ProduceException;
 
   /**
-   * Produces the {@link AdaptrisMessage} to the configured {@link ProduceDestination} and blocks for the specified timeout for a
+   * Produces the {@link com.adaptris.core.AdaptrisMessage} to the configured {@link ProduceDestination} and blocks for the specified timeout for a
    * reply.
    * 
-   * @param msg the {@link AdaptrisMessage} to produce
+   * @param msg the {@link com.adaptris.core.AdaptrisMessage} to produce
    * @param timeout the time to wait for a reply in milliseconds
-   * @return a reply {@link AdaptrisMessage} which is generally the same as supplied parameter
+   * @return a reply {@link com.adaptris.core.AdaptrisMessage} which is generally the same as supplied parameter
    * @throws ProduceException wrapping any underlying Exceptions
    */
   AdaptrisMessage request(AdaptrisMessage msg, long timeout) throws ProduceException;

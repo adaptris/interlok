@@ -127,7 +127,7 @@ public abstract class ScriptingServiceImp extends ServiceImp {
    * Specify whether or not this service is branching.
    * 
    * @param branching true to cause {@link #isBranching()} to return true; default is false.
-   * @see Service#isBranching()
+   * @see com.adaptris.core.Service#isBranching()
    * @since 3.0.3
    */
   public void setBranching(Boolean branching) {

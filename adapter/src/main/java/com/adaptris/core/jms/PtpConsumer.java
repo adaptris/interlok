@@ -26,7 +26,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * JMS Queue implementation of {@link AdaptrisMessageConsumer}
+ * JMS Queue implementation of {@link com.adaptris.core.AdaptrisMessageConsumer}
  * </p>
  * 
  * @config jms-queue-consumer

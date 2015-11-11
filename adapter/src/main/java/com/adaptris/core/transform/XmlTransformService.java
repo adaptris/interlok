@@ -323,7 +323,7 @@ public class XmlTransformService extends ServiceImp {
   /**
    * Force the output message encoding to be a particular encoding.
    * <p>
-   * If specified then the underlying {@link AdaptrisMessage#setCharEncoding(String)} is changed to match the encoding specified
+   * If specified then the underlying {@link com.adaptris.core.AdaptrisMessage#setCharEncoding(String)} is changed to match the encoding specified
    * here before attempting any write operations.
    * </p>
    * <p>
@@ -333,7 +333,7 @@ public class XmlTransformService extends ServiceImp {
    * transform.
    * </p>
    * 
-   * @param s the output encoding; if null, the the existing encoding specified by {@link AdaptrisMessage#getCharEncoding()} is
+   * @param s the output encoding; if null, the the existing encoding specified by {@link com.adaptris.core.AdaptrisMessage#getCharEncoding()} is
    *          used.
    */
   public void setOutputMessageEncoding(String s) {

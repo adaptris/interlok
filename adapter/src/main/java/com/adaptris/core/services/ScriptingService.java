@@ -42,8 +42,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * as a standard variable within the script
  * </p>
  * <p>
- * Note that this class can be used as the selector as part of a {@link BranchingServiceCollection}. If used as such, then you need
- * to remember to invoke {@link AdaptrisMessage#setNextServiceId(String)} as part of the script and {@link #setBranching(Boolean)}
+ * Note that this class can be used as the selector as part of a {@link com.adaptris.core.BranchingServiceCollection}. If used as
+ * such, then you need
+ * to remember to invoke {@link com.adaptris.core.AdaptrisMessage#setNextServiceId(String)} as part of the script and {@link
+ * #setBranching(Boolean)}
  * should be true.
  * <p>
  * 

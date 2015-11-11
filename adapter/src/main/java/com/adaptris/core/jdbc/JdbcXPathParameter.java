@@ -36,15 +36,17 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * Stored Procedure parameter implementation, can be used only for IN Stored Procedure parameters.
  * <p>
- * When this implementation is used for an IN parameter, then an xpath expression will be evaluated from the {@link AdaptrisMessage}
+ * When this implementation is used for an IN parameter, then an xpath expression will be evaluated from the {@link
+ * com.adaptris.core.AdaptrisMessage}
  * payload and used as the parameter value. You will simply set xpath to a valid xpath expression to retrieve data from the
- * {@link AdaptrisMessage} payload.
+ * {@link com.adaptris.core.AdaptrisMessage} payload.
  * </p>
  * <p>
  * Additionally you will set one or both of "name" and/or "order". "name" will map this parameter to a Stored Procedure parameter
  * using the Stored Procedures method signature. "order" will map this parameter according to the parameter number using the Stored
  * Procedures method signature. Note that the "order" starts from 1 and not 0, so the first parameter would be order 1. You will
- * also need to set the data type of the parameter; you may use any of the string types defined in {@link ParameterValueType}
+ * also need to set the data type of the parameter; you may use any of the string types defined in {@link
+ * com.adaptris.jdbc.ParameterValueType}
  * </p>
  * 
  * @config jdbc-xpath-parameter

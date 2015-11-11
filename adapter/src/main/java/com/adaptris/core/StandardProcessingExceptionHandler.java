@@ -28,8 +28,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * {@linkplain ProcessingExceptionHandler} implementation that contains a single service to apply when a message fails.
  * 
  * @config standard-processing-exception-handler
- * @see Service
- * @see ServiceList
+ * @see com.adaptris.core.Service
+ * @see com.adaptris.core.ServiceList
  */
 @XStreamAlias("standard-processing-exception-handler")
 public class StandardProcessingExceptionHandler extends RootProcessingExceptionHandler implements EventHandlerAware {

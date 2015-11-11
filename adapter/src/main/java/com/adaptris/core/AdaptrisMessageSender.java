@@ -26,7 +26,7 @@ package com.adaptris.core;
  */
 public interface AdaptrisMessageSender extends ComponentLifecycle {
   /**
-   * Produces the {@link AdaptrisMessage} to the default destination.
+   * Produces the {@link com.adaptris.core.AdaptrisMessage} to the default destination.
    * 
    * @param msg the @link AdaptrisMessage} to produce
    * @throws ProduceException wrapping any underlying Exceptions
@@ -34,9 +34,9 @@ public interface AdaptrisMessageSender extends ComponentLifecycle {
   void produce(AdaptrisMessage msg) throws ProduceException;
 
   /**
-   * Produce the {@link AdaptrisMessage} to the supplied {@link ProduceDestination} , over-riding any configured destinations.
+   * Produce the {@link com.adaptris.core.AdaptrisMessage} to the supplied {@link ProduceDestination} , over-riding any configured destinations.
    *
-   * @param msg the {@link AdaptrisMessage} to produce
+   * @param msg the {@link com.adaptris.core.AdaptrisMessage} to produce
    * @param destination the {@link ProduceDestination} to produce to
    * @throws ProduceException wrapping any underlying Exceptions
    */

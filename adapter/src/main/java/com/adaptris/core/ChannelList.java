@@ -40,7 +40,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
  * <p>
- * Container for a collection of {@link Channel} objects
+ * Container for a collection of {@link com.adaptris.core.Channel} objects
  * </p>
  * 
  * @config channel-list
@@ -241,7 +241,7 @@ public class ChannelList extends AbstractCollection<Channel> implements Adaptris
 
   /**
    * <p>
-   * Returns the {@link Channel} with the passed <code>uniqueId</code> or null if no such channel exists.
+   * Returns the {@link com.adaptris.core.Channel} with the passed <code>uniqueId</code> or null if no such channel exists.
    * </p>
    *
    * @param uniqueId the unique ID of the Channel to return, may not be null or empty

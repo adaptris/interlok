@@ -248,7 +248,8 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
   Properties getConfiguration();
 
   /**
-   * Return the version control system that is currently in use based on {@linkplain RuntimeVersionControl#getImplementationName()}
+   * Return the version control system that is currently in use based on {@linkplain
+   * com.adaptris.core.management.vcs.RuntimeVersionControl#getImplementationName()}
    * 
    * @return the version control system that is currently configured for adapter runtime (null if none is available).
    * @since 3.0.3

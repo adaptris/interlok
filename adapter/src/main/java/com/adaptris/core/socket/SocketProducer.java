@@ -63,7 +63,7 @@ public class SocketProducer extends RequestReplyProducerImp {
   }
 
   /**
-   * @see AdaptrisMessageProducerImp#produce(AdaptrisMessage,ProduceDestination)
+   * @see com.adaptris.core.AdaptrisMessageProducerImp#produce(AdaptrisMessage,ProduceDestination)
    */
   @Override
   @Profiled(tag = "{$this.getClass().getSimpleName()}.produce()", logger = "com.adaptris.perf4j.socket.TimingLogger")

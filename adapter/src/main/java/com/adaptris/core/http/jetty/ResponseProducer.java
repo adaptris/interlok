@@ -299,7 +299,7 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
   }
 
   /**
-   * Whether or not to send the {@link AdaptrisMessage#getPayload()} as part of the reply.
+   * Whether or not to send the {@link com.adaptris.core.AdaptrisMessage#getPayload()} as part of the reply.
    *
    * @param b the sendPayload to set defaults true.
    */
@@ -312,7 +312,7 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
   }
 
   /**
-   * Whether or not to send {@link AdaptrisMessage#getMetadata()} as a standard HTTP Header
+   * Whether or not to send {@link com.adaptris.core.AdaptrisMessage#getMetadata()} as a standard HTTP Header
    * 
    * @return the sendMetadataAsHeaders
    * @deprecated since 3.0.2 use {@link #setMetadataFilter(MetadataFilter)} instead.
@@ -323,7 +323,7 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
   }
 
   /**
-   * Specify whether or not to send selected {@link AdaptrisMessage} metadata as HTTP Headers or not.
+   * Specify whether or not to send selected {@link com.adaptris.core.AdaptrisMessage} metadata as HTTP Headers or not.
    * 
    * @param b the sendMetadataAsHeaders to set defaults false.
    * @deprecated since 3.0.2 use {@link #setMetadataFilter(MetadataFilter)} instead.
@@ -349,7 +349,7 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
   }
 
   /**
-   * Specify the {@link AdaptrisMessage} metadata keys that will be sent as HTTP Headers.
+   * Specify the {@link com.adaptris.core.AdaptrisMessage} metadata keys that will be sent as HTTP Headers.
    * <p>
    * Any metadata keys that match this regular expression will be sent; the metadata key is the HTTP header name, the metadata value
    * becomes the HTTP header value.
@@ -412,7 +412,7 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
   }
 
   /**
-   * Specify the {@link AdaptrisMessage} metadata keys that will be sent as HTTP Headers.
+   * Specify the {@link com.adaptris.core.AdaptrisMessage} metadata keys that will be sent as HTTP Headers.
    * <p>
    * Any metadata that is returned by this filter will be sent as HTTP headers. Any values that match will override any statically
    * configured {@link #setAdditionalHeaders(KeyValuePairSet)} entries

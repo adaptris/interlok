@@ -33,7 +33,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * <p>
  * Implementation of {@link com.adaptris.core.Service} which sets the unique ID of the next <code>Service</code> to apply based on
- * values of {@link AdaptrisMessage} metadata.
+ * values of {@link com.adaptris.core.AdaptrisMessage} metadata.
  * </p>
  * <p>
  * It concatenates the values stored against the keys in {@link #getMetadataKeys()} and uses this String as a key to look up the

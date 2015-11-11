@@ -32,7 +32,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * Provides a content type derived from metadata.
  * <p>
- * Note that the content type charset will be derived from {@link AdaptrisMessage#getCharEncoding()}
+ * Note that the content type charset will be derived from {@link com.adaptris.core.AdaptrisMessage#getCharEncoding()}
  * so configuring a mime type of {@code text/xml} when the message has a char encoding of
  * {@code UTF-8} will return {@code text/xml; charset="UTF-8"}. No validation is done on the resulting string or on the value
  * that is taken from metadata.

@@ -37,7 +37,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * Wraps services so that errors are intercepted and processed by a different service.
  * <p>
- * This Service wraps a {@link Service}; if this wrapped Service throws a ServiceException the configured exceptionHandlingService
+ * This Service wraps a {@link com.adaptris.core.Service}; if this wrapped Service throws a ServiceException the configured exceptionHandlingService
  * is applied. Normal message error handling is not triggered unless an exception is thrown from the service handling the exception.
  * </p>
  * <p>

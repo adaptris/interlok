@@ -223,7 +223,7 @@ public abstract class WorkflowImp implements Workflow {
   /**
    * Start the workflow.
    * 
-   * @see AdaptrisComponent#start()
+   * @see com.adaptris.core.AdaptrisComponent#start()
    * @throws CoreException encapsulating any underlying Exception
    */
   protected abstract void startWorkflow() throws CoreException;
@@ -631,7 +631,7 @@ public abstract class WorkflowImp implements Workflow {
 
   /**
    * <p>
-   * Get the time the {@link Workflow} implementation will wait if its parent {@link Channel} is unavailable before resubmitting the
+   * Get the time the {@link Workflow} implementation will wait if its parent {@link com.adaptris.core.Channel} is unavailable before resubmitting the
    * message.
    * </p>
    * 
@@ -643,7 +643,7 @@ public abstract class WorkflowImp implements Workflow {
 
   /**
    * <p>
-   * Sets the time the {@link Workflow} implementation will wait if its parent {@link Channel} is unavailable before resubmitting
+   * Sets the time the {@link Workflow} implementation will wait if its parent {@link com.adaptris.core.Channel} is unavailable before resubmitting
    * the message.
    * </p>
    * 
@@ -824,11 +824,13 @@ public abstract class WorkflowImp implements Workflow {
   }
 
   /**
-   * Disable the default {@link MessageMetricsInterceptor} that keeps a message count.
+   * Disable the default {@link com.adaptris.core.interceptor.MessageMetricsInterceptor} that keeps a message count.
    * <p>
-   * If the workflow has a unique-id, and there are no {@link MessageMetricsInterceptor} instances configured on the workflow, one
+   * If the workflow has a unique-id, and there are no {@link com.adaptris.core.interceptor.MessageMetricsInterceptor} instances
+   * configured on the workflow, one
    * is created with the same name as the workflow with a default configured
-   * {@link MessageMetricsInterceptor#setTimesliceDuration(TimeInterval)} of 1 minute
+   * {@link com.adaptris.core.interceptor.MessageMetricsInterceptor#setTimesliceDuration(com.adaptris.util.TimeInterval)} of 1
+   * minute
    * </p>
    * 
    * @param b true to disable, default null (false);

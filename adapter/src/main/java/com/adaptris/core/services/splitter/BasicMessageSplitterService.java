@@ -34,7 +34,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * Splits incoming {@link AdaptrisMessage}s into several <code>AdaptrisMessage</code>s using an implementation of
+ * Splits incoming {@link com.adaptris.core.AdaptrisMessage}s into several <code>AdaptrisMessage</code>s using an implementation of
  * {@link MessageSplitter}.
  * </p>
  * <p>

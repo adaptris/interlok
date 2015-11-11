@@ -39,11 +39,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * Translates between {@link AdaptrisMessage} and {@link org.apache.activemq.BlobMessage}.
+ * Translates between {@link com.adaptris.core.AdaptrisMessage} and {@link org.apache.activemq.BlobMessage}.
  * </p>
  * <p>
  * In outbound scenarios (i.e. writing to ActiveMQ), there are two ways in which this translator
- * works with the {@link AdaptrisMessage}.
+ * works with the {@link com.adaptris.core.AdaptrisMessage}.
  * </p>
  * <ol>
  * <li>If {@link #setMetadataUrlKey(String)} <strong>has been set</strong>, then the value

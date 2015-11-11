@@ -19,7 +19,7 @@ package com.adaptris.core.management.properties;
 import com.adaptris.security.password.Password;
 
 /**
- * Decodes a password using {@link Password#decode(String)}
+ * Decodes a password using {@link com.adaptris.security.password.Password#decode(String)}
  * <p>
  * Decodes system properties that are stored with the {password} scheme.
  * </p>

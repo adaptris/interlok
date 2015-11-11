@@ -43,8 +43,8 @@ import com.adaptris.fs.NioWorker;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * {@link AggregatingConsumer} implementation that allows you to read a separate message from the filesystem that is correlated in
- * some way to the current message.
+ * {@link com.adaptris.core.services.aggregator.AggregatingConsumer} implementation that allows you to read a separate message from
+ * the filesystem that is correlated in some way to the current message.
  * <p>
  * You need to configure a {@link ConsumeDestinationGenerator} implementation; which is subsequently used to generate the fully
  * qualified URL to the destination message e.g. <code>file:///C:/path/to/correlated/message</code>. If the file does not exist, is

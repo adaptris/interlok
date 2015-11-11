@@ -55,7 +55,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @see ExceptionReportGenerator
  * @see DocumentMerge
  * @author lchan
- * @see CoreConstants#OBJ_METADATA_EXCEPTION
+ * @see com.adaptris.core.CoreConstants#OBJ_METADATA_EXCEPTION
  */
 @XStreamAlias("exception-report-service")
 public class ExceptionReportService extends ServiceImp {

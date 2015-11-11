@@ -40,7 +40,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * <p>
  * Use {@link #setDocumentEncoding(String)} to force the encoding of the resulting XML document to the required value; if not set,
- * then either the original {@link AdaptrisMessage#getCharEncoding()} (if set) or <code>UTF-8</code> will be used in that order.
+ * then either the original {@link com.adaptris.core.AdaptrisMessage#getCharEncoding()} (if set) or <code>UTF-8</code> will be used in that order.
  * </p>
  * 
  * @config ignore-original-xml-document-aggregator

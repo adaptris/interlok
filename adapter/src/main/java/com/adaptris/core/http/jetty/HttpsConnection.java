@@ -87,7 +87,7 @@ public class HttpsConnection extends HttpConnection {
       }
     },
     /**
-     * Set the keystore password (may be encoded using {@link Password}.
+     * Set the keystore password (may be encoded using {@link com.adaptris.security.password.Password}.
      * <p>
      * Note that the password may also be obfuscated using the internal jetty utility
      * {@link org.eclipse.jetty.util.security.Password} using one of the reversible schemes.
@@ -131,7 +131,7 @@ public class HttpsConnection extends HttpConnection {
       }
     },
     /**
-     * Set the truststore password (may be encoded using {@link Password} .
+     * Set the truststore password (may be encoded using {@link com.adaptris.security.password.Password} .
      * <p>
      * Note that the password may also be obfuscated using the internal jetty utility
      * {@link org.eclipse.jetty.util.security.Password} using one of the reversible schemes.
@@ -165,7 +165,7 @@ public class HttpsConnection extends HttpConnection {
       }
     },
     /**
-     * Set the key manager password (may be encoded using {@link Password} .
+     * Set the key manager password (may be encoded using {@link com.adaptris.security.password.Password} .
      * <p>
      * Note that the password may also be obfuscated using the internal jetty utility
      * {@link org.eclipse.jetty.util.security.Password} using one of the reversible schemes.

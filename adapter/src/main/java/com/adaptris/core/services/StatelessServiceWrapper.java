@@ -126,7 +126,7 @@ public class StatelessServiceWrapper extends ServiceImp implements EventHandlerA
     stopService();
   }
 
-  /** @see AdaptrisComponent */
+  /** @see com.adaptris.core.AdaptrisComponent */
   @Override
   public void start() throws CoreException {
     startService();

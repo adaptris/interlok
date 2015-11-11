@@ -45,7 +45,7 @@ public interface MetadataFilter {
   /**
    * Return all the metadata that matches the filter.
    * 
-   * @param original the original set of metadata possibly from {@link AdaptrisMessage#getMetadata()}
+   * @param original the original set of metadata possibly from {@link com.adaptris.core.AdaptrisMessage#getMetadata()}
    * @return a {@link MetadataCollection} instance that has been filtered.
    */
   MetadataCollection filter(Set<MetadataElement> original);

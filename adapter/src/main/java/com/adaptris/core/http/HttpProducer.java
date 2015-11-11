@@ -151,7 +151,7 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
   /**
    * Set the RFC 2617 password.
    * <p>
-   * In additional to plain text passwords, the passwords can also be encoded using the appropriate {@link Password}
+   * In additional to plain text passwords, the passwords can also be encoded using the appropriate {@link com.adaptris.security.password.Password}
    * </p>
    * 
    * @param s the password
@@ -334,7 +334,7 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
   }
 
   /**
-   * Specify whether or not to send selected {@link AdaptrisMessage} metadata as HTTP Headers or not.
+   * Specify whether or not to send selected {@link com.adaptris.core.AdaptrisMessage} metadata as HTTP Headers or not.
    * 
    * @param b the sendMetadataAsHeaders to set
    * @deprecated since 3.0.2 use {@link #setMetadataFilter(MetadataFilter)} instead.
@@ -354,7 +354,7 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
   }
 
   /**
-   * Specify the {@link AdaptrisMessage} metadata keys that will be sent as HTTP Headers.
+   * Specify the {@link com.adaptris.core.AdaptrisMessage} metadata keys that will be sent as HTTP Headers.
    * <p>
    * Any metadata keys that match this regular expression will be sent; the metadata key is the HTTP header name, the metadata value
    * becomes the HTTP header value.
@@ -381,7 +381,7 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
   }
 
   /**
-   * Specify the {@link AdaptrisMessage} metadata keys that will be sent as HTTP Headers.
+   * Specify the {@link com.adaptris.core.AdaptrisMessage} metadata keys that will be sent as HTTP Headers.
    * <p>
    * Any metadata that is returned by this filter will be sent as HTTP headers. Any values that match will override any statically
    * configured {@link #setAdditionalHeaders(KeyValuePairSet)} entries

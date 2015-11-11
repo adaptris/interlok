@@ -38,7 +38,7 @@ public interface XmlTransformParameter {
   /**
    * Create a Map that will be passed into {@link XmlTransformer#transform(Transformer , Reader , Writer , String , Map )}
    * 
-   * @param msg the {@link AdaptrisMessage} used to build the parameters.
+   * @param msg the {@link com.adaptris.core.AdaptrisMessage} used to build the parameters.
    * @param existingParams any existing parameters that might already be configured, null otherwise.
    * @return the parameters to pass into the transform.
    */

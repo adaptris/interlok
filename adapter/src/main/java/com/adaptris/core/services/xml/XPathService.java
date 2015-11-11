@@ -66,7 +66,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * To specify where the source xml, source xpath expression and the result of the xpath execution should be saved, you shoud
  * use {@link DataInputParameter} or {@link com.adaptris.interlok.config.DataOutputParameter}.
  * <br />
- * For example you can specify the source xml can be found in the {@link AdaptrisMessage} payload, by using 
+ * For example you can specify the source xml can be found in the {@link com.adaptris.core.AdaptrisMessage} payload, by using 
  * {@link StringPayloadDataInputParameter} like this :
  * <pre>
  * {@code
@@ -90,7 +90,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * }
  * </pre>
  * 
- * And then maybe the result of the xpath execution is to be saved in {@link AdaptrisMessage} metadata, using 
+ * And then maybe the result of the xpath execution is to be saved in {@link com.adaptris.core.AdaptrisMessage} metadata, using 
  * {@link com.adaptris.core.common.MetadataDataOutputParameter};
  * 
  * <pre>
