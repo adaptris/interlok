@@ -48,7 +48,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config perf4j-timing-service
  * @see Log4JStopWatch
- * @deprecated since 3.1.0 consider using profiling instead.
+ * @deprecated since 3.1.0 consider using profiling instead; it will be removed in 3.2 due to migration away from log4j.
  */
 @XStreamAlias("perf4j-timing-service")
 @Deprecated
