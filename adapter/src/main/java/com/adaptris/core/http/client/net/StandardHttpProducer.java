@@ -18,6 +18,7 @@ package com.adaptris.core.http.client.net;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 import static com.adaptris.core.http.HttpConstants.CONTENT_TYPE;
+import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -104,7 +105,10 @@ public class StandardHttpProducer extends HttpProducer {
     http.setInstanceFollowRedirects(handleRedirection());
     http.setDoInput(true);
     getRequestHeaderProvider().addHeaders(msg, http);
-    http.setRequestProperty(CONTENT_TYPE, getContentTypeProvider().getContentType(msg));
+    String contentType = getContentTypeProvider().getContentType(msg);
+    if (!isEmpty(contentType)) {
+      http.setRequestProperty(CONTENT_TYPE, contentType);
+    }
     return http;
   }
 
