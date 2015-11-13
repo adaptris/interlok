@@ -34,6 +34,7 @@ import com.adaptris.core.ServiceList;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandaloneRequestor;
 import com.adaptris.core.StandardWorkflow;
+import com.adaptris.core.common.MetadataStreamOutputParameter;
 import com.adaptris.core.http.AdapterResourceAuthenticator;
 import com.adaptris.core.http.HttpProducerExample;
 import com.adaptris.core.http.MetadataContentTypeProvider;
@@ -110,7 +111,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     }
     assertEquals(1, mock.messageCount());
     AdaptrisMessage m2 = mock.getMessages().get(0);
-    assertTrue(m2.containsKey("Content-Type"));
+    assertTrue(m2.headersContainsKey("Content-Type"));
     assertEquals("text/complicated", m2.getMetadataValue("Content-Type"));
   }
 
@@ -134,7 +135,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     }
     assertEquals(1, mock.messageCount());
     AdaptrisMessage m2 = mock.getMessages().get(0);
-    assertTrue(m2.containsKey(getName()));
+    assertTrue(m2.headersContainsKey(getName()));
     assertEquals(getName(), m2.getMetadataValue(getName()));
   }
 
@@ -167,7 +168,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     assertEquals(1, mock.messageCount());
     AdaptrisMessage m2 = mock.getMessages().get(0);
     assertEquals("GET", m2.getMetadataValue(CoreConstants.HTTP_METHOD));
-    assertEquals(TEXT, msg.getStringPayload());
+    assertEquals(TEXT, msg.getContent());
   }
 
 
@@ -199,7 +200,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     assertEquals(1, mock.messageCount());
     AdaptrisMessage m2 = mock.getMessages().get(0);
     assertEquals("GET", m2.getMetadataValue(CoreConstants.HTTP_METHOD));
-    assertEquals(TEXT, msg.getStringPayload());
+    assertEquals(TEXT, msg.getContent());
   }
 
   public void testRequest_PostMethod_ZeroBytes() throws Exception {
@@ -229,8 +230,45 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     assertEquals(1, mock.messageCount());
     AdaptrisMessage m2 = mock.getMessages().get(0);
     assertEquals("POST", m2.getMetadataValue(CoreConstants.HTTP_METHOD));
-    assertEquals(TEXT, msg.getStringPayload());
+    assertEquals(TEXT, msg.getContent());
   }
+
+  public void testRequest_Post_ZeroBytes_ReplyToMetadata() throws Exception {
+    MockMessageProducer mock = new MockMessageProducer();
+    HttpConnection jc = HttpHelper.createConnection();
+    MessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
+    Channel c = createChannel(jc, createWorkflow(mc, mock, new ServiceList()));
+    StandardWorkflow workflow = (StandardWorkflow) c.getWorkflowList().get(0);
+    PayloadFromMetadataService pms = new PayloadFromMetadataService();
+    pms.setTemplate(TEXT);
+    workflow.getServiceCollection().add(pms);
+    workflow.getServiceCollection().add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200)));
+
+
+    StandardHttpProducer stdHttp = new StandardHttpProducer(HttpHelper.createProduceDestination(c));
+    stdHttp.setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethodProvider.RequestMethod.POST));
+    stdHttp.setResponseBody(new MetadataStreamOutputParameter(getName()));
+
+    StandaloneRequestor producer = new StandaloneRequestor(stdHttp);
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage();
+    try {
+      start(c);
+      start(producer);
+      producer.doService(msg);
+      waitForMessages(mock, 1);
+    } finally {
+      HttpHelper.stopChannelAndRelease(c);
+      stop(producer);
+    }
+    assertEquals(1, mock.messageCount());
+    AdaptrisMessage m2 = mock.getMessages().get(0);
+    assertNotSame(TEXT, msg.getContent());
+    assertEquals(0, msg.getSize());
+
+    assertTrue(msg.headersContainsKey(getName()));
+    assertEquals(TEXT, msg.getMetadataValue(getName()));
+  }
+
 
   public void testRequest_EmptyReply() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
@@ -271,7 +309,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     StandaloneRequestor producer = new StandaloneRequestor(stdHttp);
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
     msg.addMetadata(HttpHelper.CONTENT_TYPE, "text/complicated");
-    assertFalse(msg.containsKey("Server"));
+    assertFalse(msg.headersContainsKey("Server"));
     try {
       c.requestStart();
       start(producer);
@@ -283,9 +321,9 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     }
     assertEquals(1, mock.messageCount());
     AdaptrisMessage m2 = mock.getMessages().get(0);
-    assertTrue(m2.containsKey("Content-Type"));
+    assertTrue(m2.headersContainsKey("Content-Type"));
     assertEquals("text/complicated", m2.getMetadataValue("Content-Type"));
-    assertTrue(msg.containsKey("Server"));
+    assertTrue(msg.headersContainsKey("Server"));
   }
 
 
@@ -298,7 +336,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     StandaloneRequestor producer = new StandaloneRequestor(stdHttp);
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
     msg.addMetadata(HttpHelper.CONTENT_TYPE, "text/complicated");
-    assertFalse(msg.containsKey("Server"));
+    assertFalse(msg.headersContainsKey("Server"));
     try {
       c.requestStart();
       start(producer);
@@ -308,8 +346,8 @@ public class StandardHttpProducerTest extends HttpProducerExample {
       HttpHelper.stopChannelAndRelease(c);
       stop(producer);
     }
-    assertFalse(msg.containsKey("Server"));
-    assertTrue(msg.getObjectMetadata().containsKey("Server"));
+    assertFalse(msg.headersContainsKey("Server"));
+    assertTrue(msg.getObjectHeaders().containsKey("Server"));
   }
 
   public void testRequest_CompositeMetadataResponseHeaders() throws Exception {
@@ -322,7 +360,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     StandaloneRequestor producer = new StandaloneRequestor(stdHttp);
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
     msg.addMetadata(HttpHelper.CONTENT_TYPE, "text/complicated");
-    assertFalse(msg.containsKey("Server"));
+    assertFalse(msg.headersContainsKey("Server"));
     try {
       c.requestStart();
       start(producer);
@@ -332,8 +370,8 @@ public class StandardHttpProducerTest extends HttpProducerExample {
       HttpHelper.stopChannelAndRelease(c);
       stop(producer);
     }
-    assertTrue(msg.containsKey("Server"));
-    assertTrue(msg.getObjectMetadata().containsKey("Server"));
+    assertTrue(msg.headersContainsKey("Server"));
+    assertTrue(msg.getObjectHeaders().containsKey("Server"));
   }
 
 
@@ -364,7 +402,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     assertEquals(1, mock.messageCount());
     AdaptrisMessage m2 = mock.getMessages().get(0);
     assertEquals("GET", m2.getMetadataValue(CoreConstants.HTTP_METHOD));
-    assertEquals(TEXT, msg.getStringPayload());
+    assertEquals(TEXT, msg.getContent());
   }
   
   public void testRequest_GetMethod_NonZeroBytes_WithErrorResponse() throws Exception {
@@ -397,7 +435,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     assertEquals(1, mock.messageCount());
     AdaptrisMessage m2 = mock.getMessages().get(0);
     assertEquals("GET", m2.getMetadataValue(CoreConstants.HTTP_METHOD));
-    assertEquals(TEXT, msg.getStringPayload());
+    assertEquals(TEXT, msg.getContent());
     assertEquals("401", msg.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
     assertNotNull(msg.getMetadata("HTTP_Server"));
   }
@@ -431,7 +469,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
       start(stdHttp);
       AdaptrisMessage reply = stdHttp.request(msg, HttpHelper.createProduceDestination(channel));
       waitForMessages(mockProducer, 1);
-      assertEquals(TEXT, mockProducer.getMessages().get(0).getStringPayload());
+      assertEquals(TEXT, mockProducer.getMessages().get(0).getContent());
     } finally {
       stop(stdHttp);
       HttpHelper.stopChannelAndRelease(channel);
