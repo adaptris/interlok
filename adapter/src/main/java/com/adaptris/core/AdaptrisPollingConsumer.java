@@ -230,6 +230,7 @@ public abstract class AdaptrisPollingConsumer
   @Override
   public final void prepare() throws CoreException {
     getPoller().prepare();
+    prepareConsumer();
   }
   
   protected abstract void prepareConsumer() throws CoreException;
