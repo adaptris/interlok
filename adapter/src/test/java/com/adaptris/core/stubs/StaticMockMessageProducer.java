@@ -17,6 +17,7 @@
 package com.adaptris.core.stubs;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.adaptris.core.AdaptrisMessage;
@@ -30,7 +31,7 @@ import com.adaptris.core.ProduceException;
  */
 public class StaticMockMessageProducer extends MockMessageProducer {
 
-  private static List<AdaptrisMessage> producedMessages = new ArrayList<AdaptrisMessage>();
+  private static List<AdaptrisMessage> producedMessages = Collections.synchronizedList(new ArrayList<AdaptrisMessage>());
 
   public StaticMockMessageProducer() {
     super();
