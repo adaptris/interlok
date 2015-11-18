@@ -20,8 +20,6 @@ import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Topic;
 
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisMessageProducer;
 import com.adaptris.core.ProduceDestination;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -81,8 +79,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </ul>
  * 
  * @config jms-topic-producer
- * 
- *          {@link ProducerSessionFactory}
  */
 @XStreamAlias("jms-topic-producer")
 public class PasProducer extends DefinedJmsProducer {

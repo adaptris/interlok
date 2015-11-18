@@ -20,8 +20,6 @@ import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Queue;
 
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisMessageProducer;
 import com.adaptris.core.ProduceDestination;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -82,8 +80,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config jms-queue-producer
  * 
- * 
- *          {@link ProducerSessionFactory}
  */
 @XStreamAlias("jms-queue-producer")
 public class PtpProducer extends DefinedJmsProducer {
