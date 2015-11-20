@@ -61,7 +61,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config jms-producer
  * 
- * {@link ProducerSessionFactory}
  */
 @XStreamAlias("jms-producer")
 public class JmsProducer extends JmsProducerImpl {
