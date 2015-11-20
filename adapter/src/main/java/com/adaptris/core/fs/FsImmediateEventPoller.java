@@ -36,8 +36,6 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.PollerImp;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -59,7 +57,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config fs-immediate-event-poller
- * @license STANDARD
+ * 
  */
 @XStreamAlias("fs-immediate-event-poller")
 public class FsImmediateEventPoller extends PollerImp {
@@ -78,10 +76,9 @@ public class FsImmediateEventPoller extends PollerImp {
   public FsImmediateEventPoller() {
   }
   
+
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Standard);
-  }
+  public void prepare() throws CoreException {}
 
   @Override
   public void init() throws CoreException {

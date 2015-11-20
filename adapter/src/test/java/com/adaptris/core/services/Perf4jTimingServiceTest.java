@@ -26,7 +26,6 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.ServiceList;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
 
 public class Perf4jTimingServiceTest extends GeneralServiceExample {
 
@@ -172,7 +171,10 @@ public class Perf4jTimingServiceTest extends GeneralServiceExample {
   private static class FailingService extends ServiceImp {
 
     public enum WhenToFail {
-      NEVER, ON_INIT, ON_START, ON_LICENSE
+      NEVER,
+      ON_INIT,
+      ON_START,
+      ON_PREPARE
     };
 
     private WhenToFail whenToFail = WhenToFail.NEVER;
@@ -186,10 +188,16 @@ public class Perf4jTimingServiceTest extends GeneralServiceExample {
       whenToFail = wtf;
     }
 
-    public void init() throws CoreException {
+    @Override
+    protected void initService() throws CoreException {
       if (whenToFail.equals(WhenToFail.ON_INIT)) {
         throw new CoreException(WhenToFail.ON_INIT + " failure specified");
       }
+    }
+
+    @Override
+    protected void closeService() {
+
     }
 
     @Override
@@ -200,15 +208,12 @@ public class Perf4jTimingServiceTest extends GeneralServiceExample {
       super.start();
     }
 
-    public void close() {
-    }
 
     @Override
-    public boolean isEnabled(License l) {
-      if (whenToFail.equals(WhenToFail.ON_LICENSE)) {
-        return false;
+    public void prepare() throws CoreException {
+      if (whenToFail.equals(WhenToFail.ON_PREPARE)) {
+        throw new CoreException(WhenToFail.ON_PREPARE.name());
       }
-      return true;
     }
 
     public void doService(AdaptrisMessage msg) throws ServiceException {

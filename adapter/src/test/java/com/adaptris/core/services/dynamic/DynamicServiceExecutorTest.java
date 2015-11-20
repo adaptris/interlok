@@ -37,7 +37,6 @@ import com.adaptris.core.XStreamMarshaller;
 import com.adaptris.core.services.LogMessageService;
 import com.adaptris.core.services.jdbc.JdbcDataQueryService;
 import com.adaptris.core.services.metadata.AddMetadataService;
-import com.adaptris.core.stubs.LicenseStub;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.text.mime.MultiPartOutput;
 import com.adaptris.util.text.mime.SelectByContentId;
@@ -207,7 +206,6 @@ public class DynamicServiceExecutorTest extends DynamicServiceExample {
   public void testDoService_DefaultServiceExtractor_NotLicensed() throws Exception {
     JdbcDataQueryService marshalledService = new JdbcDataQueryService();
     DynamicServiceExecutor dynamicService = createService();
-    dynamicService.isEnabled(new LicenseStub());
     AdaptrisMessage msg = createMessage(new ServiceList(new Service[]
     {
       marshalledService
@@ -286,7 +284,6 @@ public class DynamicServiceExecutorTest extends DynamicServiceExample {
   private DynamicServiceExecutor createService() {
     DynamicServiceExecutor service = new DynamicServiceExecutor();
     service.registerEventHandler(null);
-    service.isEnabled(new LicenseStub());
     return service;
   }
 

@@ -31,7 +31,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config jms-topic-consumer
- * @license BASIC, additional license requirements from the chosen MessageTypeTranslator
+ * 
  */
 @XStreamAlias("jms-topic-consumer")
 public class PasConsumer extends JmsConsumerImpl {

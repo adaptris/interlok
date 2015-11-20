@@ -32,7 +32,6 @@ import com.adaptris.http.HttpHeaders;
 import com.adaptris.http.HttpSession;
 import com.adaptris.http.RequestProcessor;
 import com.adaptris.util.KeyValuePair;
-import com.adaptris.util.license.License;
 import com.adaptris.util.text.Conversion;
 
 /**
@@ -120,14 +119,10 @@ public abstract class HttpConsumerImp extends AdaptrisMessageConsumerImp
     return traceLogging;
   }
 
-  /**
-   *
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled(License)
-   */
   @Override
-  public boolean isEnabled(License l) throws CoreException {
-    return true;
+  public void prepare() throws CoreException {
   }
+
 
   protected KeyValuePair getUsernamePassword(HttpHeaders h) {
     KeyValuePair kp = null;

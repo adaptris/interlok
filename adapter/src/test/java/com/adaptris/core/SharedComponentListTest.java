@@ -33,11 +33,9 @@ import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.PtpConsumer;
 import com.adaptris.core.jms.PtpProducer;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
-import com.adaptris.core.stubs.LicenseStub;
 import com.adaptris.core.stubs.MockConnection;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.security.exc.PasswordException;
-import com.adaptris.util.license.License;
 
 /**
  * Base test for testing XSTream configuration vis-a-vis shared components.
@@ -256,7 +254,6 @@ public class SharedComponentListTest extends ExampleConfigCase {
 
   public void testRemoveConnection_unbindsJNDI() throws Exception {
     Adapter adapter = new Adapter();
-    adapter.registerLicense(new LicenseStub());
     adapter.setUniqueId(getName());
     adapter.getSharedComponents().addConnection(new NullConnection(getName()));
     Properties env = new Properties();
@@ -283,7 +280,6 @@ public class SharedComponentListTest extends ExampleConfigCase {
 
   public void testBindJNDI() throws Exception {
     Adapter adapter = new Adapter();
-    adapter.registerLicense(new LicenseStub());
     adapter.setUniqueId(getName());
     Properties env = new Properties();
     env.put(Context.INITIAL_CONTEXT_FACTORY, JndiContextFactory.class.getName());
@@ -305,7 +301,6 @@ public class SharedComponentListTest extends ExampleConfigCase {
 
   public void testSharedConnection_StandardLookup() throws Exception {
     Adapter adapter = new Adapter();
-    adapter.registerLicense(new LicenseStub());
     adapter.setUniqueId(getName());
     adapter.getSharedComponents().addConnection(new NullConnection(getName()));
     try {
@@ -320,7 +315,6 @@ public class SharedComponentListTest extends ExampleConfigCase {
 
   public void testSharedConnection_Lookup_CompEnvLookupName() throws Exception {
     Adapter adapter = new Adapter();
-    adapter.registerLicense(new LicenseStub());
     adapter.setUniqueId(getName());
     adapter.getSharedComponents().addConnection(new NullConnection(getName()));
     try {
@@ -335,7 +329,6 @@ public class SharedComponentListTest extends ExampleConfigCase {
 
   public void testSharedConnection_Lookup_FallbackToPlainName() throws Exception {
     Adapter adapter = new Adapter();
-    adapter.registerLicense(new LicenseStub());
     adapter.setUniqueId(getName());
     NullConnection nc = new NullConnection(getName());
     nc.setLookupName(getName());
@@ -352,7 +345,6 @@ public class SharedComponentListTest extends ExampleConfigCase {
 
   public void testAddConnection_BindsToJndiWhenStarted() throws Exception {
     Adapter adapter = new Adapter();
-    adapter.registerLicense(new LicenseStub());
     adapter.setUniqueId(getName());
     Properties env = new Properties();
     env.put(Context.INITIAL_CONTEXT_FACTORY, JndiContextFactory.class.getName());
@@ -374,7 +366,6 @@ public class SharedComponentListTest extends ExampleConfigCase {
 
   public void testClose_UnbindsFromJNDI() throws Exception {
     Adapter adapter = new Adapter();
-    adapter.registerLicense(new LicenseStub());
     adapter.setUniqueId(getName());
     Properties env = new Properties();
     env.put(Context.INITIAL_CONTEXT_FACTORY, JndiContextFactory.class.getName());
@@ -443,16 +434,6 @@ public class SharedComponentListTest extends ExampleConfigCase {
 
   }
 
-  public void testLicense() throws Exception {
-    SharedComponentList list = new SharedComponentList();
-    list.addConnection(new MockConnection(getName()));
-    list.addConnection(new MockConnection(getName() + "_1") {
-      public boolean isEnabled(License license) throws CoreException {
-        return false;
-      }
-    });
-    assertFalse(list.isEnabled(new LicenseStub()));
-  }
 
   public void testConnectionState() throws Exception {
     Adapter adapter = AdapterTest.createAdapter(getName());

@@ -33,12 +33,8 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisPollingConsumer;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.fs.CompositeFileFilter;
-import com.adaptris.core.fs.SizeGreaterThan;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -62,7 +58,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config ftp-consumer
- * @license BASIC
+ * 
  * @see FtpConnection
  * @see SftpConnection
  * @see FileTransferConnection
@@ -304,13 +300,10 @@ public class FtpConsumer extends AdaptrisPollingConsumer {
     }
   }
 
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled(License)
-   */
   @Override
-  public boolean isEnabled(License l) {
-    return l.isEnabled(LicenseType.Basic);
+  protected void prepareConsumer() throws CoreException {
   }
+
 
   /**
    * Get the "proc" directory.
@@ -378,11 +371,12 @@ public class FtpConsumer extends AdaptrisPollingConsumer {
    * </p>
    * <p>
    * Note that because we working against a remote server, support for additional file attributes such as size (e.g. via
-   * {@link SizeGreaterThan}) or last modified may not be supported. We encourage you to stick with filtering by filename only.
+   * {@link com.adaptris.core.fs.SizeGreaterThan}) or last modified may not be supported. We encourage you to stick with filtering
+   * by filename only.
    * </p>
    * 
    * @param s The fileFilterImp to set, if not specified, then the default is "org.apache.oro.io.GlobFilenameFilter" which uses the
-   *          jakarta oro package to perform unix glob style filtering
+   * jakarta oro package to perform unix glob style filtering
    * @see com.adaptris.core.ConsumeDestination#getFilterExpression()
    */
   public void setFileFilterImp(String s) {
@@ -444,7 +438,7 @@ public class FtpConsumer extends AdaptrisPollingConsumer {
    * 
    * @param interval the quietPeriod to set (default to 0)
    * @see FtpConnection#setServerTimezone(String)
-   * @see CompositeFileFilter
+   * @see com.adaptris.core.fs.CompositeFileFilter
    * @see #setFileFilterImp(String)
    */
   public void setQuietInterval(TimeInterval interval) {

@@ -16,9 +16,6 @@
 
 package com.adaptris.core.services.metadata;
 
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AutoPopulated;
@@ -32,17 +29,18 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Each matching metadata key from {@link ReformatMetadata#getMetadataKeyRegexp()} will be treated as a date to be reformatted.
  * </p>
  * <p>
- * In addition to supporting all the patterns allowed by {@link SimpleDateFormat}, this service also supports the special values
+ * In addition to supporting all the patterns allowed by {@link java.text.SimpleDateFormat}, this service also supports the special
+ * values
  * {@code SECONDS_SINCE_EPOCH} and {@code MILLISECONDS_SINCE_EPOCH} which describe the number of seconds and milliseconds since
  * midnight Jan 1, 1970 UTC respectively. If specified as the source format, then the {@code long} value will be converted into a
- * {@link java.util.Date} before formatting (scientific notation is supported as per {@link BigDecimal#BigDecimal(String)}); if
- * specified as the destination format, then the raw long value will be emitted.
+ * {@link java.util.Date} before formatting (scientific notation is supported as per {@link
+ * java.math.BigDecimal#BigDecimal(String)}); if specified as the destination format, then the raw long value will be emitted.
  * </p>
  * 
  * @config reformat-date-service
  * 
- * @license BASIC
- * @see SimpleDateFormat
+ * 
+ * @see java.text.SimpleDateFormat
  * @see com.adaptris.util.text.DateFormatUtil.CustomDateFormat
  * 
  */
@@ -82,13 +80,15 @@ public class ReformatDateService extends ReformatMetadata {
   }
 
   @Override
-  public void init() throws CoreException {
-    super.init();
+  protected void initService() throws CoreException {
+    super.initService();
   }
 
   @Override
-  public void close() {
+  protected void closeService() {
+    super.closeService();
   }
+
 
   /**
    * @return the sourceDateFormat
@@ -100,7 +100,7 @@ public class ReformatDateService extends ReformatMetadata {
   /**
    * The format with which to parse the source date into a Date object
    * 
-   * @see SimpleDateFormat
+   * @see java.text.SimpleDateFormat
    * @param s the sourceDateFormat to set
    */
   public void setSourceDateFormat(String s) {
@@ -117,7 +117,7 @@ public class ReformatDateService extends ReformatMetadata {
   /**
    * The format in which to output to the destination key
    * 
-   * @see SimpleDateFormat
+   * @see java.text.SimpleDateFormat
    * @param s the destinationDateFormat to set
    */
   public void setDestinationDateFormat(String s) {

@@ -21,7 +21,6 @@ import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
-import com.adaptris.util.license.License;
 
 /**
  * <p>
@@ -47,14 +46,14 @@ public class MockStopProcessingService extends ServiceImp {
   }
 
   
-  /** @see com.adaptris.core.AdaptrisComponent#init() */
-  public void init() { 
-    // na
+
+  @Override
+  protected void initService() throws CoreException {
   }
-  
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
-  public void close() { 
-    // na
+
+  @Override
+  protected void closeService() {
+
   }
 
   /** @see java.lang.Object#toString() */
@@ -69,8 +68,7 @@ public class MockStopProcessingService extends ServiceImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return true;
+  public void prepare() throws CoreException {
   }
 
 }

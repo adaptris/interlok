@@ -27,15 +27,13 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.core.CoreException;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * In memory cache of items that have been processed.
  * 
  * @config fs-inline-processed-item-cache
- * @license BASIC
+ * 
  * @author lchan
  * @author $Author: lchan $
  */
@@ -95,12 +93,6 @@ public class InlineItemCache implements ProcessedItemCache {
   public void stop() {
   }
 
-
-  @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
-  }
-
   @Override
   public void save() {
 
@@ -142,4 +134,7 @@ public class InlineItemCache implements ProcessedItemCache {
   public void setAgeBeforeEviction(TimeInterval interval) {
     ageBeforeEviction = interval;
   }
+
+  @Override
+  public void prepare() throws CoreException {}
 }

@@ -29,7 +29,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config hex-to-string-metadata-service
  * 
- * @license BASIC
+ * 
  * @see StringToHexService
  */
 @XStreamAlias("hex-to-string-metadata-service")
@@ -47,16 +47,14 @@ public class HexToStringService extends ReformatMetadata {
     setCharset(UTF_8);
   }
 
-  @Override
-  public void close() {
 
+  @Override
+  protected void initService() throws CoreException {
   }
 
   @Override
-  public void init() throws CoreException {
-
+  protected void closeService() {
   }
-
   public String getCharset() {
     return charset;
   }

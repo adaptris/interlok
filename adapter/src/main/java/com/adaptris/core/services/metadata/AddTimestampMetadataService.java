@@ -18,7 +18,6 @@ package com.adaptris.core.services.metadata;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.xml.datatype.DatatypeFactory;
@@ -31,22 +30,20 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.adaptris.util.text.DateFormatUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Adds timestamp information as metadata.
  * <p>
- * In addition to supporting all the patterns allowed by {@link SimpleDateFormat}, this service also supports the special values
+ * In addition to supporting all the patterns allowed by {@link  java.text.SimpleDateFormat}, this service also supports the special values
  * {@code SECONDS_SINCE_EPOCH} and {@code MILLISECONDS_SINCE_EPOCH} which describe the number of seconds and milliseconds since
  * midnight Jan 1, 1970 UTC respectively. If specified as the format, then the long value associated will be emitted.
  * </p>
  * 
  * @config add-timestamp-metadata-service
  * @see com.adaptris.util.text.DateFormatUtil.CustomDateFormat
- * @license BASIC
+ * 
  * @author lchan
  * @author $Author: lchan $
  */
@@ -139,16 +136,8 @@ public class AddTimestampMetadataService extends ServiceImp {
     return timestamp;
   }
 
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#close()
-   */
-  public void close() {
-  }
-
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#init()
-   */
-  public void init() throws CoreException {
+  @Override
+  protected void initService() throws CoreException {
     if (isBlank(getMetadataKey())) {
       throw new CoreException("No Metadata key specified for timestamp");
     }
@@ -156,6 +145,12 @@ public class AddTimestampMetadataService extends ServiceImp {
       throw new CoreException("No date format specified");
     }
   }
+
+  @Override
+  protected void closeService() {
+
+  }
+
 
   /**
    * @return the metadataKey
@@ -268,7 +263,7 @@ public class AddTimestampMetadataService extends ServiceImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
   }
+
 }

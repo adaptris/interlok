@@ -24,7 +24,6 @@ import com.adaptris.core.InitialisedState;
 import com.adaptris.core.StartedState;
 import com.adaptris.core.StoppedState;
 import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.util.license.License;
 
 public class MockFailingConnection extends AllowsRetriesConnection {
 
@@ -115,9 +114,10 @@ public class MockFailingConnection extends AllowsRetriesConnection {
     return closeCount;
   }
 
-  public boolean isEnabled(License license) throws CoreException {
-    return true;
+  @Override
+  protected void prepareConnection() throws CoreException {
   }
+
 
   private void execute(WhenToFail wtf) throws CoreException {
 

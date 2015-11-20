@@ -19,7 +19,6 @@ package com.adaptris.core;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.adaptris.util.license.License;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -49,10 +48,6 @@ public class NoRetries implements FailedMessageRetrier {
   public void stop() {
   }
 
-  public boolean isEnabled(License license) {
-    return true;
-  }
-
   public void onAdaptrisMessage(AdaptrisMessage msg) {
   }
 
@@ -61,5 +56,10 @@ public class NoRetries implements FailedMessageRetrier {
 
   public Collection<String> registeredWorkflowIds() {
     return new ArrayList<String>();
+  }
+
+  @Override
+  public void prepare() throws CoreException {
+
   }
 }

@@ -24,8 +24,6 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.util.Args;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -36,7 +34,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config jms-metadata-producer-session
- * @license STANDARD
+ * 
  * @author lchan
  * 
  */
@@ -57,10 +55,6 @@ public class MetadataProducerSessionFactory extends ProducerSessionFactoryImpl {
     setMetadataKey(key);
   }
 
-  @Override
-  public boolean isEnabled(License l) {
-    return l.isEnabled(LicenseType.Standard);
-  }
 
   @Override
   public ProducerSession createProducerSession(JmsProducerImpl producer, AdaptrisMessage msg)

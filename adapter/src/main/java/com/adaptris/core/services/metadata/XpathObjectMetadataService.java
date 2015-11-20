@@ -28,7 +28,6 @@ import javax.xml.namespace.NamespaceContext;
 import org.w3c.dom.Document;
 
 import com.adaptris.annotation.AutoPopulated;
-import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
@@ -38,8 +37,6 @@ import com.adaptris.core.services.metadata.xpath.XpathObjectQuery;
 import com.adaptris.core.services.metadata.xpath.XpathQuery;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.KeyValuePairSet;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.adaptris.util.text.xml.SimpleNamespaceContext;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
@@ -49,7 +46,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * 
  * @config xpath-object-metadata-service
  * 
- * @license BASIC
+ * 
  */
 @XStreamAlias("xpath-object-metadata-service")
 public class XpathObjectMetadataService extends ServiceImp {
@@ -72,14 +69,18 @@ public class XpathObjectMetadataService extends ServiceImp {
     setXpathQueries(new ArrayList<XpathObjectQuery>());
   }
 
-  /** @see AdaptrisComponent */
   @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
     for (XpathObjectQuery query : xpathQueries) {
       query.verify();
     }
     queriesToExecute = new ArrayList<XpathObjectQuery>();
     queriesToExecute.addAll(getXpathQueries());
+  }
+
+  @Override
+  protected void closeService() {
+
   }
 
   public void doService(AdaptrisMessage msg) throws ServiceException {
@@ -116,10 +117,6 @@ public class XpathObjectMetadataService extends ServiceImp {
     this.namespaceContext = namespaceContext;
   }
 
-  /** @see AdaptrisComponent */
-  @Override
-  public void close() { /* na */
-  }
 
   public List<XpathObjectQuery> getXpathQueries() {
     return xpathQueries;
@@ -145,7 +142,7 @@ public class XpathObjectMetadataService extends ServiceImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
   }
+
 }

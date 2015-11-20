@@ -33,10 +33,6 @@ import com.adaptris.mail.JavamailReceiverFactory;
 import com.adaptris.mail.MailException;
 import com.adaptris.mail.MailReceiver;
 import com.adaptris.mail.MailReceiverFactory;
-import com.adaptris.mail.MailboxClient;
-import com.adaptris.security.password.Password;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 
 /**
  * Email implementation of the AdaptrisMessageConsumer interface.
@@ -120,14 +116,10 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
     mailReceiverFactory = new JavamailReceiverFactory();
   }
 
-  /**
-   *
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled(License)
-   */
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
+  protected void prepareConsumer() throws CoreException {
   }
+
 
 
   @Override
@@ -266,7 +258,6 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
    *
    * @return returns the regularExpressionSyntax.
    * @see #setRegularExpressionStyle(String)
-   * @see MailboxClient#setRegularExpressionCompiler(java.lang.String)
    */
   public String getRegularExpressionStyle() {
     return regularExpressionStyle;
@@ -290,7 +281,7 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
    * Set the password to be used with this consumer implementation.
    * <p>
    * If you specify the username and password in the URL for the SMTP server then does not lend itself to being encrypted. Specify
-   * the password here if you wish to use {@link Password#decode(String)} to decode the password.
+   * the password here if you wish to use {@link com.adaptris.security.password.Password#decode(String)} to decode the password.
    * </p>
    *
    * @param pw the password.

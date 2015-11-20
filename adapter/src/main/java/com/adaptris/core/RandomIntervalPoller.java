@@ -31,7 +31,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config random-interval-poller
- * @license BASIC
+ * 
  */
 @XStreamAlias("random-interval-poller")
 public class RandomIntervalPoller extends FixedIntervalPoller {

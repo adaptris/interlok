@@ -40,8 +40,6 @@ import com.adaptris.mail.SmtpClient;
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 
 /**
  * Abstract implementation of the AdaptrisMessageProducer interface for handling Email.
@@ -152,13 +150,10 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
   public void stop() {
   }
 
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled(License)
-   */
   @Override
-  public boolean isEnabled(License l) {
-    return l.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
   }
+
 
   /**
    * Set the SMTP url.
@@ -357,7 +352,7 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
   }
 
   /**
-   * Specify the {@link AdaptrisMessage} metadata keys that will be sent as headers for the mail message.
+   * Specify the {@link com.adaptris.core.AdaptrisMessage} metadata keys that will be sent as headers for the mail message.
    * <p>
    * Any metadata that is returned by this filter will be sent as headers.
    * </p>

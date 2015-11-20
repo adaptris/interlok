@@ -24,7 +24,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Concrete implementation of {@link com.adaptris.core.http.client.ResponseHeaderHandler} which adds all the HTTP headers from the
- * response as object metadata to the {@link AdaptrisMessage}.
+ * response as object metadata to the {@link com.adaptris.core.AdaptrisMessage}.
  * 
  * <p>For each header field that exists, there will be a corresponding {@link URLConnectionHeaderField} in object metadata.
  * Note that {@link java.net.HttpURLConnection} exposes header fields as a {@code List<String>} so this is reflected in the {@link

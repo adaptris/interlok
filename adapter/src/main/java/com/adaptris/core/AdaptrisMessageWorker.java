@@ -23,8 +23,7 @@ package com.adaptris.core;
  * <code>AdaptrisMessageProducer</code>.
  * </p>
  */
-public interface AdaptrisMessageWorker extends AdaptrisComponent,
-    MessageEventGenerator {
+public interface AdaptrisMessageWorker extends AdaptrisComponent, MessageEventGenerator {
 
   /**
    * <p>

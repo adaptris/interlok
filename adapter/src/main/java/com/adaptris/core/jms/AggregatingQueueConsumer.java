@@ -33,16 +33,13 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.services.aggregator.AggregatingConsumer;
 import com.adaptris.core.services.aggregator.AggregatingConsumerImpl;
 import com.adaptris.core.services.aggregator.ConsumeDestinationGenerator;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * {@link AggregatingConsumer} implementation that allows you to read a separate message(s) from a queue that need to be aggregated
+ * {@link com.adaptris.core.services.aggregator.AggregatingConsumer} implementation that allows you to read a separate message(s) from a queue that need to be aggregated
  * with the current message.
  * <p>
  * The JMS Queue and message selector are created from the generated {@link ConsumeDestination#getDestination()} and
@@ -58,7 +55,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config aggregating-queue-consumer
- * @license STANDARD
+ * 
  */
 @XStreamAlias("aggregating-queue-consumer")
 public class AggregatingQueueConsumer extends AggregatingConsumerImpl<AggregatingJmsConsumeService> implements
@@ -121,8 +118,7 @@ public class AggregatingQueueConsumer extends AggregatingConsumerImpl<Aggregatin
   }
 
   @Override
-  public boolean isEnabled(License l) throws CoreException {
-    return l.isEnabled(LicenseType.Standard);
+  public void prepare() throws CoreException {
   }
 
   /**

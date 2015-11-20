@@ -22,7 +22,6 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.adaptris.core.stubs.LicenseStub;
 import com.thoughtworks.xstream.XStream;
 
 /**
@@ -97,19 +96,6 @@ public abstract class ExampleConfigCase extends BaseCase {
         Object unmarshalled = roundTrip(o, defaultMarshaller);
         doJavaxValidation(o, unmarshalled);
         assertRoundtripEquality(o, unmarshalled);
-      }
-    }
-  }
-
-  public void testSimpleLicense() throws Exception {
-    Object input = retrieveObjectForCastorRoundTrip();
-    if (input != null) {
-      assertTrue(((AdaptrisComponent) input).isEnabled(new LicenseStub()));
-    }
-    else {
-      List l = retrieveObjectsForSampleConfig();
-      for (Object o : retrieveObjectsForSampleConfig()) {
-        assertTrue(((AdaptrisComponent) o).isEnabled(new LicenseStub()));
       }
     }
   }

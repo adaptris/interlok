@@ -81,16 +81,18 @@ public abstract class MessageSplitterServiceImp extends ServiceImp {
   protected abstract void handleSplitMessage(AdaptrisMessage msg)
       throws ServiceException;
 
-  /**
-   *
-   * @see com.adaptris.core.AdaptrisComponent#init()
-   */
   @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
     if (splitter == null) {
       throw new CoreException("Configured Message splitter is null");
     }
   }
+
+  @Override
+  protected void closeService() {
+
+  }
+
 
   /**
    * <p>

@@ -28,11 +28,8 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 
 /**
  * Base class for enabling JSR223 enabled scripting languages.
@@ -73,7 +70,7 @@ public abstract class ScriptingServiceImp extends ServiceImp {
   protected abstract Reader createReader() throws IOException;
 
   @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
     if (language == null) {
       throw new CoreException("Language may not be null");
     }
@@ -85,8 +82,9 @@ public abstract class ScriptingServiceImp extends ServiceImp {
   }
 
   @Override
-  public void close() {
+  protected void closeService() {
   }
+
 
   @Override
   public void start() throws CoreException {
@@ -112,9 +110,9 @@ public abstract class ScriptingServiceImp extends ServiceImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Standard);
+  public void prepare() throws CoreException {
   }
+
 
   @Override
   public boolean isBranching() {
@@ -129,7 +127,7 @@ public abstract class ScriptingServiceImp extends ServiceImp {
    * Specify whether or not this service is branching.
    * 
    * @param branching true to cause {@link #isBranching()} to return true; default is false.
-   * @see Service#isBranching()
+   * @see com.adaptris.core.Service#isBranching()
    * @since 3.0.3
    */
   public void setBranching(Boolean branching) {

@@ -22,8 +22,6 @@ import java.net.Socket;
 
 import com.adaptris.core.CoreException;
 import com.adaptris.util.URLString;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -31,7 +29,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config tcp-produce-connection
  * 
- * @license STANDARD
+ * 
  * @author lchan
  * @author $Author: hfraser $
  */
@@ -39,9 +37,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class TcpProduceConnection extends ProduceConnection {
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Standard);
+  protected void prepareConnection() throws CoreException {
   }
+
 
   /**
    * @see ProduceConnection#createSocket(java.lang.String)

@@ -60,10 +60,10 @@ public abstract class MessageSplitterImp implements MessageSplitter {
   }
 
   /**
-   * Select the {@linkplain AdaptrisMessageFactory} instance to use to create new messages.
+   * Select the {@linkplain com.adaptris.core.AdaptrisMessageFactory} instance to use to create new messages.
    *
    * @param msg the AdaptrisMessage to derive the message factory from.
-   * @return an {@linkplain AdaptrisMessageFactory} instance
+   * @return an {@linkplain com.adaptris.core.AdaptrisMessageFactory} instance
    * @see AdaptrisMessage#getFactory()
    * @see #setMessageFactory(AdaptrisMessageFactory)
    */

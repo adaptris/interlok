@@ -54,7 +54,7 @@ public abstract class CoreConstants {
    * 'committed' if there have been no failures in the service collection</li>
    * <li>{@link MultiProducerWorkflow} - will cause the standard producer to be skipped; other configured producers that are
    * available will still be invoked.</li>
-   * <li>{@link PoolingWorkflow} - will cause the producer to be skipped</li>
+   * <li>{@link com.adaptris.core.PoolingWorkflow} - will cause the producer to be skipped</li>
    * <li>{@link com.adaptris.core.lms.LargeMessageWorkflow} - will cause the producer to be skipped</li>
    * <li>{@link com.adaptris.core.jms.JmsReplyToWorkflow} - unaffected by this metadata key to ensure that the reply is still sent</li>
    * <li>{@link RequestReplyWorkflow} - unaffected by this metadata key to ensure that a reply to the triggering application can

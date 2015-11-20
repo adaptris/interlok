@@ -23,8 +23,6 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -37,7 +35,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config throw-exception-service
  * 
- * @license BASIC
+ * 
  * @see ExceptionGenerator
  * 
  */
@@ -70,13 +68,16 @@ public class ThrowExceptionService extends ServiceImp {
     }
   }
 
-  public void init() throws CoreException {
+
+  @Override
+  protected void initService() throws CoreException {
     if (exceptionGenerator == null) {
       throw new CoreException("No Exception Generator configured");
     }
   }
 
-  public void close() {
+  @Override
+  protected void closeService() {
   }
 
   public ExceptionGenerator getExceptionGenerator() {
@@ -93,8 +94,6 @@ public class ThrowExceptionService extends ServiceImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
   }
-
 }

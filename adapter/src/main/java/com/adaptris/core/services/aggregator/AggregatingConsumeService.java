@@ -20,7 +20,7 @@ import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.Service;
 
 /**
- * Marker interface for all implementations of {@link AggregatingConsumer} to use.
+ * Marker interface for all implementations of {@link com.adaptris.core.services.aggregator.AggregatingConsumer} to use.
  * 
  * @author lchan
  * 

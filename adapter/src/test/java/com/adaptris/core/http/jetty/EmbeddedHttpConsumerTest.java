@@ -37,7 +37,6 @@ import com.adaptris.core.http.MetadataContentTypeProvider;
 import com.adaptris.core.http.client.net.StandardHttpProducer;
 import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.services.WaitService;
-import com.adaptris.core.stubs.LicenseStub;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.stubs.StaticMockMessageProducer;
 import com.adaptris.util.TimeInterval;
@@ -193,7 +192,6 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
     workflow1.setConsumer(consumer1);
     workflow1.getServiceCollection().add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200)));
     Channel channel = JettyHelper.createChannel(new EmbeddedConnection(), workflow1);
-    channel.isEnabled(new LicenseStub());
     try {
       channel.requestStart();
       AdaptrisMessage msg1 = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
@@ -233,7 +231,6 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
     workflow2.getServiceCollection().add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200)));
     channel.getWorkflowList().add(workflow2);
 
-    channel.isEnabled(new LicenseStub());
     try {
       channel.requestStart();
       AdaptrisMessage msg1 = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
@@ -274,7 +271,6 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
     workflow.getServiceCollection().add(new StandaloneProducer(responder));
     workflow.addInterceptor(new JettyPoolingWorkflowInterceptor());
     Channel channel = JettyHelper.createChannel(new EmbeddedConnection(), workflow);
-    channel.isEnabled(new LicenseStub());
     try {
       channel.requestStart();
 
@@ -308,7 +304,6 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
     workflow.getServiceCollection().add(new StandaloneProducer(mockProducer));
     workflow.getServiceCollection().add(new StandaloneProducer(responder));
     Channel channel = JettyHelper.createChannel(new EmbeddedConnection(), workflow);
-    channel.isEnabled(new LicenseStub());
     try {
       channel.requestStart();
 

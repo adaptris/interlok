@@ -78,12 +78,15 @@ public abstract class AdaptrisConnectionImp implements AdaptrisConnection, State
   }
 
   @Override
-  public void prepare() throws CoreException {
+  public final void prepare() throws CoreException {
     if (connectionErrorHandler != null) {
       connectionErrorHandler.registerConnection(this);
     }
+    prepareConnection();
     prepared = true;
   }
+
+  protected abstract void prepareConnection() throws CoreException;
   /**
    * 
    * @see com.adaptris.core.AdaptrisComponent#start()

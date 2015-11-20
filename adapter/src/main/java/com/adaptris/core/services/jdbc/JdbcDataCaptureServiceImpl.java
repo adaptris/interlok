@@ -34,7 +34,7 @@ import com.adaptris.core.jdbc.JdbcService;
 import com.adaptris.core.util.JdbcUtil;
 
 /**
- * Base implementation for capturing data from an {@linkplain AdaptrisMessage} and storing it in a jdbc database.
+ * Base implementation for capturing data from an {@linkplain com.adaptris.core.AdaptrisMessage} and storing it in a jdbc database.
  *
  */
 public abstract class JdbcDataCaptureServiceImpl extends JdbcService {
@@ -62,7 +62,7 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcService {
   }
 
   @Override
-  protected void initService() throws CoreException {
+  protected void initJdbcService() throws CoreException {
 
   }
 
@@ -77,7 +77,7 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcService {
   }
 
   @Override
-  protected void closeService() {
+  protected void closeJdbcService() {
   }
 
   /**
@@ -212,6 +212,10 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcService {
   public void setParameterApplicator(ParameterApplicator p) {
     this.parameterApplicator = p;
   }
+
+
+  @Override
+  protected void prepareService() throws CoreException {}
 
   protected class DatabaseActor {
     private PreparedStatement insertStatement = null;

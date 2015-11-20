@@ -27,7 +27,6 @@ import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.Workflow;
 import com.adaptris.core.WorkflowList;
-import com.adaptris.core.stubs.LicenseStub;
 import com.adaptris.http.legacy.ConsumeConnection;
 import com.adaptris.http.legacy.GenericConsumer;
 import com.adaptris.http.legacy.HttpResponseProducer;
@@ -49,7 +48,6 @@ public class HttpHelper {
   static Adapter createAdapter(ConsumeConnection connection, Workflow w)
       throws Exception {
     Adapter a = new Adapter();
-    a.registerLicense(new LicenseStub());
     a.setUniqueId(new GuidGenerator().getUUID());
     ChannelList cl = new ChannelList();
     Channel channel = new Channel();

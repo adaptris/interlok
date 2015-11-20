@@ -42,7 +42,7 @@ import com.adaptris.util.KeyValuePairSet;
 
 /**
  * <p>
- * Standard implementation of {@link AdaptrisMessage} interface.
+ * Standard implementation of {@link com.adaptris.core.AdaptrisMessage} interface.
  * </p>
  *
  * @see DefaultMessageFactory

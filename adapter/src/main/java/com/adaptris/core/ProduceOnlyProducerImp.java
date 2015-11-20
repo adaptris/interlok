@@ -30,7 +30,7 @@ package com.adaptris.core;
 public abstract class ProduceOnlyProducerImp extends AdaptrisMessageProducerImp {
 
   /**
-   * @see AdaptrisMessageProducerImp #produce(AdaptrisMessage, ProduceDestination)
+   * @see com.adaptris.core.AdaptrisMessageProducerImp #produce(AdaptrisMessage, ProduceDestination)
    */
   @Override
   public void produce(AdaptrisMessage msg) throws ProduceException {
@@ -40,7 +40,7 @@ public abstract class ProduceOnlyProducerImp extends AdaptrisMessageProducerImp 
   /**
    * UnsupportedOperationException is thrown
    * 
-   * @see AdaptrisMessageProducerImp#request(AdaptrisMessage)
+   * @see com.adaptris.core.AdaptrisMessageProducerImp#request(AdaptrisMessage)
    */
   @Override
   public final AdaptrisMessage request(AdaptrisMessage msg)
@@ -51,7 +51,7 @@ public abstract class ProduceOnlyProducerImp extends AdaptrisMessageProducerImp 
   /**
    * UnsupportedOperationException is thrown
    * 
-   * @see AdaptrisMessageProducerImp#request(AdaptrisMessage, long)
+   * @see com.adaptris.core.AdaptrisMessageProducerImp#request(AdaptrisMessage, long)
    */
   @Override
   public final AdaptrisMessage request(AdaptrisMessage msg, long timeout)
@@ -62,7 +62,7 @@ public abstract class ProduceOnlyProducerImp extends AdaptrisMessageProducerImp 
   /**
    * UnsupportedOperationException is thrown
    * 
-   * @see AdaptrisMessageProducerImp
+   * @see com.adaptris.core.AdaptrisMessageProducerImp
    *      #request(AdaptrisMessage,ProduceDestination)
    */
   @Override
@@ -75,7 +75,7 @@ public abstract class ProduceOnlyProducerImp extends AdaptrisMessageProducerImp 
   /**
    * UnsupportedOperationException is thrown
    * 
-   * @see AdaptrisMessageProducerImp #request(AdaptrisMessage,
+   * @see com.adaptris.core.AdaptrisMessageProducerImp #request(AdaptrisMessage,
    *      ProduceDestination, long)
    */
   @Override

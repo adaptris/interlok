@@ -22,7 +22,7 @@ package com.adaptris.core;
  * Specifies methods for components which manage state transitions.
  * </p>
  * 
- * @see AdaptrisComponent
+ * @see com.adaptris.core.AdaptrisComponent
  */
 public interface StateManagedComponent extends AdaptrisComponent {
 

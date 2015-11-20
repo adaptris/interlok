@@ -38,8 +38,6 @@ import com.adaptris.core.services.metadata.xpath.XpathQuery;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.KeyValuePairSet;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.adaptris.util.text.xml.SimpleNamespaceContext;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
@@ -51,7 +49,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * 
  * @config xpath-metadata-service
  * 
- * @license BASIC
+ * 
  */
 @XStreamAlias("xpath-metadata-service")
 public class XpathMetadataService extends ServiceImp {
@@ -77,15 +75,20 @@ public class XpathMetadataService extends ServiceImp {
     setXpathQueries(new ArrayList<XpathQuery>());
   }
 
-  /** @see AdaptrisComponent */
   @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
     for (XpathQuery query : xpathQueries) {
       query.verify();
     }
     queriesToExecute = new ArrayList<>();
     queriesToExecute.addAll(getXpathQueries());
   }
+
+  @Override
+  protected void closeService() {
+
+  }
+
 
   public void doService(AdaptrisMessage msg) throws ServiceException {
 
@@ -126,10 +129,6 @@ public class XpathMetadataService extends ServiceImp {
     this.namespaceContext = namespaceContext;
   }
 
-  /** @see AdaptrisComponent */
-  @Override
-  public void close() { /* na */
-  }
 
   public List<XpathQuery> getXpathQueries() {
     return xpathQueries;
@@ -155,8 +154,7 @@ public class XpathMetadataService extends ServiceImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
   }
 
 

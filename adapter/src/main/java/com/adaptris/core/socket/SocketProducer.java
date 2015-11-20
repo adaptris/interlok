@@ -25,14 +25,11 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.perf4j.aop.Profiled;
 
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisMessageProducerImp;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.RequestReplyProducerImp;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -40,7 +37,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config socket-producer
  * 
- * @license STANDARD
+ * 
  * @author lchan
  * @author $Author: lchan $
  */
@@ -52,9 +49,9 @@ public class SocketProducer extends RequestReplyProducerImp {
   private static final long DEFAULT_TIMEOUT = 300000;
 
   @Override
-  public boolean isEnabled(License l) {
-    return l.isEnabled(LicenseType.Standard);
+  public void prepare() throws CoreException {
   }
+
 
   /**
    *
@@ -66,7 +63,7 @@ public class SocketProducer extends RequestReplyProducerImp {
   }
 
   /**
-   * @see AdaptrisMessageProducerImp#produce(AdaptrisMessage,ProduceDestination)
+   * @see com.adaptris.core.AdaptrisMessageProducerImp#produce(AdaptrisMessage,ProduceDestination)
    */
   @Override
   @Profiled(tag = "{$this.getClass().getSimpleName()}.produce()", logger = "com.adaptris.perf4j.socket.TimingLogger")

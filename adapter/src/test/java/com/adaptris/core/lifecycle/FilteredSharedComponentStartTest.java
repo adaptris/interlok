@@ -25,7 +25,6 @@ import com.adaptris.core.ClosedState;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.InitialisedState;
 import com.adaptris.core.StartedState;
-import com.adaptris.core.stubs.LicenseStub;
 import com.adaptris.core.stubs.MockConnection;
 
 public class FilteredSharedComponentStartTest extends BaseCase {
@@ -126,7 +125,6 @@ public class FilteredSharedComponentStartTest extends BaseCase {
 
   public void testFilteredStart_Includes() throws Exception {
     Adapter adapter = new Adapter();
-    adapter.registerLicense(new LicenseStub());
     adapter.setUniqueId(getName());
     MockConnection sc1 = new MockConnection(getName() + "_1");
     MockConnection sc2 = new MockConnection(getName() + "_2");
@@ -167,7 +165,6 @@ public class FilteredSharedComponentStartTest extends BaseCase {
 
   public void testFilteredStart_Excludes() throws Exception {
     Adapter adapter = new Adapter();
-    adapter.registerLicense(new LicenseStub());
     adapter.setUniqueId(getName());
     MockConnection sc1 = new MockConnection(getName() + "_1");
     MockConnection sc2 = new MockConnection(getName() + "_2");
@@ -208,7 +205,6 @@ public class FilteredSharedComponentStartTest extends BaseCase {
 
   public void testNonBlockingStart() throws Exception {
     Adapter adapter = new Adapter();
-    adapter.registerLicense(new LicenseStub());
     adapter.setUniqueId(getName());
     TriggeredMockConnection sharedConnection = new TriggeredMockConnection(getName());
     try {
@@ -249,7 +245,6 @@ public class FilteredSharedComponentStartTest extends BaseCase {
 
   public void testNonBlockingStart_NoSharedConnection() throws Exception {
     Adapter adapter = new Adapter();
-    adapter.registerLicense(new LicenseStub());
     adapter.setUniqueId(getName());
     try {
       adapter.getSharedComponents().setLifecycleStrategy(new FilteredSharedComponentStart(true));
@@ -263,7 +258,6 @@ public class FilteredSharedComponentStartTest extends BaseCase {
 
   public void testNonBlockingStart_WithException() throws Exception {
     Adapter adapter = new Adapter();
-    adapter.registerLicense(new LicenseStub());
     adapter.setUniqueId(getName());
     TriggeredFailingMockConnection sharedConnection = new TriggeredFailingMockConnection(getName());
     try {

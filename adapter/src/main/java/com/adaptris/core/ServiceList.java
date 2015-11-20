@@ -92,4 +92,11 @@ public class ServiceList extends ServiceCollectionImp {
   @Override
   protected void doStop() {
   }
+
+  @Override
+  public void prepare() throws CoreException {
+    for (Service s : getServices()) {
+      s.prepare();
+    }
+  }
 }

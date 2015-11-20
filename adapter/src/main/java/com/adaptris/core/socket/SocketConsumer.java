@@ -36,8 +36,6 @@ import com.adaptris.core.AdaptrisMessageListener;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.ManagedThreadFactory;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -45,7 +43,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config socket-consumer
  * 
- * @license STANDARD
+ * 
  */
 @XStreamAlias("socket-consumer")
 public class SocketConsumer extends AdaptrisMessageConsumerImp {
@@ -72,8 +70,7 @@ public class SocketConsumer extends AdaptrisMessageConsumerImp {
   }
 
   @Override
-  public boolean isEnabled(License l) {
-    return l.isEnabled(LicenseType.Standard);
+  public void prepare() throws CoreException {
   }
 
   /**

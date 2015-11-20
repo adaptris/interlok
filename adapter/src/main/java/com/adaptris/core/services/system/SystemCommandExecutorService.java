@@ -34,11 +34,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
-import com.adaptris.core.services.dynamic.DynamicServiceExecutor;
-import com.adaptris.core.services.dynamic.DynamicServiceLocator;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -46,7 +42,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * <p>
  * Note that no checking is peformed on the command to be executed; it will be executed as-is. If used in combination with
- * {@link DynamicServiceExecutor} or {@link DynamicServiceLocator} then you might have a large security hole if it is improperly
+ * {@link com.adaptris.core.services.dynamic.DynamicServiceExecutor} or {@link
+ * com.adaptris.core.services.dynamic.DynamicServiceLocator} then you might have a large security hole if it is improperly
  * configured or validated.
  * </p>
  * <p>
@@ -54,12 +51,13 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <ul>
  * <li>The exitcode is stored against the metadata key {@value #COMMAND_RETURN_VALUE_METADATA_KEY} if the service does not throw an
  * exception.</li>
- * <li>If a timeout occurs then a ServiceException is thrown, output that was captured before the timeout should still be available</li>
+ * <li>If a timeout occurs then a ServiceException is thrown, output that was captured before the timeout should still be
+ * available</li>
  * </ul>
  * </p>
  * 
  * @config system-command-executor
- * @license STANDARD
+ * 
  */
 @XStreamAlias("system-command-executor")
 public class SystemCommandExecutorService extends ServiceImp {
@@ -113,22 +111,13 @@ public class SystemCommandExecutorService extends ServiceImp {
   }
   
 
-  /**
-   * @see com.adaptris.core.ComponentLifecycle#close()
-   */
   @Override
-  public void close() {
-    //Nothing to do
+  protected void initService() throws CoreException {
   }
 
-  /**
-   * @see com.adaptris.core.ComponentLifecycle#init()
-   */
   @Override
-  public void init() throws CoreException {
-    //Nothing to do
+  protected void closeService() {
   }
-
 
   public CommandBuilder getCommandBuilder() {
     return commandBuilder;
@@ -148,8 +137,7 @@ public class SystemCommandExecutorService extends ServiceImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Standard);
+  public void prepare() throws CoreException {
   }
 
   /**

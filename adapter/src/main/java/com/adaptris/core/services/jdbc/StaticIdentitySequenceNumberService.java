@@ -34,7 +34,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config jdbc-sequence-number-service
  * 
- * @license STANDARD
+ * 
  * @author lchan
  * 
  */

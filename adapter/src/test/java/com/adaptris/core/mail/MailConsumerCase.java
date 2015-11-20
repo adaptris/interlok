@@ -46,7 +46,6 @@ import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.Workflow;
 import com.adaptris.core.WorkflowList;
-import com.adaptris.core.stubs.LicenseStub;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.mail.JavamailReceiverFactory;
 import com.adaptris.mail.JunitMailHelper;
@@ -269,7 +268,6 @@ public abstract class MailConsumerCase extends MailConsumerExample {
 
   protected Adapter createAdapter(Workflow w) throws Exception {
     Adapter a = new Adapter();
-    a.registerLicense(new LicenseStub());
     a.setUniqueId(new GuidGenerator().getUUID());
     ChannelList cl = new ChannelList();
     Channel channel = new Channel();

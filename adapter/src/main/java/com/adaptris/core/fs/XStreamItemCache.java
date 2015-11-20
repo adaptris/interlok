@@ -22,7 +22,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * @config fs-xstream-processed-item-cache
- * @license BASIC
+ * 
  * 
  * @author dsefton
  * @author $Author: dsefton $

@@ -28,8 +28,6 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.fs.FsException;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -38,7 +36,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config traversing-fs-consumer
- * @license STANDARD
+ * 
  */
 @XStreamAlias("traversing-fs-consumer")
 public class TraversingFsConsumer extends FsConsumer {
@@ -157,8 +155,6 @@ public class TraversingFsConsumer extends FsConsumer {
   }
 
   @Override
-  public boolean isEnabled(License l) throws CoreException {
-    return l.isEnabled(LicenseType.Standard);
-  }
+  protected void prepareConsumer() throws CoreException {}
 
 }

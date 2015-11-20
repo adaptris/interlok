@@ -65,7 +65,7 @@ public final class DateFormatUtil {
   };
 
   /**
-   * Custom date formats over and above {@link SimpleDateFormat}.
+   * Custom date formats over and above {@link  java.text.SimpleDateFormat}.
    * 
    */
   public static enum CustomDateFormat {
@@ -75,7 +75,7 @@ public final class DateFormatUtil {
   static enum CustomDateFormatter {
 
     /**
-     * A formatter using {@link SimpleDateFormat}.
+     * A formatter using {@link  java.text.SimpleDateFormat}.
      * 
      */
     SIMPLE() {

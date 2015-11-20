@@ -16,7 +16,6 @@
 
 package com.adaptris.core;
 
-import com.adaptris.core.stubs.LicenseStub;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
@@ -57,7 +56,6 @@ public class AdapterStateSummaryTest extends BaseCase {
   public void testAdapterStateSummaryAdapterInit() throws Exception {
     Adapter a = new Adapter();
     a.setUniqueId(DEFAULT_KEY);
-    a.registerLicense(new LicenseStub());
     a.getChannelList().addChannel(new Channel());
     LifecycleHelper.init(a);
     AdapterStateSummary summary = new AdapterStateSummary(a);
@@ -70,7 +68,6 @@ public class AdapterStateSummaryTest extends BaseCase {
   public void testAdapterStateSummaryAdapterStart() throws Exception {
     Adapter a = new Adapter();
     a.setUniqueId(DEFAULT_KEY);
-    a.registerLicense(new LicenseStub());
     a.getChannelList().addChannel(new Channel());
     LifecycleHelper.init(a);
     LifecycleHelper.start(a);

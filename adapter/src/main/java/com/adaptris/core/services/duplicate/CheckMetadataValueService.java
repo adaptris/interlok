@@ -53,14 +53,14 @@ public class CheckMetadataValueService extends DuplicateMetadataValueService {
   }
 
   @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
     if (nextServiceIdIfDuplicate == null) {
       throw new CoreException("Next Service ID if Duplicate is null");
     }
     if (nextServiceIdIfUnique == null) {
       throw new CoreException("Next Service ID if Unique is null");
     }
-    super.init();
+    super.initService();
   }
   
   /** @see com.adaptris.core.Service

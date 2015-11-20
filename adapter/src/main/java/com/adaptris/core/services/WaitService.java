@@ -24,8 +24,6 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -34,7 +32,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config wait-service
- * @license BASIC
+ * 
  */
 @XStreamAlias("wait-service")
 public class WaitService extends ServiceImp {
@@ -88,16 +86,12 @@ public class WaitService extends ServiceImp {
     }
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#init() */
   @Override
-  public void init() {
-    // na
+  protected void initService() {
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
   @Override
-  public void close() {
-    // na
+  protected void closeService() {
   }
 
   long waitMs() {
@@ -118,9 +112,9 @@ public class WaitService extends ServiceImp {
     this.waitInterval = interval;
   }
 
+
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
   }
 
   public Boolean getRandomize() {

@@ -29,16 +29,12 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.NullMessageConsumer;
 import com.adaptris.core.NullProcessingExceptionHandler;
 import com.adaptris.core.NullProduceExceptionHandler;
-import com.adaptris.core.ProcessingExceptionHandler;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ProduceExceptionHandler;
 import com.adaptris.core.RetryMessageErrorHandler;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandardWorkflow;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -50,11 +46,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <p>
  * Additionally, this workflow may not be configured with any {@link ProduceExceptionHandler} as this will not allow the transaction
  * to rolled back correctly. In order to get behaviour similiar to {@link ProduceExceptionHandler}, you should use
- * {@link StandaloneProducer} as part of the service collection in order to produce the payload to the required destination.
+ * {@link com.adaptris.core.StandaloneProducer} as part of the service collection in order to produce the payload to the required destination.
  * </p>
  * 
  * @config jms-transacted-workflow
- * @license STANDARD
+ * 
  */
 @XStreamAlias("jms-transacted-workflow")
 @GenerateBeanInfo
@@ -166,8 +162,8 @@ public final class JmsTransactedWorkflow extends StandardWorkflow {
    * <p>
    * When strict mode is enabled, then any exception will cause a rollback on
    * the session; when strict is false, then if a
-   * {@link ProcessingExceptionHandler} is configured that is not
-   * {@link NullProcessingExceptionHandler}, the session will not be rolled
+   * {@link com.adaptris.core.ProcessingExceptionHandler} is configured that is not
+   * {@link com.adaptris.core.NullProcessingExceptionHandler}, the session will not be rolled
    * back.
    * </p>
    *
@@ -201,8 +197,8 @@ public final class JmsTransactedWorkflow extends StandardWorkflow {
   }
 
   @Override
-  protected boolean workflowIsEnabled(License l) {
-    return l.isEnabled(LicenseType.Standard);
-  }
+  protected void prepareWorkflow() throws CoreException {}
+
+
 
 }

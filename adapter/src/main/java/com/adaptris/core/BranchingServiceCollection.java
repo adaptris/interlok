@@ -24,8 +24,6 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -39,7 +37,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config branching-service-collection
  * 
- * @license STANDARD
+ * 
  */
 @XStreamAlias("branching-service-collection")
 public class BranchingServiceCollection extends ServiceCollectionImp {
@@ -192,9 +190,10 @@ public class BranchingServiceCollection extends ServiceCollectionImp {
     firstServiceId = string;
   }
 
-  @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Standard) && super.isEnabled(license);
+  public void prepare() throws CoreException {
+    for (Service s : getServices()) {
+      s.prepare();
+    }
   }
 
 }

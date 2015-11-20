@@ -58,7 +58,8 @@ import com.adaptris.core.management.vcs.RuntimeVersionControl;
 import com.adaptris.core.management.vcs.RuntimeVersionControlLoader;
 import com.adaptris.core.util.JmxHelper;
 import com.adaptris.util.URLString;
-import com.adaptris.util.license.LicenseException;
+
+import net.sf.saxon.trans.LicenseException;
 
 @SuppressWarnings("deprecation")
 public class AdapterRegistry implements AdapterRegistryMBean {
@@ -209,14 +210,14 @@ public class AdapterRegistry implements AdapterRegistryMBean {
   }
 
   @Override
-  public ObjectName createAdapter(URL url) throws IOException, MalformedObjectNameException, CoreException, LicenseException {
+  public ObjectName createAdapter(URL url) throws IOException, MalformedObjectNameException, CoreException {
     assertNotNull(url, EXCEPTION_MSG_URL_NULL);
     String xml = this.loadPreProcessors().process(url);
     return register((Adapter) DefaultMarshaller.getDefaultMarshaller().unmarshal(xml), url);
   }
 
   @Override
-  public ObjectName createAdapter(String xml) throws IOException, MalformedObjectNameException, CoreException, LicenseException {
+  public ObjectName createAdapter(String xml) throws IOException, MalformedObjectNameException, CoreException {
     assertNotNull(xml, EXCEPTION_MSG_XML_NULL);
     xml = this.loadPreProcessors().process(xml);
     return register((Adapter) DefaultMarshaller.getDefaultMarshaller().unmarshal(xml), null);
@@ -244,9 +245,8 @@ public class AdapterRegistry implements AdapterRegistryMBean {
     }
   }
 
-  private ObjectName register(Adapter adapter, URL configUrl) throws CoreException, MalformedObjectNameException, LicenseException {
+  private ObjectName register(Adapter adapter, URL configUrl) throws CoreException, MalformedObjectNameException {
     Adapter adapterToRegister = validate(adapter);
-    adapterToRegister.registerLicense(config.getLicense());
     AdapterManager manager = new AdapterManager(adapterToRegister);
     ObjectName adapterName = manager.createObjectName();
     addRegisteredAdapter(adapterName);

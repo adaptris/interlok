@@ -20,8 +20,6 @@ import javax.jms.JMSException;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -32,7 +30,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config jms-message-count-producer-session
- * @license STANDARD
+ * 
  * @author lchan
  * 
  */
@@ -52,11 +50,6 @@ public class MessageCountProducerSessionFactory extends ProducerSessionFactoryIm
   public MessageCountProducerSessionFactory(Integer max) {
     super();
     setMaxMessages(max);
-  }
-
-  @Override
-  public boolean isEnabled(License l) {
-    return l.isEnabled(LicenseType.Standard);
   }
 
   @Override

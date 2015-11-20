@@ -18,6 +18,15 @@ package com.adaptris.core.common;
 
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Writer;
+
+import org.apache.commons.io.IOUtils;
+
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.interlok.InterlokException;
 import com.adaptris.interlok.config.DataOutputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
@@ -25,27 +34,27 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * This {@code DataOutputParameter} is used when you want to write data to the {@link com.adaptris.core.AdaptrisMessage} payload.
- * <p>
- * An example might be specifying that the XML content required for the {@link com.adaptris.core.services.xml.XPathService} can be
- * found in the payload of an {@link com.adaptris.core.AdaptrisMessage}.
- * </p>
  * 
- * @author amcgrath
- * @config string-payload-data-output-parameter
+ * 
+ * @config stream-payload-output-parameter
  * 
  */
-@XStreamAlias("string-payload-data-output-parameter")
-public class StringPayloadDataOutputParameter implements DataOutputParameter<String> {
+@XStreamAlias("stream-payload-output-parameter")
+public class PayloadStreamOutputParameter implements DataOutputParameter<InputStream> {
 
   private String contentEncoding;
-  public StringPayloadDataOutputParameter() {
+  public PayloadStreamOutputParameter() {
     
   }
 
   @Override
-  public void insert(String data, InterlokMessage msg) throws InterlokException {
-    String encoding = defaultIfEmpty(getContentEncoding(), msg.getContentEncoding());
-    msg.setContent(data, encoding);
+  public void insert(InputStream data, InterlokMessage msg) throws InterlokException {
+    try {
+      String encoding = defaultIfEmpty(getContentEncoding(), msg.getContentEncoding());
+      copyAndClose(data, msg.getWriter(encoding));
+    } catch (IOException e) {
+      ExceptionHelper.rethrowCoreException(e);
+    }
   }
 
   public String getContentEncoding() {
@@ -54,6 +63,12 @@ public class StringPayloadDataOutputParameter implements DataOutputParameter<Str
 
   public void setContentEncoding(String contentEncoding) {
     this.contentEncoding = contentEncoding;
+  }
+
+  private void copyAndClose(InputStream input, Writer out) throws IOException {
+    try (InputStream autoCloseIn = new BufferedInputStream(input); BufferedWriter autoCloseOut = new BufferedWriter(out)) {
+      IOUtils.copy(autoCloseIn, autoCloseOut);
+    }
   }
 
 }

@@ -38,6 +38,7 @@ public abstract class ServiceImp implements Service {
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
   private transient ComponentState serviceState;
+  private transient boolean prepared = false;
   
   private String uniqueId;
   private transient boolean isBranching; // defaults to false
@@ -57,6 +58,22 @@ public abstract class ServiceImp implements Service {
     setUniqueId(new GuidGenerator().getUUID());
     changeState(ClosedState.getInstance());
   }
+
+  public final void init() throws CoreException {
+    if (!prepared)
+      prepare();
+    initService();
+  }
+
+  protected abstract void initService() throws CoreException;
+
+  public final void close() {
+    closeService();
+    prepared = false;
+  }
+
+  protected abstract void closeService();
+
 
   @Override
   public void stop() {

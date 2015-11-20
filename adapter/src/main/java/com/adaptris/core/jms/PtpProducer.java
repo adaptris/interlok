@@ -20,19 +20,17 @@ import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Queue;
 
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisMessageProducer;
 import com.adaptris.core.ProduceDestination;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * {@link AdaptrisMessageProducer} implementation for Queue based JMS.
+ * {@link com.adaptris.core.AdaptrisMessageProducer} implementation for Queue based JMS.
  * <p>
  * This implementation baselines to JMS 1.1 for minimum API support and its behaviour and support
  * for standard JMS Headers can be controlled in a number of ways.
  * </p>
  * <p>
- * When converting from an {@link AdaptrisMessage} into a standard {@link javax.jms.Message}; you
+ * When converting from an {@link com.adaptris.core.AdaptrisMessage} into a standard {@link javax.jms.Message}; you
  * should choose an implementation of {@link MessageTypeTranslator}. The more common types are
  * {@link BytesMessageTranslator}, {@link TextMessageTranslator}, {@link ObjectMessageTranslator}
  * and {@link MapMessageTranslator} which correspond to {@link javax.jms.BytesMessage},
@@ -82,8 +80,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config jms-queue-producer
  * 
- * @license BASIC, additional license requirements from the chosen {@link MessageTypeTranslator} and
- *          {@link ProducerSessionFactory}
  */
 @XStreamAlias("jms-queue-producer")
 public class PtpProducer extends DefinedJmsProducer {

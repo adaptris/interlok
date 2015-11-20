@@ -20,12 +20,12 @@ import java.util.Collection;
 
 /**
  * <p>
- * Component which consumes {@linkplain AdaptrisMessage}s and, based on message
+ * Component which consumes {@linkplain com.adaptris.core.AdaptrisMessage}s and, based on message
  * metadata, resubmits them to the {@linkplain Workflow} which processed them
  * originally.
  * </p>
  */
-public interface FailedMessageRetrier extends AdaptrisComponent, AdaptrisMessageListener {
+public interface FailedMessageRetrier extends AdaptrisComponent, AdaptrisMessageListener, ComponentLifecycleExtension {
 
   /**
    * Add a {@linkplain Workflow} to the internal register of workflows

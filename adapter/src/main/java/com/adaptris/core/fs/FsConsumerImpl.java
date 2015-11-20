@@ -40,7 +40,6 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisPollingConsumer;
-import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.fs.enhanced.FileSorter;
 import com.adaptris.core.fs.enhanced.NoSorting;
@@ -49,12 +48,10 @@ import com.adaptris.fs.FsException;
 import com.adaptris.fs.FsWorker;
 import com.adaptris.fs.NioWorker;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 
 /**
  * <p>
- * Abstract implementation of <code>AdaptrisMessageConsumer</code> based on the <code>com.adaptris.fs</code> package.
+ * Abstract implementation of {@link com.adaptris.core.AdaptrisMessageConsumer} based on the <code>com.adaptris.fs</code> package.
  * </p>
  */
 public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
@@ -81,11 +78,6 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
 
   public FsConsumerImpl() {
     setFileSorter(new NoSorting());
-  }
-
-  @Override
-  public boolean isEnabled(License l) throws CoreException {
-    return l.isEnabled(LicenseType.Basic);
   }
 
   /**
@@ -289,9 +281,9 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
    * Set the filename filter
    * 
    * @param string the classname of the {@link FileFilter} implementation to use, if not specified, then it defaults to
-   *          "org.apache.oro.io.Perl5FilenameFilter" which uses the jakarta oro package implementation of a Perl regular expression
-   *          filename filter.
-   * @see ConsumeDestination#getFilterExpression()
+   * "org.apache.oro.io.Perl5FilenameFilter" which uses the jakarta oro package implementation of a Perl regular expression
+   * filename filter.
+   * @see com.adaptris.core.ConsumeDestination#getFilterExpression()
    */
   public void setFileFilterImp(String string) {
     fileFilterImp = string;

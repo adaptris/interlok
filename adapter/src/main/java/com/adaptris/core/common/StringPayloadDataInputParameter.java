@@ -32,7 +32,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @author amcgrath
  * @config string-payload-data-input-parameter
- * @license BASIC
+ * 
  */
 @XStreamAlias("string-payload-data-input-parameter")
 public class StringPayloadDataInputParameter implements DataInputParameter<String> {

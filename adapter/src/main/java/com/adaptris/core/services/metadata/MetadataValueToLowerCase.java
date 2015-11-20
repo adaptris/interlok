@@ -26,7 +26,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config metadata-value-to-lower-case
  * 
- * @license BASIC
+ * 
  */
 @XStreamAlias("metadata-value-to-lower-case")
 public class MetadataValueToLowerCase extends ReformatMetadata {

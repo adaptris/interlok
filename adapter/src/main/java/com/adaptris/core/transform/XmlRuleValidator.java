@@ -44,7 +44,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * Used with {@link XmlValidationService} to validate an XML message against various rules.
  * 
  * @config xml-rule-validator
- * @license BASIC
+ * 
  * @author lchan
  * @see ValidationStage
  */

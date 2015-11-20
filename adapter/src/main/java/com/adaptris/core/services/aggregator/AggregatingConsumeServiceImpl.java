@@ -25,7 +25,7 @@ import com.adaptris.core.util.LifecycleHelper;
 
 
 /**
- * Base class for {@link AggregatingConsumeService} implementations providing common functionality.
+ * Base class for {@link com.adaptris.core.services.aggregator.AggregatingConsumeService} implementations providing common functionality.
  * 
  * @author lchan
  * 
@@ -52,7 +52,7 @@ public abstract class AggregatingConsumeServiceImpl<E extends AdaptrisConnection
   }
 
   @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
   }
 
   @Override
@@ -66,6 +66,6 @@ public abstract class AggregatingConsumeServiceImpl<E extends AdaptrisConnection
   }
 
   @Override
-  public void close() {
+  protected void closeService() {
   }
 }

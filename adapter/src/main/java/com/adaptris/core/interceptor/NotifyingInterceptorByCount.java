@@ -114,5 +114,4 @@ public abstract class NotifyingInterceptorByCount extends NotifyingInterceptor {
         : DEFAULT_TIMESLICE_DURATION.toMilliseconds();
   }
 
-
 }

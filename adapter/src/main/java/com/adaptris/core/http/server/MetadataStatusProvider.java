@@ -29,7 +29,7 @@ import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Implementation of {@link HttpStatusProvider} that can derive the status and text from {@link AdaptrisMessage} metadata.
+ * Implementation of {@link HttpStatusProvider} that can derive the status and text from {@link com.adaptris.core.AdaptrisMessage} metadata.
  *
  * <p>If the configured metadata key does not exist / non-numeric, then {@link #getDefaultStatus()} is
  * used to provide the Status.

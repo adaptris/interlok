@@ -142,7 +142,7 @@ public abstract class ResponseProducerImpl extends ProduceOnlyProducerImp {
   }
 
   /**
-   * Whether or not to send the {@link AdaptrisMessage#getPayload()} as part of the reply.
+   * Whether or not to send the {@link com.adaptris.core.AdaptrisMessage#getPayload()} as part of the reply.
    *
    * @param b the sendPayload to set defaults true.
    */

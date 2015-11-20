@@ -26,7 +26,6 @@ import com.adaptris.core.jms.PtpProducer;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
 import com.adaptris.core.services.Base64DecodeService;
 import com.adaptris.core.services.Base64EncodeService;
-import com.adaptris.core.stubs.LicenseStub;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageConsumer;
 import com.adaptris.core.stubs.MockMessageProducer;
@@ -34,7 +33,6 @@ import com.adaptris.core.stubs.MockRequestReplyProducer;
 import com.adaptris.core.stubs.MockSkipProducerService;
 import com.adaptris.core.stubs.MockWorkflowInterceptor;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
 
 public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
 
@@ -257,38 +255,6 @@ public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
   @Override
   protected RequestReplyWorkflow createWorkflowForGenericTests() {
     return new RequestReplyWorkflow();
-  }
-
-  @Override
-  public void testLicenseCombinations() throws Exception {
-    super.testLicenseCombinations();
-    assertEquals(true, createReqRepWorkflow(true, true).isEnabled(new LicenseStub()));
-    assertEquals(false, createReqRepWorkflow(false, true).isEnabled(new LicenseStub()));
-    assertEquals(false, createReqRepWorkflow(false, false).isEnabled(new LicenseStub()));
-    assertEquals(false, createReqRepWorkflow(true, false).isEnabled(new LicenseStub()));
-  }
-
-  private RequestReplyWorkflow createReqRepWorkflow(boolean replyLicensed, boolean replyServicesLicensed) throws Exception {
-    RequestReplyWorkflow wf = (RequestReplyWorkflow) createWorkflowLicenseCombo(true, true, true);
-
-    if (!replyLicensed) {
-      wf.setReplyProducer(new MockMessageProducer() {
-        @Override
-        public boolean isEnabled(License l) {
-          return false;
-        }
-      });
-
-    }
-    if (!replyServicesLicensed) {
-      wf.setReplyServiceCollection(new ServiceList() {
-        @Override
-        public boolean isEnabled(License l) {
-          return false;
-        }
-      });
-    }
-    return wf;
   }
 
 }

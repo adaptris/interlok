@@ -37,9 +37,9 @@ import com.adaptris.core.StartedState;
 import com.adaptris.core.Workflow;
 import com.adaptris.core.jms.AutoConvertMessageTranslator;
 import com.adaptris.core.jms.BytesMessageTranslator;
+import com.adaptris.core.jms.DefinedJmsProducer;
 import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.JmsConsumerCase;
-import com.adaptris.core.jms.DefinedJmsProducer;
 import com.adaptris.core.jms.PasConsumer;
 import com.adaptris.core.jms.PasProducer;
 import com.adaptris.core.jms.PtpConsumer;
@@ -48,7 +48,6 @@ import com.adaptris.core.jms.UrlVendorImplementation;
 import com.adaptris.core.lifecycle.NonBlockingChannelStartStrategy;
 import com.adaptris.core.lms.FileBackedMessageFactory;
 import com.adaptris.core.stubs.ExternalResourcesHelper;
-import com.adaptris.core.stubs.LicenseStub;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.core.stubs.MockMessageProducer;
@@ -176,7 +175,6 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
     result.setMessageErrorHandler(new NullProcessingExceptionHandler());
     result.setConsumeConnection(cc);
     result.getWorkflowList().add(wf);
-    result.isEnabled(new LicenseStub());
     result.prepare();
     return result;
   }
@@ -417,7 +415,6 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
     ChannelList cl = new ChannelList();
     cl.addChannel(c);
     adapter.setChannelList(cl);
-    adapter.registerLicense(new LicenseStub());
     return adapter;
   }
 

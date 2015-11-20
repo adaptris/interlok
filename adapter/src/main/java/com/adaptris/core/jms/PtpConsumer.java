@@ -26,11 +26,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * JMS Queue implementation of {@link AdaptrisMessageConsumer}
+ * JMS Queue implementation of {@link com.adaptris.core.AdaptrisMessageConsumer}
  * </p>
  * 
  * @config jms-queue-consumer
- * @license BASIC, additional license requirements from the chosen MessageTypeTranslator
+ * 
  */
 @XStreamAlias("jms-queue-consumer")
 public class PtpConsumer extends JmsConsumerImpl {

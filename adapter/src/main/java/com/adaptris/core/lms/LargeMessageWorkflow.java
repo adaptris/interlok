@@ -19,12 +19,8 @@ package com.adaptris.core.lms;
 import org.perf4j.aop.Profiled;
 
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisMessageListener;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.StandardWorkflow;
-import com.adaptris.core.WorkflowImp;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -41,7 +37,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config large-message-workflow
- * @license STANDARD
+ * 
  */
 @XStreamAlias("large-message-workflow")
 public class LargeMessageWorkflow extends StandardWorkflow {
@@ -65,13 +61,7 @@ public class LargeMessageWorkflow extends StandardWorkflow {
     super.stopWorkflow();
   }
 
-  /**
-   * <p>
-   * This method is <code>synchronized</code> in case client code is multi-threaded.
-   * </p>
-   *
-   * @see AdaptrisMessageListener#onAdaptrisMessage(AdaptrisMessage)
-   */
+
   @Override
   @Profiled(tag = "{$this.getClass().getSimpleName()}({$this.getConsumer().getDestination().getDeliveryThreadName()})", logger = "com.adaptris.perf4j.lms.TimingLogger")
   public synchronized void onAdaptrisMessage(AdaptrisMessage msg) {
@@ -83,9 +73,6 @@ public class LargeMessageWorkflow extends StandardWorkflow {
     }
   }
 
-  /**
-   * @see WorkflowImp#resubmitMessage(com.adaptris.core.AdaptrisMessage)
-   */
   @Override
   protected void resubmitMessage(AdaptrisMessage msg) {
     handleMessage(msg, false);
@@ -97,7 +84,6 @@ public class LargeMessageWorkflow extends StandardWorkflow {
   }
 
   @Override
-  protected boolean workflowIsEnabled(License l) {
-    return l.isEnabled(LicenseType.Standard);
-  }
+  protected void prepareWorkflow() throws CoreException {}
+
 }

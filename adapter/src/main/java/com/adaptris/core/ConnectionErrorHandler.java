@@ -27,7 +27,7 @@ public interface ConnectionErrorHandler extends ComponentLifecycle {
 
   /**
    * <p>
-   * Sets the {@link AdaptrisConnection} to handle errors for.
+   * Sets the {@link com.adaptris.core.AdaptrisConnection} to handle errors for.
    * </p>
    *
    * @param connection the <code>AdaptrisConnection</code> to handle errors for

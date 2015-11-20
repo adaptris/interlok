@@ -34,8 +34,6 @@ import com.adaptris.core.ProduceException;
 import com.adaptris.core.http.server.ConfiguredStatusProvider;
 import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -47,7 +45,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config jetty-standard-response-producer
- * @license BASIC
+ * 
  * @author lchan
  *
  */
@@ -76,9 +74,7 @@ public class StandardResponseProducer extends ResponseProducerImpl {
   public void close() {}
 
   @Override
-  public boolean isEnabled(License l) throws CoreException {
-    return l.isEnabled(LicenseType.Basic);
-  }
+  public void prepare() throws CoreException {}
 
 
   @Override

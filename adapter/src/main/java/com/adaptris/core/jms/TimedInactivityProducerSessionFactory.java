@@ -26,8 +26,6 @@ import javax.validation.Valid;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -38,7 +36,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config jms-timed-inactivity-producer-session
- * @license STANDARD
+ * 
  * @author lchan
  * 
  */
@@ -59,11 +57,6 @@ public class TimedInactivityProducerSessionFactory extends ProducerSessionFactor
   public TimedInactivityProducerSessionFactory(TimeInterval interval) {
     super();
     setInactivityInterval(interval);
-  }
-
-  @Override
-  public boolean isEnabled(License l) {
-    return l.isEnabled(LicenseType.Standard);
   }
 
   @Override

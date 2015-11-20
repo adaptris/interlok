@@ -41,8 +41,6 @@ import com.adaptris.jdbc.JdbcResult;
 import com.adaptris.jdbc.JdbcResultBuilder;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.XmlUtils;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.adaptris.util.text.xml.SimpleNamespaceContext;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
@@ -52,7 +50,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * 
  * @config jdbc-data-query-service
  * 
- * @license STANDARD
+ * 
  * @author sellidge
  * @author $Author: sellidge $
  */
@@ -96,13 +94,14 @@ public class JdbcDataQueryService extends JdbcService {
   }
 
   @Override
-  public void initService() throws CoreException {
+  protected void initJdbcService() throws CoreException {
     LifecycleHelper.init(resultSetTranslator);
   }
 
+
   @Override
-  public boolean isEnabled(License l) throws CoreException {
-    return l.isEnabled(LicenseType.Standard) && resultSetTranslator.isEnabled(l);
+  protected void prepareService() throws CoreException {
+    getResultSetTranslator().prepare();
   }
 
   @Override
@@ -111,7 +110,7 @@ public class JdbcDataQueryService extends JdbcService {
   }
 
   @Override
-  public void closeService() {
+  protected void closeJdbcService() {
     LifecycleHelper.close(resultSetTranslator);
   }
 
@@ -297,7 +296,6 @@ public class JdbcDataQueryService extends JdbcService {
   DocumentBuilderFactoryBuilder documentFactoryBuilder() {
     return getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig() : DocumentBuilderFactoryBuilder.newInstance();
   }
-
 
   private class DatabaseActor {
     private PreparedStatement queryStatement = null;

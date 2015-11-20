@@ -17,7 +17,6 @@
 package com.adaptris.core.services.jdbc;
 
 import java.sql.Connection;
-import java.sql.Savepoint;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -28,22 +27,18 @@ import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.Service;
-import com.adaptris.core.ServiceCollection;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceList;
-import com.adaptris.core.SharedConnection;
 import com.adaptris.core.jdbc.DatabaseConnection;
 import com.adaptris.core.jdbc.JdbcConstants;
 import com.adaptris.core.jdbc.JdbcService;
-import com.adaptris.core.services.jdbc.raw.JdbcRawDataCaptureService;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Implementation of {@link ServiceCollection} that creates a {@link java.sql.Connection} instance at the start of the execution of
+ * Implementation of {@link com.adaptris.core.ServiceCollection} that creates a {@link java.sql.Connection} instance at the start of
+ * the execution of
  * the service list and stores it in object metadata.
  * 
  * <p>
@@ -54,22 +49,24 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * The rationale behind this service collection implementation is to allow {@link JdbcService} implementations to share the same
  * underlying {@link java.sql.Connection}. Embedded {@link JdbcService} implementations do not need to have a
  * {@link DatabaseConnection} configured as they can derive the correct DatabaseConnection from object metadata. This also allows
- * the services to participate in a simple transaction if the connection is not set to auto-commit. Upon entry a {@link Savepoint}
- * is created; in the event of an exception, the connection is rolledback to the Savepoint and then committed. If all services are
- * considered successful then the transaction is committed (note that continue-on-fail=true equates to success).
+ * the services to participate in a simple transaction if the connection is not set to auto-commit. The event of an exception, the
+ * connection is rolledback and then committed. If all services are considered successful then the transaction is committed (note
+ * that continue-on-fail=true equates to success).
  * </p>
  * <p>
- * The standard use case for this will be multiple {@link JdbcDataCaptureService} or {@link JdbcRawDataCaptureService} services that
+ * The standard use case for this will be multiple {@link JdbcDataCaptureService} or {@link
+ * com.adaptris.core.services.jdbc.raw.JdbcRawDataCaptureService} services that
  * need to be executed but the captured data should only committed to the database at the end. In the event of an exception, all the
  * changes should be discarded ensuring that the database is consistent.
  * </p>
  * <p>
  * Note that only some JdbcService implementations support this behaviour namely concrete {@link AbstractJdbcSequenceNumberService}
- * instances, {@link JdbcDataCaptureService}, {@link JdbcRawDataCaptureService} and {@link JdbcDataQueryService}.
+ * instances, {@link JdbcDataCaptureService}, {@link com.adaptris.core.services.jdbc.raw.JdbcRawDataCaptureService} and {@link
+ * JdbcDataQueryService}.
  * </p>
  * 
  * @config jdbc-service-list
- * @license STANDARD
+ * 
  * 
  * @see JdbcConstants#OBJ_METADATA_DATABASE_CONNECTION_KEY
  * 
@@ -175,8 +172,11 @@ public class JdbcServiceList extends ServiceList {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Standard) && super.isEnabled(license);
+  public void prepare() throws CoreException {
+    super.prepare();
+    if (databaseConnection != null) {
+      databaseConnection.retrieveConnection(DatabaseConnection.class).prepare();
+    }
   }
 
   /**
@@ -193,8 +193,8 @@ public class JdbcServiceList extends ServiceList {
   /**
    * Set the connection that will be used by all {@link JdbcService} instances in this service list.
    * <p>
-   * Traditionally, you would use a {@link DatabaseConnection} instance here, but it is an {@link AdaptrisConnection} so that you
-   * can use a {@link SharedConnection} where appropriate.
+   * Traditionally, you would use a {@link DatabaseConnection} instance here, but it is an {@link com.adaptris.core.AdaptrisConnection} so that you
+   * can use a {@link com.adaptris.core.SharedConnection} where appropriate.
    * </p>
    * 
    * @param c

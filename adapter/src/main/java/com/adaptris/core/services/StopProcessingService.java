@@ -21,8 +21,6 @@ import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -31,11 +29,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * <p>
  * What happens will be dependent on the parent workflow and parent service collection implementation. See
- * {@link CoreConstants#STOP_PROCESSING_KEY} and {@link CoreConstants#KEY_WORKFLOW_SKIP_PRODUCER} for more information.
+ * {@link com.adaptris.core.CoreConstants#STOP_PROCESSING_KEY} and {@link com.adaptris.core.CoreConstants#KEY_WORKFLOW_SKIP_PRODUCER} for more information.
  * </p>
  * 
  * @config stop-processing-service
- * @license BASIC
+ * 
  */
 @XStreamAlias("stop-processing-service")
 public class StopProcessingService extends ServiceImp {
@@ -48,16 +46,17 @@ public class StopProcessingService extends ServiceImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
+  }
+
+
+  @Override
+  protected void initService() throws CoreException {
   }
 
   @Override
-  public void init() throws CoreException {
+  protected void closeService() {
   }
 
-  @Override
-  public void close() {
-  }
 
 }

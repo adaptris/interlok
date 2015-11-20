@@ -57,8 +57,6 @@ import com.adaptris.core.http.client.RequestMethodProvider;
 import com.adaptris.core.http.client.RequestMethodProvider.RequestMethod;
 import com.adaptris.core.http.client.net.StandardHttpProducer;
 import com.adaptris.core.util.Args;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.adaptris.util.stream.StreamUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -74,7 +72,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config jdk-http-producer
- * @license BASIC
+ * 
  * @see HttpURLConnection
  * @deprecated since 3.0.6 use {@link com.adaptris.core.http.client.net.StandardHttpProducer} instead.
  */
@@ -290,13 +288,11 @@ public class JdkHttpProducer extends HttpProducer {
       }
     }
   }
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled(License)
-   */
+
   @Override
-  public boolean isEnabled(License l) throws CoreException {
-    return l.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
   }
+
 
   private void logHeaders(String header, String message, Set headers) {
     if (log.isTraceEnabled()) {

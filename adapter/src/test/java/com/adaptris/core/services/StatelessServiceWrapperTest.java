@@ -28,7 +28,6 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceList;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.stubs.ExampleBranchingService;
-import com.adaptris.core.stubs.LicenseStub;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
 
@@ -180,7 +179,6 @@ public class StatelessServiceWrapperTest extends GeneralServiceExample {
     assertEquals(false, sw.continueOnFailure());
     assertEquals(false, sw.isBranching());
     assertEquals(false, sw.isConfirmation());
-    assertEquals(true, sw.isEnabled(new LicenseStub()));
   }
 
   public void testTryInitNoWrappedService() throws Exception {

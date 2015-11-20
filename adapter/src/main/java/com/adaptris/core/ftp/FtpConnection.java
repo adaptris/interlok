@@ -26,7 +26,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Class containing configuration for both FTP Consumers and producers.
  * 
  * @config ftp-connection
- * @license BASIC
+ * 
  * @see FtpConnectionImp
  * @author lchan
  * @author $Author: lchan $

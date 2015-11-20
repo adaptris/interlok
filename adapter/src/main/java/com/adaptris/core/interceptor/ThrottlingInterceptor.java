@@ -77,7 +77,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </ul>
  * 
  * @config throttling-interceptor
- * @license STANDARD
+ * 
  * @author amcgrath
  */
 @XStreamAlias("throttling-interceptor")

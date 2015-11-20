@@ -53,7 +53,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config jms-producer
- * @license BASIC, additional license requirements from the chosen {@link MessageTypeTranslator}
+ * 
  */
 @XStreamAlias("jms-consumer")
 public class JmsConsumer extends JmsConsumerImpl {

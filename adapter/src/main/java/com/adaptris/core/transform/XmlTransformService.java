@@ -33,8 +33,6 @@ import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.adaptris.util.text.xml.XmlTransformer;
 import com.adaptris.util.text.xml.XmlTransformerFactory;
 import com.adaptris.util.text.xml.XsltTransformerFactory;
@@ -53,7 +51,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config xml-transform-service
- * @license BASIC
+ * 
  */
 @XStreamAlias("xml-transform-service")
 public class XmlTransformService extends ServiceImp {
@@ -92,15 +90,8 @@ public class XmlTransformService extends ServiceImp {
     transforms = new HashMap<String, Transformer>();
   }
 
-  /**
-   * <p>
-   * If a <code>URL</code> is not configured, <code>allowOverride</code> is set to true, regardless of configuration.
-   * </p>
-   * 
-   * @see com.adaptris.core.AdaptrisComponent#init()
-   */
   @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
     if (getUrl() == null) {
       overrideAllowOverride = Boolean.TRUE;
     }
@@ -112,6 +103,10 @@ public class XmlTransformService extends ServiceImp {
     }
   }
 
+  @Override
+  protected void closeService() {
+  }
+
   /**
    * @see com.adaptris.core.Service#doService (com.adaptris.core.AdaptrisMessage)
    */
@@ -121,9 +116,9 @@ public class XmlTransformService extends ServiceImp {
   }
 
   @Override
-  public boolean isEnabled(License l) {
-    return l.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
   }
+
 
   /**
    * <p>
@@ -179,12 +174,6 @@ public class XmlTransformService extends ServiceImp {
       this.transforms.put(urlToUse, transformer);
       return transformer;
     }
-  }
-
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
-  @Override
-  public void close() {
-    // do nothing...
   }
 
   // properties...
@@ -334,7 +323,7 @@ public class XmlTransformService extends ServiceImp {
   /**
    * Force the output message encoding to be a particular encoding.
    * <p>
-   * If specified then the underlying {@link AdaptrisMessage#setCharEncoding(String)} is changed to match the encoding specified
+   * If specified then the underlying {@link com.adaptris.core.AdaptrisMessage#setCharEncoding(String)} is changed to match the encoding specified
    * here before attempting any write operations.
    * </p>
    * <p>
@@ -344,7 +333,7 @@ public class XmlTransformService extends ServiceImp {
    * transform.
    * </p>
    * 
-   * @param s the output encoding; if null, the the existing encoding specified by {@link AdaptrisMessage#getCharEncoding()} is
+   * @param s the output encoding; if null, the the existing encoding specified by {@link com.adaptris.core.AdaptrisMessage#getCharEncoding()} is
    *          used.
    */
   public void setOutputMessageEncoding(String s) {

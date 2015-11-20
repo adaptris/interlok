@@ -40,7 +40,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config jdbc-connection
- * @license STANDARD
+ * 
  */
 @XStreamAlias("jdbc-connection")
 public class JdbcConnection extends DatabaseConnection {

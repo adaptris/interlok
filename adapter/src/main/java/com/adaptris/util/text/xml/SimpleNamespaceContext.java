@@ -61,12 +61,12 @@ public final class SimpleNamespaceContext {
   /**
    * Create a NamespaceContext based on the supplied key value pairs or object metadata.
    * <p>
-   * In this instance, the {@link NamespaceContext} that may be present in the {@link AdaptrisMessage} will only be used if no
+   * In this instance, the {@link NamespaceContext} that may be present in the {@link com.adaptris.core.AdaptrisMessage} will only be used if no
    * context was created from the supplied {@link KeyValuePairSet}.
    * </p>
    * 
    * @param set the values that will form the namespace context
-   * @param msg the {@link AdaptrisMessage} which might contain the object metadata.
+   * @param msg the {@link com.adaptris.core.AdaptrisMessage} which might contain the object metadata.
    * @return a {@link NamespaceContext} implementation or null if none was available.
    * @see #create(KeyValuePairSet)
    */

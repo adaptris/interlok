@@ -55,7 +55,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config standard-jndi-implementation
- * @license BASIC
+ * 
  */
 @XStreamAlias("standard-jndi-implementation")
 public class StandardJndiImplementation extends VendorImplementationImp {
@@ -295,7 +295,7 @@ public class StandardJndiImplementation extends VendorImplementationImp {
    * Specify whether or not to enable encoded passwords.
    * <p>
    * When enabled, the entry matching {@link Context#SECURITY_CREDENTIALS} will be parsed and decoding attempted using the
-   * appropriate {@link Password}
+   * appropriate {@link com.adaptris.security.password.Password}
    * </p>
    *
    * @param b true to enable, false otherwise (default false)

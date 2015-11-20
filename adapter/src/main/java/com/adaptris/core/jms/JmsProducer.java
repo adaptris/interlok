@@ -60,8 +60,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config jms-producer
- * @license BASIC, additional license requirements from the chosen {@link MessageTypeTranslator} and
- * {@link ProducerSessionFactory}
+ * 
  */
 @XStreamAlias("jms-producer")
 public class JmsProducer extends JmsProducerImpl {

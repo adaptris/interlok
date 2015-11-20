@@ -35,7 +35,6 @@ import com.adaptris.core.Channel;
 import com.adaptris.core.ComponentState;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.StandardWorkflow;
-import com.adaptris.core.stubs.LicenseStub;
 import com.adaptris.core.stubs.TempFileUtils;
 import com.adaptris.core.util.JmxHelper;
 import com.adaptris.util.GuidGenerator;
@@ -80,7 +79,6 @@ public abstract class ComponentManagerCase extends BaseCase {
   protected Adapter createAdapter(String uid, int channels, int workflows) throws CoreException {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(uid);
-    adapter.registerLicense(new LicenseStub());
     for (int i = 0; i < channels; i++) {
       adapter.getChannelList().add(createChannel(guid.safeUUID(), workflows));
     }

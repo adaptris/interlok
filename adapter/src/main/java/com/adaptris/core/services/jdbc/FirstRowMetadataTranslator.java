@@ -39,7 +39,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config jdbc-first-row-metadata-translator
  * 
- * @license STANDARD
+ * 
  * @author lchan
  * 
  */

@@ -20,12 +20,10 @@ import static com.adaptris.core.util.LoggingHelper.friendlyName;
 
 import java.util.Collection;
 
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Implementation of {@linkplain ServiceCollection} that creates a new clone of {@linkplain AdaptrisMessage} for each configured
+ * Implementation of {@linkplain ServiceCollection} that creates a new clone of {@linkplain com.adaptris.core.AdaptrisMessage} for each configured
  * service.
  * <p>
  * The expected use case for this {@linkplain ServiceCollection} is that you have a number of services that have to process exactly
@@ -42,7 +40,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config clone-message-service-list
- * @license STANDARD
+ * 
  */
 @XStreamAlias("clone-message-service-list")
 public class CloneMessageServiceList extends ServiceCollectionImp {
@@ -88,8 +86,11 @@ public class CloneMessageServiceList extends ServiceCollectionImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Standard) && super.isEnabled(license);
+  public void prepare() throws CoreException {
+    for (Service s : getServices()) {
+      s.prepare();
+    }
   }
+
 
 }

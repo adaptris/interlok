@@ -53,7 +53,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config fs-consumer
- * @license BASIC
+ * 
  */
 @XStreamAlias("fs-consumer")
 public class FsConsumer extends FsConsumerImpl {
@@ -231,4 +231,6 @@ public class FsConsumer extends FsConsumerImpl {
     return resetWipFiles != null ? resetWipFiles.booleanValue() : false;
   }
 
+  @Override
+  protected void prepareConsumer() throws CoreException {}
 }

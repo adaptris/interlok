@@ -41,7 +41,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config replace-metadata-value
  * 
- * @license BASIC
+ * 
  */
 @XStreamAlias("replace-metadata-value")
 public class ReplaceMetadataValue extends ReformatMetadata {
@@ -68,8 +68,7 @@ public class ReplaceMetadataValue extends ReformatMetadata {
   }
 
   @Override
-  public void init() throws CoreException {
-    super.init();
+  protected void initService() throws CoreException {
     if (getReplacementValue() == null) {
       throw new CoreException("Replacement Value is 'null'");
     }
@@ -78,6 +77,12 @@ public class ReplaceMetadataValue extends ReformatMetadata {
     }
     matchGroupPattern = Pattern.compile(MATCH_GROUP_REGEX);
     searchPattern = Pattern.compile(getSearchValue());
+    super.initService();
+  }
+
+  @Override
+  protected void closeService() {
+    super.closeService();
   }
 
   @Override

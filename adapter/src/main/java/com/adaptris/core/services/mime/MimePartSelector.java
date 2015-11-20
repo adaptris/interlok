@@ -36,8 +36,6 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.util.MimeHelper;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.adaptris.util.stream.StreamUtil;
 import com.adaptris.util.text.mime.MultiPartInput;
 import com.adaptris.util.text.mime.PartSelector;
@@ -48,7 +46,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config mime-part-selector-service
  * 
- * @license BASIC
+ * 
  * @author lchan
  * @author $Author: lchan $
  */
@@ -124,21 +122,16 @@ public class MimePartSelector extends ServiceImp {
     return hdrs;
   }
 
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#close()
-   */
   @Override
-  public void close() {
-  }
-
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#init()
-   */
-  @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
     if (selector == null) {
       throw new CoreException("Mime part Selector may not be null");
     }
+  }
+
+  @Override
+  protected void closeService() {
+
   }
 
   /**
@@ -259,8 +252,8 @@ public class MimePartSelector extends ServiceImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
   }
+
 
 }

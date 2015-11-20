@@ -61,12 +61,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </ul>
  * </p>
  * <p>
- * The password associated with {@link #setPrivateKeyPassword(String)} may be encoded using any of the standard {@link Password}
+ * The password associated with {@link #setPrivateKeyPassword(String)} may be encoded using any of the standard {@link com.adaptris.security.password.Password}
  * mechanisms and it will be decoded when the private key is first accessed.
  * </p>
  * 
  * @config sftp-key-auth-connection
- * @license BASIC
+ * 
  * @author dsefton
  */
 @XStreamAlias("sftp-key-auth-connection")

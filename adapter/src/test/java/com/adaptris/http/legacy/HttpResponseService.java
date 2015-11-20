@@ -33,7 +33,6 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.http.HttpSession;
-import com.adaptris.util.license.License;
 import com.adaptris.util.stream.StreamUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -114,14 +113,8 @@ public class HttpResponseService extends ServiceImp {
     }
   }
 
-  /**
-   * Requires an HTTP License.
-   *
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled(License)
-   */
   @Override
-  public boolean isEnabled(License l) {
-    return true;
+  public void prepare() throws CoreException {
   }
 
   /**
@@ -146,16 +139,14 @@ public class HttpResponseService extends ServiceImp {
     }
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#init() */
   @Override
-  public void init() throws CoreException {
-    // na
+  protected void initService() throws CoreException {
+
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
   @Override
-  public void close() {
-    // na
+  protected void closeService() {
+
   }
 
   /**

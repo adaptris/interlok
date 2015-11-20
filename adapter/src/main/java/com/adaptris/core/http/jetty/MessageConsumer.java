@@ -63,7 +63,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * consider configuring a {@link JettyPoolingWorkflowInterceptor} as part of that workflow.
  * </p>
  * @config jetty-message-consumer
- * @license BASIC
+ * 
  * @author lchan
  * @author $Author: lchan $
  */
@@ -213,4 +213,9 @@ public class MessageConsumer extends BasicJettyConsumer {
   public void setHeaderHandler(HeaderHandler<HttpServletRequest> headerHandler) {
     this.headerHandler = headerHandler;
   }
+
+  @Override
+  public void prepare() throws CoreException {
+  }
+
 }

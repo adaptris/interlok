@@ -20,13 +20,13 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 
 /**
- * Interface for creating multiple messages from a single {@link AdaptrisMessage} instance.
+ * Interface for creating multiple messages from a single {@link com.adaptris.core.AdaptrisMessage} instance.
  */
 public interface MessageSplitter {
 
   /**
    * <p>
-   * Splits an {@link AdaptrisMessage} into some number of AdaptrisMessage objects. Preservation of metadata is down to the
+   * Splits an {@link com.adaptris.core.AdaptrisMessage} into some number of AdaptrisMessage objects. Preservation of metadata is down to the
    * implementation.
    * </p>
    * <p>
@@ -36,7 +36,7 @@ public interface MessageSplitter {
    * </p>
    *
    * @param msg the msg to split
-   * @return an {@link Iterable} of {@link AdaptrisMessage}
+   * @return an {@link Iterable} of {@link com.adaptris.core.AdaptrisMessage}
    * @throws CoreException wrapping any other exception
    */
   Iterable<AdaptrisMessage> splitMessage(AdaptrisMessage msg) throws CoreException;

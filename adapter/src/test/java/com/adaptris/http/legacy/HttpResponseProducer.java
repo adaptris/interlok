@@ -29,7 +29,6 @@ import org.perf4j.aop.Profiled;
 
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisMessageProducerImp;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceDestination;
@@ -41,7 +40,6 @@ import com.adaptris.http.HttpMessage;
 import com.adaptris.http.HttpSession;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
-import com.adaptris.util.license.License;
 import com.adaptris.util.stream.StreamUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -104,7 +102,7 @@ public class HttpResponseProducer extends ProduceOnlyProducerImp {
   }
 
   /**
-   * @see AdaptrisMessageProducerImp#produce(AdaptrisMessage,
+   * @see com.adaptris.core.AdaptrisMessageProducerImp#produce(AdaptrisMessage,
    *      ProduceDestination)
    */
   @Override
@@ -173,13 +171,8 @@ public class HttpResponseProducer extends ProduceOnlyProducerImp {
   public void close() {
   }
 
-  /**
-   *
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled(License)
-   */
   @Override
-  public boolean isEnabled(License l) throws CoreException {
-    return true;
+  public void prepare() throws CoreException {
   }
 
   /**

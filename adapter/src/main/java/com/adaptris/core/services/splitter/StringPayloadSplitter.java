@@ -55,7 +55,7 @@ public abstract class StringPayloadSplitter extends MessageSplitterImp {
   /**
    * default split operation.
    *
-   * @param messagePayload the string payload derived from the {@link AdaptrisMessage}
+   * @param messagePayload the string payload derived from the {@link com.adaptris.core.AdaptrisMessage}
    * @return a list of strings that make up the split messages.
    * @throws Exception
    */

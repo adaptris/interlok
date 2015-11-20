@@ -26,8 +26,6 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -38,7 +36,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * </p>
  * 
  * @config validate-metadata-service
- * @license BASIC
+ * 
  */
 @XStreamAlias("validate-metadata-service")
 public class ValidateMetadataService extends ServiceImp {
@@ -111,18 +109,16 @@ public class ValidateMetadataService extends ServiceImp {
     requiredKeys.add(key);
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#init() */
-  public void init() throws CoreException {
-    // na
-  }
 
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
-  public void close() {
-    // na
+  @Override
+  protected void initService() throws CoreException {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
+  protected void closeService() {
   }
+  @Override
+  public void prepare() throws CoreException {
+  }
+
 }

@@ -28,8 +28,6 @@ import org.eclipse.jetty.servlet.ServletMapping;
 import com.adaptris.core.AdaptrisConnectionImp;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 
 /**
  * This class is the base class that all Jetty based Connections extend.
@@ -152,11 +150,4 @@ public abstract class JettyConnection extends AdaptrisConnectionImp implements J
 
   abstract Handler createHandler(ServletContextHandler context) throws Exception;
 
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled(License)
-   */
-  @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Standard);
-  }
 }

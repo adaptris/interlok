@@ -41,7 +41,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config metadata-hashing-service
  * 
- * @license BASIC
+ * 
  * 
  */
 @XStreamAlias("metadata-hashing-service")
@@ -72,14 +72,21 @@ public class MetadataHashingService extends ReformatMetadata {
     setByteTranslator(translator);
   }
 
-  public void init() throws CoreException {
+  @Override
+  protected void initService() throws CoreException {
     try {
       MessageDigest d = MessageDigest.getInstance(getHashAlgorithm());
-    }
-    catch (NoSuchAlgorithmException e) {
+    } catch (NoSuchAlgorithmException e) {
       throw new CoreException(e.getMessage(), e);
     }
+    super.initService();
   }
+
+  @Override
+  protected void closeService() {
+    super.closeService();
+  }
+
 
   @Override
   protected String reformat(String s, String charEncoding) throws Exception {

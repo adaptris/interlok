@@ -25,7 +25,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Message factory that creates file backed messages from ZIP files. The first entry in the zip 
- * file will become the contents of the {@link AdaptrisMessage}. Any other entries in the file 
+ * file will become the contents of the {@link com.adaptris.core.AdaptrisMessage}. Any other entries in the file 
  * will be ignored. This is useful for processing large zip files without having to separately 
  * extract them before sending them in to the adapter.
  */

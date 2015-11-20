@@ -38,31 +38,28 @@ import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Implementation of {@link Service} which dynamically obtains and applies a {@link Service} to an {@link AdaptrisMessage} based on
+ * Implementation of {@link com.adaptris.core.Service} which dynamically obtains and applies a {@link com.adaptris.core.Service} to an {@link com.adaptris.core.AdaptrisMessage} based on
  * the contents of the message.
  * 
  * <p>
  * This class will attempt to extract a marshalled service (roughly analagous to {@link DynamicServiceLocator}) from the payload of
  * the current message, unmarshal that service, and then execute that service against the current message. The use of this type of
  * service is discouraged from a supportability perspective; however there will be use cases where it is appropriate. No checks are
- * performed on the {@link Service} that is unmarshalled other than license verification; any exceptions thrown by unmarshalled
+ * performed on the {@link com.adaptris.core.Service} that is unmarshalled other than license verification; any exceptions thrown by unmarshalled
  * service are simply rethrown back to the workflow for standard message error handling.
  * </p>
  * 
  * @config dynamic-service-executor
- * @license STANDARD
+ * 
  * @author lchan
- * @see ServiceExtractor
+ * @see com.adaptris.core.ServiceExtractor
  */
 @XStreamAlias("dynamic-service-executor")
 public class DynamicServiceExecutor extends ServiceImp implements EventHandlerAware {
 
-  private transient License license;
   private transient EventHandler eventHandler;
 
   @NotNull
@@ -96,10 +93,8 @@ public class DynamicServiceExecutor extends ServiceImp implements EventHandlerAw
   }
 
   private void prepare(Service service) throws CoreException {
-    if (!service.isEnabled(license)) {
-      throw new ServiceException("License not valid for service [" + friendlyName(service) + "]");
-    }
     LifecycleHelper.registerEventHandler(service, eventHandler);
+    service.prepare();
   }
 
   private static void start(AdaptrisComponent c) throws CoreException {
@@ -131,22 +126,17 @@ public class DynamicServiceExecutor extends ServiceImp implements EventHandlerAw
   }
 
   @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
   }
 
   @Override
-  public void close() {
+  protected void closeService() {
   }
 
-  /**
-   * 
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled(License)
-   */
   @Override
-  public boolean isEnabled(License l) {
-    license = l;
-    return license.isEnabled(LicenseType.Standard);
+  public void prepare() throws CoreException {
   }
+
 
   @Override
   public void registerEventHandler(EventHandler eh) {

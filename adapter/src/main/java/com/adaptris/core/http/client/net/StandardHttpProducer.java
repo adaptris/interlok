@@ -18,6 +18,7 @@ package com.adaptris.core.http.client.net;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 import static com.adaptris.core.http.HttpConstants.CONTENT_TYPE;
+import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -32,8 +33,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
+import javax.validation.Valid;
+
 import org.apache.commons.io.IOUtils;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageImp;
 import com.adaptris.core.CoreConstants;
@@ -41,32 +45,52 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
+import com.adaptris.core.common.PayloadStreamInputParameter;
+import com.adaptris.core.common.PayloadStreamOutputParameter;
 import com.adaptris.core.http.AdapterResourceAuthenticator;
 import com.adaptris.core.http.ResourceAuthenticator;
 import com.adaptris.core.http.client.RequestMethodProvider;
 import com.adaptris.core.http.client.RequestMethodProvider.RequestMethod;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
+import com.adaptris.interlok.InterlokException;
+import com.adaptris.interlok.config.DataInputParameter;
+import com.adaptris.interlok.config.DataOutputParameter;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Default {@link HttpProducer} implementation that uses {@link HttpURLConnection} available in a standard java runtime.
  * 
- * <p>This is designed mostly as a drop-in replacement for {@link com.adaptris.core.http.JdkHttpProducer} but uses the new
- * {@code com.adaptris.core.http.client} interfaces to manage request and response headers. The behaviour should be functionally
- * equivalent and a {@link com.adaptris.core.NullConnection} is the appropriate connection type.
+ * <p>This is designed mostly as a drop-in replacement for {@link com.adaptris.core.http.JdkHttpProducer}. It uses the new
+ * {@code com.adaptris.core.http.client} interfaces to manage request and response headers and also the {@link DataInputParameter}
+ * and {@link DataOutputParameter} interfaces to source the HTTP body and to handle the HTTP response body respectively. Without
+ * specific overrides for these new fields; the behaviour should be functionally equivalent and a {@link
+ * com.adaptris.core.NullConnection} is the appropriate connection type.
  * </p>
  * 
+ * <p>Note that configuring a {@link com.adaptris.core.AdaptrisMessageEncoder} instance will cause the {@link DataInputParameter}
+ * and {@link DataOutputParameter} fields to be ignored.
+ * </p>
  * @config standard-http-producer
- * @license BASIC
+ * 
  * @author lchan
  */
 @XStreamAlias("standard-http-producer")
 public class StandardHttpProducer extends HttpProducer {
 
-  private static final Collection<RequestMethodProvider.RequestMethod> METHOD_ALLOWS_OUTPUT = Collections
+  protected static final Collection<RequestMethodProvider.RequestMethod> METHOD_ALLOWS_OUTPUT = Collections
       .unmodifiableCollection(Arrays.asList(new RequestMethod[] {RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH}));
+
+  private transient DataInputParameter<InputStream> defaultRequest = new PayloadStreamInputParameter();
+  private transient DataOutputParameter<InputStream> defaultResponse = new PayloadStreamOutputParameter();
+
+  @Valid
+  @AdvancedConfig
+  private DataInputParameter<InputStream> requestBody;
+  @Valid
+  @AdvancedConfig
+  private DataOutputParameter<InputStream> responseBody;
+
 
   public StandardHttpProducer() {
     super();
@@ -106,11 +130,15 @@ public class StandardHttpProducer extends HttpProducer {
     http.setInstanceFollowRedirects(handleRedirection());
     http.setDoInput(true);
     getRequestHeaderProvider().addHeaders(msg, http);
-    http.setRequestProperty(CONTENT_TYPE, getContentTypeProvider().getContentType(msg));
+    String contentType = getContentTypeProvider().getContentType(msg);
+    if (!isEmpty(contentType)) {
+      http.setRequestProperty(CONTENT_TYPE, contentType);
+    }
     return http;
   }
 
-  private void writeData(RequestMethod methodToUse, AdaptrisMessage src, HttpURLConnection dest) throws IOException, CoreException {
+  private void writeData(RequestMethod methodToUse, AdaptrisMessage src, HttpURLConnection dest)
+      throws IOException, InterlokException {
     if (!METHOD_ALLOWS_OUTPUT.contains(methodToUse)) {
       if (src.getSize() > 0) {
         log.trace("Ignoring payload with use of {} method", methodToUse.name());
@@ -121,12 +149,12 @@ public class StandardHttpProducer extends HttpProducer {
     if (getEncoder() != null) {
       getEncoder().writeMessage(src, dest);
     } else {
-      copyAndClose(src.getInputStream(), dest.getOutputStream());
+      copyAndClose(requestBody().extract(src), dest.getOutputStream());
     }
   }
 
 
-  private void handleResponse(HttpURLConnection http, AdaptrisMessage reply) throws IOException, CoreException {
+  private void handleResponse(HttpURLConnection http, AdaptrisMessage reply) throws IOException, InterlokException {
     int responseCode = http.getResponseCode();
     logHeaders("Response Information", http.getResponseMessage(), http.getHeaderFields().entrySet());
     log.trace("Content-Length is " + http.getContentLength());
@@ -134,7 +162,7 @@ public class StandardHttpProducer extends HttpProducer {
     if (responseCode < 200 || responseCode > 299) {
       if (ignoreServerResponseCode()) {
         log.trace("Ignoring HTTP Reponse code {}", responseCode);
-        copyAndClose(http.getErrorStream(), reply.getOutputStream());
+        responseBody().insert(http.getErrorStream(), reply);
       } else {
         throw new ProduceException("Failed to send payload, got " + responseCode);
       }
@@ -145,7 +173,7 @@ public class StandardHttpProducer extends HttpProducer {
         reply.getObjectMetadata().putAll(decodedReply.getObjectMetadata());
         reply.setMetadata(decodedReply.getMetadata());
       } else {
-        copyAndClose(http.getInputStream(), reply.getOutputStream());
+        responseBody().insert(http.getInputStream(), reply);
       }
     }
     getResponseHeaderHandler().handle(http, reply);
@@ -158,12 +186,46 @@ public class StandardHttpProducer extends HttpProducer {
     }
   }
 
+
+  public DataInputParameter<InputStream> getRequestBody() {
+    return requestBody;
+  }
+
+
+
   /**
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled(License)
+   * Set where the HTTP Request body is going to come from.
+   * 
+   * @param input the input; default is {@link PayloadStreamInputParameter} which is the only implementation currently.
    */
+  public void setRequestBody(DataInputParameter<InputStream> input) {
+    this.requestBody = Args.notNull(input, "data input");
+  }
+
+  private DataInputParameter<InputStream> requestBody() {
+    return getRequestBody() != null ? getRequestBody() : defaultRequest;
+  }
+
+  public DataOutputParameter<InputStream> getResponseBody() {
+    return responseBody;
+  }
+
+  /**
+   * Set where the HTTP Response Body will be written to.
+   * 
+   * @param output the output; default is {@link PayloadStreamOutputParameter}.
+   */
+  public void setResponseBody(DataOutputParameter<InputStream> output) {
+    this.responseBody = Args.notNull(output, "data output");;
+  }
+
+
+  private DataOutputParameter<InputStream> responseBody() {
+    return getResponseBody() != null ? getResponseBody() : defaultResponse;
+  }
+
   @Override
-  public boolean isEnabled(License l) throws CoreException {
-    return l.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
   }
 
   private class HttpAuthenticator implements ResourceAuthenticator {

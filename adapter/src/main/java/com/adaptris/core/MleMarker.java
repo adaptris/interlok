@@ -25,7 +25,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * Records information about activities (generally {@link Service} implementations) performed on a {@link AdaptrisMessage} during a
+ * Records information about activities (generally {@link com.adaptris.core.Service} implementations) performed on a {@link com.adaptris.core.AdaptrisMessage} during a
  * workflow.
  * </p>
  * 

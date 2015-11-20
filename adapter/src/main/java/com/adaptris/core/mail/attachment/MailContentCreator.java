@@ -22,7 +22,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.mail.MailException;
 
 /**
- * Interface for creating a mail message from an {@link AdaptrisMessage}
+ * Interface for creating a mail message from an {@link com.adaptris.core.AdaptrisMessage}
  *
  * @author lchan
  * @author $Author: lchan $

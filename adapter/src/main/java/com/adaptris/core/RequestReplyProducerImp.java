@@ -43,7 +43,7 @@ public abstract class RequestReplyProducerImp extends AdaptrisMessageProducerImp
   }
 
   /**
-   * @see AdaptrisMessageProducerImp #produce(AdaptrisMessage)
+   * @see com.adaptris.core.AdaptrisMessageProducerImp #produce(AdaptrisMessage)
    */
   @Override
   public final void produce(AdaptrisMessage msg) throws ProduceException {
@@ -51,7 +51,7 @@ public abstract class RequestReplyProducerImp extends AdaptrisMessageProducerImp
   }
 
   /**
-   * @see AdaptrisMessageProducerImp#request(AdaptrisMessage)
+   * @see com.adaptris.core.AdaptrisMessageProducerImp#request(AdaptrisMessage)
    */
   @Override
   public final AdaptrisMessage request(AdaptrisMessage msg) throws ProduceException {
@@ -59,7 +59,7 @@ public abstract class RequestReplyProducerImp extends AdaptrisMessageProducerImp
   }
 
   /**
-   * @see AdaptrisMessageProducerImp#request(AdaptrisMessage, long)
+   * @see com.adaptris.core.AdaptrisMessageProducerImp#request(AdaptrisMessage, long)
    */
   @Override
   public final AdaptrisMessage request(AdaptrisMessage msg, long timeout) throws ProduceException {
@@ -67,7 +67,7 @@ public abstract class RequestReplyProducerImp extends AdaptrisMessageProducerImp
   }
 
   /**
-   * @see AdaptrisMessageProducerImp
+   * @see com.adaptris.core.AdaptrisMessageProducerImp
    *      #request(AdaptrisMessage,ProduceDestination)
    */
   @Override
@@ -76,7 +76,7 @@ public abstract class RequestReplyProducerImp extends AdaptrisMessageProducerImp
   }
 
   /**
-   * @see AdaptrisMessageProducerImp #request(AdaptrisMessage,
+   * @see com.adaptris.core.AdaptrisMessageProducerImp #request(AdaptrisMessage,
    *      ProduceDestination, long)
    */
   @Override
@@ -130,7 +130,7 @@ public abstract class RequestReplyProducerImp extends AdaptrisMessageProducerImp
   /**
    * Actually do the request.
    *
-   * @see AdaptrisMessageProducerImp #request(AdaptrisMessage,
+   * @see com.adaptris.core.AdaptrisMessageProducerImp #request(AdaptrisMessage,
    *      ProduceDestination, long)
    */
   protected abstract AdaptrisMessage doRequest(AdaptrisMessage msg, ProduceDestination dest, long timeout) throws ProduceException;

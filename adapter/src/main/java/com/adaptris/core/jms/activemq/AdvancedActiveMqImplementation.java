@@ -60,7 +60,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <p>
  * 
  * @config advanced-active-mq-implementation
- * @license BASIC
+ * 
  */
 @XStreamAlias("advanced-active-mq-implementation")
 public class AdvancedActiveMqImplementation extends BasicActiveMqImplementation {

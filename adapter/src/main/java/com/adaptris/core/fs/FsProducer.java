@@ -31,7 +31,6 @@ import org.perf4j.aop.Profiled;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisMessageProducer;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.FileNameCreator;
 import com.adaptris.core.FormattedFilenameCreator;
@@ -41,15 +40,13 @@ import com.adaptris.core.ProduceOnlyProducerImp;
 import com.adaptris.core.util.Args;
 import com.adaptris.fs.FsWorker;
 import com.adaptris.fs.NioWorker;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * {@link AdaptrisMessageProducer} implementation that writes to the file system.
+ * {@link com.adaptris.core.AdaptrisMessageProducer} implementation that writes to the file system.
  * 
  * @config fs-producer
- * @license BASIC
+ * 
  */
 @XStreamAlias("fs-producer")
 public class FsProducer extends ProduceOnlyProducerImp {
@@ -77,10 +74,6 @@ public class FsProducer extends ProduceOnlyProducerImp {
     setDestination(d);
   }
 
-  @Override
-  public boolean isEnabled(License l) throws CoreException {
-    return l.isEnabled(LicenseType.Basic);
-  }
 
   /**
    * @see com.adaptris.core.AdaptrisComponent#init()
@@ -275,4 +268,7 @@ public class FsProducer extends ProduceOnlyProducerImp {
   public void setFilenameCreator(FileNameCreator creator) {
     filenameCreator = Args.notNull(creator, "filename creator");
   }
+
+  @Override
+  public void prepare() throws CoreException {}
 }

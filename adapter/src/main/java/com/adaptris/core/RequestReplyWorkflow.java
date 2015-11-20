@@ -24,8 +24,6 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -33,20 +31,20 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <p>
  * Key differences to {@link StandardWorkflow} are
  * <ul>
- * <li>uses the <code>request</code> method of the configured {@link AdaptrisMessageProducer}.</li>
+ * <li>uses the <code>request</code> method of the configured {@link com.adaptris.core.AdaptrisMessageProducer}.</li>
  * <li>has a {@link #setReplyServiceCollection(ServiceCollection)} and {@link #setReplyProducer(AdaptrisMessageProducer)} which are
  * used to process any messages prior to returning it back to the requestor</li>
- * <li>Does not obey the use of {@link CoreConstants#KEY_WORKFLOW_SKIP_PRODUCER}, the producer is always triggered.</li>
+ * <li>Does not obey the use of {@link com.adaptris.core.CoreConstants#KEY_WORKFLOW_SKIP_PRODUCER}, the producer is always triggered.</li>
  * </ul>
  * </p>
  * <p>
- * Note that the reply producer shares the original {@link AdaptrisMessageConsumer}'s connection, on the basis that it will be
+ * Note that the reply producer shares the original {@link com.adaptris.core.AdaptrisMessageConsumer}'s connection, on the basis that it will be
  * replying to wherever the request came from.
  * </p>
  * 
  * @config request-reply-workflow
  * 
- * @license STANDARD
+ * 
  */
 @XStreamAlias("request-reply-workflow")
 public class RequestReplyWorkflow extends StandardWorkflow {
@@ -160,10 +158,6 @@ public class RequestReplyWorkflow extends StandardWorkflow {
     c.getConsumeConnection().addMessageProducer(getReplyProducer());
   }
 
-  @Override
-  protected boolean doAdditionalLicenseChecks(License l) throws CoreException {
-    return getReplyProducer().isEnabled(l) && getReplyServiceCollection().isEnabled(l);
-  }
 
   /**
    * <p>
@@ -251,7 +245,8 @@ public class RequestReplyWorkflow extends StandardWorkflow {
   }
 
   @Override
-  protected boolean workflowIsEnabled(License l) {
-    return l.isEnabled(LicenseType.Standard);
+  protected void prepareWorkflow() throws CoreException {
+    getReplyProducer().prepare();
+    getReplyServiceCollection().prepare();
   }
 }

@@ -57,7 +57,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config jms-poller
- * @license BASIC, additional license requirements from the chosen MessageTypeTranslator and
+ * 
  *          VendorImplementation
  */
 @XStreamAlias("jms-poller")

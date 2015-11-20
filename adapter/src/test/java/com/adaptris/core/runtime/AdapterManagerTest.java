@@ -1522,25 +1522,6 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
-  public void testMBean_checkLicense() throws Exception {
-    String adapterName = this.getClass().getSimpleName() + "." + getName();
-    Adapter adapter = createAdapter(adapterName);
-    Channel newChannel1 = createChannel(getName() + "_1");
-    adapter.getChannelList().add(newChannel1);
-    AdapterManager adapterManager = new AdapterManager(adapter);
-    ObjectName adapterObj = adapterManager.createObjectName();
-    List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
-    mBeans.add(adapterManager);
-    mBeans.addAll(adapterManager.getAllDescendants());
-    try {
-      register(mBeans);
-      AdapterManagerMBean adapterManagerProxy = JMX.newMBeanProxy(mBeanServer, adapterObj, AdapterManagerMBean.class);
-      adapterManagerProxy.checkLicense();
-    }
-    finally {
-    }
-  }
-
   public void testMBean_getAdapterBuildVersion() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);

@@ -28,8 +28,6 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -56,7 +54,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config non-deleting-fs-consumer
- * @license STANDARD
+ * 
  */
 @XStreamAlias("non-deleting-fs-consumer")
 public class NonDeletingFsConsumer extends FsConsumerImpl {
@@ -126,13 +124,9 @@ public class NonDeletingFsConsumer extends FsConsumerImpl {
     return result;
   }
 
-  /**
-   *
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled(License)
-   */
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Standard) && processedItemCache.isEnabled(license);
+  protected void prepareConsumer() throws CoreException {
+    getProcessedItemCache().prepare();
   }
 
   /**

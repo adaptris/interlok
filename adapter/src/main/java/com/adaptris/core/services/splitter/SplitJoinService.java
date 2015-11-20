@@ -38,10 +38,9 @@ import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.services.aggregator.MessageAggregator;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -49,17 +48,17 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * <p>
  * This service splits a message according to the configured {@link MessageSplitter} implementation, executes the configured
- * {@link Service} and subsequently joins all the messages back using the configured {@link MessageAggregator} implementation
+ * {@link com.adaptris.core.Service} and subsequently joins all the messages back using the configured {@link MessageAggregator} implementation
  * <p>
  * <p>
- * For simplicity a new (cloned) instance of the underlying {@link Service} is created for every split message, and executed in its
+ * For simplicity a new (cloned) instance of the underlying {@link com.adaptris.core.Service} is created for every split message, and executed in its
  * own thread; this means that where there is a high cost of initialisation for the service, then you may get better performance
  * aggregating the messages in a different way.
  * </p>
  * 
  * @config split-join-service
  * 
- * @license STANDARD
+ * 
  * @author lchan
  * 
  */
@@ -84,7 +83,6 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware {
   private transient ExecutorService executors;
   private transient AdaptrisMarshaller marshaller = null;
   private transient EventHandler eventHandler;
-  private transient License license;
 
   public SplitJoinService() {
     super();
@@ -169,7 +167,7 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware {
   }
 
   @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
     if (getSplitter() == null) {
       throw new CoreException("Null MessageSplitter implementation");
     }
@@ -184,30 +182,29 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware {
   }
 
   @Override
-  public void close() {
+  protected void closeService() {
     executors.shutdown();
     try {
       if (!executors.awaitTermination(60, TimeUnit.SECONDS)) {
         executors.shutdownNow();
       }
-    }
-    catch (InterruptedException e) {
+    } catch (InterruptedException e) {
       log.warn("Failed to shutdown execution pool");
     }
   }
 
-  public boolean isEnabled(License l) throws CoreException {
-    license = l;
-    return l.isEnabled(LicenseType.Standard) && service.isEnabled(l);
+  @Override
+  public void prepare() throws CoreException {
+    if (getService() != null) {
+      getService().prepare();
+    }
   }
 
   private Service cloneService(Service original) throws ServiceException {
     Service result = null;
     try {
       result = (Service) marshaller.unmarshal(marshaller.marshal(original));
-      if (!result.isEnabled(license)) {
-        throw new CoreException("License not enabled on service");
-      }
+      result.prepare();
     }
     catch (CoreException e) {
       rethrowServiceException(e);
@@ -304,12 +301,12 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware {
   }
 
   /**
-   * The {@link Service} to execute over all the split messages.
+   * The {@link com.adaptris.core.Service} to execute over all the split messages.
    * 
    * @param s the service to set
    */
   public void setService(Service s) {
-    this.service = s;
+    this.service = Args.notNull(s, "service");
   }
 
   /**
@@ -325,7 +322,7 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware {
    * @param ms the messageSplitter to set
    */
   public void setSplitter(MessageSplitter ms) {
-    this.splitter = ms;
+    this.splitter = Args.notNull(ms, "splitter");
   }
 
   /**
@@ -341,7 +338,7 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware {
    * @param mj the messageJoiner to set
    */
   public void setAggregator(MessageAggregator mj) {
-    this.aggregator = mj;
+    this.aggregator = Args.notNull(mj, "aggregator");
   }
 
 }

@@ -43,13 +43,16 @@ public class TestBranchingService extends BranchingServiceImp {
     }
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#init() */
-  public void init() throws CoreException {
-    // na
+
+  @Override
+  protected void initService() throws CoreException {
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
-  public void close() {
-    // na
+  @Override
+  protected void closeService() {
+
   }
+  @Override
+  public void prepare() throws CoreException {}
+
 }

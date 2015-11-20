@@ -25,15 +25,12 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Implementation of {@link Service} that compares two items of metadata.
+ * Implementation of {@link com.adaptris.core.Service} that compares two items of metadata.
  * 
  * <p>
  * Sometimes you just want to compare two metadata values and store the result against a 3rd metadata key. Well this does that.
@@ -41,7 +38,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config metadata-comparison-service
  * 
- * @license BASIC
+ * 
  */
 @XStreamAlias("metadata-comparison-service")
 public class MetadataComparisonService extends ServiceImp {
@@ -69,7 +66,8 @@ public class MetadataComparisonService extends ServiceImp {
     msg.addMetadata(getComparator().compare(msg.getMetadata(getFirstKey()), msg.getMetadata(getSecondKey())));
   }
 
-  public void init() throws CoreException {
+  @Override
+  protected void initService() throws CoreException {
     if (isBlank(getFirstKey())) {
       throw new CoreException("1st Metadata Key is blank");
     }
@@ -81,14 +79,15 @@ public class MetadataComparisonService extends ServiceImp {
     }
   }
 
-  public void close() {
-    // na
+  @Override
+  protected void closeService() {
+
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
   }
+
 
   public String getFirstKey() {
     return firstKey;

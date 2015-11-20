@@ -226,11 +226,11 @@ public abstract class XmlPayloadTranslatorImpl extends ResultSetTranslatorImp {
    * If not specified the following rules will be applied:
    * </p>
    * <ol>
-   * <li>If the {@link AdaptrisMessage#getCharEncoding()} is non-null then that will be used.</li>
+   * <li>If the {@link com.adaptris.core.AdaptrisMessage#getCharEncoding()} is non-null then that will be used.</li>
    * <li>UTF-8</li>
    * </ol>
    * <p>
-   * As a result; the character encoding on the message is always set using {@link AdaptrisMessage#setCharEncoding(String)}.
+   * As a result; the character encoding on the message is always set using {@link com.adaptris.core.AdaptrisMessage#setCharEncoding(String)}.
    * </p>
    * 
    * @param encoding the character

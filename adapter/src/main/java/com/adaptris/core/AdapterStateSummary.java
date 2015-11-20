@@ -27,7 +27,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * Summary of the state of an {@link Adapter} and associated {@link Channel}s
+ * Summary of the state of an {@link Adapter} and associated {@link com.adaptris.core.Channel}s
  * </p>
  * 
  * @config adapter-state-summary

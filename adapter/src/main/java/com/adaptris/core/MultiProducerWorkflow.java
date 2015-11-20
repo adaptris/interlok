@@ -26,8 +26,6 @@ import org.perf4j.aop.Profiled;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -40,7 +38,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config multi-producer-workflow.
  * 
- * @license STANDARD
+ * 
  */
 @XStreamAlias("multi-producer-workflow")
 public class MultiProducerWorkflow extends StandardWorkflow {
@@ -227,17 +225,6 @@ public class MultiProducerWorkflow extends StandardWorkflow {
     standaloneProducers = l;
   }
 
-
-  @Override
-  protected boolean doAdditionalLicenseChecks(License l) throws CoreException {
-    for (StandaloneProducer p : standaloneProducers) {
-      if (!p.isEnabled(l)) {
-        return false;
-      }
-    }
-    return true;
-  }
-
   /**
    * <p>
    * Sets whether the processed message should be used by the processed message
@@ -269,7 +256,9 @@ public class MultiProducerWorkflow extends StandardWorkflow {
   }
 
   @Override
-  protected boolean workflowIsEnabled(License l) {
-    return l.isEnabled(LicenseType.Standard);
+  protected void prepareWorkflow() throws CoreException {
+    for (StandaloneProducer p : getStandaloneProducers()) {
+      p.prepare();
+    }
   }
 }

@@ -21,31 +21,27 @@ import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.EventHandler;
 import com.adaptris.core.EventHandlerAware;
 import com.adaptris.core.NullService;
 import com.adaptris.core.Service;
-import com.adaptris.core.ServiceCollection;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * Splits incoming {@link AdaptrisMessage}s into several using an implementation of {@link MessageSplitter}.
+ * Splits incoming {@link com.adaptris.core.AdaptrisMessage}s into several using an implementation of {@link MessageSplitter}.
  * </p>
  * <p>
- * Rather than directly producing the message to a producer, this allows the use of a {@link ServiceCollection} as the target for
+ * Rather than directly producing the message to a producer, this allows the use of a {@link com.adaptris.core.ServiceCollection} as the target for
  * the resulting split messages.
  * </p>
  * 
  * @config advanced-message-splitter-service
  * 
- * @license STANDARD
+ * 
  */
 @XStreamAlias("advanced-message-splitter-service")
 public class AdvancedMessageSplitterService extends MessageSplitterServiceImp implements EventHandlerAware {
@@ -89,12 +85,17 @@ public class AdvancedMessageSplitterService extends MessageSplitterServiceImp im
     }
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#init() */
   @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
     LifecycleHelper.registerEventHandler(service, eventHandler);
-    super.init();
+    super.initService();
     LifecycleHelper.init(service);
+  }
+
+  @Override
+  protected void closeService() {
+    LifecycleHelper.stop(service);
+    super.closeService();
   }
 
   /** @see com.adaptris.core.AdaptrisComponent#start() */
@@ -110,11 +111,6 @@ public class AdvancedMessageSplitterService extends MessageSplitterServiceImp im
   public void stop() {
     LifecycleHelper.stop(service);
     super.stop();
-  }
-
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
-  public void close() {
-    LifecycleHelper.stop(service);
   }
 
   /**
@@ -151,7 +147,7 @@ public class AdvancedMessageSplitterService extends MessageSplitterServiceImp im
    * Note that even if this is set to true, because each child message has its
    * own unique id, you will have to externally correlate the message lifecycle
    * events together. Child messages will always have the metadata
-   * {@link CoreConstants#PARENT_UNIQUE_ID_KEY} set with the originating message
+   * {@link com.adaptris.core.CoreConstants#PARENT_UNIQUE_ID_KEY} set with the originating message
    * id.
    * </p>
    *
@@ -169,7 +165,8 @@ public class AdvancedMessageSplitterService extends MessageSplitterServiceImp im
   }
 
   @Override
-  public boolean isEnabled(License l) throws CoreException {
-    return l.isEnabled(LicenseType.Standard) && getService().isEnabled(l);
+  public void prepare() throws CoreException {
+    getService().prepare();
   }
+
 }

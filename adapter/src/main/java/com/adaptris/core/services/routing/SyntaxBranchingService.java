@@ -24,6 +24,7 @@ import javax.validation.constraints.NotNull;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.BranchingServiceImp;
+import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
@@ -36,7 +37,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * 
  * @config syntax-branching-service
  * 
- * @license STANDARD
+ * 
  * @see SyntaxIdentifier
  * @see SyntaxRoutingService
  */
@@ -102,13 +103,15 @@ public class SyntaxBranchingService extends BranchingServiceImp {
     syntaxIdentifiers = l;
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#init() */
-  public void init() {
-    // Nothing
+  @Override
+  protected void initService() throws CoreException {
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
-  public void close() {
-    // Nothing
+  @Override
+  protected void closeService() {
   }
+
+  @Override
+  public void prepare() throws CoreException {}
+
 }

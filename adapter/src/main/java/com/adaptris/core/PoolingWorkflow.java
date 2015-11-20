@@ -34,8 +34,6 @@ import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.FifoMutexLock;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -51,7 +49,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * pooled takes a significant amount of time to become ready to use (e.g. multiple database connections/JMS connections over a WAN).
  * By making a pool size fixed you only pay the cost of initialisation once when the workflow is first started. Of course, using a
  * fixed size pool can cause its own problems if long-lived connections are terminated silently by the remote system. If you are
- * using {@link SharedConnection} within the service-collection, then it is advised that you use a fixed size pool; otherwise as
+ * using {@link com.adaptris.core.SharedConnection} within the service-collection, then it is advised that you use a fixed size pool; otherwise as
  * workers are deactivated then this could cause the underlying connection instance to be closed, which will cause issues for other
  * objects sharing the connection.
  * </p>
@@ -59,12 +57,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * If <code>stop()</code> is invoked then any messages that are currently being processed will be allowed to finish, however any new
  * messages that enter the workflow via <code>onAdaptrisMessage(AdaptrisMessage)</code> before the
  * <code>AdaptrisMessageConsumer</code> is succesfully stopped will be treated as <b>bad</b> messages and sent directly to the
- * configured {@link ProcessingExceptionHandler}.
+ * configured {@link com.adaptris.core.ProcessingExceptionHandler}.
  * </p>
  * 
  * @config pooling-workflow
  * 
- * @license STANDARD
+ * 
  * @author lchan
  * @author $Author: lchan $
  * @see ProcessingExceptionHandler
@@ -213,6 +211,7 @@ public class PoolingWorkflow extends WorkflowImp {
       setPoolSize(maxIdle());
     }
     marshalledServiceCollection = cloneServiceCollection(getServiceCollection());
+    marshalledServiceCollection.prepare();
     LifecycleHelper.init(getProducer());
     getConsumer().registerAdaptrisMessageListener(this);
     LifecycleHelper.init(getConsumer());
@@ -288,11 +287,6 @@ public class PoolingWorkflow extends WorkflowImp {
   @Override
   protected void resubmitMessage(AdaptrisMessage msg) {
     onMessage(msg);
-  }
-
-  @Override
-  protected boolean workflowIsEnabled(License l) {
-    return l.isEnabled(LicenseType.Standard);
   }
 
   private void onMessage(AdaptrisMessage msg) {
@@ -539,9 +533,6 @@ public class PoolingWorkflow extends WorkflowImp {
     LifecycleHelper.registerEventHandler(result, eventHandler);
     for (Iterator i = result.getServices().iterator(); i.hasNext();) {
       Service s = (Service) i.next();
-      if (!s.isEnabled(license)) {
-        throw new CoreException("License is not valid for " + s.getClass());
-      }
     }
     return result;
   }
@@ -555,6 +546,9 @@ public class PoolingWorkflow extends WorkflowImp {
   public int currentThreadPoolCount() {
     return ((ThreadPoolExecutor) threadPool).getPoolSize();
   }
+
+  protected void prepareWorkflow() throws CoreException {}
+
 
   private class WorkerThreadFactory extends ManagedThreadFactory {
 

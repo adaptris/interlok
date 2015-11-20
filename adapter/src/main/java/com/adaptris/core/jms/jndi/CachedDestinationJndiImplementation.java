@@ -25,11 +25,7 @@ import javax.jms.Queue;
 import javax.jms.Topic;
 
 import com.adaptris.annotation.AdvancedConfig;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.jms.JmsActorConfig;
-import com.adaptris.core.jms.VendorImplementation;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -37,14 +33,15 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <p>
  * This cache is preserved across normal component lifecycle; e.g. the cache remains even if you invoke
  * {@link com.adaptris.core.Channel#requestClose()} and then {@link com.adaptris.core.Channel#requestStart()}. <strong>The only way
- * to reset the cache is to create a new instance.</strong> If this {@link VendorImplementation} is used as part of a
+ * to reset the cache is to create a new instance.</strong> If this {@link com.adaptris.core.jms.VendorImplementation} is used as
+ * part of a
  * {@link com.adaptris.core.StandaloneProducer} then the cache is preserved across the component lifecycles. If used as part of a
  * {@link com.adaptris.core.RetryOnceStandaloneProducer} then the cache will be reset when underlying components is restarted (this
  * producer specifically marshal/unmarshal it's components).
  * </p>
  * 
  * @config cached-destination-jndi-implementation
- * @license STANDARD
+ * 
  * @see StandardJndiImplementation
  */
 @XStreamAlias("cached-destination-jndi-implementation")
@@ -117,11 +114,6 @@ public class CachedDestinationJndiImplementation extends StandardJndiImplementat
 
   public int maxDestinationCacheSize() {
     return getMaxDestinationCacheSize() != null ? getMaxDestinationCacheSize().intValue() : DEFAULT_MAX_CACHE_SIZE;
-  }
-
-  @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Standard);
   }
 
   private class FixedSizeMap<K, V> extends LinkedHashMap<K, V> {

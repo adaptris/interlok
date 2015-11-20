@@ -35,13 +35,12 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.util.CastorizedList;
-import com.adaptris.util.license.License;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
  * <p>
- * Container for a collection of {@link Channel} objects
+ * Container for a collection of {@link com.adaptris.core.Channel} objects
  * </p>
  * 
  * @config channel-list
@@ -177,37 +176,6 @@ public class ChannelList extends AbstractCollection<Channel> implements Adaptris
   }
 
   /**
-   * @see com.adaptris.core.AdaptrisComponent #isEnabled(com.adaptris.util.license.License)
-   */
-  @Override
-  public boolean isEnabled(License license) throws CoreException {
-    for (Channel c : channels) {
-      if (!c.isEnabled(license)) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  // /** @see java.lang.Object#toString() */
-  // @Override
-  // public String toString() {
-  // StringBuffer result = new StringBuffer();
-  //
-  // result.append("[");
-  // result.append(this.getClass().getName());
-  // result.append("] ");
-  //
-  // result.append("count [" + channels.size() + "]");
-  // for (int i = 0; i < channels.size(); i++) {
-  // result.append("\n\nchannel [" + (i + 1) + "] ");
-  // result.append(channels.get(i));
-  // }
-  //
-  // return result.toString();
-  // }
-
-  /**
    * <p>
    * Returns the underlying <code>List</code> of <code>Channel</code>s.
    * </p>
@@ -273,7 +241,7 @@ public class ChannelList extends AbstractCollection<Channel> implements Adaptris
 
   /**
    * <p>
-   * Returns the {@link Channel} with the passed <code>uniqueId</code> or null if no such channel exists.
+   * Returns the {@link com.adaptris.core.Channel} with the passed <code>uniqueId</code> or null if no such channel exists.
    * </p>
    *
    * @param uniqueId the unique ID of the Channel to return, may not be null or empty

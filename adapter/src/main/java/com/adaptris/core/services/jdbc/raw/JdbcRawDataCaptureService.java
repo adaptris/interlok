@@ -45,7 +45,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * 
  * @config jdbc-raw-data-capture-service
  * 
- * @license STANDARD
+ * 
  */
 @XStreamAlias("jdbc-raw-data-capture-service")
 public class JdbcRawDataCaptureService extends JdbcDataCaptureServiceImpl {

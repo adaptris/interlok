@@ -33,7 +33,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config basic-javax-jms-message-translator
- * @license BASIC
+ * 
  */
 @XStreamAlias("basic-javax-jms-message-translator")
 public class BasicJavaxJmsMessageTranslator extends MessageTypeTranslatorImp {

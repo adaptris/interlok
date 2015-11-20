@@ -39,7 +39,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * situation is that parts will be lost and only one preserved.
  * </p>
  * <p>
- * As a result of this join operation, the message will be marked as MIME encoded using {@link CoreConstants#MSG_MIME_ENCODED}
+ * As a result of this join operation, the message will be marked as MIME encoded using {@link com.adaptris.core.CoreConstants#MSG_MIME_ENCODED}
  * metadata.
  * </p>
  * </p>

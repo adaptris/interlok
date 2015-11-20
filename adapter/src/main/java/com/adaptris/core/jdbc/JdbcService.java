@@ -31,8 +31,6 @@ import com.adaptris.core.ServiceImp;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 
 /**
  * <p>
@@ -53,27 +51,30 @@ public abstract class JdbcService extends ServiceImp {
   }
 
   @Override
-  public final void init() throws CoreException {
+  public final void initService() throws CoreException {
     if (connection != null) {
       connection.addExceptionListener(this);
     }
     LifecycleHelper.init(connection);
-    initService();
+    initJdbcService();
   }
 
-  /**
-   * Do any initialisation required for the concrete service.
-   * <p>
-   * This is called after the connection is initialised
-   * </p>
-   *
-   * @throws CoreException
-   */
-  protected abstract void initService() throws CoreException;
+  @Override
+  public final void prepare() throws CoreException {
+    if (connection != null) {
+      connection.prepare();
+    }
+    prepareService();
+  }
+
+  protected abstract void prepareService() throws CoreException;
+
+
+  protected abstract void initJdbcService() throws CoreException;
 
   @Override
-  public final void close() {
-    closeService();
+  public final void closeService() {
+    closeJdbcService();
     LifecycleHelper.close(connection);
   }
 
@@ -83,7 +84,7 @@ public abstract class JdbcService extends ServiceImp {
    * This is called before the connection is closed
    * </p>
    */
-  protected abstract void closeService();
+  protected abstract void closeJdbcService();
 
   @Override
   public void start() throws CoreException {
@@ -153,15 +154,7 @@ public abstract class JdbcService extends ServiceImp {
   }
 
   /**
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled(License)
-   */
-  @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Standard);
-  }
-
-  /**
-   * Get the {@link Connection} either from the {@link AdaptrisMessage} object or from configuration.
+   * Get the {@link Connection} either from the {@link com.adaptris.core.AdaptrisMessage} object or from configuration.
    * 
    * @param msg the adaptrisMessage object
    * @return the connection either from the adaptris message or from configuration.

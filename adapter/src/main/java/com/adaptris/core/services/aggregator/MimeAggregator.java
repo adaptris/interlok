@@ -48,7 +48,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * multipart as the first part).
  * </p>
  * <p>
- * As a result of this join operation, the message will be marked as MIME encoded using {@link CoreConstants#MSG_MIME_ENCODED}
+ * As a result of this join operation, the message will be marked as MIME encoded using {@link com.adaptris.core.CoreConstants#MSG_MIME_ENCODED}
  * metadata.
  * </p>
  * 

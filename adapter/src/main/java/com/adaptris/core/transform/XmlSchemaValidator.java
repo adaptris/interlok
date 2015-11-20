@@ -46,7 +46,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config xml-schema-validator
- * @license BASIC
+ * 
  * @author lchan
  * 
  */

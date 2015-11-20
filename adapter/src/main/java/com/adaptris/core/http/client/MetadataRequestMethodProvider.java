@@ -26,7 +26,7 @@ import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Implementation of {@link RequestMethodProvider} that can derive the method from {@link AdaptrisMessage} metadata.
+ * Implementation of {@link RequestMethodProvider} that can derive the method from {@link com.adaptris.core.AdaptrisMessage} metadata.
  *
  * <p>If the configured metadata key does not exist, then {@link #getDefaultMethod()} is
  * used to provide the request method.

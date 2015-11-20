@@ -31,7 +31,6 @@ import com.adaptris.core.ProduceException;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.IdGenerator;
 import com.adaptris.util.PlainIdGenerator;
-import com.adaptris.util.license.License;
 
 /**
  * <p>
@@ -67,14 +66,10 @@ public class MockNonStandardRequestReplyProducer extends
     producedMessages = new ArrayList();
   }
 
-  /**
-   *
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled(License)
-   */
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return true;
+  public void prepare() throws CoreException {
   }
+
 
   /**
    * <p>
@@ -90,21 +85,21 @@ public class MockNonStandardRequestReplyProducer extends
   // nothing to see below here...
 
   /**
-   * @see AdaptrisMessageProducerImp #produce(AdaptrisMessage)
+   * @see com.adaptris.core.AdaptrisMessageProducerImp #produce(AdaptrisMessage)
    */
   public void produce(AdaptrisMessage msg) throws ProduceException {
     produce(msg, getDestination());
   }
 
   /**
-   * @see AdaptrisMessageProducerImp#request(AdaptrisMessage)
+   * @see com.adaptris.core.AdaptrisMessageProducerImp#request(AdaptrisMessage)
    */
   public AdaptrisMessage request(AdaptrisMessage msg) throws ProduceException {
     return request(msg, getDestination(), defaultTimeout());
   }
 
   /**
-   * @see AdaptrisMessageProducerImp#request(AdaptrisMessage, long)
+   * @see com.adaptris.core.AdaptrisMessageProducerImp#request(AdaptrisMessage, long)
    */
   public AdaptrisMessage request(AdaptrisMessage msg, long timeout)
       throws ProduceException {
@@ -112,7 +107,7 @@ public class MockNonStandardRequestReplyProducer extends
   }
 
   /**
-   * @see AdaptrisMessageProducerImp
+   * @see com.adaptris.core.AdaptrisMessageProducerImp
    *      #request(AdaptrisMessage,ProduceDestination)
    */
   public AdaptrisMessage request(AdaptrisMessage msg,
@@ -132,7 +127,7 @@ public class MockNonStandardRequestReplyProducer extends
   }
 
   /**
-   * @see AdaptrisMessageProducerImp #request(AdaptrisMessage,
+   * @see com.adaptris.core.AdaptrisMessageProducerImp #request(AdaptrisMessage,
    *      ProduceDestination, long)
    */
   public AdaptrisMessage request(AdaptrisMessage msg,

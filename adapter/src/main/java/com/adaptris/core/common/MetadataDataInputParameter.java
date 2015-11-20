@@ -36,7 +36,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @author amcgrath
  * @config metadata-data-input-parameter
- * @license BASIC
+ * 
  */
 @XStreamAlias("metadata-data-input-parameter")
 public class MetadataDataInputParameter implements DataInputParameter<String> {

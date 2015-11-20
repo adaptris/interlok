@@ -50,7 +50,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * 
  * @config jdbc-data-capture-service
  * 
- * @license STANDARD
+ * 
  * @author sellidge
  */
 @XStreamAlias("jdbc-data-capture-service")
@@ -160,8 +160,8 @@ public class JdbcDataCaptureService extends JdbcDataCaptureServiceImpl {
     return getIterates() != null ? getIterates().booleanValue() : false;
   }
 
-  protected void initService() throws CoreException {
-    super.initService();
+  protected void initJdbcService() throws CoreException {
+    super.initJdbcService();
   }
 
   /**
@@ -292,4 +292,5 @@ public class JdbcDataCaptureService extends JdbcDataCaptureServiceImpl {
     return getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig()
         : DocumentBuilderFactoryBuilder.newInstance().withNamespaceAware(true);
   }
+
 }

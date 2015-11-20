@@ -37,7 +37,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config sftp-connection
- * @license BASIC
+ * 
  * @author lchan
  * @author $Author: lchan $
  */

@@ -29,7 +29,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Used with {@link XmlValidationService} to validate that a message is in fact XML.
  * 
  * @config xml-basic-validator
- * @license BASIC
+ * 
  * @author lchan
  * 
  */

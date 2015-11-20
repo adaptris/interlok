@@ -23,12 +23,7 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
 import com.adaptris.core.AdapterLifecycleEvent;
-import com.adaptris.core.AdaptrisConnection;
-import com.adaptris.core.AllowsRetriesConnection;
-import com.adaptris.core.Channel;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.FailedMessageRetrier;
-import com.adaptris.core.ProcessingExceptionHandler;
 
 /**
  * MBean specification that allows control of a single adapter.
@@ -42,7 +37,7 @@ public interface AdapterManagerMBean extends AdapterComponentMBean, ParentRuntim
   String NOTIF_MSG_FORCE_CLOSE = "Adapter Force Close";
 
   /**
-   * Add an {@link AdaptrisConnection} to the adapter's shared connections.
+   * Add an {@link com.adaptris.core.AdaptrisConnection} to the adapter's shared connections.
    * 
    * @param xmlString the string representation of the connection.
    * @return true if the connection was added, false if the connection's unique-id already exists in the list.
@@ -53,10 +48,10 @@ public interface AdapterManagerMBean extends AdapterComponentMBean, ParentRuntim
   boolean addSharedConnection(String xmlString) throws CoreException, IllegalStateException, IllegalArgumentException;
 
   /**
-   * Add an {@link AdaptrisConnection} to the adapter's shared connections and bind it to JNDI.
+   * Add an {@link com.adaptris.core.AdaptrisConnection} to the adapter's shared connections and bind it to JNDI.
    * <p>
    * This is primarily for adding shared connections when the Adapter is currently started. Runtime manipulation of the adapter
-   * allows you to invoke {@link #addChannel(String)} while the adapter is running. If the {@link Channel} object contains a
+   * allows you to invoke {@link #addChannel(String)} while the adapter is running. If the {@link com.adaptris.core.Channel} object contains a
    * reference to a shared connection, then you should use this method to add the and bind the shared connection to JNDI ready for
    * use.
    * </p>
@@ -98,7 +93,7 @@ public interface AdapterManagerMBean extends AdapterComponentMBean, ParentRuntim
   Collection<String> getSharedConnectionIds() throws CoreException;
 
   /**
-   * Add a {@link Channel} to this adapter.
+   * Add a {@link com.adaptris.core.Channel} to this adapter.
    * 
    * @param xmlString the string representation of the channel.
    * @return the ObjectName reference to the newly created ChannelManagerMBean.
@@ -108,7 +103,7 @@ public interface AdapterManagerMBean extends AdapterComponentMBean, ParentRuntim
   ObjectName addChannel(String xmlString) throws CoreException, MalformedObjectNameException;
 
   /**
-   * Remove a {@link Channel} from this adapter.
+   * Remove a {@link com.adaptris.core.Channel} from this adapter.
    * 
    * <p>
    * This also removes the associated {@link ChannelManager} and calls {@link #unregisterMBean()}.
@@ -122,7 +117,7 @@ public interface AdapterManagerMBean extends AdapterComponentMBean, ParentRuntim
   boolean removeChannel(String id) throws CoreException, MalformedObjectNameException;
 
   /**
-   * Set the {@link ProcessingExceptionHandler} for this adapter.
+   * Set the {@link com.adaptris.core.ProcessingExceptionHandler} for this adapter.
    * 
    * @param xmlString the string representation of the error handler.
    * @throws CoreException wrapping any exception
@@ -131,20 +126,13 @@ public interface AdapterManagerMBean extends AdapterComponentMBean, ParentRuntim
   void setMessageErrorHandler(String xmlString) throws CoreException;
 
   /**
-   * Set the {@link FailedMessageRetrier} for this adapter.
+   * Set the {@link com.adaptris.core.FailedMessageRetrier} for this adapter.
    * 
    * @param xmlString the string representation of the error handler.
    * @throws CoreException wrapping any exception
    * @throws IllegalStateException if the state of the adapter is not "Closed"
    */
   void setFailedMessageRetrier(String xmlString) throws CoreException;
-
-  /**
-   * Validate the license associated with this adapter.
-   * 
-   * @throws CoreException indicating any errors.
-   */
-  void checkLicense() throws CoreException;
 
   /**
    * Get the adapter build version.
@@ -172,10 +160,10 @@ public interface AdapterManagerMBean extends AdapterComponentMBean, ParentRuntim
    * Forcibly close the associated adapter.
    * 
    * <p>
-   * In the event that there is a concrete {@link AllowsRetriesConnection} that is configured incorrectly, and set with infinite
-   * retries; then the adapter will appear to be stuck waiting in the incorrect state (generally, attempting to initialise) when
-   * asked nicely to stop. Use this method to forcibly terminate whatever operations are being attempted and to shutdown the
-   * adapter.
+   * In the event that there is a concrete {@link com.adaptris.core.AllowsRetriesConnection} that is configured incorrectly, and set
+   * with infinite retries; then the adapter will appear to be stuck waiting in the incorrect state (generally, attempting to
+   * initialise) when asked nicely to stop. Use this method to forcibly terminate whatever operations are being attempted and to
+   * shutdown the adapter.
    * </p>
    * 
    * @throws CoreException

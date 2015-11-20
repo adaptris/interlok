@@ -111,8 +111,8 @@ public class FileBackedMessageFactory extends DefaultMessageFactory {
 
   /**
    * Set the maximum size before throwing a runtime exception when
-   * {@link AdaptrisMessage#getStringPayload()} or
-   * {@link AdaptrisMessage#getPayload()} is invoked.
+   * {@link com.adaptris.core.AdaptrisMessage#getStringPayload()} or
+   * {@link com.adaptris.core.AdaptrisMessage#getPayload()} is invoked.
    *
    * @param l the max size before exception to set
    */

@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.util.ManagedThreadFactory;
-import com.adaptris.util.license.License;
 
 /**
  * <p>
@@ -56,12 +55,6 @@ public abstract class AdaptrisMessageWorkerImp implements AdaptrisMessageWorker 
   public AdaptrisMessageWorkerImp() {
   }
 
-  /**
-   * 
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled(License)
-   */
-  @Override
-  public abstract boolean isEnabled(License l) throws CoreException;
 
   /**
    * @see com.adaptris.core.AdaptrisMessageWorker #handleConnectionException()

@@ -37,9 +37,6 @@ import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.security.keystore.Alias;
 import com.adaptris.security.keystore.ConfiguredKeystore;
-import com.adaptris.security.keystore.KeystoreFactory;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
@@ -145,7 +142,6 @@ public abstract class CoreSecurityService extends ServiceImp {
    * @param url an individual url
    * @see #getKeystoreUrls()
    * @see ConfiguredKeystore
-   * @see KeystoreFactory#create(String)
    */
   public void addKeystoreUrl(ConfiguredKeystore url) {
     keystoreUrls.add(url);
@@ -231,7 +227,7 @@ public abstract class CoreSecurityService extends ServiceImp {
   }
 
   @Override
-  public final void init() throws CoreException {
+  protected final void initService() throws CoreException {
     try {
       pkPassword = getPrivateKeyPasswordProvider().retrievePrivateKeyPassword();
     }
@@ -254,6 +250,7 @@ public abstract class CoreSecurityService extends ServiceImp {
       if (factory == null) {
         factory = SecurityServiceFactory.defaultInstance();
       }
+      factory.prepare();
       service = factory.createService();
       for (Iterator i = keystoreUrls.iterator(); i.hasNext();) {
         ConfiguredKeystore url = (ConfiguredKeystore) i.next();
@@ -272,16 +269,16 @@ public abstract class CoreSecurityService extends ServiceImp {
     }
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
   @Override
-  public void close() {
+  protected void closeService() {
     return;
   }
 
   @Override
-  public final boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
+
   }
+
 
   final Alias retrieveLocalPartner() {
     return localPartnerAlias;

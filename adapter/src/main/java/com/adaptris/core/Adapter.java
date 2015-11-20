@@ -37,15 +37,11 @@ import com.adaptris.core.event.AdapterCloseEvent;
 import com.adaptris.core.event.AdapterInitEvent;
 import com.adaptris.core.event.AdapterStartEvent;
 import com.adaptris.core.event.AdapterStopEvent;
-import com.adaptris.core.event.LicenseExpiryWarningEvent;
 import com.adaptris.core.event.StandardAdapterStartUpEvent;
 import com.adaptris.core.runtime.MessageErrorDigester;
 import com.adaptris.core.runtime.StandardMessageErrorDigester;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.LicenseException;
-import com.adaptris.util.license.LicenseFactory;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -111,7 +107,6 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
 
   // not marshalled...
   private transient Timer heartbeatTimer;
-  private transient License license;
   private transient ComponentState state;
   private transient boolean hasInitialised;
 
@@ -137,11 +132,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
     setChannelList(new ChannelList());
     setSharedComponents(new SharedComponentList());
     state = ClosedState.getInstance();
-    try {
-      license = LicenseFactory.create(null);
-    }
-    catch (LicenseException e) {
-    }
+
   }
 
   @Deprecated
@@ -162,7 +153,6 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
       throw new CoreException("invalid unique id [" + uniqueId + "]");
     }
     getSharedComponents().prepare();
-    checkLicense();
     try {
       getLogHandler().clean();
     }
@@ -186,7 +176,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
    * public.
    * </p>
    * 
-   * @see AdaptrisComponent
+   * @see com.adaptris.core.AdaptrisComponent
    */
   @Override
   public void init() throws CoreException {
@@ -212,7 +202,6 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
       LifecycleHelper.init(channelList);
       LifecycleHelper.init(failedMessageRetrier);
       handleLifecycleEvent(AdapterInitEvent.class, true);
-      generateLicenseExpiryEvent();
       sendStartUpEvent();
     }
     catch (CoreException e) {
@@ -234,50 +223,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
     eventHandler.send(evt);
   }
 
-  void generateLicenseExpiryEvent() throws CoreException {
-    try {
-      // LicenseExpiryWarning event sent?
-      java.util.Calendar expiryWait = java.util.Calendar.getInstance();
-      // Only send the license Expiry if it's in 2 weeks time.
-      expiryWait.add(java.util.Calendar.WEEK_OF_YEAR, 2);
-      if (license.getExpiry().after(expiryWait.getTime())) {
-        return;
-      }
-      log.warn("License expires soon : {}", license.getExpiry());
-      LicenseExpiryWarningEvent evt = EventFactory.create(LicenseExpiryWarningEvent.class);
-      evt.setAdapterUniqueId(getUniqueId());
-      evt.setExpiryDate(license.getExpiry());
-      eventHandler.send(evt);
-    }
-    catch (LicenseException e) {
-      // Technically, failure to generate this event is not an error.
-      // as it's merely a warning about impending failure, not in fact
-      // a failure in its own right.
-      log.trace("ignoring Exception [{}]", e.getMessage());
-    }
-  }
 
-  public final void checkLicense() throws CoreException {
-    try {
-      license.verify();
-    }
-    catch (LicenseException e) {
-      log.error("License not valid for this adapter; verification failed with " + e.getMessage());
-      throw new CoreException(e);
-    }
-    if (!isEnabled(license)) {
-      log.error("Adapter configuration is incompatible with the configured license");
-      throw new CoreException("Adapter configuration is incompatible with the configured license");
-    }
-  }
-
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled (com.adaptris.util.license.License)
-   */
-  @Override
-  public boolean isEnabled(License l) throws CoreException {
-    return sharedComponents.isEnabled(l) && channelList.isEnabled(l);
-  }
 
   private void registerWorkflowsInRetrier() {
     // We should clear the workflows, because
@@ -386,7 +332,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
     }
   }
 
-  /** @see AdaptrisComponent */
+  /** @see com.adaptris.core.AdaptrisComponent */
   @Override
   public void stop() {
     lastStopTime = new Date();
@@ -408,7 +354,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
     LifecycleHelper.stop(getSharedComponents());
   }
 
-  /** @see AdaptrisComponent */
+  /** @see com.adaptris.core.AdaptrisComponent */
   @Override
   public void close() {
     LifecycleHelper.close(failedMessageRetrier);
@@ -506,7 +452,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
 
   /**
    * <p>
-   * Sets the configured {@link ProcessingExceptionHandler} for the Adapter level. May not be null, but need not be configured at
+   * Sets the configured {@link com.adaptris.core.ProcessingExceptionHandler} for the Adapter level. May not be null, but need not be configured at
    * this level.
    * </p>
    * 
@@ -610,32 +556,6 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
    */
   public FailedMessageRetrier getFailedMessageRetrier() {
     return failedMessageRetrier;
-  }
-
-  /**
-   * <p>
-   * Sets the <code>License</code> to use. Must be public (for Boostrap). May not be null.
-   * </p>
-   * 
-   * @param l the <code>License</code> to use
-   */
-  public void registerLicense(License l) {
-    if (l == null) {
-      throw new IllegalArgumentException("param [" + l + "]");
-    }
-//    log.trace("Registered License : " + l);
-    license = l;
-  }
-
-  /**
-   * <p>
-   * Returns the <code>License</code> to use.
-   * </p>
-   * 
-   * @return the <code>License</code> to use
-   */
-  public License currentLicense() {
-    return license;
   }
 
   /**

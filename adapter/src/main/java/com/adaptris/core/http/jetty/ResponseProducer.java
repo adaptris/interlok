@@ -47,8 +47,6 @@ import com.adaptris.core.metadata.RemoveAllMetadataFilter;
 import com.adaptris.core.util.Args;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.adaptris.util.stream.StreamUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -61,7 +59,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config jetty-response-producer
- * @license BASIC
+ * 
  * @deprecated since 3.0.6; use {@link StandardResponseProducer} instead.
  * @author lchan
  * @author $Author: lchan $
@@ -232,15 +230,6 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
   }
 
   /**
-   *
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled(License)
-   */
-  @Override
-  public boolean isEnabled(License l) throws CoreException {
-    return l.isEnabled(LicenseType.Basic);
-  }
-
-  /**
    * Get the headers to be sent to the client.
    *
    * @return the headers
@@ -310,7 +299,7 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
   }
 
   /**
-   * Whether or not to send the {@link AdaptrisMessage#getPayload()} as part of the reply.
+   * Whether or not to send the {@link com.adaptris.core.AdaptrisMessage#getPayload()} as part of the reply.
    *
    * @param b the sendPayload to set defaults true.
    */
@@ -323,7 +312,7 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
   }
 
   /**
-   * Whether or not to send {@link AdaptrisMessage#getMetadata()} as a standard HTTP Header
+   * Whether or not to send {@link com.adaptris.core.AdaptrisMessage#getMetadata()} as a standard HTTP Header
    * 
    * @return the sendMetadataAsHeaders
    * @deprecated since 3.0.2 use {@link #setMetadataFilter(MetadataFilter)} instead.
@@ -334,7 +323,7 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
   }
 
   /**
-   * Specify whether or not to send selected {@link AdaptrisMessage} metadata as HTTP Headers or not.
+   * Specify whether or not to send selected {@link com.adaptris.core.AdaptrisMessage} metadata as HTTP Headers or not.
    * 
    * @param b the sendMetadataAsHeaders to set defaults false.
    * @deprecated since 3.0.2 use {@link #setMetadataFilter(MetadataFilter)} instead.
@@ -360,7 +349,7 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
   }
 
   /**
-   * Specify the {@link AdaptrisMessage} metadata keys that will be sent as HTTP Headers.
+   * Specify the {@link com.adaptris.core.AdaptrisMessage} metadata keys that will be sent as HTTP Headers.
    * <p>
    * Any metadata keys that match this regular expression will be sent; the metadata key is the HTTP header name, the metadata value
    * becomes the HTTP header value.
@@ -423,7 +412,7 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
   }
 
   /**
-   * Specify the {@link AdaptrisMessage} metadata keys that will be sent as HTTP Headers.
+   * Specify the {@link com.adaptris.core.AdaptrisMessage} metadata keys that will be sent as HTTP Headers.
    * <p>
    * Any metadata that is returned by this filter will be sent as HTTP headers. Any values that match will override any statically
    * configured {@link #setAdditionalHeaders(KeyValuePairSet)} entries
@@ -443,4 +432,9 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
   private Status getStatus(AdaptrisMessage msg) {
     return new HttpStatusBuilder().withCode(getHttpResponseCode()).build();
   }
+
+  @Override
+  public void prepare() throws CoreException {
+  }
+
 }

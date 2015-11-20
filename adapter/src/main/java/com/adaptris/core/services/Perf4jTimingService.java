@@ -26,7 +26,6 @@ import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 
 import com.adaptris.annotation.AutoPopulated;
-import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.EventHandler;
@@ -35,9 +34,8 @@ import com.adaptris.core.NullService;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -49,11 +47,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config perf4j-timing-service
- * 
- * @license BASIC
  * @see Log4JStopWatch
+ * @deprecated since 3.1.0 consider using profiling instead; it will be removed in 3.2 due to migration away from log4j.
  */
 @XStreamAlias("perf4j-timing-service")
+@Deprecated
 public class Perf4jTimingService extends ServiceImp implements EventHandlerAware {
 
   @NotNull
@@ -146,19 +144,18 @@ public class Perf4jTimingService extends ServiceImp implements EventHandlerAware
   }
 
   @Override
-  public void close() {
-    handleLifecycle(Lifecycle.close);
-  }
-
-  @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
     try {
       LifecycleHelper.registerEventHandler(service, eventHandler);
       handleLifecycle(Lifecycle.init);
-    }
-    catch (LifecycleException e) {
+    } catch (LifecycleException e) {
       throw (CoreException) e.getCause();
     }
+  }
+
+  @Override
+  protected void closeService() {
+    handleLifecycle(Lifecycle.close);
   }
 
   @Override
@@ -181,9 +178,10 @@ public class Perf4jTimingService extends ServiceImp implements EventHandlerAware
   }
 
   @Override
-  public boolean isEnabled(License l) throws CoreException {
-    return l.isEnabled(LicenseType.Basic) && service.isEnabled(l);
+  public void prepare() throws CoreException {
+    getService().prepare();
   }
+
 
   /**
    * Set the service that will have it's performance tracked.
@@ -191,10 +189,7 @@ public class Perf4jTimingService extends ServiceImp implements EventHandlerAware
    * @param wrappedService the service.
    */
   public void setService(Service wrappedService) {
-    if (wrappedService == null) {
-      throw new IllegalArgumentException("wrappedService is null");
-    }
-    service = wrappedService;
+    service = Args.notNull(wrappedService, "service");
   }
 
   public String getTag() {
@@ -224,7 +219,7 @@ public class Perf4jTimingService extends ServiceImp implements EventHandlerAware
 
   /**
    * Set this to true if you wish to track the performance of the individual
-   * {@link AdaptrisComponent} lifecycle methods.
+   * {@link com.adaptris.core.AdaptrisComponent} lifecycle methods.
    * <p>
    * Setting this to true will generate the additional tags "{@link #getTag()}
    * .init", "{@link #getTag()}.start", "{@link #getTag()}.stop", "

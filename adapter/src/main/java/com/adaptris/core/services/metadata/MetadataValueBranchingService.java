@@ -33,7 +33,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * <p>
  * Implementation of {@link com.adaptris.core.Service} which sets the unique ID of the next <code>Service</code> to apply based on
- * values of {@link AdaptrisMessage} metadata.
+ * values of {@link com.adaptris.core.AdaptrisMessage} metadata.
  * </p>
  * <p>
  * It concatenates the values stored against the keys in {@link #getMetadataKeys()} and uses this String as a key to look up the
@@ -42,7 +42,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config metadata-value-branching-service
- * @license STANDARD
+ * 
  */
 @XStreamAlias("metadata-value-branching-service")
 public class MetadataValueBranchingService extends MetadataBranchingServiceImp {
@@ -63,13 +63,15 @@ public class MetadataValueBranchingService extends MetadataBranchingServiceImp {
     metadataToServiceIdMappings = new KeyValuePairSet();
   }
 
+
   @Override
-  public void init() throws CoreException {
-    super.init();
+  protected void initService() throws CoreException {
+    super.initService();
     if (valueMatcher == null) {
       throw new CoreException("ValueMatcher is null; cannot continue");
     }
   }
+
 
   /**
    * <p>

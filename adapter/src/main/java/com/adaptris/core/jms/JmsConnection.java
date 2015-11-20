@@ -31,8 +31,6 @@ import com.adaptris.core.AllowsRetriesConnection;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
 import com.adaptris.security.password.Password;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -43,7 +41,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config jms-connection
- * @license BASIC, additional license requirements from the chosen VendorImplementation
+ * 
  */
 @XStreamAlias("jms-connection")
 public class JmsConnection extends AllowsRetriesConnection implements JmsConnectionConfig, ConnectionComparator<JmsConnection> {
@@ -218,12 +216,9 @@ public class JmsConnection extends AllowsRetriesConnection implements JmsConnect
     }
   }
 
-  /**
-   * @see com.adaptris.core.AdaptrisComponent #isEnabled(com.adaptris.util.license.License)
-   */
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic) && getVendorImplementation().isEnabled(license);
+  protected void prepareConnection() throws CoreException {
+    getVendorImplementation().prepare();
   }
 
   public boolean connectionEquals(JmsConnection connection) {
@@ -268,7 +263,7 @@ public class JmsConnection extends AllowsRetriesConnection implements JmsConnect
    * Sets the broker password.
    * </p>
    * <p>
-   * In additional to plain text passwords, the passwords can also be encoded using the appropriate {@link Password}
+   * In additional to plain text passwords, the passwords can also be encoded using the appropriate {@link com.adaptris.security.password.Password}
    * </p>
    * 
    * @param s the broker password

@@ -25,6 +25,9 @@ import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
 import com.adaptris.core.services.metadata.AddMetadataService;
@@ -39,6 +42,8 @@ import com.adaptris.core.stubs.MockWorkflowInterceptor;
 import com.adaptris.util.TimeInterval;
 
 public class StandardWorkflowTest extends ExampleWorkflowCase {
+
+  private static final Logger log = LoggerFactory.getLogger(StandardWorkflowTest.class);
 
   protected static final String METADATA_KEY = "key1";
   protected static final String METADATA_VALUE = "value";
@@ -61,8 +66,11 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
       service
     }));
     ((WorkflowImp) channel.getWorkflowList().get(0)).setConsumer(cons);
+    log.error("------------{}---------------", getName());
     channel.requestInit();
     EventHandler eh = channel.obtainEventHandler();
+    log.error("Obtained [{}]", eh);
+    log.error("------------{}---------------", getName());
     assertEquals(eh, prod.retrieveEventHandler());
     assertEquals(eh, cons.retrieveEventHandler());
     assertEquals(eh, service.retrieveEventHandler());

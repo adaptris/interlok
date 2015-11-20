@@ -23,7 +23,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.services.splitter.SplitJoinService;
 
 /**
- * Interface for creating a single {@link AdaptrisMessage} instance from multiple Messages.
+ * Interface for creating a single {@link com.adaptris.core.AdaptrisMessage} instance from multiple Messages.
  * 
  * @see SplitJoinService
  */
@@ -31,7 +31,7 @@ public interface MessageAggregator {
 
   /**
    * <p>
-   * Joins multiple {@link AdaptrisMessage}s into a single AdaptrisMessage objects. Preservation of metadata is down to the
+   * Joins multiple {@link com.adaptris.core.AdaptrisMessage}s into a single AdaptrisMessage objects. Preservation of metadata is down to the
    * implementation.
    * </p>
    * 

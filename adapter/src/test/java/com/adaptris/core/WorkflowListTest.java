@@ -17,17 +17,13 @@
 package com.adaptris.core;
 
 import java.util.Arrays;
-import java.util.EnumSet;
 import java.util.ListIterator;
 
 import org.apache.log4j.Logger;
 
-import com.adaptris.core.jms.PtpConsumer;
-import com.adaptris.core.stubs.LicenseStub;
 import com.adaptris.core.stubs.MockMessageConsumer;
 import com.adaptris.util.IdGenerator;
 import com.adaptris.util.PlainIdGenerator;
-import com.adaptris.util.license.License.LicenseType;
 
 public class WorkflowListTest extends BaseCase {
 
@@ -330,16 +326,6 @@ public class WorkflowListTest extends BaseCase {
     list.add(createWorkflow(idGenerator.create(list)));
     assertNotNull(list.subList(0, 2));
     assertEquals(2, list.subList(0, 2).size());
-  }
-
-  public void testIsEnabled() throws CoreException {
-    WorkflowList list = new WorkflowList();
-    list.add(createWorkflow(idGenerator.create(list)));
-    StandardWorkflow wf = createWorkflow(idGenerator.create(list));
-    wf.setConsumer(new PtpConsumer());
-    list.add(wf);
-    assertEquals(true, list.isEnabled(new LicenseStub()));
-    assertEquals(false, list.isEnabled(new LicenseStub(EnumSet.of(LicenseType.Restricted))));
   }
 
   public void testGetWorkflowById() throws Exception {

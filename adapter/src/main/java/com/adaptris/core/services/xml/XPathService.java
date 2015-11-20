@@ -53,8 +53,6 @@ import com.adaptris.core.util.Args;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.util.KeyValuePairSet;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.adaptris.util.text.xml.SimpleNamespaceContext;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
@@ -68,7 +66,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * To specify where the source xml, source xpath expression and the result of the xpath execution should be saved, you shoud
  * use {@link DataInputParameter} or {@link com.adaptris.interlok.config.DataOutputParameter}.
  * <br />
- * For example you can specify the source xml can be found in the {@link AdaptrisMessage} payload, by using 
+ * For example you can specify the source xml can be found in the {@link com.adaptris.core.AdaptrisMessage} payload, by using 
  * {@link StringPayloadDataInputParameter} like this :
  * <pre>
  * {@code
@@ -92,7 +90,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * }
  * </pre>
  * 
- * And then maybe the result of the xpath execution is to be saved in {@link AdaptrisMessage} metadata, using 
+ * And then maybe the result of the xpath execution is to be saved in {@link com.adaptris.core.AdaptrisMessage} metadata, using 
  * {@link com.adaptris.core.common.MetadataDataOutputParameter};
  * 
  * <pre>
@@ -183,7 +181,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * @since 3.0.6
  * @author amcgrath
  * @config xpath-service
- * @license BASIC
+ * 
  */
 @XStreamAlias("xpath-service")
 public class XPathService extends ServiceImp {
@@ -247,16 +245,16 @@ public class XPathService extends ServiceImp {
   }
   
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
+  }
+
+
+  @Override
+  protected void initService() throws CoreException {
   }
 
   @Override
-  public void init() throws CoreException {
-  }
-
-  @Override
-  public void close() {
+  protected void closeService() {
   }
 
   public DataInputParameter<String> getXmlSource() {

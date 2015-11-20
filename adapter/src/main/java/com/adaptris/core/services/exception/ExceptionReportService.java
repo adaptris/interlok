@@ -36,8 +36,6 @@ import com.adaptris.core.ServiceImp;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.XmlUtils;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.adaptris.util.text.xml.DocumentMerge;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -53,11 +51,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config exception-report-service
- * @license STANDARD
+ * 
  * @see ExceptionReportGenerator
  * @see DocumentMerge
  * @author lchan
- * @see CoreConstants#OBJ_METADATA_EXCEPTION
+ * @see com.adaptris.core.CoreConstants#OBJ_METADATA_EXCEPTION
  */
 @XStreamAlias("exception-report-service")
 public class ExceptionReportService extends ServiceImp {
@@ -107,7 +105,8 @@ public class ExceptionReportService extends ServiceImp {
     }
   }
 
-  public void init() throws CoreException {
+  @Override
+  protected void initService() throws CoreException {
     if (documentMerge == null) {
       throw new CoreException("No documentMerge");
     }
@@ -115,6 +114,13 @@ public class ExceptionReportService extends ServiceImp {
       throw new CoreException("No Configured exception xml generator");
     }
   }
+
+  @Override
+  protected void closeService() {
+
+  }
+
+
 
   @Override
   public void start() throws CoreException {
@@ -126,12 +132,8 @@ public class ExceptionReportService extends ServiceImp {
     super.stop();
   }
 
-  public void close() {
-  }
-
   @Override
-  public boolean isEnabled(License l) {
-    return l.isEnabled(LicenseType.Standard);
+  public void prepare() throws CoreException {
   }
 
   public DocumentMerge getDocumentMerge() {

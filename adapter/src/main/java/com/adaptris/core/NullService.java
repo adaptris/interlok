@@ -16,7 +16,6 @@
 
 package com.adaptris.core;
 
-import com.adaptris.util.license.License;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -38,25 +37,20 @@ public class NullService extends ServiceImp {
     setUniqueId(uniqueId);
   }
 
-  /** @see com.adaptris.core.Service#doService
-   *   (com.adaptris.core.AdaptrisMessage) */
   public void doService(AdaptrisMessage msg) throws ServiceException {
     // do nothing
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#init() */
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
     // do nothing
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
-  public void close() {
+  protected void closeService() {
     // do nothing
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return true;
+  public void prepare() throws CoreException {
   }
 
 }

@@ -32,8 +32,6 @@ import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.StateManagedComponent;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -49,7 +47,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config failover-jms-connection
- * @license STANDARD
+ * 
  * @author sellidge
  * @author $Author: lchan $
  */
@@ -245,13 +243,10 @@ public class FailoverJmsConnection extends JmsConnection {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
+  protected void prepareConnection() throws CoreException {
     for (JmsConnection c : connections) {
-      if (!c.isEnabled(license)) {
-        return false;
-      }
+      c.prepare();
     }
-    return license.isEnabled(LicenseType.Standard);
   }
 
   @Override

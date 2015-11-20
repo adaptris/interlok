@@ -30,7 +30,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @author amcgrath
  * @config metadata-data-output-parameter
- * @license BASIC
+ * 
  */
 @XStreamAlias("metadata-data-output-parameter")
 public class MetadataDataOutputParameter implements DataOutputParameter<String> {

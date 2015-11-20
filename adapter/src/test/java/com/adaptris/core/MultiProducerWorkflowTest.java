@@ -27,13 +27,11 @@ import java.util.concurrent.TimeUnit;
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
 import com.adaptris.core.services.metadata.PayloadFromMetadataService;
-import com.adaptris.core.stubs.LicenseStub;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.stubs.MockSkipProducerService;
 import com.adaptris.core.stubs.MockWorkflowInterceptor;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License;
 
 public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
 
@@ -439,30 +437,6 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
     catch (IllegalArgumentException e) {
     }
     assertEquals(1, wf.getStandaloneProducers().size());
-  }
-
-  @Override
-  public void testLicenseCombinations() throws Exception {
-    super.testLicenseCombinations();
-    assertEquals(true, createReqRepWorkflow(true).isEnabled(new LicenseStub()));
-    assertEquals(false, createReqRepWorkflow(false).isEnabled(new LicenseStub()));
-  }
-
-  private MultiProducerWorkflow createReqRepWorkflow(boolean additionalProducersEnabled) throws Exception {
-    MultiProducerWorkflow wf = (MultiProducerWorkflow) createWorkflowLicenseCombo(true, true, true);
-
-    if (!additionalProducersEnabled) {
-      wf.getStandaloneProducers().add(new StandaloneProducer(new MockMessageProducer() {
-        @Override
-        public boolean isEnabled(License l) {
-          return false;
-        }
-      }));
-    }
-    else {
-      wf.getStandaloneProducers().add(new StandaloneProducer(new MockMessageProducer()));
-    }
-    return wf;
   }
 
 }

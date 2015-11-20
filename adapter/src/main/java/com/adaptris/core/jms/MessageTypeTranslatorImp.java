@@ -31,8 +31,6 @@ import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.metadata.MetadataFilter;
 import com.adaptris.core.metadata.NoOpMetadataFilter;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 
 // abstract factory pattern
 
@@ -227,13 +225,8 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
 
   }
 
-  /**
-   *
-   * @see com.adaptris.core.LicensedComponent#isEnabled(License)
-   */
   @Override
-  public boolean isEnabled(License l) {
-    return l.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
   }
 
   /**
@@ -284,7 +277,7 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
   }
 
   /**
-   * Convenience method to translate a {@link Message} into a {@link AdaptrisMessage}.
+   * Convenience method to translate a {@link Message} into a {@link com.adaptris.core.AdaptrisMessage}.
    *
    * <p>
    * If translation fails, then an attempt is made to use an {@link AutoConvertMessageTranslator} instance to attempt to translate

@@ -286,7 +286,7 @@ public class ChannelManager extends ComponentManagerImpl<Channel> implements Cha
     ensureState(ClosedState.getInstance());
     Workflow newWorkflow = (Workflow) DefaultMarshaller.getDefaultMarshaller().unmarshal(xml);
     WorkflowManager workflowManager = new WorkflowManager(newWorkflow, this);
-    newWorkflow.isEnabled(getParent().getWrappedComponent().currentLicense());
+    newWorkflow.prepare();
     // We don't need to "store" the XML at this point, as channelManager will eventually call
     // addChild() and that's when that happens.
     // marshalAndSendNotification();

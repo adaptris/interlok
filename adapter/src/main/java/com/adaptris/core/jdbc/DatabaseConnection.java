@@ -30,15 +30,12 @@ import org.hibernate.validator.constraints.NotBlank;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldHint;
-import com.adaptris.core.AdaptrisConnectionImp;
 import com.adaptris.core.AllowsRetriesConnection;
 import com.adaptris.core.CoreException;
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.security.password.Password;
 import com.adaptris.util.KeyValuePairBag;
 import com.adaptris.util.KeyValuePairSet;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 
 /**
  * <p>
@@ -92,8 +89,7 @@ public abstract class DatabaseConnection extends AllowsRetriesConnection {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Standard);
+  protected void prepareConnection() throws CoreException {
   }
 
   /**
@@ -103,7 +99,6 @@ public abstract class DatabaseConnection extends AllowsRetriesConnection {
    * </p>
    * 
    * @throws CoreException if the driver implementation was not available.
-   * @see AdaptrisConnectionImp#initConnection()
    */
   @Override
   protected final void initConnection() throws CoreException {

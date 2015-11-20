@@ -44,7 +44,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config message-metrics-interceptor-by-metadata
- * @license STANDARD
+ * 
  */
 @XStreamAlias("message-metrics-interceptor-by-metadata")
 public class MessageMetricsInterceptorByMetadata extends MessageMetricsInterceptorImpl {

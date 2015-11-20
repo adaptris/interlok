@@ -21,7 +21,6 @@ import com.adaptris.core.Channel;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.Workflow;
 import com.adaptris.core.WorkflowInterceptor;
-import com.adaptris.util.license.License;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -35,7 +34,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config jmx-submit-message-interceptor
- * @license BASIC
+ * 
  * @since 3.0.4
  */
 @XStreamAlias("jmx-submit-message-interceptor")
@@ -62,8 +61,7 @@ public class JmxSubmitMessageInterceptor implements WorkflowInterceptor {
   }
   
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return true;
+  public void prepare() throws CoreException {
   }
 
   @Override

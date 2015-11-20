@@ -28,12 +28,10 @@ import com.adaptris.core.AllowsRetriesConnection;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.DefaultSerializableMessageTranslator;
-import com.adaptris.core.LicensedComponent;
 import com.adaptris.core.SerializableAdaptrisMessage;
 import com.adaptris.core.Service;
 import com.adaptris.core.util.JmxHelper;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
 
 /**
  * Implementation of {@link AdapterComponentCheckerMBean} for use by the GUI to check components.
@@ -110,7 +108,7 @@ public class AdapterComponentChecker implements AdapterComponentCheckerMBean, Ch
   public void checkInitialise(String xml) throws CoreException {
     AdaptrisMarshaller marshaller = DefaultMarshaller.getDefaultMarshaller();
     AdaptrisComponent component = (AdaptrisComponent) marshaller.unmarshal(xml);
-    checkCurrentLicense(component);
+    component.prepare();
     if (component instanceof AllowsRetriesConnection) {
       AllowsRetriesConnection retry = (AllowsRetriesConnection) component;
       if (retry.connectionAttempts() == -1) {
@@ -128,7 +126,7 @@ public class AdapterComponentChecker implements AdapterComponentCheckerMBean, Ch
   public SerializableAdaptrisMessage applyService(String xml, SerializableAdaptrisMessage serializedMsg) throws CoreException {
     AdaptrisMarshaller marshaller = DefaultMarshaller.getDefaultMarshaller();
     Service service = (Service) marshaller.unmarshal(xml);
-    checkCurrentLicense(service);
+    service.prepare();
     AdaptrisMessage msg = messageTranslator.translate(serializedMsg);
     try {
       LifecycleHelper.init(service);
@@ -140,12 +138,5 @@ public class AdapterComponentChecker implements AdapterComponentCheckerMBean, Ch
       LifecycleHelper.close(service);
     }
     return messageTranslator.translate(msg);
-  }
-
-  private void checkCurrentLicense(LicensedComponent component) throws CoreException {
-    License l = parent.getWrappedComponent().currentLicense();
-    if (!component.isEnabled(l)) {
-      throw new CoreException("Current Adapter License is not valid for this component");
-    }
   }
 }

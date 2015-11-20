@@ -30,7 +30,6 @@ import org.perf4j.aop.Profiled;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisMessageProducerImp;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.FileNameCreator;
@@ -39,8 +38,6 @@ import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.RequestReplyProducerImp;
 import com.adaptris.filetransfer.FileTransferClient;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -81,7 +78,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config ftp-producer
- * @license BASIC
+ * 
  * @see CoreConstants#FTP_REPLYTO_NAME
  * @see FileNameCreator
  * @see FtpConnection
@@ -188,7 +185,7 @@ public class FtpProducer extends RequestReplyProducerImp {
 
   /**
    *
-   * @see AdaptrisMessageProducerImp#produce(AdaptrisMessage, ProduceDestination)
+   * @see com.adaptris.core.AdaptrisMessageProducerImp#produce(AdaptrisMessage, ProduceDestination)
    */
   @Override
   @Profiled(tag = "{$this.getClass().getSimpleName()}.produce()", logger = "com.adaptris.perf4j.ftp.TimingLogger")
@@ -299,13 +296,10 @@ public class FtpProducer extends RequestReplyProducerImp {
     return reply;
   }
 
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled(License)
-   */
   @Override
-  public boolean isEnabled(License l) {
-    return l.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
   }
+
 
   /**
    * Get the build directory.

@@ -33,7 +33,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config basic-active-mq-implementation
- * @license BASIC
+ * 
  */
 @XStreamAlias("basic-active-mq-implementation")
 public class BasicActiveMqImplementation extends UrlVendorImplementation {

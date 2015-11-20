@@ -26,7 +26,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config metadata-value-to-upper-case
  * 
- * @license BASIC
+ * 
  */
 @XStreamAlias("metadata-value-to-upper-case")
 public class MetadataValueToUpperCase extends ReformatMetadata {

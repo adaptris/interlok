@@ -27,8 +27,6 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.StandardWorkflow;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -52,7 +50,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config jms-reply-to-workflow
- * @license STANDARD
+ * 
  * @deprecated Use a {@link com.adaptris.core.StandardWorkflow} with a {@link com.adaptris.core.StandaloneProducer} with a
  * {@link JmsReplyToDestination}.
  */
@@ -153,8 +151,8 @@ public final class JmsReplyToWorkflow extends StandardWorkflow {
   }
 
   @Override
-  protected boolean workflowIsEnabled(License l) {
-    return l.isEnabled(LicenseType.Standard);
-  }
+  protected void prepareWorkflow() throws CoreException {}
+
+
 
 }

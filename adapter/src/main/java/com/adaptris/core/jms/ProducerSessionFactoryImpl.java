@@ -56,6 +56,9 @@ public abstract class ProducerSessionFactoryImpl implements ProducerSessionFacto
     closeQuietly(session);
   }
 
+  @Override
+  public void prepare() throws CoreException {}
+
   protected ProducerSession createProducerSession(JmsProducerImpl producer) throws JMSException {
     Connection conn = producer.retrieveConnection(JmsConnection.class).currentConnection();
     JmsConnection jmsConnection = producer.retrieveConnection(JmsConnection.class);

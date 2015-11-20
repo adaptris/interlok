@@ -64,7 +64,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @author lchan
- * @license STANDARD
+ * 
  * @since 3.0.4
  */
 @XStreamAlias("slow-message-notification")

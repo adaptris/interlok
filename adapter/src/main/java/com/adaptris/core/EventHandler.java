@@ -24,7 +24,7 @@ package com.adaptris.core;
  * </p>
  */
 public interface EventHandler 
- extends AdaptrisComponent, StateManagedComponent {
+ extends AdaptrisComponent, StateManagedComponent, ComponentLifecycleExtension {
 
   /**
    * <p>

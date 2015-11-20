@@ -51,7 +51,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config auto-convert-message-translator
- * @license BASIC
+ * 
  * @author lchan
  */
 @SuppressWarnings("deprecation")

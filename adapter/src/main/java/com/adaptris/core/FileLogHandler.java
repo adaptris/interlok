@@ -46,8 +46,6 @@ import com.adaptris.core.runtime.AdapterManager;
 import com.adaptris.core.runtime.ParentRuntimeInfoComponent;
 import com.adaptris.core.runtime.RuntimeInfoComponent;
 import com.adaptris.core.runtime.RuntimeInfoComponentFactory;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -58,7 +56,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config file-log-handler
  * 
- * @license BASIC
+ * 
  */
 @XStreamAlias("file-log-handler")
 @GenerateBeanInfo
@@ -290,11 +288,6 @@ public class FileLogHandler extends LogHandlerImp {
     statisticsGraphLogFile = s;
   }
 
-  @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
-  }
-
   /**
    * <p>
    * Comment required...
@@ -358,6 +351,10 @@ public class FileLogHandler extends LogHandlerImp {
       return new FileLogHandlerJmx((AdapterManager) parent, (FileLogHandler) e);
     }
 
+  }
+
+  @Override
+  public void prepare() throws CoreException {
   }
 
 }

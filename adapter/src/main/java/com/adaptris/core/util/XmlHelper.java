@@ -44,7 +44,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.util.XmlUtils;
 
 /**
- * Helper class for handling XML within an {@linkplain AdaptrisMessage}
+ * Helper class for handling XML within an {@linkplain com.adaptris.core.AdaptrisMessage}
  *
  * @author lchan
  * @author $Author: $

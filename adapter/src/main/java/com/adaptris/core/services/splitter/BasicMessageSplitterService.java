@@ -30,13 +30,11 @@ import com.adaptris.core.NullMessageProducer;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * Splits incoming {@link AdaptrisMessage}s into several <code>AdaptrisMessage</code>s using an implementation of
+ * Splits incoming {@link com.adaptris.core.AdaptrisMessage}s into several <code>AdaptrisMessage</code>s using an implementation of
  * {@link MessageSplitter}.
  * </p>
  * <p>
@@ -45,7 +43,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config basic-message-splitter-service
  * 
- * @license BASIC
+ * 
  */
 @GenerateBeanInfo
 @XStreamAlias("basic-message-splitter-service")
@@ -85,14 +83,20 @@ public class BasicMessageSplitterService extends MessageSplitterServiceImp {
     }
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#init() */
   @Override
-  public void init() throws CoreException {
-    super.init();
+  protected void initService() throws CoreException {
+    super.initService();
     connection.addExceptionListener(this); // back ref
     connection.addMessageProducer(producer);
     LifecycleHelper.init(connection);
     LifecycleHelper.init(producer);
+  }
+
+  @Override
+  protected void closeService() {
+    LifecycleHelper.stop(producer);
+    LifecycleHelper.stop(connection);
+    super.closeService();
   }
 
   /** @see com.adaptris.core.AdaptrisComponent#start() */
@@ -107,12 +111,6 @@ public class BasicMessageSplitterService extends MessageSplitterServiceImp {
   public void stop() {
     LifecycleHelper.stop(producer);
     LifecycleHelper.stop(connection);
-  }
-
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
-  public void close() {
-    LifecycleHelper.close(producer);
-    LifecycleHelper.close(connection);
   }
 
   /**
@@ -174,7 +172,9 @@ public class BasicMessageSplitterService extends MessageSplitterServiceImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic) && getConnection().isEnabled(license) && getProducer().isEnabled(license);
+  public void prepare() throws CoreException {
+    getConnection().prepare();
+    getProducer().prepare();
   }
+
 }

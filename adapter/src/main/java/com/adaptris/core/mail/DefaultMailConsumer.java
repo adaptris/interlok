@@ -41,7 +41,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * 
  * @config default-mail-consumer
- * @license BASIC
+ * 
  * 
  * @see MailConsumerImp
  */

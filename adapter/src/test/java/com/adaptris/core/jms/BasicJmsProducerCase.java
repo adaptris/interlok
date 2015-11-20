@@ -19,7 +19,6 @@ package com.adaptris.core.jms;
 import static com.adaptris.core.jms.JmsConfig.DEFAULT_PAYLOAD;
 import static com.adaptris.core.jms.JmsUtils.closeQuietly;
 
-import java.util.EnumSet;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -50,10 +49,8 @@ import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandaloneRequestor;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
-import com.adaptris.core.stubs.LicenseStub;
 import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.license.License.LicenseType;
 
 public abstract class BasicJmsProducerCase extends JmsProducerCase {
 
@@ -124,45 +121,6 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
     TimedInactivityProducerSessionFactory psf = new TimedInactivityProducerSessionFactory();
     producer.setSessionFactory(psf);
     assertEquals(psf, producer.getSessionFactory());
-  }
-
-  public void testProducerSessionFactoryLicense() throws Exception {
-    LicenseStub basic = new LicenseStub(EnumSet.of(LicenseType.Basic));
-
-    LicenseStub standard = new LicenseStub(EnumSet.of(LicenseType.Basic, LicenseType.Standard));
-    LicenseStub enterprise = new LicenseStub(EnumSet.of(LicenseType.Basic, LicenseType.Standard, LicenseType.Enterprise));
-
-    DefinedJmsProducer producer = createProducer(new ConfiguredProduceDestination(getName()));
-    producer.setSessionFactory(new DefaultProducerSessionFactory());
-    assertTrue(producer.isEnabled(basic));
-    assertTrue(producer.isEnabled(standard));
-    assertTrue(producer.isEnabled(enterprise));
-
-    producer.setSessionFactory(new MessageCountProducerSessionFactory());
-    assertFalse(producer.isEnabled(basic));
-    assertTrue(producer.isEnabled(standard));
-    assertTrue(producer.isEnabled(enterprise));
-
-    producer.setSessionFactory(new MessageSizeProducerSessionFactory());
-    assertFalse(producer.isEnabled(basic));
-    assertTrue(producer.isEnabled(standard));
-    assertTrue(producer.isEnabled(enterprise));
-
-    producer.setSessionFactory(new MetadataProducerSessionFactory());
-    assertFalse(producer.isEnabled(basic));
-    assertTrue(producer.isEnabled(standard));
-    assertTrue(producer.isEnabled(enterprise));
-
-    producer.setSessionFactory(new PerMessageProducerSessionFactory());
-    assertTrue(producer.isEnabled(basic));
-    assertTrue(producer.isEnabled(standard));
-    assertTrue(producer.isEnabled(enterprise));
-
-    producer.setSessionFactory(new TimedInactivityProducerSessionFactory());
-    assertFalse(producer.isEnabled(basic));
-    assertTrue(producer.isEnabled(standard));
-    assertTrue(producer.isEnabled(enterprise));
-
   }
 
   public void testDefaultSessionFactory() throws Exception {

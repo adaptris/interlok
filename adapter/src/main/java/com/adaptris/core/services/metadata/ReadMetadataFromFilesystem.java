@@ -30,9 +30,6 @@ import java.util.Set;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -40,17 +37,14 @@ import com.adaptris.core.FileNameCreator;
 import com.adaptris.core.FormattedFilenameCreator;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ProduceDestination;
-import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.fs.FsHelper;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * Implementation of {@link Service} that reads metadata from the filesystem.
+ * Implementation of {@link com.adaptris.core.Service} that reads metadata from the filesystem.
  * </p>
  * <p>
  * Used in conjunction with {@link WriteMetadataToFilesystem} to allow preservation of metadata across integration points that make
@@ -59,7 +53,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config read-metadata-from-filesystem
  * 
- * @license BASIC
+ * 
  * @see WriteMetadataToFilesystem
  */
 @XStreamAlias("read-metadata-from-filesystem")
@@ -135,23 +129,18 @@ public class ReadMetadataFromFilesystem extends ServiceImp {
     }
   }
 
+
   @Override
-  public void init() throws CoreException {
+  protected void initService() throws CoreException {
     if (getDestination() == null) {
       throw new CoreException("Null Destination");
     }
   }
 
   @Override
-  public void close() {
+  protected void closeService() {
   }
 
-  @Override
-  public String toString() {
-    return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("InputStyle", getInputStyle())
-        .append("OverwriteExistingMetadata", getOverwriteExistingMetadata()).append("ProduceDestination", getDestination())
-        .append("FilenameCreator", getFileNameCreator()).toString();
-  }
 
   public InputStyle getInputStyle() {
     return inputStyle;
@@ -230,8 +219,8 @@ public class ReadMetadataFromFilesystem extends ServiceImp {
   }
 
   @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
+  public void prepare() throws CoreException {
   }
+
 
 }

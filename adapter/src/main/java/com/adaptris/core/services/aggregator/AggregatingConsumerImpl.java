@@ -29,7 +29,7 @@ import com.adaptris.core.util.LifecycleHelper;
 
 
 /**
- * Base class for {@link AggregatingConsumer} implementations.
+ * Base class for {@link com.adaptris.core.services.aggregator.AggregatingConsumer} implementations.
  * 
  * @author lchan
  * 

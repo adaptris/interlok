@@ -32,8 +32,6 @@ import com.adaptris.core.ServiceImp;
 import com.adaptris.transform.Source;
 import com.adaptris.transform.Target;
 import com.adaptris.transform.TransformFramework;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 
 /**
  * <p>
@@ -67,16 +65,8 @@ public abstract class TransformService extends ServiceImp {
     cachedRules = new ArrayList<Source>();
   }
 
-  /**
-   * <p>
-   * Initialises the transform framework.  If no rule is explicitly configured
-   * using <code>setUrl</code>, the <code>Service</code> is deemed to implicitly
-   * <code>allowOverride</code>.
-   * </p>
-   * @see com.adaptris.core.AdaptrisComponent#init()
-   */
   @Override
-  public final void init() throws CoreException {
+  protected final void initService() throws CoreException {
     try {
       tf = createFramework();
 
@@ -86,15 +76,21 @@ public abstract class TransformService extends ServiceImp {
           tf.addRule(configuredRule);
           cachedRules.add(configuredRule);
         }
-      }
-      else {
-        log.info("No configured URL, implicit #setAllowOverride(true): "
-            + "transform must be specified by metadata");
+      } else {
+        log.info("No configured URL, implicit #setAllowOverride(true): " + "transform must be specified by metadata");
         setAllowOverride(true);
       }
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       throw new CoreException(e);
+    }
+  }
+
+  @Override
+  protected final void closeService() {
+    Iterator i = cachedRules.iterator();
+    while (i.hasNext()) {
+      Source src = (Source) i.next();
+      tf.removeRule(src);
     }
   }
 
@@ -150,28 +146,11 @@ public abstract class TransformService extends ServiceImp {
     }
   }
 
-  /**
-   * <p>
-   * Removes cahed rules from the transform framework.
-   * </p>
-   * @see com.adaptris.core.AdaptrisComponent#close()
-   */
+
   @Override
-  public final void close() {
-    Iterator i = cachedRules.iterator();
-    while (i.hasNext()) {
-      Source src = (Source) i.next();
-      tf.removeRule(src);
-    }
+  public void prepare() throws CoreException {
   }
 
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#isEnabled(License)
-   */
-  @Override
-  public boolean isEnabled(License license) throws CoreException {
-    return license.isEnabled(LicenseType.Basic);
-  }
 
   /** @see java.lang.Object#toString() */
   @Override
@@ -300,7 +279,7 @@ public abstract class TransformService extends ServiceImp {
   /**
    * Force the output message encoding to be a particular encoding.
    * <p>
-   * If specified then the underlying {@link AdaptrisMessage#setCharEncoding(String)} is changed to match the encoding specified
+   * If specified then the underlying {@link com.adaptris.core.AdaptrisMessage#setCharEncoding(String)} is changed to match the encoding specified
    * here before attempting any write operations.
    * </p>
    * <p>

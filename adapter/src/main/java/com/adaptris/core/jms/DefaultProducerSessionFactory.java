@@ -19,8 +19,6 @@ package com.adaptris.core.jms;
 import javax.jms.JMSException;
 
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -31,7 +29,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config jms-default-producer-session
- * @license BASIC
+ * 
  * @author lchan
  * 
  */
@@ -40,11 +38,6 @@ public class DefaultProducerSessionFactory extends ProducerSessionFactoryImpl {
 
   public DefaultProducerSessionFactory() {
     super();
-  }
-
-  @Override
-  public boolean isEnabled(License l) {
-    return l.isEnabled(LicenseType.Basic);
   }
 
   @Override

@@ -26,8 +26,6 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.fs.FsProducer;
-import com.adaptris.util.license.License;
-import com.adaptris.util.license.License.LicenseType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -59,7 +57,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </ul>
  * 
  * @config large-fs-producer
- * @license STANDARD
+ * 
  */
 @XStreamAlias("large-fs-producer")
 public class LargeFsProducer extends FsProducer {
@@ -142,7 +140,7 @@ public class LargeFsProducer extends FsProducer {
 
   /**
    * Set to true to simply use {@link File#renameTo(File)} when producing an
-   * {@link AdaptrisMessage} that is an instance of {@link FileBackedMessage}
+   * {@link com.adaptris.core.AdaptrisMessage} that is an instance of {@link FileBackedMessage}
    *
    * @param b true to use {@link File#renameTo(File)}
    */
@@ -155,7 +153,7 @@ public class LargeFsProducer extends FsProducer {
   }
 
   @Override
-  public boolean isEnabled(License l) throws CoreException {
-    return l.isEnabled(LicenseType.Standard);
+  public void prepare() throws CoreException {
   }
+
 }
