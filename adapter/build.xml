@@ -186,6 +186,9 @@
   <target name="jar" depends="compile, jar.resources" description="Generate JAR file">
     <jar jarfile="${project.dist.dir}/${jar.name}" manifest="${build.dir}/Manifest.mf">
       <fileset dir="${classes.build.dir}"/>
+      <zipfileset dir="${basedir}/.." prefix="META-INF">
+        <include name="LICENSE"/>
+      </zipfileset>
     </jar>
   </target>
 
