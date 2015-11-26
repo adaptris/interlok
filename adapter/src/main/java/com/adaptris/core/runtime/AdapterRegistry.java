@@ -15,7 +15,7 @@
 */
 
 package com.adaptris.core.runtime;
-
+import static com.adaptris.core.util.PropertyHelper.getPropertyIgnoringCase;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.io.FileOutputStream;
@@ -94,9 +94,9 @@ public class AdapterRegistry implements AdapterRegistryMBean {
     if (runtimeVCS != null) {
       runtimeVCS.setBootstrapProperties(config);
     }
-    boolean enableValidation = Boolean.valueOf(
-        BootstrapProperties.getPropertyIgnoringCase(config, Constants.CFG_KEY_VALIDATE_CONFIG, Constants.DEFAULT_VALIDATE_CONFIG))
-        .booleanValue();
+    boolean enableValidation =
+        Boolean.valueOf(getPropertyIgnoringCase(config, Constants.CFG_KEY_VALIDATE_CONFIG, Constants.DEFAULT_VALIDATE_CONFIG))
+            .booleanValue();
     if (enableValidation) {
       validatorFactory = Validation.buildDefaultValidatorFactory();
     }

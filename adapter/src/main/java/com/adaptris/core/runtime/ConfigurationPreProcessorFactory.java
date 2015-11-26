@@ -15,7 +15,7 @@
 */
 
 package com.adaptris.core.runtime;
-
+import static com.adaptris.core.util.PropertyHelper.getPropertyIgnoringCase;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
@@ -52,7 +52,7 @@ public class ConfigurationPreProcessorFactory implements ConfigurationPreProcess
   @Override
   public PreProcessorsList load(BootstrapProperties bootstrapProperties) throws CoreException {
     PreProcessorsList preProcessorsList = new PreProcessorsList();
-    String prePrecessorList = BootstrapProperties.getPropertyIgnoringCase(bootstrapProperties,
+    String prePrecessorList = getPropertyIgnoringCase(bootstrapProperties,
         AdapterConfigManager.CONFIGURATION_PRE_PROCESSORS);
     if (!isEmpty(prePrecessorList)) {
       String[] configuredPreProcessors = prePrecessorList.split(PRE_PROCESSOR_SEPARATOR);

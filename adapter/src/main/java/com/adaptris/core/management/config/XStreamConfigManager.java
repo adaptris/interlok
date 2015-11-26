@@ -15,12 +15,12 @@
 */
 
 package com.adaptris.core.management.config;
+import static com.adaptris.core.util.PropertyHelper.getPropertyIgnoringCase;
 
-import com.adaptris.core.AdapterXStreamMarshallerFactory;
 import com.adaptris.core.AdapterMarshallerFactory;
-import com.adaptris.core.DefaultMarshaller;
+import com.adaptris.core.AdapterXStreamMarshallerFactory;
 import com.adaptris.core.AdapterXStreamMarshallerFactory.OutputMode;
-import com.adaptris.core.management.AdapterConfigManager;
+import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.management.BootstrapProperties;
 import com.adaptris.core.management.Constants;
 
@@ -43,19 +43,12 @@ public class XStreamConfigManager extends ReadWriteConfigManager {
     this.bootstrapProperties = bootstrapProperties;
     
     // Get the configured output type property (XML/JSON) and create the marshaller based on this
-    final String marshallerOutputProperty = 
-        (bootstrapProperties != null ?
-            BootstrapProperties
-            .getPropertyIgnoringCase(bootstrapProperties,
-                Constants.CFG_KEY_MARSHALLER_OUTPUT_TYPE) : null);
-    
+    final String marshallerOutputProperty = (bootstrapProperties != null
+        ? getPropertyIgnoringCase(bootstrapProperties, Constants.CFG_KEY_MARSHALLER_OUTPUT_TYPE) : null);
+
     // Get the xstream enable beautified output flag
-    final boolean enableBeautifiedOutputFlag = Boolean.valueOf(
-        (bootstrapProperties != null ?
-            BootstrapProperties
-            .getPropertyIgnoringCase(bootstrapProperties,
-                Constants.CFG_XSTREAM_BEAUTIFIED_OUTPUT) : null)
-                );
+    final boolean enableBeautifiedOutputFlag = Boolean.valueOf((bootstrapProperties != null
+        ? getPropertyIgnoringCase(bootstrapProperties, Constants.CFG_XSTREAM_BEAUTIFIED_OUTPUT) : null));
     
     // Now initialize the marshaller
     marshallerFactory = AdapterXStreamMarshallerFactory.getInstance();
