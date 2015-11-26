@@ -24,14 +24,19 @@ import org.apache.commons.io.IOUtils;
 
 import com.adaptris.core.CoreException;
 import com.adaptris.core.management.BootstrapProperties;
-import com.adaptris.core.runtime.AbstractConfigurationPreProcessor;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.util.KeyValuePairSet;
 
-public class DummyConfigurationPreProcessor extends AbstractConfigurationPreProcessor {
+public class DummyConfigurationPreProcessor extends ConfigPreProcessorImpl {
 
   public DummyConfigurationPreProcessor(BootstrapProperties properties) {
     super(properties);
   }
+
+  public DummyConfigurationPreProcessor(KeyValuePairSet properties) {
+    super(properties);
+  }
+
 
   @Override
   public String process(String xml) throws CoreException {

@@ -24,12 +24,16 @@ import org.apache.commons.io.IOUtils;
 
 import com.adaptris.core.CoreException;
 import com.adaptris.core.management.BootstrapProperties;
-import com.adaptris.core.runtime.AbstractConfigurationPreProcessor;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.util.KeyValuePairSet;
 
-public class DummyConfigurationPreProcessor2 extends AbstractConfigurationPreProcessor {
+public class DummyConfigurationPreProcessor2 extends ConfigPreProcessorImpl {
 
   public DummyConfigurationPreProcessor2(BootstrapProperties properties) {
+    super(properties);
+  }
+
+  public DummyConfigurationPreProcessor2(KeyValuePairSet properties) {
     super(properties);
   }
 

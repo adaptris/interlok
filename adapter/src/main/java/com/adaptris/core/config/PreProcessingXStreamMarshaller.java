@@ -69,7 +69,14 @@ public class PreProcessingXStreamMarshaller extends com.adaptris.core.XStreamMar
   @Override
   public Object unmarshal(String input) throws CoreException {
     Args.notNull(input, "Attempt to unmarshal null string");
-    return getInstance().fromXML(preProcess(input));
+    Object result = null;
+    try {
+      result = getInstance().fromXML(preProcess(input));
+    }
+    catch (Exception e) {
+      ExceptionHelper.rethrowCoreException(e);
+    }
+    return result;
   }
 
   @Override
@@ -107,7 +114,7 @@ public class PreProcessingXStreamMarshaller extends com.adaptris.core.XStreamMar
         result = this.unmarshal(in);
       }
       else {
-        throw new CoreException("could not unmarshal component from [" + url + "]");
+        throw new IOException("could not unmarshal component from [" + url + "]");
       }
     }
     catch (Exception e) {
