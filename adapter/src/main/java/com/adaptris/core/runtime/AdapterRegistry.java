@@ -50,6 +50,9 @@ import com.adaptris.core.Adapter;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.EventFactory;
+import com.adaptris.core.config.ConfigPreProcessorLoader;
+import com.adaptris.core.config.ConfigPreProcessors;
+import com.adaptris.core.config.DefaultPreProcessorLoader;
 import com.adaptris.core.event.AdapterShutdownEvent;
 import com.adaptris.core.fs.FsHelper;
 import com.adaptris.core.management.BootstrapProperties;
@@ -74,7 +77,7 @@ public class AdapterRegistry implements AdapterRegistryMBean {
   private transient MBeanServer mBeanServer;
   private static transient Logger log = LoggerFactory.getLogger(AdapterRegistry.class);
   private transient BootstrapProperties config = new BootstrapProperties();
-  private transient ConfigurationPreProcessorLoader configurationPreProcessorLoader;
+  private transient ConfigPreProcessorLoader configurationPreProcessorLoader;
   private transient Map<ObjectName, URL> configurationURLs;
   private transient RuntimeVersionControl runtimeVCS;
   private transient ValidatorFactory validatorFactory = null;
@@ -82,7 +85,7 @@ public class AdapterRegistry implements AdapterRegistryMBean {
   private AdapterRegistry() throws MalformedObjectNameException {
     registeredAdapters = new HashSet<ObjectName>();
     mBeanServer = JmxHelper.findMBeanServer();
-    configurationPreProcessorLoader = new ConfigurationPreProcessorFactory();
+    configurationPreProcessorLoader = new DefaultPreProcessorLoader();
     configurationURLs = new HashMap<ObjectName, URL>();
   }
 
@@ -167,7 +170,7 @@ public class AdapterRegistry implements AdapterRegistryMBean {
   }
 
   // For testing so we don't really care
-  void setConfigurationPreProcessorLoader(ConfigurationPreProcessorLoader cppl) {
+  void setConfigurationPreProcessorLoader(ConfigPreProcessorLoader cppl) {
     this.configurationPreProcessorLoader = cppl;
   }
 
@@ -367,7 +370,7 @@ public class AdapterRegistry implements AdapterRegistryMBean {
     }
   }
 
-  private PreProcessorsList loadPreProcessors() throws CoreException {
+  private ConfigPreProcessors loadPreProcessors() throws CoreException {
     return configurationPreProcessorLoader.load(config);
   }
 

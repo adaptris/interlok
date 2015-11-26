@@ -14,7 +14,7 @@
  * limitations under the License.
 */
 
-package com.adaptris.core.runtime;
+package com.adaptris.core.config;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,6 +24,7 @@ import org.apache.commons.io.IOUtils;
 
 import com.adaptris.core.CoreException;
 import com.adaptris.core.management.BootstrapProperties;
+import com.adaptris.core.runtime.AbstractConfigurationPreProcessor;
 import com.adaptris.core.util.ExceptionHelper;
 
 public class DummyConfigurationPreProcessor extends AbstractConfigurationPreProcessor {
