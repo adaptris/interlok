@@ -69,24 +69,28 @@ public class JmxRemoteComponent extends JmxComponentImpl {
   public static final String JMX_SERVICE_URL_ENV_PREFIX = "jmxserviceurl.env.";
 
   /**
-   * Bootstrap property that controls the username required for connecting to this JMXConnectorServer.
+   * Bootstrap property that controls the username required for connecting to this {@link JMXConnectorServer} if the {@link
+   * JMXServiceURL} indicates the jmxmp protocol.
    * 
    * <p>If no {@code jmx.remote.profiles} setting is specified then {@code SASL/PLAIN} is used. Different profiles may be specified
    * according to <a href="http://docs.oracle.com/cd/E19698-01/816-7609/6mdjrf86r/index.html">the Oracle JDMK tutorial</a>.
    * Specifying a profile of TLS may require additional {@code javax.net.ssl.*} system properties.
    * </p>
    */
-  public static final String JMX_SERVICE_URL_USERNAME = "jmxserviceurl.sasl.username";
+  public static final String JMX_JMXMP_SASL_USERNAME = "jmxserviceurl.jmxmp.username";
 
   /**
-   * Bootstrap property that controls the password required for connecting to this JMXConnectorServer.
+   * Bootstrap property that controls the password required for connecting to this {@link JMXConnectorServer} if the {@link
+   * JMXServiceURL} indicates the jmxmp protocol.
    * 
    * <p>If no {@code jmx.remote.profiles} setting is specified then {@code SASL/PLAIN} is used. Different profiles may be specified
    * according to <a href="http://docs.oracle.com/cd/E19698-01/816-7609/6mdjrf86r/index.html">the Oracle JDMK tutorial</a>.
    * Specifying a profile of TLS may require additional {@code javax.net.ssl.*} system properties.
    * </p>
    */
-  public static final String JMX_SERVICE_URL_PASSWORD = "jmxserviceurl.sasl.password";
+  public static final String JMX_JMXMP_SASL_PASSWORD = "jmxserviceurl.jmxmp.password";
+
+  private static final String PROTOCOL_JMXMP = "jmxmp";
 
 
   /**
@@ -111,7 +115,7 @@ public class JmxRemoteComponent extends JmxComponentImpl {
     JmxConnectorServerWrapper wrapper = null;
     if (getPropertyIgnoringCase(config, CFG_KEY_JMX_SERVICE_URL_KEY) != null) {
       JMXServiceURL jmxServiceUrl = new JMXServiceURL(getPropertyIgnoringCase(config, CFG_KEY_JMX_SERVICE_URL_KEY));
-      Map<String, Object> environment = createConnectorServerProperties(config);
+      Map<String, Object> environment = createConnectorServerProperties(jmxServiceUrl, config);
       log.trace("JMX Environment : {}", environment);
       JMXConnectorServer jmx = JMXConnectorServerFactory.newJMXConnectorServer(jmxServiceUrl, environment, null);
       wrapper = new JmxConnectorServerWrapper(config, jmx, ObjectName.getInstance(getPropertyIgnoringCase(config,
@@ -121,22 +125,24 @@ public class JmxRemoteComponent extends JmxComponentImpl {
   }
 
 
-  private Map<String, Object> createConnectorServerProperties(Properties config) throws Exception {
-    return configureSecurity(initialEnv(config), config);
+  private Map<String, Object> createConnectorServerProperties(JMXServiceURL serviceUrl, Properties config) throws Exception {
+    return configureSecurity(serviceUrl, initialEnv(serviceUrl, config), config);
   }
 
-  private Map<String, Object> configureSecurity(Map<String, Object> env, Properties config) {
-    if (config.containsKey(JMX_SERVICE_URL_USERNAME)) {
+  private Map<String, Object> configureSecurity(JMXServiceURL serviceUrl, Map<String, Object> env, Properties config) {
+    log.trace("JMX Protocol=[{}]", serviceUrl.getProtocol());
+    if (serviceUrl.getProtocol().equalsIgnoreCase(PROTOCOL_JMXMP) && config.containsKey(JMX_JMXMP_SASL_USERNAME)) {
+      log.trace("JXMP Security specified via [{}={}]", JMX_JMXMP_SASL_USERNAME, config.getProperty(JMX_JMXMP_SASL_USERNAME));
       addSaslProvider();
       SimpleCallbackHandler handler =
-          new SimpleCallbackHandler(config.getProperty(JMX_SERVICE_URL_USERNAME), config.getProperty(JMX_SERVICE_URL_PASSWORD));
+          new SimpleCallbackHandler(config.getProperty(JMX_JMXMP_SASL_USERNAME), config.getProperty(JMX_JMXMP_SASL_PASSWORD));
       addIfMissing(env, JMX_REMOTE_PROFILES, SASL_PLAIN);
       addIfMissing(env, JMX_REMOTE_SASL_CALLBACK_HANDLER, handler);
     }
     return env;
   }
 
-  private Map<String, Object> initialEnv(Properties config) throws Exception {
+  private Map<String, Object> initialEnv(JMXServiceURL serviceUrl, Properties config) throws Exception {
     Map<String, Object> env = new HashMap<>();
     Properties bootstrapJmxEnv = BootstrapProperties.getPropertySubset(config, JMX_SERVICE_URL_ENV_PREFIX, true);
     PropertyResolver resolver = PropertyResolver.getDefaultInstance();

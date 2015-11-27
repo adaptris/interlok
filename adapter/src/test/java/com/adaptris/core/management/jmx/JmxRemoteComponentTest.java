@@ -174,8 +174,8 @@ public class JmxRemoteComponentTest extends BaseCase {
     JmxRemoteComponent jmxr = new JmxRemoteComponent();
     JMXConnector jmxc = null;
     Properties p = createProperties();
-    p.setProperty(JmxRemoteComponent.JMX_SERVICE_URL_USERNAME, DEFAULT_USERNAME_PASSWORD);
-    p.setProperty(JmxRemoteComponent.JMX_SERVICE_URL_PASSWORD, DEFAULT_USERNAME_PASSWORD);
+    p.setProperty(JmxRemoteComponent.JMX_JMXMP_SASL_USERNAME, DEFAULT_USERNAME_PASSWORD);
+    p.setProperty(JmxRemoteComponent.JMX_JMXMP_SASL_PASSWORD, DEFAULT_USERNAME_PASSWORD);
     try {
       jmxr.init(p);
       jmxr.start();
@@ -194,8 +194,8 @@ public class JmxRemoteComponentTest extends BaseCase {
     JMXConnector jmxc = null;
     Properties p = createProperties();
     p.setProperty(JmxRemoteComponent.JMX_SERVICE_URL_ENV_PREFIX + JMX_REMOTE_PROFILES, SASL_PLAIN);
-    p.setProperty(JmxRemoteComponent.JMX_SERVICE_URL_USERNAME, DEFAULT_USERNAME_PASSWORD);
-    p.setProperty(JmxRemoteComponent.JMX_SERVICE_URL_PASSWORD, Password.encode(DEFAULT_USERNAME_PASSWORD, Password.PORTABLE_PASSWORD));
+    p.setProperty(JmxRemoteComponent.JMX_JMXMP_SASL_USERNAME, DEFAULT_USERNAME_PASSWORD);
+    p.setProperty(JmxRemoteComponent.JMX_JMXMP_SASL_PASSWORD, Password.encode(DEFAULT_USERNAME_PASSWORD, Password.PORTABLE_PASSWORD));
     try {
       jmxr.init(p);
       jmxr.start();
@@ -213,8 +213,8 @@ public class JmxRemoteComponentTest extends BaseCase {
     JmxRemoteComponent jmxr = new JmxRemoteComponent();
     JMXConnector jmxc = null;
     Properties p = createProperties();
-    p.setProperty(JmxRemoteComponent.JMX_SERVICE_URL_USERNAME, DEFAULT_USERNAME_PASSWORD);
-    p.setProperty(JmxRemoteComponent.JMX_SERVICE_URL_PASSWORD, DEFAULT_USERNAME_PASSWORD);
+    p.setProperty(JmxRemoteComponent.JMX_JMXMP_SASL_USERNAME, DEFAULT_USERNAME_PASSWORD);
+    p.setProperty(JmxRemoteComponent.JMX_JMXMP_SASL_PASSWORD, DEFAULT_USERNAME_PASSWORD);
     try {
       jmxr.init(p);
       jmxr.start();
