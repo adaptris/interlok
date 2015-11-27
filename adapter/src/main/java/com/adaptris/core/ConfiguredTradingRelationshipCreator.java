@@ -126,6 +126,6 @@ public final class ConfiguredTradingRelationshipCreator implements
    * @param s the metadata key used to obtain the type
    */
   public void setType(String s) {
-    source = Args.notNull(s, "type");
+    type = Args.notNull(s, "type");
   }
 }
