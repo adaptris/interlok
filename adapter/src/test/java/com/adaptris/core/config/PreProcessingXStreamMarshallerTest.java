@@ -16,8 +16,19 @@
 
 package com.adaptris.core.config;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import org.mockito.Mockito;
+
+import com.adaptris.core.Adapter;
+import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.MarshallingBaseCase;
 import com.adaptris.core.XStreamMarshaller;
+import com.adaptris.core.management.BootstrapProperties;
+import com.adaptris.util.KeyValuePairSet;
 
 
 public class PreProcessingXStreamMarshallerTest extends MarshallingBaseCase {
@@ -29,13 +40,46 @@ public class PreProcessingXStreamMarshallerTest extends MarshallingBaseCase {
     super(testName);
   }
 
+  public void setUp() throws Exception {
+    super.setUp();
+  }
+
+
   @Override
   protected XStreamMarshaller createMarshaller() throws Exception {
     PreProcessingXStreamMarshaller marshaller = new PreProcessingXStreamMarshaller();
-    marshaller.setPreProcessorList(
+    marshaller.setPreProcessors(
         DummyConfigurationPreProcessor.class.getCanonicalName() + ":" + DummyConfigurationPreProcessor2.class.getCanonicalName());
     return marshaller;
   }
+
+  public void testPreProcessorCalled() throws Exception {
+    DefaultPreProcessorLoader mockLoader = Mockito.mock(DefaultPreProcessorLoader.class);
+    DummyConfigurationPreProcessor mockPreProc = Mockito.mock(DummyConfigurationPreProcessor.class);
+
+    Adapter adapter = createMarshallingObject();
+    String xml = DefaultMarshaller.getDefaultMarshaller().marshal(adapter);
+
+
+    PreProcessingXStreamMarshaller marshaller = new PreProcessingXStreamMarshaller();
+    marshaller.setPreProcessors(DummyConfigurationPreProcessor.class.getCanonicalName());
+    marshaller.setPreProcessorLoader(mockLoader);
+
+    ConfigPreProcessors preProcessorsList = new ConfigPreProcessors(mockPreProc);
+
+    when(mockLoader.load(any(String.class), any(KeyValuePairSet.class))).thenReturn(preProcessorsList);
+    when(mockLoader.load(any(BootstrapProperties.class))).thenReturn(preProcessorsList);
+    when(mockPreProc.process(any(String.class))).thenReturn(xml);
+
+    Adapter unmarshalled = (Adapter) marshaller.unmarshal(xml);
+
+    verify(mockPreProc, times(1)).process(any(String.class));
+    verify(mockLoader, times(1)).load(any(String.class), any(KeyValuePairSet.class));
+    verify(mockLoader, times(0)).load(any(BootstrapProperties.class));
+    assertRoundtripEquality(adapter, unmarshalled);
+
+  }
+
 
   @Override
   protected String getClasspathXmlFilename() {

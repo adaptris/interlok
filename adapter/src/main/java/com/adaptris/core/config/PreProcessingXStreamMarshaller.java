@@ -23,7 +23,8 @@ import com.adaptris.util.URLString;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * XStream version of {@link AdaptrisMarshaller} that supports additional config pre-processors when unmarshalling.
+ * XStream version of {@link com.adaptris.core.AdaptrisMarshaller} that supports additional config pre-processors when
+ * unmarshalling.
  * 
  * @config xstream-marshaller-with-pre-processing
  * 
@@ -32,26 +33,26 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class PreProcessingXStreamMarshaller extends com.adaptris.core.XStreamMarshaller {
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
-  @AdvancedConfig
-  @NotNull
-  @AutoPopulated
-  private ConfigPreProcessorLoader preprocessorLoader = new DefaultPreProcessorLoader();
 
-  private String preProcessorList;
+  private String preProcessors;
   @NotNull
   @AutoPopulated
   private KeyValuePairSet preProcessorConfig;
 
-  private transient ConfigPreProcessors preProcessors = null;
+  @AdvancedConfig
+  private ConfigPreProcessorLoader preProcessorLoader;
+
+  private transient ConfigPreProcessors processors = null;
 
 
   public PreProcessingXStreamMarshaller() {
     super();
+    setPreProcessorConfig(new KeyValuePairSet());
   }
 
   @Override
   public Object unmarshal(Reader in) throws CoreException {
-    Args.notNull(in, "Attempt to unmarshal null reader");
+    Args.notNull(in, "reader");
     Object result = null;
     try {
       String xml = IOUtils.toString(in);
@@ -68,7 +69,7 @@ public class PreProcessingXStreamMarshaller extends com.adaptris.core.XStreamMar
 
   @Override
   public Object unmarshal(String input) throws CoreException {
-    Args.notNull(input, "Attempt to unmarshal null string");
+    Args.notNull(input, "input");
     Object result = null;
     try {
       result = getInstance().fromXML(preProcess(input));
@@ -81,7 +82,7 @@ public class PreProcessingXStreamMarshaller extends com.adaptris.core.XStreamMar
 
   @Override
   public Object unmarshal(File file) throws CoreException {
-    Args.notNull(file, "Attempt to unmarshal null file");
+    Args.notNull(file, "file");
     Object result = null;
     try  {
       result = unmarshal(new FileInputStream(file));
@@ -94,7 +95,7 @@ public class PreProcessingXStreamMarshaller extends com.adaptris.core.XStreamMar
 
   @Override
   public Object unmarshal(URL url) throws CoreException {
-    Args.notNull(url, "Attempt to unmarshal null url");
+    Args.notNull(url, "url");
     Object result = null;
     try {
       result = this.unmarshal(url.openStream());
@@ -107,7 +108,7 @@ public class PreProcessingXStreamMarshaller extends com.adaptris.core.XStreamMar
 
   @Override
   public Object unmarshal(URLString url) throws CoreException {
-    Args.notNull(url, "Attempt to unmarshal null url");
+    Args.notNull(url, "url");
     Object result = null;
     try (InputStream in = connectToUrl(url)) {
       if (in != null) {
@@ -125,7 +126,7 @@ public class PreProcessingXStreamMarshaller extends com.adaptris.core.XStreamMar
 
   @Override
   public Object unmarshal(InputStream in) throws CoreException {
-    Args.notNull(in, "Attempt to unmarshal null inputstream");
+    Args.notNull(in, "inputstream");
     Object result = null;
     try {
       String xml = IOUtils.toString(in);
@@ -140,20 +141,24 @@ public class PreProcessingXStreamMarshaller extends com.adaptris.core.XStreamMar
     return result;
   }
 
-  public ConfigPreProcessorLoader getPreprocessorLoader() {
-    return preprocessorLoader;
+  public ConfigPreProcessorLoader getPreProcessorLoader() {
+    return preProcessorLoader;
   }
 
-  public void setPreprocessorLoader(ConfigPreProcessorLoader loader) {
-    this.preprocessorLoader = loader;
+  public void setPreProcessorLoader(ConfigPreProcessorLoader loader) {
+    this.preProcessorLoader = loader;
   }
 
-  public String getPreProcessorList() {
-    return preProcessorList;
+  ConfigPreProcessorLoader preProcessorLoader() {
+    return (getPreProcessorLoader() != null) ? getPreProcessorLoader() : new DefaultPreProcessorLoader();
   }
 
-  public void setPreProcessorList(String preProcessorList) {
-    this.preProcessorList = preProcessorList;
+  public String getPreProcessors() {
+    return preProcessors;
+  }
+
+  public void setPreProcessors(String preProcessorList) {
+    this.preProcessors = preProcessorList;
   }
 
   public KeyValuePairSet getPreProcessorConfig() {
@@ -165,10 +170,10 @@ public class PreProcessingXStreamMarshaller extends com.adaptris.core.XStreamMar
   }
 
   private String preProcess(String rawXML) throws CoreException {
-    if (preProcessors == null) {
-      preProcessors = getPreprocessorLoader().load(getPreProcessorList(), getPreProcessorConfig());
+    if (processors == null) {
+      processors = preProcessorLoader().load(getPreProcessors(), getPreProcessorConfig());
     }
-    return preProcessors.process(rawXML);
+    return processors.process(rawXML);
   }
 
 }

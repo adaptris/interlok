@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -35,6 +36,15 @@ public class ConfigPreProcessors extends AbstractCollection<ConfigPreProcessor> 
   
   public ConfigPreProcessors() {
     this.setPreProcessors(new ArrayList<ConfigPreProcessor>());
+  }
+
+  public ConfigPreProcessors(Collection<? extends ConfigPreProcessor> existing) {
+    this();
+    addAll(existing);
+  }
+
+  public ConfigPreProcessors(ConfigPreProcessor... processors) {
+    this(Arrays.asList(processors));
   }
 
   public String process(URL urlToXml) throws CoreException {

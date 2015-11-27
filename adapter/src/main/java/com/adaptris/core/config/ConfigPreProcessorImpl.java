@@ -16,6 +16,8 @@
 
 package com.adaptris.core.config;
 
+import java.util.Properties;
+
 import com.adaptris.core.management.BootstrapProperties;
 import com.adaptris.core.util.Args;
 import com.adaptris.util.KeyValuePairBag;
@@ -45,11 +47,28 @@ public abstract class ConfigPreProcessorImpl implements ConfigPreProcessor {
   }
 
 
+  /**
+   * @deprecated use {@link #getProperties()} instead.
+   */
+  @Deprecated
   public BootstrapProperties getBootstrapProperties() {
     return new BootstrapProperties(KeyValuePairBag.asProperties(getConfiguration()));
   }
 
+  /**
+   * @deprecated use {@link #setProperties(Properties)} instead.
+   */
+  @Deprecated
   public void setBootstrapProperties(BootstrapProperties bp) {
+    setConfiguration(new KeyValuePairSet(bp));
+  }
+
+
+  public Properties getProperties() {
+    return KeyValuePairBag.asProperties(getConfiguration());
+  }
+
+  public void setProperties(Properties bp) {
     setConfiguration(new KeyValuePairSet(bp));
   }
 
