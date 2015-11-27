@@ -58,17 +58,6 @@ public class ConfiguredTradingRelationshipCreatorTest extends BaseCase {
     }
   }
 
-  public void testCreateDefault() throws Exception {
-    ConfiguredTradingRelationshipCreator creator = new ConfiguredTradingRelationshipCreator();
-    try {
-      creator.create(new DefaultMessageFactory().newMessage());
-      fail();
-    }
-    catch (IllegalArgumentException expected) {
-      // expected from TradingRElationship
-    }
-  }
-
   public void testCreate() throws Exception {
     ConfiguredTradingRelationshipCreator creator = new ConfiguredTradingRelationshipCreator(SRC, DEST, TYPE);
     assertNotNull(creator.create(new DefaultMessageFactory().newMessage()));
