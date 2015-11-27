@@ -35,13 +35,6 @@ public class TradingRelationshipTest extends TestCase {
   public void testSetDestination() {
     TradingRelationship tr1 = new TradingRelationship();
     try {
-      tr1.setDestination("");
-      fail();
-    }
-    catch (IllegalArgumentException e) {
-
-    }
-    try {
       tr1.setDestination(null);
       fail();
     }
@@ -54,13 +47,6 @@ public class TradingRelationshipTest extends TestCase {
 
   public void testSetSource() {
     TradingRelationship tr1 = new TradingRelationship();
-    try {
-      tr1.setSource("");
-      fail();
-    }
-    catch (IllegalArgumentException e) {
-
-    }
     try {
       tr1.setSource(null);
       fail();
@@ -75,13 +61,6 @@ public class TradingRelationshipTest extends TestCase {
 
   public void testSetType() {
     TradingRelationship tr1 = new TradingRelationship();
-    try {
-      tr1.setType("");
-      fail();
-    }
-    catch (IllegalArgumentException e) {
-
-    }
     try {
       tr1.setType(null);
       fail();

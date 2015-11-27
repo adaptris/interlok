@@ -29,7 +29,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("xstream-marshaller")
 public class XStreamMarshaller extends XStreamMarshallerImpl {
 
-  public XStreamMarshaller() throws CoreException {
+  public XStreamMarshaller() {
   }
   
   @Override

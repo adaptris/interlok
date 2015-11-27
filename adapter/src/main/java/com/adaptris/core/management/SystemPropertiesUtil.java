@@ -15,6 +15,8 @@
 */
 
 package com.adaptris.core.management;
+import static com.adaptris.core.util.PropertyHelper.getPropertyIgnoringCase;
+import static com.adaptris.core.util.PropertyHelper.getPropertySubset;
 
 import java.util.Properties;
 
@@ -59,7 +61,7 @@ public class SystemPropertiesUtil {
    */
   public static void addSystemProperties(Properties p) {
     try {
-      Properties sysProps = BootstrapProperties.getPropertySubset(p, Constants.SYSTEM_PROPERTY_PREFIX, true);
+      Properties sysProps = getPropertySubset(p, Constants.SYSTEM_PROPERTY_PREFIX, true);
       if (sysProps.size() > 0) {
         PropertyResolver resolver = PropertyResolver.getDefaultInstance();
         for (String keyWithPrefix : sysProps.stringPropertyNames()) {
@@ -86,7 +88,7 @@ public class SystemPropertiesUtil {
   
   public static void addJndiProperties(Properties bootstrapProperties) {
     boolean enableJndi = Boolean.valueOf(
-        BootstrapProperties.getPropertyIgnoringCase(bootstrapProperties, Constants.CFG_KEY_JNDI_SERVER, "false"))
+getPropertyIgnoringCase(bootstrapProperties, Constants.CFG_KEY_JNDI_SERVER, "false"))
         .booleanValue();
     if (enableJndi) {
       Properties sysProps = System.getProperties();

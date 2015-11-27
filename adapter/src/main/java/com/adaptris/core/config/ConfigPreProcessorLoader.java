@@ -14,17 +14,15 @@
  * limitations under the License.
 */
 
-package com.adaptris.core.runtime;
+package com.adaptris.core.config;
 
-/**
- * <p>
- * Implementations of this interface will perform actions on the xml configuration before
- * the configuration is unmarshalled.
- * </p>
- * @author amcgrath
- *
- */
-@Deprecated
-public interface ConfigurationPreProcessor extends com.adaptris.core.config.ConfigPreProcessor {
-  
+import com.adaptris.core.CoreException;
+import com.adaptris.core.management.BootstrapProperties;
+import com.adaptris.util.KeyValuePairSet;
+
+public interface ConfigPreProcessorLoader {
+
+  ConfigPreProcessors load(BootstrapProperties bootstrapProperties) throws CoreException;
+
+  ConfigPreProcessors load(String preProcessors, KeyValuePairSet config) throws CoreException;
 }

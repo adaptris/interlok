@@ -31,83 +31,30 @@ public class ConfiguredTradingRelationshipCreatorTest extends BaseCase {
   public void testSetDestination() throws Exception {
     ConfiguredTradingRelationshipCreator creator = new ConfiguredTradingRelationshipCreator();
     try {
-      creator.setDestination("");
-      fail("'' allowed");
-    }
-    catch (IllegalArgumentException expected) {
-    }
-    try {
       creator.setDestination(null);
       fail("null allowed");
     }
     catch (IllegalArgumentException expected) {
-    }
-    creator.setDestination(DEST);
-    try {
-      creator.create(new DefaultMessageFactory().newMessage());
-      fail();
-    }
-    catch (IllegalArgumentException expected) {
-      // expected from TradingRElationship
     }
   }
 
   public void testSetSource() throws Exception {
     ConfiguredTradingRelationshipCreator creator = new ConfiguredTradingRelationshipCreator();
     try {
-      creator.setSource("");
-      fail("'' allowed");
-    }
-    catch (IllegalArgumentException expected) {
-    }
-    try {
       creator.setSource(null);
       fail("null allowed");
     }
     catch (IllegalArgumentException expected) {
-    }
-    creator.setSource(SRC);
-    try {
-      creator.create(new DefaultMessageFactory().newMessage());
-      fail();
-    }
-    catch (IllegalArgumentException expected) {
-      // expected from TradingRElationship
     }
   }
 
   public void testSetType() throws Exception {
     ConfiguredTradingRelationshipCreator creator = new ConfiguredTradingRelationshipCreator();
     try {
-      creator.setType("");
-      fail("'' allowed");
-    }
-    catch (IllegalArgumentException expected) {
-    }
-    try {
       creator.setType(null);
       fail("null allowed");
     }
     catch (IllegalArgumentException expected) {
-    }
-    creator.setType(TYPE);
-    try {
-      creator.create(new DefaultMessageFactory().newMessage());
-      fail();
-    }
-    catch (IllegalArgumentException expected) {
-      // expected from TradingRElationship
-    }
-  }
-
-  public void testCreateDefault() throws Exception {
-    ConfiguredTradingRelationshipCreator creator = new ConfiguredTradingRelationshipCreator();
-    try {
-      creator.create(new DefaultMessageFactory().newMessage());
-      fail();
-    }
-    catch (IllegalArgumentException expected) {
-      // expected from TradingRElationship
     }
   }
 

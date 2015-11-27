@@ -47,6 +47,10 @@ import com.adaptris.core.JndiContextFactory;
 import com.adaptris.core.NullConnection;
 import com.adaptris.core.StartedState;
 import com.adaptris.core.StoppedState;
+import com.adaptris.core.config.ConfigPreProcessorLoader;
+import com.adaptris.core.config.ConfigPreProcessors;
+import com.adaptris.core.config.DefaultPreProcessorLoader;
+import com.adaptris.core.config.DummyConfigurationPreProcessor;
 import com.adaptris.core.event.AdapterShutdownEvent;
 import com.adaptris.core.management.AdapterConfigManager;
 import com.adaptris.core.management.BootstrapProperties;
@@ -63,9 +67,11 @@ public class AdapterRegistryTest extends ComponentManagerCase {
 
   @Mock private DummyConfigurationPreProcessor mockPreProcessor;
   
-  @Mock private ConfigurationPreProcessorLoader mockPreProcessorLoader;
+  @Mock
+  private DefaultPreProcessorLoader mockPreProcessorLoader;
   
-  @Spy private ConfigurationPreProcessorLoader spyPreProcessorLoader;
+  @Spy
+  private ConfigPreProcessorLoader spyPreProcessorLoader;
   
   private AdapterRegistry adapterRegistry;
   private ObjectName registryObjectName;
@@ -83,7 +89,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     adapterRegistry.registerMBean();
     registryObjectName = adapterRegistry.createObjectName();
     contextEnv.put(Context.INITIAL_CONTEXT_FACTORY, JndiContextFactory.class.getName());
-    spyPreProcessorLoader = new ConfigurationPreProcessorFactory();
+    spyPreProcessorLoader = new DefaultPreProcessorLoader();
     
     MockitoAnnotations.initMocks(this);
   }
@@ -130,7 +136,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     DefaultMarshaller.getDefaultMarshaller().marshal(adapter, filename);
     
     adapterRegistry.setConfigurationPreProcessorLoader(mockPreProcessorLoader);
-    PreProcessorsList preProcessorsList = new PreProcessorsList();
+    ConfigPreProcessors preProcessorsList = new ConfigPreProcessors();
     preProcessorsList.add(mockPreProcessor);
     
     when(mockPreProcessorLoader.load(any(BootstrapProperties.class))).thenReturn(preProcessorsList);
@@ -149,7 +155,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     DefaultMarshaller.getDefaultMarshaller().marshal(adapter, filename);
     
     adapterRegistry.setConfigurationPreProcessorLoader(mockPreProcessorLoader);
-    PreProcessorsList preProcessorsList = new PreProcessorsList();
+    ConfigPreProcessors preProcessorsList = new ConfigPreProcessors();
     preProcessorsList.add(mockPreProcessor);
     preProcessorsList.add(mockPreProcessor);
     preProcessorsList.add(mockPreProcessor);

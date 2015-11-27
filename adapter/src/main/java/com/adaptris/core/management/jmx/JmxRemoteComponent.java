@@ -16,8 +16,9 @@
 
 package com.adaptris.core.management.jmx;
 
-import static com.adaptris.core.management.BootstrapProperties.getPropertyIgnoringCase;
 import static com.adaptris.core.management.Constants.CFG_KEY_JMX_SERVICE_URL_KEY;
+import static com.adaptris.core.util.PropertyHelper.getPropertyIgnoringCase;
+import static com.adaptris.core.util.PropertyHelper.getPropertySubset;
 
 import java.security.Security;
 import java.util.HashMap;
@@ -30,7 +31,6 @@ import javax.management.remote.JMXConnectorServer;
 import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXServiceURL;
 
-import com.adaptris.core.management.BootstrapProperties;
 import com.adaptris.core.management.properties.PropertyResolver;
 import com.adaptris.core.runtime.AdapterComponentMBean;
 import com.adaptris.core.util.JmxHelper;
@@ -144,7 +144,7 @@ public class JmxRemoteComponent extends JmxComponentImpl {
 
   private Map<String, Object> initialEnv(JMXServiceURL serviceUrl, Properties config) throws Exception {
     Map<String, Object> env = new HashMap<>();
-    Properties bootstrapJmxEnv = BootstrapProperties.getPropertySubset(config, JMX_SERVICE_URL_ENV_PREFIX, true);
+    Properties bootstrapJmxEnv = getPropertySubset(config, JMX_SERVICE_URL_ENV_PREFIX, true);
     PropertyResolver resolver = PropertyResolver.getDefaultInstance();
     for (String keyWithPrefix : bootstrapJmxEnv.stringPropertyNames()) {
       String realKey = keyWithPrefix.substring(JMX_SERVICE_URL_ENV_PREFIX.length());

@@ -16,9 +16,9 @@
 
 package com.adaptris.core.management;
 
-import static com.adaptris.core.management.BootstrapProperties.getPropertyIgnoringCase;
 import static com.adaptris.core.management.Constants.CFG_KEY_PROXY_AUTHENTICATOR;
 import static com.adaptris.core.management.Constants.DEFAULT_PROXY_AUTHENTICATOR;
+import static com.adaptris.core.util.PropertyHelper.getPropertyIgnoringCase;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.net.Authenticator.RequestorType;

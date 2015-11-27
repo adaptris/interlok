@@ -76,7 +76,6 @@ public class DynamicServiceLocator extends ServiceImp implements EventHandlerAwa
   public DynamicServiceLocator() {
     // defaults...
     setMatchingStrategy(new ExactMatchingStrategy());
-    setTreatNotFoundAsError(false);
   }
 
   /**
