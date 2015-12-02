@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
@@ -51,6 +52,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * 
  */
 @XStreamAlias("add-metadata-service")
+@ComponentProfile(summary = "Add Static Metadata to a Message", tag = "metadata")
 public class AddMetadataService extends ServiceImp {
 
   private static final String UNIQUE_ID_MNENOMIC = "$UNIQUE_ID$";
