@@ -221,6 +221,7 @@ public class JdbcDataCaptureService extends JdbcDataCaptureServiceImpl {
       log.trace("Iterating " + nodes.getLength() + " times for statement " + getStatement());
       PreparedStatement insert = actor.getInsertStatement();
       for (int i = 0; i < nodes.getLength(); i++) {
+        log.trace("---Begin execution of iteration {}", i);
         insert.clearParameters();
         Node n = nodes.item(i);
 
@@ -243,6 +244,7 @@ public class JdbcDataCaptureService extends JdbcDataCaptureServiceImpl {
         this.getParameterApplicator().applyStatementParameters(msg, insert, cloneParameterList, getStatement());
 
         insert.executeUpdate();
+        log.trace("---End execution of iteration {}", i);
       }
 
       // Will only store the generated keys from the last query
