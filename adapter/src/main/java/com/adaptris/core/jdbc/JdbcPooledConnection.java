@@ -44,7 +44,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XStreamAlias("jdbc-pooled-connection")
 @AdapterComponent
-@ComponentProfile(summary = "A JDBC connection that supports connection pooling", tag = "connections,jdbc")
+@ComponentProfile(summary = "Connect to a database using a JDBC driver; connection pooling handled via C3P0",
+    tag = "connections,jdbc")
 public class JdbcPooledConnection extends DatabaseConnection {
   
   private static final int DEFAULT_MINIMUM_POOL_SIZE = 5;
