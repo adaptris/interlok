@@ -16,6 +16,8 @@
 
 package com.adaptris.core.runtime;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -27,6 +29,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("null-message-error-digester")
+@AdapterComponent
+@ComponentProfile(summary = "A NO-OP message error digester", tag = "error-handling,base")
 public class NullMessageErrorDigester extends MessageErrorDigesterImp {
 
   @Override

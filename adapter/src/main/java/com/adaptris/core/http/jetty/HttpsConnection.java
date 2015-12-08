@@ -29,8 +29,10 @@ import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.ssl.SslSocketConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.security.password.Password;
 import com.adaptris.util.KeyValuePair;
@@ -68,6 +70,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @see JettyConnection
  */
 @XStreamAlias("jetty-https-connection")
+@AdapterComponent
+@ComponentProfile(summary = "Connection that creates its own jetty engine instance and listens on the specified port",
+    tag = "connections,https,jetty")
 public class HttpsConnection extends HttpConnection {
   /**
    * Properties for {@link SslContextFactory}.

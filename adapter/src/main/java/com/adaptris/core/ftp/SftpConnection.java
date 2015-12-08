@@ -21,8 +21,10 @@ import java.io.IOException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
 import com.adaptris.sftp.DefaultSftpBehaviour;
@@ -42,6 +44,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author $Author: lchan $
  */
 @XStreamAlias("sftp-connection")
+@AdapterComponent
+@ComponentProfile(summary = "Connect to a server using the SSH File Transfer Protocol; authentica via a username and password",
+    tag = "connections,sftp")
 public class SftpConnection extends FileTransferConnectionUsingPassword {
 
   private static final String SCHEME_SFTP = "sftp";

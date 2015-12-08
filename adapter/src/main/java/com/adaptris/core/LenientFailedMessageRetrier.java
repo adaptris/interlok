@@ -16,6 +16,8 @@
 
 package com.adaptris.core;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 
@@ -40,6 +42,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @Deprecated
 @XStreamAlias("lenient-failed-message-retrier")
+@AdapterComponent
+@ComponentProfile(summary = "An alternative configurable failed message retrier that shouldn't be used",
+    tag = "error-handling,base")
 public class LenientFailedMessageRetrier extends FailedMessageRetrierImp {
 
   private static transient boolean warningLogged;

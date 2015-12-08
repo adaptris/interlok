@@ -28,7 +28,9 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.GenerateBeanInfo;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -44,6 +46,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 // Should probably implement EventAware...
 @GenerateBeanInfo
 @XStreamAlias("channel")
+@AdapterComponent
+@ComponentProfile(summary = "The base container for workflows", tag = "base")
 public class Channel implements ComponentLifecycleExtension, StateManagedComponentContainer, EventHandlerAware {
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
