@@ -16,6 +16,8 @@
 
 package com.adaptris.core.services;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -36,6 +38,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("stop-processing-service")
+@AdapterComponent
+@ComponentProfile(summary = "Marks a message so that the processing chain is terminated", tag = "service")
 public class StopProcessingService extends ServiceImp {
 
   @Override

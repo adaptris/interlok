@@ -18,6 +18,8 @@ package com.adaptris.core;
 
 import java.util.concurrent.TimeUnit;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -32,6 +34,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config retry-once-standalone-producer
  */
 @XStreamAlias("retry-once-standalone-producer")
+@AdapterComponent
+@ComponentProfile(summary = "Produce a message where as part of a service chain; retrying once on failure", tag = "service")
 public class RetryOnceStandaloneProducer extends StandaloneProducer {
 
   private static final TimeInterval DEFAULT_WAIT_BEFORE_RETRY = new TimeInterval(30L, TimeUnit.SECONDS);

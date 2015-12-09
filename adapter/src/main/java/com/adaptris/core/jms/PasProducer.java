@@ -20,6 +20,8 @@ import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Topic;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.ProduceDestination;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -81,6 +83,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config jms-topic-producer
  */
 @XStreamAlias("jms-topic-producer")
+@AdapterComponent
+@ComponentProfile(summary = "Place message on a JMS Topic", tag = "producer,jms")
 public class PasProducer extends DefinedJmsProducer {
 
   public PasProducer() {

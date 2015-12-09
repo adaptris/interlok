@@ -19,7 +19,8 @@ package com.adaptris.core.jms;
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 
-import com.adaptris.core.AdaptrisMessageConsumer;
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -33,6 +34,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("jms-queue-consumer")
+@AdapterComponent
+@ComponentProfile(summary = "Listen for JMS messages on the specified queue", tag = "consumer,jms")
 public class PtpConsumer extends JmsConsumerImpl {
 
   public PtpConsumer() {

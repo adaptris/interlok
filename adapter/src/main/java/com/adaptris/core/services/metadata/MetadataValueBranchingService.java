@@ -23,7 +23,9 @@ import java.util.Iterator;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -45,6 +47,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("metadata-value-branching-service")
+@AdapterComponent
+@ComponentProfile(summary = "Perform a branch based on a match of a metadata value", tag = "service,branching")
 public class MetadataValueBranchingService extends MetadataBranchingServiceImp {
 
   @NotNull

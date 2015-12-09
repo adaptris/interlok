@@ -23,6 +23,8 @@ import java.util.Collection;
 
 import javax.validation.Valid;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -73,6 +75,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author lchan
  */
 @XStreamAlias("jdbc-service-list")
+@AdapterComponent
+@ComponentProfile(summary = "A collection of services which has an additional database connection", tag = "service,jdbc")
 public class JdbcServiceList extends ServiceList {
 
   @Valid

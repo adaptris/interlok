@@ -24,7 +24,9 @@ import java.lang.reflect.Constructor;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisPollingConsumer;
 import com.adaptris.core.CoreConstants;
@@ -57,6 +59,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @see com.adaptris.core.ConsumeDestination
  */
 @XStreamAlias("relaxed-ftp-consumer")
+@AdapterComponent
+@ComponentProfile(summary = "Pickup messages from an FTP/SFTP server without renaming the file first",
+    tag = "consumer,ftp,ftps,sftp")
 public class RelaxedFtpConsumer extends AdaptrisPollingConsumer {
   private static final TimeInterval DEFAULT_OLDER_THAN = new TimeInterval(0L, TimeUnit.MILLISECONDS);
   private static final String FORWARD_SLASH = "/";

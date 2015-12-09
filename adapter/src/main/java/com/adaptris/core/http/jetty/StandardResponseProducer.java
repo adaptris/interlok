@@ -26,6 +26,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.perf4j.aop.Profiled;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -50,6 +52,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  *
  */
 @XStreamAlias("jetty-standard-reponse-producer")
+@AdapterComponent
+@ComponentProfile(summary = "Write and commit the HTTP Response", tag = "producer,http,https")
 public class StandardResponseProducer extends ResponseProducerImpl {
 
   public StandardResponseProducer() {
