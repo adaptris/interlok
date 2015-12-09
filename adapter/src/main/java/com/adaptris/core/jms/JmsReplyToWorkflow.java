@@ -22,6 +22,8 @@ import javax.jms.Topic;
 
 import org.perf4j.aop.Profiled;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceException;
@@ -56,6 +58,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("jms-reply-to-workflow")
 @Deprecated
+@AdapterComponent
+@ComponentProfile(summary = "Custom JMS workflow with JMSReplyTo Support", tag = "workflow,jms")
 public final class JmsReplyToWorkflow extends StandardWorkflow {
   private static transient boolean warningLogged;
 
