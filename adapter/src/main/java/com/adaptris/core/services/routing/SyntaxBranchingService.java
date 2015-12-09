@@ -21,7 +21,9 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.BranchingServiceImp;
 import com.adaptris.core.CoreException;
@@ -42,6 +44,8 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * @see SyntaxRoutingService
  */
 @XStreamAlias("syntax-branching-service")
+@AdapterComponent
+@ComponentProfile(summary = "Perform a branch based on the derived syntax of the message", tag = "service,branching")
 public class SyntaxBranchingService extends BranchingServiceImp {
 
   @NotNull

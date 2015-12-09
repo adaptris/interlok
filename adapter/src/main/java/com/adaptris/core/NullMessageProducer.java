@@ -16,6 +16,8 @@
 
 package com.adaptris.core;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -26,6 +28,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config null-message-producer
  */
 @XStreamAlias("null-message-producer")
+@AdapterComponent
+@ComponentProfile(summary = "Default NO-OP producer implementation", tag = "producer,base")
 public class NullMessageProducer extends AdaptrisMessageProducerImp {
 
   public NullMessageProducer() {

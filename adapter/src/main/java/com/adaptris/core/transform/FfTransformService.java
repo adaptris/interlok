@@ -16,6 +16,8 @@
 
 package com.adaptris.core.transform;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.transform.ProcessorHandle;
 import com.adaptris.transform.TransformFramework;
 import com.adaptris.transform.ff.FfTransform;
@@ -32,6 +34,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author sellidge
  */
 @XStreamAlias("flat-file-transform-service")
+@AdapterComponent
+@ComponentProfile(summary = "Transform from Flat-File to XML", tag = "service,transform,xml")
 public class FfTransformService extends TransformService {
 
   /**

@@ -29,7 +29,9 @@ import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.io.IOUtils;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.mail.MailException;
@@ -48,6 +50,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @see MailConsumerImp
  */
 @XStreamAlias("raw-mail-consumer")
+@AdapterComponent
+@ComponentProfile(summary = "Pickup messages from a email account without trying to parse the MIME message.", tag = "consumer,jms")
 public class RawMailConsumer extends MailConsumerImp {
 
   @AdvancedConfig

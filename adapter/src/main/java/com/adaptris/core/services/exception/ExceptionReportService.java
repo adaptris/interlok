@@ -27,8 +27,10 @@ import org.apache.commons.io.IOUtils;
 import org.hibernate.validator.constraints.NotBlank;
 import org.w3c.dom.Document;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -58,6 +60,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @see com.adaptris.core.CoreConstants#OBJ_METADATA_EXCEPTION
  */
 @XStreamAlias("exception-report-service")
+@AdapterComponent
+@ComponentProfile(summary = "Generate an XML report based on the current exception", tag = "service,error-handling")
 public class ExceptionReportService extends ServiceImp {
 
   @NotNull

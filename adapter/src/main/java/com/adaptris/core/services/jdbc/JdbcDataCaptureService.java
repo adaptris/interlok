@@ -30,8 +30,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -54,6 +56,8 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * @author sellidge
  */
 @XStreamAlias("jdbc-data-capture-service")
+@AdapterComponent
+@ComponentProfile(summary = "Capture data from the message and store it in a database", tag = "service,jdbc")
 public class JdbcDataCaptureService extends JdbcDataCaptureServiceImpl {
   private String iterationXpath = null;
   private Boolean iterates = null;

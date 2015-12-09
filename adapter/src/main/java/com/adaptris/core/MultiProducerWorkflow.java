@@ -23,8 +23,10 @@ import javax.validation.constraints.NotNull;
 
 import org.perf4j.aop.Profiled;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -41,6 +43,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("multi-producer-workflow")
+@AdapterComponent
+@ComponentProfile(summary = "Workflow that has multiple additional producers in addition to the normal producer",
+    tag = "workflow,base")
 public class MultiProducerWorkflow extends StandardWorkflow {
 
   @NotNull

@@ -32,7 +32,9 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.event.AdapterCloseEvent;
 import com.adaptris.core.event.AdapterInitEvent;
 import com.adaptris.core.event.AdapterStartEvent;
@@ -54,6 +56,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config adapter
  */
 @XStreamAlias("adapter")
+@AdapterComponent
+@ComponentProfile(summary = "The base container for integration activity", tag = "base")
 public final class Adapter implements StateManagedComponentContainer, ComponentLifecycleExtension {
   private static final TimeInterval DEFAULT_HB_EVENT_INTERVAL = new TimeInterval(15L, TimeUnit.MINUTES.name());
 

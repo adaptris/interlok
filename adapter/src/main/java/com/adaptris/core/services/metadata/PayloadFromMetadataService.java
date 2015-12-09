@@ -21,7 +21,9 @@ import java.util.regex.Matcher;
 
 import javax.validation.constraints.NotNull;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.MarshallingCDATA;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -48,6 +50,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author $Author: lchan $
  */
 @XStreamAlias("payload-from-metadata-service")
+@AdapterComponent
+@ComponentProfile(summary = "Construct a new payload based on metadata and a template", tag = "service,metadata")
 public class PayloadFromMetadataService extends ServiceImp {
 
   private static final String DEFAULT_ENCODING = "UTF-8";

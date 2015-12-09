@@ -24,6 +24,8 @@ import java.util.regex.Pattern;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
@@ -47,6 +49,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("convert-object-metadata-service")
+@AdapterComponent
+@ComponentProfile(summary = "Convert object metadata into normal metadata", tag = "service,metadata")
 public class ConvertObjectMetadataService extends ServiceImp {
 
   @NotBlank

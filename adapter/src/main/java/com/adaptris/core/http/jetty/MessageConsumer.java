@@ -30,8 +30,10 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.io.IOUtils;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.http.server.HeaderHandler;
@@ -68,6 +70,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author $Author: lchan $
  */
 @XStreamAlias("jetty-message-consumer")
+@AdapterComponent
+@ComponentProfile(summary = "Listen for HTTP traffic on the specified URI", tag = "consumer,http,https")
 public class MessageConsumer extends BasicJettyConsumer {
 
   @AdvancedConfig

@@ -27,6 +27,8 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.CoreException;
 import com.adaptris.util.text.Base64ByteTranslator;
 import com.adaptris.util.text.ByteTranslator;
@@ -45,6 +47,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("metadata-hashing-service")
+@AdapterComponent
+@ComponentProfile(summary = "Hash a metadata value, and store it", tag = "service,metadata")
 public class MetadataHashingService extends ReformatMetadata {
   private static final String DEFAULT_HASH_ALG = "SHA1";
   @NotBlank

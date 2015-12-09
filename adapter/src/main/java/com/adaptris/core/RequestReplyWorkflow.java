@@ -20,8 +20,10 @@ import java.util.concurrent.TimeUnit;
 
 import javax.validation.constraints.NotNull;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -34,19 +36,26 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <li>uses the <code>request</code> method of the configured {@link com.adaptris.core.AdaptrisMessageProducer}.</li>
  * <li>has a {@link #setReplyServiceCollection(ServiceCollection)} and {@link #setReplyProducer(AdaptrisMessageProducer)} which are
  * used to process any messages prior to returning it back to the requestor</li>
- * <li>Does not obey the use of {@link com.adaptris.core.CoreConstants#KEY_WORKFLOW_SKIP_PRODUCER}, the producer is always triggered.</li>
+ * <li>Does not obey the use of {@link com.adaptris.core.CoreConstants#KEY_WORKFLOW_SKIP_PRODUCER}, the producer is always
+ * triggered.</li>
  * </ul>
  * </p>
  * <p>
- * Note that the reply producer shares the original {@link com.adaptris.core.AdaptrisMessageConsumer}'s connection, on the basis that it will be
+ * Note that the reply producer shares the original {@link com.adaptris.core.AdaptrisMessageConsumer}'s connection, on the basis
+ * that it will be
  * replying to wherever the request came from.
  * </p>
+ * <p>Note that this workflow implementation has largely been superseded by using a {@link StandardWorkflow} or {@link
+ * PoolingWorkflow} with the appropriate services in side it; but remains available for completeness</p>
  * 
  * @config request-reply-workflow
  * 
  * 
  */
 @XStreamAlias("request-reply-workflow")
+@AdapterComponent
+@ComponentProfile(summary = "Workflow designed for synchronous replies back to the requestor",
+    tag = "workflow,base")
 public class RequestReplyWorkflow extends StandardWorkflow {
 
   private static final TimeInterval DEFAULT_REPLY_TIMEOUT = new TimeInterval(30L, TimeUnit.SECONDS);

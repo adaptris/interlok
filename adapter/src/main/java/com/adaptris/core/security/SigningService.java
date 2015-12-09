@@ -16,6 +16,8 @@
 
 package com.adaptris.core.security;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.security.Output;
 import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.adaptris.security.keystore.Alias;
@@ -29,6 +31,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author lchan / $Author: lchan $
  */
 @XStreamAlias("signing-service")
+@AdapterComponent
+@ComponentProfile(summary = "Sign a message", tag = "service,security")
 public class SigningService extends EncryptionService {
 
   /**

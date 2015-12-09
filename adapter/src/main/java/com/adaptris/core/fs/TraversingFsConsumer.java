@@ -24,6 +24,8 @@ import java.util.List;
 
 import org.perf4j.aop.Profiled;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
@@ -39,6 +41,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("traversing-fs-consumer")
+@AdapterComponent
+@ComponentProfile(summary = "Pickup messages from the filesystem; traversing sub-directories", tag = "consumer,fs,filesystem")
 public class TraversingFsConsumer extends FsConsumer {
 
   public TraversingFsConsumer() {

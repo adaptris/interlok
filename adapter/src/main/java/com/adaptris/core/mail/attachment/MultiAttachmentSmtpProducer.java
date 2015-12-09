@@ -24,9 +24,10 @@ import javax.validation.constraints.Pattern;
 
 import org.perf4j.aop.Profiled;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
@@ -73,6 +74,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @see MailContentCreator
  */
 @XStreamAlias("multi-attachment-smtp-producer")
+@AdapterComponent
+@ComponentProfile(summary = "Send an email for the facility for generating multiple attachments based on the current message",
+    tag = "producer,email")
 public class MultiAttachmentSmtpProducer extends MailProducer {
 
   @NotNull

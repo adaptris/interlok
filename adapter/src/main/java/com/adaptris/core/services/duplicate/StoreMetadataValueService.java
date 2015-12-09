@@ -19,6 +19,7 @@ package com.adaptris.core.services.duplicate;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -40,6 +41,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config store-metadata-value-service
  */
 @XStreamAlias("store-metadata-value-service")
+@ComponentProfile(summary = "Store metadata values ready for checking by check-metadata-value-service",
+    tag = "service,duplicate")
 public class StoreMetadataValueService extends DuplicateMetadataValueService {
 
   private int numberOfPreviousValuesToStore;

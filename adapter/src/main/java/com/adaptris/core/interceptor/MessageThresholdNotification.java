@@ -18,11 +18,10 @@ package com.adaptris.core.interceptor;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
-import java.util.Properties;
-
 import javax.management.MalformedObjectNameException;
-import javax.management.Notification;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -48,6 +47,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @since 3.0.4
  */
 @XStreamAlias("message-threshold-notification")
+@AdapterComponent
+@ComponentProfile(summary = "Interceptor that issues a JMX notification if a message count threshold is exceeded",
+    tag = "interceptor,jmx")
 public class MessageThresholdNotification extends NotifyingInterceptorByCount{
 
   private Long countThreshold;

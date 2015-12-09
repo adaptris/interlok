@@ -21,6 +21,8 @@ import java.util.regex.Pattern;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.CoreException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -44,6 +46,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("replace-metadata-value")
+@AdapterComponent
+@ComponentProfile(summary = "Perform a find and replace on metadata", tag = "service,metadata")
 public class ReplaceMetadataValue extends ReformatMetadata {
 
   @NotBlank

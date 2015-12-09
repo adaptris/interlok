@@ -16,6 +16,8 @@
 
 package com.adaptris.core.services;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -34,6 +36,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @Deprecated
 @XStreamAlias("always-fail-service")
+@AdapterComponent
+@ComponentProfile(summary = "Always throws an exception", tag = "service")
 public class AlwaysFailService extends ServiceImp {
 
   private static transient boolean warningLogged;

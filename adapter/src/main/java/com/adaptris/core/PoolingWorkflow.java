@@ -29,7 +29,9 @@ import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.perf4j.aop.Profiled;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.FifoMutexLock;
@@ -68,6 +70,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @see ProcessingExceptionHandler
  */
 @XStreamAlias("pooling-workflow")
+@AdapterComponent
+@ComponentProfile(summary = "Workflow with a thread pool handling the service chain", tag = "workflow,base")
 public class PoolingWorkflow extends WorkflowImp {
 
   /**

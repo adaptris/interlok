@@ -16,6 +16,8 @@
 
 package com.adaptris.core;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -27,6 +29,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("null-processing-exception-handler")
+@AdapterComponent
+@ComponentProfile(summary = "The default NO-OP exception handler", tag = "error-handling,base")
 public class NullProcessingExceptionHandler extends RootProcessingExceptionHandler {
 
   public NullProcessingExceptionHandler() {

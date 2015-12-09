@@ -25,8 +25,10 @@ import org.apache.oro.io.Perl5FilenameFilter;
 import org.hibernate.validator.constraints.NotBlank;
 import org.perf4j.aop.Profiled;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
@@ -56,6 +58,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("fs-consumer")
+@AdapterComponent
+@ComponentProfile(summary = "Pickup messages from the filesystem", tag = "consumer,fs,filesystem")
 public class FsConsumer extends FsConsumerImpl {
 
   @NotBlank

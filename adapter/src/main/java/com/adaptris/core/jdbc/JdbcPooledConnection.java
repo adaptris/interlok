@@ -32,7 +32,9 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.security.password.Password;
@@ -41,6 +43,9 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XStreamAlias("jdbc-pooled-connection")
+@AdapterComponent
+@ComponentProfile(summary = "Connect to a database using a JDBC driver; connection pooling handled via C3P0",
+    tag = "connections,jdbc")
 public class JdbcPooledConnection extends DatabaseConnection {
   
   private static final int DEFAULT_MINIMUM_POOL_SIZE = 5;

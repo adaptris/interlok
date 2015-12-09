@@ -26,8 +26,10 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.xml.namespace.NamespaceContext;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -55,6 +57,8 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * @author $Author: sellidge $
  */
 @XStreamAlias("jdbc-data-query-service")
+@AdapterComponent
+@ComponentProfile(summary = "Query a database and store the results in the message", tag = "service,jdbc")
 public class JdbcDataQueryService extends JdbcService {
 
   static final String KEY_XML_UTILS = "XmlUtils_" + JdbcDataQueryService.class.getCanonicalName();

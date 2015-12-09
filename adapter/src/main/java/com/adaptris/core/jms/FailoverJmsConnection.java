@@ -27,7 +27,9 @@ import javax.jms.Session;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.StateManagedComponent;
@@ -52,6 +54,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author $Author: lchan $
  */
 @XStreamAlias("failover-jms-connection")
+@AdapterComponent
+@ComponentProfile(summary = "Connect to a JMS 1.1 broker supporting broker failover in a vendor independent way",
+    tag = "connections,jms")
 public class FailoverJmsConnection extends JmsConnection {
 
   @NotNull

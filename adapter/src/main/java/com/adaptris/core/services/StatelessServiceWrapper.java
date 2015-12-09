@@ -21,7 +21,9 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.EventHandler;
@@ -48,6 +50,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("stateless-service-wrapper")
+@AdapterComponent
+@ComponentProfile(summary = "Wraps another service, with a strategy for restarting the service periodically", tag = "service")
 public class StatelessServiceWrapper extends ServiceImp implements EventHandlerAware {
 
   private enum MessageEventGeneratorProxy {

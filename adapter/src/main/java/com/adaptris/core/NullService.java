@@ -16,6 +16,8 @@
 
 package com.adaptris.core;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -26,6 +28,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config null-service
  */
 @XStreamAlias("null-service")
+@AdapterComponent
+@ComponentProfile(summary = "A NO-OP service", tag = "service")
 public class NullService extends ServiceImp {
 
   public NullService() {

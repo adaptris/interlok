@@ -23,7 +23,9 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.CoreException;
 import com.adaptris.jdbc.connection.FailoverConfig;
 import com.adaptris.jdbc.connection.FailoverConnection;
@@ -46,6 +48,9 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * @see com.adaptris.jdbc.connection.FailoverConnection
  */
 @XStreamAlias("failover-jdbc-connection")
+@AdapterComponent
+@ComponentProfile(summary = "Connect using a database using a JDBC driver supporting database failover in a vendor neutral fashion",
+    tag = "connections,jdbc")
 public class FailoverJdbcConnection extends DatabaseConnection {
 
   private transient FailoverConnection failover = null;

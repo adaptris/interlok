@@ -18,6 +18,8 @@ package com.adaptris.core.services.metadata;
 
 import static org.apache.commons.lang.StringUtils.trimToEmpty;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -32,6 +34,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("trim-metadata-service")
+@AdapterComponent
+@ComponentProfile(summary = "Trim leading/trailing spaces from metadata", tag = "service,metadata")
 public class TrimMetadataService extends ReformatMetadata {
 
   public TrimMetadataService() {
