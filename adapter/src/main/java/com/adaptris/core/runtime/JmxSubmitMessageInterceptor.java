@@ -16,6 +16,8 @@
 
 package com.adaptris.core.runtime;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.Channel;
 import com.adaptris.core.CoreException;
@@ -38,6 +40,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @since 3.0.4
  */
 @XStreamAlias("jmx-submit-message-interceptor")
+@AdapterComponent
+@ComponentProfile(summary = "Interceptor for ensuring JMX submissions are handled correctly", tag = "interceptor,jmx")
 public class JmxSubmitMessageInterceptor implements WorkflowInterceptor {
   
   private String uniqueId;

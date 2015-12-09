@@ -24,6 +24,8 @@ import java.util.List;
 import javax.management.MalformedObjectNameException;
 import javax.validation.constraints.NotNull;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.runtime.ParentRuntimeInfoComponent;
@@ -50,6 +52,10 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * 
  */
 @XStreamAlias("metadata-totals-interceptor")
+@AdapterComponent
+@ComponentProfile(summary = "Interceptor that adds the metadata value to an existing counter",
+    tag = "interceptor")
+
 public class MetadataTotalsInterceptor extends MetadataMetricsInterceptorImpl {
 
   static {
