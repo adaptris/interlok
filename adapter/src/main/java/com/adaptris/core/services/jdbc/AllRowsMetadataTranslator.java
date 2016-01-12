@@ -16,6 +16,8 @@
 
 package com.adaptris.core.services.jdbc;
 
+import static org.apache.commons.lang.StringUtils.isEmpty;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +57,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("jdbc-all-rows-metadata-translator")
 public class AllRowsMetadataTranslator extends MetadataResultSetTranslatorImpl {
 
+  private String rowTotalMetadataKey;
+
   public AllRowsMetadataTranslator() {
     super();
   }
@@ -65,12 +69,13 @@ public class AllRowsMetadataTranslator extends MetadataResultSetTranslatorImpl {
     List<MetadataElement> added = new ArrayList<MetadataElement>();
     int counter = 0;
     int resultSetCount = 0;
-    for (JdbcResultSet resultSet : source.getResulSets()) {
+    for (JdbcResultSet resultSet : source.getResultSets()) {
+      String resultSetPrefix = source.countResultSets() > 1 ? Integer.toString(resultSetCount) + getResultSetCounterPrefix() : "";
+      if (!isEmpty(getRowTotalMetadataKey())) {
+        target.addMetadata(resultSetPrefix + getRowTotalMetadataKey(), String.valueOf(resultSet.getRows().size()));
+      }
       for (JdbcResultRow row : resultSet.getRows()) {
         for (int i = 0; i < row.getFieldCount(); i++) {
-          String resultSetPrefix = source.countResultSets() > 1
-              ? Integer.toString(resultSetCount) + getResultSetCounterPrefix()
-              : "";
           MetadataElement md = new MetadataElement(resultSetPrefix + getMetadataKeyPrefix() + getSeparator()
               + getColumnNameStyle().format(row.getFieldName(i)) + getSeparator() + counter, toString(row, i));
           if (log.isTraceEnabled()) {
@@ -87,5 +92,18 @@ public class AllRowsMetadataTranslator extends MetadataResultSetTranslatorImpl {
     if (log.isTraceEnabled()) {
       log.debug("Added metadata : " + added);
     }
+  }
+
+  public String getRowTotalMetadataKey() {
+    return rowTotalMetadataKey;
+  }
+
+  /**
+   * Specify the metadata key which will contain the total number of rows converted.
+   * 
+   * @param rowTotalMetadataKey the metadata key.
+   */
+  public void setRowTotalMetadataKey(String key) {
+    this.rowTotalMetadataKey = key;
   }
 }

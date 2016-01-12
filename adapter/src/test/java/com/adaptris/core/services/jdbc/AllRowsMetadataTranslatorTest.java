@@ -47,6 +47,7 @@ public class AllRowsMetadataTranslatorTest extends JdbcQueryServiceCase {
     s.setStatement(ALL_ROWS_QUERY);
     s.getStatementParameters().clear();
     AllRowsMetadataTranslator t = new AllRowsMetadataTranslator();
+    t.setRowTotalMetadataKey("TotalRows");
     s.setResultSetTranslator(t);
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
@@ -60,6 +61,8 @@ public class AllRowsMetadataTranslatorTest extends JdbcQueryServiceCase {
     }
 
     assertFalse(msg.containsKey(JdbcDataQueryService.class.getCanonicalName()));
+    assertTrue(msg.containsKey("TotalRows"));
+    assertEquals("10", msg.getMetadataValue("TotalRows"));
   }
   
   public void testJdbcDataQueryServiceWithNamedParams() throws Exception {

@@ -90,7 +90,7 @@ public class MergeResultSetIntoXmlPayload extends XmlPayloadTranslatorImpl {
 
     Element results = doc.createElement(getColumnNameStyle().format(ELEMENT_NAME_RESULTS));
     doc.appendChild(results);
-    for(JdbcResultSet rSet : rs.getResulSets()) {
+    for(JdbcResultSet rSet : rs.getResultSets()) {
       List<Element> elements = createListFromResultSet(builder, doc, rSet);
       for (Element element : elements) {
         results.appendChild(element);
