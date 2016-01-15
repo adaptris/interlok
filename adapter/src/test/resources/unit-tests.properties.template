@@ -106,6 +106,7 @@ junit.XmlValidationServiceTest.input.xml=${test.resources.dir}/transform/schema-
 
 junit.XmlTransformService.outputNodeTransform=file:///${test.resources.dir}/transform/simple-node-transform.xsl
 junit.XmlTransformService.outputTestTransform=file:///${test.resources.dir}/transform/simple-transform.xsl
+junit.XmlTransformService.outputTestTransformWithXslMessage=file:///${test.resources.dir}/transform/simple-transform-xsl-message.xsl
 junit.XmlTransformService.outputTestInvalidTransform=file:///${test.resources.dir}/transform/simple-invalid-transform.xsl
 junit.XmlTransformService.outputTestFatalTransform=file:///${test.resources.dir}/transform/simple-fatal-transform.xsl
 junit.XmlTransformService.outputTestStxTransform=file:///${test.resources.dir}/transform/simple-stx-transform.stx
