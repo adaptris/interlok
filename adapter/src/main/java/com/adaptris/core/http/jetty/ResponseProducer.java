@@ -28,8 +28,10 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.io.IOUtils;
 import org.perf4j.aop.Profiled;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -66,6 +68,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("jetty-response-producer")
 @Deprecated
+@AdapterComponent
+@ComponentProfile(summary = "Write and commit the HTTP Response", tag = "producer,http,https")
 public class ResponseProducer extends ProduceOnlyProducerImp {
   private static final String DEFAULT_METADATA_REGEXP = "X-HTTP.*";
   private static final boolean DEFAULT_FORWARD_CONNECTION_EXCEPTION = false;

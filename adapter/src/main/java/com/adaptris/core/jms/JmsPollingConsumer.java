@@ -22,6 +22,8 @@ import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 import javax.jms.Topic;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.jms.JmsDestination.DestinationType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -61,6 +63,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  *          VendorImplementation
  */
 @XStreamAlias("jms-poller")
+@AdapterComponent
+@ComponentProfile(summary = "Pickup messages from a JMS broker (queue or topic) by actively polling it", tag = "consumer,jms")
 public class JmsPollingConsumer extends JmsPollingConsumerImpl {
 
 

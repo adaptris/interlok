@@ -24,6 +24,8 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -40,6 +42,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("branching-service-collection")
+@AdapterComponent
+@ComponentProfile(summary = "A Collection of services where the next service is determined dynamically",
+    tag = "service,base,branching")
 public class BranchingServiceCollection extends ServiceCollectionImp {
 
   private String firstServiceId;

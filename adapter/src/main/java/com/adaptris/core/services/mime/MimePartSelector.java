@@ -30,6 +30,8 @@ import javax.mail.internet.MimeBodyPart;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -51,6 +53,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author $Author: lchan $
  */
 @XStreamAlias("mime-part-selector-service")
+@AdapterComponent
+@ComponentProfile(summary = "Select a mime-part from the message and discards the others", tag = "service")
 public class MimePartSelector extends ServiceImp {
 
   private Boolean preserveHeadersAsMetadata;

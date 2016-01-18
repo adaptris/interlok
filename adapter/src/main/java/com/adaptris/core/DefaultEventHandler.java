@@ -16,6 +16,8 @@
 
 package com.adaptris.core;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -29,6 +31,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("default-event-handler")
+@AdapterComponent
+@ComponentProfile(summary = "Sends MessageLifecycleEvents to the specified location", tag = "base,events")
 public class DefaultEventHandler extends EventHandlerBase {
 
   private AdaptrisConnection connection; // used for consume and produce

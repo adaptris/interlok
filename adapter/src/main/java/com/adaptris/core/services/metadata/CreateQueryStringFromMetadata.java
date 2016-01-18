@@ -25,6 +25,8 @@ import java.util.List;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -40,6 +42,8 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * @author sellidge
  */
 @XStreamAlias("create-query-string-from-metadata")
+@AdapterComponent
+@ComponentProfile(summary = "Create the query portion of a URL from metadata", tag = "service,metadata,http,https")
 public class CreateQueryStringFromMetadata extends ServiceImp {
 
   private static final String AMPERSAND = "&";

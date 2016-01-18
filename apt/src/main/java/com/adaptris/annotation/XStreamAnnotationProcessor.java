@@ -47,7 +47,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 {
     "xstreamMappingFile", "xstreamDebug"
 })
-@SupportedSourceVersion(SourceVersion.RELEASE_7)
+@SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class XStreamAnnotationProcessor extends AnnotationProcessorImpl {
 
   private static final String OPTION_XSTREAM_MAPPING_FILE = "xstreamMappingFile";

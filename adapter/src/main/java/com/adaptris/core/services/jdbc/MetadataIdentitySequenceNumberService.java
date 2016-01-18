@@ -20,7 +20,9 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -46,6 +48,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("jdbc-metadata-sequence-number-service")
+@AdapterComponent
+@ComponentProfile(summary = "Create a sequence number using a database, the sequence number is associated with a metadata key",
+    tag = "service,metadata,jdbc,sequence")
 public class MetadataIdentitySequenceNumberService extends AbstractJdbcSequenceNumberService {
 
 	private static final String DEFAULT_IDENTITY_METADATA_KEY = "identity";

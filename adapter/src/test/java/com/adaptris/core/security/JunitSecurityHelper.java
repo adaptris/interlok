@@ -116,8 +116,11 @@ public class JunitSecurityHelper {
     subject.addRDN(PKCSObjectIdentifiers.pkcs_9_at_emailAddress, "myname@adaptris.com");
 
     cp.setSignatureAlgorithm("SHA256WithRSAEncryption");
-    // use 512 cos it's fast ;)
-    cp.setKeyAlgorithm("RSA", 512);
+    // Changed to 1024 as the key size, otherwise jdk8_66 appears to have a fit
+    // wrt to java.security limiting the certpath algorithms
+    // jdk.certpath.disabledAlgorithms=MD2, RSA keySize < 1024 (it was like this in _40, but doesn't
+    // apparently break things
+    cp.setKeyAlgorithm("RSA", 1024);
     cp.setSubjectInfo(subject.build());
     builder.setCertificateParameters(cp);
     return builder;

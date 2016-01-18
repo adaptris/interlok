@@ -40,6 +40,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("jdbc-statement-parameter")
 public class StatementParameter implements JdbcStatementParameter {
 
+  protected transient Logger log = LoggerFactory.getLogger(getClass());
   /**
    * Defines all the static query types supported by a Statement Parameter.
    * 
@@ -133,6 +134,7 @@ public class StatementParameter implements JdbcStatementParameter {
   
   @Override
   public void apply(int parameterIndex, PreparedStatement statement, AdaptrisMessage msg) throws SQLException, ServiceException {
+    log.trace("Setting argument {} to [{}]", parameterIndex, getQueryValue(msg));
     statement.setObject(parameterIndex, this.convertToQueryClass(getQueryValue(msg)));
   }
 

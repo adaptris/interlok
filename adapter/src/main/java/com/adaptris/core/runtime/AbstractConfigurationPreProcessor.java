@@ -16,10 +16,9 @@
 
 package com.adaptris.core.runtime;
 
-import java.net.URL;
-
-import com.adaptris.core.CoreException;
+import com.adaptris.core.config.ConfigPreProcessorImpl;
 import com.adaptris.core.management.BootstrapProperties;
+import com.adaptris.util.KeyValuePairSet;
 
 /**
  * <p>
@@ -30,28 +29,16 @@ import com.adaptris.core.management.BootstrapProperties;
  * need extra configuration.
  * </p>
  * @author amcgrath
- *
+ * @deprecated since 3.1.1 switch to using {@link ConfigPreProcessorImpl} instead.
  */
-public abstract class AbstractConfigurationPreProcessor implements ConfigurationPreProcessor {
+@Deprecated
+public abstract class AbstractConfigurationPreProcessor extends ConfigPreProcessorImpl implements ConfigurationPreProcessor {
 
-  private BootstrapProperties bootstrapProperties;
-  
   public AbstractConfigurationPreProcessor(BootstrapProperties properties) {
-    this.setBootstrapProperties(properties);
-  }
-  
-  @Override
-  public abstract String process(String xml) throws CoreException;
-
-  @Override
-  public abstract String process(URL urlToXml) throws CoreException;
-
-  public BootstrapProperties getBootstrapProperties() {
-    return bootstrapProperties;
+    super(properties);
   }
 
-  public void setBootstrapProperties(BootstrapProperties bootstrapProperties) {
-    this.bootstrapProperties = bootstrapProperties;
+  public AbstractConfigurationPreProcessor(KeyValuePairSet properties) {
+    super(properties);
   }
-
 }

@@ -16,7 +16,7 @@
 
 package com.adaptris.core;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
+import com.adaptris.core.util.Args;
 
 /**
  * <p>
@@ -131,23 +131,6 @@ public class TradingRelationship implements Cloneable {
     return result;
   }
 
-  /** @see java.lang.Object#toString() */
-  @Override
-  public String toString() {
-    StringBuffer result = new StringBuffer(this.getClass().getSimpleName());
-    result.append("{ source [");
-    result.append(getSource());
-    result.append("] destination [");
-    result.append(getDestination());
-    result.append("] type [");
-    result.append(getType());
-    result.append("]}");
-
-    return result.toString();
-  }
-
-  // getters & setters...
-
   /**
    * <p>
    * Returns the <i>destination</i> identifier.
@@ -160,15 +143,12 @@ public class TradingRelationship implements Cloneable {
 
   /**
    * <p>
-   * Sets the <i>destination</i> identifier.  May not be null or empty.
+   * Sets the <i>destination</i> identifier. May not be null.
    * </p>
    * @param s the <i>destination</i> identifier
    */
   public void setDestination(String s) {
-    if (isBlank(s)) {
-      throw new IllegalArgumentException("destination is null or empty param");
-    }
-    destination = s;
+    destination = Args.notNull(s, "destination");
   }
 
   /**
@@ -183,15 +163,12 @@ public class TradingRelationship implements Cloneable {
 
   /**
    * <p>
-   * Sets the <i>source</i> identifier. May not be null or empty.
+   * Sets the <i>source</i> identifier. May not be null.
    * </p>
    * @param s the <i>source</i> identifier
    */
   public void setSource(String s) {
-    if (isBlank(s)) {
-      throw new IllegalArgumentException("source is null or empty param");
-    }
-    source = s;
+    source = Args.notNull(s, "source");
   }
 
   /**
@@ -206,14 +183,11 @@ public class TradingRelationship implements Cloneable {
 
   /**
    * <p>
-   * Sets the <i>type</i> identifier. May not be null or empty.
+   * Sets the <i>type</i> identifier. May not be null.
    * </p>
    * @param s the <i>type</i> identifier
    */
   public void setType(String s) {
-    if (isBlank(s)) {
-      throw new IllegalArgumentException("type is null or empty param");
-    }
-    type = s;
+    type = Args.notNull(s, "type");
   }
 }

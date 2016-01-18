@@ -22,6 +22,8 @@ import javax.management.MalformedObjectNameException;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -44,6 +46,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("metadata-count-interceptor")
+@AdapterComponent
+@ComponentProfile(summary = "Interceptor that increments a counter based on some metadata value",
+    tag = "interceptor")
+
 public class MetadataCountInterceptor extends MetadataMetricsInterceptorImpl {
 
   static {

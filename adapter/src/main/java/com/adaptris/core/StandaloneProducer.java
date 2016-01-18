@@ -21,7 +21,9 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -36,6 +38,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @see AdaptrisMessageSender
  */
 @XStreamAlias("standalone-producer")
+@AdapterComponent
+@ComponentProfile(summary = "Produce a message where as part of a service chain", tag = "service")
 public class StandaloneProducer extends ServiceImp implements AdaptrisMessageSender {
 
   @Valid

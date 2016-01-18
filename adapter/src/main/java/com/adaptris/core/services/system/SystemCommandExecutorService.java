@@ -29,7 +29,9 @@ import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.Executor;
 import org.apache.commons.exec.PumpStreamHandler;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -60,6 +62,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("system-command-executor")
+@AdapterComponent
+@ComponentProfile(summary = "Execute an arbitrary system command (DANGER!)", tag = "service")
 public class SystemCommandExecutorService extends ServiceImp {
   
   public static final String COMMAND_RETURN_VALUE_METADATA_KEY = "SystemCommandExecutorService.ReturnValue";

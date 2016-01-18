@@ -48,7 +48,7 @@ import javax.tools.StandardLocation;
 
 import org.apache.velocity.VelocityContext;
 
-@SupportedSourceVersion(SourceVersion.RELEASE_7)
+@SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedAnnotationTypes("com.adaptris.annotation.GenerateBeanInfo")
 @SupportedOptions(value =
 {

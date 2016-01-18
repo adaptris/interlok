@@ -24,6 +24,8 @@ import java.util.Map;
 import org.hibernate.validator.constraints.NotBlank;
 import org.perf4j.aop.Profiled;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -42,6 +44,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author $Author: lchan $
  */
 @XStreamAlias("socket-producer")
+@AdapterComponent
+@ComponentProfile(summary = "Write a arbitrary message to a socket", tag = "producer,socket,tcp")
 public class SocketProducer extends RequestReplyProducerImp {
 
   @NotBlank

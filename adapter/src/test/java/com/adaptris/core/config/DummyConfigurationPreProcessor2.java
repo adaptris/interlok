@@ -14,7 +14,7 @@
  * limitations under the License.
 */
 
-package com.adaptris.core.runtime;
+package com.adaptris.core.config;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,10 +25,15 @@ import org.apache.commons.io.IOUtils;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.management.BootstrapProperties;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.util.KeyValuePairSet;
 
-public class DummyConfigurationPreProcessor extends AbstractConfigurationPreProcessor {
+public class DummyConfigurationPreProcessor2 extends ConfigPreProcessorImpl {
 
-  public DummyConfigurationPreProcessor(BootstrapProperties properties) {
+  public DummyConfigurationPreProcessor2(BootstrapProperties properties) {
+    super(properties);
+  }
+
+  public DummyConfigurationPreProcessor2(KeyValuePairSet properties) {
     super(properties);
   }
 

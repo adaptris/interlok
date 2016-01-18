@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -52,6 +53,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("perf4j-timing-service")
 @Deprecated
+@AdapterComponent
 public class Perf4jTimingService extends ServiceImp implements EventHandlerAware {
 
   @NotNull

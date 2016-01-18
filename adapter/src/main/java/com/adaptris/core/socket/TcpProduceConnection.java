@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.CoreException;
 import com.adaptris.util.URLString;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -34,6 +36,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author $Author: hfraser $
  */
 @XStreamAlias("tcp-produce-connection")
+@AdapterComponent
+@ComponentProfile(summary = "Connect to a server using the specified hostname and port", tag = "connections,socket,tcp")
 public class TcpProduceConnection extends ProduceConnection {
 
   @Override

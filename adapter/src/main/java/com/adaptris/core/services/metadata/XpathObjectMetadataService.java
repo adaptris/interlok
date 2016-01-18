@@ -27,7 +27,9 @@ import javax.xml.namespace.NamespaceContext;
 
 import org.w3c.dom.Document;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
@@ -49,6 +51,8 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * 
  */
 @XStreamAlias("xpath-object-metadata-service")
+@AdapterComponent
+@ComponentProfile(summary = "Extract data via XPath and store it as object metadata", tag = "service,metadata,xml")
 public class XpathObjectMetadataService extends ServiceImp {
 
   private KeyValuePairSet namespaceContext;

@@ -27,7 +27,9 @@ import javax.mail.internet.ContentType;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -60,6 +62,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author lchan
  */
 @XStreamAlias("http-request-parameter-converter-service")
+@AdapterComponent
+@ComponentProfile(summary = "Turn HTTP Request parameters (from a HTTP POST) into metadata", tag = "service,metadata,http,https")
 public class RequestParameterConverterService extends ServiceImp {
   public static final String DEFAULT_CONTENT_TYPE_KEY = HttpConstants.CONTENT_TYPE;
   public static final String DEFAULT_CONTENT_TYPE_VALUE = HttpConstants.WWW_FORM_URLENCODE;

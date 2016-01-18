@@ -23,8 +23,10 @@ import javax.validation.constraints.Pattern;
 
 import org.perf4j.aop.Profiled;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.ProduceDestination;
@@ -75,6 +77,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @see CoreConstants#EMAIL_CC_LIST
  */
 @XStreamAlias("default-smtp-producer")
+@AdapterComponent
+@ComponentProfile(summary = "Send an email", tag = "producer,email")
 public class DefaultSmtpProducer extends MailProducer {
 
   @AdvancedConfig

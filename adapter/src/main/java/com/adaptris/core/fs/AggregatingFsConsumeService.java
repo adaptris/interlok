@@ -19,6 +19,8 @@ package com.adaptris.core.fs;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.NullConnection;
@@ -34,6 +36,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("aggregating-fs-consume-service")
+@AdapterComponent
+@ComponentProfile(summary = "Allows you to aggregate messages from the filesystem", tag = "service,aggregation")
 public class AggregatingFsConsumeService extends AggregatingConsumeServiceImpl<NullConnection> {
 
   @NotNull

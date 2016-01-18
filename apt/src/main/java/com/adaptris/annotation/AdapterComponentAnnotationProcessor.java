@@ -20,9 +20,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.annotation.processing.RoundEnvironment;
@@ -46,7 +44,7 @@ import javax.tools.StandardLocation;
 {
     "componentFile", "componentDebug"
 })
-@SupportedSourceVersion(SourceVersion.RELEASE_7)
+@SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class AdapterComponentAnnotationProcessor extends AnnotationProcessorImpl {
 
   private static final String OPTION_COMPONENT_MAPPING_FILE = "componentFile";

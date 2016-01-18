@@ -16,9 +16,9 @@
 
 package com.adaptris.core.util;
 
-import static com.adaptris.core.management.BootstrapProperties.getPropertyIgnoringCase;
 import static com.adaptris.core.management.Constants.CFG_KEY_USE_MANAGEMENT_FACTORY_FOR_JMX;
 import static com.adaptris.core.management.Constants.DEFAULT_MANAGEMENT_FACTORY_FOR_JMX;
+import static com.adaptris.core.util.PropertyHelper.getPropertyIgnoringCase;
 
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
@@ -31,9 +31,6 @@ import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
-
-import com.adaptris.core.management.BootstrapProperties;
-import com.adaptris.core.management.Constants;
 
 /**
  * Helper for JMX

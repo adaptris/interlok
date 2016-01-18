@@ -20,6 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -44,12 +45,15 @@ import com.adaptris.util.text.xml.XPath;
 import com.adaptris.util.text.xml.XmlTransformerFactory;
 import com.adaptris.util.text.xml.XsltTransformerFactory;
 
+import net.sf.saxon.serialize.MessageWarner;
+
 public class XmlTransformServiceTest extends TransformServiceExample {
 
   static final String KEY_XML_NODE_TRANSFORM_URL = "XmlTransformService.outputNodeTransform";
 
   static final String KEY_XML_TEST_INPUT = "XmlTransformService.outputTestMessage";
   static final String KEY_XML_TEST_TRANSFORM_URL = "XmlTransformService.outputTestTransform";
+  static final String KEY_XML_TEST_TRANSFORM_URL_XSL_MESSAGE = "XmlTransformService.outputTestTransformWithXslMessage";
   static final String KEY_XML_TEST_INVALID_TRANSFORM_URL = "XmlTransformService.outputTestInvalidTransform";
   static final String KEY_XML_TEST_FATAL_TRANSFORM_URL = "XmlTransformService.outputTestFatalTransform";
   static final String KEY_XML_TEST_STX_TRANSFORM_URL = "XmlTransformService.outputTestStxTransform";
@@ -431,26 +435,37 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     assertEquals("payload " + m1.getContent(), PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m1.getContent());
   }
   
-  public void testXSLTError() throws Exception {
+  public void testXSLT_RecoverableError() throws Exception {
     AdaptrisMessage m1 = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     XmlTransformService service = new XmlTransformService();
     service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_INVALID_TRANSFORM_URL));
     try {
       execute(service, m1);
       fail("Exception expected but none thrown");
-    } catch (CoreException e) {
+    } catch (ServiceException e) {
       assertTrue(e.getCause() instanceof TransformerException);
     }
   }
 
-  public void testXSLTFatalError() throws Exception {
+  public void testXSLT_RecoverableError_NoFail() throws Exception {
+    AdaptrisMessage m1 = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    XmlTransformService service = new XmlTransformService();
+    XsltTransformerFactory fac = new XsltTransformerFactory();
+    fac.setFailOnRecoverableError(false);
+    service.setXmlTransformerFactory(fac);
+
+    service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_INVALID_TRANSFORM_URL));
+    execute(service, m1);
+  }
+
+  public void testXSLT_FatalError() throws Exception {
     AdaptrisMessage m1 = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     XmlTransformService service = new XmlTransformService();
     service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_FATAL_TRANSFORM_URL));
     try {
       execute(service, m1);
       fail("Exception expected but none thrown");
-    } catch (CoreException e) {
+    } catch (ServiceException e) {
       assertTrue(e.getCause() instanceof TransformerException);
     }
   }
@@ -679,6 +694,25 @@ public class XmlTransformServiceTest extends TransformServiceExample {
       assertEquals("Invalid byte 2 of 3-byte UTF-8 sequence.", e.getMessage());
     }
   }
+
+  public void testXSLT_XslMessageTerminate() throws Exception {
+    AdaptrisMessage m1 = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    XmlTransformService service = new XmlTransformService();
+    XsltTransformerFactory fac = new XsltTransformerFactory();
+    fac.getTransformerFactoryAttributes()
+        .add(new KeyValuePair("http://saxon.sf.net/feature/messageEmitterClass", MessageWarner.class.getCanonicalName()));
+    fac.getTransformerFactoryFeatures().add(new KeyValuePair(XMLConstants.FEATURE_SECURE_PROCESSING, "true"));
+    service.setXmlTransformerFactory(fac);
+    service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL_XSL_MESSAGE));
+    try {
+      execute(service, m1);
+      fail();
+    } catch (ServiceException expected) {
+      assertTrue(expected.getCause() instanceof TransformerException);
+      assertNotNull(((TransformerException) expected.getCause()).getLocator());
+    }
+  }
+
 
   private static DocumentBuilder newDocumentBuilder() throws ParserConfigurationException {
     DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();

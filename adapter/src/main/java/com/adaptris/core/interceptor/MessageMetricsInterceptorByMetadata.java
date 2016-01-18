@@ -22,6 +22,8 @@ import javax.management.MalformedObjectNameException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -38,7 +40,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * <p>
  * This captures information about a message where that message contains the specified key and and value combination, the value
- * portion may be a regular expression. Ff the message metadata matches that configured, then it captures the total number of
+ * portion may be a regular expression. If the message metadata matches that configured, then it captures the total number of
  * messages that passed through this workflow, and captures the size of messages entering the workflow (but not the total size of
  * messages exiting the workflow); and also the number of messages that had an error condition at the end of the workflow.
  * </p>
@@ -47,6 +49,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("message-metrics-interceptor-by-metadata")
+@AdapterComponent
+@ComponentProfile(summary = "Interceptor that collates message counts based on metadata",
+    tag = "interceptor")
+
 public class MessageMetricsInterceptorByMetadata extends MessageMetricsInterceptorImpl {
 
   @NotNull

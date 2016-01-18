@@ -21,6 +21,8 @@ import static com.adaptris.core.AdaptrisMessageImp.copyPayload;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -30,6 +32,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config standalone-requestor
  */
 @XStreamAlias("standalone-requestor")
+@AdapterComponent
+@ComponentProfile(summary = "Perform a synchronous request operation, storing the reply in the message", tag = "service")
 public class StandaloneRequestor extends StandaloneProducer {
 
   private static final TimeInterval DEFAULT_TIMEOUT = new TimeInterval(-1L, TimeUnit.MILLISECONDS);

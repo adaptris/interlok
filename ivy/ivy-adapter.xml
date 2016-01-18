@@ -46,14 +46,16 @@
     <dependency org="commons-pool" name="commons-pool" rev="1.6" conf="compile->default" />
     <dependency org="org.apache.commons" name="commons-exec" rev="1.2" conf="compile->default" />
 
-    <dependency org="org.bouncycastle" name="bcprov-jdk15on" rev="1.50" conf="compile->default" />
-    <dependency org="org.bouncycastle" name="bcpkix-jdk15on" rev="1.50" conf="compile->default" />
-    <dependency org="org.bouncycastle" name="bcmail-jdk15on" rev="1.50" conf="compile->default" />
-    <dependency org="org.bouncycastle" name="bcprov-ext-jdk15on" rev="1.50" conf="compile->default" />
+    <dependency org="org.bouncycastle" name="bcprov-jdk15on" rev="1.53" conf="compile->default" />
+    <dependency org="org.bouncycastle" name="bcpkix-jdk15on" rev="1.53" conf="compile->default" />
+    <dependency org="org.bouncycastle" name="bcmail-jdk15on" rev="1.53" conf="compile->default" />
+    <dependency org="org.bouncycastle" name="bcprov-ext-jdk15on" rev="1.53" conf="compile->default" />
 
     <dependency org="oro" name="oro" rev="2.0.8" conf="compile->default" />
     <dependency org="javax.mail" name="mail" rev="1.4.7" conf="compile->default" />
     <dependency org="org.glassfish.external" name="opendmk_jmxremote_optional_jar" rev="1.0-b01-ea" conf="compile->default"/>
+    <dependency org="org.glassfish.external" name="opendmk_jdmkrt_jar" rev="1.0-b01-ea" conf="compile->default"/>
+
 
     <dependency org="com.jcraft" name="jsch" rev="0.1.51" conf="compile->default" />
 

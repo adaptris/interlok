@@ -20,7 +20,9 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import javax.validation.constraints.NotNull;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -42,6 +44,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("generate-unique-metadata-value-service")
+@AdapterComponent
+@ComponentProfile(summary = "Generate a unique value and attach it as metadata", tag = "service,metadata")
 public class GenerateUniqueMetadataValueService extends ServiceImp {
 
   private String metadataKey;

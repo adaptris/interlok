@@ -18,6 +18,8 @@ package com.adaptris.core.ftp;
 
 import java.io.IOException;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.ftp.ApacheFtpClientImpl;
 import com.adaptris.ftp.CommonsNetFtpClient;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -32,6 +34,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author $Author: lchan $
  */
 @XStreamAlias("ftp-connection")
+@AdapterComponent
+@ComponentProfile(summary = "Connect to a FTP server using a username and password", tag = "connections,ftp")
 public class FtpConnection extends FtpConnectionImp {
 
   private static final String SCHEME_FTP = "ftp";

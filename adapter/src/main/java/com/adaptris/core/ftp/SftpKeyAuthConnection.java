@@ -24,18 +24,18 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.io.FileUtils;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.security.password.Password;
 import com.adaptris.sftp.DefaultSftpBehaviour;
-import com.adaptris.sftp.LenientKnownHosts;
 import com.adaptris.sftp.SftpClient;
 import com.adaptris.sftp.SftpConnectionBehaviour;
 import com.adaptris.sftp.SftpException;
-import com.adaptris.sftp.StrictKnownHosts;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -70,6 +70,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author dsefton
  */
 @XStreamAlias("sftp-key-auth-connection")
+@AdapterComponent
+@ComponentProfile(summary = "Connect to a server using the SSH File Transfer Protocol; authentication via keys", tag = "base")
 public class SftpKeyAuthConnection extends FileTransferConnection {
 
   private static final String SCHEME_SFTP = "sftp";

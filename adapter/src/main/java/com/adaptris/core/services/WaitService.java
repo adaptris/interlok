@@ -19,6 +19,8 @@ package com.adaptris.core.services;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -35,6 +37,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("wait-service")
+@AdapterComponent
+@ComponentProfile(summary = "Delay processing", tag = "service")
 public class WaitService extends ServiceImp {
 
   private static final TimeInterval DEFAULT_WAIT = new TimeInterval(20L, TimeUnit.SECONDS);
