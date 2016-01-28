@@ -16,6 +16,9 @@
 
 package com.adaptris.util;
 
+import static org.apache.commons.lang.StringUtils.isEmpty;
+
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.mail.URLName;
@@ -46,6 +49,8 @@ import javax.mail.URLName;
  */
 public class URLString extends URLName {
 
+  private static final String PROTOCOL_FILE = "file";
+
   /**
    * 
    * @see URLName#URLName(String, String, int, String, String, String)
@@ -69,5 +74,23 @@ public class URLString extends URLName {
    */
   public URLString(String url) {
     super(url);
+  }
+
+  @Override
+  public URL getURL() throws MalformedURLException {
+    if (PROTOCOL_FILE.equalsIgnoreCase(getProtocol()) || isEmpty(getProtocol())) {
+      // Cope with file:///./path/to/my/thing and perhaps ./path/to/my/thing
+      return super.getURL();
+    }
+    // Otherwise add a / prefix if it doesn't already exist so that http://my.server/path/to/my/thing
+    // is a valid URL
+    return new URL(getProtocol(), getHost(), getPort(), slashPrefix(getFile()));
+  }
+
+  private String slashPrefix(String file) {
+    if (!isEmpty(getFile()) && !getFile().startsWith("/")) {
+      return "/" + getFile();
+    }
+    return getFile();
   }
 }

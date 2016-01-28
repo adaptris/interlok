@@ -18,10 +18,10 @@ package com.adaptris.util;
 
 import java.net.URL;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import junit.framework.TestCase;
 
 /**
  *
@@ -96,5 +96,20 @@ public class TestURLString extends TestCase {
     assertEquals(password, url.getPassword());
     assertEquals(host, url.getHost());
     assertEquals(buggyURL, url.toString());
+  }
+
+  public void testGetURL() throws Exception {
+    String httpURL = "http://config.f4f.com/v3config/adapter.xml";
+    URLString url = new URLString(httpURL);
+    assertEquals(httpURL, url.getURL().toString());
+    String fileURL = "file:///./config/adapter.xml";
+    // This should skip the first "/"
+    url = new URLString(fileURL);
+    assertEquals("./config/adapter.xml", url.getURL().getFile());
+
+    String httpURL_2 = "http://config.f4f.com//v3config/adapter.xml";
+    url = new URLString(httpURL_2);
+    // The first / should get dropped but we're still OK.
+    assertEquals(httpURL, url.getURL().toString());
   }
 }
