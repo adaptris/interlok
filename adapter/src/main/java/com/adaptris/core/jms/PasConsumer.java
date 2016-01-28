@@ -21,6 +21,8 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -34,6 +36,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("jms-topic-consumer")
+@AdapterComponent
+@ComponentProfile(summary = "Listen for JMS messages on the specified topic", tag = "consumer,jms")
 public class PasConsumer extends JmsConsumerImpl {
 
   private Boolean durable; // defaults to false

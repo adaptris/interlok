@@ -21,6 +21,8 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -32,6 +34,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @see com.adaptris.core.ServiceList
  */
 @XStreamAlias("standard-processing-exception-handler")
+@AdapterComponent
+@ComponentProfile(summary = "A configurable exception handling instance", tag = "error-handling,base")
 public class StandardProcessingExceptionHandler extends RootProcessingExceptionHandler implements EventHandlerAware {
 
   @Valid

@@ -35,7 +35,9 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.GenerateBeanInfo;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.JndiHelper;
@@ -52,6 +54,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("shared-components")
 @GenerateBeanInfo
+@AdapterComponent
+@ComponentProfile(summary = "A Collection of Shared Components", tag = "base")
 public class SharedComponentList implements AdaptrisComponent, ComponentLifecycleExtension {
 
   private static final DefaultLifecycleStrategy DEFAULT_STRATEGY = new DefaultLifecycleStrategy();

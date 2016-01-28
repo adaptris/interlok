@@ -118,7 +118,7 @@ public class XmlPayloadTranslator extends XmlPayloadTranslatorImpl {
       }
       results.appendChild(originalMessage);
     }
-    for(JdbcResultSet rSet : rs.getResulSets()) {
+    for(JdbcResultSet rSet : rs.getResultSets()) {
       List<Element> elements = createListFromResultSet(builder, doc, rSet);
       for (Element element : elements) {
         results.appendChild(element);

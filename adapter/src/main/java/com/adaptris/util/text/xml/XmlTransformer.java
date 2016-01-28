@@ -27,11 +27,9 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
@@ -79,23 +77,6 @@ public class XmlTransformer {
         transformer.setParameter(o.toString(), properties.get(o));
       }
     }
-
-    transformer.setErrorListener(new ErrorListener() {
-      @Override
-      public void warning(TransformerException exception) throws TransformerException {
-        log.warn("Warning in transformation", exception);
-      }
-
-      @Override
-      public void error(TransformerException exception) throws TransformerException {
-        throw exception;
-      }
-
-      @Override
-      public void fatalError(TransformerException exception) throws TransformerException {
-        throw exception;
-      }
-    });
     transformer.transform(xmlIn, xmlOut);
   }
   
@@ -189,4 +170,5 @@ public class XmlTransformer {
     }
     return result;
   }
+
 }

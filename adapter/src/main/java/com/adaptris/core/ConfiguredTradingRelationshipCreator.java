@@ -16,6 +16,7 @@
 
 package com.adaptris.core;
 
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 
@@ -54,10 +55,6 @@ public final class ConfiguredTradingRelationshipCreator implements
   }
 
   /**
-   * <p>
-   * If any key is empty or if any key returns a value of null or empty a
-   * <code>CoreException</code> is thrown.
-   * </p>
    *
    * @see com.adaptris.core.TradingRelationshipCreator
    *      #create(com.adaptris.core.AdaptrisMessage)
@@ -65,23 +62,6 @@ public final class ConfiguredTradingRelationshipCreator implements
   public TradingRelationship create(AdaptrisMessage msg) throws CoreException {
     return new TradingRelationship(source, destination, type);
   }
-
-  /** @see java.lang.Object#toString() */
-  @Override
-  public String toString() {
-    StringBuffer result = new StringBuffer(this.getClass().getName());
-    result.append(" source [");
-    result.append(this.getSource());
-    result.append("] destination [");
-    result.append(this.getDestination());
-    result.append("] type [");
-    result.append(this.getType());
-    result.append("]");
-
-    return result.toString();
-  }
-
-  // getters & setters...
 
   /**
    * <p>
@@ -96,17 +76,13 @@ public final class ConfiguredTradingRelationshipCreator implements
 
   /**
    * <p>
-   * Sets the metadata key used to obtain the destination. May not be null or
-   * empty.
+   * Sets the metadata key used to obtain the destination. May not be null.
    * </p>
    *
    * @param s the metadata key used to obtain the destination
    */
   public void setDestination(String s) {
-    if (s == null || "".equals(s)) {
-      throw new IllegalArgumentException("Null Destination not allowed");
-    }
-    this.destination = s;
+    destination = Args.notNull(s, "destination");
   }
 
   /**
@@ -122,16 +98,13 @@ public final class ConfiguredTradingRelationshipCreator implements
 
   /**
    * <p>
-   * Sets the metadata key used to obtain the source. May not be null or empty.
+   * Sets the metadata key used to obtain the source. May not be null
    * </p>
    *
    * @param s the metadata key used to obtain the source
    */
   public void setSource(String s) {
-    if (s == null || "".equals(s)) {
-      throw new IllegalArgumentException("Null Source not allowed");
-    }
-    this.source = s;
+    source = Args.notNull(s, "source");
   }
 
   /**
@@ -147,15 +120,12 @@ public final class ConfiguredTradingRelationshipCreator implements
 
   /**
    * <p>
-   * Sets the metadata key used to obtain the type. May not be null or empty.
+   * Sets the metadata key used to obtain the type. May not be null.
    * </p>
    *
    * @param s the metadata key used to obtain the type
    */
   public void setType(String s) {
-    if (s == null || "".equals(s)) {
-      throw new IllegalArgumentException("Null Type not allowed");
-    }
-    this.type = s;
+    type = Args.notNull(s, "type");
   }
 }

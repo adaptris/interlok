@@ -21,6 +21,8 @@ import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.io.IOUtils;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -38,6 +40,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("gzip-service")
+@AdapterComponent
+@ComponentProfile(summary = "GZIP the contents of the message", tag = "service")
 public class GzipService extends ServiceImp {
 
   /**

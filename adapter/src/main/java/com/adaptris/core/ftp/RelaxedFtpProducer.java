@@ -23,7 +23,9 @@ import javax.validation.constraints.NotNull;
 
 import org.perf4j.aop.Profiled;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -69,6 +71,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author lchan
  */
 @XStreamAlias("relaxed-ftp-producer")
+@AdapterComponent
+@ComponentProfile(summary = "Put a file on a FTP/SFTP server; uses PUT only", tag = "producer,ftp,ftps,sftp")
 public class RelaxedFtpProducer extends ProduceOnlyProducerImp {
 
   private static final String SLASH = "/";

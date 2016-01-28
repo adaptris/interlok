@@ -20,6 +20,8 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -36,6 +38,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config check-metadata-value-service
  */
 @XStreamAlias("check-metadata-value-service")
+@AdapterComponent
+@ComponentProfile(summary = "Perform a branch based on whether a metadata value has already been processed",
+    tag = "service,duplicate")
 public class CheckMetadataValueService extends DuplicateMetadataValueService {
 
   @NotBlank

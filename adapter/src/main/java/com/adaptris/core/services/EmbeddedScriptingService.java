@@ -19,9 +19,9 @@ package com.adaptris.core.services;
 import java.io.Reader;
 import java.io.StringReader;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.MarshallingCDATA;
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.BranchingServiceCollection;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -49,6 +49,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("embedded-scripting-service")
+@AdapterComponent
+@ComponentProfile(summary = "Execute an embedded JSR223 script", tag = "service,scripting")
 public class EmbeddedScriptingService extends ScriptingServiceImp {
 
 	@MarshallingCDATA

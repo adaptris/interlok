@@ -19,11 +19,11 @@ package com.adaptris.core.lifecycle;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import com.adaptris.core.AdapterLifecycleEvent;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultWorkflowLifecycleStrategy;
 import com.adaptris.core.Workflow;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -46,6 +46,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("workflow-retry-and-continue")
 public class WorkflowRetryAndContinue extends DefaultWorkflowLifecycleStrategy {
+
+  static final String FAILURE_LOG_MSG = "%1$s Failure for Workflow [%2$s]; Waiting for retry; failure=[%3$s]";
+
 
   enum WorkflowAction {
     Initialise {
@@ -107,6 +110,9 @@ public class WorkflowRetryAndContinue extends DefaultWorkflowLifecycleStrategy {
         break;
       }
       catch (CoreException e) {
+        if (!exceedsMaxRetries(attempts)) {
+          logFailure(String.format(FAILURE_LOG_MSG, action.name(), LoggingHelper.friendlyName(wf), e.getMessage()), attempts);
+        }
         waitQuietly();
       }
     }
@@ -169,4 +175,14 @@ public class WorkflowRetryAndContinue extends DefaultWorkflowLifecycleStrategy {
     return getWaitBetweenRetries() != null ? getWaitBetweenRetries().toMilliseconds() : DEFAULT_INTERVAL_BETWEEN_RETRIES
         .toMilliseconds();
   }
+
+
+  void logFailure(String loggingMsg, int attempts) {
+    if (attempts == 1) {
+      log.warn(loggingMsg);
+    } else {
+      log.debug(loggingMsg);
+    }
+  }
+
 }

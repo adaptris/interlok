@@ -24,6 +24,8 @@ import javax.management.MalformedObjectNameException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -37,6 +39,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("standard-message-error-digester")
+@AdapterComponent
+@ComponentProfile(summary = "The default message error digester that exposes some minimum metrics via JMX",
+    tag = "error-handling,base")
 public class StandardMessageErrorDigester extends MessageErrorDigesterImp {
 
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());

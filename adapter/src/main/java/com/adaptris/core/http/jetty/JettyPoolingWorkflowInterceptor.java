@@ -18,6 +18,8 @@ package com.adaptris.core.http.jetty;
 
 import java.util.Date;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.interceptor.WorkflowInterceptorImpl;
@@ -30,6 +32,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("jetty-pooling-workflow-interceptor")
+@AdapterComponent
+@ComponentProfile(summary = "Interceptor that allows a jetty consumer to be part of a PoolingWorkflow",
+    tag = "interceptor,http,https")
 public class JettyPoolingWorkflowInterceptor extends WorkflowInterceptorImpl {
   static final String MESSAGE_MONITOR = JettyPoolingWorkflowInterceptor.class
       .getCanonicalName() + ".monitor";

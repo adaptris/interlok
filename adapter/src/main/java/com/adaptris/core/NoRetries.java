@@ -19,6 +19,8 @@ package com.adaptris.core;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -30,6 +32,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("no-retries")
+@AdapterComponent
+@ComponentProfile(summary = "The default NO-OP failed message retrier implementation", tag = "error-handling,base")
 public class NoRetries implements FailedMessageRetrier {
 
   public void addWorkflow(Workflow workflow) {

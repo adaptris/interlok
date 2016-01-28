@@ -23,6 +23,8 @@ import java.io.OutputStream;
 
 import org.apache.commons.io.IOUtils;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -48,6 +50,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author $Author: lchan $
  */
 @XStreamAlias("utf8-bom-remover")
+@AdapterComponent
+@ComponentProfile(summary = "Remove a UTF-8 BOM", tag = "service")
 public class Utf8BomRemover extends ServiceImp {
 
   private static final String DEFAULT_CHAR_ENCODING = "ISO-8859-1";

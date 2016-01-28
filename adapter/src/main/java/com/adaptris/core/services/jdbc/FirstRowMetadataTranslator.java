@@ -55,7 +55,7 @@ public class FirstRowMetadataTranslator extends MetadataResultSetTranslatorImpl 
     List<MetadataElement> added = new ArrayList<MetadataElement>();
 
     int resultSetCount = 0;
-    for (JdbcResultSet resultSet : source.getResulSets()) {
+    for (JdbcResultSet resultSet : source.getResultSets()) {
       if ((resultSet.getRows() != null) && (resultSet.getRows().size() > 0)) {
         JdbcResultRow storedProcedureResultRow = resultSet.getRows().get(0);
         if (storedProcedureResultRow != null) {

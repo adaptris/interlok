@@ -19,7 +19,9 @@ package com.adaptris.core.services.splitter;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.GenerateBeanInfo;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
@@ -47,6 +49,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @GenerateBeanInfo
 @XStreamAlias("basic-message-splitter-service")
+@AdapterComponent
+@ComponentProfile(summary = "Split a message and produce each split message somewhere",
+    tag = "service,splitter")
+
 public class BasicMessageSplitterService extends MessageSplitterServiceImp {
 
   @NotNull

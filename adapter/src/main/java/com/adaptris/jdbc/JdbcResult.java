@@ -55,7 +55,7 @@ public class JdbcResult {
     this.parameters = parameters;
   }
 
-  public List<JdbcResultSet> getResulSets() {
+  public List<JdbcResultSet> getResultSets() {
     return resultSets;
   }
 
@@ -64,15 +64,15 @@ public class JdbcResult {
   }
 
   public void addResultSet(JdbcResultSet resultSet) {
-    this.getResulSets().add(resultSet);
+    this.getResultSets().add(resultSet);
   }
   
   public int countResultSets() {
-    return this.getResulSets().size();
+    return this.getResultSets().size();
   }
   
   public JdbcResultSet getResultSet(int index) {
-    return this.getResulSets().get(index);
+    return this.getResultSets().get(index);
   }
   
   public int getNumRowsUpdated() {
@@ -91,7 +91,7 @@ public class JdbcResult {
     for(StoredProcedureParameter param : this.getParameters())
       buffer.append("\t" + param.toString() + "\n");
     buffer.append("ResultSets;\n");
-    for(JdbcResultSet resultSet : this.getResulSets())
+    for(JdbcResultSet resultSet : this.getResultSets())
       buffer.append("\t" + resultSet.toString() + "\n");
     
     return buffer.toString();

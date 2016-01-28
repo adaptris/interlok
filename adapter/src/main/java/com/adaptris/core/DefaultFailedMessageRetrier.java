@@ -29,6 +29,8 @@ import javax.management.MalformedObjectNameException;
 
 import org.apache.commons.io.IOUtils;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.runtime.AdapterManager;
 import com.adaptris.core.runtime.ParentRuntimeInfoComponent;
 import com.adaptris.core.runtime.RuntimeInfoComponent;
@@ -44,6 +46,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config default-failed-message-retrier
  */
 @XStreamAlias("default-failed-message-retrier")
+@AdapterComponent
+@ComponentProfile(summary = "A Configurable Failed Message Retrier", tag = "error-handling,base")
 public class DefaultFailedMessageRetrier extends FailedMessageRetrierImp {
   /**
    * The default shutdown wait.

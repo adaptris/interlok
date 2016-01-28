@@ -29,9 +29,9 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.management.MalformedObjectNameException;
-import javax.management.Notification;
 import javax.validation.Valid;
 
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -68,6 +68,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @since 3.0.4
  */
 @XStreamAlias("slow-message-notification")
+@ComponentProfile(summary = "Interceptor that issues a JMX notification if a message took too long",
+    tag = "interceptor,jmx")
 public class SlowMessageNotification extends NotifyingInterceptor {
 
   private static final String MESSAGE_PREFIX = "Threshold exceeded for ";

@@ -16,6 +16,8 @@
 
 package com.adaptris.core.security;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.ServiceException;
@@ -31,6 +33,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author lchan / $Author: lchan $
  */
 @XStreamAlias("decryption-service")
+@AdapterComponent
+@ComponentProfile(summary = "Decrypt and/or verify the signature of a message", tag = "service,security")
 public class DecryptionService extends CoreSecurityService {
 
   /**

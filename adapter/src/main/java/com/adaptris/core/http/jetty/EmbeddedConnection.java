@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisConnectionImp;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.management.webserver.JettyServerManager;
@@ -46,6 +48,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("jetty-embedded-connection")
+@AdapterComponent
+@ComponentProfile(summary = "Connection that uses the embedded Jetty engine management component for requests",
+    tag = "connections,http,https,jetty")
 public class EmbeddedConnection extends AdaptrisConnectionImp implements JettyServletRegistrar {
   private static final int DEFAULT_WAIT_INTERVAL_MS = 250;
 

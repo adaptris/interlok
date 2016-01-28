@@ -26,7 +26,9 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.io.IOUtils;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.AdaptrisMessage;
@@ -58,6 +60,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @see com.adaptris.core.ServiceExtractor
  */
 @XStreamAlias("dynamic-service-executor")
+@AdapterComponent
+@ComponentProfile(summary = "Execute a service definition which is defined in the message itself", tag = "service,dynamic")
 public class DynamicServiceExecutor extends ServiceImp implements EventHandlerAware {
 
   private transient EventHandler eventHandler;

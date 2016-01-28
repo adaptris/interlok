@@ -20,6 +20,8 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import javax.management.MalformedObjectNameException;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.runtime.ParentRuntimeInfoComponent;
@@ -42,6 +44,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("message-metrics-interceptor")
+@AdapterComponent
+@ComponentProfile(summary = "Interceptor that captures the total number of messages passing through the workflow",
+    tag = "interceptor")
 public class MessageMetricsInterceptor extends MessageMetricsInterceptorImpl {
 
   static {

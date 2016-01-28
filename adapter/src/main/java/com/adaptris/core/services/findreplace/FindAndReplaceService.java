@@ -19,6 +19,8 @@ package com.adaptris.core.services.findreplace;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -40,6 +42,8 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * @see MetadataReplacementSource
  */
 @XStreamAlias("find-and-replace-service")
+@AdapterComponent
+@ComponentProfile(summary = "Perform a find and replace on the message", tag = "service")
 public class FindAndReplaceService extends ServiceImp {
 
   @XStreamImplicit(itemFieldName = "find-replace-pair")

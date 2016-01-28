@@ -33,7 +33,9 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.util.CastorizedList;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
@@ -46,6 +48,8 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * @config workflow-list
  */
 @XStreamAlias("workflow-list")
+@AdapterComponent
+@ComponentProfile(summary = "A Collection of Workflows", tag = "base")
 public final class WorkflowList extends AbstractCollection<Workflow> implements AdaptrisComponent, List<Workflow> {
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());

@@ -45,8 +45,10 @@ import org.apache.commons.io.IOUtils;
 import org.hibernate.validator.constraints.NotBlank;
 import org.perf4j.aop.Profiled;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -78,6 +80,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("jdk-http-producer")
 @Deprecated
+@AdapterComponent
+@ComponentProfile(summary = "Make a HTTP request to a remote server using standard JRE components", tag = "producer,http,https")
 public class JdkHttpProducer extends HttpProducer {
   private static transient boolean warningLogged;
 

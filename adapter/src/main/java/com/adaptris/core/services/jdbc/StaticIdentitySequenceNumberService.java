@@ -16,6 +16,8 @@
 
 package com.adaptris.core.services.jdbc;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -39,6 +41,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("jdbc-sequence-number-service")
+@AdapterComponent
+@ComponentProfile(summary = "Create a sequence number using a database, the sequence number is associated with a static value",
+    tag = "service,metadata,jdbc,sequence")
 public class StaticIdentitySequenceNumberService extends AbstractJdbcSequenceNumberService {
 
 	private String identity;

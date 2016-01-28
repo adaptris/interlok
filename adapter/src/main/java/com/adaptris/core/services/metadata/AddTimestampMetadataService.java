@@ -25,7 +25,9 @@ import javax.xml.datatype.Duration;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -48,6 +50,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author $Author: lchan $
  */
 @XStreamAlias("add-timestamp-metadata-service")
+@AdapterComponent
+@ComponentProfile(summary = "Add a timestamp as metadata", tag = "service,metadata")
 public class AddTimestampMetadataService extends ServiceImp {
 
   @NotBlank

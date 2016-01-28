@@ -17,6 +17,7 @@
 package com.adaptris.core.management;
 
 import static com.adaptris.core.management.Constants.CFG_KEY_MANAGEMENT_COMPONENT;
+import static com.adaptris.core.util.PropertyHelper.getPropertyIgnoringCase;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.io.InputStream;
@@ -45,7 +46,7 @@ public class ManagementComponentFactory {
 
   private List<ManagementComponent> createComponents(BootstrapProperties p) throws Exception {
     List<ManagementComponent> result = new ArrayList<ManagementComponent>();
-    String componentList = BootstrapProperties.getPropertyIgnoringCase(p, CFG_KEY_MANAGEMENT_COMPONENT, "");
+    String componentList = getPropertyIgnoringCase(p, CFG_KEY_MANAGEMENT_COMPONENT, "");
     if (!isEmpty(componentList)) {
       String components[] = componentList.split(COMPONENT_SEPARATOR);
       for (String c : components) {

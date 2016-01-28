@@ -16,6 +16,8 @@
 
 package com.adaptris.core;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -26,6 +28,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config null-connection
  */
 @XStreamAlias("null-connection")
+@AdapterComponent
+@ComponentProfile(summary = "The default NO-OP connection", tag = "connections")
 public class NullConnection extends AdaptrisConnectionImp {
 
   public NullConnection() {

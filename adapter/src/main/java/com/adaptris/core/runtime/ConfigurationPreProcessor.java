@@ -16,10 +16,6 @@
 
 package com.adaptris.core.runtime;
 
-import java.net.URL;
-
-import com.adaptris.core.CoreException;
-
 /**
  * <p>
  * Implementations of this interface will perform actions on the xml configuration before
@@ -28,10 +24,7 @@ import com.adaptris.core.CoreException;
  * @author amcgrath
  *
  */
-public interface ConfigurationPreProcessor {
+@Deprecated
+public interface ConfigurationPreProcessor extends com.adaptris.core.config.ConfigPreProcessor {
   
-  public String process(String xml) throws CoreException;
-  
-  public String process(URL urlToXml) throws CoreException;
-
 }

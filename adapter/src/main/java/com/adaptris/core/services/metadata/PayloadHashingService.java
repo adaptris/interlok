@@ -25,6 +25,8 @@ import java.security.NoSuchAlgorithmException;
 import org.apache.commons.io.IOUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -43,6 +45,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author lchan
  */
 @XStreamAlias("payload-hashing-service")
+@AdapterComponent
+@ComponentProfile(summary = "Hash the payload and store the base64 form of the hash against a metadata key",
+    tag = "service,metadata")
 public class PayloadHashingService extends ServiceImp {
 
   @NotBlank

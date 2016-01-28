@@ -16,13 +16,21 @@
 
 package com.adaptris.core.management.jmx;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.MBeanServer;
+import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXConnectorServerFactory;
+import javax.management.remote.JMXServiceURL;
 
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.PortManager;
@@ -32,10 +40,14 @@ import com.adaptris.core.management.jmx.provider.junit.ServerProvider;
 import com.adaptris.core.management.properties.PropertyResolver;
 import com.adaptris.core.runtime.AdapterComponentMBean;
 import com.adaptris.core.util.JmxHelper;
+import com.adaptris.security.password.Password;
 
 public class JmxRemoteComponentTest extends BaseCase {
 
+  private static final String DEFAULT_USERNAME_PASSWORD = "admin";
   private static final String DEFAULT_VALUE = "Back At The Chicken Shack 1960";
+  private static final String SASL_PLAIN = "SASL/PLAIN";
+  private static final String JMX_REMOTE_PROFILES = "jmx.remote.profiles";
   private static final String JMXMP_PREFIX = "service:jmx:jmxmp://localhost:";
 
   private Integer unusedPort = -1;
@@ -72,7 +84,7 @@ public class JmxRemoteComponentTest extends BaseCase {
       jmxr.stop();
     }
     finally {
-      jmxr.destroy();
+      destroy(jmxr);
     }
     assertFalse(mBeanServer.isRegistered(jmxObjName));
   }
@@ -90,8 +102,11 @@ public class JmxRemoteComponentTest extends BaseCase {
 
     }
     finally {
+      destroy(jmxr);
+      destroy(jmx2);
     }
   }
+
 
   public void testNoProperties() throws Exception {
     ObjectName jmxObjName = new ObjectName(JmxRemoteComponent.DEFAULT_JMX_OBJECT_NAME);
@@ -104,7 +119,7 @@ public class JmxRemoteComponentTest extends BaseCase {
       jmxr.stop();
     }
     finally {
-      jmxr.destroy();
+      destroy(jmxr);
     }
   }
 
@@ -121,7 +136,7 @@ public class JmxRemoteComponentTest extends BaseCase {
       jmxr.stop();
     }
     finally {
-      jmxr.destroy();
+      destroy(jmxr);
     }
     assertFalse(mBeanServer.isRegistered(jmxObjName));
   }
@@ -154,10 +169,101 @@ public class JmxRemoteComponentTest extends BaseCase {
     assertEquals(DEFAULT_VALUE, resolver.resolve(DEFAULT_VALUE));
   }
 
+  public void testSASL_Authentication() throws Exception {
+    MBeanServer mBeanServer = JmxHelper.findMBeanServer();
+    JmxRemoteComponent jmxr = new JmxRemoteComponent();
+    JMXConnector jmxc = null;
+    Properties p = createProperties();
+    p.setProperty(JmxRemoteComponent.JMX_JMXMP_SASL_USERNAME, DEFAULT_USERNAME_PASSWORD);
+    p.setProperty(JmxRemoteComponent.JMX_JMXMP_SASL_PASSWORD, DEFAULT_USERNAME_PASSWORD);
+    try {
+      jmxr.init(p);
+      jmxr.start();
+      jmxc = createClientConnector(p.getProperty(Constants.CFG_KEY_JMX_SERVICE_URL_KEY), DEFAULT_USERNAME_PASSWORD, DEFAULT_USERNAME_PASSWORD);
+      MBeanServerConnection myMbeanServer = jmxc.getMBeanServerConnection();
+      assertTrue(Arrays.asList(myMbeanServer.getDomains()).contains("com.adaptris"));
+    } finally {
+      destroy(jmxr);
+      closeQuietly(jmxc);
+    }
+  }
+
+  public void testSASL_Authentication_EncodedPassword() throws Exception {
+    MBeanServer mBeanServer = JmxHelper.findMBeanServer();
+    JmxRemoteComponent jmxr = new JmxRemoteComponent();
+    JMXConnector jmxc = null;
+    Properties p = createProperties();
+    p.setProperty(JmxRemoteComponent.JMX_SERVICE_URL_ENV_PREFIX + JMX_REMOTE_PROFILES, SASL_PLAIN);
+    p.setProperty(JmxRemoteComponent.JMX_JMXMP_SASL_USERNAME, DEFAULT_USERNAME_PASSWORD);
+    p.setProperty(JmxRemoteComponent.JMX_JMXMP_SASL_PASSWORD, Password.encode(DEFAULT_USERNAME_PASSWORD, Password.PORTABLE_PASSWORD));
+    try {
+      jmxr.init(p);
+      jmxr.start();
+      jmxc = createClientConnector(p.getProperty(Constants.CFG_KEY_JMX_SERVICE_URL_KEY), DEFAULT_USERNAME_PASSWORD, DEFAULT_USERNAME_PASSWORD);
+      MBeanServerConnection myMbeanServer = jmxc.getMBeanServerConnection();
+      assertTrue(Arrays.asList(myMbeanServer.getDomains()).contains("com.adaptris"));
+    } finally {
+      destroy(jmxr);
+      closeQuietly(jmxc);
+    }
+  }
+
+  public void testSASL_Authentication_BadPassword() throws Exception {
+    MBeanServer mBeanServer = JmxHelper.findMBeanServer();
+    JmxRemoteComponent jmxr = new JmxRemoteComponent();
+    JMXConnector jmxc = null;
+    Properties p = createProperties();
+    p.setProperty(JmxRemoteComponent.JMX_JMXMP_SASL_USERNAME, DEFAULT_USERNAME_PASSWORD);
+    p.setProperty(JmxRemoteComponent.JMX_JMXMP_SASL_PASSWORD, DEFAULT_USERNAME_PASSWORD);
+    try {
+      jmxr.init(p);
+      jmxr.start();
+      jmxc = createClientConnector(p.getProperty(Constants.CFG_KEY_JMX_SERVICE_URL_KEY), DEFAULT_USERNAME_PASSWORD, "Hello World");
+      fail();
+    } catch (Exception expected) {
+    } finally {
+      destroy(jmxr);
+      closeQuietly(jmxc);
+    }
+  }
+
+  private JMXConnector createClientConnector(String urlString, String user, String password)
+      throws MalformedURLException, IOException {
+    HashMap env = new HashMap();
+    env.put(JMX_REMOTE_PROFILES, SASL_PLAIN);
+    env.put(JMXConnector.CREDENTIALS, new String[] {user, password});
+    return JMXConnectorFactory.connect(new JMXServiceURL(urlString), env);
+  }
+
+
   private Properties createProperties() {
     Properties result = new Properties();
     result.put(Constants.CFG_KEY_JMX_SERVICE_URL_KEY, JMXMP_PREFIX + unusedPort);
     return result;
+  }
+
+  private void closeQuietly(JMXConnector c) {
+    try {
+      if (c != null) {
+        c.close();
+      }
+    } catch (Exception e) {
+    }
+  }
+
+  private void destroy(JmxRemoteComponent c) {
+    if (c != null) {
+      try {
+        c.stop();
+      } catch (Exception e) {
+        
+      }
+      try {
+        c.destroy();
+      } catch (Exception e) {
+        
+      }
+    }
   }
 
 }

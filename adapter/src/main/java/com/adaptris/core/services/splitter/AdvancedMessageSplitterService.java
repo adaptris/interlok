@@ -19,7 +19,9 @@ package com.adaptris.core.services.splitter;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.EventHandler;
@@ -44,6 +46,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("advanced-message-splitter-service")
+@AdapterComponent
+@ComponentProfile(summary = "Split a message and execute an arbitary number of services on the split message",
+    tag = "service,splitter")
 public class AdvancedMessageSplitterService extends MessageSplitterServiceImp implements EventHandlerAware {
 
   @NotNull

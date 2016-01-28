@@ -14,13 +14,24 @@
  * limitations under the License.
 */
 
-package com.adaptris.core.runtime;
+package com.adaptris.core.config;
+
+import java.net.URL;
 
 import com.adaptris.core.CoreException;
-import com.adaptris.core.management.BootstrapProperties;
 
-public interface ConfigurationPreProcessorLoader {
+/**
+ * <p>
+ * Implementations of this interface will perform actions on the xml configuration before
+ * the configuration is unmarshalled.
+ * </p>
+ * @author amcgrath
+ *
+ */
+public interface ConfigPreProcessor {
   
-  PreProcessorsList load(BootstrapProperties bootstrapProperties) throws CoreException;
+  public String process(String xml) throws CoreException;
+  
+  public String process(URL urlToXml) throws CoreException;
 
 }

@@ -30,7 +30,9 @@ import java.util.Set;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.FileNameCreator;
@@ -57,6 +59,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @see WriteMetadataToFilesystem
  */
 @XStreamAlias("read-metadata-from-filesystem")
+@AdapterComponent
+@ComponentProfile(summary = "Read a set of metadata from the filesystem and add/replace current metadata", tag = "service,metadata")
 public class ReadMetadataFromFilesystem extends ServiceImp {
 
   private InputStyle inputStyle;

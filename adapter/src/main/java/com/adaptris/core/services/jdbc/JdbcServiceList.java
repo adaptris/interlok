@@ -23,6 +23,8 @@ import java.util.Collection;
 
 import javax.validation.Valid;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -73,6 +75,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author lchan
  */
 @XStreamAlias("jdbc-service-list")
+@AdapterComponent
+@ComponentProfile(summary = "A collection of services which has an additional database connection", tag = "service,jdbc")
 public class JdbcServiceList extends ServiceList {
 
   @Valid
@@ -94,12 +98,12 @@ public class JdbcServiceList extends ServiceList {
   protected void applyServices(AdaptrisMessage msg) throws ServiceException {
     try {
       if (getDatabaseConnection() != null) {
-        Connection conn = getDatabaseConnection().retrieveConnection(DatabaseConnection.class).connect();
-        msg.getObjectMetadata().put(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY, conn);
+        Connection conn = retrieveConnection().connect();
+        msg.getObjectHeaders().put(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY, conn);
       }
       super.applyServices(msg);
       // We may not have a valid connection here if we're using pooled connections.  If not, then no point in committing on a new connection.
-      Connection conn = (Connection) msg.getObjectMetadata().get(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY);
+      Connection conn = (Connection) msg.getObjectHeaders().get(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY);
       if((conn != null) && (!conn.isClosed()))
         JdbcUtil.commit(conn);
     }
@@ -108,7 +112,7 @@ public class JdbcServiceList extends ServiceList {
       rethrowServiceException(e);
     }
     finally {
-      Connection conn = (Connection) msg.getObjectMetadata().get(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY);
+      Connection conn = (Connection) msg.getObjectHeaders().get(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY);
       if(conn != null)
         JdbcUtil.closeQuietly(conn);
     }
@@ -118,10 +122,10 @@ public class JdbcServiceList extends ServiceList {
   protected void doInit() throws CoreException {
     LifecycleHelper.init(databaseConnection);
     super.doInit();
-    if(getDatabaseConnection() != null) {
+    if(databaseConnection != null) {
       for (Service service : this) {
         if(service instanceof JdbcService) {
-          ((JdbcService) service).setConnection(getDatabaseConnection());
+          ((JdbcService) service).setConnection(databaseConnection);
         }
       }
     }
@@ -148,7 +152,7 @@ public class JdbcServiceList extends ServiceList {
   private void rollback(AdaptrisMessage msg, Exception exc) throws ServiceException {
     try {
       log.warn("Exception encountered; attempting rollback due to: " + exc.getMessage());
-      Connection sqlConnection = (Connection) msg.getObjectMetadata().get(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY);
+      Connection sqlConnection = (Connection) msg.getObjectHeaders().get(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY);
       if (inDebugMode()) {
         log.trace("Rolling back SQLConnection=" + sqlConnection);
       }
@@ -161,7 +165,7 @@ public class JdbcServiceList extends ServiceList {
   }
 
   private boolean inDebugMode() {
-    return getDatabaseConnection() != null && getDatabaseConnection().retrieveConnection(DatabaseConnection.class).debugMode();
+    return getDatabaseConnection() != null && retrieveConnection().debugMode();
   }
 
   private void rethrowServiceException(Throwable e) throws ServiceException {
@@ -170,24 +174,28 @@ public class JdbcServiceList extends ServiceList {
     }
     throw new ServiceException(e);
   }
+  
+  private DatabaseConnection retrieveConnection() {
+    if(databaseConnection == null)
+      return null;
+    return databaseConnection.retrieveConnection(DatabaseConnection.class);
+  }
 
   @Override
   public void prepare() throws CoreException {
     super.prepare();
     if (databaseConnection != null) {
-      databaseConnection.retrieveConnection(DatabaseConnection.class).prepare();
+      retrieveConnection().prepare();
     }
   }
-
+  
   /**
    * Get the connection that will be used the underlying {@link JdbcService} instances.
    *
    * @return the connection.
    */
   public AdaptrisConnection getDatabaseConnection() {
-    if(databaseConnection == null)
-      return null;
-    return databaseConnection.retrieveConnection(DatabaseConnection.class);
+    return databaseConnection;
   }
 
   /**
