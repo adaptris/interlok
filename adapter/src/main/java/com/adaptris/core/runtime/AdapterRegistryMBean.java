@@ -82,7 +82,10 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
    * @param url the url.
    * @throws IOException
    * @throws CoreException
+   * @deprecated will be removed in 3.2. Invalid URL's are not serialized in the same way by later versions of the
+   * java runtime.
    */
+  @Deprecated
   void persistAdapter(AdapterManagerMBean adapter, URL url) throws IOException, CoreException;
 
   /**
@@ -92,7 +95,10 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
    * @param url the url.
    * @throws IOException
    * @throws CoreException
+   * @deprecated will be removed in 3.2. Invalid URL's are not serialized in the same way by later versions of the
+   * java runtime.
    */
+  @Deprecated
   void persistAdapter(ObjectName adapter, URL url) throws IOException, CoreException;
 
   /**
@@ -103,7 +109,10 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
    * @throws IOException
    * @throws CoreException
    * @since 3.0.3
+   * @deprecated will be removed in 3.2. Invalid URL's are not serialized in the same way by later versions of the
+   * java runtime.
    */
+  @Deprecated
   void persist(String data, URL url) throws IOException, CoreException;
 
   // Create an Adapter object, and an associated AdapterManagerMBean from the given URL.
@@ -120,7 +129,10 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
    * @throws IOException an error accessing the URL.
    * @throws CoreException an error creating the underlying adapter.
    * @throws MalformedObjectNameException if there was a problem
+   * @deprecated will be removed in 3.2. Invalid URL's are not serialized in the same way by later versions of the
+   * java runtime.
    */
+  @Deprecated
   ObjectName createAdapter(URL url) throws IOException, MalformedObjectNameException, CoreException;
 
   /**
@@ -138,17 +150,20 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
    * 
    * <pre>
    * {@code
-   *   ObjectName on = createAdapter(new URL("http://my/url"));
-   *   ObjectName on2 = createAdapter("<adapter>...</adapter>");
-   *   URL url = getConfigurationURL(on2);
+   * ObjectName on = createAdapter(new URL("http://my/url"));
+   * ObjectName on2 = createAdapter("<adapter>...</adapter>");
+   * URL url = getConfigurationURL(on2);
    * }
    * </pre>
    * 
    * @param adapterName object name representation for the associated {@link AdapterManagerMBean}
    * @return the URL that was used to create the object, or null, if {@linkplain #createAdapter(String xml)} was used to create a
-   *         new adapter.
+   * new adapter.
    * @since 3.0.2
+   * @deprecated will be removed in 3.2. Invalid URL's are not serialized in the same way by later versions of the
+   * java runtime.
    */
+  @Deprecated
   URL getConfigurationURL(ObjectName adapterName);
 
   /**
@@ -175,7 +190,10 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
    * 
    * @param adapterName object name representation for the associated {@link AdapterManagerMBean}
    * @param url the URL to be stored against the objectname
+   * @deprecated will be removed in 3.2. Invalid URL's are not serialized in the same way by later versions of the
+   * java runtime.
    */
+  @Deprecated
   void putConfigurationURL(ObjectName adapterName, URL url);
 
   // Create an Adapter object, and an associated AdapterManagerMBean from the given XML.
