@@ -84,7 +84,7 @@
     <dependency org="net.sf.saxon" name="Saxon-HE" rev="9.5.1-8" conf="compile->default" />
     <dependency org="xerces" name="xercesImpl" rev="2.11.0" conf="compile->default" />
 
-    <dependency org="com.mchange" name="c3p0" rev="0.9.5.1" conf="compile->default"/>
+    <dependency org="com.mchange" name="c3p0" rev="0.9.5.2" conf="compile->default"/>
 
     <!-- Jars required for testing only -->
     <dependency org="com.icegreen" name="greenmail" rev="1.4.0" conf="test->default"/>
@@ -103,6 +103,7 @@
     <dependency org="ant-contrib" name="ant-contrib" rev="1.0b3" conf="ant->default" transitive="false"/>
     <dependency org="org.jacoco" name="org.jacoco.ant" rev="0.7.4.201502262128" conf="ant->default"/>
 
+    <exclude org="c3p0"/>
     <exclude org="commons-logging"/>
     <exclude org="org.apache.geronimo"/>
     <exclude org="cglib"/>
