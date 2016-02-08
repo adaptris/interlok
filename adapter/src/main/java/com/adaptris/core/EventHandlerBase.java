@@ -102,7 +102,7 @@ public abstract class EventHandlerBase implements EventHandler {
    */
   @Override
   public void send(Event evt, ProduceDestination dest) throws CoreException {
-    eventProducerDelegate.produce(retrieveProducer(), createMessage(evt, null), dest);
+    eventProducerDelegate.produce(retrieveProducer(), evt, dest);
   }
 
   /** @see com.adaptris.core.EventHandler#send(com.adaptris.core.Event) */
@@ -279,27 +279,26 @@ public abstract class EventHandlerBase implements EventHandler {
     protected EventEmissary() {
     }
 
-    public void produce(final AdaptrisMessageSender producer, final AdaptrisMessage msg, final ProduceDestination dest) {
+    public void produce(final AdaptrisMessageSender producer, final Event msgEvent, final ProduceDestination dest) {
       executor.execute(new Thread() {
         @Override
         public void run() {
           String name = Thread.currentThread().getName();
-          // Thread.currentThread().setName("EventProducerThread@" +
-          // getUniqueId());
           Thread.currentThread().setName("EventProducerThread");
+          String eventClass = null;
           try {
+            AdaptrisMessage msg = createMessage(msgEvent, null);
+            eventClass = msg.getMetadataValue(CoreConstants.EVENT_CLASS);
             // should access to this producer be synchronized?
             // The null check here stops bug:844
             if (dest != null) {
               producer.produce(msg, dest);
-            }
-            else {
+            } else {
               producer.produce(msg);
             }
-          }
-          catch (ProduceException e) {
-            log.error("Failed to produce event " + msg.getMetadataValue(CoreConstants.EVENT_CLASS) + " to destination. "
-                + "Results dependent on this event may not be accurate", e);
+          } catch (CoreException e) {
+            log.error("Failed to produce event [{}] to destination. Results dependent on this event may not be accurate.",
+                eventClass, e);
           }
           Thread.currentThread().setName(name);
         }
