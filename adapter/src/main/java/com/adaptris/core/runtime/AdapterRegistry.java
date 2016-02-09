@@ -148,19 +148,16 @@ public class AdapterRegistry implements AdapterRegistryMBean {
 
   @Override
   public URLString getConfigurationURL(ObjectName adapterName) {
-    URLString url = configurationURLs.get(adapterName);
-    if (url != null) {
-      log.debug("SBELIN TMP LOGGING DEBUG: getConfigurationURL: url.toString(): " + url.toString());
-      log.debug("SBELIN TMP LOGGING DEBUG: getConfigurationURL: url.getPath(): " + url.getFile());
-    }
-    return url;
+    return configurationURLs.get(adapterName);
   }
 
   @Override
   public String getConfigurationURLString(ObjectName adapterName) {
     URLString url = getConfigurationURL(adapterName);
-    log.debug("SBELIN TMP LOGGING DEBUG: getConfigurationURLString: url.toString(): " + url.toString());
-    return url.toString();
+    if (url != null) {
+      return url.toString();
+    }
+    return null;
   }
 
   @Override
@@ -216,14 +213,11 @@ public class AdapterRegistry implements AdapterRegistryMBean {
 
   @Override
   public void persist(String data, URLString configUrl) throws CoreException, IOException {
-    log.debug("SBELIN TMP LOGGING DEBUG: persist: url.toString(): " + configUrl.toString());
-    log.debug("SBELIN TMP LOGGING DEBUG: persist: url.getFile(): " + configUrl.getFile());
     assertNotNull(configUrl, EXCEPTION_MSG_URL_NULL);
     URL url = configUrl.getURL();
     OutputStream out = null;
     try {
       if ("file".equalsIgnoreCase(url.getProtocol())) {
-        log.debug("SBELIN TMP LOGGING DEBUG: persist: FsHelper.createFileReference(url): " + FsHelper.createFileReference(url).getAbsolutePath());
         out = new FileOutputStream(FsHelper.createFileReference(url));
         persist(data, out);
       }
