@@ -60,14 +60,10 @@ public abstract class EventHandlerBase implements EventHandler {
 
   protected abstract AdaptrisMessageSender retrieveProducer() throws CoreException;
 
-  private AdaptrisMessage createMessage(Event evt, AdaptrisMessage original) throws CoreException {
+  private AdaptrisMessage createMessage(Event evt) throws CoreException {
     evt.setSourceId(retrieveSourceId());
     AdaptrisMessage result = currentMessageFactory().newMessage(currentMarshaller().marshal(evt));
     result.setUniqueId(evt.getUniqueId());
-    if (original != null) {
-      result.setMetadata(original.getMetadata());
-      result.getObjectMetadata().putAll(original.getObjectMetadata());
-    }
     result.addMetadata(CoreConstants.EVENT_NAME_SPACE_KEY, evt.getNameSpace());
     result.addMetadata(CoreConstants.EVENT_CLASS, evt.getClass().getName());
     return result;
@@ -287,7 +283,7 @@ public abstract class EventHandlerBase implements EventHandler {
           Thread.currentThread().setName("EventProducerThread");
           String eventClass = null;
           try {
-            AdaptrisMessage msg = createMessage(msgEvent, null);
+            AdaptrisMessage msg = createMessage(msgEvent);
             eventClass = msg.getMetadataValue(CoreConstants.EVENT_CLASS);
             // should access to this producer be synchronized?
             // The null check here stops bug:844
