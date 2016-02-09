@@ -30,6 +30,9 @@ import org.apache.commons.net.util.TrustManagerUtils;
  */
 public class CommonsNetFtpSslClient extends ApacheFtpClientImpl<FTPSClient> {
 
+  private static final boolean DEFAULT_IMPLICIT_SSL = false;
+
+  private boolean implicitSSL = DEFAULT_IMPLICIT_SSL;
   /**
    * Constructor.
    * 
@@ -38,8 +41,9 @@ public class CommonsNetFtpSslClient extends ApacheFtpClientImpl<FTPSClient> {
    * @param timeout the length of the timeout, in milliseconds
    * @throws IOException if a comms error occurs
    */
-  public CommonsNetFtpSslClient(String remoteHost, int port, int timeout) throws IOException {
+  public CommonsNetFtpSslClient(String remoteHost, int port, int timeout, boolean implicitSSL) throws IOException {
     super(remoteHost, port, timeout);
+    this.implicitSSL = implicitSSL;
   }
 
   /**
@@ -53,7 +57,7 @@ public class CommonsNetFtpSslClient extends ApacheFtpClientImpl<FTPSClient> {
    * @see CommonsNetFtpSslClient#CommonsNetFtpSslClient(String, int, int)
    */
   public CommonsNetFtpSslClient(String remoteHost, int port) throws IOException {
-    this(remoteHost, port, 0);
+    this(remoteHost, port, 0, DEFAULT_IMPLICIT_SSL);
   }
 
   /**
@@ -67,18 +71,21 @@ public class CommonsNetFtpSslClient extends ApacheFtpClientImpl<FTPSClient> {
    * @see CommonsNetFtpSslClient#CommonsNetFtpSslClient(String, int, int)
    */
   public CommonsNetFtpSslClient(InetAddress remoteAddr, int port) throws IOException {
-    this(remoteAddr.getHostAddress(), port, 0);
+    this(remoteAddr.getHostAddress(), port, 0, DEFAULT_IMPLICIT_SSL);
   }
 
   @Override
   protected FTPSClient createFTPClient() {
-    FTPSClient ftps = new FTPSClient(false);
+    FTPSClient ftps = new FTPSClient(implicitSSL);
     ftps.setTrustManager(TrustManagerUtils.getAcceptAllTrustManager());
     return ftps;
   }
 
   @Override
   protected void additionalSettings(FTPSClient client) throws IOException {
+    // With ImplicitSSL we still need to set the protection level; as by default
+    // the data channel is "Clear"...
+
     // Set protection buffer size
     client.execPBSZ(0);
     // Set data channel protection to private
