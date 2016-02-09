@@ -24,8 +24,6 @@ import java.util.Set;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
-import net.sf.saxon.trans.LicenseException;
-
 import com.adaptris.core.CoreException;
 import com.adaptris.util.URLString;
 
@@ -272,9 +270,8 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
    * @throws IOException an error accessing the URL.
    * @throws CoreException an error creating the underlying adapter.
    * @throws MalformedObjectNameException if there was a problem with the objectname.
-   * @throws LicenseException if there was an error with the license.
    */
-  ObjectName createAdapter(String xml) throws IOException, MalformedObjectNameException, CoreException, LicenseException;
+  ObjectName createAdapter(String xml) throws IOException, MalformedObjectNameException, CoreException;
 
   /**
    * Add an {@link AdapterManagerMBean} instance to the registry.
@@ -344,13 +341,11 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
    * 
    * @throws MalformedObjectNameException if there was a problem with any objectname.
    * @throws CoreException an error creating the underlying adapter(s).
-   * @throws LicenseException if there was an error with the license.
    * @throws IOException if there was a with reading the URL where the adapter is hosted.
    * @throws MalformedURLException if there was a problem with the URL found from config.
    * @since 3.0.3
    */
-  void reloadFromVersionControl() throws MalformedObjectNameException, CoreException, MalformedURLException, IOException,
-      LicenseException;
+  void reloadFromVersionControl() throws MalformedObjectNameException, CoreException, MalformedURLException, IOException;
 
   /**
    * Attempts to unmarshal the component within this target runtime unit.

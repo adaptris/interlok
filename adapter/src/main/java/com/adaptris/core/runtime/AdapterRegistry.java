@@ -42,8 +42,6 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
-import net.sf.saxon.trans.LicenseException;
-
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -424,8 +422,7 @@ public class AdapterRegistry implements AdapterRegistryMBean {
   }
 
   @Override
-  public void reloadFromVersionControl() throws MalformedObjectNameException, CoreException, MalformedURLException, IOException,
-  LicenseException {
+  public void reloadFromVersionControl() throws MalformedObjectNameException, CoreException, MalformedURLException, IOException {
     assertNotNull(runtimeVCS, EXCEPTION_MSG_NO_VCR);
     // first of all destroy all adapters.
     for (ObjectName o : getAdapters()) {
