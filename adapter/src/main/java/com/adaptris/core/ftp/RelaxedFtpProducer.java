@@ -72,7 +72,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("relaxed-ftp-producer")
 @AdapterComponent
-@ComponentProfile(summary = "Put a file on a FTP/SFTP server; uses PUT only", tag = "producer,ftp,ftps,sftp")
+@ComponentProfile(summary = "Put a file on a FTP/SFTP server; uses PUT only", tag = "producer,ftp,ftps,sftp",
+    recommended = {FileTransferConnection.class})
 public class RelaxedFtpProducer extends ProduceOnlyProducerImp {
 
   private static final String SLASH = "/";
