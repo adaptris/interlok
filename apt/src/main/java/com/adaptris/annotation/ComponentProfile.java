@@ -39,4 +39,12 @@ public @interface ComponentProfile {
    * 
    */
   String tag() default "";
+
+  /**
+   * Returns an array of classes that are contextually related with this component.
+   * <p>For a producer, this would be the list of connections that you should associate with it.</p>
+   * @return an array of classes
+   * @since 3.2.0
+   */
+  Class[]recommended() default {};
 }
