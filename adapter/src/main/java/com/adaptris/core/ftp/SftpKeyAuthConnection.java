@@ -28,6 +28,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
 import com.adaptris.security.exc.PasswordException;
@@ -71,7 +72,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("sftp-key-auth-connection")
 @AdapterComponent
-@ComponentProfile(summary = "Connect to a server using the SSH File Transfer Protocol; authentication via keys", tag = "base")
+@ComponentProfile(summary = "Connect to a server using the SSH File Transfer Protocol; authentication via keys",
+    tag = "connections,sftp")
+@DisplayOrder(order = {"defaultUserName", "privateKeyFilename", "privateKeyPassword", "defaultControlPort"})
 public class SftpKeyAuthConnection extends FileTransferConnection {
 
   private static final String SCHEME_SFTP = "sftp";

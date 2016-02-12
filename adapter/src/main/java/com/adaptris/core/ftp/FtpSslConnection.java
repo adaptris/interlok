@@ -21,6 +21,7 @@ import java.io.IOException;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.ftp.ApacheFtpClientImpl;
 import com.adaptris.ftp.CommonsNetFtpSslClient;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -56,6 +57,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("ftp-ssl-connection")
 @AdapterComponent
 @ComponentProfile(summary = "Connect to a FTP Server with explicit SSL with a username and password", tag = "connections,ftps")
+@DisplayOrder(order = {"defaultUserName", "defaultPassword", "defaultControlPort"})
 public class FtpSslConnection extends FtpConnectionImp {
 
   private static final String SCHEME_FTPS = "ftps";
