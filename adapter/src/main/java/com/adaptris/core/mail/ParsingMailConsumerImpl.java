@@ -17,7 +17,6 @@
 package com.adaptris.core.mail;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 import com.adaptris.util.text.mime.PartSelector;
 
@@ -28,7 +27,7 @@ import com.adaptris.util.text.mime.PartSelector;
  * 
  */
 public abstract class ParsingMailConsumerImpl extends MailConsumerImp {
-  @NotNull
+
   @Valid
   private PartSelector partSelector;
 
