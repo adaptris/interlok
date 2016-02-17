@@ -74,6 +74,17 @@ public class MetadataAppenderServiceTest extends MetadataServiceExample {
     execute(service, msg);
     assertTrue("val1val3".equals(msg.getMetadataValue(resultKey)));
   }
+  
+  public void testTwoReferencedKeys() throws CoreException {
+    msg.addMessageHeader("RefKey1", "key1");
+    msg.addMessageHeader("RefKey3", "key3");
+    
+    service.addAppendKey("$$RefKey1");
+    service.addAppendKey("$$RefKey3");
+
+    execute(service, msg);
+    assertTrue("val1val3".equals(msg.getMetadataValue(resultKey)));
+  }
 
   public void testTwoKeysOneNotSet() throws CoreException {
     service.addAppendKey("key1");
