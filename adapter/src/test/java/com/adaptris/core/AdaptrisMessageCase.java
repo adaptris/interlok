@@ -160,6 +160,16 @@ public abstract class AdaptrisMessageCase {
     assertTrue(msg1.getMetadataValue("key3") == null);
     assertNull(msg1.getMetadataValue(null));
   }
+  
+  @Test
+  public void testGetReferencedMetadata() throws Exception {
+    AdaptrisMessage msg1 = createMessage();
+    
+    msg1.addMessageHeader("RefKey", "key1");
+
+    assertTrue(msg1.getMetadataValue("RefKey").equals("key1"));
+    assertTrue(msg1.getMetadataValue("$$RefKey").equals("val1"));
+  }
 
   @Test
   public void testGetMetadata() throws Exception {
@@ -186,6 +196,16 @@ public abstract class AdaptrisMessageCase {
     assertTrue(msg1.headersContainsKey("key1"));
     assertTrue(!msg1.headersContainsKey("key3"));
   }
+  
+  @Test
+  public void testContainsReferencedKey() throws Exception {
+    AdaptrisMessage msg1 = createMessage();
+    
+    msg1.addMessageHeader("RefKey1", "key1");
+
+    assertTrue(msg1.headersContainsKey("RefKey1"));
+    assertTrue(msg1.headersContainsKey("$$RefKey1")); // tests for "key1"
+  }
 
   @Test
   public void testAddMetadata() throws Exception {
@@ -196,6 +216,17 @@ public abstract class AdaptrisMessageCase {
 
     msg1.addMetadata(new MetadataElement("key5", "val5"));
     assertTrue(msg1.getMetadataValue("key5").equals("val5"));
+  }
+  
+  @Test
+  public void testAddReferencedMetadata() throws Exception {
+    AdaptrisMessage msg1 = createMessage();
+    
+    msg1.addMessageHeader("RefKey", "key999");
+
+    msg1.addMetadata("$$RefKey", "val999");
+    assertTrue(msg1.getMetadataValue("key999").equals("val999"));
+    assertTrue(msg1.getMetadataValue("$$RefKey").equals("val999"));
   }
 
   @Test

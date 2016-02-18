@@ -97,7 +97,7 @@ public abstract class CoreConstants {
 
   /**
    * <p>
-   * Metadata key for storing the original name (generally file name) of a message.
+   * Metadata key for storing the last modified date of the consumed file.
    * </p>
    */
   public static final String FILE_LAST_MODIFIED_KEY = "lastmodified";

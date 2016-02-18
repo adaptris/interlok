@@ -51,7 +51,7 @@ public class MimeMailCreatorTest extends BaseCase {
 
   private static final String[] CONTENT_DISPOSITON =
   {
-      "attachment; name=\"attachment1.txt\"", "attachment;",
+      "attachment; filename=\"attachment1.txt\"", "attachment;",
       "attachment;"
 
   };

@@ -97,8 +97,8 @@ public class DefaultMailConsumerPartSelectorTest extends MailConsumerExample {
         + "<!-- This shows an example of using a PartSelector which allows you to selectively"
         + "\nignore some parts of the email depending on configuration; check the javadocs for the"
         + "\nvarious PartSelector implementations for more imformation. \n"
-        + "\nIn this particular configuration, the part at index 1, (indexing starts from 0, so the 2nd part)"
-        + "\nis selected which means all other parts are ignored." + "\n\n-->\n";
+        + "\nTypical configurations may select a part by index (indexing starts from 0), by content id or by matching against a header."
+        + "\n\n-->\n";
   }
 
 }

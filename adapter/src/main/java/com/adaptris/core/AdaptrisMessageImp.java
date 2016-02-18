@@ -18,6 +18,8 @@ package com.adaptris.core;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
+import static com.adaptris.core.metadata.MetadataResolver.resolveKey;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,6 +46,17 @@ import com.adaptris.util.KeyValuePairSet;
  * <p>
  * Standard implementation of {@link com.adaptris.core.AdaptrisMessage} interface.
  * </p>
+ * <p>
+ * When referring to metadata items by key you can use a form of indirection by specifying a prefix to your key ("$$").<br />
+ * Using this prefix on any metadata key will not perform an action (retrieve, add etc) to that metadata item but instead will look up
+ * the value of that metadata key and use the value as the metadata item key to be performed on. <br />
+ * Example: <br />
+ * Calling <b>addMetadata("myKey", "myValue");</b><br />
+ * Will create a new metadata item with the key "myKey" and the value "myValue".<br />
+ * However calling <b>addMetadata("$$myKey", "myValue")</b> will lookup the value of the metadata key named "myKey" and use that value as the 
+ * key for the addMetadata() method. 
+ * </p>
+ * 
  *
  * @see DefaultMessageFactory
  * @see AdaptrisMessageFactory
@@ -122,23 +135,23 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
   @Override
   public boolean containsKey(String key) {
-    return metadata.contains(new KeyValuePair(key, ""));
+    return metadata.contains(new KeyValuePair(resolveKey(this, key), ""));
   }
   
   /** @see AdaptrisMessage#headersContainsKey(String)*/
   @Override
   public boolean headersContainsKey(String key) {
-    return metadata.contains(new KeyValuePair(key, ""));
+    return metadata.contains(new KeyValuePair(resolveKey(this, key), ""));
   }
 
   @Override
   public synchronized void addMetadata(String key, String value) {
-    this.addMessageHeader(key, value);
+    this.addMessageHeader(resolveKey(this, key), value);
   }
   
   @Override
   public void addMessageHeader(String key, String value) {
-    this.addMetadata(new MetadataElement(key, value));
+    this.addMetadata(new MetadataElement(resolveKey(this, key), value));
   }
 
   /** @see AdaptrisMessage#addMetadata(MetadataElement) */
@@ -147,19 +160,21 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     if (metadata.contains(e)) {
       removeMetadata(e);
     }
+    e.setKey(resolveKey(this, e.getKey()));
     metadata.addKeyValuePair(e);
   }
 
   /** @see AdaptrisMessage#removeMetadata(MetadataElement) */
   @Override
   public void removeMetadata(MetadataElement element) {
+    element.setKey(resolveKey(this, element.getKey()));
     metadata.removeKeyValuePair(element);
   }
   
   /** @see AdaptrisMessage#removeMessageHeader(String) */
   @Override
   public void removeMessageHeader(String key) {
-    metadata.remove(key);
+    metadata.remove(resolveKey(this, key));
   }
 
   /** @see AdaptrisMessage#setMetadata(Set) */
@@ -190,7 +205,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   @Override
   public String getMetadataValue(String key) { // is case-sensitive
     if (key != null) {
-      return metadata.getValue(key);
+      return metadata.getValue(resolveKey(this, key));
     }
     return null;
   }
@@ -199,7 +214,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   @Override
   public MetadataElement getMetadata(String key) {
     if (key != null && containsKey(key)) {
-      return new MetadataElement(metadata.getKeyValuePair(key));
+      return new MetadataElement(metadata.getKeyValuePair(resolveKey(this, key)));
     }
     return null;
   }

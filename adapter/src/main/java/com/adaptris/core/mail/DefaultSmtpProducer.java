@@ -58,8 +58,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <li>emailattachmentcontenttype - If this is set, and the message is to be sent as an attachment, then this will be used as the
  * attachment content-type, otherwise the default setting (or configured setting) will be used.</li>
  * <li>emailcc - If this is set, this this comma separated list will override any configured CC list.</li>
- * <li>emailattachmentcontenttype - If this is set, and the message is to be sent as an attachment, then this will be used as the
- * attachment content-type, otherwise the default setting (or configured setting) will be used.</li>
  * </ul>
  * <p>
  * It is possible to control the underlying behaviour of this producer through the use of various properties that will be passed to
