@@ -35,6 +35,7 @@ import com.adaptris.core.ProduceOnlyProducerImp;
 import com.adaptris.core.metadata.MetadataFilter;
 import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.metadata.RemoveAllMetadataFilter;
+import com.adaptris.core.util.Args;
 import com.adaptris.mail.MailException;
 import com.adaptris.mail.SmtpClient;
 import com.adaptris.security.exc.PasswordException;
@@ -270,7 +271,7 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
    *
    * @return the properties.
    */
-  public KeyValuePairSet getProperties() {
+  public KeyValuePairSet getSessionProperties() {
     return sessionProperties;
   }
 
@@ -279,11 +280,8 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
    *
    * @param kp the properties
    */
-  public void setProperties(KeyValuePairSet kp) {
-    if (kp == null) {
-      throw new IllegalArgumentException("Illegal null Properties" + kp + "]");
-    }
-    sessionProperties = kp;
+  public void setSessionProperties(KeyValuePairSet kp) {
+    sessionProperties = Args.notNull(kp, "sessionProperties");
   }
 
   /**
