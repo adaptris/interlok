@@ -1042,6 +1042,55 @@ public class StoredProcedureProducerTest extends ProducerCase {
       }
     }
   }
+  
+  public void testProduce_AdvancedPooledConnection() throws Exception {
+    int maxServices = 5;
+    final int iterations = 5;
+    int poolsize = maxServices - 1;
+    if (testsEnabled) {
+      List<Service> serviceList = new ArrayList<Service>();
+      String name = Thread.currentThread().getName();
+      Thread.currentThread().setName(getName());
+      AdvancedJdbcPooledConnection conn = PooledConnectionHelper.createAdvancedPooledConnection(PROPERTIES.getProperty(JDBC_DRIVER),
+          PROPERTIES.getProperty(JDBC_URL), poolsize);
+      conn.setUsername(PROPERTIES.getProperty(JDBC_USER));
+      conn.setPassword(PROPERTIES.getProperty(JDBC_PASSWORD));
+
+      try {
+        for (int i = 0; i < maxServices; i++) {
+          JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
+          spp.setDestination(new ConfiguredProduceDestination("one_in"));
+          JdbcStringPayloadParameter inParameter = new JdbcStringPayloadParameter();
+          inParameter.setName("xType");
+          inParameter.setType(ParameterValueType.VARCHAR);
+          AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("Sold");
+
+          InParameters inParameters = new InParameters();
+          inParameters.add(inParameter);
+
+          spp.setInParameters(inParameters);
+          StandaloneProducer service = configureForTests(spp, false);
+          service.setConnection(conn);
+          serviceList.add(service);
+          start(service);
+        }
+        assertEquals(0, conn.currentBusyConnectionCount());
+        PooledConnectionHelper.executeTest(serviceList, iterations, new PooledConnectionHelper.MessageCreator() {
+          @Override
+          public AdaptrisMessage createMsgForPooledConnectionTest() throws Exception {
+            return createMessage("Sold");
+          }
+        });
+        assertEquals(0, conn.currentBusyConnectionCount());
+        assertEquals(poolsize, conn.currentIdleConnectionCount());
+        assertEquals(poolsize, conn.currentConnectionCount());
+      }
+      finally {
+        stop(serviceList.toArray(new ComponentLifecycle[0]));
+        Thread.currentThread().setName(name);
+      }
+    }
+  }
 
   public void testStringPayloadParamOut() throws Exception {
     if (testsEnabled) {

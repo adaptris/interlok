@@ -27,8 +27,11 @@ import com.adaptris.core.BaseCase;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.JndiContextFactory;
 import com.adaptris.core.NullConnection;
+import com.adaptris.core.jdbc.AdvancedJdbcPooledConnection;
 import com.adaptris.core.jdbc.JdbcPooledConnection;
+import com.adaptris.core.jdbc.PooledConnectionProperties;
 import com.adaptris.util.GuidGenerator;
+import com.adaptris.util.KeyValuePair;
 
 public class JndiHelperTest extends BaseCase {
   private Properties env = new Properties();
@@ -230,6 +233,28 @@ public class JndiHelperTest extends BaseCase {
       JndiHelper.bind(initialContext, connection, true);
       JdbcPooledConnection lookedup = (JdbcPooledConnection) initialContext.lookup("adapter:comp/env/" + getName());
       assertEquals("jdbcConnectionLookup", lookedup.getUniqueId());
+      assertNotNull(initialContext.lookup("adapter:comp/env/jdbc/" + getName()));
+    }
+    finally {
+      JndiHelper.unbindQuietly(initialContext, connection, true);
+    }
+  }
+  
+  public void testBindAdvancedJdbcConnection_WithLookupName() throws Exception {
+    AdvancedJdbcPooledConnection connection = new AdvancedJdbcPooledConnection();
+    connection.setConnectUrl("jdbc:derby:memory:" + new GuidGenerator().safeUUID() + ";create=true");
+    connection.setDriverImp("org.apache.derby.jdbc.EmbeddedDriver");
+    connection.getConnectionPoolProperties().add(new KeyValuePair(PooledConnectionProperties.minPoolSize.name(), "1"));
+    connection.getConnectionPoolProperties().add(new KeyValuePair(PooledConnectionProperties.acquireIncrement.name(), "1"));
+    connection.getConnectionPoolProperties().add(new KeyValuePair(PooledConnectionProperties.maxPoolSize.name(), "7"));
+    connection.setUniqueId("jdbcAdvConnectionLookup");
+    connection.setLookupName("adapter:comp/env/" + getName());
+
+    InitialContext initialContext = new InitialContext(env);
+    try {
+      JndiHelper.bind(initialContext, connection, true);
+      AdvancedJdbcPooledConnection lookedup = (AdvancedJdbcPooledConnection) initialContext.lookup("adapter:comp/env/" + getName());
+      assertEquals("jdbcAdvConnectionLookup", lookedup.getUniqueId());
       assertNotNull(initialContext.lookup("adapter:comp/env/jdbc/" + getName()));
     }
     finally {

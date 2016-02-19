@@ -29,6 +29,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ComponentLifecycle;
 import com.adaptris.core.Service;
+import com.adaptris.core.jdbc.AdvancedJdbcPooledConnection;
 import com.adaptris.core.jdbc.JdbcConnection;
 import com.adaptris.core.jdbc.JdbcPooledConnection;
 import com.adaptris.core.jdbc.PooledConnectionHelper;
@@ -254,6 +255,46 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
 
     List<Service> serviceList = new ArrayList<Service>();
     JdbcPooledConnection conn = PooledConnectionHelper.createPooledConnection(PROPERTIES.getProperty(JDBC_QUERYSERVICE_DRIVER),
+        PROPERTIES.getProperty(JDBC_QUERYSERVICE_URL), poolsize);
+
+    try {
+      for (int i = 0; i < maxServices; i++) {
+        JdbcDataQueryService service = createMetadataService(false);
+        service.setConnection(conn);
+        serviceList.add(service);
+        start(service);
+      }
+      assertEquals(0, conn.currentBusyConnectionCount());
+      PooledConnectionHelper.executeTest(serviceList, iterations, new PooledConnectionHelper.MessageCreator() {
+        @Override
+        public AdaptrisMessage createMsgForPooledConnectionTest() throws Exception {
+          return createMessage(entry);
+        }
+      });
+      assertEquals(0, conn.currentBusyConnectionCount());
+      assertEquals(poolsize, conn.currentIdleConnectionCount());
+      assertEquals(poolsize, conn.currentConnectionCount());
+    }
+    finally {
+      stop(serviceList.toArray(new ComponentLifecycle[0]));
+      Thread.currentThread().setName(name);
+    }
+  }
+  
+  public void testService_AdvancedPooledConnection() throws Exception {
+    int maxServices = 5;
+    final int iterations = 5;
+    int poolsize = maxServices - 1;
+
+    String name = Thread.currentThread().getName();
+    Thread.currentThread().setName(getName());
+    createDatabase();
+    List<AdapterTypeVersion> dbItems = generate(10);
+    final AdapterTypeVersion entry = dbItems.get(0);
+    populateDatabase(dbItems, false);
+
+    List<Service> serviceList = new ArrayList<Service>();
+    AdvancedJdbcPooledConnection conn = PooledConnectionHelper.createAdvancedPooledConnection(PROPERTIES.getProperty(JDBC_QUERYSERVICE_DRIVER),
         PROPERTIES.getProperty(JDBC_QUERYSERVICE_URL), poolsize);
 
     try {
