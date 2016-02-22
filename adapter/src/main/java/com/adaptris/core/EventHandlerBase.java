@@ -25,6 +25,7 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.util.LifecycleHelper;
 
 /**
@@ -37,10 +38,13 @@ public abstract class EventHandlerBase implements EventHandler {
   private static final int DEFAULT_SHUTDOWN_WAIT = 60;
 
   @Valid
+  @AdvancedConfig
   private AdaptrisMarshaller marshaller;
   @Valid
+  @AdvancedConfig
   private AdaptrisMessageFactory messageFactory;
   private String uniqueId;
+  @AdvancedConfig
   private Integer shutdownWaitSeconds;
 
   protected transient EventEmissary eventProducerDelegate;

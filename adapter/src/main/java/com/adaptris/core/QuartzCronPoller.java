@@ -42,6 +42,7 @@ import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.NonBlockingQuartzThreadPool;
 import com.adaptris.util.FifoMutexLock;
@@ -201,6 +202,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("quartz-cron-poller")
+@DisplayOrder(order = {"cronExpression", "useCustomThreadPool", "quartzId", "schedulerGroup"})
 public class QuartzCronPoller extends PollerImp {
 
   private transient SchedulerFactory factory;

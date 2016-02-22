@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.DisplayOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -33,6 +34,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @Deprecated
 @XStreamAlias("standard-file-name-creator")
+@DisplayOrder(order = {"useMessageUniqueId", "prefix", "suffix", "addTimestamp"})
 public class StandardFileNameCreator implements FileNameCreator {
   private static transient boolean warningLogged = false;
   private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
