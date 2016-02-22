@@ -26,8 +26,8 @@ import org.apache.commons.io.FileDeleteStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.DefaultMessageFactory;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -44,6 +44,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @see AdaptrisMessageFactory
  */
 @XStreamAlias("file-backed-message-factory")
+@DisplayOrder(order = {"defaultCharEncoding", "tempDirectory", "maxMemorySizeBytes", "defaultBufferSize"})
 public class FileBackedMessageFactory extends DefaultMessageFactory {
 
   // The default max size to limit a getStringPayload() to (10Mb)

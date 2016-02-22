@@ -20,6 +20,7 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.io.File;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -30,6 +31,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * extract them before sending them in to the adapter.
  */
 @XStreamAlias("zip-file-backed-message-factory")
+@DisplayOrder(order = {"compressionMode", "defaultCharEncoding", "tempDirectory", "maxMemorySizeBytes", "defaultBufferSize"})
 public class ZipFileBackedMessageFactory extends FileBackedMessageFactory {
 
   public enum CompressionMode {
