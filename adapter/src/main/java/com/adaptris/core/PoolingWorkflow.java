@@ -32,6 +32,7 @@ import org.perf4j.aop.Profiled;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.FifoMutexLock;
@@ -72,6 +73,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("pooling-workflow")
 @AdapterComponent
 @ComponentProfile(summary = "Workflow with a thread pool handling the service chain", tag = "workflow,base")
+@DisplayOrder(order = {"poolSize", "minIdle", "maxIdle", "threadPriority", "disableDefaultMessageCount"})
 public class PoolingWorkflow extends WorkflowImp {
 
   /**

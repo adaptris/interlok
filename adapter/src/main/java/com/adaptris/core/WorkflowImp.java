@@ -67,6 +67,8 @@ public abstract class WorkflowImp implements Workflow {
   private Boolean disableDefaultMessageCount;
 
   // Could be null; if it is, then the real one gets injected in later.
+  @AdvancedConfig
+  @Valid
   private ProcessingExceptionHandler messageErrorHandler; // configured
   // private EventHandler eventHandler;
 
