@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.security.password.Password;
@@ -34,6 +35,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Connect to a database using a JDBC driver; connection pooling handled via C3P0",
     tag = "connections,jdbc")
+@DisplayOrder(order = {"username", "password", "driverImp", "connectUrl", "connectionProperties"})
 public class AdvancedJdbcPooledConnection extends DatabaseConnection {
   
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());

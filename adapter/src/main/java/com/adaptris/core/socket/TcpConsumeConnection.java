@@ -21,6 +21,7 @@ import java.net.ServerSocket;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -36,6 +37,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("tcp-consume-connection")
 @AdapterComponent
 @ComponentProfile(summary = "Connection that listens on a standard TCP socket", tag = "connections,socket,tcp")
+@DisplayOrder(order = {"listenPort", "timeout", "backlog"})
 public class TcpConsumeConnection extends ConsumeConnection {
 
   /**

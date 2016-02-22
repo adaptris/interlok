@@ -33,6 +33,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.security.password.Password;
 import com.adaptris.util.KeyValuePair;
@@ -73,6 +74,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Connection that creates its own jetty engine instance and listens on the specified port",
     tag = "connections,https,jetty")
+@DisplayOrder(order = {"port", "httpProperties, sslProperties"})
 public class HttpsConnection extends HttpConnection {
   /**
    * Properties for {@link SslContextFactory}.
