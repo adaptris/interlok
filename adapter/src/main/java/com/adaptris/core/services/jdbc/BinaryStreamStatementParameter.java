@@ -27,42 +27,23 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * Binary Stream Statement Parameter.
  * 
- * <p>
- * Note that this class pays no heed to the {@link StatementParameter#setQueryClass(String)} setting. Additionally,
- * {@link StatementParameter#setConvertNull(Boolean)} has no meaning; null/empty/whitespace values are implicitly false.
- * </p>
  * 
  * @config jdbc-binary-stream-statement-parameter
  * @author amcgrath
  * 
  */
 @XStreamAlias("jdbc-binary-stream-statement-parameter")
-public class BinaryStreamStatementParameter extends StatementParameter {
+public class BinaryStreamStatementParameter extends NamedStatementParameter {
 
   public BinaryStreamStatementParameter() {
     super();
-    setQueryType(QueryType.payload);
   }
 
-  public BinaryStreamStatementParameter(String query, Class<?> clazz, QueryType type) {
-    this(query, clazz, type, null);
+  public BinaryStreamStatementParameter(String name) {
+    this();
+    setName(name);
   }
 
-  public BinaryStreamStatementParameter(String query, String classname, QueryType type) {
-    this(query, classname, type, null);
-  }
-
-  public BinaryStreamStatementParameter(String query, String classname, QueryType type, Boolean nullConvert) {
-    this(query, classname, type, nullConvert, null);
-  }
-
-  public BinaryStreamStatementParameter(String query, String classname, QueryType type, Boolean nullConvert, String paramName) {
-    super(query, classname, type, nullConvert, paramName);
-  }
-  
-  public BinaryStreamStatementParameter(String query, Class<?> clazz, QueryType type, Boolean nullConvert) {
-    this(query, clazz.getName(), type, nullConvert);
-  }
   
   @Override
   public void apply(int parameterIndex, PreparedStatement statement, AdaptrisMessage msg) throws SQLException, ServiceException {
@@ -72,14 +53,10 @@ public class BinaryStreamStatementParameter extends StatementParameter {
       throw new ServiceException(ex);
     }
   }
-  
+
+
   @Override
-  public Object convertToQueryClass(Object value) throws ServiceException {
-    return null;
+  public BinaryStreamStatementParameter makeCopy() {
+    return new BinaryStreamStatementParameter(getName());
   }
-  
-  public Object getQueryValue(AdaptrisMessage msg) {
-    return null;
-  }
-  
 }

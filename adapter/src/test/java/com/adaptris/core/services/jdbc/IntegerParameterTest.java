@@ -36,14 +36,7 @@ public class IntegerParameterTest {
   @Test
   public void testConvert() throws Exception {
     IntegerStatementParameter sp = new IntegerStatementParameter();
-    assertEquals(Integer.valueOf(55), sp.convertToQueryClass("55"));
-  }
-
-  @Test
-  public void testConvertWithQueryClass() throws Exception {
-    IntegerStatementParameter sp = new IntegerStatementParameter();
-    sp.setQueryClass("java.lang.String");
-    assertEquals(Integer.valueOf(55), sp.convertToQueryClass("55"));
+    assertEquals(Integer.valueOf(55), sp.toInteger("55"));
   }
 
   @Test
@@ -51,14 +44,14 @@ public class IntegerParameterTest {
     IntegerStatementParameter sp = new IntegerStatementParameter();
     sp.setConvertNull(false);
     try {
-      sp.convertToQueryClass(null);
+      sp.toInteger(null);
       fail("Expected Exception");
     }
     catch (RuntimeException expected) {
       // expected
     }
     try {
-      sp.convertToQueryClass("");
+      sp.toInteger("");
       fail("Expected Exception");
     }
     catch (RuntimeException expected) {
@@ -70,7 +63,7 @@ public class IntegerParameterTest {
   public void testConvertWithConvertNull() throws Exception {
     IntegerStatementParameter sp = new IntegerStatementParameter();
     sp.setConvertNull(true);
-    assertEquals(Integer.valueOf(0), sp.convertToQueryClass(""));
+    assertEquals(Integer.valueOf(0), sp.toInteger(""));
   }
 
 }

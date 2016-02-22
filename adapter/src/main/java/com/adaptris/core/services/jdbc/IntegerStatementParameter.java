@@ -17,8 +17,13 @@
 package com.adaptris.core.services.jdbc;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.apache.commons.lang.math.NumberUtils.toInt;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import org.apache.commons.lang.math.NumberUtils;
+
+import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -26,8 +31,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * {@link Integer} Statement Parameter.
  * 
  * <p>
- * Note that this class pays no heed to the {@link StatementParameter#setQueryClass(String)} setting; if {@code convert-null} is
- * true, then empty/blank/whitespace only values will default to 0.
+ * If {@code convert-null} is true, then empty/blank/whitespace only values will default to 0.
  * </p>
  * 
  * @config jdbc-integer-statement-parameter
@@ -35,28 +39,34 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("jdbc-integer-statement-parameter")
-public class IntegerStatementParameter extends StatementParameter {
+public class IntegerStatementParameter extends TypedStatementParameter {
 
   public IntegerStatementParameter() {
     super();
-    super.setQueryClass(null);
   }
 
-  public IntegerStatementParameter(String query, QueryType type) {
-    this(query, type, null);
-  }
-
-  public IntegerStatementParameter(String query, QueryType type, Boolean nullConvert) {
-    super(query, (String) null, type, nullConvert);
+  public IntegerStatementParameter(String query, QueryType type, Boolean nullConvert, String name) {
+    super(query, type, nullConvert, name);
   }
 
   @Override
-  public Object convertToQueryClass(Object value) throws ServiceException {
+  public void apply(int parameterIndex, PreparedStatement statement, AdaptrisMessage msg) throws SQLException, ServiceException {
+    log.trace("Setting argument {} to [{}]", parameterIndex, getQueryValue(msg));
+    statement.setObject(parameterIndex, toInteger(getQueryValue(msg)));
+  }
+
+
+  Integer toInteger(Object value) throws ServiceException {
     if (isBlank((String) value) && convertNull()) {
-      return Integer.valueOf(toInt((String) value));
-    }
-    else {
+      return Integer.valueOf(NumberUtils.toInt((String) value));
+    } else {
       return Integer.valueOf((String) value);
     }
   }
+
+  @Override
+  public IntegerStatementParameter makeCopy() {
+    return new IntegerStatementParameter(getQueryString(), getQueryType(), getConvertNull(), getName());
+  }
+
 }

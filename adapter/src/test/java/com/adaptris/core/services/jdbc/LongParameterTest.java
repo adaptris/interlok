@@ -36,29 +36,23 @@ public class LongParameterTest {
   @Test
   public void testConvert() throws Exception {
     LongStatementParameter sp = new LongStatementParameter();
-    assertEquals(Long.valueOf(55), sp.convertToQueryClass("55"));
+    assertEquals(Long.valueOf(55), sp.toLong("55"));
   }
 
-  @Test
-  public void testConvertWithQueryClass() throws Exception {
-    LongStatementParameter sp = new LongStatementParameter();
-    sp.setQueryClass("java.lang.String");
-    assertEquals(Long.valueOf(55), sp.convertToQueryClass("55"));
-  }
 
   @Test
   public void testConvertNull() throws Exception {
     LongStatementParameter sp = new LongStatementParameter();
     sp.setConvertNull(false);
     try {
-      sp.convertToQueryClass(null);
+      sp.toLong(null);
       fail("Expected Exception");
     }
     catch (RuntimeException expected) {
       // expected
     }
     try {
-      sp.convertToQueryClass("");
+      sp.toLong("");
       fail("Expected Exception");
     }
     catch (RuntimeException expected) {
@@ -70,7 +64,7 @@ public class LongParameterTest {
   public void testConvertWithConvertNull() throws Exception {
     LongStatementParameter sp = new LongStatementParameter();
     sp.setConvertNull(true);
-    assertEquals(Long.valueOf(0), sp.convertToQueryClass(""));
+    assertEquals(Long.valueOf(0), sp.toLong(""));
   }
 
 }

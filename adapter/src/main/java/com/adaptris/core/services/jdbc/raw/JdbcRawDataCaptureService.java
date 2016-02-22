@@ -31,7 +31,7 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.jdbc.JdbcDataCaptureServiceImpl;
-import com.adaptris.core.services.jdbc.StatementParameter;
+import com.adaptris.core.services.jdbc.JdbcStatementParameter;
 import com.adaptris.core.services.jdbc.StatementParameterList;
 import com.adaptris.core.util.JdbcUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -76,7 +76,7 @@ public class JdbcRawDataCaptureService extends JdbcDataCaptureServiceImpl {
    *
    * @param query the StatementParameter
    */
-  public void addStatementParameter(StatementParameter query) {
+  public void addStatementParameter(JdbcStatementParameter query) {
     statementParameters.add(query);
   }
 

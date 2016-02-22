@@ -35,20 +35,13 @@ public class BooleanParameterTest {
   @Test
   public void testConvert() throws Exception {
     BooleanStatementParameter sp = new BooleanStatementParameter();
-    assertEquals(Boolean.TRUE, sp.convertToQueryClass("on"));
-  }
-
-  @Test
-  public void testConvertWithQueryClass() throws Exception {
-    BooleanStatementParameter sp = new BooleanStatementParameter();
-    sp.setQueryClass("java.lang.String");
-    assertEquals(Boolean.TRUE, sp.convertToQueryClass("on"));
+    assertEquals(Boolean.TRUE, sp.toBoolean("on"));
   }
 
   @Test
   public void testConvertNull() throws Exception {
     BooleanStatementParameter sp = new BooleanStatementParameter();
-    assertEquals(Boolean.FALSE, sp.convertToQueryClass(""));
+    assertEquals(Boolean.FALSE, sp.toBoolean(""));
   }
 
 }

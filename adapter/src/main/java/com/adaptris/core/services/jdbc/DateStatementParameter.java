@@ -20,7 +20,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 
 import java.text.SimpleDateFormat;
 
-import com.adaptris.annotation.GenerateBeanInfo;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.ServiceException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -38,36 +38,40 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author sellidge
  */
 @XStreamAlias("jdbc-date-statement-parameter")
-@GenerateBeanInfo
+@DisplayOrder(order = {"name", "queryString", "queryType", "dateFormat", "convertNull"})
 public class DateStatementParameter extends TimestampStatementParameter {
 
   public DateStatementParameter() {
     super();
-    super.setQueryClass(null);
   }
 
   public DateStatementParameter(String query, QueryType type, SimpleDateFormat format) {
-    this(query, type, null, format);
+    this(query, type, null, null, format);
   }
 
-  public DateStatementParameter(String query, QueryType type, Boolean nullConvert, SimpleDateFormat format) {
-    super(query, type, nullConvert, format);
+  public DateStatementParameter(String query, QueryType type, Boolean nullConvert, String name, SimpleDateFormat format) {
+    super(query, type, nullConvert, name, format);
   }
 
 
   @Override
-  public Object convertToQueryClass(Object value) throws ServiceException {
+  protected Object toDate(Object value) throws ServiceException {
     if (isBlank((String) value) && convertNull()) {
       return new java.sql.Date(System.currentTimeMillis());
     }
     else {
       try {
-        return new java.sql.Date(sdf.parse((String) value).getTime());
+        return new java.sql.Date(getFormatter().parse((String) value).getTime());
       }
       catch (Exception e) {
         throw new ServiceException("Failed to convert input String [" + value
             + "] to type [java.sql.Date]", e);
       }
     }
+  }
+
+  @Override
+  public DateStatementParameter makeCopy() {
+    return new DateStatementParameter(getQueryString(), getQueryType(), getConvertNull(), getName(), getFormatter());
   }
 }

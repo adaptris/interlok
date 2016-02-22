@@ -16,8 +16,13 @@
 
 package com.adaptris.core.services.jdbc;
 
-import static org.apache.commons.lang.BooleanUtils.toBoolean;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
+import org.apache.commons.lang.BooleanUtils;
+
+import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -25,29 +30,37 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * {@link Boolean} Statement Parameter.
  * 
  * <p>
- * Note that this class pays no heed to the {@link StatementParameter#setQueryClass(String)} setting. Additionally,
- * {@link StatementParameter#setConvertNull(Boolean)} has no meaning; null/empty/whitespace values are implicitly false.
+ * {@code convert-null} has no meaning, empty/blank/whitespace only values will default to false.
  * </p>
- * 
  * @config jdbc-boolean-statement-parameter
  * @author lchan
  * 
  */
 @XStreamAlias("jdbc-boolean-statement-parameter")
-public class BooleanStatementParameter extends StatementParameter {
+@DisplayOrder(order = {"name", "queryString", "queryType"})
+public class BooleanStatementParameter extends TypedStatementParameter {
 
   public BooleanStatementParameter() {
     super();
-    super.setQueryClass(null);
-    super.setConvertNull(null);
   }
 
-  public BooleanStatementParameter(String query, QueryType type) {
-    super(query, (String) null, type);
+  public BooleanStatementParameter(String query, QueryType type, Boolean nullConvert, String name) {
+    super(query, type, nullConvert, name);
   }
 
   @Override
-  public Object convertToQueryClass(Object value) throws ServiceException {
-    return Boolean.valueOf(toBoolean((String)value));
+  public void apply(int parameterIndex, PreparedStatement statement, AdaptrisMessage msg) throws SQLException, ServiceException {
+    log.trace("Setting argument {} to [{}]", parameterIndex, getQueryValue(msg));
+    statement.setObject(parameterIndex, toBoolean(getQueryValue(msg)));
+  }
+
+
+  Boolean toBoolean(Object value) throws ServiceException {
+    return Boolean.valueOf(BooleanUtils.toBoolean((String) value));
+  }
+
+  @Override
+  public BooleanStatementParameter makeCopy() {
+    return new BooleanStatementParameter(getQueryString(), getQueryType(), getConvertNull(), getName());
   }
 }

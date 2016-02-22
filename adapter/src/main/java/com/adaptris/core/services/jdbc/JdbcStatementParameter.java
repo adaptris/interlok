@@ -20,6 +20,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.ServiceException;
 
 public interface JdbcStatementParameter {
   
@@ -31,6 +32,19 @@ public interface JdbcStatementParameter {
    * @param msg the AdaptrisMessage
    * @throws SQLException on exception
    */
-   void apply(int parameterIndex, PreparedStatement statement, AdaptrisMessage msg) throws Exception;
+  void apply(int parameterIndex, PreparedStatement statement, AdaptrisMessage msg) throws SQLException, ServiceException;
 
+  /**
+   * Get the name of this parameter.
+   * 
+   * @return name.
+   */
+  String getName();
+
+  /**
+   * Make a copy of the statement parameter.
+   * 
+   * @return a copy (might be a clone, it might not).
+   */
+  JdbcStatementParameter makeCopy();
 }

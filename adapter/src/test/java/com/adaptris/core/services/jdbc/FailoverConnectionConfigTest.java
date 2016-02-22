@@ -16,6 +16,8 @@
 
 package com.adaptris.core.services.jdbc;
 
+import java.text.SimpleDateFormat;
+
 import com.adaptris.core.jdbc.FailoverJdbcConnection;
 import com.adaptris.util.TimeInterval;
 
@@ -43,10 +45,8 @@ public class FailoverConnectionConfigTest extends JdbcServiceExample {
     connection.setConnectionRetryInterval(new TimeInterval(3L, "SECONDS"));
     service.setConnection(connection);
     service.setStatement("insert into mytable (segment_id) values (?)");
-    DateStatementParameter dp = new DateStatementParameter();
-    dp.setQueryType(StatementParameter.QueryType.xpath);
-    dp.setQueryString("Segment[@id='PO1']");
-    service.addStatementParameter(dp);
+    service.addStatementParameter(
+        new DateStatementParameter("Segment[@id='PO1']", StatementParameter.QueryType.xpath, new SimpleDateFormat("YYYY-MM-dd")));
     return service;
   }
 

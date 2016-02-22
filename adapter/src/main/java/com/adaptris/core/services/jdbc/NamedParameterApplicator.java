@@ -81,7 +81,8 @@ public class NamedParameterApplicator implements ParameterApplicator {
       counter++;
 
       String parameterName = m.group();
-      StatementParameter statementParameter = parameters.getParameterByName(parameterName.substring(this.getParameterNamePrefix()
+      JdbcStatementParameter statementParameter =
+          parameters.getParameterByName(parameterName.substring(this.getParameterNamePrefix()
           .length()));
       if (statementParameter == null)
         throw new ServiceException("Parameter " + parameterName + ", cannot be found in the configured parameter list");

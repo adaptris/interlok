@@ -18,9 +18,14 @@ package com.adaptris.core.services.jdbc;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 
-import com.adaptris.annotation.GenerateBeanInfo;
+import org.hibernate.validator.constraints.NotBlank;
+
+import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -35,25 +40,32 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config jdbc-timestamp-statement-parameter
  */
 @XStreamAlias("jdbc-timestamp-statement-parameter")
-@GenerateBeanInfo
-public class TimestampStatementParameter extends StatementParameter {
+@DisplayOrder(order = {"name", "queryString", "queryType", "dateFormat", "convertNull"})
+public class TimestampStatementParameter extends TypedStatementParameter {
+  @NotBlank
   private String dateFormat;
 
-  protected transient SimpleDateFormat sdf = null;
+  private transient SimpleDateFormat dateFormatter = null;
 
   public TimestampStatementParameter() {
     super();
-    super.setQueryClass(null);
   }
 
   public TimestampStatementParameter(String query, QueryType type, SimpleDateFormat format) {
-    this(query, type, null, format);
+    this(query, type, null, null, format);
   }
 
-  public TimestampStatementParameter(String query, QueryType type, Boolean nullConvert, SimpleDateFormat format) {
-    super(query, (String) null, type, nullConvert);
+  public TimestampStatementParameter(String query, QueryType type, Boolean nullConvert, String name, SimpleDateFormat format) {
+    super(query, type, nullConvert, name);
     setDateFormat(format.toPattern());
   }
+
+  @Override
+  public void apply(int parameterIndex, PreparedStatement statement, AdaptrisMessage msg) throws SQLException, ServiceException {
+    log.trace("Setting argument {} to [{}]", parameterIndex, getQueryValue(msg));
+    statement.setObject(parameterIndex, this.toDate(getQueryValue(msg)));
+  }
+
 
   /**
    * Set the format of the date.
@@ -61,8 +73,7 @@ public class TimestampStatementParameter extends StatementParameter {
    * @param format the format of the date that is parse-able by SimpleDateFormat
    */
   public void setDateFormat(String format) {
-      dateFormat = format;
-      sdf = new SimpleDateFormat(format);
+    dateFormat = format;
   }
 
   /**
@@ -74,18 +85,28 @@ public class TimestampStatementParameter extends StatementParameter {
     return dateFormat;
   }
 
-  @Override
-  public Object convertToQueryClass(Object value) throws ServiceException {
+  SimpleDateFormat getFormatter() {
+    if (dateFormatter == null) {
+      dateFormatter = new SimpleDateFormat(getDateFormat());
+    }
+    return dateFormatter;
+  }
+
+  protected Object toDate(Object value) throws ServiceException {
     if (isBlank((String) value) && convertNull()) {
       return new java.sql.Timestamp(System.currentTimeMillis());
     }
     else {
       try {
-        return new java.sql.Timestamp(sdf.parse((String) value).getTime());
+        return new java.sql.Timestamp(getFormatter().parse((String) value).getTime());
       }
       catch (Exception e) {
         throw new ServiceException("Failed to convert input String [" + value + "] to type [java.sql.Timestamp]", e);
       }
     }
+  }
+
+  public TimestampStatementParameter makeCopy() {
+    return new TimestampStatementParameter(getQueryString(), getQueryType(), getConvertNull(), getName(), getFormatter());
   }
 }

@@ -22,7 +22,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 
-import com.adaptris.annotation.GenerateBeanInfo;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -40,31 +40,31 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @see StatementParameter
  */
 @XStreamAlias("jdbc-time-statement-parameter")
-@GenerateBeanInfo
+@DisplayOrder(order = {"name", "queryString", "queryType", "dateFormat", "convertNull"})
 public class TimeStatementParameter extends TimestampStatementParameter {
 
   public TimeStatementParameter() {
     super();
-    setQueryClass(null);
   }
 
   public TimeStatementParameter(String query, QueryType type, SimpleDateFormat format) {
-    this(query, type, null, format);
+    this(query, type, null, null, format);
   }
 
-  public TimeStatementParameter(String query, QueryType type, Boolean nullConvert, SimpleDateFormat format) {
-    super(query, type, nullConvert, format);
+  public TimeStatementParameter(String query, QueryType type, Boolean nullConvert, String name, SimpleDateFormat format) {
+    super(query, type, nullConvert, name, format);
   }
 
+  
 
   @Override
-  public Object convertToQueryClass(Object value) throws ServiceException {
+  protected Object toDate(Object value) throws ServiceException {
     if (isBlank((String) value) && convertNull()) {
       return new java.sql.Time(System.currentTimeMillis());
     }
     else {
       try {
-        return new java.sql.Time(sdf.parse((String) value).getTime());
+        return new java.sql.Time(getFormatter().parse((String) value).getTime());
       }
       catch (Exception e) {
         throw new ServiceException("Failed to convert input String [" + value + "] to type [java.sql.Time]", e);
@@ -74,6 +74,11 @@ public class TimeStatementParameter extends TimestampStatementParameter {
   
   @Override
   public void apply(int parameterIndex, PreparedStatement statement, AdaptrisMessage msg) throws SQLException, ServiceException {
-    statement.setTime(parameterIndex, (java.sql.Time) this.convertToQueryClass(this.getQueryValue(msg)));
+    statement.setTime(parameterIndex, (java.sql.Time) this.toDate(this.getQueryValue(msg)));
+  }
+
+  @Override
+  public TimeStatementParameter makeCopy() {
+    return new TimeStatementParameter(getQueryString(), getQueryType(), getConvertNull(), getName(), getFormatter());
   }
 }

@@ -40,7 +40,7 @@ public class SequentialParameterApplicator implements ParameterApplicator {
   public void applyStatementParameters(AdaptrisMessage message, PreparedStatement statement, StatementParameterCollection parameters, String originalSql) throws ServiceException {
     try {
       for (int i = 1; i <= parameters.size(); i++) {
-        StatementParameter statementParameter = parameters.get(i - 1);
+        JdbcStatementParameter statementParameter = parameters.get(i - 1);
         statementParameter.apply(i, statement, message);
       }      
     } catch(SQLException ex) {

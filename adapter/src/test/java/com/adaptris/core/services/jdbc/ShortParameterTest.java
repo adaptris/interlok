@@ -36,29 +36,23 @@ public class ShortParameterTest {
   @Test
   public void testConvert() throws Exception {
     ShortStatementParameter sp = new ShortStatementParameter();
-    assertEquals(Short.valueOf((short) 55), sp.convertToQueryClass("55"));
+    assertEquals(Short.valueOf((short) 55), sp.toShort("55"));
   }
 
-  @Test
-  public void testConvertWithQueryClass() throws Exception {
-    ShortStatementParameter sp = new ShortStatementParameter();
-    sp.setQueryClass("java.lang.String");
-    assertEquals(Short.valueOf((short) 55), sp.convertToQueryClass("55"));
-  }
 
   @Test
   public void testConvertNull() throws Exception {
     ShortStatementParameter sp = new ShortStatementParameter();
     sp.setConvertNull(false);
     try {
-      sp.convertToQueryClass(null);
+      sp.toShort(null);
       fail("Expected Exception");
     }
     catch (RuntimeException expected) {
       // expected
     }
     try {
-      sp.convertToQueryClass("");
+      sp.toShort("");
       fail("Expected Exception");
     }
     catch (RuntimeException expected) {
@@ -70,7 +64,7 @@ public class ShortParameterTest {
   public void testConvertWithConvertNull() throws Exception {
     ShortStatementParameter sp = new ShortStatementParameter();
     sp.setConvertNull(true);
-    assertEquals(Short.valueOf((short) 0), sp.convertToQueryClass(""));
+    assertEquals(Short.valueOf((short) 0), sp.toShort(""));
   }
 
 }

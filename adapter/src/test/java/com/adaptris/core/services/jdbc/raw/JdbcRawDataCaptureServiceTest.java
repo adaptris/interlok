@@ -262,8 +262,7 @@ public class JdbcRawDataCaptureServiceTest extends JdbcServiceExample {
     service.addStatementParameter(new TimeStatementParameter("timestamp", StatementParameter.QueryType.metadata,
         new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")));
     service.addStatementParameter(new StatementParameter(null, "java.lang.String", StatementParameter.QueryType.payload));
-    service
-        .addStatementParameter(new BytePayloadStatementParameter(null, "java.lang.String", StatementParameter.QueryType.payload));
+    service.addStatementParameter(new BytePayloadStatementParameter());
     service.addStatementParameter(new CharacterStreamStatementParameter());
     service.addStatementParameter(new BinaryStreamStatementParameter());
     service.addStatementParameter(new StatementParameter(null, "java.lang.String", StatementParameter.QueryType.id));
@@ -306,8 +305,7 @@ public class JdbcRawDataCaptureServiceTest extends JdbcServiceExample {
     StatementParameter param5 = new StatementParameter(null, "java.lang.String", StatementParameter.QueryType.payload);
     param5.setName("param5");
     service.addStatementParameter(param5);
-    BytePayloadStatementParameter param6 = new BytePayloadStatementParameter(null, "java.lang.String",
-        StatementParameter.QueryType.payload);
+    BytePayloadStatementParameter param6 = new BytePayloadStatementParameter();
     param6.setName("param6");
     service.addStatementParameter(param6);
     CharacterStreamStatementParameter param7 = new CharacterStreamStatementParameter();

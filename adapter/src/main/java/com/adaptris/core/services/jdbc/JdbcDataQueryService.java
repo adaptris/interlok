@@ -43,7 +43,6 @@ import com.adaptris.core.util.XmlHelper;
 import com.adaptris.jdbc.JdbcResult;
 import com.adaptris.jdbc.JdbcResultBuilder;
 import com.adaptris.util.KeyValuePairSet;
-import com.adaptris.util.XmlUtils;
 import com.adaptris.util.text.xml.SimpleNamespaceContext;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
@@ -176,8 +175,7 @@ public class JdbcDataQueryService extends JdbcService {
     }
     msg.getObjectMetadata().put(KEY_DOCBUILDER_FAC, builder);
     if (containsXpath(getStatementParameters())) {
-      XmlUtils xml = XmlHelper.createXmlUtils(msg, namespaceCtx, builder);
-      msg.getObjectMetadata().put(KEY_XML_UTILS, xml);
+      msg.getObjectMetadata().put(KEY_XML_UTILS, XmlHelper.createXmlUtils(msg, namespaceCtx, builder));
     }
     if (namespaceCtx != null) {
       msg.getObjectMetadata().put(KEY_NAMESPACE_CTX, namespaceCtx);
@@ -189,12 +187,14 @@ public class JdbcDataQueryService extends JdbcService {
     msg.getObjectMetadata().remove(KEY_NAMESPACE_CTX);
   }
 
-  private static boolean containsXpath(List<StatementParameter> list) {
+  private static boolean containsXpath(List<JdbcStatementParameter> list) {
     boolean result = false;
-    for (StatementParameter sp : list) {
-      if (StatementParameter.QueryType.xpath.equals(sp.getQueryType())) {
-        result = true;
-        break;
+    for (JdbcStatementParameter sp : list) {
+      if (sp instanceof StatementParameter) {
+        if (StatementParameter.QueryType.xpath.equals(((StatementParameter) sp).getQueryType())) {
+          result = true;
+          break;
+        }
       }
     }
     return result;
@@ -241,7 +241,7 @@ public class JdbcDataQueryService extends JdbcService {
    * @see StatementParameter
    * @param query the StatementParameter
    */
-  public void addStatementParameter(StatementParameter query) {
+  public void addStatementParameter(JdbcStatementParameter query) {
     statementParameters.add(query);
   }
 
