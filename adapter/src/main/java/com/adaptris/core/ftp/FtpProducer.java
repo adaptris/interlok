@@ -31,6 +31,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -94,6 +95,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(summary = "Put a file on a FTP/SFTP server; uses PUT, RNFR and RNTO for atomicity",
     tag = "producer,ftp,ftps,sftp",
  recommended = {FileTransferConnection.class})
+@DisplayOrder(order = {"buildDirectory", "destDirectory", "replyDirectory", "replyProcDirectory"})
 public class FtpProducer extends RequestReplyProducerImp {
 
   private static final String SLASH = "/";

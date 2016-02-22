@@ -26,6 +26,7 @@ import org.perf4j.aop.Profiled;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -46,6 +47,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("socket-producer")
 @AdapterComponent
 @ComponentProfile(summary = "Write a arbitrary message to a socket", tag = "producer,socket,tcp")
+@DisplayOrder(order = {"protocolImplementation"})
 public class SocketProducer extends RequestReplyProducerImp {
 
   @NotBlank

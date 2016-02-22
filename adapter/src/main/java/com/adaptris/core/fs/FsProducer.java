@@ -32,6 +32,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.FileNameCreator;
@@ -53,6 +54,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("fs-producer")
 @AdapterComponent
 @ComponentProfile(summary = "Write the current message to the filesystem", tag = "producer,fs,filesystem")
+@DisplayOrder(order = {"createDirs", "filenameCreator", "tempDirectory", "fsWorker"})
 public class FsProducer extends ProduceOnlyProducerImp {
 
   private Boolean createDirs;

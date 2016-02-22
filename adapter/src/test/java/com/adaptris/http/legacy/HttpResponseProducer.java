@@ -28,6 +28,7 @@ import org.apache.commons.io.IOUtils;
 import org.perf4j.aop.Profiled;
 
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -78,6 +79,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author $Author: lchan $
  */
 @XStreamAlias("http-response-producer")
+@DisplayOrder(order = {"httpResponseCode", "httpResponseText", "contentTypeKey"})
 public class HttpResponseProducer extends ProduceOnlyProducerImp {
 
   private int httpResponseCode;

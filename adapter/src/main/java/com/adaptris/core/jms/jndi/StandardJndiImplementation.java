@@ -34,6 +34,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.jms.JmsActorConfig;
 import com.adaptris.core.jms.JmsUtils;
 import com.adaptris.core.jms.VendorImplementation;
@@ -58,6 +59,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("standard-jndi-implementation")
+@DisplayOrder(order = {"jndiName", "jndiParams"})
 public class StandardJndiImplementation extends VendorImplementationImp {
 
   @NotNull

@@ -27,6 +27,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.ProduceDestination;
@@ -77,6 +78,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("default-smtp-producer")
 @AdapterComponent
 @ComponentProfile(summary = "Send an email", tag = "producer,email")
+@DisplayOrder(order = {"smtpUrl", "username", "password", "subject", "from", "cc-list", "bcc-list"})
 public class DefaultSmtpProducer extends MailProducer {
 
   @AdvancedConfig

@@ -25,6 +25,7 @@ import javax.jms.Queue;
 import javax.jms.Topic;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.jms.JmsActorConfig;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -45,6 +46,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @see StandardJndiImplementation
  */
 @XStreamAlias("cached-destination-jndi-implementation")
+@DisplayOrder(order = {"jndiName", "jndiParams", "maxDestinationCacheSize"})
 public class CachedDestinationJndiImplementation extends StandardJndiImplementation {
 
   @AdvancedConfig

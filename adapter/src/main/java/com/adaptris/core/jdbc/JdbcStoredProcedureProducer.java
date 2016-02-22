@@ -30,6 +30,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceDestination;
@@ -98,6 +99,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("jdbc-stored-procedure-producer")
 @AdapterComponent
 @ComponentProfile(summary = "Execute a stored procedure via JDBC", tag = "producer,jdbc")
+@DisplayOrder(order = {"statementCreator", "statementExecutor", "inParameters", "outParameters", "inOutParameters",
+    "resultSetTranslator", "timeout"})
 public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
 
   private static final long DEFAULT_TIMEOUT_MS = (30 * 1000); // 30 seconds

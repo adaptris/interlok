@@ -40,6 +40,7 @@ import org.apache.commons.io.IOUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageImp;
 import com.adaptris.core.CoreConstants;
@@ -80,6 +81,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("standard-http-producer")
 @AdapterComponent
 @ComponentProfile(summary = "Make a HTTP request to a remote server using standard JRE components", tag = "producer,http,https")
+@DisplayOrder(order = {"username", "password", "allowRedirect", "ignoreServerResponseCode", "methodProvider", "contentTypeProvider",
+    "requestHeaderProvider", "requestBody", "responseHeaderHandler", "responseBody"})
 public class StandardHttpProducer extends HttpProducer {
 
   protected static final Collection<RequestMethodProvider.RequestMethod> METHOD_ALLOWS_OUTPUT = Collections

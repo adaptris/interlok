@@ -21,6 +21,7 @@ import javax.jms.JMSException;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.jms.UrlVendorImplementation;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -36,6 +37,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("basic-active-mq-implementation")
+@DisplayOrder(order = {"brokerUrl"})
 public class BasicActiveMqImplementation extends UrlVendorImplementation {
 
 
