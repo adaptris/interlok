@@ -34,6 +34,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -58,8 +59,12 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @XStreamAlias("jdbc-data-capture-service")
 @AdapterComponent
 @ComponentProfile(summary = "Capture data from the message and store it in a database", tag = "service,jdbc")
+@DisplayOrder(order = {"connection", "statement", "iterationXpath", "iterates", "statementParameters", "parameterApplicator",
+    "xmlDocumentFactoryConfig", "namespaceContext", "saveReturnedKeys", "saveReturnedKeysColumn", "saveReturnedKeysTable"})
 public class JdbcDataCaptureService extends JdbcDataCaptureServiceImpl {
+  @AdvancedConfig
   private String iterationXpath = null;
+  @AdvancedConfig
   private Boolean iterates = null;
 
   @NotNull

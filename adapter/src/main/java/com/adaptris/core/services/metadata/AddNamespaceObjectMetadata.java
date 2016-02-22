@@ -20,6 +20,7 @@ import javax.xml.namespace.NamespaceContext;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -40,6 +41,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("add-namespace-object-metadata")
 @AdapterComponent
 @ComponentProfile(summary = "Add an XML namespace as object metadata", tag = "service,metadata,xml")
+@DisplayOrder(order = {"namespaceContext"})
 public class AddNamespaceObjectMetadata extends ServiceImp {
 
   private static final String OBJECT_METADATA_KEY = SimpleNamespaceContext.class.getCanonicalName();

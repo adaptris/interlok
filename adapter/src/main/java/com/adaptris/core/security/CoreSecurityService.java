@@ -25,6 +25,7 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
@@ -53,8 +54,11 @@ public abstract class CoreSecurityService extends ServiceImp {
   @Valid
   @AutoPopulated
   private EncryptionAlgorithm encryptionAlgorithm = null;
+  @AdvancedConfig
   private String successId = null;
+  @AdvancedConfig
   private String failId = null;
+  @AdvancedConfig
   private String remotePartnerMetadataKey;
   @AutoPopulated
   @NotNull

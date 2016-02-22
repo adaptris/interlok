@@ -21,6 +21,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
 import com.adaptris.util.text.DateFormatUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -49,6 +50,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("reformat-date-service")
 @AdapterComponent
 @ComponentProfile(summary = "Reformat a data value stored in metadata", tag = "service,metadata")
+@DisplayOrder(order = {"metadataKeyRegexp", "sourceDateFormat", "destinationDateFormat"})
 public class ReformatDateService extends ReformatMetadata {
 
   static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";

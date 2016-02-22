@@ -24,6 +24,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -40,6 +41,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("metadata-exists-branching-service")
 @AdapterComponent
 @ComponentProfile(summary = "Perform a branch based on whether one or more metadata keys exist or not", tag = "service,branching")
+@DisplayOrder(order = {"metadataKeys", "metadataExistsServiceId", "defaultServiceId"})
 public class MetadataExistsBranchingService 
   extends MetadataBranchingServiceImp {
   

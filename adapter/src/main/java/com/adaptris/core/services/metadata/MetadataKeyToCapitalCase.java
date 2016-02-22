@@ -19,6 +19,7 @@ import org.apache.commons.lang.WordUtils;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.ServiceException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -34,6 +35,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("metadata-key-to-capital-case")
 @AdapterComponent
 @ComponentProfile(summary = "Changes matching metadata keys to capital case", tag = "service,metadata")
+@DisplayOrder(order = {"keysToModify"})
 public class MetadataKeyToCapitalCase extends ReformatMetadataKey {
 
   @Override

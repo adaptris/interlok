@@ -23,6 +23,7 @@ import java.util.List;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -49,6 +50,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @XStreamAlias("syntax-routing-service")
 @AdapterComponent
 @ComponentProfile(summary = "Identify a message, and set a metadata key based on the identifier", tag = "service,routing")
+@DisplayOrder(order = {"routingKey", "syntaxIdentifiers"})
 public class SyntaxRoutingService extends ServiceImp {
   private String routingKey = null;
   @XStreamImplicit

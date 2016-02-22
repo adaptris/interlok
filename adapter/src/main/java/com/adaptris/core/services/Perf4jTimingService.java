@@ -27,6 +27,7 @@ import org.perf4j.log4j.Log4JStopWatch;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.EventHandler;
@@ -54,6 +55,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("perf4j-timing-service")
 @Deprecated
 @AdapterComponent
+@DisplayOrder(order = {"tag", "logCategory", "service"})
 public class Perf4jTimingService extends ServiceImp implements EventHandlerAware {
 
   @NotNull

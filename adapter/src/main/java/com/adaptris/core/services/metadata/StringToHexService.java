@@ -16,13 +16,15 @@
 
 package com.adaptris.core.services.metadata;
 
+import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.util.text.ByteTranslator;
 import com.adaptris.util.text.CharsetByteTranslator;
 import com.adaptris.util.text.HexStringByteTranslator;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * This class will encode a metadata value into its equivalent hex hex encoded metadata value(s) using the specified character
+ * This class will encode a metadata value into its equivalent hex encoded metadata value(s) using the specified character
  * encoding
  * 
  * @config string-to-hex-metadata-service
@@ -31,6 +33,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("string-to-hex-metadata-service")
+@ComponentProfile(summary = "Turn a metadata value into a hex string using the specified character encoding",
+    tag = "service,metadata")
+@DisplayOrder(order = {"metadataKeyRegexp", "charset"})
 public class StringToHexService extends HexToStringService {
 
   public StringToHexService() {

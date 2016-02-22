@@ -24,6 +24,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -51,6 +52,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("jmx-operation-call-service")
 @AdapterComponent
 @ComponentProfile(summary = "Execute a JMX operation", tag = "service,jmx")
+@DisplayOrder(order = {"jmxServiceUrl", "objectName", "operationName", "username", "password", "operationParameters",
+    "resultValueTranslator"})
 public class JmxOperationCallService extends ServiceImp {
   
   /**

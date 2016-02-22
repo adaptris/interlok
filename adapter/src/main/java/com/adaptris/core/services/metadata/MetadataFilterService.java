@@ -22,6 +22,7 @@ import javax.validation.constraints.NotNull;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataCollection;
@@ -44,6 +45,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("metadata-filter-service")
 @AdapterComponent
 @ComponentProfile(summary = "Filter and remove metadata", tag = "service,metadata")
+@DisplayOrder(order = {"filter"})
 public class MetadataFilterService extends ServiceImp {
 
   @NotNull

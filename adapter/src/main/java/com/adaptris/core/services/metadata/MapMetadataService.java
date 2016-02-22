@@ -27,6 +27,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -56,6 +57,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("map-metadata-service")
 @AdapterComponent
 @ComponentProfile(summary = "Change a metadata value based on a regular expression match", tag = "service,metadata")
+@DisplayOrder(order = {"metadataKey", "metadataKeyMap"})
 public class MapMetadataService extends ServiceImp {
   private static final String MATCH_GROUP_REGEX = "\\{([0-9]+)\\}";
   @NotBlank

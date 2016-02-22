@@ -26,6 +26,7 @@ import java.sql.Statement;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
@@ -42,8 +43,11 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcService {
   @NotNull
   @InputFieldHint(style = "SQL")
   private String statement = null;
+  @AdvancedConfig
   private Boolean saveReturnedKeys = null;
+  @AdvancedConfig
   private String saveReturnedKeysColumn = null;
+  @AdvancedConfig
   private String saveReturnedKeysTable = null;
   protected transient DatabaseActor actor;
   @NotNull

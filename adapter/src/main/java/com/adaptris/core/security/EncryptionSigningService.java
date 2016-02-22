@@ -18,6 +18,7 @@ package com.adaptris.core.security;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.security.Output;
 import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.adaptris.security.keystore.Alias;
@@ -33,6 +34,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("encrypt-and-sign-service")
 @AdapterComponent
 @ComponentProfile(summary = "Encrypt and sign a message", tag = "service,security")
+@DisplayOrder(order = {"localPartner", "remotePartner", "remotePartnerMetadataKey", "encryptionAlgorithm", "keystoreUrls",
+    "privateKeyPasswordProvider"})
 public class EncryptionSigningService extends EncryptionService {
 
   /**

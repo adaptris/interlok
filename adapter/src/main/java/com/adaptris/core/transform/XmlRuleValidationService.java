@@ -24,6 +24,7 @@ import javax.validation.constraints.NotNull;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -47,6 +48,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @Deprecated
 @AdapterComponent
 @ComponentProfile(summary = "Validate an XML message based on some rules", tag = "service,xml")
+@DisplayOrder(order = {"validationStages", "namespaceContext"})
 public class XmlRuleValidationService extends ServiceImp {
 
   private static transient boolean warningLogged;

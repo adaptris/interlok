@@ -32,6 +32,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.BranchingServiceImp;
 import com.adaptris.core.CoreException;
@@ -65,6 +66,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(
     summary = "Perform a branch by checking a metadata key and comparing it against a list of previously received values",
     tag = "service,branching")
+@DisplayOrder(order = {"metadataKeyToCheck", "nextServiceIdIfUnique", "nextServiceIdIfDuplicate", "storeFileUrl",
+    "numberOfPreviousValuesToStore"})
 public class CheckUniqueMetadataValueService extends BranchingServiceImp {
 
   /**

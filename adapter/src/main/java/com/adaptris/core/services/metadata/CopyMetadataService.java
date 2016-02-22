@@ -21,6 +21,7 @@ import javax.validation.constraints.NotNull;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -49,6 +50,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("copy-metadata-service")
 @AdapterComponent
 @ComponentProfile(summary = "Copy metadata values to other metadata keys", tag = "service,metadata")
+@DisplayOrder(order = {"metadataKeys"})
 public class CopyMetadataService extends ServiceImp {
 
   @NotNull

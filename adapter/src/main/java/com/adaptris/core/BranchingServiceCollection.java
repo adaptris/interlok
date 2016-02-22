@@ -26,6 +26,7 @@ import org.apache.commons.lang.StringUtils;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -45,6 +46,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "A Collection of services where the next service is determined dynamically",
     tag = "service,base,branching")
+@DisplayOrder(order = {"firstServiceId", "restartAffectedServiceOnException"})
 public class BranchingServiceCollection extends ServiceCollectionImp {
 
   private String firstServiceId;

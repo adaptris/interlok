@@ -28,8 +28,10 @@ import javax.xml.namespace.NamespaceContext;
 import org.w3c.dom.Document;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
@@ -37,6 +39,7 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.services.metadata.xpath.XpathObjectQuery;
 import com.adaptris.core.services.metadata.xpath.XpathQuery;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.text.xml.SimpleNamespaceContext;
@@ -53,6 +56,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @XStreamAlias("xpath-object-metadata-service")
 @AdapterComponent
 @ComponentProfile(summary = "Extract data via XPath and store it as object metadata", tag = "service,metadata,xml")
+@DisplayOrder(order = {"xpathQueries", "namespaceContext", "xmlDocumentFactoryConfig"})
 public class XpathObjectMetadataService extends ServiceImp {
 
   private KeyValuePairSet namespaceContext;
@@ -61,7 +65,8 @@ public class XpathObjectMetadataService extends ServiceImp {
   @Valid
   @XStreamImplicit(itemFieldName = "xpath-query")
   private List<XpathObjectQuery> xpathQueries;
-
+  @AdvancedConfig
+  private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
   private transient List<XpathObjectQuery> queriesToExecute;
 
   /**
@@ -92,7 +97,11 @@ public class XpathObjectMetadataService extends ServiceImp {
     Set<MetadataElement> metadataElements = new HashSet<MetadataElement>();
     NamespaceContext namespaceCtx = SimpleNamespaceContext.create(getNamespaceContext(), msg);
     try {
-      Document doc = XmlHelper.createDocument(msg, namespaceCtx);
+      DocumentBuilderFactoryBuilder builder = documentFactoryBuilder();
+      if (namespaceCtx != null) {
+        builder.setNamespaceAware(true);
+      }
+      Document doc = XmlHelper.createDocument(msg, builder);
       for (XpathObjectQuery query : queriesToExecute) {
         msg.getObjectMetadata().put(query.getMetadataKey(), query.resolveXpath(doc, namespaceCtx, query.createXpathQuery(msg)));
         log.trace("Added object against [{}]", query.getMetadataKey());
@@ -149,4 +158,17 @@ public class XpathObjectMetadataService extends ServiceImp {
   public void prepare() throws CoreException {
   }
 
+
+  public DocumentBuilderFactoryBuilder getXmlDocumentFactoryConfig() {
+    return xmlDocumentFactoryConfig;
+  }
+
+
+  public void setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder xml) {
+    this.xmlDocumentFactoryConfig = xml;
+  }
+
+  DocumentBuilderFactoryBuilder documentFactoryBuilder() {
+    return getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig() : DocumentBuilderFactoryBuilder.newInstance();
+  }
 }

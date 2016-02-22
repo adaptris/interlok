@@ -25,6 +25,7 @@ import javax.validation.Valid;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -77,6 +78,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("jdbc-service-list")
 @AdapterComponent
 @ComponentProfile(summary = "A collection of services which has an additional database connection", tag = "service,jdbc")
+@DisplayOrder(order = {"restartAffectedServiceOnException", "databaseConnection"})
 public class JdbcServiceList extends ServiceList {
 
   @Valid

@@ -24,6 +24,8 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -43,11 +45,15 @@ import com.adaptris.transform.TransformFramework;
 public abstract class TransformService extends ServiceImp {
 
   private String url;
+  @AdvancedConfig
+  @AutoPopulated
   private String metadataKey;
   private transient List<Source> cachedRules;
   private transient Source configuredRule;
   private transient TransformFramework tf;
+  @AdvancedConfig
   private Boolean cacheTransforms;
+  @AdvancedConfig
   private Boolean allowOverride;
   private String outputMessageEncoding;
 
@@ -59,9 +65,7 @@ public abstract class TransformService extends ServiceImp {
    */
   public TransformService() {
     super();
-    setCacheTransforms(true);
     setMetadataKey(CoreConstants.TRANSFORM_OVERRIDE);
-    setAllowOverride(false);
     cachedRules = new ArrayList<Source>();
   }
 
@@ -245,7 +249,7 @@ public abstract class TransformService extends ServiceImp {
   }
 
   boolean allowOverride() {
-    return getAllowOverride() != null ? getAllowOverride().booleanValue() : true;
+    return getAllowOverride() != null ? getAllowOverride().booleanValue() : false;
   }
   /**
    * <p>

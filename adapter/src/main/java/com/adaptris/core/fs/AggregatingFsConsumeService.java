@@ -21,6 +21,7 @@ import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.NullConnection;
@@ -38,6 +39,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("aggregating-fs-consume-service")
 @AdapterComponent
 @ComponentProfile(summary = "Allows you to aggregate messages from the filesystem", tag = "service,aggregation")
+@DisplayOrder(order = {"fsConsumer"})
 public class AggregatingFsConsumeService extends AggregatingConsumeServiceImpl<NullConnection> {
 
   @NotNull

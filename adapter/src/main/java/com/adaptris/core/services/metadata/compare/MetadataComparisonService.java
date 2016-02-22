@@ -25,6 +25,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -45,6 +46,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("metadata-comparison-service")
 @AdapterComponent
 @ComponentProfile(summary = "Compare two metadata values and store the result against a 3rd metadata key", tag = "service,metadata")
+@DisplayOrder(order = {"firstKey", "secondKey", "comparator"})
 public class MetadataComparisonService extends ServiceImp {
 
   @NotBlank

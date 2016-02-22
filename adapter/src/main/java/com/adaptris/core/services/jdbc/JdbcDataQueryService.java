@@ -30,6 +30,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -59,6 +60,8 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @XStreamAlias("jdbc-data-query-service")
 @AdapterComponent
 @ComponentProfile(summary = "Query a database and store the results in the message", tag = "service,jdbc")
+@DisplayOrder(order = {"connection", "statement", "statementParameters", "resultSetTranslator", "parameterApplicator",
+    "namespaceContext", "xmlDocumentFactoryConfig"})
 public class JdbcDataQueryService extends JdbcService {
 
   static final String KEY_XML_UTILS = "XmlUtils_" + JdbcDataQueryService.class.getCanonicalName();

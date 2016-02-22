@@ -45,6 +45,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -188,6 +189,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @XStreamAlias("xpath-service")
 @AdapterComponent
 @ComponentProfile(summary = "Extract data via XPath and store it", tag = "service,xml")
+@DisplayOrder(order = {"xmlSource", "executions", "namespaceContext", "xmlDocumentFactoryConfig"})
 public class XPathService extends ServiceImp {
   
   @NotNull

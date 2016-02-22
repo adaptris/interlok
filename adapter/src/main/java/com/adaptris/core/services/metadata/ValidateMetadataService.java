@@ -24,6 +24,7 @@ import javax.validation.constraints.NotNull;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -43,6 +44,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @XStreamAlias("validate-metadata-service")
 @AdapterComponent
 @ComponentProfile(summary = "Verify a message has all the required metadata keys", tag = "service,metadata")
+@DisplayOrder(order = {"requiredKeys"})
 public class ValidateMetadataService extends ServiceImp {
 
   @XStreamImplicit(itemFieldName = "required-key")
