@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.event.AdapterCloseEvent;
@@ -69,10 +70,12 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
   @NotNull
   @AutoPopulated
   @NotBlank
+  @AdvancedConfig
   private String startUpEventImp;
   @NotNull
   @AutoPopulated
   @NotBlank
+  @AdvancedConfig
   private String heartbeatEventImp;
   @NotNull
   @AutoPopulated
