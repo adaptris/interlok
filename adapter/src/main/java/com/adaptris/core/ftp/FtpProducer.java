@@ -93,7 +93,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Put a file on a FTP/SFTP server; uses PUT, RNFR and RNTO for atomicity",
     tag = "producer,ftp,ftps,sftp",
-    recommended = {FtpConnection.class, FtpSslConnection.class, SftpConnection.class, SftpKeyAuthConnection.class})
+ recommended = {FileTransferConnection.class})
 public class FtpProducer extends RequestReplyProducerImp {
 
   private static final String SLASH = "/";

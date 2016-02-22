@@ -69,7 +69,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("ftp-consumer")
 @AdapterComponent
-@ComponentProfile(summary = "Pickup messages from an FTP or SFTP server", tag = "consumer,ftp,ftps,sftp")
+@ComponentProfile(summary = "Pickup messages from an FTP or SFTP server", tag = "consumer,ftp,ftps,sftp",
+    recommended = {FileTransferConnection.class})
 public class FtpConsumer extends AdaptrisPollingConsumer {
   private static final TimeInterval DEFAULT_OLDER_THAN = new TimeInterval(0L, TimeUnit.MILLISECONDS);
   private static final String DEFAULT_WIP_SUFFIX = "_wip";

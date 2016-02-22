@@ -61,7 +61,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("relaxed-ftp-consumer")
 @AdapterComponent
 @ComponentProfile(summary = "Pickup messages from an FTP/SFTP server without renaming the file first",
-    tag = "consumer,ftp,ftps,sftp")
+    tag = "consumer,ftp,ftps,sftp", recommended = {FileTransferConnection.class})
 public class RelaxedFtpConsumer extends AdaptrisPollingConsumer {
   private static final TimeInterval DEFAULT_OLDER_THAN = new TimeInterval(0L, TimeUnit.MILLISECONDS);
   private static final String FORWARD_SLASH = "/";
