@@ -27,6 +27,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
@@ -61,6 +62,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("non-deleting-fs-consumer")
 @AdapterComponent
 @ComponentProfile(summary = "Pickup messages from the filesystem without deleting them afterwards", tag = "consumer,fs,filesystem")
+@DisplayOrder(order = {"poller", "createDirs", "fileFilterImp", "fileSorter", "processedItemCache"})
 public class NonDeletingFsConsumer extends FsConsumerImpl {
 
   @NotNull

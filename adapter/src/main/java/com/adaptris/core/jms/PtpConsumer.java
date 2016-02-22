@@ -21,6 +21,7 @@ import javax.jms.MessageConsumer;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -36,6 +37,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("jms-queue-consumer")
 @AdapterComponent
 @ComponentProfile(summary = "Listen for JMS messages on the specified queue", tag = "consumer,jms")
+@DisplayOrder(order = {"destination", "acknowledgeMode", "messageTranslator"})
 public class PtpConsumer extends JmsConsumerImpl {
 
   public PtpConsumer() {
