@@ -20,6 +20,7 @@ import java.lang.reflect.Constructor;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -32,6 +33,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author sellidge
  */
 @XStreamAlias("jdbc-statement-parameter")
+@DisplayOrder(order = {"name", "queryString", "queryType", "queryClass", "convertNull"})
 public class StatementParameter extends StatementParameterImpl {
 
   private String queryClass;

@@ -23,6 +23,7 @@ import java.sql.SQLException;
 
 import org.apache.commons.lang.math.NumberUtils;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -38,6 +39,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("jdbc-double-statement-parameter")
+@DisplayOrder(order = {"name", "queryString", "queryType"})
 public class DoubleStatementParameter extends TypedStatementParameter {
 
   public DoubleStatementParameter() {
