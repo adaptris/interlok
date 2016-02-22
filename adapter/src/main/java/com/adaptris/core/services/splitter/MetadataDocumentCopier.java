@@ -25,6 +25,7 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -41,6 +42,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config metadata-document-copier
  */
 @XStreamAlias("metadata-document-copier")
+@DisplayOrder(order = {"metadataKey", "copyMetadata", "copyObjectMetadata", "indexMetadataKey"})
 public class MetadataDocumentCopier extends MessageSplitterImp {
 
   @NotNull

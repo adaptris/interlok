@@ -38,6 +38,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
@@ -74,6 +75,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author sellidge
  */
 @XStreamAlias("xpath-message-splitter")
+@DisplayOrder(order = {"xpath", "encoding", "copyMetadata", "copyObjectMetadata", "namespaceContext", "xmlDocumentFactoryConfig"})
 public class XpathMessageSplitter extends MessageSplitterImp {
 
   @NotNull

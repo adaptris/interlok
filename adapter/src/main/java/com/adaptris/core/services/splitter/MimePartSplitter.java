@@ -32,6 +32,8 @@ import javax.mail.internet.MimeBodyPart;
 
 import org.apache.commons.io.IOUtils;
 
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -53,8 +55,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author lchan
  */
 @XStreamAlias("mime-part-splitter")
+@DisplayOrder(order = {"copyMetadata", "copyObjectMetadata", "preserveHeaders", "headerPrefix"})
 public class MimePartSplitter extends MessageSplitterImp {
+  @AdvancedConfig
   private Boolean preserveHeaders;
+  @AdvancedConfig
   private String headerPrefix;
 
   /**

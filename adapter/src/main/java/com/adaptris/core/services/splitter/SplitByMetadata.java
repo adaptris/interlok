@@ -25,6 +25,7 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -41,6 +42,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author lchan
  */
 @XStreamAlias("split-by-metadata")
+@DisplayOrder(order = {"metadataKey", "splitMetadataKey", "copyMetadata", "copyObjectMetadata", "separator"})
 public class SplitByMetadata extends MessageSplitterImp {
   @NotNull
   @AutoPopulated

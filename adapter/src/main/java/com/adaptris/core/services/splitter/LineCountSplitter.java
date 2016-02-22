@@ -23,6 +23,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Iterator;
 
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -38,6 +40,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config line-count-splitter
  */
 @XStreamAlias("line-count-splitter")
+@DisplayOrder(order = {"splitOnLine", "ignoreBlankLines", "copyMetadata", "copyObjectMetadata", "keepHeaderLines", "bufferSize"})
 public class LineCountSplitter extends MessageSplitterImp {
 
   private transient static final int DEFAULT_BUFFER_SIZE = 8192;
@@ -45,6 +48,7 @@ public class LineCountSplitter extends MessageSplitterImp {
   private int keepHeaderLines;
   private int splitOnLine;
   private Boolean ignoreBlankLines;
+  @AdvancedConfig
   private Integer bufferSize;
 
   /**
