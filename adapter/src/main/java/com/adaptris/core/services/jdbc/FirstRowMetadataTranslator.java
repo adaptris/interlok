@@ -20,6 +20,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
@@ -44,6 +45,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("jdbc-first-row-metadata-translator")
+@DisplayOrder(order = {"metadataKeyPrefix", "separator", "columnNameStyle", "columnTranslators", "resultSetCounterPrefix"})
 public class FirstRowMetadataTranslator extends MetadataResultSetTranslatorImpl {
 
   public FirstRowMetadataTranslator() {

@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
@@ -55,6 +56,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("jdbc-all-rows-metadata-translator")
+@DisplayOrder(order = {"metadataKeyPrefix", "separator", "columnNameStyle", "columnTranslators", "resultSetCounterPrefix",
+    "rowTotalMetadataKey"})
 public class AllRowsMetadataTranslator extends MetadataResultSetTranslatorImpl {
 
   private String rowTotalMetadataKey;
