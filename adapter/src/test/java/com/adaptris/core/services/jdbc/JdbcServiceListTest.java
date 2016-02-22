@@ -32,6 +32,7 @@ import com.adaptris.core.NullService;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceCollectionCase;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.jdbc.AdvancedJdbcPooledConnection;
 import com.adaptris.core.jdbc.DatabaseConnection;
 import com.adaptris.core.jdbc.JdbcConnection;
 import com.adaptris.core.jdbc.JdbcConstants;
@@ -129,6 +130,46 @@ public class JdbcServiceListTest extends ServiceCollectionCase {
     String name = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
     JdbcPooledConnection conn = PooledConnectionHelper.createPooledConnection(PROPERTIES.getProperty(CFG_JDBC_DRIVER),
+        PROPERTIES.getProperty(CFG_JDBC_URL), poolsize);
+
+    try {
+      GuidGenerator guid = new GuidGenerator();
+      for (int i = 0; i < maxServices; i++) {
+        // The Connection should never be used by the wrappedService, as it will exist in objectMetadata.
+        JdbcServiceList service = createServiceCollection(createSequenceNumberService(conn, guid.safeUUID()),
+            createSequenceNumberService(conn, guid.safeUUID()));
+        service.setDatabaseConnection(conn);
+        serviceList.add(service);
+        start(service);
+      }
+      assertEquals(0, conn.currentBusyConnectionCount());
+      PooledConnectionHelper.executeTest(serviceList, iterations, new PooledConnectionHelper.MessageCreator() {
+
+        @Override
+        public AdaptrisMessage createMsgForPooledConnectionTest() throws Exception {
+          return AdaptrisMessageFactory.getDefaultInstance().newMessage();
+        }
+      });
+      assertEquals(0, conn.currentBusyConnectionCount());
+      assertEquals(poolsize, conn.currentIdleConnectionCount());
+      assertEquals(poolsize, conn.currentConnectionCount());
+    }
+    finally {
+      stop(serviceList.toArray(new ComponentLifecycle[0]));
+      Thread.currentThread().setName(name);
+    }
+  }
+  
+  public void testServiceList_AdvancedPooledConnection() throws Exception {
+    int maxServices = 5;
+    final int iterations = 5;
+    int poolsize = maxServices - 1;
+
+    createDatabase();
+    List<Service> serviceList = new ArrayList<Service>();
+    String name = Thread.currentThread().getName();
+    Thread.currentThread().setName(getName());
+    AdvancedJdbcPooledConnection conn = PooledConnectionHelper.createAdvancedPooledConnection(PROPERTIES.getProperty(CFG_JDBC_DRIVER),
         PROPERTIES.getProperty(CFG_JDBC_URL), poolsize);
 
     try {

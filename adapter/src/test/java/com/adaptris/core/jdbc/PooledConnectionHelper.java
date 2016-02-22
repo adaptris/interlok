@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.Service;
+import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.TimeInterval;
 
 public class PooledConnectionHelper {
@@ -79,6 +80,21 @@ public class PooledConnectionHelper {
     conn.setMaxIdleTime(DEFAULT_IDLE_TIME);
     conn.setIdleConnectionTestPeriod(DEFAULT_IDLE_CONNECTION_TEST);
     conn.setConnectionAcquireWait(DEFAULT_ACQUIRE_WAIT);
+    conn.setConnectionAttempts(1);
+    conn.setConnectionRetryInterval(DEFAULT_RETRY_WAIT);
+    return conn;
+  }
+  
+  public static AdvancedJdbcPooledConnection createAdvancedPooledConnection(String driver, String url, int poolsize) {
+    AdvancedJdbcPooledConnection conn = new AdvancedJdbcPooledConnection();
+    conn.setConnectUrl(url);
+    conn.setDriverImp(driver);
+    conn.getConnectionPoolProperties().add(new KeyValuePair(PooledConnectionProperties.maxPoolSize.name(), Integer.toString(poolsize)));
+    conn.getConnectionPoolProperties().add(new KeyValuePair(PooledConnectionProperties.minPoolSize.name(), Integer.toString(poolsize)));
+    conn.getConnectionPoolProperties().add(new KeyValuePair(PooledConnectionProperties.maxIdleTime.name(), Long.toString(DEFAULT_IDLE_TIME.toMilliseconds())));
+    conn.getConnectionPoolProperties().add(new KeyValuePair(PooledConnectionProperties.idleConnectionTestPeriod.name(), Long.toString(DEFAULT_IDLE_CONNECTION_TEST.toMilliseconds())));
+    conn.getConnectionPoolProperties().add(new KeyValuePair(PooledConnectionProperties.checkoutTimeout.name(), Long.toString(DEFAULT_ACQUIRE_WAIT.toMilliseconds())));
+
     conn.setConnectionAttempts(1);
     conn.setConnectionRetryInterval(DEFAULT_RETRY_WAIT);
     return conn;
