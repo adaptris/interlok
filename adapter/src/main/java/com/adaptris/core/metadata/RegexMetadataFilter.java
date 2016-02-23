@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.MetadataCollection;
 import com.adaptris.core.MetadataElement;
@@ -50,6 +51,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * 
  */
 @XStreamAlias("regex-metadata-filter")
+@DisplayOrder(order = {"includePatterns", "excludePatterns"})
 public class RegexMetadataFilter implements MetadataFilter {
 
   @XStreamImplicit(itemFieldName = "include-pattern")

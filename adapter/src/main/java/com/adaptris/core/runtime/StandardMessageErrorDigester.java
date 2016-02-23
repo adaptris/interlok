@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -42,6 +43,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "The default message error digester that exposes some minimum metrics via JMX",
     tag = "error-handling,base")
+@DisplayOrder(order = {"digestMaxSize"})
 public class StandardMessageErrorDigester extends MessageErrorDigesterImp {
 
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());

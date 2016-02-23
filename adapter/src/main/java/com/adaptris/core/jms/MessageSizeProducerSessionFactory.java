@@ -18,6 +18,7 @@ package com.adaptris.core.jms;
 
 import javax.jms.JMSException;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -35,6 +36,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("jms-message-size-producer-session")
+@DisplayOrder(order = {"maxSizeBytes"})
 public class MessageSizeProducerSessionFactory extends ProducerSessionFactoryImpl {
 
   private static final long DEFAULT_MAX_SIZE = 10 * 1024 * 1024;

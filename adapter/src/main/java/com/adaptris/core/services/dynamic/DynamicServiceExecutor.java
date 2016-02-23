@@ -27,6 +27,7 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.io.IOUtils;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisComponent;
@@ -71,6 +72,7 @@ public class DynamicServiceExecutor extends ServiceImp implements EventHandlerAw
   @Valid
   private ServiceExtractor serviceExtractor;
   @Valid
+  @AdvancedConfig
   private AdaptrisMarshaller marshaller;
 
   public DynamicServiceExecutor() {

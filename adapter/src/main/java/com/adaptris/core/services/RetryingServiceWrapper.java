@@ -22,6 +22,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -77,6 +78,7 @@ public class RetryingServiceWrapper extends ServiceImp implements EventHandlerAw
   private Integer numRetries;
   @Valid
   private TimeInterval delayBetweenRetries;
+  @AdvancedConfig
   private Boolean restartOnFailure;
   @NotNull
   @Valid

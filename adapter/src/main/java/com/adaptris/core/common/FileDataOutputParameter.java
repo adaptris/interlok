@@ -23,6 +23,7 @@ import java.net.URL;
 import org.apache.commons.io.IOUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.fs.FsHelper;
 import com.adaptris.core.util.ExceptionHelper;
@@ -36,6 +37,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config file-data-output-parameter
  */
 @XStreamAlias("file-data-output-parameter")
+@DisplayOrder(order = {"url"})
 public class FileDataOutputParameter implements DataOutputParameter<String> {
 
   @NotBlank

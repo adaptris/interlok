@@ -16,6 +16,7 @@
 
 package com.adaptris.core.services.dynamic;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.TradingRelationship;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -27,6 +28,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config configured-service-name-mapper
  */
 @XStreamAlias("configured-service-name-mapper")
+@DisplayOrder(order = {"serviceName", "tradingRelationship"})
 public class ServiceNameMapper {
 
   private TradingRelationship tradingRelationship;

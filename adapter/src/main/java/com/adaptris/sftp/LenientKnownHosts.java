@@ -16,6 +16,7 @@
 
 package com.adaptris.sftp;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 
@@ -29,6 +30,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("lenient-known-hosts")
+@DisplayOrder(order = {"knownHostsFile", "useCompression"})
 public class LenientKnownHosts extends SftpBehaviourImpl {
 
   public LenientKnownHosts() {

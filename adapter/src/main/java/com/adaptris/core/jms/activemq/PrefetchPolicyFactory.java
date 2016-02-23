@@ -18,6 +18,7 @@ package com.adaptris.core.jms.activemq;
 
 import org.apache.activemq.ActiveMQPrefetchPolicy;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -36,6 +37,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("activemq-prefetch-policy")
+@DisplayOrder(order = {"queuePrefetch", "topicPrefetch", "maximumPendingMessageLimit", "queueBrowserPrefetch",
+    "durableTopicPrefetch", "optimizeDurableTopicPrefetch"})
 public class PrefetchPolicyFactory {
   private Integer durableTopicPrefetch, maximumPendingMessageLimit, optimizeDurableTopicPrefetch,
       queueBrowserPrefetch, queuePrefetch, topicPrefetch;

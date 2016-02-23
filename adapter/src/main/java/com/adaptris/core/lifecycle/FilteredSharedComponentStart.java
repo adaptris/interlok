@@ -32,11 +32,11 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.SharedComponentLifecycleStrategy;
-import com.adaptris.core.SharedComponentList;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -86,7 +86,7 @@ public class FilteredSharedComponentStart implements SharedComponentLifecycleStr
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   private transient Map<String, ExecutorService> connectionStarters;
-
+  @AdvancedConfig
   private Boolean threadedStart;
   @NotNull
   @AutoPopulated

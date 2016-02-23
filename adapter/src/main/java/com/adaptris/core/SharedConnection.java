@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -44,6 +45,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("shared-connection")
 @AdapterComponent
 @ComponentProfile(summary = "A Connection that refers to another connection configured elsewhere", tag = "connections,base")
+@DisplayOrder(order = {"lookupName"})
 public class SharedConnection implements AdaptrisConnection {
 
   @NotBlank

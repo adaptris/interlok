@@ -20,8 +20,8 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 
 import org.apache.activemq.blob.BlobTransferPolicy;
 import org.apache.activemq.blob.BlobUploadStrategy;
-import org.apache.activemq.blob.DefaultBlobUploadStrategy;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -43,6 +43,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("activemq-blob-transfer-policy")
+@DisplayOrder(order = {"brokerUploadUrl", "defaultUploadUrl", "uploadUrl", "bufferSize", "uploadStrategy"})
 public class BlobTransferPolicyFactory {
   private String brokerUploadUrl = null;
   private String defaultUploadUrl = null;

@@ -30,6 +30,7 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
@@ -44,6 +45,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("map-message-translator")
+@DisplayOrder(order = {"keyForPayload", "treatMetadataAsPartOfMessage", "metadataFilter", "moveMetadata", "moveJmsHeaders",
+    "reportAllErrors"})
 public final class MapMessageTranslator extends MessageTypeTranslatorImp {
 
   @NotNull

@@ -16,6 +16,7 @@
 
 package com.adaptris.core.fs;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.XStreamMarshaller;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -28,6 +29,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author $Author: dsefton $
  */
 @XStreamAlias("fs-xstream-processed-item-cache")
+@DisplayOrder(order = {"persistentStore"})
 public class XStreamItemCache extends MarshallingItemCache {
 	
 	/**

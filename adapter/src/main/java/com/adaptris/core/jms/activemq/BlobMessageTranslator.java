@@ -28,6 +28,7 @@ import org.apache.activemq.ActiveMQSession;
 import org.apache.activemq.BlobMessage;
 import org.apache.commons.io.IOUtils;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.jms.AutoConvertMessageTranslator;
@@ -69,6 +70,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @SuppressWarnings("deprecation")
 @XStreamAlias("activemq-blob-message-translator")
+@DisplayOrder(order = {"metadataUrlKey", "metadataFilter", "moveMetadata", "moveJmsHeaders", "reportAllErrors"})
 public final class BlobMessageTranslator extends MessageTypeTranslatorImp {
 
   private String metadataUrlKey;

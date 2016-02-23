@@ -25,6 +25,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -34,6 +35,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * @config metadata-destination
  */
 @XStreamAlias("metadata-destination")
+@DisplayOrder(order = {"keys"})
 public class MetadataDestination implements ProduceDestination {
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());

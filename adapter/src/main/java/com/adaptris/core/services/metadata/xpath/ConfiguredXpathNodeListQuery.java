@@ -21,6 +21,7 @@ import javax.xml.namespace.NamespaceContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -37,6 +38,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @see com.adaptris.core.services.metadata.XpathObjectMetadataService
  */
 @XStreamAlias("configured-xpath-nodelist-query")
+@DisplayOrder(order = {"metadataKey", "xpathQuery"})
 public class ConfiguredXpathNodeListQuery extends ConfiguredXpathQueryImpl implements XpathObjectQuery {
 
   public ConfiguredXpathNodeListQuery() {

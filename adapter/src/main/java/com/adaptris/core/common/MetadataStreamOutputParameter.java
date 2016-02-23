@@ -28,7 +28,9 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.interlok.InterlokException;
@@ -44,6 +46,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("metadata-stream-output-parameter")
+@DisplayOrder(order = {"metadataKey", "contentEncoding"})
 public class MetadataStreamOutputParameter implements DataOutputParameter<InputStream> {
   
   private static final String DEFAULT_METADATA_KEY = "destinationKey";
@@ -51,6 +54,7 @@ public class MetadataStreamOutputParameter implements DataOutputParameter<InputS
   @NotBlank
   @AutoPopulated
   private String metadataKey;
+  @AdvancedConfig
   private String contentEncoding;
   
   public MetadataStreamOutputParameter() {

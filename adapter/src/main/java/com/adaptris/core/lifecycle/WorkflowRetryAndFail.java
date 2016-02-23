@@ -16,6 +16,7 @@
 
 package com.adaptris.core.lifecycle;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.Workflow;
 import com.adaptris.core.util.LoggingHelper;
@@ -35,6 +36,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author $Author: lchan $
  */
 @XStreamAlias("workflow-retry-and-fail")
+@DisplayOrder(order = {"maxRetries"})
 public class WorkflowRetryAndFail extends WorkflowRetryAndContinue {
 
   public WorkflowRetryAndFail() {

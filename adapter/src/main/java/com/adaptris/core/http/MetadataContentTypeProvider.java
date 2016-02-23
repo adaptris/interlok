@@ -24,6 +24,7 @@ import java.util.Locale;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
@@ -41,6 +42,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config http-metadata-content-type-provider
  */
 @XStreamAlias("http-metadata-content-type-provider")
+@DisplayOrder(order = {"metataKey", "defaultMimeType"})
 public class MetadataContentTypeProvider extends ContentTypeProviderImpl {
 
   @NotBlank

@@ -20,6 +20,7 @@ import javax.xml.namespace.NamespaceContext;
 
 import org.w3c.dom.Document;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -31,6 +32,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("metadata-xpath-query")
+@DisplayOrder(order = {"metadataKey", "xpathMetadataKey"})
 public class MetadataXpathQuery extends MetadataXpathQueryImpl implements XpathQuery {
 
   public MetadataXpathQuery() {

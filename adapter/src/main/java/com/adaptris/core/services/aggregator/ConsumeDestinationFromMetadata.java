@@ -18,6 +18,8 @@ package com.adaptris.core.services.aggregator;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.ConsumeDestination;
@@ -30,10 +32,13 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("consume-destination-from-metadata")
+@DisplayOrder(order = {"destinationMetadataKey", "defaultDestination", "filterMetadataKey", "defaultFilterExpression"})
 public class ConsumeDestinationFromMetadata implements ConsumeDestinationGenerator {
   private String defaultDestination;
   private String destinationMetadataKey;
+  @AdvancedConfig
   private String defaultFilterExpression;
+  @AdvancedConfig
   private String filterMetadataKey;
 
   public String getDefaultDestination() {

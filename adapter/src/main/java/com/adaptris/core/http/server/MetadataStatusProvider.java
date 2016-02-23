@@ -24,6 +24,7 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -40,6 +41,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author lchan
  */
 @XStreamAlias("http-metadata-status")
+@DisplayOrder(order = {"codeKey", "defaultStatus", "textKey"})
 public class MetadataStatusProvider implements HttpStatusProvider {
 
   @NotBlank

@@ -22,10 +22,9 @@ import java.util.Collection;
 
 import org.w3c.dom.Document;
 
-import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.text.xml.DocumentMerge;
@@ -48,11 +47,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("ignore-original-xml-document-aggregator")
+@DisplayOrder(order = {"template", "documentEncoding", "mergeImplementation", "xmlDocumentFactoryConfig"})
 public class IgnoreOriginalXmlDocumentAggregator extends XmlDocumentAggregator {
 
   private String template;
-  @AdvancedConfig
-  private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 
   public IgnoreOriginalXmlDocumentAggregator() {
   }
@@ -101,19 +99,5 @@ public class IgnoreOriginalXmlDocumentAggregator extends XmlDocumentAggregator {
    */
   public void setTemplate(String s) {
     this.template = s;
-  }
-
-  public DocumentBuilderFactoryBuilder getXmlDocumentFactoryConfig() {
-    return xmlDocumentFactoryConfig;
-  }
-
-
-  public void setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder xml) {
-    this.xmlDocumentFactoryConfig = xml;
-  }
-
-  DocumentBuilderFactoryBuilder documentFactoryBuilder() {
-    return getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig()
-        : DocumentBuilderFactoryBuilder.newInstance().withNamespaceAware(true);
   }
 }

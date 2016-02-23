@@ -20,6 +20,7 @@ import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.GenerateBeanInfo;
 import com.adaptris.annotation.MarshallingCDATA;
 import com.adaptris.core.util.LifecycleHelper;
@@ -38,6 +39,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @GenerateBeanInfo
 @AdapterComponent
 @ComponentProfile(summary = "Generate a static trigger message on a schedule", tag = "consumer,base")
+@DisplayOrder(order = {"template"})
 public class PollingTrigger extends AdaptrisPollingConsumer {
 
 	@MarshallingCDATA

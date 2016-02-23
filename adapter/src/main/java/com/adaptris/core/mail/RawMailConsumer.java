@@ -52,7 +52,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("raw-mail-consumer")
 @AdapterComponent
-@ComponentProfile(summary = "Pickup messages from a email account without trying to parse the MIME message.", tag = "consumer,jms")
+@ComponentProfile(summary = "Pickup messages from a email account without trying to parse the MIME message.",
+    tag = "consumer,email")
 @DisplayOrder(order = {"poller", "username", "password", "mailReceiverFactory"})
 public class RawMailConsumer extends MailConsumerImp {
 

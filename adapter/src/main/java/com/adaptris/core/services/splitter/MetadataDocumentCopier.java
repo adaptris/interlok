@@ -25,6 +25,7 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -48,6 +49,7 @@ public class MetadataDocumentCopier extends MessageSplitterImp {
   @NotNull
   @NotBlank
   private String metadataKey = null;
+  @AdvancedConfig
   private String indexMetadataKey;
 
   public MetadataDocumentCopier() {

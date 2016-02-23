@@ -19,6 +19,7 @@ package com.adaptris.core.http.server;
 import java.net.HttpURLConnection;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -30,6 +31,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  *
  */
 @XStreamAlias("http-raw-status")
+@DisplayOrder(order = {"code", "text"})
 public class RawStatusProvider implements HttpStatusProvider {
 
   private int code;

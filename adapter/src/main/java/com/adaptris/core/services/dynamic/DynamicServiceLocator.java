@@ -22,6 +22,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -59,13 +60,16 @@ public class DynamicServiceLocator extends ServiceImp implements EventHandlerAwa
   @NotNull
   @AutoPopulated
   @Valid
+  @AdvancedConfig
   private MatchingStrategy matchingStrategy;
   @NotNull
   @Valid
+  @AdvancedConfig
   private ServiceNameProvider serviceNameProvider;
   @NotNull
   @Valid
   private ServiceStore serviceStore;
+  @AdvancedConfig
   private Boolean treatNotFoundAsError;
 
   private transient EventHandler eventHandler;

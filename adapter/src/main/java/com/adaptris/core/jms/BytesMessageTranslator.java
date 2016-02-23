@@ -27,6 +27,7 @@ import javax.jms.MessageEOFException;
 
 import org.apache.commons.io.IOUtils;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -39,6 +40,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("bytes-message-translator")
+@DisplayOrder(order = {"metadataFilter", "moveMetadata", "moveJmsHeaders", "reportAllErrors"})
 public class BytesMessageTranslator extends MessageTypeTranslatorImp {
 
   // Threshold of 50k size to switch to to using an OutputStream impl to copy stuff into the msg proper.

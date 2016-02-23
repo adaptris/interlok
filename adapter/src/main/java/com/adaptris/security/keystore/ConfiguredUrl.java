@@ -16,6 +16,7 @@
 
 package com.adaptris.security.keystore;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.adaptris.security.password.Password;
@@ -30,6 +31,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author $Author: lchan $
  */
 @XStreamAlias("configured-keystore-url")
+@DisplayOrder(order = {"url", "password"})
 public class ConfiguredUrl extends ConfiguredKeystore {
 
   private String url;

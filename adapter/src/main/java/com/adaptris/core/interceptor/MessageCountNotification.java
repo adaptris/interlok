@@ -22,6 +22,7 @@ import javax.management.MalformedObjectNameException;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -86,7 +87,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Interceptor that issues a JMX notification based on a message count boundary",
  tag = "interceptor,jmx")
-
+@DisplayOrder(order = {"messageCount", "maxNotifications"})
 public class MessageCountNotification extends NotifyingInterceptorByCount {
 
   /**

@@ -27,7 +27,8 @@ import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TemporaryTopic;
 
-import com.adaptris.core.ConnectionErrorHandler;
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
@@ -45,11 +46,13 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config active-jms-connection-error-handler
  */
 @XStreamAlias("active-jms-connection-error-handler")
+@DisplayOrder(order = {"additionalLogging", "checkInterval"})
 public class ActiveJmsConnectionErrorHandler extends JmsConnectionErrorHandlerImpl {
 
   private static final TimeInterval DEFAULT_CHECK_INTERVAL = new TimeInterval(5L, TimeUnit.SECONDS);
   private static final TimeInterval DEFAULT_MAX_WAIT_FOR_START = new TimeInterval(5L, TimeUnit.MINUTES);
   private Boolean additionalLogging;
+  @AdvancedConfig
   private TimeInterval checkInterval;
   private transient JmsConnectionVerifier verifier;
 

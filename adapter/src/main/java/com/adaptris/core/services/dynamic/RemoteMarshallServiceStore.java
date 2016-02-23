@@ -16,6 +16,8 @@
 
 package com.adaptris.core.services.dynamic;
 
+import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -25,6 +27,7 @@ import java.net.URLConnection;
 
 import org.apache.commons.io.IOUtils;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.Service;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -37,6 +40,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config remote-marshall-service-store
  */
 @XStreamAlias("remote-marshall-service-store")
+@DisplayOrder(order = {"baseUrl"})
 public class RemoteMarshallServiceStore extends MarshallFileServiceStore {
 
   private String baseUrl;
@@ -72,8 +76,7 @@ public class RemoteMarshallServiceStore extends MarshallFileServiceStore {
   protected Service unmarshal(String s) throws CoreException {
     Service result = null;
 
-    String remoteFile = getBaseUrl() + "/" + getFileNamePrefix() + s
-        + getFileNameSuffix();
+    String remoteFile = getBaseUrl() + "/" + defaultIfEmpty(getFileNamePrefix(), "") + s + defaultIfEmpty(getFileNameSuffix(), "");
     Reader reader = null;
     try {
       URL url = new URL(remoteFile);

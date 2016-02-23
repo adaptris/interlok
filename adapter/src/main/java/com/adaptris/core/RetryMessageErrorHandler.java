@@ -18,6 +18,7 @@ package com.adaptris.core;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -48,6 +49,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "An exception handler instance that supports automated retries defined by schedule",
     tag = "error-handling,base")
+@DisplayOrder(order = {"retryLimit"})
 public class RetryMessageErrorHandler extends RetryMessageErrorHandlerImp {
 
   public RetryMessageErrorHandler() {

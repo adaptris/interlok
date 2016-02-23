@@ -16,6 +16,7 @@
 
 package com.adaptris.core.services.dynamic;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.Service;
 
@@ -28,7 +29,9 @@ import com.adaptris.core.Service;
  */
 public abstract class MarshallFileServiceStore extends MarshallServiceStore {
   private String fileNameSuffix;
+  @AdvancedConfig
   private String fileNamePrefix;
+  @AdvancedConfig
   private String defaultFileName;
 
   /**

@@ -22,6 +22,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.util.XmlUtils;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -34,6 +35,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("xml-insert-node")
+@DisplayOrder(order = {"xpathToParentNode"})
 public class InsertNode extends XpathMergeImpl {
   @NotNull
   @NotBlank

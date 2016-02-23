@@ -25,6 +25,8 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.IORunnable;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -36,13 +38,15 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("system-command-add-metadata-value")
+@DisplayOrder(order = {"metadataKey", "strip", "encoding"})
 public class AddMetaDataValue implements CommandOutputCapture {
 
   @NotNull
   private String metadataKey;
+  @AdvancedConfig
+  private Boolean strip;
   
-  private boolean strip = true;
-  
+  @AdvancedConfig
   private String encoding;
   
   @Override
@@ -54,7 +58,9 @@ public class AddMetaDataValue implements CommandOutputCapture {
       @Override
       public void run() throws IOException {
         String result = getResultAsString(bos.toByteArray());
-        if(isStrip()) { result = StringUtils.strip(result); }
+        if (strip()) {
+          result = StringUtils.strip(result);
+        }
         msg.addMetadata(metadataKey, result);
       }
       
@@ -96,7 +102,7 @@ public class AddMetaDataValue implements CommandOutputCapture {
     this.encoding = encoding;
   }
 
-  public boolean isStrip() {
+  public Boolean getStrip() {
     return strip;
   }
 
@@ -104,8 +110,12 @@ public class AddMetaDataValue implements CommandOutputCapture {
    * Whether to strip whitespace like newlines, spaces and tabs from the command output. Default: true
    * @param strip
    */
-  public void setStrip(boolean strip) {
+  public void setStrip(Boolean strip) {
     this.strip = strip;
+  }
+
+  private boolean strip() {
+    return getStrip() != null ? getStrip().booleanValue() : true;
   }
 
   private static class RunAfterCloseOutputStream extends FilterOutputStream {

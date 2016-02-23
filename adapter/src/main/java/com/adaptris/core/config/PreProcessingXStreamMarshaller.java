@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
@@ -30,6 +31,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("xstream-marshaller-with-pre-processing")
+@DisplayOrder(order = {"preProcessors", "preProcessorConfig", "preProcessorLoader"})
 public class PreProcessingXStreamMarshaller extends com.adaptris.core.XStreamMarshaller {
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass());

@@ -18,10 +18,10 @@ package com.adaptris.core.services.routing;
 
 import java.util.List;
 
-import javax.xml.xpath.XPathConstants;
-
 import org.w3c.dom.Document;
 
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.ServiceException;
 import com.adaptris.util.text.xml.XPath;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -39,8 +39,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author $Author: lchan $
  */
 @XStreamAlias("routing-xpath-node-syntax-identifier")
+@DisplayOrder(order = {"destination", "patterns", "resolveAsNodeSet", "namespaceContext"})
 public class XpathNodeIdentifier extends XmlSyntaxIdentifierImpl {
 
+  @AdvancedConfig
   private Boolean resolveAsNodeset;
 
   public XpathNodeIdentifier() {

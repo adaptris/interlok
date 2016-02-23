@@ -26,6 +26,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -39,6 +40,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config metadata-correlation-id-source
  */
 @XStreamAlias("metadata-correlation-id-source")
+@DisplayOrder(order = {"metadataKey"})
 public class MetadataCorrelationIdSource implements CorrelationIdSource {
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass());

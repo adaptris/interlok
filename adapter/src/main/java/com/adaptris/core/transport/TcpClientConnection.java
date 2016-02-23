@@ -16,6 +16,8 @@
 
 package com.adaptris.core.transport;
 
+import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.transport.TcpSocketTransport;
 import com.adaptris.transport.Transport;
 import com.adaptris.transport.TransportException;
@@ -33,6 +35,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author $Author: hfraser $
  */
 @XStreamAlias("tcp-client-connection")
+@ComponentProfile(summary = "Connection for a client tcp connection", tag = "connections,socket,tcp")
+@DisplayOrder(order = {"host", "port", "timeout", "blocksize"})
 public class TcpClientConnection extends TransportConfig {
 
   private String host;

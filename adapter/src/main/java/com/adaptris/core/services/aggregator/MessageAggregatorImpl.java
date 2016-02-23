@@ -16,6 +16,7 @@
 
 package com.adaptris.core.services.aggregator;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.ExceptionHelper;
@@ -28,6 +29,7 @@ import com.adaptris.core.util.ExceptionHelper;
  */
 public abstract class MessageAggregatorImpl implements MessageAggregator {
 
+  @AdvancedConfig
   private Boolean overwriteMetadata;
 
   /**

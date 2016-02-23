@@ -21,6 +21,7 @@ import static org.apache.commons.io.IOUtils.closeQuietly;
 import java.io.OutputStream;
 import java.util.Collection;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -50,6 +51,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("ignore-original-mime-aggregator")
+@DisplayOrder(order = {"encoding", "overwriteMetadata", "partContentIdMetadataKey"})
 public class IgnoreOriginalMimeAggregator extends MimeAggregator {
 
   @Override

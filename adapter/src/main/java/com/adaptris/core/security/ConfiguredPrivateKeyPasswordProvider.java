@@ -18,6 +18,7 @@ package com.adaptris.core.security;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.security.password.Password;
@@ -38,6 +39,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("configured-private-key-password-provider")
+@DisplayOrder(order = {"encodedPassword"})
 public class ConfiguredPrivateKeyPasswordProvider implements PrivateKeyPasswordProvider {
   private transient char[] pkPassword;
   @InputFieldHint(style = "PASSWORD")

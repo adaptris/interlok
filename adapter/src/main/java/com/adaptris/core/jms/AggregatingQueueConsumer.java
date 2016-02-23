@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ConsumeDestination;
@@ -58,6 +59,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("aggregating-queue-consumer")
+@DisplayOrder(order = {"destination", "messageAggregator", "messageTranslator", "timeout"})
 public class AggregatingQueueConsumer extends AggregatingConsumerImpl<AggregatingJmsConsumeService> implements
     AggregatingJmsConsumer {
 
