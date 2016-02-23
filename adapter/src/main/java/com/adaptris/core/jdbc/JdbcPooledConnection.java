@@ -64,9 +64,7 @@ public class JdbcPooledConnection extends DatabaseConnection {
   @NotBlank
   private String connectUrl;
   
-  @AdvancedConfig
   private int minimumPoolSize;
-  @AdvancedConfig
   private int maximumPoolSize;
   @AdvancedConfig
   private int acquireIncrement;

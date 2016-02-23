@@ -120,10 +120,12 @@ public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
   @NotNull
   @AutoPopulated
   @Valid
+  @AdvancedConfig
   private CallableStatementCreator statementCreator;
   @NotNull
   @AutoPopulated
   @Valid
+  @AdvancedConfig
   private CallableStatementExecutor statementExecutor;
   @NotNull
   @Valid

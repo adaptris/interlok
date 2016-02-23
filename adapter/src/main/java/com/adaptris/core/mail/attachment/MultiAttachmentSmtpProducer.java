@@ -25,6 +25,7 @@ import javax.validation.constraints.Pattern;
 import org.perf4j.aop.Profiled;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -78,7 +79,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Send an email for the facility for generating multiple attachments based on the current message",
     tag = "producer,email")
-@DisplayOrder(order = {"smtpUrl", "username", "password", "subject", "from", "cc-list", "bcc-list", "mailCreator"})
+@DisplayOrder(order = {"smtpUrl", "username", "password", "subject", "from", "ccList", "bccList", "mailCreator"})
 public class MultiAttachmentSmtpProducer extends MailProducer {
 
   @NotNull
@@ -87,6 +88,7 @@ public class MultiAttachmentSmtpProducer extends MailProducer {
   @NotNull
   @AutoPopulated
   @Pattern(regexp = "base64|quoted-printable|uuencode|x-uuencode|x-uue|binary|7bit|8bit")
+  @AdvancedConfig
   private String contentEncoding = "base64";
 
   /**

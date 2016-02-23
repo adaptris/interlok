@@ -28,8 +28,10 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.StateManagedComponent;
@@ -57,6 +59,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Connect to a JMS 1.1 broker supporting broker failover in a vendor independent way",
     tag = "connections,jms")
+@DisplayOrder(order = {"registerOwner"})
 public class FailoverJmsConnection extends JmsConnection {
 
   @NotNull
@@ -64,11 +67,13 @@ public class FailoverJmsConnection extends JmsConnection {
   @Valid
   private List<JmsConnection> connections = null;
   private transient JmsConnection current;
+  @AdvancedConfig
   private Boolean registerOwner;
 
   public FailoverJmsConnection() {
     super();
     setUserName(null);
+    setPassword(null);
     setVendorImplementation(null);
     setConnections(new ArrayList<JmsConnection>());
   }

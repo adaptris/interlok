@@ -78,17 +78,19 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("default-smtp-producer")
 @AdapterComponent
 @ComponentProfile(summary = "Send an email", tag = "producer,email")
-@DisplayOrder(order = {"smtpUrl", "username", "password", "subject", "from", "cc-list", "bcc-list"})
+@DisplayOrder(order = {"smtpUrl", "username", "password", "subject", "from", "ccList", "bccList"})
 public class DefaultSmtpProducer extends MailProducer {
 
   @AdvancedConfig
-  private boolean isAttachment = false;
+  private Boolean isAttachment;
   @NotNull
   @AutoPopulated
+  @AdvancedConfig
   private String contentType = "text/plain";
   @NotNull
   @AutoPopulated
   @Pattern(regexp = "base64|quoted-printable|uuencode|x-uuencode|x-uue|binary|7bit|8bit")
+  @AdvancedConfig
   private String contentEncoding = "base64";
   @NotNull
   @AutoPopulated
@@ -121,7 +123,7 @@ public class DefaultSmtpProducer extends MailProducer {
       byte[] encodedPayload = encode(msg);
       smtp.addTo(destination.getDestination(msg));
 
-      if (isAttachment) {
+      if (isAttachment()) {
         String template = msg
             .getMetadataValue(CoreConstants.EMAIL_TEMPLATE_BODY);
         if (template != null) {
@@ -167,7 +169,7 @@ public class DefaultSmtpProducer extends MailProducer {
    *
    * @param b true or false.
    */
-  public void setAttachment(boolean b) {
+  public void setIsAttachment(Boolean b) {
     isAttachment = b;
   }
 
@@ -176,8 +178,12 @@ public class DefaultSmtpProducer extends MailProducer {
    *
    * @return true or false.
    */
-  public boolean getAttachment() {
+  public Boolean getIsAttachment() {
     return isAttachment;
+  }
+
+  boolean isAttachment() {
+    return getIsAttachment() != null ? getIsAttachment().booleanValue() : false;
   }
 
   /**
