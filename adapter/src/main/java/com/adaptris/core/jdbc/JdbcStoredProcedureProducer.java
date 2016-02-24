@@ -81,10 +81,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * {@link java.sql.ResultSet}'s may also be applied back into the {@link com.adaptris.core.AdaptrisMessage} To define the behaviour
  * of applying
  * {@link java.sql.ResultSet}'s back into the {@link com.adaptris.core.AdaptrisMessage} set the translator for this producer, see
- * {@link java.sql.ResultSetTranslator}
+ * {@link ResultSetTranslator}
  * Note; if your Stored Procedure returns multiple result sets, each will be applied back into your {@link
  * com.adaptris.core.AdaptrisMessage} using
- * the {@link java.sql.ResultSetTranslator} configured.
+ * the {@link ResultSetTranslator} configured.
  * </p>
  * <p>
  * Finally, the default timeout set for the database operation is 30 seconds. You can override this by configuring the "timeout"

@@ -36,10 +36,11 @@ import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * {@link ConnectionErrorHandler} implementation that actively attempts messages via JMS to detect outages.
+ * {@link com.adaptris.core.ConnectionErrorHandler} implementation that actively attempts messages via JMS to detect outages.
  * 
  * <p>
- * Implementation of {@link ConnectionErrorHandler} which tests the connection every {@link #getCheckInterval()} interval (default
+ * Implementation of {@link com.adaptris.core.ConnectionErrorHandler} which tests the connection every {@link #getCheckInterval()}
+ * interval (default
  * is 5 second) and if the test fails then restarts the Connection's owner and stops the testing thread.
  * </p>
  * 

@@ -21,6 +21,7 @@ import com.adaptris.core.AdapterMarshallerFactory;
 import com.adaptris.core.AdapterXStreamMarshallerFactory;
 import com.adaptris.core.AdapterXStreamMarshallerFactory.OutputMode;
 import com.adaptris.core.DefaultMarshaller;
+import com.adaptris.core.management.AdapterConfigManager;
 import com.adaptris.core.management.BootstrapProperties;
 import com.adaptris.core.management.Constants;
 

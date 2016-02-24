@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import javax.mail.URLName;
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.net.pop3.POP3Client;

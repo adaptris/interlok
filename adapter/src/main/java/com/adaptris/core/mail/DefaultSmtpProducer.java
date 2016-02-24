@@ -233,7 +233,7 @@ public class DefaultSmtpProducer extends MailProducer {
    * @param s the content type
    *
    * @see #setContentType(String)
-   * @see #setAttachment(boolean)
+   * @see #setIsAttachment(Boolean)
    * @see SmtpClient#addAttachment(byte[], java.lang.String, java.lang.String)
    */
   public void setAttachmentContentType(String s) {

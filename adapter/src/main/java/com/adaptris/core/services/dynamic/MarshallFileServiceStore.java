@@ -125,7 +125,7 @@ public abstract class MarshallFileServiceStore extends MarshallServiceStore {
    * </p>
    *
    * @param s the defaultFileName to set
-   * @see com.adaptris.core.ServiceStore#obtain(String)
+   * @see ServiceStore#obtain(String)
    */
   public void setDefaultFileName(String s) {
     defaultFileName = s;

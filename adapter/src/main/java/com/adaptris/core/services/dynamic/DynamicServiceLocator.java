@@ -299,8 +299,8 @@ public class DynamicServiceLocator extends ServiceImp implements EventHandlerAwa
    * exception.
    *
    * @param b if true then a ServiceException is thrown if the
-   *          <code>ServiceStore.obtain(String)</code> returns null
-   * @see com.adaptris.core.ServiceStore#obtain(String)
+   *        <code>ServiceStore.obtain(String)</code> returns null
+   * @see ServiceStore#obtain(String)
    */
   public void setTreatNotFoundAsError(Boolean b) {
     treatNotFoundAsError = b;

@@ -33,6 +33,7 @@ import org.apache.commons.net.ftp.FTPCmd;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 
+import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferClientImp;
 import com.adaptris.filetransfer.FileTransferException;
 import com.adaptris.util.FifoMutexLock;

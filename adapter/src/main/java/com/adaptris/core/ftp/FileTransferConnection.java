@@ -31,6 +31,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.NullConnection;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
+import com.adaptris.ftp.FtpException;
 import com.adaptris.security.password.Password;
 
 /**

@@ -18,6 +18,8 @@ package com.adaptris.core.services.routing;
 
 import java.util.List;
 
+import javax.xml.xpath.XPathConstants;
+
 import org.w3c.dom.Document;
 
 import com.adaptris.annotation.AdvancedConfig;

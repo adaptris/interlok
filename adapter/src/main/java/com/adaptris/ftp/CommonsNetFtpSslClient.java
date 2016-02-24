@@ -46,30 +46,19 @@ public class CommonsNetFtpSslClient extends ApacheFtpClientImpl<FTPSClient> {
     this.implicitSSL = implicitSSL;
   }
 
-  /**
-   * @see CommonsNetFtpSslClient#CommonsNetFtpSslClient(String, int, int)
-   */
+
   public CommonsNetFtpSslClient(String remoteHost) throws IOException {
     this(remoteHost, FTPClient.DEFAULT_PORT);
   }
 
-  /**
-   * @see CommonsNetFtpSslClient#CommonsNetFtpSslClient(String, int, int)
-   */
   public CommonsNetFtpSslClient(String remoteHost, int port) throws IOException {
     this(remoteHost, port, 0, DEFAULT_IMPLICIT_SSL);
   }
 
-  /**
-   * @see CommonsNetFtpSslClient#CommonsNetFtpSslClient(String, int, int)
-   */
   public CommonsNetFtpSslClient(InetAddress remoteAddr) throws IOException {
     this(remoteAddr, FTPClient.DEFAULT_PORT);
   }
 
-  /**
-   * @see CommonsNetFtpSslClient#CommonsNetFtpSslClient(String, int, int)
-   */
   public CommonsNetFtpSslClient(InetAddress remoteAddr, int port) throws IOException {
     this(remoteAddr.getHostAddress(), port, 0, DEFAULT_IMPLICIT_SSL);
   }
