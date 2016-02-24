@@ -35,9 +35,10 @@ import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandaloneRequestor;
 import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.common.MetadataStreamOutputParameter;
-import com.adaptris.core.http.AdapterResourceAuthenticator;
 import com.adaptris.core.http.HttpProducerExample;
 import com.adaptris.core.http.MetadataContentTypeProvider;
+import com.adaptris.core.http.auth.HttpAuthenticator;
+import com.adaptris.core.http.auth.MetadataUsernamePassword;
 import com.adaptris.core.http.client.ConfiguredRequestMethodProvider;
 import com.adaptris.core.http.client.MetadataRequestMethodProvider;
 import com.adaptris.core.http.client.RequestMethodProvider;
@@ -440,6 +441,12 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     assertNotNull(msg.getMetadata("HTTP_Server"));
   }
 
+  private HttpAuthenticator getAuthenticator(String username, String password) {
+    MetadataUsernamePassword auth = new MetadataUsernamePassword();
+    auth.setUsername(username);
+    auth.setPassword(password);
+    return auth;
+  }
 
   public void testProduce_WithUsernamePassword() throws Exception {
     String threadName = Thread.currentThread().getName();
@@ -458,14 +465,15 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     MessageConsumer consumer = JettyHelper.createConsumer(HttpHelper.URL_TO_POST_TO);
     Channel channel = JettyHelper.createChannel(jc, consumer, mockProducer);
 
+    HttpAuthenticator auth = getAuthenticator(getName(), getName());
+    
     StandardHttpProducer stdHttp = new StandardHttpProducer();
     stdHttp.setIgnoreServerResponseCode(true);
     stdHttp.registerConnection(new NullConnection());
+    stdHttp.setAuthenticator(auth);
     try {
       start(channel);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
-      stdHttp.setUsername("user");
-      stdHttp.setPassword("password");
       start(stdHttp);
       AdaptrisMessage reply = stdHttp.request(msg, HttpHelper.createProduceDestination(channel));
       waitForMessages(mockProducer, 1);
@@ -473,7 +481,6 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     } finally {
       stop(stdHttp);
       HttpHelper.stopChannelAndRelease(channel);
-      assertEquals(0, AdapterResourceAuthenticator.getInstance().currentAuthenticators().size());
       Thread.currentThread().setName(threadName);
     }
   }
@@ -497,14 +504,15 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     MessageConsumer consumer = JettyHelper.createConsumer(HttpHelper.URL_TO_POST_TO);
     Channel channel = JettyHelper.createChannel(jc, consumer, mockProducer);
 
+    HttpAuthenticator auth = getAuthenticator(getName(), getName());
+    
     StandardHttpProducer stdHttp = new StandardHttpProducer();
     stdHttp.setIgnoreServerResponseCode(false);
     stdHttp.registerConnection(new NullConnection());
+    stdHttp.setAuthenticator(auth);
     try {
       start(channel);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
-      stdHttp.setUsername(getName());
-      stdHttp.setPassword(getName());
       start(stdHttp);
       AdaptrisMessage reply = stdHttp.request(msg, HttpHelper.createProduceDestination(channel));
       fail();
@@ -513,7 +521,6 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     } finally {
       stop(stdHttp);
       HttpHelper.stopChannelAndRelease(channel);
-      assertEquals(0, AdapterResourceAuthenticator.getInstance().currentAuthenticators().size());
       Thread.currentThread().setName(threadName);
     }
   }
@@ -524,8 +531,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
   protected Object retrieveObjectForSampleConfig() {
     StandardHttpProducer producer = new StandardHttpProducer(new ConfiguredProduceDestination("http://myhost.com/url/to/post/to"));
 
-    producer.setUsername("username");
-    producer.setPassword("password");
+    producer.setAuthenticator(getAuthenticator("username", "password"));
 
     StandaloneProducer result = new StandaloneProducer(producer);
 
