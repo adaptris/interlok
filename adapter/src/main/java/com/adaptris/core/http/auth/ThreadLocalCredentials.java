@@ -25,7 +25,9 @@ public class ThreadLocalCredentials extends Authenticator {
   @Override
   protected PasswordAuthentication getPasswordAuthentication() {
     PasswordAuthentication auth = threadAuthentication.get();
-    log.trace("Using user={} to login to [{}]", auth.getUserName(), getRequestingURL());
+    if(auth != null) {
+      log.trace("Using user={} to login to [{}]", auth.getUserName(), getRequestingURL());
+    }
     return auth;
   }
 

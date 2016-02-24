@@ -38,7 +38,7 @@ import com.adaptris.core.common.MetadataStreamOutputParameter;
 import com.adaptris.core.http.HttpProducerExample;
 import com.adaptris.core.http.MetadataContentTypeProvider;
 import com.adaptris.core.http.auth.HttpAuthenticator;
-import com.adaptris.core.http.auth.MetadataUsernamePassword;
+import com.adaptris.core.http.auth.ConfiguredUsernamePassword;
 import com.adaptris.core.http.client.ConfiguredRequestMethodProvider;
 import com.adaptris.core.http.client.MetadataRequestMethodProvider;
 import com.adaptris.core.http.client.RequestMethodProvider;
@@ -442,7 +442,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
   }
 
   private HttpAuthenticator getAuthenticator(String username, String password) {
-    MetadataUsernamePassword auth = new MetadataUsernamePassword();
+    ConfiguredUsernamePassword auth = new ConfiguredUsernamePassword();
     auth.setUsername(username);
     auth.setPassword(password);
     return auth;

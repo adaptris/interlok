@@ -10,9 +10,9 @@ import com.adaptris.security.exc.PasswordException;
 import com.adaptris.security.password.Password;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
-@XStreamAlias("http-static-username-password")
+@XStreamAlias("http-configured-username-password")
 @DisplayOrder(order = {"username", "password"})
-public class StaticUsernamePassword extends UserPassAuthentication {
+public class ConfiguredUsernamePassword extends UserPassAuthentication {
 
   private String username = null;
   

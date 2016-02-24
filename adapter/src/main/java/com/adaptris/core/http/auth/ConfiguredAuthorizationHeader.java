@@ -7,8 +7,8 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.http.HttpConstants;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
-@XStreamAlias("http-static-authorization-header")
-public class StaticAuthorizationHeader implements HttpAuthenticator {
+@XStreamAlias("http-configured-authorization-header")
+public class ConfiguredAuthorizationHeader implements HttpAuthenticator {
 
   private String headerValue;
   
