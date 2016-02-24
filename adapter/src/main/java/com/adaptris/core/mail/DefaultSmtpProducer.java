@@ -30,6 +30,7 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
+import com.adaptris.core.NullConnection;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.mail.SmtpClient;
@@ -77,7 +78,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("default-smtp-producer")
 @AdapterComponent
-@ComponentProfile(summary = "Send an email", tag = "producer,email")
+@ComponentProfile(summary = "Send an email", tag = "producer,email", recommended = {NullConnection.class})
 @DisplayOrder(order = {"smtpUrl", "username", "password", "subject", "from", "ccList", "bccList"})
 public class DefaultSmtpProducer extends MailProducer {
 

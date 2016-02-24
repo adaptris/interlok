@@ -53,6 +53,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
+import com.adaptris.core.NullConnection;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.http.client.RequestMethodProvider;
@@ -81,7 +82,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("jdk-http-producer")
 @Deprecated
 @AdapterComponent
-@ComponentProfile(summary = "Make a HTTP request to a remote server using standard JRE components", tag = "producer,http,https")
+@ComponentProfile(summary = "Make a HTTP request to a remote server using standard JRE components", tag = "producer,http,https",
+    recommended = {NullConnection.class})
 public class JdkHttpProducer extends HttpProducer {
   private static transient boolean warningLogged;
 

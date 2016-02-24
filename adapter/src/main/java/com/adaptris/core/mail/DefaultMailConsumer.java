@@ -30,6 +30,7 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.NullConnection;
 import com.adaptris.mail.Attachment;
 import com.adaptris.mail.MailException;
 import com.adaptris.mail.MessageParser;
@@ -50,7 +51,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("default-mail-consumer")
 @AdapterComponent
-@ComponentProfile(summary = "Pickup messages from a email account parsing the MIME message", tag = "consumer,email")
+@ComponentProfile(summary = "Pickup messages from a email account parsing the MIME message", tag = "consumer,email",
+    recommended = {NullConnection.class})
 @DisplayOrder(order = {"poller", "username", "password", "mailReceiverFactory", "partSelector"})
 public class DefaultMailConsumer extends ParsingMailConsumerImpl {
 

@@ -98,7 +98,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("jdbc-stored-procedure-producer")
 @AdapterComponent
-@ComponentProfile(summary = "Execute a stored procedure via JDBC", tag = "producer,jdbc")
+@ComponentProfile(summary = "Execute a stored procedure via JDBC", tag = "producer,jdbc", recommended = {DatabaseConnection.class})
 @DisplayOrder(order = {"statementCreator", "statementExecutor", "inParameters", "outParameters", "inOutParameters",
     "resultSetTranslator", "timeout"})
 public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
