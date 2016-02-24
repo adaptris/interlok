@@ -17,16 +17,21 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class ThreadLocalCredentialsTest {
+
+  private static final String TARGET = "http://localhost";
   
   @Before
   public void setup() {
-    ThreadLocalCredentials tlc = ThreadLocalCredentials.getInstance();
-    Authenticator.setDefault(tlc);
+    ThreadLocalCredentials tlc = ThreadLocalCredentials.getInstance(TARGET);
+    AdapterResourceAuthenticator.getInstance().addAuthenticator(tlc);
+    Authenticator.setDefault(AdapterResourceAuthenticator.getInstance());
   }
   
   @After
   public void teardown() {
-    ThreadLocalCredentials.getInstance().removeThreadCredentials();
+    ThreadLocalCredentials tlc = ThreadLocalCredentials.getInstance(TARGET);
+    tlc.removeThreadCredentials();
+    AdapterResourceAuthenticator.getInstance().removeAuthenticator(tlc);
     Authenticator.setDefault(null);
   }
   
@@ -37,7 +42,7 @@ public class ThreadLocalCredentialsTest {
   
   @Test
   public void mainThreadWorks() throws InterruptedException, UnknownHostException {
-    ThreadLocalCredentials.getInstance().setThreadCredentials(new PasswordAuthentication("username", "password".toCharArray()));
+    ThreadLocalCredentials.getInstance(TARGET).setThreadCredentials(new PasswordAuthentication("username", "password".toCharArray()));
     
     PasswordAuthentication auth = Authenticator.requestPasswordAuthentication("localhost", InetAddress.getLocalHost(), 80, "http", "", "http");
     assertEquals("username", auth.getUserName());
@@ -46,7 +51,7 @@ public class ThreadLocalCredentialsTest {
   
   @Test
   public void secondThreadInitialNull() throws InterruptedException, UnknownHostException {
-    ThreadLocalCredentials.getInstance().setThreadCredentials(new PasswordAuthentication("username", "password".toCharArray()));
+    ThreadLocalCredentials.getInstance(TARGET).setThreadCredentials(new PasswordAuthentication("username", "password".toCharArray()));
     
     // Fire up a new thread and make sure it's null in there
     final AtomicReference<PasswordAuthentication> fromOtherThread = new AtomicReference<>(new PasswordAuthentication("dummy", "dummy".toCharArray()));
@@ -71,7 +76,7 @@ public class ThreadLocalCredentialsTest {
   
   @Test
   public void secondThreadWorks() throws InterruptedException, UnknownHostException {
-    ThreadLocalCredentials.getInstance().setThreadCredentials(new PasswordAuthentication("username", "password".toCharArray()));
+    ThreadLocalCredentials.getInstance(TARGET).setThreadCredentials(new PasswordAuthentication("username", "password".toCharArray()));
     
     final AtomicBoolean t2UsernameOK = new AtomicBoolean(false);
     final AtomicBoolean t2PasswordOK = new AtomicBoolean(false);
@@ -79,7 +84,7 @@ public class ThreadLocalCredentialsTest {
       @Override
       public void run() {
         try {
-          ThreadLocalCredentials.getInstance().setThreadCredentials(new PasswordAuthentication("username2", "password2".toCharArray()));
+          ThreadLocalCredentials.getInstance(TARGET).setThreadCredentials(new PasswordAuthentication("username2", "password2".toCharArray()));
           
           PasswordAuthentication auth = requestAuthentication();
           

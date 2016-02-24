@@ -19,9 +19,8 @@ public class MetadataAuthorizationHeader implements HttpAuthenticator {
   private transient String headerValue;
   
   @Override
-  public HttpAuthenticator setup(AdaptrisMessage msg) throws CoreException {
+  public void setup(String target, AdaptrisMessage msg) throws CoreException {
     headerValue = msg.getMetadataValue(getMetadataKey());
-    return this;
   }
 
   @Override

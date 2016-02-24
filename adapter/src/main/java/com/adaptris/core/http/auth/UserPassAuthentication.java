@@ -9,10 +9,14 @@ import com.adaptris.core.CoreException;
 
 public abstract class UserPassAuthentication implements HttpAuthenticator {
 
+  private ThreadLocalCredentials threadLocalCreds;
+  
   @Override
-  public HttpAuthenticator setup(AdaptrisMessage msg) throws CoreException {
-    ThreadLocalCredentials.getInstance().setThreadCredentials(getPasswordAuthentication(msg));
-    return this;
+  public void setup(String target, AdaptrisMessage msg) throws CoreException {
+    threadLocalCreds = ThreadLocalCredentials.getInstance(target);
+    threadLocalCreds.setThreadCredentials(getPasswordAuthentication(msg));
+    AdapterResourceAuthenticator.getInstance().addAuthenticator(threadLocalCreds);
+    return;
   }
   
   protected abstract PasswordAuthentication getPasswordAuthentication(AdaptrisMessage msg)
@@ -25,7 +29,8 @@ public abstract class UserPassAuthentication implements HttpAuthenticator {
   
   @Override
   public void close() {
-    ThreadLocalCredentials.getInstance().removeThreadCredentials();
+    threadLocalCreds.removeThreadCredentials();
+    AdapterResourceAuthenticator.getInstance().removeAuthenticator(threadLocalCreds);
   }
 
 }

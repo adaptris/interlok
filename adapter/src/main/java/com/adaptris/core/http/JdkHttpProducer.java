@@ -55,6 +55,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
+import com.adaptris.core.http.auth.AdapterResourceAuthenticator;
 import com.adaptris.core.http.auth.ThreadLocalCredentials;
 import com.adaptris.core.http.client.RequestMethodProvider;
 import com.adaptris.core.http.client.RequestMethodProvider.RequestMethod;
@@ -124,11 +125,14 @@ public class JdkHttpProducer extends HttpProducer {
   protected AdaptrisMessage doRequest(AdaptrisMessage msg, ProduceDestination destination, long timeout) throws ProduceException {
 
     AdaptrisMessage reply = defaultIfNull(getMessageFactory()).newMessage();
+    ThreadLocalCredentials threadLocalCreds = null;
     try {
       URL url = new URL(destination.getDestination(msg));
       if (getPasswordAuthentication() != null) {
-        Authenticator.setDefault(ThreadLocalCredentials.getInstance());
-        ThreadLocalCredentials.getInstance().setThreadCredentials(getPasswordAuthentication());
+        Authenticator.setDefault(AdapterResourceAuthenticator.getInstance());
+        threadLocalCreds = ThreadLocalCredentials.getInstance(url.toString());
+        threadLocalCreds.setThreadCredentials(getPasswordAuthentication());
+        AdapterResourceAuthenticator.getInstance().addAuthenticator(threadLocalCreds);
       }
       HttpURLConnection http = (HttpURLConnection) url.openConnection();
       http.setRequestMethod(methodToUse(msg).name());
@@ -158,7 +162,10 @@ public class JdkHttpProducer extends HttpProducer {
         throw new ProduceException(e);
       }
     } finally {
-      ThreadLocalCredentials.getInstance().removeThreadCredentials();
+      if(threadLocalCreds != null) {
+        threadLocalCreds.removeThreadCredentials();
+        AdapterResourceAuthenticator.getInstance().removeAuthenticator(threadLocalCreds);
+      }
     }
     return reply;
   }

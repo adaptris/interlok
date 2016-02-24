@@ -25,8 +25,7 @@ public class ConfiguredAuthorizationHeader implements HttpAuthenticator {
   }
 
   @Override
-  public HttpAuthenticator setup(AdaptrisMessage msg) throws CoreException {
-    return this;
+  public void setup(String target, AdaptrisMessage msg) throws CoreException {
   }
 
   @Override

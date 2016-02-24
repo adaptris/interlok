@@ -7,19 +7,19 @@ import com.adaptris.core.CoreException;
 
 
 /**
- * HttpAuthenticator is an interface designed to facilitate HttpAuthentication in various ways. A HttpAuthenticator
- * object is expected to be used in a try-with-resources statement so that it can be guaranteed that it's close()
- * method will always be called. Some implementations of this interface will need to temporarily mutate global
- * state and therefore this kind of guarantee is highly desirable.
+ * HttpAuthenticator is an interface designed to facilitate HttpAuthentication in various ways. 
+ * Some implementations of this interface will need to temporarily mutate global state and therefore 
+ * must be closed in a finally statement or try-with-resources block.
  */
 public interface HttpAuthenticator extends AutoCloseable {
 
   /**
    * Initialize the HttpAuthenticator for a message and return. Any global state mutations should be done here.
-   * @param msg
+   * @param target The URL to set authenticate for
+   * @param msg The message to set up for
    * @return
    */
-  public HttpAuthenticator setup(AdaptrisMessage msg) throws CoreException;
+  public void setup(String target, AdaptrisMessage msg) throws CoreException;
 
   /**
    * Perform whatever actions are required to the HttpURLConnection after it's been opened (setting custom headers, etc). Not

@@ -50,6 +50,7 @@ import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.common.PayloadStreamInputParameter;
 import com.adaptris.core.common.PayloadStreamOutputParameter;
+import com.adaptris.core.http.auth.AdapterResourceAuthenticator;
 import com.adaptris.core.http.auth.HttpAuthenticator;
 import com.adaptris.core.http.auth.NoAuthentication;
 import com.adaptris.core.http.auth.ConfiguredUsernamePassword;
@@ -104,7 +105,7 @@ public class StandardHttpProducer extends HttpProducer {
 
   public StandardHttpProducer() {
     super();
-    Authenticator.setDefault(ThreadLocalCredentials.getInstance());
+    Authenticator.setDefault(AdapterResourceAuthenticator.getInstance());
   }
 
   public StandardHttpProducer(ProduceDestination d) {
@@ -123,14 +124,17 @@ public class StandardHttpProducer extends HttpProducer {
     }
     
     AdaptrisMessage reply = defaultIfNull(getMessageFactory()).newMessage();
-    try(HttpAuthenticator auth = authenticator.setup(msg)) {
+    try {
       URL url = new URL(destination.getDestination(msg));
+      authenticator.setup(url.toString(), msg);
       HttpURLConnection http = configure((HttpURLConnection) url.openConnection(), msg);
-      auth.configureConnection(http);
+      authenticator.configureConnection(http);
       writeData(getMethod(msg), msg, http);
       handleResponse(http, reply);
     } catch (Exception e) {
       ExceptionHelper.rethrowProduceException(e);
+    } finally {
+      authenticator.close();
     }
     return reply;
   }

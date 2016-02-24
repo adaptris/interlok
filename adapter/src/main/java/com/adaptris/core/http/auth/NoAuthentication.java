@@ -10,9 +10,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class NoAuthentication implements HttpAuthenticator {
 
   @Override
-  public HttpAuthenticator setup(AdaptrisMessage msg) throws CoreException {
-    ThreadLocalCredentials.getInstance().removeThreadCredentials();
-    return this;
+  public void setup(String target, AdaptrisMessage msg) throws CoreException {
+    ThreadLocalCredentials.getInstance(target).removeThreadCredentials();
   }
 
   @Override

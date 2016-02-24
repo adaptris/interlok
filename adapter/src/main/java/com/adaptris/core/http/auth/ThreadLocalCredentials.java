@@ -1,17 +1,29 @@
 package com.adaptris.core.http.auth;
 
-import java.net.Authenticator;
 import java.net.PasswordAuthentication;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ThreadLocalCredentials extends Authenticator {
-  
-  private static ThreadLocalCredentials INSTANCE = new ThreadLocalCredentials();
+import com.adaptris.core.http.ResourceAuthenticator;
 
-  public static ThreadLocalCredentials getInstance() {
-    return INSTANCE;
+public class ThreadLocalCredentials implements ResourceAuthenticator {
+
+  /**
+   * Keep one ThreadLocalCredentials per target, multiple can be added to the AdapterResourceAuthenticator.
+   */
+  private static Map<String, ThreadLocalCredentials> instances = Collections.synchronizedMap(new HashMap<String, ThreadLocalCredentials>());
+
+  public static ThreadLocalCredentials getInstance(String target) {
+    ThreadLocalCredentials instance = instances.get(target);
+    if(instance == null) {
+      instance = new ThreadLocalCredentials(target);
+      instances.put(target, instance);
+    }
+    return instance;
   }
   
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
@@ -21,16 +33,31 @@ public class ThreadLocalCredentials extends Authenticator {
    *  since this ThreadLocal must always have its value set explicitly.
    */
   private transient final ThreadLocal<PasswordAuthentication> threadAuthentication = new ThreadLocal<PasswordAuthentication>();
+
+  private final String target;
+  
+  private ThreadLocalCredentials(String target) {
+    this.target = target;
+  }
   
   @Override
-  protected PasswordAuthentication getPasswordAuthentication() {
-    PasswordAuthentication auth = threadAuthentication.get();
-    if(auth != null) {
-      log.trace("Using user={} to login to [{}]", auth.getUserName(), getRequestingURL());
+  public PasswordAuthentication authenticate(ResourceTarget target) {
+    if(this.target.equals(target.getRequestingURL().toString())) {
+      PasswordAuthentication auth = getThreadCredentials();
+      if(auth != null) {
+        log.trace("Using user={} to login to [{}]", auth.getUserName(), target.getRequestingURL());
+      }
+      return auth;
+    } else {
+      log.trace("Unmatched authentication request for {}. My target is {}", target.getRequestingURL(), this.target);
     }
-    return auth;
+    return null;
   }
 
+  public PasswordAuthentication getThreadCredentials() {
+    return threadAuthentication.get();
+  }
+  
   /**
    * Set the credentials for the current thread
    */

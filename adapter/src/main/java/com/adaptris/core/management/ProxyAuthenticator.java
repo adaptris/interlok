@@ -24,8 +24,8 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 import java.net.Authenticator.RequestorType;
 import java.net.PasswordAuthentication;
 
-import com.adaptris.core.http.AdapterResourceAuthenticator;
 import com.adaptris.core.http.ResourceAuthenticator;
+import com.adaptris.core.http.auth.AdapterResourceAuthenticator;
 
 final class ProxyAuthenticator {
 
