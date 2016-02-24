@@ -20,6 +20,7 @@ import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -55,7 +56,7 @@ public class AdapterResourceAuthenticator extends Authenticator {
   }
 
   private AdapterResourceAuthenticator() {
-    configuredAuthenticators = new LinkedHashSet<>();
+    configuredAuthenticators = Collections.synchronizedSet(new LinkedHashSet<ResourceAuthenticator>());
   }
 
   public static final AdapterResourceAuthenticator getInstance() {
