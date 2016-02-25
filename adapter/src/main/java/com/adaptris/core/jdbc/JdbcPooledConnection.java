@@ -43,6 +43,12 @@ import com.adaptris.util.TimeInterval;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+/**
+ * A {@link DatabaseConnection} instance that provides connection pooling via c3p0.
+ * 
+ * @author amcgrath
+ *
+ */
 @XStreamAlias("jdbc-pooled-connection")
 @AdapterComponent
 @ComponentProfile(summary = "Connect to a database using a JDBC driver; connection pooling handled via C3P0",
