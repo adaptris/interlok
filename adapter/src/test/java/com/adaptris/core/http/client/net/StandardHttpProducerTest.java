@@ -35,10 +35,14 @@ import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandaloneRequestor;
 import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.common.MetadataStreamOutputParameter;
+import com.adaptris.core.http.HttpConstants;
 import com.adaptris.core.http.HttpProducerExample;
 import com.adaptris.core.http.MetadataContentTypeProvider;
+import com.adaptris.core.http.auth.ConfiguredAuthorizationHeader;
 import com.adaptris.core.http.auth.HttpAuthenticator;
 import com.adaptris.core.http.auth.ConfiguredUsernamePassword;
+import com.adaptris.core.http.auth.MetadataAuthorizationHeader;
+import com.adaptris.core.http.auth.MetadataUsernamePassword;
 import com.adaptris.core.http.client.ConfiguredRequestMethodProvider;
 import com.adaptris.core.http.client.MetadataRequestMethodProvider;
 import com.adaptris.core.http.client.RequestMethodProvider;
@@ -468,7 +472,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     HttpAuthenticator auth = getAuthenticator(getName(), getName());
     
     StandardHttpProducer stdHttp = new StandardHttpProducer();
-    stdHttp.setIgnoreServerResponseCode(true);
+    stdHttp.setIgnoreServerResponseCode(false);
     stdHttp.registerConnection(new NullConnection());
     stdHttp.setAuthenticator(auth);
     try {
@@ -485,6 +489,46 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     }
   }
 
+  public void testProduce_WithMetadataUsernamePassword() throws Exception {
+    String threadName = Thread.currentThread().getName();
+    Thread.currentThread().setName(getName());
+    HashUserRealmProxy hr = new HashUserRealmProxy();
+    hr.setFilename(PROPERTIES.getProperty(HttpConsumerTest.JETTY_USER_REALM));
+
+    SecurityConstraint securityConstraint = new SecurityConstraint();
+    securityConstraint.setMustAuthenticate(true);
+    securityConstraint.setRoles("user");
+
+    hr.setSecurityConstraints(Arrays.asList(securityConstraint));
+    HttpConnection jc = HttpHelper.createConnection();
+    jc.setSecurityHandler(hr);
+    MockMessageProducer mockProducer = new MockMessageProducer();
+    MessageConsumer consumer = JettyHelper.createConsumer(HttpHelper.URL_TO_POST_TO);
+    Channel channel = JettyHelper.createChannel(jc, consumer, mockProducer);
+
+    MetadataUsernamePassword auth = new MetadataUsernamePassword();
+    auth.setUsernameMetadataKey("user-key");
+    auth.setPasswordMetadataKey("pass-key");
+    
+    StandardHttpProducer stdHttp = new StandardHttpProducer();
+    stdHttp.setIgnoreServerResponseCode(false);
+    stdHttp.registerConnection(new NullConnection());
+    stdHttp.setAuthenticator(auth);
+    try {
+      start(channel);
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
+      msg.addMetadata("user-key", getName());
+      msg.addMetadata("pass-key", getName());
+      start(stdHttp);
+      AdaptrisMessage reply = stdHttp.request(msg, HttpHelper.createProduceDestination(channel));
+      waitForMessages(mockProducer, 1);
+      assertEquals(TEXT, mockProducer.getMessages().get(0).getContent());
+    } finally {
+      stop(stdHttp);
+      HttpHelper.stopChannelAndRelease(channel);
+      Thread.currentThread().setName(threadName);
+    }
+  }
 
 
   public void testProduce_WithUsernamePassword_BadCredentials() throws Exception {
@@ -525,7 +569,62 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     }
   }
 
-
+  public void testProduceWithAuthorizationHeader() throws Exception {
+    MockMessageProducer mock = new MockMessageProducer();
+    Channel c = HttpHelper.createAndStartChannel(mock);
+    StandardHttpProducer stdHttp = new StandardHttpProducer(HttpHelper.createProduceDestination(c));
+    
+    ConfiguredAuthorizationHeader authenticator = new ConfiguredAuthorizationHeader();
+    authenticator.setHeaderValue("some value");
+    stdHttp.setAuthenticator(authenticator);
+    
+    StandaloneProducer producer = new StandaloneProducer(stdHttp);
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
+    
+    try {
+      c.requestStart();
+      start(producer);
+      producer.doService(msg);
+      waitForMessages(mock, 1);
+    }
+    finally {
+      HttpHelper.stopChannelAndRelease(c);
+      stop(producer);
+    }
+    assertEquals(1, mock.messageCount());
+    AdaptrisMessage m2 = mock.getMessages().get(0);
+    assertTrue(m2.headersContainsKey(HttpConstants.AUTHORIZATION));
+    assertEquals("some value", m2.getMetadataValue(HttpConstants.AUTHORIZATION));
+  }
+  
+  public void testProduceWithMetadataAuthorizationHeader() throws Exception {
+    MockMessageProducer mock = new MockMessageProducer();
+    Channel c = HttpHelper.createAndStartChannel(mock);
+    StandardHttpProducer stdHttp = new StandardHttpProducer(HttpHelper.createProduceDestination(c));
+    
+    MetadataAuthorizationHeader authenticator = new MetadataAuthorizationHeader();
+    authenticator.setMetadataKey("ah-key");
+    stdHttp.setAuthenticator(authenticator);
+    
+    StandaloneProducer producer = new StandaloneProducer(stdHttp);
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
+    msg.addMetadata("ah-key", "some value");
+    
+    try {
+      c.requestStart();
+      start(producer);
+      producer.doService(msg);
+      waitForMessages(mock, 1);
+    }
+    finally {
+      HttpHelper.stopChannelAndRelease(c);
+      stop(producer);
+    }
+    assertEquals(1, mock.messageCount());
+    AdaptrisMessage m2 = mock.getMessages().get(0);
+    assertTrue(m2.headersContainsKey(HttpConstants.AUTHORIZATION));
+    assertEquals("some value", m2.getMetadataValue(HttpConstants.AUTHORIZATION));
+  }
 
   @Override
   protected Object retrieveObjectForSampleConfig() {

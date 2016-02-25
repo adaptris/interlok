@@ -5,8 +5,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.net.Authenticator;
+import java.net.Authenticator.RequestorType;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -36,21 +39,21 @@ public class ThreadLocalCredentialsTest {
   }
   
   @Test
-  public void mainThreadInitialNull() throws InterruptedException, UnknownHostException {
+  public void mainThreadInitialNull() throws InterruptedException, UnknownHostException, MalformedURLException {
     assertNull("PasswordAuthentication must be null before it is set", requestAuthentication());
   }
   
   @Test
-  public void mainThreadWorks() throws InterruptedException, UnknownHostException {
+  public void mainThreadWorks() throws InterruptedException, UnknownHostException, MalformedURLException {
     ThreadLocalCredentials.getInstance(TARGET).setThreadCredentials(new PasswordAuthentication("username", "password".toCharArray()));
     
-    PasswordAuthentication auth = Authenticator.requestPasswordAuthentication("localhost", InetAddress.getLocalHost(), 80, "http", "", "http");
+    PasswordAuthentication auth = requestAuthentication();
     assertEquals("username", auth.getUserName());
     assertTrue(Arrays.areEqual("password".toCharArray(), auth.getPassword()));
   }
   
   @Test
-  public void secondThreadInitialNull() throws InterruptedException, UnknownHostException {
+  public void secondThreadInitialNull() throws InterruptedException, UnknownHostException, MalformedURLException {
     ThreadLocalCredentials.getInstance(TARGET).setThreadCredentials(new PasswordAuthentication("username", "password".toCharArray()));
     
     // Fire up a new thread and make sure it's null in there
@@ -75,7 +78,7 @@ public class ThreadLocalCredentialsTest {
   }
   
   @Test
-  public void secondThreadWorks() throws InterruptedException, UnknownHostException {
+  public void secondThreadWorks() throws InterruptedException, UnknownHostException, MalformedURLException {
     ThreadLocalCredentials.getInstance(TARGET).setThreadCredentials(new PasswordAuthentication("username", "password".toCharArray()));
     
     final AtomicBoolean t2UsernameOK = new AtomicBoolean(false);
@@ -99,13 +102,13 @@ public class ThreadLocalCredentialsTest {
     assertTrue("Username in other thread is wrong", t2UsernameOK.get());
     assertTrue("Password in other thread is wrong", t2PasswordOK.get());
     
-    PasswordAuthentication auth = Authenticator.requestPasswordAuthentication("localhost", InetAddress.getLocalHost(), 80, "http", "", "http");
+    PasswordAuthentication auth = requestAuthentication();
     assertEquals("Main thread credentials must still be set", "username", auth.getUserName());
     assertTrue("Main thread credentials must still be set", Arrays.areEqual("password".toCharArray(), auth.getPassword()));
   }
   
-  private PasswordAuthentication requestAuthentication() throws UnknownHostException {
-    return Authenticator.requestPasswordAuthentication("localhost", InetAddress.getLocalHost(), 80, "http", "", "http");
+  private PasswordAuthentication requestAuthentication() throws UnknownHostException, MalformedURLException {
+    return Authenticator.requestPasswordAuthentication("localhost", InetAddress.getLocalHost(), 80, "http", "", "http", new URL("http://localhost"), RequestorType.SERVER);
   }
   
 }
