@@ -57,7 +57,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("ftp-ssl-connection")
 @AdapterComponent
 @ComponentProfile(summary = "Connect to a FTP Server with explicit SSL with a username and password", tag = "connections,ftps")
-@DisplayOrder(order = {"defaultUserName", "defaultPassword", "defaultControlPort"})
+@DisplayOrder(order = {"defaultUserName", "defaultPassword", "transferType", "ftpDataMode", "defaultControlPort", "implicitSsl"})
 public class FtpSslConnection extends FtpConnectionImp {
 
   private static final String SCHEME_FTPS = "ftps";

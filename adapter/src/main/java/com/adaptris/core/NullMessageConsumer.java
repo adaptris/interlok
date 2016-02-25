@@ -29,7 +29,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("null-message-consumer")
 @AdapterComponent
-@ComponentProfile(summary = "Default NO-OP consumer implementation", tag = "consumer,base")
+@ComponentProfile(summary = "Default NO-OP consumer implementation", tag = "consumer,base", recommended = {NullConnection.class})
 public class NullMessageConsumer extends AdaptrisMessageConsumerImp {
 	
 	public NullMessageConsumer() {

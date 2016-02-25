@@ -29,7 +29,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("null-message-producer")
 @AdapterComponent
-@ComponentProfile(summary = "Default NO-OP producer implementation", tag = "producer,base")
+@ComponentProfile(summary = "Default NO-OP producer implementation", tag = "producer,base", recommended = {NullConnection.class})
 public class NullMessageProducer extends AdaptrisMessageProducerImp {
 
   public NullMessageProducer() {

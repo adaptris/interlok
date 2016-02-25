@@ -31,6 +31,7 @@ import javax.management.remote.JMXConnectorServer;
 import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXServiceURL;
 
+import com.adaptris.core.management.ManagementComponent;
 import com.adaptris.core.management.properties.PropertyResolver;
 import com.adaptris.core.runtime.AdapterComponentMBean;
 import com.adaptris.core.util.JmxHelper;

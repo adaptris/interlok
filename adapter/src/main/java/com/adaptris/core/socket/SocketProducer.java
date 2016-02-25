@@ -46,7 +46,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("socket-producer")
 @AdapterComponent
-@ComponentProfile(summary = "Write a arbitrary message to a socket", tag = "producer,socket,tcp")
+@ComponentProfile(summary = "Write a arbitrary message to a socket", tag = "producer,socket,tcp",
+    recommended = {ProduceConnection.class})
 @DisplayOrder(order = {"protocolImplementation"})
 public class SocketProducer extends RequestReplyProducerImp {
 

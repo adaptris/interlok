@@ -37,6 +37,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.FileNameCreator;
 import com.adaptris.core.FormattedFilenameCreator;
+import com.adaptris.core.NullConnection;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ProduceOnlyProducerImp;
@@ -53,7 +54,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("fs-producer")
 @AdapterComponent
-@ComponentProfile(summary = "Write the current message to the filesystem", tag = "producer,fs,filesystem")
+@ComponentProfile(summary = "Write the current message to the filesystem", tag = "producer,fs,filesystem",
+    recommended = {NullConnection.class})
 @DisplayOrder(order = {"createDirs", "filenameCreator", "tempDirectory", "fsWorker"})
 public class FsProducer extends ProduceOnlyProducerImp {
 

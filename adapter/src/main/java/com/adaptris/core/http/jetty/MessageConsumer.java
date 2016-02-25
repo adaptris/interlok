@@ -72,7 +72,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("jetty-message-consumer")
 @AdapterComponent
-@ComponentProfile(summary = "Listen for HTTP traffic on the specified URI", tag = "consumer,http,https")
+@ComponentProfile(summary = "Listen for HTTP traffic on the specified URI", tag = "consumer,http,https",
+    recommended = {EmbeddedConnection.class, JettyConnection.class})
 @DisplayOrder(order = {"destination"})
 public class MessageConsumer extends BasicJettyConsumer {
 

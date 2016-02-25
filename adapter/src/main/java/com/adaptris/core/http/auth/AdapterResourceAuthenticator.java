@@ -33,7 +33,7 @@ import com.adaptris.core.util.Args;
  * 
  * <p>
  * This calls {@link Authenticator#setDefault(Authenticator)} in a static block; when authentication is required, this will iterate
- * over the list of configured {@link ResourceAuthenticator} instances and return the first non-null {@link com.adaptris.security.password.PasswordAuthentication}
+ * over the list of configured {@link ResourceAuthenticator} instances and return the first non-null {@link PasswordAuthentication}
  * provided.
  * </p>
  * <p>

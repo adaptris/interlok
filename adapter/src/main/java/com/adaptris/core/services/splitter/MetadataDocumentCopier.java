@@ -82,7 +82,7 @@ public class MetadataDocumentCopier extends MessageSplitterImp {
   /**
    * Set the metadata key to use to for generating msgs.
    *
-   * @param xp the metadata key
+   * @param key the metadata key
    */
   public void setMetadataKey(String key) {
     metadataKey = Args.notEmpty(key, "metadata key");

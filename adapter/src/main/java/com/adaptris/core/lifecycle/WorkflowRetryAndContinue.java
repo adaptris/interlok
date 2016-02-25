@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.core.AdapterLifecycleEvent;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultWorkflowLifecycleStrategy;
 import com.adaptris.core.Workflow;

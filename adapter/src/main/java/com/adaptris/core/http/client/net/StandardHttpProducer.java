@@ -46,6 +46,7 @@ import com.adaptris.core.AdaptrisMessageImp;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
+import com.adaptris.core.NullConnection;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.common.PayloadStreamInputParameter;
@@ -83,7 +84,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("standard-http-producer")
 @AdapterComponent
-@ComponentProfile(summary = "Make a HTTP request to a remote server using standard JRE components", tag = "producer,http,https")
+@ComponentProfile(summary = "Make a HTTP request to a remote server using standard JRE components", tag = "producer,http,https", recommended = {NullConnection.class})
 @DisplayOrder(order = {"authenticator", "username", "password", "allowRedirect", "ignoreServerResponseCode", "methodProvider", "contentTypeProvider",
     "requestHeaderProvider", "requestBody", "responseHeaderHandler", "responseBody"})
 public class StandardHttpProducer extends HttpProducer {

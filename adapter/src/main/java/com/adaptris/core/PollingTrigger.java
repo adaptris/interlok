@@ -38,7 +38,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("polling-trigger")
 @GenerateBeanInfo
 @AdapterComponent
-@ComponentProfile(summary = "Generate a static trigger message on a schedule", tag = "consumer,base")
+@ComponentProfile(summary = "Generate a static trigger message on a schedule", tag = "consumer,base",
+    recommended = {NullConnection.class})
 @DisplayOrder(order = {"template"})
 public class PollingTrigger extends AdaptrisPollingConsumer {
 

@@ -43,7 +43,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
- * Filtered start strategy for {@link SharedComponentList}
+ * Filtered start strategy for {@link com.adaptris.core.SharedComponentList}
  * <p>
  * In a standard Adapter lifecycle; all shared connections are started before any channels are started. If a connection is
  * referenced by a Channel that is not set to auto-start; then this can cause a connection to be made which would waste resources.

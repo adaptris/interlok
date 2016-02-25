@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.DefaultMessageFactory;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 

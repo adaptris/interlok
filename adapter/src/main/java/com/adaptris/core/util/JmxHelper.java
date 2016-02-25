@@ -32,6 +32,9 @@ import javax.management.MBeanServerFactory;
 import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
 
+import com.adaptris.core.management.BootstrapProperties;
+import com.adaptris.core.management.Constants;
+
 /**
  * Helper for JMX
  *

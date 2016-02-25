@@ -30,7 +30,9 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.NullConnection;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.mail.MailProducer;
@@ -78,7 +80,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("multi-attachment-smtp-producer")
 @AdapterComponent
 @ComponentProfile(summary = "Send an email for the facility for generating multiple attachments based on the current message",
-    tag = "producer,email")
+    tag = "producer,email", recommended = {NullConnection.class})
 @DisplayOrder(order = {"smtpUrl", "username", "password", "subject", "from", "ccList", "bccList", "mailCreator"})
 public class MultiAttachmentSmtpProducer extends MailProducer {
 
