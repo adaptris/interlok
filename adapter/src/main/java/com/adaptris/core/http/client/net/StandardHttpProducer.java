@@ -27,7 +27,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Authenticator;
 import java.net.HttpURLConnection;
-import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,6 +35,7 @@ import java.util.Collections;
 import javax.validation.Valid;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.util.Strings;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
@@ -51,8 +51,11 @@ import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.common.PayloadStreamInputParameter;
 import com.adaptris.core.common.PayloadStreamOutputParameter;
-import com.adaptris.core.http.AdapterResourceAuthenticator;
-import com.adaptris.core.http.ResourceAuthenticator;
+import com.adaptris.core.http.auth.AdapterResourceAuthenticator;
+import com.adaptris.core.http.auth.HttpAuthenticator;
+import com.adaptris.core.http.auth.NoAuthentication;
+import com.adaptris.core.http.auth.ConfiguredUsernamePassword;
+import com.adaptris.core.http.auth.ThreadLocalCredentials;
 import com.adaptris.core.http.client.RequestMethodProvider;
 import com.adaptris.core.http.client.RequestMethodProvider.RequestMethod;
 import com.adaptris.core.util.Args;
@@ -82,7 +85,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("standard-http-producer")
 @AdapterComponent
 @ComponentProfile(summary = "Make a HTTP request to a remote server using standard JRE components", tag = "producer,http,https", recommended = {NullConnection.class})
-@DisplayOrder(order = {"username", "password", "allowRedirect", "ignoreServerResponseCode", "methodProvider", "contentTypeProvider",
+@DisplayOrder(order = {"authenticator", "username", "password", "allowRedirect", "ignoreServerResponseCode", "methodProvider", "contentTypeProvider",
     "requestHeaderProvider", "requestBody", "responseHeaderHandler", "responseBody"})
 public class StandardHttpProducer extends HttpProducer {
 
@@ -99,9 +102,11 @@ public class StandardHttpProducer extends HttpProducer {
   @AdvancedConfig
   private DataOutputParameter<InputStream> responseBody;
 
+  private HttpAuthenticator authenticator = new NoAuthentication();
 
   public StandardHttpProducer() {
     super();
+    Authenticator.setDefault(AdapterResourceAuthenticator.getInstance());
   }
 
   public StandardHttpProducer(ProduceDestination d) {
@@ -111,22 +116,26 @@ public class StandardHttpProducer extends HttpProducer {
 
   @Override
   protected AdaptrisMessage doRequest(AdaptrisMessage msg, ProduceDestination destination, long timeout) throws ProduceException {
+    // If deprecated username/password are set and no authenticator is configured, transparently create a static authenticator
+    if(getAuthenticator() instanceof NoAuthentication && Strings.isNotEmpty(getUsername())) {
+      ConfiguredUsernamePassword auth = new ConfiguredUsernamePassword();
+      auth.setUsername(getUsername());
+      auth.setPassword(getPassword());
+      setAuthenticator(auth);
+    }
+    
     AdaptrisMessage reply = defaultIfNull(getMessageFactory()).newMessage();
-    HttpAuthenticator myAuth = null;
     try {
       URL url = new URL(destination.getDestination(msg));
-      if (getPasswordAuthentication() != null) {
-        myAuth = new HttpAuthenticator(url, getPasswordAuthentication());
-        Authenticator.setDefault(AdapterResourceAuthenticator.getInstance());
-        AdapterResourceAuthenticator.getInstance().addAuthenticator(myAuth);
-      }
+      authenticator.setup(url.toString(), msg);
       HttpURLConnection http = configure((HttpURLConnection) url.openConnection(), msg);
+      authenticator.configureConnection(http);
       writeData(getMethod(msg), msg, http);
       handleResponse(http, reply);
     } catch (Exception e) {
       ExceptionHelper.rethrowProduceException(e);
     } finally {
-      AdapterResourceAuthenticator.getInstance().removeAuthenticator(myAuth);
+      authenticator.close();
     }
     return reply;
   }
@@ -236,23 +245,15 @@ public class StandardHttpProducer extends HttpProducer {
   public void prepare() throws CoreException {
   }
 
-  private class HttpAuthenticator implements ResourceAuthenticator {
-
-    private URL url;
-    private PasswordAuthentication auth;
-
-    HttpAuthenticator(URL url, PasswordAuthentication auth) {
-      this.url = url;
-      this.auth = auth;
-    }
-
-    @Override
-    public PasswordAuthentication authenticate(ResourceTarget target) {
-      if (url.equals(target.getRequestingURL())) {
-        log.trace("Using user={} to login to [{}]", auth.getUserName(), target.getRequestingURL());
-        return auth;
-      }
-      return null;
-    }
+  public HttpAuthenticator getAuthenticator() {
+    return authenticator;
   }
+
+  /**
+   * Set the authentication method to use for the HTTP request
+   */
+  public void setAuthenticator(HttpAuthenticator authenticator) {
+    this.authenticator = authenticator;
+  }
+  
 }

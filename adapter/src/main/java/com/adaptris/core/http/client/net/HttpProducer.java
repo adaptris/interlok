@@ -60,7 +60,10 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
   @Valid
   private RequestMethodProvider methodProvider;
 
+  @Deprecated
   private String username = null;
+  
+  @Deprecated
   @InputFieldHint(style = "PASSWORD")
   private String password = null;
 
@@ -142,6 +145,7 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
    * 
    * @param s the user name
    */
+  @Deprecated
   public void setUsername(String s) {
     username = s;
   }
@@ -154,6 +158,7 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
    * 
    * @param s the password
    */
+  @Deprecated
   public void setPassword(String s) {
     password = s;
   }
@@ -163,6 +168,7 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
    * 
    * @return username
    */
+  @Deprecated
   public String getUsername() {
     return username;
   }
@@ -172,6 +178,7 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
    * 
    * @return the password
    */
+  @Deprecated
   public String getPassword() {
     return password;
   }

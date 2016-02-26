@@ -14,15 +14,17 @@
  * limitations under the License.
 */
 
-package com.adaptris.core.http;
+package com.adaptris.core.http.auth;
 
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import com.adaptris.core.http.ResourceAuthenticator;
 import com.adaptris.core.http.ResourceAuthenticator.ResourceTarget;
 import com.adaptris.core.util.Args;
 
@@ -54,7 +56,7 @@ public class AdapterResourceAuthenticator extends Authenticator {
   }
 
   private AdapterResourceAuthenticator() {
-    configuredAuthenticators = new LinkedHashSet<>();
+    configuredAuthenticators = Collections.synchronizedSet(new LinkedHashSet<ResourceAuthenticator>());
   }
 
   public static final AdapterResourceAuthenticator getInstance() {

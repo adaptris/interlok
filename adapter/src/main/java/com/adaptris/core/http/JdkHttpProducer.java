@@ -56,6 +56,8 @@ import com.adaptris.core.MetadataElement;
 import com.adaptris.core.NullConnection;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
+import com.adaptris.core.http.auth.AdapterResourceAuthenticator;
+import com.adaptris.core.http.auth.ThreadLocalCredentials;
 import com.adaptris.core.http.client.RequestMethodProvider;
 import com.adaptris.core.http.client.RequestMethodProvider.RequestMethod;
 import com.adaptris.core.http.client.net.StandardHttpProducer;
@@ -125,13 +127,14 @@ public class JdkHttpProducer extends HttpProducer {
   protected AdaptrisMessage doRequest(AdaptrisMessage msg, ProduceDestination destination, long timeout) throws ProduceException {
 
     AdaptrisMessage reply = defaultIfNull(getMessageFactory()).newMessage();
-    HttpAuthenticator myAuth = null;
+    ThreadLocalCredentials threadLocalCreds = null;
     try {
       URL url = new URL(destination.getDestination(msg));
       if (getPasswordAuthentication() != null) {
-        myAuth = new HttpAuthenticator(url, getPasswordAuthentication());
         Authenticator.setDefault(AdapterResourceAuthenticator.getInstance());
-        AdapterResourceAuthenticator.getInstance().addAuthenticator(myAuth);
+        threadLocalCreds = ThreadLocalCredentials.getInstance(url.toString());
+        threadLocalCreds.setThreadCredentials(getPasswordAuthentication());
+        AdapterResourceAuthenticator.getInstance().addAuthenticator(threadLocalCreds);
       }
       HttpURLConnection http = (HttpURLConnection) url.openConnection();
       http.setRequestMethod(methodToUse(msg).name());
@@ -161,8 +164,9 @@ public class JdkHttpProducer extends HttpProducer {
         throw new ProduceException(e);
       }
     } finally {
-      if (myAuth != null) {
-        AdapterResourceAuthenticator.getInstance().removeAuthenticator(myAuth);
+      if(threadLocalCreds != null) {
+        threadLocalCreds.removeThreadCredentials();
+        AdapterResourceAuthenticator.getInstance().removeAuthenticator(threadLocalCreds);
       }
     }
     return reply;
