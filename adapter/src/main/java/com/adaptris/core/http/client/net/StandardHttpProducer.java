@@ -35,7 +35,6 @@ import java.util.Collections;
 import javax.validation.Valid;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.util.Strings;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
@@ -52,10 +51,9 @@ import com.adaptris.core.ProduceException;
 import com.adaptris.core.common.PayloadStreamInputParameter;
 import com.adaptris.core.common.PayloadStreamOutputParameter;
 import com.adaptris.core.http.auth.AdapterResourceAuthenticator;
+import com.adaptris.core.http.auth.ConfiguredUsernamePassword;
 import com.adaptris.core.http.auth.HttpAuthenticator;
 import com.adaptris.core.http.auth.NoAuthentication;
-import com.adaptris.core.http.auth.ConfiguredUsernamePassword;
-import com.adaptris.core.http.auth.ThreadLocalCredentials;
 import com.adaptris.core.http.client.RequestMethodProvider;
 import com.adaptris.core.http.client.RequestMethodProvider.RequestMethod;
 import com.adaptris.core.util.Args;
@@ -117,7 +115,7 @@ public class StandardHttpProducer extends HttpProducer {
   @Override
   protected AdaptrisMessage doRequest(AdaptrisMessage msg, ProduceDestination destination, long timeout) throws ProduceException {
     // If deprecated username/password are set and no authenticator is configured, transparently create a static authenticator
-    if(getAuthenticator() instanceof NoAuthentication && Strings.isNotEmpty(getUsername())) {
+    if (getAuthenticator() instanceof NoAuthentication && !isEmpty(getUsername())) {
       ConfiguredUsernamePassword auth = new ConfiguredUsernamePassword();
       auth.setUsername(getUsername());
       auth.setPassword(getPassword());
