@@ -2,7 +2,7 @@ package com.adaptris.core.http.auth;
 
 import java.net.HttpURLConnection;
 
-import org.apache.logging.log4j.util.Strings;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.core.AdaptrisMessage;
@@ -25,7 +25,7 @@ public class MetadataAuthorizationHeader implements HttpAuthenticator {
 
   @Override
   public void configureConnection(HttpURLConnection conn) {
-    if(Strings.isNotBlank(headerValue)) {
+    if (!StringUtils.isBlank(headerValue)) {
       conn.addRequestProperty(HttpConstants.AUTHORIZATION, headerValue);
     }
   }
