@@ -38,6 +38,9 @@ public class MetadataAuthorizationHeader implements HttpAuthenticator {
     return metadataKey;
   }
 
+  /**
+   * The metadata key to retrieve the value for the Authorization header from
+   */
   public void setMetadataKey(String metadataKey) {
     this.metadataKey = metadataKey;
   }

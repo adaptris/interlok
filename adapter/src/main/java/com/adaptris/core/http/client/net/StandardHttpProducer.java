@@ -249,6 +249,9 @@ public class StandardHttpProducer extends HttpProducer {
     return authenticator;
   }
 
+  /**
+   * Set the authentication method to use for the HTTP request
+   */
   public void setAuthenticator(HttpAuthenticator authenticator) {
     this.authenticator = authenticator;
   }
