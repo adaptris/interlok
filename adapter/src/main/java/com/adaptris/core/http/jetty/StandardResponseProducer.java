@@ -53,7 +53,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author lchan
  *
  */
-@XStreamAlias("jetty-standard-reponse-producer")
+@XStreamAlias("jetty-standard-response-producer")
 @AdapterComponent
 @ComponentProfile(summary = "Write and commit the HTTP Response", tag = "producer,http,https", recommended = {NullConnection.class})
 @DisplayOrder(order = {"sendPayload", "flushBuffer", "forwardConnectionException"})
