@@ -18,6 +18,8 @@ package com.adaptris.security.keystore;
 
 import java.util.Properties;
 
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.adaptris.security.util.Constants;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -31,10 +33,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author $Author: lchan $
  */
 @XStreamAlias("inline-keystore")
+@DisplayOrder(order = {"alias", "certificate", "type"})
 public class InlineKeystore extends ConfiguredKeystore {
 
   private String certificate;
   private transient InlineKeystoreLocation keystoreLocation;
+  @AdvancedConfig
   private String type;
   private String alias;
 

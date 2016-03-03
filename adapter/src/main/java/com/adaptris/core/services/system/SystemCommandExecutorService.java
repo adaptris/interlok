@@ -30,6 +30,7 @@ import org.apache.commons.exec.Executor;
 import org.apache.commons.exec.PumpStreamHandler;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -72,6 +73,7 @@ public class SystemCommandExecutorService extends ServiceImp {
   private static final TimeInterval DEFAULT_TIMEOUT = new TimeInterval(30L, TimeUnit.SECONDS);
 
   @Valid
+  @AdvancedConfig
   private TimeInterval timeout;
   @NotNull
   @AutoPopulated

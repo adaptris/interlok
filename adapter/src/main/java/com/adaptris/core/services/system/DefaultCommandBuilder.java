@@ -30,7 +30,9 @@ import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.Executor;
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
@@ -44,21 +46,27 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("default-system-command-builder")
+@DisplayOrder(order = {"executablePath", "arguments", "workingDirectory", "quoteHandling", "successExitCode"})
 public class DefaultCommandBuilder implements CommandBuilder {
 
   @NotNull
   @AutoPopulated
+  @AdvancedConfig
   private List<String> environmentMetadataKeys;
   @NotNull
   @AutoPopulated
+  @AdvancedConfig
   private KeyValuePairSet environmentProperties;
   @NotNull
   @AutoPopulated
   private List<CommandArgument> arguments;
   @NotBlank
   private String executablePath;
+  @AdvancedConfig
   private String workingDirectory;
+  @AdvancedConfig
   private Boolean quoteHandling;
+  @AdvancedConfig
   private Integer successExitCode;
 
   public DefaultCommandBuilder() {

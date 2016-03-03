@@ -60,7 +60,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("jms-consumer")
 @AdapterComponent
-@ComponentProfile(summary = "Listen for JMS messages on the specified queue or topic", tag = "consumer,jms")
+@ComponentProfile(summary = "Listen for JMS messages on the specified queue or topic", tag = "consumer,jms",
+    recommended = {JmsConnection.class})
 @DisplayOrder(order = {"destination", "acknowledgeMode", "messageTranslator"})
 public class JmsConsumer extends JmsConsumerImpl {
 

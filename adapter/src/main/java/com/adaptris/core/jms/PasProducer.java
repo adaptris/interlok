@@ -85,8 +85,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("jms-topic-producer")
 @AdapterComponent
-@ComponentProfile(summary = "Place message on a JMS Topic", tag = "producer,jms")
-@DisplayOrder(order = {"destination", "messageTypeTranslator", "delivery", "priority", "ttl", "acknowledgeMode"})
+@ComponentProfile(summary = "Place message on a JMS Topic", tag = "producer,jms", recommended = {JmsConnection.class})
+@DisplayOrder(order = {"destination", "messageTypeTranslator", "deliveryMode", "priority", "ttl", "acknowledgeMode"})
 public class PasProducer extends DefinedJmsProducer {
 
   public PasProducer() {

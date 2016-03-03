@@ -19,6 +19,8 @@ package com.adaptris.core.lifecycle;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.core.AdapterLifecycleEvent;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultWorkflowLifecycleStrategy;
 import com.adaptris.core.Workflow;
@@ -45,6 +47,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author $Author: lchan $
  */
 @XStreamAlias("workflow-retry-and-continue")
+@DisplayOrder(order = {"maxRetries"})
 public class WorkflowRetryAndContinue extends DefaultWorkflowLifecycleStrategy {
 
   static final String FAILURE_LOG_MSG = "%1$s Failure for Workflow [%2$s]; Waiting for retry; failure=[%3$s]";

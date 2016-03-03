@@ -19,6 +19,7 @@ package com.adaptris.core.http.server;
 import java.net.HttpURLConnection;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -30,6 +31,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  *
  */
 @XStreamAlias("http-raw-status")
+@DisplayOrder(order = {"code", "text"})
 public class RawStatusProvider implements HttpStatusProvider {
 
   private int code;
@@ -74,12 +76,13 @@ public class RawStatusProvider implements HttpStatusProvider {
   /**
    * Set the optional response text that will be sent with the response code.
    * 
-   * <p>Note that for {@link com.adaptris.core.http.jetty.ResponseProducer} any values configured here will be ignored as
+   * <p>
+   * Note that for {@link com.adaptris.core.http.jetty.ResponseProducer} any values configured here will be ignored as
    * that will use {@link javax.servlet.http.HttpServletResponse#setStatus(int)} method only. This field is included only for
    * completeness, a sensible default will be made available based on the {@link HttpStatusProvider.HttpStatus} selected.
    * </p>
    * 
-   * @param txt the text to be sent (e.g. {@code OK}, if the status code is {@value java.net.HttpURLConnection##HTTP_OK}).
+   * @param txt the text to be sent (e.g. {@code OK}, if the status code is {@value java.net.HttpURLConnection#HTTP_OK}).
    */
   public void setText(String txt) {
     this.text = txt;

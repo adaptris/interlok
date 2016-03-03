@@ -23,6 +23,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.MarshallingCDATA;
+import com.adaptris.core.BranchingServiceCollection;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**

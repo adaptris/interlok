@@ -28,6 +28,7 @@ import javax.validation.constraints.NotNull;
 import org.w3c.dom.Document;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
@@ -54,8 +55,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("xml-document-aggregator")
+@DisplayOrder(order = {"documentEncoding", "mergeImplementation", "xmlDocumentFactoryConfig"})
 public class XmlDocumentAggregator extends MessageAggregatorImpl {
 
+  @AdvancedConfig
   private String documentEncoding;
   @NotNull
   @Valid

@@ -23,6 +23,8 @@ import javax.jms.Destination;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceDestination;
@@ -36,10 +38,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config jms-reply-to-destination
  */
 @XStreamAlias("jms-reply-to-destination")
+@DisplayOrder(order = {"objectMetadataKey"})
 public class JmsReplyToDestination implements ProduceDestination {
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
+  @AdvancedConfig
   private String objectMetadataKey;
 
   // separator char here if required

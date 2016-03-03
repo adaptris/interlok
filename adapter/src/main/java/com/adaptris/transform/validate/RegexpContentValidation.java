@@ -21,6 +21,7 @@ import java.util.regex.Pattern;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.DisplayOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -30,6 +31,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("xml-content-regexp")
+@DisplayOrder(order = {"pattern"})
 public class RegexpContentValidation implements ContentValidation {
 
   @NotBlank

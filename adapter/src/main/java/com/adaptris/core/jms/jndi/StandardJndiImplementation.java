@@ -59,7 +59,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("standard-jndi-implementation")
-@DisplayOrder(order = {"jndiName", "jndiParams"})
+@DisplayOrder(order = {"jndiName", "jndiParams", "enableEncodedPassword", "encodedPasswordKeys", "useJndiForQueues",
+    "useJndiForTopics", "newContextOnException", "extraFactoryConfiguration"})
 public class StandardJndiImplementation extends VendorImplementationImp {
 
   @NotNull

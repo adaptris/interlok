@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -42,7 +43,9 @@ public class StandaloneConsumer implements AdaptrisMessageConsumer, StateManaged
 
   private AdaptrisConnection connection;
   private AdaptrisMessageConsumer consumer;
+  @AdvancedConfig
   private Boolean isTrackingEndpoint;
+  @AdvancedConfig
   private Boolean isConfirmation;
   private transient ComponentState consumerState;
 

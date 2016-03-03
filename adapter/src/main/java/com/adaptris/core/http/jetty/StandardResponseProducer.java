@@ -32,6 +32,7 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.NullConnection;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.http.server.ConfiguredStatusProvider;
@@ -52,9 +53,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author lchan
  *
  */
-@XStreamAlias("jetty-standard-reponse-producer")
+@XStreamAlias("jetty-standard-response-producer")
 @AdapterComponent
-@ComponentProfile(summary = "Write and commit the HTTP Response", tag = "producer,http,https")
+@ComponentProfile(summary = "Write and commit the HTTP Response", tag = "producer,http,https", recommended = {NullConnection.class})
 @DisplayOrder(order = {"sendPayload", "flushBuffer", "forwardConnectionException"})
 public class StandardResponseProducer extends ResponseProducerImpl {
 

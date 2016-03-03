@@ -26,9 +26,12 @@ import java.util.HashMap;
 import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
+import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.DisplayOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -56,6 +59,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author $Author: lchan $
  */
 @XStreamAlias("simple-data-store")
+@DisplayOrder(order = {"dataFile", "lockFile", "maxAttempts"})
 public class SimpleDataStore extends DataStore {
 
   /** The filename property */
@@ -76,11 +80,15 @@ public class SimpleDataStore extends DataStore {
    */
   public static final String DEFAULT_LOCK = "sds.dat.lock";
 
+  @NotBlank
+  @AutoPopulated
   private String dataFile = DEFAULT_FILENAME;
+  @NotBlank
+  @AutoPopulated
   private String lockFile = DEFAULT_LOCK;
 
   private int maxAttempts = 15;
-  private boolean haveLock = false;
+  private transient boolean haveLock = false;
 
   private transient Logger logR = LoggerFactory.getLogger(this.getClass());
 

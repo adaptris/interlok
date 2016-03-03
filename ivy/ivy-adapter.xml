@@ -57,7 +57,7 @@
     <dependency org="org.glassfish.external" name="opendmk_jdmkrt_jar" rev="1.0-b01-ea" conf="compile->default"/>
 
 
-    <dependency org="com.jcraft" name="jsch" rev="0.1.51" conf="compile->default" />
+    <dependency org="com.jcraft" name="jsch" rev="0.1.53" conf="compile->default" />
 
     <dependency org="org.slf4j" name="jcl-over-slf4j" rev="1.7.12" conf="compile->default" />
     <dependency org="org.slf4j" name="slf4j-api" rev="1.7.12" conf="compile->default" />

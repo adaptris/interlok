@@ -36,7 +36,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("jms-queue-consumer")
 @AdapterComponent
-@ComponentProfile(summary = "Listen for JMS messages on the specified queue", tag = "consumer,jms")
+@ComponentProfile(summary = "Listen for JMS messages on the specified queue", tag = "consumer,jms",
+    recommended = {JmsConnection.class})
 @DisplayOrder(order = {"destination", "acknowledgeMode", "messageTranslator"})
 public class PtpConsumer extends JmsConsumerImpl {
 

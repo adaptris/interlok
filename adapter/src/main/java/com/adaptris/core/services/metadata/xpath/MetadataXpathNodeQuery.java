@@ -21,6 +21,7 @@ import javax.xml.namespace.NamespaceContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -32,6 +33,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("metadata-xpath-node-query")
+@DisplayOrder(order = {"metadataKey", "xpathMetadataKey"})
 public class MetadataXpathNodeQuery extends MetadataXpathQueryImpl implements XpathObjectQuery {
 
   public MetadataXpathNodeQuery() {

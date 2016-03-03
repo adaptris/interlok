@@ -81,6 +81,7 @@ public class XpathMessageSplitter extends MessageSplitterImp {
   @NotNull
   @NotBlank
   private String xpath = null;
+  @AdvancedConfig
   private String encoding = null;
   @AdvancedConfig
   private KeyValuePairSet namespaceContext;

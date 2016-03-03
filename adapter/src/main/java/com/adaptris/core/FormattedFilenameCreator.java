@@ -20,6 +20,7 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.util.Date;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 
@@ -63,6 +64,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @see java.util.Formatter
  */
 @XStreamAlias("formatted-filename-creator")
+@DisplayOrder(order = {"filenameFormat"})
 public class FormattedFilenameCreator implements FileNameCreator {
 
   private String filenameFormat;

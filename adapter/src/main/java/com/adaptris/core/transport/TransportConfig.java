@@ -19,6 +19,7 @@ package com.adaptris.core.transport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.transport.Transport;
 import com.adaptris.transport.TransportException;
 
@@ -29,7 +30,9 @@ import com.adaptris.transport.TransportException;
  */
 public abstract class TransportConfig {
 
+  @AdvancedConfig
   private int timeout;
+  @AdvancedConfig
   private int blocksize;
 
   protected transient Logger logR = LoggerFactory.getLogger(this.getClass());

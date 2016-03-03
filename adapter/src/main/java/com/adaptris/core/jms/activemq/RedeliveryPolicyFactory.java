@@ -18,6 +18,7 @@ package com.adaptris.core.jms.activemq;
 
 import org.apache.activemq.RedeliveryPolicy;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -36,6 +37,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("activemq-redelivery-policy")
+@DisplayOrder(order = {"maximumRedeliveries", "initialRedeliveryDelay", "useCollisionAvoidance", "useExponentialBackOff",
+    "collisionAvoidancePercent", "backOffMultiplier"})
 public class RedeliveryPolicyFactory {
   private Short collisionAvoidancePercent;
   private Double backOffMultiplier;

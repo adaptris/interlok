@@ -106,7 +106,7 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
       MockMessageProducer mockProducer = new MockMessageProducer();
       Pop3sReceiverFactory pop3s = new Pop3sReceiverFactory();
       pop3s.setAlwaysTrust(true);
-      pop3s.setImplicitTLS(true);
+      pop3s.setImplicitTls(true);
       Adapter a = createAdapter(createConsumerForTests(gm.getPop3s(), pop3s), mockProducer);
       a.requestStart();
       waitForMessages(mockProducer, 1);

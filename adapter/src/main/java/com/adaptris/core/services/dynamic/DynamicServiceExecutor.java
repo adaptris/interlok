@@ -27,6 +27,7 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.io.IOUtils;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisComponent;
@@ -43,21 +44,23 @@ import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Implementation of {@link com.adaptris.core.Service} which dynamically obtains and applies a {@link com.adaptris.core.Service} to an {@link com.adaptris.core.AdaptrisMessage} based on
+ * Implementation of {@link com.adaptris.core.Service} which dynamically obtains and applies a {@link com.adaptris.core.Service} to
+ * an {@link com.adaptris.core.AdaptrisMessage} based on
  * the contents of the message.
  * 
  * <p>
  * This class will attempt to extract a marshalled service (roughly analagous to {@link DynamicServiceLocator}) from the payload of
  * the current message, unmarshal that service, and then execute that service against the current message. The use of this type of
  * service is discouraged from a supportability perspective; however there will be use cases where it is appropriate. No checks are
- * performed on the {@link com.adaptris.core.Service} that is unmarshalled other than license verification; any exceptions thrown by unmarshalled
+ * performed on the {@link com.adaptris.core.Service} that is unmarshalled other than license verification; any exceptions thrown by
+ * unmarshalled
  * service are simply rethrown back to the workflow for standard message error handling.
  * </p>
  * 
  * @config dynamic-service-executor
  * 
  * @author lchan
- * @see com.adaptris.core.ServiceExtractor
+ * @see ServiceExtractor
  */
 @XStreamAlias("dynamic-service-executor")
 @AdapterComponent
@@ -71,6 +74,7 @@ public class DynamicServiceExecutor extends ServiceImp implements EventHandlerAw
   @Valid
   private ServiceExtractor serviceExtractor;
   @Valid
+  @AdvancedConfig
   private AdaptrisMarshaller marshaller;
 
   public DynamicServiceExecutor() {

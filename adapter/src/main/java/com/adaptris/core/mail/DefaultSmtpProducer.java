@@ -30,6 +30,7 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
+import com.adaptris.core.NullConnection;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.mail.SmtpClient;
@@ -77,18 +78,20 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("default-smtp-producer")
 @AdapterComponent
-@ComponentProfile(summary = "Send an email", tag = "producer,email")
-@DisplayOrder(order = {"smtpUrl", "username", "password", "subject", "from", "cc-list", "bcc-list"})
+@ComponentProfile(summary = "Send an email", tag = "producer,email", recommended = {NullConnection.class})
+@DisplayOrder(order = {"smtpUrl", "username", "password", "subject", "from", "ccList", "bccList"})
 public class DefaultSmtpProducer extends MailProducer {
 
   @AdvancedConfig
-  private boolean isAttachment = false;
+  private Boolean isAttachment;
   @NotNull
   @AutoPopulated
+  @AdvancedConfig
   private String contentType = "text/plain";
   @NotNull
   @AutoPopulated
   @Pattern(regexp = "base64|quoted-printable|uuencode|x-uuencode|x-uue|binary|7bit|8bit")
+  @AdvancedConfig
   private String contentEncoding = "base64";
   @NotNull
   @AutoPopulated
@@ -121,7 +124,7 @@ public class DefaultSmtpProducer extends MailProducer {
       byte[] encodedPayload = encode(msg);
       smtp.addTo(destination.getDestination(msg));
 
-      if (isAttachment) {
+      if (isAttachment()) {
         String template = msg
             .getMetadataValue(CoreConstants.EMAIL_TEMPLATE_BODY);
         if (template != null) {
@@ -167,7 +170,7 @@ public class DefaultSmtpProducer extends MailProducer {
    *
    * @param b true or false.
    */
-  public void setAttachment(boolean b) {
+  public void setIsAttachment(Boolean b) {
     isAttachment = b;
   }
 
@@ -176,8 +179,12 @@ public class DefaultSmtpProducer extends MailProducer {
    *
    * @return true or false.
    */
-  public boolean getAttachment() {
+  public Boolean getIsAttachment() {
     return isAttachment;
+  }
+
+  boolean isAttachment() {
+    return getIsAttachment() != null ? getIsAttachment().booleanValue() : false;
   }
 
   /**
@@ -226,7 +233,7 @@ public class DefaultSmtpProducer extends MailProducer {
    * @param s the content type
    *
    * @see #setContentType(String)
-   * @see #setAttachment(boolean)
+   * @see #setIsAttachment(Boolean)
    * @see SmtpClient#addAttachment(byte[], java.lang.String, java.lang.String)
    */
   public void setAttachmentContentType(String s) {

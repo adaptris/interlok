@@ -16,6 +16,7 @@
 
 package com.adaptris.core;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -26,6 +27,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config configured-produce-destination
  */
 @XStreamAlias("configured-produce-destination")
+@DisplayOrder(order = {"destination"})
 public final class ConfiguredProduceDestination implements ProduceDestination {
 
   private String destination;

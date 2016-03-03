@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -40,6 +41,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author lchan
  */
 @XStreamAlias("simple-exception-report")
+@DisplayOrder(order = {"elementName"})
 public class SimpleExceptionReport implements ExceptionReportGenerator {
 
   private transient Logger logR = LoggerFactory.getLogger(this.getClass());

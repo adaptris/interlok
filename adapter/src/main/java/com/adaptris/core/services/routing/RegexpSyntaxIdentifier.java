@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.ServiceException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -36,6 +37,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author $Author: lchan $
  */
 @XStreamAlias("routing-regexp-syntax-identifier")
+@DisplayOrder(order = {"destination", "patterns"})
 public class RegexpSyntaxIdentifier extends SyntaxIdentifierImpl {
   private transient List<Pattern> patternList = null;
   private transient boolean initialised = false;

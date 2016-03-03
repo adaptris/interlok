@@ -26,6 +26,8 @@ import java.io.Writer;
 
 import org.apache.commons.io.IOUtils;
 
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.interlok.InterlokException;
 import com.adaptris.interlok.config.DataOutputParameter;
@@ -40,8 +42,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("stream-payload-output-parameter")
+@DisplayOrder(order = {"contentEncoding"})
 public class PayloadStreamOutputParameter implements DataOutputParameter<InputStream> {
 
+  @AdvancedConfig
   private String contentEncoding;
   public PayloadStreamOutputParameter() {
     

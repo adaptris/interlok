@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.w3c.dom.Document;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.ServiceException;
 import com.adaptris.util.text.xml.XPath;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -35,6 +36,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author $Author: lchan $
  */
 @XStreamAlias("routing-xpath-syntax-identifier")
+@DisplayOrder(order = {"destination", "patterns", "namespaceContext"})
 public class XpathSyntaxIdentifier extends XmlSyntaxIdentifierImpl {
   public XpathSyntaxIdentifier() {
     super();

@@ -18,6 +18,7 @@ package com.adaptris.core.jms;
 
 import javax.jms.JMSException;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -35,6 +36,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("jms-message-count-producer-session")
+@DisplayOrder(order = {"maxMessages"})
 public class MessageCountProducerSessionFactory extends ProducerSessionFactoryImpl {
 
   private static final int DEFAULT_MAX_MESSAGES = 1024;

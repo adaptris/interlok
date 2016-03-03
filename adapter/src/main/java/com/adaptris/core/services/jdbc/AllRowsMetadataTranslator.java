@@ -104,7 +104,7 @@ public class AllRowsMetadataTranslator extends MetadataResultSetTranslatorImpl {
   /**
    * Specify the metadata key which will contain the total number of rows converted.
    * 
-   * @param rowTotalMetadataKey the metadata key.
+   * @param key the metadata key.
    */
   public void setRowTotalMetadataKey(String key) {
     this.rowTotalMetadataKey = key;

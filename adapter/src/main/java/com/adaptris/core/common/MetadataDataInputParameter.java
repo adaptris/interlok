@@ -19,6 +19,7 @@ package com.adaptris.core.common;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.util.Args;
 import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
@@ -39,6 +40,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("metadata-data-input-parameter")
+@DisplayOrder(order = {"metadataKey"})
 public class MetadataDataInputParameter implements DataInputParameter<String> {
   
   private static final String DEFAULT_METADATA_KEY = "destinationKey";

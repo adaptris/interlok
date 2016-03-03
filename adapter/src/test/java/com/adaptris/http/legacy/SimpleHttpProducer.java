@@ -33,6 +33,7 @@ import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.http.HttpProducer;
+import com.adaptris.core.http.JdkHttpProducer;
 import com.adaptris.http.Http;
 import com.adaptris.http.HttpClientTransport;
 import com.adaptris.http.HttpException;

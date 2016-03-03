@@ -33,6 +33,7 @@ import javax.validation.constraints.Pattern;
 
 import org.slf4j.Logger;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessageListener;
@@ -71,6 +72,7 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
   @NotNull
   @AutoPopulated
   @Pattern(regexp = "AUTO_ACKNOWLEDGE|CLIENT_ACKNOWLEDGE|DUPS_OK_ACKNOWLEDGE|[0-9]+")
+  @AdvancedConfig
   private String acknowledgeMode;
   @NotNull
   @AutoPopulated
@@ -83,7 +85,9 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
   @NotNull
   @AutoPopulated
   @Valid
+  @AdvancedConfig
   private CorrelationIdSource correlationIdSource;
+  @AdvancedConfig
   private Boolean additionalDebug;
   @Valid
   private TimeInterval receiveTimeout;

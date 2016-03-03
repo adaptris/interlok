@@ -32,18 +32,18 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.SharedComponentLifecycleStrategy;
-import com.adaptris.core.SharedComponentList;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
- * Filtered start strategy for {@link SharedComponentList}
+ * Filtered start strategy for {@link com.adaptris.core.SharedComponentList}
  * <p>
  * In a standard Adapter lifecycle; all shared connections are started before any channels are started. If a connection is
  * referenced by a Channel that is not set to auto-start; then this can cause a connection to be made which would waste resources.
@@ -86,7 +86,7 @@ public class FilteredSharedComponentStart implements SharedComponentLifecycleStr
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   private transient Map<String, ExecutorService> connectionStarters;
-
+  @AdvancedConfig
   private Boolean threadedStart;
   @NotNull
   @AutoPopulated

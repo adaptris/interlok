@@ -24,6 +24,8 @@ import java.util.Collection;
 
 import javax.validation.constraints.Pattern;
 
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -58,10 +60,13 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("mime-aggregator")
+@DisplayOrder(order = {"encoding", "overwriteMetadata", "partContentIdMetadataKey"})
 public class MimeAggregator extends MessageAggregatorImpl {
 
   @Pattern(regexp = "base64|quoted-printable|uuencode|x-uuencode|x-uue|binary|7bit|8bit")
+  @AdvancedConfig
   private String encoding;
+  @AdvancedConfig
   private String partContentIdMetadataKey;
 
   @Override

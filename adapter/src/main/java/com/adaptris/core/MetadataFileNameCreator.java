@@ -16,6 +16,7 @@
 
 package com.adaptris.core;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -29,6 +30,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  */
 @XStreamAlias("metadata-file-name-creator")
+@DisplayOrder(order = {"metadataKey", "defaultName"})
 public class MetadataFileNameCreator implements FileNameCreator {
 
   private String metadataKey;

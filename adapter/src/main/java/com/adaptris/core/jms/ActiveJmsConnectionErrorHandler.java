@@ -27,7 +27,8 @@ import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TemporaryTopic;
 
-import com.adaptris.core.ConnectionErrorHandler;
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
@@ -35,21 +36,24 @@ import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * {@link ConnectionErrorHandler} implementation that actively attempts messages via JMS to detect outages.
+ * {@link com.adaptris.core.ConnectionErrorHandler} implementation that actively attempts messages via JMS to detect outages.
  * 
  * <p>
- * Implementation of {@link ConnectionErrorHandler} which tests the connection every {@link #getCheckInterval()} interval (default
+ * Implementation of {@link com.adaptris.core.ConnectionErrorHandler} which tests the connection every {@link #getCheckInterval()}
+ * interval (default
  * is 5 second) and if the test fails then restarts the Connection's owner and stops the testing thread.
  * </p>
  * 
  * @config active-jms-connection-error-handler
  */
 @XStreamAlias("active-jms-connection-error-handler")
+@DisplayOrder(order = {"additionalLogging", "checkInterval"})
 public class ActiveJmsConnectionErrorHandler extends JmsConnectionErrorHandlerImpl {
 
   private static final TimeInterval DEFAULT_CHECK_INTERVAL = new TimeInterval(5L, TimeUnit.SECONDS);
   private static final TimeInterval DEFAULT_MAX_WAIT_FOR_START = new TimeInterval(5L, TimeUnit.MINUTES);
   private Boolean additionalLogging;
+  @AdvancedConfig
   private TimeInterval checkInterval;
   private transient JmsConnectionVerifier verifier;
 

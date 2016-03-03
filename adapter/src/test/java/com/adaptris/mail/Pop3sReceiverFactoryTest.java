@@ -74,7 +74,7 @@ public class Pop3sReceiverFactoryTest extends Pop3FactoryCase {
     f.setSendBufferSize(8192);
     f.setTcpNoDelay(true);
     f.setTimeout(60000);
-    fac.setImplicitTLS(true);
+    fac.setImplicitTls(true);
     fac.setAlwaysTrust(true);
     fac.setCipherSuites("TLS_DHE_DSS_WITH_AES_128_CBC_SHA,TLS_DHE_RSA_WITH_AES_256_CBC_SHA,TLS_RSA_WITH_AES_256_CBC_SHA");
     fac.setProtocols("SSLv3,TLSv1,TLSv1.1,SSLv2Hello");

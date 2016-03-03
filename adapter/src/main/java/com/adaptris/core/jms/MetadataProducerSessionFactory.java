@@ -22,6 +22,7 @@ import javax.jms.JMSException;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -39,6 +40,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("jms-metadata-producer-session")
+@DisplayOrder(order = {"metadataKey"})
 public class MetadataProducerSessionFactory extends ProducerSessionFactoryImpl {
 
   private static final String DEFAULT_METADATA_KEY = "newJmsSession";

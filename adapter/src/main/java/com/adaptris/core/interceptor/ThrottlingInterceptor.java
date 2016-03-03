@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.ManagedThreadFactory;
@@ -84,6 +85,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("throttling-interceptor")
 @ComponentProfile(summary = "Throttles message flow based on some message count criteria",
     tag = "interceptor,jmx")
+@DisplayOrder(order = {"maximumMessages", "timeSliceInterval"})
 public class ThrottlingInterceptor extends WorkflowInterceptorImpl {
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());

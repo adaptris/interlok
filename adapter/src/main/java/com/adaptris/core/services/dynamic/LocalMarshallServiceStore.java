@@ -16,6 +16,7 @@
 
 package com.adaptris.core.services.dynamic;
 
+import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.io.File;
@@ -89,7 +90,7 @@ public class LocalMarshallServiceStore extends MarshallFileServiceStore {
   protected Service unmarshal(String s) throws CoreException {
     Service result = null;
 
-    String filename = getFileNamePrefix() + s + getFileNameSuffix();
+    String filename = defaultIfEmpty(getFileNamePrefix(), "") + s + defaultIfEmpty(getFileNameSuffix(), "");
     try {
       if (baseDir == null) {
         validate();

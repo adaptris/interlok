@@ -22,6 +22,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -33,6 +34,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("xml-replace-node")
+@DisplayOrder(order = {"xpathToNode"})
 public class ReplaceNode extends XpathMergeImpl {
   @NotNull
   @NotBlank

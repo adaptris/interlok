@@ -22,6 +22,7 @@ import javax.management.MalformedObjectNameException;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -33,17 +34,17 @@ import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Interceptor that emits a {@link Notification} under based on message count being higher or lower
+ * Interceptor that emits a {@link javax.management.Notification} under based on message count being higher or lower
  * than the given message count.
  * <p>
  * A Notification will be emitted when the message count threshold is first exceeded in the last
  * complete timeslice. Notifications will continue being emitted for as long as the message count is
  * greater than the threshold and {@link #getMaxNotifications()} has not been exceeded. When the
  * message count dips below the threshold a notification is emitted with a different
- * {@link Notification#getMessage()}.
+ * {@link javax.management.Notification#getMessage()}.
  * </p>
  * <p>
- * The {@link Notification#setUserData(Object)} part of the notification is a {@link Properties}
+ * The {@link javax.management.Notification#setUserData(Object)} part of the notification is a {@link java.util.Properties}
  * object containing information about the slice which was the source of the notification.
  * Notifications are only generated based on the last complete timeslice that was recorded when a
  * message enters the workflow. Note that a workflow which does not process any messages within a
@@ -86,16 +87,16 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Interceptor that issues a JMX notification based on a message count boundary",
  tag = "interceptor,jmx")
-
+@DisplayOrder(order = {"messageCount", "maxNotifications"})
 public class MessageCountNotification extends NotifyingInterceptorByCount {
 
   /**
-   * The {@link Notification#getMessage()} when the message count is below the configured threshold.
+   * The {@link javax.management.Notification#getMessage()} when the message count is below the configured threshold.
    * 
    */
   public static final String NOTIF_MESSAGE_BELOW_THRESHOLD = "Message Count Below Boundary";
   /**
-   * The {@link Notification#getMessage()} when the message count is above the configured threshold.
+   * The {@link javax.management.Notification#getMessage()} when the message count is above the configured threshold.
    * 
    */
   public static final String NOTIF_MESSAGE_ABOVE_THRESHOLD = "Message Count Above Boundary";

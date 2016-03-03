@@ -19,6 +19,7 @@ package com.adaptris.core;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -30,6 +31,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config metadata-trading-relationship-creator
  */
 @XStreamAlias("metadata-trading-relationship-creator")
+@DisplayOrder(order = {"sourceKey", "destinationKey", "typeKey"})
 public class MetadataTradingRelationshipCreator
   implements TradingRelationshipCreator {
 

@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.CoreException;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -44,6 +45,7 @@ public class InlineItemCache implements ProcessedItemCache {
   protected transient Map<String, ProcessedItem> cache = new HashMap<String, ProcessedItem>();
   protected transient Logger logR = LoggerFactory.getLogger(this.getClass());
 
+  @AdvancedConfig
   private TimeInterval ageBeforeEviction;
 
   public InlineItemCache() {
