@@ -210,7 +210,7 @@ public class XPathService extends ServiceImp {
   
   public XPathService() {
     this.setExecutions(new ArrayList<Execution>());
-    this.setSourceXmlDestination(new StringPayloadDataInputParameter());
+    this.setXmlSource(new StringPayloadDataInputParameter());
   }
 
   // @Override
@@ -267,7 +267,7 @@ public class XPathService extends ServiceImp {
     return xmlSource;
   }
 
-  public void setSourceXmlDestination(DataInputParameter<String> sourceDestination) {
+  public void setXmlSource(DataInputParameter<String> sourceDestination) {
     this.xmlSource = Args.notNull(sourceDestination, "source-xml");
   }
 
