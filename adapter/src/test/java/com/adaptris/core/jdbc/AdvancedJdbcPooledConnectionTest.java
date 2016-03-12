@@ -52,9 +52,14 @@ public class AdvancedJdbcPooledConnectionTest extends DatabaseConnectionCase<Adv
      LifecycleHelper.start(con);
      ComboPooledDataSource poolDs = (ComboPooledDataSource) con.asDataSource();
      assertEquals(0, poolDs.getNumBusyConnections());
-     Connection c1 = poolDs.getConnection();
-     log.info("1 get: NumConnections=" + poolDs.getNumConnections() + ", NumBusyConnnections=" + poolDs.getNumBusyConnections() + ", NumIdleConnections" + poolDs.getNumIdleConnections());
-     c1.close();
+     Connection c1 = null;
+     try {
+       c1 = poolDs.getConnection();
+       log.info("1 get: NumConnections=" + poolDs.getNumConnections() + ", NumBusyConnnections=" + poolDs.getNumBusyConnections() + ", NumIdleConnections" + poolDs.getNumIdleConnections());
+     } finally {
+       Thread.sleep(1500);
+       c1.close();
+     }
      log.info("1 close: NumConnections=" + poolDs.getNumConnections() + ", NumBusyConnnections=" + poolDs.getNumBusyConnections() + ", NumIdleConnections" + poolDs.getNumIdleConnections());
      c1 = poolDs.getConnection();
      log.info("1 get (again): NumConnections=" + poolDs.getNumConnections() + ", NumBusyConnnections=" + poolDs.getNumBusyConnections() + ", NumIdleConnections" + poolDs.getNumIdleConnections());
