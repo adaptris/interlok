@@ -5,14 +5,14 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core;
 
@@ -21,7 +21,11 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Timer;
 import java.util.concurrent.TimeUnit;
 
@@ -43,6 +47,7 @@ import com.adaptris.core.event.AdapterStopEvent;
 import com.adaptris.core.event.StandardAdapterStartUpEvent;
 import com.adaptris.core.runtime.MessageErrorDigester;
 import com.adaptris.core.runtime.StandardMessageErrorDigester;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -162,8 +167,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
     getSharedComponents().prepare();
     try {
       getLogHandler().clean();
-    }
-    catch (IOException i) {
+    } catch (IOException i) {
       log.warn("ignoring exception cleaning log files", i);
     }
     eventHandler.registerSourceId(getUniqueId());
@@ -190,8 +194,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
     try {
       prepare();
       initialise();
-    }
-    catch (RuntimeException e) {
+    } catch (RuntimeException e) {
       log.error("Caught un-handled RuntimeException", e);
       throw new CoreException(e);
     }
@@ -202,20 +205,22 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
    */
   private synchronized void initialise() throws CoreException {
     eventHandler.requestStart();
+    List<AdaptrisComponent> toInit =
+        Arrays.asList(getSharedComponents(), getMessageErrorDigester(), messageErrorHandler, channelList, failedMessageRetrier);
     try {
-      LifecycleHelper.init(getSharedComponents());
-      LifecycleHelper.init(getMessageErrorDigester());
-      LifecycleHelper.init(messageErrorHandler);
-      LifecycleHelper.init(channelList);
-      LifecycleHelper.init(failedMessageRetrier);
+      for (ComponentLifecycle c : toInit) {
+        LifecycleHelper.init(c);
+      }
       handleLifecycleEvent(AdapterInitEvent.class, true);
       sendStartUpEvent();
-    }
-    catch (CoreException e) {
+    } catch (CoreException e) {
+      log.error("Failed to initialise Adapter; closing components");
+      for (ComponentLifecycle c : reverse(toInit)) {
+        LifecycleHelper.close(c);
+      }
       handleLifecycleEvent(AdapterInitEvent.class, false);
       throw e;
     }
-
   }
 
   /**
@@ -242,8 +247,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
         for (Workflow workflow : channel.getWorkflowList()) {
           failedMessageRetrier.addWorkflow(workflow);
         }
-      }
-      catch (CoreException e) {
+      } catch (CoreException e) {
         log.warn("Workflows cannot be uniquely identified at the Adapter" + " level, FailedMessageRetrier reset to null");
         setFailedMessageRetrier(new NoRetries());
         break; // out of Channel loop
@@ -271,8 +275,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
           workflow.registerActiveMsgErrorHandler(workflow.getMessageErrorHandler());
           // LifecycleHelper.registerEventHandler(workflow.getMessageErrorHandler(), getEventHandler());
           workflow.getMessageErrorHandler().registerParent(channel.retrieveActiveMsgErrorHandler());
-        }
-        else {
+        } else {
           workflow.registerActiveMsgErrorHandler(errorHandlerToUse);
         }
       }
@@ -291,6 +294,10 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
    */
   @Override
   public void start() throws CoreException {
+
+    List<AdaptrisComponent> toStart =
+        Arrays.asList(getMessageErrorDigester(), messageErrorHandler, channelList, failedMessageRetrier, getSharedComponents());
+
     try {
       LifecycleHelper.start(getMessageErrorDigester());
       LifecycleHelper.start(messageErrorHandler);
@@ -302,14 +309,9 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
       handleLifecycleEvent(AdapterStartEvent.class, true);
 
       lastStartTime = new Date();
-    }
-    catch (CoreException e) {
+    } catch (CoreException | RuntimeException e) {
       handleLifecycleEvent(AdapterStartEvent.class, false);
-      throw e;
-    }
-    catch (RuntimeException e) {
-      log.error("Caught un-handled RuntimeException", e);
-      throw new CoreException(e);
+      ExceptionHelper.rethrowCoreException(e);
     }
   }
 
@@ -319,12 +321,11 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
       HeartbeatTimerTask task = new HeartbeatTimerTask((Class<HeartbeatEvent>) Class.forName(getHeartbeatEventImp()), this);
       heartbeatTimer = new Timer(true); // is daemon
       heartbeatTimer.schedule(task, heartbeatInterval(), heartbeatInterval());
-    }
-    catch (ClassNotFoundException e) {
+    } catch (ClassNotFoundException e) {
       throw new CoreException(e);
-     }
+    }
   }
-  
+
   // nb called from synch'd method only
   private void sendStartUpEvent() throws CoreException {
     if (!hasInitialised) {
@@ -339,7 +340,9 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
     }
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent */
+  /**
+   * @see com.adaptris.core.AdaptrisComponent
+   */
   @Override
   public void stop() {
     lastStopTime = new Date();
@@ -354,14 +357,15 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
     LifecycleHelper.stop(getMessageErrorDigester());
     try {
       handleLifecycleEvent(AdapterStopEvent.class, true);
-    }
-    catch (CoreException e) {
+    } catch (CoreException e) {
       log.trace("Failed to stop component cleanly, logging exception for informational purposes only", e);
     }
     LifecycleHelper.stop(getSharedComponents());
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent */
+  /**
+   * @see com.adaptris.core.AdaptrisComponent
+   */
   @Override
   public void close() {
     LifecycleHelper.close(failedMessageRetrier);
@@ -370,8 +374,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
     LifecycleHelper.close(getMessageErrorDigester());
     try {
       handleLifecycleEvent(AdapterCloseEvent.class, true);
-    }
-    catch (CoreException e) {
+    } catch (CoreException e) {
       log.trace("Failed to shutdown component cleanly, logging exception for informational purposes only", e);
     }
     LifecycleHelper.close(getSharedComponents());
@@ -459,7 +462,8 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
 
   /**
    * <p>
-   * Sets the configured {@link com.adaptris.core.ProcessingExceptionHandler} for the Adapter level. May not be null, but need not be configured at
+   * Sets the configured {@link com.adaptris.core.ProcessingExceptionHandler} for the Adapter level. May not be null, but need not
+   * be configured at
    * this level.
    * </p>
    * 
@@ -535,8 +539,8 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
   }
 
   long heartbeatInterval() {
-    return getHeartbeatEventInterval() != null ? getHeartbeatEventInterval().toMilliseconds() : DEFAULT_HB_EVENT_INTERVAL
-        .toMilliseconds();
+    return getHeartbeatEventInterval() != null ? getHeartbeatEventInterval().toMilliseconds()
+        : DEFAULT_HB_EVENT_INTERVAL.toMilliseconds();
   }
 
   /**
@@ -687,4 +691,34 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
     return lastStopTime;
   }
 
+
+  static <T> ReverseIterator<T> reverse(List<T> original) {
+    return new ReverseIterator<T>(original);
+  }
+
+  private static class ReverseIterator<T> implements Iterable<T> {
+    private final List<T> original;
+
+    public ReverseIterator(List<T> original) {
+      this.original = original;
+    }
+
+    public Iterator<T> iterator() {
+      final ListIterator<T> i = original.listIterator(original.size());
+
+      return new Iterator<T>() {
+        public boolean hasNext() {
+          return i.hasPrevious();
+        }
+
+        public T next() {
+          return i.previous();
+        }
+
+        public void remove() {
+          i.remove();
+        }
+      };
+    }
+  }
 }
