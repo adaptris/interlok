@@ -48,7 +48,7 @@ import com.adaptris.util.TimeInterval;
 @SuppressWarnings("deprecation")
 public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
 
-  private static final String QUERY_SQL = "SELECT adapter_version, message_translator_type, inserted_on, counter"
+  protected static final String QUERY_SQL = "SELECT adapter_version, message_translator_type, inserted_on, counter"
       + " FROM adapter_type_version " + " WHERE adapter_unique_id = ?";
   private static final String QUERY_SQL_NO_RESULT = "SELECT adapter_version, message_translator_type, inserted_on, counter"
       + " FROM adapter_type_version " + " WHERE adapter_unique_id = 'xxxxxxx'";

@@ -24,23 +24,22 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.jdbc.JdbcResult;
 
 /**
- * Interface used to format output from a {@link JdbcDataQueryService}
+ * Interface used to format output from a {@link SplittingJdbcDataQueryService}
  *
- * @author lchan
- *
+ * @author gdries
  */
-public interface ResultSetTranslator extends AdaptrisComponent {
+public interface SplittingResultSetTranslator extends AdaptrisComponent {
 
   /**
-   * Translate the contents of the result set into the AdaptrisMessage object. Only use
-   * this method for JdbcResults that are guaranteed to fit in memory.
+   * Translate the JdbcResult into (possibly) multiple AdaptrisMessage objects. This method should be
+   * used when the JdbcResult may be too big for a single message (or too big for RAM) or if you want
+   * to split the JDBC result into multiple messages (x rows per message, for example).
    * 
-   * @param source the result set from a database query executed by
-   *          {@link JdbcDataQueryService}
-   * @param target the adaptris message
-   * @throws SQLException on errors accessing the result set.
-   * @throws ServiceException wrapping any other exception
+   * @param source
+   * @return an Iterable that may result in multiple AdaptrisMessage objects
+   * @throws SQLException
+   * @throws ServiceException
    */
-  void translate(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException;
+  Iterable<AdaptrisMessage> translate(JdbcResult source) throws SQLException, ServiceException;
   
 }
