@@ -22,7 +22,6 @@ import java.io.OutputStream;
 import java.io.StringReader;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -107,61 +106,28 @@ public abstract class XmlPayloadTranslatorImpl extends ResultSetTranslatorImp {
         String value = toString(row, i);
 
         Element node = doc.createElement(elementNames.get(i));
-        setElementValue(columnName, builder, node, value);
+        if (isXmlColumn(columnName)) {
+          try {
+            Document xmlColumn = null;
+            xmlColumn = builder.parse(createInputSource(value));
+            node.appendChild(doc.importNode(xmlColumn.getFirstChild(), true));
+          }
+          catch (Exception e) {
+            if (isDisplayColumnErrors()) {
+              log.warn("Failed to parse column {} as an XML Document, treating as text.", columnName);
+              log.trace("Failed to parse column {} as an XML Document", columnName, e);
+            }
+            node.appendChild(createTextNode(doc, value, isCdataColumn(columnName)));
+          }
+        }
+        else {
+          node.appendChild(createTextNode(doc, value, isCdataColumn(columnName)));
+        }
         elementRow.appendChild(node);
       }
       results.add(elementRow);
     }
     return results;
-  }
-  
-  protected void appendRowsToElement(DocumentBuilder builder, Element ele, Iterator<JdbcResultRow> rows, int maxRows) throws SQLException {
-    Document doc = ele.getOwnerDocument();
-    
-    List<String> elementNames = new ArrayList<>();
-    boolean firstRecord = true;
-    
-    // This will continue where the previous invocation left off since a ResultSet iterator is never reset
-    while(rows.hasNext() && maxRows>0) {
-      JdbcResultRow row = rows.next();
-      Element elementRow = doc.createElement(getColumnNameStyle().format(ELEMENT_NAME_ROW));
-      // let's go through and build up the element names we need once.
-      if (firstRecord) {
-        firstRecord = false;
-        elementNames = createElementNames(row);
-      }
-      for (int i = 0; i < row.getFieldCount(); i++) {
-        String columnName = row.getFieldName(i);
-        String value = toString(row, i);
-
-        Element node = doc.createElement(elementNames.get(i));
-        setElementValue(columnName, builder, node, value);
-        elementRow.appendChild(node);
-      }
-      ele.appendChild(elementRow);
-      maxRows--;
-    }
-  }
-  
-  private void setElementValue(String columnName, DocumentBuilder builder, Element node, String value) {
-    Document doc = node.getOwnerDocument();
-    if (isXmlColumn(columnName)) {
-      try {
-        Document xmlColumn = null;
-        xmlColumn = builder.parse(createInputSource(value));
-        node.appendChild(doc.importNode(xmlColumn.getFirstChild(), true));
-      }
-      catch (Exception e) {
-        if (isDisplayColumnErrors()) {
-          log.warn("Failed to parse column {} as an XML Document, treating as text.", columnName);
-          log.trace("Failed to parse column {} as an XML Document", columnName, e);
-        }
-        node.appendChild(createTextNode(doc, value, isCdataColumn(columnName)));
-      }
-    }
-    else {
-      node.appendChild(createTextNode(doc, value, isCdataColumn(columnName)));
-    }
   }
 
   private List<String> createElementNames(JdbcResultRow row) throws SQLException {

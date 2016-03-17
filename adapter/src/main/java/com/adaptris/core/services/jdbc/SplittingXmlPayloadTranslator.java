@@ -18,7 +18,11 @@ package com.adaptris.core.services.jdbc;
 
 import java.sql.SQLException;
 import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -26,9 +30,13 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.AdaptrisMessageProducer;
+import com.adaptris.core.ProduceException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.jdbc.JdbcResult;
@@ -37,19 +45,13 @@ import com.adaptris.jdbc.JdbcResultSet;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Translate the ResultSet contents into an XML Payload.
- * <p>
- * The original message can be included in the output message in order to allow consolidation of XML data and SQL data in a
- * subsequent XSLT step.
+ * Translate the ResultSet contents into some number of XML messages.
  * 
- * The format of the returned message is as follows:
+ * The format of the output messages is as follows:
  * 
  * <pre>
  * {@code
  * <Results>
- *   <OriginalMessage>
- *   ...
- *   </OriginalMessage>
  *   <Row>
  *     <column1>...</column1>
  *     <column2>...</column2>
@@ -65,104 +67,70 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * a valid XML element name. If the actual name (in the database table definition) is not valid, the query should specify an alias
  * name in the query. E.g: <code>SELECT "col 1" AS "col1" FROM mytable;</code>
  * </p>
+ * <p>
+ * The output messages will be constructed by the same MessageFactory as the incoming message. If a MessageFactory has been configured
+ * then that one will be used instead (useful in case the incoming message is file-backed, for example). 
+ * </p>
  * 
- * @config jdbc-xml-payload-translator
+ * @config jdbc-splitting-xml-payload-translator
  * 
- * @author lchan
+ * @author gdries
  * 
  */
 @XStreamAlias("jdbc-splitting-xml-payload-translator")
-@DisplayOrder(order = {"maxRowsPerMessage", "allowMultipleResultsPerMessage",
+@DisplayOrder(order = {"maxRowsPerMessage", "producer",
     "columnNameStyle", "columnTranslators", "mergeImplementation", "outputMessageEncoding", 
     "stripIllegalXmlChars", "xmlColumnPrefix", "xmlColumnRegexp", "cdataColumnRegexp",
     "messageFactory"})
-public class SplittingXmlPayloadTranslator extends XmlPayloadTranslatorImpl implements SplittingResultSetTranslator {
+public class SplittingXmlPayloadTranslator extends XmlPayloadTranslatorImpl {
+  @NotNull
+  @AutoPopulated
+  @Valid
+  private AdaptrisMessageProducer producer;
+
+  @AdvancedConfig
   private AdaptrisMessageFactory messageFactory;
-  private int maxRowsPerMessage;
+  
+  private int maxRowsPerMessage = 1000;
 
   public SplittingXmlPayloadTranslator() {
     super();
-    setMessageFactory(AdaptrisMessageFactory.getDefaultInstance());
   }
 
   /**
-   * This method cannot be used with this translator. Wouldn't make sense anyway since the whole point
-   * of this one is to be able to handle arbitrarily large result sets and the contract for this method
-   * requires that the whole ResultSet will be put in this one message.
+   * Split the JdbcResult into possibly multiple output messages. Each ResultSet will start in a new message if there are multiple.
    */
   @Override
-  public void translate(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException {
-    throw new UnsupportedOperationException();
-  }
+  public void translate(JdbcResult source, AdaptrisMessage inputMessage) throws SQLException, ServiceException {
+    final AdaptrisMessageFactory factory = getMessageFactory() == null ? inputMessage.getFactory() : getMessageFactory();
+
+    try {
+      // Handle each ResultSet separately and create as many messages as required
+      for(JdbcResultSet rs: source.getResultSets()) {
   
-  @Override
-  public Iterable<AdaptrisMessage> translate(final JdbcResult source) throws SQLException, ServiceException {
-    return new Iterable<AdaptrisMessage>() {
-      @Override
-      public Iterator<AdaptrisMessage> iterator() {
-        try {
-          return new Splitter(source);
-        } catch (Exception e) {
-          throw new RuntimeException(e);
+        // While we still have rows in this ResultSet
+        final Iterator<JdbcResultRow> rows = rs.getRows().iterator();
+        while(rows.hasNext()) {
+          AdaptrisMessage outputMessage = factory.newMessage();
+          
+          // Fill the message with the requisite number of rows if this ResultSet has enough of them
+          Document doc = toDocument(outputMessage, new LimitedResultSet(rows, getMaxRowsPerMessage()));
+          writeXmlDocument(doc, outputMessage);
+          
+          // Use the configured producer to send the message on its way
+          getProducer().produce(outputMessage);
         }
       }
-    };
-  }
-  
-  private class Splitter implements Iterator<AdaptrisMessage> {
-    private final Iterator<JdbcResultSet> rsIt;
-    private AdaptrisMessage nextMessage;
-    private Iterator<JdbcResultRow> rowIt;
-    
-    public Splitter(JdbcResult source) throws Exception {
-      rsIt = source.getResultSets().iterator();
-      nextMessage = buildNextMessage();
+    } catch (ParserConfigurationException e) {
+      throw new ServiceException(e);
+    } catch (ProduceException e) {
+      throw new ServiceException("Failed to send output message", e);
+    } catch (Exception e) {
+      throw new ServiceException("Failed to process message", e);
     }
-
-    @Override
-    public boolean hasNext() {
-      return nextMessage != null;
-    }
-
-    @Override
-    public AdaptrisMessage next() {
-      try {
-        AdaptrisMessage tmp = nextMessage;
-        nextMessage = buildNextMessage();
-        return tmp;
-      } catch(Exception e) {
-        throw new RuntimeException("Unable to construct next message", e);
-      }
-    }
-    
-    private AdaptrisMessage buildNextMessage() throws Exception {
-      AdaptrisMessage msg = getMessageFactory().newMessage();
-
-      // If we are not currently iterating a ResultSet, begin the next ResultSet if there is one.
-      if(rowIt == null) {
-        if(rsIt.hasNext()) {
-          rowIt = rsIt.next().getRows().iterator();
-        } else {
-          return null;
-        }
-      }
-      
-      // Fill the message with the requisite number of rows if this ResultSet has enough of them
-      Document doc = toDocument(msg, rowIt, getMaxRowsPerMessage());
-      writeXmlDocument(doc, msg);
-      
-      // If there are no more rows in this result set, set up for the next one
-      // The next call to this method will start the next result set.
-      if(!rowIt.hasNext()) {
-        rowIt = null;
-      }
-      
-      return msg;
-    }
-    
   }
 
-  private Document toDocument(AdaptrisMessage msg, Iterator<JdbcResultRow> rows, int maxRows) throws ParserConfigurationException, SQLException {
+  private Document toDocument(AdaptrisMessage msg, JdbcResultSet rSet) throws ParserConfigurationException, SQLException {
     DocumentBuilderFactoryBuilder factoryBuilder = documentFactoryBuilder(msg);
     DocumentBuilderFactory factory = factoryBuilder.configure(DocumentBuilderFactory.newInstance());
     DocumentBuilder builder = factory.newDocumentBuilder();
@@ -172,7 +140,10 @@ public class SplittingXmlPayloadTranslator extends XmlPayloadTranslatorImpl impl
     Element results = doc.createElement(elementNameStyle.format(ELEMENT_NAME_RESULTS));
     doc.appendChild(results);
 
-    appendRowsToElement(builder, results, rows, maxRows);
+    List<Element> elements = createListFromResultSet(builder, doc, rSet);
+    for (Element element : elements) {
+      results.appendChild(element);
+    }
    
     return doc;
   }
@@ -182,13 +153,42 @@ public class SplittingXmlPayloadTranslator extends XmlPayloadTranslatorImpl impl
         (DocumentBuilderFactoryBuilder) msg.getObjectHeaders().get(JdbcDataQueryService.KEY_DOCBUILDER_FAC);
     return factoryBuilder != null ? factoryBuilder : DocumentBuilderFactoryBuilder.newInstance();
   }
-
+  
   public int getMaxRowsPerMessage() {
     return maxRowsPerMessage;
   }
 
   public void setMaxRowsPerMessage(int maxRowsPerMessage) {
     this.maxRowsPerMessage = maxRowsPerMessage;
+  }
+  
+  /**
+   * <p>
+   * Sets the <code>AdaptrisMessageProducer</code> to use for producing split
+   * messages.
+   * </p>
+   *
+   * @param prod the <code>AdaptrisMessageProducer</code> to use for producing
+   *          split messages, may not be null
+   */
+  public void setProducer(AdaptrisMessageProducer prod) {
+    if (prod == null) {
+      throw new IllegalArgumentException("param is null");
+    }
+    producer = prod;
+  }
+
+  /**
+   * <p>
+   * Returns the <code>AdaptrisMessageProducer</code> to use for producing split
+   * messages.
+   * </p>
+   *
+   * @return the <code>AdaptrisMessageProducer</code> to use for producing split
+   *         messages
+   */
+  public AdaptrisMessageProducer getProducer() {
+    return producer;
   }
 
   public AdaptrisMessageFactory getMessageFactory() {
@@ -197,6 +197,60 @@ public class SplittingXmlPayloadTranslator extends XmlPayloadTranslatorImpl impl
 
   public void setMessageFactory(AdaptrisMessageFactory messageFactory) {
     this.messageFactory = messageFactory;
+  }
+
+  /**
+   * Wrap a JdbcResultSet to limit the number of rows it will return.
+   */
+  private static class LimitedResultSet implements JdbcResultSet {
+    private final Iterator<JdbcResultRow> rows;
+    
+    public LimitedResultSet(Iterator<JdbcResultRow> rows, int rowLimit) {
+      this.rows = new LimitedIterator<JdbcResultRow>(rows, rowLimit);
+    }
+
+    @Override
+    public Iterable<JdbcResultRow> getRows() {
+      return new Iterable<JdbcResultRow>() {
+        @Override
+        public Iterator<JdbcResultRow> iterator() {
+          return rows;
+        }
+      };
+    }
+  }
+
+  /**
+   * Wraps an Iterator and limits the number of objects produced by it
+   *
+   * @param <T>
+   */
+  private static class LimitedIterator<T> implements Iterator<T> {
+    private final Iterator<? extends T> delegate;
+    private final int limit;
+    private int objectsProduced;
+    
+    public LimitedIterator(Iterator<? extends T> delegate, int limit) {
+      this.delegate = delegate;
+      this.limit = limit;
+    }
+
+    @Override
+    public boolean hasNext() {
+      return (objectsProduced < limit) && delegate.hasNext();
+    }
+
+    @Override
+    public T next() {
+      if(objectsProduced >= limit) {
+        throw new NoSuchElementException();
+      }
+
+      final T tmp = delegate.next();
+      objectsProduced++;
+      return tmp;
+    }
+    
   }
 
 }

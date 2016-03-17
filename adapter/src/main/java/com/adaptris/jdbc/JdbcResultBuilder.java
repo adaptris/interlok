@@ -60,14 +60,14 @@ public class JdbcResultBuilder {
   }
 
   private JdbcResultSet mapResultSet(ResultSet resultSet) throws SQLException {
-    return new JdbcResultSet(resultSet);
+    return new JdbcResultSetImpl(resultSet);
   }
 
   private List<JdbcResultSet> mapResultSet(Statement statement) throws SQLException {
     ArrayList<JdbcResultSet> result = new ArrayList<JdbcResultSet>();
 
     do {
-      JdbcResultSet singleResultSet = new JdbcResultSet(statement.getResultSet());
+      JdbcResultSet singleResultSet = new JdbcResultSetImpl(statement.getResultSet());
       result.add(singleResultSet);
     } while(statement.getMoreResults());
 
