@@ -36,9 +36,11 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.AdaptrisMessageProducer;
+import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.jdbc.JdbcResult;
 import com.adaptris.jdbc.JdbcResultRow;
 import com.adaptris.jdbc.JdbcResultSet;
@@ -95,6 +97,35 @@ public class SplittingXmlPayloadTranslator extends XmlPayloadTranslatorImpl {
 
   public SplittingXmlPayloadTranslator() {
     super();
+  }
+  
+  @Override
+  public void init() throws CoreException {
+    super.init();
+    getProducer().init();
+  }
+  
+  @Override
+  public void start() throws CoreException {
+    super.start();
+    LifecycleHelper.start(getProducer());
+  }
+
+  @Override
+  public void prepare() throws CoreException {
+    getProducer().prepare();
+  }
+  
+  @Override
+  public void stop() {
+    super.stop();
+    LifecycleHelper.stop(getProducer());
+  }
+
+  @Override
+  public void close() {
+    super.close();
+    LifecycleHelper.close(getProducer());
   }
 
   /**
