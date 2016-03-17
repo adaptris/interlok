@@ -102,7 +102,7 @@ public class SplittingXmlPayloadTranslator extends XmlPayloadTranslatorImpl {
   @Override
   public void init() throws CoreException {
     super.init();
-    getProducer().init();
+    LifecycleHelper.init(getProducer());
   }
   
   @Override
