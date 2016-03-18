@@ -18,6 +18,7 @@ package com.adaptris.core.services.jdbc;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.adaptris.annotation.DisplayOrder;
@@ -57,9 +58,12 @@ public class FirstRowMetadataTranslator extends MetadataResultSetTranslatorImpl 
     List<MetadataElement> added = new ArrayList<MetadataElement>();
 
     int resultSetCount = 0;
+    Iterator<JdbcResultRow> iter;
     for (JdbcResultSet resultSet : source.getResultSets()) {
-      if ((resultSet.getRows() != null) && (resultSet.getRows().size() > 0)) {
-        JdbcResultRow storedProcedureResultRow = resultSet.getRows().get(0);
+      if (resultSet.getRows() != null 
+      && (iter = resultSet.getRows().iterator()) != null
+      && iter.hasNext()) {
+        JdbcResultRow storedProcedureResultRow = iter.next();
         if (storedProcedureResultRow != null) {
           for (int i = 0; i < storedProcedureResultRow.getFieldCount(); i++) {
             String column = storedProcedureResultRow.getFieldName(i);

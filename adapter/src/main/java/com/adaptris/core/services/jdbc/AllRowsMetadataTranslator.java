@@ -70,13 +70,10 @@ public class AllRowsMetadataTranslator extends MetadataResultSetTranslatorImpl {
   public void translate(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException {
 
     List<MetadataElement> added = new ArrayList<MetadataElement>();
-    int counter = 0;
     int resultSetCount = 0;
     for (JdbcResultSet resultSet : source.getResultSets()) {
+      int counter = 0;
       String resultSetPrefix = source.countResultSets() > 1 ? Integer.toString(resultSetCount) + getResultSetCounterPrefix() : "";
-      if (!isEmpty(getRowTotalMetadataKey())) {
-        target.addMetadata(resultSetPrefix + getRowTotalMetadataKey(), String.valueOf(resultSet.getRows().size()));
-      }
       for (JdbcResultRow row : resultSet.getRows()) {
         for (int i = 0; i < row.getFieldCount(); i++) {
           MetadataElement md = new MetadataElement(resultSetPrefix + getMetadataKeyPrefix() + getSeparator()
@@ -89,6 +86,9 @@ public class AllRowsMetadataTranslator extends MetadataResultSetTranslatorImpl {
 
         counter++;
       }
+      if (!isEmpty(getRowTotalMetadataKey())) {
+        target.addMetadata(resultSetPrefix + getRowTotalMetadataKey(), String.valueOf(counter));
+      }      
       resultSetCount++;
     }
 

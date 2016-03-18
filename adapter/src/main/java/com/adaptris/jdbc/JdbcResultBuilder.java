@@ -17,13 +17,10 @@
 package com.adaptris.jdbc;
 
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.adaptris.core.util.JdbcUtil;
 
 public class JdbcResultBuilder {
 
@@ -63,49 +60,15 @@ public class JdbcResultBuilder {
   }
 
   private JdbcResultSet mapResultSet(ResultSet resultSet) throws SQLException {
-    JdbcResultSet resultReturned = new JdbcResultSet();
-
-    if(resultSet != null) {
-      ResultSetMetaData rsmd = resultSet.getMetaData();
-      int columnCount = rsmd.getColumnCount();
-
-      while(resultSet.next()) {
-        result.setHasResultSet(true);
-        JdbcResultRow row = new JdbcResultRow();
-        for(int counter = 1; counter <= columnCount; counter ++) {
-          row.setFieldValue(rsmd.getColumnName(counter), resultSet.getObject(counter));
-        }
-        resultReturned.addRow(row);
-      }
-    }
-    JdbcUtil.closeQuietly(resultSet);
-
-    return resultReturned;
+    return new JdbcResultSetImpl(resultSet);
   }
 
   private List<JdbcResultSet> mapResultSet(Statement statement) throws SQLException {
     ArrayList<JdbcResultSet> result = new ArrayList<JdbcResultSet>();
 
-    do{
-      JdbcResultSet singleResultSet = new JdbcResultSet();
-      ResultSet resultSet = statement.getResultSet();
-
-      if(resultSet != null) {
-        ResultSetMetaData rsmd = resultSet.getMetaData();
-        int columnCount = rsmd.getColumnCount();
-
-        while(resultSet.next()) {
-          JdbcResultRow row = new JdbcResultRow();
-          for(int counter = 1; counter <= columnCount; counter ++) {
-            row.setFieldValue(rsmd.getColumnName(counter), resultSet.getObject(counter));
-          }
-          singleResultSet.addRow(row);
-        }
-
-        result.add(singleResultSet);
-      }
-      JdbcUtil.closeQuietly(resultSet);
-
+    do {
+      JdbcResultSet singleResultSet = new JdbcResultSetImpl(statement.getResultSet());
+      result.add(singleResultSet);
     } while(statement.getMoreResults());
 
     return result;

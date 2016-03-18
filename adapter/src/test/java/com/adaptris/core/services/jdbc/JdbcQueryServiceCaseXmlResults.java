@@ -31,7 +31,6 @@ import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
-import com.adaptris.util.XmlUtils;
 
 @SuppressWarnings("deprecation")
 public abstract class JdbcQueryServiceCaseXmlResults extends JdbcQueryServiceCase {
@@ -117,7 +116,7 @@ public abstract class JdbcQueryServiceCaseXmlResults extends JdbcQueryServiceCas
     assertEquals("UTF-8", msg.getContentEncoding());
   }
 
-  private void logMessage(String prefix, AdaptrisMessage msg) throws Exception {
+  protected void logMessage(String prefix, AdaptrisMessage msg) throws Exception {
     execute( new LogMessageService(LoggingLevel.TRACE, prefix), msg);
   }
 
