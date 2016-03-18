@@ -24,6 +24,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -63,6 +64,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("exception-handling-service-wrapper")
 @AdapterComponent
 @ComponentProfile(summary = "Handle exceptions from one service via a separate service", tag = "service,error-handling")
+@DisplayOrder(order = {"exceptionMessageMetadataKey"})
 public class ExceptionHandlingServiceWrapper extends ServiceImp implements EventHandlerAware {
 
   public static final String DEFAULT_EXCEPTION_MESSAGE_METADATA_KEY = "adp.exception.wrapper.message";

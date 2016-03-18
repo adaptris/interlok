@@ -16,6 +16,8 @@
 
 package com.adaptris.core;
 
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.DisplayOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -28,9 +30,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config configured-consume-destination
  */
 @XStreamAlias("configured-consume-destination")
+@DisplayOrder(order = {"destination", "filterExpression"})
 public final class ConfiguredConsumeDestination extends ConsumeDestinationImp {
 
   private String destination;
+  @AdvancedConfig
   private String filterExpression;
 
   /**

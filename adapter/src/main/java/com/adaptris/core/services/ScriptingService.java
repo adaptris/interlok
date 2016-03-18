@@ -27,6 +27,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -60,6 +61,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("scripting-service")
 @AdapterComponent
 @ComponentProfile(summary = "Execute a JSR223 script stored on the filesystem", tag = "service,scripting")
+@DisplayOrder(order = {"language", "scriptFilename", "branching"})
 public class ScriptingService extends ScriptingServiceImp {
 
   @NotBlank

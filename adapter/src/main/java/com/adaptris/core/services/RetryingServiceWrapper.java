@@ -22,8 +22,10 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.EventHandler;
@@ -67,6 +69,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("retrying-service-wrapper")
 @AdapterComponent
 @ComponentProfile(summary = "Retry a message periodically if the wrapped service fails", tag = "service")
+@DisplayOrder(order = {"service", "numRetries", "restartOnFailure", "delayBetweenRetries"})
 public class RetryingServiceWrapper extends ServiceImp implements EventHandlerAware {
 
   private static final TimeInterval DEFAULT_DELAY = new TimeInterval(10l, TimeUnit.SECONDS);
@@ -75,6 +78,7 @@ public class RetryingServiceWrapper extends ServiceImp implements EventHandlerAw
   private Integer numRetries;
   @Valid
   private TimeInterval delayBetweenRetries;
+  @AdvancedConfig
   private Boolean restartOnFailure;
   @NotNull
   @Valid

@@ -32,6 +32,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
@@ -69,6 +70,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Connection that creates its own jetty engine instance and listens on the specified port",
     tag = "connections,http,jetty")
+@DisplayOrder(order = {"port", "httpProperties"})
 public class HttpConnection extends JettyConnection {
 
   /**

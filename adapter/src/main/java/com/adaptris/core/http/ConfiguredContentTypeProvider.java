@@ -18,6 +18,7 @@ package com.adaptris.core.http;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -33,6 +34,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config http-configured-content-type-provider
  */
 @XStreamAlias("http-configured-content-type-provider")
+@DisplayOrder(order = {"mimeType"})
 public class ConfiguredContentTypeProvider extends ContentTypeProviderImpl {
 
   @NotBlank

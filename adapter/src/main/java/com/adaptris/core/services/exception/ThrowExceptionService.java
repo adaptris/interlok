@@ -21,6 +21,7 @@ import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -44,6 +45,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("throw-exception-service")
 @AdapterComponent
 @ComponentProfile(summary = "Throw an exception based on some configured criteria", tag = "service,error-handling")
+@DisplayOrder(order = {"exceptionGenerator"})
 public class ThrowExceptionService extends ServiceImp {
 
   @NotNull

@@ -23,6 +23,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -51,43 +52,45 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Create a sequence number using a database, the sequence number is associated with a metadata key",
     tag = "service,metadata,jdbc,sequence")
+@DisplayOrder(order = {"connection", "metadataKey", "identityMetadataKey", "numberFormat", "selectStatement", "updateStatement",
+    "insertStatement", "resetStatement", "alwaysReplaceMetadata"})
 public class MetadataIdentitySequenceNumberService extends AbstractJdbcSequenceNumberService {
 
-	private static final String DEFAULT_IDENTITY_METADATA_KEY = "identity";
+  private static final String DEFAULT_IDENTITY_METADATA_KEY = "identity";
   @NotNull
   @AutoPopulated
   @NotBlank
-	private String identityMetadataKey;
+  private String identityMetadataKey;
 
-	public MetadataIdentitySequenceNumberService() {
-		super();
-		setIdentityMetadataKey(DEFAULT_IDENTITY_METADATA_KEY);
-	}
+  public MetadataIdentitySequenceNumberService() {
+    super();
+    setIdentityMetadataKey(DEFAULT_IDENTITY_METADATA_KEY);
+  }
 
-	@Override
-	public void doService(AdaptrisMessage msg) throws ServiceException {
-		super.doService(msg);
-	}
+  @Override
+  public void doService(AdaptrisMessage msg) throws ServiceException {
+    super.doService(msg);
+  }
 
-	@Override
+  @Override
   public String getIdentity(AdaptrisMessage msg) throws ServiceException {
     if (!msg.containsKey(getIdentityMetadataKey())) {
       throw new ServiceException("Message does not contain identity metadata key - " + getIdentityMetadataKey());
     }
     return msg.getMetadataValue(getIdentityMetadataKey());
-	}
+  }
 
-	public String getIdentityMetadataKey() {
-		return identityMetadataKey;
-	}
+  public String getIdentityMetadataKey() {
+    return identityMetadataKey;
+  }
 
   /**
    * Set the metadata key that contains the identity.
    *
    * @param identityMetadataKey the metadata key, default metadata key is 'identity'
    */
-	public void setIdentityMetadataKey(String identityMetadataKey) {
-		this.identityMetadataKey = identityMetadataKey;
-	}
+  public void setIdentityMetadataKey(String identityMetadataKey) {
+    this.identityMetadataKey = identityMetadataKey;
+  }
 
 }

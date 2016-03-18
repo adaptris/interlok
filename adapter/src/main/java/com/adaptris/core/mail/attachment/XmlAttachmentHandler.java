@@ -33,6 +33,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.IdGenerator;
 import com.adaptris.util.KeyValuePairSet;
@@ -49,11 +50,14 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author $Author: lchan $
  */
 @XStreamAlias("mail-xml-attachment-handler")
+@DisplayOrder(order = {"xpath", "filenameXpath", "encodingXpath", "namespaceContext"})
 public class XmlAttachmentHandler implements AttachmentHandler {
   @NotNull
   @NotBlank
   private String xpath;
+  @AdvancedConfig
   private String filenameXpath;
+  @AdvancedConfig
   private String encodingXpath;
   private transient IdGenerator idGenerator = null;
   @AdvancedConfig

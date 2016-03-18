@@ -85,7 +85,7 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
     },
     TimestampQueryColumn {
       @Override
-      public StatementParameter create() {
+      public TimestampStatementParameter create() {
         return new TimestampStatementParameter("metadata containing a timestamp", StatementParameter.QueryType.metadata,
             new SimpleDateFormat(
             "yyyy-MM-dd'T'HH:mm:ssZ"));
@@ -93,14 +93,14 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
     },
     DateQueryColumn {
       @Override
-      public StatementParameter create()  {
+      public DateStatementParameter create() {
         return new DateStatementParameter("/xpath/to/a/date", StatementParameter.QueryType.xpath,
             new SimpleDateFormat("yyyy-MM-dd"));
       }
     },
     TimeQueryColumn {
       @Override
-      public StatementParameter create() {
+      public TimeStatementParameter create() {
         return new TimeStatementParameter("/xpath/to/a/time", StatementParameter.QueryType.xpath, new SimpleDateFormat("HH:mm:ssZ"));
 
       }
@@ -113,38 +113,38 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
     },
     BooleanQueryColumn {
       @Override
-      public StatementParameter create() {
-        return new BooleanStatementParameter("/xpath/to/boolean/value", StatementParameter.QueryType.xpath);
+      public BooleanStatementParameter create() {
+        return new BooleanStatementParameter("/xpath/to/boolean/value", StatementParameter.QueryType.xpath, null, null);
       }
     },
     DoubleQueryColumn {
       @Override
-      public StatementParameter create() {
-        return new DoubleStatementParameter("/xpath/to/double/value", StatementParameter.QueryType.xpath);
+      public DoubleStatementParameter create() {
+        return new DoubleStatementParameter("/xpath/to/double/value", StatementParameter.QueryType.xpath, null, null);
       }
     },
     FloatQueryColumn {
       @Override
-      public StatementParameter create() {
-        return new FloatStatementParameter("/xpath/to/float/value", StatementParameter.QueryType.xpath);
+      public FloatStatementParameter create() {
+        return new FloatStatementParameter("/xpath/to/float/value", StatementParameter.QueryType.xpath, null, null);
       }
     },
     IntegerQueryColumn {
       @Override
-      public StatementParameter create() {
-        return new IntegerStatementParameter("metadata-key-containing-an-int", StatementParameter.QueryType.metadata);
+      public IntegerStatementParameter create() {
+        return new IntegerStatementParameter("metadata-key-containing-an-int", StatementParameter.QueryType.metadata, null, null);
       }
     },
     LongQueryColumn {
       @Override
-      public StatementParameter create() {
-        return new LongStatementParameter("metadata-key-containing-a-long", StatementParameter.QueryType.metadata);
+      public LongStatementParameter create() {
+        return new LongStatementParameter("metadata-key-containing-a-long", StatementParameter.QueryType.metadata, null, null);
       }
     },
     ShortQueryColumn {
       @Override
-      public StatementParameter create() {
-        return new ShortStatementParameter("metadata-key-containing-a-short", StatementParameter.QueryType.metadata);
+      public ShortStatementParameter create() {
+        return new ShortStatementParameter("metadata-key-containing-a-short", StatementParameter.QueryType.metadata, null, null);
       }
     },
     ConstantColumn {
@@ -155,7 +155,7 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
     }
     ;
 
-    public abstract StatementParameter create();
+    public abstract NamedStatementParameter create();
 
   }
 
@@ -270,7 +270,7 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
       int count = 0;
       for (QueryClasses qc : QueryClasses.values()) {
         count ++;
-        StatementParameter statementParameter = qc.create();
+        NamedStatementParameter statementParameter = qc.create();
         statementParameter.setName("param" + count);
         service2.addStatementParameter(statementParameter);
         if (first) {

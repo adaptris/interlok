@@ -35,6 +35,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.security.password.Password;
@@ -42,10 +43,18 @@ import com.adaptris.util.TimeInterval;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+/**
+ * A {@link DatabaseConnection} instance that provides connection pooling via c3p0.
+ * 
+ * @author amcgrath
+ *
+ */
 @XStreamAlias("jdbc-pooled-connection")
 @AdapterComponent
 @ComponentProfile(summary = "Connect to a database using a JDBC driver; connection pooling handled via C3P0",
     tag = "connections,jdbc")
+@DisplayOrder(order = {"username", "password", "driverImp", "connectUrl", "minimumPoolSize", "maximumPoolSize", "maxIdleTime",
+    "acquireIncrement"})
 public class JdbcPooledConnection extends DatabaseConnection {
   
   private static final int DEFAULT_MINIMUM_POOL_SIZE = 5;
@@ -61,9 +70,7 @@ public class JdbcPooledConnection extends DatabaseConnection {
   @NotBlank
   private String connectUrl;
   
-  @AdvancedConfig
   private int minimumPoolSize;
-  @AdvancedConfig
   private int maximumPoolSize;
   @AdvancedConfig
   private int acquireIncrement;

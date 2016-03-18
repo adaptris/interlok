@@ -18,6 +18,7 @@ package com.adaptris.core.services;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -39,6 +40,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("change-char-encoding-service")
 @AdapterComponent
 @ComponentProfile(summary = "Change the character encoding of a message", tag = "service")
+@DisplayOrder(order = {"charEncoding"})
 public class ChangeCharEncodingService extends ServiceImp {
 
   private String charEncoding;

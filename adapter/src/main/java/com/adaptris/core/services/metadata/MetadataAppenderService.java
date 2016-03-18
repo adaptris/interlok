@@ -26,6 +26,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceImp;
@@ -45,6 +46,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @XStreamAlias("metadata-appender-service")
 @AdapterComponent
 @ComponentProfile(summary = "Concatenate various metadata values into one", tag = "service,metadata")
+@DisplayOrder(order = {"appendKeys", "resultKey"})
 public class MetadataAppenderService extends ServiceImp {
 
   @NotNull

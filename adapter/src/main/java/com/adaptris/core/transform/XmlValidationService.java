@@ -24,6 +24,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -46,6 +47,7 @@ public class XmlValidationService extends ServiceImp {
 
   @NotNull
   @Valid
+  @AutoPopulated
   private List<MessageValidator> validators;
 
   public XmlValidationService() {

@@ -31,6 +31,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.security.exc.PasswordException;
@@ -47,6 +48,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("jdbc-connection")
 @AdapterComponent
 @ComponentProfile(summary = "Connect to a database using a JDBC driver", tag = "connections,jdbc")
+@DisplayOrder(order = {"username", "password", "driverImp", "connectUrl"})
 public class JdbcConnection extends DatabaseConnection {
 
   private static final int NUM_SECONDS_TIMEOUT_CONN_VALIDATE = 5;

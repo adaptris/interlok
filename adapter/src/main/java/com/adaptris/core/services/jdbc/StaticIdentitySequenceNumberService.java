@@ -18,6 +18,7 @@ package com.adaptris.core.services.jdbc;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -44,13 +45,15 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Create a sequence number using a database, the sequence number is associated with a static value",
     tag = "service,metadata,jdbc,sequence")
+@DisplayOrder(order = {"connection", "metadataKey", "identify", "numberFormat", "selectStatement", "updateStatement",
+    "insertStatement", "resetStatement", "alwaysReplaceMetadata"})
 public class StaticIdentitySequenceNumberService extends AbstractJdbcSequenceNumberService {
 
-	private String identity;
+  private String identity;
 
   public String getIdentity() {
-		return identity;
-	}
+    return identity;
+  }
 
   /**
    * Set the identity that will be used as part of the standard SQL statements.
@@ -58,8 +61,8 @@ public class StaticIdentitySequenceNumberService extends AbstractJdbcSequenceNum
    * @param id the identiy, the default is null which means that SQL statements are assumed to not require parameters.
    */
   public void setIdentity(String id) {
-		identity = id;
-	}
+    identity = id;
+  }
 
   @Override
   protected String getIdentity(AdaptrisMessage msg) {

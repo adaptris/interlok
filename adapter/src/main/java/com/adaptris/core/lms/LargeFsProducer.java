@@ -24,6 +24,7 @@ import org.apache.commons.io.FileUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceDestination;
@@ -65,6 +66,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Write the current message to the filesystem with large message support",
     tag = "producer,fs,filesystem")
+@DisplayOrder(order = {"createDirs", "filenameCreator", "tempDirectory", "fsWorker"})
 public class LargeFsProducer extends FsProducer {
 
   @AdvancedConfig

@@ -20,6 +20,7 @@ import org.perf4j.aop.Profiled;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.StandardWorkflow;
@@ -44,6 +45,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("large-message-workflow")
 @AdapterComponent
 @ComponentProfile(summary = "Workflow that supports arbitrarily large messages", tag = "workflow,base")
+@DisplayOrder(order = {"disableDefaultMessageCount", "sendEvents", "logPayload"})
 public class LargeMessageWorkflow extends StandardWorkflow {
 
   /**

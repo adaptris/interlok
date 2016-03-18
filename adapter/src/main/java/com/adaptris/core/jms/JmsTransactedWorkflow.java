@@ -23,6 +23,7 @@ import org.perf4j.aop.Profiled;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.GenerateBeanInfo;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageConsumer;
@@ -58,6 +59,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @GenerateBeanInfo
 @AdapterComponent
 @ComponentProfile(summary = "JMS specific workflow that supports rollback of messages", tag = "workflow,jms")
+@DisplayOrder(order = {"strict", "waitPeriodAfterRollback", "disableDefaultMessageCount", "sendEvents", "logPayload"})
 public final class JmsTransactedWorkflow extends StandardWorkflow {
 
   private static final ThreadLocal<Boolean> LAST_MSG_FAILED = new ThreadLocal<Boolean>() {

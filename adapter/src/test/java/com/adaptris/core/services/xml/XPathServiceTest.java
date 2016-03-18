@@ -71,7 +71,7 @@ public class XPathServiceTest extends ServiceCase {
     List<Execution> executions = new ArrayList<>();
     executions.add(execution);
     
-    service.setSourceXmlDestination(new StringPayloadDataInputParameter());
+    service.setXmlSource(new StringPayloadDataInputParameter());
     service.setExecutions(executions);
     execute(service, message);
     
@@ -91,7 +91,7 @@ public class XPathServiceTest extends ServiceCase {
     List<Execution> executions = new ArrayList<>();
     executions.add(execution);
     
-    service.setSourceXmlDestination(new StringPayloadDataInputParameter());
+    service.setXmlSource(new StringPayloadDataInputParameter());
     service.setExecutions(executions);
     try {
       execute(service, message);
@@ -111,7 +111,7 @@ public class XPathServiceTest extends ServiceCase {
     List<Execution> executions = new ArrayList<>();
     executions.add(execution);
     
-    service.setSourceXmlDestination(new StringPayloadDataInputParameter());
+    service.setXmlSource(new StringPayloadDataInputParameter());
     service.setExecutions(executions);
     execute(service, message);
     
@@ -130,7 +130,7 @@ public class XPathServiceTest extends ServiceCase {
     List<Execution> executions = new ArrayList<>();
     executions.add(execution);
     
-    service.setSourceXmlDestination(new StringPayloadDataInputParameter());
+    service.setXmlSource(new StringPayloadDataInputParameter());
     service.setExecutions(executions);
     execute(service, message);
     
@@ -160,7 +160,7 @@ public class XPathServiceTest extends ServiceCase {
     executions.add(execution2);
     executions.add(execution3);
     
-    service.setSourceXmlDestination(new StringPayloadDataInputParameter());
+    service.setXmlSource(new StringPayloadDataInputParameter());
     service.setExecutions(executions);
     execute(service, message);
     
@@ -180,7 +180,7 @@ public class XPathServiceTest extends ServiceCase {
     List<Execution> executions = new ArrayList<>();
     executions.add(execution);
     
-    service.setSourceXmlDestination(new StringPayloadDataInputParameter());
+    service.setXmlSource(new StringPayloadDataInputParameter());
     service.setExecutions(executions);
     execute(service, message);
     
@@ -206,7 +206,7 @@ public class XPathServiceTest extends ServiceCase {
     namespaceMappings.addKeyValuePair(new KeyValuePair("n3", "http://adaptris.com/xml/n3"));
     
     service.setNamespaceContext(namespaceMappings);
-    service.setSourceXmlDestination(new StringPayloadDataInputParameter());
+    service.setXmlSource(new StringPayloadDataInputParameter());
     service.setExecutions(executions);
     execute(service, message);
     
@@ -242,7 +242,7 @@ public class XPathServiceTest extends ServiceCase {
     
     service.setNamespaceContext(namespaceMappings);
     
-    service.setSourceXmlDestination(new StringPayloadDataInputParameter());
+    service.setXmlSource(new StringPayloadDataInputParameter());
     service.setExecutions(executions);
     
     return service;

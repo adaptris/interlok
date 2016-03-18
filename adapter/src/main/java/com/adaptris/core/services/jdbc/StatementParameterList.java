@@ -27,23 +27,23 @@ import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AutoPopulated;
 
-public class StatementParameterList extends AbstractCollection<StatementParameter> implements StatementParameterCollection {
+public class StatementParameterList extends AbstractCollection<JdbcStatementParameter>implements StatementParameterCollection {
 
   @AutoPopulated
   @NotNull
-  private List<StatementParameter> parameters;
+  private List<JdbcStatementParameter> parameters;
   
   public StatementParameterList() {
-    this.setParameters(new ArrayList<StatementParameter>());
+    this.setParameters(new ArrayList<JdbcStatementParameter>());
   }
   
-  public StatementParameterList(List<StatementParameter> parameters) {
+  public StatementParameterList(List<JdbcStatementParameter> parameters) {
     this.setParameters(parameters);
   }
 
   @Override
-  public StatementParameter getParameterByName(String name) {
-    for(StatementParameter parameter : this.getParameters()) {
+  public JdbcStatementParameter getParameterByName(String name) {
+    for (JdbcStatementParameter parameter : this.getParameters()) {
       if((parameter.getName() != null) && (parameter.getName().equals(name)))
         return parameter;
     }
@@ -51,7 +51,7 @@ public class StatementParameterList extends AbstractCollection<StatementParamete
   }
   
   @Override
-  public boolean add(StatementParameter parameter) {
+  public boolean add(JdbcStatementParameter parameter) {
     return getParameters().add(parameter);
   }
 
@@ -60,7 +60,7 @@ public class StatementParameterList extends AbstractCollection<StatementParamete
    *
    */
   @Override
-  public Iterator<StatementParameter> iterator() {
+  public Iterator<JdbcStatementParameter> iterator() {
     return getParameters().iterator();
   }
 
@@ -70,22 +70,22 @@ public class StatementParameterList extends AbstractCollection<StatementParamete
   }
 
   @Override
-  public void add(int index, StatementParameter element) {
+  public void add(int index, JdbcStatementParameter element) {
     getParameters().add(index, element);
   }
 
   @Override
-  public boolean addAll(Collection<? extends StatementParameter> c) {
+  public boolean addAll(Collection<? extends JdbcStatementParameter> c) {
     return getParameters().addAll(c);
   }
 
   @Override
-  public boolean addAll(int index, Collection<? extends StatementParameter> c) {
+  public boolean addAll(int index, Collection<? extends JdbcStatementParameter> c) {
     return getParameters().addAll(index, c);
   }
 
   @Override
-  public StatementParameter get(int index) {
+  public JdbcStatementParameter get(int index) {
     return getParameters().get(index);
   }
 
@@ -104,7 +104,7 @@ public class StatementParameterList extends AbstractCollection<StatementParamete
    *
    */
   @Override
-  public ListIterator<StatementParameter> listIterator() {
+  public ListIterator<JdbcStatementParameter> listIterator() {
     return getParameters().listIterator();
   }
 
@@ -113,22 +113,22 @@ public class StatementParameterList extends AbstractCollection<StatementParamete
    *
    */
   @Override
-  public ListIterator<StatementParameter> listIterator(int index) {
+  public ListIterator<JdbcStatementParameter> listIterator(int index) {
     return getParameters().listIterator(index);
   }
 
   @Override
-  public StatementParameter remove(int index) {
+  public JdbcStatementParameter remove(int index) {
     return getParameters().remove(index);
   }
 
   @Override
-  public StatementParameter set(int index, StatementParameter element) {
+  public JdbcStatementParameter set(int index, JdbcStatementParameter element) {
     return getParameters().set(index, element);
   }
 
   @Override
-  public List<StatementParameter> subList(int fromIndex, int toIndex) {
+  public List<JdbcStatementParameter> subList(int fromIndex, int toIndex) {
     return getParameters().subList(fromIndex, toIndex);
   }
 
@@ -137,11 +137,11 @@ public class StatementParameterList extends AbstractCollection<StatementParamete
     getParameters().clear();
   }
 
-  public List<StatementParameter> getParameters() {
+  public List<JdbcStatementParameter> getParameters() {
     return parameters;
   }
 
-  public void setParameters(List<StatementParameter> parameters) {
+  public void setParameters(List<JdbcStatementParameter> parameters) {
     this.parameters = parameters;
   }
 

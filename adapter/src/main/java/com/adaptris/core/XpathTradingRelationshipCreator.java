@@ -27,6 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.text.xml.SimpleNamespaceContext;
 import com.adaptris.util.text.xml.XPath;
@@ -41,6 +43,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config xpath-trading-relationship-creator
  */
 @XStreamAlias("xpath-trading-relationship-creator")
+@DisplayOrder(order = {"sourceXpath", "destinationXpath", "typeXpath", "namespaceContext"})
 public class XpathTradingRelationshipCreator implements
     TradingRelationshipCreator {
 
@@ -56,6 +59,7 @@ public class XpathTradingRelationshipCreator implements
   @NotBlank
   private String typeXpath;
 
+  @AdvancedConfig
   private KeyValuePairSet namespaceContext;
 
   /**

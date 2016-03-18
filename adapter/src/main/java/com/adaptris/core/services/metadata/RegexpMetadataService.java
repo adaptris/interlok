@@ -25,6 +25,7 @@ import javax.validation.constraints.NotNull;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
@@ -47,6 +48,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @AdapterComponent
 @ComponentProfile(summary = "Extract data from the message via a regular expression and store it as metadata",
     tag = "service,metadata")
+@DisplayOrder(order = {"regexpMetadataQueries"})
 public class RegexpMetadataService extends ServiceImp {
 
   @NotNull

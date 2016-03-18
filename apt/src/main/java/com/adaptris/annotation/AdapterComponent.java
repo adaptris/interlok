@@ -16,12 +16,21 @@
 
 package com.adaptris.annotation;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
  * Annotation that allows the UI to find custom components that should be configurable within the UI.
  * 
  * @author lchan
  * 
  */
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE})
+@Documented
 public @interface AdapterComponent {
 
 }

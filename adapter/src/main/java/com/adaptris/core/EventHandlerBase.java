@@ -25,6 +25,7 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.util.LifecycleHelper;
 
 /**
@@ -37,10 +38,13 @@ public abstract class EventHandlerBase implements EventHandler {
   private static final int DEFAULT_SHUTDOWN_WAIT = 60;
 
   @Valid
+  @AdvancedConfig
   private AdaptrisMarshaller marshaller;
   @Valid
+  @AdvancedConfig
   private AdaptrisMessageFactory messageFactory;
   private String uniqueId;
+  @AdvancedConfig
   private Integer shutdownWaitSeconds;
 
   protected transient EventEmissary eventProducerDelegate;
@@ -60,14 +64,10 @@ public abstract class EventHandlerBase implements EventHandler {
 
   protected abstract AdaptrisMessageSender retrieveProducer() throws CoreException;
 
-  private AdaptrisMessage createMessage(Event evt, AdaptrisMessage original) throws CoreException {
+  private AdaptrisMessage createMessage(Event evt) throws CoreException {
     evt.setSourceId(retrieveSourceId());
     AdaptrisMessage result = currentMessageFactory().newMessage(currentMarshaller().marshal(evt));
     result.setUniqueId(evt.getUniqueId());
-    if (original != null) {
-      result.setMetadata(original.getMetadata());
-      result.getObjectMetadata().putAll(original.getObjectMetadata());
-    }
     result.addMetadata(CoreConstants.EVENT_NAME_SPACE_KEY, evt.getNameSpace());
     result.addMetadata(CoreConstants.EVENT_CLASS, evt.getClass().getName());
     return result;
@@ -102,7 +102,7 @@ public abstract class EventHandlerBase implements EventHandler {
    */
   @Override
   public void send(Event evt, ProduceDestination dest) throws CoreException {
-    eventProducerDelegate.produce(retrieveProducer(), createMessage(evt, null), dest);
+    eventProducerDelegate.produce(retrieveProducer(), evt, dest);
   }
 
   /** @see com.adaptris.core.EventHandler#send(com.adaptris.core.Event) */
@@ -279,27 +279,26 @@ public abstract class EventHandlerBase implements EventHandler {
     protected EventEmissary() {
     }
 
-    public void produce(final AdaptrisMessageSender producer, final AdaptrisMessage msg, final ProduceDestination dest) {
+    public void produce(final AdaptrisMessageSender producer, final Event msgEvent, final ProduceDestination dest) {
       executor.execute(new Thread() {
         @Override
         public void run() {
           String name = Thread.currentThread().getName();
-          // Thread.currentThread().setName("EventProducerThread@" +
-          // getUniqueId());
           Thread.currentThread().setName("EventProducerThread");
+          String eventClass = null;
           try {
+            AdaptrisMessage msg = createMessage(msgEvent);
+            eventClass = msg.getMetadataValue(CoreConstants.EVENT_CLASS);
             // should access to this producer be synchronized?
             // The null check here stops bug:844
             if (dest != null) {
               producer.produce(msg, dest);
-            }
-            else {
+            } else {
               producer.produce(msg);
             }
-          }
-          catch (ProduceException e) {
-            log.error("Failed to produce event " + msg.getMetadataValue(CoreConstants.EVENT_CLASS) + " to destination. "
-                + "Results dependent on this event may not be accurate", e);
+          } catch (CoreException e) {
+            log.error("Failed to produce event [{}] to destination. Results dependent on this event may not be accurate.",
+                eventClass, e);
           }
           Thread.currentThread().setName(name);
         }

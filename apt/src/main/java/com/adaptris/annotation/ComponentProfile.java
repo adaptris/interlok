@@ -16,6 +16,7 @@
 
 package com.adaptris.annotation;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -29,6 +30,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
+@Documented
 public @interface ComponentProfile {
   /**
    * The summary or short description associated with this component profile.
@@ -39,4 +41,12 @@ public @interface ComponentProfile {
    * 
    */
   String tag() default "";
+
+  /**
+   * Returns an array of classes that are contextually related with this component.
+   * <p>For a producer, this would be the list of connections that you should associate with it.</p>
+   * @return an array of classes
+   * @since 3.2.0
+   */
+  Class[]recommended() default {};
 }

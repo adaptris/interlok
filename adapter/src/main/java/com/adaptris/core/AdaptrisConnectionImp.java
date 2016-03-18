@@ -38,6 +38,7 @@ public abstract class AdaptrisConnectionImp implements AdaptrisConnection, State
 
   @AdvancedConfig
   private String lookupName;
+  @AdvancedConfig
   private ConnectionErrorHandler connectionErrorHandler;
   @AdvancedConfig
   private Boolean workersFirstOnShutdown;

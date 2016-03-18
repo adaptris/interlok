@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.ftp.ApacheFtpClientImpl;
 import com.adaptris.ftp.CommonsNetFtpClient;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -36,6 +37,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("ftp-connection")
 @AdapterComponent
 @ComponentProfile(summary = "Connect to a FTP server using a username and password", tag = "connections,ftp")
+@DisplayOrder(order = {"defaultUserName", "defaultPassword", "transferType", "ftpDataMode", "defaultControlPort"})
 public class FtpConnection extends FtpConnectionImp {
 
   private static final String SCHEME_FTP = "ftp";

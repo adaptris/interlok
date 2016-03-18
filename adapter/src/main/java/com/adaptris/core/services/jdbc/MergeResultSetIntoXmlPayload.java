@@ -27,6 +27,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
@@ -46,6 +47,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("jdbc-merge-into-xml-payload")
+@DisplayOrder(order = {"columnNameStyle", "columnTranslators", "mergeImplementation", "outputMessageEncoding",
+    "stripIllegalXmlChars", "xmlColumnPrefix",
+    "xmlColumnRegexp", "cdataColumnRegexp"})
 public class MergeResultSetIntoXmlPayload extends XmlPayloadTranslatorImpl {
   @NotNull
   @Valid

@@ -37,6 +37,7 @@ import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataCollection;
 import com.adaptris.core.MetadataElement;
+import com.adaptris.core.NullConnection;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ProduceOnlyProducerImp;
@@ -69,7 +70,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("jetty-response-producer")
 @Deprecated
 @AdapterComponent
-@ComponentProfile(summary = "Write and commit the HTTP Response", tag = "producer,http,https")
+@ComponentProfile(summary = "Write and commit the HTTP Response", tag = "producer,http,https", recommended = {NullConnection.class})
 public class ResponseProducer extends ProduceOnlyProducerImp {
   private static final String DEFAULT_METADATA_REGEXP = "X-HTTP.*";
   private static final boolean DEFAULT_FORWARD_CONNECTION_EXCEPTION = false;

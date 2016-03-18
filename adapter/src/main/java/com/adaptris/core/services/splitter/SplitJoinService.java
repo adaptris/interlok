@@ -30,6 +30,7 @@ import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -69,6 +70,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(
     summary = "Split a message and then execute the associated services on the split items, aggregating the split messages afterwards",
     tag = "service,splitjoin")
+@DisplayOrder(order = {"splitter", "service", "aggregator", "timeout"})
 public class SplitJoinService extends ServiceImp implements EventHandlerAware {
 
   private static final String GENERIC_EXCEPTION_MSG = "Exception waiting for all services to complete";

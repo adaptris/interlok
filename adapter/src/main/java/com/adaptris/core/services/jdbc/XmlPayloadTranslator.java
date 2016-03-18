@@ -26,6 +26,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
@@ -70,6 +71,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("jdbc-xml-payload-translator")
+@DisplayOrder(order = {"preserveOriginalMessage", "columnNameStyle", "columnTranslators", "mergeImplementation",
+    "outputMessageEncoding", "stripIllegalXmlChars", "xmlColumnPrefix", "xmlColumnRegexp", "cdataColumnRegexp"})
 public class XmlPayloadTranslator extends XmlPayloadTranslatorImpl {
   private static final String ORIGINAL_MESSAGE_ELEMENT = "OriginalMessage";
   private Boolean preserveOriginalMessage;

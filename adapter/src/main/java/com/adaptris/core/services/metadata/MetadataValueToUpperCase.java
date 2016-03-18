@@ -18,6 +18,7 @@ package com.adaptris.core.services.metadata;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -33,6 +34,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("metadata-value-to-upper-case")
 @AdapterComponent
 @ComponentProfile(summary = "Changes matching metadata to uppercase", tag = "service,metadata")
+@DisplayOrder(order = {"metadataKeyRegexp"})
 public class MetadataValueToUpperCase extends ReformatMetadata {
 
   public MetadataValueToUpperCase() {

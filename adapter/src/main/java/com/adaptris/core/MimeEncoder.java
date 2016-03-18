@@ -33,6 +33,8 @@ import javax.validation.constraints.Pattern;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.util.text.mime.MultiPartInput;
 import com.adaptris.util.text.mime.MultiPartOutput;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -54,6 +56,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config mime-encoder
  */
 @XStreamAlias("mime-encoder")
+@DisplayOrder(order = {"payloadEncoding", "metadataEncoding", "retainUniqueId"})
 public class MimeEncoder extends AdaptrisMessageEncoderImp {
 
   private static final String PAYLOAD_CONTENT_ID = "AdaptrisMessage/payload";
@@ -61,9 +64,12 @@ public class MimeEncoder extends AdaptrisMessageEncoderImp {
   private static final String EXCEPTION_CONTENT_ID = "AdaptrisMessage/exception";
 
   @Pattern(regexp = "base64|quoted-printable|uuencode|x-uuencode|x-uue|binary|7bit|8bit")
+  @AdvancedConfig
   private String metadataEncoding;
   @Pattern(regexp = "base64|quoted-printable|uuencode|x-uuencode|x-uue|binary|7bit|8bit")
+  @AdvancedConfig
   private String payloadEncoding;
+  @AdvancedConfig
   private Boolean retainUniqueId;
 
   public MimeEncoder() {

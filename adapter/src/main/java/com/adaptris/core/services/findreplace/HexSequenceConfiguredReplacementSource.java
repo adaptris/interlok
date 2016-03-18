@@ -18,6 +18,8 @@ package com.adaptris.core.services.findreplace;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.adaptris.util.text.ByteTranslator;
@@ -43,8 +45,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config hex-sequence-configured-replacement-source
  */
 @XStreamAlias("hex-sequence-configured-replacement-source")
+@DisplayOrder(order = {"value", "charset"})
 public class HexSequenceConfiguredReplacementSource extends AbstractReplacementSource {
-
+  @AdvancedConfig
   private String charset;
 
   public HexSequenceConfiguredReplacementSource() {

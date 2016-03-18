@@ -20,6 +20,8 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.AdvancedConfig;
+
 /**
  * Abstract superclass for {@link StrictKnownHosts} and {@link LenientKnownHosts} allowing compression and a specified known_hosts
  * file.
@@ -32,10 +34,10 @@ public abstract class SftpBehaviourImpl implements SftpConnectionBehaviour {
 
   @NotBlank
   private String knownHostsFile;
-  private boolean useCompression;
+  @AdvancedConfig
+  private Boolean useCompression;
 
   public SftpBehaviourImpl() {
-    useCompression = false;
   }
 
   public String getKnownHostsFile() {
@@ -51,17 +53,21 @@ public abstract class SftpBehaviourImpl implements SftpConnectionBehaviour {
     knownHostsFile = s;
   }
 
-  public boolean getUseCompression() {
+  public Boolean getUseCompression() {
     return useCompression;
   }
 
-  public void setUseCompression(boolean useCompression) {
+  public void setUseCompression(Boolean useCompression) {
     this.useCompression = useCompression;
+  }
+
+  boolean useCompression() {
+    return getUseCompression() != null ? getUseCompression().booleanValue() : false;
   }
 
   @Override
   public final void configure(SftpClient c) throws SftpException {
-    c.setUseCompression(useCompression);
+    c.setUseCompression(useCompression());
     doConfigure(c);
   }
 

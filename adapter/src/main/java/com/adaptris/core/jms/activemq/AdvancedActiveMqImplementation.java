@@ -20,12 +20,10 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.activemq.ActiveMQPrefetchPolicy;
-import org.apache.activemq.RedeliveryPolicy;
-import org.apache.activemq.blob.BlobTransferPolicy;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -63,6 +61,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("advanced-active-mq-implementation")
+@DisplayOrder(order = {"brokerUrl", "connectionFactoryProperties"})
 public class AdvancedActiveMqImplementation extends BasicActiveMqImplementation {
 
   /**
@@ -472,7 +471,7 @@ public class AdvancedActiveMqImplementation extends BasicActiveMqImplementation 
    * Get the Blob Transfer Policy.
    *
    * @return the Blob Transfer Policy.
-   * @see BlobTransferPolicy
+   * @see org.apache.activemq.blob.BlobTransferPolicy
    * @see BlobTransferPolicyFactory
    */
   public BlobTransferPolicyFactory getBlobTransferPolicy() {
@@ -483,12 +482,12 @@ public class AdvancedActiveMqImplementation extends BasicActiveMqImplementation 
    * Set the Blob Transfer Policy.
    * <p>
    * If not explicitly configured then the associated setter
-   * {@link ActiveMQConnectionFactory#setBlobTransferPolicy(BlobTransferPolicy)}
+   * {@link ActiveMQConnectionFactory#setBlobTransferPolicy(org.apache.activemq.blob.BlobTransferPolicy)}
    * is never invoked.
    * <p>
    *
    * @param f the Blob Transfer Policy.
-   * @see BlobTransferPolicy
+   * @see org.apache.activemq.blob.BlobTransferPolicy
    * @see BlobTransferPolicyFactory
    */
   public void setBlobTransferPolicy(BlobTransferPolicyFactory f) {
@@ -499,7 +498,7 @@ public class AdvancedActiveMqImplementation extends BasicActiveMqImplementation 
    * Get the Prefetch Policy.
    *
    * @return the PrefetchPolicy.
-   * @see ActiveMQPrefetchPolicy
+   * @see org.apache.activemq.ActiveMQPrefetchPolicy
    * @see PrefetchPolicyFactory
    */
   public PrefetchPolicyFactory getPrefetchPolicy() {
@@ -510,12 +509,12 @@ public class AdvancedActiveMqImplementation extends BasicActiveMqImplementation 
    * Set the Prefetch Policy.
    * <p>
    * If not explicitly configured then the associated setter
-   * {@link ActiveMQConnectionFactory#setPrefetchPolicy(ActiveMQPrefetchPolicy)}
+   * {@link ActiveMQConnectionFactory#setPrefetchPolicy(org.apache.activemq.ActiveMQPrefetchPolicy)}
    * is never invoked.
    * <p>
    *
    * @param f the PrefetchPolicy.
-   * @see ActiveMQPrefetchPolicy
+   * @see org.apache.activemq.ActiveMQPrefetchPolicy
    * @see PrefetchPolicyFactory
    */
   public void setPrefetchPolicy(PrefetchPolicyFactory f) {
@@ -526,7 +525,7 @@ public class AdvancedActiveMqImplementation extends BasicActiveMqImplementation 
    * Get the Redelivery Policy.
    *
    * @return the redelivery Policy.
-   * @see RedeliveryPolicy
+   * @see org.apache.activemq.RedeliveryPolicy
    * @see RedeliveryPolicyFactory
    */
   public RedeliveryPolicyFactory getRedeliveryPolicy() {
@@ -537,12 +536,12 @@ public class AdvancedActiveMqImplementation extends BasicActiveMqImplementation 
    * Set the Redelivery Policy.
    * <p>
    * If not explicitly configured then the associated setter
-   * {@link ActiveMQConnectionFactory#setRedeliveryPolicy(RedeliveryPolicy)} is
+   * {@link ActiveMQConnectionFactory#setRedeliveryPolicy(org.apache.activemq.RedeliveryPolicy)} is
    * never invoked.
    * <p>
    *
    * @param f the redelivery Policy.
-   * @see RedeliveryPolicy
+   * @see org.apache.activemq.RedeliveryPolicy
    * @see RedeliveryPolicyFactory
    */
   public void setRedeliveryPolicy(RedeliveryPolicyFactory f) {

@@ -21,7 +21,9 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisConnectionImp;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.management.webserver.JettyServerManager;
@@ -51,6 +53,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Connection that uses the embedded Jetty engine management component for requests",
     tag = "connections,http,https,jetty")
+@DisplayOrder(order = {"host", "connectorName"})
 public class EmbeddedConnection extends AdaptrisConnectionImp implements JettyServletRegistrar {
   private static final int DEFAULT_WAIT_INTERVAL_MS = 250;
 
@@ -58,7 +61,9 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
 
   private String host;
   private String connectorName;
+  @AdvancedConfig
   private Set<String> roles;
+  @AdvancedConfig
   private TimeInterval maxStartupWait;
 
   /**

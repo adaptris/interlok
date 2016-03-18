@@ -24,6 +24,7 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ComponentLifecycle;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.jdbc.AdvancedJdbcPooledConnection;
 import com.adaptris.core.jdbc.JdbcConnection;
 import com.adaptris.core.jdbc.JdbcPooledConnection;
 import com.adaptris.core.jdbc.PooledConnectionHelper;
@@ -166,6 +167,44 @@ public class StaticIdentitySequenceNumberServiceTest extends SequenceNumberCase 
     String name = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
     JdbcPooledConnection conn = PooledConnectionHelper.createPooledConnection(PROPERTIES.getProperty(JDBC_SEQUENCENUMBER_DRIVER),
+        PROPERTIES.getProperty(JDBC_SEQUENCENUMBER_URL), poolsize);
+
+    try {
+      for (int i = 0; i < maxServices; i++) {
+        StaticIdentitySequenceNumberService service = createServiceForTests(false);
+        service.setConnection(conn);
+        service.setIdentity(new GuidGenerator().safeUUID());
+        serviceList.add(service);
+        start(service);
+      }
+      assertEquals(0, conn.currentBusyConnectionCount());
+      PooledConnectionHelper.executeTest(serviceList, iterations, new PooledConnectionHelper.MessageCreator() {
+
+        @Override
+        public AdaptrisMessage createMsgForPooledConnectionTest() throws Exception {
+          return createMessageForTests();
+        }
+      });
+      assertEquals(0, conn.currentBusyConnectionCount());
+      assertEquals(poolsize, conn.currentIdleConnectionCount());
+      assertEquals(poolsize, conn.currentConnectionCount());
+    }
+    finally {
+      stop(serviceList.toArray(new ComponentLifecycle[0]));
+      Thread.currentThread().setName(name);
+    }
+  }
+  
+  public void testService_AdvancedPooledConnection() throws Exception {
+    int maxServices = 5;
+    final int iterations = 5;
+    int poolsize = maxServices - 1;
+
+    createDatabase();
+    List<Service> serviceList = new ArrayList<Service>();
+    String name = Thread.currentThread().getName();
+    Thread.currentThread().setName(getName());
+    AdvancedJdbcPooledConnection conn = PooledConnectionHelper.createAdvancedPooledConnection(PROPERTIES.getProperty(JDBC_SEQUENCENUMBER_DRIVER),
         PROPERTIES.getProperty(JDBC_SEQUENCENUMBER_URL), poolsize);
 
     try {

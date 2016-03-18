@@ -35,6 +35,7 @@ import org.apache.commons.net.ftp.FTPReply;
 
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferClientImp;
+import com.adaptris.filetransfer.FileTransferException;
 import com.adaptris.util.FifoMutexLock;
 
 /**
@@ -51,6 +52,10 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
 
   private transient T ftp;
   private transient TimezoneDateHandler tzHandler;
+
+  private transient String remoteHost;
+  private transient int timeout;
+  private transient int port;
 
   // This is to handle possible thread safety from Usage from
   // FileTransferConnection
@@ -70,33 +75,37 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
    */
   public ApacheFtpClientImpl(String remoteHost, int port, int timeout) throws IOException {
     this();
-    initConnect(remoteHost, port, timeout);
+    this.remoteHost = remoteHost;
+    this.port = port;
+    this.timeout = timeout;
+
     tzHandler = new TimezoneDateHandler(TimeZone.getDefault());
   }
 
-  /**
-   * This is the actual connect process
-   */
-  private void initConnect(String remoteHost, int port, int timeout) throws IOException {
-    ftp = createFTPClient();
-    ftp.setConnectTimeout(timeout);
+  private T ftpClient() throws IOException {
+    if (ftp == null) {
+      ftp = createFTPClient();
+      ftp.setConnectTimeout(timeout);
 
-    try {
-      ftp.connect(remoteHost, port);
-      logReply(ftp.getReplyStrings());
-      int replyCode = ftp.getReplyCode();
-      if (!FTPReply.isPositiveCompletion(replyCode)) {
-        throw new IOException("FTP Server refused connection");
+      try {
+        ftp.connect(remoteHost, port);
+        logReply(ftp.getReplyStrings());
+        int replyCode = ftp.getReplyCode();
+        if (!FTPReply.isPositiveCompletion(replyCode)) {
+          throw new IOException("FTP Server refused connection");
+        }
+        additionalSettings(ftp);
+      } catch (IOException e) {
+        if (ftp.isConnected()) {
+          ftp.disconnect();
+          ftp = null;
+        }
+        throw e;
       }
-      additionalSettings(ftp);
     }
-    catch (IOException e) {
-      if (ftp.isConnected()) {
-        ftp.disconnect();
-      }
-      throw e;
-    }
+    return ftp;
   }
+
 
   /**
    * Create the base commons net client.
@@ -107,20 +116,12 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
 
   protected abstract void additionalSettings(T client) throws IOException;
 
-  /**
-   * The timeout period once a connection has been opened
-   */
-  public int getTimeout() {
-    return ftp.getConnectTimeout();
+  public int getTimeout() throws IOException {
+    return ftpClient().getConnectTimeout();
   }
 
-  /**
-   * The timeout period once a connection has been opened
-   * 
-   * @param millis
-   */
-  public void setTimeout(int millis) {
-    ftp.setConnectTimeout(millis);
+  public void setTimeout(int millis) throws IOException {
+    ftpClient().setConnectTimeout(millis);
   }
 
   private void acquireLock() {
@@ -142,10 +143,10 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
       acquireLock();
       log("{} {}", FTPCmd.USER, user);
       log("{} ********", FTPCmd.PASS);
-      handleReturnValue(ftp.login(user, password));
+      handleReturnValue(ftpClient().login(user, password));
     }
     finally {
-      logReply(ftp.getReplyStrings());
+      logReply(ftpClient().getReplyStrings());
       releaseLock();
     }
   }
@@ -157,10 +158,10 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
       log("{} {}", FTPCmd.USER, user);
       log("{} ********", FTPCmd.PASS);
       log("{} {}", FTPCmd.ACCT, user);
-      handleReturnValue(ftp.login(user, password, account));
+      handleReturnValue(ftpClient().login(user, password, account));
     }
     finally {
-      logReply(ftp.getReplyStrings());
+      logReply(ftpClient().getReplyStrings());
       releaseLock();
     }
   }
@@ -171,15 +172,15 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
       acquireLock();
       if (append) {
         log("{} {}", FTPCmd.APPE, remoteFile);
-        handleReturnValue(ftp.appendFile(remoteFile, srcStream));
+        handleReturnValue(ftpClient().appendFile(remoteFile, srcStream));
       }
       else {
         log("{} {}", FTPCmd.STOR, remoteFile);
-        handleReturnValue(ftp.storeFile(remoteFile, srcStream));
+        handleReturnValue(ftpClient().storeFile(remoteFile, srcStream));
       }
     }
     finally {
-      logReply(ftp.getReplyStrings());
+      logReply(ftpClient().getReplyStrings());
       releaseLock();
     }
   }
@@ -195,10 +196,10 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
     try {
       acquireLock();
       log("{} {}", FTPCmd.RETR, remoteFile);
-      handleReturnValue(ftp.retrieveFile(remoteFile, destStream));
+      handleReturnValue(ftpClient().retrieveFile(remoteFile, destStream));
     }
     finally {
-      logReply(ftp.getReplyStrings());
+      logReply(ftpClient().getReplyStrings());
       releaseLock();
     }
   }
@@ -215,7 +216,7 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
       acquireLock();
       log("{} {}", FTPCmd.RETR, remoteFile);
       // Get input stream from FTP server
-      BufferedInputStream in = new BufferedInputStream(ftp.retrieveFileStream(remoteFile));
+      BufferedInputStream in = new BufferedInputStream(ftpClient().retrieveFileStream(remoteFile));
       long size = 0;
       byte[] chunk = new byte[CHUNK_SIZE];
       int count;
@@ -227,14 +228,14 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
           size += count;
         }
 
-        ftp.completePendingCommand();
+        ftpClient().completePendingCommand();
       }
       finally {
         out.flush();
 
         in.close();
       }
-      logReply(ftp.getReplyStrings());
+      logReply(ftpClient().getReplyStrings());
       log("Transferred " + size + " bytes from remote host");
     }
     finally {
@@ -252,8 +253,8 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
     try {
       acquireLock();
       log("{} {}", FTPCmd.LIST, dirname);
-      FTPFile[] results = ftp.listFiles(dirname);
-      logReply(ftp.getReplyStrings());
+      FTPFile[] results = ftpClient().listFiles(dirname);
+      logReply(ftpClient().getReplyStrings());
       List<String> output = new ArrayList<String>();
       for (FTPFile file : results) {
         if (full) {
@@ -281,10 +282,10 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
     try {
       acquireLock();
       log("{} {}", FTPCmd.DELE, remoteFile);
-      handleReturnValue(ftp.deleteFile(remoteFile));
+      handleReturnValue(ftpClient().deleteFile(remoteFile));
     }
     finally {
-      logReply(ftp.getReplyStrings());
+      logReply(ftpClient().getReplyStrings());
       releaseLock();
     }
   }
@@ -301,10 +302,10 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
       acquireLock();
       log("{} {}", FTPCmd.RNFR, from);
       log("{} {}", FTPCmd.RNTO, to);
-      handleReturnValue(ftp.rename(from, to));
+      handleReturnValue(ftpClient().rename(from, to));
     }
     finally {
-      logReply(ftp.getReplyStrings());
+      logReply(ftpClient().getReplyStrings());
       releaseLock();
     }
   }
@@ -319,10 +320,10 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
     try {
       acquireLock();
       log("{} {}", FTPCmd.RMD, dir);
-      handleReturnValue(ftp.removeDirectory(dir));
+      handleReturnValue(ftpClient().removeDirectory(dir));
     }
     finally {
-      logReply(ftp.getReplyStrings());
+      logReply(ftpClient().getReplyStrings());
       releaseLock();
     }
 
@@ -338,10 +339,10 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
     try {
       acquireLock();
       log("{} {}", FTPCmd.MKD, dir);
-      handleReturnValue(ftp.makeDirectory(dir));
+      handleReturnValue(ftpClient().makeDirectory(dir));
     }
     finally {
-      logReply(ftp.getReplyStrings());
+      logReply(ftpClient().getReplyStrings());
       releaseLock();
     }
   }
@@ -356,10 +357,10 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
     try {
       acquireLock();
       log("{} {}", FTPCmd.CWD, dir);
-      handleReturnValue(ftp.changeWorkingDirectory(dir));
+      handleReturnValue(ftpClient().changeWorkingDirectory(dir));
     }
     finally {
-      logReply(ftp.getReplyStrings());
+      logReply(ftpClient().getReplyStrings());
       releaseLock();
     }
   }
@@ -372,11 +373,12 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
     try {
       acquireLock();
       log("BYE");
-      ftp.disconnect();
+      ftpClient().disconnect();
     }
     finally {
-      logReply(ftp.getReplyStrings());
+      logReply(ftpClient().getReplyStrings());
       releaseLock();
+      ftp = null;
     }
   }
 
@@ -387,7 +389,7 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
    *          class
    */
   public void setType(TransferType ftpFileType) throws IOException {
-    ftpFileType.applyTransferType(ftp);
+    ftpFileType.applyTransferType(ftpClient());
   }
 
   /**
@@ -399,12 +401,12 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
     try {
       acquireLock();
       log("MDTM {}", path);
-      ftp.sendCommand("MDTM", path);
-      Reply reply = validateReply(ftp.getReplyString(), "213");
+      ftpClient().sendCommand("MDTM", path);
+      Reply reply = validateReply(ftpClient().getReplyString(), "213");
       lastModified = tzHandler.asLong(reply.getReplyText());
     }
     finally {
-      logReply(ftp.getReplyStrings());
+      logReply(ftpClient().getReplyStrings());
       releaseLock();
     }
     return lastModified;
@@ -418,13 +420,14 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
     Date lastModified = null;
     try {
       acquireLock();
+      releaseLock();
       log("MDTM {}", path);
-      ftp.sendCommand("MDTM", path);
-      Reply reply = validateReply(ftp.getReplyString(), "213");
+      ftpClient().sendCommand("MDTM", path);
+      Reply reply = validateReply(ftpClient().getReplyString(), "213");
       lastModified = tzHandler.asDate(reply.getReplyText());
     }
     finally {
-      logReply(ftp.getReplyStrings());
+      logReply(ftpClient().getReplyStrings());
       releaseLock();
     }
     return lastModified;
@@ -480,8 +483,8 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
     String result = null;
     try {
       acquireLock();
-      ftp.syst();
-      result = ftp.getReplyString();
+      ftpClient().syst();
+      result = ftpClient().getReplyString();
     }
     finally {
       releaseLock();
@@ -499,8 +502,8 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
     String result = null;
     try {
       acquireLock();
-      ftp.pwd();
-      result = ftp.getReplyString();
+      ftpClient().pwd();
+      result = ftpClient().getReplyString();
     }
     finally {
       releaseLock();
@@ -531,10 +534,10 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
     }
   }
 
-  public void setDataMode(FtpDataMode mode) {
+  public void setDataMode(FtpDataMode mode) throws IOException {
     try {
       acquireLock();
-      mode.applyDataMode(ftp);
+      mode.applyDataMode(ftpClient());
     }
     finally {
       releaseLock();
@@ -550,7 +553,7 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
    * @param expectedReplyCode the reply we expected to receive
    * 
    */
-  private Reply validateReply(String reply, String expectedReplyCode) throws IOException, FtpException {
+  private Reply validateReply(String reply, String expectedReplyCode) throws IOException, FileTransferException {
 
     // all reply codes are 3 chars long
     String replyCode = reply.substring(0, 3);
@@ -565,41 +568,46 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
     throw new FtpException(replyText, replyCode);
   }
 
-  /**
-   * Get the time to wait between sending control connection keepalive messages.
-   * 
-   * @return time in seconds
-   * @author Daniel Sefton
-   */
+
   @Override
-  public long getKeepAliveTimeout() throws FtpException {
-    return ftp.getControlKeepAliveTimeout();
+  public long getKeepAliveTimeout() throws FileTransferException {
+    try {
+      acquireLock();
+      return ftpClient().getControlKeepAliveTimeout();
+    } catch (IOException e) {
+      throw new FtpException(e);
+    } finally {
+      releaseLock();
+    }
   }
 
-  /**
-   * Set the time to wait between sending control connection keepalive messages
-   * when processing file upload or download.
-   * 
-   * @param seconds time in seconds
-   */
   @Override
-  public void setKeepAliveTimeout(long seconds) throws FtpException {
-    ftp.setControlKeepAliveTimeout(seconds);
+  public void setKeepAliveTimeout(long seconds) throws FileTransferException {
+    try {
+      acquireLock();
+      ftpClient().setControlKeepAliveTimeout(seconds);
+    } catch (IOException e) {
+      throw new FileTransferException(e);
+    } finally {
+      releaseLock();
+    }
   }
 
   @Override
   public boolean isConnected() {
     try {
-      return ftp.sendNoOp();
-    }
-    catch (IOException e) {
+      acquireLock();
+      return ftpClient().sendNoOp();
+    } catch (IOException e) {
       return false;
+    } finally {
+      releaseLock();
     }
   }
 
   void handleReturnValue(boolean value) throws IOException {
     if (!value) {
-      throw new IOException(ftp.getReplyString());
+      throw new IOException(ftpClient().getReplyString());
     }
   }
 }

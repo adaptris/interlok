@@ -22,6 +22,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -41,6 +42,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Perform a branch based on whether a metadata value has already been processed",
     tag = "service,duplicate")
+@DisplayOrder(order = {"metadataKey", "nextServiceIdIfUnique", "nextServiceIdIfDuplicate", "storeFileUrl"})
 public class CheckMetadataValueService extends DuplicateMetadataValueService {
 
   @NotBlank

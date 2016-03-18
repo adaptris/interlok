@@ -20,6 +20,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.BranchingServiceImp;
 import com.adaptris.core.CoreException;
@@ -41,6 +42,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("size-based-branching-service")
 @AdapterComponent
 @ComponentProfile(summary = "Perform a branch based on the size of the message", tag = "service,branching")
+@DisplayOrder(order = {"greaterThanServiceId", "smallerThanServiceId", "sizeCriteriaBytes"})
 public class SizeBasedBranchingService extends BranchingServiceImp {
   @NotBlank
   private String greaterThanServiceId;

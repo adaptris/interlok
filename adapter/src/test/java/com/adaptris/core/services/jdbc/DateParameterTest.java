@@ -47,14 +47,7 @@ public class DateParameterTest {
 
   @Test
   public void testConvert() throws Exception {
-    assertEquals(date, create().convertToQueryClass(dateString));
-  }
-
-  @Test
-  public void testConvertWithQueryClass() throws Exception {
-    DateStatementParameter sp = create();
-    sp.setQueryClass("java.lang.String");
-    assertEquals(date, sp.convertToQueryClass(dateString));
+    assertEquals(date, create().toDate(dateString));
   }
 
   @Test
@@ -62,7 +55,7 @@ public class DateParameterTest {
     DateStatementParameter sp = create();
     sp.setDateFormat("yyyy-MM-ddHH:mm:ss");
     try {
-      sp.convertToQueryClass(dateString);
+      sp.toDate(dateString);
       fail("Expected ServiceException");
     }
     catch (ServiceException expected) {
@@ -75,7 +68,7 @@ public class DateParameterTest {
     DateStatementParameter sp = create();
     sp.setConvertNull(false);
     try {
-      sp.convertToQueryClass(null);
+      sp.toDate(null);
       fail("Expected ServiceException");
     }
     catch (ServiceException expected) {
@@ -87,7 +80,7 @@ public class DateParameterTest {
   public void testConvertWithConvertNull() throws Exception {
     DateStatementParameter sp = create();
     sp.setConvertNull(true);
-    long convertedTime = ((java.sql.Date) sp.convertToQueryClass(null)).getTime();
+    long convertedTime = ((java.sql.Date) sp.toDate(null)).getTime();
     long now = System.currentTimeMillis();
     assertTrue("now > convertedTime", now >= convertedTime);
   }

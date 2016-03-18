@@ -20,6 +20,7 @@ import org.perf4j.aop.Profiled;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -38,6 +39,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("standard-workflow")
 @AdapterComponent
 @ComponentProfile(summary = "Basic Single Threaded Workflow", tag = "workflow,base")
+@DisplayOrder(order = {"disableDefaultMessageCount", "sendEvents", "logPayload"})
 public class StandardWorkflow extends WorkflowImp {
 
   /**

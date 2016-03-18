@@ -23,7 +23,9 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -42,11 +44,13 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author lchan / $Author: lchan $
  */
 @XStreamAlias("marshalled-class-destination")
+@DisplayOrder(order = {"defaultDestination", "mappings", "marshaller"})
 public final class MarshalledClassDestination implements ProduceDestination {
 
   @NotNull
   @AutoPopulated
   private KeyValuePairSet mappings;
+  @AdvancedConfig
   private AdaptrisMarshaller marshaller;
   @NotBlank
   private String defaultDestination;

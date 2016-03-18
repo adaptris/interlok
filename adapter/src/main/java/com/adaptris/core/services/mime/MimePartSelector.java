@@ -32,6 +32,7 @@ import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -55,6 +56,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("mime-part-selector-service")
 @AdapterComponent
 @ComponentProfile(summary = "Select a mime-part from the message and discards the others", tag = "service")
+@DisplayOrder(order = {"selector", "markAsNonMime", "preserveHeadersAsMetadata", "headerPrefix", "preservePartHeadersAsMetadata",
+    "partHeaderPrefix"})
 public class MimePartSelector extends ServiceImp {
 
   private Boolean preserveHeadersAsMetadata;

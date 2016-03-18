@@ -55,7 +55,7 @@ abstract class ReadWriteConfigManager extends ConfigManagerImpl {
       return createAdapter();
     }
     return JMX.newMBeanProxy(JmxHelper.findMBeanServer(bootstrapProperties),
-        getAdapterRegistry().createAdapter(new URLString(adapterConfigUrl).getURL()), AdapterManagerMBean.class);
+        getAdapterRegistry().createAdapter(new URLString(adapterConfigUrl)), AdapterManagerMBean.class);
   }
 
 
@@ -78,7 +78,7 @@ abstract class ReadWriteConfigManager extends ConfigManagerImpl {
   private void syncAdapterConfiguration(AdapterManagerMBean adapter, URLString master, URLString slave)
       throws MalformedObjectNameException, MalformedURLException, IOException, CoreException {
     log.trace("persisting [" + master + "] to [" + slave + "]");
-    getAdapterRegistry().persistAdapter(adapter, slave.getURL());
+    getAdapterRegistry().persistAdapter(adapter, slave);
   }
 
 }

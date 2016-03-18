@@ -22,12 +22,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.xml.namespace.NamespaceContext;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -49,6 +54,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * @see ValidationStage
  */
 @XStreamAlias("xml-rule-validator")
+@DisplayOrder(order = {"validationStages", "namespaceContext"})
 public class XmlRuleValidator extends MessageValidatorImpl {
 
   private static final String I_COUNT = "@I_COUNT@";
@@ -60,8 +66,12 @@ public class XmlRuleValidator extends MessageValidatorImpl {
   private static final String ERR_MSG = "NodeList entry " + I_COUNT + " from [" + I_XP + "] with element retrieved by XPath ["
       + E_XP + "][" + CONTENTS + "] was invalid : " + VALIDATION_MSG;
 
+  @Valid
   @XStreamImplicit(itemFieldName = "validation-stage")
+  @NotNull
+  @AutoPopulated
   private List<ValidationStage> validationStages = new ArrayList<ValidationStage>();
+  @AdvancedConfig
   private KeyValuePairSet namespaceContext;
 
   public XmlRuleValidator() {

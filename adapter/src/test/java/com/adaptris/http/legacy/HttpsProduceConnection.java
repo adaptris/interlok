@@ -18,6 +18,7 @@ package com.adaptris.http.legacy;
 
 import com.adaptris.core.CoreException;
 import com.adaptris.core.NullConnection;
+import com.adaptris.core.security.ConfiguredPrivateKeyPasswordProvider;
 import com.adaptris.core.security.PrivateKeyPasswordProvider;
 import com.adaptris.http.HttpClientTransport;
 import com.adaptris.http.HttpException;

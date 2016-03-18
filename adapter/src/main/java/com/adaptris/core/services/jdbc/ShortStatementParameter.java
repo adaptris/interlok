@@ -17,8 +17,14 @@
 package com.adaptris.core.services.jdbc;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.apache.commons.lang.math.NumberUtils.toShort;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import org.apache.commons.lang.math.NumberUtils;
+
+import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -26,8 +32,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * {@link Short} Statement Parameter.
  * 
  * <p>
- * Note that this class pays no heed to the {@link StatementParameter#setQueryClass(String)} setting; if {@code convert-null} is
- * true, then empty/blank/whitespace only values will default to 0.
+ * If {@code convert-null} is true, then empty/blank/whitespace only values will default to 0.
  * </p>
  * 
  * @config jdbc-short-statement-parameter
@@ -35,29 +40,34 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("jdbc-short-statement-parameter")
-public class ShortStatementParameter extends StatementParameter {
+@DisplayOrder(order = {"name", "queryString", "queryType"})
+public class ShortStatementParameter extends TypedStatementParameter {
 
   public ShortStatementParameter() {
     super();
-    super.setQueryClass(null);
   }
 
-
-  public ShortStatementParameter(String query, QueryType type) {
-    this(query, type, null);
-  }
-
-  public ShortStatementParameter(String query, QueryType type, Boolean nullConvert) {
-    super(query, (String) null, type, nullConvert);
+  public ShortStatementParameter(String query, QueryType type, Boolean nullConvert, String name) {
+    super(query, type, nullConvert, name);
   }
 
   @Override
-  public Object convertToQueryClass(Object value) throws ServiceException {
+  public void apply(int parameterIndex, PreparedStatement statement, AdaptrisMessage msg) throws SQLException, ServiceException {
+    log.trace("Setting argument {} to [{}]", parameterIndex, getQueryValue(msg));
+    statement.setObject(parameterIndex, toShort(getQueryValue(msg)));
+  }
+
+
+  Short toShort(Object value) throws ServiceException {
     if (isBlank((String) value) && convertNull()) {
-      return Short.valueOf(toShort((String) value));
-    }
-    else {
+      return Short.valueOf(NumberUtils.toShort((String) value));
+    } else {
       return Short.valueOf((String) value);
     }
+  }
+
+  @Override
+  public ShortStatementParameter makeCopy() {
+    return new ShortStatementParameter(getQueryString(), getQueryType(), getConvertNull(), getName());
   }
 }

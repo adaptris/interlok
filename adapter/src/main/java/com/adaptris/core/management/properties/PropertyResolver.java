@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * Resolves any properties that are stored using a scheme and decodes using the specified {@link Decoder} implementation.
  *
  * <p>
- * At the moment only one scheme {password} is registered, which will be resolved using {@link com.adaptris.security.password.PasswordDecoder}. If the system
+ * At the moment only one scheme {password} is registered, which will be resolved using {@link PasswordDecoder}. If the system
  * property is represented like this:
  * </p>
  * <code>

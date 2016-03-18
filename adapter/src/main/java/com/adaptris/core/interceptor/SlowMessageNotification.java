@@ -44,11 +44,11 @@ import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Interceptor that emits a {@link Notification} if a message has exceeded the specified threshold
+ * Interceptor that emits a {@link javax.management.Notification} if a message has exceeded the specified threshold
  * for processing within a workflow.
  * 
  * <p>
- * The {@link Notification#setUserData(Object)} part of the notification is a {@link Properties}
+ * The {@link javax.management.Notification#setUserData(Object)} part of the notification is a {@link java.util.Properties}
  * object containing information about the message that exceeded the interceptors threshold. Note
  * that notifications are emitted whenever a message is deemed to have exceeded the threshold; you
  * might get multiple notifications if a message exceeds the threshold, fails and is automatically
@@ -175,7 +175,7 @@ public class SlowMessageNotification extends NotifyingInterceptor {
   }
 
   /**
-   * Specify the duration which if exceeded a {@link Notification} will be sent.
+   * Specify the duration which if exceeded a {@link javax.management.Notification} will be sent.
    * 
    * @param t the duration, if not specified then 1 minute.
    */

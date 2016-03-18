@@ -25,6 +25,8 @@ import javax.mail.URLName;
 
 import org.apache.commons.net.pop3.POP3Client;
 
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.DisplayOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -44,15 +46,22 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("pop3-receiver-factory")
+@DisplayOrder(order = {"connectTimeout", "timeout", "receiveBufferSize", "sendBufferSize", "tcpNoDelay", "keepAlive"})
 public class Pop3ReceiverFactory extends ApacheClientConfig implements MailReceiverFactory {
 
   private static final List<String> SUPPORTED = Collections.unmodifiableList(Arrays.asList("pop3"));
 
+  @AdvancedConfig
   private Integer connectTimeout;
+  @AdvancedConfig
   private Integer receiveBufferSize;
+  @AdvancedConfig
   private Integer sendBufferSize;
+  @AdvancedConfig
   private Boolean tcpNoDelay;
+  @AdvancedConfig
   private Boolean keepAlive;
+  @AdvancedConfig
   private Integer timeout;
 
   @Override

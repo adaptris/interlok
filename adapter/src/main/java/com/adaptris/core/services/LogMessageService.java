@@ -23,6 +23,7 @@ import org.slf4j.MarkerFactory;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -40,6 +41,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("log-message-service")
 @AdapterComponent
 @ComponentProfile(summary = "Log the message to the log file; useful for debugging", tag = "service,logging,debug")
+@DisplayOrder(order = {"logLevel", "logPrefix", "includeEvents", "includePayload"})
 public class LogMessageService extends ServiceImp {
 
   public static enum LoggingLevel {

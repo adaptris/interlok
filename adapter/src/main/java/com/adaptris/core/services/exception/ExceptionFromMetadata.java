@@ -18,6 +18,7 @@ package com.adaptris.core.services.exception;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -37,6 +38,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("exception-from-metadata")
+@DisplayOrder(order = {"exceptionMessageMetadataKey", "defaultExceptionMessage"})
 public class ExceptionFromMetadata extends ExceptionFromMetadataImpl {
 
   private String defaultExceptionMessage;

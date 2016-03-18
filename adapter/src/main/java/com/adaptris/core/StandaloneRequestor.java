@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -34,6 +35,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("standalone-requestor")
 @AdapterComponent
 @ComponentProfile(summary = "Perform a synchronous request operation, storing the reply in the message", tag = "service")
+@DisplayOrder(order = {"connection", "producer", "replyTimeout"})
 public class StandaloneRequestor extends StandaloneProducer {
 
   private static final TimeInterval DEFAULT_TIMEOUT = new TimeInterval(-1L, TimeUnit.MILLISECONDS);

@@ -24,6 +24,8 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.DisplayOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -35,12 +37,17 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config simple-regexp-message-splitter
  */
 @XStreamAlias("simple-regexp-message-splitter")
+@DisplayOrder(order = {"splitPattern", "copyMetadata", "copyObjectMetadata", "matchPattern", "compareToPreviousMatch",
+    "ignoreFirstSubMessage"})
 public class SimpleRegexpMessageSplitter extends StringPayloadSplitter {
   @NotNull
   @NotBlank
   private String splitPattern;
+  @AdvancedConfig
   private String matchPattern;
+  @AdvancedConfig
   private Boolean compareToPreviousMatch;
+  @AdvancedConfig
   private Boolean ignoreFirstSubMessage;
 
   private transient Pattern compiledSplitPattern;

@@ -33,6 +33,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -69,6 +70,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config xpath-document-copier
  */
 @XStreamAlias("xpath-document-copier")
+@DisplayOrder(order = {"xpath", "copyMetadata", "copyObjectMetadata", "namespaceContext", "xmlDocumentFactoryConfig"})
 public class XpathDocumentCopier extends MessageSplitterImp {
 
   @NotNull

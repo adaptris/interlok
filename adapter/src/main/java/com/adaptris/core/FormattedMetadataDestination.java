@@ -28,6 +28,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -65,6 +66,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * @see java.util.Formatter
  */
 @XStreamAlias("formatted-metadata-destination")
+@DisplayOrder(order = {"destinationTemplate", "metadataKeys", "objectMetadataKeys"})
 public class FormattedMetadataDestination implements ProduceDestination {
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());

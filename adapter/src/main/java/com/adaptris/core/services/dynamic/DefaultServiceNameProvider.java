@@ -16,6 +16,8 @@
 
 package com.adaptris.core.services.dynamic;
 
+import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.TradingRelationship;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -29,8 +31,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config default-service-name-provider
  */
 @XStreamAlias("default-service-name-provider")
+@DisplayOrder(order = {"separator"})
 public class DefaultServiceNameProvider extends ServiceNameProviderImp {
 
+  @AutoPopulated
   private String separator;
 
   /**

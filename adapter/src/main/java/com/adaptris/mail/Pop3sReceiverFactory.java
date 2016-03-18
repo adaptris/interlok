@@ -33,6 +33,7 @@ import javax.net.ssl.X509TrustManager;
 import org.apache.commons.net.pop3.POP3Client;
 import org.apache.commons.net.pop3.POP3SClient;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -57,10 +58,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("pop3s-receiver-factory")
+@DisplayOrder(order = {"implicitTls", "alwaysTrust", "protocols", "cipherSuites", "connectTimeout", "timeout", "receiveBufferSize",
+    "sendBufferSize", "tcpNoDelay", "keepAlive"})
 public class Pop3sReceiverFactory extends Pop3ReceiverFactory {
 
   private static final List<String> SUPPORTED = Collections.unmodifiableList(Arrays.asList("pop3s"));
-  private Boolean implicitTLS;
+  private Boolean implicitTls;
   private Boolean alwaysTrust;
   private String cipherSuites;
   private String protocols;
@@ -94,8 +97,8 @@ public class Pop3sReceiverFactory extends Pop3ReceiverFactory {
     return pop3s;
   }
 
-  public Boolean getImplicitTLS() {
-    return implicitTLS;
+  public Boolean getImplicitTls() {
+    return implicitTls;
   }
 
   /**
@@ -108,12 +111,12 @@ public class Pop3sReceiverFactory extends Pop3ReceiverFactory {
    * 
    * @param b true to enable implicit TLS; default is null (true).
    */
-  public void setImplicitTLS(Boolean b) {
-    this.implicitTLS = b;
+  public void setImplicitTls(Boolean b) {
+    this.implicitTls = b;
   }
 
   boolean implicitTLS() {
-    return getImplicitTLS() != null ? getImplicitTLS().booleanValue() : true;
+    return getImplicitTls() != null ? getImplicitTls().booleanValue() : true;
   }
 
   public Boolean getAlwaysTrust() {
@@ -159,7 +162,7 @@ public class Pop3sReceiverFactory extends Pop3ReceiverFactory {
   /**
    * Set the protocol versions supported for TLS.
    * 
-   * @param s a comma separated list of protocol versions.
+   * @param s a comma separated list of protocol versions e.g. {@code SSLv2, SSLv3, TLSv1, TLSv1.1, SSLv2Hello}
    * @see POP3SClient#setEnabledProtocols(String[])
    */
   public void setProtocols(String s) {

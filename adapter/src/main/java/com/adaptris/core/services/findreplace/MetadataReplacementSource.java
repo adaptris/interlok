@@ -16,6 +16,7 @@
 
 package com.adaptris.core.services.findreplace;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -30,6 +31,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config metadata-replacement-source
  */
 @XStreamAlias("metadata-replacement-source")
+@DisplayOrder(order = {"value"})
 public class MetadataReplacementSource extends AbstractReplacementSource {
 
   public MetadataReplacementSource() {

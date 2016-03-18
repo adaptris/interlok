@@ -30,6 +30,7 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ComponentLifecycle;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.jdbc.AdvancedJdbcPooledConnection;
 import com.adaptris.core.jdbc.JdbcConnection;
 import com.adaptris.core.jdbc.JdbcPooledConnection;
 import com.adaptris.core.jdbc.PooledConnectionHelper;
@@ -64,84 +65,85 @@ public class JdbcDataCaptureServiceTest extends JdbcServiceExample {
     IdCaptureColumn {
 
       @Override
-      public StatementParameter create() {
+      public JdbcStatementParameter create() {
         return new StatementParameter(null, String.class.getName(), StatementParameter.QueryType.id);
       }
     },
     MetadataCaptureColumn {
 
       @Override
-      public StatementParameter create() {
+      public JdbcStatementParameter create() {
         return new StatementParameter("A Metadata Key", String.class.getName(), StatementParameter.QueryType.metadata);
       }
     },
     XpathCaptureColumn {
 
       @Override
-      public StatementParameter create() {
+      public JdbcStatementParameter create() {
         return new StatementParameter("xpath/to/value", String.class.getName(), StatementParameter.QueryType.xpath, true);
       }
     },
     ConstantCaptureColumn {
 
       @Override
-      public StatementParameter create() {
+      public JdbcStatementParameter create() {
         return new StatementParameter("The Constant", String.class.getName(), StatementParameter.QueryType.constant);
       }
     },
     PayloadCaptureColumn {
 
       @Override
-      public StatementParameter create() {
+      public JdbcStatementParameter create() {
         return new StatementParameter(null, String.class.getName(), StatementParameter.QueryType.payload);
       }
     },
     BooleanCaptureColumn {
 
       @Override
-      public StatementParameter create() {
-        return new BooleanStatementParameter("relative/xpath/to/boolean/value", StatementParameter.QueryType.xpath);
+      public JdbcStatementParameter create() {
+        return new BooleanStatementParameter("relative/xpath/to/boolean/value", StatementParameter.QueryType.xpath, null, null);
       }
     },
     DoubleCaptureColumn {
 
       @Override
-      public StatementParameter create() {
-        return new DoubleStatementParameter("relative/xpath/to/double/value", StatementParameter.QueryType.xpath, true);
+      public JdbcStatementParameter create() {
+        return new DoubleStatementParameter("relative/xpath/to/double/value", StatementParameter.QueryType.xpath, true, null);
       }
     },
     FloatCaptureColumn {
 
       @Override
-      public StatementParameter create() {
-        return new FloatStatementParameter("relative/xpath/to/float/value", StatementParameter.QueryType.xpath, true);
+      public JdbcStatementParameter create() {
+        return new FloatStatementParameter("relative/xpath/to/float/value", StatementParameter.QueryType.xpath, true, null);
       }
     },
     IntegerCaptureColumn {
 
       @Override
-      public StatementParameter create() {
-        return new IntegerStatementParameter("metadata-key-containing-an-integer", StatementParameter.QueryType.metadata, true);
+      public JdbcStatementParameter create() {
+        return new IntegerStatementParameter("metadata-key-containing-an-integer", StatementParameter.QueryType.metadata, true,
+            null);
       }
     },
     LongCaptureColumn {
 
       @Override
-      public StatementParameter create() {
-        return new LongStatementParameter("metadata-key-containing-a-long", StatementParameter.QueryType.metadata, true);
+      public JdbcStatementParameter create() {
+        return new LongStatementParameter("metadata-key-containing-a-long", StatementParameter.QueryType.metadata, true, null);
       }
     },
     ShortCaptureColumn {
 
       @Override
-      public StatementParameter create() {
-        return new ShortStatementParameter("metadata-key-containing-a-short", StatementParameter.QueryType.metadata, true);
+      public JdbcStatementParameter create() {
+        return new ShortStatementParameter("metadata-key-containing-a-short", StatementParameter.QueryType.metadata, true, null);
       }
     },
     TimestampCaptureColumn {
       @Override
-      public StatementParameter create() {
-        return new TimestampStatementParameter("relative/xpath/to/timestamp/value", StatementParameter.QueryType.xpath, true,
+      public JdbcStatementParameter create() {
+        return new TimestampStatementParameter("relative/xpath/to/timestamp/value", StatementParameter.QueryType.xpath, true, null,
             new SimpleDateFormat(
             "yyyy-MM-dd'T'HH:mm:ssZ"));
       }
@@ -149,21 +151,21 @@ public class JdbcDataCaptureServiceTest extends JdbcServiceExample {
     DateCaptureColumn {
 
       @Override
-      public StatementParameter create() {
-        return new DateStatementParameter("relative/xpath/to/date/value", StatementParameter.QueryType.xpath, true,
+      public JdbcStatementParameter create() {
+        return new DateStatementParameter("relative/xpath/to/date/value", StatementParameter.QueryType.xpath, true, null,
             new SimpleDateFormat("yyyy-MM-dd"));
       }
     },
     TimeCaptureColumn {
 
       @Override
-      public StatementParameter create() {
-        return new TimeStatementParameter("relative/xpath/to/time/value", StatementParameter.QueryType.xpath, true,
+      public JdbcStatementParameter create() {
+        return new TimeStatementParameter("relative/xpath/to/time/value", StatementParameter.QueryType.xpath, true, null,
             new SimpleDateFormat("HH:mm:ssZ"));
       }
     };
 
-    public abstract StatementParameter create();
+    public abstract JdbcStatementParameter create();
 
   }
 
@@ -224,6 +226,45 @@ public class JdbcDataCaptureServiceTest extends JdbcServiceExample {
     String name = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
     JdbcPooledConnection conn = PooledConnectionHelper.createPooledConnection(PROPERTIES.getProperty(JDBC_CAPTURE_SERVICE_DRIVER),
+        PROPERTIES.getProperty(JDBC_CAPTURE_SERVICE_URL), poolsize);
+    try {
+      for (int i = 0; i < maxServices; i++) {
+        JdbcDataCaptureService service = createBasicService(false);
+        service.setConnection(conn);
+        serviceList.add(service);
+        start(service);
+      }
+      assertEquals(0, conn.currentBusyConnectionCount());
+      PooledConnectionHelper.executeTest(serviceList, iterations, new PooledConnectionHelper.MessageCreator() {
+
+        @Override
+        public AdaptrisMessage createMsgForPooledConnectionTest() {
+          AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_DOCUMENT);
+          msg.addMetadata(METADATA_KEY, METADATA_VALUE);
+          return msg;
+        }
+      });
+      assertEquals(0, conn.currentBusyConnectionCount());
+      assertEquals(poolsize, conn.currentIdleConnectionCount());
+      assertEquals(poolsize, conn.currentConnectionCount());
+      doBasicCaptureAsserts(maxServices * iterations);
+    }
+    finally {
+      stop(serviceList.toArray(new ComponentLifecycle[0]));
+      Thread.currentThread().setName(name);
+    }
+  }
+  
+  public void testService_AdvancedPooledConnection() throws Exception {
+    int maxServices = 5;
+    final int iterations = 5;
+    int poolsize = maxServices - 1;
+
+    createDatabase();
+    List<Service> serviceList = new ArrayList<Service>();
+    String name = Thread.currentThread().getName();
+    Thread.currentThread().setName(getName());
+    AdvancedJdbcPooledConnection conn = PooledConnectionHelper.createAdvancedPooledConnection(PROPERTIES.getProperty(JDBC_CAPTURE_SERVICE_DRIVER),
         PROPERTIES.getProperty(JDBC_CAPTURE_SERVICE_URL), poolsize);
     try {
       for (int i = 0; i < maxServices; i++) {

@@ -16,6 +16,7 @@
 
 package com.adaptris.core;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -29,6 +30,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config configured-trading-relationship-creator
  */
 @XStreamAlias("configured-trading-relationship-creator")
+@DisplayOrder(order = {"source", "destination", "type"})
 public final class ConfiguredTradingRelationshipCreator implements
     TradingRelationshipCreator {
 

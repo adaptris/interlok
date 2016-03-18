@@ -17,8 +17,14 @@
 package com.adaptris.core.services.jdbc;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.apache.commons.lang.math.NumberUtils.toDouble;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import org.apache.commons.lang.math.NumberUtils;
+
+import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -26,37 +32,42 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * {@link Double} Statement Parameter.
  * 
  * <p>
- * Note that this class pays no heed to the {@link StatementParameter#setQueryClass(String)} setting; if {@code convert-null} is
- * true, then empty/blank/whitespace only values will default to 0.
+ * If {@code convert-null} is true, then empty/blank/whitespace only values will default to 0.
  * </p>
- * 
  * @config jdbc-double-statement-parameter
  * @author lchan
  * 
  */
 @XStreamAlias("jdbc-double-statement-parameter")
-public class DoubleStatementParameter extends StatementParameter {
+@DisplayOrder(order = {"name", "queryString", "queryType"})
+public class DoubleStatementParameter extends TypedStatementParameter {
 
   public DoubleStatementParameter() {
     super();
-    super.setQueryClass(null);
   }
 
-  public DoubleStatementParameter(String query, QueryType type) {
-    this(query, type, null);
-  }
-
-  public DoubleStatementParameter(String query, QueryType type, Boolean nullConvert) {
-    super(query, (String) null, type, nullConvert);
+  public DoubleStatementParameter(String query, QueryType type, Boolean nullConvert, String name) {
+    super(query, type, nullConvert, name);
   }
 
   @Override
-  public Object convertToQueryClass(Object value) throws ServiceException {
+  public void apply(int parameterIndex, PreparedStatement statement, AdaptrisMessage msg) throws SQLException, ServiceException {
+    log.trace("Setting argument {} to [{}]", parameterIndex, getQueryValue(msg));
+    statement.setObject(parameterIndex, toDouble(getQueryValue(msg)));
+  }
+
+
+  Double toDouble(Object value) throws ServiceException {
     if (isBlank((String) value) && convertNull()) {
-      return Double.valueOf(toDouble((String) value));
-    }
-    else {
+      return Double.valueOf(NumberUtils.toDouble((String) value));
+    } else {
       return Double.valueOf((String) value);
     }
   }
+
+  @Override
+  public DoubleStatementParameter makeCopy() {
+    return new DoubleStatementParameter(getQueryString(), getQueryType(), getConvertNull(), getName());
+  }
+
 }

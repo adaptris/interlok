@@ -34,6 +34,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -58,8 +59,12 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @XStreamAlias("jdbc-data-capture-service")
 @AdapterComponent
 @ComponentProfile(summary = "Capture data from the message and store it in a database", tag = "service,jdbc")
+@DisplayOrder(order = {"connection", "statement", "iterationXpath", "iterates", "statementParameters", "parameterApplicator",
+    "xmlDocumentFactoryConfig", "namespaceContext", "saveReturnedKeys", "saveReturnedKeysColumn", "saveReturnedKeysTable"})
 public class JdbcDataCaptureService extends JdbcDataCaptureServiceImpl {
+  @AdvancedConfig
   private String iterationXpath = null;
+  @AdvancedConfig
   private Boolean iterates = null;
 
   @NotNull
@@ -88,7 +93,7 @@ public class JdbcDataCaptureService extends JdbcDataCaptureServiceImpl {
    * @see StatementParameter
    * @param query the StatementParameter
    */
-  public void addStatementParameter(StatementParameter query) {
+  public void addStatementParameter(JdbcStatementParameter query) {
     statementParameters.add(query);
   }
 
@@ -232,17 +237,18 @@ public class JdbcDataCaptureService extends JdbcDataCaptureServiceImpl {
         StatementParameterList cloneParameterList = new StatementParameterList();
         // set the statement arguments
         for (int args = 1; args <= statementParameters.size(); args++) {
-          StatementParameter sp = statementParameters.get(args - 1);
+          JdbcStatementParameter param = statementParameters.get(args - 1);
           String queryResult = null;
           // Due to iteratesXpath, we don't use getqueryValue from
           // statementParameter.
-          if (StatementParameter.QueryType.xpath.equals(sp.getQueryType())) {
-            queryResult = xpath.selectSingleTextItem(n, sp.getQueryString());
-            cloneParameterList.add(new StatementParameter(queryResult, sp.getQueryClass(), StatementParameter.QueryType.constant,
-                sp.getConvertNull(), sp.getName()));
+          if (isXpathParam(param)) {
+            StatementParameter spParam = (StatementParameter) param;
+            queryResult = xpath.selectSingleTextItem(n, spParam.getQueryString());
+            cloneParameterList.add(new StatementParameter(queryResult, spParam.getQueryClass(),
+                StatementParameterImpl.QueryType.constant, spParam.getConvertNull(), spParam.getName()));
+          } else {
+            cloneParameterList.add(param.makeCopy());
           }
-          else
-            cloneParameterList.add(new StatementParameter(sp.getQueryString(), sp.getQueryClass(), sp.getQueryType(), sp.getConvertNull(), sp.getName()));
         }
         
         this.getParameterApplicator().applyStatementParameters(msg, insert, cloneParameterList, getStatement());
@@ -262,6 +268,15 @@ public class JdbcDataCaptureService extends JdbcDataCaptureServiceImpl {
       JdbcUtil.closeQuietly(conn);
     }
     return;
+  }
+
+  private boolean isXpathParam(JdbcStatementParameter param) {
+    if (param instanceof StatementParameter) {
+      if (StatementParameter.QueryType.xpath.equals(((StatementParameter) param).getQueryType())) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**

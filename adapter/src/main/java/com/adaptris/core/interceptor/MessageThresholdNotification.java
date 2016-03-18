@@ -22,6 +22,7 @@ import javax.management.MalformedObjectNameException;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -32,10 +33,10 @@ import com.adaptris.core.runtime.WorkflowManager;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Interceptor that emits a {@link Notification} if the number of messages has exceeded the
+ * Interceptor that emits a {@link javax.management.Notification} if the number of messages has exceeded the
  * specified threshold in the current timeslice.
  * <p>
- * The {@link Notification#setUserData(Object)} part of the notification is a {@link Properties}
+ * The {@link javax.management.Notification#setUserData(Object)} part of the notification is a {@link java.util.Properties}
  * object containing information about the various counts that exceeded the interceptors threshold.
  * Note that notifications are emitted whenever a message is deemed to have exceeded the threshold;
  * so you will get multiple notifications whenever a message causes the threshold to be exceeded
@@ -50,6 +51,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Interceptor that issues a JMX notification if a message count threshold is exceeded",
     tag = "interceptor,jmx")
+@DisplayOrder(order = {"countThreshold", "errorThreshold", "sizeThreshold"})
 public class MessageThresholdNotification extends NotifyingInterceptorByCount{
 
   private Long countThreshold;

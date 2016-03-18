@@ -28,6 +28,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
 import com.adaptris.security.exc.PasswordException;
@@ -53,15 +54,17 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <li>If no private key password is specified then it is assumed to be a 0 length string.</li>
  * <li>Only a single privatekey file will be supported per SftpKeyAuthConnection instance.</li>
  * <li>Specifying the username+password in the destination (e.g. <code>sftp://lchan:myPassword@1.2.3.4:22//opt/sftp</code>), will
- * override the username used to login but no other credentials. The only valid authentication is via the specified private key.</li>
- * <li>You can specify additional behaviour using one of {@link DefaultSftpBehaviour}, {@link LenientKnownHosts} or
- * {@link StrictKnownHosts}. {@link StrictKnownHosts} will cause an exception to be thrown if the servers key is not present in any
- * configured known_hosts file.</li>
+ * override the username used to login but no other credentials. The only valid authentication is via the specified private
+ * key.</li>
+ * <li>You can specify additional behaviour using one of {@link DefaultSftpBehaviour}, {@link com.adaptris.sftp.LenientKnownHosts}
+ * or {@link com.adaptris.sftp.StrictKnownHosts}. {@link com.adaptris.sftp.StrictKnownHosts} will cause an exception to be thrown
+ * if the servers key is not present in any configured known_hosts file.</li>
  * <li>The private key and known_hosts file are expected to be in OpenSSH format</li>
  * </ul>
  * </p>
  * <p>
- * The password associated with {@link #setPrivateKeyPassword(String)} may be encoded using any of the standard {@link com.adaptris.security.password.Password}
+ * The password associated with {@link #setPrivateKeyPassword(String)} may be encoded using any of the standard {@link
+ * com.adaptris.security.password.Password}
  * mechanisms and it will be decoded when the private key is first accessed.
  * </p>
  * 
@@ -71,7 +74,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("sftp-key-auth-connection")
 @AdapterComponent
-@ComponentProfile(summary = "Connect to a server using the SSH File Transfer Protocol; authentication via keys", tag = "base")
+@ComponentProfile(summary = "Connect to a server using the SSH File Transfer Protocol; authentication via keys",
+    tag = "connections,sftp")
+@DisplayOrder(order = {"defaultUserName", "privateKeyFilename", "privateKeyPassword", "defaultControlPort"})
 public class SftpKeyAuthConnection extends FileTransferConnection {
 
   private static final String SCHEME_SFTP = "sftp";

@@ -22,6 +22,7 @@ import java.util.Collection;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -47,6 +48,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("clone-message-service-list")
 @AdapterComponent
 @ComponentProfile(summary = "A collection of services where each service gets a new copy of the message", tag = "service,base")
+@DisplayOrder(order = {"restartAffectedServiceOnException"})
 public class CloneMessageServiceList extends ServiceCollectionImp {
 
   public CloneMessageServiceList() {

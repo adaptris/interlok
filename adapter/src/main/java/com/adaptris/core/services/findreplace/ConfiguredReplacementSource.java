@@ -16,6 +16,7 @@
 
 package com.adaptris.core.services.findreplace;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -28,6 +29,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config configured-replacement-source
  */
 @XStreamAlias("configured-replacement-source")
+@DisplayOrder(order = {"value"})
 public class ConfiguredReplacementSource extends AbstractReplacementSource {
 
   public ConfiguredReplacementSource() {

@@ -162,7 +162,7 @@ public class DefaultMailProducerTest extends MailProducerExample {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
       StandaloneProducer producer = createProducerForTests(gm);
       DefaultSmtpProducer mailer = (DefaultSmtpProducer) producer.getProducer();
-      mailer.setAttachment(true);
+      mailer.setIsAttachment(true);
       mailer.setAttachmentContentType("text/plain");
       ServiceCase.execute(producer, msg);
 
@@ -186,7 +186,7 @@ public class DefaultMailProducerTest extends MailProducerExample {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
       StandaloneProducer producer = createProducerForTests(gm);
       DefaultSmtpProducer mailer = (DefaultSmtpProducer) producer.getProducer();
-      mailer.setAttachment(true);
+      mailer.setIsAttachment(true);
       mailer.setAttachmentContentType("text/xml");
       msg.addMetadata(CoreConstants.EMAIL_ATTACH_FILENAME, "filename.txt");
       ServiceCase.execute(producer, msg);
@@ -212,7 +212,7 @@ public class DefaultMailProducerTest extends MailProducerExample {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
       StandaloneProducer producer = createProducerForTests(gm);
       DefaultSmtpProducer mailer = (DefaultSmtpProducer) producer.getProducer();
-      mailer.setAttachment(true);
+      mailer.setIsAttachment(true);
       mailer.setAttachmentContentType("text/xml");
       msg.addMetadata(CoreConstants.EMAIL_ATTACH_CONTENT_TYPE, "text/plain");
       ServiceCase.execute(producer, msg);
@@ -238,7 +238,7 @@ public class DefaultMailProducerTest extends MailProducerExample {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
       StandaloneProducer producer = createProducerForTests(gm);
       DefaultSmtpProducer mailer = (DefaultSmtpProducer) producer.getProducer();
-      mailer.setAttachment(true);
+      mailer.setIsAttachment(true);
       mailer.setAttachmentContentType("text/plain");
       msg.addMetadata(CoreConstants.EMAIL_TEMPLATE_BODY, "This is the body");
       ServiceCase.execute(producer, msg);
@@ -264,7 +264,7 @@ public class DefaultMailProducerTest extends MailProducerExample {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD, "UTF-8");
       StandaloneProducer producer = createProducerForTests(gm);
       DefaultSmtpProducer mailer = (DefaultSmtpProducer) producer.getProducer();
-      mailer.setAttachment(true);
+      mailer.setIsAttachment(true);
       mailer.setAttachmentContentType("text/plain");
       msg.addMetadata(CoreConstants.EMAIL_TEMPLATE_BODY, "This is the body");
       ServiceCase.execute(producer, msg);
@@ -364,7 +364,7 @@ public class DefaultMailProducerTest extends MailProducerExample {
     List<StandaloneProducer> result = new ArrayList<StandaloneProducer>();
     DefaultSmtpProducer smtp = new DefaultSmtpProducer();
     smtp.setDestination(new ConfiguredProduceDestination("user@domain"));
-    smtp.getProperties().addKeyValuePair(new KeyValuePair("mail.smtp.starttls.enable", "true"));
+    smtp.getSessionProperties().addKeyValuePair(new KeyValuePair("mail.smtp.starttls.enable", "true"));
     smtp.setSubject("Configured subject");
     smtp.setSmtpUrl("smtp://localhost:25");
     smtp.setCcList("user@domain, user@domain");
@@ -374,7 +374,7 @@ public class DefaultMailProducerTest extends MailProducerExample {
 
     DefaultSmtpProducer smtps = new DefaultSmtpProducer();
     smtps.setDestination(new ConfiguredProduceDestination("user@domain"));
-    smtps.getProperties().addKeyValuePair(new KeyValuePair("mail.smtp.starttls.enable", "true"));
+    smtps.getSessionProperties().addKeyValuePair(new KeyValuePair("mail.smtp.starttls.enable", "true"));
     smtps.setSubject("Configured subject");
     smtps.setSmtpUrl("smtps://username%40gmail.com:mypassword;@smtp.gmail.com:465");
     smtps.setCcList("user@domain, user@domain");

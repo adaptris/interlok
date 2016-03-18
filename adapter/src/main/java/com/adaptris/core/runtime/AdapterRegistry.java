@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.runtime;
 import static com.adaptris.core.util.PropertyHelper.getPropertyIgnoringCase;
@@ -62,8 +62,6 @@ import com.adaptris.core.management.vcs.RuntimeVersionControlLoader;
 import com.adaptris.core.util.JmxHelper;
 import com.adaptris.util.URLString;
 
-import net.sf.saxon.trans.LicenseException;
-
 @SuppressWarnings("deprecation")
 public class AdapterRegistry implements AdapterRegistryMBean {
 
@@ -72,13 +70,13 @@ public class AdapterRegistry implements AdapterRegistryMBean {
   private static final String EXCEPTION_MSG_MBEAN_NULL = "AdapterManagerMBean is null";
   private static final String EXCEPTION_MSG_NO_VCR = "No Runtime Version Control";
 
-  private Set<ObjectName> registeredAdapters;
+  private final Set<ObjectName> registeredAdapters;
   private transient ObjectName myObjectName;
   private transient MBeanServer mBeanServer;
   private static transient Logger log = LoggerFactory.getLogger(AdapterRegistry.class);
   private transient BootstrapProperties config = new BootstrapProperties();
   private transient ConfigPreProcessorLoader configurationPreProcessorLoader;
-  private transient Map<ObjectName, URL> configurationURLs;
+  private transient Map<ObjectName, URLString> configurationURLs;
   private transient RuntimeVersionControl runtimeVCS;
   private transient ValidatorFactory validatorFactory = null;
 
@@ -86,7 +84,7 @@ public class AdapterRegistry implements AdapterRegistryMBean {
     registeredAdapters = new HashSet<ObjectName>();
     mBeanServer = JmxHelper.findMBeanServer();
     configurationPreProcessorLoader = new DefaultPreProcessorLoader();
-    configurationURLs = new HashMap<ObjectName, URL>();
+    configurationURLs = new HashMap<ObjectName, URLString>();
   }
 
   public AdapterRegistry(BootstrapProperties config) throws MalformedObjectNameException {
@@ -99,7 +97,7 @@ public class AdapterRegistry implements AdapterRegistryMBean {
     }
     boolean enableValidation =
         Boolean.valueOf(getPropertyIgnoringCase(config, Constants.CFG_KEY_VALIDATE_CONFIG, Constants.DEFAULT_VALIDATE_CONFIG))
-            .booleanValue();
+        .booleanValue();
     if (enableValidation) {
       validatorFactory = Validation.buildDefaultValidatorFactory();
     }
@@ -147,13 +145,22 @@ public class AdapterRegistry implements AdapterRegistryMBean {
   }
 
   @Override
-  public URL getConfigurationURL(ObjectName adapterName) {
+  public URLString getConfigurationURL(ObjectName adapterName) {
     return configurationURLs.get(adapterName);
   }
 
   @Override
+  public String getConfigurationURLString(ObjectName adapterName) {
+    URLString url = getConfigurationURL(adapterName);
+    if (url != null) {
+      return url.toString();
+    }
+    return null;
+  }
+
+  @Override
   public boolean removeConfigurationURL(ObjectName adapterName) {
-    URL removed = null;
+    URLString removed = null;
     synchronized (configurationURLs) {
       removed = configurationURLs.remove(adapterName);
     }
@@ -161,7 +168,7 @@ public class AdapterRegistry implements AdapterRegistryMBean {
   }
 
   @Override
-  public void putConfigurationURL(ObjectName adapterName, URL configUrl) {
+  public void putConfigurationURL(ObjectName adapterName, URLString configUrl) {
     if (configUrl != null) {
       synchronized (configurationURLs) {
         configurationURLs.put(adapterName, configUrl);
@@ -169,25 +176,43 @@ public class AdapterRegistry implements AdapterRegistryMBean {
     }
   }
 
+  @Override
+  public void putConfigurationURL(ObjectName adapterName, String configUrl) throws IOException {
+    putConfigurationURL(adapterName, new URLString(configUrl));
+  }
+
   // For testing so we don't really care
   void setConfigurationPreProcessorLoader(ConfigPreProcessorLoader cppl) {
-    this.configurationPreProcessorLoader = cppl;
+    configurationPreProcessorLoader = cppl;
   }
 
   @Override
-  public void persistAdapter(AdapterManagerMBean adapter, URL url) throws CoreException, IOException {
+  public void persistAdapter(AdapterManagerMBean adapter, URLString url) throws CoreException, IOException {
     assertNotNull(adapter, EXCEPTION_MSG_MBEAN_NULL);
     persist(adapter.getConfiguration(), url);
   }
 
   @Override
-  public void persistAdapter(ObjectName adapter, URL url) throws CoreException, IOException {
+  public void persistAdapter(AdapterManagerMBean adapter, String url) throws CoreException, IOException {
+    assertNotNull(url, EXCEPTION_MSG_URL_NULL);
+    persistAdapter(adapter, new URLString(url));
+  }
+
+  @Override
+  public void persistAdapter(ObjectName adapter, URLString url) throws CoreException, IOException {
     persistAdapter(JMX.newMBeanProxy(mBeanServer, adapter, AdapterManagerMBean.class), url);
   }
 
   @Override
-  public void persist(String data, URL url) throws CoreException, IOException {
+  public void persistAdapter(ObjectName adapter, String url) throws CoreException, IOException {
     assertNotNull(url, EXCEPTION_MSG_URL_NULL);
+    persistAdapter(adapter, new URLString(url));
+  }
+
+  @Override
+  public void persist(String data, URLString configUrl) throws CoreException, IOException {
+    assertNotNull(configUrl, EXCEPTION_MSG_URL_NULL);
+    URL url = configUrl.getURL();
     OutputStream out = null;
     try {
       if ("file".equalsIgnoreCase(url.getProtocol())) {
@@ -213,16 +238,22 @@ public class AdapterRegistry implements AdapterRegistryMBean {
   }
 
   @Override
-  public ObjectName createAdapter(URL url) throws IOException, MalformedObjectNameException, CoreException {
+  public ObjectName createAdapter(URLString url) throws IOException, MalformedObjectNameException, CoreException {
     assertNotNull(url, EXCEPTION_MSG_URL_NULL);
-    String xml = this.loadPreProcessors().process(url);
+    String xml = loadPreProcessors().process(url.getURL());
     return register((Adapter) DefaultMarshaller.getDefaultMarshaller().unmarshal(xml), url);
+  }
+
+  @Override
+  public ObjectName createAdapterFromUrl(String url) throws IOException, MalformedObjectNameException, CoreException {
+    assertNotNull(url, EXCEPTION_MSG_URL_NULL);
+    return createAdapter(new URLString(url));
   }
 
   @Override
   public ObjectName createAdapter(String xml) throws IOException, MalformedObjectNameException, CoreException {
     assertNotNull(xml, EXCEPTION_MSG_XML_NULL);
-    xml = this.loadPreProcessors().process(xml);
+    xml = loadPreProcessors().process(xml);
     return register((Adapter) DefaultMarshaller.getDefaultMarshaller().unmarshal(xml), null);
   }
 
@@ -248,7 +279,7 @@ public class AdapterRegistry implements AdapterRegistryMBean {
     }
   }
 
-  private ObjectName register(Adapter adapter, URL configUrl) throws CoreException, MalformedObjectNameException {
+  private ObjectName register(Adapter adapter, URLString configUrl) throws CoreException, MalformedObjectNameException {
     Adapter adapterToRegister = validate(adapter);
     AdapterManager manager = new AdapterManager(adapterToRegister);
     ObjectName adapterName = manager.createObjectName();
@@ -266,7 +297,7 @@ public class AdapterRegistry implements AdapterRegistryMBean {
     checkViolations(validator.validate(adapter));
     return adapter;
   }
-  
+
   private void checkViolations(Set<ConstraintViolation<Adapter>> violations) throws CoreException {
     StringWriter writer = new StringWriter();
     if (violations.size() == 0) {
@@ -284,7 +315,7 @@ public class AdapterRegistry implements AdapterRegistryMBean {
     }
     throw new CoreException(writer.toString());
   }
-  
+
   @Override
   public void destroyAdapter(AdapterManagerMBean adapter) throws CoreException, MalformedObjectNameException {
     assertNotNull(adapter, EXCEPTION_MSG_MBEAN_NULL);
@@ -391,8 +422,7 @@ public class AdapterRegistry implements AdapterRegistryMBean {
   }
 
   @Override
-  public void reloadFromVersionControl() throws MalformedObjectNameException, CoreException, MalformedURLException, IOException,
-      LicenseException {
+  public void reloadFromVersionControl() throws MalformedObjectNameException, CoreException, MalformedURLException, IOException {
     assertNotNull(runtimeVCS, EXCEPTION_MSG_NO_VCR);
     // first of all destroy all adapters.
     for (ObjectName o : getAdapters()) {
@@ -403,7 +433,7 @@ public class AdapterRegistry implements AdapterRegistryMBean {
     // Reconfigure Logging; likely to not be required because we create and watch...
     // config.reconfigureLogging();
 
-    createAdapter(new URLString(config.findAdapterResource()).getURL());
+    createAdapter(new URLString(config.findAdapterResource()));
   }
 
   // For testing.
@@ -415,7 +445,7 @@ public class AdapterRegistry implements AdapterRegistryMBean {
   public void validateConfig(String config) throws CoreException {
     try {
       assertNotNull(config, EXCEPTION_MSG_XML_NULL);
-      String xml = this.loadPreProcessors().process(config);
+      String xml = loadPreProcessors().process(config);
       DefaultMarshaller.getDefaultMarshaller().unmarshal(xml);
     } catch (CoreException e) {
       // We do this so that we don't have nested causes as it's possible that

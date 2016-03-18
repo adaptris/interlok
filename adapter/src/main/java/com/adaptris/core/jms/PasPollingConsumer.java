@@ -24,8 +24,10 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.NullConnection;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -40,7 +42,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("jms-topic-poller")
 @AdapterComponent
-@ComponentProfile(summary = "Pickup messages from a JMS Topic by actively polling for them", tag = "consumer,jms")
+@ComponentProfile(summary = "Pickup messages from a JMS Topic by actively polling for them", tag = "consumer,jms",
+    recommended = {NullConnection.class})
+@DisplayOrder(order = {"poller", "vendorImplementation", "userName", "password", "clientId", "subscriptionId", "acknowledgeMode",
+    "messageTranslator"})
 public class PasPollingConsumer extends JmsPollingConsumerImpl {
 
   @NotNull

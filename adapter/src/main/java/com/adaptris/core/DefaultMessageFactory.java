@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -34,6 +35,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config default-message-factory
  */
 @XStreamAlias("default-message-factory")
+@DisplayOrder(order = {"defaultCharEncoding"})
 public class DefaultMessageFactory extends AdaptrisMessageFactory {
 
   private String defaultCharEncoding;

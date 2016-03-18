@@ -16,6 +16,7 @@
 
 package com.adaptris.core.services.exception;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -34,6 +35,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("configured-exception")
+@DisplayOrder(order = {"message"})
 public class ConfiguredException implements ExceptionGenerator {
 
   private String message;

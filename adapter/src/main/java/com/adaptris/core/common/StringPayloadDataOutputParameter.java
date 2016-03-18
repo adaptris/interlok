@@ -18,6 +18,8 @@ package com.adaptris.core.common;
 
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.interlok.InterlokException;
 import com.adaptris.interlok.config.DataOutputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
@@ -35,8 +37,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("string-payload-data-output-parameter")
+@DisplayOrder(order = {"contentEncoding"})
 public class StringPayloadDataOutputParameter implements DataOutputParameter<String> {
-
+  @AdvancedConfig
   private String contentEncoding;
   public StringPayloadDataOutputParameter() {
     

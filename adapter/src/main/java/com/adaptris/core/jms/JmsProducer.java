@@ -29,6 +29,7 @@ import org.perf4j.aop.Profiled;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceDestination;
@@ -66,7 +67,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("jms-producer")
 @AdapterComponent
-@ComponentProfile(summary = "Place message on a JMS queue or topic", tag = "producer,jms")
+@ComponentProfile(summary = "Place message on a JMS queue or topic", tag = "producer,jms", recommended = {JmsConnection.class})
+@DisplayOrder(order = {"destination", "messageTypeTranslator", "deliveryMode", "priority", "ttl", "acknowledgeMode"})
 public class JmsProducer extends JmsProducerImpl {
 
 

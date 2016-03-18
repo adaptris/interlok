@@ -36,14 +36,7 @@ public class FloatParameterTest {
   @Test
   public void testConvert() throws Exception {
     FloatStatementParameter sp = new FloatStatementParameter();
-    assertEquals(Float.valueOf(55.0f), sp.convertToQueryClass("55.0"));
-  }
-
-  @Test
-  public void testConvertWithQueryClass() throws Exception {
-    FloatStatementParameter sp = new FloatStatementParameter();
-    sp.setQueryClass("java.lang.String");
-    assertEquals(Float.valueOf(55.0f), sp.convertToQueryClass("55.0"));
+    assertEquals(Float.valueOf(55.0f), sp.toFloat("55.0"));
   }
 
   @Test
@@ -51,14 +44,14 @@ public class FloatParameterTest {
     FloatStatementParameter sp = new FloatStatementParameter();
     sp.setConvertNull(false);
     try {
-      sp.convertToQueryClass(null);
+      sp.toFloat(null);
       fail("Expected Exception");
     }
     catch (RuntimeException expected) {
       // expected
     }
     try {
-      sp.convertToQueryClass("");
+      sp.toFloat("");
       fail("Expected Exception");
     }
     catch (RuntimeException expected) {
@@ -70,7 +63,7 @@ public class FloatParameterTest {
   public void testConvertWithConvertNull() throws Exception {
     FloatStatementParameter sp = new FloatStatementParameter();
     sp.setConvertNull(true);
-    assertEquals(Float.valueOf(0), sp.convertToQueryClass(""));
+    assertEquals(Float.valueOf(0), sp.toFloat(""));
   }
 
 }

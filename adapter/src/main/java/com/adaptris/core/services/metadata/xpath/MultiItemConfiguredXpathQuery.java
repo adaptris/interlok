@@ -21,6 +21,9 @@ import javax.xml.namespace.NamespaceContext;
 
 import org.w3c.dom.Document;
 
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -32,9 +35,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("multi-item-configured-xpath-query")
+@DisplayOrder(order = {"metadataKey", "xpathQuery"})
 public class MultiItemConfiguredXpathQuery extends ConfiguredXpathQueryImpl implements XpathQuery {
 
   @NotNull
+  @AdvancedConfig
+  @AutoPopulated
   private String separator;
 
   public MultiItemConfiguredXpathQuery() {

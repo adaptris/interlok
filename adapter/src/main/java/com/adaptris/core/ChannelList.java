@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.util.CastorizedList;
@@ -61,6 +62,7 @@ public class ChannelList extends AbstractCollection<Channel> implements Adaptris
   private List<Channel> channels;
   private transient Map<String, Channel> addressableChannels;
   @Valid
+  @AdvancedConfig
   private ChannelLifecycleStrategy lifecycleStrategy;
 
   /**

@@ -23,8 +23,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
 
-import com.adaptris.ftp.FtpException;
-
 /**
  * Common interface for all FTP client flavours.
  *
@@ -287,14 +285,14 @@ public interface FileTransferClient {
    *
    * @return time in seconds
    */
-  long getKeepAliveTimeout() throws FtpException;
+  long getKeepAliveTimeout() throws FileTransferException;
 
   /**
    * Set the time to wait between sending control connection keepalive messages when processing file upload or download.
    *
    * @param seconds time in seconds
    */
-  void setKeepAliveTimeout(long seconds) throws FtpException;
+  void setKeepAliveTimeout(long seconds) throws FileTransferException;
 
 
   /**

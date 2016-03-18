@@ -30,6 +30,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceDestination;
@@ -80,10 +81,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * {@link java.sql.ResultSet}'s may also be applied back into the {@link com.adaptris.core.AdaptrisMessage} To define the behaviour
  * of applying
  * {@link java.sql.ResultSet}'s back into the {@link com.adaptris.core.AdaptrisMessage} set the translator for this producer, see
- * {@link java.sql.ResultSetTranslator}
+ * {@link ResultSetTranslator}
  * Note; if your Stored Procedure returns multiple result sets, each will be applied back into your {@link
  * com.adaptris.core.AdaptrisMessage} using
- * the {@link java.sql.ResultSetTranslator} configured.
+ * the {@link ResultSetTranslator} configured.
  * </p>
  * <p>
  * Finally, the default timeout set for the database operation is 30 seconds. You can override this by configuring the "timeout"
@@ -97,7 +98,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("jdbc-stored-procedure-producer")
 @AdapterComponent
-@ComponentProfile(summary = "Execute a stored procedure via JDBC", tag = "producer,jdbc")
+@ComponentProfile(summary = "Execute a stored procedure via JDBC", tag = "producer,jdbc", recommended = {DatabaseConnection.class})
+@DisplayOrder(order = {"statementCreator", "statementExecutor", "inParameters", "outParameters", "inOutParameters",
+    "resultSetTranslator", "timeout"})
 public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
 
   private static final long DEFAULT_TIMEOUT_MS = (30 * 1000); // 30 seconds
@@ -117,10 +120,12 @@ public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
   @NotNull
   @AutoPopulated
   @Valid
+  @AdvancedConfig
   private CallableStatementCreator statementCreator;
   @NotNull
   @AutoPopulated
   @Valid
+  @AdvancedConfig
   private CallableStatementExecutor statementExecutor;
   @NotNull
   @Valid

@@ -22,6 +22,8 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.AdvancedConfig;
+
 /**
  * Abstract base class for Metadata Xpath Queries.
  *
@@ -32,6 +34,7 @@ public abstract class XpathQueryImpl implements XpathMetadataQuery {
 
   protected transient Logger logR = LoggerFactory.getLogger(this.getClass());
 
+  @AdvancedConfig
   private Boolean allowEmptyResults;
   @NotBlank
   private String metadataKey;

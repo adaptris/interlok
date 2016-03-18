@@ -19,6 +19,7 @@ package com.adaptris.core.services.splitter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreConstants;
@@ -34,8 +35,10 @@ public abstract class MessageSplitterImp implements MessageSplitter {
 
   protected transient Logger logR = LoggerFactory.getLogger(this.getClass());
 
+  @AdvancedConfig
   private AdaptrisMessageFactory messageFactory;
-  private Boolean copyMetadata, copyObjectMetadata;
+  private Boolean copyMetadata;
+  private Boolean copyObjectMetadata;
 
   public MessageSplitterImp() {
   }

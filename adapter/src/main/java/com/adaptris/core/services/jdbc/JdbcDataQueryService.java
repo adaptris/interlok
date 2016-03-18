@@ -30,6 +30,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -42,7 +43,6 @@ import com.adaptris.core.util.XmlHelper;
 import com.adaptris.jdbc.JdbcResult;
 import com.adaptris.jdbc.JdbcResultBuilder;
 import com.adaptris.util.KeyValuePairSet;
-import com.adaptris.util.XmlUtils;
 import com.adaptris.util.text.xml.SimpleNamespaceContext;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
@@ -59,6 +59,8 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @XStreamAlias("jdbc-data-query-service")
 @AdapterComponent
 @ComponentProfile(summary = "Query a database and store the results in the message", tag = "service,jdbc")
+@DisplayOrder(order = {"connection", "statement", "statementParameters", "resultSetTranslator", "parameterApplicator",
+    "namespaceContext", "xmlDocumentFactoryConfig"})
 public class JdbcDataQueryService extends JdbcService {
 
   static final String KEY_XML_UTILS = "XmlUtils_" + JdbcDataQueryService.class.getCanonicalName();
@@ -173,8 +175,7 @@ public class JdbcDataQueryService extends JdbcService {
     }
     msg.getObjectMetadata().put(KEY_DOCBUILDER_FAC, builder);
     if (containsXpath(getStatementParameters())) {
-      XmlUtils xml = XmlHelper.createXmlUtils(msg, namespaceCtx, builder);
-      msg.getObjectMetadata().put(KEY_XML_UTILS, xml);
+      msg.getObjectMetadata().put(KEY_XML_UTILS, XmlHelper.createXmlUtils(msg, namespaceCtx, builder));
     }
     if (namespaceCtx != null) {
       msg.getObjectMetadata().put(KEY_NAMESPACE_CTX, namespaceCtx);
@@ -186,12 +187,14 @@ public class JdbcDataQueryService extends JdbcService {
     msg.getObjectMetadata().remove(KEY_NAMESPACE_CTX);
   }
 
-  private static boolean containsXpath(List<StatementParameter> list) {
+  private static boolean containsXpath(List<JdbcStatementParameter> list) {
     boolean result = false;
-    for (StatementParameter sp : list) {
-      if (StatementParameter.QueryType.xpath.equals(sp.getQueryType())) {
-        result = true;
-        break;
+    for (JdbcStatementParameter sp : list) {
+      if (sp instanceof StatementParameter) {
+        if (StatementParameter.QueryType.xpath.equals(((StatementParameter) sp).getQueryType())) {
+          result = true;
+          break;
+        }
       }
     }
     return result;
@@ -238,7 +241,7 @@ public class JdbcDataQueryService extends JdbcService {
    * @see StatementParameter
    * @param query the StatementParameter
    */
-  public void addStatementParameter(StatementParameter query) {
+  public void addStatementParameter(JdbcStatementParameter query) {
     statementParameters.add(query);
   }
 

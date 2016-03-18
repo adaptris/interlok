@@ -16,6 +16,7 @@
 
 package com.adaptris.jdbc;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -34,6 +35,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("configured-statement-creator")
+@DisplayOrder(order = {"statement"})
 public class ConfiguredStatementCreator implements CallableStatementCreator {
 
   public String statement;

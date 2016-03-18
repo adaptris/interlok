@@ -18,8 +18,8 @@ package com.adaptris.core.services.jdbc;
 
 import java.util.List;
 
-public interface StatementParameterCollection extends List<StatementParameter>{
+public interface StatementParameterCollection extends List<JdbcStatementParameter> {
   
-  StatementParameter getParameterByName(String name);
+  JdbcStatementParameter getParameterByName(String name);
 
 }

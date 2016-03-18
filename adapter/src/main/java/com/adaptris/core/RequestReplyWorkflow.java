@@ -24,6 +24,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -54,8 +55,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("request-reply-workflow")
 @AdapterComponent
-@ComponentProfile(summary = "Workflow designed for synchronous replies back to the requestor",
-    tag = "workflow,base")
+@ComponentProfile(summary = "Workflow designed for synchronous replies back to the requestor", tag = "workflow,base")
+@DisplayOrder(order = {"retainUniqueId", "disableDefaultMessageCount", "sendEvents", "logPayload"})
 public class RequestReplyWorkflow extends StandardWorkflow {
 
   private static final TimeInterval DEFAULT_REPLY_TIMEOUT = new TimeInterval(30L, TimeUnit.SECONDS);

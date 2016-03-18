@@ -29,9 +29,11 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.NullConnection;
 import com.adaptris.core.util.Args;
 import com.adaptris.fs.FsException;
 import com.adaptris.fs.FsFilenameExistsException;
@@ -53,13 +55,40 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <p>
  * On windows based platforms, you should always use a file based url.
  * </p>
- * 
+ * <p>
+ * Once A file has been consumed from the file-system a standard set of metadata is added to the resulting message;
+ * <table>
+ * <th>Metadata Key</th>
+ * <th>Description</th>
+ * <tr>
+ *   <td>originalname</td>
+ *   <td>Metadata key for storing the original name (generally file name) of a message. </td>
+ * </tr>
+ * <tr>
+ *   <td>lastmodified</td>
+ *   <td>Metadata key for storing the last modified date of the consumed file. </td>
+ * </tr>
+ * <tr>
+ *   <td>fsFileSize</td>
+ *   <td>Metadata key for storing the size of the message.</td>
+ * </tr>
+ * <tr>
+ *   <td>fsConsumeDir</td>
+ *   <td>Metadata key for storing the directory where a file was consumed from. </td>
+ * </tr>
+ * <tr>
+ *   <td>fsParentDir</td>
+ *   <td>Metadata key for storing the name of the immediate parent directory that a file was consumed from. </td>
+ * </tr>
+ * </table>
  * @config fs-consumer
  * 
  */
 @XStreamAlias("fs-consumer")
 @AdapterComponent
-@ComponentProfile(summary = "Pickup messages from the filesystem", tag = "consumer,fs,filesystem")
+@ComponentProfile(summary = "Pickup messages from the filesystem", tag = "consumer,fs,filesystem",
+    recommended = {NullConnection.class})
+@DisplayOrder(order = {"poller", "createDirs", "fileFilterImp", "fileSorter", "wipSuffix", "resetWipFiles"})
 public class FsConsumer extends FsConsumerImpl {
 
   @NotBlank

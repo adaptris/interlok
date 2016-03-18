@@ -32,6 +32,8 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -51,10 +53,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("xml-schema-validator")
+@DisplayOrder(order = {"schema", "schemaMetadataKey"})
 public class XmlSchemaValidator extends MessageValidatorImpl {
 
   // marshalled
   private String schema;
+  @AdvancedConfig
   private String schemaMetadataKey;
 
   // transient

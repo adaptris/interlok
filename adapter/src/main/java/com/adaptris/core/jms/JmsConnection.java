@@ -28,6 +28,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AllowsRetriesConnection;
 import com.adaptris.core.CoreException;
@@ -48,6 +49,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("jms-connection")
 @AdapterComponent
 @ComponentProfile(summary = "Connect to a JMS 1.1 broker", tag = "connections,jms")
+@DisplayOrder(order = {"userName", "password", "clientId", "vendorImplementation"})
 public class JmsConnection extends AllowsRetriesConnection implements JmsConnectionConfig, ConnectionComparator<JmsConnection> {
 
   protected transient Connection connection;

@@ -25,6 +25,8 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -41,11 +43,13 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config metadata-document-copier
  */
 @XStreamAlias("metadata-document-copier")
+@DisplayOrder(order = {"metadataKey", "copyMetadata", "copyObjectMetadata", "indexMetadataKey"})
 public class MetadataDocumentCopier extends MessageSplitterImp {
 
   @NotNull
   @NotBlank
   private String metadataKey = null;
+  @AdvancedConfig
   private String indexMetadataKey;
 
   public MetadataDocumentCopier() {
@@ -78,7 +82,7 @@ public class MetadataDocumentCopier extends MessageSplitterImp {
   /**
    * Set the metadata key to use to for generating msgs.
    *
-   * @param xp the metadata key
+   * @param key the metadata key
    */
   public void setMetadataKey(String key) {
     metadataKey = Args.notEmpty(key, "metadata key");

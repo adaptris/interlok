@@ -22,6 +22,7 @@ import org.apache.activemq.blob.BlobTransferPolicy;
 import org.apache.activemq.blob.BlobUploadStrategy;
 import org.apache.activemq.blob.DefaultBlobUploadStrategy;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -35,7 +36,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * explicitly configured.
  * </p>
  * <p>
- * If fields are not explicitly set, then the corresponding {@link BlobTransferPolicy} method will not be invoked.
+ * If fields are not explicitly set, then the corresponding {@link org.apache.activemq.blob.BlobUploadStrategy} method will not be
+ * invoked.
  * </p>
  * 
  * @config activemq-blob-transfer-policy
@@ -43,6 +45,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("activemq-blob-transfer-policy")
+@DisplayOrder(order = {"brokerUploadUrl", "defaultUploadUrl", "uploadUrl", "bufferSize", "uploadStrategy"})
 public class BlobTransferPolicyFactory {
   private String brokerUploadUrl = null;
   private String defaultUploadUrl = null;
@@ -124,7 +127,7 @@ public class BlobTransferPolicyFactory {
     return uploadStrategy;
   }
 
-  /** @see BlobTransferPolicy#setUploadStrategy(BlobUploadStrategy) */
+  /** @see BlobTransferPolicy#setUploadStrategy(org.apache.activemq.blob.BlobUploadStrategy) */
   public void setUploadStrategy(BlobUploadStrategy strat) {
     uploadStrategy = strat;
   }

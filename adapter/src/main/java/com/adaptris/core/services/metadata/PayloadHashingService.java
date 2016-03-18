@@ -27,6 +27,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -48,6 +49,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Hash the payload and store the base64 form of the hash against a metadata key",
     tag = "service,metadata")
+@DisplayOrder(order = {"hashAlgorithm", "metadataKey"})
 public class PayloadHashingService extends ServiceImp {
 
   @NotBlank

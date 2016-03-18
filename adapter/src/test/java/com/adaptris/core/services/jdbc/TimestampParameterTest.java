@@ -48,14 +48,7 @@ public class TimestampParameterTest {
   @Test
   public void testConvert() throws Exception {
     TimestampStatementParameter sp = create();
-    assertEquals(timestamp, sp.convertToQueryClass(timestampString));
-  }
-
-  @Test
-  public void testConvertWithQueryClass() throws Exception {
-    TimestampStatementParameter sp = create();
-    sp.setQueryClass("java.lang.String");
-    assertEquals(timestamp, sp.convertToQueryClass(timestampString));
+    assertEquals(timestamp, sp.toDate(timestampString));
   }
 
   @Test
@@ -64,7 +57,7 @@ public class TimestampParameterTest {
     sp.setDateFormat("yyyy-MM-ddHH:mm:ss");
     sp.setConvertNull(false);
     try {
-      sp.convertToQueryClass(timestampString);
+      sp.toDate(timestampString);
       fail("Expected ServiceException");
     }
     catch (ServiceException expected) {
@@ -77,7 +70,7 @@ public class TimestampParameterTest {
     TimestampStatementParameter sp = create();
     sp.setConvertNull(false);
     try {
-      sp.convertToQueryClass(null);
+      sp.toDate(null);
       fail("Expected ServiceException");
     }
     catch (ServiceException expected) {
@@ -89,7 +82,7 @@ public class TimestampParameterTest {
   public void testConvertWithConvertNull() throws Exception {
     TimestampStatementParameter sp = create();
     sp.setConvertNull(true);
-    long convertedTime = ((java.sql.Timestamp) sp.convertToQueryClass(null)).getTime();
+    long convertedTime = ((java.sql.Timestamp) sp.toDate(null)).getTime();
     long now = System.currentTimeMillis();
     assertTrue("now > convertedTime", now >= convertedTime);
   }

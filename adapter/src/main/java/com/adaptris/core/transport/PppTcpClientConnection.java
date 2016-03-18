@@ -16,6 +16,9 @@
 
 package com.adaptris.core.transport;
 
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.transport.Transport;
 import com.adaptris.transport.TransportException;
 import com.adaptris.transport.ppp.PppSocketTransport;
@@ -30,11 +33,16 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author $Author: hfraser $
  */
 @XStreamAlias("ppp-tcp-client-connection")
+@ComponentProfile(summary = "Connection for a client tcp connection over PPP", tag = "connections,socket,tcp")
+@DisplayOrder(order = {"host", "port", "connectCommand", "disconnectCommand", "checkConnectionCommand", "noConnectionFilter",
+    "timeout", "blocksize"})
 public class PppTcpClientConnection extends TcpClientConnection {
 
   private String connectCommand;
   private String disconnectCommand;
+  @AdvancedConfig
   private String checkConnectionCommand;
+  @AdvancedConfig
   private String noConnectionFilter;
 
   /** @see Object#Object()

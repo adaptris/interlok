@@ -32,6 +32,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -55,6 +56,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("duplicate-message-routing-service")
 @AdapterComponent
 @ComponentProfile(summary = "Set Metadata based on whether the message is considered a duplicate or not", tag = "service,duplicate")
+@DisplayOrder(order = {"keyToCheck", "destinationKey", "uniqueDestination", "duplicateDestination", "configLocation"})
 public class DuplicateMessageRoutingService extends ServiceImp {
   private transient LinkedList<String> comparators = new LinkedList<String>();
 

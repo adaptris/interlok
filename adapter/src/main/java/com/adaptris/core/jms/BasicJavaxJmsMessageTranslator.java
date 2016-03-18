@@ -19,6 +19,7 @@ package com.adaptris.core.jms;
 import javax.jms.JMSException;
 import javax.jms.Message;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -36,6 +37,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("basic-javax-jms-message-translator")
+@DisplayOrder(order = {"metadataFilter", "moveMetadata", "moveJmsHeaders", "reportAllErrors"})
 public class BasicJavaxJmsMessageTranslator extends MessageTypeTranslatorImp {
 
   public BasicJavaxJmsMessageTranslator() {

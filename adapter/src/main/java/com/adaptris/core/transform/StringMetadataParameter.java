@@ -27,6 +27,7 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.MetadataCollection;
 import com.adaptris.core.MetadataElement;
@@ -40,6 +41,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config xml-transform-string-parameter
  */
 @XStreamAlias("xml-transform-string-parameter")
+@DisplayOrder(order = {"metadataFilter"})
 public class StringMetadataParameter implements XmlTransformParameter {
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass());

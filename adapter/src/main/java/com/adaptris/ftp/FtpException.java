@@ -47,11 +47,11 @@ public class FtpException extends FileTransferException {
   }
 
   /**
-   *  Constructor. Permits setting of reply code
+   * Constructor. Permits setting of reply code
    *
-   *   @param   msg        message that the user will be
-   *                       able to retrieve
-   *   @param   replyCode  string form of reply code
+   * @param msg message that the user will be
+   * able to retrieve
+   * @param replyCode string form of reply code
    */
   public FtpException(String msg, String replyCode) {
 
@@ -63,6 +63,10 @@ public class FtpException extends FileTransferException {
     } catch (NumberFormatException ex) {
       this.replyCode = -1;
     }
+  }
+
+  public FtpException(Throwable e) {
+    super(e);
   }
 
   /**

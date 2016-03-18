@@ -12,13 +12,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.runtime;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Properties;
 import java.util.Set;
 
@@ -26,8 +25,7 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
 import com.adaptris.core.CoreException;
-
-import net.sf.saxon.trans.LicenseException;
+import com.adaptris.util.URLString;
 
 /**
  * A registry of Adapters that are available for management.
@@ -49,7 +47,7 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
    * 
    */
   String CFG_KEY_REGISTRY_JMX_ID = "adapterRegistry.object.id";
-  
+
   /**
    * The type for the adapter registry.
    * 
@@ -83,7 +81,17 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
    * @throws IOException
    * @throws CoreException
    */
-  void persistAdapter(AdapterManagerMBean adapter, URL url) throws IOException, CoreException;
+  void persistAdapter(AdapterManagerMBean adapter, URLString url) throws IOException, CoreException;
+
+  /**
+   * Persist the adapter to the given URL.
+   * 
+   * @param adapter the adapter Manager.
+   * @param url the url.
+   * @throws IOException
+   * @throws CoreException
+   */
+  void persistAdapter(AdapterManagerMBean adapter, String url) throws IOException, CoreException;
 
   /**
    * Persist the adapter to the given URL.
@@ -93,7 +101,17 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
    * @throws IOException
    * @throws CoreException
    */
-  void persistAdapter(ObjectName adapter, URL url) throws IOException, CoreException;
+  void persistAdapter(ObjectName adapter, URLString url) throws IOException, CoreException;
+
+  /**
+   * Persist the adapter to the given URL.
+   * 
+   * @param adapter the {@link AdapterManagerMBean} ObjectName.
+   * @param url the url.
+   * @throws IOException
+   * @throws CoreException
+   */
+  void persistAdapter(ObjectName adapter, String url) throws IOException, CoreException;
 
   /**
    * Persist some data the given URL.
@@ -104,7 +122,7 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
    * @throws CoreException
    * @since 3.0.3
    */
-  void persist(String data, URL url) throws IOException, CoreException;
+  void persist(String data, URLString url) throws IOException, CoreException;
 
   // Create an Adapter object, and an associated AdapterManagerMBean from the given URL.
   // Register the MBean and return its object name.
@@ -121,7 +139,54 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
    * @throws CoreException an error creating the underlying adapter.
    * @throws MalformedObjectNameException if there was a problem
    */
-  ObjectName createAdapter(URL url) throws IOException, MalformedObjectNameException, CoreException;
+  ObjectName createAdapter(URLString url) throws IOException, MalformedObjectNameException, CoreException;
+
+  /**
+   * Create an adapter from the given URL.
+   * <p>
+   * Create an adapter from the given URL; the license associated with this adapter is one that was
+   * derived from <code>bootstrap.properties</code>.
+   * </p>
+   * 
+   * @param url the url
+   * @return the object name representing for the associated {@link AdapterManagerMBean}
+   * @throws IOException an error accessing the URL.
+   * @throws CoreException an error creating the underlying adapter.
+   * @throws MalformedObjectNameException if there was a problem
+   */
+  ObjectName createAdapterFromUrl(String url) throws IOException, MalformedObjectNameException, CoreException;
+
+  /**
+   * Get the URL that was used to create the adapter associated with that ObjectName.
+   * <p>
+   * When attempting to persist an adapter instance, you can use this method to query for the URL
+   * that was used to create the associated adapter. This will be the URL used to create the adapter
+   * initially (i.e. the {@code adapterConfigURL} that was resolved from
+   * {@code bootstrap.properties}) unless the adapter was created with
+   * {@linkplain #createAdapter(String xml)} in the first instance (in which case, you need to
+   * figure out where you want to persist the adapter in a different way).
+   * </p>
+   * <p>
+   * Internally, the URLs are keyed against the ObjectName, which means that if create adapters that
+   * have the same logical object name, then a URLString will be returned regardless of "how" you
+   * created the adapter. So the code below will return {@code http://my/url} if the two ObjectName
+   * instances are considered the same.
+   * 
+   * <pre>
+   * {
+   *   &#064;code
+   *   ObjectName on = createAdapter(new URLString(&quot;http://my/url&quot;));
+   *   ObjectName on2 = createAdapter(&quot;&lt;adapter&gt;...&lt;/adapter&gt;&quot;);
+   *   URLString url = getConfigurationURL(on2);
+   * }
+   * </pre>
+   * 
+   * @param adapterName object name representation for the associated {@link AdapterManagerMBean}
+   * @return the URL that was used to create the object, or null, if
+   *         {@linkplain #createAdapter(String xml)} was used to create a new adapter.
+   * @since 3.0.2
+   */
+  URLString getConfigurationURL(ObjectName adapterName);
 
   /**
    * Get the URL that was used to create the adapter associated with that ObjectName.
@@ -138,18 +203,18 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
    * 
    * <pre>
    * {@code
-   *   ObjectName on = createAdapter(new URL("http://my/url"));
-   *   ObjectName on2 = createAdapter("<adapter>...</adapter>");
-   *   URL url = getConfigurationURL(on2);
+   * ObjectName on = createAdapter(new URL("http://my/url"));
+   * ObjectName on2 = createAdapter("<adapter>...</adapter>");
+   * URL url = getConfigurationURL(on2);
    * }
    * </pre>
    * 
    * @param adapterName object name representation for the associated {@link AdapterManagerMBean}
    * @return the URL that was used to create the object, or null, if {@linkplain #createAdapter(String xml)} was used to create a
-   *         new adapter.
+   * new adapter.
    * @since 3.0.2
    */
-  URL getConfigurationURL(ObjectName adapterName);
+  String getConfigurationURLString(ObjectName adapterName);
 
   /**
    * Remove the URL that was used to create the adapter associated with the ObjectName.
@@ -176,7 +241,20 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
    * @param adapterName object name representation for the associated {@link AdapterManagerMBean}
    * @param url the URL to be stored against the objectname
    */
-  void putConfigurationURL(ObjectName adapterName, URL url);
+  void putConfigurationURL(ObjectName adapterName, URLString url);
+
+  /**
+   * Register a URL against a given ObjectName.
+   * <p>
+   * Where you have used {@link #createAdapter(String)}; there will not be an URL associated with the newly created adapter. Use
+   * this to register a URL against the given ObjectName, which means that {@linkplain #getConfigurationURL(ObjectName)} will not
+   * return a null object.
+   * </p>
+   * 
+   * @param adapterName object name representation for the associated {@link AdapterManagerMBean}
+   * @param url the URL to be stored against the objectname
+   */
+  void putConfigurationURL(ObjectName adapterName, String url) throws IOException;
 
   // Create an Adapter object, and an associated AdapterManagerMBean from the given XML.
   // Register the MBean and return its object name.
@@ -192,9 +270,8 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
    * @throws IOException an error accessing the URL.
    * @throws CoreException an error creating the underlying adapter.
    * @throws MalformedObjectNameException if there was a problem with the objectname.
-   * @throws LicenseException if there was an error with the license.
    */
-  ObjectName createAdapter(String xml) throws IOException, MalformedObjectNameException, CoreException, LicenseException;
+  ObjectName createAdapter(String xml) throws IOException, MalformedObjectNameException, CoreException;
 
   /**
    * Add an {@link AdapterManagerMBean} instance to the registry.
@@ -264,13 +341,11 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
    * 
    * @throws MalformedObjectNameException if there was a problem with any objectname.
    * @throws CoreException an error creating the underlying adapter(s).
-   * @throws LicenseException if there was an error with the license.
    * @throws IOException if there was a with reading the URL where the adapter is hosted.
    * @throws MalformedURLException if there was a problem with the URL found from config.
    * @since 3.0.3
    */
-  void reloadFromVersionControl() throws MalformedObjectNameException, CoreException, MalformedURLException, IOException,
-      LicenseException;
+  void reloadFromVersionControl() throws MalformedObjectNameException, CoreException, MalformedURLException, IOException;
 
   /**
    * Attempts to unmarshal the component within this target runtime unit.

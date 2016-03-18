@@ -32,6 +32,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -56,6 +57,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("metadata-to-payload")
 @AdapterComponent
 @ComponentProfile(summary = "Takes a metadata value and sets that as the payload", tag = "service,metadata")
+@DisplayOrder(order = {"key", "encoding", "metadataSource"})
 public class MetadataToPayloadService extends ServiceImp {
 
 

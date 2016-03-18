@@ -32,6 +32,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageConsumerImp;
 import com.adaptris.core.AdaptrisMessageListener;
@@ -49,7 +50,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("socket-consumer")
 @AdapterComponent
-@ComponentProfile(summary = "Process messages arriving on a socket", tag = "consumer,socket,tcp")
+@ComponentProfile(summary = "Process messages arriving on a socket", tag = "consumer,socket,tcp",
+    recommended = {ConsumeConnection.class})
+@DisplayOrder(order = {"destination", "protocolImplementation"})
 public class SocketConsumer extends AdaptrisMessageConsumerImp {
   @AdvancedConfig
   private Boolean sendImmediateReply;

@@ -27,10 +27,11 @@ import javax.validation.constraints.NotNull;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.jdbc.JdbcDataCaptureServiceImpl;
-import com.adaptris.core.services.jdbc.StatementParameter;
+import com.adaptris.core.services.jdbc.JdbcStatementParameter;
 import com.adaptris.core.services.jdbc.StatementParameterList;
 import com.adaptris.core.util.JdbcUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -51,6 +52,8 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @XStreamAlias("jdbc-raw-data-capture-service")
 @AdapterComponent
 @ComponentProfile(summary = "Capture data from the message and store it in a database", tag = "service,jdbc")
+@DisplayOrder(order = {"connection", "statement", "statementParameters", "parameterApplicator", "saveReturnedKeys",
+    "saveReturnedKeysColumn", "saveReturnedKeysTable"})
 public class JdbcRawDataCaptureService extends JdbcDataCaptureServiceImpl {
   @XStreamImplicit
   @NotNull
@@ -73,7 +76,7 @@ public class JdbcRawDataCaptureService extends JdbcDataCaptureServiceImpl {
    *
    * @param query the StatementParameter
    */
-  public void addStatementParameter(StatementParameter query) {
+  public void addStatementParameter(JdbcStatementParameter query) {
     statementParameters.add(query);
   }
 

@@ -21,6 +21,7 @@ import java.util.List;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -44,6 +45,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @XStreamAlias("find-and-replace-service")
 @AdapterComponent
 @ComponentProfile(summary = "Perform a find and replace on the message", tag = "service")
+@DisplayOrder(order = {"findAndReplaceUnits", "replaceFirstOnly"})
 public class FindAndReplaceService extends ServiceImp {
 
   @XStreamImplicit(itemFieldName = "find-replace-pair")

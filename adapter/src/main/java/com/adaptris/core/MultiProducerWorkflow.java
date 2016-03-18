@@ -27,6 +27,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -46,6 +47,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Workflow that has multiple additional producers in addition to the normal producer",
     tag = "workflow,base")
+@DisplayOrder(order = {"useProcessedMessage", "disableDefaultMessageCount", "sendEvents", "logPayload"})
 public class MultiProducerWorkflow extends StandardWorkflow {
 
   @NotNull

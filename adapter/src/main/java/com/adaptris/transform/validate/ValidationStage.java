@@ -23,7 +23,9 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.DisplayOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -34,10 +36,16 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author sellidge
  */
 @XStreamAlias("xml-validation-stage")
+@DisplayOrder(order = {"iterationXpath", "elementXpath", "rules", "failOnIterateFailure"})
 public class ValidationStage {
 
+  @NotNull
+  @AutoPopulated
   private String iterationXpath = "";
+  @NotNull
+  @AutoPopulated
   private String elementXpath = "";
+  @AdvancedConfig
   private Boolean failOnIterateFailure;
 
   @NotNull

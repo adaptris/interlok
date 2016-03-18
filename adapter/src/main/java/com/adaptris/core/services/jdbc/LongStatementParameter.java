@@ -17,8 +17,14 @@
 package com.adaptris.core.services.jdbc;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.apache.commons.lang.math.NumberUtils.toLong;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import org.apache.commons.lang.math.NumberUtils;
+
+import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -26,8 +32,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * {@link Long} Statement Parameter.
  * 
  * <p>
- * Note that this class pays no heed to the {@link StatementParameter#setQueryClass(String)} setting; if {@code convert-null} is
- * true, then empty/blank/whitespace only values will default to 0.
+ * If {@code convert-null} is true, then empty/blank/whitespace only values will default to 0.
  * </p>
  * 
  * @config jdbc-long-statement-parameter
@@ -35,28 +40,35 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("jdbc-long-statement-parameter")
-public class LongStatementParameter extends StatementParameter {
+@DisplayOrder(order = {"name", "queryString", "queryType"})
+public class LongStatementParameter extends TypedStatementParameter {
 
   public LongStatementParameter() {
     super();
-    super.setQueryClass(null);
   }
 
-  public LongStatementParameter(String query, QueryType type) {
-    this(query, type, null);
-  }
 
-  public LongStatementParameter(String query, QueryType type, Boolean nullConvert) {
-    super(query, (String) null, type, nullConvert);
+  public LongStatementParameter(String query, QueryType type, Boolean nullConvert, String name) {
+    super(query, type, nullConvert, name);
   }
 
   @Override
-  public Object convertToQueryClass(Object value) throws ServiceException {
+  public void apply(int parameterIndex, PreparedStatement statement, AdaptrisMessage msg) throws SQLException, ServiceException {
+    log.trace("Setting argument {} to [{}]", parameterIndex, getQueryValue(msg));
+    statement.setObject(parameterIndex, toLong(getQueryValue(msg)));
+  }
+
+
+  Long toLong(Object value) throws ServiceException {
     if (isBlank((String) value) && convertNull()) {
-      return Long.valueOf(toLong((String) value));
-    }
-    else {
+      return Long.valueOf(NumberUtils.toLong((String) value));
+    } else {
       return Long.valueOf((String) value);
     }
+  }
+
+  @Override
+  public LongStatementParameter makeCopy() {
+    return new LongStatementParameter(getQueryString(), getQueryType(), getConvertNull(), getName());
   }
 }
