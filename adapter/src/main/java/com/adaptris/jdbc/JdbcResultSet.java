@@ -1,7 +1,9 @@
 package com.adaptris.jdbc;
 
-public interface JdbcResultSet {
+import java.io.Closeable;
+
+public interface JdbcResultSet extends Closeable {
 
   public abstract Iterable<JdbcResultRow> getRows();
-
+  
 }

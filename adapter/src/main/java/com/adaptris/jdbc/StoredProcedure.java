@@ -53,9 +53,9 @@ public class StoredProcedure {
   }
 
   public JdbcResult execute() throws CoreException {
-    CallableStatement statement = null;
+    
     try {
-      statement = getConnection().prepareCall(getStatementCreator().createCall(getName(), getParameters().size()));
+      CallableStatement statement = getConnection().prepareCall(getStatementCreator().createCall(getName(), getParameters().size()));
       statement.setQueryTimeout((int) (this.getTimeout() / 1000));// seconds
       applyInParameters(statement);
 
@@ -68,8 +68,6 @@ public class StoredProcedure {
 
     } catch (SQLException e) {
       throw new CoreException(e);
-    } finally {
-      JdbcUtil.closeQuietly(statement);
     }
   }
 

@@ -144,7 +144,7 @@ public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
   @Override
   protected AdaptrisMessage doRequest(AdaptrisMessage msg, ProduceDestination destination, long timeout) throws ProduceException {
     Connection connection = null;
-
+    JdbcResult results = null;
     try {
       connection = getConnection(msg);
 
@@ -156,7 +156,7 @@ public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
       storedProcedure.setStatementExecutor(getStatementExecutor());
       storedProcedure.setTimeout(this.defaultTimeout());
 
-      JdbcResult results = storedProcedure.execute();
+      results = storedProcedure.execute();
 
       parseOutParameters(msg, results.getParameters());
       translateResultSet(msg, results);
@@ -168,6 +168,7 @@ public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
       throw new ProduceException(e);
     }
     finally {
+      JdbcUtil.closeQuietly(results);
       JdbcUtil.closeQuietly(connection);
     }
     return msg;

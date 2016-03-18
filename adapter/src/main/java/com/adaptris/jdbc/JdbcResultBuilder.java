@@ -46,6 +46,7 @@ public class JdbcResultBuilder {
   }
 
   public JdbcResultBuilder setResultSet(Statement statement) throws SQLException {
+    result.setStatement(statement);
     result.setResultSets(this.mapResultSet(statement));
     return this;
   }
@@ -69,7 +70,7 @@ public class JdbcResultBuilder {
     do {
       JdbcResultSet singleResultSet = new JdbcResultSetImpl(statement.getResultSet());
       result.add(singleResultSet);
-    } while(statement.getMoreResults());
+    } while(statement.getMoreResults(Statement.KEEP_CURRENT_RESULT));
 
     return result;
   }

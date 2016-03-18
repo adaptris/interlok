@@ -22,6 +22,8 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import com.adaptris.core.util.JdbcUtil;
+
 public class JdbcResultSetImpl implements JdbcResultSet {
 
   private ResultSet resultSet;
@@ -56,6 +58,11 @@ public class JdbcResultSetImpl implements JdbcResultSet {
         }
       }
     };
+  }
+  
+  @Override
+  public void close() {
+    JdbcUtil.closeQuietly(resultSet);
   }
   
   /**

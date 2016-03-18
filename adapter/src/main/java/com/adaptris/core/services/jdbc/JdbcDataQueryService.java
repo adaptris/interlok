@@ -134,7 +134,7 @@ public class JdbcDataQueryService extends JdbcService {
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     log.trace("Beginning doService");
-    ResultSet rs = null;
+    JdbcResult result = null;
     Connection conn = null;
     try {
       Connection c = getConnection(msg);
@@ -148,9 +148,9 @@ public class JdbcDataQueryService extends JdbcService {
       log.trace("Executing statement " + getStatement());
       
       this.getParameterApplicator().applyStatementParameters(msg, preparedStatement, getStatementParameters(), statement);
-      rs = preparedStatement.executeQuery();
+      ResultSet rs = preparedStatement.executeQuery();
 
-      JdbcResult result = new JdbcResultBuilder().setHasResultSet(true).setResultSet(rs).build();
+      result = new JdbcResultBuilder().setHasResultSet(true).setResultSet(rs).build();
 
       resultSetTranslator.translate(result, msg);
       destroyXmlHelper(msg);
@@ -161,7 +161,7 @@ public class JdbcDataQueryService extends JdbcService {
       rethrowServiceException(e);
     }
     finally {
-      JdbcUtil.closeQuietly(rs);
+      JdbcUtil.closeQuietly(result);
       JdbcUtil.closeQuietly(conn);
     }
   }
