@@ -85,6 +85,19 @@ public class CreateQueryStringFromMetadataTest extends MetadataServiceExample {
     assertEquals("?param1=one&param2=two&param3=three", msg.getMetadataValue("resultKey"));
   }
 
+
+  public void testService_SimpleQueryString_NoQueryPrefix() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    CreateQueryStringFromMetadata service = createService();
+    service.setIncludeQueryPrefix(false);
+    msg.addMetadata("param1", "one");
+    msg.addMetadata("param2", "two");
+    msg.addMetadata("param3", "three");
+    execute(createService(), msg);
+    assertEquals("param1=one&param2=two&param3=three", msg.getMetadataValue("resultKey"));
+  }
+
+
   public void testService_NoOutput() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     execute(createService(), msg);
