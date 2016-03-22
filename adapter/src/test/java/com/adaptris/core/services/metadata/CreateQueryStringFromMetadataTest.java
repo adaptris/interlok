@@ -93,7 +93,7 @@ public class CreateQueryStringFromMetadataTest extends MetadataServiceExample {
     msg.addMetadata("param1", "one");
     msg.addMetadata("param2", "two");
     msg.addMetadata("param3", "three");
-    execute(createService(), msg);
+    execute(service, msg);
     assertEquals("param1=one&param2=two&param3=three", msg.getMetadataValue("resultKey"));
   }
 
