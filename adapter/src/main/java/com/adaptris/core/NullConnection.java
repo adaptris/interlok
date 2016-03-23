@@ -21,16 +21,14 @@ import com.adaptris.annotation.ComponentProfile;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * <p>
- * Null implemenation of <code>AdaptrisConnection</code>.
- * </p>
+ * No Op connection
  * 
  * @config null-connection
  */
 @XStreamAlias("null-connection")
 @AdapterComponent
 @ComponentProfile(summary = "The default NO-OP connection", tag = "connections")
-public class NullConnection extends AdaptrisConnectionImp {
+public final class NullConnection extends NoOpConnection {
 
   public NullConnection() {
     super();
@@ -41,41 +39,4 @@ public class NullConnection extends AdaptrisConnectionImp {
     this();
     setUniqueId(uniqueId);
   }
-
-  @Override
-  protected void initConnection() throws CoreException {
-    ;
-  }
-
-  /**
-   *
-   * @see com.adaptris.core.AdaptrisConnectionImp#startConnection()
-   */
-  @Override
-  protected void startConnection() throws CoreException {
-    ;
-  }
-
-  /**
-   *
-   * @see com.adaptris.core.AdaptrisConnectionImp#stopConnection()
-   */
-  @Override
-  protected void stopConnection() {
-    ;
-  }
-
-  /**
-   *
-   * @see com.adaptris.core.AdaptrisConnectionImp#closeConnection()
-   */
-  @Override
-  protected void closeConnection() {
-    ;
-  }
-
-  @Override
-  protected void prepareConnection() throws CoreException {
-  }
-
 }
