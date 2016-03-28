@@ -26,6 +26,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.xml.namespace.NamespaceContext;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -59,7 +61,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @XStreamAlias("jdbc-data-query-service")
 @AdapterComponent
 @ComponentProfile(summary = "Query a database and store the results in the message", tag = "service,jdbc")
-@DisplayOrder(order = {"connection", "statement", "statementParameters", "resultSetTranslator", "parameterApplicator",
+@DisplayOrder(order = {"connection", "statement", "statementCreator", "statementParameters", "resultSetTranslator", "parameterApplicator",
     "namespaceContext", "xmlDocumentFactoryConfig"})
 public class JdbcDataQueryService extends JdbcService {
 
@@ -67,9 +69,10 @@ public class JdbcDataQueryService extends JdbcService {
   static final String KEY_NAMESPACE_CTX = "NamespaceCtx_" + JdbcDataQueryService.class.getCanonicalName();
   static final String KEY_DOCBUILDER_FAC = "DocBuilderFactoryBuilder_" + JdbcDataQueryService.class.getCanonicalName();
 
-  @NotNull
-  @InputFieldHint(style = "SQL")
-  private String statement = null;
+  @InputFieldHint(style="SQL")
+  private String statement;  
+  @AdvancedConfig
+  private JdbcStatementCreator statementCreator;
   @NotNull
   @AutoPopulated
   @Valid
@@ -98,12 +101,14 @@ public class JdbcDataQueryService extends JdbcService {
     setParameterApplicator(new SequentialParameterApplicator());
     actor = new DatabaseActor();
   }
-
+  
   @Override
   protected void initJdbcService() throws CoreException {
     LifecycleHelper.init(resultSetTranslator);
+    if(getStatementCreator() == null) {
+      setStatementCreator(new ConfiguredSQLStatement(statement));
+    }
   }
-
 
   @Override
   protected void prepareService() throws CoreException {
@@ -143,7 +148,8 @@ public class JdbcDataQueryService extends JdbcService {
       }
       conn = actor.getSqlConnection();
       initXmlHelper(msg);
-      PreparedStatement preparedStatement = actor.getQueryStatement();
+      String statement = getStatementCreator().createStatement(msg);
+      PreparedStatement preparedStatement = actor.getQueryStatement(statement); 
       preparedStatement.clearParameters();
       log.trace("Executing statement " + getStatement());
       
@@ -200,8 +206,8 @@ public class JdbcDataQueryService extends JdbcService {
     return result;
   }
   
-  private String prepareStringStatement() {
-    return this.getParameterApplicator().prepareParametersToStatement(getStatement());
+  private String prepareStringStatement(String statement) {
+    return this.getParameterApplicator().prepareParametersToStatement(statement);
   }
 
   /**
@@ -304,7 +310,21 @@ public class JdbcDataQueryService extends JdbcService {
     return getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig() : DocumentBuilderFactoryBuilder.newInstance();
   }
 
+  public JdbcStatementCreator getStatementCreator() {
+    return statementCreator;
+  }
+
+  /**
+   * Set the SQL Query statement creator. If set, a StatementCreator will override the configured statement, if any.
+   * 
+   * @param statementCreator The statement creator to set.
+   */
+  public void setStatementCreator(JdbcStatementCreator statementCreator) {
+    this.statementCreator = statementCreator;
+  }
+
   private class DatabaseActor {
+    private String queryString = "";
     private PreparedStatement queryStatement = null;
     private Connection sqlConnection;
 
@@ -315,7 +335,7 @@ public class JdbcDataQueryService extends JdbcService {
     void reInitialise(Connection c) throws SQLException {
       destroy();
       sqlConnection = c;
-      queryStatement = prepareStatement(sqlConnection, prepareStringStatement());
+      queryStatement = null;
     }
 
     void destroy() {
@@ -324,7 +344,18 @@ public class JdbcDataQueryService extends JdbcService {
       sqlConnection = null;
     }
 
-    PreparedStatement getQueryStatement() {
+    /**
+     * If the statement string has changed or if we haven't prepared the statement yet, prepare the 
+     * statement. Otherwise just return the prepared statement.
+     * 
+     * @param statement
+     * @return
+     * @throws SQLException
+     */
+    PreparedStatement getQueryStatement(String statement) throws SQLException {
+      if(queryStatement == null && !queryString.equals(statement)) {
+        queryStatement = prepareStatement(sqlConnection, prepareStringStatement(statement));
+      }
       return queryStatement;
     }
 
