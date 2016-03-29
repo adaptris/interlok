@@ -16,7 +16,7 @@
 
 package com.adaptris.http.legacy;
 
-import com.adaptris.core.NullConnection;
+import com.adaptris.core.NoOpConnection;
 import com.adaptris.http.HttpClient;
 import com.adaptris.http.HttpClientTransport;
 import com.adaptris.http.HttpException;
@@ -41,7 +41,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @Deprecated
 @XStreamAlias("http-produce-connection")
-public class HttpProduceConnection extends NullConnection implements
+public class HttpProduceConnection extends NoOpConnection implements
     HttpClientConnection {
 
   /**
