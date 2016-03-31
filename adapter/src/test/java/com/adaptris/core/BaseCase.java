@@ -123,23 +123,23 @@ public abstract class BaseCase extends TestCase {
     }
   }
 
-  protected static void start(ComponentLifecycle c) throws CoreException {
+  public static void start(ComponentLifecycle c) throws CoreException {
     LifecycleHelper.init(c);
     LifecycleHelper.start(c);
   }
 
-  protected static void stop(ComponentLifecycle c) {
+  public static void stop(ComponentLifecycle c) {
     LifecycleHelper.stop(c);
     LifecycleHelper.close(c);
   }
 
-  protected static void start(ComponentLifecycle... comps) throws CoreException {
+  public static void start(ComponentLifecycle... comps) throws CoreException {
     for (ComponentLifecycle c : comps) {
       start(c);
     }
   }
 
-  protected static void stop(ComponentLifecycle... comps) {
+  public static void stop(ComponentLifecycle... comps) {
     for (ComponentLifecycle c : comps) {
       stop(c);
     }
