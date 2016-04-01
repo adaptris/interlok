@@ -113,7 +113,16 @@ public class StandardHttpProducer extends HttpProducer {
   }
 
   @Override
+  public void produce(AdaptrisMessage msg, ProduceDestination dest) throws ProduceException {
+    doRequest(msg, dest, defaultTimeout(), defaultIfNull(getMessageFactory()).newMessage());
+  }
+  
+  @Override
   protected AdaptrisMessage doRequest(AdaptrisMessage msg, ProduceDestination destination, long timeout) throws ProduceException {
+    return doRequest(msg, destination, timeout, msg);
+  }
+
+  private AdaptrisMessage doRequest(AdaptrisMessage msg, ProduceDestination destination, long timeout, AdaptrisMessage reply) throws ProduceException {
     // If deprecated username/password are set and no authenticator is configured, transparently create a static authenticator
     if (getAuthenticator() instanceof NoAuthentication && !isEmpty(getUsername())) {
       ConfiguredUsernamePassword auth = new ConfiguredUsernamePassword();
@@ -122,7 +131,6 @@ public class StandardHttpProducer extends HttpProducer {
       setAuthenticator(auth);
     }
     
-    AdaptrisMessage reply = defaultIfNull(getMessageFactory()).newMessage();
     try {
       URL url = new URL(destination.getDestination(msg));
       authenticator.setup(url.toString(), msg);
