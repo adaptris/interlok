@@ -34,10 +34,13 @@ import org.w3c.dom.Element;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.AdaptrisMessageProducer;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.NullConnection;
+import com.adaptris.core.NullMessageProducer;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
@@ -89,6 +92,11 @@ public class SplittingXmlPayloadTranslator extends XmlPayloadTranslatorImpl {
   @NotNull
   @AutoPopulated
   @Valid
+  private AdaptrisConnection connection;
+  
+  @NotNull
+  @AutoPopulated
+  @Valid
   private AdaptrisMessageProducer producer;
 
   @AdvancedConfig
@@ -98,34 +106,42 @@ public class SplittingXmlPayloadTranslator extends XmlPayloadTranslatorImpl {
 
   public SplittingXmlPayloadTranslator() {
     super();
+    setConnection(new NullConnection());
+    setProducer(new NullMessageProducer());
   }
   
   @Override
   public void init() throws CoreException {
     super.init();
+    connection.addMessageProducer(producer);
+    LifecycleHelper.init(getConnection());
     LifecycleHelper.init(getProducer());
   }
   
   @Override
   public void start() throws CoreException {
     super.start();
+    LifecycleHelper.start(getConnection());
     LifecycleHelper.start(getProducer());
   }
 
   @Override
   public void prepare() throws CoreException {
+    getConnection().prepare();
     getProducer().prepare();
   }
   
   @Override
   public void stop() {
     super.stop();
+    LifecycleHelper.stop(getConnection());
     LifecycleHelper.stop(getProducer());
   }
 
   @Override
   public void close() {
     super.close();
+    LifecycleHelper.close(getConnection());
     LifecycleHelper.close(getProducer());
   }
 
@@ -194,6 +210,35 @@ public class SplittingXmlPayloadTranslator extends XmlPayloadTranslatorImpl {
     this.maxRowsPerMessage = maxRowsPerMessage;
   }
   
+  /**
+   * <p>
+   * Sets the <code>AdaptrisConnection</code> to use for producing split
+   * messages.
+   * </p>
+   *
+   * @param conn the <code>AdaptrisConnection</code> to use for producing split
+   *          messages, may not be null
+   */
+  public void setConnection(AdaptrisConnection conn) {
+    if (conn == null) {
+      throw new IllegalArgumentException("param is null");
+    }
+    connection = conn;
+  }
+
+  /**
+   * <p>
+   * Returns the <code>AdaptrisConnection</code> to use for producing split
+   * messages.
+   * </p>
+   *
+   * @return the <code>AdaptrisConnection</code> to use for producing split
+   *         messages
+   */
+  public AdaptrisConnection getConnection() {
+    return connection;
+  }
+
   /**
    * <p>
    * Sets the <code>AdaptrisMessageProducer</code> to use for producing split
