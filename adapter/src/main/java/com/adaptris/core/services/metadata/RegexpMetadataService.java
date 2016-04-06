@@ -130,10 +130,10 @@ public class RegexpMetadataService extends ServiceImp {
 
   /**
    * If set to true then null values will be added as metadata in the event that a regular expression doesn't match but
-   * {@link RegexpMetadataQuery#getAllowNullResults()} is true.
+   * {@link RegexpMetadataQuery#getAllowNulls()} is true.
    * 
    * @param b true to add possible null values to metadata; default is true.
-   * @see RegexpMetadataQuery#setAllowNullResults(Boolean)
+   * @see RegexpMetadataQuery#setAllowNulls(Boolean)
    */
   public void setAddNullValues(Boolean b) {
     this.addNullValues = b;
