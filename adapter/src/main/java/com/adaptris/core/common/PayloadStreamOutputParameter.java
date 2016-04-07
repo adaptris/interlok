@@ -17,11 +17,14 @@
 package com.adaptris.core.common;
 
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
+import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Writer;
 
 import org.apache.commons.io.IOUtils;
@@ -55,7 +58,12 @@ public class PayloadStreamOutputParameter implements DataOutputParameter<InputSt
   public void insert(InputStream data, InterlokMessage msg) throws InterlokException {
     try {
       String encoding = defaultIfEmpty(getContentEncoding(), msg.getContentEncoding());
-      copyAndClose(data, msg.getWriter(encoding));
+      if (isEmpty(encoding)) {
+        copyAndClose(data, msg.getOutputStream());
+      } else {
+        copyAndClose(data, msg.getWriter(encoding));
+        msg.setContentEncoding(encoding);
+      }
     } catch (IOException e) {
       ExceptionHelper.rethrowCoreException(e);
     }
@@ -75,4 +83,10 @@ public class PayloadStreamOutputParameter implements DataOutputParameter<InputSt
     }
   }
 
+  private void copyAndClose(InputStream input, OutputStream out) throws IOException {
+    try (InputStream autoCloseIn = new BufferedInputStream(input);
+        BufferedOutputStream autoCloseOut = new BufferedOutputStream(out)) {
+      IOUtils.copy(autoCloseIn, autoCloseOut);
+    }
+  }
 }
