@@ -22,6 +22,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.util.Args;
 import com.adaptris.interlok.types.InterlokMessage;
 import com.adaptris.util.URLString;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -57,7 +58,7 @@ public class FileDataInputParameter extends FileInputParameterImpl {
   }
 
   public void setUrl(String url) {
-    this.url = url;
+    this.url = Args.notBlank(url, "url");
   }
 
 

@@ -37,7 +37,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"metadataKey"})
 public class MetadataDataOutputParameter implements DataOutputParameter<String> {
   
-  private static final String DEFAULT_METADATA_KEY = "destinationKey";
+  static final String DEFAULT_METADATA_KEY = "destinationKey";
 
   @NotBlank
   @AutoPopulated
@@ -62,7 +62,7 @@ public class MetadataDataOutputParameter implements DataOutputParameter<String> 
   }
 
   public void setMetadataKey(String key) {
-    this.metadataKey = Args.notNull(key, "metadata key");
+    this.metadataKey = Args.notBlank(key, "metadata key");
   }
 
 }

@@ -49,7 +49,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"metadataKey", "contentEncoding"})
 public class MetadataStreamOutputParameter implements DataOutputParameter<InputStream> {
   
-  private static final String DEFAULT_METADATA_KEY = "destinationKey";
+  static final String DEFAULT_METADATA_KEY = "destinationKey";
 
   @NotBlank
   @AutoPopulated
@@ -96,7 +96,7 @@ public class MetadataStreamOutputParameter implements DataOutputParameter<InputS
   }
 
   public void setMetadataKey(String key) {
-    this.metadataKey = Args.notNull(key, "metadata key");
+    this.metadataKey = Args.notBlank(key, "metadata key");
   }
 
   public String getContentEncoding() {
