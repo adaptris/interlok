@@ -66,7 +66,7 @@ public class MetadataStreamDataOutputParameterTest {
     MetadataStreamOutputParameter p = new MetadataStreamOutputParameter();
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     ByteArrayInputStream in = new ByteArrayInputStream(TEXT.getBytes());
-    p.insert(in, msg);
+    p.insert(new InputStreamWithEncoding(in, null), msg);
     assertNotSame(TEXT, msg.getContent());
     assertEquals(TEXT, msg.getMetadataValue(MetadataStreamOutputParameter.DEFAULT_METADATA_KEY));
   }
@@ -76,7 +76,7 @@ public class MetadataStreamDataOutputParameterTest {
     p.setContentEncoding(UTF_8);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     ByteArrayInputStream in = new ByteArrayInputStream(TEXT.getBytes(UTF_8));
-    p.insert(in, msg);
+    p.insert(new InputStreamWithEncoding(in, null), msg);
     assertNotSame(TEXT, msg.getContent());
     assertEquals(TEXT, msg.getMetadataValue(MetadataStreamOutputParameter.DEFAULT_METADATA_KEY));
   }

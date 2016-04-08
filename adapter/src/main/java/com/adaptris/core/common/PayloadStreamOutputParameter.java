@@ -46,22 +46,19 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("stream-payload-output-parameter")
 @DisplayOrder(order = {"contentEncoding"})
-public class PayloadStreamOutputParameter implements DataOutputParameter<InputStream> {
+public class PayloadStreamOutputParameter implements DataOutputParameter<InputStreamWithEncoding> {
 
   @AdvancedConfig
   private String contentEncoding;
-  public PayloadStreamOutputParameter() {
-    
-  }
 
   @Override
-  public void insert(InputStream data, InterlokMessage msg) throws InterlokException {
+  public void insert(InputStreamWithEncoding data, InterlokMessage msg) throws InterlokException {
     try {
-      String encoding = defaultIfEmpty(getContentEncoding(), msg.getContentEncoding());
+      String encoding = defaultIfEmpty(getContentEncoding(), data.encoding);
       if (isEmpty(encoding)) {
-        copyAndClose(data, msg.getOutputStream());
+        copyAndClose(data.inputStream, msg.getOutputStream());
       } else {
-        copyAndClose(data, msg.getWriter(encoding));
+        copyAndClose(data.inputStream, msg.getWriter(encoding));
         msg.setContentEncoding(encoding);
       }
     } catch (IOException e) {
