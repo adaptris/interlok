@@ -26,8 +26,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.xml.namespace.NamespaceContext;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -151,7 +149,7 @@ public class JdbcDataQueryService extends JdbcService {
       String statement = getStatementCreator().createStatement(msg);
       PreparedStatement preparedStatement = actor.getQueryStatement(statement); 
       preparedStatement.clearParameters();
-      log.trace("Executing statement " + getStatement());
+      log.trace("Executing statement [{}]", statement);
       
       this.getParameterApplicator().applyStatementParameters(msg, preparedStatement, getStatementParameters(), statement);
       ResultSet rs = preparedStatement.executeQuery();
@@ -353,7 +351,7 @@ public class JdbcDataQueryService extends JdbcService {
      * @throws SQLException
      */
     PreparedStatement getQueryStatement(String statement) throws SQLException {
-      if(queryStatement == null && !queryString.equals(statement)) {
+      if (queryStatement == null || !queryString.equals(statement)) {
         queryStatement = prepareStatement(sqlConnection, prepareStringStatement(statement));
       }
       return queryStatement;

@@ -1,16 +1,27 @@
 package com.adaptris.core.services.jdbc;
 
-import javax.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.util.Args;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+/**
+ * Build an SQL Statement for {@link JdbcDataQueryService} from metadata.
+ * 
+ * @config jdbc-metadata-sql-statement
+ * @author gdries
+ *
+ */
+@XStreamAlias("jdbc-metadata-sql-statement")
 public class MetadataSQLStatement implements JdbcStatementCreator {
+
+
+  @NotBlank
+  private String metadataKey;
 
   public MetadataSQLStatement() {
   }
-  
-  @NotNull
-  private String metadataKey;
   
   @Override
   public String createStatement(AdaptrisMessage msg) {
@@ -22,7 +33,7 @@ public class MetadataSQLStatement implements JdbcStatementCreator {
   }
 
   public void setMetadataKey(String metadataKey) {
-    this.metadataKey = metadataKey;
+    this.metadataKey = Args.notBlank(metadataKey, "metadataKey");
   }
 
 }

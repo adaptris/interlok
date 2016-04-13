@@ -4,6 +4,6 @@ import com.adaptris.core.AdaptrisMessage;
 
 public interface JdbcStatementCreator {
 
-  public abstract String createStatement(AdaptrisMessage msg);
+  String createStatement(AdaptrisMessage msg);
   
 }

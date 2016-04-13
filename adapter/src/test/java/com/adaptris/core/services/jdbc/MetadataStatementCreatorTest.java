@@ -22,6 +22,10 @@ import com.adaptris.core.AdaptrisMessage;
 
 public class MetadataStatementCreatorTest extends JdbcQueryServiceCase {
 
+  protected static final String QUERY_SQL_2 =
+      "SELECT adapter_version"
+      + " FROM adapter_type_version " + " WHERE adapter_unique_id = ?";
+
   public MetadataStatementCreatorTest(String arg0) {
     super(arg0);
   }
@@ -60,6 +64,49 @@ public class MetadataStatementCreatorTest extends JdbcQueryServiceCase {
     assertFalse(msg.containsKey(JdbcDataQueryService.class.getCanonicalName()));
   }
   
+  public void testMultipleExecutions() throws Exception {
+    createDatabase();
+    List<AdapterTypeVersion> dbItems = generate(10);
+    AdapterTypeVersion entry1 = dbItems.get(0);
+    AdapterTypeVersion entry2 = dbItems.get(1);
+
+    String metadataQuery1 = QUERY_SQL;
+    String metadataQuery2 = QUERY_SQL_2;
+
+    populateDatabase(dbItems, false);
+    JdbcDataQueryService s = createMetadataService();
+    FirstRowMetadataTranslator t = new FirstRowMetadataTranslator();
+    s.setResultSetTranslator(t);
+    AdaptrisMessage msg1 = createMessage(entry1);
+    msg1.addMetadata("sqlStatement", metadataQuery1);
+    AdaptrisMessage msg2 = createMessage(entry2);
+    msg2.addMetadata("sqlStatement", metadataQuery2);
+
+    MetadataSQLStatement ms = new MetadataSQLStatement();
+    ms.setMetadataKey("sqlStatement");
+    s.setStatementCreator(ms);
+    s.setStatement(null); // Get rid of the statement in the service
+
+    try {
+      start(s);
+      s.doService(msg1);
+      assertTrue(msg1.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION));
+      assertTrue(msg1.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_TYPE));
+      assertEquals(entry1.getVersion(), msg1.getMetadataValue(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION));
+      assertEquals(entry1.getTranslatorType(), msg1.getMetadataValue(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_TYPE));
+
+      s.doService(msg2);
+
+      assertTrue(msg2.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION));
+      assertFalse(msg2.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_TYPE));
+      assertEquals(entry2.getVersion(), msg2.getMetadataValue(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION));
+
+    } finally {
+      stop(s);
+    }
+  }
+
+
   @Override
   protected FirstRowMetadataTranslator createTranslatorForConfig() {
     return new FirstRowMetadataTranslator();
