@@ -27,9 +27,17 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 public class JdbcPooledConnectionTest extends DatabaseConnectionCase<JdbcPooledConnection> {
   
   private static final GuidGenerator GUID = new GuidGenerator();
+  private transient boolean testsEnabled = false;
 
   public JdbcPooledConnectionTest(String arg0) {
     super(arg0);
+  }
+
+  protected void setUp() throws Exception {
+    if (Boolean.parseBoolean(PROPERTIES.getProperty(StoredProcedureProducerTest.JDBC_STOREDPROC_TESTS_ENABLED, "false"))) {
+      super.setUp();
+      testsEnabled = true;
+    }
   }
 
   @Override
@@ -51,6 +59,9 @@ public class JdbcPooledConnectionTest extends DatabaseConnectionCase<JdbcPooledC
 
   // INTERLOK-107
   public void testConnectionDataSource_Poolsize() throws Exception {
+    if (!testsEnabled) {
+      return;
+    }
     String originalThread = Thread.currentThread().getName();
     Thread.currentThread().setName("testConnectionDataSource_Poolsize");    
         
