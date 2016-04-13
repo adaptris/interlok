@@ -16,7 +16,10 @@
 
 package com.adaptris.jdbc;
 
+import org.hibernate.validator.constraints.NotBlank;
+
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldHint;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -38,6 +41,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"statement"})
 public class ConfiguredStatementCreator implements CallableStatementCreator {
 
+  @InputFieldHint(style = "SQL")
+  @NotBlank
   public String statement;
   
   @Override

@@ -24,10 +24,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.adaptris.core.CoreException;
-import com.adaptris.core.util.JdbcUtil;
 
 public class StoredProcedure {
+
+  private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   private String name;
 
@@ -55,7 +59,9 @@ public class StoredProcedure {
   public JdbcResult execute() throws CoreException {
     
     try {
-      CallableStatement statement = getConnection().prepareCall(getStatementCreator().createCall(getName(), getParameters().size()));
+      String sqlStatement =getStatementCreator().createCall(getName(), getParameters().size());
+      log.trace("Generated SQL Statement [{}]", sqlStatement);
+      CallableStatement statement = getConnection().prepareCall(sqlStatement);
       statement.setQueryTimeout((int) (this.getTimeout() / 1000));// seconds
       applyInParameters(statement);
 
