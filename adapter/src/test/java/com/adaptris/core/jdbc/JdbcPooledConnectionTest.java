@@ -46,9 +46,10 @@ public class JdbcPooledConnectionTest extends DatabaseConnectionCase<JdbcPooledC
   }
 
   @Override
-  protected JdbcPooledConnection configure(JdbcPooledConnection conn1) {
-    conn1.setConnectUrl(PROPERTIES.getProperty("jdbc.url"));
-    conn1.setDriverImp(PROPERTIES.getProperty("jdbc.driver"));
+  protected JdbcPooledConnection configure(JdbcPooledConnection conn1) throws Exception {
+    String url = initialiseDatabase();
+    conn1.setConnectUrl(url);
+    conn1.setDriverImp(DRIVER_IMP);
     conn1.setConnectionAttempts(1);
     conn1.setConnectionRetryInterval(new TimeInterval(10L, TimeUnit.MILLISECONDS.name()));
     conn1.setAcquireIncrement(5);

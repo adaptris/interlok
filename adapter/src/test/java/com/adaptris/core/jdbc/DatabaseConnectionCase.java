@@ -27,31 +27,18 @@ import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.GuidGenerator;
-import com.adaptris.util.IdGenerator;
 import com.adaptris.util.KeyValuePairSet;
-import com.adaptris.util.PlainIdGenerator;
 import com.adaptris.util.TimeInterval;
 
 public abstract class DatabaseConnectionCase<T extends DatabaseConnection> extends BaseCase {
+  protected static final String DRIVER_IMP = "org.apache.derby.jdbc.EmbeddedDriver";
 
   protected static final String DEFAULT_TEST_STATEMENT = "SELECT seq_number from sequences where id='id'";
 
-  protected static IdGenerator nameGen;
-  static {
-    try {
-      nameGen = new GuidGenerator();
-    }
-    catch (Exception e) {
-      nameGen = new PlainIdGenerator("_");
-    }
-  }
+  protected static GuidGenerator nameGen = new GuidGenerator();
+
   public DatabaseConnectionCase(String arg0) {
     super(arg0);
-  }
-
-  @Override
-  protected void setUp() throws Exception {
-    initialiseDatabase(PROPERTIES.getProperty("jdbc.driver"), PROPERTIES.getProperty("jdbc.url"));
   }
 
   public void testXmlRoundTrip() throws Exception {
@@ -254,10 +241,12 @@ public abstract class DatabaseConnectionCase<T extends DatabaseConnection> exten
 
   protected abstract T createConnection();
 
-  protected abstract T configure(T c);
+  protected abstract T configure(T c) throws Exception;
 
-  private void initialiseDatabase(String driver, String url) throws Exception {
-    Class.forName(driver);
+  protected String initialiseDatabase() throws Exception {
+    String url = "jdbc:derby:memory:" + nameGen.safeUUID() + ";create=true";
+
+    Class.forName(DRIVER_IMP);
     Connection dbCon = null;
     Statement stmt = null;
     try {
@@ -276,5 +265,7 @@ public abstract class DatabaseConnectionCase<T extends DatabaseConnection> exten
       JdbcUtil.closeQuietly(stmt);
       JdbcUtil.closeQuietly(dbCon);
     }
+    return url;
   }
+
 }

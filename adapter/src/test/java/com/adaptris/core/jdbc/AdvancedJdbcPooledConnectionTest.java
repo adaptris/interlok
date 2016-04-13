@@ -31,9 +31,10 @@ public class AdvancedJdbcPooledConnectionTest extends DatabaseConnectionCase<Adv
   }
 
   @Override
-  protected AdvancedJdbcPooledConnection configure(AdvancedJdbcPooledConnection conn1) {
-    conn1.setConnectUrl(PROPERTIES.getProperty("jdbc.url"));
-    conn1.setDriverImp(PROPERTIES.getProperty("jdbc.driver"));
+  protected AdvancedJdbcPooledConnection configure(AdvancedJdbcPooledConnection conn1) throws Exception {
+    String url = initialiseDatabase();
+    conn1.setConnectUrl(url);
+    conn1.setDriverImp(DRIVER_IMP);
     conn1.setConnectionAttempts(1);
     conn1.setConnectionRetryInterval(new TimeInterval(10L, TimeUnit.MILLISECONDS.name()));
     conn1.getConnectionPoolProperties().add(new KeyValuePair(PooledConnectionProperties.acquireIncrement.name(), "5"));
