@@ -53,8 +53,9 @@ public class FloatStatementParameter extends TypedStatementParameter {
 
   @Override
   public void apply(int parameterIndex, PreparedStatement statement, AdaptrisMessage msg) throws SQLException, ServiceException {
-    log.trace("Setting argument {} to [{}]", parameterIndex, getQueryValue(msg));
-    statement.setObject(parameterIndex, toFloat(getQueryValue(msg)));
+    Float val = toFloat(getQueryValue(msg));
+    log.trace("Setting argument {} to [{}]", parameterIndex, val);
+    statement.setObject(parameterIndex, val);
   }
 
 

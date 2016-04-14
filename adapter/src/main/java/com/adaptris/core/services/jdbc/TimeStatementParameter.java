@@ -58,7 +58,7 @@ public class TimeStatementParameter extends TimestampStatementParameter {
   
 
   @Override
-  protected Object toDate(Object value) throws ServiceException {
+  protected java.util.Date toDate(Object value) throws ServiceException {
     if (isBlank((String) value) && convertNull()) {
       return new java.sql.Time(System.currentTimeMillis());
     }
@@ -74,7 +74,9 @@ public class TimeStatementParameter extends TimestampStatementParameter {
   
   @Override
   public void apply(int parameterIndex, PreparedStatement statement, AdaptrisMessage msg) throws SQLException, ServiceException {
-    statement.setTime(parameterIndex, (java.sql.Time) this.toDate(this.getQueryValue(msg)));
+    java.sql.Time ts = (java.sql.Time) this.toDate(getQueryValue(msg));
+    log.trace("Setting argument {} to [{}]", parameterIndex, ts);
+    statement.setTime(parameterIndex, ts);
   }
 
   @Override

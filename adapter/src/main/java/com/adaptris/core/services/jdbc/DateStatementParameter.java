@@ -18,9 +18,12 @@ package com.adaptris.core.services.jdbc;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -53,9 +56,16 @@ public class DateStatementParameter extends TimestampStatementParameter {
     super(query, type, nullConvert, name, format);
   }
 
+  @Override
+  public void apply(int parameterIndex, PreparedStatement statement, AdaptrisMessage msg) throws SQLException, ServiceException {
+    java.sql.Date ts = (java.sql.Date) this.toDate(getQueryValue(msg));
+    log.trace("Setting argument {} to [{}]", parameterIndex, ts);
+    statement.setDate(parameterIndex, ts);
+  }
+
 
   @Override
-  protected Object toDate(Object value) throws ServiceException {
+  protected java.util.Date toDate(Object value) throws ServiceException {
     if (isBlank((String) value) && convertNull()) {
       return new java.sql.Date(System.currentTimeMillis());
     }
