@@ -31,7 +31,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * <p>
  * An example might be specifying that the XPath expression required for the {@link
- * com.adaptris.core.services.xml.XPathService} can be found in
+ * com.adaptris.core.services.path.XPathService} can be found in
  * a particular metadata item of an {@link com.adaptris.core.AdaptrisMessage}.
  * </p>
  * 

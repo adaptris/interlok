@@ -14,7 +14,7 @@
  * limitations under the License.
 */
 
-package com.adaptris.core.services.xml;
+package com.adaptris.core.services.path;
 
 import java.io.IOException;
 import java.io.StringReader;
