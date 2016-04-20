@@ -20,6 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
 
+import com.adaptris.core.util.Args;
+
 /**
  * An OutputStream that flushes out to a slf4j logger.
  * <p>
@@ -96,6 +98,11 @@ public class Slf4jLoggingOutputStream extends LoggingOutputStreamImpl {
     this(LoggerFactory.getLogger(Slf4jLoggingOutputStream.class), level);
   }
 
+  public Slf4jLoggingOutputStream(String level) {
+    this(LoggerFactory.getLogger(Slf4jLoggingOutputStream.class), level);
+  }
+
+
   /**
    * Creates the LoggingOutputStream to flush to the given LogLevel.
    *
@@ -105,12 +112,23 @@ public class Slf4jLoggingOutputStream extends LoggingOutputStreamImpl {
    */
   public Slf4jLoggingOutputStream(Logger log, LogLevel level) throws IllegalArgumentException {
     super(level);
-    if (log == null) {
-      throw new IllegalArgumentException("Logger == null");
-    }
-    logger = log;
+    logger = Args.notNull(log, "Logger");
     reset();
   }
+
+  /**
+   * Creates the LoggingOutputStream to flush to the given LogLevel.
+   *
+   * @param log the Logger to write to
+   * @param level the Level to use when writing to the Logger
+   * @throws IllegalArgumentException if log == null or level == null
+   */
+  public Slf4jLoggingOutputStream(Logger log, String level) throws IllegalArgumentException {
+    super(LogLevel.valueOf(level));
+    logger = Args.notNull(log, "Logger");
+    reset();
+  }
+
 
   @Override
   protected void log(LogLevel level, String s) {
