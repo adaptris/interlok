@@ -28,7 +28,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * This {@code DataOutputParameter} is used when you want to write data to the {@link com.adaptris.core.AdaptrisMessage} payload.
  * <p>
- * An example might be specifying that the XML content required for the {@link com.adaptris.core.services.xml.XPathService} can be
+ * An example might be specifying that the XML content required for the {@link com.adaptris.core.services.path.XPathService} can be
  * found in the payload of an {@link com.adaptris.core.AdaptrisMessage}.
  * </p>
  * 

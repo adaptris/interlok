@@ -55,7 +55,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
    * 
    */
   public static final String BASE_DIR_KEY = "JdbcProducerExamples.baseDir";
-  private static final String JDBC_STOREDPROC_TESTS_ENABLED = "jdbc.storedproc.tests.enabled";
+  public static final String JDBC_STOREDPROC_TESTS_ENABLED = "jdbc.storedproc.tests.enabled";
   private static final String JDBC_DRIVER = "jdbc.storedproc.driver";
   private static final String JDBC_URL = "jdbc.storedproc.url";
   private static final String JDBC_USER = "jdbc.storedproc.username";

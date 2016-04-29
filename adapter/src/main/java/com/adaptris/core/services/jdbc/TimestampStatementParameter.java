@@ -62,8 +62,9 @@ public class TimestampStatementParameter extends TypedStatementParameter {
 
   @Override
   public void apply(int parameterIndex, PreparedStatement statement, AdaptrisMessage msg) throws SQLException, ServiceException {
-    log.trace("Setting argument {} to [{}]", parameterIndex, getQueryValue(msg));
-    statement.setObject(parameterIndex, this.toDate(getQueryValue(msg)));
+    java.sql.Timestamp ts = (java.sql.Timestamp) this.toDate(getQueryValue(msg));
+    log.trace("Setting argument {} to [{}]", parameterIndex, ts);
+    statement.setTimestamp(parameterIndex, ts);
   }
 
 
@@ -92,7 +93,7 @@ public class TimestampStatementParameter extends TypedStatementParameter {
     return dateFormatter;
   }
 
-  protected Object toDate(Object value) throws ServiceException {
+  protected java.util.Date toDate(Object value) throws ServiceException {
     if (isBlank((String) value) && convertNull()) {
       return new java.sql.Timestamp(System.currentTimeMillis());
     }

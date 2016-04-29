@@ -16,6 +16,8 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.apache.commons.lang.StringUtils.isEmpty;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +25,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -31,6 +34,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -57,11 +61,9 @@ public class RegexpMetadataService extends ServiceImp {
   @XStreamImplicit(itemFieldName="regexp-metadata-query")
   private List<RegexpMetadataQuery> regexpMetadataQueries;
 
-  /**
-   * <p>
-   * Creates a new instance.
-   * </p>
-   */
+  @AdvancedConfig
+  private Boolean addNullValues;
+
   public RegexpMetadataService() {
     regexpMetadataQueries = new ArrayList<RegexpMetadataQuery>();
   }
@@ -71,24 +73,18 @@ public class RegexpMetadataService extends ServiceImp {
     setRegexpMetadataQueries(list);
   }
 
-  /**
-   * <p>
-   * Executes all configured <code>RegexpMetadataQuery</code>s on the
-   * passed <code>AdaptrisMessage</code>.
-   * </p><p>
-   * @param msg the <code>AdaptrisMessage</code> to process
-   * @throws ServiceException wrapping any underlying <code>Exception</code>
-   */
   public void doService(AdaptrisMessage msg)
     throws ServiceException {
 
-    String message = msg.getStringPayload();
+    String message = msg.getContent();
 
     try {
       for (int i = 0; i < regexpMetadataQueries.size(); i++) {
         RegexpMetadataQuery q = regexpMetadataQueries.get(i);
         MetadataElement elem = q.doQuery(message);
-        msg.addMetadata(elem);
+        if (!isEmpty(elem.getValue()) || addNullValues()) {
+          msg.addMetadata(elem);
+        }
       }
     }
     catch (CoreException e) {
@@ -97,38 +93,22 @@ public class RegexpMetadataService extends ServiceImp {
   }
 
   /**
-   * <p>
-   * Adds a <code>RegexpMetadataQuery</code> to the <code>List</code> to
-   * be applied.
-   * </p>
-   * @param query a <code>RegexpMetadataQuery</code> to apply
+   * Adds a {@link RegexpMetadataQuery} to the list be applied.
+   * 
    */
   public void addRegexpMetadataQuery(RegexpMetadataQuery query) {
-    regexpMetadataQueries.add(query);
+    regexpMetadataQueries.add(Args.notNull(query, "regexp-metadata-query"));
   }
 
-  /**
-   * <p>
-   * Returns the <code>List</code> of <code>RegexpMetadataQuery</code>s
-   * that will be applied by this <code>Service</code>.
-   * </p>
-   * @return the <code>List</code> of <code>RegexpMetadataQuery</code>s
-   * that will be applied by this <code>Service</code>
-   */
   public List<RegexpMetadataQuery> getRegexpMetadataQueries() {
     return regexpMetadataQueries;
   }
 
   /**
-   * <p>
-   * Sets the <code>List</code> of <code>RegexpMetadataQuery</code>s
-   * that will be applied by this <code>Service</code>.
-   * </p>
-   * @param l the <code>List</code> of <code>RegexpMetadataQuery</code>s
-   * that will be applied by this <code>Service</code>
+   * Sets the {@link List} of {@link RegexpMetadataQuery} instances that will be applied by this service.
    */
   public void setRegexpMetadataQueries(List<RegexpMetadataQuery> l) {
-    regexpMetadataQueries = l;
+    regexpMetadataQueries = Args.notNull(l, "regexp-metadata-queries");
   }
 
   @Override
@@ -144,4 +124,22 @@ public class RegexpMetadataService extends ServiceImp {
   public void prepare() throws CoreException {
   }
 
+  public Boolean getAddNullValues() {
+    return addNullValues;
+  }
+
+  /**
+   * If set to true then null values will be added as metadata in the event that a regular expression doesn't match but
+   * {@link RegexpMetadataQuery#getAllowNulls()} is true.
+   * 
+   * @param b true to add possible null values to metadata; default is true.
+   * @see RegexpMetadataQuery#setAllowNulls(Boolean)
+   */
+  public void setAddNullValues(Boolean b) {
+    this.addNullValues = b;
+  }
+
+  boolean addNullValues() {
+    return getAddNullValues() != null ? getAddNullValues().booleanValue() : true;
+  }
 }

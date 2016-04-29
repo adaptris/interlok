@@ -47,9 +47,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("metadata-stream-output-parameter")
 @DisplayOrder(order = {"metadataKey", "contentEncoding"})
-public class MetadataStreamOutputParameter implements DataOutputParameter<InputStream> {
+public class MetadataStreamOutputParameter implements DataOutputParameter<InputStreamWithEncoding> {
   
-  private static final String DEFAULT_METADATA_KEY = "destinationKey";
+  static final String DEFAULT_METADATA_KEY = "destinationKey";
 
   @NotBlank
   @AutoPopulated
@@ -67,10 +67,10 @@ public class MetadataStreamOutputParameter implements DataOutputParameter<InputS
   }
 
   @Override
-  public void insert(InputStream data, InterlokMessage message) throws InterlokException {
+  public void insert(InputStreamWithEncoding data, InterlokMessage message) throws InterlokException {
     try {
       StringBuilder builder = new StringBuilder();
-      try (Reader in = getReader(data, defaultIfEmpty(getContentEncoding(), message.getContentEncoding()));
+      try (Reader in = getReader(data.inputStream, defaultIfEmpty(getContentEncoding(), data.encoding));
           StringBuilderWriter out = new StringBuilderWriter(builder)) {
         IOUtils.copy(in, out);
       }
@@ -96,7 +96,7 @@ public class MetadataStreamOutputParameter implements DataOutputParameter<InputS
   }
 
   public void setMetadataKey(String key) {
-    this.metadataKey = Args.notNull(key, "metadata key");
+    this.metadataKey = Args.notBlank(key, "metadata key");
   }
 
   public String getContentEncoding() {

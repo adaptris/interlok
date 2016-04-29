@@ -14,7 +14,7 @@
  * limitations under the License.
 */
 
-package com.adaptris.core.services.xml;
+package com.adaptris.core.services.path;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +29,7 @@ import com.adaptris.core.common.MetadataDataInputParameter;
 import com.adaptris.core.common.MetadataDataOutputParameter;
 import com.adaptris.core.common.StringPayloadDataInputParameter;
 import com.adaptris.core.common.StringPayloadDataOutputParameter;
+import com.adaptris.core.services.path.XPathService;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 

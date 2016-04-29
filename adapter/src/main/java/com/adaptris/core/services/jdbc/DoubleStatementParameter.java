@@ -52,8 +52,9 @@ public class DoubleStatementParameter extends TypedStatementParameter {
 
   @Override
   public void apply(int parameterIndex, PreparedStatement statement, AdaptrisMessage msg) throws SQLException, ServiceException {
-    log.trace("Setting argument {} to [{}]", parameterIndex, getQueryValue(msg));
-    statement.setObject(parameterIndex, toDouble(getQueryValue(msg)));
+    Double val = toDouble(getQueryValue(msg));
+    log.trace("Setting argument {} to [{}]", parameterIndex, val);
+    statement.setObject(parameterIndex, val);
   }
 
 

@@ -48,10 +48,12 @@ import com.adaptris.util.TimeInterval;
 @SuppressWarnings("deprecation")
 public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
 
-  private static final String QUERY_SQL = "SELECT adapter_version, message_translator_type, inserted_on, counter"
+  protected static final String QUERY_SQL = "SELECT adapter_version, message_translator_type, inserted_on, counter"
       + " FROM adapter_type_version " + " WHERE adapter_unique_id = ?";
   private static final String QUERY_SQL_NO_RESULT = "SELECT adapter_version, message_translator_type, inserted_on, counter"
       + " FROM adapter_type_version " + " WHERE adapter_unique_id = 'xxxxxxx'";
+  protected static final String QUERY_SQL_MULTI_RESULT = "SELECT adapter_version, message_translator_type, inserted_on, counter"
+      + " FROM adapter_type_version";
   private static final String STRING_PAYLOAD = "The Quick Brown Fox Jumps Over The Lazy Dog";
   protected static final String ADAPTER_ID_KEY = "adapter_id";
   protected static final String JDBC_QUERYSERVICE_DRIVER = "jdbc.queryservice.driver";
@@ -501,6 +503,15 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
     sp.setQueryType(StatementParameter.QueryType.xpath);
     sp.setQueryString("/root/document");
     service.addStatementParameter(sp);
+    return service;
+  }
+  
+  protected static JdbcDataQueryService createMultiService() {
+    JdbcDataQueryService service = new JdbcDataQueryService();
+    JdbcConnection connection = new JdbcConnection(PROPERTIES.getProperty(JDBC_QUERYSERVICE_URL),
+        PROPERTIES.getProperty(JDBC_QUERYSERVICE_DRIVER));
+    service.setConnection(connection);
+    service.setStatement(QUERY_SQL_MULTI_RESULT);
     return service;
   }
 

@@ -32,6 +32,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
+import javax.mail.internet.ContentType;
+import javax.mail.internet.ParseException;
 import javax.validation.Valid;
 
 import org.apache.commons.io.IOUtils;
@@ -48,6 +50,7 @@ import com.adaptris.core.MetadataElement;
 import com.adaptris.core.NullConnection;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
+import com.adaptris.core.common.InputStreamWithEncoding;
 import com.adaptris.core.common.PayloadStreamInputParameter;
 import com.adaptris.core.common.PayloadStreamOutputParameter;
 import com.adaptris.core.http.auth.AdapterResourceAuthenticator;
@@ -87,18 +90,20 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
     "requestHeaderProvider", "requestBody", "responseHeaderHandler", "responseBody"})
 public class StandardHttpProducer extends HttpProducer {
 
+  private static final String PARAM_CHARSET = "charset";
+  
   protected static final Collection<RequestMethodProvider.RequestMethod> METHOD_ALLOWS_OUTPUT = Collections
       .unmodifiableCollection(Arrays.asList(new RequestMethod[] {RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH}));
 
   private transient DataInputParameter<InputStream> defaultRequest = new PayloadStreamInputParameter();
-  private transient DataOutputParameter<InputStream> defaultResponse = new PayloadStreamOutputParameter();
+  private transient DataOutputParameter<InputStreamWithEncoding> defaultResponse = new PayloadStreamOutputParameter();
 
   @Valid
   @AdvancedConfig
   private DataInputParameter<InputStream> requestBody;
   @Valid
   @AdvancedConfig
-  private DataOutputParameter<InputStream> responseBody;
+  private DataOutputParameter<InputStreamWithEncoding> responseBody;
 
   private HttpAuthenticator authenticator = new NoAuthentication();
 
@@ -113,7 +118,16 @@ public class StandardHttpProducer extends HttpProducer {
   }
 
   @Override
+  public void produce(AdaptrisMessage msg, ProduceDestination dest) throws ProduceException {
+    doRequest(msg, dest, defaultTimeout(), defaultIfNull(getMessageFactory()).newMessage());
+  }
+  
+  @Override
   protected AdaptrisMessage doRequest(AdaptrisMessage msg, ProduceDestination destination, long timeout) throws ProduceException {
+    return doRequest(msg, destination, timeout, msg);
+  }
+
+  private AdaptrisMessage doRequest(AdaptrisMessage msg, ProduceDestination destination, long timeout, AdaptrisMessage reply) throws ProduceException {
     // If deprecated username/password are set and no authenticator is configured, transparently create a static authenticator
     if (getAuthenticator() instanceof NoAuthentication && !isEmpty(getUsername())) {
       ConfiguredUsernamePassword auth = new ConfiguredUsernamePassword();
@@ -122,7 +136,6 @@ public class StandardHttpProducer extends HttpProducer {
       setAuthenticator(auth);
     }
     
-    AdaptrisMessage reply = defaultIfNull(getMessageFactory()).newMessage();
     try {
       URL url = new URL(destination.getDestination(msg));
       authenticator.setup(url.toString(), msg);
@@ -177,7 +190,7 @@ public class StandardHttpProducer extends HttpProducer {
     if (responseCode < 200 || responseCode > 299) {
       if (ignoreServerResponseCode()) {
         log.trace("Ignoring HTTP Reponse code {}", responseCode);
-        responseBody().insert(http.getErrorStream(), reply);
+        responseBody().insert(new InputStreamWithEncoding(http.getErrorStream(), getContentEncoding(http)), reply);
       } else {
         throw new ProduceException("Failed to send payload, got " + responseCode);
       }
@@ -188,7 +201,7 @@ public class StandardHttpProducer extends HttpProducer {
         reply.getObjectMetadata().putAll(decodedReply.getObjectMetadata());
         reply.setMetadata(decodedReply.getMetadata());
       } else {
-        responseBody().insert(http.getInputStream(), reply);
+        responseBody().insert(new InputStreamWithEncoding(http.getInputStream(), getContentEncoding(http)), reply);
       }
     }
     getResponseHeaderHandler().handle(http, reply);
@@ -199,6 +212,24 @@ public class StandardHttpProducer extends HttpProducer {
     try (InputStream autoCloseIn = new BufferedInputStream(input); OutputStream autoCloseOut = new BufferedOutputStream(out)) {
       IOUtils.copy(autoCloseIn, autoCloseOut);
     }
+  }
+  
+  private String getContentEncoding(HttpURLConnection http) {
+    if(http.getContentEncoding() != null) {
+      return http.getContentEncoding();
+    }
+    
+    // Parse Content-Type header for encoding
+    try {
+      ContentType contentType = new ContentType(http.getContentType());
+      if(!isEmpty(contentType.getParameter(PARAM_CHARSET))) {
+        return contentType.getParameter(PARAM_CHARSET);
+      }
+    } catch (ParseException e) {
+      log.warn("Unable to parse Content-Type header \"{}\": {}", http.getContentType(), e.toString());
+    }
+    
+    return null;
   }
 
 
@@ -221,21 +252,21 @@ public class StandardHttpProducer extends HttpProducer {
     return getRequestBody() != null ? getRequestBody() : defaultRequest;
   }
 
-  public DataOutputParameter<InputStream> getResponseBody() {
+  public DataOutputParameter<InputStreamWithEncoding> getResponseBody() {
     return responseBody;
   }
 
   /**
    * Set where the HTTP Response Body will be written to.
    * 
-   * @param output the output; default is {@link PayloadStreamOutputParameter}.
+   * @param output the output; default is {@link PayloadHttpStreamOutputParameter}.
    */
-  public void setResponseBody(DataOutputParameter<InputStream> output) {
-    this.responseBody = Args.notNull(output, "data output");;
+  public void setResponseBody(DataOutputParameter<InputStreamWithEncoding> output) {
+    this.responseBody = Args.notNull(output, "data output");
   }
 
 
-  private DataOutputParameter<InputStream> responseBody() {
+  private DataOutputParameter<InputStreamWithEncoding> responseBody() {
     return getResponseBody() != null ? getResponseBody() : defaultResponse;
   }
 

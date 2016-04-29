@@ -28,7 +28,7 @@ import java.util.Map;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.NullConnection;
+import com.adaptris.core.NoOpConnection;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
 import com.adaptris.ftp.FtpException;
@@ -40,7 +40,7 @@ import com.adaptris.security.password.Password;
  * @author lchan
  * @author $Author: lchan $
  */
-public abstract class FileTransferConnection extends NullConnection {
+public abstract class FileTransferConnection extends NoOpConnection {
   /**
    * The default size of the cache if a size isn't specified ({@value #DEFAULT_MAX_CACHE_SIZE})
    *

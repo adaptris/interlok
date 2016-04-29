@@ -16,6 +16,8 @@
 
 package com.adaptris.core.util;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -51,6 +53,16 @@ public final class JdbcUtil {
       }
     }
     catch (SQLException e) {
+    }
+  }
+
+  public static void closeQuietly(Closeable p) {
+    try {
+      if (p != null) {
+        p.close();
+      }
+    }
+    catch (IOException e) {
     }
   }
 

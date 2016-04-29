@@ -16,6 +16,9 @@
 
 package com.adaptris.jdbc;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+@XStreamAlias("mssql-server-statement-creator")
 public class SqlServerStatementCreator implements CallableStatementCreator {
   
   /**

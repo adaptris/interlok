@@ -80,11 +80,22 @@ public class RegexpMetadataServiceTest extends MetadataServiceExample {
   public void testServiceAllowNulls() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(ALTERNATE_PAYLOAD);
     RegexpMetadataService service = createService();
+    service.setAddNullValues(true);
     RegexpMetadataQuery q = service.getRegexpMetadataQueries().get(0);
-    q.setAllowNullResults(true);
+    q.setAllowNulls(true);
     execute(service, msg);
     assertTrue("message contains key1", msg.containsKey("postcode"));
     assertEquals("Found the post-code", "", msg.getMetadataValue("postcode"));
+  }
+
+  public void testServiceAllowNulls_DoNotAddNullValues() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(ALTERNATE_PAYLOAD);
+    RegexpMetadataService service = createService();
+    service.setAddNullValues(false);
+    RegexpMetadataQuery q = service.getRegexpMetadataQueries().get(0);
+    q.setAllowNulls(true);
+    execute(service, msg);
+    assertFalse(msg.containsKey("postcode"));
   }
 
 

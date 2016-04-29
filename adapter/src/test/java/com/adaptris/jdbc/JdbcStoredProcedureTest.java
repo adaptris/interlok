@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
 
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.CoreException;
@@ -326,7 +327,7 @@ public class JdbcStoredProcedureTest extends BaseCase {
       assertEquals(true, procedureResult.isHasResultSet());
       
       assertEquals(1, procedureResult.countResultSets());
-      assertEquals(5, procedureResult.getResultSet(0).getRows().size());  
+      assertEquals(5, countRows(procedureResult.getResultSet(0).getRows()));  
     }
   }
   
@@ -338,7 +339,7 @@ public class JdbcStoredProcedureTest extends BaseCase {
       assertEquals(true, procedureResult.isHasResultSet());
       
       assertEquals(1, procedureResult.countResultSets());
-      assertEquals(5, procedureResult.getResultSet(0).getRows().size());  
+      assertEquals(5, countRows(procedureResult.getResultSet(0).getRows()));  
     }
   }
   
@@ -351,8 +352,8 @@ public class JdbcStoredProcedureTest extends BaseCase {
       
       assertEquals(2, procedureResult.countResultSets());
       
-      assertEquals(5, procedureResult.getResultSet(0).getRows().size());  
-      assertEquals(5, procedureResult.getResultSet(1).getRows().size());  
+      assertEquals(5, countRows(procedureResult.getResultSet(0).getRows())); 
+      assertEquals(5, countRows(procedureResult.getResultSet(1).getRows()));  
     }
   }
   
@@ -366,8 +367,8 @@ public class JdbcStoredProcedureTest extends BaseCase {
       
       assertEquals(2, procedureResult.countResultSets());
       
-      assertEquals(5, procedureResult.getResultSet(0).getRows().size());  
-      assertEquals(5, procedureResult.getResultSet(1).getRows().size());  
+      assertEquals(5, countRows(procedureResult.getResultSet(0).getRows()));  
+      assertEquals(5, countRows(procedureResult.getResultSet(1).getRows()));  
     }
   }
   
@@ -399,4 +400,14 @@ public class JdbcStoredProcedureTest extends BaseCase {
     return formatter.format(date.getTime());
   }
 
+  private int countRows(Iterable<JdbcResultRow> iter) {
+    int count = 0;
+    Iterator<JdbcResultRow> it = iter.iterator();
+    while(it.hasNext()) {
+      assertNotNull(it.next());
+      count++;
+    }
+    return count;
+  }
+  
 }

@@ -27,7 +27,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * <p>
  * An example might be configuring the XPath expression directly in Interlok configuration used for the {@link
- * com.adaptris.core.services.xml.XPathService}.
+ * com.adaptris.core.services.path.XPathService}.
  * </p>
  * 
  * @author amcgrath

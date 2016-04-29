@@ -31,7 +31,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * <p>
  * An example might be specifying that the XPath expression required for the {@link
- * com.adaptris.core.services.xml.XPathService} can be found in
+ * com.adaptris.core.services.path.XPathService} can be found in
  * a particular metadata item of an {@link com.adaptris.core.AdaptrisMessage}.
  * </p>
  * 
@@ -43,7 +43,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"metadataKey"})
 public class MetadataDataInputParameter implements DataInputParameter<String> {
   
-  private static final String DEFAULT_METADATA_KEY = "destinationKey";
+  static final String DEFAULT_METADATA_KEY = "sourceKey";
 
   @NotBlank
   @AutoPopulated
@@ -68,7 +68,7 @@ public class MetadataDataInputParameter implements DataInputParameter<String> {
   }
 
   public void setMetadataKey(String key) {
-    this.metadataKey = Args.notNull(key, "metadata key");
+    this.metadataKey = Args.notBlank(key, "metadata key");
   }
 
 }

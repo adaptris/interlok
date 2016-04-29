@@ -17,7 +17,7 @@
 package com.adaptris.http.legacy;
 
 import com.adaptris.core.CoreException;
-import com.adaptris.core.NullConnection;
+import com.adaptris.core.NoOpConnection;
 import com.adaptris.core.security.ConfiguredPrivateKeyPasswordProvider;
 import com.adaptris.core.security.PrivateKeyPasswordProvider;
 import com.adaptris.http.HttpClientTransport;
@@ -47,7 +47,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @Deprecated
 @XStreamAlias("https-produce-connection")
-public class HttpsProduceConnection extends NullConnection implements HttpClientConnection {
+public class HttpsProduceConnection extends NoOpConnection implements HttpClientConnection {
 
   private String keystore = null;
   private String keystorePassword = null;

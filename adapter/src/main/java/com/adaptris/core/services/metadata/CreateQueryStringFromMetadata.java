@@ -26,6 +26,7 @@ import java.util.List;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
@@ -53,7 +54,10 @@ public class CreateQueryStringFromMetadata extends ServiceImp {
   private List<String> metadataKeys;
   @NotBlank
   private String resultKey;
+  @AdvancedConfig
   private String querySeparator;
+  @AdvancedConfig
+  private Boolean includeQueryPrefix;
 
   public CreateQueryStringFromMetadata() {
     metadataKeys = new ArrayList<String>();
@@ -61,7 +65,7 @@ public class CreateQueryStringFromMetadata extends ServiceImp {
 
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    StringBuilder queryString = new StringBuilder("?");
+    StringBuilder queryString = new StringBuilder(includeQueryPrefix() ? "?" : "");
 
     for (String metadataKey : getMetadataKeys()) {
       if (msg.containsKey(metadataKey)) {
@@ -163,4 +167,20 @@ public class CreateQueryStringFromMetadata extends ServiceImp {
   public void prepare() throws CoreException {
   }
 
+  public Boolean getIncludeQueryPrefix() {
+    return includeQueryPrefix;
+  }
+
+  /**
+   * Whether or not to include the standard query prefix
+   * 
+   * @param b
+   */
+  public void setIncludeQueryPrefix(Boolean b) {
+    this.includeQueryPrefix = b;
+  }
+
+  boolean includeQueryPrefix() {
+    return getIncludeQueryPrefix() != null ? getIncludeQueryPrefix().booleanValue() : true;
+  }
 }

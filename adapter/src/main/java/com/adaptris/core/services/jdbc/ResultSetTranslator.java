@@ -32,7 +32,8 @@ import com.adaptris.jdbc.JdbcResult;
 public interface ResultSetTranslator extends AdaptrisComponent {
 
   /**
-   * Translate the contents of the result set into the AdaptrisMessage object.
+   * Translate the contents of the result set into the AdaptrisMessage object. Only use
+   * this method for JdbcResults that are guaranteed to fit in memory.
    * 
    * @param source the result set from a database query executed by
    *          {@link JdbcDataQueryService}
@@ -41,5 +42,5 @@ public interface ResultSetTranslator extends AdaptrisComponent {
    * @throws ServiceException wrapping any other exception
    */
   void translate(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException;
-
+  
 }

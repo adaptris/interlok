@@ -43,6 +43,7 @@ import com.adaptris.core.util.Args;
  * </p>
  * 
  * @author lchan
+ * @author gdries
  * 
  */
 public class AdapterResourceAuthenticator extends Authenticator {

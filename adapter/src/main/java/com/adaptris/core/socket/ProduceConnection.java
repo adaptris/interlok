@@ -20,14 +20,14 @@ import java.io.IOException;
 import java.net.Socket;
 
 import com.adaptris.annotation.AdvancedConfig;
-import com.adaptris.core.NullConnection;
+import com.adaptris.core.NoOpConnection;
 
 /** Abstract ProduceConnection class for the Socket Adapter.
  * 
  * @author lchan
  * @author $Author: lchan $
  */
-public abstract class ProduceConnection extends NullConnection {
+public abstract class ProduceConnection extends NoOpConnection {
 
   @AdvancedConfig
   private int socketTimeout;

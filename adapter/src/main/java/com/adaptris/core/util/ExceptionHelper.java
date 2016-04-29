@@ -32,12 +32,24 @@ public class ExceptionHelper {
     rethrowCoreException(e.getMessage(), e);
   }
 
+  public static CoreException wrapCoreException(Throwable e) {
+    return wrapCoreException(e.getMessage(), e);
+  }
+
   public static void rethrowServiceException(Throwable e) throws ServiceException {
     rethrowServiceException(e.getMessage(), e);
   }
 
+  public static ServiceException wrapServiceException(Throwable e) {
+    return wrapServiceException(e.getMessage(), e);
+  }
+
   public static void rethrowProduceException(Throwable e) throws ProduceException {
     rethrowProduceException(e.getMessage(), e);
+  }
+
+  public static ProduceException wrapProduceException(Throwable e) {
+    return wrapProduceException(e.getMessage(), e);
   }
 
   public static void rethrowCoreException(String msg, Throwable e) throws CoreException {
@@ -47,6 +59,13 @@ public class ExceptionHelper {
     throw new CoreException(msg, e);
   }
 
+  public static CoreException wrapCoreException(String msg, Throwable e) {
+    if (e instanceof CoreException) {
+      return (CoreException) e;
+    }
+    return new CoreException(msg, e);
+  }
+
   public static void rethrowServiceException(String msg, Throwable e) throws ServiceException {
     if (e instanceof ServiceException) {
       throw (ServiceException) e;
@@ -54,11 +73,24 @@ public class ExceptionHelper {
     throw new ServiceException(msg, e);
   }
 
+  public static ServiceException wrapServiceException(String msg, Throwable e) {
+    if (e instanceof ServiceException) {
+      return (ServiceException) e;
+    }
+    return new ServiceException(msg, e);
+  }
 
   public static void rethrowProduceException(String msg, Throwable e) throws ProduceException {
     if (e instanceof ProduceException) {
       throw (ProduceException) e;
     }
     throw new ProduceException(msg, e);
+  }
+
+  public static ProduceException wrapProduceException(String msg, Throwable e) {
+    if (e instanceof ProduceException) {
+      return (ProduceException) e;
+    }
+    return new ProduceException(msg, e);
   }
 }

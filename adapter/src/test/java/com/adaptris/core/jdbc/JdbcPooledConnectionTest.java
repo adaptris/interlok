@@ -27,9 +27,17 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 public class JdbcPooledConnectionTest extends DatabaseConnectionCase<JdbcPooledConnection> {
   
   private static final GuidGenerator GUID = new GuidGenerator();
+  private transient boolean testsEnabled = false;
 
   public JdbcPooledConnectionTest(String arg0) {
     super(arg0);
+  }
+
+  protected void setUp() throws Exception {
+    if (Boolean.parseBoolean(PROPERTIES.getProperty(StoredProcedureProducerTest.JDBC_STOREDPROC_TESTS_ENABLED, "false"))) {
+      super.setUp();
+      testsEnabled = true;
+    }
   }
 
   @Override
@@ -38,9 +46,10 @@ public class JdbcPooledConnectionTest extends DatabaseConnectionCase<JdbcPooledC
   }
 
   @Override
-  protected JdbcPooledConnection configure(JdbcPooledConnection conn1) {
-    conn1.setConnectUrl(PROPERTIES.getProperty("jdbc.url"));
-    conn1.setDriverImp(PROPERTIES.getProperty("jdbc.driver"));
+  protected JdbcPooledConnection configure(JdbcPooledConnection conn1) throws Exception {
+    String url = initialiseDatabase();
+    conn1.setConnectUrl(url);
+    conn1.setDriverImp(DRIVER_IMP);
     conn1.setConnectionAttempts(1);
     conn1.setConnectionRetryInterval(new TimeInterval(10L, TimeUnit.MILLISECONDS.name()));
     conn1.setAcquireIncrement(5);
@@ -51,6 +60,9 @@ public class JdbcPooledConnectionTest extends DatabaseConnectionCase<JdbcPooledC
 
   // INTERLOK-107
   public void testConnectionDataSource_Poolsize() throws Exception {
+    if (!testsEnabled) {
+      return;
+    }
     String originalThread = Thread.currentThread().getName();
     Thread.currentThread().setName("testConnectionDataSource_Poolsize");    
         

@@ -156,7 +156,7 @@ public class RegexpMetadataQuery {
    * </p>
    * @param b set whether or not to process
    */
-  public void setAllowNullResults(Boolean b) {
+  public void setAllowNulls(Boolean b) {
     allowNulls = b;
   }
 
@@ -166,11 +166,11 @@ public class RegexpMetadataQuery {
    * </p>
    * @return whether the class allows null results
    */
-  public Boolean getAllowNullResults() {
+  public Boolean getAllowNulls() {
     return allowNulls;
   }
 
   boolean allowNullResults() {
-    return getAllowNullResults() != null ? getAllowNullResults().booleanValue() : false;
+    return getAllowNulls() != null ? getAllowNulls().booleanValue() : false;
   }
 }

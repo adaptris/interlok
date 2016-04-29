@@ -86,6 +86,7 @@ junit.SyntaxRoutingServiceExamples.baseDir=${junit.ServiceCase.baseDir}/routing-
 junit.CacheServiceExamples.baseDir=${junit.ServiceCase.baseDir}/cache
 junit.AggregatingServiceExamples.baseDir=${junit.ServiceCase.baseDir}/aggregator
 junit.XmlServiceExamples.baseDir=${junit.ServiceCase.baseDir}/xml
+junit.RegexpServiceExamples.baseDir=${junit.ServiceCase.baseDir}/regexp
 
 
 
