@@ -16,6 +16,41 @@
 
 package com.adaptris.logging.jmx;
 
+import java.util.Collections;
+import java.util.List;
+
 public interface JmxLoggingNotificationMBean {
 
+  /**
+   * The default number of log messages to keep for contextual information around an error.
+   * 
+   */
+  int DEFAULT_LOGMSG_COUNT = 150;
+  /**
+   * The default number of errors to capture and keep a history of.
+   */
+  int DEFAULT_MAX_ERRORS_COUNT = 100;
+
+  /**
+   * Returns any logging saved.
+   * 
+   * @param index the index to retrieve.
+   * @return a list of strings or {@link Collections#EMPTY_LIST} if the index was not valid
+   */
+  List<String> getErrorLog(int index);
+
+  /**
+   * Return the number of errors that are currently being tracked.
+   * 
+   * @return the number of errors.
+   */
+  int errorCount();
+
+  /**
+   * Remove an error log at the specified index.
+   * 
+   * @param index the index to remove
+   * @return the list of strings that was removed or {@link Collections#EMPTY_LIST} if the index was not valid
+   */
+  List<String> remove(int index);
 }

@@ -38,8 +38,12 @@ public class JmxLogger {
   private volatile boolean started;
 
   public JmxLogger(ObjectName objName) {
+    this(objName, JmxLoggingNotificationMBean.DEFAULT_LOGMSG_COUNT, JmxLoggingNotificationMBean.DEFAULT_MAX_ERRORS_COUNT);
+  }
+
+  public JmxLogger(ObjectName objName, int lines, int errors) {
     loggerObjectName = objName;
-    notifier = new JmxLoggingNotification();
+    notifier = new JmxLoggingNotification(lines, errors);
   }
 
   public synchronized void start() throws InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException {
@@ -78,7 +82,7 @@ public class JmxLogger {
         try {
           while (true) {
             JmxLoggingEvent event = queue.take();
-            notifier.sendNotification(event);
+            notifier.handle(event);
           }
         } catch (InterruptedException ex) {
           Thread.currentThread().interrupt();
