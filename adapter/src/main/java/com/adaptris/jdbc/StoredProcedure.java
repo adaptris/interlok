@@ -82,11 +82,11 @@ public class StoredProcedure {
       if(param.getParameterType().equals(ParameterType.OUT) || param.getParameterType().equals(ParameterType.INOUT)) {
         if(!isEmpty(param.getName())) {
           param.setOutValue(statement.getObject(param.getName()));
-          log.debug("Receiving 'OUT' parameter with name '" + param.getName() + "' and value '" + param.getOutValue().toString() + "'");
+          log.debug("Receiving 'OUT' parameter with name '" + param.getName() + "' and value '" + param.getOutValue() + "'");
         }
         else {
           param.setOutValue(statement.getObject(param.getOrder()));
-          log.debug("Receiving 'OUT' parameter with order '" + param.getOrder() + "' and value '" + param.getOutValue().toString() + "'");
+          log.debug("Receiving 'OUT' parameter with order '" + param.getOrder() + "' and value '" + param.getOutValue() + "'");
         }
       }
     }
@@ -97,11 +97,11 @@ public class StoredProcedure {
       if(param.getParameterType().equals(ParameterType.IN) || param.getParameterType().equals(ParameterType.INOUT)) {
         if(!isEmpty(param.getName())) {
           statement.setObject(param.getName(), param.getInValue(), param.getParameterValueType().getValue());
-          log.debug("Applying 'IN' parameter with name '" + param.getName() + "' and value '" + param.getInValue().toString() + "'");
+          log.debug("Applying 'IN' parameter with name '" + param.getName() + "' and value '" + param.getInValue() + "'");
         }
         else {
           statement.setObject(param.getOrder(), param.getInValue(), param.getParameterValueType().getValue());
-          log.debug("Applying 'IN' parameter with order '" + param.getOrder() + "' and value '" + param.getInValue().toString() + "'");
+          log.debug("Applying 'IN' parameter with order '" + param.getOrder() + "' and value '" + param.getInValue() + "'");
         }
       }
         
