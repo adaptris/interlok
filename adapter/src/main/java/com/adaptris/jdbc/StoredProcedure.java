@@ -82,9 +82,11 @@ public class StoredProcedure {
       if(param.getParameterType().equals(ParameterType.OUT) || param.getParameterType().equals(ParameterType.INOUT)) {
         if(!isEmpty(param.getName())) {
           param.setOutValue(statement.getObject(param.getName()));
+          log.debug("Receiving 'OUT' parameter with name '" + param.getName() + "' and value '" + param.getOutValue().toString() + "'");
         }
         else {
           param.setOutValue(statement.getObject(param.getOrder()));
+          log.debug("Receiving 'OUT' parameter with order '" + param.getOrder() + "' and value '" + param.getOutValue().toString() + "'");
         }
       }
     }
@@ -95,17 +97,23 @@ public class StoredProcedure {
       if(param.getParameterType().equals(ParameterType.IN) || param.getParameterType().equals(ParameterType.INOUT)) {
         if(!isEmpty(param.getName())) {
           statement.setObject(param.getName(), param.getInValue(), param.getParameterValueType().getValue());
+          log.debug("Applying 'IN' parameter with name '" + param.getName() + "' and value '" + param.getInValue().toString() + "'");
         }
         else {
           statement.setObject(param.getOrder(), param.getInValue(), param.getParameterValueType().getValue());
+          log.debug("Applying 'IN' parameter with order '" + param.getOrder() + "' and value '" + param.getInValue().toString() + "'");
         }
       }
         
       if(param.getParameterType().equals(ParameterType.OUT) || param.getParameterType().equals(ParameterType.INOUT)) {
-        if(!isEmpty(param.getName()))
+        if(!isEmpty(param.getName())){
           statement.registerOutParameter(param.getName(), param.getParameterValueType().getValue());
-        else
+          log.debug("Registering 'OUT' parameter with name '" + param.getName() + "'");
+        }
+        else {
           statement.registerOutParameter(param.getOrder(), param.getParameterValueType().getValue());
+          log.debug("Registering 'OUT' parameter with order '" + param.getOrder() + "'");
+        }
       }
     }
   }
