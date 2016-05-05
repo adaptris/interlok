@@ -23,6 +23,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +63,9 @@ public class StoredProcedure {
       String sqlStatement =getStatementCreator().createCall(getName(), getParameters().size());
       log.trace("Generated SQL Statement [{}]", sqlStatement);
       CallableStatement statement = getConnection().prepareCall(sqlStatement);
-      statement.setQueryTimeout((int) (this.getTimeout() / 1000));// seconds
+      if (timeout > 0) {
+        statement.setQueryTimeout((int) TimeUnit.MILLISECONDS.toSeconds(this.getTimeout()));
+      }
       applyInParameters(statement);
 
       JdbcResult results = statementExecutor.executeCallableStatement(statement);
@@ -166,6 +169,11 @@ public class StoredProcedure {
     return timeout;
   }
 
+  /**
+   * Set the timeout in ms.
+   * 
+   * @param timeout
+   */
   public void setTimeout(long timeout) {
     this.timeout = timeout;
   }
