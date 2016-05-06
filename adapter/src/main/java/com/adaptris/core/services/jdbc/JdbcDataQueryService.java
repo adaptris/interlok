@@ -161,6 +161,7 @@ public class JdbcDataQueryService extends JdbcService {
         result = new JdbcResultBuilder().setHasResultSet(true).setResultSet(rs).build();
       } catch (SQLException e) {
         if (ignoreExecuteQueryErrors()) {
+          log.debug("Ignore ExecuteQuery Errors enabled); using empty ResultSet");
           result = new JdbcResultBuilder().setHasResultSet(false).build();
         } else {
           throw e;
