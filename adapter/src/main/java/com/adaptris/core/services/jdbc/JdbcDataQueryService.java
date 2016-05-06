@@ -60,7 +60,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @AdapterComponent
 @ComponentProfile(summary = "Query a database and store the results in the message", tag = "service,jdbc")
 @DisplayOrder(order = {"connection", "statement", "statementCreator", "statementParameters", "resultSetTranslator", "parameterApplicator",
-    "namespaceContext", "xmlDocumentFactoryConfig"})
+ "namespaceContext", "xmlDocumentFactoryConfig", "ignoreExecuteQueryErrors"})
 public class JdbcDataQueryService extends JdbcService {
 
   static final String KEY_XML_UTILS = "XmlUtils_" + JdbcDataQueryService.class.getCanonicalName();
@@ -90,6 +90,10 @@ public class JdbcDataQueryService extends JdbcService {
   @Valid
   @AdvancedConfig
   private ParameterApplicator parameterApplicator;
+
+  @Valid
+  @AdvancedConfig
+  private Boolean ignoreExecuteQueryErrors;
 
   private transient DatabaseActor actor;
 
@@ -152,10 +156,16 @@ public class JdbcDataQueryService extends JdbcService {
       log.trace("Executing statement [{}]", statement);
       
       this.getParameterApplicator().applyStatementParameters(msg, preparedStatement, getStatementParameters(), statement);
-      ResultSet rs = preparedStatement.executeQuery();
-
-      result = new JdbcResultBuilder().setHasResultSet(true).setResultSet(rs).build();
-
+      try {
+        ResultSet rs = preparedStatement.executeQuery();
+        result = new JdbcResultBuilder().setHasResultSet(true).setResultSet(rs).build();
+      } catch (SQLException e) {
+        if (ignoreExecuteQueryErrors()) {
+          result = new JdbcResultBuilder().setHasResultSet(false).build();
+        } else {
+          throw e;
+        }
+      }
       resultSetTranslator.translate(result, msg);
       destroyXmlHelper(msg);
       commit(conn, msg);
@@ -321,6 +331,33 @@ public class JdbcDataQueryService extends JdbcService {
     this.statementCreator = statementCreator;
   }
 
+
+  /**
+   * @return the ignoreExecuteQueryErrors
+   */
+  public Boolean getIgnoreExecuteQueryErrors() {
+    return ignoreExecuteQueryErrors;
+  }
+
+  /**
+   * Whether or not to ignore the SQL Exception when executing {@link PreparedStatement#executeQuery()}.
+   * 
+   * <p>
+   * If set to true this means is that the {@link PreparedStatement#executeQuery()} is treated as successful, but with
+   * an empty result set.
+   * </p>
+   * 
+   * @param b the ignoreExecuteQueryErrors to set
+   */
+  public void setIgnoreExecuteQueryErrors(Boolean b) {
+    this.ignoreExecuteQueryErrors = b;
+  }
+
+  boolean ignoreExecuteQueryErrors() {
+    return getIgnoreExecuteQueryErrors() != null ? getIgnoreExecuteQueryErrors().booleanValue() : false;
+  }
+
+
   private class DatabaseActor {
     private String queryString = "";
     private PreparedStatement queryStatement = null;
@@ -361,5 +398,6 @@ public class JdbcDataQueryService extends JdbcService {
       return sqlConnection;
     }
   }
+
 
 }
