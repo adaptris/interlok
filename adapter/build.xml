@@ -463,7 +463,16 @@
     </findbugs>
   </target>
 
-  <target name="prepare-for-publish" depends="jar, stubs.jar, test-no-reports, javadoc">
+  <!-- When working inside some corporate networks, we get failures for no other reason than
+       well "reasons"; so let's just run the tests and ignore any test failures.
+  -->
+  <target name="test-never-fail" depends="jar, stubs.jar, execute-tests" if="${ignore.test.failures}"/>
+
+  <target name="test-check-for-failure" depends="jar, stubs.jar, execute-tests" unless="${ignore.test.failures}">
+   <fail message="JUNIT tests failed, check output in ${tests.output.dir}" if="junit.failed"/>
+  </target>  
+  
+  <target name="prepare-for-publish" depends="test-check-for-failure, test-never-fail, javadoc">
     <mkdir dir="${project.dist.dir}/adp-core/javadoc"/>
     <mkdir dir="${project.dist.dir}/adp-core/examples"/>
     <mkdir dir="${project.dist.dir}/adp-core/pom"/>
