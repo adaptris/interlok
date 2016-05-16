@@ -16,9 +16,8 @@
 
 package com.adaptris.core;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import static com.adaptris.core.metadata.MetadataResolver.resolveKey;
+import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -174,7 +173,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   /** @see AdaptrisMessage#removeMessageHeader(String) */
   @Override
   public void removeMessageHeader(String key) {
-    metadata.remove(resolveKey(this, key));
+    metadata.remove(new MetadataElement(resolveKey(this, key), ""));
   }
 
   /** @see AdaptrisMessage#setMetadata(Set) */
