@@ -35,6 +35,7 @@ import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.jdbc.DatabaseConnection;
 import com.adaptris.core.jdbc.JdbcService;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.JdbcUtil;
@@ -58,7 +59,8 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  */
 @XStreamAlias("jdbc-data-query-service")
 @AdapterComponent
-@ComponentProfile(summary = "Query a database and store the results in the message", tag = "service,jdbc")
+@ComponentProfile(summary = "Query a database and store the results in the message", tag = "service,jdbc",
+    recommended = {DatabaseConnection.class})
 @DisplayOrder(order = {"connection", "statement", "statementCreator", "statementParameters", "resultSetTranslator", "parameterApplicator",
  "namespaceContext", "xmlDocumentFactoryConfig", "ignoreExecuteQueryErrors"})
 public class JdbcDataQueryService extends JdbcService {
