@@ -87,32 +87,32 @@
       <ant-properties>
         <property name="ivy.user" value="${ivy.user}"/>
         <property name="ivy.password" value="${ivy.password}"/>
-        <property name="adp-core-version" value="3.2-SNAPSHOT"/>
-        <property name="ivy.publish.revision" value="3.2-SNAPSHOT"/>
+        <property name="adp-core-version" value="3.3-SNAPSHOT"/>
+        <property name="ivy.publish.revision" value="3.3-SNAPSHOT"/>
       </ant-properties>
     </interlok:project-build>
     <interlok:project-build target="publish" project="common">
       <ant-properties>
         <property name="ivy.user" value="${ivy.user}"/>
         <property name="ivy.password" value="${ivy.password}"/>
-        <property name="adp-core-version" value="3.2-SNAPSHOT"/>
-        <property name="ivy.publish.revision" value="3.2-SNAPSHOT"/>
+        <property name="adp-core-version" value="3.3-SNAPSHOT"/>
+        <property name="ivy.publish.revision" value="3.3-SNAPSHOT"/>
       </ant-properties>
     </interlok:project-build>
     <interlok:project-build target="publish" project="logging">
       <ant-properties>
         <property name="ivy.user" value="${ivy.user}"/>
         <property name="ivy.password" value="${ivy.password}"/>
-        <property name="adp-core-version" value="3.2-SNAPSHOT"/>
-        <property name="ivy.publish.revision" value="3.2-SNAPSHOT"/>
+        <property name="adp-core-version" value="3.3-SNAPSHOT"/>
+        <property name="ivy.publish.revision" value="3.3-SNAPSHOT"/>
       </ant-properties>
     </interlok:project-build>    
     <interlok:project-build target="publish" project="adapter">
       <ant-properties>
         <property name="ivy.user" value="${ivy.user}"/>
         <property name="ivy.password" value="${ivy.password}"/>
-        <property name="adp-core-version" value="3.2-SNAPSHOT"/>
-        <property name="ivy.publish.revision" value="3.2-SNAPSHOT"/>
+        <property name="adp-core-version" value="3.3-SNAPSHOT"/>
+        <property name="ivy.publish.revision" value="3.3-SNAPSHOT"/>
         <property name="junit.test.classes" value="**/*Test*.java"/>
         <property name="run.cobertura" value="false"/>
         <property name="junit.forkmode" value="once"/>
