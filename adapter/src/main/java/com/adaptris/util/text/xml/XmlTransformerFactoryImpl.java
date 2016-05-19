@@ -48,7 +48,7 @@ public abstract class XmlTransformerFactoryImpl implements XmlTransformerFactory
   @AutoPopulated
   private KeyValuePairSet transformerFactoryFeatures;
   @AdvancedConfig
-  @InputFieldDefault(value = "false")
+  @InputFieldDefault(value = "true")
   private Boolean failOnRecoverableError;
 
   public XmlTransformerFactoryImpl() {
@@ -123,7 +123,7 @@ public abstract class XmlTransformerFactoryImpl implements XmlTransformerFactory
   }
 
   private boolean failOnRecoverableError() {
-    return getFailOnRecoverableError() != null ? getFailOnRecoverableError().booleanValue() : false;
+    return getFailOnRecoverableError() != null ? getFailOnRecoverableError().booleanValue() : true;
   }
 
   private class DefaultErrorListener implements ErrorListener {
