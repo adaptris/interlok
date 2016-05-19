@@ -103,7 +103,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
     "resultSetTranslator", "timeout"})
 public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
 
-  private static final long DEFAULT_TIMEOUT_MS = 0; // 30 seconds
+  private static final long DEFAULT_TIMEOUT_MS = 0;
   
   @NotNull
   @AutoPopulated
