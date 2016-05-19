@@ -28,6 +28,7 @@ import org.perf4j.log4j.Log4JStopWatch;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.EventHandler;
@@ -62,6 +63,7 @@ public class Perf4jTimingService extends ServiceImp implements EventHandlerAware
   @AutoPopulated
   private Service service;
   private String tag;
+  @InputFieldDefault(value = "false")
   private Boolean includeLifecycleStats;
   private String logCategory;
   private transient EventHandler eventHandler;

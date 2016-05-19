@@ -23,6 +23,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.EventHandler;
@@ -58,6 +59,7 @@ public class AdvancedMessageSplitterService extends MessageSplitterServiceImp im
   @Valid
   private Service service;
   private transient EventHandler eventHandler;
+  @InputFieldDefault(value = "false")
   private Boolean sendEvents;
 
   /**

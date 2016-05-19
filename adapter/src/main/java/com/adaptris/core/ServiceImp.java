@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.util.GuidGenerator;
 
 /**
@@ -43,10 +44,13 @@ public abstract class ServiceImp implements Service {
   private String uniqueId;
   private transient boolean isBranching; // defaults to false
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean continueOnFail;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean isTrackingEndpoint;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean isConfirmation;
 
   /**

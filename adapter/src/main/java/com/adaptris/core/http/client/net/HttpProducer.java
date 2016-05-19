@@ -32,6 +32,7 @@ import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -85,8 +86,10 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
   private RequestHeaderProvider<HttpURLConnection> requestHeaderProvider;
 
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean ignoreServerResponseCode;
   @AdvancedConfig
+  @InputFieldDefault(value = "true")
   private Boolean allowRedirect;
 
   private transient String authString = null;

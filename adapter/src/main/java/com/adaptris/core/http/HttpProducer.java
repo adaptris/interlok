@@ -26,6 +26,7 @@ import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageImp;
@@ -68,8 +69,10 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
   @Deprecated
   private Boolean sendMetadataAsHeaders;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean ignoreServerResponseCode;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean handleRedirection;
   @AdvancedConfig
   @Deprecated

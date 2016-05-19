@@ -41,6 +41,7 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.GenerateBeanInfo;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.JndiHelper;
 import com.adaptris.core.util.LifecycleHelper;
@@ -68,6 +69,7 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
   @NotNull
   private List<AdaptrisConnection> connections;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean debug;
   @Valid
   private SharedComponentLifecycleStrategy lifecycleStrategy;

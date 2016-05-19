@@ -31,6 +31,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -95,6 +96,7 @@ public class JdbcDataQueryService extends JdbcService {
 
   @Valid
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean ignoreExecuteQueryErrors;
 
   private transient DatabaseActor actor;

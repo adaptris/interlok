@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.SharedComponentLifecycleStrategy;
@@ -87,6 +88,7 @@ public class FilteredSharedComponentStart implements SharedComponentLifecycleStr
 
   private transient Map<String, ExecutorService> connectionStarters;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean threadedStart;
   @NotNull
   @AutoPopulated

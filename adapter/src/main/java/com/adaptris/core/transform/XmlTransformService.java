@@ -32,6 +32,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -70,10 +71,13 @@ public class XmlTransformService extends ServiceImp {
   private String metadataKey;
 
   @AdvancedConfig
+  @InputFieldDefault(value = "true")
   private Boolean cacheTransforms;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean allowOverride;
   @Deprecated
+  @InputFieldDefault(value = "false")
   private Boolean useMetadataAsStylesheetParameters;
 
   // Default to null is fine

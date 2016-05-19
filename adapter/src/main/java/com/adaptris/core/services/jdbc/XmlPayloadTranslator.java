@@ -27,6 +27,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
@@ -75,6 +76,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
     "outputMessageEncoding", "stripIllegalXmlChars", "xmlColumnPrefix", "xmlColumnRegexp", "cdataColumnRegexp"})
 public class XmlPayloadTranslator extends XmlPayloadTranslatorImpl {
   private static final String ORIGINAL_MESSAGE_ELEMENT = "OriginalMessage";
+  @InputFieldDefault(value = "false")
   private Boolean preserveOriginalMessage;
 
   public XmlPayloadTranslator() {

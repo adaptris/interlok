@@ -22,6 +22,7 @@ import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ProduceOnlyProducerImp;
 import com.adaptris.core.http.ContentTypeProvider;
@@ -51,11 +52,14 @@ public abstract class ResponseProducerImpl extends ProduceOnlyProducerImp {
   @AutoPopulated
   @Valid
   private ContentTypeProvider contentTypeProvider;
+  @InputFieldDefault(value = "true")
   private Boolean sendPayload;
 
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean forwardConnectionException;
   @AdvancedConfig
+  @InputFieldDefault(value = "true")
   private Boolean flushBuffer;
 
   public ResponseProducerImpl() {

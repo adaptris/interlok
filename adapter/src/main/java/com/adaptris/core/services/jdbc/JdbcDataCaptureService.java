@@ -35,6 +35,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -67,6 +68,7 @@ public class JdbcDataCaptureService extends JdbcDataCaptureServiceImpl {
   @AdvancedConfig
   private String iterationXpath = null;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean iterates = null;
 
   @NotNull

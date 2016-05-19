@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.InputFieldDefault;
 
 /**
  * Abstract superclass for {@link StrictKnownHosts} and {@link LenientKnownHosts} allowing compression and a specified known_hosts
@@ -35,6 +36,7 @@ public abstract class SftpBehaviourImpl implements SftpConnectionBehaviour {
   @NotBlank
   private String knownHostsFile;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean useCompression;
 
   public SftpBehaviourImpl() {

@@ -27,6 +27,7 @@ import java.text.NumberFormat;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -70,6 +71,7 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
   @NotBlank
   private String numberFormat;
   @AdvancedConfig
+  @InputFieldDefault(value = "true")
   private Boolean alwaysReplaceMetadata;
   @InputFieldHint(style = "SQL")
   @AdvancedConfig
@@ -84,6 +86,7 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
   @AdvancedConfig
   private String resetStatement = null;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean createDatabase;
 
   private OverflowBehaviour overflowBehaviour;

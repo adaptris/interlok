@@ -49,6 +49,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -98,6 +99,7 @@ public class JdkHttpProducer extends HttpProducer {
   private String method;
 
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean replyHttpHeadersAsMetadata;
   @AdvancedConfig
   private String replyMetadataPrefix;

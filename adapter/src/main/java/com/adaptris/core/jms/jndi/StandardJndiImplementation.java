@@ -35,6 +35,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.jms.JmsActorConfig;
 import com.adaptris.core.jms.JmsUtils;
 import com.adaptris.core.jms.VendorImplementation;
@@ -71,11 +72,14 @@ public class StandardJndiImplementation extends VendorImplementationImp {
   @NotBlank
   private String jndiName;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean useJndiForQueues;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean useJndiForTopics;
   private transient volatile Context context = null;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean enableEncodedPasswords;
   @AdvancedConfig
   private String encodedPasswordKeys;
@@ -85,6 +89,7 @@ public class StandardJndiImplementation extends VendorImplementationImp {
   @AdvancedConfig
   private ExtraFactoryConfiguration extraFactoryConfiguration;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean newContextOnException;
 
   public StandardJndiImplementation() {

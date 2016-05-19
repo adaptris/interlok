@@ -25,6 +25,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.GenerateBeanInfo;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageConsumer;
 import com.adaptris.core.CoreConstants;
@@ -70,6 +71,7 @@ public final class JmsTransactedWorkflow extends StandardWorkflow {
   };
 
   @AdvancedConfig
+  @InputFieldDefault(value = "true")
   private Boolean strict;
   @AdvancedConfig
   private TimeInterval waitPeriodAfterRollback;

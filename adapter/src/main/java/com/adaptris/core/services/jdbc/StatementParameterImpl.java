@@ -17,6 +17,8 @@ package com.adaptris.core.services.jdbc;
 
 import javax.validation.constraints.NotNull;
 
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.util.XmlUtils;
 
@@ -65,6 +67,8 @@ public abstract class StatementParameterImpl extends NamedStatementParameter {
   private String queryString;
   @NotNull
   private QueryType queryType;
+  @InputFieldDefault(value = "false")
+  @AdvancedConfig
   private Boolean convertNull;
 
   public StatementParameterImpl() {

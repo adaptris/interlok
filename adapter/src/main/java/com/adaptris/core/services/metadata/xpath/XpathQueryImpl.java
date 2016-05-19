@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.InputFieldDefault;
 
 /**
  * Abstract base class for Metadata Xpath Queries.
@@ -35,6 +36,7 @@ public abstract class XpathQueryImpl implements XpathMetadataQuery {
   protected transient Logger logR = LoggerFactory.getLogger(this.getClass());
 
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean allowEmptyResults;
   @NotBlank
   private String metadataKey;

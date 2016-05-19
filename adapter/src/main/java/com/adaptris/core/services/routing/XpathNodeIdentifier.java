@@ -24,6 +24,7 @@ import org.w3c.dom.Document;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.ServiceException;
 import com.adaptris.util.text.xml.XPath;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -45,6 +46,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class XpathNodeIdentifier extends XmlSyntaxIdentifierImpl {
 
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean resolveAsNodeset;
 
   public XpathNodeIdentifier() {

@@ -21,6 +21,7 @@ import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.FifoMutexLock;
@@ -40,6 +41,7 @@ public abstract class AdaptrisPollingConsumer
   @Valid
   private Poller poller;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean reacquireLockBetweenMessages;
   // make logging from FML configurable (default false) when util is released
 

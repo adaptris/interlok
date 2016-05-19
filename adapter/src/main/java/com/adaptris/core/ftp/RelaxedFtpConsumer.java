@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisPollingConsumer;
 import com.adaptris.core.CoreConstants;
@@ -72,6 +73,7 @@ public class RelaxedFtpConsumer extends AdaptrisPollingConsumer {
   @AdvancedConfig
   private TimeInterval olderThan;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean failOnDeleteFailure;
 
   private transient FileFilter fileFilter;

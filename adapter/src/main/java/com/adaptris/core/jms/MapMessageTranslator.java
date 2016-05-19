@@ -31,6 +31,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
@@ -53,6 +54,7 @@ public final class MapMessageTranslator extends MessageTypeTranslatorImp {
   @NotBlank
   private String keyForPayload;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean treatMetadataAsPartOfMessage;
 
   public MapMessageTranslator() {

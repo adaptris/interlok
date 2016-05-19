@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.FifoMutexLock;
 import com.adaptris.util.GuidGenerator;
@@ -48,12 +49,16 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
   private String uniqueId;
+  @InputFieldDefault(value = "false")
   private Boolean restartAffectedServiceOnException;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean continueOnFail;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean isTrackingEndpoint;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean isConfirmation;
   @AdvancedConfig
   @Deprecated

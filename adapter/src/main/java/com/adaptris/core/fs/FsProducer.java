@@ -33,6 +33,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.FileNameCreator;
@@ -59,6 +60,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"createDirs", "filenameCreator", "tempDirectory", "fsWorker"})
 public class FsProducer extends ProduceOnlyProducerImp {
 
+  @InputFieldDefault(value = "false")
   private Boolean createDirs;
   @AdvancedConfig
   private String tempDirectory = null;

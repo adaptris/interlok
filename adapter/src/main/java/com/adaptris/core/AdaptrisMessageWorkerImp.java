@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.ManagedThreadFactory;
 
 /**
@@ -45,8 +46,10 @@ public abstract class AdaptrisMessageWorkerImp implements AdaptrisMessageWorker 
   @Valid
   private AdaptrisMessageEncoder encoder;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean isTrackingEndpoint;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean isConfirmation;
   @AdvancedConfig
   private AdaptrisMessageFactory messageFactory;

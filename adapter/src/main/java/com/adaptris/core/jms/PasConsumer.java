@@ -24,6 +24,7 @@ import javax.jms.MessageConsumer;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -43,6 +44,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"destination", "durable", "subscriptionId", "acknowledgeMode", "messageTranslator"})
 public class PasConsumer extends JmsConsumerImpl {
 
+  @InputFieldDefault(value = "false")
   private Boolean durable; // defaults to false
   private String subscriptionId;
 

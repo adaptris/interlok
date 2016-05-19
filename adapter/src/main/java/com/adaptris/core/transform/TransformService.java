@@ -26,6 +26,7 @@ import org.apache.commons.io.IOUtils;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -52,8 +53,10 @@ public abstract class TransformService extends ServiceImp {
   private transient Source configuredRule;
   private transient TransformFramework tf;
   @AdvancedConfig
+  @InputFieldDefault(value = "true")
   private Boolean cacheTransforms;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean allowOverride;
   private String outputMessageEncoding;
 

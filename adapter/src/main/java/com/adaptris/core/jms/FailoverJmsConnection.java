@@ -32,6 +32,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.StateManagedComponent;
@@ -68,6 +69,7 @@ public class FailoverJmsConnection extends JmsConnection {
   private List<JmsConnection> connections = null;
   private transient JmsConnection current;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean registerOwner;
 
   public FailoverJmsConnection() {

@@ -30,6 +30,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
@@ -96,6 +97,7 @@ public class FsConsumer extends FsConsumerImpl {
   @AdvancedConfig
   private String wipSuffix;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean resetWipFiles;
 
   /**

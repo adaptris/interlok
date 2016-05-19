@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessageListener;
 import com.adaptris.core.AdaptrisPollingConsumer;
@@ -88,6 +89,7 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
   @AdvancedConfig
   private CorrelationIdSource correlationIdSource;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean additionalDebug;
   @Valid
   private TimeInterval receiveTimeout;

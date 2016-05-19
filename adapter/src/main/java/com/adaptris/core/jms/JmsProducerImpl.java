@@ -42,6 +42,7 @@ import org.slf4j.Logger;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageListener;
 import com.adaptris.core.CoreException;
@@ -77,6 +78,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
   private CorrelationIdSource correlationIdSource;
 
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean captureOutgoingMessageDetails;
 
   @NotNull
@@ -91,9 +93,11 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
   private int priority;
   @Min(0)
   @AdvancedConfig
+  @InputFieldDefault(value = "0")
   private Long ttl;
 
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean perMessageProperties;
   @AutoPopulated
   @NotNull

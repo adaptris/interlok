@@ -26,6 +26,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -46,8 +47,10 @@ public class SimpleRegexpMessageSplitter extends StringPayloadSplitter {
   @AdvancedConfig
   private String matchPattern;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean compareToPreviousMatch;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean ignoreFirstSubMessage;
 
   private transient Pattern compiledSplitPattern;

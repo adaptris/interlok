@@ -25,6 +25,7 @@ import java.util.Iterator;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -47,6 +48,7 @@ public class LineCountSplitter extends MessageSplitterImp {
 
   private int keepHeaderLines;
   private int splitOnLine;
+  @InputFieldDefault(value = "false")
   private Boolean ignoreBlankLines;
   @AdvancedConfig
   private Integer bufferSize;

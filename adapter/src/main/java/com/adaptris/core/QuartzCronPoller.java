@@ -43,6 +43,7 @@ import org.quartz.impl.StdSchedulerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.NonBlockingQuartzThreadPool;
 import com.adaptris.util.FifoMutexLock;
@@ -219,6 +220,7 @@ public class QuartzCronPoller extends PollerImp {
   @AdvancedConfig
   private String schedulerGroup;
   @AdvancedConfig
+  @InputFieldDefault(value = "true")
   private Boolean useCustomThreadPool;
 
   private static final transient FifoMutexLock lock = new FifoMutexLock();

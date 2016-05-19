@@ -19,6 +19,8 @@ package com.adaptris.core;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.runtime.MessageErrorDigester;
 
 /**
@@ -37,6 +39,8 @@ public abstract class RootProcessingExceptionHandler implements ProcessingExcept
 
   private transient ComponentState state;
   private String uniqueId;
+  @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean alwaysHandleException;
 
   public RootProcessingExceptionHandler() {

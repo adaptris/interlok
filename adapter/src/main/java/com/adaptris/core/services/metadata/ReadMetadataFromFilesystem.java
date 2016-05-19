@@ -34,6 +34,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.FileNameCreator;
@@ -69,6 +70,7 @@ public class ReadMetadataFromFilesystem extends ServiceImp {
   @NotNull
   @Valid
   private ProduceDestination destination;
+  @InputFieldDefault(value = "false")
   private Boolean overwriteExistingMetadata;
   @NotNull
   @AutoPopulated

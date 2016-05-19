@@ -44,6 +44,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageConsumerImp;
 import com.adaptris.core.CoreConstants;
@@ -70,6 +71,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   private transient ServletWrapper servletWrapper = null;
   private transient List<String> acceptedMethods = new ArrayList<>(HTTP_METHODS);
 
+  @InputFieldDefault(value = "false")
   private Boolean additionalDebug;
   private TimeInterval maxWaitTime;
 

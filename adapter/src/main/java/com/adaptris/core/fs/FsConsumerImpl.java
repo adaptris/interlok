@@ -38,6 +38,7 @@ import org.perf4j.aop.Profiled;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisPollingConsumer;
 import com.adaptris.core.CoreException;
@@ -61,8 +62,10 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
   // marshalled
   @AdvancedConfig
   private String fileFilterImp;
+  @InputFieldDefault(value = "false")
   private Boolean createDirs;
   @AdvancedConfig
+  @InputFieldDefault(value = "true")
   private Boolean logAllExceptions;
   @AdvancedConfig
   private TimeInterval quietInterval;

@@ -21,6 +21,7 @@ import java.io.IOException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -38,6 +39,7 @@ public abstract class MessageSplitterServiceImp extends ServiceImp {
   @NotNull
   @Valid
   private MessageSplitter splitter;
+  @InputFieldDefault(value = "false")
   private Boolean ignoreSplitMessageFailures;
   
   /**

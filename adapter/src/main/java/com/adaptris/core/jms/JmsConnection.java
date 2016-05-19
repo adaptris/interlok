@@ -29,6 +29,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AllowsRetriesConnection;
 import com.adaptris.core.CoreException;
@@ -54,11 +55,13 @@ public class JmsConnection extends AllowsRetriesConnection implements JmsConnect
 
   protected transient Connection connection;
 
+  @InputFieldDefault(value = "")
   private String userName;
   @InputFieldHint(style = "PASSWORD")
   private String password;
   private String clientId;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean additionalDebug;
   @Valid
   @AutoPopulated

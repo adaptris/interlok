@@ -24,6 +24,7 @@ import org.slf4j.MarkerFactory;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -85,7 +86,9 @@ public class LogMessageService extends ServiceImp {
   }
 
   private String logPrefix;
+  @InputFieldDefault(value = "true")
   private Boolean includePayload;
+  @InputFieldDefault(value = "false")
   private Boolean includeEvents;
   private LoggingLevel logLevel;
 

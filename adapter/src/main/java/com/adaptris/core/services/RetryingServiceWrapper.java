@@ -26,6 +26,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.EventHandler;
@@ -75,10 +76,12 @@ public class RetryingServiceWrapper extends ServiceImp implements EventHandlerAw
   private static final TimeInterval DEFAULT_DELAY = new TimeInterval(10l, TimeUnit.SECONDS);
   private static final int DEFAULT_NUM_RETRIES = 10;
   
+  @InputFieldDefault(value = "10")
   private Integer numRetries;
   @Valid
   private TimeInterval delayBetweenRetries;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean restartOnFailure;
   @NotNull
   @Valid
