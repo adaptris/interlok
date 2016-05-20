@@ -22,9 +22,6 @@ import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -36,7 +33,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("jetty-http-parameters-as-object-metadata")
 public class ObjectMetadataParameterHandler extends ParameterHandlerImpl {
-  protected transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   public ObjectMetadataParameterHandler() {
   }

@@ -31,8 +31,6 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.hibernate.validator.constraints.NotBlank;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
@@ -59,8 +57,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"username", "password", "driverImp", "connectUrl", "connectionProperties"})
 public class AdvancedJdbcPooledConnection extends DatabaseConnection {
   
-  protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
-
   @NotBlank
   private String connectUrl;
   
