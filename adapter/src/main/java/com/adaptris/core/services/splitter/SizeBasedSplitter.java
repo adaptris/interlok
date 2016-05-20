@@ -39,7 +39,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config size-based-splitter
  */
 @XStreamAlias("size-based-splitter")
-@DisplayOrder(order = {"split-size-bytes"})
+@DisplayOrder(order = {"splitSizeBytes"})
 public class SizeBasedSplitter extends MessageSplitterImp {
 
   // 256k seems like a reasonable amount; it's the max size of SQS messages.
