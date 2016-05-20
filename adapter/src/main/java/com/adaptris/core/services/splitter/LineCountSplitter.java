@@ -5,14 +5,14 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.services.splitter;
 
@@ -67,27 +67,26 @@ public class LineCountSplitter extends MessageSplitterImp {
     splitOnLine = 10;
   }
 
-	public CloseableIterable<AdaptrisMessage> splitMessage(final AdaptrisMessage msg) throws CoreException {
-		logR.trace("LineCountSplitter splits every " + getSplitOnLine() + " lines");
+  public CloseableIterable<AdaptrisMessage> splitMessage(final AdaptrisMessage msg) throws CoreException {
+    logR.trace("LineCountSplitter splits every " + getSplitOnLine() + " lines");
 
-		try {
-			BufferedReader buf = new BufferedReader(msg.getReader(), bufferSize());
-			
-			return new LineCountSplitGenerator(buf, msg, selectFactory(msg), readHeader(buf));
-		} catch (IOException e) {
-			throw new CoreException(e);
-		}
-	}
+    try {
+      BufferedReader buf = new BufferedReader(msg.getReader(), bufferSize());
+      return new LineCountSplitGenerator(buf, msg, selectFactory(msg), readHeader(buf));
+    } catch (IOException e) {
+      throw new CoreException(e);
+    }
+  }
 
-	private String readHeader(BufferedReader buf) throws IOException {
-		StringWriter sw = new StringWriter();
-		PrintWriter writer = new PrintWriter(sw);
-		for(int i=0; i<getKeepHeaderLines(); i++) {
-			writer.println(buf.readLine());
-		}
-		return sw.toString();
-	}
-  
+  private String readHeader(BufferedReader buf) throws IOException {
+    StringWriter sw = new StringWriter();
+    PrintWriter writer = new PrintWriter(sw);
+    for (int i = 0; i < getKeepHeaderLines(); i++) {
+      writer.println(buf.readLine());
+    }
+    return sw.toString();
+  }
+
   /**
    * Set the boundary marker so that the file is split every <code>i</code> lines.
    *
@@ -153,13 +152,13 @@ public class LineCountSplitter extends MessageSplitterImp {
   int bufferSize() {
     return getBufferSize() != null ? getBufferSize().intValue() : DEFAULT_BUFFER_SIZE;
   }
-  
+
   public int getKeepHeaderLines() {
-  	return keepHeaderLines;
+    return keepHeaderLines;
   }
 
   public void setKeepHeaderLines(int keepHeaderLines) {
-  	this.keepHeaderLines = keepHeaderLines;
+    this.keepHeaderLines = keepHeaderLines;
   }
 
   /**
@@ -180,7 +179,7 @@ public class LineCountSplitter extends MessageSplitterImp {
       this.msg = msg;
       this.factory = factory;
       this.header = header;
-      logR.debug("Using message factory: " + factory);
+      logR.trace("Using message factory: {}", factory.getClass());
     }
 
     @Override
