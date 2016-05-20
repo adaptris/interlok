@@ -17,8 +17,6 @@
 package com.adaptris.core.http.client.net;
 
 import java.net.HttpURLConnection;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -58,7 +56,6 @@ public class MetadataRequestHeaders implements RequestHeaderProvider<HttpURLConn
 
   @Override
   public HttpURLConnection addHeaders(AdaptrisMessage msg, HttpURLConnection target) {
-    Map<String, String> result = new HashMap<>();
     MetadataCollection metadataSubset = getFilter().filter(msg);
     for (MetadataElement me : metadataSubset) {
       log.trace("Adding Request Property [{}: {}]", me.getKey(), me.getValue());
