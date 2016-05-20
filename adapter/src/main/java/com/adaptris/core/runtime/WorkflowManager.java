@@ -5,14 +5,14 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.runtime;
 
@@ -45,6 +45,7 @@ import com.adaptris.core.Workflow;
 import com.adaptris.core.WorkflowInterceptor;
 import com.adaptris.core.http.jetty.BasicJettyConsumer;
 import com.adaptris.core.http.jetty.JettyPoolingWorkflowInterceptor;
+import com.adaptris.core.interceptor.InFlightWorkflowInterceptor;
 import com.adaptris.core.interceptor.MessageMetricsInterceptor;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.interlok.InterlokException;
@@ -54,7 +55,7 @@ import com.adaptris.util.TimeInterval;
 /**
  * Base implementation of {@link WorkflowManagerMBean}.
  */
-public class WorkflowManager extends ComponentManagerImpl<Workflow> implements WorkflowManagerMBean, WorkflowRuntimeManager {
+public class WorkflowManager extends ComponentManagerImpl<Workflow>implements WorkflowManagerMBean, WorkflowRuntimeManager {
 
   private static final TimeInterval MAX_REPLY_WAIT = new TimeInterval(1L, TimeUnit.MINUTES);
   private transient Workflow managedWorkflow;
@@ -165,7 +166,8 @@ public class WorkflowManager extends ComponentManagerImpl<Workflow> implements W
     return translator.translate(this.waitForInjectReply(msg));
   }
 
-  private AdaptrisMessage toAdaptrisMessage(SerializableMessage msg, SerializableMessageTranslator translator) throws CoreException {
+  private AdaptrisMessage toAdaptrisMessage(SerializableMessage msg, SerializableMessageTranslator translator)
+      throws CoreException {
     AdaptrisMessage result = null;
     if (msg instanceof SerializableAdaptrisMessage) {
       result = translator.translate((SerializableAdaptrisMessage) msg);
@@ -176,16 +178,17 @@ public class WorkflowManager extends ComponentManagerImpl<Workflow> implements W
   }
 
   /**
-   * Test if we have a configured caching interceptor.  If we do, great, otherwise create one.
+   * Test if we have a configured caching interceptor. If we do, great, otherwise create one.
+   * 
    * @throws CoreException
    */
   private void testAndInjectCachingInterceptor() throws CoreException {
-    for(WorkflowInterceptor interceptor : managedWorkflow.getInterceptors()) {
-      if(interceptor instanceof JmxSubmitMessageInterceptor) {
+    for (WorkflowInterceptor interceptor : managedWorkflow.getInterceptors()) {
+      if (interceptor instanceof JmxSubmitMessageInterceptor) {
         this.injectInterceptor = (JmxSubmitMessageInterceptor) interceptor;
       }
     }
-    if(this.injectInterceptor == null) {
+    if (this.injectInterceptor == null) {
       injectInterceptor = new JmxSubmitMessageInterceptor();
       managedWorkflow.getInterceptors().add(injectInterceptor);
       injectInterceptor.init();
@@ -195,10 +198,10 @@ public class WorkflowManager extends ComponentManagerImpl<Workflow> implements W
 
   private AdaptrisMessage waitForInjectReply(AdaptrisMessage adaptrisMessage) {
     long startTime = System.currentTimeMillis();
-    while(!injectInterceptor.getMessageCache().contains(adaptrisMessage.getUniqueId())) {
+    while (!injectInterceptor.getMessageCache().contains(adaptrisMessage.getUniqueId())) {
       try {
         Thread.sleep(50);
-        if((System.currentTimeMillis() - startTime) > MAX_REPLY_WAIT.toMilliseconds())
+        if ((System.currentTimeMillis() - startTime) > MAX_REPLY_WAIT.toMilliseconds())
           return null;
       } catch (InterruptedException e) {
         break;
@@ -224,8 +227,7 @@ public class WorkflowManager extends ComponentManagerImpl<Workflow> implements W
         WorkflowManagerMBean rhs = (WorkflowManagerMBean) o;
         return new EqualsBuilder().append(myObjectName, rhs.createObjectName()).isEquals();
       }
-    }
-    catch (MalformedObjectNameException e) {
+    } catch (MalformedObjectNameException e) {
 
     }
     return false;
@@ -318,30 +320,26 @@ public class WorkflowManager extends ComponentManagerImpl<Workflow> implements W
 
   @Override
   public MBeanNotificationInfo[] getNotificationInfo() {
-    MBeanNotificationInfo adapterLifecycle = new MBeanNotificationInfo(new String[]
-    {
-        NOTIF_TYPE_WORKFLOW_LIFECYCLE, NOTIF_TYPE_WORKFLOW_CONFIG
-    }, Notification.class.getName(), "Workflow Notifications");
+    MBeanNotificationInfo adapterLifecycle =
+        new MBeanNotificationInfo(new String[] {NOTIF_TYPE_WORKFLOW_LIFECYCLE, NOTIF_TYPE_WORKFLOW_CONFIG},
+            Notification.class.getName(), "Workflow Notifications");
 
-    return new MBeanNotificationInfo[]
-    {
-      adapterLifecycle
-    };
+    return new MBeanNotificationInfo[] {adapterLifecycle};
   }
 
   @Override
   protected String getNotificationType(ComponentNotificationType type) {
     String result = null;
     switch (type) {
-    case LIFECYCLE: {
-      result = NOTIF_TYPE_WORKFLOW_LIFECYCLE;
-      break;
-    }
-    case CONFIG: {
-      result = NOTIF_TYPE_WORKFLOW_CONFIG;
-      break;
-    }
-    default:
+      case LIFECYCLE: {
+        result = NOTIF_TYPE_WORKFLOW_LIFECYCLE;
+        break;
+      }
+      case CONFIG: {
+        result = NOTIF_TYPE_WORKFLOW_CONFIG;
+        break;
+      }
+      default:
     }
     return result;
   }
@@ -358,6 +356,10 @@ public class WorkflowManager extends ComponentManagerImpl<Workflow> implements W
       managedWorkflow.getInterceptors().add(
           new MessageMetricsInterceptor(managedWorkflow.getUniqueId(), new TimeInterval(5L, TimeUnit.MINUTES), 12));
     }
+    if (!hasInterceptorOfType(managedWorkflow.getInterceptors(), InFlightWorkflowInterceptor.class)) {
+      log.trace("InFlight interceptor added for [{}]", createObjectName());
+      managedWorkflow.getInterceptors().add(new InFlightWorkflowInterceptor(managedWorkflow.getUniqueId()));
+    }
   }
 
   private void configureJettyInterceptor() throws CoreException, MalformedObjectNameException {
@@ -373,7 +375,7 @@ public class WorkflowManager extends ComponentManagerImpl<Workflow> implements W
     }
     return;
   }
-  
+
   private static boolean hasInterceptorOfType(List<WorkflowInterceptor> interceptors, Class<?> clz) {
     boolean found = false;
     for (WorkflowInterceptor wi : interceptors) {

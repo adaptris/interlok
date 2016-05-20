@@ -50,6 +50,7 @@ import com.adaptris.core.Workflow;
 import com.adaptris.core.XStreamMarshaller;
 import com.adaptris.core.http.jetty.JettyPoolingWorkflowInterceptor;
 import com.adaptris.core.http.jetty.MessageConsumer;
+import com.adaptris.core.interceptor.InFlightWorkflowInterceptor;
 import com.adaptris.core.interceptor.MessageMetricsInterceptor;
 import com.adaptris.core.interceptor.ThrottlingInterceptor;
 import com.adaptris.core.services.metadata.AddMetadataService;
@@ -82,9 +83,10 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     PoolingWorkflow workflow = new PoolingWorkflow("w1");
     workflow.setConsumer(new MessageConsumer());
     new WorkflowManager(workflow, channelManager);
-    assertEquals(2, workflow.getInterceptors().size());
+    assertEquals(3, workflow.getInterceptors().size());
     assertEquals(MessageMetricsInterceptor.class, workflow.getInterceptors().get(0).getClass());
-    assertEquals(JettyPoolingWorkflowInterceptor.class, workflow.getInterceptors().get(1).getClass());
+    assertEquals(InFlightWorkflowInterceptor.class, workflow.getInterceptors().get(1).getClass());
+    assertEquals(JettyPoolingWorkflowInterceptor.class, workflow.getInterceptors().get(2).getClass());
   }
 
   public void testJettyInterceptor_AlreadyHasInterceptor() throws Exception {
@@ -98,11 +100,12 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     workflow.setConsumer(new MessageConsumer());
     new WorkflowManager(workflow, channelManager);
 
-    assertEquals(2, workflow.getInterceptors().size());
+    assertEquals(3, workflow.getInterceptors().size());
 
     // Look the order should now be swapped.
     assertEquals(JettyPoolingWorkflowInterceptor.class, workflow.getInterceptors().get(0).getClass());
     assertEquals(MessageMetricsInterceptor.class, workflow.getInterceptors().get(1).getClass());
+    assertEquals(InFlightWorkflowInterceptor.class, workflow.getInterceptors().get(2).getClass());
   }
 
   public void testJettyInterceptor_NotAddedTo_StandardWorkflow() throws Exception {
@@ -114,8 +117,9 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     StandardWorkflow workflow = createWorkflow("w1");
     workflow.setConsumer(new MessageConsumer());
     new WorkflowManager(workflow, channelManager);
-    assertEquals(1, workflow.getInterceptors().size());
+    assertEquals(2, workflow.getInterceptors().size());
     assertEquals(MessageMetricsInterceptor.class, workflow.getInterceptors().get(0).getClass());
+    assertEquals(InFlightWorkflowInterceptor.class, workflow.getInterceptors().get(1).getClass());
   }
 
   public void testMessageCounter_Enabled() throws Exception {
@@ -126,8 +130,9 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     ChannelManager channelManager = new ChannelManager(channel, adapterManager);
     Workflow workflow = createWorkflow("w1");
     new WorkflowManager(workflow, channelManager);
-    assertEquals(1, workflow.getInterceptors().size());
+    assertEquals(2, workflow.getInterceptors().size());
     assertEquals(MessageMetricsInterceptor.class, workflow.getInterceptors().get(0).getClass());
+    assertEquals(InFlightWorkflowInterceptor.class, workflow.getInterceptors().get(1).getClass());
   }
 
   public void testMessageCounter_Enabled_AlreadyHasMessageCounter() throws Exception {
@@ -139,9 +144,10 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     Workflow workflow = createWorkflow("w1");
     workflow.getInterceptors().add(new MessageMetricsInterceptor(getName(), null));
     new WorkflowManager(workflow, channelManager);
-    assertEquals(1, workflow.getInterceptors().size());
+    assertEquals(2, workflow.getInterceptors().size());
     assertEquals(MessageMetricsInterceptor.class, workflow.getInterceptors().get(0).getClass());
     assertEquals(getName(), workflow.getInterceptors().get(0).getUniqueId());
+    assertEquals(InFlightWorkflowInterceptor.class, workflow.getInterceptors().get(1).getClass());
   }
 
   public void testMessageCounter_Disabled() throws Exception {
