@@ -103,7 +103,7 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
     catch (Exception e) {
       log.warn("Exception listing files in [" + getDestination().getDestination() + "], waiting for next scheduled poll");
       if (logAllExceptions()) {
-        log.warn(e.getMessage(), e);
+        log.trace(e.getMessage(), e);
       }
       return 0;
     }
@@ -118,7 +118,7 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
       catch (Exception e) {
         log.warn("Exception processing [" + file.getName() + "], waiting for next scheduled poll");
         if (logAllExceptions()) {
-          log.warn(e.getMessage(), e);
+          log.trace(e.getMessage(), e);
         }
       }
     }
