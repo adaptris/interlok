@@ -23,10 +23,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -49,6 +51,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"firstServiceId", "restartAffectedServiceOnException"})
 public class BranchingServiceCollection extends ServiceCollectionImp {
 
+  @NotBlank
   private String firstServiceId;
 
   public BranchingServiceCollection() {
@@ -183,18 +186,14 @@ public class BranchingServiceCollection extends ServiceCollectionImp {
    * null, empty or <code>CoreConstants.ENDPOINT_SERVICE_UNIQUE_ID</code>.
    * </p>
    *
-   * @param string the unique ID of the first <code>Service</code> to apply
+   * @param s the unique ID of the first <code>Service</code> to apply
    */
-  public void setFirstServiceId(String string) {
-    if (string == null || "".equals(string)) {
-      throw new IllegalArgumentException("null or empty param");
-    }
-
-    if (string.equals(CoreConstants.ENDPOINT_SERVICE_UNIQUE_ID)) {
+  public void setFirstServiceId(String s) {
+    String srvId = Args.notBlank(s, "firstServiceId");
+    if (srvId.equals(CoreConstants.ENDPOINT_SERVICE_UNIQUE_ID)) {
       throw new IllegalArgumentException("first Service cannot be end point");
     }
-
-    firstServiceId = string;
+    firstServiceId = srvId;
   }
 
   public void prepare() throws CoreException {

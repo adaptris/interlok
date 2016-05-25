@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
@@ -67,6 +68,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   private OutOfStateHandler outOfStateHandler;
   @AutoPopulated
   @NotNull
+  @Valid
   private List<Service> services;
   
   private transient FifoMutexLock lock = new FifoMutexLock();
