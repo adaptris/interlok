@@ -48,6 +48,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(summary = "Connect to a JMX MBeanServer instance", tag = "connections,jmx")
 @DisplayOrder(order = {"jmxServiceUrl", "jmxProperties", "username", "password"})
 public class JmxConnection extends AllowsRetriesConnection {
+
+  private static final String SASL_PLAIN = "SASL/PLAIN";
+  private static final String JMX_REMOTE_PROFILES = "jmx.remote.profiles";
+
+
   private String jmxServiceUrl;
   @Valid
   private KeyValuePairSet jmxProperties;
@@ -58,6 +63,7 @@ public class JmxConnection extends AllowsRetriesConnection {
   @InputFieldDefault(value = "false")
   private Boolean additionalDebug;
 
+  private transient JMXConnector connector = null;
   private transient MBeanServerConnection connection;
 
   public JmxConnection() {
@@ -87,6 +93,14 @@ public class JmxConnection extends AllowsRetriesConnection {
 
   @Override
   protected void closeConnection() {
+    if (connector != null) {
+      try {
+        connector.close();
+      } catch (Exception ignored) {
+
+      }
+      connector = null;
+    }
     connection = null;
   }
 
@@ -127,12 +141,12 @@ public class JmxConnection extends AllowsRetriesConnection {
     if (!isBlank(getJmxServiceUrl())) {
       Map env = KeyValuePairBag.asMap(getJmxProperties());
       if (!isBlank(getUsername())) {
-        if (!env.containsKey("jmx.remote.profiles")) {
-          env.put("jmx.remote.profiles", "SASL/PLAIN");
-          env.put(JMXConnector.CREDENTIALS, new String[] {getUsername(), Password.decode(getPassword())});
+        if (!env.containsKey(JMX_REMOTE_PROFILES)) {
+          env.put(JMX_REMOTE_PROFILES, SASL_PLAIN);
         }
+        env.put(JMXConnector.CREDENTIALS, new String[] {getUsername(), Password.decode(getPassword())});
       }
-      JMXConnector connector = JMXConnectorFactory.connect(new JMXServiceURL(getJmxServiceUrl()), env.size() == 0 ? null : env);
+      connector = JMXConnectorFactory.connect(new JMXServiceURL(getJmxServiceUrl()), env.size() == 0 ? null : env);
       result = connector.getMBeanServerConnection();
     } else {
       result = JmxHelper.findMBeanServer();
