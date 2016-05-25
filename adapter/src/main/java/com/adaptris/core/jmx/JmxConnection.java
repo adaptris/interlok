@@ -112,7 +112,7 @@ public class JmxConnection extends AllowsRetriesConnection {
           log.error("Failed to connect to [{}]", getJmxServiceUrl(), e);
           throw ExceptionHelper.wrapCoreException(e);
         } else {
-          log.warn("Attempt [{}] failed for broker [{}], retrying", attemptCount, jmxServiceUrlForLogging());
+          log.warn("Attempt [{}] failed for [{}], retrying", attemptCount, jmxServiceUrlForLogging());
           log.info(createLoggingStatement(attemptCount));
           Thread.sleep(connectionRetryInterval());
           continue;

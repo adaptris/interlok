@@ -74,7 +74,7 @@ public class JmxNotificationConsumer extends AdaptrisMessageConsumerImp implemen
   @Override
   public void init() throws CoreException {
     try {
-      scheduler = Executors.newScheduledThreadPool(1, new ManagedThreadFactory());
+      scheduler = Executors.newSingleThreadScheduledExecutor(new ManagedThreadFactory());
       connection = retrieveConnection(JmxConnection.class).mbeanServerConnection();
       actualObjectName = ObjectName.getInstance(getDestination().getDestination());
     } catch (Exception e) {

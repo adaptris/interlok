@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -55,10 +56,17 @@ public class MetadataValueTranslator implements ValueTranslator {
   private String metadataKey;
     
   @AutoPopulated
+  @NotBlank
   private String type;
   
   public MetadataValueTranslator() {
     this.setType(DEFAULT_PARAMETER_TYPE);
+  }
+
+  public MetadataValueTranslator(String key, String type) {
+    this();
+    setMetadataKey(key);
+    setType(type);
   }
 
   public Object getValue(AdaptrisMessage message) throws CoreException {
@@ -96,11 +104,11 @@ public class MetadataValueTranslator implements ValueTranslator {
   }
 
   public String getType() {
-    return this.type == null ? DEFAULT_PARAMETER_TYPE : this.type;
+    return this.type;
   }
 
   public void setType(String type) {
-    this.type = type;
+    this.type = Args.notBlank(type, "type");
   }
 
   public String getMetadataKey() {
@@ -108,7 +116,7 @@ public class MetadataValueTranslator implements ValueTranslator {
   }
 
   public void setMetadataKey(String metadataKey) {
-    this.metadataKey = metadataKey;
+    this.metadataKey = Args.notBlank(metadataKey, "metadataKey");
   }
 
 }

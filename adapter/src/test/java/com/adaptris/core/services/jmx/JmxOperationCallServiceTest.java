@@ -16,22 +16,25 @@
 
 package com.adaptris.core.services.jmx;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.management.MBeanException;
+import javax.management.MBeanServerConnection;
 
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import static org.mockito.Mockito.when;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.ServiceCase;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.jmx.JmxConnection;
 
 public class JmxOperationCallServiceTest extends ServiceCase {
   
@@ -43,7 +46,10 @@ public class JmxOperationCallServiceTest extends ServiceCase {
   
   private String originalPayload = "OriginalPayload";
 
-  @Mock private JmxOperationInvoker mockInvoker;
+  @Mock
+  private JmxOperationInvoker<Object> mockInvoker;
+  @Mock
+  private JmxConnection mockConnection;
   
   public JmxOperationCallServiceTest(String name) {
     super(name);
@@ -62,8 +68,6 @@ public class JmxOperationCallServiceTest extends ServiceCase {
     callService = new JmxOperationCallService();
     callService.setInvoker(mockInvoker);
     callService.setOperationName("MyOperationName");
-    callService.setJmxServiceUrl("jmx:jmxmp://localhost:5555");
-    callService.setObjectName("com.adaptris:type=Workflow,adapter=JMS-JMS-Adapter,channel=Channel1,id=Workflow1");
     
     message = DefaultMessageFactory.getDefaultInstance().newMessage(originalPayload);
     
@@ -82,7 +86,8 @@ public class JmxOperationCallServiceTest extends ServiceCase {
   
   public void testPayloadReturn() throws Exception {
     String operationReturnValue = "NewPayloadValue";
-    when(mockInvoker.invoke(anyString(), anyString(), anyString(), anyString(), anyString(), any(Object[].class), any(String[].class)))
+    
+    when(mockInvoker.invoke((MBeanServerConnection) any(), anyString(), anyString(), any(Object[].class), any(String[].class)))
       .thenReturn(operationReturnValue);
     
     callService.setResultValueTranslator(new PayloadValueTranslator());
@@ -93,7 +98,7 @@ public class JmxOperationCallServiceTest extends ServiceCase {
   
   public void testPayloadReturnNullPayloadType() throws Exception {
     String operationReturnValue = "NewPayloadValue";
-    when(mockInvoker.invoke(anyString(), anyString(), anyString(), anyString(), anyString(), any(Object[].class), any(String[].class)))
+    when(mockInvoker.invoke((MBeanServerConnection) any(), anyString(), anyString(), any(Object[].class), any(String[].class)))
       .thenReturn(operationReturnValue);
     
     PayloadValueTranslator payloadValueTranslator = new PayloadValueTranslator();
@@ -106,7 +111,7 @@ public class JmxOperationCallServiceTest extends ServiceCase {
   
   public void testPayloadReturnWithParams() throws Exception {
     String operationReturnValue = "NewPayloadValue";
-    when(mockInvoker.invoke(anyString(), anyString(), anyString(), anyString(), anyString(), any(Object[].class), any(String[].class)))
+    when(mockInvoker.invoke((MBeanServerConnection) any(), anyString(), anyString(), any(Object[].class), any(String[].class)))
       .thenReturn(operationReturnValue);
     
     PayloadValueTranslator translatorParam = new PayloadValueTranslator();
@@ -122,7 +127,7 @@ public class JmxOperationCallServiceTest extends ServiceCase {
   
   public void testNoReturn() throws Exception {
     String operationReturnValue = "NewPayloadValue";
-    when(mockInvoker.invoke(anyString(), anyString(), anyString(), anyString(), anyString(), any(Object[].class), any(String[].class)))
+    when(mockInvoker.invoke((MBeanServerConnection) any(), anyString(), anyString(), any(Object[].class), any(String[].class)))
       .thenReturn(operationReturnValue);
     
     callService.setResultValueTranslator(null);
@@ -132,7 +137,7 @@ public class JmxOperationCallServiceTest extends ServiceCase {
   }
   
   public void testInvokerException() throws Exception {
-    when(mockInvoker.invoke(anyString(), anyString(), anyString(), anyString(), anyString(), any(Object[].class), any(String[].class)))
+    when(mockInvoker.invoke((MBeanServerConnection) any(), anyString(), anyString(), any(Object[].class), any(String[].class)))
       .thenThrow(new MBeanException(new Exception(), "Expected"));
     
     callService.setResultValueTranslator(null);
@@ -150,7 +155,7 @@ public class JmxOperationCallServiceTest extends ServiceCase {
     String newMetadataKay = "NewMetadataKey";
     
     String operationReturnValue = "NewMetadataValue";
-    when(mockInvoker.invoke(anyString(), anyString(), anyString(), anyString(), anyString(), any(Object[].class), any(String[].class)))
+    when(mockInvoker.invoke((MBeanServerConnection) any(), anyString(), anyString(), any(Object[].class), any(String[].class)))
       .thenReturn(operationReturnValue);
     
     message.addObjectMetadata(existingObjectMetadataKey, existingObjectMetadataValue);
@@ -182,34 +187,41 @@ public class JmxOperationCallServiceTest extends ServiceCase {
     PayloadValueTranslator resultTranslator = new PayloadValueTranslator();
     
     PayloadValueTranslator param1 = new PayloadValueTranslator();
-    
-    MetadataValueTranslator param2 = new MetadataValueTranslator();
-    param2.setMetadataKey("metadataKey");
-    
-    ObjectMetadataValueTranslator param3 = new ObjectMetadataValueTranslator();
-    param3.setMetadataKey("objectMetadataKey");
-    param3.setType("java.lang.Object");
-    
-    ConstantValueTranslator param4 = new ConstantValueTranslator();
-    param4.setAllowOverwrite(true);
-    param4.setValue("1");
-    param4.setType("java.lang.Integer");
-    
-    List<ValueTranslator> params = new ArrayList<>();
-    params.add(param1);
-    params.add(param2);
-    params.add(param3);
-    params.add(param4);
+    MetadataValueTranslator param2 = new MetadataValueTranslator("metadataKey", "java.lang.String");
+    ObjectMetadataValueTranslator param3 = new ObjectMetadataValueTranslator("objectMetadataKey", "java.lang.Object");
+    ConstantValueTranslator param4 = new ConstantValueTranslator("1", "java.lang.Integer", true);
+    List<ValueTranslator> params = new ArrayList<>(Arrays.asList(param1, param2, param3, param4));
     
     JmxOperationCallService callService = new JmxOperationCallService();
-    callService.setJmxServiceUrl("service:jmx:rmi://host[:connectorPort]urlpath");
+    JmxConnection conn = new JmxConnection();
+    conn.setJmxServiceUrl("service:jmx:rmi://host[:connectorPort]urlpath");
+    conn.setUsername("jmxUsername");
+    conn.setPassword("jmxPassword");
+    callService.setConnection(conn);
     callService.setObjectName("com.adaptris:type=Workflow,adapter=MyAdapter,channel=Channel1,id=Workflow1");
     callService.setOperationName("myMethodToInvoke");
-    callService.setUsername("jmxUsername");
-    callService.setPassword("jmxPassword");
     callService.setOperationParameters(params);
     callService.setResultValueTranslator(resultTranslator);
     
+    return callService;
+  }
+
+  @Override
+  protected Object retrieveObjectForCastorRoundTrip() {
+    PayloadValueTranslator resultTranslator = new PayloadValueTranslator();
+    PayloadValueTranslator param1 = new PayloadValueTranslator();
+    MetadataValueTranslator param2 = new MetadataValueTranslator("metadataKey", "java.lang.String");
+    ObjectMetadataValueTranslator param3 = new ObjectMetadataValueTranslator("objectMetadataKey", "java.lang.Object");
+    ConstantValueTranslator param4 = new ConstantValueTranslator("1", "java.lang.Integer", true);
+    List<ValueTranslator> params = new ArrayList<>(Arrays.asList(param1, param2, param3, param4));
+
+    JmxOperationCallService callService = new JmxOperationCallService();
+    callService.setConnection(new JmxConnection());
+    callService.setObjectName("com.adaptris:type=Workflow,adapter=MyAdapter,channel=Channel1,id=Workflow1");
+    callService.setOperationName("myMethodToInvoke");
+    callService.setOperationParameters(params);
+    callService.setResultValueTranslator(resultTranslator);
+
     return callService;
   }
 
