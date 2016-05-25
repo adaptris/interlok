@@ -84,7 +84,9 @@ public class SimpleNotificationSerializer implements NotificationSerializer {
     try (OutputStream out = msg.getOutputStream()) {
       p.store(out, "");
     }
-    msg.getObjectHeaders().put(OBJ_METADATA_USERDATA, n.getUserData());
+    if (n.getUserData() != null) {
+      msg.getObjectHeaders().put(OBJ_METADATA_USERDATA, n.getUserData());
+    }
     return msg;
   }
 }

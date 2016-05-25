@@ -40,6 +40,7 @@ public class JmxConnectionTest {
   @Test
   public void testLocalJmx() throws Exception {
     JmxConnection conn = new JmxConnection();
+    conn.setAdditionalDebug(true);
     conn.init();
     assertNotNull(conn.mbeanServerConnection());
   }

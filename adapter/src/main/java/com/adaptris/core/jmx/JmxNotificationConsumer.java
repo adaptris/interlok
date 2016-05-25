@@ -38,6 +38,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageConsumerImp;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.FifoMutexLock;
@@ -65,6 +66,8 @@ public class JmxNotificationConsumer extends AdaptrisMessageConsumerImp implemen
   private transient ObjectName actualObjectName;
   private transient ScheduledExecutorService scheduler;
   private transient FifoMutexLock locker;
+  // Not configurable
+  private TimeInterval retryInterval;
 
   public JmxNotificationConsumer() {
     setSerializer(new SimpleNotificationSerializer());
@@ -181,8 +184,8 @@ public class JmxNotificationConsumer extends AdaptrisMessageConsumerImp implemen
 
   private void scheduleNext() {
     if (scheduler != null && locker.permitAvailable()) {
-      log.trace("Scheduling next attempt in {}ms", DEFAULT_INTERVAL.toMilliseconds());
-      scheduler.schedule(new NotificationRetry(), DEFAULT_INTERVAL.toMilliseconds(), TimeUnit.MILLISECONDS);
+      log.trace("Scheduling next attempt in {}ms", retryInterval());
+      scheduler.schedule(new NotificationRetry(), retryInterval(), TimeUnit.MILLISECONDS);
     }
   }
 
@@ -219,6 +222,18 @@ public class JmxNotificationConsumer extends AdaptrisMessageConsumerImp implemen
         scheduleNext();
       }
     }
+  }
+
+  TimeInterval getRetryInterval() {
+    return retryInterval;
+  }
+
+  void setRetryInterval(TimeInterval t) {
+    this.retryInterval = Args.notNull(t, "retryInterval");
+  }
+
+  long retryInterval() {
+    return getRetryInterval() != null ? getRetryInterval().toMilliseconds() : DEFAULT_INTERVAL.toMilliseconds();
   }
 
 }

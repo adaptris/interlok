@@ -117,6 +117,9 @@ public class XmlNotificationSerializer implements NotificationSerializer {
         xmlBuilder.writeDocument(out, encoding);
         msg.setContentEncoding(encoding);
       }
+      if (n.getUserData() != null) {
+        msg.getObjectHeaders().put(OBJ_METADATA_USERDATA, n.getUserData());
+      }
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }

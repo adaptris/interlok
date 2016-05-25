@@ -194,7 +194,7 @@ public class JmxOperationCallServiceTest extends ServiceCase {
     
     JmxOperationCallService callService = new JmxOperationCallService();
     JmxConnection conn = new JmxConnection();
-    conn.setJmxServiceUrl("service:jmx:rmi://host[:connectorPort]urlpath");
+    conn.setJmxServiceUrl("service:jmx:jmxmp://localhost:5555");
     conn.setUsername("jmxUsername");
     conn.setPassword("jmxPassword");
     callService.setConnection(conn);
