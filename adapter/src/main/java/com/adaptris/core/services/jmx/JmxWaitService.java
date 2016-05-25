@@ -16,32 +16,22 @@
 
 package com.adaptris.core.services.jmx;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
-import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.ServiceImp;
 import com.adaptris.core.interceptor.InFlightWorkflowInterceptor;
 import com.adaptris.core.jmx.JmxConnection;
-import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -62,34 +52,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Execute a JMX operation", tag = "service,jmx", recommended = {JmxConnection.class})
 @DisplayOrder(order = {"objectName", "operationName", "operationParameters", "negate"})
-public class JmxWaitService extends ServiceImp {
+public class JmxWaitService extends JmxOperationServiceImpl {
   
   private static final TimeInterval DEFAULT_INTERVAL = new TimeInterval(10L, TimeUnit.SECONDS);
 
-  @Valid
-  @NotNull
-  @AutoPopulated
-  private AdaptrisConnection connection;
-
   @InputFieldDefault(value = "false")
   private Boolean negate;
-
-  /**
-   * The fully qualified object name string, pointing to the object containing your chosen operation.
-   */
-  @NotBlank
-  private String objectName;
-  
-  /**
-   * The name of the operation that belongs to the ObjectName specified by the jmx-service-url.
-   */
-  @NotBlank
-  private String operationName;
-  
-  @Valid
-  @NotNull
-  @AutoPopulated
-  private List<ValueTranslator> operationParameters;
   
   @Valid
   @AdvancedConfig
@@ -98,8 +66,7 @@ public class JmxWaitService extends ServiceImp {
   private transient JmxOperationInvoker invoker;
 
   public JmxWaitService() {
-    this.setOperationParameters(new ArrayList<ValueTranslator>());
-    setConnection(new JmxConnection());
+    super();
     setInvoker(new JmxOperationInvoker<Boolean>());
   }
 
@@ -107,14 +74,13 @@ public class JmxWaitService extends ServiceImp {
   public void doService(AdaptrisMessage message) throws ServiceException {
     try {
       MBeanServerConnection mbeanConn = getConnection().retrieveConnection(JmxConnection.class).mbeanServerConnection();
-      Boolean result = getInvoker().invoke(mbeanConn, getObjectName(), getOperationName(), parametersToArray(message),
-          parametersToTypeArray(message));
-      boolean conditionReached = evaluate(result);
+      Object[] params = parametersToArray(message);
+      String[] paramTypes = parametersToTypeArray(message);
+      ObjectName objectNameInst = ObjectName.getInstance(getObjectName());
+      boolean conditionReached = evaluate(getInvoker().invoke(mbeanConn, objectNameInst, getOperationName(), params, paramTypes));
       while (!conditionReached) {
         Thread.sleep(retryInterval());
-        result = getInvoker().invoke(mbeanConn, getObjectName(), getOperationName(), parametersToArray(message),
-            parametersToTypeArray(message));
-        conditionReached = evaluate(result);
+        conditionReached = evaluate(getInvoker().invoke(mbeanConn, objectNameInst, getOperationName(), params, paramTypes));
       }
     } catch (Exception e) {
       throw ExceptionHelper.wrapServiceException(e);
@@ -126,88 +92,6 @@ public class JmxWaitService extends ServiceImp {
       return !result;
     }
     return result;
-  }
-
-  private Object[] parametersToArray(AdaptrisMessage message) throws CoreException {
-    Object[] returnArray = new Object[this.getOperationParameters().size()];
-    for(int count = 0; count < this.getOperationParameters().size(); count ++)
-      returnArray[count] = this.getOperationParameters().get(count).getValue(message);
-    
-    return returnArray;
-  }
-  
-  private String[] parametersToTypeArray(AdaptrisMessage message) {
-    String[] returnArray = new String[this.getOperationParameters().size()];
-    for(int count = 0; count < this.getOperationParameters().size(); count ++)
-      returnArray[count] = this.getOperationParameters().get(count).getType();
-    
-    return returnArray;
-  }
-
-  @Override
-  public void prepare() throws CoreException {
-    getConnection().prepare();
-  }
-
-  @Override
-  protected void initService() throws CoreException {
-    LifecycleHelper.init(getConnection());
-  }
-
-  @Override
-  protected void closeService() {
-    LifecycleHelper.close(getConnection());
-  }
-
-  @Override
-  public void stop() {
-    super.stop();
-    LifecycleHelper.stop(getConnection());
-  }
-
-  @Override
-  public void start() throws CoreException {
-    super.start();
-    LifecycleHelper.start(getConnection());
-  }
-
-
-  public String getObjectName() {
-    return objectName;
-  }
-
-  public void setObjectName(String objectName) {
-    this.objectName = Args.notNull(objectName, "objectName");
-  }
-
-  public String getOperationName() {
-    return operationName;
-  }
-
-  public void setOperationName(String operationName) {
-    this.operationName = operationName;
-  }
-
-  public List<ValueTranslator> getOperationParameters() {
-    return operationParameters;
-  }
-
-  public void setOperationParameters(List<ValueTranslator> parameters) {
-    this.operationParameters = parameters;
-  }
-
-  /**
-   * @return the connection
-   */
-  public AdaptrisConnection getConnection() {
-    return connection;
-  }
-
-  /**
-   * @param c the connection to set
-   */
-  public void setConnection(AdaptrisConnection c) {
-    this.connection = Args.notNull(c, "connection");
   }
 
   /**
