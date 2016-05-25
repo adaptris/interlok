@@ -44,10 +44,13 @@ public class RandomIntervalPoller extends FixedIntervalPoller {
     super(interval);
   }
 
+  @Override
   protected void scheduleTask() {
-    long delay = ThreadLocalRandom.current().nextLong(pollInterval());
-    pollerTask = executor.schedule(new MyPollerTask(), delay, TimeUnit.MILLISECONDS);
-    log.trace("Next Execution scheduled in {}ms", delay);
+    if (executor != null && !executor.isShutdown()) {
+      long delay = ThreadLocalRandom.current().nextLong(pollInterval());
+      pollerTask = executor.schedule(new MyPollerTask(), delay, TimeUnit.MILLISECONDS);
+      log.trace("Next Execution scheduled in {}ms", delay);
+    }
   }
 
   private class MyPollerTask implements Runnable {

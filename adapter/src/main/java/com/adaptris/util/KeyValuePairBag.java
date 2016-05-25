@@ -19,6 +19,7 @@ package com.adaptris.util;
 import java.util.AbstractCollection;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -220,13 +221,16 @@ public abstract class KeyValuePairBag extends AbstractCollection<KeyValuePair> {
   }
 
   /**
-   * Convert a KeyValuePairSet into a Properties object.
+   * Convert a {@link KeyValuePairBag} into a Properties object.
    *
    * @param kvps the key value pair set to convert.
    * @return a Properties object containing the key and value pairs.
    */
   public static Properties asProperties(KeyValuePairBag kvps) {
     Properties result = new Properties();
+    if (kvps == null) {
+      return result;
+    }
     for (KeyValuePair kvp : kvps.getKeyValuePairs()) {
       result.setProperty(kvp.getKey(), kvp.getValue());
     }
@@ -234,7 +238,25 @@ public abstract class KeyValuePairBag extends AbstractCollection<KeyValuePair> {
   }
 
   /**
+   * Convert a {@link KeyValuePairBag} into a Map object.
+   *
+   * @param kvps the key value pair set to convert.
+   * @return a Map object containing the key and value pairs.
+   */
+  public static Map<String, String> asMap(KeyValuePairBag kvps) {
+    Map<String, String> result = new HashMap<String, String>();
+    if (kvps == null) {
+      return result;
+    }
+    for (KeyValuePair kvp : kvps.getKeyValuePairs()) {
+      result.put(kvp.getKey(), kvp.getValue());
+    }
+    return result;
+  }
+
+  /**
    * Convenience method to add all the associated properties to this collection
+   * 
    * @param p collection of properties to add.
    */
   public void addAll(Properties p) {

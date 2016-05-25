@@ -64,6 +64,13 @@ public class ConstantValueTranslator implements ValueTranslator {
     this.setType(DEFAULT_PARAMETER_TYPE);
   }
 
+  public ConstantValueTranslator(String value, String type, Boolean allowOverwrite) {
+    this();
+    setValue(value);
+    setType(type);
+    setAllowOverwrite(allowOverwrite);
+  }
+
   @Override
   public void setValue(AdaptrisMessage message, Object object) {
     if(this.getAllowOverwrite()) {

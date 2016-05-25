@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -47,15 +48,22 @@ public class ObjectMetadataValueTranslator implements ValueTranslator {
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
     
   @NotBlank
-  @AutoPopulated
   private String metadataKey;
 
   @NotBlank
+  @AutoPopulated
   private String type;
   
   public ObjectMetadataValueTranslator() {
+    setType("java.lang.Object");
   }
   
+  public ObjectMetadataValueTranslator(String metadataKey, String type) {
+    this();
+    setMetadataKey(metadataKey);
+    setType(type);
+  }
+
   public Object getValue(AdaptrisMessage message) {
     if(!StringUtils.isEmpty(metadataKey))
       return message.getObjectMetadata().get(this.getMetadataKey());
@@ -79,7 +87,7 @@ public class ObjectMetadataValueTranslator implements ValueTranslator {
 
   @Override
   public void setType(String type) {
-    this.type = type;
+    this.type = Args.notBlank(type, "type");
   }
 
   public String getMetadataKey() {
@@ -87,7 +95,7 @@ public class ObjectMetadataValueTranslator implements ValueTranslator {
   }
 
   public void setMetadataKey(String metadataKey) {
-    this.metadataKey = metadataKey;
+    this.metadataKey = Args.notBlank(metadataKey, "metadataKey");
   }
 
 }

@@ -290,7 +290,7 @@
 
   <target name="ivy-report" depends="prepare-ivy" description="Produce an IVY dependency report">
     <mkdir dir="${ivy.report.dir}"/>
-    <ivy:report todir="${ivy.report.dir}" conf="compile,runtime" graph="false"/>
+    <ivy:report todir="${ivy.report.dir}" conf="compile,runtime,optional" graph="false"/>
   </target>
 
 </project>
