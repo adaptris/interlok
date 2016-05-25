@@ -31,10 +31,10 @@
     <dependency org="commons-net" name="commons-net" rev="3.3" conf="compile->default" />
     <dependency org="commons-pool" name="commons-pool" rev="1.6" conf="compile->default" />
 
-    <dependency org="org.slf4j" name="jcl-over-slf4j" rev="1.7.12" conf="compile->default" />
+    <dependency org="org.slf4j" name="jcl-over-slf4j" rev="1.7.12" conf="optional->default" />
     <dependency org="org.slf4j" name="slf4j-api" rev="1.7.12" conf="compile->default" />
-    <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.12" conf="compile->default"/>
-    <dependency org="org.slf4j" name="jul-to-slf4j" rev="1.7.12" conf="compile->default" />
+    <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.12" conf="optional->default"/>
+    <dependency org="org.slf4j" name="jul-to-slf4j" rev="1.7.12" conf="optional->default" />
 
     <dependency org="log4j" name="log4j" rev="1.2.17" force="true" conf="runtime->default;ant->default"/>
 
