@@ -26,6 +26,8 @@ import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import javax.validation.Valid;
 
+import org.apache.commons.io.IOUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -71,16 +73,11 @@ public class JmxConnection extends AllowsRetriesConnection {
   }
 
   @Override
-  protected void prepareConnection() throws CoreException {
-  }
+  protected void prepareConnection() throws CoreException {}
 
   @Override
   protected void initConnection() throws CoreException {
-    try {
-      doConnect();
-    } catch (Exception e) {
-      throw ExceptionHelper.wrapCoreException(e);
-    }
+    doConnect();
   }
 
   @Override
@@ -93,23 +90,37 @@ public class JmxConnection extends AllowsRetriesConnection {
 
   @Override
   protected void closeConnection() {
-    if (connector != null) {
-      try {
-        connector.close();
-      } catch (Exception ignored) {
-
-      }
-      connector = null;
-    }
-    connection = null;
+    closeQuietly();
   }
 
-  public MBeanServerConnection mbeanServerConnection() {
+  public MBeanServerConnection mbeanServerConnection() throws CoreException {
+    if (!validateJmx()) {
+      closeQuietly();
+      doConnect();
+    }
     return connection;
   }
 
+  private boolean validateJmx() {
+    boolean result = false;
+    try {
+      if (connection != null) {
+        int beans = connection.getMBeanCount();
+        result = true;
+      }
+    } catch (IOException e) {
+      result = false;
+    }
+    return result;
+  }
 
-  private void doConnect() throws Exception {
+  private void closeQuietly() {
+    IOUtils.closeQuietly(connector);
+    connector = null;
+    connection = null;
+  }
+
+  private void doConnect() throws CoreException {
     int attemptCount = 0;
     while (connection == null) {
       try {
@@ -118,7 +129,7 @@ public class JmxConnection extends AllowsRetriesConnection {
           log.trace("Attempting connection to [{}]", jmxServiceUrlForLogging());
         }
         connection = createConnection();
-      } catch (IOException e) {
+      } catch (Exception e) {
         if (attemptCount == 1) {
           log.warn("Cannot connect to [{}]", jmxServiceUrlForLogging(), e);
         }
@@ -128,13 +139,19 @@ public class JmxConnection extends AllowsRetriesConnection {
         } else {
           log.warn("Attempt [{}] failed for [{}], retrying", attemptCount, jmxServiceUrlForLogging());
           log.info(createLoggingStatement(attemptCount));
-          Thread.sleep(connectionRetryInterval());
+          waitQuietly();
           continue;
         }
       }
     }
   }
 
+  private void waitQuietly() {
+    try {
+      Thread.sleep(connectionRetryInterval());
+    } catch (InterruptedException e) {
+    }
+  }
 
   private MBeanServerConnection createConnection() throws IOException, AdaptrisSecurityException {
     MBeanServerConnection result = null;
