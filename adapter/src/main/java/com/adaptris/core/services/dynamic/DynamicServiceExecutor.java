@@ -40,6 +40,7 @@ import com.adaptris.core.EventHandlerAware;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -96,7 +97,7 @@ public class DynamicServiceExecutor extends ServiceImp implements EventHandlerAw
       stop(service);
     }
     catch (IOException | CoreException e) {
-      rethrowServiceException(e);
+      throw ExceptionHelper.wrapServiceException(e);
     }
   }
 

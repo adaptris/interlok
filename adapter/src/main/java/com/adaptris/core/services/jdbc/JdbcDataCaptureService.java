@@ -41,6 +41,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.jdbc.DatabaseConnection;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.text.xml.SimpleNamespaceContext;
@@ -267,7 +268,7 @@ public class JdbcDataCaptureService extends JdbcDataCaptureServiceImpl {
     }
     catch (Exception e) {
       rollback(conn, msg);
-      rethrowServiceException(e);
+      throw ExceptionHelper.wrapServiceException(e);
     } finally {
       JdbcUtil.closeQuietly(conn);
     }

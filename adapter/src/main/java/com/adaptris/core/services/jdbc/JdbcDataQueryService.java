@@ -39,6 +39,7 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.jdbc.DatabaseConnection;
 import com.adaptris.core.jdbc.JdbcService;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.XmlHelper;
@@ -177,7 +178,7 @@ public class JdbcDataQueryService extends JdbcService {
     }
     catch (Exception e) {
       rollback(conn, msg);
-      rethrowServiceException(e);
+      throw ExceptionHelper.wrapServiceException(e);
     }
     finally {
       JdbcUtil.closeQuietly(result);

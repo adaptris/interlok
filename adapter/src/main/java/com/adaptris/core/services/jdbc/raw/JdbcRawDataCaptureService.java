@@ -33,6 +33,7 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.jdbc.JdbcDataCaptureServiceImpl;
 import com.adaptris.core.services.jdbc.JdbcStatementParameter;
 import com.adaptris.core.services.jdbc.StatementParameterList;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.JdbcUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
@@ -118,7 +119,7 @@ public class JdbcRawDataCaptureService extends JdbcDataCaptureServiceImpl {
     }
     catch (Exception e) {
       rollback(conn, msg);
-      rethrowServiceException(e);
+      throw ExceptionHelper.wrapServiceException(e);
     } finally {
       JdbcUtil.closeQuietly(conn);
     }
