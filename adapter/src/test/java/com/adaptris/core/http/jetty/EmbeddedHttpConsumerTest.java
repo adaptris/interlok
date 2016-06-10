@@ -19,6 +19,7 @@ package com.adaptris.core.http.jetty;
 import static com.adaptris.core.http.jetty.EmbeddedJettyHelper.URL_TO_POST_TO;
 import static com.adaptris.core.http.jetty.EmbeddedJettyHelper.XML_PAYLOAD;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -34,6 +35,7 @@ import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.Workflow;
 import com.adaptris.core.http.HttpConsumerExample;
 import com.adaptris.core.http.MetadataContentTypeProvider;
+import com.adaptris.core.http.auth.ConfiguredUsernamePassword;
 import com.adaptris.core.http.client.net.StandardHttpProducer;
 import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.services.WaitService;
@@ -125,6 +127,41 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
       helper.stopServer();
     }
   }
+
+
+  public void testBasicConsumeWorkflow_WithACL() throws Exception {
+
+    EmbeddedJettyHelper helper = new EmbeddedJettyHelper();
+    helper.startServer();
+
+    MockMessageProducer mockProducer = new MockMessageProducer();
+    EmbeddedConnection embedded = new EmbeddedConnection();
+    HashUserRealmProxy hr = new HashUserRealmProxy();
+    hr.setFilename(PROPERTIES.getProperty(HttpConsumerTest.JETTY_USER_REALM));
+
+    SecurityConstraint securityConstraint = new SecurityConstraint();
+    securityConstraint.setMustAuthenticate(true);
+    securityConstraint.setRoles("user");
+
+    hr.setSecurityConstraints(Arrays.asList(securityConstraint));
+    embedded.setSecurityHandler(hr);
+    Channel channel = JettyHelper.createChannel(embedded, JettyHelper.createConsumer(URL_TO_POST_TO), mockProducer);
+    try {
+      start(channel);
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
+      msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
+      httpProducer.setAuthenticator(new ConfiguredUsernamePassword("user", "password"));
+      start(httpProducer);
+      AdaptrisMessage reply = httpProducer.request(msg, helper.createProduceDestination());
+      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
+      doAssertions(mockProducer);
+    } finally {
+      stop(httpProducer);
+      stop(channel);
+      helper.stopServer();
+    }
+  }
+
 
   public void testBasicConsumeWorkflow_AcrossRestarts() throws Exception {
     EmbeddedJettyHelper helper = new EmbeddedJettyHelper();

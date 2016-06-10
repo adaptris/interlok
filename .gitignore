@@ -12,6 +12,8 @@ build.properties
 *.iml
 *.iws
 *.class
+.vscode
+.gradle
 
 # Project artefacts from building.
 cobertura.ser

@@ -5,14 +5,14 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.management.webserver;
 
@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.Servlet;
@@ -43,6 +44,8 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.core.http.jetty.SecurityHandlerWrapper;
+
 /**
  * Implementation of the {@link ServerManager} interface for managing Jetty servers.
  * <p>
@@ -59,6 +62,7 @@ public class JettyServerManager implements ServerManager {
   public static final String CONNECTOR_NAMES = "connectorNames";
   public static final String CONTEXT_PATH = "contextPath";
   public static final String ROLES = "roles";
+  public static final String SECURITY_CONSTRAINTS = "securityConstraints";
 
   /**
    * Enable additional debug logging by specifying the system property {@code adp.jetty.debug} to true.
@@ -109,38 +113,45 @@ public class JettyServerManager implements ServerManager {
     for (Server server : servers) {
       WebAppContext rootWar = findRootContext(server);
       if (rootWar != null) {
-        log.trace("Adding servlet to existing ROOT.war");
-        rootWar.addServlet(servlet, (String) additionalProperties.get(CONTEXT_PATH));
-        debugLogging("{}: Current Servlet Mappings: {}", rootWar.getWar(),
-            Arrays.asList(rootWar.getServletHandler().getServletMappings()));
-        debugLogging("{}: Current Servlets: {}", rootWar.getWar(), Arrays.asList(rootWar.getServletHandler().getServlets()));
+        reconfigureWar(rootWar, servlet, additionalProperties);
+        debugLogging("{}: Current Servlet Handler: {}", rootWar.getWar(), rootWar.getServletHandler().dump());
+        debugLogging("{}: Current Security: {}", rootWar.getWar(), rootWar.getSecurityHandler().dump());
         // log.trace("ROOT.war config : {}", AggregateLifeCycle.dump(rootWar));
         addedAtLeastOnce = true;
       }
     }
     if (!addedAtLeastOnce) {
-      addDeployment(
-          additionalProperties,
-          createServletHandler(servlet, (String) additionalProperties.get(CONTEXT_PATH),
-              (String) additionalProperties.get(CONNECTOR_NAMES)));
+      addDeployment(additionalProperties, createServletHandler(servlet, additionalProperties));
     }
 
   }
 
+
+  private void reconfigureWar(WebAppContext rootWar, ServletHolder servlet, HashMap<String, Object> additionalProperties)
+      throws Exception {
+    // Have to stop the WAR before we can reconfigure the security handler, not true if we just want
+    // to add a new servlet; but it's probaby good practice to.
+    rootWar.stop();
+    String pathSpec = (String) additionalProperties.get(CONTEXT_PATH);
+    log.trace("Adding servlet to existing ROOT.war against {}", pathSpec);
+    rootWar.addServlet(servlet, pathSpec);
+    SecurityHandlerWrapper w = (SecurityHandlerWrapper) additionalProperties.get(SECURITY_CONSTRAINTS);
+    if (w != null) {
+      rootWar.setSecurityHandler(w.createSecurityHandler());
+    }
+    rootWar.start();
+  }
+
   @Override
   public void addWebapp(String path, HashMap<String, Object> additionalProperties) throws Exception {
-    addDeployment(
-        additionalProperties,
-        createWebappHandler(path, (String) additionalProperties.get(CONTEXT_PATH),
-            (String) additionalProperties.get(CONNECTOR_NAMES)));
+    addDeployment(additionalProperties, createWebappHandler(path, (String) additionalProperties.get(CONTEXT_PATH),
+        (String) additionalProperties.get(CONNECTOR_NAMES)));
   }
 
   @Override
   public void addWebappDir(String path, HashMap<String, Object> additionalProperties) throws Exception {
-    addDeployment(
-        additionalProperties,
-        createWebappDirHandler(path, (String) additionalProperties.get(CONTEXT_PATH),
-            (String) additionalProperties.get(CONNECTOR_NAMES)));
+    addDeployment(additionalProperties, createWebappDirHandler(path, (String) additionalProperties.get(CONTEXT_PATH),
+        (String) additionalProperties.get(CONNECTOR_NAMES)));
   }
 
   /**
@@ -157,13 +168,11 @@ public class JettyServerManager implements ServerManager {
       Set<String> roles = null;
       try {
         roles = (Set<String>) additionalProperties.get(ROLES);
-      }
-      catch (Exception ex) {
+      } catch (Exception ex) {
       }
       if (host == null) {
         addHandlerToServer(server, handler, roles);
-      }
-      else {
+      } else {
         Connector[] connectors = server.getConnectors();
         for (Connector connector : connectors) {
           if (host.equalsIgnoreCase(connector.getHost())) {
@@ -189,8 +198,7 @@ public class JettyServerManager implements ServerManager {
     log.trace("Adding Handler roles : {}", roles);
     if (handler == null) {
       throw new NullPointerException("No configured handler!");
-    }
-    else if (handler instanceof HandlerCollection) {
+    } else if (handler instanceof HandlerCollection) {
       HandlerCollection outer = (HandlerCollection) handler;
 
       if (roles == null) {
@@ -201,15 +209,14 @@ public class JettyServerManager implements ServerManager {
             debugLogging("Adding {} to handler {}", deploymentHandler.getDisplayName(), inner);
             inner.addHandler(deploymentHandler);
           }
-        }        
-      }
-      else {
+        }
+      } else {
         Handler[] handlers = outer.getHandlers();
         for (Handler childHandler : handlers) {
           if (childHandler instanceof ConstraintSecurityHandler) {
             ConstraintSecurityHandler securityHandler = (ConstraintSecurityHandler) childHandler;
-            securityHandler.addConstraintMapping(createConstraintMapping(deploymentHandler.getContextPath(),
-                roles.toArray(new String[roles.size()])));
+            securityHandler.addConstraintMapping(
+                createConstraintMapping(deploymentHandler.getContextPath(), roles.toArray(new String[roles.size()])));
             HandlerCollection inner = (HandlerCollection) securityHandler.getHandler();
             if (inner != null) {
               debugLogging("Adding {} to handler {}", deploymentHandler.getDisplayName(), inner);
@@ -218,8 +225,7 @@ public class JettyServerManager implements ServerManager {
           }
         }
       }
-    }
-    else {
+    } else {
       throw new Exception("Unexpected handler class: " + handler.getClass());
     }
 
@@ -247,18 +253,20 @@ public class JettyServerManager implements ServerManager {
     return result;
   }
 
-  private ServletContextHandler createServletHandler(ServletHolder servlet, String contextPath, String port) throws Exception {
+  private ServletContextHandler createServletHandler(ServletHolder servlet, Map<String, Object> cfg) throws Exception {
+    String contextPath = (String) cfg.get(CONTEXT_PATH);
+    String port = (String) cfg.get(CONNECTOR_NAMES);
+    SecurityHandlerWrapper securityHandler = (SecurityHandlerWrapper) cfg.get(SECURITY_CONSTRAINTS);
     ServletContextHandler contextHandler = new ServletContextHandler();
     contextHandler.setDisplayName("[ServletContextHandler for " + contextPath + "]");
     contextHandler.setAttribute(SERVLET_CONTEXT_PATH_ATTRIBUTE, contextPath);
     contextHandler.addServlet(servlet, contextPath);
     if (port != null) {
-      contextHandler.setConnectorNames(new String[]
-      {
-        port
-      });
+      contextHandler.setConnectorNames(new String[] {port});
     }
-
+    if (securityHandler != null) {
+      contextHandler.setSecurityHandler(securityHandler.createSecurityHandler());
+    }
     return contextHandler;
   }
 
@@ -275,10 +283,7 @@ public class JettyServerManager implements ServerManager {
     context.setWar(path);
     context.setContextPath(contextPath);
     if (port != null) {
-      context.setConnectorNames(new String[]
-      {
-        port
-      });
+      context.setConnectorNames(new String[] {port});
     }
 
     return context;
@@ -297,10 +302,7 @@ public class JettyServerManager implements ServerManager {
     context.setResourceBase(path);
     context.setContextPath(contextPath);
     if (port != null) {
-      context.setConnectorNames(new String[]
-      {
-        port
-      });
+      context.setConnectorNames(new String[] {port});
     }
 
     return context;
@@ -353,8 +355,7 @@ public class JettyServerManager implements ServerManager {
     for (ServletHolder holder : handler.getServlets()) {
       if (toRemove.equals(holder)) {
         names.add(holder.getName());
-      }
-      else {
+      } else {
         servletsToKeep.add(holder);
       }
     }
@@ -394,32 +395,28 @@ public class JettyServerManager implements ServerManager {
           removeQuietly(hc, childHandler);
         }
       }
-    }
-    else if (handler instanceof SecurityHandler) {
+    } else if (handler instanceof SecurityHandler) {
       SecurityHandler sh = (SecurityHandler) handler;
       Handler[] childHandlers = sh.getChildHandlersByClass(HandlerCollection.class);
       for (Handler childHandler : childHandlers) {
         destroyContext(contextPath, childHandler);
       }
-    }
-    else if (handler instanceof ServletContextHandler) {
+    } else if (handler instanceof ServletContextHandler) {
       ServletContextHandler sch = (ServletContextHandler) handler;
       String servletPath = (String) sch.getAttribute(SERVLET_CONTEXT_PATH_ATTRIBUTE);
       if (contextPath.equals(servletPath)) {
         destroyQuietly(sch);
         return true;
-      }
-      else if (contextPath.equals(sch.getContextPath())) {
+      } else if (contextPath.equals(sch.getContextPath())) {
         destroyQuietly(sch);
         return true;
       }
-    }
-    else if (handler instanceof ContextHandler) {
+    } else if (handler instanceof ContextHandler) {
       ContextHandler ch = (ContextHandler) handler;
-        if (contextPath.equals(ch.getContextPath())) {
-          destroyQuietly(ch);
-          return true;
-        }
+      if (contextPath.equals(ch.getContextPath())) {
+        destroyQuietly(ch);
+        return true;
+      }
     }
     return false;
   }
@@ -429,8 +426,7 @@ public class JettyServerManager implements ServerManager {
     try {
       ch.stop();
       ch.destroy();
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
 
     }
   }
@@ -438,11 +434,11 @@ public class JettyServerManager implements ServerManager {
   private void removeQuietly(HandlerCollection parent, Handler child) {
     try {
       parent.removeHandler(child);
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       ;
     }
   }
+
   @Override
   public void startDeployment(String contextPath) throws Exception {
     for (Server server : servers) {
@@ -472,8 +468,7 @@ public class JettyServerManager implements ServerManager {
           || contextPath.equals(contextHandler.getAttribute(SERVLET_CONTEXT_PATH_ATTRIBUTE))) {
         if (start) {
           contextHandler.start();
-        }
-        else {
+        } else {
           contextHandler.stop();
         }
       }

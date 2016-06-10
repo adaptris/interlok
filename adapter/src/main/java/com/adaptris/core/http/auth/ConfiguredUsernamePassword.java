@@ -39,7 +39,15 @@ public class ConfiguredUsernamePassword extends UserPassAuthentication {
   
   @InputFieldHint(style = "PASSWORD")
   private String password = null;
-  
+
+  public ConfiguredUsernamePassword() {}
+
+  public ConfiguredUsernamePassword(String username, String password) {
+    this();
+    setUsername(username);
+    setPassword(password);
+  }
+
   @Override
   protected PasswordAuthentication getPasswordAuthentication(AdaptrisMessage msg) throws CoreException {
     try {

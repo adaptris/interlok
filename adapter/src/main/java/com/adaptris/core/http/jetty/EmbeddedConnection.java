@@ -20,6 +20,11 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import javax.validation.Valid;
+
+import org.eclipse.jetty.security.SecurityHandler;
+import org.eclipse.jetty.webapp.WebAppContext;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -65,6 +70,9 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
   private Set<String> roles;
   @AdvancedConfig
   private TimeInterval maxStartupWait;
+  @Valid
+  @AdvancedConfig
+  private SecurityHandlerWrapper securityHandler;
 
   /**
    * @see AdaptrisConnectionImp#AdaptrisConnectionImp()
@@ -162,6 +170,7 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
       additionalProperties.put(JettyServerManager.CONNECTOR_NAMES, getConnectorName());
       additionalProperties.put(JettyServerManager.ROLES, getRoles());
       additionalProperties.put(JettyServerManager.CONTEXT_PATH, wrapper.getUrl());
+      additionalProperties.put(JettyServerManager.SECURITY_CONSTRAINTS, getSecurityHandler());
       serverManager.addServlet(wrapper.getServletHolder(), additionalProperties);
       serverManager.startDeployment(wrapper.getUrl());
       log.trace("Added " + wrapper.getServletHolder() + " against " + wrapper.getUrl());
@@ -233,5 +242,27 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
 
   long maxStartupWaitTimeMs() {
     return getMaxStartupWait() != null ? getMaxStartupWait().toMilliseconds() : DEFAULT_MAX_WAIT.toMilliseconds();
+  }
+
+  /**
+   * @return the securityHandler wrapper implementation
+   */
+  public SecurityHandlerWrapper getSecurityHandler() {
+    return securityHandler;
+  }
+
+  /**
+   * Specify the SecurityHandler implementation.
+   * <p>
+   * By specifying a {@link SecurityHandlerWrapper} implementation you will overwrite whatever {@link SecurityHandler}
+   * implementation that is present in the {@link WebAppContext}. If you have multiple instances of {@link EmbeddedConnection}
+   * configured inside your adapter, then results may be undefined; you are advised to configure a single {@code EmbeddedConnection}
+   * as a {@code shared-component} to avoid any issues.
+   * </p>
+   * 
+   * @param s the securityHandler wrapper implementation.
+   */
+  public void setSecurityHandler(SecurityHandlerWrapper s) {
+    securityHandler = s;
   }
 }
