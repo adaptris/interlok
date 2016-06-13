@@ -21,8 +21,6 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-import org.perf4j.aop.Profiled;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -117,7 +115,6 @@ public class DefaultSmtpProducer extends MailProducer {
    *      ProduceDestination)
    */
   @Override
-  @Profiled(tag = "{$this.getClass().getSimpleName()}.produce()", logger = "com.adaptris.perf4j.lms.TimingLogger")
   public void produce(AdaptrisMessage msg, ProduceDestination destination)
       throws ProduceException {
     try {

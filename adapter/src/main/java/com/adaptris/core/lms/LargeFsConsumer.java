@@ -23,7 +23,6 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileCleaningTracker;
 import org.apache.commons.io.FileDeleteStrategy;
-import org.perf4j.aop.Profiled;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
@@ -108,7 +107,6 @@ public class LargeFsConsumer extends FsConsumer {
 
 
   @Override
-  @Profiled(tag = "{$this.getClass().getSimpleName()}.processFile()", logger = "com.adaptris.perf4j.lms.TimingLogger")
   protected int processFile(File originalFile) throws CoreException {
     int rc = 0;
     try {

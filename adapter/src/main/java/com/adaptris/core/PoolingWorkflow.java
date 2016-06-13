@@ -27,7 +27,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericObjectPool;
-import org.perf4j.aop.Profiled;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
@@ -703,7 +702,6 @@ public class PoolingWorkflow extends WorkflowImp {
     // This is just really a frig so that we can get profiling
     // information out from PoolingWorkflow as $this by this time
     // isn't all that useful...
-    @Profiled(tag = "PoolingWorkflow({$0})", logger = "com.adaptris.perf4j.TimingLogger")
     public void handleMessage(String id, AdaptrisMessage msg) {
       AdaptrisMessage wip = null;
       workflowStart(msg);

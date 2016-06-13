@@ -24,8 +24,6 @@ import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.Properties;
 
-import org.perf4j.aop.Profiled;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -101,7 +99,6 @@ public class SimpleHttpProducer extends HttpProducer {
    *      ProduceDestination, long)
    */
   @Override
-  @Profiled(tag = "{$this.getClass().getSimpleName()}.request()", logger = "com.adaptris.perf4j.http.TimingLogger")
   protected AdaptrisMessage doRequest(AdaptrisMessage msg,
                                       ProduceDestination destination,
                                       long timeout) throws ProduceException {

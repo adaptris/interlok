@@ -34,8 +34,6 @@ import java.util.concurrent.TimeUnit;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import org.perf4j.aop.Profiled;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
@@ -162,7 +160,6 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
    * @return the number of files processed.
    * @throws CoreException wrapping any other Exception.
    */
-  @Profiled(tag = "{$this.getClass().getSimpleName()}.processFile()", logger = "com.adaptris.perf4j.fs.TimingLogger")
   protected abstract int processFile(File f) throws CoreException;
 
   /**

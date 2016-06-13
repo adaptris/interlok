@@ -27,7 +27,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
-import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -360,7 +359,6 @@ public abstract class WorkflowImp implements Workflow {
 
   /** @see com.adaptris.core.Workflow#handleProduceException() */
   @Override
-  @Profiled(tag = "{$this.getClass().getSimpleName()}.handleProduceException()", logger = "com.adaptris.perf4j.TimingLogger")
   public void handleProduceException() {
     produceExceptionHandler.handle(this);
   }
@@ -390,7 +388,6 @@ public abstract class WorkflowImp implements Workflow {
    * @see com.adaptris.core.Workflow#handleBadMessage(AdaptrisMessage)
    */
   @Override
-  @Profiled(tag = "{$this.getClass().getSimpleName()}.handleBadMessage()", logger = "com.adaptris.perf4j.TimingLogger")
   public void handleBadMessage(AdaptrisMessage msg) {
     try {
       log.debug("handling bad message");
@@ -407,7 +404,6 @@ public abstract class WorkflowImp implements Workflow {
     }
   }
 
-  @Profiled(tag = "{$this.getClass().getSimpleName()}.sendMessageLifecycleEvent()", logger = "com.adaptris.perf4j.TimingLogger")
   protected void sendMessageLifecycleEvent(AdaptrisMessage wip) {
     try {
       if (sendEvents()) { // eventH guaranteed not null

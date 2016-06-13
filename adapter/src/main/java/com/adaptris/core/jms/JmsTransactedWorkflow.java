@@ -18,8 +18,6 @@ package com.adaptris.core.jms;
 
 import java.util.concurrent.TimeUnit;
 
-import org.perf4j.aop.Profiled;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -118,7 +116,6 @@ public final class JmsTransactedWorkflow extends StandardWorkflow {
   }
 
   @Override
-  @Profiled(tag = "JmsTransactedWorkflow({$this.getConsumer().getDestination().getDeliveryThreadName()})", logger = "com.adaptris.perf4j.jms.TimingLogger")
   public synchronized void onAdaptrisMessage(AdaptrisMessage msg) {
     if (!obtainChannel().isAvailable()) {
       handleChannelUnavailable(msg); // make pluggable?

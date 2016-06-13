@@ -23,7 +23,6 @@ import java.net.URL;
 
 import org.apache.oro.io.Perl5FilenameFilter;
 import org.hibernate.validator.constraints.NotBlank;
-import org.perf4j.aop.Profiled;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
@@ -116,7 +115,6 @@ public class FsConsumer extends FsConsumerImpl {
   }
 
   @Override
-  @Profiled(tag = "{$this.getClass().getSimpleName()}.processFile()", logger = "com.adaptris.perf4j.fs.TimingLogger")
   protected int processFile(File originalFile) throws CoreException {
     int rc = 0;
     try {

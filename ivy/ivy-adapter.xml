@@ -73,7 +73,6 @@
     <dependency org="org.apache.geronimo.specs" name="geronimo-servlet_3.0_spec" rev="1.0" transitive="false" conf="compile->default" />
 
     <dependency org="net.sf.joost" name="joost" rev="0.9.1" conf="runtime->default"/>
-    <dependency org="org.perf4j" name="perf4j" rev="0.9.16" transitive="false" conf="compile->default"/>
     <dependency org="org.quartz-scheduler" name="quartz" rev="2.2.1" transitive="false" conf="compile->default"/>
     <!--
     <dependency org="saxpath" name="saxpath" rev="1.0-FCS" conf="compile->default" />

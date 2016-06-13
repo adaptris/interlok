@@ -31,7 +31,6 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,7 +115,6 @@ final class StdSecurityService implements SecurityService {
   /**
    * @see SecurityService#encrypt(byte[], Alias, Alias)
    */
-  @Profiled(tag = "StandardSecurityService.encrypt()", logger = "com.adaptris.perf4j.security.TimingLogger")
   public Output encrypt(byte[] payload, Alias sender, Alias receiver)
       throws AdaptrisSecurityException {
 
@@ -161,7 +159,6 @@ final class StdSecurityService implements SecurityService {
   /**
    * @see SecurityService#sign(byte[], Alias, Output)
    */
-  @Profiled(tag = "StandardSecurityService.sign()", logger = "com.adaptris.perf4j.security.TimingLogger")
   public Output sign(byte[] payload, Alias us, Output output)
       throws AdaptrisSecurityException {
 
@@ -207,7 +204,6 @@ final class StdSecurityService implements SecurityService {
   /**
    * @see SecurityService#verify(byte[], Alias, Alias)
    */
-  @Profiled(tag = "StandardSecurityService.verify()", logger = "com.adaptris.perf4j.security.TimingLogger")
   public Output verify(byte[] payload, Alias receiver, Alias sender)
       throws AdaptrisSecurityException {
 
