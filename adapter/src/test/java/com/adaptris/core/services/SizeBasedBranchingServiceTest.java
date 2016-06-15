@@ -134,7 +134,7 @@ public class SizeBasedBranchingServiceTest extends BranchingServiceExample {
         m = super.newMessage();
       }
       else {
-        m = new SizeMessage(uniqueIdGenerator, this, msgSize);
+        m = new SizeMessage(uniqueIdGenerator(), this, msgSize);
         if (getDefaultCharEncoding() != null && !"".equals(getDefaultCharEncoding())) {
           m.setContentEncoding(getDefaultCharEncoding());
         }

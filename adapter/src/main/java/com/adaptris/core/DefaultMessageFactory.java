@@ -120,7 +120,7 @@ public class DefaultMessageFactory extends AdaptrisMessageFactory {
 
   @Override
   public AdaptrisMessage newMessage() {
-    AdaptrisMessage m = new DefaultAdaptrisMessageImp(uniqueIdGenerator, this);
+    AdaptrisMessage m = new DefaultAdaptrisMessageImp(uniqueIdGenerator(), this);
     if (!isEmpty(getDefaultCharEncoding())) {
       m.setContentEncoding(getDefaultCharEncoding());
     }

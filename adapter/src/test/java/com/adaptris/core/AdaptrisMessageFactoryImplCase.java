@@ -30,6 +30,9 @@ import java.util.Set;
 
 import org.junit.Test;
 
+import com.adaptris.util.GuidGenerator;
+import com.adaptris.util.PseudoRandomIdGenerator;
+
 public abstract class AdaptrisMessageFactoryImplCase {
 
   protected static final String TEST_PAYLOAD = "test payload";
@@ -196,5 +199,18 @@ public abstract class AdaptrisMessageFactoryImplCase {
   public void testCreate() {
     AdaptrisMessage msg = getMessageFactory().newMessage();
     assertEquals(0, msg.getPayload().length);
+  }
+
+  @Test
+  public void testIdGenerator() {
+    AdaptrisMessageFactory fac = getMessageFactory();
+    assertNull(fac.getUniqueIdGenerator());
+    assertEquals(GuidGenerator.class, fac.uniqueIdGenerator().getClass());
+    fac.setUniqueIdGenerator(new PseudoRandomIdGenerator("testIdGenerator", false));
+    assertNotNull(fac.getUniqueIdGenerator());
+    assertEquals(PseudoRandomIdGenerator.class, fac.getUniqueIdGenerator().getClass());
+    assertEquals(PseudoRandomIdGenerator.class, fac.uniqueIdGenerator().getClass());
+    AdaptrisMessage msg = fac.newMessage();
+    assertTrue(msg.getUniqueId().startsWith("testIdGenerator"));
   }
 }

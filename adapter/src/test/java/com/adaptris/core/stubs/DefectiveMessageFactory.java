@@ -33,7 +33,7 @@ public final class DefectiveMessageFactory extends DefaultMessageFactory {
 
   @Override
   public AdaptrisMessage newMessage() {
-    AdaptrisMessage result = new DefectiveAdaptrisMessage(uniqueIdGenerator, this);
+    AdaptrisMessage result = new DefectiveAdaptrisMessage(uniqueIdGenerator(), this);
     return result;
   }
 

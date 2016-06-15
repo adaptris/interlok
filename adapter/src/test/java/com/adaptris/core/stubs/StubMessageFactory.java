@@ -33,7 +33,7 @@ public final class StubMessageFactory extends DefaultMessageFactory {
 
   @Override
   public AdaptrisMessage newMessage() {
-    AdaptrisMessage result = new AdaptrisMessageStub(uniqueIdGenerator, this);
+    AdaptrisMessage result = new AdaptrisMessageStub(uniqueIdGenerator(), this);
     return result;
   }
 
