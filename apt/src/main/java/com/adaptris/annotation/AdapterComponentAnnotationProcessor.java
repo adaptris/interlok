@@ -44,7 +44,7 @@ import javax.tools.StandardLocation;
 {
     "componentFile", "componentDebug"
 })
-@SupportedSourceVersion(SourceVersion.RELEASE_8)
+@SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class AdapterComponentAnnotationProcessor extends AnnotationProcessorImpl {
 
   private static final String OPTION_COMPONENT_MAPPING_FILE = "componentFile";

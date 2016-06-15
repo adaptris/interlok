@@ -50,7 +50,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 {
     "xstreamImplicitMappingFile", "xstreamImplicitDebug"
 })
-@SupportedSourceVersion(SourceVersion.RELEASE_8)
+@SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class XStreamImplicitAnnotationProcessor extends AnnotationProcessorImpl {
 
   private static final String OPTION_XSTREAM_MAPPING_FILE = "xstreamImplicitMappingFile";
