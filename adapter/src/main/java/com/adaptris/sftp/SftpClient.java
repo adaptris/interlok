@@ -185,7 +185,7 @@ public class SftpClient extends FileTransferClientImp {
     try {
       sftpSession = jsch.getSession(user, sshHost, sshPort);
       connectionBehaviour.configure(this);
-      sftpSession.setConfig("PreferredAuthentications", "publickey,password");
+      sftpSession.setConfig("PreferredAuthentications", "publickey,keyboard-interactive,password");
       sftpSession.setDaemonThread(true);
       sftpSession.setUserInfo(ui);
       sftpSession.connect(timeout);
