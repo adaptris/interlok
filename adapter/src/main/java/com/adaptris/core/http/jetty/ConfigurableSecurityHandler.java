@@ -23,7 +23,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * of different Login Service and Authenticators.
  * @author ellidges
  */
-@XStreamAlias("configurable-security-handler")
+@XStreamAlias("jetty-configurable-security-handler")
 public class ConfigurableSecurityHandler implements SecurityHandlerWrapper {
   
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());

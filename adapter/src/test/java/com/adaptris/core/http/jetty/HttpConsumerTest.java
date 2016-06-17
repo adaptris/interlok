@@ -771,7 +771,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     }
   }
 
-  public void testConsume_WithACL() throws Exception {
+  public void testConsume_WithACL_HashUserRealmProxy() throws Exception {
     String threadName = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
     HashUserRealmProxy hr = new HashUserRealmProxy();
@@ -808,20 +808,55 @@ public class HttpConsumerTest extends HttpConsumerExample {
     }
   }
 
+  public void testConsume_WithACL() throws Exception {
+    String threadName = Thread.currentThread().getName();
+    Thread.currentThread().setName(getName());
+    ConfigurableSecurityHandler csh = new ConfigurableSecurityHandler();
+    HashLoginServiceFactory hsl = new HashLoginServiceFactory("InterlokJetty", PROPERTIES.getProperty(JETTY_USER_REALM));
+    csh.setLoginService(hsl);
+    SecurityConstraint securityConstraint = new SecurityConstraint();
+    securityConstraint.setMustAuthenticate(true);
+    securityConstraint.setRoles("user");
+    csh.setSecurityConstraints(Arrays.asList(securityConstraint));
+    HttpConnection connection = createConnection(csh);
+    MockMessageProducer mockProducer = new MockMessageProducer();
+    MessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
+    Channel adapter = JettyHelper.createChannel(connection, consumer, mockProducer);
+
+    try {
+      adapter.requestStart();
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
+      msg.addMetadata("content.type", "text/xml");
+      httpProducer.setUserName("user");
+      httpProducer.setPassword("password");
+      start(httpProducer);
+      AdaptrisMessage reply = httpProducer.request(msg, createProduceDestination(connection.getPort()));
+      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getStringPayload());
+      doAssertions(mockProducer);
+    } finally {
+      stop(httpProducer);
+      adapter.requestClose();
+      Thread.currentThread().setName(threadName);
+      PortManager.release(connection.getPort());
+      assertEquals(0, AdapterResourceAuthenticator.getInstance().currentAuthenticators().size());
+    }
+  }
+
   public void testConsume_WithACL_UnprotectedURL() throws Exception {
     String threadName = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
-    HashUserRealmProxy hr = new HashUserRealmProxy();
-    hr.setFilename(PROPERTIES.getProperty(JETTY_USER_REALM));
+    ConfigurableSecurityHandler csh = new ConfigurableSecurityHandler();
+    HashLoginServiceFactory hsl = new HashLoginServiceFactory("InterlokJetty", PROPERTIES.getProperty(JETTY_USER_REALM));
+    csh.setLoginService(hsl);
 
     SecurityConstraint securityConstraint = new SecurityConstraint();
     securityConstraint.setMustAuthenticate(true);
     securityConstraint.setRoles("user");
     securityConstraint.setPaths(Arrays.asList("/secure/path1|/secure/path2"));
 
-    hr.setSecurityConstraints(Arrays.asList(securityConstraint));
+    csh.setSecurityConstraints(Arrays.asList(securityConstraint));
 
-    HttpConnection connection = createConnection(hr);
+    HttpConnection connection = createConnection(csh);
     MockMessageProducer mockProducer = new MockMessageProducer();
     MessageConsumer consumer = JettyHelper.createConsumer("/*");
     Channel adapter = JettyHelper.createChannel(connection, consumer, mockProducer);
@@ -846,17 +881,18 @@ public class HttpConsumerTest extends HttpConsumerExample {
   public void testConsume_WithACL_IncorrectPassword() throws Exception {
     String threadName = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
-    HashUserRealmProxy hr = new HashUserRealmProxy();
-    hr.setFilename(PROPERTIES.getProperty(JETTY_USER_REALM));
+    ConfigurableSecurityHandler csh = new ConfigurableSecurityHandler();
+    HashLoginServiceFactory hsl = new HashLoginServiceFactory("InterlokJetty", PROPERTIES.getProperty(JETTY_USER_REALM));
+    csh.setLoginService(hsl);
 
     SecurityConstraint securityConstraint = new SecurityConstraint();
     securityConstraint.setMustAuthenticate(true);
     securityConstraint.setRoles("user");
     securityConstraint.setPaths(Arrays.asList("/"));
 
-    hr.setSecurityConstraints(Arrays.asList(securityConstraint));
+    csh.setSecurityConstraints(Arrays.asList(securityConstraint));
 
-    HttpConnection connection = createConnection(hr);
+    HttpConnection connection = createConnection(csh);
     MockMessageProducer mockProducer = new MockMessageProducer();
     MessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
     Channel adapter = JettyHelper.createChannel(connection, consumer, mockProducer);
@@ -903,16 +939,17 @@ public class HttpConsumerTest extends HttpConsumerExample {
   public void testConsume_WithACL_WithNoRoles() throws Exception {
     String threadName = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
-    HashUserRealmProxy hr = new HashUserRealmProxy();
-    hr.setFilename(PROPERTIES.getProperty(JETTY_USER_REALM));
+    ConfigurableSecurityHandler csh = new ConfigurableSecurityHandler();
+    HashLoginServiceFactory hsl = new HashLoginServiceFactory("InterlokJetty", PROPERTIES.getProperty(JETTY_USER_REALM));
+    csh.setLoginService(hsl);
 
     SecurityConstraint securityConstraint = new SecurityConstraint();
     securityConstraint.setMustAuthenticate(true);
     securityConstraint.setPaths(Arrays.asList("/"));
 
-    hr.setSecurityConstraints(Arrays.asList(securityConstraint));
+    csh.setSecurityConstraints(Arrays.asList(securityConstraint));
 
-    HttpConnection connection = createConnection(hr);
+    HttpConnection connection = createConnection(csh);
     MockMessageProducer mockProducer = new MockMessageProducer();
     MessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
     Channel adapter = JettyHelper.createChannel(connection, consumer, mockProducer);
@@ -961,17 +998,18 @@ public class HttpConsumerTest extends HttpConsumerExample {
   public void testLoopbackWithIncorrectRole() throws Exception {
     String threadName = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
-    HashUserRealmProxy hr = new HashUserRealmProxy();
-    hr.setFilename(PROPERTIES.getProperty(JETTY_USER_REALM));
+    ConfigurableSecurityHandler csh = new ConfigurableSecurityHandler();
+    HashLoginServiceFactory hsl = new HashLoginServiceFactory("InterlokJetty", PROPERTIES.getProperty(JETTY_USER_REALM));
+    csh.setLoginService(hsl);
 
     SecurityConstraint securityConstraint = new SecurityConstraint();
     securityConstraint.setMustAuthenticate(true);
     securityConstraint.setRoles("admin");
     securityConstraint.setPaths(Arrays.asList("/"));
 
-    hr.setSecurityConstraints(Arrays.asList(securityConstraint));
+    csh.setSecurityConstraints(Arrays.asList(securityConstraint));
 
-    HttpConnection connection = createConnection(hr);
+    HttpConnection connection = createConnection(csh);
     MockMessageProducer mockProducer = new MockMessageProducer();
     MessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
     Channel adapter = JettyHelper.createChannel(connection, consumer, mockProducer);
@@ -1050,8 +1088,9 @@ public class HttpConsumerTest extends HttpConsumerExample {
   }
 
   SecurityHandlerWrapper createSecurityHandlerExample() {
-    HashUserRealmProxy hp = new HashUserRealmProxy();
-    hp.setFilename("/path/to/realm.properties");
+    ConfigurableSecurityHandler csh = new ConfigurableSecurityHandler();
+    HashLoginServiceFactory hsl = new HashLoginServiceFactory("InterlokJetty", "/path/to/realm.properties");
+    csh.setLoginService(hsl);
 
     SecurityConstraint securityConstraint = new SecurityConstraint();
     securityConstraint.setMustAuthenticate(false);
@@ -1067,8 +1106,8 @@ public class HttpConsumerTest extends HttpConsumerExample {
     securityConstraint3.setRoles("serviceUserRole,optionsUserRole,anotherUserRole");
     securityConstraint3.setPaths(new ArrayList(Arrays.asList("/myServices", "/myOptions", "/myOtherURL")));
 
-    hp.setSecurityConstraints(new ArrayList(Arrays.asList(securityConstraint, securityConstraint2, securityConstraint3)));
-    return hp;
+    csh.setSecurityConstraints(new ArrayList(Arrays.asList(securityConstraint, securityConstraint2, securityConstraint3)));
+    return csh;
   }
 
   @Override

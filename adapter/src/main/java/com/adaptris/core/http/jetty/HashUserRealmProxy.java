@@ -50,8 +50,9 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * 
  * @config jetty-hash-user-realm-proxy
  * @see JettyConnection
+ * @deprecated use {@link ConfigurableSecurityHandler} instead; since 3.3.0
  */
-
+@Deprecated
 @XStreamAlias("jetty-hash-user-realm-proxy")
 public class HashUserRealmProxy implements SecurityHandlerWrapper {
   
