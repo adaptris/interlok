@@ -813,6 +813,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     Thread.currentThread().setName(getName());
     ConfigurableSecurityHandler csh = new ConfigurableSecurityHandler();
     HashLoginServiceFactory hsl = new HashLoginServiceFactory("InterlokJetty", PROPERTIES.getProperty(JETTY_USER_REALM));
+    hsl.setRefreshInterval(100);
     csh.setLoginService(hsl);
     SecurityConstraint securityConstraint = new SecurityConstraint();
     securityConstraint.setMustAuthenticate(true);

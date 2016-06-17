@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.eclipse.jetty.security.Authenticator;
@@ -15,6 +16,7 @@ import org.eclipse.jetty.util.security.Constraint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.AutoPopulated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -29,9 +31,12 @@ public class ConfigurableSecurityHandler implements SecurityHandlerWrapper {
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
   
   @NotNull
+  @Valid
   private JettyLoginServiceFactory loginService;
   
   @NotNull
+  @Valid
+  @AutoPopulated
   private JettyAuthenticatorFactory authenticator;
   
   @NotNull
@@ -39,7 +44,7 @@ public class ConfigurableSecurityHandler implements SecurityHandlerWrapper {
   private List<SecurityConstraint> securityConstraints;
   
   public ConfigurableSecurityHandler() {
-    authenticator = new BasicAuthenticatorFactory();
+    setAuthenticator(new BasicAuthenticatorFactory());
     securityConstraints = new ArrayList<>();
   }
   
