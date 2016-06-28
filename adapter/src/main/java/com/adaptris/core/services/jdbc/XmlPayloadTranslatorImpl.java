@@ -35,6 +35,7 @@ import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
@@ -61,6 +62,7 @@ public abstract class XmlPayloadTranslatorImpl extends ResultSetTranslatorImp {
   private String xmlColumnRegexp = null;
   @AdvancedConfig
   private String cdataColumnRegexp = null;
+  @InputFieldDefault(value = "false")
   private Boolean stripIllegalXmlChars = null;
   private String outputMessageEncoding = null;
   private transient Pattern cdataColumnRegexpPattern = null;

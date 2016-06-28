@@ -26,6 +26,7 @@ import javax.validation.constraints.NotNull;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -46,6 +47,7 @@ public class ValidationStage {
   @AutoPopulated
   private String elementXpath = "";
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean failOnIterateFailure;
 
   @NotNull

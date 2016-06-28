@@ -35,6 +35,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.util.text.mime.MultiPartInput;
 import com.adaptris.util.text.mime.MultiPartOutput;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -70,6 +71,7 @@ public class MimeEncoder extends AdaptrisMessageEncoderImp {
   @AdvancedConfig
   private String payloadEncoding;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean retainUniqueId;
 
   public MimeEncoder() {

@@ -17,9 +17,7 @@
 package com.adaptris.core.services.metadata;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -34,7 +32,6 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.services.metadata.xpath.XpathObjectQuery;
@@ -93,8 +90,6 @@ public class XpathObjectMetadataService extends ServiceImp {
   }
 
   public void doService(AdaptrisMessage msg) throws ServiceException {
-
-    Set<MetadataElement> metadataElements = new HashSet<MetadataElement>();
     NamespaceContext namespaceCtx = SimpleNamespaceContext.create(getNamespaceContext(), msg);
     try {
       DocumentBuilderFactoryBuilder builder = documentFactoryBuilder();

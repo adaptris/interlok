@@ -20,6 +20,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Set;
 
+import javax.validation.Valid;
+
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.IdGenerator;
 
@@ -33,11 +36,11 @@ public abstract class AdaptrisMessageFactory {
 
   private static DefaultMessageFactory DEFAULT_INSTANCE = new DefaultMessageFactory();
 
-  protected static final IdGenerator uniqueIdGenerator;
+  private static final IdGenerator DEFAULT_GENERATOR = new GuidGenerator();
 
-  static {
-    uniqueIdGenerator = new GuidGenerator();
-  }
+  @AdvancedConfig
+  @Valid
+  private IdGenerator uniqueIdGenerator;
 
   /**
    * Get the default implementationion of AdaptrisMessageFactory.
@@ -193,5 +196,29 @@ public abstract class AdaptrisMessageFactory {
    */
   public abstract AdaptrisMessage newMessage();
 
+  /**
+   * @return the uniqueIdGenerator
+   */
+  public IdGenerator getUniqueIdGenerator() {
+    return uniqueIdGenerator;
+  }
+
+  /**
+   * Set the unique id generator used for messages.
+   * <p>
+   * In some situations you may not want to use the default {@link GuidGenerator} instance when assigning unique ids to messages.
+   * This allows you to change the {@link IdGenerator} used both for message ids unique ids associated with
+   * {@link MessageLifecycleEvent}.
+   * </p>
+   * 
+   * @param s the uniqueIdGenerator to set
+   */
+  public void setUniqueIdGenerator(IdGenerator s) {
+    this.uniqueIdGenerator = s;
+  }
+
+  protected IdGenerator uniqueIdGenerator() {
+    return getUniqueIdGenerator() != null ? getUniqueIdGenerator() : DEFAULT_GENERATOR;
+  }
 
 }

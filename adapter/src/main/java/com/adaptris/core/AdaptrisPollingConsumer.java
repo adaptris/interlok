@@ -5,14 +5,14 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core;
 
@@ -21,43 +21,40 @@ import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.FifoMutexLock;
 
-/**
- * <p>
- * Partial implementation of <code>AdaptrisMessageConsumer</code> which
- * uses an implementation of <code>Poller</code> to schedule message delivery,
- * and a <code>FifoMutexLock</code> for thread safety.
- * </p>
- */
-public abstract class AdaptrisPollingConsumer
-  extends AdaptrisMessageConsumerImp {
+public abstract class AdaptrisPollingConsumer extends AdaptrisMessageConsumerImp implements StateManagedComponent {
 
   @NotNull
   @AutoPopulated
   @Valid
   private Poller poller;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean reacquireLockBetweenMessages;
   // make logging from FML configurable (default false) when util is released
-
+  private transient ComponentState serviceState;
   // transient
   private transient FifoMutexLock lock;
 
   /**
    * <p>
-   * Creates a new instance.  Default <code>Poller</code> is a
+   * Creates a new instance. Default <code>Poller</code> is a
    * <code>FixedIntervalPoller</code>.
    * </p>
    */
   public AdaptrisPollingConsumer() {
+    changeState(ClosedState.getInstance());
     lock = new FifoMutexLock();
     setPoller(new FixedIntervalPoller());
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#init() */
+  /**
+   * @see com.adaptris.core.AdaptrisComponent#init()
+   */
   @Override
   public void init() throws CoreException {
     if (getDestination().getDestination() == null) {
@@ -70,31 +67,36 @@ public abstract class AdaptrisPollingConsumer
     LifecycleHelper.init(poller);
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#start() */
+  /**
+   * @see com.adaptris.core.AdaptrisComponent#start()
+   */
   @Override
   public void start() throws CoreException {
     lock.release(); // required when moving from stopped
     LifecycleHelper.start(poller);
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#stop() */
+  /**
+   * @see com.adaptris.core.AdaptrisComponent#stop()
+   */
   @Override
   public void stop() {
     try {
       // log.trace("Releasing and acquiring lock...");
-    	lock.release();
+      lock.release();
 
       lock.acquire();
       // log.trace("lock acquired");
       LifecycleHelper.stop(poller);
-    }
-    catch (InterruptedException e) {
+    } catch (InterruptedException e) {
       ;
     }
 
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
+  /**
+   * @see com.adaptris.core.AdaptrisComponent#close()
+   */
   @Override
   public void close() {
     LifecycleHelper.close(poller);
@@ -109,16 +111,21 @@ public abstract class AdaptrisPollingConsumer
    * @see #getReacquireLockBetweenMessages()
    */
   public final boolean continueProcessingMessages() {
-    if (!reacquireLockBetweenMessages()) {
-      return true;
+    if (retrieveComponentState() == StartedState.getInstance()) {
+      if (!reacquireLockBetweenMessages()) {
+        return true;
+      }
+      return reacquireLock();
+    } else {
+      return false;
     }
-    return reacquireLock();
   }
 
   /**
    * <p>
    * Release the <code>lock</code> and acquire it again.
    * </p>
+   * 
    * @return true if the lock is acquired.
    */
   final boolean reacquireLock() {
@@ -126,8 +133,7 @@ public abstract class AdaptrisPollingConsumer
     try {
       lock.release();
       result = lock.attempt(0L);
-    }
-    catch (InterruptedException e) {
+    } catch (InterruptedException e) {
       log.warn("ignoring InterruptedException [" + e.getMessage() + "]");
     }
     return result;
@@ -135,7 +141,7 @@ public abstract class AdaptrisPollingConsumer
 
   /**
    * <p>
-   * Attempt to obtain the lock.  Returns true if the lock is obtained,
+   * Attempt to obtain the lock. Returns true if the lock is obtained,
    * otherwise false.
    * </p>
    */
@@ -143,9 +149,8 @@ public abstract class AdaptrisPollingConsumer
     boolean result = false;
     try {
       result = lock.attempt(0L);
-    }
-    catch (InterruptedException e) {
-       log.debug("InteruptedException while attempting to get the lock"); // do nothing
+    } catch (InterruptedException e) {
+      log.debug("InteruptedException while attempting to get the lock"); // do nothing
       ;
     }
 
@@ -154,7 +159,7 @@ public abstract class AdaptrisPollingConsumer
 
   /**
    * <p>
-   * Release the lock.  If this method is called and the lock is not held it
+   * Release the lock. If this method is called and the lock is not held it
    * has no effect.
    * </p>
    */
@@ -168,20 +173,6 @@ public abstract class AdaptrisPollingConsumer
    * </p>
    */
   protected abstract int processMessages();
-
-  /** @see java.lang.Object#toString() */
-  @Override
-  public String toString() {
-    StringBuffer result = new StringBuffer();
-    result.append(super.toString());
-    result.append(" reacquire lock between messages [");
-    result.append(reacquireLockBetweenMessages);
-    result.append("]");
-
-    return result.toString();
-  }
-
-  // gets & sets...
 
   /**
    * <p>
@@ -232,7 +223,40 @@ public abstract class AdaptrisPollingConsumer
     getPoller().prepare();
     prepareConsumer();
   }
-  
+
   protected abstract void prepareConsumer() throws CoreException;
-    
+
+
+  @Override
+  public void changeState(ComponentState newState) {
+    serviceState = newState;
+  }
+
+
+  @Override
+  public ComponentState retrieveComponentState() {
+    return serviceState;
+  }
+
+
+  @Override
+  public void requestInit() throws CoreException {
+    serviceState.requestInit(this);
+  }
+
+  @Override
+  public void requestStart() throws CoreException {
+    serviceState.requestStart(this);
+  }
+
+  @Override
+  public void requestStop() {
+    serviceState.requestStop(this);
+  }
+
+  @Override
+  public void requestClose() {
+    serviceState.requestClose(this);
+  }
+
 }

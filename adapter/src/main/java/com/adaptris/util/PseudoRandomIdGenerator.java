@@ -19,6 +19,8 @@ package com.adaptris.util;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.security.SecureRandom;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import com.adaptris.util.text.Conversion;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -26,7 +28,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * Pseudo Random {@linkplain IdGenerator} implementation
  * <p>
- * The ID is generated from the a combination of {@linkplain SecureRandom#nextBytes(byte[])} (8 bytes, and then base64 encoded),
+ * The ID is generated from the a combination of {@linkplain Random#nextBytes(byte[])} (8 bytes, and then base64 encoded),
  * along with the configured prefix to generate an id. No guarantees are made for the uniqueness of the id that is generated. If you
  * wish for a unique-id then you should consider using {@link GuidGenerator} instead.
  * </p>
@@ -56,7 +58,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class PseudoRandomIdGenerator implements IdGenerator {
 
   private String prefix;
-  private static SecureRandom random = new SecureRandom();
+  private Boolean useSecureRandom;
+  private final static SecureRandom SECURE_RAND = new SecureRandom();
 
   public PseudoRandomIdGenerator() {
     setPrefix("");
@@ -67,6 +70,12 @@ public class PseudoRandomIdGenerator implements IdGenerator {
     setPrefix(prefix);
   }
 
+  public PseudoRandomIdGenerator(String prefix, boolean useSecureRandom) {
+    this();
+    setPrefix(prefix);
+    setUseSecureRandom(useSecureRandom);
+  }
+
   /**
    * A generated ID.
    *
@@ -75,7 +84,7 @@ public class PseudoRandomIdGenerator implements IdGenerator {
    */
   public String create(Object msg) {
     byte[] bytes = new byte[8];
-    random.nextBytes(bytes);
+    random().nextBytes(bytes);
     return getPrefix() + Conversion.byteArrayToBase64String(bytes);
   }
 
@@ -96,5 +105,29 @@ public class PseudoRandomIdGenerator implements IdGenerator {
     else {
       prefix = s;
     }
+  }
+
+  /**
+   * @return the useSecureRandom
+   */
+  public Boolean getUseSecureRandom() {
+    return useSecureRandom;
+  }
+
+  /**
+   * Whether or not to use {@link SecureRandom} when generating a random sequence of bytes.
+   * 
+   * @param u the useSecureRandom to set, if not set, defaults to true.
+   */
+  public void setUseSecureRandom(Boolean u) {
+    this.useSecureRandom = u;
+  }
+
+  boolean useSecureRandom() {
+    return getUseSecureRandom() != null ? getUseSecureRandom().booleanValue() : true;
+  }
+
+  Random random() {
+    return useSecureRandom() ? SECURE_RAND : ThreadLocalRandom.current();
   }
 }

@@ -21,6 +21,7 @@ import java.util.Date;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -56,10 +57,18 @@ public class ConstantValueTranslator implements ValueTranslator {
   @AutoPopulated
   private String type;
   
+  @InputFieldDefault(value = "false")
   private Boolean allowOverwrite;
   
   public ConstantValueTranslator() {
     this.setType(DEFAULT_PARAMETER_TYPE);
+  }
+
+  public ConstantValueTranslator(String value, String type, Boolean allowOverwrite) {
+    this();
+    setValue(value);
+    setType(type);
+    setAllowOverwrite(allowOverwrite);
   }
 
   @Override

@@ -24,6 +24,7 @@ import java.util.Iterator;
 import org.apache.commons.io.IOUtils;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.lms.FileBackedMessage;
 import com.adaptris.util.stream.StreamUtil;
 
@@ -37,6 +38,7 @@ import com.adaptris.util.stream.StreamUtil;
 public abstract class RequestReplyProducerImp extends AdaptrisMessageProducerImp {
 
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean ignoreReplyMetadata;
 
   public RequestReplyProducerImp() {

@@ -28,6 +28,7 @@ import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -44,6 +45,7 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcService {
   @InputFieldHint(style = "SQL")
   private String statement = null;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean saveReturnedKeys = null;
   @AdvancedConfig
   private String saveReturnedKeysColumn = null;

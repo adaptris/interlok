@@ -32,6 +32,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.GenerateBeanInfo;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -67,6 +68,7 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
   @NotNull
   @NotBlank
   private String uniqueId;
+  @InputFieldDefault(value = "true")
   private Boolean autoStart;
 
   private transient boolean available;

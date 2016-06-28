@@ -33,6 +33,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
@@ -65,6 +66,7 @@ public class DefaultCommandBuilder implements CommandBuilder {
   @AdvancedConfig
   private String workingDirectory;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean quoteHandling;
   @AdvancedConfig
   private Integer successExitCode;

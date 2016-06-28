@@ -26,12 +26,12 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.io.IOUtils;
-import org.perf4j.aop.Profiled;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -89,13 +89,16 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
   @AdvancedConfig
   @Deprecated
   private String sendMetadataRegexp;
+  @InputFieldDefault(value = "true")
   private Boolean sendPayload;
   @AdvancedConfig
   @Deprecated
   private Boolean sendMetadataAsHeaders;
   @AdvancedConfig
+  @InputFieldDefault(value = "true")
   private Boolean flushBuffer;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean forwardConnectionException;
   @NotNull
   @AutoPopulated
@@ -128,7 +131,6 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
   }
 
   @Override
-  @Profiled(tag = "{$this.getClass().getSimpleName()}.produce()", logger = "com.adaptris.perf4j.http.jetty.TimingLogger")
   public void produce(AdaptrisMessage msg, ProduceDestination destination)
       throws ProduceException {
     HttpServletResponse response = (HttpServletResponse) msg

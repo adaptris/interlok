@@ -25,6 +25,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.MarshallingCDATA;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -63,6 +64,7 @@ public class PayloadFromMetadataService extends ServiceImp {
   private KeyValuePairSet metadataTokens;
   @MarshallingCDATA
   private String template = null;
+  @InputFieldDefault(value = "true")
   private Boolean escapeBackslash;
 
   public PayloadFromMetadataService() {

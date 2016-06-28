@@ -22,6 +22,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.ftp.ApacheFtpClientImpl;
 import com.adaptris.ftp.CommonsNetFtpSslClient;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -62,6 +63,7 @@ public class FtpSslConnection extends FtpConnectionImp {
 
   private static final String SCHEME_FTPS = "ftps";
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean implicitSsl;
 
   public FtpSslConnection() {

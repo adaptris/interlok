@@ -80,6 +80,15 @@ public abstract class AdaptrisMessageCase {
   }
 
   @Test
+  public void testRemoveHeader() throws Exception {
+    AdaptrisMessageFactory mf = getMessageFactory();
+    AdaptrisMessage msg = mf.newMessage();
+    msg.addMessageHeader("hello", "world");
+    msg.removeMessageHeader("hello");
+    assertFalse(msg.containsKey("hello"));
+  }
+
+  @Test
   public void testSetNextServiceId() throws Exception {
     String nextServiceId = "NEXT";
     AdaptrisMessage msg1 = createMessage();

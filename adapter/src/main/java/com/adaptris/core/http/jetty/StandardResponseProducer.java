@@ -24,8 +24,6 @@ import java.io.InputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.perf4j.aop.Profiled;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -85,7 +83,6 @@ public class StandardResponseProducer extends ResponseProducerImpl {
 
 
   @Override
-  @Profiled(tag = "{$this.getClass().getSimpleName()}.produce()", logger = "com.adaptris.perf4j.http.jetty.TimingLogger")
   public void produce(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException {
     HttpServletResponse response = (HttpServletResponse) msg.getObjectMetadata().get(CoreConstants.JETTY_RESPONSE_KEY);
 

@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -46,6 +47,7 @@ public class WaitService extends ServiceImp {
   private static final TimeInterval DEFAULT_WAIT = new TimeInterval(20L, TimeUnit.SECONDS);
 
   private TimeInterval waitInterval;
+  @InputFieldDefault(value = "false")
   private Boolean randomize;
 
   /**

@@ -31,8 +31,10 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -60,10 +62,17 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
     "partHeaderPrefix"})
 public class MimePartSelector extends ServiceImp {
 
+  @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean preserveHeadersAsMetadata;
+  @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean preservePartHeadersAsMetadata;
+  @InputFieldDefault(value = "false")
   private Boolean markAsNonMime;
+  @AdvancedConfig
   private String headerPrefix;
+  @AdvancedConfig
   private String partHeaderPrefix;
   @NotNull
   @Valid

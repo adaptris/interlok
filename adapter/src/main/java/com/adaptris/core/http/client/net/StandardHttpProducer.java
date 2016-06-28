@@ -130,10 +130,7 @@ public class StandardHttpProducer extends HttpProducer {
   private AdaptrisMessage doRequest(AdaptrisMessage msg, ProduceDestination destination, long timeout, AdaptrisMessage reply) throws ProduceException {
     // If deprecated username/password are set and no authenticator is configured, transparently create a static authenticator
     if (getAuthenticator() instanceof NoAuthentication && !isEmpty(getUsername())) {
-      ConfiguredUsernamePassword auth = new ConfiguredUsernamePassword();
-      auth.setUsername(getUsername());
-      auth.setPassword(getPassword());
-      setAuthenticator(auth);
+      setAuthenticator(new ConfiguredUsernamePassword(getUsername(), getPassword()));
     }
     
     try {

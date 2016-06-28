@@ -42,6 +42,7 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.services.aggregator.MessageAggregator;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -119,7 +120,7 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware {
     Throwable e = handler.getFirstThrowableException();
     if (e != null) {
       log.error("One or more services failed; " + e.getMessage());
-      rethrowServiceException(e);
+      throw ExceptionHelper.wrapServiceException(e);
     }
   }
 
@@ -128,7 +129,7 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware {
       getAggregator().joinMessage(joined, split);
     }
     catch (CoreException e) {
-      rethrowServiceException(e);
+      throw ExceptionHelper.wrapServiceException(e);
     }
   }
 
@@ -138,7 +139,7 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware {
       msgs = toList(getSplitter().splitMessage(m));
     }
     catch (CoreException e) {
-      rethrowServiceException(e);
+      throw ExceptionHelper.wrapServiceException(e);
     }
     return msgs;
   }
@@ -215,7 +216,7 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware {
       result.prepare();
     }
     catch (CoreException e) {
-      rethrowServiceException(e);
+      throw ExceptionHelper.wrapServiceException(e);
     }
     return result;
   }

@@ -38,6 +38,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -114,7 +115,7 @@ public class SystemCommandExecutorService extends ServiceImp {
       msg.addMetadata(COMMAND_RETURN_VALUE_METADATA_KEY, "" + exit);
     }
     catch (Exception e) {
-      rethrowServiceException(e);
+      throw ExceptionHelper.wrapServiceException(e);
     }
   }
   

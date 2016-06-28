@@ -36,4 +36,5 @@ public interface SecurityHandlerWrapper {
    * @throws Exception wrapping other exceptions.
    */
   SecurityHandler createSecurityHandler() throws Exception;
+
 }

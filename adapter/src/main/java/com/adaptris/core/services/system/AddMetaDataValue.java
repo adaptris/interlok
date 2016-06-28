@@ -27,6 +27,7 @@ import org.apache.commons.lang.StringUtils;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.IORunnable;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -44,6 +45,7 @@ public class AddMetaDataValue implements CommandOutputCapture {
   @NotNull
   private String metadataKey;
   @AdvancedConfig
+  @InputFieldDefault(value = "true")
   private Boolean strip;
   
   @AdvancedConfig

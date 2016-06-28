@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.eclipse.jetty.security.ConstraintMapping;
@@ -29,7 +30,10 @@ import org.eclipse.jetty.security.SecurityHandler;
 import org.eclipse.jetty.security.authentication.BasicAuthenticator;
 import org.eclipse.jetty.util.security.Constraint;
 import org.hibernate.validator.constraints.NotBlank;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
@@ -46,11 +50,14 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * 
  * @config jetty-hash-user-realm-proxy
  * @see JettyConnection
+ * @deprecated use {@link ConfigurableSecurityHandler} instead; since 3.3.0
  */
-
+@Deprecated
 @XStreamAlias("jetty-hash-user-realm-proxy")
 public class HashUserRealmProxy implements SecurityHandlerWrapper {
   
+  private transient Logger log = LoggerFactory.getLogger(this.getClass());
+
   @NotNull
   @NotBlank
   @AutoPopulated
@@ -58,8 +65,11 @@ public class HashUserRealmProxy implements SecurityHandlerWrapper {
   @NotNull
   @NotBlank
   private String filename;
+  @AdvancedConfig
+  private Integer refreshInterval;
   @NotNull
   @XStreamImplicit
+  @Valid
   private List<SecurityConstraint> securityConstraints;
   
   public HashUserRealmProxy() {
@@ -70,25 +80,34 @@ public class HashUserRealmProxy implements SecurityHandlerWrapper {
   
   @Override
   public SecurityHandler createSecurityHandler() throws Exception {
-    ConstraintSecurityHandler securityHandler = new ConstraintSecurityHandler();
+    return configure(new ConstraintSecurityHandler());
+  }
+
+  private ConstraintSecurityHandler configure(ConstraintSecurityHandler securityHandler) {
     securityHandler.setAuthenticator(new BasicAuthenticator());
-    securityHandler.setLoginService(new HashLoginService(getUserRealm(), getFilename()));
-    
-    for(SecurityConstraint securityConstraint : this.getSecurityConstraints()) {
+    securityHandler.setLoginService(createLoginService());
+    for (SecurityConstraint securityConstraint : this.getSecurityConstraints()) {
       Constraint constraint = new Constraint();
       constraint.setName(securityConstraint.getConstraintName());
       constraint.setRoles(asArray(securityConstraint.getRoles()));
       constraint.setAuthenticate(securityConstraint.isMustAuthenticate());
-      
-      for(String path : securityConstraint.getPaths()) {
+
+      for (String path : securityConstraint.getPaths()) {
         ConstraintMapping constraintMapping = new ConstraintMapping();
         constraintMapping.setConstraint(constraint);
         constraintMapping.setPathSpec(path);
-        
         securityHandler.addConstraintMapping(constraintMapping);
       }
     }
     return securityHandler;
+  }
+
+  private HashLoginService createLoginService() {
+    HashLoginService loginService = new HashLoginService(getUserRealm(), getFilename());
+    if (getRefreshInterval() != null) {
+      loginService.setRefreshInterval(getRefreshInterval());
+    }
+    return loginService;
   }
 
   private static String[] asArray(String s) {
@@ -123,8 +142,32 @@ public class HashUserRealmProxy implements SecurityHandlerWrapper {
     return filename;
   }
 
+  /**
+   * Set the filename containing the username/password/roles.
+   * 
+   * @param filename the filename.
+   */
   public void setFilename(String filename) {
     this.filename = filename;
+  }
+
+
+  /**
+   * @return the refreshInterval
+   */
+  public Integer getRefreshInterval() {
+    return refreshInterval;
+  }
+
+
+  /**
+   * Specify the refresh interval (in seconds) for monitoring the password file.
+   * 
+   * @see HashLoginService#setRefreshInterval(int)
+   * @param i the refreshInterval to set
+   */
+  public void setRefreshInterval(Integer i) {
+    this.refreshInterval = i;
   }
 
 }

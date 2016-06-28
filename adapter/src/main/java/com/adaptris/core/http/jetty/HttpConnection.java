@@ -33,6 +33,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.CoreException;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
@@ -202,8 +203,10 @@ public class HttpConnection extends JettyConnection {
 
   private int port;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean sendDateHeader;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean sendServerVersion;
   @Valid
   @AdvancedConfig

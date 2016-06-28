@@ -87,8 +87,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * the {@link ResultSetTranslator} configured.
  * </p>
  * <p>
- * Finally, the default timeout set for the database operation is 30 seconds. You can override this by configuring the "timeout"
- * field with a {@link TimeInterval}
+ * Finally, the default timeout set for the database operation is 0 (i.e. no timeout). You can override this by configuring the
+ * "timeout" field with a {@link TimeInterval}
  * </p>
  * 
  * @config jdbc-stored-procedure-producer
@@ -103,7 +103,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
     "resultSetTranslator", "timeout"})
 public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
 
-  private static final long DEFAULT_TIMEOUT_MS = (30 * 1000); // 30 seconds
+  private static final long DEFAULT_TIMEOUT_MS = 0;
   
   @NotNull
   @AutoPopulated

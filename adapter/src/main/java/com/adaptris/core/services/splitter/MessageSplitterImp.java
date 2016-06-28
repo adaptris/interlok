@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreConstants;
@@ -37,7 +38,9 @@ public abstract class MessageSplitterImp implements MessageSplitter {
 
   @AdvancedConfig
   private AdaptrisMessageFactory messageFactory;
+  @InputFieldDefault(value = "true")
   private Boolean copyMetadata;
+  @InputFieldDefault(value = "false")
   private Boolean copyObjectMetadata;
 
   public MessageSplitterImp() {

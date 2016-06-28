@@ -29,6 +29,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -57,6 +58,7 @@ public class CreateQueryStringFromMetadata extends ServiceImp {
   @AdvancedConfig
   private String querySeparator;
   @AdvancedConfig
+  @InputFieldDefault(value = "true")
   private Boolean includeQueryPrefix;
 
   public CreateQueryStringFromMetadata() {

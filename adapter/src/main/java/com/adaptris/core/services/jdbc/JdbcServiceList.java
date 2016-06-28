@@ -77,7 +77,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("jdbc-service-list")
 @AdapterComponent
-@ComponentProfile(summary = "A collection of services which has an additional database connection", tag = "service,jdbc")
+@ComponentProfile(summary = "A collection of services which has an additional database connection", tag = "service,jdbc",
+    recommended = {DatabaseConnection.class})
 @DisplayOrder(order = {"restartAffectedServiceOnException", "databaseConnection"})
 public class JdbcServiceList extends ServiceList {
 

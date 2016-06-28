@@ -34,6 +34,7 @@ import org.apache.commons.net.pop3.POP3Client;
 import org.apache.commons.net.pop3.POP3SClient;
 
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -63,7 +64,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class Pop3sReceiverFactory extends Pop3ReceiverFactory {
 
   private static final List<String> SUPPORTED = Collections.unmodifiableList(Arrays.asList("pop3s"));
+  @InputFieldDefault(value = "true")
   private Boolean implicitTls;
+  @InputFieldDefault(value = "false")
   private Boolean alwaysTrust;
   private String cipherSuites;
   private String protocols;

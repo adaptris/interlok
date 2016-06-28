@@ -26,7 +26,9 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.services.jdbc.types.ColumnTranslator;
 import com.adaptris.jdbc.JdbcResultRow;
@@ -75,6 +77,8 @@ public abstract class ResultSetTranslatorImp implements ResultSetTranslator {
 
   protected transient Logger log = LoggerFactory.getLogger(this.getClass());
 
+  @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean displayColumnErrors = null;
   @NotNull
   @AutoPopulated

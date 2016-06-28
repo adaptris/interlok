@@ -23,13 +23,13 @@ import java.net.URL;
 
 import org.apache.oro.io.Perl5FilenameFilter;
 import org.hibernate.validator.constraints.NotBlank;
-import org.perf4j.aop.Profiled;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
@@ -96,6 +96,7 @@ public class FsConsumer extends FsConsumerImpl {
   @AdvancedConfig
   private String wipSuffix;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean resetWipFiles;
 
   /**
@@ -114,7 +115,6 @@ public class FsConsumer extends FsConsumerImpl {
   }
 
   @Override
-  @Profiled(tag = "{$this.getClass().getSimpleName()}.processFile()", logger = "com.adaptris.perf4j.fs.TimingLogger")
   protected int processFile(File originalFile) throws CoreException {
     int rc = 0;
     try {

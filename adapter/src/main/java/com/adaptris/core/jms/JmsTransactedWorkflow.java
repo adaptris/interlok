@@ -18,13 +18,12 @@ package com.adaptris.core.jms;
 
 import java.util.concurrent.TimeUnit;
 
-import org.perf4j.aop.Profiled;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.GenerateBeanInfo;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageConsumer;
 import com.adaptris.core.CoreConstants;
@@ -70,6 +69,7 @@ public final class JmsTransactedWorkflow extends StandardWorkflow {
   };
 
   @AdvancedConfig
+  @InputFieldDefault(value = "true")
   private Boolean strict;
   @AdvancedConfig
   private TimeInterval waitPeriodAfterRollback;
@@ -116,7 +116,6 @@ public final class JmsTransactedWorkflow extends StandardWorkflow {
   }
 
   @Override
-  @Profiled(tag = "JmsTransactedWorkflow({$this.getConsumer().getDestination().getDeliveryThreadName()})", logger = "com.adaptris.perf4j.jms.TimingLogger")
   public synchronized void onAdaptrisMessage(AdaptrisMessage msg) {
     if (!obtainChannel().isAvailable()) {
       handleChannelUnavailable(msg); // make pluggable?

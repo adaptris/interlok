@@ -21,8 +21,6 @@ import java.io.InputStream;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import org.perf4j.aop.Profiled;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
@@ -130,7 +128,6 @@ public class RelaxedFtpProducer extends ProduceOnlyProducerImp {
    * @see com.adaptris.core.AdaptrisMessageProducerImp#produce(AdaptrisMessage, ProduceDestination)
    */
   @Override
-  @Profiled(tag = "{$this.getClass().getSimpleName()}.produce()", logger = "com.adaptris.perf4j.ftp.TimingLogger")
   public void produce(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException {
     FileTransferConnection conn = retrieveConnection(FileTransferConnection.class);
     FileTransferClient client = null;

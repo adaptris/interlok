@@ -24,6 +24,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.CoreException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -56,6 +57,7 @@ public class ReplaceMetadataValue extends ReformatMetadata {
   private String searchValue;
   @NotBlank
   private String replacementValue;
+  @InputFieldDefault(value = "false")
   private Boolean replaceAll;
   private static final String MATCH_GROUP_REGEX = "(.*?)\\{([0-9]+?)\\}(.*)";
   private transient Pattern matchGroupPattern;

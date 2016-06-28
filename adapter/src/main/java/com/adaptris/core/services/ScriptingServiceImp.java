@@ -26,6 +26,7 @@ import javax.script.ScriptEngineManager;
 import org.apache.commons.io.IOUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -44,6 +45,7 @@ public abstract class ScriptingServiceImp extends ServiceImp {
   private String language;
   private transient ScriptEngineManager fatController;
   private transient ScriptEngine engine;
+  @InputFieldDefault(value = "false")
   private Boolean branching;
 
   public ScriptingServiceImp() {

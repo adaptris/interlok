@@ -25,7 +25,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.io.IOUtils;
-import org.perf4j.aop.Profiled;
 
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
@@ -108,7 +107,6 @@ public class HttpResponseProducer extends ProduceOnlyProducerImp {
    *      ProduceDestination)
    */
   @Override
-  @Profiled(tag = "{$this.getClass().getSimpleName()}.produce()", logger = "com.adaptris.perf4j.http.TimingLogger")
   public void produce(AdaptrisMessage msg, ProduceDestination destination)
       throws ProduceException {
     HttpSession session = (HttpSession) msg.getObjectMetadata().get(

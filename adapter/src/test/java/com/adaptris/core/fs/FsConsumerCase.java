@@ -325,6 +325,24 @@ public abstract class FsConsumerCase extends ConsumerCase {
             + "\n less than or equal to the size specified (in bytes) in <filter-expression> \n\n-->\n";
       }
     },
+    OlderThan {
+      @Override
+      public String getExpression() {
+        return "-P1D";
+      }
+
+      @Override
+      public String getImpl() {
+        return OlderThan.class.getCanonicalName();
+      }
+
+      @Override
+      public String getXmlHeader() {
+        return "<!--\n\n  "
+            + "The configured <file-filter-imp>  allows you to filter files based on the last modified of each file, it must be"
+            + "\n in this instance older than 1 day based on the <filter-expression> \n\n-->\n";
+      }
+    },
     Composite {
 
       @Override

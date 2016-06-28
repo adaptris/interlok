@@ -25,8 +25,6 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
 
-import org.perf4j.aop.Profiled;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -86,8 +84,6 @@ public class JmsProducer extends JmsProducerImpl {
    * @see com.adaptris.core.AdaptrisMessageProducer#produce(AdaptrisMessage, ProduceDestination)
    */
   @Override
-  @Profiled(tag = "{$this.getClass().getSimpleName()}.produce()",
-      logger = "com.adaptris.perf4j.jms.TimingLogger")
   public void produce(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException {
     try {
       setupSession(msg);
@@ -131,8 +127,6 @@ public class JmsProducer extends JmsProducerImpl {
   }
 
   @Override
-  @Profiled(tag = "{$this.getClass().getSimpleName()}.request()",
-      logger = "com.adaptris.perf4j.jms.TimingLogger")
   protected AdaptrisMessage doRequest(AdaptrisMessage msg, ProduceDestination dest, long timeout)
       throws ProduceException {
 

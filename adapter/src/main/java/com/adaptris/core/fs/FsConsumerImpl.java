@@ -34,10 +34,9 @@ import java.util.concurrent.TimeUnit;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import org.perf4j.aop.Profiled;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisPollingConsumer;
 import com.adaptris.core.CoreException;
@@ -61,8 +60,10 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
   // marshalled
   @AdvancedConfig
   private String fileFilterImp;
+  @InputFieldDefault(value = "false")
   private Boolean createDirs;
   @AdvancedConfig
+  @InputFieldDefault(value = "true")
   private Boolean logAllExceptions;
   @AdvancedConfig
   private TimeInterval quietInterval;
@@ -100,7 +101,7 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
     catch (Exception e) {
       log.warn("Exception listing files in [" + getDestination().getDestination() + "], waiting for next scheduled poll");
       if (logAllExceptions()) {
-        log.warn(e.getMessage(), e);
+        log.trace(e.getMessage(), e);
       }
       return 0;
     }
@@ -115,7 +116,7 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
       catch (Exception e) {
         log.warn("Exception processing [" + file.getName() + "], waiting for next scheduled poll");
         if (logAllExceptions()) {
-          log.warn(e.getMessage(), e);
+          log.trace(e.getMessage(), e);
         }
       }
     }
@@ -159,7 +160,6 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
    * @return the number of files processed.
    * @throws CoreException wrapping any other Exception.
    */
-  @Profiled(tag = "{$this.getClass().getSimpleName()}.processFile()", logger = "com.adaptris.perf4j.fs.TimingLogger")
   protected abstract int processFile(File f) throws CoreException;
 
   /**

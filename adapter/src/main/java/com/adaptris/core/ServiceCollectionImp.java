@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
@@ -33,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.FifoMutexLock;
 import com.adaptris.util.GuidGenerator;
@@ -48,12 +50,16 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
   private String uniqueId;
+  @InputFieldDefault(value = "false")
   private Boolean restartAffectedServiceOnException;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean continueOnFail;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean isTrackingEndpoint;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean isConfirmation;
   @AdvancedConfig
   @Deprecated
@@ -62,6 +68,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   private OutOfStateHandler outOfStateHandler;
   @AutoPopulated
   @NotNull
+  @Valid
   private List<Service> services;
   
   private transient FifoMutexLock lock = new FifoMutexLock();

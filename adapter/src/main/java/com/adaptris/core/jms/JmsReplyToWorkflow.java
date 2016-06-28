@@ -20,8 +20,6 @@ import javax.jms.Destination;
 import javax.jms.Queue;
 import javax.jms.Topic;
 
-import org.perf4j.aop.Profiled;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -108,7 +106,6 @@ public final class JmsReplyToWorkflow extends StandardWorkflow {
   }
 
   @Override
-  @Profiled(tag = "JmsReplyToWorkflow({$this.getConsumer().getDestination().getDeliveryThreadName()})", logger = "com.adaptris.perf4j.jms.TimingLogger")
   public synchronized void onAdaptrisMessage(AdaptrisMessage msg) {
     if (!obtainChannel().isAvailable()) {
       handleChannelUnavailable(msg); // make pluggable?

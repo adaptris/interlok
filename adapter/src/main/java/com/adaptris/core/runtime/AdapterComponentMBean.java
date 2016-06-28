@@ -122,6 +122,13 @@ public interface AdapterComponentMBean extends BaseComponentMBean {
   String JMX_METRICS_TYPE = JMX_DOMAIN_NAME + ":type=Metrics";
   
   /**
+   * The standard JMX Prefix for a given MessageInFlight Interceptor exposed via JMX which resolves to {@value}
+   * 
+   */
+  String JMX_INFLIGHT_TYPE = JMX_DOMAIN_NAME + ":type=InFlight";
+
+
+  /**
    * The standard JMX Prefix for an Interceptor which emits {@link javax.management.Notification}
    * which resolves to {@value}
    * 

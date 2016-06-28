@@ -44,7 +44,7 @@ import javax.tools.StandardLocation;
 {
     "cdataMappingFile", "cdataDebug"
 })
-@SupportedSourceVersion(SourceVersion.RELEASE_8)
+@SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class CDataAnnotationProcessor extends AnnotationProcessorImpl {
 
 	private static final String OPTION_CDATA_MAPPING_FILE = "cdataMappingFile";

@@ -29,6 +29,7 @@ import javax.jms.TemporaryTopic;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
@@ -52,6 +53,7 @@ public class ActiveJmsConnectionErrorHandler extends JmsConnectionErrorHandlerIm
 
   private static final TimeInterval DEFAULT_CHECK_INTERVAL = new TimeInterval(5L, TimeUnit.SECONDS);
   private static final TimeInterval DEFAULT_MAX_WAIT_FOR_START = new TimeInterval(5L, TimeUnit.MINUTES);
+  @InputFieldDefault(value = "false")
   private Boolean additionalLogging;
   @AdvancedConfig
   private TimeInterval checkInterval;

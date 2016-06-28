@@ -56,6 +56,7 @@ junit.SftpConsumerExamples.baseDir=${junit.ConsumerCase.baseDir}/sftp
 junit.MailConsumerExamples.baseDir=${junit.ConsumerCase.baseDir}/mail
 junit.HttpConsumerExamples.baseDir=${junit.ConsumerCase.baseDir}/http
 junit.SocketConsumerExamples.baseDir=${junit.ConsumerCase.baseDir}/socket
+junit.JmxConsumerExamples.baseDir=${junit.ConsumerCase.baseDir}/jmx
 
 
 junit.JmsProducerExamples.baseDir=${junit.ProducerCase.baseDir}/jms

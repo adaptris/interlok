@@ -27,12 +27,12 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
-import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.PlainIdGenerator;
 import com.adaptris.util.TimeInterval;
@@ -64,6 +64,7 @@ public abstract class WorkflowImp implements Workflow {
   private AdaptrisMessageProducer producer;
 
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean disableDefaultMessageCount;
 
   // Could be null; if it is, then the real one gets injected in later.
@@ -73,8 +74,10 @@ public abstract class WorkflowImp implements Workflow {
   // private EventHandler eventHandler;
 
   @AdvancedConfig
+  @InputFieldDefault(value = "true")
   private Boolean sendEvents;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean logPayload;
   @NotNull
   @AutoPopulated
@@ -356,7 +359,6 @@ public abstract class WorkflowImp implements Workflow {
 
   /** @see com.adaptris.core.Workflow#handleProduceException() */
   @Override
-  @Profiled(tag = "{$this.getClass().getSimpleName()}.handleProduceException()", logger = "com.adaptris.perf4j.TimingLogger")
   public void handleProduceException() {
     produceExceptionHandler.handle(this);
   }
@@ -386,7 +388,6 @@ public abstract class WorkflowImp implements Workflow {
    * @see com.adaptris.core.Workflow#handleBadMessage(AdaptrisMessage)
    */
   @Override
-  @Profiled(tag = "{$this.getClass().getSimpleName()}.handleBadMessage()", logger = "com.adaptris.perf4j.TimingLogger")
   public void handleBadMessage(AdaptrisMessage msg) {
     try {
       log.debug("handling bad message");
@@ -403,7 +404,6 @@ public abstract class WorkflowImp implements Workflow {
     }
   }
 
-  @Profiled(tag = "{$this.getClass().getSimpleName()}.sendMessageLifecycleEvent()", logger = "com.adaptris.perf4j.TimingLogger")
   protected void sendMessageLifecycleEvent(AdaptrisMessage wip) {
     try {
       if (sendEvents()) { // eventH guaranteed not null

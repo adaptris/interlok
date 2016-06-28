@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.LifecycleHelper;
 
 /**
@@ -41,6 +42,7 @@ public abstract class AdaptrisConnectionImp implements AdaptrisConnection, State
   @AdvancedConfig
   private ConnectionErrorHandler connectionErrorHandler;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean workersFirstOnShutdown;
   private String uniqueId;
 

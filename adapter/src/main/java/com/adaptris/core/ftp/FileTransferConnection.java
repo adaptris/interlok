@@ -27,6 +27,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.NoOpConnection;
 import com.adaptris.filetransfer.FileTransferClient;
@@ -53,12 +54,16 @@ public abstract class FileTransferConnection extends NoOpConnection {
   @AdvancedConfig
   private Integer defaultControlPort;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean forceRelativePath;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean additionalDebug;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean windowsWorkAround;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean cacheConnection;
   @AdvancedConfig
   private Integer maxClientCacheSize;

@@ -24,8 +24,6 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
 
-import org.perf4j.aop.Profiled;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceDestination;
@@ -114,7 +112,6 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
     }
   }
 
-  @Profiled(tag = "{$this.getClass().getSimpleName()}.produce()", logger = "com.adaptris.perf4j.jms.TimingLogger")
   protected void produce(AdaptrisMessage msg, Destination destination, Destination replyTo) throws JMSException, CoreException {
     setupSession(msg);
     Message jmsMsg = translate(msg, replyTo);
@@ -146,7 +143,6 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
    * @throws ProduceException wrapping any underlying <code>Exception</code>s
    */
   @Override
-  @Profiled(tag = "{$this.getClass().getSimpleName()}.request()", logger = "com.adaptris.perf4j.jms.TimingLogger")
   protected AdaptrisMessage doRequest(AdaptrisMessage msg, ProduceDestination dest, long timeout) throws ProduceException {
 
     AdaptrisMessage translatedReply = defaultIfNull(getMessageFactory()).newMessage();

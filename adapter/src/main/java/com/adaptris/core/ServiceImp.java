@@ -23,6 +23,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.core.services.confirmation.ConfirmServiceImp;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.GuidGenerator;
 
 /**
@@ -43,10 +46,13 @@ public abstract class ServiceImp implements Service {
   private String uniqueId;
   private transient boolean isBranching; // defaults to false
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean continueOnFail;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean isTrackingEndpoint;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean isConfirmation;
 
   /**
@@ -95,7 +101,6 @@ public abstract class ServiceImp implements Service {
     return defaultIfEmpty(getUniqueId(), "");
   }
 
-  /** @see java.lang.Object#toString() */
   @Override
   public String toString() {
     StringBuffer result = new StringBuffer();
@@ -112,13 +117,11 @@ public abstract class ServiceImp implements Service {
     return result.toString();
   }
 
-  /** @see com.adaptris.core.Service#getUniqueId() */
   @Override
   public String getUniqueId() {
     return uniqueId;
   }
 
-  /** @see com.adaptris.core.Service#setUniqueId(java.lang.String) */
   @Override
   public void setUniqueId(String s) {
     if (s == null) {
@@ -127,16 +130,11 @@ public abstract class ServiceImp implements Service {
     uniqueId = s;
   }
 
-  /** @see com.adaptris.core.Service#isBranching() */
   @Override
   public boolean isBranching() {
     return isBranching;
   }
 
-  /**
-   *
-   * @see com.adaptris.core.Service#continueOnFailure()
-   */
   @Override
   public boolean continueOnFailure() {
     if (getContinueOnFail() != null) {
@@ -146,16 +144,17 @@ public abstract class ServiceImp implements Service {
   }
 
   /**
-   * @see com.adaptris.core.Service#continueOnFailure()
    * @return whether or not this service is configured to continue on failure.
+   * @see #continueOnFailure()
    */
   public Boolean getContinueOnFail() {
     return continueOnFail;
   }
 
   /**
-   * @see com.adaptris.core.Service#continueOnFailure() param b whether or not
-   *      this service is configured to continue on failure.
+   * whether or not this service is configured to continue on failure.
+   * 
+   * @param b true/false, default if not specified is false.
    */
   public void setContinueOnFail(Boolean b) {
     continueOnFail = b;
@@ -165,6 +164,11 @@ public abstract class ServiceImp implements Service {
     return isTrackingEndpoint;
   }
 
+  /**
+   * whether or not this service is is a tracking endpoint.
+   * 
+   * @param b true/false, default if not specified is false.
+   */
   public void setIsTrackingEndpoint(Boolean b) {
     isTrackingEndpoint = b;
   }
@@ -173,14 +177,16 @@ public abstract class ServiceImp implements Service {
     return isConfirmation;
   }
 
+  /**
+   * whether or not this service is configured a confirmation.
+   * 
+   * @param b true/false, default if not specified is false.
+   * @see ConfirmServiceImp
+   */
   public void setIsConfirmation(Boolean b) {
     isConfirmation = b;
   }
 
-  /**
-   *
-   * @see com.adaptris.core.MessageEventGenerator#isTrackingEndpoint()
-   */
   @Override
   public boolean isTrackingEndpoint() {
     if (isTrackingEndpoint != null) {
@@ -189,10 +195,6 @@ public abstract class ServiceImp implements Service {
     return false;
   }
 
-  /**
-   *
-   * @see com.adaptris.core.MessageEventGenerator#isConfirmation()
-   */
   @Override
   public boolean isConfirmation() {
     if (isConfirmation != null) {
@@ -201,13 +203,15 @@ public abstract class ServiceImp implements Service {
     return false;
   }
 
+  /**
+   * @deprecated use {@link ExceptionHelper#wrapServiceException(Throwable)} or
+   *             {@link ExceptionHelper#rethrowServiceException(Throwable)} instead.
+   */
+  @Deprecated
   protected static void rethrowServiceException(Throwable e) throws ServiceException {
-    if (e instanceof ServiceException) {
-      throw (ServiceException) e;
-    }
-    throw new ServiceException(e);
+    throw ExceptionHelper.wrapServiceException(e);
   }
-  
+
   /**
    * <p>
    * Updates the state for the component <code>ComponentState</code>.

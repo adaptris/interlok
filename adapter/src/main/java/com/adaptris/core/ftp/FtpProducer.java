@@ -25,13 +25,13 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.io.IOUtils;
-import org.perf4j.aop.Profiled;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -107,6 +107,7 @@ public class FtpProducer extends RequestReplyProducerImp {
   @AdvancedConfig
   private String replyProcDirectory = null;
   @AdvancedConfig
+  @InputFieldDefault(value = "true")
   private Boolean replyUsesEncoder;
   @NotNull
   @Valid
@@ -196,7 +197,6 @@ public class FtpProducer extends RequestReplyProducerImp {
    * @see com.adaptris.core.AdaptrisMessageProducerImp#produce(AdaptrisMessage, ProduceDestination)
    */
   @Override
-  @Profiled(tag = "{$this.getClass().getSimpleName()}.produce()", logger = "com.adaptris.perf4j.ftp.TimingLogger")
   public void produce(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException {
     FileTransferConnection conn = retrieveConnection(FileTransferConnection.class);
     FileTransferClient client = null;
@@ -239,7 +239,6 @@ public class FtpProducer extends RequestReplyProducerImp {
    * @see RequestReplyProducerImp#doRequest(AdaptrisMessage, ProduceDestination, long)
    */
   @Override
-  @Profiled(tag = "{$this.getClass().getSimpleName()}.request()", logger = "com.adaptris.perf4j.ftp.TimingLogger")
   protected AdaptrisMessage doRequest(AdaptrisMessage msg, ProduceDestination destination, long timeout) throws ProduceException {
 
     if (replyDirectory == null) {

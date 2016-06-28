@@ -35,10 +35,13 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.jdbc.DatabaseConnection;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.text.xml.SimpleNamespaceContext;
@@ -58,13 +61,15 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  */
 @XStreamAlias("jdbc-data-capture-service")
 @AdapterComponent
-@ComponentProfile(summary = "Capture data from the message and store it in a database", tag = "service,jdbc")
+@ComponentProfile(summary = "Capture data from the message and store it in a database", tag = "service,jdbc",
+    recommended = {DatabaseConnection.class})
 @DisplayOrder(order = {"connection", "statement", "iterationXpath", "iterates", "statementParameters", "parameterApplicator",
     "xmlDocumentFactoryConfig", "namespaceContext", "saveReturnedKeys", "saveReturnedKeysColumn", "saveReturnedKeysTable"})
 public class JdbcDataCaptureService extends JdbcDataCaptureServiceImpl {
   @AdvancedConfig
   private String iterationXpath = null;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean iterates = null;
 
   @NotNull
@@ -263,7 +268,7 @@ public class JdbcDataCaptureService extends JdbcDataCaptureServiceImpl {
     }
     catch (Exception e) {
       rollback(conn, msg);
-      rethrowServiceException(e);
+      throw ExceptionHelper.wrapServiceException(e);
     } finally {
       JdbcUtil.closeQuietly(conn);
     }

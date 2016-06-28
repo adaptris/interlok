@@ -34,6 +34,7 @@ import org.apache.commons.io.IOUtils;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -58,6 +59,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"copyMetadata", "copyObjectMetadata", "preserveHeaders", "headerPrefix"})
 public class MimePartSplitter extends MessageSplitterImp {
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean preserveHeaders;
   @AdvancedConfig
   private String headerPrefix;

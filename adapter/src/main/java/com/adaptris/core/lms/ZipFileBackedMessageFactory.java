@@ -63,7 +63,7 @@ public class ZipFileBackedMessageFactory extends FileBackedMessageFactory {
   
   @Override
   public AdaptrisMessage newMessage() {
-    AdaptrisMessage m = new ZipFileBackedMessageImpl(uniqueIdGenerator, this, 
+    AdaptrisMessage m = new ZipFileBackedMessageImpl(uniqueIdGenerator(), this, 
         new File(getTempDirectory()), getDefaultBufferSize(), getMaxMemorySizeBytes(), getCompressionMode());
     
     if (!isEmpty(getDefaultCharEncoding())) {

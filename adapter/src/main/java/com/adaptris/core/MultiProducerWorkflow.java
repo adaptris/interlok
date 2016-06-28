@@ -21,13 +21,12 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
-import org.perf4j.aop.Profiled;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -54,6 +53,7 @@ public class MultiProducerWorkflow extends StandardWorkflow {
   @AutoPopulated
   private List<StandaloneProducer> standaloneProducers;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean useProcessedMessage;
 
   /**
@@ -75,7 +75,6 @@ public class MultiProducerWorkflow extends StandardWorkflow {
    * @see AdaptrisMessageListener#onAdaptrisMessage(AdaptrisMessage)
    */
   @Override
-  @Profiled(tag = "{$this.getClass().getSimpleName()}({$this.getConsumer().getDestination().getDeliveryThreadName()})", logger = "com.adaptris.perf4j.TimingLogger")
   public synchronized void onAdaptrisMessage(AdaptrisMessage msg) {
     if (!obtainChannel().isAvailable()) {
       handleChannelUnavailable(msg); // make pluggable?

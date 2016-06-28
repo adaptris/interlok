@@ -40,7 +40,6 @@ import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.jce.provider.X509CertificateObject;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
-import org.perf4j.aop.Profiled;
 
 import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.adaptris.security.exc.CertException;
@@ -137,7 +136,6 @@ final class X509Builder implements CertificateBuilder {
    *
    * @throws NoSuchAlgorithmException if the specified algorithm can't be used
    */
-  @Profiled(tag = "CertificateBuilder#createKeyPair()", logger = "com.adaptris.perf4j.security.certificate.TimingLogger")
   private void createKeyPair() throws NoSuchAlgorithmException {
 
     KeyPairGenerator kpg = KeyPairGenerator.getInstance(certificateParm.getKeyAlgorithm());
@@ -156,7 +154,6 @@ final class X509Builder implements CertificateBuilder {
    *           the certificate
    * @throws CertificateException if the certificate couldn't be created
    */
-  @Profiled(tag = "CertificateBuilder#createCertificate()", logger = "com.adaptris.perf4j.security.certificate.TimingLogger")
   private void createCertificate()
       throws NoSuchAlgorithmException, CertificateException, OperatorCreationException {
     if (privateKey == null) {

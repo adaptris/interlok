@@ -35,6 +35,7 @@ import org.apache.logging.log4j.core.layout.PatternLayout;
 
 import com.adaptris.logging.jmx.JmxLogger;
 import com.adaptris.logging.jmx.JmxLoggingEvent;
+import com.adaptris.logging.jmx.JmxLoggingNotificationMBean;
 
 @Plugin(name = "JmxLogAppender", category = "Core", elementType = "appender", printObject = true)
 public final class JmxLogAppender extends AbstractAppender {
@@ -43,9 +44,14 @@ public final class JmxLogAppender extends AbstractAppender {
   private final Lock readLock = rwLock.readLock();
   private ObjectName objectName;
   private JmxLogger logger;
+  private int linesOfContext = JmxLoggingNotificationMBean.DEFAULT_LOGMSG_COUNT;
+  private int errors = JmxLoggingNotificationMBean.DEFAULT_MAX_ERRORS_COUNT;
 
-  protected JmxLogAppender(String name, Filter filter, AbstractStringLayout layout, final boolean ignoreExceptions) {
+  protected JmxLogAppender(String name, Filter filter, AbstractStringLayout layout, final boolean ignoreExceptions, int lines,
+      int errs) {
     super(name, filter, layout, ignoreExceptions);
+    this.linesOfContext = lines != 0 ? lines : JmxLoggingNotificationMBean.DEFAULT_LOGMSG_COUNT;
+    this.errors = errs != 0 ? errs : JmxLoggingNotificationMBean.DEFAULT_MAX_ERRORS_COUNT;
   }
 
   @Override
@@ -63,8 +69,9 @@ public final class JmxLogAppender extends AbstractAppender {
   }
 
   @PluginFactory
-  public static JmxLogAppender createAppender(@PluginAttribute("name") String name,
-      @PluginElement("Layout") AbstractStringLayout layout, @PluginElement("Filter") final Filter filter) {
+  public static JmxLogAppender createAppender(@PluginAttribute("name") String name, @PluginAttribute("lines") int lines,
+      @PluginAttribute("errors") int errors, @PluginElement("Layout") AbstractStringLayout layout,
+      @PluginElement("Filter") final Filter filter) {
     if (name == null) {
       LOGGER.error("No name provided for JmxLogAppender");
       return null;
@@ -72,7 +79,7 @@ public final class JmxLogAppender extends AbstractAppender {
     if (layout == null) {
       layout = PatternLayout.createDefaultLayout();
     }
-    return new JmxLogAppender(name, filter, layout, true);
+    return new JmxLogAppender(name, filter, layout, true, lines, errors);
   }
 
   private ObjectName buildObjectName() throws MalformedObjectNameException {
@@ -95,7 +102,7 @@ public final class JmxLogAppender extends AbstractAppender {
   public void start() {
     try {
       objectName = buildObjectName();
-      logger = new JmxLogger(objectName);
+      logger = new JmxLogger(objectName, linesOfContext, errors);
       if (!logger.isStarted()) {
         logger.start();
       }

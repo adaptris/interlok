@@ -29,6 +29,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AllowsRetriesConnection;
 import com.adaptris.core.CoreException;
@@ -55,10 +56,13 @@ public abstract class DatabaseConnection extends AllowsRetriesConnection {
   @AutoPopulated
   private String driverImp;
   @AdvancedConfig
+  @InputFieldDefault(value = "true")
   private Boolean autoCommit;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean debugMode;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean alwaysValidateConnection;
   private String username;
   @InputFieldHint(style = "PASSWORD")

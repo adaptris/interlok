@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.util.KeyValuePair;
@@ -47,6 +48,7 @@ public abstract class XmlTransformerFactoryImpl implements XmlTransformerFactory
   @AutoPopulated
   private KeyValuePairSet transformerFactoryFeatures;
   @AdvancedConfig
+  @InputFieldDefault(value = "true")
   private Boolean failOnRecoverableError;
 
   public XmlTransformerFactoryImpl() {

@@ -21,13 +21,12 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-import org.perf4j.aop.Profiled;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.NullConnection;
@@ -83,6 +82,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class DefaultSmtpProducer extends MailProducer {
 
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean isAttachment;
   @NotNull
   @AutoPopulated
@@ -115,7 +115,6 @@ public class DefaultSmtpProducer extends MailProducer {
    *      ProduceDestination)
    */
   @Override
-  @Profiled(tag = "{$this.getClass().getSimpleName()}.produce()", logger = "com.adaptris.perf4j.lms.TimingLogger")
   public void produce(AdaptrisMessage msg, ProduceDestination destination)
       throws ProduceException {
     try {

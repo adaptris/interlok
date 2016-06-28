@@ -17,6 +17,7 @@
 package com.adaptris.core.services.aggregator;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.ExceptionHelper;
@@ -30,6 +31,7 @@ import com.adaptris.core.util.ExceptionHelper;
 public abstract class MessageAggregatorImpl implements MessageAggregator {
 
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean overwriteMetadata;
 
   /**

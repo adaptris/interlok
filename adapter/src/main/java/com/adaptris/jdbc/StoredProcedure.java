@@ -23,6 +23,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +63,9 @@ public class StoredProcedure {
       String sqlStatement =getStatementCreator().createCall(getName(), getParameters().size());
       log.trace("Generated SQL Statement [{}]", sqlStatement);
       CallableStatement statement = getConnection().prepareCall(sqlStatement);
-      statement.setQueryTimeout((int) (this.getTimeout() / 1000));// seconds
+      if (timeout > 0) {
+        statement.setQueryTimeout((int) TimeUnit.MILLISECONDS.toSeconds(this.getTimeout()));
+      }
       applyInParameters(statement);
 
       JdbcResult results = statementExecutor.executeCallableStatement(statement);
@@ -82,9 +85,11 @@ public class StoredProcedure {
       if(param.getParameterType().equals(ParameterType.OUT) || param.getParameterType().equals(ParameterType.INOUT)) {
         if(!isEmpty(param.getName())) {
           param.setOutValue(statement.getObject(param.getName()));
+          log.debug("Receiving 'OUT' parameter with name '" + param.getName() + "' and value '" + param.getOutValue() + "'");
         }
         else {
           param.setOutValue(statement.getObject(param.getOrder()));
+          log.debug("Receiving 'OUT' parameter with order '" + param.getOrder() + "' and value '" + param.getOutValue() + "'");
         }
       }
     }
@@ -95,17 +100,23 @@ public class StoredProcedure {
       if(param.getParameterType().equals(ParameterType.IN) || param.getParameterType().equals(ParameterType.INOUT)) {
         if(!isEmpty(param.getName())) {
           statement.setObject(param.getName(), param.getInValue(), param.getParameterValueType().getValue());
+          log.debug("Applying 'IN' parameter with name '" + param.getName() + "' and value '" + param.getInValue() + "'");
         }
         else {
           statement.setObject(param.getOrder(), param.getInValue(), param.getParameterValueType().getValue());
+          log.debug("Applying 'IN' parameter with order '" + param.getOrder() + "' and value '" + param.getInValue() + "'");
         }
       }
         
       if(param.getParameterType().equals(ParameterType.OUT) || param.getParameterType().equals(ParameterType.INOUT)) {
-        if(!isEmpty(param.getName()))
+        if(!isEmpty(param.getName())){
           statement.registerOutParameter(param.getName(), param.getParameterValueType().getValue());
-        else
+          log.debug("Registering 'OUT' parameter with name '" + param.getName() + "'");
+        }
+        else {
           statement.registerOutParameter(param.getOrder(), param.getParameterValueType().getValue());
+          log.debug("Registering 'OUT' parameter with order '" + param.getOrder() + "'");
+        }
       }
     }
   }
@@ -158,6 +169,11 @@ public class StoredProcedure {
     return timeout;
   }
 
+  /**
+   * Set the timeout in ms.
+   * 
+   * @param timeout
+   */
   public void setTimeout(long timeout) {
     this.timeout = timeout;
   }

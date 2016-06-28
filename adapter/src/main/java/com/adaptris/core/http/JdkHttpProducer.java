@@ -43,12 +43,12 @@ import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.hibernate.validator.constraints.NotBlank;
-import org.perf4j.aop.Profiled;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -98,6 +98,7 @@ public class JdkHttpProducer extends HttpProducer {
   private String method;
 
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean replyHttpHeadersAsMetadata;
   @AdvancedConfig
   private String replyMetadataPrefix;
@@ -123,7 +124,6 @@ public class JdkHttpProducer extends HttpProducer {
   }
 
   @Override
-  @Profiled(tag = "{$this.getClass().getSimpleName()}.request()", logger = "com.adaptris.perf4j.http.TimingLogger")
   protected AdaptrisMessage doRequest(AdaptrisMessage msg, ProduceDestination destination, long timeout) throws ProduceException {
 
     AdaptrisMessage reply = defaultIfNull(getMessageFactory()).newMessage();

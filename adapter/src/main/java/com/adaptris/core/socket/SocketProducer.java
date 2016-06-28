@@ -22,7 +22,6 @@ import java.net.Socket;
 import java.util.Map;
 
 import org.hibernate.validator.constraints.NotBlank;
-import org.perf4j.aop.Profiled;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
@@ -73,7 +72,6 @@ public class SocketProducer extends RequestReplyProducerImp {
    * @see com.adaptris.core.AdaptrisMessageProducerImp#produce(AdaptrisMessage,ProduceDestination)
    */
   @Override
-  @Profiled(tag = "{$this.getClass().getSimpleName()}.produce()", logger = "com.adaptris.perf4j.socket.TimingLogger")
   public void produce(AdaptrisMessage msg, ProduceDestination destination)
       throws ProduceException {
     sendMessage(msg, destination, DEFAULT_TIMEOUT, false);
@@ -117,7 +115,6 @@ public class SocketProducer extends RequestReplyProducerImp {
    *      long)
    */
   @Override
-  @Profiled(tag = "{$this.getClass().getSimpleName()}.produce()", logger = "com.adaptris.perf4j.socket.TimingLogger")
   public AdaptrisMessage doRequest(AdaptrisMessage msg,
                                 ProduceDestination destination, long timeout)
       throws ProduceException {

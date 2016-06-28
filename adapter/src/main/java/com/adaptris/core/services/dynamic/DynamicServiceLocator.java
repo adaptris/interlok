@@ -26,6 +26,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -70,6 +71,7 @@ public class DynamicServiceLocator extends ServiceImp implements EventHandlerAwa
   @Valid
   private ServiceStore serviceStore;
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean treatNotFoundAsError;
 
   private transient EventHandler eventHandler;

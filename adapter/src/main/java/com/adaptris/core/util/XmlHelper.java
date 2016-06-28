@@ -115,7 +115,7 @@ public class XmlHelper {
     DivertConsoleOutput dc = new DivertConsoleOutput();
     InputStream input = null;
     try {
-      DocumentBuilderFactory dbf = builder.configure(DocumentBuilderFactory.newInstance());
+      DocumentBuilderFactory dbf = defaultIfNull(builder).configure(DocumentBuilderFactory.newInstance());
       if (ctx != null) {
         dbf.setNamespaceAware(true);
       }

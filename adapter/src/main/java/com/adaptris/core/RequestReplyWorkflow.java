@@ -25,6 +25,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -62,6 +63,7 @@ public class RequestReplyWorkflow extends StandardWorkflow {
   private static final TimeInterval DEFAULT_REPLY_TIMEOUT = new TimeInterval(30L, TimeUnit.SECONDS);
 
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean retainUniqueId;
   @NotNull
   @AutoPopulated

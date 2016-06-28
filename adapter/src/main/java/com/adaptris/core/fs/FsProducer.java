@@ -26,13 +26,12 @@ import java.net.URL;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import org.perf4j.aop.Profiled;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.FileNameCreator;
@@ -59,6 +58,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"createDirs", "filenameCreator", "tempDirectory", "fsWorker"})
 public class FsProducer extends ProduceOnlyProducerImp {
 
+  @InputFieldDefault(value = "false")
   private Boolean createDirs;
   @AdvancedConfig
   private String tempDirectory = null;
@@ -118,7 +118,6 @@ public class FsProducer extends ProduceOnlyProducerImp {
    * @see com.adaptris.core.AdaptrisMessageProducer #produce(AdaptrisMessage, ProduceDestination)
    */
   @Override
-  @Profiled(tag = "{$this.getClass().getSimpleName()}.produce()", logger = "com.adaptris.perf4j.fs.TimingLogger")
   public void produce(AdaptrisMessage msg, ProduceDestination overload) throws ProduceException {
 
     if (overload != null) {
