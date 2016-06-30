@@ -40,6 +40,7 @@ import com.adaptris.security.exc.PasswordException;
 import com.adaptris.security.password.Password;
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.GreenMailUtil;
+import com.icegreen.greenmail.util.ServerSetup;
 
 public abstract class MailReceiverCase extends BaseCase {
 
@@ -86,15 +87,16 @@ public abstract class MailReceiverCase extends BaseCase {
     }
   }
 
-  private void sendMessage(String from, String to) throws Exception {
-    GreenMailUtil.sendTextEmailTest(to, from, DEFAULT_SUBJECT, DEFAULT_PAYLOAD);
-  }
+  private void sendMessage(String from, String to, ServerSetup setup) throws Exception {
+    GreenMailUtil.sendTextEmail(to, from, DEFAULT_SUBJECT, DEFAULT_PAYLOAD, setup);
+    }
 
   public void testPop3NoFilterNoDelete() throws Exception {
 
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER);
-    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com");
+    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
+    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
+    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
     MailReceiver mbox = createClient(gm);
     try {
       mbox.connect();
@@ -119,11 +121,12 @@ public abstract class MailReceiverCase extends BaseCase {
     String name = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    sendMessage("anotherAddress@anotherDomain.com", DEFAULT_RECEIVER);
-    sendMessage("anotherAddress@anotherDomain.com", DEFAULT_RECEIVER);
-    sendMessage("anotherAddress@anotherDomain.com", DEFAULT_RECEIVER);
-    sendMessage("anotherAddress@anotherDomain.com", DEFAULT_RECEIVER);
-    sendMessage("anotherAddress@anotherDomain.com", DEFAULT_RECEIVER);
+    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
+    sendMessage("anotherAddress@anotherDomain.com", DEFAULT_RECEIVER, smtpServerSetup);
+    sendMessage("anotherAddress@anotherDomain.com", DEFAULT_RECEIVER, smtpServerSetup);
+    sendMessage("anotherAddress@anotherDomain.com", DEFAULT_RECEIVER, smtpServerSetup);
+    sendMessage("anotherAddress@anotherDomain.com", DEFAULT_RECEIVER, smtpServerSetup);
+    sendMessage("anotherAddress@anotherDomain.com", DEFAULT_RECEIVER, smtpServerSetup);
     MailReceiver mbox = createClient(gm);
     mbox.purge(true);
     mbox.setRegularExpressionCompiler(PERL5);
@@ -148,11 +151,12 @@ public abstract class MailReceiverCase extends BaseCase {
     String name = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    sendMessage("anotherAddress@anotherDomain.com", DEFAULT_RECEIVER);
-    sendMessage("anotherAddress@anotherDomain.com", DEFAULT_RECEIVER);
-    sendMessage("anotherAddress@anotherDomain.com", DEFAULT_RECEIVER);
-    sendMessage("anotherAddress@anotherDomain.com", DEFAULT_RECEIVER);
-    sendMessage("anotherAddress@anotherDomain.com", DEFAULT_RECEIVER);
+    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
+    sendMessage("anotherAddress@anotherDomain.com", DEFAULT_RECEIVER, smtpServerSetup);
+    sendMessage("anotherAddress@anotherDomain.com", DEFAULT_RECEIVER, smtpServerSetup);
+    sendMessage("anotherAddress@anotherDomain.com", DEFAULT_RECEIVER, smtpServerSetup);
+    sendMessage("anotherAddress@anotherDomain.com", DEFAULT_RECEIVER, smtpServerSetup);
+    sendMessage("anotherAddress@anotherDomain.com", DEFAULT_RECEIVER, smtpServerSetup);
     MailReceiver mbox = createClient(gm);
     mbox.purge(true);
     mbox.setRegularExpressionCompiler(PERL5);
@@ -184,8 +188,9 @@ public abstract class MailReceiverCase extends BaseCase {
   public void testPop3GlobFromFilter() throws Exception {
 
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER);
-    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com");
+    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
+    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
+    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
     MailReceiver mbox = createClient(gm);
     mbox.setRegularExpressionCompiler(GLOB);
     mbox.setFromFilter(DEFAULT_SENDER);
@@ -212,8 +217,9 @@ public abstract class MailReceiverCase extends BaseCase {
   public void testPop3Perl5FromFilter() throws Exception {
 
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER);
-    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com");
+    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
+    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
+    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
     MailReceiver mbox = createClient(gm);
     mbox.setRegularExpressionCompiler(PERL5);
     mbox.setFromFilter(DEFAULT_SENDER);
@@ -237,8 +243,9 @@ public abstract class MailReceiverCase extends BaseCase {
   public void testPop3AwkFromFilter() throws Exception {
 
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER);
-    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com");
+    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
+    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
+    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
     MailReceiver mbox = createClient(gm);
     mbox.setRegularExpressionCompiler(AWK);
     mbox.setFromFilter(DEFAULT_SENDER);
@@ -262,8 +269,9 @@ public abstract class MailReceiverCase extends BaseCase {
   public void testPop3GlobToFilterNoMatch() throws Exception {
 
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER);
-    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com");
+    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
+    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
+    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
     MailReceiver mbox = createClient(gm);
     mbox.setRegularExpressionCompiler(GLOB);
     mbox.setFromFilter("ABCDEFG");
@@ -281,8 +289,9 @@ public abstract class MailReceiverCase extends BaseCase {
   public void testPop3GlobToFilter() throws Exception {
 
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER);
-    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com");
+    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
+    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
+    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
     MailReceiver mbox = createClient(gm);
     mbox.setRegularExpressionCompiler(GLOB);
     mbox.setRecipientFilter(DEFAULT_RECEIVER + "*");
@@ -308,8 +317,9 @@ public abstract class MailReceiverCase extends BaseCase {
 
   public void testPop3Perl5ToFilter() throws Exception {
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER);
-    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com");
+    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
+    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
+    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
     MailReceiver mbox = createClient(gm);
     mbox.setRegularExpressionCompiler(PERL5);
     mbox.setRecipientFilter(".*" + DEFAULT_RECEIVER + ".*");
@@ -332,8 +342,9 @@ public abstract class MailReceiverCase extends BaseCase {
 
   public void testPop3Perl5ToFilterNoMatch() throws Exception {
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER);
-    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com");
+    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
+    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
+    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
     MailReceiver mbox = createClient(gm);
     mbox.setRegularExpressionCompiler(PERL5);
     mbox.setRecipientFilter("ABCDEFG");
@@ -350,8 +361,9 @@ public abstract class MailReceiverCase extends BaseCase {
 
   public void testPop3AwkToFilter() throws Exception {
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER);
-    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com");
+    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
+    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
+    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
     MailReceiver mbox = createClient(gm);
     mbox.setRegularExpressionCompiler(AWK);
     mbox.setRecipientFilter(".*" + DEFAULT_RECEIVER + ".*");
@@ -374,8 +386,9 @@ public abstract class MailReceiverCase extends BaseCase {
 
   public void testPop3AwkToFilterNoMatch() throws Exception {
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER);
-    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com");
+    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
+    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
+    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
     MailReceiver mbox = createClient(gm);
     mbox.setRegularExpressionCompiler(AWK);
     mbox.setRecipientFilter("ABCDEFG");
@@ -393,8 +406,9 @@ public abstract class MailReceiverCase extends BaseCase {
   public void testPop3GlobCustomFilter() throws Exception {
 
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER);
-    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com");
+    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
+    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
+    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
     MailReceiver mbox = createClient(gm);
     mbox.setRegularExpressionCompiler(GLOB);
     mbox.addCustomFilter("From", DEFAULT_SENDER);
@@ -416,8 +430,9 @@ public abstract class MailReceiverCase extends BaseCase {
 
   public void testPop3Perl5CustomFilter() throws Exception {
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER);
-    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com");
+    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
+    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
+    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
     MailReceiver mbox = createClient(gm);
     mbox.setRegularExpressionCompiler(PERL5);
     mbox.addCustomFilter("From", ".*" + DEFAULT_SENDER + ".*");
@@ -440,8 +455,9 @@ public abstract class MailReceiverCase extends BaseCase {
   public void testPop3AwkCustomFilter() throws Exception {
 
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER);
-    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com");
+    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
+    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
+    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
     MailReceiver mbox = createClient(gm);
     mbox.setRegularExpressionCompiler(AWK);
     mbox.addCustomFilter("From", ".*" + DEFAULT_SENDER + ".*");
@@ -464,8 +480,9 @@ public abstract class MailReceiverCase extends BaseCase {
   public void testPop3GlobSubjectFilter() throws Exception {
 
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER);
-    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com");
+    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
+    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
+    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
     MailReceiver mbox = createClient(gm);
     mbox.setRegularExpressionCompiler(GLOB);
     mbox.setSubjectFilter("Junit*");
@@ -488,8 +505,9 @@ public abstract class MailReceiverCase extends BaseCase {
   public void testPop3Perl5SubjectFilter() throws Exception {
 
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER);
-    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com");
+    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
+    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
+    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
     MailReceiver mbox = createClient(gm);
     mbox.setRegularExpressionCompiler(PERL5);
     mbox.setSubjectFilter(".*Junit.*");
@@ -512,8 +530,9 @@ public abstract class MailReceiverCase extends BaseCase {
   public void testPop3AwkSubjectFilter() throws Exception {
 
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER);
-    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com");
+    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
+    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
+    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
     MailReceiver mbox = createClient(gm);
     mbox.setRegularExpressionCompiler(AWK);
     mbox.setSubjectFilter(".*Junit.*");
@@ -536,8 +555,9 @@ public abstract class MailReceiverCase extends BaseCase {
   public void testPop3GlobFromSubjectFilter() throws Exception {
 
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER);
-    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com");
+    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
+    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
+    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
     MailReceiver mbox = createClient(gm);
     mbox.setRegularExpressionCompiler(GLOB);
     mbox.setFromFilter(DEFAULT_SENDER);
@@ -561,8 +581,9 @@ public abstract class MailReceiverCase extends BaseCase {
   public void testPop3GlobFromSubjectFilterWithDelete() throws Exception {
 
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER);
-    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com");
+    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
+    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
+    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
     MailReceiver mbox = createClient(gm);
     mbox.setRegularExpressionCompiler(GLOB);
     mbox.setFromFilter(DEFAULT_SENDER);
