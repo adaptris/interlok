@@ -62,6 +62,7 @@ public abstract class JmsConsumerImpl extends AdaptrisMessageConsumerImp impleme
   private transient Session session;
   private transient OnMessageHandler onMessageHandler;
   private transient Boolean transacted;
+  private transient boolean managedTransaction;
   private transient long rollbackTimeout = 30000;
 
   /**
@@ -159,7 +160,7 @@ public abstract class JmsConsumerImpl extends AdaptrisMessageConsumerImp impleme
   }
 
   boolean isTransacted() {
-    return transacted != null ? transacted.booleanValue() : false;
+    return isManagedTransaction() || (transacted != null ? transacted.booleanValue() : false);
   }
 
   void setTransacted(Boolean b) {
@@ -301,6 +302,15 @@ public abstract class JmsConsumerImpl extends AdaptrisMessageConsumerImp impleme
   @Override
   public Logger currentLogger() {
     return log;
+  }
+  
+  public void setManagedTransaction(boolean managedTransaction) {
+    this.managedTransaction = managedTransaction;
+  }
+
+  @Override
+  public boolean isManagedTransaction() {
+    return managedTransaction;
   }
 
 }

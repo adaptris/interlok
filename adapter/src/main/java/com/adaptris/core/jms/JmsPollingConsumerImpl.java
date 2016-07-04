@@ -95,6 +95,7 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
   private TimeInterval receiveTimeout;
 
   private transient Boolean transacted;
+  private transient boolean managedTransaction;
   private transient long rollbackTimeout = 30000;
   private transient ConnectionFactory factory;
   private transient Connection connection;
@@ -243,7 +244,7 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
   }
 
   boolean isTransacted() {
-    return transacted != null ? transacted.booleanValue() : false;
+    return isManagedTransaction() || (transacted != null ? transacted.booleanValue() : false);
   }
 
   void setTransacted(Boolean b) {
@@ -472,6 +473,15 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
   @Override
   public long rollbackTimeout() {
     return rollbackTimeout;
+  }
+  
+  public void setManagedTransaction(boolean managedTransaction) {
+    this.managedTransaction = managedTransaction;
+  }
+
+  @Override
+  public boolean isManagedTransaction() {
+    return managedTransaction;
   }
 
 }

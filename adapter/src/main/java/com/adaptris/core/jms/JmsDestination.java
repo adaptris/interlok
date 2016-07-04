@@ -35,12 +35,12 @@ public interface JmsDestination {
   public enum DestinationType {
     QUEUE {
       @Override
-      Queue create(VendorImplementation vendor, JmsActorConfig c, String name) throws JMSException {
+      public Queue create(VendorImplementationBase vendor, JmsActorConfig c, String name) throws JMSException {
         return vendor.createQueue(name, c);
       }
 
       @Override
-      TemporaryQueue createTemporaryDestination(Session c) throws JMSException {
+      public TemporaryQueue createTemporaryDestination(Session c) throws JMSException {
         return c.createTemporaryQueue();
       }
 
@@ -48,12 +48,12 @@ public interface JmsDestination {
     TOPIC {
 
       @Override
-      Topic create(VendorImplementation vendor, JmsActorConfig c, String name) throws JMSException {
+      public Topic create(VendorImplementationBase vendor, JmsActorConfig c, String name) throws JMSException {
         return vendor.createTopic(name, c);
       }
 
       @Override
-      TemporaryTopic createTemporaryDestination(Session c) throws JMSException {
+      public TemporaryTopic createTemporaryDestination(Session c) throws JMSException {
         return c.createTemporaryTopic();
       }
     };
@@ -62,9 +62,9 @@ public interface JmsDestination {
     // destination
     // rather than creating it from the session.
     // somewhat obtuse, but there we go.
-    abstract Destination create(VendorImplementation vendor, JmsActorConfig c, String name) throws JMSException;
+    public abstract Destination create(VendorImplementationBase vendor, JmsActorConfig c, String name) throws JMSException;
 
-    abstract Destination createTemporaryDestination(Session c) throws JMSException;
+    public abstract Destination createTemporaryDestination(Session c) throws JMSException;
     
   }
 
