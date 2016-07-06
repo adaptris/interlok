@@ -16,9 +16,13 @@
 
 package com.adaptris.core.ftp;
 
+import java.io.File;
+
+import org.apache.commons.io.FileUtils;
+
+import com.adaptris.filetransfer.FileTransferClient;
+import com.adaptris.filetransfer.FileTransferException;
 import com.adaptris.security.password.Password;
-import com.adaptris.sftp.DefaultSftpBehaviour;
-import com.adaptris.sftp.StrictKnownHosts;
 
 public class SftpConnectionTest extends FtpPasswordConnectionCase {
 
@@ -26,6 +30,11 @@ public class SftpConnectionTest extends FtpPasswordConnectionCase {
   public static final String CFG_USER = "SftpConsumerTest.username";
   public static final String CFG_PASSWORD = "SftpConsumerTest.password";
   public static final String CFG_REMOTE_DIR = "SftpConsumerTest.remotedir";
+
+  // DO NOT use the top two directly, use @setupTempHostsFile and the CFG_TEMP_HOSTS_FILE
+  protected static final String CFG_KNOWN_HOSTS_FILE = "SftpConsumerTest.knownHostsFile";
+  protected static final String CFG_UNKNOWN_HOSTS_FILE = "SftpConsumerTest.unknownHostsFile";
+  protected static final String CFG_TEMP_HOSTS_FILE = "SftpConsumerTest.tempHostsFile";
 
   public SftpConnectionTest(String name) {
     super(name);
@@ -76,23 +85,129 @@ public class SftpConnectionTest extends FtpPasswordConnectionCase {
 
   }
 
-  public void testSetSshConnectionBehaviour() throws Exception {
+
+  public void testSetKnownHostsFile() throws Exception {
     SftpConnection conn = new SftpConnection();
-    assertNotNull(conn.getSftpConnectionBehaviour());
-    assertEquals(DefaultSftpBehaviour.class, conn.getSftpConnectionBehaviour().getClass());
+    assertNull(conn.getKnownHostsFile());
+    conn.setKnownHostsFile("abc");
+    assertEquals("abc", conn.getKnownHostsFile());
+  }
 
-    StrictKnownHosts skh = new StrictKnownHosts();
 
-    conn.setSftpConnectionBehaviour(skh);
-    assertEquals(skh, conn.getSftpConnectionBehaviour());
-    try {
-      conn.setSftpConnectionBehaviour(null);
-      fail();
+  public void testConnectOnly_DefaultBehaviour() throws Exception {
+    if (areTestsEnabled()) {
+      File tempHostsFile = copyHostsFile(new File(PROPERTIES.getProperty(CFG_KNOWN_HOSTS_FILE)));
+
+      SftpConnection conn = createConnection();
+      try {
+        start(conn);
+        FileTransferClient c = conn.connect(getDestinationString());
+        assertTrue(c.isConnected());
+        c.disconnect();
+      } finally {
+        stop(conn);
+      }
     }
-    catch (IllegalArgumentException expected) {
+  }
 
+  public void testConnectOnly_StrictKnownHosts_UnknownHost() throws Exception {
+    if (areTestsEnabled()) {
+      File tempHostsFile = copyHostsFile(new File(PROPERTIES.getProperty(CFG_UNKNOWN_HOSTS_FILE)));
+
+      SftpConnection conn = createConnection();
+      conn.setConfiguration(new InlineConfigRepositoryBuilder(true).build());
+      conn.setKnownHostsFile(tempHostsFile.getCanonicalPath());
+      try {
+        start(conn);
+        FileTransferClient c = conn.connect(getDestinationString());
+        fail();
+      } catch (FileTransferException expected) {
+
+      } finally {
+        stop(conn);
+      }
     }
-    assertEquals(skh, conn.getSftpConnectionBehaviour());
+  }
+
+  public void testConnectOnly_PerHost_StrictKeyCheck_UnknownHost() throws Exception {
+    if (areTestsEnabled()) {
+      File tempHostsFile = copyHostsFile(new File(PROPERTIES.getProperty(CFG_UNKNOWN_HOSTS_FILE)));
+
+      SftpConnection conn = createConnection();
+      conn.setConfiguration(new PerHostConfigRepositoryBuilder(tempHostsFile, true).build());
+      conn.setKnownHostsFile(tempHostsFile.getCanonicalPath());
+      try {
+        start(conn);
+        FileTransferClient c = conn.connect(getDestinationString());
+        fail();
+      } catch (FileTransferException expected) {
+
+      } finally {
+        stop(conn);
+      }
+    }
+  }
+
+  public void testConnectOnly_PerHost_StrictKeyCheck_KnownHost() throws Exception {
+    if (areTestsEnabled()) {
+      File tempHostsFile = copyHostsFile(new File(PROPERTIES.getProperty(CFG_KNOWN_HOSTS_FILE)));
+
+      SftpConnection conn = createConnection();
+      conn.setConfiguration(new PerHostConfigRepositoryBuilder(tempHostsFile, true).build());
+      conn.setKnownHostsFile(tempHostsFile.getCanonicalPath());
+      try {
+        start(conn);
+        FileTransferClient c = conn.connect(getDestinationString());
+        assertTrue(c.isConnected());
+        c.disconnect();
+      } finally {
+        stop(conn);
+      }
+    }
+  }
+
+  public void testConnectOnly_LenientKnownHosts_UnknownHost() throws Exception {
+    if (areTestsEnabled()) {
+      File tempHostsFile = copyHostsFile(new File(PROPERTIES.getProperty(CFG_UNKNOWN_HOSTS_FILE)));
+
+      SftpConnection conn = createConnection();
+      conn.setConfiguration(new InlineConfigRepositoryBuilder(false).build());
+      conn.setKnownHostsFile(tempHostsFile.getCanonicalPath());
+      try {
+        start(conn);
+        FileTransferClient c = conn.connect(getDestinationString());
+        assertTrue(c.isConnected());
+        c.disconnect();
+      } finally {
+        stop(conn);
+      }
+    }
+  }
+
+  public void testConnectOnly_LenientKnownHosts_KnownHost() throws Exception {
+    if (areTestsEnabled()) {
+      File tempHostsFile = copyHostsFile(new File(PROPERTIES.getProperty(CFG_KNOWN_HOSTS_FILE)));
+
+      SftpConnection conn = createConnection();
+      conn.setConfiguration(new InlineConfigRepositoryBuilder(false).build());
+      conn.setKnownHostsFile(tempHostsFile.getCanonicalPath());
+      try {
+        start(conn);
+        FileTransferClient c = conn.connect(getDestinationString());
+        assertTrue(c.isConnected());
+        c.disconnect();
+      } finally {
+        stop(conn);
+      }
+    }
+  }
+
+  private File copyHostsFile(File srcKnownHosts) throws Exception {
+    File tempDir = new File(PROPERTIES.getProperty(CFG_TEMP_HOSTS_FILE));
+    tempDir.mkdirs();
+    File tempFile = File.createTempFile(SftpConnectionTest.class.getSimpleName(), "", tempDir);
+    FileUtils.copyFile(srcKnownHosts, tempFile);
+    return tempFile;
   }
 
   protected void assertDefaultControlPort(int defaultControlPort) {
