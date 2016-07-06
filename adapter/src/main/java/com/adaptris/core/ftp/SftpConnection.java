@@ -30,9 +30,9 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.util.Args;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
+import com.adaptris.sftp.ConfigRepositoryBuilder;
 import com.adaptris.sftp.InlineConfigRepository;
 import com.adaptris.sftp.SftpClient;
-import com.adaptris.sftp.ConfigRepositoryBuilder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -151,7 +151,7 @@ public class SftpConnection extends FileTransferConnectionUsingPassword {
   /**
    * Set the config repository.
    * <p>
-   * Use a config repository to set various SSH based settings on a per-host basis (such as {@code PreferredAuthentications} or
+   * Use a config repository to set various SSH based settings (such as {@code PreferredAuthentications} or
    * {@code ServerAliveInterval}.
    * </p>
    * 

@@ -29,6 +29,7 @@ import com.adaptris.sftp.ConfigRepositoryBuilder;
 import com.adaptris.sftp.HostConfig;
 import com.adaptris.sftp.OpenSSHConfigBuilder;
 import com.adaptris.sftp.PerHostConfigRepository;
+import com.adaptris.sftp.SftpClient;
 import com.adaptris.util.KeyValuePair;
 
 
@@ -98,10 +99,10 @@ public class SftpConsumerTest extends FtpConsumerCase {
 
   public static PerHostConfigRepository createPerHostConfigRepo() {
     PerHostConfigRepository inline = new PerHostConfigRepository();
-    HostConfig a = new HostConfig("my.host.com", null, -1, new KeyValuePair("StrictHostKeyChecking", "true"),
-        new KeyValuePair("PreferredAuthentications", "publickey,keyboard-interactive,password"));
-    HostConfig b = new HostConfig("another.host.com", null, -1, new KeyValuePair("StrictHostKeyChecking", "false"),
-        new KeyValuePair("PreferredAuthentications", "kerberos,publickey,keyboard-interactive,password"));
+    HostConfig a = new HostConfig("my.host.com", null, -1, new KeyValuePair("StrictHostKeyChecking", "yes"),
+        new KeyValuePair(SftpClient.SSH_PREFERRED_AUTHENTICATIONS, SftpClient.NO_KERBEROS_AUTH));
+    HostConfig b = new HostConfig("another.host.com", null, -1, new KeyValuePair("StrictHostKeyChecking", "no"),
+        new KeyValuePair(SftpClient.SSH_PREFERRED_AUTHENTICATIONS, SftpClient.NO_KERBEROS_AUTH));
     inline.getHosts().add(a);
     inline.getHosts().add(b);
     return inline;

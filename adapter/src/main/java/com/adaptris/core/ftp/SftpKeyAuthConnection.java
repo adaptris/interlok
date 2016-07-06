@@ -210,7 +210,7 @@ public class SftpKeyAuthConnection extends FileTransferConnection {
   /**
    * Set the config repository.
    * <p>
-   * Use a config repository to set various SSH based settings on a per-host basis (such as {@code PreferredAuthentications} or
+   * Use a config repository to set various SSH based settings (such as {@code PreferredAuthentications} or
    * {@code ServerAliveInterval}.
    * </p>
    * 

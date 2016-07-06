@@ -17,12 +17,17 @@
 package com.adaptris.core.ftp;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.BooleanUtils;
 
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
 import com.adaptris.security.password.Password;
+import com.adaptris.sftp.OpenSSHConfigBuilder;
+import com.adaptris.sftp.SftpClient;
 
 public class SftpConnectionTest extends FtpPasswordConnectionCase {
 
@@ -110,7 +115,7 @@ public class SftpConnectionTest extends FtpPasswordConnectionCase {
     }
   }
 
-  public void testConnectOnly_StrictKnownHosts_UnknownHost() throws Exception {
+  public void testConnectOnly_StrictKeyCheck_UnknownHost() throws Exception {
     if (areTestsEnabled()) {
       File tempHostsFile = copyHostsFile(new File(PROPERTIES.getProperty(CFG_UNKNOWN_HOSTS_FILE)));
 
@@ -166,7 +171,7 @@ public class SftpConnectionTest extends FtpPasswordConnectionCase {
     }
   }
 
-  public void testConnectOnly_LenientKnownHosts_UnknownHost() throws Exception {
+  public void testConnectOnly_UnknownHost() throws Exception {
     if (areTestsEnabled()) {
       File tempHostsFile = copyHostsFile(new File(PROPERTIES.getProperty(CFG_UNKNOWN_HOSTS_FILE)));
 
@@ -184,7 +189,7 @@ public class SftpConnectionTest extends FtpPasswordConnectionCase {
     }
   }
 
-  public void testConnectOnly_LenientKnownHosts_KnownHost() throws Exception {
+  public void testConnectOnly_KnownHost() throws Exception {
     if (areTestsEnabled()) {
       File tempHostsFile = copyHostsFile(new File(PROPERTIES.getProperty(CFG_KNOWN_HOSTS_FILE)));
 
@@ -202,6 +207,44 @@ public class SftpConnectionTest extends FtpPasswordConnectionCase {
     }
   }
 
+  public void testConnectOnly_OpenSSH_Strict_UnknownHost() throws Exception {
+    if (areTestsEnabled()) {
+      File tempHostsFile = copyHostsFile(new File(PROPERTIES.getProperty(CFG_UNKNOWN_HOSTS_FILE)));
+
+      SftpConnection conn = createConnection();
+      conn.setConfiguration(new OpenSSHConfigBuilder(createOpenSshConfig(true).getCanonicalPath()));
+      conn.setKnownHostsFile(tempHostsFile.getCanonicalPath());
+      try {
+        start(conn);
+        FileTransferClient c = conn.connect(getDestinationString());
+        fail();
+      } catch (FileTransferException expected) {
+
+      } finally {
+        stop(conn);
+      }
+    }
+  }
+
+  public void testConnectOnly_OpenSSH_Strict_KnownHost() throws Exception {
+    if (areTestsEnabled()) {
+      File tempHostsFile = copyHostsFile(new File(PROPERTIES.getProperty(CFG_KNOWN_HOSTS_FILE)));
+
+      SftpConnection conn = createConnection();
+      conn.setConfiguration(new OpenSSHConfigBuilder(createOpenSshConfig(true).getCanonicalPath()));
+      conn.setKnownHostsFile(tempHostsFile.getCanonicalPath());
+      try {
+        start(conn);
+        FileTransferClient c = conn.connect(getDestinationString());
+        assertTrue(c.isConnected());
+        c.disconnect();
+      } finally {
+        stop(conn);
+      }
+    }
+  }
+
+
   private File copyHostsFile(File srcKnownHosts) throws Exception {
     File tempDir = new File(PROPERTIES.getProperty(CFG_TEMP_HOSTS_FILE));
     tempDir.mkdirs();
@@ -209,6 +252,19 @@ public class SftpConnectionTest extends FtpPasswordConnectionCase {
     FileUtils.copyFile(srcKnownHosts, tempFile);
     return tempFile;
   }
+
+  private File createOpenSshConfig(boolean strict) throws Exception {
+    File tempDir = new File(PROPERTIES.getProperty(CFG_TEMP_HOSTS_FILE));
+    tempDir.mkdirs();
+    File tempFile = File.createTempFile(SftpConnectionTest.class.getSimpleName(), "", tempDir);
+    try (PrintStream out = new PrintStream(new FileOutputStream(tempFile))) {
+      out.println("Host *");
+      out.println("  StrictHostKeyChecking " + BooleanUtils.toStringYesNo(strict));
+      out.println("  " + SftpClient.SSH_PREFERRED_AUTHENTICATIONS + " " + SftpClient.NO_KERBEROS_AUTH);
+    }
+    return tempFile;
+  }
+
 
   protected void assertDefaultControlPort(int defaultControlPort) {
     assertEquals(SftpConnection.DEFAULT_CONTROL_PORT, defaultControlPort);

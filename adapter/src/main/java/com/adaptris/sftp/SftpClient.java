@@ -56,11 +56,8 @@ import com.jcraft.jsch.UserInfo;
  */
 public class SftpClient extends FileTransferClientImp {
 
-  private static final String NO_KERBEROS_AUTH = "publickey,keyboard-interactive,password";
-
-  private static final String SSH_PREFERRED_AUTHENTICATIONS = "PreferredAuthentications";
-
-  private static final File DEFAULT_KNOWN_HOSTS = null;
+  public static final String NO_KERBEROS_AUTH = "publickey,keyboard-interactive,password";
+  public static final String SSH_PREFERRED_AUTHENTICATIONS = "PreferredAuthentications";
 
   private static final String PARENT_DIR = "..";
 
@@ -89,9 +86,9 @@ public class SftpClient extends FileTransferClientImp {
         jsch.setKnownHosts(knownHostsFile.getAbsolutePath());
       }
       if (configRepo != null) {
-        jsch.setConfigRepository(configRepo);
         configRepository = configRepo;
       }
+      jsch.setConfigRepository(configRepository);
     } catch (JSchException e) {
       throw new SftpException(e);
     }
@@ -103,7 +100,7 @@ public class SftpClient extends FileTransferClientImp {
    * @param host the remote ssh host.
    */
   public SftpClient(String host) throws SftpException {
-    this(host, DEFAULT_SSH_PORT, DEFAULT_TIMEOUT, DEFAULT_KNOWN_HOSTS, null);
+    this(host, DEFAULT_SSH_PORT, DEFAULT_TIMEOUT, null, null);
   }
 
   /**
@@ -112,7 +109,7 @@ public class SftpClient extends FileTransferClientImp {
    * @param addr the remote ssh host.
    */
   public SftpClient(InetAddress addr) throws SftpException {
-    this(addr.getHostAddress(), DEFAULT_SSH_PORT, DEFAULT_TIMEOUT, DEFAULT_KNOWN_HOSTS, null);
+    this(addr.getHostAddress(), DEFAULT_SSH_PORT, DEFAULT_TIMEOUT, null, null);
   }
 
   /**
@@ -123,7 +120,7 @@ public class SftpClient extends FileTransferClientImp {
    * @param timeout the timeout;
    */
   public SftpClient(InetAddress addr, int port, int timeout) throws SftpException {
-    this(addr.getHostAddress(), port, timeout, DEFAULT_KNOWN_HOSTS, null);
+    this(addr.getHostAddress(), port, timeout, null, null);
   }
 
   /**
@@ -134,7 +131,7 @@ public class SftpClient extends FileTransferClientImp {
    * @param timeout the timeout;
    */
   public SftpClient(String host, int port, int timeout) throws SftpException {
-    this(host, port, timeout, DEFAULT_KNOWN_HOSTS, null);
+    this(host, port, timeout, null, null);
   }
 
   /**
