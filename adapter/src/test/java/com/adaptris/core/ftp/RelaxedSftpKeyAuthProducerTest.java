@@ -24,10 +24,8 @@ import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.FormattedFilenameCreator;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.security.password.Password;
-import com.adaptris.sftp.DefaultSftpBehaviour;
-import com.adaptris.sftp.LenientKnownHosts;
-import com.adaptris.sftp.SftpConnectionBehaviour;
-import com.adaptris.sftp.StrictKnownHosts;
+import com.adaptris.sftp.ConfigRepositoryBuilder;
+import com.adaptris.sftp.OpenSSHConfigBuilder;
 
 public class RelaxedSftpKeyAuthProducerTest extends RelaxedFtpProducerCase {
 
@@ -53,16 +51,16 @@ public class RelaxedSftpKeyAuthProducerTest extends RelaxedFtpProducerCase {
     con.setPrivateKeyFilename("/path/to/private/key/in/openssh/format");
     con.setPrivateKeyPassword("my_super_secret_password");
     con.setSocketTimeout(10000);
-    con.setSftpConnectionBehaviour(new LenientKnownHosts());
+    con.setKnownHostsFile("/optional/path/to/known_hosts");
     return con;
   }
 
-  private StandaloneProducer createProducerExample(SftpConnectionBehaviour behaviour) {
+  private StandaloneProducer createProducerExample(ConfigRepositoryBuilder behaviour) {
     SftpKeyAuthConnection con = createConnectionForExamples();
     RelaxedFtpProducer producer = createProducerExample();
     try {
       con.setPrivateKeyPassword(Password.encode("my_super_secret_password", Password.PORTABLE_PASSWORD));
-      con.setSftpConnectionBehaviour(behaviour);
+      con.setConfiguration(behaviour);
       producer.setFileNameCreator(new FormattedFilenameCreator());
       producer.setDestination(new ConfiguredProduceDestination("sftp://sftpuser@hostname:port/path/to/directory"));
     }
@@ -76,16 +74,16 @@ public class RelaxedSftpKeyAuthProducerTest extends RelaxedFtpProducerCase {
   protected String createBaseFileName(Object object) {
     SftpKeyAuthConnection con = (SftpKeyAuthConnection) ((StandaloneProducer) object).getConnection();
     return super.createBaseFileName(object) + "-" + con.getClass().getSimpleName() + "-"
-        + con.getSftpConnectionBehaviour().getClass().getSimpleName();
+        + con.getConfiguration().getClass().getSimpleName();
   }
 
   @Override
   protected List retrieveObjectsForSampleConfig() {
     return new ArrayList(Arrays.asList(new StandaloneProducer[]
     {
-        createProducerExample(new LenientKnownHosts("/path/to/known/hosts", false)),
-        createProducerExample(new StrictKnownHosts("/path/to/known/hosts", false)),
-        createProducerExample(new DefaultSftpBehaviour())
+        createProducerExample(new OpenSSHConfigBuilder("/path/openssh/config/file")),
+        createProducerExample(SftpConsumerTest.createInlineConfigRepo()),
+        createProducerExample(SftpConsumerTest.createPerHostConfigRepo()),
     }));
   }
 

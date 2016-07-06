@@ -19,6 +19,7 @@ package com.adaptris.sftp;
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -30,6 +31,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferClientImp;
 import com.adaptris.filetransfer.FileTransferException;
@@ -37,6 +40,7 @@ import com.adaptris.ftp.FtpException;
 import com.adaptris.util.FifoMutexLock;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.ConfigRepository;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
@@ -52,7 +56,8 @@ import com.jcraft.jsch.UserInfo;
  */
 public class SftpClient extends FileTransferClientImp {
 
-  private static final SftpConnectionBehaviour DEFAULT_BEHAVIOUR = new DefaultSftpBehaviour();
+  public static final String NO_KERBEROS_AUTH = "publickey,keyboard-interactive,password";
+  public static final String SSH_PREFERRED_AUTHENTICATIONS = "PreferredAuthentications";
 
   private static final String PARENT_DIR = "..";
 
@@ -65,17 +70,28 @@ public class SftpClient extends FileTransferClientImp {
   private String sshHost;
   private int sshPort;
   private int timeout;
-  private SftpConnectionBehaviour connectionBehaviour;
   private long keepAliveTimeout = 0;
 
   private transient JSch jsch;
   private transient Session sftpSession;
   private transient ChannelSftp sftpChannel;
   private transient FifoMutexLock lock;
+  private transient ConfigRepository configRepository = ConfigRepository.nullConfig;
 
-  private SftpClient() {
-    jsch = new JSch();
-    lock = new FifoMutexLock();
+  private SftpClient(File knownHostsFile, ConfigRepository configRepo) throws SftpException {
+    try {
+      jsch = new JSch();
+      lock = new FifoMutexLock();
+      if (knownHostsFile != null) {
+        jsch.setKnownHosts(knownHostsFile.getAbsolutePath());
+      }
+      if (configRepo != null) {
+        configRepository = configRepo;
+      }
+      jsch.setConfigRepository(configRepository);
+    } catch (JSchException e) {
+      throw new SftpException(e);
+    }
   }
 
   /**
@@ -83,8 +99,8 @@ public class SftpClient extends FileTransferClientImp {
    *
    * @param host the remote ssh host.
    */
-  public SftpClient(String host) {
-    this(host, DEFAULT_SSH_PORT, DEFAULT_TIMEOUT, DEFAULT_BEHAVIOUR);
+  public SftpClient(String host) throws SftpException {
+    this(host, DEFAULT_SSH_PORT, DEFAULT_TIMEOUT, null, null);
   }
 
   /**
@@ -92,8 +108,8 @@ public class SftpClient extends FileTransferClientImp {
    *
    * @param addr the remote ssh host.
    */
-  public SftpClient(InetAddress addr) {
-    this(addr.getHostAddress(), DEFAULT_SSH_PORT, DEFAULT_TIMEOUT, DEFAULT_BEHAVIOUR);
+  public SftpClient(InetAddress addr) throws SftpException {
+    this(addr.getHostAddress(), DEFAULT_SSH_PORT, DEFAULT_TIMEOUT, null, null);
   }
 
   /**
@@ -103,8 +119,8 @@ public class SftpClient extends FileTransferClientImp {
    * @param port the ssh port.
    * @param timeout the timeout;
    */
-  public SftpClient(InetAddress addr, int port, int timeout) {
-    this(addr.getHostAddress(), port, timeout, DEFAULT_BEHAVIOUR);
+  public SftpClient(InetAddress addr, int port, int timeout) throws SftpException {
+    this(addr.getHostAddress(), port, timeout, null, null);
   }
 
   /**
@@ -114,8 +130,8 @@ public class SftpClient extends FileTransferClientImp {
    * @param port the port
    * @param timeout the timeout;
    */
-  public SftpClient(String host, int port, int timeout) {
-    this(host, port, timeout, DEFAULT_BEHAVIOUR);
+  public SftpClient(String host, int port, int timeout) throws SftpException {
+    this(host, port, timeout, null, null);
   }
 
   /**
@@ -126,12 +142,11 @@ public class SftpClient extends FileTransferClientImp {
    * @param timeout the timeout;
    * @param scb any required behaviour for this client;
    */
-  public SftpClient(String host, int port, int timeout, SftpConnectionBehaviour scb) {
-    this();
+  public SftpClient(String host, int port, int timeout, File knownHostsFile, ConfigRepository configRepo) throws SftpException {
+    this(knownHostsFile, configRepo);
     sshHost = host;
     sshPort = port;
     this.timeout = timeout;
-    connectionBehaviour = scb;
   }
 
   private void acquireLock() {
@@ -184,8 +199,11 @@ public class SftpClient extends FileTransferClientImp {
   private void connect(String user, UserInfo ui) throws FileTransferException {
     try {
       sftpSession = jsch.getSession(user, sshHost, sshPort);
-      connectionBehaviour.configure(this);
-      sftpSession.setConfig("PreferredAuthentications", "publickey,keyboard-interactive,password");
+      if (configRepository.getConfig(sshHost) == null
+          || StringUtils.isBlank(configRepository.getConfig(sshHost).getValue(SSH_PREFERRED_AUTHENTICATIONS))) {
+        // No config, let's killoff #995
+        sftpSession.setConfig(SSH_PREFERRED_AUTHENTICATIONS, NO_KERBEROS_AUTH);
+      }
       sftpSession.setDaemonThread(true);
       sftpSession.setUserInfo(ui);
       sftpSession.connect(timeout);
@@ -480,27 +498,6 @@ public class SftpClient extends FileTransferClientImp {
       result = sftpChannel.isConnected();
     }
     return result;
-  }
-
-  public void setHostKeyChecking(boolean on) {
-    if (on) {
-      sftpSession.setConfig("StrictHostKeyChecking", "yes");
-    }
-    else {
-      sftpSession.setConfig("StrictHostKeyChecking", "no");
-    }
-  }
-
-  public void setUseCompression(boolean on) {
-    if (on) {
-      sftpSession.setConfig("compression.s2c", "zlib,none");
-      sftpSession.setConfig("compression.c2s", "zlib,none");
-    }
-    else {
-      // Do nothing, don't unnecessarily set session config
-      // sftpSession.setConfig("compression.s2c", "none");
-      // sftpSession.setConfig("compression.c2s", "none");
-    }
   }
 
   public void setKnownHosts(String knownHostsFilename) throws SftpException {
