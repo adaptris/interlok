@@ -11,6 +11,7 @@ import com.jcraft.jsch.ConfigRepository;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
+ * Contains host configuration for use with {@link PerHostConfigRepository}.
  * 
  * @config sftp-host-config
  */

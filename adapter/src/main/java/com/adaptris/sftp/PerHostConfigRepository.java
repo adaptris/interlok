@@ -20,6 +20,9 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
  * A statically configured SSH {@link ConfigRepository} that supports different configuration on a per host basis.
+ * <p>
+ * If a host is not configured then we build default configuration from {@link #getDefaultConfiguration()}
+ * </p>
  * 
  * @config sftp-per-host-config-repository
  */
