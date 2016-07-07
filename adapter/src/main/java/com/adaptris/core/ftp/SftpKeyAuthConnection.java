@@ -29,13 +29,14 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.core.util.Args;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.security.password.Password;
-import com.adaptris.sftp.DefaultSftpBehaviour;
+import com.adaptris.sftp.ConfigRepositoryBuilder;
+import com.adaptris.sftp.InlineConfigRepository;
 import com.adaptris.sftp.SftpClient;
-import com.adaptris.sftp.SftpConnectionBehaviour;
 import com.adaptris.sftp.SftpException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -56,7 +57,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <li>Specifying the username+password in the destination (e.g. <code>sftp://lchan:myPassword@1.2.3.4:22//opt/sftp</code>), will
  * override the username used to login but no other credentials. The only valid authentication is via the specified private
  * key.</li>
- * <li>You can specify additional behaviour using one of {@link DefaultSftpBehaviour}, {@link com.adaptris.sftp.LenientKnownHosts}
+ * <li>You can specify additional behaviour using one of {@link DefaultKnownHosts}, {@link com.adaptris.sftp.LenientKnownHosts}
  * or {@link com.adaptris.sftp.StrictKnownHosts}. {@link com.adaptris.sftp.StrictKnownHosts} will cause an exception to be thrown
  * if the servers key is not present in any configured known_hosts file.</li>
  * <li>The private key and known_hosts file are expected to be in OpenSSH format</li>
@@ -88,18 +89,20 @@ public class SftpKeyAuthConnection extends FileTransferConnection {
   private String privateKeyPassword;
   @AdvancedConfig
   private Integer socketTimeout;
+  @AdvancedConfig
+  private String knownHostsFile;
   @Valid
   @NotNull
   @AutoPopulated
   @AdvancedConfig
-  private SftpConnectionBehaviour sftpConnectionBehaviour;
+  private ConfigRepositoryBuilder configuration;
   // For sending keep alives every 60 seconds on the control port when downloading stuff.
   // Could make it configurable
   private transient long keepAlive = 60;
 
   public SftpKeyAuthConnection() {
     super();
-    setSftpConnectionBehaviour(new DefaultSftpBehaviour());
+    setConfiguration(new InlineConfigRepository());
   }
 
 
@@ -111,7 +114,7 @@ public class SftpKeyAuthConnection extends FileTransferConnection {
   @Override
   protected FileTransferClient create(String remoteHost, int port, UserInfo ui) throws IOException, FileTransferException {
     log.debug("Connecting to " + remoteHost + ":" + port + " as user " + ui.getUser());
-    SftpClient sftp = new SftpClient(remoteHost, port, socketTimeout(), getSftpConnectionBehaviour());
+    SftpClient sftp = new SftpClient(remoteHost, port, socketTimeout(), knownHosts(), getConfiguration().build());
     sftp.setAdditionalDebug(additionalDebug());
     sftp.setKeepAliveTimeout(keepAlive);
     try {
@@ -177,20 +180,44 @@ public class SftpKeyAuthConnection extends FileTransferConnection {
     return new UserInfo(getDefaultUserName());
   }
 
-  public SftpConnectionBehaviour getSftpConnectionBehaviour() {
-    return sftpConnectionBehaviour;
+  public String getKnownHostsFile() {
+    return knownHostsFile;
   }
 
-  public void setSftpConnectionBehaviour(SftpConnectionBehaviour k) {
-    if (k == null) {
-      throw new IllegalArgumentException("known_hosts handler may not be null");
-    }
-    sftpConnectionBehaviour = k;
+  public void setKnownHostsFile(String k) {
+    knownHostsFile = k;
+  }
+
+  private File knownHosts() {
+    return knownHostsFile != null ? new File(knownHostsFile) : null;
   }
 
   @Override
   public int defaultControlPort() {
     return getDefaultControlPort() != null ? getDefaultControlPort().intValue() : DEFAULT_CONTROL_PORT;
+  }
+
+
+  /**
+   * @return the configRepository
+   */
+  public ConfigRepositoryBuilder getConfiguration() {
+    return configuration;
+  }
+
+
+
+  /**
+   * Set the config repository.
+   * <p>
+   * Use a config repository to set various SSH based settings (such as {@code PreferredAuthentications} or
+   * {@code ServerAliveInterval}.
+   * </p>
+   * 
+   * @param repo the configRepository to set
+   */
+  public void setConfiguration(ConfigRepositoryBuilder repo) {
+    this.configuration = Args.notNull(repo, "configuration");
   }
 }
 

@@ -25,10 +25,12 @@ import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.Poller;
 import com.adaptris.core.QuartzCronPoller;
 import com.adaptris.core.StandaloneConsumer;
-import com.adaptris.sftp.DefaultSftpBehaviour;
-import com.adaptris.sftp.LenientKnownHosts;
-import com.adaptris.sftp.SftpConnectionBehaviour;
-import com.adaptris.sftp.StrictKnownHosts;
+import com.adaptris.sftp.ConfigRepositoryBuilder;
+import com.adaptris.sftp.HostConfig;
+import com.adaptris.sftp.OpenSSHConfigBuilder;
+import com.adaptris.sftp.PerHostConfigRepository;
+import com.adaptris.sftp.SftpClient;
+import com.adaptris.util.KeyValuePair;
 
 
 
@@ -53,7 +55,7 @@ public class SftpConsumerTest extends FtpConsumerCase {
     SftpConnection con = new SftpConnection();
     con.setDefaultUserName("default-username-if-not-specified");
     con.setDefaultPassword("default-password-if-not-specified");
-    con.setSftpConnectionBehaviour(new LenientKnownHosts());
+    con.setKnownHostsFile("/optional/path/to/known/hosts/file");
     return con;
   }
 
@@ -62,11 +64,11 @@ public class SftpConsumerTest extends FtpConsumerCase {
     return "sftp";
   }
 
-  private StandaloneConsumer createConsumerExample(SftpConnectionBehaviour behavior, Poller poller) {
+  private StandaloneConsumer createConsumerExample(ConfigRepositoryBuilder behavior, Poller poller) {
     SftpConnection con = createConnectionForExamples();
     FtpConsumer cfgConsumer = new FtpConsumer();
     try {
-      con.setSftpConnectionBehaviour(behavior);
+      con.setConfiguration(behavior);
       cfgConsumer.setProcDirectory("/proc");
       cfgConsumer.setDestination(new ConfiguredConsumeDestination("sftp://overrideuser@hostname:port/path/to/directory", "*.xml"));
       cfgConsumer.setPoller(poller);
@@ -79,21 +81,37 @@ public class SftpConsumerTest extends FtpConsumerCase {
 
   @Override
   protected List retrieveObjectsForSampleConfig() {
-    return new ArrayList(Arrays.asList(new StandaloneConsumer[]
-    {
-        createConsumerExample(new LenientKnownHosts("/path/to/known/hosts", false), new QuartzCronPoller("*/20 * * * * ?")),
-        createConsumerExample(new LenientKnownHosts("/path/to/known/hosts", false), new FixedIntervalPoller()),
-        createConsumerExample(new StrictKnownHosts("/path/to/known/hosts", false), new QuartzCronPoller("*/20 * * * * ?")),
-        createConsumerExample(new StrictKnownHosts("/path/to/known/hosts", false), new FixedIntervalPoller()),
-        createConsumerExample(new DefaultSftpBehaviour(), new QuartzCronPoller("*/20 * * * * ?")),
-        createConsumerExample(new DefaultSftpBehaviour(), new FixedIntervalPoller()),
+    return new ArrayList(Arrays.asList(new StandaloneConsumer[] {
+        createConsumerExample(new OpenSSHConfigBuilder("/path/openssh/config/file"), new QuartzCronPoller("*/20 * * * * ?")),
+        createConsumerExample(createInlineConfigRepo(), new QuartzCronPoller("*/20 * * * * ?")),
+        createConsumerExample(createPerHostConfigRepo(), new QuartzCronPoller("*/20 * * * * ?")),
+        createConsumerExample(createInlineConfigRepo(), new FixedIntervalPoller()),
+        createConsumerExample(createPerHostConfigRepo(), new FixedIntervalPoller()),
+        createConsumerExample(new OpenSSHConfigBuilder("/path/openssh/config/file"), new FixedIntervalPoller()),
     }));
+  }
+
+
+  public static ConfigRepositoryBuilder createInlineConfigRepo() {
+    return new InlineConfigRepositoryBuilder(false).build();
+  }
+
+
+  public static PerHostConfigRepository createPerHostConfigRepo() {
+    PerHostConfigRepository inline = new PerHostConfigRepository();
+    HostConfig a = new HostConfig("my.host.com", null, -1, new KeyValuePair("StrictHostKeyChecking", "yes"),
+        new KeyValuePair(SftpClient.SSH_PREFERRED_AUTHENTICATIONS, SftpClient.NO_KERBEROS_AUTH));
+    HostConfig b = new HostConfig("another.host.com", null, -1, new KeyValuePair("StrictHostKeyChecking", "no"),
+        new KeyValuePair(SftpClient.SSH_PREFERRED_AUTHENTICATIONS, SftpClient.NO_KERBEROS_AUTH));
+    inline.getHosts().add(a);
+    inline.getHosts().add(b);
+    return inline;
   }
 
   @Override
   protected String createBaseFileName(Object object) {
     SftpConnection con = (SftpConnection) ((StandaloneConsumer) object).getConnection();
     return super.createBaseFileName(object) + "-" + con.getClass().getSimpleName() + "-"
-        + con.getSftpConnectionBehaviour().getClass().getSimpleName();
+        + con.getConfiguration().getClass().getSimpleName();
   }
 }
