@@ -21,6 +21,7 @@ import java.io.IOException;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.SourceVersion;
 
 abstract class AnnotationProcessorImpl extends AbstractProcessor {
 
@@ -67,5 +68,10 @@ abstract class AnnotationProcessorImpl extends AbstractProcessor {
   protected abstract String getOutputFileOverride();
 
   protected abstract String getDefaultOutputFile();
+
+  @Override
+  public SourceVersion getSupportedSourceVersion() {
+    return SourceVersion.latest();
+  }
 
 }

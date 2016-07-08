@@ -27,8 +27,6 @@ import java.util.Set;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedOptions;
-import javax.annotation.processing.SupportedSourceVersion;
-import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Name;
@@ -47,7 +45,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 {
     "xstreamMappingFile", "xstreamDebug"
 })
-@SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class XStreamAnnotationProcessor extends AnnotationProcessorImpl {
 
   private static final String OPTION_XSTREAM_MAPPING_FILE = "xstreamMappingFile";
