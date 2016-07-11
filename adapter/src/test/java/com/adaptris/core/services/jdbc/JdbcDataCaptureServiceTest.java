@@ -215,6 +215,34 @@ public class JdbcDataCaptureServiceTest extends JdbcServiceExample {
     execute(service, msg);
     doBasicCaptureAsserts(1);
   }
+  
+  public void testServiceSequentialParameterApplicator() throws Exception {
+    createDatabase();    
+    JdbcDataCaptureService service = createBasicService();
+    service.setParameterApplicator(new SequentialParameterApplicator()); // default anyway, so identical to the test above, but good to be explicit in case the default changes.
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_DOCUMENT);
+    msg.addMetadata(METADATA_KEY, METADATA_VALUE);
+    execute(service, msg);
+    doBasicCaptureAsserts(1);
+  }
+  
+  public void testServiceNamedParameterApplicator() throws Exception {
+    createDatabase();
+    
+    StatementParameterList statementParameterList = new StatementParameterList();
+    statementParameterList.add(new StatementParameter("/document/content", String.class.getName(), StatementParameter.QueryType.xpath, null, "param3"));
+    statementParameterList.add(new StatementParameter(null, String.class.getName(), StatementParameter.QueryType.payload, null, "param2"));
+    statementParameterList.add(new StatementParameter(METADATA_KEY, String.class.getName(), StatementParameter.QueryType.metadata, null, "param1"));
+    
+    String statement = "insert into jdbc_data_capture_basic (metadata_value, payload_value, xpath_value) values (#param1, #param2, #param3)";
+    
+    JdbcDataCaptureService service = createBasicService(true, statementParameterList, statement);
+    service.setParameterApplicator(new NamedParameterApplicator());
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_DOCUMENT);
+    msg.addMetadata(METADATA_KEY, METADATA_VALUE);
+    execute(service, msg);
+    doBasicCaptureAsserts(1);
+  }
 
   public void testService_PooledConnection() throws Exception {
     int maxServices = 5;
@@ -316,6 +344,7 @@ public class JdbcDataCaptureServiceTest extends JdbcServiceExample {
       JdbcUtil.closeQuietly(c);
     }
   }
+  
   public void testServiceSaveKeys() throws Exception {
     createDatabase();
     JdbcDataCaptureService service = createSaveKeysService();
@@ -337,7 +366,7 @@ public class JdbcDataCaptureServiceTest extends JdbcServiceExample {
     log.debug(msg);
     // this is a pecularity of derby I think, the generatedKeys() returns a
     // resultsetMetadata where columnLabel and columnName =1;
-    assertTrue(msg.containsKey("1"));
+    assertTrue(msg.headersContainsKey("1"));
   }
 
   public void testIteratesService() throws Exception {
@@ -417,6 +446,21 @@ public class JdbcDataCaptureServiceTest extends JdbcServiceExample {
   }
 
   private JdbcDataCaptureService createBasicService(boolean createConnection) throws Exception {
+    StatementParameterList statementParameterList = new StatementParameterList();
+    statementParameterList.add(new StatementParameter(METADATA_KEY, String.class, StatementParameter.QueryType.metadata));
+    statementParameterList.add(new StatementParameter(null, String.class, StatementParameter.QueryType.payload));
+    statementParameterList.add(new StatementParameter("/document/content", String.class, StatementParameter.QueryType.xpath));
+
+    return createBasicService(createConnection, statementParameterList);
+  }
+  
+  private JdbcDataCaptureService createBasicService(boolean createConnection, StatementParameterList parameterList) throws Exception {
+    String statement = "insert into jdbc_data_capture_basic (metadata_value, payload_value, xpath_value) values (?, ?, ?)";
+
+    return createBasicService(createConnection, parameterList, statement);
+  }
+  
+  private JdbcDataCaptureService createBasicService(boolean createConnection, StatementParameterList parameterList, String statement) throws Exception {
     JdbcDataCaptureService service = new JdbcDataCaptureService();
     if (createConnection) {
       JdbcConnection connection = new JdbcConnection();
@@ -424,11 +468,8 @@ public class JdbcDataCaptureServiceTest extends JdbcServiceExample {
       connection.setDriverImp(PROPERTIES.getProperty(JDBC_CAPTURE_SERVICE_DRIVER));
       service.setConnection(connection);
     }
-    service.addStatementParameter(new StatementParameter(METADATA_KEY, String.class, StatementParameter.QueryType.metadata));
-    service.addStatementParameter(new StatementParameter(null, String.class, StatementParameter.QueryType.payload));
-    service.addStatementParameter(new StatementParameter("/document/content", String.class, StatementParameter.QueryType.xpath));
-
-    service.setStatement("insert into jdbc_data_capture_basic (metadata_value, payload_value, xpath_value) values (?, ?, ?)");
+    service.setStatementParameters(parameterList);
+    service.setStatement(statement);
 
     return service;
   }
