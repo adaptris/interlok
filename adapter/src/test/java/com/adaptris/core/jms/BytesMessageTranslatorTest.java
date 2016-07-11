@@ -16,6 +16,10 @@
 
 package com.adaptris.core.jms;
 
+import static org.mockito.Matchers.anyByte;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+
 import java.io.ByteArrayOutputStream;
 
 import javax.jms.BytesMessage;
@@ -24,12 +28,15 @@ import javax.jms.Message;
 import javax.jms.MessageEOFException;
 import javax.jms.Session;
 
+import org.mockito.Mockito;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.metadata.RemoveAllMetadataFilter;
+import com.adaptris.core.stubs.DefectiveMessageFactory;
 
 @SuppressWarnings("deprecation")
 public class BytesMessageTranslatorTest extends MessageTypeTranslatorCase {
@@ -37,6 +44,7 @@ public class BytesMessageTranslatorTest extends MessageTypeTranslatorCase {
   public BytesMessageTranslatorTest(String name) {
     super(name);
   }
+
 
   // We aren't actually producing the message, so we have to
   // switch to read-only mode.
@@ -204,6 +212,54 @@ public class BytesMessageTranslatorTest extends MessageTypeTranslatorCase {
     }
   }
 
+
+  public void testBytesMessageToAdaptrisMessage_StreamFailure() throws Exception {
+    EmbeddedActiveMq broker = new EmbeddedActiveMq();
+    MessageTypeTranslatorImp trans = createTranslator();
+    try {
+      broker.start();
+      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      BytesMessage jmsMsg = createMessage(session);
+      jmsMsg.writeBytes(TEXT.getBytes());
+      start(trans, session);
+      trans.registerMessageFactory(new DefectiveMessageFactory());
+      jmsMsg.reset();
+      try {
+        AdaptrisMessage msg = trans.translate(jmsMsg);
+        fail();
+      } catch (JMSException expected) {
+
+      }
+    } finally {
+      stop(trans);
+      broker.destroy();
+    }
+  }
+
+  public void testBytesMessageToAdaptrisMessage_StreamFailure_CheckedJMSException() throws Exception {
+    BytesMessage jmsMsg = Mockito.mock(BytesMessage.class);
+    Session session = Mockito.mock(Session.class);
+    doThrow(new JMSException(getName())).when(jmsMsg).readByte();
+    when(session.createBytesMessage()).thenReturn(jmsMsg);
+    BytesMessageTranslator trans = new BytesMessageTranslator() {
+      long streamThreshold() {
+        return TEXT.length() - 1;
+      }
+    };
+    try {
+      start(trans, session);
+      try {
+        AdaptrisMessage msg = trans.translate(jmsMsg);
+        fail();
+      } catch (JMSException expected) {
+
+      }
+    } finally {
+      stop(trans);
+    }
+  }
+
+
   public void testAdaptrisMessageToBytesMessage() throws Exception {
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
@@ -224,6 +280,55 @@ public class BytesMessageTranslatorTest extends MessageTypeTranslatorCase {
       broker.destroy();
     }
   }
+
+  public void testAdaptrisMessageToBytesMessage_StreamFailure() throws Exception {
+    EmbeddedActiveMq broker = new EmbeddedActiveMq();
+    BytesMessageTranslator trans = new BytesMessageTranslator() {
+      long streamThreshold() {
+        return TEXT.length() - 1;
+      }
+    };
+    try {
+      broker.start();
+      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      start(trans, session);
+      AdaptrisMessage msg = new DefectiveMessageFactory().newMessage(TEXT);
+      addMetadata(msg);
+      try {
+        Message jmsMsg = trans.translate(msg);
+        fail();
+      } catch (JMSException expected) {
+      }
+    } finally {
+      stop(trans);
+      broker.destroy();
+    }
+  }
+
+  public void testAdaptrisMessageToBytesMessage_StreamFailure_CheckedJMSException() throws Exception {
+    BytesMessage jmsMsg = Mockito.mock(BytesMessage.class);
+    Session session = Mockito.mock(Session.class);
+    doThrow(new JMSException(getName())).when(jmsMsg).writeByte(anyByte());
+    when(session.createBytesMessage()).thenReturn(jmsMsg);
+    BytesMessageTranslator trans = new BytesMessageTranslator() {
+      long streamThreshold() {
+        return TEXT.length() - 1;
+      }
+    };
+    try {
+      start(trans, session);
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
+      try {
+        Message m = trans.translate(msg);
+        fail();
+      } catch (JMSException expected) {
+      }
+    } finally {
+      stop(trans);
+    }
+  }
+
+
 
   public void testAdaptrisMessageToBytesMessage_ExceedsThreshold() throws Exception {
     EmbeddedActiveMq broker = new EmbeddedActiveMq();

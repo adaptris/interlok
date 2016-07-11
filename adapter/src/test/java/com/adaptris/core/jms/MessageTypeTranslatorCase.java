@@ -174,6 +174,8 @@ public abstract class MessageTypeTranslatorCase extends BaseCase {
 
   }
 
+
+
   public void testMoveMetadataJmsMessageToAdaptrisMessage_DoNotMoveMetadata() throws Exception {
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
