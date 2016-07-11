@@ -173,8 +173,14 @@ public class JdbcDataCaptureServiceTest extends JdbcServiceExample {
     super(arg0);
   }
 
-  @Override
   protected Object retrieveObjectForSampleConfig() {
+    return null;
+  }
+  
+  @Override
+  protected List<Object> retrieveObjectsForSampleConfig() {
+    List<Object> returnedObjects = new ArrayList<>();
+    
     JdbcDataCaptureService service = new JdbcDataCaptureService();
     JdbcConnection connection = new JdbcConnection();
     connection.setConnectUrl("jdbc:mysql://localhost:3306/mydatabase");
@@ -193,7 +199,44 @@ public class JdbcDataCaptureServiceTest extends JdbcServiceExample {
     columns = columns.substring(0, columns.lastIndexOf(','));
     values = values.substring(0, values.lastIndexOf(','));
     service.setStatement("insert into mytable (" + columns + ") values (" + values + ");");
-    return service;
+    
+    JdbcDataCaptureService service2 = new JdbcDataCaptureService();
+    JdbcConnection connection2 = new JdbcConnection();
+    connection2.setConnectUrl("jdbc:mysql://localhost:3306/mydatabase");
+    connection2.setConnectionAttempts(2);
+    connection2.setConnectionRetryInterval(new TimeInterval(3L, "SECONDS"));
+    service2.setConnection(connection2);
+    service2.setIterates(true);
+    service2.setIterationXpath("/xpath/to/repeating/element");
+    service2.setParameterApplicator(new NamedParameterApplicator());
+    String columns2 = "";
+    String values2 = "";
+    int paramCount = 0;
+    for (CaptureClassesForSamples qc : CaptureClassesForSamples.values()) {
+      paramCount ++;
+      NamedStatementParameter jdbcStatementParameter = (NamedStatementParameter) qc.create();
+      jdbcStatementParameter.setName("param" + paramCount);
+      service2.addStatementParameter(jdbcStatementParameter);
+      columns2 += qc.name() + ", ";
+      values2 += "#param" + paramCount + ", ";
+    }
+    columns2 = columns2.substring(0, columns2.lastIndexOf(','));
+    values2 = values2.substring(0, values2.lastIndexOf(','));
+    service2.setStatement("insert into mytable (" + columns2 + ") values (" + values2 + ");");
+    
+    returnedObjects.add(service);
+    returnedObjects.add(service2);
+    
+    return returnedObjects;
+  }
+  
+  @Override
+  protected String createBaseFileName(Object o) {
+    JdbcDataCaptureService sc = (JdbcDataCaptureService) o;
+    String name = super.createBaseFileName(o);
+    if(sc.getParameterApplicator() instanceof NamedParameterApplicator)
+      name = name + "-WithNamedParameterApplicator";
+    return name;
   }
 
   public void testSetNamespaceContext() throws Exception {
