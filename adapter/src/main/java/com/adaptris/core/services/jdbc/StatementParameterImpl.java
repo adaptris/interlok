@@ -32,7 +32,7 @@ public abstract class StatementParameterImpl extends NamedStatementParameter {
     payload {
       @Override
       String getValue(AdaptrisMessage msg, String queryString) {
-        return msg.getStringPayload();
+        return msg.getContent();
       }
     },
     metadata {
@@ -44,7 +44,7 @@ public abstract class StatementParameterImpl extends NamedStatementParameter {
     xpath {
       @Override
       String getValue(AdaptrisMessage msg, String queryString) {
-        XmlUtils xu = (XmlUtils) msg.getObjectMetadata().get(JdbcDataQueryService.KEY_XML_UTILS);
+        XmlUtils xu = (XmlUtils) msg.getObjectHeaders().get(JdbcDataQueryService.KEY_XML_UTILS);
         return xu.getSingleTextItem(queryString, xu.getSingleNode("/"));
 
       }
@@ -79,6 +79,7 @@ public abstract class StatementParameterImpl extends NamedStatementParameter {
     setQueryString(query);
     setQueryType(type);
     setConvertNull(nullConvert);
+    setName(name);
   }
 
 
