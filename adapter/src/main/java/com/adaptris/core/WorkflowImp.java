@@ -563,7 +563,7 @@ public abstract class WorkflowImp implements Workflow {
    * Sets whether events should be sent.
    * </p>
    * 
-   * @param events whether events should be sent
+   * @param events whether events should be sent; default is null (true).
    */
   public void setSendEvents(Boolean events) {
     sendEvents = events;
