@@ -42,6 +42,37 @@ public class PropertyResolverTest {
     assertEquals(DEFAULT_VALUE, resolver.resolve(DEFAULT_VALUE));
   }
 
+  @Test
+  public void testNotDecodable() throws Exception {
+    PropertyResolver resolver = PropertyResolver.getDefaultInstance();
+    resolver.init();
+    String cannotDecode = "{testNotDecodable}" + DEFAULT_VALUE;
+    assertEquals(cannotDecode, resolver.resolve(cannotDecode));
+  }
+
+  @Test
+  public void testNoMatch_LeadingSpaces() throws Exception {
+    PropertyResolver resolver = PropertyResolver.getDefaultInstance();
+    resolver.init();
+    String cannotDecode = "  " + encode(DEFAULT_VALUE);
+    assertEquals(cannotDecode, resolver.resolve(cannotDecode));
+  }
+
+  @Test
+  public void testNoMatch_OpenBraceOnly() throws Exception {
+    PropertyResolver resolver = PropertyResolver.getDefaultInstance();
+    resolver.init();
+    String cannotDecode = "{testNoMatch_OpenBraceOnly]" + DEFAULT_VALUE;
+    assertEquals(cannotDecode, resolver.resolve(cannotDecode));
+  }
+
+  @Test
+  public void testNoMatch_CloseBraceOnly() throws Exception {
+    PropertyResolver resolver = PropertyResolver.getDefaultInstance();
+    resolver.init();
+    String cannotDecode = "[testNoMatch_CloseBraceOnly}" + DEFAULT_VALUE;
+    assertEquals(cannotDecode, resolver.resolve(cannotDecode));
+  }
 
   @Test
   public void testDecoding() throws Exception {
