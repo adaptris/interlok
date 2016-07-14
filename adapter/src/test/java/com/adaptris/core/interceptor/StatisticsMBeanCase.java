@@ -133,29 +133,6 @@ public abstract class StatisticsMBeanCase extends BaseCase {
     }
   }
 
-  public void testGetTimesliceEnd() throws Exception {
-    String adapterName = this.getClass().getSimpleName() + "." + getName();
-
-    Adapter adapter = createAdapter(adapterName);
-    List<BaseComponentMBean> mBeans = createJmxManagers(adapter);
-    try {
-      start(adapter);
-      register(mBeans);
-      ObjectName workflowObj = createWorkflowObjectName(adapterName);
-      ObjectName metricsObj = createMetricsObjectName(adapterName);
-      MetricsMBean stats = JMX.newMBeanProxy(mBeanServer, metricsObj, MetricsMBean.class);
-      WorkflowManagerMBean workflow = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
-      long now = System.currentTimeMillis();
-      SerializableAdaptrisMessage msg = createMessageForInjection(null);
-      workflow.processAsync(msg);
-      // We can't check the real time so we check that the time is greater than now.
-      assertTrue(now < stats.getEndMillisForTimeSliceIndex(0));
-    }
-    finally {
-      stop(adapter);
-    }
-  }
-
   public void testGetTimesliceDuration() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -169,25 +146,6 @@ public abstract class StatisticsMBeanCase extends BaseCase {
       MetricsMBean stats = JMX.newMBeanProxy(mBeanServer, metricsObj, MetricsMBean.class);
       WorkflowManagerMBean workflow = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
       assertEquals(10, stats.getTimeSliceDurationSeconds());
-    }
-    finally {
-      stop(adapter);
-    }
-  }
-
-  public void testGetTimesliceEnd_NoTimeslices() throws Exception {
-    String adapterName = this.getClass().getSimpleName() + "." + getName();
-
-    Adapter adapter = createAdapter(adapterName);
-    List<BaseComponentMBean> mBeans = createJmxManagers(adapter);
-    try {
-      start(adapter);
-      register(mBeans);
-      ObjectName workflowObj = createWorkflowObjectName(adapterName);
-      ObjectName metricsObj = createMetricsObjectName(adapterName);
-      MetricsMBean stats = JMX.newMBeanProxy(mBeanServer, metricsObj, MetricsMBean.class);
-      WorkflowManagerMBean workflow = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
-      assertEquals(0, stats.getEndMillisForTimeSliceIndex(1));
     }
     finally {
       stop(adapter);

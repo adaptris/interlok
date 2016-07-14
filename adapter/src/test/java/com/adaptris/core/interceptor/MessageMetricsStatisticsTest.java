@@ -25,11 +25,8 @@ import javax.management.ObjectName;
 
 import com.adaptris.core.Adapter;
 import com.adaptris.core.SerializableAdaptrisMessage;
-import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.runtime.BaseComponentMBean;
 import com.adaptris.core.runtime.WorkflowManagerMBean;
-import com.adaptris.core.services.exception.ConfiguredException;
-import com.adaptris.core.services.exception.ThrowExceptionService;
 import com.adaptris.interlok.management.MessageProcessor;
 
 @SuppressWarnings("deprecation")
@@ -57,125 +54,6 @@ public class MessageMetricsStatisticsTest extends StatisticsMBeanCase {
     }
   }
 
-  public void testGetMsgCountNoCacheExists() throws Exception {
-    String adapterName = this.getClass().getSimpleName() + "." + getName();
-
-    Adapter adapter = createAdapter(adapterName);
-    List<BaseComponentMBean> mBeans = createJmxManagers(adapter);
-    try {
-      start(adapter);
-      register(mBeans);
-      ObjectName adapterObj = createAdapterObjectName(adapterName);
-      ObjectName metricsObj = createMetricsObjectName(adapterName);
-      MessageMetricsStatisticsMBean stats = JMX.newMBeanProxy(mBeanServer, metricsObj, MessageMetricsStatisticsMBean.class);
-      assertEquals(0, stats.getNumberOfMessagesForTimeSliceIndex(1));
-    }
-    finally {
-      stop(adapter);
-    }
-  }
-
-  public void testGetMsgSizeNoCacheExists() throws Exception {
-    String adapterName = this.getClass().getSimpleName() + "." + getName();
-
-    Adapter adapter = createAdapter(adapterName);
-    List<BaseComponentMBean> mBeans = createJmxManagers(adapter);
-    try {
-      start(adapter);
-      register(mBeans);
-      ObjectName adapterObj = createAdapterObjectName(adapterName);
-      ObjectName metricsObj = createMetricsObjectName(adapterName);
-      MessageMetricsStatisticsMBean stats = JMX.newMBeanProxy(mBeanServer, metricsObj, MessageMetricsStatisticsMBean.class);
-      assertEquals(0, stats.getTotalSizeOfMessagesForTimeSliceIndex(1));
-    }
-    finally {
-      stop(adapter);
-    }
-  }
-
-  public void testGetMsgEndMillisNoCacheExists() throws Exception {
-    String adapterName = this.getClass().getSimpleName() + "." + getName();
-
-    Adapter adapter = createAdapter(adapterName);
-    List<BaseComponentMBean> mBeans = createJmxManagers(adapter);
-    try {
-      start(adapter);
-      register(mBeans);
-      ObjectName adapterObj = createAdapterObjectName(adapterName);
-      ObjectName metricsObj = createMetricsObjectName(adapterName);
-      MessageMetricsStatisticsMBean stats = JMX.newMBeanProxy(mBeanServer, metricsObj, MessageMetricsStatisticsMBean.class);
-      assertEquals(0, stats.getEndMillisForTimeSliceIndex(1));
-    }
-    finally {
-      stop(adapter);
-    }
-  }
-
-  public void testGetMsgCount() throws Exception {
-    String adapterName = this.getClass().getSimpleName() + "." + getName();
-
-    Adapter adapter = createAdapter(adapterName);
-    List<BaseComponentMBean> mBeans = createJmxManagers(adapter);
-    try {
-      start(adapter);
-      register(mBeans);
-      ObjectName workflowObj = createWorkflowObjectName(adapterName);
-      ObjectName metricsObj = createMetricsObjectName(adapterName);
-      MessageMetricsStatisticsMBean stats = JMX.newMBeanProxy(mBeanServer, metricsObj, MessageMetricsStatisticsMBean.class);
-      WorkflowManagerMBean workflow = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
-      SerializableAdaptrisMessage msg = createMessageForInjection(null);
-      workflow.processAsync(msg);
-      assertEquals(1, stats.getNumberOfMessagesForTimeSliceIndex(0));
-    }
-    finally {
-      stop(adapter);
-    }
-  }
-
-  public void testGetMsgEndMillis() throws Exception {
-    String adapterName = this.getClass().getSimpleName() + "." + getName();
-
-    Adapter adapter = createAdapter(adapterName);
-    List<BaseComponentMBean> mBeans = createJmxManagers(adapter);
-    try {
-      start(adapter);
-      register(mBeans);
-      ObjectName workflowObj = createWorkflowObjectName(adapterName);
-      ObjectName metricsObj = createMetricsObjectName(adapterName);
-      MessageMetricsStatisticsMBean stats = JMX.newMBeanProxy(mBeanServer, metricsObj, MessageMetricsStatisticsMBean.class);
-      WorkflowManagerMBean workflow = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
-      SerializableAdaptrisMessage msg = createMessageForInjection(null);
-      long now = System.currentTimeMillis();
-      workflow.processAsync(msg);
-      // We can't check the real time so we check that the time is greater than now.
-      assertTrue(now < stats.getEndMillisForTimeSliceIndex(0));
-    }
-    finally {
-      stop(adapter);
-    }
-  }
-
-  public void testGetMsgSize() throws Exception {
-    String adapterName = this.getClass().getSimpleName() + "." + getName();
-    String payload = "SomePayload";
-
-    Adapter adapter = createAdapter(adapterName);
-    List<BaseComponentMBean> mBeans = createJmxManagers(adapter);
-    try {
-      start(adapter);
-      register(mBeans);
-      ObjectName workflowObj = createWorkflowObjectName(adapterName);
-      ObjectName metricsObj = createMetricsObjectName(adapterName);
-      MessageMetricsStatisticsMBean stats = JMX.newMBeanProxy(mBeanServer, metricsObj, MessageMetricsStatisticsMBean.class);
-      WorkflowManagerMBean workflow = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
-      workflow.processAsync(createMessageForInjection(payload));
-      assertEquals(1, stats.getNumberOfMessagesForTimeSliceIndex(0));
-      assertEquals(payload.getBytes().length, stats.getTotalSizeOfMessagesForTimeSliceIndex(0));
-    }
-    finally {
-      stop(adapter);
-    }
-  }
 
   public void testGetMessageStatistics() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
@@ -210,32 +88,6 @@ public class MessageMetricsStatisticsTest extends StatisticsMBeanCase {
     }
   }
 
-  public void testGetMsgSizeMultipleMessages() throws Exception {
-    String adapterName = this.getClass().getSimpleName() + "." + getName();
-    String payload1 = "SomePayload";
-    String payload2 = "SomePayload-blah";
-    String payload3 = "SomePayload-blah-blah";
-    int bytesExpected = payload1.getBytes().length + payload2.getBytes().length + payload3.getBytes().length;
-
-    Adapter adapter = createAdapter(adapterName);
-    List<BaseComponentMBean> mBeans = createJmxManagers(adapter);
-    try {
-      start(adapter);
-      register(mBeans);
-      ObjectName workflowObj = createWorkflowObjectName(adapterName);
-      ObjectName metricsObj = createMetricsObjectName(adapterName);
-      MessageMetricsStatisticsMBean stats = JMX.newMBeanProxy(mBeanServer, metricsObj, MessageMetricsStatisticsMBean.class);
-      WorkflowManagerMBean workflow = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
-      workflow.processAsync(createMessageForInjection(payload1));
-      workflow.processAsync(createMessageForInjection(payload2));
-      workflow.processAsync(createMessageForInjection(payload3));
-      assertEquals(3, stats.getNumberOfMessagesForTimeSliceIndex(0));
-      assertEquals(bytesExpected, stats.getTotalSizeOfMessagesForTimeSliceIndex(0));
-    }
-    finally {
-      stop(adapter);
-    }
-  }
 
   public void testGetTotalStringStats() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
@@ -259,31 +111,6 @@ public class MessageMetricsStatisticsTest extends StatisticsMBeanCase {
     }
   }
 
-  public void testGetNumberOfErrorMessages() throws Exception {
-    String adapterName = this.getClass().getSimpleName() + "." + getName();
-
-    Adapter adapter = createAdapter(adapterName);
-    // We need to get the workflow and add a FailService
-    ((StandardWorkflow) adapter.getChannelList().get(0).getWorkflowList().get(0)).getServiceCollection().add(
-        new ThrowExceptionService(new ConfiguredException("Fail")));
-    List<BaseComponentMBean> mBeans = createJmxManagers(adapter);
-    try {
-      start(adapter);
-      register(mBeans);
-      ObjectName workflowObj = createWorkflowObjectName(adapterName);
-      ObjectName metricsObj = createMetricsObjectName(adapterName);
-      MessageMetricsStatisticsMBean stats = JMX.newMBeanProxy(mBeanServer, metricsObj, MessageMetricsStatisticsMBean.class);
-      WorkflowManagerMBean workflow = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
-      SerializableAdaptrisMessage msg = createMessageForInjection(null);
-      workflow.processAsync(msg);
-      assertEquals(1, stats.getNumberOfErrorMessagesForTimeSliceIndex(0));
-      assertEquals(0, stats.getNumberOfErrorMessagesForTimeSliceIndex(10));
-    }
-    finally {
-      stop(adapter);
-    }
-
-  }
 
   protected SerializableAdaptrisMessage createMessageForInjection(String payload) {
     if (!isEmpty(payload)) {

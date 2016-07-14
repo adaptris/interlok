@@ -18,6 +18,7 @@ package com.adaptris.core.interceptor;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -48,10 +49,11 @@ public abstract class MessageMetricsInterceptorImpl extends WorkflowInterceptorI
   // * Internal cache array, containing timeslices. Will never have more
   // * time slices than that dictated by time slice history count.
   private transient List<MessageStatistic> cacheArray;
+  private transient Object chubb = new Object();
 
   public MessageMetricsInterceptorImpl() {
     super();
-    cacheArray = new ArrayList<MessageStatistic>();
+    cacheArray = new MaxCapacityList<MessageStatistic>();
   }
 
   @Override
@@ -70,37 +72,52 @@ public abstract class MessageMetricsInterceptorImpl extends WorkflowInterceptorI
   public void close() {
   }
 
-  protected void updateCurrentTimeSlice(MessageStatistic currentTimeSlice) {
+  protected void clearStatistics() {
+    synchronized (chubb) {
+      cacheArray.clear();
+    }
+  }
+  protected void update(StatisticsDelta d) {
+    synchronized (chubb) {
+      MessageStatistic stat = getCurrentTimeSlice();
+      stat.setTotalMessageCount(stat.getTotalMessageCount() + d.messageCountIncrement());
+      stat.setTotalMessageSize(stat.getTotalMessageSize() + d.messageSizeIncrement());
+      stat.setTotalMessageErrorCount(stat.getTotalMessageErrorCount() + d.messageErrorCountIncrement());
+      updateCurrentTimeSlice(stat);
+    }
+  }
+
+  private void updateCurrentTimeSlice(MessageStatistic currentTimeSlice) {
     cacheArray.set(cacheArray.size() - 1, currentTimeSlice);
   }
 
-  protected MessageStatistic getCurrentTimeSlice() {
+  private MessageStatistic getCurrentTimeSlice() {
     MessageStatistic timeSlice = null;
     long timeInMillis = Calendar.getInstance().getTimeInMillis();
 
     if (cacheArray.size() == 0) {
       timeSlice = new MessageStatistic();
       timeSlice.setEndMillis(timeInMillis + timesliceDurationMs());
-      addNewTimeSlice(timeSlice);
+      cacheArray.add(timeSlice);
     }
     else {
       timeSlice = getLatestTimeSlice();
       if (timeSlice.getEndMillis() <= timeInMillis) {
         timeSlice = new MessageStatistic(timeInMillis + timesliceDurationMs());
-        addNewTimeSlice(timeSlice);
+        cacheArray.add(timeSlice);
       }
     }
     return timeSlice;
   }
 
-  protected void addNewTimeSlice(MessageStatistic timeSlice) {
-    if (cacheArray.size() == timesliceHistoryCount() && cacheArray.size() > 0) {
-      cacheArray.remove(0);
-    }
-    cacheArray.add(timeSlice);
-  }
+  // private void addNewTimeSlice(MessageStatistic timeSlice) {
+  // if (cacheArray.size() == timesliceHistoryCount() && cacheArray.size() > 0) {
+  // cacheArray.remove(0);
+  // }
+  // cacheArray.add(timeSlice);
+  // }
 
-  protected MessageStatistic getLatestTimeSlice() {
+  private MessageStatistic getLatestTimeSlice() {
     if (cacheArray.size() == 0) {
       return null;
     }
@@ -151,4 +168,38 @@ public abstract class MessageMetricsInterceptorImpl extends WorkflowInterceptorI
     return getTimesliceDuration() != null ? getTimesliceDuration().toMilliseconds() : DEFAULT_TIMESLICE_DURATION.toMilliseconds();
   }
 
+  public interface StatisticsDelta {
+
+    public int messageCountIncrement();
+
+    public long messageSizeIncrement();
+
+    public int messageErrorCountIncrement();
+  }
+
+  // We only use the add method internally, so we can safely do a throw for all the others.
+  private class MaxCapacityList<T> extends ArrayList<T> {
+
+    public boolean add(T item) {
+      while (size() >= timesliceHistoryCount()) {
+        remove(0);
+      }
+      return super.add(item);
+    }
+
+    public void add(int index, T element) {
+      throw new UnsupportedOperationException();
+    }
+
+
+    public boolean addAll(Collection<? extends T> c) {
+      throw new UnsupportedOperationException();
+    }
+
+
+    public boolean addAll(int index, Collection<? extends T> c) {
+      throw new UnsupportedOperationException();
+    }
+
+  }
 }

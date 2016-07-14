@@ -57,31 +57,10 @@ public class MessageMetricsStatistics implements MessageMetricsStatisticsMBean, 
     return wrappedComponent.getCacheArray().size();
   }
 
-  @Override
-  public int getNumberOfMessagesForTimeSliceIndex(int index) {
-    try {
-      MessageStatistic timeSlice = wrappedComponent.getCacheArray().get(index);
-      return timeSlice.getTotalMessageCount();
-    }
-    catch (IndexOutOfBoundsException ex) {
-      return 0;
-    }
-  }
 
   @Override
   public int getTimeSliceDurationSeconds() {
     return Long.valueOf(TimeUnit.MILLISECONDS.toSeconds(wrappedComponent.timesliceDurationMs())).intValue();
-  }
-
-  @Override
-  public long getTotalSizeOfMessagesForTimeSliceIndex(int index) {
-    try {
-      MessageStatistic timeSlice = wrappedComponent.getCacheArray().get(index);
-      return timeSlice.getTotalMessageSize();
-    }
-    catch (IndexOutOfBoundsException ex) {
-      return 0;
-    }
   }
 
   @Override
@@ -101,29 +80,7 @@ public class MessageMetricsStatistics implements MessageMetricsStatisticsMBean, 
 
     return buffer.toString();
   }
-
-  @Override
-  public int getNumberOfErrorMessagesForTimeSliceIndex(int index) {
-    try {
-      MessageStatistic timeSlice = wrappedComponent.getCacheArray().get(index);
-      return timeSlice.getTotalMessageErrorCount();
-    }
-    catch (IndexOutOfBoundsException ex) {
-      return 0;
-    }
-  }
   
-  @Override
-  public long getEndMillisForTimeSliceIndex(int index) {
-    try {
-      MessageStatistic timeSlice = wrappedComponent.getCacheArray().get(index);
-      return timeSlice.getEndMillis();
-    }
-    catch (IndexOutOfBoundsException ex) {
-      return 0;
-    }
-  }
-
   @Override
   public ParentRuntimeInfoComponent getParentRuntimeInfoComponent() {
     return parent;
@@ -181,5 +138,10 @@ public class MessageMetricsStatistics implements MessageMetricsStatisticsMBean, 
       ExceptionHelper.rethrowCoreException(e);
     }
     return result;
+  }
+
+  @Override
+  public void clearStatistics() throws CoreException {
+    wrappedComponent.clearStatistics();
   }
 }

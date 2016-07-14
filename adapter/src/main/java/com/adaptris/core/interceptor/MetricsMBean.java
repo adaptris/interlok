@@ -40,13 +40,4 @@ public interface MetricsMBean extends ChildRuntimeInfoComponentMBean {
    */
   int getTimeSliceDurationSeconds();
 
-  /**
-   * Get the end time in millisecond of a given timeslice.
-   * 
-   * @param index the index of the timeslice
-   * @return the end time in millisecond.
-   * @deprecated since 3.0.3
-   */
-  @Deprecated
-  long getEndMillisForTimeSliceIndex(int index);
 }

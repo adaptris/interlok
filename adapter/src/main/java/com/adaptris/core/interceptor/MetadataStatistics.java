@@ -126,11 +126,6 @@ public class MetadataStatistics implements MetadataStatisticsMBean, ChildRuntime
   }
 
   @Override
-  public long getEndMillisForTimeSliceIndex(int index) {
-    return get(index).getEndMillis();
-  }
-
-  @Override
   public List<MetadataStatistic> getStatistics() throws CoreException {
     return getStatistics(0, wrappedComponent.getStats().size());
   }
