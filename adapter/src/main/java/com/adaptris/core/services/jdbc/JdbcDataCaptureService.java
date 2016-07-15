@@ -21,6 +21,7 @@ import static com.adaptris.core.util.XmlHelper.createDocument;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
+import javax.validation.Valid;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -68,8 +69,10 @@ public class JdbcDataCaptureService extends JdbcDataCaptureServiceImpl {
   @InputFieldDefault(value = "false")
   private Boolean iterates = null;
   @AdvancedConfig
+  @Valid
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
   @AdvancedConfig
+  @Valid
   private KeyValuePairSet namespaceContext;
 
 

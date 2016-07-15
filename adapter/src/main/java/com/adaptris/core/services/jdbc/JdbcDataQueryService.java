@@ -75,14 +75,17 @@ public class JdbcDataQueryService extends JdbcServiceWithParameters {
   @Deprecated
   private String statement;  
   @AdvancedConfig
+  @Valid
   private JdbcStatementCreator statementCreator;
   @NotNull
   @AutoPopulated
   @Valid
   private ResultSetTranslator resultSetTranslator;
   @AdvancedConfig
+  @Valid
   private KeyValuePairSet namespaceContext;
   @AdvancedConfig
+  @Valid
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 
   @Valid
@@ -112,6 +115,7 @@ public class JdbcDataQueryService extends JdbcServiceWithParameters {
       throw new CoreException("No JDBC Statement or creator defined");
     }
     if(getStatementCreator() == null) {
+      log.warn("'statement' is deprecated; use a statement-creator instead");
       setStatementCreator(new ConfiguredSQLStatement(statement));
     }
   }

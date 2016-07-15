@@ -50,11 +50,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
     "saveReturnedKeysColumn", "saveReturnedKeysTable"})
 public class JdbcRawDataCaptureService extends JdbcDataCaptureServiceImpl {
 
-  /**
-   * <p>
-   * Creates a new instance.
-   * </p>
-   */
   public JdbcRawDataCaptureService() {
     super();
   }
