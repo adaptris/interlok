@@ -23,23 +23,20 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdvancedConfig;
-import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.jdbc.JdbcService;
 import com.adaptris.core.util.JdbcUtil;
 
 /**
  * Base implementation for capturing data from an {@linkplain com.adaptris.core.AdaptrisMessage} and storing it in a jdbc database.
  *
  */
-public abstract class JdbcDataCaptureServiceImpl extends JdbcService {
+public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParameters {
 
   @NotNull
   @InputFieldHint(style = "SQL")
@@ -52,10 +49,6 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcService {
   @AdvancedConfig
   private String saveReturnedKeysTable = null;
   protected transient DatabaseActor actor;
-  @NotNull
-  @AutoPopulated
-  @Valid
-  private ParameterApplicator parameterApplicator;
 
   /**
    * <p>
@@ -203,22 +196,6 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcService {
       actor.reInitialise(c);
     }
   }
-
-  public ParameterApplicator getParameterApplicator() {
-    return parameterApplicator;
-  }
-
-  /**
-   * Specify how parameters will be applied to the SQL statement.
-   * 
-   * @param p the parameter applicator implementation; default is {@link SequentialParameterApplicator}
-   * @see SequentialParameterApplicator
-   * @see NamedParameterApplicator
-   */
-  public void setParameterApplicator(ParameterApplicator p) {
-    this.parameterApplicator = p;
-  }
-
 
   @Override
   protected void prepareService() throws CoreException {}

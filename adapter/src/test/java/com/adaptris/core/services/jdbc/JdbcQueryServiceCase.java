@@ -335,7 +335,7 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
 
   @Override
   public void testBackReferences() throws Exception {
-    this.testBackReferences(new JdbcDataQueryService());
+    this.testBackReferences(new JdbcDataQueryService(new ConfiguredSQLStatement("INSERT INTO MYTABLE ('ABC');")));
   }
 
   protected static void createDatabase() throws Exception {

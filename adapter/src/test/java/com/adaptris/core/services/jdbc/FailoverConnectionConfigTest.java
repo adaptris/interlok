@@ -65,7 +65,7 @@ public class FailoverConnectionConfigTest extends JdbcServiceExample {
 
   @Override
   public void testBackReferences() throws Exception {
-    JdbcDataCaptureService service = new JdbcDataCaptureService();
+    JdbcDataCaptureService service = new JdbcDataCaptureService("INSERT INTO MYTABLE ('ABC');");
     FailoverJdbcConnection connection = new FailoverJdbcConnection();
     connection.addConnectUrl("jdbc:mysql://localhost:3306/mydatabase");
     connection.addConnectUrl("jdbc:mysql://127.0.0.1:3306/mydatabase");
