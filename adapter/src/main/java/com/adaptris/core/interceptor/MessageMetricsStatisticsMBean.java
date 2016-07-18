@@ -60,12 +60,4 @@ public interface MessageMetricsStatisticsMBean extends MetricsMBean {
    */
   List<MessageStatistic> getStatistics(int fromIndex, int toIndex) throws CoreException;
 
-  /**
-   * Clear any statistics held in this MBean.
-   * 
-   * @since 3.4.0
-   * 
-   */
-  void clearStatistics() throws CoreException;
-
 }

@@ -54,7 +54,7 @@ public class MessageMetricsStatistics implements MessageMetricsStatisticsMBean, 
 
   @Override
   public int getNumberOfTimeSlices() {
-    return wrappedComponent.getCacheArray().size();
+    return wrappedComponent.getStats().size();
   }
 
 
@@ -67,11 +67,11 @@ public class MessageMetricsStatistics implements MessageMetricsStatisticsMBean, 
   public String getTotalStringStats() {
     long timeinMillis = Calendar.getInstance().getTimeInMillis();
     StringBuffer buffer = new StringBuffer();
-    buffer.append(wrappedComponent.getCacheArray().size());
+    buffer.append(wrappedComponent.getStats().size());
     buffer.append(" time slice(s) have been recorded.\n");
 
-    if (wrappedComponent.getCacheArray().size() > 0) {
-      MessageStatistic timeSlice = wrappedComponent.getCacheArray().get(wrappedComponent.getCacheArray().size() - 1);
+    if (wrappedComponent.getStats().size() > 0) {
+      MessageStatistic timeSlice = wrappedComponent.getStats().get(wrappedComponent.getStats().size() - 1);
       buffer.append("Current time slice statistics; \n");
       buffer.append("    Time Slice ends in  - " + (timeSlice.getEndMillis() - timeinMillis) / 1000 + " seconds.\n");
       buffer.append("    Message count - " + timeSlice.getTotalMessageCount() + "\n");
@@ -123,14 +123,14 @@ public class MessageMetricsStatistics implements MessageMetricsStatisticsMBean, 
 
   @Override
   public List<MessageStatistic> getStatistics() throws CoreException {
-    return getStatistics(0, wrappedComponent.getCacheArray().size());
+    return getStatistics(0, wrappedComponent.getStats().size());
   }
 
   @Override
   public List<MessageStatistic> getStatistics(int fromIndex, int toIndex) throws CoreException {
     List<MessageStatistic> result = new ArrayList<MessageStatistic>();
     try {
-      List<MessageStatistic> sublist = wrappedComponent.getCacheArray().subList(fromIndex, toIndex);
+      List<MessageStatistic> sublist = wrappedComponent.getStats().subList(fromIndex, toIndex);
       for (MessageStatistic ms : sublist) {
         result.add(ms.clone());
       }

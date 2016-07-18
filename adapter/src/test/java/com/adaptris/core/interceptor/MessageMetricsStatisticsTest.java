@@ -72,8 +72,8 @@ public class MessageMetricsStatisticsTest extends StatisticsMBeanCase {
       workflow.processAsync(createMessageForInjection(payload));
       
       assertEquals(1, stats.getStatistics().size());
-      assertEquals(interceptor.getCacheArray().size(), stats.getStatistics().size());
-      MessageStatistic interceptorStat = interceptor.getCacheArray().get(0);
+      assertEquals(interceptor.getStats().size(), stats.getStatistics().size());
+      MessageStatistic interceptorStat = interceptor.getStats().get(0);
       MessageStatistic mbeanStat = stats.getStatistics().get(0);
 
       assertNotSame(interceptorStat, mbeanStat); // They're not objectively equals (not clones), and no equals method.
