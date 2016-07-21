@@ -4,8 +4,16 @@ import javax.jms.XAConnectionFactory;
 import javax.transaction.xa.XAResource;
 
 import com.adaptris.core.AdaptrisComponent;
+import com.adaptris.core.JndiBindable;
 
-public interface TransactionManager extends AdaptrisComponent {
+public interface TransactionManager extends AdaptrisComponent, JndiBindable {
+  
+  /**
+   * Get the unique-id that is associated with this connection.
+   *
+   * @return the unique-id
+   */
+  String getUniqueId();
   
   void preEnlistXAResource(String name, XAConnectionFactory connectionFactory) throws Exception;
   
