@@ -34,6 +34,9 @@ import com.adaptris.core.jms.PtpConsumer;
 import com.adaptris.core.jms.PtpProducer;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
 import com.adaptris.core.stubs.MockConnection;
+import com.adaptris.core.transaction.SharedTransactionManager;
+import com.adaptris.core.transaction.DummyTransactionManager;
+import com.adaptris.core.transaction.TransactionManager;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.security.exc.PasswordException;
 
@@ -116,6 +119,9 @@ public class SharedComponentListTest extends ExampleConfigCase {
       FtpConnection ftpConnection = new FtpConnection("a-shared-ftp-connection");
       ftpConnection.setLookupName("adapter:comp/env/ftpConnection");
       adapter.getSharedComponents().addConnection(ftpConnection);
+      TransactionManager transactionManager = new DummyTransactionManager("myUniqueId", "adapter:comp/env/myTransactionManager");
+      adapter.getSharedComponents().setTransactionManager(transactionManager);
+      
     }
     catch (Exception e) {
       throw new RuntimeException(e);
@@ -298,6 +304,27 @@ public class SharedComponentListTest extends ExampleConfigCase {
       stop(adapter);
     }
   }
+  
+  public void testBindJNDITransactionManager() throws Exception {
+    Adapter adapter = new Adapter();
+    adapter.setUniqueId(getName());
+    Properties env = new Properties();
+    env.put(Context.INITIAL_CONTEXT_FACTORY, JndiContextFactory.class.getName());
+    InitialContext initialContext = new InitialContext(env);
+
+    try {
+      start(adapter);
+      adapter.getSharedComponents().setTransactionManager(new DummyTransactionManager(getName(), null));
+      adapter.getSharedComponents().bindJNDI(getName());
+      TransactionManager lookedup = (TransactionManager) initialContext.lookup("adapter:comp/env/" + getName());
+      assertNotNull(lookedup);
+      assertEquals(getName(), lookedup.getUniqueId());
+      adapter.getSharedComponents().bindJNDI("ShouldGetIgnored");
+    }
+    finally {
+      stop(adapter);
+    }
+  }
 
   public void testSharedConnection_StandardLookup() throws Exception {
     Adapter adapter = new Adapter();
@@ -307,6 +334,36 @@ public class SharedComponentListTest extends ExampleConfigCase {
       start(adapter);
       SharedConnection conn = new SharedConnection(getName());
       conn.retrieveConnection(NullConnection.class);
+    }
+    finally {
+      stop(adapter);
+    }
+  }
+  
+  public void testSharedTransactionManager_StandardLookup() throws Exception {
+    Adapter adapter = new Adapter();
+    adapter.setUniqueId(getName());
+    adapter.getSharedComponents().setTransactionManager(new DummyTransactionManager(getName(), getName()));
+    try {
+      start(adapter);
+      SharedTransactionManager conn = new SharedTransactionManager(getName());
+      conn.init();
+      assertNotNull(conn.getProxiedTransactionManager());
+    }
+    finally {
+      stop(adapter);
+    }
+  }
+  
+  public void testSharedTransactionManager_CompEnvLookupName() throws Exception {
+    Adapter adapter = new Adapter();
+    adapter.setUniqueId(getName());
+    adapter.getSharedComponents().setTransactionManager(new DummyTransactionManager(getName(), null));
+    try {
+      start(adapter);
+      SharedTransactionManager conn = new SharedTransactionManager("comp/env/" + getName());
+      conn.init();
+      assertNotNull(conn.getProxiedTransactionManager());
     }
     finally {
       stop(adapter);
