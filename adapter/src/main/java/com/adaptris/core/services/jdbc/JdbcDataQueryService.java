@@ -16,6 +16,8 @@
 
 package com.adaptris.core.services.jdbc;
 
+import static org.apache.commons.lang.StringUtils.isEmpty;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -37,7 +39,6 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.jdbc.DatabaseConnection;
-import com.adaptris.core.jdbc.JdbcService;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.JdbcUtil;
@@ -48,7 +49,6 @@ import com.adaptris.jdbc.JdbcResultBuilder;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.text.xml.SimpleNamespaceContext;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
  * Perform a triggered JDBC query and the results of this query that can be stored in the AdaptrisMessage.
@@ -63,37 +63,30 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @AdapterComponent
 @ComponentProfile(summary = "Query a database and store the results in the message", tag = "service,jdbc",
     recommended = {DatabaseConnection.class})
-@DisplayOrder(order = {"connection", "statement", "statementCreator", "statementParameters", "resultSetTranslator", "parameterApplicator",
+@DisplayOrder(order = {"connection", "statementCreator", "statementParameters", "resultSetTranslator", "parameterApplicator",
  "namespaceContext", "xmlDocumentFactoryConfig", "ignoreExecuteQueryErrors"})
-public class JdbcDataQueryService extends JdbcService {
+public class JdbcDataQueryService extends JdbcServiceWithParameters {
 
   static final String KEY_XML_UTILS = "XmlUtils_" + JdbcDataQueryService.class.getCanonicalName();
   static final String KEY_NAMESPACE_CTX = "NamespaceCtx_" + JdbcDataQueryService.class.getCanonicalName();
   static final String KEY_DOCBUILDER_FAC = "DocBuilderFactoryBuilder_" + JdbcDataQueryService.class.getCanonicalName();
 
   @InputFieldHint(style="SQL")
+  @Deprecated
   private String statement;  
   @AdvancedConfig
-  private JdbcStatementCreator statementCreator;
-  @NotNull
-  @AutoPopulated
   @Valid
-  @XStreamImplicit
-  private StatementParameterList statementParameters;
+  private JdbcStatementCreator statementCreator;
   @NotNull
   @AutoPopulated
   @Valid
   private ResultSetTranslator resultSetTranslator;
   @AdvancedConfig
+  @Valid
   private KeyValuePairSet namespaceContext;
   @AdvancedConfig
-  private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
-
-  @NotNull
-  @AutoPopulated
   @Valid
-  @AdvancedConfig
-  private ParameterApplicator parameterApplicator;
+  private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 
   @Valid
   @AdvancedConfig
@@ -109,10 +102,20 @@ public class JdbcDataQueryService extends JdbcService {
     actor = new DatabaseActor();
   }
   
+  public JdbcDataQueryService(JdbcStatementCreator creator) {
+    this();
+    setStatementCreator(creator);
+  }
+
+
   @Override
   protected void initJdbcService() throws CoreException {
     LifecycleHelper.init(resultSetTranslator);
+    if (isEmpty(getStatement()) && getStatementCreator() == null) {
+      throw new CoreException("No JDBC Statement or creator defined");
+    }
     if(getStatementCreator() == null) {
+      log.warn("'statement' is deprecated; use a statement-creator instead");
       setStatementCreator(new ConfiguredSQLStatement(statement));
     }
   }
@@ -227,7 +230,9 @@ public class JdbcDataQueryService extends JdbcService {
   /**
    * 
    * @return Returns the statement.
+   * @deprecated since 3.4.0 use a {@link JdbcStatementCreator} instead.
    */
+  @Deprecated
   public String getStatement() {
     return statement;
   }
@@ -236,34 +241,13 @@ public class JdbcDataQueryService extends JdbcService {
    * Set the SQL Query statement
    * 
    * @param statement The statement to set.
+   * @deprecated since 3.4.0 use a {@link JdbcStatementCreator} instead.
    */
+  @Deprecated
   public void setStatement(String statement) {
     this.statement = statement;
   }
 
-  /**
-   * @return Returns the statementParameters.
-   */
-  public StatementParameterList getStatementParameters() {
-    return statementParameters;
-  }
-
-  /**
-   * @param list The statementParameters to set.
-   */
-  public void setStatementParameters(StatementParameterList list) {
-    statementParameters = list;
-  }
-
-  /**
-   * Add a StatementParameter to this service.
-   * 
-   * @see StatementParameter
-   * @param query the StatementParameter
-   */
-  public void addStatementParameter(JdbcStatementParameter query) {
-    statementParameters.add(query);
-  }
 
   /**
    * 
@@ -301,14 +285,6 @@ public class JdbcDataQueryService extends JdbcService {
    */
   public void setNamespaceContext(KeyValuePairSet kvps) {
     this.namespaceContext = kvps;
-  }
-
-  public ParameterApplicator getParameterApplicator() {
-    return parameterApplicator;
-  }
-
-  public void setParameterApplicator(ParameterApplicator parameterApplicator) {
-    this.parameterApplicator = parameterApplicator;
   }
 
   public DocumentBuilderFactoryBuilder getXmlDocumentFactoryConfig() {
@@ -394,6 +370,8 @@ public class JdbcDataQueryService extends JdbcService {
      * @throws SQLException
      */
     PreparedStatement getQueryStatement(String statement) throws SQLException {
+      // This will prepare the statement *every time* because queryString never equals the statement.
+      // Can we just rely on the fact that the JDBC driver will optimize that out of the way?
       if (queryStatement == null || !queryString.equals(statement)) {
         queryStatement = prepareStatement(sqlConnection, prepareStringStatement(statement));
       }

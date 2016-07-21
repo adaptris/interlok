@@ -16,7 +16,6 @@
 
 package com.adaptris.core.interceptor;
 
-import java.util.Collection;
 import java.util.List;
 
 import com.adaptris.core.CoreException;
@@ -26,27 +25,6 @@ import com.adaptris.core.CoreException;
  * 
  */
 public interface MetadataStatisticsMBean extends MetricsMBean {
-
-  /**
-   * Get the metadata keys that are tracked within the given timeslice.
-   * 
-   * @param index the index of the timeslice.
-   * @return the metadata keys tracked.
-   * @deprecated since 3.0.3 use {@linkplain #getStatistics()} instead for efficiency when dealing with remote MBeans
-   */
-  @Deprecated
-  Collection<String> getMetadataKeys(int index);
-
-  /**
-   * Get the total for the given key within the given timeslice.
-   * 
-   * @param index the index of the timeslice
-   * @param key the metadata key that was tracked
-   * @return the total for that metadata key.
-   * @deprecated since 3.0.3 use {@linkplain #getStatistics()} instead for efficiency when dealing with remote MBeans
-   */
-  @Deprecated
-  int getTotal(int index, String key);
 
   /**
    * Get all the statistics hosted by this management bean.

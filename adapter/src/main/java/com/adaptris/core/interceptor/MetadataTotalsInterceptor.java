@@ -82,11 +82,14 @@ public class MetadataTotalsInterceptor extends MetadataMetricsInterceptorImpl {
   }
 
   @Override
-  public synchronized void workflowEnd(AdaptrisMessage inputMsg, AdaptrisMessage outputMsg) {
-    MetadataStatistic currentStat = getCurrentStat();
-    // Only work on outputMsg.
-    increment(outputMsg, currentStat);
-    updateCurrent(currentStat);
+  public synchronized void workflowEnd(AdaptrisMessage inputMsg, final AdaptrisMessage outputMsg) {
+    update(new StatisticsDelta<MetadataStatistic>() {
+      @Override
+      public MetadataStatistic apply(MetadataStatistic currentStat) {
+        increment(outputMsg, currentStat);
+        return currentStat;
+      }
+    });
   }
 
   private void increment(AdaptrisMessage msg, MetadataStatistic stat) {

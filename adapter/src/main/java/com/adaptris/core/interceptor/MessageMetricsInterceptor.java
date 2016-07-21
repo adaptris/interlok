@@ -78,23 +78,14 @@ public class MessageMetricsInterceptor extends MessageMetricsInterceptorImpl {
     final int errors = wasSuccessful(inputMsg, outputMsg) ? 0 : 1;
     final int msgs = 1;
     final long size = inputMsg.getSize();
-    update(new StatisticsDelta() {
-
+    update(new StatisticsDelta<MessageStatistic>() {
       @Override
-      public int messageCountIncrement() {
-        return msgs;
+      public MessageStatistic apply(MessageStatistic currentStat) {
+        currentStat.setTotalMessageCount(currentStat.getTotalMessageCount() + msgs);
+        currentStat.setTotalMessageSize(currentStat.getTotalMessageSize() + size);
+        currentStat.setTotalMessageErrorCount(currentStat.getTotalMessageErrorCount() + errors);
+        return currentStat;
       }
-
-      @Override
-      public long messageSizeIncrement() {
-        return size;
-      }
-
-      @Override
-      public int messageErrorCountIncrement() {
-        return errors;
-      }
-      
     });
   }
 

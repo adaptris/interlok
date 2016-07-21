@@ -226,7 +226,7 @@ public class JdbcRawDataCaptureServiceTest extends JdbcServiceExample {
   
   @Override
   public void testBackReferences() throws Exception {
-    this.testBackReferences(new JdbcRawDataCaptureService());
+    this.testBackReferences(new JdbcRawDataCaptureService("INSERT INTO MYTABLE ('ABC');"));
   }
 
   private Date onceUponATime() {

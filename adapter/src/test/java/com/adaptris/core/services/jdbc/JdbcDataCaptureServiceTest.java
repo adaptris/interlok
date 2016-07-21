@@ -481,7 +481,7 @@ public class JdbcDataCaptureServiceTest extends JdbcServiceExample {
 
   @Override
   public void testBackReferences() throws Exception {
-    this.testBackReferences(new JdbcDataCaptureService());
+    this.testBackReferences(new JdbcDataCaptureService("INSERT INTO MYTABLE ('ABC');"));
   }
 
   private JdbcDataCaptureService createBasicService() throws Exception {

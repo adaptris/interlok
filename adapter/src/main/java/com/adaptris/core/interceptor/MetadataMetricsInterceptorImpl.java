@@ -16,15 +16,28 @@
 
 package com.adaptris.core.interceptor;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public abstract class MetadataMetricsInterceptorImpl extends MetricsInterceptorImpl {
+public abstract class MetadataMetricsInterceptorImpl extends MetricsInterceptorImpl<MetadataStatistic> {
   private transient List<MetadataStatistic> statistics;
+  private transient Object chubb = new Object();
 
   protected MetadataMetricsInterceptorImpl() {
-    statistics = new ArrayList<MetadataStatistic>();
+    statistics = new MaxCapacityList<MetadataStatistic>();
+  }
+
+  protected void clearStatistics() {
+    synchronized (chubb) {
+      statistics.clear();
+    }
+  }
+
+  protected void update(StatisticsDelta<MetadataStatistic> d) {
+    synchronized (chubb) {
+      MetadataStatistic stat = getCurrentStat();
+      updateCurrent(d.apply(stat));
+    }
   }
 
   protected void updateCurrent(MetadataStatistic currentTimeSlice) {
@@ -35,33 +48,27 @@ public abstract class MetadataMetricsInterceptorImpl extends MetricsInterceptorI
     return statistics;
   }
 
-  protected MetadataStatistic getCurrentStat() {
+  private MetadataStatistic getCurrentStat() {
     MetadataStatistic timeSlice = null;
     long timeInMillis = Calendar.getInstance().getTimeInMillis();
 
     if (statistics.size() == 0) {
       timeSlice = new MetadataStatistic();
       timeSlice.setEndMillis(timeInMillis + timesliceDurationMs());
-      addNewStat(timeSlice);
+      statistics.add(timeSlice);
     }
     else {
       timeSlice = getLatestStat();
       if (timeSlice.getEndMillis() <= timeInMillis) {
         timeSlice = new MetadataStatistic(timeInMillis + timesliceDurationMs());
-        addNewStat(timeSlice);
+        statistics.add(timeSlice);
       }
     }
     return timeSlice;
   }
 
-  protected void addNewStat(MetadataStatistic timeSlice) {
-    if (statistics.size() == getTimesliceHistoryCount() && statistics.size() > 0) {
-      statistics.remove(0);
-    }
-    statistics.add(timeSlice);
-  }
 
-  protected MetadataStatistic getLatestStat() {
+  private MetadataStatistic getLatestStat() {
     if (statistics.size() == 0) {
       return null;
     }

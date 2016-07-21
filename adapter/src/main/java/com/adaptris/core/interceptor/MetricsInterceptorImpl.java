@@ -16,6 +16,8 @@
 
 package com.adaptris.core.interceptor;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -28,14 +30,16 @@ import com.adaptris.util.TimeInterval;
  * Abstract WorkflowInterceptor implementation that captures historical data.
  * 
  */
-public abstract class MetricsInterceptorImpl extends WorkflowInterceptorImpl {
+public abstract class MetricsInterceptorImpl<T> extends WorkflowInterceptorImpl {
 
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
   private static final TimeInterval DEFAULT_TIMESLICE_DURATION = new TimeInterval(10L, TimeUnit.SECONDS);
+  protected static final int DEFAULT_TIMESLICE_HISTORY_COUNT = 100;
+
   private TimeInterval timesliceDuration;
   // * Optional - Defaults to 100
   // * The number of timeslices we should persist for history sake
-  private int timesliceHistoryCount;
+  private Integer timesliceHistoryCount;
 
   public MetricsInterceptorImpl() {
     super();
@@ -58,18 +62,25 @@ public abstract class MetricsInterceptorImpl extends WorkflowInterceptorImpl {
   public void close() {
   }
 
-  public int getTimesliceHistoryCount() {
+
+  protected int timesliceHistoryCount() {
+    return getTimesliceHistoryCount() != null ? getTimesliceHistoryCount().intValue() : DEFAULT_TIMESLICE_HISTORY_COUNT;
+  }
+
+  public Integer getTimesliceHistoryCount() {
     return timesliceHistoryCount;
   }
 
   /**
    * Set the number of timeslices to keep.
    * 
-   * @param timesliceHistoryCount the number of timeslices to keep (default 100)
+   * @param s the number of timeslices to keep (default 100)
    */
-  public void setTimesliceHistoryCount(int timesliceHistoryCount) {
-    this.timesliceHistoryCount = timesliceHistoryCount;
+  public void setTimesliceHistoryCount(Integer s) {
+    this.timesliceHistoryCount = s;
   }
+
+
 
   public TimeInterval getTimesliceDuration() {
     return timesliceDuration;
@@ -88,4 +99,33 @@ public abstract class MetricsInterceptorImpl extends WorkflowInterceptorImpl {
     return getTimesliceDuration() != null ? getTimesliceDuration().toMilliseconds() : DEFAULT_TIMESLICE_DURATION.toMilliseconds();
   }
 
+  // We only use the add method internally, so we can safely do a throw for all the others.
+  protected class MaxCapacityList<E> extends ArrayList<E> {
+
+    public boolean add(E item) {
+      while (size() >= timesliceHistoryCount()) {
+        remove(0);
+      }
+      return super.add(item);
+    }
+
+    public void add(int index, E element) {
+      throw new UnsupportedOperationException();
+    }
+
+
+    public boolean addAll(Collection<? extends E> c) {
+      throw new UnsupportedOperationException();
+    }
+
+
+    public boolean addAll(int index, Collection<? extends E> c) {
+      throw new UnsupportedOperationException();
+    }
+  }
+
+
+  public interface StatisticsDelta<E extends InterceptorStatistic> {
+    public E apply(E currentStat);
+  }
 }

@@ -16,6 +16,7 @@
 
 package com.adaptris.core.interceptor;
 
+import com.adaptris.core.CoreException;
 import com.adaptris.core.runtime.ChildRuntimeInfoComponentMBean;
 
 /**
@@ -40,4 +41,11 @@ public interface MetricsMBean extends ChildRuntimeInfoComponentMBean {
    */
   int getTimeSliceDurationSeconds();
 
+  /**
+   * Clear any statistics held in this MBean.
+   * 
+   * @since 3.4.0
+   * 
+   */
+  void clearStatistics() throws CoreException;
 }
