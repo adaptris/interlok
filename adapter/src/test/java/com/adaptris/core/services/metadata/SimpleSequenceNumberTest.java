@@ -121,6 +121,15 @@ public class SimpleSequenceNumberTest extends SequenceNumberServiceExample {
     assertEquals(DEFAULT_METADATA_KEY, service.getMetadataKey());
   }
 
+  public void testSetMaximum() throws Exception {
+    SimpleSequenceNumberService service = new SimpleSequenceNumberService();
+    assertNull(service.getMaximumSequenceNumber());
+    service.setMaximumSequenceNumber(null);
+    assertNull(service.getMaximumSequenceNumber());
+    service.setMaximumSequenceNumber(12L);
+    assertEquals(new Long(12L), service.getMaximumSequenceNumber());
+  }
+
   public void testInit() throws Exception {
     SimpleSequenceNumberService service = new SimpleSequenceNumberService();
     try {
@@ -279,6 +288,109 @@ public class SimpleSequenceNumberTest extends SequenceNumberServiceExample {
     assertEquals("000000001", msg.getMetadataValue(DEFAULT_METADATA_KEY));
   }
 
+  public void testDoService_MaximumAndSetNotHit() throws Exception {
+    SimpleSequenceNumberService service = new SimpleSequenceNumberService();
+    service.setMetadataKey(DEFAULT_METADATA_KEY);
+    String filename = new File(PROPERTIES.getProperty(KEY_BASEDIR), new GuidGenerator().getUUID()).getCanonicalPath();
+    createPropertyFile(filename, 10);
+    service.setSequenceNumberFile(filename);
+    service.setMaximumSequenceNumber(12L);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    execute(service, msg);
+    assertEquals(11, getSequenceNumber(filename));
+    assertTrue(msg.containsKey(DEFAULT_METADATA_KEY));
+    assertEquals("10", msg.getMetadataValue(DEFAULT_METADATA_KEY));
+  }
+
+  public void testDoService_MaximumSetHit() throws Exception {
+    SimpleSequenceNumberService service = new SimpleSequenceNumberService();
+    service.setMetadataKey(DEFAULT_METADATA_KEY);
+    String filename = new File(PROPERTIES.getProperty(KEY_BASEDIR), new GuidGenerator().getUUID()).getCanonicalPath();
+    createPropertyFile(filename, 13);
+    service.setSequenceNumberFile(filename);
+    service.setMaximumSequenceNumber(12L);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    execute(service, msg);
+    assertEquals(2, getSequenceNumber(filename));
+    assertTrue(msg.containsKey(DEFAULT_METADATA_KEY));
+    assertEquals("1", msg.getMetadataValue(DEFAULT_METADATA_KEY));
+  }
+
+  public void testDoService_MaximumSetHitPropertyExceededMax() throws Exception {
+    SimpleSequenceNumberService service = new SimpleSequenceNumberService();
+    service.setMetadataKey(DEFAULT_METADATA_KEY);
+    String filename = new File(PROPERTIES.getProperty(KEY_BASEDIR), new GuidGenerator().getUUID()).getCanonicalPath();
+    createPropertyFile(filename, 13);
+    service.setSequenceNumberFile(filename);
+    service.setMaximumSequenceNumber(12L);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    execute(service, msg);
+    assertEquals(2, getSequenceNumber(filename));
+    assertTrue(msg.containsKey(DEFAULT_METADATA_KEY));
+    assertEquals("1", msg.getMetadataValue(DEFAULT_METADATA_KEY));
+  }
+
+  public void testDoService_MaximumAndNumberFormattingSetNotHit() throws Exception {
+    SimpleSequenceNumberService service = new SimpleSequenceNumberService();
+    service.setMetadataKey(DEFAULT_METADATA_KEY);
+    String filename = new File(PROPERTIES.getProperty(KEY_BASEDIR), new GuidGenerator().getUUID()).getCanonicalPath();
+    createPropertyFile(filename, 10);
+    service.setSequenceNumberFile(filename);
+    service.setNumberFormat("000");
+    service.setMaximumSequenceNumber(12L);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    execute(service, msg);
+    assertEquals(11, getSequenceNumber(filename));
+    assertTrue(msg.containsKey(DEFAULT_METADATA_KEY));
+    assertEquals("010", msg.getMetadataValue(DEFAULT_METADATA_KEY));
+  }
+
+  public void testDoService_MaximumAndNumberFormattingSetHit() throws Exception {
+    SimpleSequenceNumberService service = new SimpleSequenceNumberService();
+    service.setMetadataKey(DEFAULT_METADATA_KEY);
+    String filename = new File(PROPERTIES.getProperty(KEY_BASEDIR), new GuidGenerator().getUUID()).getCanonicalPath();
+    createPropertyFile(filename, 12);
+    service.setSequenceNumberFile(filename);
+    service.setNumberFormat("000");
+    service.setMaximumSequenceNumber(12L);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    execute(service, msg);
+    assertEquals(1, getSequenceNumber(filename));
+    assertTrue(msg.containsKey(DEFAULT_METADATA_KEY));
+    assertEquals("012", msg.getMetadataValue(DEFAULT_METADATA_KEY));
+  }
+
+  public void testDoService_MaximumAndNumberFormattingSetHitPropertyExceededMax() throws Exception {
+    SimpleSequenceNumberService service = new SimpleSequenceNumberService();
+    service.setMetadataKey(DEFAULT_METADATA_KEY);
+    String filename = new File(PROPERTIES.getProperty(KEY_BASEDIR), new GuidGenerator().getUUID()).getCanonicalPath();
+    createPropertyFile(filename, 13);
+    service.setSequenceNumberFile(filename);
+    service.setNumberFormat("000");
+    service.setMaximumSequenceNumber(12L);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    execute(service, msg);
+    assertEquals(2, getSequenceNumber(filename));
+    assertTrue(msg.containsKey(DEFAULT_METADATA_KEY));
+    assertEquals("001", msg.getMetadataValue(DEFAULT_METADATA_KEY));
+  }
+
+  public void testDoService_MaximumAndOverflowBehaviourResetToOne() throws Exception {
+    SimpleSequenceNumberService service = new SimpleSequenceNumberService();
+    service.setMetadataKey(DEFAULT_METADATA_KEY);
+    String filename = new File(PROPERTIES.getProperty(KEY_BASEDIR), new GuidGenerator().getUUID()).getCanonicalPath();
+    createPropertyFile(filename, 10);
+    service.setSequenceNumberFile(filename);
+    service.setNumberFormat("0");
+    service.setOverflowBehaviour(OverflowBehaviour.ResetToOne);
+    service.setMaximumSequenceNumber(12L);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    execute(service, msg);
+    assertEquals(2, getSequenceNumber(filename));
+    assertTrue(msg.containsKey(DEFAULT_METADATA_KEY));
+    assertEquals("1", msg.getMetadataValue(DEFAULT_METADATA_KEY));
+  }
+
   @Override
   protected Object retrieveObjectForSampleConfig() {
     SimpleSequenceNumberService service = new SimpleSequenceNumberService();
@@ -286,6 +398,7 @@ public class SimpleSequenceNumberTest extends SequenceNumberServiceExample {
     service.setSequenceNumberFile("/path/to/the/sequence/number/file");
     service.setNumberFormat(DEFAULT_NUMBER_FORMAT);
     service.setOverflowBehaviour(OverflowBehaviour.Continue);
+    service.setMaximumSequenceNumber(12L);
     return service;
   }
 
