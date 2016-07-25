@@ -16,28 +16,71 @@
 
 package com.adaptris.core.management.vcs;
 
+/**
+ * Constants controlling behaviour when integrating against a version control system.
+ * 
+ * @author lchan
+ *
+ */
 public class VcsConstants {
 
+  /**
+   * Whether or not to always do a git checkout -f (or equivalent)
+   */
+  public static final String VCS_CLEAN_UPDATE = "vcs.always.reset";
+
+  /**
+   * The password to access VCS (if required)
+   * 
+   */
   public static final String VCS_PASSWORD_KEY = "vcs.password";
   
+  /**
+   * The username to access VCS (if required)
+   * 
+   */
   public static final String VCS_USERNAME_KEY = "vcs.username";
   
+  /**
+   * The local working copy for any files checked out.
+   * 
+   */
   public static final String VCS_LOCAL_URL_KEY = "vcs.workingcopy.url";
   
+  /**
+   * The remote VCS url.
+   * 
+   */
   public static final String VCS_REMOTE_REPO_URL_KEY = "vcs.remote.repo.url";
-  
+
+  /**
+   * The revision or branch to checkout.
+   * 
+   */
   public static final String VCS_REVISION_KEY = "vcs.revision";
   
   public static final String VCS_SSH_TUNNEL_PORT_KEY = "vcs.ssh.tunnel.port";
   
+  /**
+   * The SSH keyfile
+   * 
+   */
   public static final String VCS_SSH_KEYFILE_URL_KEY = "vcs.ssh.keyfile.url";
   
+  /**
+   * The SSH password
+   * 
+   */
   public static final String VCS_SSH_PASSPHRASE_KEY = "vcs.ssh.passphrase";
   
   public static final String VCS_SSL_CERTIFICATE_URL_KEY = "vcs.ssl.certificate.url";
   
   public static final String VCS_SSL_PASSWORD_KEY = "vcs.ssl.password";
   
+  /**
+   * The type of VCS authentication which may be different according to each VCS provider.
+   * 
+   */
   public static final String VCS_AUTHENTICATION_IMPL_KEY = "vcs.auth";
   
 }
