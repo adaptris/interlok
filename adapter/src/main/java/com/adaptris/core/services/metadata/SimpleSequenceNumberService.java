@@ -32,6 +32,7 @@ import org.apache.commons.io.IOUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
@@ -68,7 +69,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("simple-sequence-number-service")
 @AdapterComponent
 @ComponentProfile(summary = "Generate a sequence number from a simple text file", tag = "service,sequence")
-@DisplayOrder(order = {"metadataKey", "numberFormat", "overflowBehaviour", "sequenceNumberFile", "alwaysReplaceMetadata"})
+@DisplayOrder(order = {"metadataKey", "numberFormat", "overflowBehaviour", "maximumSequenceNumber", "sequenceNumberFile", "alwaysReplaceMetadata"})
 public class SimpleSequenceNumberService extends ServiceImp {
 
   @NotBlank
@@ -80,6 +81,8 @@ public class SimpleSequenceNumberService extends ServiceImp {
   private OverflowBehaviour overflowBehaviour;
   @NotBlank
   private String sequenceNumberFile;
+  @AdvancedConfig
+  private Long maximumSequenceNumber;
 
   private static final String PROPERTY_KEY = "SimpleSequenceNumberService.next";
   private static final String ONE = "1";
@@ -150,13 +153,13 @@ public class SimpleSequenceNumberService extends ServiceImp {
     try {
       File myFile = new File(getSequenceNumberFile());
       Properties p = load(myFile);
-      Long count = Long.parseLong(nextSequenceNumber(p));
+      Long count = Long.parseLong(nextSequenceNumber(p, getMaximumSequenceNumber()));
       String countString = formatter.format(count);
       if (countString.length() > getNumberFormat().length()) {
         count = getBehaviour(getOverflowBehaviour()).wrap(count);
         countString = formatter.format(count);
       }
-      p.setProperty(PROPERTY_KEY, String.valueOf(count + 1));
+      incrementSequenceNumberProperty(p, count, getMaximumSequenceNumber());
       store(p, myFile);
       msg.addMetadata(getMetadataKey(), countString);
     }
@@ -262,6 +265,20 @@ public class SimpleSequenceNumberService extends ServiceImp {
     sequenceNumberFile = s;
   }
 
+
+  public Long getMaximumSequenceNumber() {
+    return maximumSequenceNumber;
+  }
+
+  /**
+   * Set the maximum sequence number which will reset the count when reached.
+   *
+   * @param l the maximum sequence number, a value of null means there is no maximum (default).
+   */
+  public void setMaximumSequenceNumber(Long l) {
+    this.maximumSequenceNumber = l;
+  }
+
   private static Properties load(File myFile) throws IOException {
     Properties result = new Properties();
     InputStream in = null;
@@ -289,11 +306,31 @@ public class SimpleSequenceNumberService extends ServiceImp {
     }
   }
 
-  private static String nextSequenceNumber(Properties p) {
+  private static String nextSequenceNumber(Properties p, Long maximum) {
     if (!p.containsKey(PROPERTY_KEY)) {
       p.setProperty(PROPERTY_KEY, ONE);
     }
+    if(greaterThanMaximum(p.getProperty(PROPERTY_KEY), maximum)){
+      p.setProperty(PROPERTY_KEY, ONE);
+    }
     return p.getProperty(PROPERTY_KEY);
+  }
+
+  private static void incrementSequenceNumberProperty(Properties p, Long count, Long maximum){
+    if(greaterThanMaximum(String.valueOf(count + 1), maximum)){
+      p.setProperty(PROPERTY_KEY, ONE);
+    } else {
+      p.setProperty(PROPERTY_KEY, String.valueOf(count + 1));
+    }
+  }
+
+  private static boolean greaterThanMaximum(String value, Long maximum){
+    if(maximum == null){
+      return false;
+    }
+    Long count = Long.parseLong(value);
+    return count > maximum;
+
   }
 
   @Override
