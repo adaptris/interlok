@@ -46,7 +46,11 @@ public abstract class ScriptingServiceImp extends ServiceImp {
   private transient ScriptEngineManager fatController;
   private transient ScriptEngine engine;
   @InputFieldDefault(value = "false")
+  @Deprecated
   private Boolean branching;
+
+  @InputFieldDefault(value = "false")
+  private Boolean branchingEnabled;
 
   public ScriptingServiceImp() {
     super();
@@ -118,9 +122,19 @@ public abstract class ScriptingServiceImp extends ServiceImp {
 
   @Override
   public boolean isBranching() {
-    return getBranching() != null ? getBranching().booleanValue() : false;
+    boolean be = false;
+    if (getBranching() != null) {
+      be = getBranching().booleanValue();
+    } else {
+      be = getBranchingEnabled() != null ? getBranchingEnabled().booleanValue() : false;
+    }
+    return be;
   }
 
+  /**
+   * @deprecated since 3.4.0
+   */
+  @Deprecated
   public Boolean getBranching() {
     return branching;
   }
@@ -131,9 +145,27 @@ public abstract class ScriptingServiceImp extends ServiceImp {
    * @param branching true to cause {@link #isBranching()} to return true; default is false.
    * @see com.adaptris.core.Service#isBranching()
    * @since 3.0.3
+   * @deprecated since 3.4.0 as it causes problems with the UI.
    */
+  @Deprecated
   public void setBranching(Boolean branching) {
     this.branching = branching;
+  }
+
+
+  public Boolean getBranchingEnabled() {
+    return branchingEnabled;
+  }
+
+  /**
+   * Specify whether or not this service is branching.
+   * 
+   * @param branching true to cause {@link #isBranching()} to return true; default is false.
+   * @see com.adaptris.core.Service#isBranching()
+   * @since 3.4.0
+   */
+  public void setBranchingEnabled(Boolean branching) {
+    this.branchingEnabled = branching;
   }
 
 }
