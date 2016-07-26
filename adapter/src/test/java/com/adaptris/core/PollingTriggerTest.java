@@ -35,7 +35,9 @@ public class PollingTriggerTest extends ConsumerCase {
 
   private static final Poller[] POLLERS =
   {
-      new FixedIntervalPoller(new TimeInterval(1L, TimeUnit.MINUTES)), new QuartzCronPoller()
+      new FixedIntervalPoller(new TimeInterval(1L, TimeUnit.MINUTES))
+      ,new QuartzCronPoller()
+      ,new GaussianIntervalPoller(new TimeInterval(5L,TimeUnit.SECONDS),new TimeInterval(6L, TimeUnit.SECONDS))
   };
 
   private static final List<Poller> POLLER_LIST = Arrays.asList(POLLERS);
