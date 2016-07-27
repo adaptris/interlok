@@ -49,6 +49,7 @@ public class DefaultSerializableMessage implements SerializableMessage {
   public DefaultSerializableMessage() {
     messageHeaders = new HashMap<>();
     setUniqueId(UUID.randomUUID().toString());
+    setNextServiceId("");
   }
 
   @Override
