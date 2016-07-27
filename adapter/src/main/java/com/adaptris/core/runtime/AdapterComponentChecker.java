@@ -28,10 +28,10 @@ import com.adaptris.core.AllowsRetriesConnection;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.DefaultSerializableMessageTranslator;
-import com.adaptris.core.SerializableAdaptrisMessage;
 import com.adaptris.core.Service;
 import com.adaptris.core.util.JmxHelper;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.types.SerializableMessage;
 
 /**
  * Implementation of {@link AdapterComponentCheckerMBean} for use by the GUI to check components.
@@ -123,7 +123,7 @@ public class AdapterComponentChecker implements AdapterComponentCheckerMBean, Ch
   }
 
   @Override
-  public SerializableAdaptrisMessage applyService(String xml, SerializableAdaptrisMessage serializedMsg) throws CoreException {
+  public SerializableMessage applyService(String xml, SerializableMessage serializedMsg) throws CoreException {
     AdaptrisMarshaller marshaller = DefaultMarshaller.getDefaultMarshaller();
     Service service = (Service) marshaller.unmarshal(xml);
     service.prepare();

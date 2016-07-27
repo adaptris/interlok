@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 
 import com.adaptris.core.runtime.ChildRuntimeInfoComponentMBean;
+import com.adaptris.interlok.types.SerializableMessage;
 
 /**
  * JMX Interface for {@link DefaultFailedMessageRetrier}
@@ -41,7 +42,7 @@ public interface DefaultFailedMessageRetrierJmxMBean extends ChildRuntimeInfoCom
    * @return true if the message was successfully submitted to a workflow, false otherwise.
    * @throws CoreException if there was an error unwrapping the file using {@link DefaultSerializableMessageTranslator}
    */
-  boolean retryMessage(SerializableAdaptrisMessage msg) throws CoreException;
+  boolean retryMessage(SerializableMessage msg) throws CoreException;
 
   /**
    * Retry a message that has been written to the filesystem.

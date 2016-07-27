@@ -36,9 +36,9 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.DefaultSerializableMessageTranslator;
 import com.adaptris.core.MetadataElement;
-import com.adaptris.core.SerializableAdaptrisMessage;
 import com.adaptris.core.services.jdbc.JdbcServiceList;
 import com.adaptris.core.services.metadata.AddMetadataService;
+import com.adaptris.interlok.types.SerializableMessage;
 
 public class AdapterComponentCheckerTest extends ComponentManagerCase {
 
@@ -104,7 +104,7 @@ public class AdapterComponentCheckerTest extends ComponentManagerCase {
     ObjectName objectName = createComponentCheckerObjectName(adapterName);
     register(mBeans);
     AdapterComponentCheckerMBean manager = JMX.newMBeanProxy(mBeanServer, objectName, AdapterComponentCheckerMBean.class);
-    SerializableAdaptrisMessage msg = createSerializableMessage();
+    SerializableMessage msg = createSerializableMessage();
     try {
       manager.applyService("<Document/>", msg);
       fail();
@@ -132,7 +132,7 @@ public class AdapterComponentCheckerTest extends ComponentManagerCase {
     return DefaultMarshaller.getDefaultMarshaller().marshal(service);
   }
 
-  private SerializableAdaptrisMessage createSerializableMessage() throws Exception {
+  private SerializableMessage createSerializableMessage() throws Exception {
     return new DefaultSerializableMessageTranslator().translate(AdaptrisMessageFactory.getDefaultInstance().newMessage());
   }
 }
