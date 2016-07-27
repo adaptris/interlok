@@ -21,6 +21,7 @@ import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
@@ -67,6 +68,7 @@ public class DefaultSerializableMessageTranslator implements SerializableMessage
     serializedMsg.setUniqueId(message.getUniqueId());
     serializedMsg.setContentEncoding(message.getContentEncoding());
     serializedMsg.setMetadata(message.getMetadata());
+    serializedMsg.setNextServiceId(message.getNextServiceId());
     
     // do we have a failed/error'd message?
     if(message.getObjectHeaders().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION))
@@ -90,6 +92,8 @@ public class DefaultSerializableMessageTranslator implements SerializableMessage
         message.setUniqueId(new GuidGenerator().create(this));
         
       adaptrisMessage.setUniqueId(message.getUniqueId());
+      adaptrisMessage.setNextServiceId(message.getNextServiceId());
+
       return adaptrisMessage;
 
     }
@@ -104,6 +108,10 @@ public class DefaultSerializableMessageTranslator implements SerializableMessage
       result.add(new MetadataElement(kvp));
     }
     return result;
+  }
+
+  private Set<MetadataElement> convertMap(Map<String, String> set) {
+    return convertKeyValuePairs(new KeyValuePairSet(set));
   }
 
   private String buildFileDetails(File f) throws CoreException {

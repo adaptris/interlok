@@ -27,6 +27,7 @@ public class StubSerializableMessage implements SerializableMessage {
   private String uniqueId;
   private String payload;
   private String payloadEncoding;
+  private String nextServiceId;
   private Map<String, String> messageHeaders;
 
   public StubSerializableMessage() {
@@ -82,6 +83,16 @@ public class StubSerializableMessage implements SerializableMessage {
   @Override
   public void setMessageHeaders(Map<String, String> hdrs) {
     this.messageHeaders = hdrs;
+  }
+
+  @Override
+  public String getNextServiceId() {
+    return nextServiceId;
+  }
+
+  @Override
+  public void setNextServiceId(String next) {
+    nextServiceId = next;
   }
 
 

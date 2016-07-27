@@ -19,11 +19,11 @@ package com.adaptris.core;
 import java.io.File;
 import java.io.RandomAccessFile;
 
-import junit.framework.TestCase;
-
 import com.adaptris.core.lms.FileBackedMessage;
 import com.adaptris.core.lms.FileBackedMessageFactory;
 import com.adaptris.core.stubs.TempFileUtils;
+
+import junit.framework.TestCase;
 
 
 public class SerializableMessageTranslatorTest extends TestCase {
@@ -93,13 +93,14 @@ public class SerializableMessageTranslatorTest extends TestCase {
     serialisableAdaptrisMessage.setUniqueId("uuid2");
     serialisableAdaptrisMessage.addMetadata("MetaKey3", "MetaValue3");
     serialisableAdaptrisMessage.addMetadata("MetaKey4", "MetaValue4");
-    
+    serialisableAdaptrisMessage.setNextServiceId(getName());
     AdaptrisMessage adaptrisMessage = new DefaultSerializableMessageTranslator().translate(serialisableAdaptrisMessage);
     
     assertEquals("MetaValue3", adaptrisMessage.getMetadataValue("MetaKey3"));
     assertEquals("MetaValue4", adaptrisMessage.getMetadataValue("MetaKey4"));
     assertEquals("Some Payload", adaptrisMessage.getContent());
     assertEquals("uuid2", adaptrisMessage.getUniqueId());
+    assertEquals(getName(), adaptrisMessage.getNextServiceId());
   }
 
   public void testUnserialize_WithEncoding() throws Exception {
