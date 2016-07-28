@@ -60,8 +60,7 @@ public class DummyTransactionManager implements TransactionManager {
   }
 
   @Override
-  public void preEnlistXAResource(String name, XAConnectionFactory connectionFactory)
-      throws Exception {
+  public void registerXAResource(String name, XAConnectionFactory connectionFactory) throws Exception {
     // TODO Auto-generated method stub
     
   }
@@ -114,6 +113,12 @@ public class DummyTransactionManager implements TransactionManager {
 
   public void setLookupName(String lookupName) {
     this.lookupName = lookupName;
+  }
+
+  @Override
+  public void deRegisterXAResource(String name, XAConnectionFactory connectionFactory) throws Exception {
+    // TODO Auto-generated method stub
+    
   }
 
 }
