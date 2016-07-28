@@ -15,7 +15,9 @@ public interface TransactionManager extends AdaptrisComponent, JndiBindable {
    */
   String getUniqueId();
   
-  void preEnlistXAResource(String name, XAConnectionFactory connectionFactory) throws Exception;
+  void registerXAResource(String name, XAConnectionFactory connectionFactory) throws Exception;
+  
+  void deRegisterXAResource(String name, XAConnectionFactory connectionFactory) throws Exception;
   
   void enlistXAResource(String name, XAResource xaResource) throws Exception;
   

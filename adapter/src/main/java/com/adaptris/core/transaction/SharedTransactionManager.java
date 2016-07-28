@@ -4,6 +4,8 @@ import javax.jms.XAConnectionFactory;
 import javax.transaction.xa.XAResource;
 
 import org.hibernate.validator.constraints.NotBlank;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
@@ -17,6 +19,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(summary = "A Transaction Manager that refers to another Transaction Manager configured elsewhere", tag = "transactionManager,base")
 @DisplayOrder(order = {"lookupName"})
 public class SharedTransactionManager extends SharedComponent implements TransactionManager {
+  
+  protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
   
   @NotBlank
   private String lookupName;
@@ -44,27 +48,30 @@ public class SharedTransactionManager extends SharedComponent implements Transac
 
   @Override
   public void init() throws CoreException {
-    setProxiedTransactionManager((TransactionManager) triggerJndiLookup(this.getLookupName()));
+//    getProxiedTransactionManager().init();
   }
 
   @Override
   public void start() throws CoreException {
-    // handled by SharedComponents
+//    getProxiedTransactionManager().start();
   }
 
   @Override
   public void stop() {
     // handled by SharedComponents
+//    getProxiedTransactionManager().stop();
   }
 
   @Override
   public void close() {
     // handled by SharedComponents
+//    getProxiedTransactionManager().close();
   }
 
   @Override
   public void prepare() throws CoreException {
     // handled by SharedComponents
+//    getProxiedTransactionManager().prepare();
   }
 
   @Override
@@ -73,8 +80,13 @@ public class SharedTransactionManager extends SharedComponent implements Transac
   }
 
   @Override
-  public void preEnlistXAResource(String name, XAConnectionFactory connectionFactory) throws Exception {
-    getProxiedTransactionManager().preEnlistXAResource(name, connectionFactory);
+  public void registerXAResource(String name, XAConnectionFactory connectionFactory) throws Exception {
+    getProxiedTransactionManager().registerXAResource(name, connectionFactory);
+  }
+  
+  @Override
+  public void deRegisterXAResource(String name, XAConnectionFactory connectionFactory) throws Exception {
+    getProxiedTransactionManager().deRegisterXAResource(name, connectionFactory);
   }
 
   @Override
@@ -113,6 +125,12 @@ public class SharedTransactionManager extends SharedComponent implements Transac
   }
 
   public TransactionManager getProxiedTransactionManager() {
+    if(proxiedTransactionManager == null)
+      try {
+        setProxiedTransactionManager((TransactionManager) triggerJndiLookup(this.getLookupName()));
+      } catch (CoreException e) {
+        log.error("Cannot look-up shared transaction manager with name: " + this.getLookupName());
+      }
     return proxiedTransactionManager;
   }
 
