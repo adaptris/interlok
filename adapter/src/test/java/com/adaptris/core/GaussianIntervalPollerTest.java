@@ -18,6 +18,41 @@ public class GaussianIntervalPollerTest extends BaseCase {
     p = new GaussianIntervalPoller(new TimeInterval(0L, TimeUnit.SECONDS), new TimeInterval(10L, TimeUnit.SECONDS));
   }
 
+  public void testInit_standardDeviation() throws Exception{
+    GaussianIntervalPoller p = new GaussianIntervalPoller(new TimeInterval(0L, TimeUnit.SECONDS), new TimeInterval(0L, TimeUnit.SECONDS));
+    try {
+      p.init();
+      fail("Expected exception not thrown");
+    }
+    catch (CoreException expected) {
+
+    }
+    p.setStandardDeviationInterval(new TimeInterval(-2L, TimeUnit.SECONDS));
+    try {
+      p.init();
+      fail("Expected exception not thrown");
+    }
+    catch (CoreException expected) {
+
+    }
+    p.setStandardDeviationInterval(new TimeInterval(10L, TimeUnit.SECONDS));
+    p.init();
+  }
+  public void testInit_mean() throws Exception{
+    GaussianIntervalPoller p = new GaussianIntervalPoller(new TimeInterval(-2L, TimeUnit.SECONDS), new TimeInterval(10L, TimeUnit.SECONDS));
+    try {
+      p.init();
+      fail("Expected exception not thrown");
+    }
+    catch (CoreException expected) {
+
+    }
+    p.setMeanInterval(new TimeInterval(0L, TimeUnit.SECONDS));
+    p.init();
+    p.setMeanInterval(new TimeInterval(10L, TimeUnit.SECONDS));
+    p.init();
+  }
+
   public void testSetMeanInterval() throws Exception {
     TimeInterval defaultMeanInterval = new TimeInterval(0L, TimeUnit.SECONDS);
     TimeInterval meanInterval = new TimeInterval(60L, TimeUnit.SECONDS);

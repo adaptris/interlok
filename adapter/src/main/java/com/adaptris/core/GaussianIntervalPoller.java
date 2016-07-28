@@ -1,14 +1,12 @@
 package com.adaptris.core;
 
-import java.util.concurrent.*;
-
-import javax.validation.Valid;
-
-import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
-import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+import javax.validation.Valid;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -53,6 +51,16 @@ public class GaussianIntervalPoller extends ScheduledTaskPoller  {
   public GaussianIntervalPoller(TimeInterval meanInterval, TimeInterval standardDeviationInterval) {
     setMeanInterval(meanInterval);
     setStandardDeviationInterval(standardDeviationInterval);
+  }
+
+  @Override
+  public void init() throws CoreException {
+    if(standardDeviationInterval() <= 0){
+      throw new CoreException("Gaussian Interval Poller - Standard Deviation cannot be less than or equal to zero");
+    }
+    if(meanInterval() < 0){
+      throw new CoreException("Gaussian Interval Poller - Mean cannot be less than zero");
+    }
   }
 
   protected void scheduleTask() {
