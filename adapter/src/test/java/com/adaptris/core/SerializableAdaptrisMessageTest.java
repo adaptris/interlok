@@ -20,12 +20,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
 import com.adaptris.core.stubs.StubSerializableMessage;
 import com.adaptris.interlok.types.SerializableMessage;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
+
+import junit.framework.TestCase;
 
 /**
  * <p>
@@ -54,12 +54,14 @@ public class SerializableAdaptrisMessageTest extends TestCase {
     assertEquals(getName(), message.getUniqueId());
     assertEquals(0, message.getMetadata().size());
     assertNull(message.getContent());
+    assertEquals("", message.getNextServiceId());
 
     message = new SerializableAdaptrisMessage(getName(), "my payload");
     assertEquals(getName(), message.getUniqueId());
     assertEquals(0, message.getMetadata().size());
     assertEquals("my payload", message.getContent());
-    
+    assertEquals("", message.getNextServiceId());
+
     SerializableMessage stub = new StubSerializableMessage();
     stub.setUniqueId(getName());
     stub.setContent("my payload");
@@ -67,6 +69,7 @@ public class SerializableAdaptrisMessageTest extends TestCase {
     assertEquals(getName(), message.getUniqueId());
     assertEquals(0, message.getMetadata().size());
     assertEquals("my payload", message.getContent());
+    assertEquals("", message.getNextServiceId());
 
 
   }

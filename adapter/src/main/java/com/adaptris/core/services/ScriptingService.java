@@ -37,7 +37,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * You should take care when configuring this class; it can present an audit trail issue when used in combination with
  * {@link com.adaptris.core.services.dynamic.DynamicServiceLocator} or
  * {@link com.adaptris.core.services.dynamic.DynamicServiceExecutor} if your script executes arbitrary system commands. In that
- * situation, all commands will be executed with the current users permissions may be subject to the virtual machines security
+ * situation, all commands will be executed with the current users permissions and may be subject to the virtual machines security
  * manager.
  * </p>
  * <p>
@@ -48,7 +48,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Note that this class can be used as the selector as part of a {@link com.adaptris.core.BranchingServiceCollection}. If used as
  * such, then you need
  * to remember to invoke {@link com.adaptris.core.AdaptrisMessage#setNextServiceId(String)} as part of the script and {@link
- * #setBranching(Boolean)}
+ * #setBranchingEnabled(Boolean)}
  * should be true.
  * <p>
  * 
@@ -61,7 +61,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("scripting-service")
 @AdapterComponent
 @ComponentProfile(summary = "Execute a JSR223 script stored on the filesystem", tag = "service,scripting")
-@DisplayOrder(order = {"language", "scriptFilename", "branching"})
+@DisplayOrder(order = {"language", "scriptFilename", "branchingEnabled"})
 public class ScriptingService extends ScriptingServiceImp {
 
   @NotBlank

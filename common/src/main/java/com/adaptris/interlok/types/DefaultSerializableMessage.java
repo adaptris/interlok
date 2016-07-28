@@ -21,9 +21,10 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.GenerateBeanInfo;
-import com.adaptris.interlok.types.SerializableMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -42,11 +43,13 @@ public class DefaultSerializableMessage implements SerializableMessage {
   private String uniqueId;
   private String payload;
   private String payloadEncoding;
+  private String nextServiceId;
 
 
   public DefaultSerializableMessage() {
     messageHeaders = new HashMap<>();
     setUniqueId(UUID.randomUUID().toString());
+    setNextServiceId("");
   }
 
   @Override
@@ -160,6 +163,18 @@ public class DefaultSerializableMessage implements SerializableMessage {
   }
 
   /**
+   * Convenience method for method chaining.
+   * 
+   * @param s the next ServiceId.
+   * @return the current DefaultSerializableMessage object for method chaining
+   * @see #setNextServiceId(String)
+   */
+  public DefaultSerializableMessage withNextServiceId(String s) {
+    setNextServiceId(s);
+    return this;
+  }
+
+  /**
    * Convenience method to do the same as {@link #setMessageHeaders(Map)} converting any non-string
    * keys/values into Strings.
    * 
@@ -179,6 +194,16 @@ public class DefaultSerializableMessage implements SerializableMessage {
       setMessageHeaders(result);
     }
     return this;
+  }
+
+
+  public String getNextServiceId() {
+    return nextServiceId;
+  }
+
+
+  public void setNextServiceId(String s) {
+    this.nextServiceId = StringUtils.defaultIfEmpty(s, "");
   }
 
 

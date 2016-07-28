@@ -16,10 +16,12 @@
 
 package com.adaptris.core;
 
+import com.adaptris.interlok.types.SerializableMessage;
+
 public interface SerializableMessageTranslator extends AdaptrisMessageTranslator {
 
-  SerializableAdaptrisMessage translate(AdaptrisMessage message) throws CoreException;
+  SerializableMessage translate(AdaptrisMessage message) throws CoreException;
 
-  AdaptrisMessage translate(SerializableAdaptrisMessage message) throws CoreException;
+  AdaptrisMessage translate(SerializableMessage message) throws CoreException;
   
 }

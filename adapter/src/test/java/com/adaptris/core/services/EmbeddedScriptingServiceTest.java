@@ -58,6 +58,15 @@ public class EmbeddedScriptingServiceTest extends GeneralServiceExample {
     assertEquals(new StringBuffer(MY_METADATA_VALUE).reverse().toString(), msg.getMetadataValue(MY_METADATA_KEY));
   }
 
+  public void testBranchingService_Deprecated() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    msg.addMetadata(MY_METADATA_KEY, MY_METADATA_VALUE);
+    EmbeddedScriptingService service = createServiceForBranch_Deprecated(getName(), NEXT_SERVICE_ID);
+    assertTrue(service.isBranching());
+    execute(service, msg);
+    assertEquals(NEXT_SERVICE_ID, msg.getNextServiceId());
+  }
+
   public void testBranchingService() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata(MY_METADATA_KEY, MY_METADATA_VALUE);
@@ -160,7 +169,7 @@ public class EmbeddedScriptingServiceTest extends GeneralServiceExample {
     return result;
   }
 
-  private EmbeddedScriptingService createServiceForBranch(String uid, String nextServiceId) {
+  private EmbeddedScriptingService createServiceForBranch_Deprecated(String uid, String nextServiceId) {
     EmbeddedScriptingService result = uid == null ? new EmbeddedScriptingService(SERVICE_UID) : new EmbeddedScriptingService(uid);
     result.setLanguage("nashorn");
     result.setBranching(true);
@@ -172,6 +181,19 @@ public class EmbeddedScriptingServiceTest extends GeneralServiceExample {
     }
     return result;
   }
+
+  private EmbeddedScriptingService createServiceForBranch(String uid, String nextServiceId) {
+    EmbeddedScriptingService result = uid == null ? new EmbeddedScriptingService(SERVICE_UID) : new EmbeddedScriptingService(uid);
+    result.setLanguage("nashorn");
+    result.setBranchingEnabled(true);
+    if (!isEmpty(nextServiceId)) {
+      result.setScript("message.setNextServiceId('" + nextServiceId + "');");
+    } else {
+      result.setScript("message.addMetadata('" + MY_METADATA_KEY3 + "', '" + MY_METADATA_VALUE + "');");
+    }
+    return result;
+  }
+
 
   @Override
   protected String getExampleCommentHeader(Object obj) {

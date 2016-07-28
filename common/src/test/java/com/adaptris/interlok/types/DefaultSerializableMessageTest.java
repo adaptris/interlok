@@ -31,8 +31,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
 
-import com.adaptris.interlok.types.DefaultSerializableMessage;
-
 public class DefaultSerializableMessageTest {
 
   @Rule
@@ -57,12 +55,14 @@ public class DefaultSerializableMessageTest {
 
     DefaultSerializableMessage msg =
         new DefaultSerializableMessage().withUniqueId(testName.getMethodName()).withMessageHeaders(hdrs)
-            .withPayload(testName.getMethodName()).withPayloadEncoding(testName.getMethodName());
+            .withPayload(testName.getMethodName()).withPayloadEncoding(testName.getMethodName())
+            .withNextServiceId(testName.getMethodName());
     assertEquals(testName.getMethodName(), msg.getUniqueId());
     assertEquals(testName.getMethodName(), msg.getContent());
     assertEquals(testName.getMethodName(), msg.getContentEncoding());
     assertEquals(1, msg.getMessageHeaders().size());
     assertEquals(testName.getMethodName(), msg.getMessageHeaders().get(testName.getMethodName()));
+    assertEquals(testName.getMethodName(), msg.getNextServiceId());
   }
 
 

@@ -29,6 +29,7 @@ import com.adaptris.core.runtime.AdapterManager;
 import com.adaptris.core.runtime.ChildRuntimeInfoComponent;
 import com.adaptris.core.runtime.RuntimeInfoComponent;
 import com.adaptris.core.util.JmxHelper;
+import com.adaptris.interlok.types.SerializableMessage;
 
 public class DefaultFailedMessageRetrierJmx implements DefaultFailedMessageRetrierJmxMBean, ChildRuntimeInfoComponent {
 
@@ -92,7 +93,7 @@ public class DefaultFailedMessageRetrierJmx implements DefaultFailedMessageRetri
   }
 
   @Override
-  public boolean retryMessage(SerializableAdaptrisMessage msg) throws CoreException {
+  public boolean retryMessage(SerializableMessage msg) throws CoreException {
     return wrappedComponent.retryMessage(translator.translate(msg));
   }
 

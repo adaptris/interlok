@@ -19,6 +19,8 @@ package com.adaptris.core.stubs;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.adaptris.interlok.types.SerializableMessage;
 
 public class StubSerializableMessage implements SerializableMessage {
@@ -27,10 +29,12 @@ public class StubSerializableMessage implements SerializableMessage {
   private String uniqueId;
   private String payload;
   private String payloadEncoding;
+  private String nextServiceId;
   private Map<String, String> messageHeaders;
 
   public StubSerializableMessage() {
     messageHeaders = new HashMap<String, String>();
+    setNextServiceId(null);
   }
 
   @Override
@@ -82,6 +86,16 @@ public class StubSerializableMessage implements SerializableMessage {
   @Override
   public void setMessageHeaders(Map<String, String> hdrs) {
     this.messageHeaders = hdrs;
+  }
+
+  @Override
+  public String getNextServiceId() {
+    return nextServiceId;
+  }
+
+  @Override
+  public void setNextServiceId(String next) {
+    nextServiceId = StringUtils.defaultIfEmpty(next, "");
   }
 
 

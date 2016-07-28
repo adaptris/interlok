@@ -1220,6 +1220,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
       assertEquals(METADATA_VALUE, headers.get(METADATA_KEY));
       assertTrue(headers.containsKey(getName()));
       assertEquals(getName(), headers.get(getName()));
+      assertEquals("", reply.getNextServiceId());
     } finally {
       adapter.requestClose();
     }

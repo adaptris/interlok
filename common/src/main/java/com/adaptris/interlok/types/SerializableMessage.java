@@ -65,4 +65,9 @@ public interface SerializableMessage extends Serializable {
 
   public void setContentEncoding(String payloadEncoding);
 
+  public void setNextServiceId(String next);
+
+  public String getNextServiceId();
+
+
 }

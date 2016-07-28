@@ -17,7 +17,7 @@
 package com.adaptris.core.runtime;
 
 import com.adaptris.core.CoreException;
-import com.adaptris.core.SerializableAdaptrisMessage;
+import com.adaptris.interlok.types.SerializableMessage;
 
 /**
  * MBean for the UI to ask the adapter to test configuration.
@@ -46,6 +46,6 @@ public interface AdapterComponentCheckerMBean extends BaseComponentMBean {
    * @return the result of applying these services.
    * @throws CoreException wrapping any other exception
    */
-  SerializableAdaptrisMessage applyService(String xml, SerializableAdaptrisMessage msg) throws CoreException;
+  SerializableMessage applyService(String xml, SerializableMessage msg) throws CoreException;
 
 }
