@@ -256,7 +256,7 @@ public class StandardHttpProducer extends HttpProducer {
   /**
    * Set where the HTTP Response Body will be written to.
    * 
-   * @param output the output; default is {@link PayloadHttpStreamOutputParameter}.
+   * @param output the output; default is {@link PayloadStreamOutputParameter}.
    */
   public void setResponseBody(DataOutputParameter<InputStreamWithEncoding> output) {
     this.responseBody = Args.notNull(output, "data output");

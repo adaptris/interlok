@@ -43,7 +43,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class SizeBasedSplitter extends MessageSplitterImp {
 
   // 256k seems like a reasonable amount; it's the max size of SQS messages.
-  static final int DEFAULT_SPLIT_SIZE = 256 * 1024;
+  public static final int DEFAULT_SPLIT_SIZE = 256 * 1024;
   // Is 64k a good max buffer size, or should we make it configurable?
   private static final int MAX_BUF_SIZ = 64 * 1024;
 

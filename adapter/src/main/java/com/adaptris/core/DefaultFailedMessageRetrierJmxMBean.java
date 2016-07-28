@@ -49,7 +49,7 @@ public interface DefaultFailedMessageRetrierJmxMBean extends ChildRuntimeInfoCom
    * 
    * <p>
    * This assumes that the contents of the file has previously been encoded using a {@link MimeEncoder} and written out to the
-   * filesystem. It will decode the file and then submit it using {@link #retryMessage(SerializableAdaptrisMessage)}. Note that the
+   * filesystem. It will decode the file and then submit it using {@link #retryMessage(SerializableMessage)}. Note that the
    * return code only indicates that a workflow was found, and the message was successfully submitted to the workflow. It does not
    * indicate anything about the successful processing (or not) of the message.
    * </p>

@@ -20,7 +20,7 @@ import com.adaptris.core.PoolingWorkflow;
 import com.adaptris.core.runtime.ChildRuntimeInfoComponentMBean;
 
 /**
- * Management bean interface for metadata totals statistics.
+ * Management bean interface for messages in flight.
  * 
  */
 public interface MessageInFlightMBean extends ChildRuntimeInfoComponentMBean {
@@ -40,7 +40,7 @@ public interface MessageInFlightMBean extends ChildRuntimeInfoComponentMBean {
    * {@link PoolingWorkflow#getPoolSize()}. It is included for completeness.
    * </p>
    * 
-   * @return
+   * @return the number of messages in flight.
    */
   int messagesInFlightCount();
 

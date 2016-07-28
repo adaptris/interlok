@@ -36,7 +36,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Serializes a {@link Notification} into an XML message.
  * <p>
  * {@link Notification#getUserData()} is always added as object metadata against the key
- * {@value NotificationSerializer#OBJ_METADATA_USERDATA}.
+ * {@value com.adaptris.core.jmx.NotificationSerializer#OBJ_METADATA_USERDATA}.
  * </p>
  * 
  * @config xml-jmx-notification-serializer
