@@ -29,6 +29,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.util.Args;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
@@ -57,9 +58,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <li>Specifying the username+password in the destination (e.g. <code>sftp://lchan:myPassword@1.2.3.4:22//opt/sftp</code>), will
  * override the username used to login but no other credentials. The only valid authentication is via the specified private
  * key.</li>
- * <li>You can specify additional behaviour using one of {@link DefaultKnownHosts}, {@link com.adaptris.sftp.LenientKnownHosts}
- * or {@link com.adaptris.sftp.StrictKnownHosts}. {@link com.adaptris.sftp.StrictKnownHosts} will cause an exception to be thrown
- * if the servers key is not present in any configured known_hosts file.</li>
  * <li>The private key and known_hosts file are expected to be in OpenSSH format</li>
  * </ul>
  * </p>
@@ -86,6 +84,7 @@ public class SftpKeyAuthConnection extends FileTransferConnection {
   private static final int DEFAULT_TIMEOUT = 60000;
 
   private String privateKeyFilename;
+  @InputFieldHint(style = "PASSWORD")
   private String privateKeyPassword;
   @AdvancedConfig
   private Integer socketTimeout;

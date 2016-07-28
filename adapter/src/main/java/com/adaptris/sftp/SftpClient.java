@@ -140,7 +140,7 @@ public class SftpClient extends FileTransferClientImp {
    * @param host the host
    * @param port the port
    * @param timeout the timeout;
-   * @param scb any required behaviour for this client;
+   * @param configRepo any required behaviour for this client;
    */
   public SftpClient(String host, int port, int timeout, File knownHostsFile, ConfigRepository configRepo) throws SftpException {
     this(knownHostsFile, configRepo);
