@@ -253,7 +253,7 @@ public class SftpConnectionTest extends FtpPasswordConnectionCase {
     return tempFile;
   }
 
-  private File createOpenSshConfig(boolean strict) throws Exception {
+  public static File createOpenSshConfig(boolean strict) throws Exception {
     File tempDir = new File(PROPERTIES.getProperty(CFG_TEMP_HOSTS_FILE));
     tempDir.mkdirs();
     File tempFile = File.createTempFile(SftpConnectionTest.class.getSimpleName(), "", tempDir);

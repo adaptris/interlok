@@ -43,6 +43,7 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.ConfigRepository;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Proxy;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpATTRS;
 import com.jcraft.jsch.UserInfo;
@@ -77,20 +78,22 @@ public class SftpClient extends FileTransferClientImp {
   private transient ChannelSftp sftpChannel;
   private transient FifoMutexLock lock;
   private transient ConfigRepository configRepository = ConfigRepository.nullConfig;
+  private transient Proxy proxy = null;
 
-  private SftpClient(File knownHostsFile, ConfigRepository configRepo) throws SftpException {
+  private SftpClient(File knownHostsFile, ConfigBuilder configBuilder) throws SftpException {
     try {
       jsch = new JSch();
       lock = new FifoMutexLock();
       if (knownHostsFile != null) {
         jsch.setKnownHosts(knownHostsFile.getAbsolutePath());
       }
-      if (configRepo != null) {
-        configRepository = configRepo;
+      if (configBuilder != null) {
+        configRepository = configBuilder.buildConfigRepository();
+        proxy = configBuilder.buildProxy();
       }
       jsch.setConfigRepository(configRepository);
-    } catch (JSchException e) {
-      throw new SftpException(e);
+    } catch (Exception e) {
+      throw SftpException.wrapException(e);
     }
   }
 
@@ -142,8 +145,8 @@ public class SftpClient extends FileTransferClientImp {
    * @param timeout the timeout;
    * @param configRepo any required behaviour for this client;
    */
-  public SftpClient(String host, int port, int timeout, File knownHostsFile, ConfigRepository configRepo) throws SftpException {
-    this(knownHostsFile, configRepo);
+  public SftpClient(String host, int port, int timeout, File knownHostsFile, ConfigBuilder configBuilder) throws SftpException {
+    this(knownHostsFile, configBuilder);
     sshHost = host;
     sshPort = port;
     this.timeout = timeout;
@@ -204,6 +207,7 @@ public class SftpClient extends FileTransferClientImp {
         // No config, let's killoff #995
         sftpSession.setConfig(SSH_PREFERRED_AUTHENTICATIONS, NO_KERBEROS_AUTH);
       }
+      sftpSession.setProxy(proxy);
       sftpSession.setDaemonThread(true);
       sftpSession.setUserInfo(ui);
       sftpSession.connect(timeout);

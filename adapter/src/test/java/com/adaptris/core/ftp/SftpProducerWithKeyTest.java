@@ -24,7 +24,7 @@ import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.FormattedFilenameCreator;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.security.password.Password;
-import com.adaptris.sftp.ConfigRepositoryBuilder;
+import com.adaptris.sftp.ConfigBuilder;
 import com.adaptris.sftp.OpenSSHConfigBuilder;
 
 public class SftpProducerWithKeyTest extends FtpProducerExample {
@@ -42,7 +42,7 @@ public class SftpProducerWithKeyTest extends FtpProducerExample {
     return null;
   }
 
-  private StandaloneProducer createProducerExample(ConfigRepositoryBuilder behaviour) {
+  private StandaloneProducer createProducerExample(ConfigBuilder behaviour) {
     SftpKeyAuthConnection con = new SftpKeyAuthConnection();
     FtpProducer producer = new FtpProducer();
     try {

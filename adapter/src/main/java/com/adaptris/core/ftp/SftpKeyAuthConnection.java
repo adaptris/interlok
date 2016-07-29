@@ -35,8 +35,8 @@ import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.security.password.Password;
-import com.adaptris.sftp.ConfigRepositoryBuilder;
-import com.adaptris.sftp.InlineConfigRepository;
+import com.adaptris.sftp.ConfigBuilder;
+import com.adaptris.sftp.InlineConfigBuilder;
 import com.adaptris.sftp.SftpClient;
 import com.adaptris.sftp.SftpException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -94,14 +94,14 @@ public class SftpKeyAuthConnection extends FileTransferConnection {
   @NotNull
   @AutoPopulated
   @AdvancedConfig
-  private ConfigRepositoryBuilder configuration;
+  private ConfigBuilder configuration;
   // For sending keep alives every 60 seconds on the control port when downloading stuff.
   // Could make it configurable
   private transient long keepAlive = 60;
 
   public SftpKeyAuthConnection() {
     super();
-    setConfiguration(new InlineConfigRepository());
+    setConfiguration(new InlineConfigBuilder());
   }
 
 
@@ -113,7 +113,7 @@ public class SftpKeyAuthConnection extends FileTransferConnection {
   @Override
   protected FileTransferClient create(String remoteHost, int port, UserInfo ui) throws IOException, FileTransferException {
     log.debug("Connecting to " + remoteHost + ":" + port + " as user " + ui.getUser());
-    SftpClient sftp = new SftpClient(remoteHost, port, socketTimeout(), knownHosts(), getConfiguration().build());
+    SftpClient sftp = new SftpClient(remoteHost, port, socketTimeout(), knownHosts(), getConfiguration());
     sftp.setAdditionalDebug(additionalDebug());
     sftp.setKeepAliveTimeout(keepAlive);
     try {
@@ -200,7 +200,7 @@ public class SftpKeyAuthConnection extends FileTransferConnection {
   /**
    * @return the configRepository
    */
-  public ConfigRepositoryBuilder getConfiguration() {
+  public ConfigBuilder getConfiguration() {
     return configuration;
   }
 
@@ -215,7 +215,7 @@ public class SftpKeyAuthConnection extends FileTransferConnection {
    * 
    * @param repo the configRepository to set
    */
-  public void setConfiguration(ConfigRepositoryBuilder repo) {
+  public void setConfiguration(ConfigBuilder repo) {
     this.configuration = Args.notNull(repo, "configuration");
   }
 }

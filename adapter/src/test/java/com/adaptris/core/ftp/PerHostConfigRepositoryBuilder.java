@@ -9,9 +9,9 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 
-import com.adaptris.sftp.ConfigRepositoryBuilder;
+import com.adaptris.sftp.ConfigBuilder;
 import com.adaptris.sftp.HostConfig;
-import com.adaptris.sftp.PerHostConfigRepository;
+import com.adaptris.sftp.PerHostConfigBuilder;
 
 
 public class PerHostConfigRepositoryBuilder extends InlineConfigRepositoryBuilder {
@@ -31,8 +31,8 @@ public class PerHostConfigRepositoryBuilder extends InlineConfigRepositoryBuilde
 
 
   @Override
-  public ConfigRepositoryBuilder build() {
-    PerHostConfigRepository repo = new PerHostConfigRepository();
+  public ConfigBuilder build() {
+    PerHostConfigBuilder repo = new PerHostConfigBuilder();
     repo.getDefaultConfiguration().addAll(config());
     for (String host : knownHosts) {
       HostConfig cfg = new HostConfig();

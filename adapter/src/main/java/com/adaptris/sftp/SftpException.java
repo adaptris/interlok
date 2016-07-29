@@ -61,4 +61,15 @@ public class SftpException extends FileTransferException {
   public SftpException(String msg, Throwable t) {
     super(msg, t);
   }
+
+  static SftpException wrapException(Throwable t) {
+    return wrapException(t.getMessage(), t);
+  }
+
+  static SftpException wrapException(String msg, Throwable t) {
+    if (t instanceof SftpException) {
+      return (SftpException) t;
+    }
+    return new SftpException(msg, t);
+  }
 }

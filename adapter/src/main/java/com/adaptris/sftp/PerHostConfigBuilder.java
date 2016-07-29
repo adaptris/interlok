@@ -1,3 +1,18 @@
+/*
+ * Copyright 2015 Adaptris Ltd.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.adaptris.sftp;
 
 import java.io.IOException;
@@ -12,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.util.Args;
 import com.adaptris.util.KeyValuePairSet;
 import com.jcraft.jsch.ConfigRepository;
@@ -26,8 +42,9 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * 
  * @config sftp-per-host-config-repository
  */
-@XStreamAlias("sftp-per-host-config-repository")
-public class PerHostConfigRepository implements ConfigRepository, ConfigRepositoryBuilder {
+@XStreamAlias("sftp-per-host-config-builder")
+@DisplayOrder(order = {"hosts", "defaultConfiguration", "proxy"})
+public class PerHostConfigBuilder extends ConfigBuilderImpl implements ConfigRepository {
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -43,7 +60,7 @@ public class PerHostConfigRepository implements ConfigRepository, ConfigReposito
   @AdvancedConfig
   private KeyValuePairSet defaultConfiguration;
 
-  public PerHostConfigRepository() {
+  public PerHostConfigBuilder() {
     setHosts(new ArrayList<HostConfig>());
     setDefaultConfiguration(new KeyValuePairSet());
   }
@@ -109,7 +126,7 @@ public class PerHostConfigRepository implements ConfigRepository, ConfigReposito
   }
 
   @Override
-  public ConfigRepository build() throws IOException {
+  public ConfigRepository buildConfigRepository() throws IOException {
     return this;
   }
 

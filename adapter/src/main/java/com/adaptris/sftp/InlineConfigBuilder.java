@@ -1,3 +1,18 @@
+/*
+ * Copyright 2015 Adaptris Ltd.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.adaptris.sftp;
 
 import java.io.IOException;
@@ -6,6 +21,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.util.KeyValuePairSet;
 import com.jcraft.jsch.ConfigRepository;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -15,8 +31,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config sftp-inline-config-repository
  */
-@XStreamAlias("sftp-inline-config-repository")
-public class InlineConfigRepository implements ConfigRepository, ConfigRepositoryBuilder {
+@XStreamAlias("sftp-inline-config")
+@DisplayOrder(order = {"config", "proxy"})
+public class InlineConfigBuilder extends ConfigBuilderImpl implements ConfigRepository {
 
   @AutoPopulated
   @NotNull
@@ -24,7 +41,7 @@ public class InlineConfigRepository implements ConfigRepository, ConfigRepositor
   private KeyValuePairSet config;
 
 
-  public InlineConfigRepository() {
+  public InlineConfigBuilder() {
     setConfig(new KeyValuePairSet());
   }
 
@@ -98,7 +115,7 @@ public class InlineConfigRepository implements ConfigRepository, ConfigRepositor
 
 
   @Override
-  public ConfigRepository build() throws IOException {
+  public ConfigRepository buildConfigRepository() throws IOException {
     return this;
   }
 

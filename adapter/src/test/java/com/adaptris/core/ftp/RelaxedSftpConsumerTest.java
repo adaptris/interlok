@@ -25,7 +25,7 @@ import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.Poller;
 import com.adaptris.core.QuartzCronPoller;
 import com.adaptris.core.StandaloneConsumer;
-import com.adaptris.sftp.ConfigRepositoryBuilder;
+import com.adaptris.sftp.ConfigBuilder;
 import com.adaptris.sftp.OpenSSHConfigBuilder;
 
 
@@ -59,7 +59,7 @@ public class RelaxedSftpConsumerTest extends RelaxedFtpConsumerCase {
     return "sftp";
   }
 
-  private StandaloneConsumer createConsumerExample(ConfigRepositoryBuilder behavior, Poller poller) {
+  private StandaloneConsumer createConsumerExample(ConfigBuilder behavior, Poller poller) {
     SftpConnection con = createConnectionForExamples();
     RelaxedFtpConsumer cfgConsumer = new RelaxedFtpConsumer();
     try {

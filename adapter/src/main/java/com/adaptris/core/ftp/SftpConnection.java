@@ -30,8 +30,8 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.util.Args;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
-import com.adaptris.sftp.ConfigRepositoryBuilder;
-import com.adaptris.sftp.InlineConfigRepository;
+import com.adaptris.sftp.ConfigBuilder;
+import com.adaptris.sftp.InlineConfigBuilder;
 import com.adaptris.sftp.SftpClient;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -66,7 +66,7 @@ public class SftpConnection extends FileTransferConnectionUsingPassword {
   @NotNull
   @AutoPopulated
   @AdvancedConfig
-  private ConfigRepositoryBuilder configuration;
+  private ConfigBuilder configuration;
 
   // For sending keep alives every 60 seconds on the control port when downloading stuff.
   // Could make it configurable
@@ -82,7 +82,7 @@ public class SftpConnection extends FileTransferConnectionUsingPassword {
    */
   public SftpConnection() {
     super();
-    setConfiguration(new InlineConfigRepository());
+    setConfiguration(new InlineConfigBuilder());
   }
 
 
@@ -97,7 +97,7 @@ public class SftpConnection extends FileTransferConnectionUsingPassword {
       throws IOException, FileTransferException {
     log.debug("Connecting to " + remoteHost + ":" + port + " as user "
         + ui.getUser());
-    SftpClient sftp = new SftpClient(remoteHost, port, socketTimeout(), knownHosts(), getConfiguration().build());
+    SftpClient sftp = new SftpClient(remoteHost, port, socketTimeout(), knownHosts(), getConfiguration());
     sftp.setAdditionalDebug(additionalDebug());
     sftp.setKeepAliveTimeout(keepAlive);
     sftp.connect(ui.getUser(), ui.getPassword());
@@ -142,7 +142,7 @@ public class SftpConnection extends FileTransferConnectionUsingPassword {
   /**
    * @return the configRepository
    */
-  public ConfigRepositoryBuilder getConfiguration() {
+  public ConfigBuilder getConfiguration() {
     return configuration;
   }
 
@@ -157,7 +157,7 @@ public class SftpConnection extends FileTransferConnectionUsingPassword {
    * 
    * @param repo the configRepository to set
    */
-  public void setConfiguration(ConfigRepositoryBuilder repo) {
+  public void setConfiguration(ConfigBuilder repo) {
     this.configuration = Args.notNull(repo, "configuration");
   }
 }

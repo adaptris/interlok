@@ -23,7 +23,7 @@ import java.util.List;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.FormattedFilenameCreator;
 import com.adaptris.core.StandaloneProducer;
-import com.adaptris.sftp.ConfigRepositoryBuilder;
+import com.adaptris.sftp.ConfigBuilder;
 import com.adaptris.sftp.OpenSSHConfigBuilder;
 
 public class SftpProducerTest extends FtpProducerCase {
@@ -42,7 +42,7 @@ public class SftpProducerTest extends FtpProducerCase {
     return null;
   }
 
-  private StandaloneProducer createProducerExample(ConfigRepositoryBuilder behaviour) {
+  private StandaloneProducer createProducerExample(ConfigBuilder behaviour) {
     SftpConnection con = createConnectionForExamples();
     FtpProducer producer = createProducerExample();
     try {

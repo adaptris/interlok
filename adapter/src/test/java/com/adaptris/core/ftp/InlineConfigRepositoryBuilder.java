@@ -2,8 +2,8 @@ package com.adaptris.core.ftp;
 
 import org.apache.commons.lang.BooleanUtils;
 
-import com.adaptris.sftp.ConfigRepositoryBuilder;
-import com.adaptris.sftp.InlineConfigRepository;
+import com.adaptris.sftp.ConfigBuilder;
+import com.adaptris.sftp.InlineConfigBuilder;
 import com.adaptris.sftp.SftpClient;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
@@ -17,8 +17,8 @@ public class InlineConfigRepositoryBuilder {
   }
 
 
-  public ConfigRepositoryBuilder build() {
-    InlineConfigRepository repo = new InlineConfigRepository();
+  public ConfigBuilder build() {
+    InlineConfigBuilder repo = new InlineConfigBuilder();
     repo.getConfig().addAll(config());
     return repo;
   }

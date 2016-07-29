@@ -26,7 +26,7 @@ import com.adaptris.core.Poller;
 import com.adaptris.core.QuartzCronPoller;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.security.password.Password;
-import com.adaptris.sftp.ConfigRepositoryBuilder;
+import com.adaptris.sftp.ConfigBuilder;
 import com.adaptris.sftp.OpenSSHConfigBuilder;
 
 
@@ -63,7 +63,7 @@ public class SftpKeyAuthConsumerTest extends FtpConsumerCase {
     return "sftp";
   }
 
-  private StandaloneConsumer createConsumerExample(ConfigRepositoryBuilder behavior, Poller poller) {
+  private StandaloneConsumer createConsumerExample(ConfigBuilder behavior, Poller poller) {
     SftpKeyAuthConnection con = createConnectionForExamples();
     FtpConsumer cfgConsumer = new FtpConsumer();
     try {

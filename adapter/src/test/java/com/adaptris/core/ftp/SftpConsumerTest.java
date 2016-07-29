@@ -25,10 +25,10 @@ import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.Poller;
 import com.adaptris.core.QuartzCronPoller;
 import com.adaptris.core.StandaloneConsumer;
-import com.adaptris.sftp.ConfigRepositoryBuilder;
+import com.adaptris.sftp.ConfigBuilder;
 import com.adaptris.sftp.HostConfig;
 import com.adaptris.sftp.OpenSSHConfigBuilder;
-import com.adaptris.sftp.PerHostConfigRepository;
+import com.adaptris.sftp.PerHostConfigBuilder;
 import com.adaptris.sftp.SftpClient;
 import com.adaptris.util.KeyValuePair;
 
@@ -64,7 +64,7 @@ public class SftpConsumerTest extends FtpConsumerCase {
     return "sftp";
   }
 
-  private StandaloneConsumer createConsumerExample(ConfigRepositoryBuilder behavior, Poller poller) {
+  private StandaloneConsumer createConsumerExample(ConfigBuilder behavior, Poller poller) {
     SftpConnection con = createConnectionForExamples();
     FtpConsumer cfgConsumer = new FtpConsumer();
     try {
@@ -92,13 +92,13 @@ public class SftpConsumerTest extends FtpConsumerCase {
   }
 
 
-  public static ConfigRepositoryBuilder createInlineConfigRepo() {
+  public static ConfigBuilder createInlineConfigRepo() {
     return new InlineConfigRepositoryBuilder(false).build();
   }
 
 
-  public static PerHostConfigRepository createPerHostConfigRepo() {
-    PerHostConfigRepository inline = new PerHostConfigRepository();
+  public static PerHostConfigBuilder createPerHostConfigRepo() {
+    PerHostConfigBuilder inline = new PerHostConfigBuilder();
     HostConfig a = new HostConfig("my.host.com", null, -1, new KeyValuePair("StrictHostKeyChecking", "yes"),
         new KeyValuePair(SftpClient.SSH_PREFERRED_AUTHENTICATIONS, SftpClient.NO_KERBEROS_AUTH));
     HostConfig b = new HostConfig("another.host.com", null, -1, new KeyValuePair("StrictHostKeyChecking", "no"),
