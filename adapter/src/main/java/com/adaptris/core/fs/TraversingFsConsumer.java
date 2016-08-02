@@ -70,7 +70,7 @@ public class TraversingFsConsumer extends FsConsumer {
       }
       return 0;
     }
-    getFileSorter().sort(fileList);
+    fileList = getFileSorter().sort(fileList);
     for (File file : fileList) {
       try {
         filesProcessed += processFile(file);
@@ -108,7 +108,7 @@ public class TraversingFsConsumer extends FsConsumer {
     int result = 0;
     logFile(srcDir, "processDirectory ");
     List<File> fileList = Arrays.asList(srcDir.listFiles());
-    getFileSorter().sort(fileList);
+    fileList = getFileSorter().sort(fileList);
 
     for (File f : fileList) {
       result += processFile(f);

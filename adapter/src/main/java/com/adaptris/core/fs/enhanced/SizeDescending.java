@@ -17,9 +17,6 @@
 package com.adaptris.core.fs.enhanced;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -32,17 +29,24 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("fs-sort-size-descending")
-public class SizeDescending implements FileSorter, Comparator<File> {
-
-
-  @Override
-  public void sort(List<File> unsorted) {
-    Collections.sort(unsorted, this);
-  }
+public class SizeDescending extends SafeFileSorter {
 
   @Override
-  public int compare(File o1, File o2) {
-    return Long.valueOf(o2.length()).compareTo(Long.valueOf(o1.length()));
+  SortEntry wrap(File f) {
+    return new SizeDesc(f);
   }
 
+  private class SizeDesc extends SortEntry<SizeDesc> {
+    private long val;
+
+    private SizeDesc(File f) {
+      super(f);
+      val = f.length();
+    }
+
+    public int compareTo(SizeDesc o) {
+      long theirs = o.val;
+      return val < theirs ? 1 : val == theirs ? 0 : -1;
+    }
+  }
 }

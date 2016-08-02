@@ -17,9 +17,6 @@
 package com.adaptris.core.fs.enhanced;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -32,17 +29,26 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("fs-sort-last-modified-descending")
-public class LastModifiedDescending implements FileSorter, Comparator<File> {
-
-
-  @Override
-  public void sort(List<File> unsorted) {
-    Collections.sort(unsorted, this);
-  }
+public class LastModifiedDescending extends SafeFileSorter {
 
   @Override
-  public int compare(File o1, File o2) {
-    return Long.valueOf(o2.lastModified()).compareTo(Long.valueOf(o1.lastModified()));
+  SortEntry wrap(File f) {
+    return new ModTimeDesc(f);
+  };
+
+  private class ModTimeDesc extends SortEntry<ModTimeDesc> {
+    private long val;
+
+    public ModTimeDesc(File f) {
+      super(f);
+      val = f.lastModified();
+    }
+
+    public int compareTo(ModTimeDesc o) {
+      long theirs = o.val;
+      return val < theirs ? 1 : val == theirs ? 0 : -1;
+    }
   }
+
 
 }

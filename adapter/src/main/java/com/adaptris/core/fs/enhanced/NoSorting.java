@@ -33,8 +33,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class NoSorting implements FileSorter {
 
   @Override
-  public void sort(List<File> unsorted) {
-    // Do Nothing
+  public List<File> sort(List<File> unsorted) {
+    return unsorted;
   }
 
 }

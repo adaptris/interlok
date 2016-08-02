@@ -35,8 +35,9 @@ public class AlphabeticDescending implements FileSorter, Comparator<File> {
 
 
   @Override
-  public void sort(List<File> unsorted) {
-    Collections.sort(unsorted, this);
+  public List<File> sort(List<File> list) {
+    Collections.sort(list, this);
+    return list;
   }
 
   @Override

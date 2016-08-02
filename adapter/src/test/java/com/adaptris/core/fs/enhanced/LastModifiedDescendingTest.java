@@ -28,7 +28,7 @@ public class LastModifiedDescendingTest extends FileSorterCase {
   public void testSort() throws Exception {
     LastModifiedDescending sorter = new LastModifiedDescending();
     List<File> files = createFiles(10, 100l);
-    sorter.sort(files);
+    files = sorter.sort(files);
     log("Sorted", files);
 
     File firstFile = files.get(0);

@@ -105,7 +105,7 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
       }
       return 0;
     }
-    getFileSorter().sort(fileList);
+    fileList = getFileSorter().sort(fileList);
     for (File file : fileList) {
       try {
         filesProcessed += processFile(file);

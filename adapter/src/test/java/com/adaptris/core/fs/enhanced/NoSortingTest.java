@@ -30,7 +30,7 @@ public class NoSortingTest extends FileSorterCase {
     NoSorting sorter = new NoSorting();
     List<File> files = createFiles(10);
     ArrayList unsorted = new ArrayList<File>(files);
-    sorter.sort(files);
+    files = sorter.sort(files);
     log("Sorted", files);
     assertEquals(unsorted, files);
   }

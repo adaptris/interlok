@@ -28,7 +28,7 @@ public class AlphabeticDescendingTest extends FileSorterCase {
   public void testSort() throws Exception {
     AlphabeticDescending sorter = new AlphabeticDescending();
     List<File> files = createFiles(10);
-    sorter.sort(files);
+    files = sorter.sort(files);
     log("Sorted", files);
     String lastFilename = String.format("%1$s-%2$03d%3$s", AlphabeticDescendingTest.class.getSimpleName(), 1, ".xml");
     String firstFilename = String.format("%1$s-%2$03d%3$s", AlphabeticDescendingTest.class.getSimpleName(), 10, ".xml");
