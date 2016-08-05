@@ -49,7 +49,7 @@ public class JdbcDataCaptureServiceTest extends JdbcServiceExample {
 
   protected static final String JDBC_CAPTURE_SERVICE_DRIVER = "jdbc.captureservice.driver";
   protected static final String JDBC_CAPTURE_SERVICE_URL = "jdbc.captureservice.url";
-  private static final String LF = System.getProperty("line.separator");
+  private static final String LF = System.lineSeparator();
   private static final String XML_DOCUMENT = "<?xml version=\"1.0\"?>" + LF + "<document>" + LF + "<subject>" + SUBJECT
       + "</subject>" + LF + "<content>" + CONTENT + "</content>" + LF + "<attachment><data>" + ATTACHMENT_DATA
       + "</data></attachment>" + LF + "<attachment><data>" + ATTACHMENT_DATA + "</data></attachment>" + LF + "</document>";

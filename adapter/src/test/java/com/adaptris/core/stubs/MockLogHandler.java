@@ -24,13 +24,13 @@ import com.adaptris.core.LogHandlerImp;
 public abstract class MockLogHandler extends LogHandlerImp {
 
   public static final String LOG_EXTRACT = "TRACE [main] [DownloadPatchRequestEvent.handle()] "
-      + "created non-existent directory cfc135ee0000005d0029428e0fa278ab" + System.getProperty("line.separator")
+      + "created non-existent directory cfc135ee0000005d0029428e0fa278ab" + System.lineSeparator()
       + "TRACE [main] [DownloadPatchRequestEvent.downloadPatch()] Downloading patch cfc135ee0000005d0029428e0fa278ab "
-      + "from [http://development.adaptris.com/internal/core-latest/2010-05-24/HEADER.html]" + System.getProperty("line.separator")
+      + "from [http://development.adaptris.com/internal/core-latest/2010-05-24/HEADER.html]" + System.lineSeparator()
       + "TRACE [main] [DownloadPatchRequestEvent.downloadPatch()] cfc135ee0000005d0029428e0fa278ab written to "
-      + "[cfc135ee0000005d0029428e0fa278ab/HEADER.html]" + System.getProperty("line.separator")
+      + "[cfc135ee0000005d0029428e0fa278ab/HEADER.html]" + System.lineSeparator()
       + "TRACE [main] [DownloadPatchRequestEvent.handle()] created non-existent directory cfc137080000005d0029428e4812f3e9"
-      + System.getProperty("line.separator");
+      + System.lineSeparator();
 
   public void clean() throws IOException {
   }

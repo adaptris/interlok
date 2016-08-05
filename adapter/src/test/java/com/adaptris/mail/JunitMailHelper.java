@@ -42,7 +42,7 @@ public class JunitMailHelper {
   public static final String DEFAULT_PAYLOAD_HTML = "<html><body>The quick brown fox jumps over the lazy dog</body></html>";
   public static final String DEFAULT_SUBJECT = "Junit Mail Test : " + new Date();
 
-  private static final String LF = System.getProperty("line.separator");
+  private static final String LF = System.lineSeparator();
   public static final String XML_DOCUMENT = "<?xml version=\"1.0\"?>" + LF + "<document>" + LF
       + "<subject>an email with attachemnts perhaps</subject>" + LF + "<content>Quick zephyrs blow, vexing daft Jim</content>" + LF
       + "<!-- This is ADP-01 MD5 Base64 -->" + LF

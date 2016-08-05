@@ -47,7 +47,7 @@ public class FfTransformServiceTest extends TransformServiceExample {
   // This is the FF input; and is replicated in what's stored in KEY_FF_INPUT
   private static final String TEST_INPUT_HDR_LINE = "HDRSRC20110601THE TITLE OF DOCSrcDescDestinationDesc  1234567890  ";
   private static final String TEST_INPUT_TRAILER_ = "TRL00000005                                                       ";
-  private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+  private static final String LINE_SEPARATOR = System.lineSeparator();
 
   // These detail fields are never used, but included for completeness.
   private static final String TEST_INPUT_DETAIL_1 = "DETField   1.01Field  1.02Field     1.0320110630Field   1.04400821";

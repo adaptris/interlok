@@ -30,7 +30,7 @@ public class RequestParameterConverterServiceTest extends HttpServiceExample {
 
   private static final String TEST_VALUE = "the quick brown fox jumps over the lazy dog";
   private static final String XML_VALUE = "<?xml version=\"1.0\" "
-      + "encoding=\"UTF-8\"?>" + System.getProperty("line.separator")
+      + "encoding=\"UTF-8\"?>" + System.lineSeparator()
       + "<root>" + "<unencrypted>Unencrypted xpath</unencrypted>" + "</root>";
 
   private static final String SAVE_PARAM = "PostParameterToSaveAsPayload";

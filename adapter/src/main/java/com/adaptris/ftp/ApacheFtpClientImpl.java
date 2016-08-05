@@ -47,7 +47,6 @@ import com.adaptris.util.FifoMutexLock;
  */
 public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTransferClientImp implements FtpFileTransferClient {
 
-  private static final String LINEFEED = System.getProperty("line.separator");
   private static final int CHUNK_SIZE = 4096;
 
   private transient T ftp;
@@ -466,7 +465,7 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
       for (int i = 0; i < replyText.length; i++) {
         sb.append(replyText[i]);
         if (i + 1 < replyText.length) {
-          sb.append(System.getProperty("line.separator"));
+          sb.append(System.lineSeparator());
         }
       }
       logR.trace(sb.toString());
