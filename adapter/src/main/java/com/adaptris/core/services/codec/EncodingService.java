@@ -19,6 +19,7 @@ package com.adaptris.core.services.codec;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.AdaptrisMessageEncoder;
 import com.adaptris.core.ServiceException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import org.apache.commons.io.IOUtils;
@@ -35,6 +36,13 @@ import java.io.OutputStream;
 @AdapterComponent
 @ComponentProfile(summary = "Encodes the message", tag = "service")
 public class EncodingService extends CodecService {
+
+  public EncodingService(){
+  }
+
+  public EncodingService(AdaptrisMessageEncoder encoder) {
+    super(encoder);
+  }
 
   @Override
   public void processMessage(AdaptrisMessage msg) throws ServiceException {

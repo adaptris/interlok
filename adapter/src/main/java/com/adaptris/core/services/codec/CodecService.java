@@ -27,6 +27,13 @@ public abstract class CodecService extends ServiceImp {
   @AdvancedConfig
   private AdaptrisMessageFactory messageFactory;
 
+  public CodecService(){
+  }
+
+  public CodecService(AdaptrisMessageEncoder encoder){
+    setEncoder(encoder);
+  }
+
   /**
    * @see Service#doService(AdaptrisMessage)
    */
@@ -39,6 +46,9 @@ public abstract class CodecService extends ServiceImp {
 
   @Override
   protected void initService() throws CoreException {
+    if (getEncoder() == null) {
+      throw new CoreException("Encoder is null");
+    }
   }
 
   @Override

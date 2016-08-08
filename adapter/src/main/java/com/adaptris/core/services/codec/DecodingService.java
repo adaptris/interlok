@@ -3,6 +3,7 @@ package com.adaptris.core.services.codec;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.AdaptrisMessageEncoder;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -24,6 +25,12 @@ import java.io.OutputStream;
 @ComponentProfile(summary = "Decodes the message", tag = "service")
 public class DecodingService extends CodecService {
 
+  public DecodingService(){
+  }
+
+  public DecodingService(AdaptrisMessageEncoder encoder) {
+    super(encoder);
+  }
 
   private boolean overrideHeaders;
 
