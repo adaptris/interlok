@@ -73,6 +73,8 @@ public class AggregatingFsConsumer extends AggregatingConsumerImpl<AggregatingFs
 
   private String fileFilterImp;
   @AdvancedConfig
+  private Boolean deleteAggregatedFiles;
+  @AdvancedConfig
   private String wipSuffix;
   @Valid
   @AdvancedConfig
@@ -101,8 +103,12 @@ public class AggregatingFsConsumer extends AggregatingConsumerImpl<AggregatingFs
     catch (Exception e) {
       rethrowServiceException(e);
     }
-    // At this point, the messages have been aggregated so we can delete all the "files" associated with the message.
-    deleteAggregatedFiles(result);
+    if(isDeleteAggregatedFiles()) {
+      // At this point, the messages have been aggregated so we can delete all the "files" associated with the message.
+      deleteAggregatedFiles(result);
+    } else {
+      renameAggregatedFiles(result);
+    }
   }
 
   private void deleteAggregatedFiles(List<AdaptrisMessage> msgs) {
@@ -111,6 +117,20 @@ public class AggregatingFsConsumer extends AggregatingConsumerImpl<AggregatingFs
       if (objectMetadata.containsKey(OBJ_METADATA_KEY_FILE)) {
         log.trace("Deleting aggregated file : " + objectMetadata.get(OBJ_METADATA_KEY_FILENAME));
         ((File) objectMetadata.get(OBJ_METADATA_KEY_FILE)).delete();
+      }
+    }
+  }
+  private void renameAggregatedFiles(List<AdaptrisMessage> msgs) {
+    for (AdaptrisMessage m : msgs) {
+      Map<?,?> objectMetadata = m.getObjectHeaders();
+      if (objectMetadata.containsKey(OBJ_METADATA_KEY_FILE)) {
+        log.trace("Deleting aggregated file : " + objectMetadata.get(OBJ_METADATA_KEY_FILENAME));
+        File f = ((File) objectMetadata.get(OBJ_METADATA_KEY_FILE));
+        File parent = f.getParentFile();
+        String name = f.getName().replaceAll(wipSuffix().replaceAll("\\.", "\\\\."), "");
+        log.trace("Will Rename " + f.getName() + " back to " + name);
+        File newFile = new File(parent, name);
+        f.renameTo(newFile);
       }
     }
   }
@@ -247,6 +267,26 @@ public class AggregatingFsConsumer extends AggregatingConsumerImpl<AggregatingFs
 
   String wipSuffix() {
     return !isEmpty(getWipSuffix()) ? getWipSuffix() : DEFAULT_WIP_SUFFIX;
+  }
+
+  /**
+   * @return the deleteAggregatedFiles
+   */
+  public Boolean getDeleteAggregatedFiles() {
+    return deleteAggregatedFiles;
+  }
+
+  /**
+   * Set whether to delete aggregated files.
+   *
+   * @param deleteAggregatedFiles defaults to true.
+   */
+  public void setDeleteAggregatedFiles(Boolean deleteAggregatedFiles) {
+    this.deleteAggregatedFiles = deleteAggregatedFiles;
+  }
+
+  Boolean isDeleteAggregatedFiles(){
+    return getDeleteAggregatedFiles() == null ? true : getDeleteAggregatedFiles();
   }
 
   @Override
