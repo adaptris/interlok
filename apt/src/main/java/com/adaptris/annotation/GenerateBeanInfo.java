@@ -16,6 +16,8 @@
 
 package com.adaptris.annotation;
 
+import com.thoughtworks.xstream.converters.javabean.JavaBeanConverter;
+
 /**
  * Annotation to create a standard BeanInfo java class for any given class.
  * <p>
@@ -23,8 +25,11 @@ package com.adaptris.annotation;
  * the setters and getters have behaviour associated with them that are not simple <code>this.x = x</code>.
  * </p>
  * 
+ * @deprecated since 3.4.0 with no replacement; due to changes in XStream as of 1.4.9 {@link JavaBeanConverter} may not generate the
+ *             desired output; and call a setter with null.
  * 
  */
+@Deprecated
 public @interface GenerateBeanInfo {
 
 }
