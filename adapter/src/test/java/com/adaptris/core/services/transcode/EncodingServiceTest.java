@@ -1,11 +1,11 @@
-package com.adaptris.core.services.codec;
+package com.adaptris.core.services.transcode;
 
 import com.adaptris.core.*;
 import com.adaptris.core.stubs.MockEncoder;
 import com.adaptris.core.stubs.StubMessageFactory;
 import com.adaptris.core.util.LifecycleHelper;
 
-public class EncodingServiceTest extends CodecServiceCase {
+public class EncodingServiceTest extends TranscodingServiceCase {
 
   public EncodingServiceTest(String name) {
     super(name);

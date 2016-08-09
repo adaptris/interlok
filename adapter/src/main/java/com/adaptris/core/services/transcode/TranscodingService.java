@@ -14,7 +14,7 @@
  * limitations under the License.
 */
 
-package com.adaptris.core.services.codec;
+package com.adaptris.core.services.transcode;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.*;
@@ -24,7 +24,7 @@ import javax.validation.constraints.NotNull;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 
-public abstract class CodecService extends ServiceImp {
+public abstract class TranscodingService extends ServiceImp {
 
   @Valid
   @NotNull
@@ -32,10 +32,10 @@ public abstract class CodecService extends ServiceImp {
   @AdvancedConfig
   private AdaptrisMessageFactory messageFactory;
 
-  public CodecService(){
+  public TranscodingService(){
   }
 
-  public CodecService(AdaptrisMessageEncoder encoder){
+  public TranscodingService(AdaptrisMessageEncoder encoder){
     setEncoder(encoder);
   }
 
@@ -44,10 +44,10 @@ public abstract class CodecService extends ServiceImp {
    */
   public final void doService(AdaptrisMessage msg) throws ServiceException {
     registerEncoderMessageFactory();
-    codecAction(msg);
+    transcodeMessage(msg);
   }
 
-  public abstract void codecAction(AdaptrisMessage msg) throws ServiceException;
+  public abstract void transcodeMessage(AdaptrisMessage msg) throws ServiceException;
 
   @Override
   protected void initService() throws CoreException {

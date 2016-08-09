@@ -14,7 +14,7 @@
  * limitations under the License.
 */
 
-package com.adaptris.core.services.codec;
+package com.adaptris.core.services.transcode;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
@@ -38,7 +38,7 @@ import java.io.OutputStream;
 @XStreamAlias("decoding-service")
 @AdapterComponent
 @ComponentProfile(summary = "Decodes the message", tag = "service")
-public class DecodingService extends CodecService {
+public class DecodingService extends TranscodingService {
 
   public DecodingService(){
   }
@@ -50,7 +50,7 @@ public class DecodingService extends CodecService {
   private Boolean overrideMetadata;
 
   @Override
-  public void codecAction(AdaptrisMessage msg) throws ServiceException {
+  public void transcodeMessage(AdaptrisMessage msg) throws ServiceException {
     InputStream msgIn = null;
     OutputStream msgOut = null;
     ByteArrayInputStream decodedPayload = null;

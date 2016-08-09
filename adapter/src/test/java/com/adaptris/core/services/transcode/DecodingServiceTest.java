@@ -1,11 +1,11 @@
-package com.adaptris.core.services.codec;
+package com.adaptris.core.services.transcode;
 
 import com.adaptris.core.*;
 import com.adaptris.core.stubs.MockEncoder;
 import com.adaptris.core.stubs.StubMessageFactory;
 import com.adaptris.core.util.LifecycleHelper;
 
-public class DecodingServiceTest extends CodecServiceCase {
+public class DecodingServiceTest extends TranscodingServiceCase {
 
   private static final String OVERRIDE_HEADER_VALUE = "value";
 
