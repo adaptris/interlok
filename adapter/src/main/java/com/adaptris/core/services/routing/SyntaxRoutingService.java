@@ -63,7 +63,7 @@ public class SyntaxRoutingService extends ServiceImp {
    * @see com.adaptris.core.Service#doService(AdaptrisMessage)
    */
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    String message = msg.getStringPayload();
+    String message = msg.getContent();
     String destination = null;
 
     for (int i = 0; i < syntaxIdentifiers.size(); i++) {

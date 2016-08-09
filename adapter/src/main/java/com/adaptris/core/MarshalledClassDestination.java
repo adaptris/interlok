@@ -83,7 +83,7 @@ public final class MarshalledClassDestination implements ProduceDestination {
     String destination = null;
     Object msgObject = null;
     try {
-      msgObject = marshallerToUse().unmarshal(msg.getStringPayload());
+      msgObject = marshallerToUse().unmarshal(msg.getContent());
       String className = msgObject.getClass().getName();
       logR.trace("Unmarshalled [" + className + "]");
       if (mappings.contains(new KeyValuePair(className, ""))) {

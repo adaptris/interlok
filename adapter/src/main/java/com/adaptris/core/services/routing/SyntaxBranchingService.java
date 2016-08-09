@@ -58,7 +58,7 @@ public class SyntaxBranchingService extends BranchingServiceImp {
    *      #doService(com.adaptris.core.AdaptrisMessage)
    */
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    String message = msg.getStringPayload();
+    String message = msg.getContent();
     String destination = null;
     for (SyntaxIdentifier ident : syntaxIdentifiers) {
       if (ident.isThisSyntax(message)) {
