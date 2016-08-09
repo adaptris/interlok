@@ -20,6 +20,8 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +42,7 @@ public abstract class AdaptrisConnectionImp implements AdaptrisConnection, State
   @AdvancedConfig
   private String lookupName;
   @AdvancedConfig
+  @Valid
   private ConnectionErrorHandler connectionErrorHandler;
   @AdvancedConfig
   @InputFieldDefault(value = "false")
