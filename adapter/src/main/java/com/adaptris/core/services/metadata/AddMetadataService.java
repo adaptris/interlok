@@ -23,7 +23,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
@@ -99,6 +103,9 @@ public class AddMetadataService extends ServiceImp {
   }
 
   @XStreamImplicit
+  @Valid
+  @NotNull
+  @AutoPopulated
   private Set<MetadataElement> metadataElements;
 
   /**

@@ -16,6 +16,7 @@
 
 package com.adaptris.core.services.metadata;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AutoPopulated;
@@ -37,6 +38,7 @@ public abstract class ReformatMetadataKey extends ServiceImp {
 
   @AutoPopulated
   @NotNull
+  @Valid
   private MetadataFilter keysToModify;
 
   public ReformatMetadataKey() {

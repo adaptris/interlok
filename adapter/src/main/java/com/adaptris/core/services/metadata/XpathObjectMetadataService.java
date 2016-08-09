@@ -56,6 +56,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @DisplayOrder(order = {"xpathQueries", "namespaceContext", "xmlDocumentFactoryConfig"})
 public class XpathObjectMetadataService extends ServiceImp {
 
+  @Valid
   private KeyValuePairSet namespaceContext;
   @NotNull
   @AutoPopulated

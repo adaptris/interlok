@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
@@ -64,6 +65,7 @@ public class MapMetadataService extends ServiceImp {
   private String metadataKey;
   @AutoPopulated
   @NotNull
+  @Valid
   private KeyValuePairList metadataKeyMap;
 
   public MapMetadataService() {
