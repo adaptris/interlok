@@ -60,7 +60,7 @@ public class AddNamespaceObjectMetadata extends ServiceImp {
 
   public void doService(AdaptrisMessage msg) throws ServiceException {
     NamespaceContext ctx = SimpleNamespaceContext.create(getNamespaceContext());
-    if (ctx != null) msg.getObjectMetadata().put(OBJECT_METADATA_KEY, ctx);
+    if (ctx != null) msg.getObjectHeaders().put(OBJECT_METADATA_KEY, ctx);
   }
 
   @Override

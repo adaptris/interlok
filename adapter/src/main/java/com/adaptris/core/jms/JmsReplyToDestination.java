@@ -84,8 +84,8 @@ public class JmsReplyToDestination implements ProduceDestination {
       throws CoreException {
     Object result = null;
     String keyToUse = deriveMetadataKey();
-    if (msg.getObjectMetadata().containsKey(keyToUse)) {
-      result = msg.getObjectMetadata().get(keyToUse);
+    if (msg.getObjectHeaders().containsKey(keyToUse)) {
+      result = msg.getObjectHeaders().get(keyToUse);
     }
     else {
       log.warn(keyToUse + " not found in object metadata");

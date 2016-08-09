@@ -98,7 +98,7 @@ public class XpathObjectMetadataService extends ServiceImp {
       }
       Document doc = XmlHelper.createDocument(msg, builder);
       for (XpathObjectQuery query : queriesToExecute) {
-        msg.getObjectMetadata().put(query.getMetadataKey(), query.resolveXpath(doc, namespaceCtx, query.createXpathQuery(msg)));
+        msg.getObjectHeaders().put(query.getMetadataKey(), query.resolveXpath(doc, namespaceCtx, query.createXpathQuery(msg)));
         log.trace("Added object against [{}]", query.getMetadataKey());
       }
     }

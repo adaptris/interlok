@@ -114,7 +114,7 @@ public abstract class RequestReplyProducerImp extends AdaptrisMessageProducerImp
         MetadataElement e = (MetadataElement) i.next();
         msg.addMetadata(e);
       }
-      msg.getObjectMetadata().putAll(reply.getObjectMetadata());
+      msg.getObjectHeaders().putAll(reply.getObjectHeaders());
     }
     if (reply.getContentEncoding() != null) {
       msg.setContentEncoding(reply.getContentEncoding());

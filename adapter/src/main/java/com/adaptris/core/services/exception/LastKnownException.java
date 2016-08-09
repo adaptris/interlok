@@ -41,8 +41,8 @@ public class LastKnownException implements ExceptionGenerator {
 
   public ServiceException create(AdaptrisMessage msg) {
     ServiceException result = null;
-    if (msg.getObjectMetadata().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION)) {
-      Exception exc = (Exception) msg.getObjectMetadata().get(CoreConstants.OBJ_METADATA_EXCEPTION);
+    if (msg.getObjectHeaders().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION)) {
+      Exception exc = (Exception) msg.getObjectHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION);
       if (exc != null) {
         if (exc instanceof ServiceException) {
           result = (ServiceException) exc;

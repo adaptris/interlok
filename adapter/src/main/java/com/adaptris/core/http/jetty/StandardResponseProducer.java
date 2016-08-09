@@ -84,7 +84,7 @@ public class StandardResponseProducer extends ResponseProducerImpl {
 
   @Override
   public void produce(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException {
-    HttpServletResponse response = (HttpServletResponse) msg.getObjectMetadata().get(CoreConstants.JETTY_RESPONSE_KEY);
+    HttpServletResponse response = (HttpServletResponse) msg.getObjectHeaders().get(CoreConstants.JETTY_RESPONSE_KEY);
 
     try {
       if (response == null) {

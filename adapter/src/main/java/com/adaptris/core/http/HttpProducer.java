@@ -317,7 +317,7 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
 
   protected void copy(AdaptrisMessage src, AdaptrisMessage dest) throws IOException, CoreException {
     AdaptrisMessageImp.copyPayload(src, dest);
-    dest.getObjectMetadata().putAll(src.getObjectMetadata());
+    dest.getObjectHeaders().putAll(src.getObjectHeaders());
     dest.setMetadata(src.getMetadata());
   }
 
