@@ -51,6 +51,7 @@ public abstract class JmsConsumerImpl extends AdaptrisMessageConsumerImp impleme
   private String acknowledgeMode;
   @NotNull
   @AutoPopulated
+  @Valid
   private MessageTypeTranslator messageTranslator;
   @NotNull
   @AutoPopulated

@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import javax.validation.constraints.NotNull;
+
+import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.MetadataCollection;
@@ -55,8 +58,12 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 public class RegexMetadataFilter implements MetadataFilter {
 
   @XStreamImplicit(itemFieldName = "include-pattern")
+  @NotNull
+  @AutoPopulated
   private List<String> includePatterns;
   @XStreamImplicit(itemFieldName = "exclude-pattern")
+  @NotNull
+  @AutoPopulated
   private List<String> excludePatterns;
 
   private transient List<Pattern> incPatterns;
