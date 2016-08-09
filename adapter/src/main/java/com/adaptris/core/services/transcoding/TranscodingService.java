@@ -14,7 +14,7 @@
  * limitations under the License.
 */
 
-package com.adaptris.core.services.transcode;
+package com.adaptris.core.services.transcoding;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.*;

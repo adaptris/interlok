@@ -1,4 +1,4 @@
-package com.adaptris.core.services.transcode;
+package com.adaptris.core.services.transcoding;
 
 import com.adaptris.core.*;
 import com.adaptris.core.stubs.MockEncoder;
