@@ -157,8 +157,8 @@ public abstract class EncryptionServiceCase extends SecurityServiceCase {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(EXAMPLE_MSG);
     execute(input, msg);
     assertEquals(FAIL, msg.getNextServiceId());
-    assertTrue(msg.getObjectMetadata().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION));
-    assertTrue(msg.getObjectMetadata().get(CoreConstants.OBJ_METADATA_EXCEPTION) instanceof AdaptrisSecurityException);
+    assertTrue(msg.getObjectHeaders().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION));
+    assertTrue(msg.getObjectHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION) instanceof AdaptrisSecurityException);
 
   }
 
@@ -171,7 +171,7 @@ public abstract class EncryptionServiceCase extends SecurityServiceCase {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(EXAMPLE_MSG);
     execute(input, msg);
     assertEquals(SUCCESS, msg.getNextServiceId());
-    assertTrue(!msg.getObjectMetadata().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION));
+    assertTrue(!msg.getObjectHeaders().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION));
     DecryptionService output = new DecryptionService();
     applyConfigForTests(output, url);
     execute(output, msg);

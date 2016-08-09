@@ -150,7 +150,7 @@ public class XpathSplitterTest extends SplitterCase {
     List<AdaptrisMessage> result = splitter.splitMessage(msg);
     assertEquals("Number of messages", 3, result.size());
     for (AdaptrisMessage m : result) {
-      assertFalse("No Object Metadata", m.getObjectMetadata().containsKey(obj));
+      assertFalse("No Object Metadata", m.getObjectHeaders().containsKey(obj));
     }
   }
 

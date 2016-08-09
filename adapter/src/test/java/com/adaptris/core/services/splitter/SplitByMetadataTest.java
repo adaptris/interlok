@@ -52,13 +52,13 @@ public class SplitByMetadataTest extends SplitterCase {
   public void testSplit() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_MESSAGE);
     Object obj = "ABCDEFG";
-    msg.getObjectMetadata().put(obj, obj);
+    msg.getObjectHeaders().put(obj, obj);
     SplitByMetadata splitter = new SplitByMetadata(SPLIT_ON_METADATA_KEY, SPLIT_METADATA_KEY);
     msg.addMetadata(SPLIT_ON_METADATA_KEY, A_B_C_D);
     List<AdaptrisMessage> result = splitter.splitMessage(msg);
     assertEquals("Number of messages", 4, result.size());
     for (AdaptrisMessage m : result) {
-      assertFalse("No Object Metadata", m.getObjectMetadata().containsKey(obj));
+      assertFalse("No Object Metadata", m.getObjectHeaders().containsKey(obj));
       doStandardAssertions(m);
     }
   }
@@ -66,14 +66,14 @@ public class SplitByMetadataTest extends SplitterCase {
   public void testSplitWithObjectMetadata() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_MESSAGE);
     Object obj = "ABCDEFG";
-    msg.getObjectMetadata().put(obj, obj);
+    msg.getObjectHeaders().put(obj, obj);
     SplitByMetadata splitter = new SplitByMetadata(SPLIT_ON_METADATA_KEY, SPLIT_METADATA_KEY);
     splitter.setCopyObjectMetadata(true);
     msg.addMetadata(SPLIT_ON_METADATA_KEY, A_B_C_D);
     List<AdaptrisMessage> result = splitter.splitMessage(msg);
     assertEquals("Number of messages", 4, result.size());
     for (AdaptrisMessage m : result) {
-      assertTrue("Object Metadata", m.getObjectMetadata().containsKey(obj));
+      assertTrue("Object Metadata", m.getObjectHeaders().containsKey(obj));
       doStandardAssertions(m);
     }
   }

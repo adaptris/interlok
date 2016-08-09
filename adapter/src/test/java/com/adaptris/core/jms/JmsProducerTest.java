@@ -95,7 +95,7 @@ public class JmsProducerTest extends JmsProducerCase {
       StandaloneProducer sp = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
 
       ServiceCase.execute(sp, msg);
-      Map objMd = msg.getObjectMetadata();
+      Map objMd = msg.getObjectHeaders();
       String prefix = Message.class.getCanonicalName() + ".";
       assertTrue(objMd.containsKey(prefix + JmsConstants.JMS_MESSAGE_ID));
       assertTrue(objMd.containsKey(prefix + JmsConstants.JMS_DESTINATION));
@@ -119,7 +119,7 @@ public class JmsProducerTest extends JmsProducerCase {
       activeMqBroker.start();
       AdaptrisMessage msg = createMessage();
       ServiceCase.execute(standaloneProducer, msg);
-      Map objectMetadata = msg.getObjectMetadata();
+      Map objectMetadata = msg.getObjectHeaders();
       assertTrue(objectMetadata.containsKey(Message.class.getCanonicalName() + "." + JmsConstants.JMS_MESSAGE_ID));
       assertTrue(objectMetadata.containsKey(Message.class.getCanonicalName() + "." + JmsConstants.JMS_DESTINATION));
       assertTrue(objectMetadata.containsKey(Message.class.getCanonicalName() + "." + JmsConstants.JMS_PRIORITY));

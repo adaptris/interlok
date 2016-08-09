@@ -72,7 +72,7 @@ public class JdbcServiceListTest extends ServiceCollectionCase {
     list.add(createSequenceNumberService(createJdbcConnection(), getName(), SequenceNumberCase.DEFAULT_ID));
     execute(list, msg);
     doStandardAssertions(msg);
-    assertFalse(msg.getObjectMetadata().containsKey(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY));
+    assertFalse(msg.getObjectHeaders().containsKey(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY));
   }
 
   public void testServiceList_SqlConnectionInObjectMetadata() throws Exception {
@@ -82,8 +82,8 @@ public class JdbcServiceListTest extends ServiceCollectionCase {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
 
     execute(service, msg);
-    assertTrue(msg.getObjectMetadata().containsKey(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY));
-    Connection sqlCon = (Connection) msg.getObjectMetadata().get(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY);
+    assertTrue(msg.getObjectHeaders().containsKey(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY));
+    Connection sqlCon = (Connection) msg.getObjectHeaders().get(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY);
   }
 
   public void testServiceList_NoConnectionInObjectMetadata_WithException() throws Exception {
@@ -104,7 +104,7 @@ public class JdbcServiceListTest extends ServiceCollectionCase {
       //
     }
     doStandardAssertions(msg); // This checks the database has been commited, as the next seq_no == 2.
-    assertFalse(msg.getObjectMetadata().containsKey(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY));
+    assertFalse(msg.getObjectHeaders().containsKey(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY));
   }
 
   public void testServiceList_SequenceNumber_Commit_AutoCommit() throws Exception {
@@ -116,8 +116,8 @@ public class JdbcServiceListTest extends ServiceCollectionCase {
     service.add(createSequenceNumberService(null, getName(), SequenceNumberCase.DEFAULT_ID));
     execute(service, msg);
     doStandardAssertions(msg);
-    assertTrue(msg.getObjectMetadata().containsKey(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY));
-    Connection sqlCon = (Connection) msg.getObjectMetadata().get(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY);
+    assertTrue(msg.getObjectHeaders().containsKey(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY));
+    Connection sqlCon = (Connection) msg.getObjectHeaders().get(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY);
   }
 
   public void testServiceList_PooledConnection() throws Exception {
@@ -212,8 +212,8 @@ public class JdbcServiceListTest extends ServiceCollectionCase {
     service.add(createSequenceNumberService(null, getName(), SequenceNumberCase.DEFAULT_ID));
     execute(service, msg);
     doStandardAssertions(msg);
-    assertTrue(msg.getObjectMetadata().containsKey(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY));
-    Connection sqlCon = (Connection) msg.getObjectMetadata().get(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY);
+    assertTrue(msg.getObjectHeaders().containsKey(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY));
+    Connection sqlCon = (Connection) msg.getObjectHeaders().get(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY);
   }
 
   public void testServiceList_ExceptionRollsback() throws Exception {
@@ -240,8 +240,8 @@ public class JdbcServiceListTest extends ServiceCollectionCase {
       }
       catch (ServiceException expected) {
       }
-      assertTrue(msg.getObjectMetadata().containsKey(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY));
-      Connection conn = (Connection) msg.getObjectMetadata().get(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY);
+      assertTrue(msg.getObjectHeaders().containsKey(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY));
+      Connection conn = (Connection) msg.getObjectHeaders().get(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY);
       assertTrue(conn.isClosed());
       // Here, we will expect there to be in row inserted.
       // getCurrentSequenceNumber returns -1 in that instance, C-Styley
@@ -274,8 +274,8 @@ public class JdbcServiceListTest extends ServiceCollectionCase {
     catch (ServiceException expected) {
 
     }
-    assertTrue(msg.getObjectMetadata().containsKey(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY));
-    Connection conn = (Connection) msg.getObjectMetadata().get(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY);
+    assertTrue(msg.getObjectHeaders().containsKey(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY));
+    Connection conn = (Connection) msg.getObjectHeaders().get(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY);
     assertTrue(conn.isClosed());
     // Here, we will expect there to be in row inserted.
     // getCurrentSequenceNumber returns -1 in that instance, C-Styley

@@ -75,7 +75,7 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
       activeMqBroker.start();
       AdaptrisMessage msg = createMessage();
       ServiceCase.execute(standaloneProducer, msg);
-      Map objectMetadata = msg.getObjectMetadata();
+      Map objectMetadata = msg.getObjectHeaders();
       assertTrue(objectMetadata.containsKey(Message.class.getCanonicalName() + "." + JmsConstants.JMS_MESSAGE_ID));
       assertTrue(objectMetadata.containsKey(Message.class.getCanonicalName() + "." + JmsConstants.JMS_DESTINATION));
       assertTrue(objectMetadata.containsKey(Message.class.getCanonicalName() + "." + JmsConstants.JMS_PRIORITY));

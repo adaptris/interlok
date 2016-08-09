@@ -90,7 +90,7 @@ public class MessageMetricsInterceptorByMetadataTest extends TestCase {
     LifecycleHelper.init(interceptor);
     LifecycleHelper.start(interceptor);
     AdaptrisMessage message = createMessage(true);
-    message.getObjectMetadata().put(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception());
+    message.getObjectHeaders().put(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception());
     assertEquals(0, interceptor.getStats().size());
     submitMessage(message);
     assertEquals(1, interceptor.getStats().size());

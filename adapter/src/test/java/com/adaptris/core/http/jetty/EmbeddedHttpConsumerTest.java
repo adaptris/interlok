@@ -362,7 +362,7 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
   protected void doAssertions(MockMessageProducer mockProducer) {
     assertEquals("Only 1 message consumed", 1, mockProducer.getMessages().size());
     assertEquals("Consumed Payload", XML_PAYLOAD, mockProducer.getMessages().get(0).getStringPayload());
-    Map objMetadata = mockProducer.getMessages().get(0).getObjectMetadata();
+    Map objMetadata = mockProducer.getMessages().get(0).getObjectHeaders();
     assertNotNull(objMetadata.get(CoreConstants.JETTY_REQUEST_KEY));
     assertNotNull(objMetadata.get(CoreConstants.JETTY_RESPONSE_KEY));
   }

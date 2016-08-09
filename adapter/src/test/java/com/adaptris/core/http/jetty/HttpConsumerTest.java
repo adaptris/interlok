@@ -397,9 +397,9 @@ public class HttpConsumerTest extends HttpConsumerExample {
 
       assertTrue(receivedMsg.containsKey(CoreConstants.JETTY_QUERY_STRING));
       assertEquals("queryParam1=1&queryParam2=2&queryParam3=3", receivedMsg.getMetadataValue(CoreConstants.JETTY_QUERY_STRING));
-      assertEquals("1", receivedMsg.getObjectMetadata().get("queryParam1"));
-      assertEquals("2", receivedMsg.getObjectMetadata().get("queryParam2"));
-      assertEquals("3", receivedMsg.getObjectMetadata().get("queryParam3"));
+      assertEquals("1", receivedMsg.getObjectHeaders().get("queryParam1"));
+      assertEquals("2", receivedMsg.getObjectHeaders().get("queryParam2"));
+      assertEquals("3", receivedMsg.getObjectHeaders().get("queryParam3"));
     }
     finally {
       stop(httpProducer);
@@ -495,12 +495,12 @@ public class HttpConsumerTest extends HttpConsumerExample {
       AdaptrisMessage receivedMsg = doAssertions(mockProducer);
       assertTrue(receivedMsg.containsKey(CoreConstants.JETTY_QUERY_STRING));
       assertEquals("queryParam1=1&queryParam2=2&queryParam3=3", receivedMsg.getMetadataValue(CoreConstants.JETTY_QUERY_STRING));
-      assertFalse(receivedMsg.getObjectMetadata().containsKey("Http_Header_queryParam1"));
-      assertFalse(receivedMsg.getObjectMetadata().containsKey("Http_Header_queryParam2"));
-      assertFalse(receivedMsg.getObjectMetadata().containsKey("Http_Header_queryParam3"));
-      assertEquals("1", receivedMsg.getObjectMetadata().get("Http_Param_queryParam1"));
-      assertEquals("2", receivedMsg.getObjectMetadata().get("Http_Param_queryParam2"));
-      assertEquals("3", receivedMsg.getObjectMetadata().get("Http_Param_queryParam3"));
+      assertFalse(receivedMsg.getObjectHeaders().containsKey("Http_Header_queryParam1"));
+      assertFalse(receivedMsg.getObjectHeaders().containsKey("Http_Header_queryParam2"));
+      assertFalse(receivedMsg.getObjectHeaders().containsKey("Http_Header_queryParam3"));
+      assertEquals("1", receivedMsg.getObjectHeaders().get("Http_Param_queryParam1"));
+      assertEquals("2", receivedMsg.getObjectHeaders().get("Http_Param_queryParam2"));
+      assertEquals("3", receivedMsg.getObjectHeaders().get("Http_Param_queryParam3"));
     }
     finally {
       stop(httpProducer);
@@ -530,12 +530,12 @@ public class HttpConsumerTest extends HttpConsumerExample {
       AdaptrisMessage receivedMsg = doAssertions(mockProducer);
       assertTrue(receivedMsg.containsKey(CoreConstants.JETTY_QUERY_STRING));
       assertEquals("queryParam1=1&queryParam2=2&queryParam3=3", receivedMsg.getMetadataValue(CoreConstants.JETTY_QUERY_STRING));
-      assertFalse(receivedMsg.getObjectMetadata().containsKey("Http_Header_queryParam1"));
-      assertFalse(receivedMsg.getObjectMetadata().containsKey("Http_Header_queryParam2"));
-      assertFalse(receivedMsg.getObjectMetadata().containsKey("Http_Header_queryParam3"));
-      assertEquals("1", receivedMsg.getObjectMetadata().get("Http_Param_queryParam1"));
-      assertEquals("2", receivedMsg.getObjectMetadata().get("Http_Param_queryParam2"));
-      assertEquals("3", receivedMsg.getObjectMetadata().get("Http_Param_queryParam3"));
+      assertFalse(receivedMsg.getObjectHeaders().containsKey("Http_Header_queryParam1"));
+      assertFalse(receivedMsg.getObjectHeaders().containsKey("Http_Header_queryParam2"));
+      assertFalse(receivedMsg.getObjectHeaders().containsKey("Http_Header_queryParam3"));
+      assertEquals("1", receivedMsg.getObjectHeaders().get("Http_Param_queryParam1"));
+      assertEquals("2", receivedMsg.getObjectHeaders().get("Http_Param_queryParam2"));
+      assertEquals("3", receivedMsg.getObjectHeaders().get("Http_Param_queryParam3"));
     } finally {
       stop(httpProducer);
       channel.requestClose();
@@ -666,7 +666,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     assertTrue(msg.containsKey(CoreConstants.JETTY_URI));
     assertEquals(URL_TO_POST_TO, msg.getMetadataValue(CoreConstants.JETTY_URI));
     assertTrue(msg.containsKey(CoreConstants.JETTY_URL));
-    Map objMetadata = msg.getObjectMetadata();
+    Map objMetadata = msg.getObjectHeaders();
     assertNotNull(objMetadata.get(CoreConstants.JETTY_REQUEST_KEY));
     assertNotNull(objMetadata.get(CoreConstants.JETTY_RESPONSE_KEY));
     return msg;

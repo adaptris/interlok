@@ -94,8 +94,8 @@ public class XpathObjectMetadataServiceTest extends MetadataServiceExample {
     execute(service, msg);
     assertFalse(msg.containsKey("source"));
     assertFalse(msg.containsKey("destination"));
-    assertTrue(msg.getObjectMetadata().containsKey("source"));
-    assertTrue(msg.getObjectMetadata().containsKey("destination"));
+    assertTrue(msg.getObjectHeaders().containsKey("source"));
+    assertTrue(msg.getObjectHeaders().containsKey("destination"));
   }
 
   public void testDoService_UsingXpathQuery_WithNamespaceContext() throws CoreException {
@@ -109,7 +109,7 @@ public class XpathObjectMetadataServiceTest extends MetadataServiceExample {
     execute(service, msg);
 
     assertFalse(msg.containsKey("failureCount"));
-    assertTrue(msg.getObjectMetadata().containsKey("failureCount"));
+    assertTrue(msg.getObjectHeaders().containsKey("failureCount"));
   }
 
   public void testSetXpathQueryList() {

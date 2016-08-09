@@ -106,7 +106,7 @@ public class JmsReplyToDestinationTest extends ExampleProduceDestinationCase {
       activeMqBroker.start();
       Queue tempQueue = createTempQueue(activeMqBroker);
       AdaptrisMessage msg = createMessage(tempQueue);
-      msg.getObjectMetadata().clear();
+      msg.getObjectHeaders().clear();
       JmsReplyToDestination d = new JmsReplyToDestination();
       d.setObjectMetadataKey(ANY_OLD_KEY);
       assertNull(d.getDestination(msg));

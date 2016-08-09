@@ -321,13 +321,27 @@ public abstract class AdaptrisMessageCase {
     AdaptrisMessage msg1 = createMessage();
 
     Object metadata2 = new Object();
-    msg1.addObjectHeader("key", metadata2);
+    msg1.addObjectMetadata("key", metadata2);
 
-    java.util.Map<?,?> objectMetadata = msg1.getObjectHeaders();
+    java.util.Map<?, ?> objectMetadata = msg1.getObjectMetadata();
 
     assertTrue(objectMetadata.keySet().size() == 1);
     assertTrue(metadata2.equals(objectMetadata.get("key")));
   }
+
+  @Test
+  public void testObjectHeaders() throws Exception {
+    AdaptrisMessage msg1 = createMessage();
+
+    Object metadata2 = new Object();
+    msg1.addObjectHeader("key", metadata2);
+
+    java.util.Map<?, ?> objectMetadata = msg1.getObjectHeaders();
+
+    assertTrue(objectMetadata.keySet().size() == 1);
+    assertTrue(metadata2.equals(objectMetadata.get("key")));
+  }
+
 
   @Test
   public void testCloneAdaptrisMessage() throws Exception {
