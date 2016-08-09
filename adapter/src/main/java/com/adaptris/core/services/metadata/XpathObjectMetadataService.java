@@ -63,6 +63,7 @@ public class XpathObjectMetadataService extends ServiceImp {
   @XStreamImplicit(itemFieldName = "xpath-query")
   private List<XpathObjectQuery> xpathQueries;
   @AdvancedConfig
+  @Valid
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
   private transient List<XpathObjectQuery> queriesToExecute;
 

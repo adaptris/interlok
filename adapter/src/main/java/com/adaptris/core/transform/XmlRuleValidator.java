@@ -36,6 +36,7 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.transform.validate.ContentValidation;
 import com.adaptris.transform.validate.ValidationStage;
@@ -73,6 +74,9 @@ public class XmlRuleValidator extends MessageValidatorImpl {
   private List<ValidationStage> validationStages = new ArrayList<ValidationStage>();
   @AdvancedConfig
   private KeyValuePairSet namespaceContext;
+  @AdvancedConfig
+  @Valid
+  private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 
   public XmlRuleValidator() {
     super();
@@ -87,7 +91,7 @@ public class XmlRuleValidator extends MessageValidatorImpl {
   public void validate(AdaptrisMessage msg) throws CoreException {
     try {
       NamespaceContext namespaceCtx = SimpleNamespaceContext.create(getNamespaceContext(), msg);
-      Document doc = createDocument(msg, namespaceCtx);
+      Document doc = createDocument(msg, documentFactoryBuilder(namespaceCtx));
       XPath xp = new XPath(namespaceCtx);
       for (int stageIndex = 0; stageIndex < validationStages.size(); stageIndex++) {
         ValidationStage v = (ValidationStage) validationStages.get(stageIndex);
@@ -147,5 +151,19 @@ public class XmlRuleValidator extends MessageValidatorImpl {
    */
   public void setNamespaceContext(KeyValuePairSet set) {
     this.namespaceContext = set;
+  }
+
+  public DocumentBuilderFactoryBuilder getXmlDocumentFactoryConfig() {
+    return xmlDocumentFactoryConfig;
+  }
+
+
+  public void setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder xml) {
+    this.xmlDocumentFactoryConfig = xml;
+  }
+
+  DocumentBuilderFactoryBuilder documentFactoryBuilder(NamespaceContext nc) {
+    return (getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig() : DocumentBuilderFactoryBuilder.newInstance())
+        .withNamespaceAware(nc);
   }
 }

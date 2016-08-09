@@ -19,7 +19,7 @@ package com.adaptris.core;
 import static com.adaptris.core.util.XmlHelper.createDocument;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.Valid;
 import javax.xml.namespace.NamespaceContext;
 
 import org.hibernate.validator.constraints.NotBlank;
@@ -29,6 +29,8 @@ import org.w3c.dom.Document;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.text.xml.SimpleNamespaceContext;
 import com.adaptris.util.text.xml.XPath;
@@ -49,19 +51,18 @@ public class XpathTradingRelationshipCreator implements
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
-  @NotNull
   @NotBlank
   private String sourceXpath;
-  @NotNull
   @NotBlank
   private String destinationXpath;
-  @NotNull
   @NotBlank
   private String typeXpath;
 
   @AdvancedConfig
   private KeyValuePairSet namespaceContext;
-
+  @AdvancedConfig
+  @Valid
+  private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
   /**
    * <p>
    * Creates a new instance. Default keys are empty <code>String</code>s.
@@ -88,7 +89,7 @@ public class XpathTradingRelationshipCreator implements
     try {
       NamespaceContext namespaceCtx = SimpleNamespaceContext.create(getNamespaceContext(), msg);
       XPath xpath = new XPath(namespaceCtx);
-      Document doc = createDocument(msg, namespaceCtx);
+      Document doc = createDocument(msg, documentFactoryBuilder(namespaceCtx));
       String source = resolveXpath(sourceXpath, xpath, doc);
       String destination = resolveXpath(destinationXpath, xpath, doc);
       String type = resolveXpath(typeXpath, xpath, doc);
@@ -114,21 +115,6 @@ public class XpathTradingRelationshipCreator implements
     return result;
   }
 
-  /** @see java.lang.Object#toString() */
-  @Override
-  public String toString() {
-    StringBuffer result = new StringBuffer(this.getClass().getName());
-    result.append(" source xpath [");
-    result.append(getSourceXpath());
-    result.append("] destination xpath [");
-    result.append(getDestinationXpath());
-    result.append("] type xpath [");
-    result.append(getTypeXpath());
-    result.append("]");
-
-    return result.toString();
-  }
-
   // getters & setters...
 
   /**
@@ -151,10 +137,7 @@ public class XpathTradingRelationshipCreator implements
    * @param s the metadata key used to obtain the destination
    */
   public void setDestinationXpath(String s) {
-    if (s == null || "".equals(s)) {
-      throw new IllegalArgumentException("null or empty param");
-    }
-    destinationXpath = s;
+    destinationXpath = Args.notBlank(s, "destinationXpath");
   }
 
   /**
@@ -176,10 +159,7 @@ public class XpathTradingRelationshipCreator implements
    * @param s the metadata key used to obtain the source
    */
   public void setSourceXpath(String s) {
-    if (s == null || "".equals(s)) {
-      throw new IllegalArgumentException("null or empty param");
-    }
-    sourceXpath = s;
+    sourceXpath = Args.notBlank(s, "sourceXpath");
   }
 
   /**
@@ -201,10 +181,7 @@ public class XpathTradingRelationshipCreator implements
    * @param s the metadata key used to obtain the type
    */
   public void setTypeXpath(String s) {
-    if (s == null || "".equals(s)) {
-      throw new IllegalArgumentException("null or empty param");
-    }
-    typeXpath = s;
+    typeXpath = Args.notBlank(s, "typeXpath");
   }
 
   /**
@@ -226,5 +203,20 @@ public class XpathTradingRelationshipCreator implements
    */
   public void setNamespaceContext(KeyValuePairSet kvps) {
     this.namespaceContext = kvps;
+  }
+
+
+  public DocumentBuilderFactoryBuilder getXmlDocumentFactoryConfig() {
+    return xmlDocumentFactoryConfig;
+  }
+
+
+  public void setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder xml) {
+    this.xmlDocumentFactoryConfig = xml;
+  }
+
+  DocumentBuilderFactoryBuilder documentFactoryBuilder(NamespaceContext nc) {
+    return (getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig() : DocumentBuilderFactoryBuilder.newInstance())
+        .withNamespaceAware(nc);
   }
 }
