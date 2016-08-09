@@ -43,6 +43,7 @@ import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.stubs.StaticMockMessageProducer;
 import com.adaptris.util.TimeInterval;
 
+@SuppressWarnings("deprecation")
 public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
 
   static final String METADATA_VALUE2 = "value2";

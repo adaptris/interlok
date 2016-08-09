@@ -39,14 +39,15 @@ import com.adaptris.core.http.HttpConstants;
 import com.adaptris.core.http.HttpProducerExample;
 import com.adaptris.core.http.MetadataContentTypeProvider;
 import com.adaptris.core.http.auth.ConfiguredAuthorizationHeader;
-import com.adaptris.core.http.auth.HttpAuthenticator;
 import com.adaptris.core.http.auth.ConfiguredUsernamePassword;
+import com.adaptris.core.http.auth.HttpAuthenticator;
 import com.adaptris.core.http.auth.MetadataAuthorizationHeader;
 import com.adaptris.core.http.auth.MetadataUsernamePassword;
 import com.adaptris.core.http.client.ConfiguredRequestMethodProvider;
 import com.adaptris.core.http.client.MetadataRequestMethodProvider;
 import com.adaptris.core.http.client.RequestMethodProvider;
-import com.adaptris.core.http.jetty.HashUserRealmProxy;
+import com.adaptris.core.http.jetty.ConfigurableSecurityHandler;
+import com.adaptris.core.http.jetty.HashLoginServiceFactory;
 import com.adaptris.core.http.jetty.HttpConnection;
 import com.adaptris.core.http.jetty.HttpConsumerTest;
 import com.adaptris.core.http.jetty.JettyHelper;
@@ -455,16 +456,19 @@ public class StandardHttpProducerTest extends HttpProducerExample {
   public void testProduce_WithUsernamePassword() throws Exception {
     String threadName = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
-    HashUserRealmProxy hr = new HashUserRealmProxy();
-    hr.setFilename(PROPERTIES.getProperty(HttpConsumerTest.JETTY_USER_REALM));
 
+    ConfigurableSecurityHandler csh = new ConfigurableSecurityHandler();
+    HashLoginServiceFactory hsl =
+        new HashLoginServiceFactory("InterlokJetty", PROPERTIES.getProperty(HttpConsumerTest.JETTY_USER_REALM));
+    hsl.setRefreshInterval(100);
+    csh.setLoginService(hsl);
     SecurityConstraint securityConstraint = new SecurityConstraint();
     securityConstraint.setMustAuthenticate(true);
     securityConstraint.setRoles("user");
+    csh.setSecurityConstraints(Arrays.asList(securityConstraint));
 
-    hr.setSecurityConstraints(Arrays.asList(securityConstraint));
     HttpConnection jc = HttpHelper.createConnection();
-    jc.setSecurityHandler(hr);
+    jc.setSecurityHandler(csh);
     MockMessageProducer mockProducer = new MockMessageProducer();
     MessageConsumer consumer = JettyHelper.createConsumer(HttpHelper.URL_TO_POST_TO);
     Channel channel = JettyHelper.createChannel(jc, consumer, mockProducer);
@@ -492,16 +496,18 @@ public class StandardHttpProducerTest extends HttpProducerExample {
   public void testProduce_WithMetadataUsernamePassword() throws Exception {
     String threadName = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
-    HashUserRealmProxy hr = new HashUserRealmProxy();
-    hr.setFilename(PROPERTIES.getProperty(HttpConsumerTest.JETTY_USER_REALM));
-
+    ConfigurableSecurityHandler csh = new ConfigurableSecurityHandler();
+    HashLoginServiceFactory hsl =
+        new HashLoginServiceFactory("InterlokJetty", PROPERTIES.getProperty(HttpConsumerTest.JETTY_USER_REALM));
+    hsl.setRefreshInterval(100);
+    csh.setLoginService(hsl);
     SecurityConstraint securityConstraint = new SecurityConstraint();
     securityConstraint.setMustAuthenticate(true);
     securityConstraint.setRoles("user");
+    csh.setSecurityConstraints(Arrays.asList(securityConstraint));
 
-    hr.setSecurityConstraints(Arrays.asList(securityConstraint));
     HttpConnection jc = HttpHelper.createConnection();
-    jc.setSecurityHandler(hr);
+    jc.setSecurityHandler(csh);
     MockMessageProducer mockProducer = new MockMessageProducer();
     MessageConsumer consumer = JettyHelper.createConsumer(HttpHelper.URL_TO_POST_TO);
     Channel channel = JettyHelper.createChannel(jc, consumer, mockProducer);
@@ -534,16 +540,18 @@ public class StandardHttpProducerTest extends HttpProducerExample {
   public void testProduce_WithUsernamePassword_BadCredentials() throws Exception {
     String threadName = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
-    HashUserRealmProxy hr = new HashUserRealmProxy();
-    hr.setFilename(PROPERTIES.getProperty(HttpConsumerTest.JETTY_USER_REALM));
-
+    ConfigurableSecurityHandler csh = new ConfigurableSecurityHandler();
+    HashLoginServiceFactory hsl =
+        new HashLoginServiceFactory("InterlokJetty", PROPERTIES.getProperty(HttpConsumerTest.JETTY_USER_REALM));
+    hsl.setRefreshInterval(100);
+    csh.setLoginService(hsl);
     SecurityConstraint securityConstraint = new SecurityConstraint();
     securityConstraint.setMustAuthenticate(true);
     securityConstraint.setRoles("user");
+    csh.setSecurityConstraints(Arrays.asList(securityConstraint));
 
-    hr.setSecurityConstraints(Arrays.asList(securityConstraint));
     HttpConnection jc = HttpHelper.createConnection();
-    jc.setSecurityHandler(hr);
+    jc.setSecurityHandler(csh);
     MockMessageProducer mockProducer = new MockMessageProducer();
     MessageConsumer consumer = JettyHelper.createConsumer(HttpHelper.URL_TO_POST_TO);
     Channel channel = JettyHelper.createChannel(jc, consumer, mockProducer);
