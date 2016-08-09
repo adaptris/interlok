@@ -28,7 +28,6 @@ import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.util.KeyValuePair;
 
-@SuppressWarnings("deprecation")
 public class XpathDocumentCopierTest extends SplitterCase {
 
   static final String XPATH_DOCUMENT_COUNT = "count(/envelope/document)";

@@ -24,6 +24,7 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.util.XmlHelper;
 
+@SuppressWarnings("deprecation")
 public class TransformParameterCase extends BaseCase {
 
   protected static final String XML_DOC = "<document>data</document>";

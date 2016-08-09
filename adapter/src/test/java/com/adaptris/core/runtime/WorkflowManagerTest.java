@@ -60,7 +60,6 @@ import com.adaptris.interlok.management.MessageProcessor;
 import com.adaptris.interlok.types.SerializableMessage;
 import com.adaptris.util.GuidGenerator;
 
-@SuppressWarnings("deprecation")
 public class WorkflowManagerTest extends ComponentManagerCase {
   private static final String PAYLOAD = "Quick zephyrs blow, vexing daft Jim";
   private static final String PAYLOAD_ENCODING = "UTF-8";

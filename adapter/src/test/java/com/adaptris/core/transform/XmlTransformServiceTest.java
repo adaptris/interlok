@@ -47,6 +47,7 @@ import com.adaptris.util.text.xml.XsltTransformerFactory;
 
 import net.sf.saxon.serialize.MessageWarner;
 
+@SuppressWarnings("deprecation")
 public class XmlTransformServiceTest extends TransformServiceExample {
 
   static final String KEY_XML_NODE_TRANSFORM_URL = "XmlTransformService.outputNodeTransform";

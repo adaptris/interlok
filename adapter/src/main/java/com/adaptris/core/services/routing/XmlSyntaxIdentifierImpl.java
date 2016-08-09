@@ -16,6 +16,8 @@
 
 package com.adaptris.core.services.routing;
 
+import javax.validation.Valid;
+
 import org.w3c.dom.Document;
 
 import com.adaptris.core.util.XmlHelper;
@@ -25,6 +27,7 @@ import com.adaptris.util.text.xml.XPath;
 
 public abstract class XmlSyntaxIdentifierImpl extends SyntaxIdentifierImpl {
 
+  @Valid
   private KeyValuePairSet namespaceContext;
 
   public XmlSyntaxIdentifierImpl() {

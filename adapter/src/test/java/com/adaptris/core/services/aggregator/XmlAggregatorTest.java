@@ -25,7 +25,6 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.NullService;
 import com.adaptris.core.services.LogMessageService;
-import com.adaptris.core.services.aggregator.XmlDocumentAggregator;
 import com.adaptris.core.services.splitter.SplitJoinService;
 import com.adaptris.core.services.splitter.SplitJoinServiceTest;
 import com.adaptris.core.services.splitter.SplitterCase;
@@ -35,6 +34,7 @@ import com.adaptris.util.TimeInterval;
 import com.adaptris.util.text.xml.InsertNode;
 import com.adaptris.util.text.xml.XPath;
 
+@SuppressWarnings("deprecation")
 public class XmlAggregatorTest extends XmlAggregatorCase {
 
   public XmlAggregatorTest(String name) {

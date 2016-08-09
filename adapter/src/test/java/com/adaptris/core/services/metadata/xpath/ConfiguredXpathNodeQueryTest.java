@@ -24,6 +24,7 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.XmlHelper;
 
+@SuppressWarnings("deprecation")
 public class ConfiguredXpathNodeQueryTest extends ConfiguredXpathQueryCase {
 
   public ConfiguredXpathNodeQueryTest(String testName) {

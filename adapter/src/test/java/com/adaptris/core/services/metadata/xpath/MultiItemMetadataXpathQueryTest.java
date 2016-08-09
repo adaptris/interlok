@@ -24,6 +24,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.util.XmlHelper;
 
+@SuppressWarnings("deprecation")
 public class MultiItemMetadataXpathQueryTest extends MetadataXpathQueryCase {
 
   public MultiItemMetadataXpathQueryTest(String testName) {

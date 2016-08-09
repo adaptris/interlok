@@ -36,6 +36,7 @@ import com.adaptris.core.lms.FileBackedMessageFactory;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.text.xml.XPath;
 
+@SuppressWarnings("deprecation")
 public class FfTransformServiceTest extends TransformServiceExample {
 
   private static final String ISO_8859_1 = "ISO-8859-1";

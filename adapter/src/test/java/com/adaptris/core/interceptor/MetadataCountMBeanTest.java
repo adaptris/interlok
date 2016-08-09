@@ -31,7 +31,6 @@ import com.adaptris.core.SerializableAdaptrisMessage;
 import com.adaptris.core.runtime.BaseComponentMBean;
 import com.adaptris.core.runtime.WorkflowManagerMBean;
 
-@SuppressWarnings("deprecation")
 public class MetadataCountMBeanTest extends MetadataStatisticsMBeanCase {
 
   private static final String COUNTER_1 = "counter1";

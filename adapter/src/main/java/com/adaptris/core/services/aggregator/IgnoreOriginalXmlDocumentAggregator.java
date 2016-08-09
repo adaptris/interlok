@@ -72,7 +72,7 @@ public class IgnoreOriginalXmlDocumentAggregator extends XmlDocumentAggregator {
       if (isEmpty(getTemplate())) {
         throw new CoreException("Template is null / empty, cannot continue");
       }
-      Document resultDoc = XmlHelper.createDocument(getTemplate());
+      Document resultDoc = XmlHelper.createDocument(getTemplate(), documentFactoryBuilder());
       for (AdaptrisMessage m : messages) {
         Document mergeDoc = XmlHelper.createDocument(m, documentFactoryBuilder());
         overwriteMetadata(m, original);
