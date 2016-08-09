@@ -27,7 +27,7 @@ import org.apache.commons.io.IOUtils;
 import java.io.OutputStream;
 
 /**
- * Encodes the message.
+ * Encodes the in flight message and sets the payload to the encoded output.
  * 
  * @config encoding-service
  *
@@ -45,7 +45,7 @@ public class EncodingService extends CodecService {
   }
 
   @Override
-  public void processMessage(AdaptrisMessage msg) throws ServiceException {
+  public void codecAction(AdaptrisMessage msg) throws ServiceException {
     OutputStream out = null;
     try {
       out = msg.getOutputStream();

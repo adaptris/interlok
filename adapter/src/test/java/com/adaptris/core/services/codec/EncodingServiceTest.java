@@ -2,6 +2,7 @@ package com.adaptris.core.services.codec;
 
 import com.adaptris.core.*;
 import com.adaptris.core.stubs.MockEncoder;
+import com.adaptris.core.stubs.StubMessageFactory;
 import com.adaptris.core.util.LifecycleHelper;
 
 public class EncodingServiceTest extends CodecServiceCase {
@@ -23,6 +24,32 @@ public class EncodingServiceTest extends CodecServiceCase {
     service = new EncodingService(new MockEncoder());
     LifecycleHelper.init(service);
   }
+
+  public void testSetEncoder() throws Exception {
+    EncodingService s = new EncodingService();
+    assertNull(s.getEncoder());
+    MockEncoder me = new MockEncoder();
+    s = new EncodingService(me);
+    assertEquals(me, s.getEncoder());
+    s = new EncodingService();
+    s.setEncoder(me);
+    assertEquals(me, s.getEncoder());
+  }
+
+  public void testSetMessageFactory() throws Exception {
+    EncodingService s = new EncodingService();
+    assertNull(s.getMessageFactory());
+    s = new EncodingService(new MockEncoder());
+    assertNull(s.getMessageFactory());
+    assertTrue(s.getEncoder().currentMessageFactory() instanceof DefaultMessageFactory);
+    s = new EncodingService(new MockEncoder());
+    AdaptrisMessageFactory amf = new StubMessageFactory();
+    s.setMessageFactory(amf);
+    assertEquals(amf, s.getMessageFactory());
+    assertTrue(s.getEncoder().currentMessageFactory() instanceof StubMessageFactory);
+    assertEquals(amf, s.getEncoder().currentMessageFactory());
+  }
+
 
   public void testMockEncoder() throws Exception {
     EncodingService service = new EncodingService(new MockEncoder());

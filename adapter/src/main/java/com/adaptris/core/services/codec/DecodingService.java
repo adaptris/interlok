@@ -30,10 +30,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * Decodes the message.
+ * Decodes the payload and updates the in flight message with the decoded output.
  *
  * @config decoding-processMessage
- *
  *
  */
 @XStreamAlias("decoding-service")
@@ -48,10 +47,10 @@ public class DecodingService extends CodecService {
     super(encoder);
   }
 
-  private boolean overrideHeaders;
+  private Boolean overrideMetadata;
 
   @Override
-  public void processMessage(AdaptrisMessage msg) throws ServiceException {
+  public void codecAction(AdaptrisMessage msg) throws ServiceException {
     InputStream msgIn = null;
     OutputStream msgOut = null;
     ByteArrayInputStream decodedPayload = null;
@@ -59,7 +58,7 @@ public class DecodingService extends CodecService {
       msgIn = msg.getInputStream();
       AdaptrisMessage decodedMsg = getEncoder().readMessage(msgIn);
       for (MetadataElement me : decodedMsg.getMetadata()) {
-        if (!isOverrideHeaders() && msg.headersContainsKey(me.getKey())){
+        if (!isOverrideMetadata() && msg.headersContainsKey(me.getKey())){
           continue;
         }
         msg.addMetadata(me);
@@ -78,16 +77,23 @@ public class DecodingService extends CodecService {
     }
   }
 
-  public boolean isOverrideHeaders(){
-    return getOverrideHeaders() == null ? false : getOverrideHeaders();
+  boolean isOverrideMetadata(){
+    return getOverrideMetadata() == null ? false : getOverrideMetadata();
   }
 
-  public Boolean getOverrideHeaders(){
-    return this.overrideHeaders;
+  public Boolean getOverrideMetadata(){
+    return this.overrideMetadata;
   }
 
-  public void setOverrideHeaders(boolean overrideHeaders) {
-    this.overrideHeaders = overrideHeaders;
+  /**
+   * Set boolean value to control the overriding of metadata.
+   *
+   * <p>If true metadata when a metadata key from the decoded message has the same key as metadata in the in flight message it will be replaced with the value of the decoded one.</p>
+   *
+   * @param overrideMetadata Boolean value to control overriding of metadata.
+   */
+  public void setOverrideMetadata(boolean overrideMetadata) {
+    this.overrideMetadata = overrideMetadata;
   }
 
 }

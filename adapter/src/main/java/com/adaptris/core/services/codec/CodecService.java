@@ -19,10 +19,15 @@ package com.adaptris.core.services.codec;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 
 public abstract class CodecService extends ServiceImp {
 
+  @Valid
+  @NotNull
   private AdaptrisMessageEncoder encoder;
   @AdvancedConfig
   private AdaptrisMessageFactory messageFactory;
@@ -39,10 +44,10 @@ public abstract class CodecService extends ServiceImp {
    */
   public final void doService(AdaptrisMessage msg) throws ServiceException {
     registerEncoderMessageFactory();
-    processMessage(msg);
+    codecAction(msg);
   }
 
-  public abstract void processMessage(AdaptrisMessage msg) throws ServiceException;
+  public abstract void codecAction(AdaptrisMessage msg) throws ServiceException;
 
   @Override
   protected void initService() throws CoreException {
@@ -65,6 +70,7 @@ public abstract class CodecService extends ServiceImp {
 
   public void setEncoder(AdaptrisMessageEncoder encoder) {
     this.encoder = encoder;
+    registerEncoderMessageFactory();
   }
 
   public AdaptrisMessageFactory getMessageFactory() {
