@@ -70,7 +70,7 @@ public class JmsProducerTest extends JmsProducerCase {
 
   private AdaptrisMessage createMessage(Destination d) throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx");
-    msg.addObjectMetadata(JmsConstants.OBJ_JMS_REPLY_TO_KEY, d);
+    msg.addObjectHeader(JmsConstants.OBJ_JMS_REPLY_TO_KEY, d);
     return msg;
 
   }

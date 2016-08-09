@@ -587,7 +587,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
       inParameter.setType(ParameterValueType.VARCHAR);
       AdaptrisMessage message = createMessage();
 
-      message.addObjectMetadata("xType", "Sold");
+      message.addObjectHeader("xType", "Sold");
 
       InParameters inParameters = new InParameters();
       inParameters.add(inParameter);
@@ -623,7 +623,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
       inOutParameter.setType(ParameterValueType.INTEGER);
       AdaptrisMessage message = createMessage();
 
-      message.addObjectMetadata("xSomeAmount", 100);
+      message.addObjectHeader("xSomeAmount", 100);
 
       InOutParameters inOutParameters = new InOutParameters();
       inOutParameters.add(inOutParameter);

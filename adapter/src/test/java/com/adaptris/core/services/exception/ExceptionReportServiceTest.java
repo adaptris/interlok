@@ -61,7 +61,7 @@ public class ExceptionReportServiceTest extends ExceptionServiceExample {
 
   public void testNonXml() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(RAW_DATA);
-    msg.addObjectMetadata(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("This is the exception"));
+    msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("This is the exception"));
     ExceptionReportService service = new ExceptionReportService(new SimpleExceptionReport(), new ReplaceNode(XPATH_ORIGINAL_NODE));
     try {
       execute(service, msg);
@@ -74,7 +74,7 @@ public class ExceptionReportServiceTest extends ExceptionServiceExample {
 
   public void testReplaceNode() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
-    msg.addObjectMetadata(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("This is the exception"));
+    msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("This is the exception"));
     ExceptionReportService service = new ExceptionReportService(new SimpleExceptionReport(), new ReplaceNode(XPATH_ORIGINAL_NODE));
     execute(service, msg);
     assertNotSame(XML_PAYLOAD, msg.getStringPayload());
@@ -84,7 +84,7 @@ public class ExceptionReportServiceTest extends ExceptionServiceExample {
 
   public void testInsertNode() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
-    msg.addObjectMetadata(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("This is the exception"));
+    msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("This is the exception"));
     ExceptionReportService service = new ExceptionReportService(new SimpleExceptionReport(), new InsertNode(XPATH_ROOT));
     execute(service, msg);
     assertNotSame(XML_PAYLOAD, msg.getStringPayload());
@@ -95,7 +95,7 @@ public class ExceptionReportServiceTest extends ExceptionServiceExample {
 
   public void testBug2220() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
-    msg.addObjectMetadata(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("I had problems parsing <ABCDE>"));
+    msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("I had problems parsing <ABCDE>"));
     ExceptionReportService service = new ExceptionReportService(new SimpleExceptionReport(), new InsertNode(XPATH_ROOT));
     execute(service, msg);
     assertNotSame(XML_PAYLOAD, msg.getStringPayload());

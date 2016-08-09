@@ -75,7 +75,7 @@ public class ObjectMetadataValueTranslator implements ValueTranslator {
 
   public void setValue(AdaptrisMessage message, Object value) {
     if(!StringUtils.isEmpty(metadataKey))
-      message.addObjectMetadata(this.getMetadataKey(), value);
+      message.addObjectHeader(this.getMetadataKey(), value);
     else
       log.warn("No metadata key set for metadata-value-translator, no translation occuring.");
   }

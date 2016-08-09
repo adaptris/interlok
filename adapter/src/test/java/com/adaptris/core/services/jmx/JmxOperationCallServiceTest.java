@@ -158,7 +158,7 @@ public class JmxOperationCallServiceTest extends ServiceCase {
     when(mockInvoker.invoke((MBeanServerConnection) any(), anyString(), anyString(), any(Object[].class), any(String[].class)))
       .thenReturn(operationReturnValue);
     
-    message.addObjectMetadata(existingObjectMetadataKey, existingObjectMetadataValue);
+    message.addObjectHeader(existingObjectMetadataKey, existingObjectMetadataValue);
     
     ObjectMetadataValueTranslator translatorParam = new ObjectMetadataValueTranslator();
     translatorParam.setMetadataKey("ExistingObjectMetadataKey");

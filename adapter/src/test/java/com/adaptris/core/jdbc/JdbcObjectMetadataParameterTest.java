@@ -70,7 +70,7 @@ public class JdbcObjectMetadataParameterTest extends NullableParameterCase {
   }
   
   public void testMetadataAlreadyExistsOutputParam() throws Exception {
-    message.addObjectMetadata(METADATA_KEY, METADATA_VALUE);
+    message.addObjectHeader(METADATA_KEY, METADATA_VALUE);
     assertEquals(message.getObjectMetadata().get(METADATA_KEY), METADATA_VALUE);
     
     JdbcObjectMetadataParameter param = new JdbcObjectMetadataParameter();
@@ -82,7 +82,7 @@ public class JdbcObjectMetadataParameterTest extends NullableParameterCase {
   }
   
   public void testMetadataAppliedInputParam() throws Exception {
-    message.addObjectMetadata(METADATA_KEY, METADATA_VALUE);
+    message.addObjectHeader(METADATA_KEY, METADATA_VALUE);
     
     JdbcObjectMetadataParameter param = new JdbcObjectMetadataParameter();
     param.setMetadataKey(METADATA_KEY);

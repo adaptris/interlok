@@ -51,7 +51,7 @@ public class ObjectMetadataParameterHandler extends ParameterHandlerImpl {
       String value = request.getParameter(key);
       String metadataKey = prefix + key;
       log.trace("Adding Object Metadata [{}: {}]", metadataKey, value);
-      message.addObjectMetadata(metadataKey, value);
+      message.addObjectHeader(metadataKey, value);
     } 
   }
 

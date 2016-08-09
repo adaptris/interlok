@@ -61,7 +61,7 @@ public class JdbcObjectMetadataParameter extends JdbcMetadataParameter {
   public void applyOutputParam(Object dbValue, AdaptrisMessage msg) throws JdbcParameterException {
     super.checkMetadataKey();
     
-    msg.addObjectMetadata(this.getMetadataKey(), normalize(dbValue));
+    msg.addObjectHeader(this.getMetadataKey(), normalize(dbValue));
   }
 
 }

@@ -27,7 +27,7 @@ public class MessageEventGeneratorTest extends BaseCase {
         .newMessage();
 
     // spoof conf id...
-    msg.addObjectMetadata(MessageEventGenerator.CONFIRMATION_ID_KEY, "123");
+    msg.addObjectHeader(MessageEventGenerator.CONFIRMATION_ID_KEY, "123");
     // spoof conf id...
 
     Service s2 = new NullService();

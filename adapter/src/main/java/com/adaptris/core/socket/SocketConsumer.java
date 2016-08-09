@@ -158,7 +158,7 @@ public class SocketConsumer extends AdaptrisMessageConsumerImp {
    * object metadata against the resulting AdaptrisMessage.
    *
    * @param b true to send a reply immediately upon receipt of data.
-   * @see AdaptrisMessage#addObjectMetadata(String, Object)
+   * @see AdaptrisMessage#addObjectHeader(Object, Object)
    * @see CoreConstants#SOCKET_OBJECT_KEY
    */
   public void setSendImmediateReply(Boolean b) {
@@ -327,7 +327,7 @@ public class SocketConsumer extends AdaptrisMessageConsumerImp {
       AdaptrisMessage msg = defaultIfNull(getMessageFactory()).newMessage(b);
       AdaptrisMessageListener l = retrieveAdaptrisMessageListener();
       if (!sendImmediateReply()) {
-        msg.addObjectMetadata(CoreConstants.SOCKET_OBJECT_KEY, sock);
+        msg.addObjectHeader(CoreConstants.SOCKET_OBJECT_KEY, sock);
       }
       synchronized (l) {
         l.onAdaptrisMessage(msg);
