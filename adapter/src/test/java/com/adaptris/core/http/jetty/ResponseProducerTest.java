@@ -101,7 +101,7 @@ public class ResponseProducerTest extends HttpProducerExample {
       c.requestStart();
       start(requestor);
       requestor.doService(msg);
-      assertEquals(TEXT, msg.getStringPayload());
+      assertEquals(TEXT, msg.getContent());
       assertFalse(msg.containsKey(CUSTOM_HEADER1));
       assertFalse(msg.containsKey(CUSTOM_HEADER2));
 
@@ -123,7 +123,7 @@ public class ResponseProducerTest extends HttpProducerExample {
       c.requestStart();
       start(requestor);
       requestor.doService(msg);
-      assertEquals(TEXT, msg.getStringPayload());
+      assertEquals(TEXT, msg.getContent());
       assertFalse(msg.containsKey(CUSTOM_HEADER1));
       assertFalse(msg.containsKey(CUSTOM_HEADER2));
 
@@ -146,7 +146,7 @@ public class ResponseProducerTest extends HttpProducerExample {
       c.requestStart();
       start(requestor);
       requestor.doService(msg);
-      assertEquals(TEXT, msg.getStringPayload());
+      assertEquals(TEXT, msg.getContent());
       assertFalse(msg.containsKey(CUSTOM_HEADER1));
       assertFalse(msg.containsKey(CUSTOM_HEADER2));
     }
@@ -194,7 +194,7 @@ public class ResponseProducerTest extends HttpProducerExample {
       c.requestStart();
       start(requestor);
       requestor.doService(msg);
-      assertEquals(TEXT, msg.getStringPayload());
+      assertEquals(TEXT, msg.getContent());
       assertTrue(msg.containsKey(CUSTOM_HEADER1));
       assertTrue(msg.containsKey(CUSTOM_HEADER2));
       assertEquals(CUSTOM_VALUE1, msg.getMetadataValue(CUSTOM_HEADER1));
@@ -228,7 +228,7 @@ public class ResponseProducerTest extends HttpProducerExample {
       c.requestStart();
       start(requestor);
       requestor.doService(msg);
-      assertEquals(TEXT, msg.getStringPayload());
+      assertEquals(TEXT, msg.getContent());
       assertTrue(msg.containsKey(CUSTOM_HEADER1));
       assertTrue(msg.containsKey(CUSTOM_HEADER2));
       assertEquals(CUSTOM_VALUE1, msg.getMetadataValue(CUSTOM_HEADER1));
@@ -258,7 +258,7 @@ public class ResponseProducerTest extends HttpProducerExample {
       c.requestStart();
       start(requestor);
       requestor.doService(msg);
-      assertEquals(TEXT, msg.getStringPayload());
+      assertEquals(TEXT, msg.getContent());
       assertTrue(msg.containsKey(CUSTOM_HEADER1));
       assertTrue(msg.containsKey(CUSTOM_HEADER2));
       assertEquals(CUSTOM_VALUE1, msg.getMetadataValue(CUSTOM_HEADER1));
@@ -292,7 +292,7 @@ public class ResponseProducerTest extends HttpProducerExample {
       c.requestStart();
       start(requestor);
       requestor.doService(msg);
-      assertEquals(TEXT, msg.getStringPayload());
+      assertEquals(TEXT, msg.getContent());
       assertTrue(msg.containsKey("Content-Type"));
       assertEquals("text/xml", msg.getMetadataValue("Content-Type"));
     }
@@ -318,7 +318,7 @@ public class ResponseProducerTest extends HttpProducerExample {
       c.requestStart();
       start(requestor);
       requestor.doService(msg);
-      assertEquals(TEXT, msg.getStringPayload());
+      assertEquals(TEXT, msg.getContent());
     }
     finally {
       c.requestClose();
@@ -343,7 +343,7 @@ public class ResponseProducerTest extends HttpProducerExample {
       c.requestStart();
       start(requestor);
       requestor.doService(msg);
-      assertNotSame(TEXT, msg.getStringPayload());
+      assertNotSame(TEXT, msg.getContent());
 
     }
     finally {
@@ -365,7 +365,7 @@ public class ResponseProducerTest extends HttpProducerExample {
       c.requestStart();
       start(requestor);
       requestor.doService(msg);
-      assertNotSame(TEXT, msg.getStringPayload());
+      assertNotSame(TEXT, msg.getContent());
 
     }
     finally {
@@ -387,7 +387,7 @@ public class ResponseProducerTest extends HttpProducerExample {
       c.requestStart();
       start(requestor);
       requestor.doService(msg);
-      assertNotSame(TEXT, msg.getStringPayload());
+      assertNotSame(TEXT, msg.getContent());
     }
     finally {
       c.requestClose();

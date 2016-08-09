@@ -151,7 +151,7 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
     this.waitForConsumer(1, 3000);
     
     assertEquals(1, messageListener.getMessages().size());
-    assertEquals(payload, messageListener.getMessages().get(0).getStringPayload());
+    assertEquals(payload, messageListener.getMessages().get(0).getContent());
   }
   
   public void testMultipleFileConsume() throws Exception {

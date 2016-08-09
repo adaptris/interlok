@@ -81,7 +81,7 @@ public class PollingTriggerTest extends ConsumerCase {
     workflow.stop();
     workflow.close();
     AdaptrisMessage msg = mockProducer.getMessages().get(0);
-    assertEquals("Payloads", PAYLOAD, msg.getStringPayload());
+    assertEquals("Payloads", PAYLOAD, msg.getContent());
   }
 
   public void testStartWithEmptyMessages() throws Exception {

@@ -86,7 +86,7 @@ public class DecryptionServiceTest extends SecurityServiceCase {
     output.setFailId(FAIL);
     output.setSuccessId(SUCCESS);
     execute(output, msg);
-    assertEquals("Payload equality", EXAMPLE_MSG, msg.getStringPayload());
+    assertEquals("Payload equality", EXAMPLE_MSG, msg.getContent());
     assertEquals(SUCCESS, msg.getNextServiceId());
     assertTrue(!msg.getObjectHeaders().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION));
 

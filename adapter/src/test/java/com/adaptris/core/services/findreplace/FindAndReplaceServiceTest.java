@@ -152,7 +152,7 @@ public class FindAndReplaceServiceTest extends GeneralServiceExample {
     FindAndReplaceService service = createServiceForTests(ReplacementSourceImpl.Configured, true);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD);
     execute(service, msg);
-    assertTrue(msg.getStringPayload().equals(PAYLOAD_REPLACED_FIRST_ONLY));
+    assertTrue(msg.getContent().equals(PAYLOAD_REPLACED_FIRST_ONLY));
   }
 
   public void testReplaceFirst_RegExp_MatchGroups() throws Exception {
@@ -163,14 +163,14 @@ public class FindAndReplaceServiceTest extends GeneralServiceExample {
             REGEXP_REPLACE_USE_MATCHGROUP)));
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(REGEXP_PAYLOAD);
     execute(service, msg);
-    assertEquals(REGEXP_PAYLOAD_EXPECTED, msg.getStringPayload());
+    assertEquals(REGEXP_PAYLOAD_EXPECTED, msg.getContent());
   }
 
   public void testReplaceAllConfigured() throws Exception {
     FindAndReplaceService service = createServiceForTests(ReplacementSourceImpl.Configured, false);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD);
     execute(service, msg);
-    assertTrue(msg.getStringPayload().equals(PAYLOAD_REPLACED_ALL));
+    assertTrue(msg.getContent().equals(PAYLOAD_REPLACED_ALL));
   }
 
   public void testReplaceAll_RegExp_MatchGroups() throws Exception {
@@ -181,7 +181,7 @@ public class FindAndReplaceServiceTest extends GeneralServiceExample {
             REGEXP_REPLACE_USE_MATCHGROUP)));
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(REGEXP_PAYLOAD);
     execute(service, msg);
-    assertEquals(REGEXP_PAYLOAD_EXPECTED, msg.getStringPayload());
+    assertEquals(REGEXP_PAYLOAD_EXPECTED, msg.getContent());
   }
 
   public void testReplaceFirstMetadata() throws Exception {
@@ -190,7 +190,7 @@ public class FindAndReplaceServiceTest extends GeneralServiceExample {
     msg.addMetadata(TO_REPLACE, TO_REPLACE);
     msg.addMetadata(REPLACE_WITH, REPLACE_WITH);
     execute(service, msg);
-    assertTrue(msg.getStringPayload().equals(PAYLOAD_REPLACED_FIRST_ONLY));
+    assertTrue(msg.getContent().equals(PAYLOAD_REPLACED_FIRST_ONLY));
   }
 
   public void testReplaceAllMetadata() throws Exception {
@@ -199,21 +199,21 @@ public class FindAndReplaceServiceTest extends GeneralServiceExample {
     msg.addMetadata(TO_REPLACE, TO_REPLACE);
     msg.addMetadata(REPLACE_WITH, REPLACE_WITH);
     execute(service, msg);
-    assertTrue(msg.getStringPayload().equals(PAYLOAD_REPLACED_ALL));
+    assertTrue(msg.getContent().equals(PAYLOAD_REPLACED_ALL));
   }
 
   public void testReplaceFirstHexadecimal() throws Exception {
     FindAndReplaceService service = createServiceForTests(ReplacementSourceImpl.Hexadecimal, true);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD);
     execute(service, msg);
-    assertTrue(msg.getStringPayload().equals(PAYLOAD_REPLACED_FIRST_ONLY_HEX));
+    assertTrue(msg.getContent().equals(PAYLOAD_REPLACED_FIRST_ONLY_HEX));
   }
 
   public void testReplaceAllHexadecimal() throws Exception {
     FindAndReplaceService service = createServiceForTests(ReplacementSourceImpl.Hexadecimal, false);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD);
     execute(service, msg);
-    assertTrue(msg.getStringPayload().equals(PAYLOAD_REPLACED_ALL_HEX));
+    assertTrue(msg.getContent().equals(PAYLOAD_REPLACED_ALL_HEX));
   }
 
   private FindAndReplaceService createServiceForTests(ReplacementSourceImpl impl, boolean replaceFirst) {

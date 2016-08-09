@@ -208,7 +208,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg, createProduceDestination(connection.getPort()));
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getStringPayload());
+      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
     }
     finally {
@@ -237,7 +237,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg, createProduceDestination(connection.getPort()));
       // Because of redmineID #4715 it should just "return immediatel" which flushes the stream so there's no content.
-      assertEquals("Reply Payloads", "", reply.getStringPayload());
+      assertEquals("Reply Payloads", "", reply.getContent());
     }
     finally {
       stop(httpProducer);
@@ -256,7 +256,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg, createProduceDestination(connection.getPort()));
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getStringPayload());
+      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
       AdaptrisMessage receivedMsg = doAssertions(mockProducer);
       assertFalse(receivedMsg.containsKey("Content-Type"));
     }
@@ -311,7 +311,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg, createProduceDestination(connection.getPort()));
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getStringPayload());
+      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
       AdaptrisMessage receivedMsg = doAssertions(mockProducer);
       assertEquals("text/xml", receivedMsg.getMetadataValue("Http_Header_Content-Type"));
     } finally {
@@ -333,7 +333,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg, createProduceDestination(connection.getPort()));
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getStringPayload());
+      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
       AdaptrisMessage receivedMsg = doAssertions(mockProducer);
       assertEquals("text/xml", receivedMsg.getMetadataValue("Http_Header_Content-Type"));
     }
@@ -359,7 +359,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       ConfiguredProduceDestination dest = createProduceDestination(connection.getPort());
       dest.setDestination(dest.getDestination() + "?queryParam1=1&queryParam2=2&queryParam3=3");
       AdaptrisMessage reply = httpProducer.request(msg, dest);
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getStringPayload());
+      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
       AdaptrisMessage receivedMsg = doAssertions(mockProducer);
 
       assertTrue(receivedMsg.containsKey(CoreConstants.JETTY_QUERY_STRING));
@@ -390,7 +390,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       ConfiguredProduceDestination dest = createProduceDestination(connection.getPort());
       dest.setDestination(dest.getDestination() + "?queryParam1=1&queryParam2=2&queryParam3=3");
       AdaptrisMessage reply = httpProducer.request(msg, dest);
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getStringPayload());
+      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
       AdaptrisMessage receivedMsg = doAssertions(mockProducer);
 
       System.out.println("XXX - " + receivedMsg);
@@ -425,7 +425,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       ConfiguredProduceDestination dest = createProduceDestination(connection.getPort());
       dest.setDestination(dest.getDestination() + "?queryParam1=1&queryParam2=2&queryParam3=3");
       AdaptrisMessage reply = httpProducer.request(msg, dest);
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getStringPayload());
+      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
       AdaptrisMessage receivedMsg = doAssertions(mockProducer);
       assertTrue(receivedMsg.containsKey(CoreConstants.JETTY_QUERY_STRING));
       assertEquals("queryParam1=1&queryParam2=2&queryParam3=3", receivedMsg.getMetadataValue(CoreConstants.JETTY_QUERY_STRING));
@@ -457,7 +457,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       ConfiguredProduceDestination dest = createProduceDestination(connection.getPort());
       dest.setDestination(dest.getDestination() + "?queryParam1=1&queryParam2=2&queryParam3=3");
       AdaptrisMessage reply = httpProducer.request(msg, dest);
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getStringPayload());
+      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
       AdaptrisMessage receivedMsg = doAssertions(mockProducer);
       assertTrue(receivedMsg.containsKey(CoreConstants.JETTY_QUERY_STRING));
       assertEquals("queryParam1=1&queryParam2=2&queryParam3=3", receivedMsg.getMetadataValue(CoreConstants.JETTY_QUERY_STRING));
@@ -491,7 +491,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       ConfiguredProduceDestination dest = createProduceDestination(connection.getPort());
       dest.setDestination(dest.getDestination() + "?queryParam1=1&queryParam2=2&queryParam3=3");
       AdaptrisMessage reply = httpProducer.request(msg, dest);
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getStringPayload());
+      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
       AdaptrisMessage receivedMsg = doAssertions(mockProducer);
       assertTrue(receivedMsg.containsKey(CoreConstants.JETTY_QUERY_STRING));
       assertEquals("queryParam1=1&queryParam2=2&queryParam3=3", receivedMsg.getMetadataValue(CoreConstants.JETTY_QUERY_STRING));
@@ -526,7 +526,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       ConfiguredProduceDestination dest = createProduceDestination(connection.getPort());
       dest.setDestination(dest.getDestination() + "?queryParam1=1&queryParam2=2&queryParam3=3");
       AdaptrisMessage reply = httpProducer.request(msg, dest);
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getStringPayload());
+      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
       AdaptrisMessage receivedMsg = doAssertions(mockProducer);
       assertTrue(receivedMsg.containsKey(CoreConstants.JETTY_QUERY_STRING));
       assertEquals("queryParam1=1&queryParam2=2&queryParam3=3", receivedMsg.getMetadataValue(CoreConstants.JETTY_QUERY_STRING));
@@ -575,7 +575,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg, createProduceDestination(connection.getPort()));
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getStringPayload());
+      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
     }
     finally {
@@ -597,7 +597,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg, createProduceDestination(connection.getPort()));
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getStringPayload());
+      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
     }
     finally {
@@ -620,7 +620,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg, createProduceDestination(connection.getPort()));
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getStringPayload());
+      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
     }
     finally {
@@ -649,7 +649,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg, createProduceDestination(connection.getPort()));
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getStringPayload());
+      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
       doAssertions(mock2);
     }
     finally {
@@ -662,7 +662,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
   protected AdaptrisMessage doAssertions(MockMessageProducer mockProducer) {
     assertEquals("Only 1 message consumed", 1, mockProducer.getMessages().size());
     AdaptrisMessage msg = mockProducer.getMessages().get(0);
-    assertEquals("Consumed Payload", XML_PAYLOAD, msg.getStringPayload());
+    assertEquals("Consumed Payload", XML_PAYLOAD, msg.getContent());
     assertTrue(msg.containsKey(CoreConstants.JETTY_URI));
     assertEquals(URL_TO_POST_TO, msg.getMetadataValue(CoreConstants.JETTY_URI));
     assertTrue(msg.containsKey(CoreConstants.JETTY_URL));
@@ -694,11 +694,11 @@ public class HttpConsumerTest extends HttpConsumerExample {
       httpProducer.setMetadataFilter(filter);
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg, createProduceDestination(connection.getPort()));
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getStringPayload());
+      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
 
       AdaptrisMessage consumedMsg = mockProducer.getMessages().get(0);
-      assertEquals("Consumed Payload", XML_PAYLOAD, consumedMsg.getStringPayload());
+      assertEquals("Consumed Payload", XML_PAYLOAD, consumedMsg.getContent());
       assertTrue(consumedMsg.containsKey(X_HTTP_KEY1));
       assertEquals(METADATA_VALUE1, consumedMsg.getMetadataValue(X_HTTP_KEY1));
 
@@ -729,7 +729,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg, createProduceDestination(connection.getPort()));
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getStringPayload());
+      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
       assertEquals("Consumed Message Java Class", AdaptrisMessageStub.class, mockProducer.getMessages().get(0).getClass());
     }
@@ -796,7 +796,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       httpProducer.setPassword("password");
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg, createProduceDestination(connection.getPort()));
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getStringPayload());
+      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
     }
     finally {
@@ -832,7 +832,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       httpProducer.setPassword("password");
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg, createProduceDestination(connection.getPort()));
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getStringPayload());
+      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
     } finally {
       stop(httpProducer);
@@ -867,7 +867,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       msg.addMetadata("content.type", "text/xml");
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg, createProduceDestination(connection.getPort()));
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getStringPayload());
+      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
     }
     finally {

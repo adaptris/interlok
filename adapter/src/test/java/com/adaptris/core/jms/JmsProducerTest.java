@@ -556,8 +556,8 @@ public class JmsProducerTest extends JmsProducerCase {
       AdaptrisMessage msg2 = createMessage();
       serviceList.doService(msg1);
       serviceList.doService(msg2);
-      assertEquals(DEFAULT_PAYLOAD.toUpperCase(), msg1.getStringPayload());
-      assertEquals(DEFAULT_PAYLOAD.toUpperCase(), msg2.getStringPayload());
+      assertEquals(DEFAULT_PAYLOAD.toUpperCase(), msg1.getContent());
+      assertEquals(DEFAULT_PAYLOAD.toUpperCase(), msg2.getContent());
     } finally {
       stop(serviceList);
       echo.stop();

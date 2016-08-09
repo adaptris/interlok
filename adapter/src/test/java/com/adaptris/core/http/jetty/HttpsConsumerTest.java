@@ -71,7 +71,7 @@ public class HttpsConsumerTest extends HttpConsumerTest {
       msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
       start(myHttpProducer);
       AdaptrisMessage reply = myHttpProducer.request(msg, createProduceDestination(connection.getPort()));
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getStringPayload());
+      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
     }
     finally {

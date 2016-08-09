@@ -100,7 +100,7 @@ public class SplitByMetadataTest extends SplitterCase {
     assertEquals("Number of messages", 1, producer.getMessages().size());
     for (AdaptrisMessage m : producer.getMessages()) {
       assertFalse(m.containsKey(SPLIT_METADATA_KEY));
-      assertEquals(XML_MESSAGE, m.getStringPayload());
+      assertEquals(XML_MESSAGE, m.getContent());
     }
   }
 
@@ -109,7 +109,7 @@ public class SplitByMetadataTest extends SplitterCase {
     String s = msg.getMetadataValue(SPLIT_METADATA_KEY);
     assertTrue(s.matches("[abcd]{1}"));
     assertEquals(A_B_C_D, msg.getMetadataValue(SPLIT_ON_METADATA_KEY));
-    assertEquals(XML_MESSAGE, msg.getStringPayload());
+    assertEquals(XML_MESSAGE, msg.getContent());
   }
 
   @Override

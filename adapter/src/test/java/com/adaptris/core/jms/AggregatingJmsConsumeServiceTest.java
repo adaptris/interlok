@@ -68,8 +68,8 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
       AdaptrisMessage msg = new DefaultMessageFactory().newMessage(PAYLOAD);
       msg.addMetadata(DEFAULT_FILTER_KEY, "JMSCorrelationID = '0001'");
       service.doService(msg);
-      assertNotSame(PAYLOAD, msg.getStringPayload());
-      assertEquals(DATA_PAYLOAD, msg.getStringPayload());
+      assertNotSame(PAYLOAD, msg.getContent());
+      assertEquals(DATA_PAYLOAD, msg.getContent());
     }
     finally {
       stop(service);

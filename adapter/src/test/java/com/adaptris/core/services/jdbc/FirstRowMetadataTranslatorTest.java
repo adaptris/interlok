@@ -68,7 +68,7 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
     s.setResultSetTranslator(t);
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
-    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getStringPayload());
+    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
     assertTrue(msg.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION));
     assertEquals(entry.getVersion(), msg.getMetadataValue(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION));
     assertTrue(msg.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_TYPE));
@@ -91,7 +91,7 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
     s.setResultSetTranslator(t);
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
-    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getStringPayload());
+    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
     assertTrue(msg.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION));
     assertEquals(entry.getVersion(), msg.getMetadataValue(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION));
     assertTrue(msg.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_TYPE));
@@ -110,7 +110,7 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
     s.setResultSetTranslator(t);
     AdaptrisMessage msg = createMessage(AdaptrisMessageFactory.getDefaultInstance(), "ISO-8859-1", entry, true);
     execute(s, msg);
-    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getStringPayload());
+    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
     assertTrue(msg.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION));
     assertEquals(entry.getVersion(), msg.getMetadataValue(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION));
     assertTrue(msg.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_TYPE));
@@ -143,7 +143,7 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
     AdaptrisMessage msg = createMessage(entry);
     msg.addMetadata(METADATA_KEY_DATE, dateToString(yesterday));
     execute(service, msg);
-    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getStringPayload());
+    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
     assertTrue(msg.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION));
     assertEquals(entry.getVersion(), msg.getMetadataValue(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION));
     assertTrue(msg.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_TYPE));
@@ -168,7 +168,7 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
     s.setResultSetTranslator(t);
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
-    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getStringPayload());
+    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
     assertTrue(msg.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION));
     assertEquals(entry.getVersion(), msg.getMetadataValue(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION));
     assertTrue(msg.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_TYPE));
@@ -188,7 +188,7 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
     s.setResultSetTranslator(t);
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
-    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getStringPayload());
+    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
     assertTrue(msg.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION.toUpperCase()));
     assertEquals(entry.getVersion(),
         msg.getMetadataValue(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION.toUpperCase()));
@@ -210,7 +210,7 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
     s.setResultSetTranslator(t);
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
-    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getStringPayload());
+    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
     assertTrue(msg.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION.toLowerCase()));
     assertEquals(entry.getVersion(),
         msg.getMetadataValue(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION.toLowerCase()));
@@ -231,7 +231,7 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
     s.setResultSetTranslator(t);
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
-    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getStringPayload());
+    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
     assertTrue(msg.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + StringUtils.capitalize(COLUMN_VERSION)));
     assertEquals(entry.getVersion(),
         msg.getMetadataValue(t.getMetadataKeyPrefix() + t.getSeparator() + StringUtils.capitalize(COLUMN_VERSION)));
@@ -340,7 +340,7 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
 
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
-    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getStringPayload());
+    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
     assertTrue(msg.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION));
     assertEquals(entry.getVersion(), msg.getMetadataValue(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION));
     assertTrue(msg.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_TYPE));
@@ -371,7 +371,7 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
 
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
-    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getStringPayload());
+    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
     assertTrue(msg.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION));
     assertEquals(entry.getVersion(), msg.getMetadataValue(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION));
     assertTrue(msg.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_TYPE));
@@ -402,7 +402,7 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
 
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
-    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getStringPayload());
+    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
     assertTrue(msg.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION));
     assertEquals(entry.getVersion(), msg.getMetadataValue(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION));
     assertTrue(msg.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_TYPE));
@@ -441,7 +441,7 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
 
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
-    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getStringPayload());
+    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
     assertTrue(msg.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION));
     assertEquals(entry.getVersion(), msg.getMetadataValue(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION));
     assertTrue(msg.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_TYPE));
@@ -473,7 +473,7 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
 
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
-    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getStringPayload());
+    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
     assertTrue(msg.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION));
     assertEquals(entry.getVersion(), msg.getMetadataValue(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION));
     assertTrue(msg.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_TYPE));
@@ -505,7 +505,7 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
 
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
-    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getStringPayload());
+    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
     assertTrue(msg.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION));
     assertEquals(entry.getVersion(), msg.getMetadataValue(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION));
     assertTrue(msg.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_TYPE));
@@ -537,7 +537,7 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
 
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
-    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getStringPayload());
+    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
     assertTrue(msg.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION));
     assertEquals(entry.getVersion(), msg.getMetadataValue(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION));
     assertTrue(msg.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_TYPE));
@@ -569,7 +569,7 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
 
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
-    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getStringPayload());
+    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
     assertTrue(msg.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION));
     assertEquals(entry.getVersion(), msg.getMetadataValue(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION));
     assertTrue(msg.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_TYPE));

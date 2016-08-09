@@ -86,7 +86,7 @@ public abstract class EncryptionServiceCase extends SecurityServiceCase {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(EXAMPLE_MSG);
     execute(input, msg);
     execute(output, msg);
-    assertEquals("Payload equality", EXAMPLE_MSG, msg.getStringPayload());
+    assertEquals("Payload equality", EXAMPLE_MSG, msg.getContent());
   }
 
   public void testEncryptionDecryptionWithConfiguredProvider() throws Exception {
@@ -100,7 +100,7 @@ public abstract class EncryptionServiceCase extends SecurityServiceCase {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(EXAMPLE_MSG);
     execute(input, msg);
     execute(output, msg);
-    assertEquals("Payload equality", EXAMPLE_MSG, msg.getStringPayload());
+    assertEquals("Payload equality", EXAMPLE_MSG, msg.getContent());
   }
 
   public void testEncryptionDecryptionWithMissingPrivateKeyPassword() throws Exception {
@@ -114,7 +114,7 @@ public abstract class EncryptionServiceCase extends SecurityServiceCase {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(EXAMPLE_MSG);
     execute(input, msg);
     execute(output, msg);
-    assertEquals("Payload equality", EXAMPLE_MSG, msg.getStringPayload());
+    assertEquals("Payload equality", EXAMPLE_MSG, msg.getContent());
   }
 
   public void testEncryptionDecryptionWithEncryptedPassword() throws Exception {
@@ -129,7 +129,7 @@ public abstract class EncryptionServiceCase extends SecurityServiceCase {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(EXAMPLE_MSG);
     execute(input, msg);
     execute(output, msg);
-    assertEquals("Payload equality", EXAMPLE_MSG, msg.getStringPayload());
+    assertEquals("Payload equality", EXAMPLE_MSG, msg.getContent());
   }
 
   public void testFailedEncryption() throws Exception {
@@ -175,7 +175,7 @@ public abstract class EncryptionServiceCase extends SecurityServiceCase {
     DecryptionService output = new DecryptionService();
     applyConfigForTests(output, url);
     execute(output, msg);
-    assertEquals("Payload equality", EXAMPLE_MSG, msg.getStringPayload());
+    assertEquals("Payload equality", EXAMPLE_MSG, msg.getContent());
   }
 
   public void testRoundTripWithRemotePartnerFromDefaultMetadata() throws Exception {
@@ -190,7 +190,7 @@ public abstract class EncryptionServiceCase extends SecurityServiceCase {
     msg.addMetadata(CoreConstants.SECURITY_REMOTE_PARTNER, PROPERTIES.getProperty(SECURITY_ALIAS));
     execute(input, msg);
     execute(output, msg);
-    assertEquals("Payload equality", EXAMPLE_MSG, msg.getStringPayload());
+    assertEquals("Payload equality", EXAMPLE_MSG, msg.getContent());
   }
 
   public void testRoundTripWithRemotePartnerFromCustomMetadata() throws Exception {
@@ -207,7 +207,7 @@ public abstract class EncryptionServiceCase extends SecurityServiceCase {
     msg.addMetadata("MyRemotePartner", PROPERTIES.getProperty(SECURITY_ALIAS));
     execute(input, msg);
     execute(output, msg);
-    assertEquals("Payload equality", EXAMPLE_MSG, msg.getStringPayload());
+    assertEquals("Payload equality", EXAMPLE_MSG, msg.getContent());
   }
 
   public void testRoundTripWithBadMetadata() throws Exception {

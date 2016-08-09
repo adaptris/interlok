@@ -151,7 +151,7 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
       assertEquals("Make sure all produced", 1, producer.getMessages().size());
       for (Iterator i = producer.getMessages().iterator(); i.hasNext();) {
         AdaptrisMessage m = (AdaptrisMessage) i.next();
-        assertEquals(PAYLOAD_2, m.getStringPayload());
+        assertEquals(PAYLOAD_2, m.getContent());
         assertTrue("Contains correct metadata key", m.containsKey(METADATA_KEY));
         assertEquals(METADATA_VALUE, m.getMetadataValue(METADATA_KEY));
       }
@@ -186,7 +186,7 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
       assertEquals("Make sure all produced", 1, producer.getMessages().size());
       for (Iterator i = producer.getMessages().iterator(); i.hasNext();) {
         AdaptrisMessage m = (AdaptrisMessage) i.next();
-        assertEquals(PAYLOAD_2, m.getStringPayload());
+        assertEquals(PAYLOAD_2, m.getContent());
         assertTrue("Contains correct metadata key", m.containsKey(METADATA_KEY));
         assertEquals(METADATA_VALUE, m.getMetadataValue(METADATA_KEY));
       }
@@ -222,7 +222,7 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
       assertEquals("Make sure all produced", count, producer.messageCount());
       assertEquals("Make sure all intercepted", count, interceptor.messageCount());
       for (AdaptrisMessage m : producer.getMessages()) {
-        assertEquals(PAYLOAD_2, m.getStringPayload());
+        assertEquals(PAYLOAD_2, m.getContent());
         assertTrue("Contains correct metadata key", m.containsKey(METADATA_KEY));
         assertEquals(METADATA_VALUE, m.getMetadataValue(METADATA_KEY));
       }
@@ -262,7 +262,7 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
       assertEquals("Make sure all produced", 1, producer.getMessages().size());
       for (Iterator i = producer.getMessages().iterator(); i.hasNext();) {
         AdaptrisMessage m = (AdaptrisMessage) i.next();
-        assertEquals(PAYLOAD_2, m.getStringPayload());
+        assertEquals(PAYLOAD_2, m.getContent());
         assertTrue("Contains correct metadata key", m.containsKey(METADATA_KEY));
         assertEquals(METADATA_VALUE, m.getMetadataValue(METADATA_KEY));
       }
@@ -301,7 +301,7 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
       assertEquals(1, meh.getMessages().size());
       for (Iterator i = meh.getMessages().iterator(); i.hasNext();) {
         AdaptrisMessage m = (AdaptrisMessage) i.next();
-        assertEquals(PAYLOAD_1, m.getStringPayload());
+        assertEquals(PAYLOAD_1, m.getContent());
         assertFalse("Does not contains correct metadata key", m.containsKey(METADATA_KEY));
       }
     }
@@ -334,7 +334,7 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
       assertEquals(1, meh.getMessages().size());
       for (Iterator i = meh.getMessages().iterator(); i.hasNext();) {
         AdaptrisMessage m = (AdaptrisMessage) i.next();
-        assertEquals(PAYLOAD_1, m.getStringPayload());
+        assertEquals(PAYLOAD_1, m.getContent());
         assertFalse("Does not contains correct metadata key", m.containsKey(METADATA_KEY));
       }
     }
@@ -377,7 +377,7 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
       assertEquals(1, meh.getMessages().size());
       for (Iterator i = meh.getMessages().iterator(); i.hasNext();) {
         AdaptrisMessage m = (AdaptrisMessage) i.next();
-        assertEquals(PAYLOAD_1, m.getStringPayload());
+        assertEquals(PAYLOAD_1, m.getContent());
         assertFalse("Does not contains correct metadata key", m.containsKey(METADATA_KEY));
       }
     }
@@ -423,7 +423,7 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
       assertEquals(1, meh.getMessages().size());
       for (Iterator i = meh.getMessages().iterator(); i.hasNext();) {
         AdaptrisMessage m = (AdaptrisMessage) i.next();
-        assertEquals(PAYLOAD_1, m.getStringPayload());
+        assertEquals(PAYLOAD_1, m.getContent());
         assertFalse("Does not contains correct metadata key", m.containsKey(METADATA_KEY));
       }
     }

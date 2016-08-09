@@ -177,7 +177,7 @@ public class QuartzCronPollerTest extends BaseCase {
     assertTrue("No. Produced Messages >=1", mock1.getMessages().size() >= 1);
     for (Iterator i = mock1.getMessages().iterator(); i.hasNext();) {
       AdaptrisMessage msg = (AdaptrisMessage) i.next();
-      assertEquals("Payloads", PAYLOAD, msg.getStringPayload());
+      assertEquals("Payloads", PAYLOAD, msg.getContent());
     }
     assertEquals("No. Produced messages = 0", 0, mock2.getMessages().size());
   }
@@ -204,7 +204,7 @@ public class QuartzCronPollerTest extends BaseCase {
     assertTrue("No. Produced Messages >=1", mock1.getMessages().size() >= 1);
     for (Iterator i = mock1.getMessages().iterator(); i.hasNext();) {
       AdaptrisMessage msg = (AdaptrisMessage) i.next();
-      assertEquals("Payloads", PAYLOAD, msg.getStringPayload());
+      assertEquals("Payloads", PAYLOAD, msg.getContent());
     }
     assertEquals("No. Produced messages = 0", 0, mock2.getMessages().size());
   }

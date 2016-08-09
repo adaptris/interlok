@@ -42,7 +42,7 @@ public class Base64ServiceTest extends GeneralServiceExample {
     execute(new Base64DecodeService(), msg);
 
     assertEquals("base64 then debase64 gives same result", LINE, msg
-        .getStringPayload());
+        .getContent());
   }
 
   @Override

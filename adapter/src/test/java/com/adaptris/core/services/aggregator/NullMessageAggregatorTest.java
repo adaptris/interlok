@@ -43,7 +43,7 @@ public class NullMessageAggregatorTest extends AggregatingServiceExample {
     {
         splitMsg1, splitMsg2
     }));
-    assertEquals("Goodbye", original.getStringPayload());
+    assertEquals("Goodbye", original.getContent());
     assertEquals("originalValue", original.getMetadataValue("originalKey"));
   }
 

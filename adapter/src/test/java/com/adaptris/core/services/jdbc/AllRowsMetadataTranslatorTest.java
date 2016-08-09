@@ -51,7 +51,7 @@ public class AllRowsMetadataTranslatorTest extends JdbcQueryServiceCase {
     s.setResultSetTranslator(t);
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
-    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getStringPayload());
+    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
     String metadataKeyColumnVersion = t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION + t.getSeparator();
     String metadataKeyColumnType = t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_TYPE + t.getSeparator();
     for (int i = 0; i < 10; i++) {
@@ -84,7 +84,7 @@ public class AllRowsMetadataTranslatorTest extends JdbcQueryServiceCase {
     s.setResultSetTranslator(t);
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
-    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getStringPayload());
+    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
     String metadataKeyColumnVersion = t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION + t.getSeparator();
     String metadataKeyColumnType = t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_TYPE + t.getSeparator();
     for (int i = 0; i < 10; i++) {
@@ -110,7 +110,7 @@ public class AllRowsMetadataTranslatorTest extends JdbcQueryServiceCase {
     s.setResultSetTranslator(t);
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
-    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getStringPayload());
+    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
     String metadataKeyColumnVersion = t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION.toUpperCase() + t.getSeparator();
     String metadataKeyColumnType = t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_TYPE.toUpperCase() + t.getSeparator();
     for (int i = 0; i < 10; i++) {

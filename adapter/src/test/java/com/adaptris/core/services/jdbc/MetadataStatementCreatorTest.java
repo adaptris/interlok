@@ -56,7 +56,7 @@ public class MetadataStatementCreatorTest extends JdbcQueryServiceCase {
     assertNull(s.getStatement()); // Make sure the service doesn't have the statement anymore
     
     execute(s, msg);
-    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getStringPayload());
+    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
     assertTrue(msg.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION));
     assertEquals(entry.getVersion(), msg.getMetadataValue(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION));
     assertTrue(msg.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_TYPE));

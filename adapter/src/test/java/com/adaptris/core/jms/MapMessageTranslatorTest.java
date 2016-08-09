@@ -66,7 +66,7 @@ public class MapMessageTranslatorTest extends MessageTypeTranslatorCase {
       start(t, session);
       AdaptrisMessage msg = t.translate(jmsMsg);
       assertMetadata(msg);
-      assertTrue(msg.getStringPayload().equals(TEXT));
+      assertTrue(msg.getContent().equals(TEXT));
     }
     finally {
       stop(t);

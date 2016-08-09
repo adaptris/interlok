@@ -93,7 +93,7 @@ public class JmxOperationCallServiceTest extends ServiceCase {
     callService.setResultValueTranslator(new PayloadValueTranslator());
     callService.doService(message);
     
-    assertEquals(operationReturnValue, message.getStringPayload());
+    assertEquals(operationReturnValue, message.getContent());
   }
   
   public void testPayloadReturnNullPayloadType() throws Exception {
@@ -106,7 +106,7 @@ public class JmxOperationCallServiceTest extends ServiceCase {
     callService.setResultValueTranslator(payloadValueTranslator);
     callService.doService(message);
     
-    assertEquals(operationReturnValue, message.getStringPayload());
+    assertEquals(operationReturnValue, message.getContent());
   }
   
   public void testPayloadReturnWithParams() throws Exception {
@@ -122,7 +122,7 @@ public class JmxOperationCallServiceTest extends ServiceCase {
     callService.setResultValueTranslator(new PayloadValueTranslator());
     callService.doService(message);
     
-    assertEquals(operationReturnValue, message.getStringPayload());
+    assertEquals(operationReturnValue, message.getContent());
   }
   
   public void testNoReturn() throws Exception {
@@ -133,7 +133,7 @@ public class JmxOperationCallServiceTest extends ServiceCase {
     callService.setResultValueTranslator(null);
     callService.doService(message);
     
-    assertEquals(originalPayload, message.getStringPayload());
+    assertEquals(originalPayload, message.getContent());
   }
   
   public void testInvokerException() throws Exception {

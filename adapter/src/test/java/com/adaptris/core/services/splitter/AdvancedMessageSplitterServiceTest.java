@@ -229,7 +229,7 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
     assertEquals("Should have " + msgCount + " produced message", msgCount, eh.getMessages().size());
     for (Iterator i = eh.getMessages().iterator(); i.hasNext();) {
       AdaptrisMessage m = (AdaptrisMessage) i.next();
-      Object o = cm.unmarshal(m.getStringPayload());
+      Object o = cm.unmarshal(m.getContent());
       assertEquals("Classname", expectedEventClass, o.getClass());
     }
   }

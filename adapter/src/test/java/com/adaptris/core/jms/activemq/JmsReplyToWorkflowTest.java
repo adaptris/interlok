@@ -168,7 +168,7 @@ public class JmsReplyToWorkflowTest extends BaseCase {
       start(sender);
       AdaptrisMessage m = AdaptrisMessageFactory.getDefaultInstance().newMessage(REQUEST_TEXT);
       sender.doService(m);
-      assertEquals(REPLY_TEXT, m.getStringPayload());
+      assertEquals(REPLY_TEXT, m.getContent());
     }
     finally {
       channel.requestClose();
@@ -195,7 +195,7 @@ public class JmsReplyToWorkflowTest extends BaseCase {
       start(sender);
       AdaptrisMessage m = AdaptrisMessageFactory.getDefaultInstance().newMessage(REQUEST_TEXT);
       sender.doService(m);
-      assertEquals(REPLY_TEXT, m.getStringPayload());
+      assertEquals(REPLY_TEXT, m.getContent());
     }
     finally {
       channel.requestClose();
@@ -228,7 +228,7 @@ public class JmsReplyToWorkflowTest extends BaseCase {
       start(sender);
       AdaptrisMessage m = AdaptrisMessageFactory.getDefaultInstance().newMessage(REQUEST_TEXT);
       sender.doService(m);
-      assertEquals(REPLY_TEXT, m.getStringPayload());
+      assertEquals(REPLY_TEXT, m.getContent());
     }
     finally {
       stop(channel);
@@ -257,7 +257,7 @@ public class JmsReplyToWorkflowTest extends BaseCase {
       start(sender);
       AdaptrisMessage m = AdaptrisMessageFactory.getDefaultInstance().newMessage(REQUEST_TEXT);
       sender.doService(m);
-      assertEquals(REPLY_TEXT, m.getStringPayload());
+      assertEquals(REPLY_TEXT, m.getContent());
       assertEquals(1, interceptor.messageCount());
     }
     finally {

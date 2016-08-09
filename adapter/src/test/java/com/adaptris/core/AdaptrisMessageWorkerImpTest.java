@@ -97,7 +97,7 @@ public class AdaptrisMessageWorkerImpTest extends BaseCase {
     byte[] bytes = worker.encode(msg);
     AdaptrisMessage msg2 = worker.decode(bytes);
     assertEquals(msg.getUniqueId(), msg2.getUniqueId());
-    assertEquals(msg.getStringPayload(), msg2.getStringPayload());
+    assertEquals(msg.getContent(), msg2.getContent());
     assertTrue(msg2.containsKey("key"));
     assertEquals("data", msg2.getMetadataValue("key"));
   }
@@ -112,7 +112,7 @@ public class AdaptrisMessageWorkerImpTest extends BaseCase {
     byte[] bytes = worker.encode(msg);
     AdaptrisMessage msg2 = worker.decode(bytes);
     assertNotSame(msg.getUniqueId(), msg2.getUniqueId());
-    assertEquals(msg.getStringPayload(), msg2.getStringPayload());
+    assertEquals(msg.getContent(), msg2.getContent());
     assertFalse(msg2.containsKey("key"));
   }
 

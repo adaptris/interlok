@@ -65,8 +65,8 @@ public class AggregatingFsConsumeServiceTest extends AggregatingServiceExample {
       start(service);
       AdaptrisMessage msg = new DefaultMessageFactory().newMessage(INITIAL_PAYLOAD);
       service.doService(msg);
-      assertNotSame(INITIAL_PAYLOAD, msg.getStringPayload());
-      assertEquals(DATA_PAYLOAD, msg.getStringPayload());
+      assertNotSame(INITIAL_PAYLOAD, msg.getContent());
+      assertEquals(DATA_PAYLOAD, msg.getContent());
     }
     finally {
       stop(service);

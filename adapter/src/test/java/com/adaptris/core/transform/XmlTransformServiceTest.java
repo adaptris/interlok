@@ -480,8 +480,8 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     service.setUseMetadataAsStylesheetParameters(true);
     execute(service, msg);
 
-    assertTrue("payload " + msg.getStringPayload(),
-        msg.getStringPayload().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
+    assertTrue("payload " + msg.getContent(),
+        msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
   }
 
   public void testSingleParameter_XSLTOutput() throws Exception {
@@ -559,7 +559,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     service.setXmlTransformerFactory(new StxTransformerFactory());
     service.setUseMetadataAsStylesheetParameters(true);
     execute(service, msg);
-    assertTrue("payload " + msg.getStringPayload(),
+    assertTrue("payload " + msg.getContent(),
         msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
   }
 
@@ -589,7 +589,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     service.setUseMetadataAsStylesheetParameters(true);
     execute(service, msg);
 
-    assertTrue("payload " + msg.getStringPayload(),
+    assertTrue("payload " + msg.getContent(),
         msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
   }
 
@@ -626,7 +626,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     service.setUseMetadataAsStylesheetParameters(true);
     execute(service, msg);
 
-    assertTrue("payload " + msg.getStringPayload(),
+    assertTrue("payload " + msg.getContent(),
         msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
   }
 
