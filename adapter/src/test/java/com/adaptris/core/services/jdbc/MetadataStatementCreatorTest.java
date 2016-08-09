@@ -35,6 +35,7 @@ public class MetadataStatementCreatorTest extends JdbcQueryServiceCase {
 
   }
 
+  @SuppressWarnings("deprecation")
   public void testMetadataStatementCreator() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -64,6 +65,7 @@ public class MetadataStatementCreatorTest extends JdbcQueryServiceCase {
     assertFalse(msg.containsKey(JdbcDataQueryService.class.getCanonicalName()));
   }
   
+  @SuppressWarnings("deprecation")
   public void testMultipleExecutions() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);

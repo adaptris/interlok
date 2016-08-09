@@ -44,7 +44,7 @@ public class AllRowsMetadataTranslatorTest extends JdbcQueryServiceCase {
 
     populateDatabase(dbItems, false);
     JdbcDataQueryService s = createMetadataService();
-    s.setStatement(ALL_ROWS_QUERY);
+    s.setStatementCreator(new ConfiguredSQLStatement(ALL_ROWS_QUERY));
     s.getStatementParameters().clear();
     AllRowsMetadataTranslator t = new AllRowsMetadataTranslator();
     t.setRowTotalMetadataKey("TotalRows");
@@ -72,7 +72,7 @@ public class AllRowsMetadataTranslatorTest extends JdbcQueryServiceCase {
 
     populateDatabase(dbItems, false);
     JdbcDataQueryService s = createMetadataService();
-    s.setStatement(ALL_ROWS_QUERY_NAMED_PARAMS);
+    s.setStatementCreator(new ConfiguredSQLStatement(ALL_ROWS_QUERY_NAMED_PARAMS));
     
     StatementParameter adapterVersion = new StatementParameter("xxx", "java.lang.String", StatementParameter.QueryType.constant);
     adapterVersion.setName("adapterVersion");
@@ -103,7 +103,7 @@ public class AllRowsMetadataTranslatorTest extends JdbcQueryServiceCase {
 
     populateDatabase(dbItems, false);
     JdbcDataQueryService s = createMetadataService();
-    s.setStatement(ALL_ROWS_QUERY);
+    s.setStatementCreator(new ConfiguredSQLStatement(ALL_ROWS_QUERY));
     s.getStatementParameters().clear();
     AllRowsMetadataTranslator t = new AllRowsMetadataTranslator();
     t.setColumnNameStyle(ResultSetTranslatorImp.ColumnStyle.UpperCase);
@@ -128,7 +128,7 @@ public class AllRowsMetadataTranslatorTest extends JdbcQueryServiceCase {
 
     populateDatabase(dbItems, false);
     JdbcDataQueryService s = createMetadataService();
-    s.setStatement(ALL_ROWS_QUERY);
+    s.setStatementCreator(new ConfiguredSQLStatement(ALL_ROWS_QUERY));
     s.getStatementParameters().clear();
     AllRowsMetadataTranslator t = new AllRowsMetadataTranslator();
     t.setColumnNameStyle(ResultSetTranslatorImp.ColumnStyle.LowerCase);
@@ -154,7 +154,7 @@ public class AllRowsMetadataTranslatorTest extends JdbcQueryServiceCase {
 
     populateDatabase(dbItems, false);
     JdbcDataQueryService s = createMetadataService();
-    s.setStatement(ALL_ROWS_QUERY);
+    s.setStatementCreator(new ConfiguredSQLStatement(ALL_ROWS_QUERY));
     s.getStatementParameters().clear();
     AllRowsMetadataTranslator t = new AllRowsMetadataTranslator();
     t.setColumnNameStyle(ResultSetTranslatorImp.ColumnStyle.Capitalize);

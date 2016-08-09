@@ -129,7 +129,8 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
     JdbcDataQueryService service = new JdbcDataQueryService();
     service.setConnection(new JdbcConnection(PROPERTIES.getProperty(JDBC_QUERYSERVICE_URL),
         PROPERTIES.getProperty(JDBC_QUERYSERVICE_DRIVER)));
-    service.setStatement(DATE_QUERY_SQL);
+
+    service.setStatementCreator(new ConfiguredSQLStatement(DATE_QUERY_SQL));
     DateStatementParameter tsp = new DateStatementParameter();
     tsp.setDateFormat(DATE_FORMAT);
     tsp.setQueryType(StatementParameter.QueryType.metadata);
