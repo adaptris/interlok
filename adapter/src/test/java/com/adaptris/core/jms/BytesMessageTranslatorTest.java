@@ -204,7 +204,7 @@ public class BytesMessageTranslatorTest extends MessageTypeTranslatorCase {
       jmsMsg.reset();
       AdaptrisMessage msg = trans.translate(jmsMsg);
       assertMetadata(msg);
-      assertEquals(TEXT, msg.getStringPayload());
+      assertEquals(TEXT, msg.getContent());
     }
     finally {
       stop(trans);

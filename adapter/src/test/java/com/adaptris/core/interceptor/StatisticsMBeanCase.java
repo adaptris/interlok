@@ -46,7 +46,6 @@ import com.adaptris.core.runtime.WorkflowManagerMBean;
 import com.adaptris.core.util.JmxHelper;
 import com.adaptris.util.GuidGenerator;
 
-@SuppressWarnings("deprecation")
 public abstract class StatisticsMBeanCase extends BaseCase {
 
   protected static final String DEFAULT_INTERCEPTOR_NAME = "MMI";

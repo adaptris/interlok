@@ -120,7 +120,7 @@ public class MessageDigestErrorEntry extends MessageDigestEntry {
   }
 
   private void addException(AdaptrisMessage msg) {
-    Map<String, Object> objectMetadata = msg.getObjectMetadata();
+    Map<Object, Object> objectMetadata = msg.getObjectHeaders();
     if (objectMetadata.containsKey(OBJ_METADATA_EXCEPTION)) {
       Exception e = (Exception) objectMetadata.get(OBJ_METADATA_EXCEPTION);
       setStackTrace(e);

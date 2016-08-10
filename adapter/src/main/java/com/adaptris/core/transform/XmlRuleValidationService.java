@@ -19,6 +19,7 @@ package com.adaptris.core.transform;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdapterComponent;
@@ -56,7 +57,9 @@ public class XmlRuleValidationService extends ServiceImp {
   @XStreamImplicit(itemFieldName = "validation-stage")
   @NotNull
   @AutoPopulated
+  @Valid
   private List<ValidationStage> validationStages = new ArrayList<ValidationStage>();
+  @Valid
   private KeyValuePairSet namespaceContext;
   private transient XmlRuleValidator validator;
 

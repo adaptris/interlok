@@ -196,18 +196,18 @@ public class JdbcDataQueryService extends JdbcServiceWithParameters {
     if (namespaceCtx != null) {
       builder = builder.withNamespaceAware(true);
     }
-    msg.getObjectMetadata().put(KEY_DOCBUILDER_FAC, builder);
+    msg.getObjectHeaders().put(KEY_DOCBUILDER_FAC, builder);
     if (containsXpath(getStatementParameters())) {
-      msg.getObjectMetadata().put(KEY_XML_UTILS, XmlHelper.createXmlUtils(msg, namespaceCtx, builder));
+      msg.getObjectHeaders().put(KEY_XML_UTILS, XmlHelper.createXmlUtils(msg, namespaceCtx, builder));
     }
     if (namespaceCtx != null) {
-      msg.getObjectMetadata().put(KEY_NAMESPACE_CTX, namespaceCtx);
+      msg.getObjectHeaders().put(KEY_NAMESPACE_CTX, namespaceCtx);
     }
   }
 
   private void destroyXmlHelper(AdaptrisMessage msg) {
-    msg.getObjectMetadata().remove(KEY_XML_UTILS);
-    msg.getObjectMetadata().remove(KEY_NAMESPACE_CTX);
+    msg.getObjectHeaders().remove(KEY_XML_UTILS);
+    msg.getObjectHeaders().remove(KEY_NAMESPACE_CTX);
   }
 
   private static boolean containsXpath(List<JdbcStatementParameter> list) {

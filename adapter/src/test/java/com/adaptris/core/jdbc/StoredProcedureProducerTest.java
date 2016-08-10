@@ -587,14 +587,14 @@ public class StoredProcedureProducerTest extends ProducerCase {
       inParameter.setType(ParameterValueType.VARCHAR);
       AdaptrisMessage message = createMessage();
 
-      message.addObjectMetadata("xType", "Sold");
+      message.addObjectHeader("xType", "Sold");
 
       InParameters inParameters = new InParameters();
       inParameters.add(inParameter);
 
       spp.setInParameters(inParameters);
 
-      Map<String, Object> objectMetadata = message.getObjectMetadata();
+      Map<Object, Object> objectMetadata = message.getObjectHeaders();
 
       assertEquals(1, objectMetadata.size());
       StandaloneProducer producer = configureForTests(spp, true);
@@ -602,7 +602,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
         start(producer);
         producer.doService(message);
 
-        objectMetadata = message.getObjectMetadata();
+        objectMetadata = message.getObjectHeaders();
         assertEquals(1, objectMetadata.size());
       }
       finally {
@@ -623,14 +623,14 @@ public class StoredProcedureProducerTest extends ProducerCase {
       inOutParameter.setType(ParameterValueType.INTEGER);
       AdaptrisMessage message = createMessage();
 
-      message.addObjectMetadata("xSomeAmount", 100);
+      message.addObjectHeader("xSomeAmount", 100);
 
       InOutParameters inOutParameters = new InOutParameters();
       inOutParameters.add(inOutParameter);
 
       spp.setInOutParameters(inOutParameters);
 
-      Map<String, Object> objectMetadata = message.getObjectMetadata();
+      Map<Object, Object> objectMetadata = message.getObjectHeaders();
 
       assertEquals(1, objectMetadata.size());
       assertTrue("100".equals(objectMetadata.get("xSomeAmount").toString()));
@@ -697,7 +697,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
       spp.setOutParameters(outParameters);
       AdaptrisMessage message = createMessage();
 
-      Map<String, Object> objectMetadata = message.getObjectMetadata();
+      Map<Object, Object> objectMetadata = message.getObjectHeaders();
 
       assertEquals(0, objectMetadata.size());
       StandaloneProducer producer = configureForTests(spp, true);
@@ -705,7 +705,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
         start(producer);
         producer.doService(message);
 
-        objectMetadata = message.getObjectMetadata();
+        objectMetadata = message.getObjectHeaders();
 
         assertEquals(1, objectMetadata.size());
         assertTrue("31".equals(objectMetadata.get("transferCount").toString()));
@@ -746,7 +746,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
       spp.setOutParameters(outParameters);
       AdaptrisMessage message = createMessage();
 
-      Map<String, Object> objectMetadata = message.getObjectMetadata();
+      Map<Object, Object> objectMetadata = message.getObjectHeaders();
 
       assertEquals(0, objectMetadata.size());
       StandaloneProducer producer = configureForTests(spp, true);
@@ -754,7 +754,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
         start(producer);
         producer.doService(message);
 
-        objectMetadata = message.getObjectMetadata();
+        objectMetadata = message.getObjectHeaders();
 
         assertEquals(3, objectMetadata.size());
 

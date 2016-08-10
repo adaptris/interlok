@@ -29,7 +29,6 @@ import com.adaptris.core.runtime.BaseComponentMBean;
 import com.adaptris.core.runtime.WorkflowManagerMBean;
 import com.adaptris.interlok.management.MessageProcessor;
 
-@SuppressWarnings("deprecation")
 public class MessageMetricsStatisticsTest extends StatisticsMBeanCase {
 
   public MessageMetricsStatisticsTest(String name) {

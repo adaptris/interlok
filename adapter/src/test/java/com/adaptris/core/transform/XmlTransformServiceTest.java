@@ -47,6 +47,7 @@ import com.adaptris.util.text.xml.XsltTransformerFactory;
 
 import net.sf.saxon.serialize.MessageWarner;
 
+@SuppressWarnings("deprecation")
 public class XmlTransformServiceTest extends TransformServiceExample {
 
   static final String KEY_XML_NODE_TRANSFORM_URL = "XmlTransformService.outputNodeTransform";
@@ -480,8 +481,8 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     service.setUseMetadataAsStylesheetParameters(true);
     execute(service, msg);
 
-    assertTrue("payload " + msg.getStringPayload(),
-        msg.getStringPayload().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
+    assertTrue("payload " + msg.getContent(),
+        msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
   }
 
   public void testSingleParameter_XSLTOutput() throws Exception {
@@ -559,7 +560,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     service.setXmlTransformerFactory(new StxTransformerFactory());
     service.setUseMetadataAsStylesheetParameters(true);
     execute(service, msg);
-    assertTrue("payload " + msg.getStringPayload(),
+    assertTrue("payload " + msg.getContent(),
         msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
   }
 
@@ -589,7 +590,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     service.setUseMetadataAsStylesheetParameters(true);
     execute(service, msg);
 
-    assertTrue("payload " + msg.getStringPayload(),
+    assertTrue("payload " + msg.getContent(),
         msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
   }
 
@@ -626,7 +627,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     service.setUseMetadataAsStylesheetParameters(true);
     execute(service, msg);
 
-    assertTrue("payload " + msg.getStringPayload(),
+    assertTrue("payload " + msg.getContent(),
         msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
   }
 

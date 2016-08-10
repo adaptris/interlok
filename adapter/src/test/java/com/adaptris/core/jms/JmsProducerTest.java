@@ -70,7 +70,7 @@ public class JmsProducerTest extends JmsProducerCase {
 
   private AdaptrisMessage createMessage(Destination d) throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx");
-    msg.addObjectMetadata(JmsConstants.OBJ_JMS_REPLY_TO_KEY, d);
+    msg.addObjectHeader(JmsConstants.OBJ_JMS_REPLY_TO_KEY, d);
     return msg;
 
   }
@@ -95,7 +95,7 @@ public class JmsProducerTest extends JmsProducerCase {
       StandaloneProducer sp = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
 
       ServiceCase.execute(sp, msg);
-      Map objMd = msg.getObjectMetadata();
+      Map objMd = msg.getObjectHeaders();
       String prefix = Message.class.getCanonicalName() + ".";
       assertTrue(objMd.containsKey(prefix + JmsConstants.JMS_MESSAGE_ID));
       assertTrue(objMd.containsKey(prefix + JmsConstants.JMS_DESTINATION));
@@ -119,7 +119,7 @@ public class JmsProducerTest extends JmsProducerCase {
       activeMqBroker.start();
       AdaptrisMessage msg = createMessage();
       ServiceCase.execute(standaloneProducer, msg);
-      Map objectMetadata = msg.getObjectMetadata();
+      Map objectMetadata = msg.getObjectHeaders();
       assertTrue(objectMetadata.containsKey(Message.class.getCanonicalName() + "." + JmsConstants.JMS_MESSAGE_ID));
       assertTrue(objectMetadata.containsKey(Message.class.getCanonicalName() + "." + JmsConstants.JMS_DESTINATION));
       assertTrue(objectMetadata.containsKey(Message.class.getCanonicalName() + "." + JmsConstants.JMS_PRIORITY));
@@ -556,8 +556,8 @@ public class JmsProducerTest extends JmsProducerCase {
       AdaptrisMessage msg2 = createMessage();
       serviceList.doService(msg1);
       serviceList.doService(msg2);
-      assertEquals(DEFAULT_PAYLOAD.toUpperCase(), msg1.getStringPayload());
-      assertEquals(DEFAULT_PAYLOAD.toUpperCase(), msg2.getStringPayload());
+      assertEquals(DEFAULT_PAYLOAD.toUpperCase(), msg1.getContent());
+      assertEquals(DEFAULT_PAYLOAD.toUpperCase(), msg2.getContent());
     } finally {
       stop(serviceList);
       echo.stop();

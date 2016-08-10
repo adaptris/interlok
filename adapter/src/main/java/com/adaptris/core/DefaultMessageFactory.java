@@ -114,7 +114,7 @@ public class DefaultMessageFactory extends AdaptrisMessageFactory {
       MleMarker marker = (MleMarker) ((MleMarker) markers.get(i)).clone();
       mle.addMleMarker(marker);
     }
-    result.getObjectMetadata().putAll(source.getObjectMetadata());
+    result.getObjectHeaders().putAll(source.getObjectHeaders());
     return result;
   }
 

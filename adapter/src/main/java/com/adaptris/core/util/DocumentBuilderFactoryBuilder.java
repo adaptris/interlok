@@ -3,6 +3,7 @@ package com.adaptris.core.util;
 import java.util.Map;
 
 import javax.validation.constraints.NotNull;
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -211,6 +212,10 @@ public class DocumentBuilderFactoryBuilder {
     return this;
   }
 
+  public DocumentBuilderFactoryBuilder withNamespaceAware(NamespaceContext b) {
+    setNamespaceAware(b != null ? true : false);
+    return this;
+  }
 
   public Boolean getIgnoreWhitespace() {
     return ignoreWhitespace;

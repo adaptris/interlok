@@ -19,6 +19,7 @@ package com.adaptris.core.jms;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
+import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +57,7 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
    * Set the filter that will be used return a subset of the messages metdata to be copied over during the translate.
    */
   @AdvancedConfig
+  @Valid
   private MetadataFilter metadataFilter;
   @AdvancedConfig
   @Deprecated

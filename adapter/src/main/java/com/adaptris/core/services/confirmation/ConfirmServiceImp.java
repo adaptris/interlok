@@ -45,7 +45,7 @@ public abstract class ConfirmServiceImp extends ServiceImp {
    * </p>
    */
   protected void confirm(AdaptrisMessage msg, String confirmationId) {
-    msg.addObjectMetadata
+    msg.addObjectHeader
       (MessageEventGenerator.CONFIRMATION_ID_KEY, confirmationId);
   }
 

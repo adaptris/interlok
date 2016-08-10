@@ -231,6 +231,7 @@ public class BootstrapProperties extends Properties {
     return configManager;
   }
 
+  @SuppressWarnings("deprecation")
   public void reconfigureLogging() {
     try {
       // Default to log4j12Url for backwards compat.

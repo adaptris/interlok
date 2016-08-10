@@ -54,14 +54,14 @@ public class ExceptionReportServiceTest extends ExceptionServiceExample {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
     ExceptionReportService service = new ExceptionReportService(new SimpleExceptionReport(), new ReplaceNode(XPATH_ORIGINAL_NODE));
     execute(service, msg);
-    assertEquals(XML_PAYLOAD, msg.getStringPayload());
+    assertEquals(XML_PAYLOAD, msg.getContent());
     XmlUtils xml = XmlHelper.createXmlUtils(msg);
     assertEquals(RAW_DATA, xml.getSingleTextItem(XPATH_ORIGINAL_NODE));
   }
 
   public void testNonXml() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(RAW_DATA);
-    msg.addObjectMetadata(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("This is the exception"));
+    msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("This is the exception"));
     ExceptionReportService service = new ExceptionReportService(new SimpleExceptionReport(), new ReplaceNode(XPATH_ORIGINAL_NODE));
     try {
       execute(service, msg);
@@ -74,20 +74,20 @@ public class ExceptionReportServiceTest extends ExceptionServiceExample {
 
   public void testReplaceNode() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
-    msg.addObjectMetadata(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("This is the exception"));
+    msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("This is the exception"));
     ExceptionReportService service = new ExceptionReportService(new SimpleExceptionReport(), new ReplaceNode(XPATH_ORIGINAL_NODE));
     execute(service, msg);
-    assertNotSame(XML_PAYLOAD, msg.getStringPayload());
+    assertNotSame(XML_PAYLOAD, msg.getContent());
     XmlUtils xml = XmlHelper.createXmlUtils(msg);
     assertNotSame(RAW_DATA, xml.getSingleNode(XPATH_ORIGINAL_NODE));
   }
 
   public void testInsertNode() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
-    msg.addObjectMetadata(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("This is the exception"));
+    msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("This is the exception"));
     ExceptionReportService service = new ExceptionReportService(new SimpleExceptionReport(), new InsertNode(XPATH_ROOT));
     execute(service, msg);
-    assertNotSame(XML_PAYLOAD, msg.getStringPayload());
+    assertNotSame(XML_PAYLOAD, msg.getContent());
     XmlUtils xml = XmlHelper.createXmlUtils(msg);
     assertEquals(RAW_DATA, xml.getSingleTextItem(XPATH_ORIGINAL_NODE));
     assertNotNull(xml.getSingleNode(XPATH_ROOT + "/Exception"));
@@ -95,10 +95,10 @@ public class ExceptionReportServiceTest extends ExceptionServiceExample {
 
   public void testBug2220() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
-    msg.addObjectMetadata(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("I had problems parsing <ABCDE>"));
+    msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("I had problems parsing <ABCDE>"));
     ExceptionReportService service = new ExceptionReportService(new SimpleExceptionReport(), new InsertNode(XPATH_ROOT));
     execute(service, msg);
-    assertNotSame(XML_PAYLOAD, msg.getStringPayload());
+    assertNotSame(XML_PAYLOAD, msg.getContent());
     XmlUtils xml = XmlHelper.createXmlUtils(msg);
     assertEquals(RAW_DATA, xml.getSingleTextItem(XPATH_ORIGINAL_NODE));
     assertNotNull(xml.getSingleNode(XPATH_ROOT + "/Exception"));
@@ -127,7 +127,7 @@ public class ExceptionReportServiceTest extends ExceptionServiceExample {
       consumer.submitMessage(msg);
       assertEquals(1, mockProducer.getMessages().size());
       AdaptrisMessage failedMessage = mockProducer.getMessages().get(0);
-      assertNotSame(XML_PAYLOAD, failedMessage.getStringPayload());
+      assertNotSame(XML_PAYLOAD, failedMessage.getContent());
       XmlUtils xml = XmlHelper.createXmlUtils(failedMessage);
       assertEquals(RAW_DATA, xml.getSingleTextItem(XPATH_ORIGINAL_NODE));
       assertNotNull(xml.getSingleNode(XPATH_ROOT + "/Exception"));

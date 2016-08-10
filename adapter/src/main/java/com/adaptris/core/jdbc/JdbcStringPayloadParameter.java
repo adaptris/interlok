@@ -42,7 +42,7 @@ public class JdbcStringPayloadParameter extends AbstractParameter {
 
   @Override
   public Object applyInputParam(AdaptrisMessage msg) throws JdbcParameterException {
-    return msg.getStringPayload();
+    return msg.getContent();
   }
 
   @Override

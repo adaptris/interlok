@@ -79,7 +79,7 @@ public class HttpResponseService extends ServiceImp {
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     try {
-      HttpSession session = (HttpSession) msg.getObjectMetadata().get(
+      HttpSession session = (HttpSession) msg.getObjectHeaders().get(
           CoreConstants.HTTP_SESSION_KEY);
 
       if (session != null) {
@@ -105,7 +105,7 @@ public class HttpResponseService extends ServiceImp {
       }
     }
     catch (ClassCastException e) {
-      log.error("ignoring [" + msg.getObjectMetadata().getClass().getName()
+      log.error("ignoring [" + msg.getObjectHeaders().getClass().getName()
           + "] metadata");
     }
     catch (Exception e) {

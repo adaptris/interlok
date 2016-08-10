@@ -471,7 +471,7 @@ public class ActiveMqJmsTransactedWorkflowTest extends BaseCase {
       assertEquals(msgCount, receivedList.size());
 
       for (int i = 0; i < msgCount; i++) {
-        assertEquals(String.valueOf(i), receivedList.get(i).getStringPayload());
+        assertEquals(String.valueOf(i), receivedList.get(i).getContent());
       }
     }
     finally {
@@ -503,7 +503,7 @@ public class ActiveMqJmsTransactedWorkflowTest extends BaseCase {
       assertEquals(msgCount, receivedList.size());
 
       for (int i = 0; i < msgCount; i++) {
-        assertEquals(String.valueOf(i), receivedList.get(i).getStringPayload());
+        assertEquals(String.valueOf(i), receivedList.get(i).getContent());
       }
     }
     finally {
@@ -536,7 +536,7 @@ public class ActiveMqJmsTransactedWorkflowTest extends BaseCase {
       assertEquals(msgCount, receivedList.size());
 
       for (int i = 0; i < msgCount; i++) {
-        assertEquals(String.valueOf(i), receivedList.get(i).getStringPayload());
+        assertEquals(String.valueOf(i), receivedList.get(i).getContent());
       }
     }
     finally {

@@ -45,13 +45,13 @@ public class Utf8BomRemoverTest extends GeneralServiceExample {
   public void testServiceWithBom() throws Exception {
     AdaptrisMessage msg = create(true);
       execute(new Utf8BomRemover(), msg);
-    assertEquals(PAYLOAD, msg.getStringPayload());
+    assertEquals(PAYLOAD, msg.getContent());
   }
 
   public void testServiceWithoutBom() throws Exception {
     AdaptrisMessage msg = create(false);
     execute(new Utf8BomRemover(), msg);
-    assertEquals(PAYLOAD, msg.getStringPayload());
+    assertEquals(PAYLOAD, msg.getContent());
   }
 
   private AdaptrisMessage create(boolean includeBom) throws Exception {

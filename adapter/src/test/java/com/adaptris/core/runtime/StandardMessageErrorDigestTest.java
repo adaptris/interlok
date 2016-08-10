@@ -426,7 +426,7 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
     if (!isEmpty(fsLocation)) {
       msg.addMetadata(CoreConstants.FS_PRODUCE_DIRECTORY, fsLocation);
     }
-    msg.getObjectMetadata().put(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception(errorMsg));
+    msg.getObjectHeaders().put(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception(errorMsg));
     msg.addEvent(new MessageEventGenerator() {
 
       @Override

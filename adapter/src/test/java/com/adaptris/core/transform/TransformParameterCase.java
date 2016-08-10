@@ -24,6 +24,7 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.util.XmlHelper;
 
+@SuppressWarnings("deprecation")
 public class TransformParameterCase extends BaseCase {
 
   protected static final String XML_DOC = "<document>data</document>";
@@ -49,8 +50,8 @@ public class TransformParameterCase extends BaseCase {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata(KEY_STRING_METADATA, METADATA_VALUE);
     msg.addMetadata(KEY_STRING_METADATA_2, "another value");
-    msg.getObjectMetadata().put(KEY_OBJECT_METADATA, XmlHelper.createDocument(XML_DOC));
-    msg.getObjectMetadata().put(KEY_OBJECT_METADATA_2, new Object());
+    msg.getObjectHeaders().put(KEY_OBJECT_METADATA, XmlHelper.createDocument(XML_DOC));
+    msg.getObjectHeaders().put(KEY_OBJECT_METADATA_2, new Object());
     return msg;
   }
 }

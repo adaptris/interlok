@@ -88,7 +88,7 @@ public class StandaloneRequestor extends StandaloneProducer {
     try {
       dest.setContentEncoding(src.getContentEncoding());
       copyPayload(src, dest);
-      dest.getObjectMetadata().putAll(src.getObjectMetadata());
+      dest.getObjectHeaders().putAll(src.getObjectHeaders());
       // Well the thing we shouldn't need to do is set the unique Id I guess.
       //
       dest.setUniqueId(src.getUniqueId());

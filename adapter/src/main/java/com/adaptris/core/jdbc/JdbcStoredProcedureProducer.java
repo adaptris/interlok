@@ -186,8 +186,8 @@ public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
    * @return the connection either from the adaptris message or from configuration.
    */
   private Connection getConnection(AdaptrisMessage msg) throws SQLException {
-    if (msg.getObjectMetadata().containsKey(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY)) {
-      return (Connection) msg.getObjectMetadata().get(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY);
+    if (msg.getObjectHeaders().containsKey(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY)) {
+      return (Connection) msg.getObjectHeaders().get(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY);
     }
     return retrieveConnection(DatabaseConnection.class).connect();
   }
@@ -203,7 +203,7 @@ public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
    * @param msg the AdaptrisMessage
    */
   private void rollback(Connection sqlConnection, AdaptrisMessage msg) {
-    if (msg.getObjectMetadata().containsKey(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY)) {
+    if (msg.getObjectHeaders().containsKey(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY)) {
       return;
     }
     JdbcUtil.rollback(sqlConnection);
@@ -221,7 +221,7 @@ public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
    * @throws SQLException if the commit fails.
    */
   private void commit(Connection sqlConnection, AdaptrisMessage msg) throws SQLException {
-    if (msg.getObjectMetadata().containsKey(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY)) {
+    if (msg.getObjectHeaders().containsKey(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY)) {
       return;
     }
     JdbcUtil.commit(sqlConnection);

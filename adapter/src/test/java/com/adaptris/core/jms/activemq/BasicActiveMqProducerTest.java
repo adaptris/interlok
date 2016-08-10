@@ -135,7 +135,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
       echo.waitFor(DEFAULT_TIMEOUT);
       assertNotNull(echo.getLastMessage());
       assertNotNull(echo.getLastMessage().getJMSReplyTo());
-      assertEquals(DEFAULT_PAYLOAD.toUpperCase(), msg.getStringPayload());
+      assertEquals(DEFAULT_PAYLOAD.toUpperCase(), msg.getContent());
     }
     finally {
       echo.stop();
@@ -177,7 +177,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
       echo.waitFor(DEFAULT_TIMEOUT);
       assertNotNull(echo.getLastMessage());
       assertNotNull(echo.getLastMessage().getJMSReplyTo());
-      assertEquals(DEFAULT_PAYLOAD.toUpperCase(), msg.getStringPayload());
+      assertEquals(DEFAULT_PAYLOAD.toUpperCase(), msg.getContent());
     }
     finally {
       echo.stop();
@@ -200,7 +200,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
       echo.waitFor(DEFAULT_TIMEOUT);
       assertNotNull(echo.getLastMessage());
       assertNotNull(echo.getLastMessage().getJMSReplyTo());
-      assertEquals(DEFAULT_PAYLOAD.toUpperCase(), msg.getStringPayload());
+      assertEquals(DEFAULT_PAYLOAD.toUpperCase(), msg.getContent());
     }
     finally {
       echo.stop();

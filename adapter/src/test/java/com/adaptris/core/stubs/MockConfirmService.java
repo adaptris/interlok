@@ -32,7 +32,7 @@ public class MockConfirmService extends ConfirmServiceImp {
   /** @see com.adaptris.core.Service
    *   #doService(com.adaptris.core.AdaptrisMessage) */
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    this.confirm(msg, msg.getStringPayload());
+    this.confirm(msg, msg.getContent());
   }
 
   @Override

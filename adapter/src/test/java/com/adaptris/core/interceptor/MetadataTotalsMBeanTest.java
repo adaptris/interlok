@@ -29,7 +29,6 @@ import com.adaptris.core.SerializableAdaptrisMessage;
 import com.adaptris.core.runtime.BaseComponentMBean;
 import com.adaptris.core.runtime.WorkflowManagerMBean;
 
-@SuppressWarnings("deprecation")
 public class MetadataTotalsMBeanTest extends MetadataStatisticsMBeanCase {
 
   private static final String STATS_KEY = "SomeValue";

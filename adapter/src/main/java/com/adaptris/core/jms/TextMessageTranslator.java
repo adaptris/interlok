@@ -59,7 +59,7 @@ public final class TextMessageTranslator extends MessageTypeTranslatorImp {
    * @throws JMSException
    */
   public Message translate(AdaptrisMessage msg) throws JMSException {
-    return helper.moveMetadata(msg, session.createTextMessage(msg.getStringPayload()));
+    return helper.moveMetadata(msg, session.createTextMessage(msg.getContent()));
   }
 
   /**

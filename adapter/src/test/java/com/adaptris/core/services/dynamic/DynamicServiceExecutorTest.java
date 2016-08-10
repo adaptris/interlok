@@ -69,7 +69,7 @@ public class DynamicServiceExecutorTest extends DynamicServiceExample {
             + createMessage(new ServiceList(new Service[]
             {
               new LogMessageService()
-            })).getStringPayload() + "\n-->\n";
+            })).getContent() + "\n-->\n";
       }
     },
     MIME {
@@ -92,7 +92,7 @@ public class DynamicServiceExecutorTest extends DynamicServiceExample {
             + "\ne.g. something like:\n" + createMimeMessage(new ServiceList(new Service[]
             {
               new LogMessageService()
-            }), ENCODING_8BIT).getStringPayload() + "\n-->\n";
+            }), ENCODING_8BIT).getContent() + "\n-->\n";
       }
 
     };

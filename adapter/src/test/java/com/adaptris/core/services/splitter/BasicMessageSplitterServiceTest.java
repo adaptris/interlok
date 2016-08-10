@@ -148,7 +148,7 @@ public class BasicMessageSplitterServiceTest extends TestCase {
     AdaptrisMessage msg = createMessage(REGEXP_DATA);
     Object obj = "ABCDEFG";
     ((SimpleRegexpMessageSplitter) service.getSplitter()).setCopyObjectMetadata(true);
-    msg.getObjectMetadata().put(obj, obj);
+    msg.getObjectHeaders().put(obj, obj);
     ServiceCase.execute(service, msg);
     List<AdaptrisMessage> producedMessages = producer.getMessages();
     assertEquals(4, producedMessages.size());
@@ -158,8 +158,8 @@ public class BasicMessageSplitterServiceTest extends TestCase {
     for (AdaptrisMessage m : producedMessages) {
       count ++;
       assertEquals(METADATA_VALUE, m.getMetadataValue(METADATA_KEY));
-      assertTrue(m.getObjectMetadata().containsKey(obj));
-      assertEquals(obj, m.getObjectMetadata().get(obj));
+      assertTrue(m.getObjectHeaders().containsKey(obj));
+      assertEquals(obj, m.getObjectHeaders().get(obj));
       assertEquals(count, Integer.parseInt(m.getMetadataValue(KEY_CURRENT_SPLIT_MESSAGE_COUNT)));
     }
   }
@@ -170,7 +170,7 @@ public class BasicMessageSplitterServiceTest extends TestCase {
     AdaptrisMessage msg = createMessage(REGEXP_DATA);
     ((SimpleRegexpMessageSplitter) service.getSplitter()).setCopyMetadata(true);
     Object obj = "ABCDEFG";
-    msg.getObjectMetadata().put(obj, obj);
+    msg.getObjectHeaders().put(obj, obj);
     execute(service, msg);
     List<AdaptrisMessage> producedMessages = producer.getMessages();
     assertEquals(4, producedMessages.size());
@@ -179,7 +179,7 @@ public class BasicMessageSplitterServiceTest extends TestCase {
     for (AdaptrisMessage m : producedMessages) {
       count ++;
       assertEquals(METADATA_VALUE, m.getMetadataValue(METADATA_KEY));
-      assertFalse(m.getObjectMetadata().containsKey(obj));
+      assertFalse(m.getObjectHeaders().containsKey(obj));
       assertEquals(count, Integer.parseInt(m.getMetadataValue(KEY_CURRENT_SPLIT_MESSAGE_COUNT)));
     }
   }

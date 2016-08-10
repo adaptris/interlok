@@ -43,6 +43,7 @@ import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.stubs.StaticMockMessageProducer;
 import com.adaptris.util.TimeInterval;
 
+@SuppressWarnings("deprecation")
 public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
 
   static final String METADATA_VALUE2 = "value2";
@@ -96,7 +97,7 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
       msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg, helper.createProduceDestination());
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getStringPayload());
+      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
     }
     finally {
@@ -118,7 +119,7 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
       msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg, helper.createProduceDestination());
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getStringPayload());
+      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
     }
     finally {
@@ -177,7 +178,7 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
       msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg, helper.createProduceDestination());
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getStringPayload());
+      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
     }
     finally {
@@ -210,7 +211,7 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
       msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg, helper.createProduceDestination());
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getStringPayload());
+      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
       doAssertions(mock2);
     }
     finally {
@@ -315,7 +316,7 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
       msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg, helper.createProduceDestination());
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getStringPayload());
+      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
     }
     finally {
@@ -349,7 +350,7 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg, helper.createProduceDestination());
       // Because of redmineID #4715 it should just "return immediatel" which flushes the stream so there's no content.
-      assertEquals("Reply Payloads", "", reply.getStringPayload());
+      assertEquals("Reply Payloads", "", reply.getContent());
     }
     finally {
       stop(httpProducer);
@@ -360,8 +361,8 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
 
   protected void doAssertions(MockMessageProducer mockProducer) {
     assertEquals("Only 1 message consumed", 1, mockProducer.getMessages().size());
-    assertEquals("Consumed Payload", XML_PAYLOAD, mockProducer.getMessages().get(0).getStringPayload());
-    Map objMetadata = mockProducer.getMessages().get(0).getObjectMetadata();
+    assertEquals("Consumed Payload", XML_PAYLOAD, mockProducer.getMessages().get(0).getContent());
+    Map objMetadata = mockProducer.getMessages().get(0).getObjectHeaders();
     assertNotNull(objMetadata.get(CoreConstants.JETTY_REQUEST_KEY));
     assertNotNull(objMetadata.get(CoreConstants.JETTY_RESPONSE_KEY));
   }

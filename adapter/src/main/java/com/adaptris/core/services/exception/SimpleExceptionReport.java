@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -65,7 +66,7 @@ public class SimpleExceptionReport implements ExceptionReportGenerator {
     pw.println("</" + getElementName() + ">");
     pw.close();
     logR.trace("Created Exception Report " + sw.toString());
-    return createDocument(sw.toString());
+    return createDocument(sw.toString(), (DocumentBuilderFactoryBuilder) null);
   }
 
   public String getElementName() {

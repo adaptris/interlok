@@ -31,6 +31,7 @@ import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.XmlUtils;
 
+@SuppressWarnings("deprecation")
 public class InsertNodeTest {
   private static final String XPATH_NEW_NODE = "/Root/NewNode";
   private static final String XPATH_ORIGINAL_NODE = "/Root/OriginalNode";

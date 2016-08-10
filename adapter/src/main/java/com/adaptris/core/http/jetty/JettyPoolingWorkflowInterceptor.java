@@ -68,16 +68,16 @@ public class JettyPoolingWorkflowInterceptor extends WorkflowInterceptorImpl {
 
   @Override
   public void workflowEnd(AdaptrisMessage inputMsg, AdaptrisMessage outputMsg) {
-    if (inputMsg.getObjectMetadata().containsKey(MESSAGE_MONITOR)) {
-      JettyConsumerMonitor o = (JettyConsumerMonitor) inputMsg.getObjectMetadata().get(MESSAGE_MONITOR);
+    if (inputMsg.getObjectHeaders().containsKey(MESSAGE_MONITOR)) {
+      JettyConsumerMonitor o = (JettyConsumerMonitor) inputMsg.getObjectHeaders().get(MESSAGE_MONITOR);
       o.setMessageComplete(true);
       o.setEndTime(new Date().getTime());
       synchronized (o) {
         o.notifyAll();
       }
     }
-    if (outputMsg.getObjectMetadata().containsKey(MESSAGE_MONITOR)) {
-      JettyConsumerMonitor o = (JettyConsumerMonitor) outputMsg.getObjectMetadata().get(MESSAGE_MONITOR);
+    if (outputMsg.getObjectHeaders().containsKey(MESSAGE_MONITOR)) {
+      JettyConsumerMonitor o = (JettyConsumerMonitor) outputMsg.getObjectHeaders().get(MESSAGE_MONITOR);
       o.setMessageComplete(true);
       o.setEndTime(new Date().getTime());
       synchronized (o) {

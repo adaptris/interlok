@@ -166,7 +166,7 @@ public class CommonsSystemCommandExecutorServiceTest extends GeneralServiceExamp
     try {
       execute(service, msg);
     } catch (ServiceException e) {
-      System.err.println(getName() + "=" + msg.getStringPayload());
+      System.err.println(getName() + "=" + msg.getContent());
       e.printStackTrace(System.err);
       throw e;
     }
@@ -190,7 +190,7 @@ public class CommonsSystemCommandExecutorServiceTest extends GeneralServiceExamp
 
     AdaptrisMessage msg = createMessage();
     execute(service, msg);
-    assertEquals(VALUE_ENV, StringUtils.strip(msg.getStringPayload()));
+    assertEquals(VALUE_ENV, StringUtils.strip(msg.getContent()));
   }
 
   public void testDoService_WithMetadataEnvironment() throws Exception {
@@ -204,7 +204,7 @@ public class CommonsSystemCommandExecutorServiceTest extends GeneralServiceExamp
 
     AdaptrisMessage msg = createMessage();
     execute(service, msg);
-    assertEquals(VALUE_ENV, strip(msg.getStringPayload()));
+    assertEquals(VALUE_ENV, strip(msg.getContent()));
   }
 
   public void testDoService_CaptureOutput() throws Exception {
@@ -212,7 +212,7 @@ public class CommonsSystemCommandExecutorServiceTest extends GeneralServiceExamp
     SystemCommandExecutorService service = new SystemCommandExecutorService(createEchoCommand(false), new OverwritePayload());
     AdaptrisMessage msg = createMessage();
     execute(service, msg);
-    assertEquals("Hello World", strip(msg.getStringPayload()));
+    assertEquals("Hello World", strip(msg.getContent()));
   }
   
   public void testDoService_CaptureOutputToMetaData() throws Exception {
@@ -233,7 +233,7 @@ public class CommonsSystemCommandExecutorServiceTest extends GeneralServiceExamp
     SystemCommandExecutorService service = new SystemCommandExecutorService(createEchoCommand(true), new OverwritePayload());
     AdaptrisMessage msg = createMessage();
     execute(service, msg);
-    assertEquals("Hello World", strip(msg.getStringPayload()));
+    assertEquals("Hello World", strip(msg.getContent()));
   }
 
   public void testDoService_Failure() throws Exception {
@@ -260,7 +260,7 @@ public class CommonsSystemCommandExecutorServiceTest extends GeneralServiceExamp
       fail();
     }
     catch (ServiceException expected) {
-      System.err.println(getName() + "=" + msg.getStringPayload());
+      System.err.println(getName() + "=" + msg.getContent());
       expected.printStackTrace(System.err);
     }
   }
@@ -273,7 +273,7 @@ public class CommonsSystemCommandExecutorServiceTest extends GeneralServiceExamp
       execute(service, msg);
     }
     catch (ServiceException e) {
-      System.err.println(getName() + "=" + msg.getStringPayload());
+      System.err.println(getName() + "=" + msg.getContent());
       e.printStackTrace(System.err);
       throw e;
     }

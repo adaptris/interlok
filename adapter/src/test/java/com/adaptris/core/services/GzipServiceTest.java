@@ -42,7 +42,7 @@ public class GzipServiceTest extends GeneralServiceExample {
     assertFalse(MessageDigest.isEqual(LINE.getBytes("UTF-8"), msg.getPayload()));
     execute(new GunzipService(), msg);
     assertEquals("zip then unzip gives same result", LINE, msg
-        .getStringPayload());
+        .getContent());
   }
 
   public void testZipServiceFailure() throws Exception {

@@ -45,7 +45,7 @@ public class XmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlResults {
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
     assertTrue(ADAPTER_ID_KEY + " exists", msg.containsKey(ADAPTER_ID_KEY));
-    assertNotSame(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getStringPayload());
+    assertNotSame(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
     assertFalse(msg.containsKey(JdbcDataQueryService.class.getCanonicalName()));
     XmlUtils xu = XmlHelper.createXmlUtils(msg);
     assertNull("Xpath /Results/OriginalMessage", xu.getSingleNode("/Results/OriginalMessage"));
@@ -63,7 +63,7 @@ public class XmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlResults {
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
     assertTrue(ADAPTER_ID_KEY + " exists", msg.containsKey(ADAPTER_ID_KEY));
-    assertNotSame(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getStringPayload());
+    assertNotSame(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
     assertFalse(msg.containsKey(JdbcDataQueryService.class.getCanonicalName()));
     XmlUtils xu = XmlHelper.createXmlUtils(msg);
     assertNull("Xpath /Results/OriginalMessage", xu.getSingleNode("/Results/OriginalMessage"));
@@ -102,10 +102,10 @@ public class XmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlResults {
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
     assertTrue(ADAPTER_ID_KEY + " exists", msg.containsKey(ADAPTER_ID_KEY));
-    assertNotSame(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getStringPayload());
+    assertNotSame(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
     assertFalse(msg.containsKey(JdbcDataQueryService.class.getCanonicalName()));
     XmlUtils xu = XmlHelper.createXmlUtils(msg);
-    log.warn(msg.getStringPayload());
+    log.warn(msg.getContent());
     assertNull("Xpath /Results/OriginalMessage", xu.getSingleNode("/results/originalmessage"));
     assertNotNull("/Results/Row", xu.getSingleNode("/results/row"));
   }

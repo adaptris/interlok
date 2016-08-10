@@ -42,7 +42,7 @@ public class TextMessageTranslatorTest extends MessageTypeTranslatorCase {
       start(trans, session);
       AdaptrisMessage msg = trans.translate(jmsMsg);
       assertMetadata(msg);
-      assertEquals(TEXT, msg.getStringPayload());
+      assertEquals(TEXT, msg.getContent());
     }
     finally {
       stop(trans);

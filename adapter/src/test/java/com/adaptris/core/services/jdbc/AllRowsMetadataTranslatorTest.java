@@ -44,14 +44,14 @@ public class AllRowsMetadataTranslatorTest extends JdbcQueryServiceCase {
 
     populateDatabase(dbItems, false);
     JdbcDataQueryService s = createMetadataService();
-    s.setStatement(ALL_ROWS_QUERY);
+    s.setStatementCreator(new ConfiguredSQLStatement(ALL_ROWS_QUERY));
     s.getStatementParameters().clear();
     AllRowsMetadataTranslator t = new AllRowsMetadataTranslator();
     t.setRowTotalMetadataKey("TotalRows");
     s.setResultSetTranslator(t);
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
-    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getStringPayload());
+    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
     String metadataKeyColumnVersion = t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION + t.getSeparator();
     String metadataKeyColumnType = t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_TYPE + t.getSeparator();
     for (int i = 0; i < 10; i++) {
@@ -72,7 +72,7 @@ public class AllRowsMetadataTranslatorTest extends JdbcQueryServiceCase {
 
     populateDatabase(dbItems, false);
     JdbcDataQueryService s = createMetadataService();
-    s.setStatement(ALL_ROWS_QUERY_NAMED_PARAMS);
+    s.setStatementCreator(new ConfiguredSQLStatement(ALL_ROWS_QUERY_NAMED_PARAMS));
     
     StatementParameter adapterVersion = new StatementParameter("xxx", "java.lang.String", StatementParameter.QueryType.constant);
     adapterVersion.setName("adapterVersion");
@@ -84,7 +84,7 @@ public class AllRowsMetadataTranslatorTest extends JdbcQueryServiceCase {
     s.setResultSetTranslator(t);
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
-    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getStringPayload());
+    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
     String metadataKeyColumnVersion = t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION + t.getSeparator();
     String metadataKeyColumnType = t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_TYPE + t.getSeparator();
     for (int i = 0; i < 10; i++) {
@@ -103,14 +103,14 @@ public class AllRowsMetadataTranslatorTest extends JdbcQueryServiceCase {
 
     populateDatabase(dbItems, false);
     JdbcDataQueryService s = createMetadataService();
-    s.setStatement(ALL_ROWS_QUERY);
+    s.setStatementCreator(new ConfiguredSQLStatement(ALL_ROWS_QUERY));
     s.getStatementParameters().clear();
     AllRowsMetadataTranslator t = new AllRowsMetadataTranslator();
     t.setColumnNameStyle(ResultSetTranslatorImp.ColumnStyle.UpperCase);
     s.setResultSetTranslator(t);
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
-    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getStringPayload());
+    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
     String metadataKeyColumnVersion = t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION.toUpperCase() + t.getSeparator();
     String metadataKeyColumnType = t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_TYPE.toUpperCase() + t.getSeparator();
     for (int i = 0; i < 10; i++) {
@@ -128,7 +128,7 @@ public class AllRowsMetadataTranslatorTest extends JdbcQueryServiceCase {
 
     populateDatabase(dbItems, false);
     JdbcDataQueryService s = createMetadataService();
-    s.setStatement(ALL_ROWS_QUERY);
+    s.setStatementCreator(new ConfiguredSQLStatement(ALL_ROWS_QUERY));
     s.getStatementParameters().clear();
     AllRowsMetadataTranslator t = new AllRowsMetadataTranslator();
     t.setColumnNameStyle(ResultSetTranslatorImp.ColumnStyle.LowerCase);
@@ -154,7 +154,7 @@ public class AllRowsMetadataTranslatorTest extends JdbcQueryServiceCase {
 
     populateDatabase(dbItems, false);
     JdbcDataQueryService s = createMetadataService();
-    s.setStatement(ALL_ROWS_QUERY);
+    s.setStatementCreator(new ConfiguredSQLStatement(ALL_ROWS_QUERY));
     s.getStatementParameters().clear();
     AllRowsMetadataTranslator t = new AllRowsMetadataTranslator();
     t.setColumnNameStyle(ResultSetTranslatorImp.ColumnStyle.Capitalize);

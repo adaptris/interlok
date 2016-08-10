@@ -35,8 +35,8 @@ public class ConvertObjectMetadataTest extends MetadataServiceExample {
     Object o1 = "java.jms.Message.JMSCorrelationID";
     Object o2 = new Object();
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    msg.getObjectMetadata().put(o1, o1);
-    msg.getObjectMetadata().put(o2, o2);
+    msg.getObjectHeaders().put(o1, o1);
+    msg.getObjectHeaders().put(o2, o2);
     execute(service, msg);
     assertTrue(msg.containsKey(o1.toString()));
     assertEquals(o1.toString(), msg.getMetadataValue(o1.toString()));

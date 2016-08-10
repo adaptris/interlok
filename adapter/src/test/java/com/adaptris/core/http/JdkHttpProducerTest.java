@@ -203,7 +203,7 @@ public class JdkHttpProducerTest extends HttpProducerExample {
     assertEquals(1, mock.messageCount());
     AdaptrisMessage m2 = mock.getMessages().get(0);
     assertEquals("GET", m2.getMetadataValue(CoreConstants.HTTP_METHOD));
-    assertEquals(TEXT, msg.getStringPayload());
+    assertEquals(TEXT, msg.getContent());
   }
 
   public void testRequest_PostMethod_ZeroBytes() throws Exception {
@@ -233,7 +233,7 @@ public class JdkHttpProducerTest extends HttpProducerExample {
     assertEquals(1, mock.messageCount());
     AdaptrisMessage m2 = mock.getMessages().get(0);
     assertEquals("POST", m2.getMetadataValue(CoreConstants.HTTP_METHOD));
-    assertEquals(TEXT, msg.getStringPayload());
+    assertEquals(TEXT, msg.getContent());
   }
 
   public void testRequest_EmptyReply() throws Exception {
@@ -291,7 +291,7 @@ public class JdkHttpProducerTest extends HttpProducerExample {
     assertEquals(1, mock.messageCount());
     AdaptrisMessage m2 = mock.getMessages().get(0);
     assertEquals("GET", m2.getMetadataValue(CoreConstants.HTTP_METHOD));
-    assertEquals(TEXT, msg.getStringPayload());
+    assertEquals(TEXT, msg.getContent());
   }
   
   public void testRequest_GetMethod_NonZeroBytes_WithErrorResponse() throws Exception {
@@ -325,7 +325,7 @@ public class JdkHttpProducerTest extends HttpProducerExample {
     assertEquals(1, mock.messageCount());
     AdaptrisMessage m2 = mock.getMessages().get(0);
     assertEquals("GET", m2.getMetadataValue(CoreConstants.HTTP_METHOD));
-    assertEquals(TEXT, msg.getStringPayload());
+    assertEquals(TEXT, msg.getContent());
     assertEquals("401", msg.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
     assertNotNull(msg.getMetadata("HTTP_Server"));
   }

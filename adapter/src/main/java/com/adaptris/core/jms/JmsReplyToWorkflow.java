@@ -119,7 +119,7 @@ public final class JmsReplyToWorkflow extends StandardWorkflow {
   public void doProduce(AdaptrisMessage msg) throws ServiceException,
       ProduceException {
 
-    Destination jmsDestination = (Destination) msg.getObjectMetadata().get(
+    Destination jmsDestination = (Destination) msg.getObjectHeaders().get(
         JmsConstants.OBJ_JMS_REPLY_TO_KEY);
 
     if (this.verifyDestinationDomain(jmsDestination)) {

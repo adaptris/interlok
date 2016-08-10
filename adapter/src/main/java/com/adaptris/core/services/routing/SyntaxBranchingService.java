@@ -19,6 +19,7 @@ package com.adaptris.core.services.routing;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdapterComponent;
@@ -51,6 +52,7 @@ public class SyntaxBranchingService extends BranchingServiceImp {
   @NotNull
   @AutoPopulated
   @XStreamImplicit
+  @Valid
   private List<SyntaxIdentifier> syntaxIdentifiers = new ArrayList<SyntaxIdentifier>();
 
   /**
@@ -58,7 +60,7 @@ public class SyntaxBranchingService extends BranchingServiceImp {
    *      #doService(com.adaptris.core.AdaptrisMessage)
    */
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    String message = msg.getStringPayload();
+    String message = msg.getContent();
     String destination = null;
     for (SyntaxIdentifier ident : syntaxIdentifiers) {
       if (ident.isThisSyntax(message)) {

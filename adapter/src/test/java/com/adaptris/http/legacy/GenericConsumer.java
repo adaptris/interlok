@@ -75,7 +75,7 @@ public abstract class GenericConsumer extends HttpConsumerImp {
           StreamUtil.copyStream(message.getInputStream(), out, header
               .getContentLength());
         }
-        result.addObjectMetadata(CoreConstants.HTTP_SESSION_KEY, httpSession);
+        result.addObjectHeader(CoreConstants.HTTP_SESSION_KEY, httpSession);
         addParamsAsMetadata(httpSession, result);
       }
       else {

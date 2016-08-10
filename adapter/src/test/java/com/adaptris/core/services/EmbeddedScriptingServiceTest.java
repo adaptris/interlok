@@ -169,6 +169,7 @@ public class EmbeddedScriptingServiceTest extends GeneralServiceExample {
     return result;
   }
 
+  @SuppressWarnings("deprecation")
   private EmbeddedScriptingService createServiceForBranch_Deprecated(String uid, String nextServiceId) {
     EmbeddedScriptingService result = uid == null ? new EmbeddedScriptingService(SERVICE_UID) : new EmbeddedScriptingService(uid);
     result.setLanguage("nashorn");

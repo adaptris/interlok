@@ -44,8 +44,8 @@ public class JmsReplyToDestinationTest extends ExampleProduceDestinationCase {
 
   private AdaptrisMessage createMessage(Destination d) throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx");
-    msg.addObjectMetadata(JmsConstants.OBJ_JMS_REPLY_TO_KEY, d);
-    msg.addObjectMetadata(ANY_OLD_KEY, d);
+    msg.addObjectHeader(JmsConstants.OBJ_JMS_REPLY_TO_KEY, d);
+    msg.addObjectHeader(ANY_OLD_KEY, d);
     return msg;
 
   }
@@ -106,7 +106,7 @@ public class JmsReplyToDestinationTest extends ExampleProduceDestinationCase {
       activeMqBroker.start();
       Queue tempQueue = createTempQueue(activeMqBroker);
       AdaptrisMessage msg = createMessage(tempQueue);
-      msg.getObjectMetadata().clear();
+      msg.getObjectHeaders().clear();
       JmsReplyToDestination d = new JmsReplyToDestination();
       d.setObjectMetadataKey(ANY_OLD_KEY);
       assertNull(d.getDestination(msg));

@@ -135,11 +135,24 @@ public abstract class AdaptrisMessageCase {
   public void testGetStringPayload() throws Exception {
     AdaptrisMessage msg1 = createMessage();
 
-    assertEquals(PAYLOAD, msg1.getContent());
+    assertEquals(PAYLOAD, msg1.getStringPayload());
   }
 
   @Test
   public void testSetStringPayload() throws Exception {
+    AdaptrisMessage msg1 = createMessage();
+    msg1.setStringPayload(PAYLOAD2, msg1.getContentEncoding());
+    assertEquals(PAYLOAD2, msg1.getContent());
+    // with spec. char enc.
+    String enc = "ISO-8859-1";
+    String payload2 = new String(PAYLOAD2.getBytes(), enc);
+
+    msg1.setStringPayload(payload2, enc);
+    assertEquals(payload2, msg1.getContent());
+  }
+
+  @Test
+  public void testSetContent() throws Exception {
     AdaptrisMessage msg1 = createMessage();
     msg1.setContent(PAYLOAD2, msg1.getContentEncoding());
     assertEquals(PAYLOAD2, msg1.getContent());
@@ -157,7 +170,7 @@ public abstract class AdaptrisMessageCase {
     msg1.setContentEncoding("ISO-8859-1");
     assertEquals("ISO-8859-1", msg1.getContentEncoding());
     msg1.setStringPayload(PAYLOAD2);
-    assertEquals(PAYLOAD2, msg1.getContent());
+    assertEquals(PAYLOAD2, msg1.getStringPayload());
     assertNull(msg1.getContentEncoding());
   }
 
@@ -321,13 +334,27 @@ public abstract class AdaptrisMessageCase {
     AdaptrisMessage msg1 = createMessage();
 
     Object metadata2 = new Object();
-    msg1.addObjectHeader("key", metadata2);
+    msg1.addObjectMetadata("key", metadata2);
 
-    java.util.Map<?,?> objectMetadata = msg1.getObjectHeaders();
+    java.util.Map<?, ?> objectMetadata = msg1.getObjectMetadata();
 
     assertTrue(objectMetadata.keySet().size() == 1);
     assertTrue(metadata2.equals(objectMetadata.get("key")));
   }
+
+  @Test
+  public void testObjectHeaders() throws Exception {
+    AdaptrisMessage msg1 = createMessage();
+
+    Object metadata2 = new Object();
+    msg1.addObjectHeader("key", metadata2);
+
+    java.util.Map<?, ?> objectMetadata = msg1.getObjectHeaders();
+
+    assertTrue(objectMetadata.keySet().size() == 1);
+    assertTrue(metadata2.equals(objectMetadata.get("key")));
+  }
+
 
   @Test
   public void testCloneAdaptrisMessage() throws Exception {
@@ -339,7 +366,7 @@ public abstract class AdaptrisMessageCase {
     assertTrue(msg2.getPayload() != msg1.getPayload());
     assertTrue(msg2.getMetadata() != msg1.getMetadata());
     assertTrue(msg2.getMessageLifecycleEvent() != msg1.getMessageLifecycleEvent());
-    assertTrue(msg2.getStringPayload().equals(msg1.getStringPayload()));
+    assertTrue(msg2.getContent().equals(msg1.getContent()));
     assertTrue(msg2.getMetadata().equals(msg1.getMetadata()));
     MessageLifecycleEvent event1 = msg1.getMessageLifecycleEvent();
     MessageLifecycleEvent event2 = msg2.getMessageLifecycleEvent();
@@ -440,9 +467,9 @@ public abstract class AdaptrisMessageCase {
     PrintStream out = new PrintStream(msg1.getOutputStream());
     out.print(PAYLOAD2);
     // w/o closing the output stream, it's not going to be equal
-    assertNotSame(PAYLOAD2, msg1.getStringPayload());
+    assertNotSame(PAYLOAD2, msg1.getContent());
     out.close();
-    assertEquals(PAYLOAD2, msg1.getStringPayload());
+    assertEquals(PAYLOAD2, msg1.getContent());
   }
 
   @Test
@@ -473,9 +500,9 @@ public abstract class AdaptrisMessageCase {
     PrintWriter out = new PrintWriter(msg1.getWriter());
     out.print(PAYLOAD2);
     // w/o closing the output stream, it's not going to be equal
-    assertNotSame(PAYLOAD2, msg1.getStringPayload());
+    assertNotSame(PAYLOAD2, msg1.getContent());
     out.close();
-    assertEquals(PAYLOAD2, msg1.getStringPayload());
+    assertEquals(PAYLOAD2, msg1.getContent());
   }
 
   @Test
@@ -485,7 +512,7 @@ public abstract class AdaptrisMessageCase {
     PrintWriter out = new PrintWriter(msg1.getWriter());
     out.print(PAYLOAD2);
     // w/o closing the output stream, it's not going to be equal
-    assertNotSame(PAYLOAD2, msg1.getStringPayload());
+    assertNotSame(PAYLOAD2, msg1.getContent());
     out.close();
     assertTrue(Arrays.equals(PAYLOAD2.getBytes("ISO-8859-1"), msg1.getPayload()));
   }

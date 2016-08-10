@@ -23,6 +23,7 @@ import com.adaptris.core.BaseCase;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.ServiceCase;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.transform.validate.IsNullContentValidation;
 import com.adaptris.transform.validate.NotInListContentValidation;
 import com.adaptris.transform.validate.NotNullContentValidation;
@@ -212,6 +213,7 @@ public class XmlRuleValidatorTest extends BaseCase {
 
   public void testListContentValidation_DataInList() throws Exception {
     XmlRuleValidator validator = new XmlRuleValidator();
+    validator.setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder.newInstance());
     validator.setValidationStages(Arrays.asList(new ValidationStage[]
     {
       new ValidationStage(XPATH_ITERATION_CHILDREN_OF_ZEUS, XPATH_CHILDREN_OF_HERA, new SimpleListContentValidation(

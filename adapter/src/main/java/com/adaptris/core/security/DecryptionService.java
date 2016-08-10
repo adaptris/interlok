@@ -57,7 +57,7 @@ public class DecryptionService extends CoreSecurityService {
     catch (Exception e) {
       if (branchingEnabled) {
         msg.setNextServiceId(getFailId());
-        msg.getObjectMetadata().put(CoreConstants.OBJ_METADATA_EXCEPTION, e);
+        msg.getObjectHeaders().put(CoreConstants.OBJ_METADATA_EXCEPTION, e);
       } else {
         throw new ServiceException(e);
       }

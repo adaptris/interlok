@@ -16,7 +16,7 @@
 
 package com.adaptris.core;
 
-
+import javax.validation.Valid;
 
 /**
  * <p>
@@ -27,6 +27,7 @@ public abstract class AdaptrisMessageProducerImp
   extends AdaptrisMessageWorkerImp
   implements AdaptrisMessageProducer {
 
+  @Valid
   private ProduceDestination destination;
   
   public AdaptrisMessageProducerImp() {    

@@ -65,8 +65,8 @@ public class AggregatingFsConsumeServiceTest extends AggregatingServiceExample {
       start(service);
       AdaptrisMessage msg = new DefaultMessageFactory().newMessage(INITIAL_PAYLOAD);
       service.doService(msg);
-      assertNotSame(INITIAL_PAYLOAD, msg.getStringPayload());
-      assertEquals(DATA_PAYLOAD, msg.getStringPayload());
+      assertNotSame(INITIAL_PAYLOAD, msg.getContent());
+      assertEquals(DATA_PAYLOAD, msg.getContent());
       assertFalse(tempFile.exists());
       assertFalse(wipFile.exists());
     }
@@ -89,8 +89,8 @@ public class AggregatingFsConsumeServiceTest extends AggregatingServiceExample {
       start(service);
       AdaptrisMessage msg = new DefaultMessageFactory().newMessage(INITIAL_PAYLOAD);
       service.doService(msg);
-      assertNotSame(INITIAL_PAYLOAD, msg.getStringPayload());
-      assertEquals(DATA_PAYLOAD, msg.getStringPayload());
+      assertNotSame(INITIAL_PAYLOAD, msg.getContent());
+      assertEquals(DATA_PAYLOAD, msg.getContent());
       assertTrue(tempFile.exists());
       assertFalse(wipFile.exists());
     }

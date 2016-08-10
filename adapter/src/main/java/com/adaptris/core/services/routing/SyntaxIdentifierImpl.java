@@ -19,11 +19,20 @@ package com.adaptris.core.services.routing;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotBlank;
+
+import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 public abstract class SyntaxIdentifierImpl implements SyntaxIdentifier {
+  @NotBlank
   private String destination = null;
   @XStreamImplicit(itemFieldName = "pattern")
+  @AutoPopulated
+  @NotNull
   private List<String> patterns = null;
 
   public SyntaxIdentifierImpl() {
@@ -35,10 +44,7 @@ public abstract class SyntaxIdentifierImpl implements SyntaxIdentifier {
    */
   @Override
   public void setDestination(String dest) {
-    if (dest == null) {
-      throw new IllegalArgumentException("dest is null");
-    }
-    destination = dest;
+    destination = Args.notBlank(dest, "destination");
   }
 
   /**
@@ -54,10 +60,7 @@ public abstract class SyntaxIdentifierImpl implements SyntaxIdentifier {
    */
   @Override
   public void addPattern(String pattern) {
-    if (pattern == null) {
-      throw new IllegalArgumentException("pattern is null");
-    }
-    patterns.add(pattern);
+    patterns.add(Args.notBlank(pattern, "pattern"));
   }
 
   /**
@@ -73,9 +76,6 @@ public abstract class SyntaxIdentifierImpl implements SyntaxIdentifier {
    */
   @Override
   public void setPatterns(List<String> l) {
-    if (l == null) {
-      throw new IllegalArgumentException("list is null");
-    }
-    patterns = l;
+    patterns = Args.notNull(l, "patterns");
   }
 }

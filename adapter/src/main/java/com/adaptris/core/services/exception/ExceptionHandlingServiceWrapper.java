@@ -104,7 +104,7 @@ public class ExceptionHandlingServiceWrapper extends ServiceImp implements Event
     catch (ServiceException e) {
       log.warn("exception has occurred, applying exceptionService");
       log.trace("exception details", e);
-      msg.getObjectMetadata().put(CoreConstants.OBJ_METADATA_EXCEPTION, e);
+      msg.getObjectHeaders().put(CoreConstants.OBJ_METADATA_EXCEPTION, e);
       msg.addMetadata(getExceptionMessageMetadataKey(), e.getMessage() == null ? "" : e.getMessage());
       exceptionHandlingService.doService(msg);
     }

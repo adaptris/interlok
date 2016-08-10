@@ -195,7 +195,7 @@ public class StandardHttpProducer extends HttpProducer {
       if (getEncoder() != null) {
         AdaptrisMessage decodedReply = getEncoder().readMessage(http);
         AdaptrisMessageImp.copyPayload(decodedReply, reply);
-        reply.getObjectMetadata().putAll(decodedReply.getObjectMetadata());
+        reply.getObjectHeaders().putAll(decodedReply.getObjectHeaders());
         reply.setMetadata(decodedReply.getMetadata());
       } else {
         responseBody().insert(new InputStreamWithEncoding(http.getInputStream(), getContentEncoding(http)), reply);

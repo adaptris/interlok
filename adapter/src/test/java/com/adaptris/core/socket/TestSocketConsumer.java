@@ -76,7 +76,7 @@ public class TestSocketConsumer extends ConsumerCase {
     execute(consumer, producer, msg, stub);
     release(port);
     assertEquals(1, stub.getMessages().size());
-    assertEquals(PAYLOAD, stub.getMessages().get(0).getStringPayload());
+    assertEquals(PAYLOAD, stub.getMessages().get(0).getContent());
   }
 
   private static StandaloneConsumer createConsumer(Integer port) {

@@ -27,6 +27,7 @@ import org.w3c.dom.Document;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.XmlUtils;
 
+@SuppressWarnings("deprecation")
 public class ReplaceOriginalTest {
   private static final String XPATH_NEW_NODE = "/SomeOtherRoot/Node";
   private static final String XPATH_ORIGINAL_NODE = "/Root/OriginalNode";
