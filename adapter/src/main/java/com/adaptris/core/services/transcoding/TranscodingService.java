@@ -62,6 +62,7 @@ public abstract class TranscodingService extends ServiceImp {
     if (getEncoder() == null) {
       throw new CoreException("Encoder is null");
     }
+    registerEncoderMessageFactory();
   }
 
   @Override

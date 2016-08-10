@@ -1,6 +1,10 @@
 package com.adaptris.core.services.transcoding;
 
-import com.adaptris.core.*;
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.DefaultMessageFactory;
+import com.adaptris.core.MimeEncoder;
 import com.adaptris.core.stubs.MockEncoder;
 import com.adaptris.core.stubs.StubMessageFactory;
 import com.adaptris.core.util.LifecycleHelper;
@@ -45,9 +49,14 @@ public class EncodingServiceTest extends TranscodingServiceCase {
     s = new EncodingService(new MockEncoder());
     AdaptrisMessageFactory amf = new StubMessageFactory();
     s.setMessageFactory(amf);
-    assertEquals(amf, s.getMessageFactory());
-    assertTrue(s.getEncoder().currentMessageFactory() instanceof StubMessageFactory);
-    assertEquals(amf, s.getEncoder().currentMessageFactory());
+    try {
+      LifecycleHelper.init(s);
+      assertEquals(amf, s.getMessageFactory());
+      assertTrue(s.getEncoder().currentMessageFactory() instanceof StubMessageFactory);
+      assertEquals(amf, s.getEncoder().currentMessageFactory());
+    } finally {
+      LifecycleHelper.close(s);
+    }
   }
 
 
