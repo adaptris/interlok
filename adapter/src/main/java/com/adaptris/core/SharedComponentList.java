@@ -173,6 +173,8 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
     unbindQuietly(connections);
     unbindQuietly(getTransactionManager());
     notYetInJndi.addAll(connectionIds);
+    if(transactionManager != null)
+      notYetInJndi.add(transactionManager.getUniqueId());
   }
 
   /**
