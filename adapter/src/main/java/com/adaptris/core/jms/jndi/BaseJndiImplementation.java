@@ -58,6 +58,12 @@ public abstract class BaseJndiImplementation extends VendorImplementationImp {
   @InputFieldDefault(value = "false")
   private Boolean newContextOnException;
 
+  public BaseJndiImplementation() {
+    super();
+    setJndiParams(new KeyValuePairSet());
+    setExtraFactoryConfiguration(new NoOpFactoryConfiguration());
+  }
+
   protected Object lookup(String name) throws JMSException {
     Object result = null;
     try {
@@ -286,10 +292,6 @@ public abstract class BaseJndiImplementation extends VendorImplementationImp {
    */
   public void setEncodedPasswordKeys(String encodedPasswordKey) {
     encodedPasswordKeys = encodedPasswordKey;
-  }
-
-  public BaseJndiImplementation() {
-    super();
   }
 
   public ExtraFactoryConfiguration getExtraFactoryConfiguration() {
