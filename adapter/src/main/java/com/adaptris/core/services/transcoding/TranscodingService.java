@@ -16,13 +16,20 @@
 
 package com.adaptris.core.services.transcoding;
 
-import com.adaptris.annotation.AdvancedConfig;
-import com.adaptris.core.*;
+import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.AdaptrisMessageEncoder;
+import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.Service;
+import com.adaptris.core.ServiceException;
+import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.Args;
 
 public abstract class TranscodingService extends ServiceImp {
 
@@ -30,6 +37,7 @@ public abstract class TranscodingService extends ServiceImp {
   @NotNull
   private AdaptrisMessageEncoder encoder;
   @AdvancedConfig
+  @Valid
   private AdaptrisMessageFactory messageFactory;
 
   public TranscodingService(){
@@ -69,8 +77,7 @@ public abstract class TranscodingService extends ServiceImp {
   }
 
   public void setEncoder(AdaptrisMessageEncoder encoder) {
-    this.encoder = encoder;
-    registerEncoderMessageFactory();
+    this.encoder = Args.notNull(encoder, "encoder");
   }
 
   public AdaptrisMessageFactory getMessageFactory() {
@@ -79,7 +86,6 @@ public abstract class TranscodingService extends ServiceImp {
 
   public void setMessageFactory(AdaptrisMessageFactory f) {
     messageFactory = f;
-    registerEncoderMessageFactory();
   }
 
   private void registerEncoderMessageFactory() {

@@ -16,23 +16,25 @@
 
 package com.adaptris.core.services.transcoding;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import org.apache.commons.io.IOUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageEncoder;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import org.apache.commons.io.IOUtils;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 /**
  * Decodes the payload and updates the in flight message with the decoded output.
  *
- * @config decoding-processMessage
+ * @config decoding-service
  *
  */
 @XStreamAlias("decoding-service")
@@ -47,6 +49,7 @@ public class DecodingService extends TranscodingService {
     super(encoder);
   }
 
+  @InputFieldDefault(value = "false")
   private Boolean overrideMetadata;
 
   @Override
@@ -92,7 +95,7 @@ public class DecodingService extends TranscodingService {
    *
    * @param overrideMetadata Boolean value to control overriding of metadata.
    */
-  public void setOverrideMetadata(boolean overrideMetadata) {
+  public void setOverrideMetadata(Boolean overrideMetadata) {
     this.overrideMetadata = overrideMetadata;
   }
 
