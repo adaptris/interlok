@@ -5,19 +5,20 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -33,9 +34,10 @@ import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.PtpConsumer;
 import com.adaptris.core.jms.PtpProducer;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
+import com.adaptris.core.lifecycle.FilteredSharedComponentStart;
 import com.adaptris.core.stubs.MockConnection;
-import com.adaptris.core.transaction.SharedTransactionManager;
 import com.adaptris.core.transaction.DummyTransactionManager;
+import com.adaptris.core.transaction.SharedTransactionManager;
 import com.adaptris.core.transaction.TransactionManager;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.security.exc.PasswordException;
@@ -121,9 +123,8 @@ public class SharedComponentListTest extends ExampleConfigCase {
       adapter.getSharedComponents().addConnection(ftpConnection);
       TransactionManager transactionManager = new DummyTransactionManager("myUniqueId", "adapter:comp/env/myTransactionManager");
       adapter.getSharedComponents().setTransactionManager(transactionManager);
-      
-    }
-    catch (Exception e) {
+
+    } catch (Exception e) {
       throw new RuntimeException(e);
     }
     return adapter;
@@ -146,16 +147,14 @@ public class SharedComponentListTest extends ExampleConfigCase {
     try {
       list.addConnection(new MockConnection());
       fail();
-    }
-    catch (IllegalArgumentException expected) {
+    } catch (IllegalArgumentException expected) {
 
     }
     assertEquals(0, list.getConnections().size());
     try {
       list.addConnection(null);
       fail();
-    }
-    catch (IllegalArgumentException expected) {
+    } catch (IllegalArgumentException expected) {
 
     }
     assertEquals(0, list.getConnections().size());
@@ -171,61 +170,45 @@ public class SharedComponentListTest extends ExampleConfigCase {
   public void testAddConnections() throws Exception {
     SharedComponentList list = new SharedComponentList();
     try {
-      list.addConnections(Arrays.asList(new AdaptrisConnection[]
-      {
-          new MockConnection(getName()), new MockConnection()
-      }));
+      list.addConnections(Arrays.asList(new AdaptrisConnection[] {new MockConnection(getName()), new MockConnection()}));
       fail();
-    }
-    catch (IllegalArgumentException expected) {
+    } catch (IllegalArgumentException expected) {
 
     }
     assertEquals(0, list.getConnections().size());
     try {
       list.addConnections(null);
       fail();
-    }
-    catch (IllegalArgumentException expected) {
+    } catch (IllegalArgumentException expected) {
 
     }
     assertEquals(0, list.getConnections().size());
 
     // This is valid, we don't check for duplicates until later.
-    Collection<AdaptrisConnection> rejected = list.addConnections(Arrays.asList(new AdaptrisConnection[]
-    {
-        new MockConnection(getName()), new MockConnection(getName())
-    }));
+    Collection<AdaptrisConnection> rejected =
+        list.addConnections(Arrays.asList(new AdaptrisConnection[] {new MockConnection(getName()), new MockConnection(getName())}));
     assertEquals(1, list.getConnections().size());
     assertEquals(1, rejected.size());
   }
 
   public void testSetConnections() throws Exception {
     SharedComponentList list = new SharedComponentList();
-    List<AdaptrisConnection> bad = Arrays.asList(new AdaptrisConnection[]
-    {
-        new MockConnection(getName()), new MockConnection()
-    });
-    List<AdaptrisConnection> alsoBad = Arrays.asList(new AdaptrisConnection[]
-    {
-        new MockConnection(getName()), new MockConnection(getName())
-    });
-    List<AdaptrisConnection> good = Arrays.asList(new AdaptrisConnection[]
-    {
-        new MockConnection(getName()), new MockConnection(getName() + "_1")
-    });
+    List<AdaptrisConnection> bad = Arrays.asList(new AdaptrisConnection[] {new MockConnection(getName()), new MockConnection()});
+    List<AdaptrisConnection> alsoBad =
+        Arrays.asList(new AdaptrisConnection[] {new MockConnection(getName()), new MockConnection(getName())});
+    List<AdaptrisConnection> good =
+        Arrays.asList(new AdaptrisConnection[] {new MockConnection(getName()), new MockConnection(getName() + "_1")});
     try {
       list.setConnections(bad);
       fail();
-    }
-    catch (IllegalArgumentException expected) {
+    } catch (IllegalArgumentException expected) {
 
     }
     assertEquals(0, list.getConnections().size());
     try {
       list.setConnections(alsoBad);
       fail();
-    }
-    catch (IllegalArgumentException expected) {
+    } catch (IllegalArgumentException expected) {
 
     }
     assertEquals(0, list.getConnections().size());
@@ -235,21 +218,112 @@ public class SharedComponentListTest extends ExampleConfigCase {
 
   public void testContainsConnection() throws Exception {
     SharedComponentList list = new SharedComponentList();
-    List<AdaptrisConnection> good = Arrays.asList(new AdaptrisConnection[]
-    {
-        new MockConnection(getName()), new MockConnection(getName() + "_1")
-    });
+    List<AdaptrisConnection> good =
+        Arrays.asList(new AdaptrisConnection[] {new MockConnection(getName()), new MockConnection(getName() + "_1")});
     list.setConnections(good);
     assertEquals(2, list.getConnections().size());
     assertTrue(list.containsConnection(getName()));
   }
 
+  public void testLifecycle_Init() throws Exception {
+    SharedComponentList list = new SharedComponentList();
+    List<AdaptrisConnection> good =
+        Arrays.asList(new AdaptrisConnection[] {new MockConnection(getName()), new MockConnection(getName() + "_1")});
+    list.setConnections(good);
+    try {
+      LifecycleHelper.init(list);
+      assertEquals(2, list.getConnections().size());
+      for (AdaptrisConnection c : list.getConnections()) {
+        assertEquals(InitialisedState.getInstance(), c.retrieveComponentState());
+      }
+    } finally {
+      stop(list);
+    }
+  }
+
+  public void testLifecycle_Start() throws Exception {
+    SharedComponentList list = new SharedComponentList();
+    List<AdaptrisConnection> good =
+        Arrays.asList(new AdaptrisConnection[] {new MockConnection(getName()), new MockConnection(getName() + "_1")});
+    list.setConnections(good);
+    try {
+      LifecycleHelper.init(list);
+      LifecycleHelper.start(list);
+      assertEquals(2, list.getConnections().size());
+      for (AdaptrisConnection c : list.getConnections()) {
+        assertEquals(StartedState.getInstance(), c.retrieveComponentState());
+      }
+    } finally {
+      stop(list);
+    }
+  }
+
+  public void testLifecycle_Stop() throws Exception {
+    SharedComponentList list = new SharedComponentList();
+    List<AdaptrisConnection> good =
+        Arrays.asList(new AdaptrisConnection[] {new MockConnection(getName()), new MockConnection(getName() + "_1")});
+    list.setConnections(good);
+    try {
+      LifecycleHelper.init(list);
+      LifecycleHelper.start(list);
+      LifecycleHelper.stop(list);
+      assertEquals(2, list.getConnections().size());
+      for (AdaptrisConnection c : list.getConnections()) {
+        assertEquals(StoppedState.getInstance(), c.retrieveComponentState());
+      }
+    } finally {
+      stop(list);
+    }
+  }
+
+  public void testLifecycle_Close() throws Exception {
+    SharedComponentList list = new SharedComponentList();
+    List<AdaptrisConnection> good =
+        Arrays.asList(new AdaptrisConnection[] {new MockConnection(getName()), new MockConnection(getName() + "_1")});
+    list.setConnections(good);
+    try {
+      LifecycleHelper.init(list);
+      LifecycleHelper.start(list);
+      LifecycleHelper.stop(list);
+      LifecycleHelper.close(list);
+      assertEquals(2, list.getConnections().size());
+      for (AdaptrisConnection c : list.getConnections()) {
+        assertEquals(ClosedState.getInstance(), c.retrieveComponentState());
+      }
+    } finally {
+      stop(list);
+    }
+  }
+
+
+  // FilteredStart was removing connections
+  // from the underlying list.
+  public void testInterlok_1096() throws Exception {
+    SharedComponentList list = new SharedComponentList();
+    List<AdaptrisConnection> good =
+        Arrays.asList(new AdaptrisConnection[] {new MockConnection(getName()), new MockConnection(getName() + "_1")});
+    list.setConnections(new ArrayList<>(good));
+    FilteredSharedComponentStart starter = new FilteredSharedComponentStart();
+    starter.addExclude(getName());
+    starter.addExclude(getName() + "_1");
+    list.setLifecycleStrategy(starter);
+    try {
+      LifecycleHelper.init(list);
+      LifecycleHelper.start(list);
+      assertEquals(2, list.getConnections().size());
+      for (AdaptrisConnection c : good) {
+        assertEquals(ClosedState.getInstance(), c.retrieveComponentState());
+      }
+    } finally {
+      stop(list);
+    }
+  }
+
+
   public void testRemoveConnection() throws Exception {
     SharedComponentList list = new SharedComponentList();
-    List<AdaptrisConnection> good = Arrays.asList(new AdaptrisConnection[]
-    {
-        new MockConnection(getName()), new MockConnection(getName() + "_1")
-    });
+    List<AdaptrisConnection> good =
+        Arrays.asList(new AdaptrisConnection[] {new MockConnection(getName()), new MockConnection(getName() + "_1")});
     list.setConnections(good);
     assertEquals(2, list.getConnections().size());
     Collection<AdaptrisConnection> removed = list.removeConnection(getName());
@@ -275,11 +349,9 @@ public class SharedComponentListTest extends ExampleConfigCase {
       try {
         initialContext.lookup("adapter:comp/env/" + getName());
         fail();
+      } catch (NamingException expected) {
       }
-      catch (NamingException expected) {
-      }
-    }
-    finally {
+    } finally {
       stop(adapter);
     }
   }
@@ -299,12 +371,11 @@ public class SharedComponentListTest extends ExampleConfigCase {
       assertNotNull(lookedup);
       assertEquals(getName(), lookedup.getUniqueId());
       adapter.getSharedComponents().bindJNDI("ShouldGetIgnored");
-    }
-    finally {
+    } finally {
       stop(adapter);
     }
   }
-  
+
   public void testBindJNDITransactionManager() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(getName());
@@ -320,8 +391,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
       assertNotNull(lookedup);
       assertEquals(getName(), lookedup.getUniqueId());
       adapter.getSharedComponents().bindJNDI("ShouldGetIgnored");
-    }
-    finally {
+    } finally {
       stop(adapter);
     }
   }
@@ -334,12 +404,11 @@ public class SharedComponentListTest extends ExampleConfigCase {
       start(adapter);
       SharedConnection conn = new SharedConnection(getName());
       conn.retrieveConnection(NullConnection.class);
-    }
-    finally {
+    } finally {
       stop(adapter);
     }
   }
-  
+
   public void testSharedTransactionManager_StandardLookup() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(getName());
@@ -349,12 +418,11 @@ public class SharedComponentListTest extends ExampleConfigCase {
       SharedTransactionManager conn = new SharedTransactionManager(getName());
       conn.init();
       assertNotNull(conn.getProxiedTransactionManager());
-    }
-    finally {
+    } finally {
       stop(adapter);
     }
   }
-  
+
   public void testSharedTransactionManager_CompEnvLookupName() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(getName());
@@ -364,8 +432,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
       SharedTransactionManager conn = new SharedTransactionManager("comp/env/" + getName());
       conn.init();
       assertNotNull(conn.getProxiedTransactionManager());
-    }
-    finally {
+    } finally {
       stop(adapter);
     }
   }
@@ -378,8 +445,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
       start(adapter);
       SharedConnection conn = new SharedConnection("comp/env/" + getName());
       conn.retrieveConnection(NullConnection.class);
-    }
-    finally {
+    } finally {
       stop(adapter);
     }
   }
@@ -394,8 +460,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
       start(adapter);
       SharedConnection conn = new SharedConnection(getName());
       conn.retrieveConnection(NullConnection.class);
-    }
-    finally {
+    } finally {
       stop(adapter);
     }
   }
@@ -415,8 +480,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
       NullConnection lookedup = (NullConnection) initialContext.lookup("adapter:comp/env/" + getName());
       assertNotNull(lookedup);
       assertEquals(getName(), lookedup.getUniqueId());
-    }
-    finally {
+    } finally {
       stop(adapter);
     }
   }
@@ -438,26 +502,22 @@ public class SharedComponentListTest extends ExampleConfigCase {
       try {
         initialContext.lookup("adapter:comp/env/" + getName());
         fail();
-      }
-      catch (NamingException expected) {
+      } catch (NamingException expected) {
 
       }
       // Now a start request should rebind to JNDI.
       start(adapter);
       initialContext.lookup("adapter:comp/env/" + getName());
       initialContext.lookup("adapter:comp/env/" + getName() + "_2");
-    }
-    finally {
+    } finally {
       stop(adapter);
     }
   }
 
   public void testGetConnectionIds() throws Exception {
     SharedComponentList list = new SharedComponentList();
-    List<AdaptrisConnection> good = Arrays.asList(new AdaptrisConnection[]
-    {
-        new MockConnection(getName()), new MockConnection(getName() + "_1")
-    });
+    List<AdaptrisConnection> good =
+        Arrays.asList(new AdaptrisConnection[] {new MockConnection(getName()), new MockConnection(getName() + "_1")});
     list.setConnections(good);
     assertEquals(2, list.getConnections().size());
     assertEquals(2, list.getConnectionIds().size());
@@ -466,10 +526,8 @@ public class SharedComponentListTest extends ExampleConfigCase {
 
   public void testGetConnections() throws Exception {
     SharedComponentList list = new SharedComponentList();
-    List<AdaptrisConnection> good = Arrays.asList(new AdaptrisConnection[]
-    {
-        new MockConnection(getName()), new MockConnection(getName() + "_1")
-    });
+    List<AdaptrisConnection> good =
+        Arrays.asList(new AdaptrisConnection[] {new MockConnection(getName()), new MockConnection(getName() + "_1")});
     list.setConnections(good);
     List<AdaptrisConnection> copy = list.getConnections();
     copy.add(new NullConnection(getName()));
@@ -483,8 +541,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
     try {
       list.setConnections(copy);
       fail();
-    }
-    catch (IllegalArgumentException expected) {
+    } catch (IllegalArgumentException expected) {
 
     }
     assertEquals(2, list.getConnections().size());
@@ -527,7 +584,6 @@ public class SharedComponentListTest extends ExampleConfigCase {
 
 
 
-
   private Adapter createAdapter() throws CoreException, PasswordException {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(UUID.randomUUID().toString());
@@ -547,9 +603,8 @@ public class SharedComponentListTest extends ExampleConfigCase {
     wf.setUniqueId(UUID.randomUUID().toString());
     wf.setConsumer(new PtpConsumer(new ConfiguredConsumeDestination("SampleQ1")));
     wf.setProducer(new NullMessageProducer());
-    wf.getServiceCollection().add(
-        new StandaloneProducer(new SharedConnection("jms-connection"),
-            new PtpProducer(new ConfiguredProduceDestination("SampleQ2"))));
+    wf.getServiceCollection().add(new StandaloneProducer(new SharedConnection("jms-connection"),
+        new PtpProducer(new ConfiguredProduceDestination("SampleQ2"))));
     // wf.addInterceptor(unlicensedInterceptor);
     // wf.addInterceptor(metricsInterceptor);
     Channel channel = new Channel();
