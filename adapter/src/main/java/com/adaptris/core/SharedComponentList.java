@@ -32,6 +32,9 @@ import javax.naming.NamingException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -60,6 +63,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"connections", "lifecycleStrategy", "debug"})
 public class SharedComponentList implements AdaptrisComponent, ComponentLifecycleExtension {
 
+  private transient Logger log = LoggerFactory.getLogger(this.getClass());
   private static final DefaultLifecycleStrategy DEFAULT_STRATEGY = new DefaultLifecycleStrategy();
 
   @Valid
@@ -121,31 +125,27 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
   @Override
   public void init() throws CoreException {
     bindNotYetBound();
-    lifecycleStrategy().init(connections);
-    if(getTransactionManager() != null)
-      LifecycleHelper.init(getTransactionManager());
+    lifecycleStrategy().init(getConnections());
+    LifecycleHelper.init(getTransactionManager());
   }
 
   @Override
   public void start() throws CoreException {
     bindNotYetBound();
-    lifecycleStrategy().start(connections);
-    if(getTransactionManager() != null)
-      LifecycleHelper.start(getTransactionManager());
+    lifecycleStrategy().start(getConnections());
+    LifecycleHelper.start(getTransactionManager());
   }
 
   @Override
   public void stop() {
-    lifecycleStrategy().stop(connections);
-    if(getTransactionManager() != null)
-      LifecycleHelper.stop(getTransactionManager());
+    lifecycleStrategy().stop(getConnections());
+    LifecycleHelper.stop(getTransactionManager());
   }
 
   @Override
   public void close() {
-    lifecycleStrategy().close(connections);
-    if(getTransactionManager() != null)
-      LifecycleHelper.close(getTransactionManager());
+    lifecycleStrategy().close(getConnections());
+    LifecycleHelper.close(getTransactionManager());
     unbindAll();
   }
 
