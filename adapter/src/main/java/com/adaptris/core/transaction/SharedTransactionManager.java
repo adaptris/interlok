@@ -16,17 +16,18 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XStreamAlias("shared-transaction-manager")
 @AdapterComponent
-@ComponentProfile(summary = "A Transaction Manager that refers to another Transaction Manager configured elsewhere", tag = "transactionManager,base")
+@ComponentProfile(summary = "A Transaction Manager that refers to another Transaction Manager configured elsewhere",
+    tag = "transactionManager,base")
 @DisplayOrder(order = {"lookupName"})
 public class SharedTransactionManager extends SharedComponent implements TransactionManager {
-  
+
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
-  
+
   @NotBlank
   private String lookupName;
 
   private transient TransactionManager proxiedTransactionManager;
-  
+
   public SharedTransactionManager() {
 
   }
@@ -35,8 +36,8 @@ public class SharedTransactionManager extends SharedComponent implements Transac
     this();
     setLookupName(lookupName);
   }
-  
-  
+
+
 
   public String getLookupName() {
     return lookupName;
@@ -48,84 +49,84 @@ public class SharedTransactionManager extends SharedComponent implements Transac
 
   @Override
   public void init() throws CoreException {
-//    getProxiedTransactionManager().init();
+    // getProxiedTransactionManager().init();
   }
 
   @Override
   public void start() throws CoreException {
-//    getProxiedTransactionManager().start();
+    // getProxiedTransactionManager().start();
   }
 
   @Override
   public void stop() {
     // handled by SharedComponents
-//    getProxiedTransactionManager().stop();
+    // getProxiedTransactionManager().stop();
   }
 
   @Override
   public void close() {
     // handled by SharedComponents
-//    getProxiedTransactionManager().close();
+    // getProxiedTransactionManager().close();
   }
 
   @Override
   public void prepare() throws CoreException {
     // handled by SharedComponents
-//    getProxiedTransactionManager().prepare();
+    // getProxiedTransactionManager().prepare();
   }
 
   @Override
   public String getUniqueId() {
-    return getProxiedTransactionManager().getUniqueId();
+    return proxiedTransactionManager().getUniqueId();
   }
 
   @Override
   public void registerXAResource(String name, XAConnectionFactory connectionFactory) throws Exception {
-    getProxiedTransactionManager().registerXAResource(name, connectionFactory);
+    proxiedTransactionManager().registerXAResource(name, connectionFactory);
   }
-  
+
   @Override
   public void deRegisterXAResource(String name, XAConnectionFactory connectionFactory) throws Exception {
-    getProxiedTransactionManager().deRegisterXAResource(name, connectionFactory);
+    proxiedTransactionManager().deRegisterXAResource(name, connectionFactory);
   }
 
   @Override
   public void enlistXAResource(String name, XAResource xaResource) throws Exception {
-    getProxiedTransactionManager().enlistXAResource(name, xaResource);
+    proxiedTransactionManager().enlistXAResource(name, xaResource);
   }
 
   @Override
   public void delistXAResource(String name, XAResource xaResource, int status) throws Exception {
-    getProxiedTransactionManager().delistXAResource(name, xaResource, status);
+    proxiedTransactionManager().delistXAResource(name, xaResource, status);
   }
 
   @Override
   public void beginTransaction() throws Exception {
-    getProxiedTransactionManager().beginTransaction();
+    proxiedTransactionManager().beginTransaction();
   }
 
   @Override
   public boolean commit() throws Exception {
-    return getProxiedTransactionManager().commit();
+    return proxiedTransactionManager().commit();
   }
 
   @Override
   public void rollback() throws Exception {
-    getProxiedTransactionManager().rollback();
+    proxiedTransactionManager().rollback();
   }
 
   @Override
   public boolean transactionIsActive() throws Exception {
-    return getProxiedTransactionManager().transactionIsActive();
+    return proxiedTransactionManager().transactionIsActive();
   }
 
   @Override
   public void setRollbackOnly() throws Exception {
-    getProxiedTransactionManager().setRollbackOnly();
+    proxiedTransactionManager().setRollbackOnly();
   }
 
-  public TransactionManager getProxiedTransactionManager() {
-    if(proxiedTransactionManager == null)
+  public TransactionManager proxiedTransactionManager() {
+    if (proxiedTransactionManager == null)
       try {
         setProxiedTransactionManager((TransactionManager) triggerJndiLookup(this.getLookupName()));
       } catch (CoreException e) {
@@ -134,7 +135,7 @@ public class SharedTransactionManager extends SharedComponent implements Transac
     return proxiedTransactionManager;
   }
 
-  public void setProxiedTransactionManager(TransactionManager proxiedTransactionManager) {
+  void setProxiedTransactionManager(TransactionManager proxiedTransactionManager) {
     this.proxiedTransactionManager = proxiedTransactionManager;
   }
 

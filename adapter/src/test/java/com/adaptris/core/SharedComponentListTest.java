@@ -417,7 +417,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
       start(adapter);
       SharedTransactionManager conn = new SharedTransactionManager(getName());
       conn.init();
-      assertNotNull(conn.getProxiedTransactionManager());
+      assertNotNull(conn.proxiedTransactionManager());
     } finally {
       stop(adapter);
     }
@@ -431,7 +431,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
       start(adapter);
       SharedTransactionManager conn = new SharedTransactionManager("comp/env/" + getName());
       conn.init();
-      assertNotNull(conn.getProxiedTransactionManager());
+      assertNotNull(conn.proxiedTransactionManager());
     } finally {
       stop(adapter);
     }
