@@ -70,19 +70,19 @@ public class JdbcObjectMetadataParameterTest extends NullableParameterCase {
   }
   
   public void testMetadataAlreadyExistsOutputParam() throws Exception {
-    message.addObjectMetadata(METADATA_KEY, METADATA_VALUE);
-    assertEquals(message.getObjectMetadata().get(METADATA_KEY), METADATA_VALUE);
+    message.addObjectHeader(METADATA_KEY, METADATA_VALUE);
+    assertEquals(message.getObjectHeaders().get(METADATA_KEY), METADATA_VALUE);
     
     JdbcObjectMetadataParameter param = new JdbcObjectMetadataParameter();
     param.setMetadataKey(METADATA_KEY);
     
     param.applyOutputParam("NEW_PARAM_METADATA_VALUE", message);
     
-    assertEquals(message.getObjectMetadata().get(METADATA_KEY), "NEW_PARAM_METADATA_VALUE");
+    assertEquals(message.getObjectHeaders().get(METADATA_KEY), "NEW_PARAM_METADATA_VALUE");
   }
   
   public void testMetadataAppliedInputParam() throws Exception {
-    message.addObjectMetadata(METADATA_KEY, METADATA_VALUE);
+    message.addObjectHeader(METADATA_KEY, METADATA_VALUE);
     
     JdbcObjectMetadataParameter param = new JdbcObjectMetadataParameter();
     param.setMetadataKey(METADATA_KEY);
@@ -97,8 +97,8 @@ public class JdbcObjectMetadataParameterTest extends NullableParameterCase {
     
     param.applyOutputParam(METADATA_VALUE, message);
     
-    assertTrue(message.getObjectMetadata().containsKey(METADATA_KEY));
-    assertEquals(message.getObjectMetadata().get(METADATA_KEY), METADATA_VALUE);
+    assertTrue(message.getObjectHeaders().containsKey(METADATA_KEY));
+    assertEquals(message.getObjectHeaders().get(METADATA_KEY), METADATA_VALUE);
   }
 
 }

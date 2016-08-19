@@ -40,8 +40,8 @@ public class AddNamespaceObjectMetadataTest extends MetadataServiceExample {
     try {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
       execute(service, msg);
-      assertTrue(msg.getObjectMetadata().containsKey(SimpleNamespaceContext.class.getCanonicalName()));
-      NamespaceContext ctx = (NamespaceContext) msg.getObjectMetadata().get(SimpleNamespaceContext.class.getCanonicalName());
+      assertTrue(msg.getObjectHeaders().containsKey(SimpleNamespaceContext.class.getCanonicalName()));
+      NamespaceContext ctx = (NamespaceContext) msg.getObjectHeaders().get(SimpleNamespaceContext.class.getCanonicalName());
       // Configured NamespaceContext takes precendence.
       assertNotSame(ctx, SimpleNamespaceContext.create(createContextEntries(), msg));
       // If we have nothing configured, it should now be the same.
@@ -57,7 +57,7 @@ public class AddNamespaceObjectMetadataTest extends MetadataServiceExample {
     try {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
       execute(service, msg);
-      assertFalse(msg.getObjectMetadata().containsKey(SimpleNamespaceContext.class.getCanonicalName()));
+      assertFalse(msg.getObjectHeaders().containsKey(SimpleNamespaceContext.class.getCanonicalName()));
       assertNotNull(SimpleNamespaceContext.create(createContextEntries(), msg));
     }
     finally {

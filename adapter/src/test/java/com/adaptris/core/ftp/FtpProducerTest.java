@@ -253,7 +253,7 @@ public class FtpProducerTest extends FtpProducerCase {
 
       start(requestor);
       requestor.doService(msg);
-      assertEquals(PAYLOAD_ALTERNATE, msg.getStringPayload());
+      assertEquals(PAYLOAD_ALTERNATE, msg.getContent());
     }
     finally {
       stop(requestor);
@@ -278,7 +278,7 @@ public class FtpProducerTest extends FtpProducerCase {
 
       start(requestor);
       requestor.doService(msg);
-      assertEquals(PAYLOAD_ALTERNATE, msg.getStringPayload());
+      assertEquals(PAYLOAD_ALTERNATE, msg.getContent());
     }
     finally {
       stop(requestor);
@@ -333,7 +333,7 @@ public class FtpProducerTest extends FtpProducerCase {
       start(requestor);
 
       requestor.doService(msg);
-      assertEquals(PAYLOAD_ALTERNATE, msg.getStringPayload());
+      assertEquals(PAYLOAD_ALTERNATE, msg.getContent());
     }
     finally {
       stop(requestor);
@@ -361,7 +361,7 @@ public class FtpProducerTest extends FtpProducerCase {
       start(requestor);
 
       requestor.doService(msg);
-      assertEquals(PAYLOAD_ALTERNATE, msg.getStringPayload());
+      assertEquals(PAYLOAD_ALTERNATE, msg.getContent());
     }
     finally {
       stop(requestor);
@@ -388,7 +388,7 @@ public class FtpProducerTest extends FtpProducerCase {
 
       start(requestor);
       requestor.doService(msg);
-      assertEquals(PAYLOAD_ALTERNATE, msg.getStringPayload());
+      assertEquals(PAYLOAD_ALTERNATE, msg.getContent());
     }
     finally {
       stop(requestor);
@@ -415,7 +415,7 @@ public class FtpProducerTest extends FtpProducerCase {
 
       start(requestor);
       requestor.doService(msg);
-      assertEquals(PAYLOAD_ALTERNATE, msg.getStringPayload());
+      assertEquals(PAYLOAD_ALTERNATE, msg.getContent());
     }
     finally {
       stop(requestor);
@@ -441,7 +441,7 @@ public class FtpProducerTest extends FtpProducerCase {
 
       start(requestor);
       requestor.doService(msg);
-      assertEquals(PAYLOAD_ALTERNATE, msg.getStringPayload());
+      assertEquals(PAYLOAD_ALTERNATE, msg.getContent());
       assertEquals(1, filesystem.listFiles(DEFAULT_PROC_DIR_CANONICAL).size());
 
     }

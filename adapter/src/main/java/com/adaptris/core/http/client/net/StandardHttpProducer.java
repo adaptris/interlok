@@ -195,7 +195,7 @@ public class StandardHttpProducer extends HttpProducer {
       if (getEncoder() != null) {
         AdaptrisMessage decodedReply = getEncoder().readMessage(http);
         AdaptrisMessageImp.copyPayload(decodedReply, reply);
-        reply.getObjectMetadata().putAll(decodedReply.getObjectMetadata());
+        reply.getObjectHeaders().putAll(decodedReply.getObjectHeaders());
         reply.setMetadata(decodedReply.getMetadata());
       } else {
         responseBody().insert(new InputStreamWithEncoding(http.getInputStream(), getContentEncoding(http)), reply);
@@ -256,7 +256,7 @@ public class StandardHttpProducer extends HttpProducer {
   /**
    * Set where the HTTP Response Body will be written to.
    * 
-   * @param output the output; default is {@link PayloadHttpStreamOutputParameter}.
+   * @param output the output; default is {@link PayloadStreamOutputParameter}.
    */
   public void setResponseBody(DataOutputParameter<InputStreamWithEncoding> output) {
     this.responseBody = Args.notNull(output, "data output");

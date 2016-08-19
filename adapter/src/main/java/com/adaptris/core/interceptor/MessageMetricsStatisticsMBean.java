@@ -28,36 +28,6 @@ import com.adaptris.core.CoreException;
  */
 public interface MessageMetricsStatisticsMBean extends MetricsMBean {
 
-  /**
-   * Get the number of messages for a given timeslice.
-   * 
-   * @param index the index of the timeslice.
-   * @return the number of messages.
-   * @deprecated since 3.0.3 use {@link #getStatistics()} instead for efficiency when dealing with remote MBeans
-   */
-  @Deprecated
-	int getNumberOfMessagesForTimeSliceIndex(int index);
-
-  /**
-   * Get the total size of messages processed in a given timeslice
-   * 
-   * @param index the index of the timeslice
-   * @return the total size of messages.
-   * @deprecated since 3.0.3 use {@link #getStatistics()} instead for efficiency when dealing with remote MBeans.
-   */
-  @Deprecated
-	long getTotalSizeOfMessagesForTimeSliceIndex(int index);
-
-  /**
-   * Get the total number of messages that had an error in a given timeslice.
-   * 
-   * @param index the index of the timeslice
-   * @return the total of messages that errored.
-   * @deprecated since 3.0.3 use {@link #getStatistics()} instead for efficiency when dealing with remote MBeans.
-   */
-  @Deprecated
-	int getNumberOfErrorMessagesForTimeSliceIndex(int index);
-
 
   /**
    * Get a simple string representation of stats.

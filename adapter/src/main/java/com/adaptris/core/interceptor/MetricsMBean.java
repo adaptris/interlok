@@ -16,6 +16,7 @@
 
 package com.adaptris.core.interceptor;
 
+import com.adaptris.core.CoreException;
 import com.adaptris.core.runtime.ChildRuntimeInfoComponentMBean;
 
 /**
@@ -41,12 +42,10 @@ public interface MetricsMBean extends ChildRuntimeInfoComponentMBean {
   int getTimeSliceDurationSeconds();
 
   /**
-   * Get the end time in millisecond of a given timeslice.
+   * Clear any statistics held in this MBean.
    * 
-   * @param index the index of the timeslice
-   * @return the end time in millisecond.
-   * @deprecated since 3.0.3
+   * @since 3.4.0
+   * 
    */
-  @Deprecated
-  long getEndMillisForTimeSliceIndex(int index);
+  void clearStatistics() throws CoreException;
 }

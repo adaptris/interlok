@@ -61,7 +61,7 @@ public abstract class MessageSplitterImp implements MessageSplitter {
     }
     child.addMetadata(CoreConstants.PARENT_UNIQUE_ID_KEY, parent.getUniqueId());
     if (copyObjectMetadata()) {
-      child.getObjectMetadata().putAll(parent.getObjectMetadata());
+      child.getObjectHeaders().putAll(parent.getObjectHeaders());
     }
   }
 

@@ -131,7 +131,7 @@ public class SocketProducer extends RequestReplyProducerImp {
     Socket sock = null;
     try {
       String host = dest.getDestination(msg);
-      Map m = msg.getObjectMetadata();
+      Map m = msg.getObjectHeaders();
       // Use the object metadata socket if available.
       sock = m.containsKey(CoreConstants.SOCKET_OBJECT_KEY) ? (Socket) m.get(CoreConstants.SOCKET_OBJECT_KEY) : retrieveConnection(
           ProduceConnection.class).createSocket(host);
@@ -152,7 +152,7 @@ public class SocketProducer extends RequestReplyProducerImp {
       throw new ProduceException(e);
     }
     finally {
-      msg.getObjectMetadata().remove(CoreConstants.SOCKET_OBJECT_KEY);
+      msg.getObjectHeaders().remove(CoreConstants.SOCKET_OBJECT_KEY);
       if (sock != null) {
         try {
           sock.close();

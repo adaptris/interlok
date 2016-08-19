@@ -31,7 +31,8 @@ public interface FileSorter {
    * Sort the list of files that need to be processed.
    *
    * @param unsorted an unsorted list of files.
+   * @return the sorted list.
    */
-  void sort(List<File> unsorted);
+  List<File> sort(List<File> unsorted);
 
 }

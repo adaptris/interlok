@@ -4,6 +4,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -38,7 +39,7 @@ public class ConfiguredSQLStatement implements JdbcStatementCreator {
   }
 
   public void setStatement(String statement) {
-    this.statement = statement;
+    this.statement = Args.notBlank(statement, "statement");
   }
 
 }

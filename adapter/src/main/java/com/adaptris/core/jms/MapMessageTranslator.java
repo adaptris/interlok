@@ -90,7 +90,7 @@ public final class MapMessageTranslator extends MessageTypeTranslatorImp {
    */
   public Message translate(AdaptrisMessage msg) throws JMSException {
     MapMessage jmsMsg = session.createMapMessage();
-    jmsMsg.setString(getKeyForPayload(), msg.getStringPayload());
+    jmsMsg.setString(getKeyForPayload(), msg.getContent());
     if (treatMetadataAsPartOfMessage()) {
       Set metadata = msg.getMetadata();
       for (Iterator itr = metadata.iterator(); itr.hasNext();) {

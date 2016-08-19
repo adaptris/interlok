@@ -68,7 +68,7 @@ public class MultiAttachmentProducerMimeTest extends MailProducerExample {
   @Override
   protected String getExampleCommentHeader(Object obj) {
     try {
-      return super.getExampleCommentHeader(obj) + "<!-- The example document for this would be \n" + create().getStringPayload()
+      return super.getExampleCommentHeader(obj) + "<!-- The example document for this would be \n" + create().getContent()
           + "\nwhich will create 2 attachments to the email \n" + "The email itself has the body '" + PAYLOAD_2 + "'\n-->\n";
     }
     catch (Exception e) {

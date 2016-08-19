@@ -88,7 +88,7 @@ public class PayloadHashingServiceTest extends MetadataServiceExample {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD);
     execute(service, msg);
     assertTrue(msg.containsKey(METADATA_KEY));
-    assertEquals(PAYLOAD, msg.getStringPayload());
+    assertEquals(PAYLOAD, msg.getContent());
     assertNotNull(msg.getMetadataValue(METADATA_KEY));
     assertEquals(createHash(), msg.getMetadataValue(METADATA_KEY));
   }

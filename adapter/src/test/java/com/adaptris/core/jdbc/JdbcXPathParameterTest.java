@@ -110,7 +110,7 @@ public class JdbcXPathParameterTest extends NullableParameterCase {
   }
   
   public void testNoNodeXPathOutputParameter() throws Exception {
-    assertEquals(message.getStringPayload(), XML_PAYLOAD);
+    assertEquals(message.getContent(), XML_PAYLOAD);
     
     JdbcXPathParameter parameter = new JdbcXPathParameter();
     parameter.setXpath("/head/body/element999");

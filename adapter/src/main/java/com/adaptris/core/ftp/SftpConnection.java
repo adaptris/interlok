@@ -16,6 +16,7 @@
 
 package com.adaptris.core.ftp;
 
+import java.io.File;
 import java.io.IOException;
 
 import javax.validation.Valid;
@@ -26,11 +27,12 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.core.util.Args;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
-import com.adaptris.sftp.DefaultSftpBehaviour;
+import com.adaptris.sftp.ConfigBuilder;
+import com.adaptris.sftp.InlineConfigBuilder;
 import com.adaptris.sftp.SftpClient;
-import com.adaptris.sftp.SftpConnectionBehaviour;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -58,11 +60,14 @@ public class SftpConnection extends FileTransferConnectionUsingPassword {
 
   @AdvancedConfig
   private Integer socketTimeout;
+  @AdvancedConfig
+  private String knownHostsFile;
   @Valid
   @NotNull
   @AutoPopulated
   @AdvancedConfig
-  private SftpConnectionBehaviour sftpConnectionBehaviour;
+  private ConfigBuilder configuration;
+
   // For sending keep alives every 60 seconds on the control port when downloading stuff.
   // Could make it configurable
   private transient long keepAlive = 60;
@@ -77,7 +82,7 @@ public class SftpConnection extends FileTransferConnectionUsingPassword {
    */
   public SftpConnection() {
     super();
-    setSftpConnectionBehaviour(new DefaultSftpBehaviour());
+    setConfiguration(new InlineConfigBuilder());
   }
 
 
@@ -92,7 +97,7 @@ public class SftpConnection extends FileTransferConnectionUsingPassword {
       throws IOException, FileTransferException {
     log.debug("Connecting to " + remoteHost + ":" + port + " as user "
         + ui.getUser());
-    SftpClient sftp = new SftpClient(remoteHost, port, socketTimeout(), getSftpConnectionBehaviour());
+    SftpClient sftp = new SftpClient(remoteHost, port, socketTimeout(), knownHosts(), getConfiguration());
     sftp.setAdditionalDebug(additionalDebug());
     sftp.setKeepAliveTimeout(keepAlive);
     sftp.connect(ui.getUser(), ui.getPassword());
@@ -116,19 +121,43 @@ public class SftpConnection extends FileTransferConnectionUsingPassword {
     return getSocketTimeout() != null ? getSocketTimeout().intValue() : DEFAULT_TIMEOUT;
   }
 
-  public SftpConnectionBehaviour getSftpConnectionBehaviour() {
-    return sftpConnectionBehaviour;
+  public String getKnownHostsFile() {
+    return knownHostsFile;
   }
 
-  public void setSftpConnectionBehaviour(SftpConnectionBehaviour k) {
-    if (k == null) {
-      throw new IllegalArgumentException("known_hosts handler may not be null");
-    }
-    sftpConnectionBehaviour = k;
+  public void setKnownHostsFile(String k) {
+    knownHostsFile = k;
+  }
+
+  private File knownHosts() {
+    return knownHostsFile != null ? new File(knownHostsFile) : null;
   }
 
   @Override
   public int defaultControlPort() {
     return getDefaultControlPort() != null ? getDefaultControlPort().intValue() : DEFAULT_CONTROL_PORT;
+  }
+
+
+  /**
+   * @return the configRepository
+   */
+  public ConfigBuilder getConfiguration() {
+    return configuration;
+  }
+
+
+
+  /**
+   * Set the config repository.
+   * <p>
+   * Use a config repository to set various SSH based settings (such as {@code PreferredAuthentications} or
+   * {@code ServerAliveInterval}.
+   * </p>
+   * 
+   * @param repo the configRepository to set
+   */
+  public void setConfiguration(ConfigBuilder repo) {
+    this.configuration = Args.notNull(repo, "configuration");
   }
 }

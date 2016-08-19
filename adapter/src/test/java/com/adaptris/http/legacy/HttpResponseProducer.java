@@ -109,7 +109,7 @@ public class HttpResponseProducer extends ProduceOnlyProducerImp {
   @Override
   public void produce(AdaptrisMessage msg, ProduceDestination destination)
       throws ProduceException {
-    HttpSession session = (HttpSession) msg.getObjectMetadata().get(
+    HttpSession session = (HttpSession) msg.getObjectHeaders().get(
         CoreConstants.HTTP_SESSION_KEY);
     InputStream in = null;
 

@@ -162,7 +162,7 @@ public class SplitJoinServiceTest extends TestCase {
   public void testService_WithNoSplitMessages() throws Exception {
     // This is a 100 line message, so we expect to get 11 parts.
     AdaptrisMessage msg = SplitterCase.createLineCountMessageInput();
-    String originalInput = msg.getStringPayload();
+    String originalInput = msg.getContent();
     SplitJoinService service = new SplitJoinService();
     // The service doesn't actually matter right now.
     service.setService(wrap(new NullService()));
@@ -177,7 +177,7 @@ public class SplitJoinServiceTest extends TestCase {
     });
     service.setAggregator(new MimeAggregator());
     execute(service, msg);
-    assertEquals(originalInput, msg.getStringPayload());
+    assertEquals(originalInput, msg.getContent());
   }
 
   public void testService_WithSplitFailure() throws Exception {

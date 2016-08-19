@@ -24,7 +24,7 @@ public class XpathProduceDestinationTest extends ExampleProduceDestinationCase {
   private static final String DEFAULT_DEST = "default";
   private static final String DEST_XPATH = "/root/document";
   private static final String DEST_XPATH_WITH_FUNCTION = "local-name(/*)";
-  private static final String LINE_SEP = System.getProperty("line.separator");
+  private static final String LINE_SEP = System.lineSeparator();
   private static final String XML_DOC = "<root>" + LINE_SEP
       + "<document>value</document>" + LINE_SEP + "</root>" + LINE_SEP;
 

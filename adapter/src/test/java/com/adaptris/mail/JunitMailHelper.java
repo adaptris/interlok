@@ -27,8 +27,10 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import com.adaptris.core.PortManager;
 import com.icegreen.greenmail.smtp.SmtpServer;
 import com.icegreen.greenmail.util.GreenMail;
+import com.icegreen.greenmail.util.ServerSetup;
 
 public class JunitMailHelper {
 
@@ -40,7 +42,7 @@ public class JunitMailHelper {
   public static final String DEFAULT_PAYLOAD_HTML = "<html><body>The quick brown fox jumps over the lazy dog</body></html>";
   public static final String DEFAULT_SUBJECT = "Junit Mail Test : " + new Date();
 
-  private static final String LF = System.getProperty("line.separator");
+  private static final String LF = System.lineSeparator();
   public static final String XML_DOCUMENT = "<?xml version=\"1.0\"?>" + LF + "<document>" + LF
       + "<subject>an email with attachemnts perhaps</subject>" + LF + "<content>Quick zephyrs blow, vexing daft Jim</content>" + LF
       + "<!-- This is ADP-01 MD5 Base64 -->" + LF
@@ -50,12 +52,12 @@ public class JunitMailHelper {
 
   // Just starts a vanilla server with no settings...
   public static GreenMail startServer() throws Exception {
-    return startServer(new GreenMail());
+    return startServer(new GreenMail(createServerSetups()));
   }
 
   // Starts a server whereby emails for "emailAddr" are picked up by logging in as "user" and "password"
   public static GreenMail startServer(String emailAddr, String user, String password) throws Exception {
-    GreenMail gm = new GreenMail();
+    GreenMail gm = new GreenMail(createServerSetups());
     gm.setUser(emailAddr, user, password);
     return startServer(gm);
   }
@@ -67,6 +69,7 @@ public class JunitMailHelper {
 
   public static void stopServer(GreenMail gm) throws Exception {
     if (gm != null) {
+      releasePorts(gm);
       gm.stop();
     }
   }
@@ -145,5 +148,38 @@ public class JunitMailHelper {
     SmtpClient client = new SmtpClient(smtpUrl);
     client.startSession();
     return client;
+  }
+
+  private static void releasePorts(GreenMail gm) {
+    if (gm.getPop3() != null) {
+      PortManager.release(gm.getPop3().getPort());
+    }
+    if (gm.getPop3s() != null) {
+      PortManager.release(gm.getPop3s().getPort());
+    }
+    if (gm.getImap() != null) {
+      PortManager.release(gm.getImap().getPort());
+    }
+    if (gm.getImaps() != null) {
+      PortManager.release(gm.getImaps().getPort());
+    }
+    if (gm.getSmtp() != null) {
+      PortManager.release(gm.getSmtp().getPort());
+    }
+    if (gm.getSmtps() != null) {
+      PortManager.release(gm.getSmtps().getPort());
+    }
+  }
+
+  private static ServerSetup[] createServerSetups() {
+    int basePort = 12500;
+    return new ServerSetup[] {
+        new ServerSetup(PortManager.nextUnusedPort(basePort), null, ServerSetup.PROTOCOL_SMTP),
+        new ServerSetup(PortManager.nextUnusedPort(basePort), null, ServerSetup.PROTOCOL_SMTPS),
+        new ServerSetup(PortManager.nextUnusedPort(basePort), null, ServerSetup.PROTOCOL_POP3),
+        new ServerSetup(PortManager.nextUnusedPort(basePort), null, ServerSetup.PROTOCOL_POP3S),
+        new ServerSetup(PortManager.nextUnusedPort(basePort), null, ServerSetup.PROTOCOL_IMAP),
+        new ServerSetup(PortManager.nextUnusedPort(basePort), null, ServerSetup.PROTOCOL_IMAPS)
+    };
   }
 }

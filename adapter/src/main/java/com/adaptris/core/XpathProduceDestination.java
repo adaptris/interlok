@@ -19,6 +19,7 @@ package com.adaptris.core;
 import static com.adaptris.core.util.XmlHelper.createXmlUtils;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.xml.namespace.NamespaceContext;
 
@@ -59,8 +60,10 @@ public class XpathProduceDestination implements ProduceDestination {
   private String defaultDestination;
 
   @AdvancedConfig
+  @Valid
   private KeyValuePairSet namespaceContext;
   @AdvancedConfig
+  @Valid
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 
   private transient Logger logR = LoggerFactory.getLogger(this.getClass().getName());

@@ -41,11 +41,11 @@ import com.adaptris.core.DefaultFailedMessageRetrier;
 import com.adaptris.core.DefaultFailedMessageRetrierJmxMBean;
 import com.adaptris.core.DefaultSerializableMessageTranslator;
 import com.adaptris.core.MimeEncoder;
-import com.adaptris.core.SerializableAdaptrisMessage;
 import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.Workflow;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.types.SerializableMessage;
 import com.adaptris.util.TimeInterval;
 
 public class DefaultFailedMessageRetrierJmxTest extends ComponentManagerCase {
@@ -124,7 +124,7 @@ public class DefaultFailedMessageRetrierJmxTest extends ComponentManagerCase {
 
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata(Workflow.WORKFLOW_ID_KEY, getName() + "@" + getName());
-    SerializableAdaptrisMessage serialized = new DefaultSerializableMessageTranslator().translate(msg);
+    SerializableMessage serialized = new DefaultSerializableMessageTranslator().translate(msg);
     AdapterManager adapterManager = new AdapterManager(adapter);
     try {
       adapterManager.registerMBean();
@@ -155,7 +155,7 @@ public class DefaultFailedMessageRetrierJmxTest extends ComponentManagerCase {
 
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata(Workflow.WORKFLOW_ID_KEY, getName() + "@BLAHBLAH");
-    SerializableAdaptrisMessage serialized = new DefaultSerializableMessageTranslator().translate(msg);
+    SerializableMessage serialized = new DefaultSerializableMessageTranslator().translate(msg);
     AdapterManager adapterManager = new AdapterManager(adapter);
     try {
       adapterManager.registerMBean();
@@ -324,7 +324,7 @@ public class DefaultFailedMessageRetrierJmxTest extends ComponentManagerCase {
 
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata(Workflow.WORKFLOW_ID_KEY, getName() + "@" + getName());
-    SerializableAdaptrisMessage serialized = new DefaultSerializableMessageTranslator().translate(msg);
+    SerializableMessage serialized = new DefaultSerializableMessageTranslator().translate(msg);
     AdapterManager adapterManager = new AdapterManager(adapter);
     try {
       adapterManager.registerMBean();
@@ -357,7 +357,7 @@ public class DefaultFailedMessageRetrierJmxTest extends ComponentManagerCase {
 
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata(Workflow.WORKFLOW_ID_KEY, getName() + "@" + getName());
-    SerializableAdaptrisMessage serialized = new DefaultSerializableMessageTranslator().translate(msg);
+    SerializableMessage serialized = new DefaultSerializableMessageTranslator().translate(msg);
     AdapterManager adapterManager = new AdapterManager(adapter);
     try {
       adapterManager.registerMBean();

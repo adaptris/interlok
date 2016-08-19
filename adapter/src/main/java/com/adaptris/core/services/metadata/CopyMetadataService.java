@@ -16,6 +16,7 @@
 
 package com.adaptris.core.services.metadata;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdapterComponent;
@@ -55,6 +56,7 @@ public class CopyMetadataService extends ServiceImp {
 
   @NotNull
   @AutoPopulated
+  @Valid
   private KeyValuePairCollection metadataKeys;
 
   public CopyMetadataService() {

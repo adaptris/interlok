@@ -146,7 +146,7 @@ public final class JmsTransactedWorkflow extends StandardWorkflow {
       log.error(logMsg, e);
     }
     if (!(retrieveActiveMsgErrorHandler() instanceof NullProcessingExceptionHandler)) {
-      msg.getObjectMetadata().put(CoreConstants.OBJ_METADATA_EXCEPTION, e);
+      msg.getObjectHeaders().put(CoreConstants.OBJ_METADATA_EXCEPTION, e);
       handleBadMessage(msg);
       if (!isStrict()) {
         LAST_MSG_FAILED.set(Boolean.FALSE);

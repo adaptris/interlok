@@ -84,7 +84,7 @@ public final class HexDump {
       if (count > 11) {
 
         String s = Justify.trailing(sb2.toString(), 64, ' ');
-        data.append(System.getProperty("line.separator"));
+        data.append(System.lineSeparator());
         sb.append(s);
         sb.append(data.toString());
         sb2.setLength(0);
@@ -94,7 +94,7 @@ public final class HexDump {
     }
 
     String s = Justify.trailing(sb2.toString(), 64, ' ');
-    data.append(System.getProperty("line.separator"));
+    data.append(System.lineSeparator());
     sb.append(s);
     sb.append(data.toString());
     sb.append("Total bytes " + bytes.length);

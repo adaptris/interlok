@@ -42,7 +42,7 @@ import com.adaptris.util.TimeInterval;
  * Runnable implementation to be used as a Shutdown Hook.
  * </p>
  */
-class ShutdownHandler extends Thread {
+public class ShutdownHandler extends Thread {
 
   private transient static final TimeInterval DEFAULT_WAIT_TIME = new TimeInterval(30L, TimeUnit.SECONDS);
 

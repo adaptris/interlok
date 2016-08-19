@@ -49,7 +49,7 @@ public class JdbcDataCaptureServiceTest extends JdbcServiceExample {
 
   protected static final String JDBC_CAPTURE_SERVICE_DRIVER = "jdbc.captureservice.driver";
   protected static final String JDBC_CAPTURE_SERVICE_URL = "jdbc.captureservice.url";
-  private static final String LF = System.getProperty("line.separator");
+  private static final String LF = System.lineSeparator();
   private static final String XML_DOCUMENT = "<?xml version=\"1.0\"?>" + LF + "<document>" + LF + "<subject>" + SUBJECT
       + "</subject>" + LF + "<content>" + CONTENT + "</content>" + LF + "<attachment><data>" + ATTACHMENT_DATA
       + "</data></attachment>" + LF + "<attachment><data>" + ATTACHMENT_DATA + "</data></attachment>" + LF + "</document>";
@@ -173,8 +173,14 @@ public class JdbcDataCaptureServiceTest extends JdbcServiceExample {
     super(arg0);
   }
 
-  @Override
   protected Object retrieveObjectForSampleConfig() {
+    return null;
+  }
+  
+  @Override
+  protected List<Object> retrieveObjectsForSampleConfig() {
+    List<Object> returnedObjects = new ArrayList<>();
+    
     JdbcDataCaptureService service = new JdbcDataCaptureService();
     JdbcConnection connection = new JdbcConnection();
     connection.setConnectUrl("jdbc:mysql://localhost:3306/mydatabase");
@@ -193,7 +199,44 @@ public class JdbcDataCaptureServiceTest extends JdbcServiceExample {
     columns = columns.substring(0, columns.lastIndexOf(','));
     values = values.substring(0, values.lastIndexOf(','));
     service.setStatement("insert into mytable (" + columns + ") values (" + values + ");");
-    return service;
+    
+    JdbcDataCaptureService service2 = new JdbcDataCaptureService();
+    JdbcConnection connection2 = new JdbcConnection();
+    connection2.setConnectUrl("jdbc:mysql://localhost:3306/mydatabase");
+    connection2.setConnectionAttempts(2);
+    connection2.setConnectionRetryInterval(new TimeInterval(3L, "SECONDS"));
+    service2.setConnection(connection2);
+    service2.setIterates(true);
+    service2.setIterationXpath("/xpath/to/repeating/element");
+    service2.setParameterApplicator(new NamedParameterApplicator());
+    String columns2 = "";
+    String values2 = "";
+    int paramCount = 0;
+    for (CaptureClassesForSamples qc : CaptureClassesForSamples.values()) {
+      paramCount ++;
+      NamedStatementParameter jdbcStatementParameter = (NamedStatementParameter) qc.create();
+      jdbcStatementParameter.setName("param" + paramCount);
+      service2.addStatementParameter(jdbcStatementParameter);
+      columns2 += qc.name() + ", ";
+      values2 += "#param" + paramCount + ", ";
+    }
+    columns2 = columns2.substring(0, columns2.lastIndexOf(','));
+    values2 = values2.substring(0, values2.lastIndexOf(','));
+    service2.setStatement("insert into mytable (" + columns2 + ") values (" + values2 + ");");
+    
+    returnedObjects.add(service);
+    returnedObjects.add(service2);
+    
+    return returnedObjects;
+  }
+  
+  @Override
+  protected String createBaseFileName(Object o) {
+    JdbcDataCaptureService sc = (JdbcDataCaptureService) o;
+    String name = super.createBaseFileName(o);
+    if(sc.getParameterApplicator() instanceof NamedParameterApplicator)
+      name = name + "-WithNamedParameterApplicator";
+    return name;
   }
 
   public void testSetNamespaceContext() throws Exception {
@@ -210,6 +253,34 @@ public class JdbcDataCaptureServiceTest extends JdbcServiceExample {
   public void testService() throws Exception {
     createDatabase();
     JdbcDataCaptureService service = createBasicService();
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_DOCUMENT);
+    msg.addMetadata(METADATA_KEY, METADATA_VALUE);
+    execute(service, msg);
+    doBasicCaptureAsserts(1);
+  }
+  
+  public void testServiceSequentialParameterApplicator() throws Exception {
+    createDatabase();    
+    JdbcDataCaptureService service = createBasicService();
+    service.setParameterApplicator(new SequentialParameterApplicator()); // default anyway, so identical to the test above, but good to be explicit in case the default changes.
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_DOCUMENT);
+    msg.addMetadata(METADATA_KEY, METADATA_VALUE);
+    execute(service, msg);
+    doBasicCaptureAsserts(1);
+  }
+  
+  public void testServiceNamedParameterApplicator() throws Exception {
+    createDatabase();
+    
+    StatementParameterList statementParameterList = new StatementParameterList();
+    statementParameterList.add(new StatementParameter("/document/content", String.class.getName(), StatementParameter.QueryType.xpath, null, "param3"));
+    statementParameterList.add(new StatementParameter(null, String.class.getName(), StatementParameter.QueryType.payload, null, "param2"));
+    statementParameterList.add(new StatementParameter(METADATA_KEY, String.class.getName(), StatementParameter.QueryType.metadata, null, "param1"));
+    
+    String statement = "insert into jdbc_data_capture_basic (metadata_value, payload_value, xpath_value) values (#param1, #param2, #param3)";
+    
+    JdbcDataCaptureService service = createBasicService(true, statementParameterList, statement);
+    service.setParameterApplicator(new NamedParameterApplicator());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_DOCUMENT);
     msg.addMetadata(METADATA_KEY, METADATA_VALUE);
     execute(service, msg);
@@ -316,6 +387,7 @@ public class JdbcDataCaptureServiceTest extends JdbcServiceExample {
       JdbcUtil.closeQuietly(c);
     }
   }
+  
   public void testServiceSaveKeys() throws Exception {
     createDatabase();
     JdbcDataCaptureService service = createSaveKeysService();
@@ -337,7 +409,7 @@ public class JdbcDataCaptureServiceTest extends JdbcServiceExample {
     log.debug(msg);
     // this is a pecularity of derby I think, the generatedKeys() returns a
     // resultsetMetadata where columnLabel and columnName =1;
-    assertTrue(msg.containsKey("1"));
+    assertTrue(msg.headersContainsKey("1"));
   }
 
   public void testIteratesService() throws Exception {
@@ -409,7 +481,7 @@ public class JdbcDataCaptureServiceTest extends JdbcServiceExample {
 
   @Override
   public void testBackReferences() throws Exception {
-    this.testBackReferences(new JdbcDataCaptureService());
+    this.testBackReferences(new JdbcDataCaptureService("INSERT INTO MYTABLE ('ABC');"));
   }
 
   private JdbcDataCaptureService createBasicService() throws Exception {
@@ -417,6 +489,21 @@ public class JdbcDataCaptureServiceTest extends JdbcServiceExample {
   }
 
   private JdbcDataCaptureService createBasicService(boolean createConnection) throws Exception {
+    StatementParameterList statementParameterList = new StatementParameterList();
+    statementParameterList.add(new StatementParameter(METADATA_KEY, String.class, StatementParameter.QueryType.metadata));
+    statementParameterList.add(new StatementParameter(null, String.class, StatementParameter.QueryType.payload));
+    statementParameterList.add(new StatementParameter("/document/content", String.class, StatementParameter.QueryType.xpath));
+
+    return createBasicService(createConnection, statementParameterList);
+  }
+  
+  private JdbcDataCaptureService createBasicService(boolean createConnection, StatementParameterList parameterList) throws Exception {
+    String statement = "insert into jdbc_data_capture_basic (metadata_value, payload_value, xpath_value) values (?, ?, ?)";
+
+    return createBasicService(createConnection, parameterList, statement);
+  }
+  
+  private JdbcDataCaptureService createBasicService(boolean createConnection, StatementParameterList parameterList, String statement) throws Exception {
     JdbcDataCaptureService service = new JdbcDataCaptureService();
     if (createConnection) {
       JdbcConnection connection = new JdbcConnection();
@@ -424,11 +511,8 @@ public class JdbcDataCaptureServiceTest extends JdbcServiceExample {
       connection.setDriverImp(PROPERTIES.getProperty(JDBC_CAPTURE_SERVICE_DRIVER));
       service.setConnection(connection);
     }
-    service.addStatementParameter(new StatementParameter(METADATA_KEY, String.class, StatementParameter.QueryType.metadata));
-    service.addStatementParameter(new StatementParameter(null, String.class, StatementParameter.QueryType.payload));
-    service.addStatementParameter(new StatementParameter("/document/content", String.class, StatementParameter.QueryType.xpath));
-
-    service.setStatement("insert into jdbc_data_capture_basic (metadata_value, payload_value, xpath_value) values (?, ?, ?)");
+    service.setStatementParameters(parameterList);
+    service.setStatement(statement);
 
     return service;
   }

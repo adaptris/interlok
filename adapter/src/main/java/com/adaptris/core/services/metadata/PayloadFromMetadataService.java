@@ -19,6 +19,7 @@ package com.adaptris.core.services.metadata;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdapterComponent;
@@ -61,6 +62,7 @@ public class PayloadFromMetadataService extends ServiceImp {
   
   @NotNull
   @AutoPopulated
+  @Valid
   private KeyValuePairSet metadataTokens;
   @MarshallingCDATA
   private String template = null;

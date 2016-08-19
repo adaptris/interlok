@@ -49,7 +49,7 @@ public abstract class EncryptionService extends CoreSecurityService {
     catch (Exception e) {
       if (branchingEnabled) {
         m.setNextServiceId(getFailId());
-        m.getObjectMetadata().put(CoreConstants.OBJ_METADATA_EXCEPTION, e);        
+        m.getObjectHeaders().put(CoreConstants.OBJ_METADATA_EXCEPTION, e);        
       } else {
         throw new ServiceException(e);
       }

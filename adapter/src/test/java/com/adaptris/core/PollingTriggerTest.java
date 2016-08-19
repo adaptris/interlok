@@ -35,7 +35,9 @@ public class PollingTriggerTest extends ConsumerCase {
 
   private static final Poller[] POLLERS =
   {
-      new FixedIntervalPoller(new TimeInterval(1L, TimeUnit.MINUTES)), new QuartzCronPoller()
+      new FixedIntervalPoller(new TimeInterval(1L, TimeUnit.MINUTES))
+      ,new QuartzCronPoller()
+      ,new GaussianIntervalPoller(new TimeInterval(5L,TimeUnit.SECONDS),new TimeInterval(6L, TimeUnit.SECONDS))
   };
 
   private static final List<Poller> POLLER_LIST = Arrays.asList(POLLERS);
@@ -79,7 +81,7 @@ public class PollingTriggerTest extends ConsumerCase {
     workflow.stop();
     workflow.close();
     AdaptrisMessage msg = mockProducer.getMessages().get(0);
-    assertEquals("Payloads", PAYLOAD, msg.getStringPayload());
+    assertEquals("Payloads", PAYLOAD, msg.getContent());
   }
 
   public void testStartWithEmptyMessages() throws Exception {

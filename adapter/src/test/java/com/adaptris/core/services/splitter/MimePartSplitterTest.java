@@ -62,26 +62,26 @@ public class MimePartSplitterTest extends SplitterCase {
   public void testSplitMessage() throws Exception {
     Object obj = "ABCDEFG";
     AdaptrisMessage msg = create();
-    msg.getObjectMetadata().put(obj, obj);
+    msg.getObjectHeaders().put(obj, obj);
     MimePartSplitter m = new MimePartSplitter();
     List<AdaptrisMessage> result = m.splitMessage(msg);
     assertEquals(3, result.size());
     for (AdaptrisMessage smsg : result) {
-      assertFalse("Should not contain object metadata", smsg.getObjectMetadata().containsKey(obj));
+      assertFalse("Should not contain object metadata", smsg.getObjectHeaders().containsKey(obj));
     }
   }
 
   public void testSplitMessageWithObjectMetadata() throws Exception {
     Object obj = "ABCDEFG";
     AdaptrisMessage msg = create();
-    msg.getObjectMetadata().put(obj, obj);
+    msg.getObjectHeaders().put(obj, obj);
     MimePartSplitter m = new MimePartSplitter();
     m.setCopyObjectMetadata(true);
     List<AdaptrisMessage> result = m.splitMessage(msg);
     assertEquals(3, result.size());
     for (AdaptrisMessage smsg : result) {
-      assertTrue("Should contain object metadata", smsg.getObjectMetadata().containsKey(obj));
-      assertEquals(obj, smsg.getObjectMetadata().get(obj));
+      assertTrue("Should contain object metadata", smsg.getObjectHeaders().containsKey(obj));
+      assertEquals(obj, smsg.getObjectHeaders().get(obj));
     }
   }
 

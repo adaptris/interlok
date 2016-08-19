@@ -63,7 +63,7 @@ public class BytesMessageTranslator extends MessageTypeTranslatorImp {
         IOUtils.copy(in, out);
       }
       catch (IOException e) {
-        JmsUtils.rethrowJMSException(e);
+        throw JmsUtils.wrapJMSException(e);
       }
     }
     else {
@@ -87,7 +87,7 @@ public class BytesMessageTranslator extends MessageTypeTranslatorImp {
       IOUtils.copy(in, out);
     }
     catch (IOException e) {
-      JmsUtils.rethrowJMSException(e);
+      throw JmsUtils.wrapJMSException(e);
     }
     return helper.moveMetadata(msg, result);
   }
@@ -100,24 +100,6 @@ public class BytesMessageTranslator extends MessageTypeTranslatorImp {
     private final BytesMessage myMsg;
     public BytesMessageOutputStream(BytesMessage message) {
       this.myMsg = message;
-    }
-
-    public void write(byte b[]) throws IOException {
-      try {
-        myMsg.writeBytes(b);
-      }
-      catch (JMSException ex) {
-        throw new IOException(ex);
-      }
-    }
-
-    public void write(byte b[], int off, int len) throws IOException {
-      try {
-        myMsg.writeBytes(b, off, len);
-      }
-      catch (JMSException ex) {
-        throw new IOException(ex);
-      }
     }
 
     public void write(int b) throws IOException {
@@ -135,31 +117,6 @@ public class BytesMessageTranslator extends MessageTypeTranslatorImp {
 
     BytesMessageInputStream(BytesMessage message) {
       this.myMsg = message;
-    }
-
-    @Override
-    public int read(byte b[]) throws IOException {
-      try {
-        return myMsg.readBytes(b);
-      }
-      catch (JMSException ex) {
-        throw new IOException(ex);
-      }
-    }
-
-    @Override
-    public int read(byte b[], int off, int len) throws IOException {
-      if (off == 0) {
-        try {
-          return myMsg.readBytes(b, len);
-        }
-        catch (JMSException ex) {
-          throw new IOException(ex);
-        }
-      }
-      else {
-        return super.read(b, off, len);
-      }
     }
 
     @Override

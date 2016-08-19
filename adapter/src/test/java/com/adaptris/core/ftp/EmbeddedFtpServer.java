@@ -111,7 +111,7 @@ public class EmbeddedFtpServer {
     // assertEquals("All files consumed/produced", count, list.size());
     for (AdaptrisMessage m : list) {
       assertTrue(m.containsKey(CoreConstants.ORIGINAL_NAME_KEY));
-      // assertEquals(PAYLOAD, m.getStringPayload().trim());
+      // assertEquals(PAYLOAD, m.getContent().trim());
     }
   }
 

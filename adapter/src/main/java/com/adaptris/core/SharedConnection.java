@@ -16,23 +16,13 @@
 
 package com.adaptris.core;
 
-import java.util.Properties;
 import java.util.Set;
 
-import javax.naming.CompositeName;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.InvalidNameException;
-import javax.naming.NamingException;
-
 import org.hibernate.validator.constraints.NotBlank;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -46,14 +36,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "A Connection that refers to another connection configured elsewhere", tag = "connections,base")
 @DisplayOrder(order = {"lookupName"})
-public class SharedConnection implements AdaptrisConnection {
+public class SharedConnection extends SharedComponent implements AdaptrisConnection {
 
   @NotBlank
   private String lookupName;
 
   private transient AdaptrisConnection proxiedConnection;
-
-  private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
   public SharedConnection() {
 
@@ -67,68 +55,13 @@ public class SharedConnection implements AdaptrisConnection {
   private AdaptrisConnection getProxiedConnection() {
     try {
       if (proxiedConnection == null) {
-        proxiedConnection = triggerJndiLookup(getLookupName());
+        proxiedConnection = (AdaptrisConnection) triggerJndiLookup(getLookupName());
       }
     }
     catch (CoreException e) {
       throw new RuntimeException(e);
     }
     return proxiedConnection;
-  }
-
-  private AdaptrisConnection triggerJndiLookup(String jndiName) throws CoreException {
-    AdaptrisConnection result = null;
-    try {
-      InitialContext ctx = createContext();
-      String compEnvName = this.checkAndComposeName(jndiName);
-      String[] namesToTry =
-      {
-          compEnvName, jndiName
-      };
-      for (String name : namesToTry) {
-        result = lookupQuietly(ctx, name);
-        if (result != null) {
-          break;
-        }
-      }
-      if (result == null) {
-        throw new CoreException("Failed to find connection: [" + compEnvName + "] or [" + jndiName + "]");
-      }
-    }
-    catch (Exception e) {
-      ExceptionHelper.rethrowCoreException(e);
-    }
-    return result;
-  }
-
-  private InitialContext createContext() throws NamingException {
-    Properties env = new Properties();
-    env.put(Context.INITIAL_CONTEXT_FACTORY, JndiContextFactory.class.getName());
-    return new InitialContext(env);
-  }
-
-  private AdaptrisConnection lookupQuietly(InitialContext ctx, String name) {
-    AdaptrisConnection result = null;
-    try {
-      result = (AdaptrisConnectionImp) ctx.lookup(name);
-    }
-    catch (NamingException ex) {
-    }
-    return result;
-  }
-
-  /**
-   * If the lookup name doesn't contain any subcontext (e.g. "comp/env/") then lets prepend these sub contexts to the name.
-   * If however the lookup name does include at least one sub-context, no matter what that sub-context is, then leave the name alone.
-   * @param jndiName
-   * @return String jndiName
-   * @throws InvalidNameException 
-   */
-  private String checkAndComposeName(String jndiName) throws InvalidNameException {
-    CompositeName compositeName = new CompositeName(jndiName);
-    if(compositeName.size() == 1) // no sub contexts
-      jndiName = new CompositeName("comp/env/" + jndiName).toString();
-    return jndiName;
   }
 
   @Override

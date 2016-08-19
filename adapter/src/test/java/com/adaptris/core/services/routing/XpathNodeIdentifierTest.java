@@ -17,6 +17,7 @@
 package com.adaptris.core.services.routing;
 
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 
 public class XpathNodeIdentifierTest extends SyntaxIdentifierCase {
 
@@ -54,6 +55,13 @@ public class XpathNodeIdentifierTest extends SyntaxIdentifierCase {
 
   public void testMatchSingleNode() throws Exception {
     XpathNodeIdentifier ident = createIdentifier();
+    ident.addPattern(SINGLENODE_MATCH);
+    assertTrue("Xpath matches", ident.isThisSyntax(readInput(INPUT_FILE)));
+  }
+
+  public void testMatchSingleNode_WithDocumentBuilderFactory() throws Exception {
+    XpathNodeIdentifier ident = createIdentifier();
+    ident.setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder.newInstance());
     ident.addPattern(SINGLENODE_MATCH);
     assertTrue("Xpath matches", ident.isThisSyntax(readInput(INPUT_FILE)));
   }

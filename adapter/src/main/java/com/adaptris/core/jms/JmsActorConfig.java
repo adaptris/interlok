@@ -79,5 +79,10 @@ public interface JmsActorConfig {
    * @return the timeout in ms.
    */
   long rollbackTimeout();
+  
+  /**
+   * @return whether we are in a managed (XA) transaction
+   */
+  boolean isManagedTransaction();
 
 }

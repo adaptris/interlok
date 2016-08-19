@@ -35,6 +35,7 @@ public class MetadataStatementCreatorTest extends JdbcQueryServiceCase {
 
   }
 
+  @SuppressWarnings("deprecation")
   public void testMetadataStatementCreator() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -45,18 +46,19 @@ public class MetadataStatementCreatorTest extends JdbcQueryServiceCase {
     FirstRowMetadataTranslator t = new FirstRowMetadataTranslator();
     s.setResultSetTranslator(t);
     AdaptrisMessage msg = createMessage(entry);
+    String sql = ((ConfiguredSQLStatement) s.getStatementCreator()).getStatement();
     
     MetadataSQLStatement ms = new MetadataSQLStatement();
     ms.setMetadataKey("sqlStatement");
     s.setStatementCreator(ms);
 
     // Copy the statement from the service to the metadata of the message to test the metadatastamentcreator
-    msg.addMetadata("sqlStatement", s.getStatement());
+    msg.addMetadata("sqlStatement", sql);
     s.setStatement(null); // Get rid of the statement in the service
     assertNull(s.getStatement()); // Make sure the service doesn't have the statement anymore
     
     execute(s, msg);
-    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getStringPayload());
+    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
     assertTrue(msg.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION));
     assertEquals(entry.getVersion(), msg.getMetadataValue(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION));
     assertTrue(msg.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_TYPE));
@@ -64,6 +66,7 @@ public class MetadataStatementCreatorTest extends JdbcQueryServiceCase {
     assertFalse(msg.containsKey(JdbcDataQueryService.class.getCanonicalName()));
   }
   
+  @SuppressWarnings("deprecation")
   public void testMultipleExecutions() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);

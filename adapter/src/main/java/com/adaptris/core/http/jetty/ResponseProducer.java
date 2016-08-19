@@ -134,7 +134,7 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
   public void produce(AdaptrisMessage msg, ProduceDestination destination)
       throws ProduceException {
     HttpServletResponse response = (HttpServletResponse) msg
-        .getObjectMetadata().get(CoreConstants.JETTY_RESPONSE_KEY);
+        .getObjectHeaders().get(CoreConstants.JETTY_RESPONSE_KEY);
     InputStream in = null;
 
     try {

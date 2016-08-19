@@ -54,19 +54,9 @@ public class MessageMetricsStatistics implements MessageMetricsStatisticsMBean, 
 
   @Override
   public int getNumberOfTimeSlices() {
-    return wrappedComponent.getCacheArray().size();
+    return wrappedComponent.getStats().size();
   }
 
-  @Override
-  public int getNumberOfMessagesForTimeSliceIndex(int index) {
-    try {
-      MessageStatistic timeSlice = wrappedComponent.getCacheArray().get(index);
-      return timeSlice.getTotalMessageCount();
-    }
-    catch (IndexOutOfBoundsException ex) {
-      return 0;
-    }
-  }
 
   @Override
   public int getTimeSliceDurationSeconds() {
@@ -74,25 +64,14 @@ public class MessageMetricsStatistics implements MessageMetricsStatisticsMBean, 
   }
 
   @Override
-  public long getTotalSizeOfMessagesForTimeSliceIndex(int index) {
-    try {
-      MessageStatistic timeSlice = wrappedComponent.getCacheArray().get(index);
-      return timeSlice.getTotalMessageSize();
-    }
-    catch (IndexOutOfBoundsException ex) {
-      return 0;
-    }
-  }
-
-  @Override
   public String getTotalStringStats() {
     long timeinMillis = Calendar.getInstance().getTimeInMillis();
     StringBuffer buffer = new StringBuffer();
-    buffer.append(wrappedComponent.getCacheArray().size());
+    buffer.append(wrappedComponent.getStats().size());
     buffer.append(" time slice(s) have been recorded.\n");
 
-    if (wrappedComponent.getCacheArray().size() > 0) {
-      MessageStatistic timeSlice = wrappedComponent.getCacheArray().get(wrappedComponent.getCacheArray().size() - 1);
+    if (wrappedComponent.getStats().size() > 0) {
+      MessageStatistic timeSlice = wrappedComponent.getStats().get(wrappedComponent.getStats().size() - 1);
       buffer.append("Current time slice statistics; \n");
       buffer.append("    Time Slice ends in  - " + (timeSlice.getEndMillis() - timeinMillis) / 1000 + " seconds.\n");
       buffer.append("    Message count - " + timeSlice.getTotalMessageCount() + "\n");
@@ -101,29 +80,7 @@ public class MessageMetricsStatistics implements MessageMetricsStatisticsMBean, 
 
     return buffer.toString();
   }
-
-  @Override
-  public int getNumberOfErrorMessagesForTimeSliceIndex(int index) {
-    try {
-      MessageStatistic timeSlice = wrappedComponent.getCacheArray().get(index);
-      return timeSlice.getTotalMessageErrorCount();
-    }
-    catch (IndexOutOfBoundsException ex) {
-      return 0;
-    }
-  }
   
-  @Override
-  public long getEndMillisForTimeSliceIndex(int index) {
-    try {
-      MessageStatistic timeSlice = wrappedComponent.getCacheArray().get(index);
-      return timeSlice.getEndMillis();
-    }
-    catch (IndexOutOfBoundsException ex) {
-      return 0;
-    }
-  }
-
   @Override
   public ParentRuntimeInfoComponent getParentRuntimeInfoComponent() {
     return parent;
@@ -166,14 +123,14 @@ public class MessageMetricsStatistics implements MessageMetricsStatisticsMBean, 
 
   @Override
   public List<MessageStatistic> getStatistics() throws CoreException {
-    return getStatistics(0, wrappedComponent.getCacheArray().size());
+    return getStatistics(0, wrappedComponent.getStats().size());
   }
 
   @Override
   public List<MessageStatistic> getStatistics(int fromIndex, int toIndex) throws CoreException {
     List<MessageStatistic> result = new ArrayList<MessageStatistic>();
     try {
-      List<MessageStatistic> sublist = wrappedComponent.getCacheArray().subList(fromIndex, toIndex);
+      List<MessageStatistic> sublist = wrappedComponent.getStats().subList(fromIndex, toIndex);
       for (MessageStatistic ms : sublist) {
         result.add(ms.clone());
       }
@@ -181,5 +138,10 @@ public class MessageMetricsStatistics implements MessageMetricsStatisticsMBean, 
       ExceptionHelper.rethrowCoreException(e);
     }
     return result;
+  }
+
+  @Override
+  public void clearStatistics() throws CoreException {
+    wrappedComponent.clearStatistics();
   }
 }

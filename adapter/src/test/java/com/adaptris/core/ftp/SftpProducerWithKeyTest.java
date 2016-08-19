@@ -24,10 +24,8 @@ import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.FormattedFilenameCreator;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.security.password.Password;
-import com.adaptris.sftp.DefaultSftpBehaviour;
-import com.adaptris.sftp.LenientKnownHosts;
-import com.adaptris.sftp.SftpConnectionBehaviour;
-import com.adaptris.sftp.StrictKnownHosts;
+import com.adaptris.sftp.ConfigBuilder;
+import com.adaptris.sftp.OpenSSHConfigBuilder;
 
 public class SftpProducerWithKeyTest extends FtpProducerExample {
 
@@ -44,13 +42,13 @@ public class SftpProducerWithKeyTest extends FtpProducerExample {
     return null;
   }
 
-  private StandaloneProducer createProducerExample(SftpConnectionBehaviour behaviour) {
+  private StandaloneProducer createProducerExample(ConfigBuilder behaviour) {
     SftpKeyAuthConnection con = new SftpKeyAuthConnection();
     FtpProducer producer = new FtpProducer();
     try {
       con.setPrivateKeyFilename("/path/to/private/key");
       con.setPrivateKeyPassword(Password.encode("MyPassword", Password.PORTABLE_PASSWORD));
-      con.setSftpConnectionBehaviour(behaviour);
+      con.setConfiguration(behaviour);
       con.setDefaultUserName("UserName if Not configured in destination");
       producer.setFilenameCreator(new FormattedFilenameCreator());
       producer.setDestination(new ConfiguredProduceDestination("sftp://sftpuser@hostname:port/path/to/directory"));
@@ -64,7 +62,7 @@ public class SftpProducerWithKeyTest extends FtpProducerExample {
   @Override
   protected String createBaseFileName(Object object) {
     SftpKeyAuthConnection con = (SftpKeyAuthConnection) ((StandaloneProducer) object).getConnection();
-    return super.createBaseFileName(object) + "-" + con.getSftpConnectionBehaviour().getClass().getSimpleName()
+    return super.createBaseFileName(object) + "-" + con.getConfiguration().getClass().getSimpleName()
         + "-SFTP-KeyBasedAuth";
   }
 
@@ -72,9 +70,9 @@ public class SftpProducerWithKeyTest extends FtpProducerExample {
   protected List retrieveObjectsForSampleConfig() {
     return new ArrayList(Arrays.asList(new StandaloneProducer[]
     {
-        createProducerExample(new LenientKnownHosts("/path/to/known/hosts", false)),
-        createProducerExample(new StrictKnownHosts("/path/to/known/hosts", false)),
-        createProducerExample(new DefaultSftpBehaviour())
+        createProducerExample(new OpenSSHConfigBuilder("/path/openssh/config/file")),
+        createProducerExample(SftpConsumerTest.createPerHostConfigRepo()),
+        createProducerExample(SftpConsumerTest.createInlineConfigRepo()),
     }));
   }
 

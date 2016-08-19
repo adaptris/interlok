@@ -127,17 +127,19 @@ public class WorkflowManager extends ComponentManagerImpl<Workflow>implements Wo
   }
 
   @Override
+  @Deprecated
   public SerializableAdaptrisMessage injectMessageWithReply(SerializableAdaptrisMessage msgToProcess) throws CoreException {
-    SerializableAdaptrisMessage result = null;
+    SerializableMessage result = null;
     try {
       result = process(msgToProcess);
     } catch (InterlokException e) {
       ExceptionHelper.rethrowCoreException(e);
     }
-    return result;
+    return new SerializableAdaptrisMessage(result);
   }
 
   @Override
+  @Deprecated
   public boolean injectMessage(SerializableAdaptrisMessage msgToProcess) throws CoreException {
     try {
       processAsync(msgToProcess);
@@ -155,7 +157,7 @@ public class WorkflowManager extends ComponentManagerImpl<Workflow>implements Wo
   }
 
   @Override
-  public SerializableAdaptrisMessage process(SerializableMessage msgToProcess) throws InterlokException {
+  public SerializableMessage process(SerializableMessage msgToProcess) throws InterlokException {
     DefaultSerializableMessageTranslator translator = new DefaultSerializableMessageTranslator();
     AdaptrisMessage msg = toAdaptrisMessage(msgToProcess, translator);
     if (injectInterceptor == null) {
@@ -168,13 +170,7 @@ public class WorkflowManager extends ComponentManagerImpl<Workflow>implements Wo
 
   private AdaptrisMessage toAdaptrisMessage(SerializableMessage msg, SerializableMessageTranslator translator)
       throws CoreException {
-    AdaptrisMessage result = null;
-    if (msg instanceof SerializableAdaptrisMessage) {
-      result = translator.translate((SerializableAdaptrisMessage) msg);
-    } else {
-      result = translator.translate(new SerializableAdaptrisMessage(msg));
-    }
-    return result;
+    return translator.translate(msg);
   }
 
   /**

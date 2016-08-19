@@ -87,7 +87,7 @@ public class FileBackedMessageTest extends AdaptrisMessageCase {
     getMessageFactory().setMaxMemorySizeBytes(10);
     AdaptrisMessage orig = getMessageFactory().newMessage(PAYLOAD);
     try {
-      String string = orig.getStringPayload();
+      String string = orig.getContent();
       fail("Managed to get " + string);
     }
     catch (RuntimeException e) {
@@ -128,7 +128,7 @@ public class FileBackedMessageTest extends AdaptrisMessageCase {
     assertTrue(msg2.getPayload() != msg1.getPayload());
     assertTrue(msg2.getMetadata() != msg1.getMetadata());
     assertTrue(msg2.getMessageLifecycleEvent() != msg1.getMessageLifecycleEvent());
-    assertTrue(msg2.getStringPayload().equals(msg1.getStringPayload()));
+    assertTrue(msg2.getContent().equals(msg1.getContent()));
     assertTrue(msg2.getMetadata().equals(msg1.getMetadata()));
     MessageLifecycleEvent event1 = msg1.getMessageLifecycleEvent();
     MessageLifecycleEvent event2 = msg2.getMessageLifecycleEvent();

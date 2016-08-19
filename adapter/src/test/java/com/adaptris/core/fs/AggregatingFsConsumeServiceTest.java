@@ -59,14 +59,40 @@ public class AggregatingFsConsumeServiceTest extends AggregatingServiceExample {
     ConsumeDestinationGenerator cdg = createConsumeDestination(url, null);
     AggregatingFsConsumer afc = createConsumer(cdg, new ReplaceWithFirstMessage());
     AggregatingFsConsumeService service = createAggregatingService(afc);
-    
+    File wipFile = new File(tempFile.getParent(), tempFile.getName() + afc.wipSuffix());
     try {
       writeDataMessage(tempFile);
       start(service);
       AdaptrisMessage msg = new DefaultMessageFactory().newMessage(INITIAL_PAYLOAD);
       service.doService(msg);
-      assertNotSame(INITIAL_PAYLOAD, msg.getStringPayload());
-      assertEquals(DATA_PAYLOAD, msg.getStringPayload());
+      assertNotSame(INITIAL_PAYLOAD, msg.getContent());
+      assertEquals(DATA_PAYLOAD, msg.getContent());
+      assertFalse(tempFile.exists());
+      assertFalse(wipFile.exists());
+    }
+    finally {
+      stop(service);
+    }
+  }
+
+  public void testServiceNonDeleting() throws Exception {
+    Object o = new Object();
+    File tempFile = TempFileUtils.createTrackedFile(o);
+    String url = "file://localhost/" + tempFile.getCanonicalPath().replaceAll("\\\\", "/");
+    ConsumeDestinationGenerator cdg = createConsumeDestination(url, null);
+    AggregatingFsConsumer afc = createConsumer(cdg, new ReplaceWithFirstMessage());
+    afc.setDeleteAggregatedFiles(false);
+    AggregatingFsConsumeService service = createAggregatingService(afc);
+    File wipFile = new File(tempFile.getParent(), tempFile.getName() + afc.wipSuffix());
+    try {
+      writeDataMessage(tempFile);
+      start(service);
+      AdaptrisMessage msg = new DefaultMessageFactory().newMessage(INITIAL_PAYLOAD);
+      service.doService(msg);
+      assertNotSame(INITIAL_PAYLOAD, msg.getContent());
+      assertEquals(DATA_PAYLOAD, msg.getContent());
+      assertTrue(tempFile.exists());
+      assertFalse(wipFile.exists());
     }
     finally {
       stop(service);

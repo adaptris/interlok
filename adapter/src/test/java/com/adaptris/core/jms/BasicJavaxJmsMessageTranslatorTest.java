@@ -45,7 +45,7 @@ public class BasicJavaxJmsMessageTranslatorTest extends MessageTypeTranslatorCas
       start(trans, session);
       AdaptrisMessage msg = trans.translate(jmsMsg);
       assertMetadata(msg);
-      assertEquals(0, msg.getStringPayload().length());
+      assertEquals(0, msg.getContent().length());
     }
     finally {
       stop(trans);

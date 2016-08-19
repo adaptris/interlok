@@ -173,7 +173,7 @@ final class X509Builder implements CertificateBuilder {
     valid.add(Calendar.MONTH, 12);
     Date notAfter = valid.getTime();
 
-    SubjectPublicKeyInfo pubKeyInfo = new SubjectPublicKeyInfo(ASN1Sequence.getInstance(publicKey.getEncoded()));
+    SubjectPublicKeyInfo pubKeyInfo = SubjectPublicKeyInfo.getInstance(ASN1Sequence.getInstance(publicKey.getEncoded()));
 
     X509v3CertificateBuilder certGen = new X509v3CertificateBuilder(name, serial, notBefore, notAfter, name, pubKeyInfo);
     String alg = certificateParm.getSignatureAlgorithm();

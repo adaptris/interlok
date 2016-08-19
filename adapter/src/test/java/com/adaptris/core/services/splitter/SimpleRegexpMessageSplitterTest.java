@@ -112,26 +112,26 @@ public class SimpleRegexpMessageSplitterTest extends SplitterCase {
   public void testSplitMessage() throws Exception {
     Object obj = "ABCDEFG";
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(SIMPLE_MSG);
-    msg.getObjectMetadata().put(obj, obj);
+    msg.getObjectHeaders().put(obj, obj);
     SimpleRegexpMessageSplitter splitter = new SimpleRegexpMessageSplitter("\n");
     List<AdaptrisMessage> result = splitter.splitMessage(msg);
     assertEquals(4, result.size());
     for (AdaptrisMessage m : result) {
-      assertFalse("Should not contain object metadata", m.getObjectMetadata().containsKey(obj));
+      assertFalse("Should not contain object metadata", m.getObjectHeaders().containsKey(obj));
     }
   }
 
   public void testSplitMessageWithObjectMetadata() throws Exception {
     Object obj = "ABCDEFG";
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(SIMPLE_MSG);
-    msg.getObjectMetadata().put(obj, obj);
+    msg.getObjectHeaders().put(obj, obj);
     SimpleRegexpMessageSplitter splitter = new SimpleRegexpMessageSplitter("\n");
     splitter.setCopyObjectMetadata(true);
     List<AdaptrisMessage> result = splitter.splitMessage(msg);
     assertEquals(4, result.size());
     for (AdaptrisMessage m : result) {
-      assertTrue("Should contain object metadata", m.getObjectMetadata().containsKey(obj));
-      assertEquals(obj, m.getObjectMetadata().get(obj));
+      assertTrue("Should contain object metadata", m.getObjectHeaders().containsKey(obj));
+      assertEquals(obj, m.getObjectHeaders().get(obj));
     }
   }
 

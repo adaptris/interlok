@@ -19,6 +19,8 @@ package com.adaptris.core.services.findreplace;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -50,6 +52,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 public class FindAndReplaceService extends ServiceImp {
 
   @XStreamImplicit(itemFieldName = "find-replace-pair")
+  @Valid
   private List<FindAndReplaceUnit> findAndReplaceUnits;
   @InputFieldDefault(value = "false")
   private Boolean replaceFirstOnly;

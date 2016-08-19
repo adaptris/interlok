@@ -5,14 +5,14 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.ftp;
 
@@ -26,10 +26,8 @@ import com.adaptris.core.Poller;
 import com.adaptris.core.QuartzCronPoller;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.security.password.Password;
-import com.adaptris.sftp.DefaultSftpBehaviour;
-import com.adaptris.sftp.LenientKnownHosts;
-import com.adaptris.sftp.SftpConnectionBehaviour;
-import com.adaptris.sftp.StrictKnownHosts;
+import com.adaptris.sftp.ConfigBuilder;
+import com.adaptris.sftp.OpenSSHConfigBuilder;
 
 
 
@@ -56,7 +54,7 @@ public class SftpKeyAuthConsumerTest extends FtpConsumerCase {
     con.setPrivateKeyFilename("/path/to/private/key/in/openssh/format");
     con.setPrivateKeyPassword("my_super_secret_password");
     con.setSocketTimeout(10000);
-    con.setSftpConnectionBehaviour(new LenientKnownHosts());
+    con.setKnownHostsFile("/optional/path/to/known/hosts/file");
     return con;
   }
 
@@ -65,18 +63,17 @@ public class SftpKeyAuthConsumerTest extends FtpConsumerCase {
     return "sftp";
   }
 
-  private StandaloneConsumer createConsumerExample(SftpConnectionBehaviour behavior, Poller poller) {
+  private StandaloneConsumer createConsumerExample(ConfigBuilder behavior, Poller poller) {
     SftpKeyAuthConnection con = createConnectionForExamples();
     FtpConsumer cfgConsumer = new FtpConsumer();
     try {
       con.setPrivateKeyPassword(Password.encode("my_super_secret_password", Password.PORTABLE_PASSWORD));
-      con.setSftpConnectionBehaviour(behavior);
+      con.setConfiguration(behavior);
       con.setDefaultUserName("UserName if Not configured in destination");
       cfgConsumer.setProcDirectory("/proc");
       cfgConsumer.setDestination(new ConfiguredConsumeDestination("sftp://overrideuser@hostname:port/path/to/directory", "*.xml"));
       cfgConsumer.setPoller(poller);
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       throw new RuntimeException(e);
     }
     return new StandaloneConsumer(con, cfgConsumer);
@@ -84,22 +81,22 @@ public class SftpKeyAuthConsumerTest extends FtpConsumerCase {
 
   @Override
   protected List retrieveObjectsForSampleConfig() {
-    return new ArrayList(Arrays.asList(new StandaloneConsumer[]
-    {
-        createConsumerExample(new LenientKnownHosts("/path/to/known/hosts", false), new QuartzCronPoller("*/20 * * * * ?")),
-        createConsumerExample(new LenientKnownHosts("/path/to/known/hosts", false), new FixedIntervalPoller()),
-        createConsumerExample(new StrictKnownHosts("/path/to/known/hosts", false), new QuartzCronPoller("*/20 * * * * ?")),
-        createConsumerExample(new StrictKnownHosts("/path/to/known/hosts", false), new FixedIntervalPoller()),
-        createConsumerExample(new DefaultSftpBehaviour(), new QuartzCronPoller("*/20 * * * * ?")),
-        createConsumerExample(new DefaultSftpBehaviour(), new FixedIntervalPoller()),
+    return new ArrayList(Arrays.asList(new StandaloneConsumer[] {
+        createConsumerExample(new OpenSSHConfigBuilder("/path/openssh/config/file"), new QuartzCronPoller("*/20 * * * * ?")),
+        createConsumerExample(SftpConsumerTest.createInlineConfigRepo(), new QuartzCronPoller("*/20 * * * * ?")),
+        createConsumerExample(SftpConsumerTest.createPerHostConfigRepo(), new QuartzCronPoller("*/20 * * * * ?")),
+        createConsumerExample(SftpConsumerTest.createInlineConfigRepo(), new FixedIntervalPoller()),
+        createConsumerExample(SftpConsumerTest.createPerHostConfigRepo(), new FixedIntervalPoller()),
+        createConsumerExample(new OpenSSHConfigBuilder("/path/openssh/config/file"), new FixedIntervalPoller()),
     }));
   }
+
 
   @Override
   protected String createBaseFileName(Object object) {
     SftpKeyAuthConnection con = (SftpKeyAuthConnection) ((StandaloneConsumer) object).getConnection();
     return super.createBaseFileName(object) + "-" + con.getClass().getSimpleName() + "-"
-        + con.getSftpConnectionBehaviour().getClass().getSimpleName();
+        + con.getConfiguration().getClass().getSimpleName();
   }
 
 }

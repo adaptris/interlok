@@ -30,7 +30,7 @@ import com.adaptris.util.KeyValuePairSet;
  */
 public class XmlMailCreatorTest extends BaseCase {
 
-  private static final String LF = System.getProperty("line.separator");
+  private static final String LF = System.lineSeparator();
   private static final String XML_DOCUMENT = "<?xml version=\"1.0\"?>" + LF +
 
   "<document>" + LF + "<subject>an email with attachemnts perhaps</subject>" + LF

@@ -73,8 +73,8 @@ public final class SimpleNamespaceContext {
   public static NamespaceContext create(KeyValuePairSet set, AdaptrisMessage msg) {
     NamespaceContext result = create(set);
     String metadataKey = SimpleNamespaceContext.class.getCanonicalName();
-    if (result == null && msg.getObjectMetadata().containsKey(metadataKey)) {      
-      result = (NamespaceContext) msg.getObjectMetadata().get(metadataKey);
+    if (result == null && msg.getObjectHeaders().containsKey(metadataKey)) {      
+      result = (NamespaceContext) msg.getObjectHeaders().get(metadataKey);
     }
     return result;
   }

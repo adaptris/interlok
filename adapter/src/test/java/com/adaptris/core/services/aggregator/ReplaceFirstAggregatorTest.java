@@ -44,7 +44,7 @@ public class ReplaceFirstAggregatorTest extends AggregatorCase {
     {
         splitMsg1, splitMsg2
     }));
-    assertEquals("Cruel", original.getStringPayload());
+    assertEquals("Cruel", original.getContent());
     // It's part of split message 2 so it gets ignored.
     assertEquals("originalValue", original.getMetadataValue("originalKey"));
   }

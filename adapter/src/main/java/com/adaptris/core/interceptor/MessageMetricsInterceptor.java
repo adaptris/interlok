@@ -5,14 +5,14 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.interceptor;
 
@@ -75,13 +75,18 @@ public class MessageMetricsInterceptor extends MessageMetricsInterceptorImpl {
 
   @Override
   public synchronized void workflowEnd(AdaptrisMessage inputMsg, AdaptrisMessage outputMsg) {
-    MessageStatistic currentTimeSlice = getCurrentTimeSlice();
-    currentTimeSlice.setTotalMessageCount(currentTimeSlice.getTotalMessageCount() + 1);
-    currentTimeSlice.setTotalMessageSize(currentTimeSlice.getTotalMessageSize() + inputMsg.getSize());
-    if (!wasSuccessful(inputMsg, outputMsg)) {
-      currentTimeSlice.setTotalMessageErrorCount(currentTimeSlice.getTotalMessageErrorCount() + 1);
-    }
-    updateCurrentTimeSlice(currentTimeSlice);
+    final int errors = wasSuccessful(inputMsg, outputMsg) ? 0 : 1;
+    final int msgs = 1;
+    final long size = inputMsg.getSize();
+    update(new StatisticsDelta<MessageStatistic>() {
+      @Override
+      public MessageStatistic apply(MessageStatistic currentStat) {
+        currentStat.setTotalMessageCount(currentStat.getTotalMessageCount() + msgs);
+        currentStat.setTotalMessageSize(currentStat.getTotalMessageSize() + size);
+        currentStat.setTotalMessageErrorCount(currentStat.getTotalMessageErrorCount() + errors);
+        return currentStat;
+      }
+    });
   }
 
   private static class JmxFactory extends RuntimeInfoComponentFactory {
@@ -101,5 +106,4 @@ public class MessageMetricsInterceptor extends MessageMetricsInterceptorImpl {
     }
 
   }
-
 }

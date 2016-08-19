@@ -140,7 +140,7 @@ public class StatelessServiceWrapperTest extends GeneralServiceExample {
     execute(s, msg);
     assertEquals(ClosedState.getInstance(), prod.retrieveComponentState());
     assertEquals(1, prod.getMessages().size());
-    assertEquals("ABC", prod.getMessages().get(0).getStringPayload());
+    assertEquals("ABC", prod.getMessages().get(0).getContent());
   }
 
   public void testServiceThatFailsToStart() throws Exception {

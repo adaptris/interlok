@@ -204,8 +204,10 @@ public class XPathService extends ServiceImp {
   private List<Execution> executions;
   
   @AdvancedConfig
+  @Valid
   private KeyValuePairSet namespaceContext;
   @AdvancedConfig
+  @Valid
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
   
   public XPathService() {

@@ -22,8 +22,6 @@ import java.io.StringWriter;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
@@ -34,10 +32,13 @@ import org.xml.sax.InputSource;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.text.xml.XPath;
 
+import junit.framework.TestCase;
+
 /**
  *
  * @author Stuart Ellidge
  */
+@SuppressWarnings("deprecation")
 public class XmlUtilsTest extends TestCase {
 
   private static Log logR = LogFactory.getLog(XmlUtilsTest.class);

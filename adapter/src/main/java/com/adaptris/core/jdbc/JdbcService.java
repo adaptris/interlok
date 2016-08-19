@@ -160,7 +160,7 @@ public abstract class JdbcService extends ServiceImp {
    * @return the connection either from the adaptris message or from configuration.
    */
   protected Connection getConnection(AdaptrisMessage msg) throws SQLException {
-    Connection conn = (Connection) msg.getObjectMetadata().get(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY);
+    Connection conn = (Connection) msg.getObjectHeaders().get(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY);
     
     if ((conn != null) && (!conn.isClosed())){
       return conn;
@@ -180,7 +180,7 @@ public abstract class JdbcService extends ServiceImp {
    * @param msg the AdaptrisMessage
    */
   protected void rollback(Connection sqlConnection, AdaptrisMessage msg) {
-    if (msg.getObjectMetadata().containsKey(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY)) {
+    if (msg.getObjectHeaders().containsKey(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY)) {
       return;
     }
     JdbcUtil.rollback(sqlConnection);
@@ -198,7 +198,7 @@ public abstract class JdbcService extends ServiceImp {
    * @throws SQLException if the commit fails.
    */
   protected void commit(Connection sqlConnection, AdaptrisMessage msg) throws SQLException {
-    if (msg.getObjectMetadata().containsKey(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY)) {
+    if (msg.getObjectHeaders().containsKey(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY)) {
       return;
     }
     JdbcUtil.commit(sqlConnection);

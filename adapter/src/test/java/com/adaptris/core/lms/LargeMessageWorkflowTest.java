@@ -83,7 +83,7 @@ public class LargeMessageWorkflowTest extends StandardWorkflowTest {
       assertEquals("Make none produced", 0, producer.getMessages().size());
       assertEquals(1, meh.getMessages().size());
       for (AdaptrisMessage m : meh.getMessages()) {
-        assertEquals(PAYLOAD_2, m.getStringPayload());
+        assertEquals(PAYLOAD_2, m.getContent());
         assertTrue("Contains correct metadata key", m.containsKey(METADATA_KEY));
         assertEquals(METADATA_VALUE, m.getMetadataValue(METADATA_KEY));
       }
@@ -132,7 +132,7 @@ public class LargeMessageWorkflowTest extends StandardWorkflowTest {
       assertEquals("Make none produced", 0, producer.getMessages().size());
       assertEquals(1, meh.getMessages().size());
       for (AdaptrisMessage m : meh.getMessages()) {
-        assertEquals(PAYLOAD_2, m.getStringPayload());
+        assertEquals(PAYLOAD_2, m.getContent());
         assertTrue("Contains correct metadata key", m.containsKey(METADATA_KEY));
         assertEquals(METADATA_VALUE, m.getMetadataValue(METADATA_KEY));
       }
@@ -181,7 +181,7 @@ public class LargeMessageWorkflowTest extends StandardWorkflowTest {
       assertEquals("Make none produced", 0, producer.getMessages().size());
       assertEquals(1, meh.getMessages().size());
       for (AdaptrisMessage m : meh.getMessages()) {
-        assertEquals(PAYLOAD_2, m.getStringPayload());
+        assertEquals(PAYLOAD_2, m.getContent());
         assertTrue("Contains correct metadata key", m.containsKey(METADATA_KEY));
         assertEquals(METADATA_VALUE, m.getMetadataValue(METADATA_KEY));
       }

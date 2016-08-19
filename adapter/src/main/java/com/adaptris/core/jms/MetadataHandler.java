@@ -245,8 +245,8 @@ public class MetadataHandler {
         reportException(h.getKey(), e);
       }
     }
-    out.addObjectMetadata(JMS_DESTINATION, in.getJMSDestination());
-    out.addObjectMetadata(JMS_REPLY_TO, in.getJMSReplyTo());
+    out.addObjectHeader(JMS_DESTINATION, in.getJMSDestination());
+    out.addObjectHeader(JMS_REPLY_TO, in.getJMSReplyTo());
   }
 
   /**

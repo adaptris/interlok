@@ -60,7 +60,7 @@ public abstract class UrlVendorImplementation extends VendorImplementationImp {
   }
 
   @Override
-  public boolean connectionEquals(VendorImplementation vendorImp) {
+  public boolean connectionEquals(VendorImplementationBase vendorImp) {
     if (vendorImp instanceof UrlVendorImplementation) {
       return new EqualsBuilder().append(getBrokerUrl(), ((UrlVendorImplementation) vendorImp).getBrokerUrl()).isEquals();
     }

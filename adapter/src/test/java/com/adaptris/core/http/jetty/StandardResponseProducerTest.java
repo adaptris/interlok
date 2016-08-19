@@ -98,7 +98,7 @@ public class StandardResponseProducerTest extends HttpProducerExample {
       c.requestStart();
       start(requestor);
       requestor.doService(msg);
-      assertEquals(TEXT, msg.getStringPayload());
+      assertEquals(TEXT, msg.getContent());
       assertFalse(msg.containsKey(CUSTOM_HEADER1));
       assertFalse(msg.containsKey(CUSTOM_HEADER2));
 
@@ -120,7 +120,7 @@ public class StandardResponseProducerTest extends HttpProducerExample {
       c.requestStart();
       start(requestor);
       requestor.doService(msg);
-      assertEquals(TEXT, msg.getStringPayload());
+      assertEquals(TEXT, msg.getContent());
       assertFalse(msg.containsKey(CUSTOM_HEADER1));
       assertFalse(msg.containsKey(CUSTOM_HEADER2));
     } finally {
@@ -164,7 +164,7 @@ public class StandardResponseProducerTest extends HttpProducerExample {
       c.requestStart();
       start(requestor);
       requestor.doService(msg);
-      assertEquals(TEXT, msg.getStringPayload());
+      assertEquals(TEXT, msg.getContent());
       assertTrue(msg.containsKey(CUSTOM_HEADER1));
       assertTrue(msg.containsKey(CUSTOM_HEADER2));
       assertEquals(CUSTOM_VALUE1, msg.getMetadataValue(CUSTOM_HEADER1));
@@ -193,7 +193,7 @@ public class StandardResponseProducerTest extends HttpProducerExample {
       c.requestStart();
       start(requestor);
       requestor.doService(msg);
-      assertEquals(TEXT, msg.getStringPayload());
+      assertEquals(TEXT, msg.getContent());
       assertTrue(msg.containsKey(CUSTOM_HEADER1));
       assertTrue(msg.containsKey(CUSTOM_HEADER2));
       assertEquals(CUSTOM_VALUE1, msg.getMetadataValue(CUSTOM_HEADER1));
@@ -218,7 +218,7 @@ public class StandardResponseProducerTest extends HttpProducerExample {
       c.requestStart();
       start(requestor);
       requestor.doService(msg);
-      assertEquals(TEXT, msg.getStringPayload());
+      assertEquals(TEXT, msg.getContent());
     } finally {
       c.requestClose();
       stop(requestor);
@@ -242,7 +242,7 @@ public class StandardResponseProducerTest extends HttpProducerExample {
       c.requestStart();
       start(requestor);
       requestor.doService(msg);
-      assertEquals(TEXT, msg.getStringPayload());
+      assertEquals(TEXT, msg.getContent());
       assertTrue(msg.containsKey("Content-Type"));
       assertTrue(msg.getMetadataValue("Content-Type").startsWith("text/xml"));
     } finally {
@@ -264,7 +264,7 @@ public class StandardResponseProducerTest extends HttpProducerExample {
       c.requestStart();
       start(requestor);
       requestor.doService(msg);
-      assertEquals(TEXT, msg.getStringPayload());
+      assertEquals(TEXT, msg.getContent());
     } finally {
       c.requestClose();
       stop(requestor);
@@ -285,7 +285,7 @@ public class StandardResponseProducerTest extends HttpProducerExample {
       c.requestStart();
       start(requestor);
       requestor.doService(msg);
-      assertNotSame(TEXT, msg.getStringPayload());
+      assertNotSame(TEXT, msg.getContent());
 
     } finally {
       c.requestClose();
@@ -306,8 +306,8 @@ public class StandardResponseProducerTest extends HttpProducerExample {
       c.requestStart();
       start(requestor);
       requestor.doService(msg);
-      System.err.println(msg.getStringPayload());
-      assertNotSame(TEXT, msg.getStringPayload());
+      System.err.println(msg.getContent());
+      assertNotSame(TEXT, msg.getContent());
 
     } finally {
       c.requestClose();
@@ -327,7 +327,7 @@ public class StandardResponseProducerTest extends HttpProducerExample {
       c.requestStart();
       start(requestor);
       requestor.doService(msg);
-      assertNotSame(TEXT, msg.getStringPayload());
+      assertNotSame(TEXT, msg.getContent());
     } finally {
       c.requestClose();
       stop(requestor);
@@ -354,7 +354,7 @@ public class StandardResponseProducerTest extends HttpProducerExample {
       c.requestStart();
       start(requestor);
       requestor.doService(msg);
-      assertNotSame(TEXT, msg.getStringPayload());
+      assertNotSame(TEXT, msg.getContent());
       assertTrue(msg.containsKey(getName()));
       assertTrue(msg.containsKey("Hello"));
     } finally {

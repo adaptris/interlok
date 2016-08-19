@@ -33,6 +33,7 @@ import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.XmlUtils;
 
+@SuppressWarnings("deprecation")
 public class ReplaceNodeTest {
   private static final String XPATH_ROOT_NODE = "/Root/Node";
   private static String DATA_A = "This is Some Data";

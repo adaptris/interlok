@@ -24,13 +24,12 @@ import com.adaptris.util.XmlUtils;
 
 @SuppressWarnings("deprecation")
 public class XmlHelperTest extends BaseCase {
-  private static final String EXAMPLE_XML = "<document>" + System.getProperty("line.separator")
- + "  <content>text body</content>"
-      + System.getProperty("line.separator")
-      + "  <attachment encoding=\"base64\" filename=\"attachment1.txt\">dp/HSJfonUsSMM7QRBSRfg==</attachment>"
-      + System.getProperty("line.separator")
-      + "  <attachment encoding=\"base64\" filename=\"attachment2.txt\">OdjozpCZB9PbCCLZlKregQ</attachment>"
-      + System.getProperty("line.separator") + "</document>";
+  private static final String EXAMPLE_XML =
+      "<document>" + System.lineSeparator() + "  <content>text body</content>" + System.lineSeparator()
+          + "  <attachment encoding=\"base64\" filename=\"attachment1.txt\">dp/HSJfonUsSMM7QRBSRfg==</attachment>"
+          + System.lineSeparator()
+          + "  <attachment encoding=\"base64\" filename=\"attachment2.txt\">OdjozpCZB9PbCCLZlKregQ</attachment>"
+          + System.lineSeparator() + "</document>";
 
   public XmlHelperTest(String s) {
     super(s);

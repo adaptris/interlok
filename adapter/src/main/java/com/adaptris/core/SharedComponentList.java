@@ -42,6 +42,7 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.GenerateBeanInfo;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.core.transaction.TransactionManager;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.JndiHelper;
 import com.adaptris.core.util.LifecycleHelper;
@@ -62,12 +63,15 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"connections", "lifecycleStrategy", "debug"})
 public class SharedComponentList implements AdaptrisComponent, ComponentLifecycleExtension {
 
+  private transient Logger log = LoggerFactory.getLogger(this.getClass());
   private static final DefaultLifecycleStrategy DEFAULT_STRATEGY = new DefaultLifecycleStrategy();
 
   @Valid
   @AutoPopulated
   @NotNull
   private List<AdaptrisConnection> connections;
+  @Valid
+  private TransactionManager transactionManager;
   @AdvancedConfig
   @InputFieldDefault(value = "false")
   private Boolean debug;
@@ -75,7 +79,6 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
   private SharedComponentLifecycleStrategy lifecycleStrategy;
   private transient Set<String> connectionIds;
   private transient Set<String> notYetInJndi;
-  private transient Logger log = LoggerFactory.getLogger(this.getClass());
   private transient InitialContext context = null;
 
   public SharedComponentList() {
@@ -122,23 +125,27 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
   @Override
   public void init() throws CoreException {
     bindNotYetBound();
-    lifecycleStrategy().init(connections);
+    lifecycleStrategy().init(getConnections());
+    LifecycleHelper.init(getTransactionManager());
   }
 
   @Override
   public void start() throws CoreException {
     bindNotYetBound();
-    lifecycleStrategy().start(connections);
+    lifecycleStrategy().start(getConnections());
+    LifecycleHelper.start(getTransactionManager());
   }
 
   @Override
   public void stop() {
-    lifecycleStrategy().stop(connections);
+    lifecycleStrategy().stop(getConnections());
+    LifecycleHelper.stop(getTransactionManager());
   }
 
   @Override
   public void close() {
-    lifecycleStrategy().close(connections);
+    lifecycleStrategy().close(getConnections());
+    LifecycleHelper.close(getTransactionManager());
     unbindAll();
   }
 
@@ -147,6 +154,11 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
     bindNotYetBound();
     for (AdaptrisConnection c : connections) {
       c.prepare();
+    }
+    if(getTransactionManager() != null) {
+      if(getTransactionManager().getUniqueId() == null)
+        throw new CoreException("Transaction Manager cannot have a null unique-id");
+      getTransactionManager().prepare();
     }
   }
 
@@ -159,7 +171,10 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
   
   private synchronized void unbindAll() {
     unbindQuietly(connections);
+    unbindQuietly(getTransactionManager());
     notYetInJndi.addAll(connectionIds);
+    if(transactionManager != null)
+      notYetInJndi.add(transactionManager.getUniqueId());
   }
 
   /**
@@ -181,7 +196,12 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
         break;
       }
     }
-    bind(getContext(), connectionToRegister, isDebug());
+    if(connectionToRegister != null)
+      bind(getContext(), connectionToRegister, isDebug());
+    else if(getTransactionManager() != null) {
+      if(connectionId.equals(getTransactionManager().getUniqueId()))
+        bind(getContext(), getTransactionManager(), isDebug());
+    }
   }
 
   /**
@@ -347,6 +367,17 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
       JndiHelper.unbindQuietly(ctx, c, isDebug());
     }
   }
+  
+  private void unbindQuietly(TransactionManager transactionManager) {
+    Context ctx = null;
+    try {
+      ctx = getContext();
+    }
+    catch (CoreException e) {
+      return;
+    }
+    JndiHelper.unbindQuietly(ctx, transactionManager, isDebug());
+  }
 
 
   private static class DefaultLifecycleStrategy implements SharedComponentLifecycleStrategy {
@@ -381,6 +412,16 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
       }
     }
     
+  }
+
+
+  public TransactionManager getTransactionManager() {
+    return transactionManager;
+  }
+
+  public void setTransactionManager(TransactionManager transactionManager) {
+    this.transactionManager = transactionManager;
+    notYetInJndi.add(transactionManager.getUniqueId());
   }
 
 }

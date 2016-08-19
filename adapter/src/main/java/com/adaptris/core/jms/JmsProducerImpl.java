@@ -243,7 +243,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
 
   protected int calculateDeliveryMode(AdaptrisMessage msg, String defaultDeliveryMode) {
     int deliveryMode;
-    if (msg.containsKey(JMS_DELIVERY_MODE)) {
+    if (msg.headersContainsKey(JMS_DELIVERY_MODE)) {
       deliveryMode = DeliveryMode.getMode(msg.getMetadataValue(JMS_DELIVERY_MODE));
     } else {
       deliveryMode = DeliveryMode.getMode(defaultDeliveryMode);
@@ -266,7 +266,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
       throws JMSException {
     long ttl = defaultTTL != null ? defaultTTL.longValue() : 0;
     try {
-      if (msg.containsKey(JMS_EXPIRATION)) {
+      if (msg.headersContainsKey(JMS_EXPIRATION)) {
         Date expiration = new Date();
         String value = msg.getMetadataValue(JMS_EXPIRATION);
         for (ExpirationConverter c : ExpirationConverter.values()) {
@@ -309,7 +309,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
 
   protected int calculatePriority(AdaptrisMessage msg, Integer defaultPriority) {
     int priority = defaultPriority != null ? defaultPriority.intValue() : 0;
-    if (msg.containsKey(JMS_PRIORITY)) {
+    if (msg.headersContainsKey(JMS_PRIORITY)) {
       priority = Integer.parseInt(msg.getMetadataValue(JMS_PRIORITY));
     }
     log.trace("Priority overridden to be " + priority);
@@ -607,6 +607,11 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
     return rollbackTimeout;
   }
 
+  @Override
+  public boolean isManagedTransaction() {
+    return false;
+  }
+  
   protected boolean captureOutgoingMessageDetails() {
     return getCaptureOutgoingMessageDetails() != null ? getCaptureOutgoingMessageDetails()
         .booleanValue() : false;
@@ -644,7 +649,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
 
       }
     }
-    msg.getObjectMetadata().putAll(jmsDetails);
+    msg.getObjectHeaders().putAll(jmsDetails);
   }
 
   public ProducerSessionFactory getSessionFactory() {

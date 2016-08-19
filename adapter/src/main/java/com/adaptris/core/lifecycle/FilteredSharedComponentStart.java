@@ -117,7 +117,7 @@ public class FilteredSharedComponentStart implements SharedComponentLifecycleStr
 
   @Override
   public void init(Collection<AdaptrisConnection> conns) throws CoreException {
-    Collection<AdaptrisConnection> actual = filter(conns);
+    Collection<AdaptrisConnection> actual = filter(new ArrayList<AdaptrisConnection>(conns));
     logActivity(ConnectionAction.INIT, actual);
     for (AdaptrisConnection c : actual) {
       execute(ConnectionAction.INIT, c);
@@ -126,7 +126,7 @@ public class FilteredSharedComponentStart implements SharedComponentLifecycleStr
 
   @Override
   public void start(Collection<AdaptrisConnection> conns) throws CoreException {
-    Collection<AdaptrisConnection> actual = filter(conns);
+    Collection<AdaptrisConnection> actual = filter(new ArrayList<AdaptrisConnection>(conns));
     logActivity(ConnectionAction.START, actual);
     for (AdaptrisConnection c : actual) {
       execute(ConnectionAction.START, c);

@@ -69,15 +69,17 @@
       <ant-properties>
         <property name="adp-core-version" value="${tag.version}"/>
         <property name="ivy.publish.revision" value="${tag.version}"/>
+        <property name="ivy.repo" value="${ivy.repo}"/>
         <property name="ivy.user" value="${ivy.user}"/>
         <property name="ivy.password" value="${ivy.password}"/>
         <property name="junit.test.classes" value="**/*Test*.java"/>
+        <property name="junit.with.coverage" value="false"/>
         <property name="junit.forkmode" value="once"/>
         <property name="junitjms.jms.tests.enabled" value="false"/>
         <property name="default.ftp.tests.enabled" value="false"/>
         <property name="default.jdbc.storedproc.tests.enabled" value="false"/>
         <property name="default.security.remote.tests.enabled" value="false"/>
-        <property name="ivy.repo" value="${ivy.repo}"/>
+        <property name="ignore.test.failures" value="true"/>
       </ant-properties>
     </interlok:project-build>
   </target>
@@ -87,36 +89,37 @@
       <ant-properties>
         <property name="ivy.user" value="${ivy.user}"/>
         <property name="ivy.password" value="${ivy.password}"/>
-        <property name="adp-core-version" value="3.3-SNAPSHOT"/>
-        <property name="ivy.publish.revision" value="3.3-SNAPSHOT"/>
+        <property name="adp-core-version" value="3.4-SNAPSHOT"/>
+        <property name="ivy.publish.revision" value="3.4-SNAPSHOT"/>
       </ant-properties>
     </interlok:project-build>
     <interlok:project-build target="publish" project="common">
       <ant-properties>
         <property name="ivy.user" value="${ivy.user}"/>
         <property name="ivy.password" value="${ivy.password}"/>
-        <property name="adp-core-version" value="3.3-SNAPSHOT"/>
-        <property name="ivy.publish.revision" value="3.3-SNAPSHOT"/>
+        <property name="adp-core-version" value="3.4-SNAPSHOT"/>
+        <property name="ivy.publish.revision" value="3.4-SNAPSHOT"/>
       </ant-properties>
     </interlok:project-build>
     <interlok:project-build target="publish" project="logging">
       <ant-properties>
         <property name="ivy.user" value="${ivy.user}"/>
         <property name="ivy.password" value="${ivy.password}"/>
-        <property name="adp-core-version" value="3.3-SNAPSHOT"/>
-        <property name="ivy.publish.revision" value="3.3-SNAPSHOT"/>
+        <property name="adp-core-version" value="3.4-SNAPSHOT"/>
+        <property name="ivy.publish.revision" value="3.4-SNAPSHOT"/>
       </ant-properties>
     </interlok:project-build>    
     <interlok:project-build target="publish" project="adapter">
       <ant-properties>
         <property name="ivy.user" value="${ivy.user}"/>
         <property name="ivy.password" value="${ivy.password}"/>
-        <property name="adp-core-version" value="3.3-SNAPSHOT"/>
-        <property name="ivy.publish.revision" value="3.3-SNAPSHOT"/>
+        <property name="adp-core-version" value="3.4-SNAPSHOT"/>
+        <property name="ivy.publish.revision" value="3.4-SNAPSHOT"/>
         <property name="junit.test.classes" value="**/*Test*.java"/>
-        <property name="run.cobertura" value="false"/>
+        <property name="junit.with.coverage" value="false"/>
         <property name="junit.forkmode" value="once"/>
         <property name="junitjms.jms.tests.enabled" value="false"/>
+        <property name="ignore.test.failures" value="true"/>
         <property name="default.ftp.tests.enabled" value="false"/>
         <property name="default.jdbc.storedproc.tests.enabled" value="false"/>
         <property name="default.security.remote.tests.enabled" value="false"/>

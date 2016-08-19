@@ -55,7 +55,7 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
       a.requestClose();
       // assertEquals(1, mockProducer.getMessages().size());
       AdaptrisMessage prdMsg = mockProducer.getMessages().get(0);
-      assertEquals("Consumed Payload", TEXT_PAYLOADS[0], prdMsg.getStringPayload());
+      assertEquals("Consumed Payload", TEXT_PAYLOADS[0], prdMsg.getContent());
     }
     finally {
       JunitMailHelper.stopServer(gm);
@@ -74,7 +74,7 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
       a.requestClose();
       // assertEquals(1, mockProducer.getMessages().size());
       AdaptrisMessage prdMsg = mockProducer.getMessages().get(0);
-      assertEquals("Consumed Payload", TEXT_PAYLOADS[0], prdMsg.getStringPayload());
+      assertEquals("Consumed Payload", TEXT_PAYLOADS[0], prdMsg.getContent());
     }
     finally {
       JunitMailHelper.stopServer(gm);
@@ -113,7 +113,7 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
       a.requestClose();
       // assertEquals(1, mockProducer.getMessages().size());
       AdaptrisMessage prdMsg = mockProducer.getMessages().get(0);
-      assertEquals("Consumed Payload", TEXT_PAYLOADS[0], prdMsg.getStringPayload());
+      assertEquals("Consumed Payload", TEXT_PAYLOADS[0], prdMsg.getContent());
     }
     finally {
       JunitMailHelper.stopServer(gm);
@@ -132,7 +132,7 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
       waitForMessages(mockProducer, 1);
       a.requestClose();
       AdaptrisMessage prdMsg = mockProducer.getMessages().get(0);
-      assertEquals("Consumed Payload", TEXT_PAYLOADS[1], prdMsg.getStringPayload());
+      assertEquals("Consumed Payload", TEXT_PAYLOADS[1], prdMsg.getContent());
     }
     finally {
       JunitMailHelper.stopServer(gm);

@@ -121,7 +121,7 @@ public abstract class WorkflowInterceptorImpl implements WorkflowInterceptor, St
   protected static boolean wasSuccessful(AdaptrisMessage... msgs) {
     boolean result = true;
     for (AdaptrisMessage msg : msgs) {
-      if (msg.getObjectMetadata().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION)) {
+      if (msg.getObjectHeaders().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION)) {
         result = false;
         break;
       }

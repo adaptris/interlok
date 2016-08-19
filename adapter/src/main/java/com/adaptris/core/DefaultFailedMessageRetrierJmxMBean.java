@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 
 import com.adaptris.core.runtime.ChildRuntimeInfoComponentMBean;
+import com.adaptris.interlok.types.SerializableMessage;
 
 /**
  * JMX Interface for {@link DefaultFailedMessageRetrier}
@@ -41,14 +42,14 @@ public interface DefaultFailedMessageRetrierJmxMBean extends ChildRuntimeInfoCom
    * @return true if the message was successfully submitted to a workflow, false otherwise.
    * @throws CoreException if there was an error unwrapping the file using {@link DefaultSerializableMessageTranslator}
    */
-  boolean retryMessage(SerializableAdaptrisMessage msg) throws CoreException;
+  boolean retryMessage(SerializableMessage msg) throws CoreException;
 
   /**
    * Retry a message that has been written to the filesystem.
    * 
    * <p>
    * This assumes that the contents of the file has previously been encoded using a {@link MimeEncoder} and written out to the
-   * filesystem. It will decode the file and then submit it using {@link #retryMessage(SerializableAdaptrisMessage)}. Note that the
+   * filesystem. It will decode the file and then submit it using {@link #retryMessage(SerializableMessage)}. Note that the
    * return code only indicates that a workflow was found, and the message was successfully submitted to the workflow. It does not
    * indicate anything about the successful processing (or not) of the message.
    * </p>

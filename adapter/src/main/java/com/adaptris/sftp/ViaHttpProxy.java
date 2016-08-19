@@ -5,32 +5,42 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
-
+ */
 package com.adaptris.sftp;
 
-
+import com.adaptris.annotation.DisplayOrder;
+import com.jcraft.jsch.ProxyHTTP;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Interface allowing the adapter to configure the underlying {@link SftpClient} directly with specific behaviour.
- *
+ * Connect via a HTTP proxy
+ * 
  * @author lchan
  *
  */
-public interface SftpConnectionBehaviour {
+@XStreamAlias("sftp-via-http-proxy")
+@DisplayOrder(order = {"proxy", "username", "password"})
+public class ViaHttpProxy extends ViaProxy {
 
-  /**
-   * Configure the {@link SftpClient}
-   * 
-   * @param c the SftpClient
-   * @throws SftpException wrapping other exceptions.
-   */
-  void configure(SftpClient c) throws SftpException;
+  public ViaHttpProxy() {
+    super();
+  }
+
+  public ViaHttpProxy(String proxy) {
+    this();
+    setProxy(proxy);
+  }
+
+  @Override
+  protected ProxyHTTP createProxy(String host) {
+    return new ProxyHTTP(host);
+  }
+
 }

@@ -27,6 +27,19 @@ import javax.jms.TemporaryTopic;
 
 public abstract class JmsUtils {
 
+  public static JMSException wrapJMSException(Throwable e) {
+    return wrapJMSException(e.getMessage(), e);
+  }
+
+  public static JMSException wrapJMSException(String msg, Throwable e) {
+    if (e instanceof JMSException) {
+      return (JMSException) e;
+    }
+    JMSException exc = new JMSException(msg);
+    exc.initCause(e);
+    return exc;
+  }
+
   public static void rethrowJMSException(Throwable e) throws JMSException {
     rethrowJMSException(e.getMessage(), e);
   }

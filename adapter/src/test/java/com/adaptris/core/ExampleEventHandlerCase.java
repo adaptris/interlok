@@ -91,7 +91,7 @@ public abstract class ExampleEventHandlerCase extends ExampleConfigCase {
     assertEquals("Should have " + msgCount + " produced message", msgCount, producer.getMessages().size());
     for (Iterator i = producer.getMessages().iterator(); i.hasNext();) {
       AdaptrisMessage m = (AdaptrisMessage) i.next();
-      Object o = cm.unmarshal(m.getStringPayload());
+      Object o = cm.unmarshal(m.getContent());
       assertEquals("Classname", expectedEventClass, o.getClass());
     }
   }

@@ -24,13 +24,13 @@ import com.adaptris.core.mail.MailProducerExample;
 public class MultiAttachmentProducerXmlTest extends MailProducerExample {
 
   private static final String EXAMPLE_XML_FOR_CFG = "<document>"
-      + System.getProperty("line.separator")
+      + System.lineSeparator()
       + "  <content>The text body of the email</content>"
-      + System.getProperty("line.separator")
+      + System.lineSeparator()
       + "  <attachment encoding=\"base64\" filename=\"attachment1.txt\">UXVpY2sgemVwaHlycyBibG93LCB2ZXhpbmcgZGFmdCBKaW0=</attachment>"
-      + System.getProperty("line.separator")
+      + System.lineSeparator()
       + "  <attachment encoding=\"base64\" filename=\"attachment2.txt\">UGFjayBteSBib3ggd2l0aCBmaXZlIGRvemVuIGxpcXVvciBqdWdz</attachment>"
-      + System.getProperty("line.separator") + "</document>";
+      + System.lineSeparator() + "</document>";
 
   private MultiAttachmentSmtpProducer producer;
 

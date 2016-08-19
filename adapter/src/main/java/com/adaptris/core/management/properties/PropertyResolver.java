@@ -17,6 +17,7 @@
 package com.adaptris.core.management.properties;
 
 import static org.apache.commons.io.IOUtils.closeQuietly;
+import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -25,6 +26,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +55,8 @@ public abstract class PropertyResolver {
   private static transient Logger log = LoggerFactory.getLogger(PropertyResolver.class);
   private static final String MAPPING_FILE = "META-INF/com/adaptris/core/management/properties/resolver";
 
+  // Matching {password}PW:BLAHBLAH, but reluctantly.
+  private static final String PROPERTY_RESOLVE_PATTERN = "^\\{(.*?)\\}(.*)$";
 
   public PropertyResolver() {
   }
@@ -89,9 +94,11 @@ public abstract class PropertyResolver {
 
   private static class DefaultPropertyResolver extends PropertyResolver {
     private Map<String, Decoder> schemes;
+    private Pattern resolverPattern;
 
     DefaultPropertyResolver() {
       schemes = new HashMap<String, Decoder>();
+      resolverPattern = Pattern.compile(PROPERTY_RESOLVE_PATTERN);
     }
 
     @Override
@@ -135,18 +142,16 @@ public abstract class PropertyResolver {
 
     @Override
     public String resolve(String propertyValue) throws Exception {
-      String result = null;
-
-      if (propertyValue.startsWith("{")) {
-        String scheme = propertyValue.substring(1, propertyValue.indexOf("}"));
-        String value = propertyValue.substring(propertyValue.indexOf("}") + 1);
-        Decoder transformer = schemes.get(scheme);
-        result = transformer.decode(value);
+      String result = propertyValue;
+      Matcher m = resolverPattern.matcher(defaultIfEmpty(propertyValue, ""));
+      if (m.matches()) {
+        String scheme = m.group(1);
+        String value = m.group(2);
+        if (schemes.containsKey(scheme)) {
+          Decoder transformer = schemes.get(scheme);
+          result = transformer.decode(value);
+        }
       }
-      else {
-        result = propertyValue;
-      }
-
       return result;
     }
   }

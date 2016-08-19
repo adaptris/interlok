@@ -66,7 +66,7 @@ public class ObjectMetadataParameter implements XmlTransformParameter {
     }
     Pattern pattern = Pattern.compile(getObjectMetadataKeyRegexp());
     Map params = existingParams == null ? new HashMap() : new HashMap(existingParams);
-    Map objMetadata = msg.getObjectMetadata();
+    Map objMetadata = msg.getObjectHeaders();
     for (Object key : objMetadata.keySet()) {
       if (pattern.matcher(key.toString()).matches()) {
         params.put(key.toString(), objMetadata.get(key));

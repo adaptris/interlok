@@ -67,7 +67,7 @@ public abstract class JmsProducerCase extends JmsProducerExample {
     assertEquals("Number of Messages", size, msgs.size());
     if (assertPayloads) {
       for (int i = 0; i < size; i++) {
-        assertEquals("MessageText", DEFAULT_PAYLOAD, msgs.get(i).getStringPayload());
+        assertEquals("MessageText", DEFAULT_PAYLOAD, msgs.get(i).getContent());
       }
     }
   }

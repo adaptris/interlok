@@ -72,7 +72,7 @@ public class PayloadFromMetadataTest extends MetadataServiceExample {
     execute(service, msg);
 
     assertEquals("Hello", msg.getMetadataValue(DEFAULT_METADATA_KEY));
-    assertEquals("Hello World", msg.getStringPayload());
+    assertEquals("Hello World", msg.getContent());
   }
 
   public void testNoMetadataMatch() throws Exception {
@@ -80,8 +80,8 @@ public class PayloadFromMetadataTest extends MetadataServiceExample {
     AdaptrisMessage msg = createMessage();
     msg.removeMetadata(new MetadataElement(DEFAULT_METADATA_KEY, ""));
     execute(service, msg);
-    assertNotSame("Hello World", msg.getStringPayload());
-    assertEquals("__HELLO__ World", msg.getStringPayload());
+    assertNotSame("Hello World", msg.getContent());
+    assertEquals("__HELLO__ World", msg.getContent());
   }
 
   public void testService_MetadataValueHasSlash_CanEscape() throws Exception {
@@ -90,7 +90,7 @@ public class PayloadFromMetadataTest extends MetadataServiceExample {
     msg.addMetadata(DEFAULT_METADATA_KEY, "\\tHello");
     execute(service, msg);
     assertEquals("\\tHello", msg.getMetadataValue(DEFAULT_METADATA_KEY));
-    assertEquals("\\tHello World", msg.getStringPayload());
+    assertEquals("\\tHello World", msg.getContent());
   }
 
   public void testService_MetadataValueHasSlash_NoEscape() throws Exception {
@@ -100,7 +100,7 @@ public class PayloadFromMetadataTest extends MetadataServiceExample {
     msg.addMetadata(DEFAULT_METADATA_KEY, "\\tHello");
     execute(service, msg);
     assertEquals("\\tHello", msg.getMetadataValue(DEFAULT_METADATA_KEY));
-    assertEquals("tHello World", msg.getStringPayload());
+    assertEquals("tHello World", msg.getContent());
   }
 
   public void testService_MetadataValueHasDollar_NoEscape() throws Exception {
@@ -140,7 +140,7 @@ public class PayloadFromMetadataTest extends MetadataServiceExample {
     msg.addMetadata(DEFAULT_METADATA_KEY, "Hello$");
     execute(service, msg);
     assertEquals("Hello$", msg.getMetadataValue(DEFAULT_METADATA_KEY));
-    assertEquals("Hello$ World", msg.getStringPayload());
+    assertEquals("Hello$ World", msg.getContent());
   }
   
   private KeyValuePairSet KVPS(KeyValuePair... kvps) {

@@ -243,7 +243,7 @@ public abstract class JdbcQueryServiceCaseXmlResults extends JdbcQueryServiceCas
     XmlPayloadTranslatorImpl translator = createPayloadTranslator();
     translator.setColumnNameStyle(ColumnStyle.UpperCase);
     s.setResultSetTranslator(translator);
-    s.setStatement(QUERY_SQL_ILLEGAL_COLUMN);
+    s.setStatementCreator(new ConfiguredSQLStatement(QUERY_SQL_ILLEGAL_COLUMN));
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
     logMessage(getName(), msg);
@@ -261,7 +261,7 @@ public abstract class JdbcQueryServiceCaseXmlResults extends JdbcQueryServiceCas
     translator.setStripIllegalXmlChars(true);
     translator.setColumnNameStyle(ColumnStyle.UpperCase);
     s.setResultSetTranslator(translator);
-    s.setStatement(QUERY_SQL_ILLEGAL_BLANK_COLUMN);
+    s.setStatementCreator(new ConfiguredSQLStatement(QUERY_SQL_ILLEGAL_BLANK_COLUMN));
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
     logMessage(getName(), msg);

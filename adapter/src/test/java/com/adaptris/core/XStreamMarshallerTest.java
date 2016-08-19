@@ -40,6 +40,7 @@ import com.adaptris.util.text.xml.XPath;
 import com.thoughtworks.xstream.XStream;
 
 
+@SuppressWarnings("deprecation")
 public class XStreamMarshallerTest extends MarshallingBaseCase {
 
   private static final String XSTREAM_STANDARD_XML = "xstream-standard.xml";

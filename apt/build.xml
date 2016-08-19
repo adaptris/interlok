@@ -11,7 +11,7 @@
     <property name="project.name" value="adp-core-apt"/>
     <property name="project.jar.name" value="${project.name}.jar"/>
     <property name="ivy.publish.bundle.type" value="jar"/>
-    <property name="ivy.publish.revision" value="3.3-SNAPSHOT"/>
+    <property name="ivy.publish.revision" value="3.4-SNAPSHOT"/>
     <property name="ivy.dir" value="${basedir}/../ivy"/>
     <property name="ivy.xml.file" value="${ivy.dir}/ivy-apt.xml"/>
     <property name="ivy.artifact.publish.status" value="integration"/>

@@ -21,22 +21,15 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
 import com.adaptris.annotation.AdapterComponent;
-import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.jdbc.JdbcDataCaptureServiceImpl;
-import com.adaptris.core.services.jdbc.JdbcStatementParameter;
-import com.adaptris.core.services.jdbc.StatementParameterList;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.JdbcUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
  * Capture Data from a AdaptrisMessage and store it in a JDBC-compliant database.
@@ -56,48 +49,14 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @DisplayOrder(order = {"connection", "statement", "statementParameters", "parameterApplicator", "saveReturnedKeys",
     "saveReturnedKeysColumn", "saveReturnedKeysTable"})
 public class JdbcRawDataCaptureService extends JdbcDataCaptureServiceImpl {
-  @XStreamImplicit
-  @NotNull
-  @AutoPopulated
-  @Valid
-  private StatementParameterList statementParameters = null;
 
-  /**
-   * <p>
-   * Creates a new instance.
-   * </p>
-   */
   public JdbcRawDataCaptureService() {
     super();
-    setStatementParameters(new StatementParameterList());
   }
 
-  /**
-   * Add a StatementParameter to this service.
-   *
-   * @param query the StatementParameter
-   */
-  public void addStatementParameter(JdbcStatementParameter query) {
-    statementParameters.add(query);
-  }
-
-  /**
-   * Get the configured parameters
-   *
-   * @return the list.
-   */
-  public StatementParameterList getStatementParameters() {
-    return statementParameters;
-  }
-
-  /**
-   * Set the configured parameters list.
-   *
-   * @param statementParameterList the list.
-   * @see JdbcStatementParameter
-   */
-  public void setStatementParameters(StatementParameterList statementParameterList) {
-    statementParameters = statementParameterList;
+  public JdbcRawDataCaptureService(String statement) {
+    this();
+    setStatement(statement);
   }
 
   @Override

@@ -28,4 +28,9 @@ public class UseKeyAsServiceIdValueMatcherTest extends BaseCase {
     UseKeyAsServiceIdValueMatcher matcher = new UseKeyAsServiceIdValueMatcher();
     assertEquals("key", matcher.getNextServiceId("key", null));
   }
+
+  public void testMatcherReturnsNull() throws Exception {
+    UseKeyAsServiceIdValueMatcher matcher = new UseKeyAsServiceIdValueMatcher();
+    assertNull(matcher.getNextServiceId(null, null));
+  }
 }

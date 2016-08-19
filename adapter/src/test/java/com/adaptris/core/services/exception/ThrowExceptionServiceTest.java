@@ -204,7 +204,7 @@ public class ThrowExceptionServiceTest extends ExceptionServiceExample {
   public void testLastKnownExceptionAvailableException() throws Exception {
     ThrowExceptionService service = new ThrowExceptionService(new LastKnownException());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    msg.getObjectMetadata().put(CoreConstants.OBJ_METADATA_EXCEPTION, new ServiceException(CONFIGURED));
+    msg.getObjectHeaders().put(CoreConstants.OBJ_METADATA_EXCEPTION, new ServiceException(CONFIGURED));
     try {
       execute(service, msg);
       fail("Expected Exception");
@@ -217,7 +217,7 @@ public class ThrowExceptionServiceTest extends ExceptionServiceExample {
   public void testLastKnownExceptionNonServiceException() throws Exception {
     ThrowExceptionService service = new ThrowExceptionService(new LastKnownException());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    msg.getObjectMetadata().put(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception(CONFIGURED));
+    msg.getObjectHeaders().put(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception(CONFIGURED));
     try {
       execute(service, msg);
       fail("Expected Exception");

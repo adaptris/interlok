@@ -69,8 +69,8 @@ public class DecryptionServiceTest extends SecurityServiceCase {
     execute(input, msg);
     execute(output, msg);
     assertEquals(FAIL, msg.getNextServiceId());
-    assertTrue(msg.getObjectMetadata().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION));
-    assertTrue(msg.getObjectMetadata().get(CoreConstants.OBJ_METADATA_EXCEPTION) instanceof AdaptrisSecurityException);
+    assertTrue(msg.getObjectHeaders().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION));
+    assertTrue(msg.getObjectHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION) instanceof AdaptrisSecurityException);
 
   }
 
@@ -86,9 +86,9 @@ public class DecryptionServiceTest extends SecurityServiceCase {
     output.setFailId(FAIL);
     output.setSuccessId(SUCCESS);
     execute(output, msg);
-    assertEquals("Payload equality", EXAMPLE_MSG, msg.getStringPayload());
+    assertEquals("Payload equality", EXAMPLE_MSG, msg.getContent());
     assertEquals(SUCCESS, msg.getNextServiceId());
-    assertTrue(!msg.getObjectMetadata().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION));
+    assertTrue(!msg.getObjectHeaders().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION));
 
   }
 

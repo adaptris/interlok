@@ -26,7 +26,6 @@ import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 
 /**
  */
-@SuppressWarnings("deprecation")
 public class MapMessageTranslatorTest extends MessageTypeTranslatorCase {
   private static final String BODY_KEY1 = "bodykey1";
 
@@ -66,7 +65,7 @@ public class MapMessageTranslatorTest extends MessageTypeTranslatorCase {
       start(t, session);
       AdaptrisMessage msg = t.translate(jmsMsg);
       assertMetadata(msg);
-      assertTrue(msg.getStringPayload().equals(TEXT));
+      assertTrue(msg.getContent().equals(TEXT));
     }
     finally {
       stop(t);

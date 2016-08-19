@@ -56,6 +56,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @DisplayOrder(order = {"xpathQueries", "namespaceContext", "xmlDocumentFactoryConfig"})
 public class XpathObjectMetadataService extends ServiceImp {
 
+  @Valid
   private KeyValuePairSet namespaceContext;
   @NotNull
   @AutoPopulated
@@ -63,6 +64,7 @@ public class XpathObjectMetadataService extends ServiceImp {
   @XStreamImplicit(itemFieldName = "xpath-query")
   private List<XpathObjectQuery> xpathQueries;
   @AdvancedConfig
+  @Valid
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
   private transient List<XpathObjectQuery> queriesToExecute;
 
@@ -98,7 +100,7 @@ public class XpathObjectMetadataService extends ServiceImp {
       }
       Document doc = XmlHelper.createDocument(msg, builder);
       for (XpathObjectQuery query : queriesToExecute) {
-        msg.getObjectMetadata().put(query.getMetadataKey(), query.resolveXpath(doc, namespaceCtx, query.createXpathQuery(msg)));
+        msg.getObjectHeaders().put(query.getMetadataKey(), query.resolveXpath(doc, namespaceCtx, query.createXpathQuery(msg)));
         log.trace("Added object against [{}]", query.getMetadataKey());
       }
     }

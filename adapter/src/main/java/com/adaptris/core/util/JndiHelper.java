@@ -33,6 +33,7 @@ import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.JndiContextFactory;
 import com.adaptris.core.jdbc.DatabaseConnection;
+import com.adaptris.core.transaction.TransactionManager;
 
 public class JndiHelper {
 
@@ -41,16 +42,31 @@ public class JndiHelper {
   private static String createJndiName(AdaptrisConnection object) throws InvalidNameException {
     String jndiName = null;
     if (object.getLookupName() != null) jndiName = object.getLookupName();
+    else
+      return createJndiName(object.getUniqueId());
+
+    return jndiName;
+  }
+  
+  private static String createJndiName(TransactionManager object) throws InvalidNameException {
+    String jndiName = null;
+    if (object.getLookupName() != null) jndiName = object.getLookupName();
+    else
+      return createJndiName(object.getUniqueId());
+
+    return jndiName;
+  }
+  
+  private static String createJndiName(String lookupId) throws InvalidNameException {
+    String jndiName = null;
+    int indexOfSchemeMarker = lookupId.indexOf(":"); // remove the scheme
+    if (indexOfSchemeMarker > 0) {
+      CompositeName configuredCompositeName = new CompositeName(lookupId.substring(indexOfSchemeMarker + 1));
+      jndiName = "comp/env/" + configuredCompositeName.get(configuredCompositeName.size() - 1);
+    }
     else {
-      int indexOfSchemeMarker = object.getUniqueId().indexOf(":"); // remove the scheme
-      if (indexOfSchemeMarker > 0) {
-        CompositeName configuredCompositeName = new CompositeName(object.getUniqueId().substring(indexOfSchemeMarker + 1));
-        jndiName = "comp/env/" + configuredCompositeName.get(configuredCompositeName.size() - 1);
-      }
-      else {
-        CompositeName configuredCompositeName = new CompositeName(object.getUniqueId());
-        jndiName = "comp/env/" + configuredCompositeName.get(configuredCompositeName.size() - 1);
-      }
+      CompositeName configuredCompositeName = new CompositeName(lookupId);
+      jndiName = "comp/env/" + configuredCompositeName.get(configuredCompositeName.size() - 1);
     }
 
     return jndiName;
@@ -73,9 +89,17 @@ public class JndiHelper {
   public static void bind(Collection<AdaptrisConnection> connections) throws CoreException {
     bind(createContext(), connections, false);
   }
+  
+  public static void bind(TransactionManager transactionManager) throws CoreException {
+    bind(createContext(), transactionManager, false);
+  }
 
   public static void bind(Collection<AdaptrisConnection> connections, boolean debug) throws CoreException {
     bind(createContext(), connections, debug);
+  }
+  
+  public static void bind(TransactionManager transactionManager, boolean debug) throws CoreException {
+    bind(createContext(), transactionManager, debug);
   }
 
   public static void bind(Context ctx, Collection<AdaptrisConnection> connections, boolean debug) throws CoreException {
@@ -88,6 +112,23 @@ public class JndiHelper {
     bind(createContext(), con, debug);
   }
 
+  public static void bind(Context ctx, TransactionManager transactionManager, boolean debug) throws CoreException {
+    try {
+      if (transactionManager == null) {
+        if (debug) log.trace("TransactionManager is null, ignoring");
+        return;
+      }
+      
+      String jndiName = createJndiName(transactionManager);
+      ctx.bind(jndiName, transactionManager);
+      if (debug) log.trace("Saved JNDI entry {} for object ({}) {}", jndiName, transactionManager.getClass().getName(), transactionManager);
+    }
+    catch (NamingException ex) {
+      if (debug) log.error("TransactionManager '{}' could not be bound into the JNDI context.", transactionManager.getUniqueId());
+      ExceptionHelper.rethrowCoreException(ex);
+    }
+  }
+  
   public static void bind(Context ctx, AdaptrisConnection connection, boolean debug) throws CoreException {
     try {
       if (connection == null) {
@@ -117,6 +158,14 @@ public class JndiHelper {
 
   public static void unbind(Collection<AdaptrisConnection> connections, boolean debug) throws CoreException {
     unbind(createContext(), connections, debug);
+  }
+  
+  public static void unbind(TransactionManager transactionManager, boolean debug) throws CoreException {
+    unbind(createContext(), transactionManager, debug);
+  }
+  
+  public static void unbind(TransactionManager transactionManager) throws CoreException {
+    unbind(createContext(), transactionManager, false);
   }
 
   public static void unbind(AdaptrisConnection conn, boolean debug) throws CoreException {
@@ -149,6 +198,23 @@ public class JndiHelper {
       ExceptionHelper.rethrowCoreException(ex);
     }
   }
+  
+  public static void unbind(Context ctx, TransactionManager transactionManager, boolean debug) throws CoreException {
+    try {
+      if (transactionManager == null) {
+        if (debug) log.trace("TransactionManager is null, ignoring");
+        return;
+      }
+      
+      String jndiName = createJndiName(transactionManager);
+      ctx.unbind(jndiName);
+      if (debug) log.trace("Deleted JNDI entry {}", jndiName);
+    }
+    catch (NamingException ex) {
+      if (debug) log.error("TransactionManager '{}' could not be unbound from the JNDI context.", transactionManager.getUniqueId());
+      ExceptionHelper.rethrowCoreException(ex);
+    }
+  }
 
   public static void unbindQuietly(Context ctx, Collection<AdaptrisConnection> connections, boolean debug) {
     for (AdaptrisConnection connection : connections) {
@@ -159,6 +225,15 @@ public class JndiHelper {
   public static void unbindQuietly(Context ctx, AdaptrisConnection connection, boolean debug) {
     try {
       unbind(ctx, connection, debug);
+    }
+    catch (CoreException e) {
+
+    }
+  }
+  
+  public static void unbindQuietly(Context ctx, TransactionManager transactionManager, boolean debug) {
+    try {
+      unbind(ctx, transactionManager, debug);
     }
     catch (CoreException e) {
 

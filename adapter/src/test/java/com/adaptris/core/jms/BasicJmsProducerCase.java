@@ -75,7 +75,7 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
       activeMqBroker.start();
       AdaptrisMessage msg = createMessage();
       ServiceCase.execute(standaloneProducer, msg);
-      Map objectMetadata = msg.getObjectMetadata();
+      Map objectMetadata = msg.getObjectHeaders();
       assertTrue(objectMetadata.containsKey(Message.class.getCanonicalName() + "." + JmsConstants.JMS_MESSAGE_ID));
       assertTrue(objectMetadata.containsKey(Message.class.getCanonicalName() + "." + JmsConstants.JMS_DESTINATION));
       assertTrue(objectMetadata.containsKey(Message.class.getCanonicalName() + "." + JmsConstants.JMS_PRIORITY));
@@ -449,8 +449,8 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
       AdaptrisMessage msg2 = createMessage();
       serviceList.doService(msg1);
       serviceList.doService(msg2);
-      assertEquals(DEFAULT_PAYLOAD.toUpperCase(), msg1.getStringPayload());
-      assertEquals(DEFAULT_PAYLOAD.toUpperCase(), msg2.getStringPayload());
+      assertEquals(DEFAULT_PAYLOAD.toUpperCase(), msg1.getContent());
+      assertEquals(DEFAULT_PAYLOAD.toUpperCase(), msg2.getContent());
     }
     finally {
       stop(serviceList);

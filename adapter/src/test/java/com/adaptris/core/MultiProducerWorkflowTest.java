@@ -78,9 +78,9 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(ORIGINAL_PAYLOAD);
       workflow.onAdaptrisMessage(msg);
       assertEquals(1, mock1.getMessages().size());
-      assertEquals(MODIFIED_PAYLOAD, mock1.getMessages().get(0).getStringPayload());
+      assertEquals(MODIFIED_PAYLOAD, mock1.getMessages().get(0).getContent());
       assertEquals(1, mock2.getMessages().size());
-      assertEquals(MODIFIED_PAYLOAD, mock2.getMessages().get(0).getStringPayload());
+      assertEquals(MODIFIED_PAYLOAD, mock2.getMessages().get(0).getContent());
     }
     finally {
       channel.requestClose();
@@ -116,9 +116,9 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
       workflow.onAdaptrisMessage(msg);
       log.debug("After workflow.onMessage()");
       assertEquals(1, mock1.getMessages().size());
-      assertEquals(MODIFIED_PAYLOAD, mock1.getMessages().get(0).getStringPayload());
+      assertEquals(MODIFIED_PAYLOAD, mock1.getMessages().get(0).getContent());
       assertEquals(1, mock2.getMessages().size());
-      assertEquals(MODIFIED_PAYLOAD, mock2.getMessages().get(0).getStringPayload());
+      assertEquals(MODIFIED_PAYLOAD, mock2.getMessages().get(0).getContent());
       t.cancel();
     }
     finally {
@@ -144,9 +144,9 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(ORIGINAL_PAYLOAD);
       workflow.onAdaptrisMessage(msg);
       assertEquals(1, mock1.getMessages().size());
-      assertEquals(ORIGINAL_PAYLOAD, mock1.getMessages().get(0).getStringPayload());
+      assertEquals(ORIGINAL_PAYLOAD, mock1.getMessages().get(0).getContent());
       assertEquals(1, mock2.getMessages().size());
-      assertEquals(ORIGINAL_PAYLOAD, mock2.getMessages().get(0).getStringPayload());
+      assertEquals(ORIGINAL_PAYLOAD, mock2.getMessages().get(0).getContent());
     }
     finally {
       channel.requestClose();
@@ -204,9 +204,9 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(ORIGINAL_PAYLOAD);
       workflow.onAdaptrisMessage(msg);
       assertEquals(1, mock1.getMessages().size());
-      assertEquals(ORIGINAL_PAYLOAD, mock1.getMessages().get(0).getStringPayload());
+      assertEquals(ORIGINAL_PAYLOAD, mock1.getMessages().get(0).getContent());
       assertEquals(1, mock2.getMessages().size());
-      assertEquals(ORIGINAL_PAYLOAD, mock2.getMessages().get(0).getStringPayload());
+      assertEquals(ORIGINAL_PAYLOAD, mock2.getMessages().get(0).getContent());
       assertEquals(1, interceptor.messageCount());
     }
     finally {
@@ -241,7 +241,7 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
       assertEquals(0, mock1.getMessages().size());
       assertEquals(0, mock2.getMessages().size());
       assertEquals(1, meh.getMessages().size());
-      assertEquals(ORIGINAL_PAYLOAD, meh.getMessages().get(0).getStringPayload());
+      assertEquals(ORIGINAL_PAYLOAD, meh.getMessages().get(0).getContent());
     }
     finally {
       channel.requestClose();
@@ -286,7 +286,7 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
       assertEquals(0, mock1.getMessages().size());
       assertEquals(0, mock2.getMessages().size());
       assertEquals(1, meh.getMessages().size());
-      assertEquals(ORIGINAL_PAYLOAD, meh.getMessages().get(0).getStringPayload());
+      assertEquals(ORIGINAL_PAYLOAD, meh.getMessages().get(0).getContent());
     }
     finally {
       channel.requestClose();
@@ -322,7 +322,7 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
       workflow.onAdaptrisMessage(msg);
       assertEquals(0, mock1.getMessages().size());
       assertEquals(1, mock2.getMessages().size());
-      assertEquals(ORIGINAL_PAYLOAD, mock2.getMessages().get(0).getStringPayload());
+      assertEquals(ORIGINAL_PAYLOAD, mock2.getMessages().get(0).getContent());
     }
     finally {
       channel.requestClose();
@@ -367,7 +367,7 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
       assertEquals(0, mock1.getMessages().size());
       assertEquals(0, mock2.getMessages().size());
       assertEquals(1, meh.getMessages().size());
-      assertEquals(ORIGINAL_PAYLOAD, meh.getMessages().get(0).getStringPayload());
+      assertEquals(ORIGINAL_PAYLOAD, meh.getMessages().get(0).getContent());
     }
     finally {
       channel.requestClose();

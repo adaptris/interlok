@@ -20,7 +20,6 @@ import static com.adaptris.core.runtime.AdapterComponentMBean.ID_PREFIX;
 import static com.adaptris.core.runtime.AdapterComponentMBean.JMX_METRICS_TYPE;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -116,21 +115,6 @@ public class MetadataStatistics implements MetadataStatisticsMBean, ChildRuntime
   }
 
   @Override
-  public Collection<String> getMetadataKeys(int index) {
-    return get(index).getKeys();
-  }
-
-  @Override
-  public int getTotal(int index, String key) {
-    return get(index).getValue(key);
-  }
-
-  @Override
-  public long getEndMillisForTimeSliceIndex(int index) {
-    return get(index).getEndMillis();
-  }
-
-  @Override
   public List<MetadataStatistic> getStatistics() throws CoreException {
     return getStatistics(0, wrappedComponent.getStats().size());
   }
@@ -147,5 +131,10 @@ public class MetadataStatistics implements MetadataStatisticsMBean, ChildRuntime
       ExceptionHelper.rethrowCoreException(e);
     }
     return result;
+  }
+
+  @Override
+  public void clearStatistics() throws CoreException {
+    wrappedComponent.clearStatistics();
   }
 }

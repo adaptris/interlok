@@ -59,6 +59,7 @@ public class MessageMetricsInterceptorByMetadata extends MessageMetricsIntercept
   @Valid
   private KeyValuePair metadataElement;
 
+  private transient Object chubb = new Object();
   static {
     RuntimeInfoComponentFactory.registerComponentFactory(new JmxFactory());
   }
@@ -106,13 +107,18 @@ public class MessageMetricsInterceptorByMetadata extends MessageMetricsIntercept
   @Override
   public synchronized void workflowEnd(AdaptrisMessage inputMsg, AdaptrisMessage outputMsg) {
     if (captureMetric(inputMsg) || captureMetric(outputMsg)) {
-      MessageStatistic currentTimeSlice = getCurrentTimeSlice();
-      currentTimeSlice.setTotalMessageCount(currentTimeSlice.getTotalMessageCount() + 1);
-      currentTimeSlice.setTotalMessageSize(currentTimeSlice.getTotalMessageSize() + inputMsg.getSize());
-      if (!wasSuccessful(inputMsg, outputMsg)) {
-        currentTimeSlice.setTotalMessageErrorCount(currentTimeSlice.getTotalMessageErrorCount() + 1);
-      }
-      updateCurrentTimeSlice(currentTimeSlice);
+      final int errors = wasSuccessful(inputMsg, outputMsg) ? 0 : 1;
+      final int msgs = 1;
+      final long size = inputMsg.getSize();
+      update(new StatisticsDelta<MessageStatistic>() {
+        @Override
+        public MessageStatistic apply(MessageStatistic currentStat) {
+          currentStat.setTotalMessageCount(currentStat.getTotalMessageCount() + msgs);
+          currentStat.setTotalMessageSize(currentStat.getTotalMessageSize() + size);
+          currentStat.setTotalMessageErrorCount(currentStat.getTotalMessageErrorCount() + errors);
+          return currentStat;
+        }
+      });
     }
   }
 

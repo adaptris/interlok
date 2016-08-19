@@ -71,7 +71,7 @@ public class ConvertObjectMetadataService extends ServiceImp {
 
   public void doService(AdaptrisMessage msg) throws ServiceException {
     Set<MetadataElement> metadataToAdd = new HashSet<MetadataElement>();
-    for (Iterator i = msg.getObjectMetadata().entrySet().iterator(); i.hasNext();) {
+    for (Iterator i = msg.getObjectHeaders().entrySet().iterator(); i.hasNext();) {
       Map.Entry entry = (Map.Entry) i.next();
       String key = entry.getKey().toString();
       if (objectMetadataKeyPattern.matcher(key).matches()) {

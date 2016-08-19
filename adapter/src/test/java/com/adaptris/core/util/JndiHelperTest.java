@@ -30,6 +30,8 @@ import com.adaptris.core.NullConnection;
 import com.adaptris.core.jdbc.AdvancedJdbcPooledConnection;
 import com.adaptris.core.jdbc.JdbcPooledConnection;
 import com.adaptris.core.jdbc.PooledConnectionProperties;
+import com.adaptris.core.transaction.DummyTransactionManager;
+import com.adaptris.core.transaction.TransactionManager;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.KeyValuePair;
 
@@ -187,6 +189,91 @@ public class JndiHelperTest extends BaseCase {
       ;
     }
     JndiHelper.unbindQuietly(initialContext, connection, false);
+  }
+  
+  public void testBindTransactionManager_AlreadyBound() throws Exception {
+    TransactionManager transactionManager = new DummyTransactionManager(getName(), null);
+    InitialContext initialContext = new InitialContext(env);
+    JndiHelper.bind(initialContext, transactionManager, false);
+    try {
+      JndiHelper.bind(initialContext, transactionManager, true);
+      fail();
+    }
+    catch (CoreException expected) {
+      ;
+    }
+    try {
+      JndiHelper.bind(initialContext, transactionManager, false);
+      fail();
+    }
+    catch (CoreException expected) {
+      ;
+    }
+    JndiHelper.unbindQuietly(initialContext, transactionManager, false);
+  }
+  
+  public void testBindNullTransactionManager() throws Exception {
+    TransactionManager transactionManager = null;
+    InitialContext initialContext = new InitialContext(env);
+    try {
+      JndiHelper.bind(initialContext, transactionManager, false);
+    }
+    catch (CoreException expected) {
+      fail("Should not error, just ignore.");
+    }
+  }
+  
+  public void testBindNullTransactionManager_Debug() throws Exception {
+    TransactionManager transactionManager = null;
+    InitialContext initialContext = new InitialContext(env);
+    try {
+      JndiHelper.bind(initialContext, transactionManager, true);
+    }
+    catch (CoreException expected) {
+      fail("Should not error, just ignore.");
+    }
+  }
+  
+  public void testUnbindNullTransactionManager() throws Exception {
+    TransactionManager transactionManager = null;
+    try {
+      JndiHelper.unbind(transactionManager, false);
+    }
+    catch (CoreException expected) {
+      fail("Should not error, just ignore.");
+    }
+  }
+  
+  public void testUnbindNullTransactionManager_Debug() throws Exception {
+    TransactionManager transactionManager = null;
+    try {
+      JndiHelper.unbind(transactionManager, true);
+    }
+    catch (CoreException expected) {
+      fail("Should not error, just ignore.");
+    }
+  }
+  
+  public void testUnbindUnboundTransactionManager() throws Exception {
+    TransactionManager transactionManager = new DummyTransactionManager(getName(), null);
+    try {
+      JndiHelper.unbind(transactionManager, false);
+      fail();
+    }
+    catch (CoreException expected) {
+      // not previously bound, so should error.
+    }
+  }
+  
+  public void testUnbindUnboundTransactionManager_Debug() throws Exception {
+    TransactionManager transactionManager = new DummyTransactionManager(getName(), null);
+    try {
+      JndiHelper.unbind(transactionManager, true);
+      fail();
+    }
+    catch (CoreException expected) {
+      // not previously bound, so should error.
+    }
   }
 
   public void testBindJdbcConnection() throws Exception {

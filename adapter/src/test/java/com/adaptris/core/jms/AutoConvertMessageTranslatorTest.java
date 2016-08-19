@@ -69,7 +69,7 @@ public class AutoConvertMessageTranslatorTest extends MessageTypeTranslatorCase 
 
       AdaptrisMessage msg = trans.translate(jmsMsg);
       assertMetadata(msg);
-      assertEquals(TEXT, msg.getStringPayload());
+      assertEquals(TEXT, msg.getContent());
     }
     finally {
       stop(trans);

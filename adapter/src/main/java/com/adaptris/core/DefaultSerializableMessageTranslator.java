@@ -21,6 +21,7 @@ import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
@@ -30,6 +31,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
 
 import com.adaptris.core.lms.FileBackedMessage;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.interlok.types.SerializableMessage;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
@@ -55,7 +57,7 @@ public class DefaultSerializableMessageTranslator implements SerializableMessage
   }
 
   @Override
-  public SerializableAdaptrisMessage translate(AdaptrisMessage message) throws CoreException {
+  public SerializableMessage translate(AdaptrisMessage message) throws CoreException {
     SerializableAdaptrisMessage serializedMsg = new SerializableAdaptrisMessage();
     // It's a file message; arbitrarily too large?
     if (message instanceof FileBackedMessage && message.getSize() > DEFAULT_LMS_BOUNDARY) {
@@ -67,6 +69,7 @@ public class DefaultSerializableMessageTranslator implements SerializableMessage
     serializedMsg.setUniqueId(message.getUniqueId());
     serializedMsg.setContentEncoding(message.getContentEncoding());
     serializedMsg.setMetadata(message.getMetadata());
+    serializedMsg.setNextServiceId(message.getNextServiceId());
     
     // do we have a failed/error'd message?
     if(message.getObjectHeaders().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION))
@@ -76,20 +79,22 @@ public class DefaultSerializableMessageTranslator implements SerializableMessage
   }
 
   @Override
-  public AdaptrisMessage translate(SerializableAdaptrisMessage message) throws CoreException {
+  public AdaptrisMessage translate(SerializableMessage message) throws CoreException {
     try {
       AdaptrisMessage adaptrisMessage = null;
       if (StringUtils.isEmpty(message.getContentEncoding())) {
-        adaptrisMessage = messageFactory.newMessage(message.getContent(), convertKeyValuePairs(message.getMetadata()));
+        adaptrisMessage = messageFactory.newMessage(message.getContent(), convertMap(message.getMessageHeaders()));
       }
       else {
         adaptrisMessage = messageFactory.newMessage(message.getContent(), message.getContentEncoding(),
-            convertKeyValuePairs(message.getMetadata()));
+            convertMap(message.getMessageHeaders()));
       }
       if(StringUtils.isEmpty(message.getUniqueId()))
         message.setUniqueId(new GuidGenerator().create(this));
         
       adaptrisMessage.setUniqueId(message.getUniqueId());
+      adaptrisMessage.setNextServiceId(message.getNextServiceId());
+
       return adaptrisMessage;
 
     }
@@ -104,6 +109,10 @@ public class DefaultSerializableMessageTranslator implements SerializableMessage
       result.add(new MetadataElement(kvp));
     }
     return result;
+  }
+
+  private Set<MetadataElement> convertMap(Map<String, String> set) {
+    return convertKeyValuePairs(new KeyValuePairSet(set));
   }
 
   private String buildFileDetails(File f) throws CoreException {

@@ -40,7 +40,7 @@ public class GunzipServiceTest extends GeneralServiceExample {
     execute(new GzipService(), msg);
     assertFalse(MessageDigest.isEqual(LINE.getBytes("UTF-8"), msg.getPayload()));
     execute(new GunzipService(), msg);
-    assertEquals("zip then unzip gives same result", LINE, msg.getStringPayload());
+    assertEquals("zip then unzip gives same result", LINE, msg.getContent());
   }
 
   public void testUnZipWithInvalidZip() throws Exception {

@@ -31,6 +31,7 @@ import java.util.List;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.jdbc.JdbcConnection;
 import com.adaptris.core.services.jdbc.types.BlobColumnTranslator;
@@ -40,6 +41,7 @@ import com.adaptris.core.services.jdbc.types.IntegerColumnTranslator;
 import com.adaptris.core.services.jdbc.types.StringColumnTranslator;
 import com.adaptris.core.services.jdbc.types.TimestampColumnTranslator;
 import com.adaptris.core.util.JdbcUtil;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
@@ -242,7 +244,8 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
 
         }
       }
-      service.setStatement("SELECT StringColumn1, DateColumn2, IntegerColumn3, BlobColumn, ClobColumn FROM tablename WHERE " + additionalParams);
+      service.setStatementCreator(new ConfiguredSQLStatement(
+          "SELECT StringColumn1, DateColumn2, IntegerColumn3, BlobColumn, ClobColumn FROM tablename WHERE " + additionalParams));
     }
     catch (Exception e) {
       throw new RuntimeException(e);
@@ -333,9 +336,41 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
     }
   }
 
+  public void testInit_Statement_NoCreator() throws Exception {
+    createDatabase();
+    JdbcDataQueryService s = createMessageIdService();
+    s.setStatementCreator(null);
+    s.setStatement(QUERY_SQL);
+    try {
+      LifecycleHelper.init(s);
+      assertNotNull(s.getStatementCreator());
+      assertEquals(QUERY_SQL, s.getStatementCreator().createStatement(AdaptrisMessageFactory.getDefaultInstance().newMessage()));
+    } finally {
+      LifecycleHelper.close(s);
+
+    }
+
+  }
+
+  public void testInit_NoStatement_NoCreator() throws Exception {
+    createDatabase();
+    JdbcDataQueryService s = createMessageIdService();
+    s.setStatementCreator(null);
+    s.setStatement(null);
+    try {
+      LifecycleHelper.init(s);
+      fail();
+    } catch (CoreException expected) {
+
+    } finally {
+      LifecycleHelper.close(s);
+    }
+  }
+
+
   @Override
   public void testBackReferences() throws Exception {
-    this.testBackReferences(new JdbcDataQueryService());
+    this.testBackReferences(new JdbcDataQueryService(new ConfiguredSQLStatement("INSERT INTO MYTABLE ('ABC');")));
   }
 
   protected static void createDatabase() throws Exception {
@@ -438,7 +473,7 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
         PROPERTIES.getProperty(JDBC_QUERYSERVICE_DRIVER));
     service.setConnection(connection);
 
-    service.setStatement(QUERY_SQL);
+    service.setStatementCreator(new ConfiguredSQLStatement(QUERY_SQL));
     StatementParameter sp = new StatementParameter();
     sp.setQueryClass("java.lang.String");
     sp.setQueryType(StatementParameter.QueryType.constant);
@@ -452,7 +487,7 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
     JdbcConnection connection = new JdbcConnection(PROPERTIES.getProperty(JDBC_QUERYSERVICE_URL),
         PROPERTIES.getProperty(JDBC_QUERYSERVICE_DRIVER));
     service.setConnection(connection);
-    service.setStatement(QUERY_SQL);
+    service.setStatementCreator(new ConfiguredSQLStatement(QUERY_SQL));
     StatementParameter sp = new StatementParameter();
     sp.setQueryClass("java.lang.String");
     sp.setQueryType(StatementParameter.QueryType.id);
@@ -471,7 +506,7 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
           PROPERTIES.getProperty(JDBC_QUERYSERVICE_DRIVER));
       service.setConnection(connection);
     }
-    service.setStatement(QUERY_SQL);
+    service.setStatementCreator(new ConfiguredSQLStatement(QUERY_SQL));
     StatementParameter sp = new StatementParameter();
     sp.setQueryClass("java.lang.String");
     sp.setQueryType(StatementParameter.QueryType.metadata);
@@ -487,7 +522,7 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
         PROPERTIES.getProperty(JDBC_QUERYSERVICE_DRIVER));
     service.setConnection(connection);
 
-    service.setStatement(QUERY_SQL_NO_RESULT);
+    service.setStatementCreator(new ConfiguredSQLStatement(QUERY_SQL_NO_RESULT));
 
     return service;
   }
@@ -497,7 +532,7 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
     JdbcConnection connection = new JdbcConnection(PROPERTIES.getProperty(JDBC_QUERYSERVICE_URL),
         PROPERTIES.getProperty(JDBC_QUERYSERVICE_DRIVER));
     service.setConnection(connection);
-    service.setStatement(QUERY_SQL);
+    service.setStatementCreator(new ConfiguredSQLStatement(QUERY_SQL));
     StatementParameter sp = new StatementParameter();
     sp.setQueryClass("java.lang.String");
     sp.setQueryType(StatementParameter.QueryType.xpath);
@@ -511,7 +546,7 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
     JdbcConnection connection = new JdbcConnection(PROPERTIES.getProperty(JDBC_QUERYSERVICE_URL),
         PROPERTIES.getProperty(JDBC_QUERYSERVICE_DRIVER));
     service.setConnection(connection);
-    service.setStatement(QUERY_SQL_MULTI_RESULT);
+    service.setStatementCreator(new ConfiguredSQLStatement(QUERY_SQL_MULTI_RESULT));
     return service;
   }
 

@@ -780,7 +780,7 @@ public class AdapterTest extends BaseCase {
   }
 
   private static Event createEvent(AdaptrisMessage msg, AdaptrisMarshaller marshaller) throws Exception {
-    String payload = msg.getStringPayload();
+    String payload = msg.getContent();
     Event result = null;
 
     if (payload == null) {

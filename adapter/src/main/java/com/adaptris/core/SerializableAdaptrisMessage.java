@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
@@ -62,12 +63,15 @@ public class SerializableAdaptrisMessage implements SerializableMessage {
   private String payloadEncoding;
 
   /**
-   * A pure copy of the AdaptrisMessage
+   * A copy of the metadata.
    */
   private KeyValuePairSet metadata;
 
+  private String nextServiceId;
+
   public SerializableAdaptrisMessage() {
     metadata = new KeyValuePairSet();
+    setNextServiceId("");
   }
 
   public SerializableAdaptrisMessage(SerializableMessage orig) {
@@ -75,6 +79,7 @@ public class SerializableAdaptrisMessage implements SerializableMessage {
     setUniqueId(orig.getUniqueId());
     setMessageHeaders(orig.getMessageHeaders());
     setPayload(orig.getContent(), orig.getContentEncoding());
+    setNextServiceId(orig.getNextServiceId());
   }
 
   public SerializableAdaptrisMessage(String uniqueId) {
@@ -229,6 +234,15 @@ public class SerializableAdaptrisMessage implements SerializableMessage {
     this.payloadEncoding = payloadEncoding;
   }
 
+
+  public String getNextServiceId() {
+    return nextServiceId;
+  }
+
+  public void setNextServiceId(String s) {
+    this.nextServiceId = StringUtils.defaultIfEmpty(s, "");
+  }
+
   @Override
   public boolean equals(Object object) {
     if (object == null) {
@@ -242,7 +256,8 @@ public class SerializableAdaptrisMessage implements SerializableMessage {
     }
     SerializableAdaptrisMessage rhs = (SerializableAdaptrisMessage) object;
     return new EqualsBuilder().append(getContent(), rhs.getContent()).append(getContentEncoding(), rhs.getContentEncoding())
-        .append(getUniqueId(), rhs.getUniqueId()).append(getMetadata(), rhs.getMetadata()).isEquals();
+        .append(getUniqueId(), rhs.getUniqueId()).append(getMetadata(), rhs.getMetadata())
+        .append(getNextServiceId(), rhs.getNextServiceId()).isEquals();
   }
 
   @Override
@@ -258,5 +273,6 @@ public class SerializableAdaptrisMessage implements SerializableMessage {
     }
     return result;
   }
+
 
 }

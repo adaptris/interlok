@@ -40,7 +40,6 @@ import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.text.xml.XPath;
 
-@SuppressWarnings("deprecation")
 public class XpathSplitterTest extends SplitterCase {
 
   public static final String ENCODING_ISO_8859_1 = "iso-8859-1";
@@ -150,7 +149,7 @@ public class XpathSplitterTest extends SplitterCase {
     List<AdaptrisMessage> result = splitter.splitMessage(msg);
     assertEquals("Number of messages", 3, result.size());
     for (AdaptrisMessage m : result) {
-      assertFalse("No Object Metadata", m.getObjectMetadata().containsKey(obj));
+      assertFalse("No Object Metadata", m.getObjectHeaders().containsKey(obj));
     }
   }
 

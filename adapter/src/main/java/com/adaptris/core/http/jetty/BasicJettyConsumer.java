@@ -288,11 +288,11 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
       if (!isEmpty(request.getQueryString())) {
         msg.addMetadata(JETTY_QUERY_STRING, request.getQueryString());
       }
-      msg.addObjectMetadata(CoreConstants.JETTY_RESPONSE_KEY, response);
-      msg.addObjectMetadata(CoreConstants.JETTY_REQUEST_KEY, request);
+      msg.addObjectHeader(CoreConstants.JETTY_RESPONSE_KEY, response);
+      msg.addObjectHeader(CoreConstants.JETTY_REQUEST_KEY, request);
       JettyConsumerMonitor monitor = new JettyConsumerMonitor();
       monitor.setStartTime(new Date().getTime());
-      msg.addObjectMetadata(JettyPoolingWorkflowInterceptor.MESSAGE_MONITOR, monitor);
+      msg.addObjectHeader(JettyPoolingWorkflowInterceptor.MESSAGE_MONITOR, monitor);
       boolean waitFor = submitToWorkflow(msg);
       if (waitFor) {
         try {

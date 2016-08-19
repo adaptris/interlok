@@ -37,7 +37,7 @@ public abstract class SetUpConfirmationServiceImp extends ServiceImp {
   protected void registerConfirmationId
     (AdaptrisMessage msg, String confirmationId) {
     
-    msg.addObjectMetadata
+    msg.addObjectHeader
       (MessageEventGenerator.CONFIRMATION_ID_KEY, confirmationId);
   }
   

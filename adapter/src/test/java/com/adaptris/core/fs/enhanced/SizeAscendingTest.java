@@ -28,7 +28,7 @@ public class SizeAscendingTest extends FileSorterCase {
   public void testSort() throws Exception {
     SizeAscending sorter = new SizeAscending();
     List<File> files = createFiles(10);
-    sorter.sort(files);
+    files = sorter.sort(files);
     log("Sorted", files);
 
     File firstFile = files.get(0);

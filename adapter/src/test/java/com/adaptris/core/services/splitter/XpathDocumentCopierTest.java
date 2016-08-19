@@ -28,7 +28,6 @@ import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.util.KeyValuePair;
 
-@SuppressWarnings("deprecation")
 public class XpathDocumentCopierTest extends SplitterCase {
 
   static final String XPATH_DOCUMENT_COUNT = "count(/envelope/document)";
@@ -104,7 +103,7 @@ public class XpathDocumentCopierTest extends SplitterCase {
     List<AdaptrisMessage> result = splitter.splitMessage(msg);
     assertEquals(3, result.size());
     for (AdaptrisMessage m : result) {
-      assertFalse("No Object Metadata", m.getObjectMetadata().containsKey(obj));
+      assertFalse("No Object Metadata", m.getObjectHeaders().containsKey(obj));
     }
   }
 
@@ -126,8 +125,8 @@ public class XpathDocumentCopierTest extends SplitterCase {
     List<AdaptrisMessage> result = splitter.splitMessage(msg);
     assertEquals(3, result.size());
     for (AdaptrisMessage m : result) {
-      assertTrue("Object Metadata", m.getObjectMetadata().containsKey(obj));
-      assertEquals(obj, m.getObjectMetadata().get(obj));
+      assertTrue("Object Metadata", m.getObjectHeaders().containsKey(obj));
+      assertEquals(obj, m.getObjectHeaders().get(obj));
     }
   }
 

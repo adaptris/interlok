@@ -58,10 +58,10 @@ public class MessageMetricsInterceptorByMetadataTest extends TestCase {
     LifecycleHelper.start(interceptor);
     AdaptrisMessage message = createMessage(true);
 
-    assertEquals(0, interceptor.getCacheArray().size());
+    assertEquals(0, interceptor.getStats().size());
     submitMessage(message);
-    assertEquals(1, interceptor.getCacheArray().size());
-    assertEquals(1, interceptor.getCacheArray().get(0).getTotalMessageCount());
+    assertEquals(1, interceptor.getStats().size());
+    assertEquals(1, interceptor.getStats().get(0).getTotalMessageCount());
   }
 
   public void testInterceptor_NoMatch() throws Exception {
@@ -69,9 +69,9 @@ public class MessageMetricsInterceptorByMetadataTest extends TestCase {
     LifecycleHelper.start(interceptor);
     AdaptrisMessage message = createMessage(false);
 
-    assertEquals(0, interceptor.getCacheArray().size());
+    assertEquals(0, interceptor.getStats().size());
     submitMessage(message);
-    assertEquals(0, interceptor.getCacheArray().size());
+    assertEquals(0, interceptor.getStats().size());
   }
 
   public void testInterceptor_MatchByRegexp() throws Exception {
@@ -80,22 +80,22 @@ public class MessageMetricsInterceptorByMetadataTest extends TestCase {
     LifecycleHelper.start(interceptor);
     AdaptrisMessage message = createMessage(true);
 
-    assertEquals(0, interceptor.getCacheArray().size());
+    assertEquals(0, interceptor.getStats().size());
     submitMessage(message);
-    assertEquals(1, interceptor.getCacheArray().size());
-    assertEquals(1, interceptor.getCacheArray().get(0).getTotalMessageCount());
+    assertEquals(1, interceptor.getStats().size());
+    assertEquals(1, interceptor.getStats().get(0).getTotalMessageCount());
   }
 
   public void testInterceptor_WithException() throws Exception {
     LifecycleHelper.init(interceptor);
     LifecycleHelper.start(interceptor);
     AdaptrisMessage message = createMessage(true);
-    message.getObjectMetadata().put(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception());
-    assertEquals(0, interceptor.getCacheArray().size());
+    message.getObjectHeaders().put(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception());
+    assertEquals(0, interceptor.getStats().size());
     submitMessage(message);
-    assertEquals(1, interceptor.getCacheArray().size());
-    assertEquals(1, interceptor.getCacheArray().get(0).getTotalMessageCount());
-    assertEquals(1, interceptor.getCacheArray().get(0).getTotalMessageErrorCount());
+    assertEquals(1, interceptor.getStats().size());
+    assertEquals(1, interceptor.getStats().get(0).getTotalMessageCount());
+    assertEquals(1, interceptor.getStats().get(0).getTotalMessageErrorCount());
   }
 
   public void testCreatesNewTimeSliceAfterTimeDelay() throws Exception {
@@ -104,18 +104,18 @@ public class MessageMetricsInterceptorByMetadataTest extends TestCase {
 
     AdaptrisMessage message = createMessage(true);
 
-    assertEquals(0, interceptor.getCacheArray().size());
+    assertEquals(0, interceptor.getStats().size());
     submitMessage(message);
 
     waitFor(6);
 
-    assertEquals(1, interceptor.getCacheArray().size());
+    assertEquals(1, interceptor.getStats().size());
     submitMessage(message);
     submitMessage(message);
 
-    assertEquals(2, interceptor.getCacheArray().size());
-    assertEquals(1, interceptor.getCacheArray().get(0).getTotalMessageCount());
-    assertEquals(2, interceptor.getCacheArray().get(1).getTotalMessageCount());
+    assertEquals(2, interceptor.getStats().size());
+    assertEquals(1, interceptor.getStats().get(0).getTotalMessageCount());
+    assertEquals(2, interceptor.getStats().get(1).getTotalMessageCount());
   }
 
   public void testDoesNotCreateMoreHistoryThanSpecified() throws Exception {
@@ -124,16 +124,16 @@ public class MessageMetricsInterceptorByMetadataTest extends TestCase {
 
     AdaptrisMessage message = createMessage(true);
 
-    assertEquals(0, interceptor.getCacheArray().size());
+    assertEquals(0, interceptor.getStats().size());
     submitMessage(message);
 
     waitFor(6);
 
-    assertEquals(1, interceptor.getCacheArray().size());
+    assertEquals(1, interceptor.getStats().size());
     submitMessage(message);
     submitMessage(message);
 
-    assertEquals(2, interceptor.getCacheArray().size());
+    assertEquals(2, interceptor.getStats().size());
 
     waitFor(6);
 
@@ -141,9 +141,9 @@ public class MessageMetricsInterceptorByMetadataTest extends TestCase {
     submitMessage(message);
     submitMessage(message);
     // Should still only be 2 time slices
-    assertEquals(2, interceptor.getCacheArray().size());
-    assertEquals(2, interceptor.getCacheArray().get(0).getTotalMessageCount());
-    assertEquals(3, interceptor.getCacheArray().get(1).getTotalMessageCount());
+    assertEquals(2, interceptor.getStats().size());
+    assertEquals(2, interceptor.getStats().get(0).getTotalMessageCount());
+    assertEquals(3, interceptor.getStats().get(1).getTotalMessageCount());
   }
 
 
@@ -159,7 +159,7 @@ public class MessageMetricsInterceptorByMetadataTest extends TestCase {
     new MetricsInserterThread(20).run();
 
     Thread.sleep(5000); // Lets allow the threads to finish
-    assertEquals(130, interceptor.getCacheArray().get(0).getTotalMessageCount());
+    assertEquals(130, interceptor.getStats().get(0).getTotalMessageCount());
   }
 
   private void waitFor(int seconds) throws Exception {

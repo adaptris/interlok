@@ -78,6 +78,7 @@ public class SystemCommandExecutorService extends ServiceImp {
   private TimeInterval timeout;
   @NotNull
   @AutoPopulated
+  @Valid
   private CommandBuilder commandBuilder;
   @NotNull
   @Valid

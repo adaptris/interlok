@@ -40,11 +40,9 @@ import com.adaptris.core.stubs.StubMessageFactory;
 public abstract class SplitterCase extends SplitterServiceExample {
 
   public static final String XML_MESSAGE = "<?xml version=\"1.0\" "
-      + "encoding=\"UTF-8\"?>" + System.getProperty("line.separator")
-      + "<envelope>" + System.getProperty("line.separator")
-      + "<document>one</document>" + System.getProperty("line.separator")
-      + "<document>two</document>" + System.getProperty("line.separator") + "<document>three</document>"
-      + System.getProperty("line.separator") + "</envelope>";
+      + "encoding=\"UTF-8\"?>" + System.lineSeparator() + "<envelope>" + System.lineSeparator() + "<document>one</document>"
+      + System.lineSeparator() + "<document>two</document>" + System.lineSeparator() + "<document>three</document>"
+      + System.lineSeparator() + "</envelope>";
   public static final String LINE = "The quick brown fox jumps over the lazy dog";
 
 

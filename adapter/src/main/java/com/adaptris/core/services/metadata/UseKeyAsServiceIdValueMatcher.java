@@ -16,6 +16,8 @@
 
 package com.adaptris.core.services.metadata;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.adaptris.util.KeyValuePairSet;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -33,6 +35,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class UseKeyAsServiceIdValueMatcher implements MetadataValueMatcher {
 
   public String getNextServiceId(String serviceKey, KeyValuePairSet mappings) {
-    return serviceKey;
+    return StringUtils.defaultIfBlank(serviceKey, null);
   }
 }

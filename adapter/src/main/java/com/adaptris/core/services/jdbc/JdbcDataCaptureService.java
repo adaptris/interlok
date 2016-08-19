@@ -22,7 +22,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -32,7 +31,6 @@ import org.w3c.dom.NodeList;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
-import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
@@ -47,7 +45,6 @@ import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.text.xml.SimpleNamespaceContext;
 import com.adaptris.util.text.xml.XPath;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
  * <p>
@@ -71,54 +68,25 @@ public class JdbcDataCaptureService extends JdbcDataCaptureServiceImpl {
   @AdvancedConfig
   @InputFieldDefault(value = "false")
   private Boolean iterates = null;
-
-  @NotNull
-  @AutoPopulated
-  @Valid
-  @XStreamImplicit
-  private StatementParameterList statementParameters = null;
   @AdvancedConfig
+  @Valid
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
   @AdvancedConfig
+  @Valid
   private KeyValuePairSet namespaceContext;
 
-  /**
-   * <p>
-   * Creates a new instance.
-   * </p>
-   */
+
   public JdbcDataCaptureService() {
     super();
     setStatementParameters(new StatementParameterList());
   }
 
-  /**
-   * Add a StatementParameter to this service.
-   *
-   * @see StatementParameter
-   * @param query the StatementParameter
-   */
-  public void addStatementParameter(JdbcStatementParameter query) {
-    statementParameters.add(query);
+
+  public JdbcDataCaptureService(String statement) {
+    this();
+    setStatement(statement);
   }
 
-  /**
-   * Get the configured StatementParameter list.
-   *
-   * @return the list.
-   */
-  public StatementParameterList getStatementParameters() {
-    return statementParameters;
-  }
-
-  /**
-   * Set the configured StatementParameter list.
-   *
-   * @param l the list.
-   */
-  public void setStatementParameters(StatementParameterList l) {
-    statementParameters = l;
-  }
 
   /**
    * <p>
@@ -241,8 +209,9 @@ public class JdbcDataCaptureService extends JdbcDataCaptureServiceImpl {
 
         StatementParameterList cloneParameterList = new StatementParameterList();
         // set the statement arguments
-        for (int args = 1; args <= statementParameters.size(); args++) {
-          JdbcStatementParameter param = statementParameters.get(args - 1);
+        StatementParameterList spList = getStatementParameters();
+        for (int args = 1; args <= spList.size(); args++) {
+          JdbcStatementParameter param = spList.get(args - 1);
           String queryResult = null;
           // Due to iteratesXpath, we don't use getqueryValue from
           // statementParameter.

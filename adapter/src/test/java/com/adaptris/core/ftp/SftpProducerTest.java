@@ -23,10 +23,8 @@ import java.util.List;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.FormattedFilenameCreator;
 import com.adaptris.core.StandaloneProducer;
-import com.adaptris.sftp.DefaultSftpBehaviour;
-import com.adaptris.sftp.LenientKnownHosts;
-import com.adaptris.sftp.SftpConnectionBehaviour;
-import com.adaptris.sftp.StrictKnownHosts;
+import com.adaptris.sftp.ConfigBuilder;
+import com.adaptris.sftp.OpenSSHConfigBuilder;
 
 public class SftpProducerTest extends FtpProducerCase {
 
@@ -44,11 +42,11 @@ public class SftpProducerTest extends FtpProducerCase {
     return null;
   }
 
-  private StandaloneProducer createProducerExample(SftpConnectionBehaviour behaviour) {
+  private StandaloneProducer createProducerExample(ConfigBuilder behaviour) {
     SftpConnection con = createConnectionForExamples();
     FtpProducer producer = createProducerExample();
     try {
-      con.setSftpConnectionBehaviour(behaviour);
+      con.setConfiguration(behaviour);
       producer.setFilenameCreator(new FormattedFilenameCreator());
       producer.setDestination(new ConfiguredProduceDestination("sftp://sftpuser@hostname:port/path/to/directory"));
     }
@@ -62,16 +60,16 @@ public class SftpProducerTest extends FtpProducerCase {
   protected String createBaseFileName(Object object) {
     SftpConnection con = (SftpConnection) ((StandaloneProducer) object).getConnection();
     return super.createBaseFileName(object) + "-" + con.getClass().getSimpleName() + "-"
-        + con.getSftpConnectionBehaviour().getClass().getSimpleName();
+        + con.getConfiguration().getClass().getSimpleName();
   }
 
   @Override
   protected List retrieveObjectsForSampleConfig() {
     return new ArrayList(Arrays.asList(new StandaloneProducer[]
     {
-        createProducerExample(new LenientKnownHosts("/path/to/known/hosts", false)),
-        createProducerExample(new StrictKnownHosts("/path/to/known/hosts", false)),
-        createProducerExample(new DefaultSftpBehaviour())
+        createProducerExample(new OpenSSHConfigBuilder("/path/openssh/config/file")),
+        createProducerExample(SftpConsumerTest.createPerHostConfigRepo()),
+        createProducerExample(SftpConsumerTest.createInlineConfigRepo()),
     }));
   }
 

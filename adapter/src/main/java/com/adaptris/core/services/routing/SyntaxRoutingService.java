@@ -21,7 +21,11 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
@@ -54,6 +58,9 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 public class SyntaxRoutingService extends ServiceImp {
   private String routingKey = null;
   @XStreamImplicit
+  @Valid
+  @NotNull
+  @AutoPopulated
   private List<SyntaxIdentifier> syntaxIdentifiers = new ArrayList<SyntaxIdentifier>();
 
   public SyntaxRoutingService() {
@@ -63,7 +70,7 @@ public class SyntaxRoutingService extends ServiceImp {
    * @see com.adaptris.core.Service#doService(AdaptrisMessage)
    */
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    String message = msg.getStringPayload();
+    String message = msg.getContent();
     String destination = null;
 
     for (int i = 0; i < syntaxIdentifiers.size(); i++) {

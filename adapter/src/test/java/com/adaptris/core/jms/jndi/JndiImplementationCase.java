@@ -42,7 +42,7 @@ public abstract class JndiImplementationCase extends BaseCase {
   protected abstract StandardJndiImplementation createVendorImplementation();
 
   public void testSetEnableJndiForQueues() throws Exception {
-    StandardJndiImplementation vendorImp = createVendorImplementation();
+    BaseJndiImplementation vendorImp = createVendorImplementation();
     assertNull(vendorImp.getUseJndiForQueues());
     assertFalse(vendorImp.useJndiForQueues());
     vendorImp.setUseJndiForQueues(Boolean.TRUE);
@@ -54,7 +54,7 @@ public abstract class JndiImplementationCase extends BaseCase {
   }
 
   public void testSetEnableJndiForTopics() throws Exception {
-    StandardJndiImplementation vendorImp = createVendorImplementation();
+    BaseJndiImplementation vendorImp = createVendorImplementation();
     assertNull(vendorImp.getUseJndiForTopics());
     assertFalse(vendorImp.useJndiForTopics());
     vendorImp.setUseJndiForTopics(Boolean.TRUE);
@@ -67,7 +67,7 @@ public abstract class JndiImplementationCase extends BaseCase {
   }
 
   public void testSetEnableEncodedPasswords() throws Exception {
-    StandardJndiImplementation vendorImp = createVendorImplementation();
+    BaseJndiImplementation vendorImp = createVendorImplementation();
     assertNull(vendorImp.getEnableEncodedPasswords());
     assertFalse(vendorImp.enableEncodedPasswords());
     vendorImp.setEnableEncodedPasswords(Boolean.TRUE);
@@ -79,7 +79,7 @@ public abstract class JndiImplementationCase extends BaseCase {
   }
 
   public void testSetNewContextOnException() throws Exception {
-    StandardJndiImplementation jv = createVendorImplementation();
+    BaseJndiImplementation jv = createVendorImplementation();
     assertNull(jv.getNewContextOnException());
     assertFalse(jv.newContextOnException());
     jv.setNewContextOnException(Boolean.TRUE);
@@ -92,7 +92,7 @@ public abstract class JndiImplementationCase extends BaseCase {
   }
 
   public void testSetJndiName() throws Exception {
-    StandardJndiImplementation jv = createVendorImplementation();
+    BaseJndiImplementation jv = createVendorImplementation();
     jv.setJndiName("ABCDE");
     assertEquals("ABCDE", jv.getJndiName());
     try {
@@ -113,7 +113,7 @@ public abstract class JndiImplementationCase extends BaseCase {
   }
 
   public void testSetExtraConfiguration() throws Exception {
-    StandardJndiImplementation jv = createVendorImplementation();
+    BaseJndiImplementation jv = createVendorImplementation();
     assertEquals(NoOpFactoryConfiguration.class, jv.getExtraFactoryConfiguration().getClass());
     jv.setExtraFactoryConfiguration(new SimpleFactoryConfiguration());
     assertEquals(SimpleFactoryConfiguration.class, jv.getExtraFactoryConfiguration().getClass());
@@ -129,7 +129,7 @@ public abstract class JndiImplementationCase extends BaseCase {
 
 
   public void testSetJndiParams() throws Exception {
-    StandardJndiImplementation jv = createVendorImplementation();
+    BaseJndiImplementation jv = createVendorImplementation();
     KeyValuePairSet set = new KeyValuePairSet();
     jv.setJndiParams(set);
     assertEquals(set, jv.getJndiParams());
