@@ -425,6 +425,17 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     assertEquals("payload " + m1.getContent(), PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m1.getContent());
   }
 
+
+  public void testXSLTOutput_NamedXsltTransformFactory() throws Exception {
+    AdaptrisMessage m1 = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    XmlTransformService service = new XmlTransformService();
+    XsltTransformerFactory fac = new XsltTransformerFactory(net.sf.saxon.TransformerFactoryImpl.class.getCanonicalName());
+    service.setXmlTransformerFactory(fac);
+    service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL));
+    execute(service, m1);
+    assertEquals("payload " + m1.getContent(), PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m1.getContent());
+  }
+
   public void testSTXOutput() throws Exception {
     AdaptrisMessage m1 = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     XmlTransformService service = new XmlTransformService();
