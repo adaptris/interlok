@@ -74,7 +74,6 @@ public class JdbcDataQueryService extends JdbcServiceWithParameters {
   @InputFieldHint(style="SQL")
   @Deprecated
   private String statement;  
-  @AdvancedConfig
   @Valid
   private JdbcStatementCreator statementCreator;
   @NotNull
