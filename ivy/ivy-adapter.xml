@@ -52,7 +52,12 @@
     <dependency org="org.bouncycastle" name="bcprov-ext-jdk15on" rev="1.53" conf="compile->default" />
 
     <dependency org="oro" name="oro" rev="2.0.8" conf="compile->default" />
-    <dependency org="javax.mail" name="mail" rev="1.4.7" conf="compile->default" />
+
+    <dependency org="com.sun.mail" name="javax.mail" rev="1.5.6" conf="compile->default"/>
+    <dependency org="com.sun.mail" name="smtp" rev="1.5.6" conf="compile->default"/>
+    <dependency org="com.sun.mail" name="imap" rev="1.5.6" conf="compile->default"/>
+    <dependency org="com.sun.mail" name="pop3" rev="1.5.6" conf="compile->default"/>
+
     <dependency org="org.glassfish.external" name="opendmk_jmxremote_optional_jar" rev="1.0-b01-ea" conf="compile->default"/>
     <dependency org="org.glassfish.external" name="opendmk_jdmkrt_jar" rev="1.0-b01-ea" conf="compile->default"/>
 
@@ -102,6 +107,7 @@
     <dependency org="ant-contrib" name="ant-contrib" rev="1.0b3" conf="ant->default" transitive="false"/>
     <dependency org="org.jacoco" name="org.jacoco.ant" rev="0.7.7.201606060606" conf="ant->default"/>
 
+    <exclude org="javax.mail" artifact="mail"/>
     <exclude org="c3p0"/>
     <exclude org="commons-logging"/>
     <exclude org="org.apache.geronimo"/>
