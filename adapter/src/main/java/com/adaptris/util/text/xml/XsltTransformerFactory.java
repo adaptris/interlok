@@ -87,9 +87,9 @@ public class XsltTransformerFactory extends XmlTransformerFactoryImpl {
   /**
    * Specify the transformer factory that will be used.
    * <p>
-   * If you have both saxon and xalan (for instance) available on the classpath; and you want to
-   * explicitly use the xalan implementation then you could put {@code org.apache.xalan.processor.TransformerFactoryImpl} here to
-   * force it to use Xalan
+   * If you have both saxon and xalan (for instance) available on the classpath; and you want to explicitly use the xalan
+   * implementation then you could put {@code org.apache.xalan.processor.TransformerFactoryImpl} here to force it to use Xalan or
+   * {@code net.sf.saxon.TransformerFactoryImpl} to force it to use Saxon.
    * <p>
    * 
    * @param s the transformerFactoryImpl to set, if not specified the JVM default is used {@link TransformerFactory#newInstance()}.
