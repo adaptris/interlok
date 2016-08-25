@@ -31,6 +31,7 @@ import com.adaptris.core.EventHandlerAware;
 import com.adaptris.core.NullService;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -133,10 +134,7 @@ public class AdvancedMessageSplitterService extends MessageSplitterServiceImp im
    * @param sc the serviceList to set
    */
   public void setService(Service sc) {
-    if (sc == null) {
-      throw new IllegalArgumentException("service may not be null");
-    }
-    service = sc;
+    service = Args.notNull(sc, "service");
   }
 
   /**

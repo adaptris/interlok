@@ -26,6 +26,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.Args;
 
 /**
  * <p>
@@ -104,10 +105,7 @@ public abstract class MessageSplitterServiceImp extends ServiceImp {
    * @param ms the <code>MessageSplitter</code> to use, may not be null
    */
   public void setSplitter(MessageSplitter ms) {
-    if (ms == null) {
-      throw new IllegalArgumentException("param is null");
-    }
-    splitter = ms;
+    splitter = Args.notNull(ms, "splitter");
   }
 
   /**
