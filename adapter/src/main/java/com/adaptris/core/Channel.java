@@ -31,8 +31,8 @@ import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
-import com.adaptris.annotation.GenerateBeanInfo;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -45,7 +45,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config channel
  */
 // Should probably implement EventAware...
-@GenerateBeanInfo
 @XStreamAlias("channel")
 @AdapterComponent
 @ComponentProfile(summary = "The base container for workflows", tag = "base")
@@ -193,10 +192,7 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
    * @param connection the <code>AdaptrisConnection</code> to use for consuming, may not be null
    */
   public void setConsumeConnection(AdaptrisConnection connection) {
-    if (connection == null) {
-      throw new IllegalArgumentException("param may not be null");
-    }
-    consumeConnection = connection;
+    consumeConnection = Args.notNull(connection, "consumeConnection");
   }
 
   /**
@@ -218,10 +214,7 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
    * @param connection the <code>AdaptrisConnection</code> to use for producing, may not be null
    */
   public void setProduceConnection(AdaptrisConnection connection) {
-    if (connection == null) {
-      throw new IllegalArgumentException("param may not be null");
-    }
-    produceConnection = connection;
+    produceConnection = Args.notNull(connection, "produceConnection");
   }
 
   /**
@@ -243,10 +236,7 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
    * @param workflows the <code>WorkflowList</code> to use, may not be null
    */
   public void setWorkflowList(WorkflowList workflows) {
-    if (workflows == null) {
-      throw new IllegalArgumentException("param may not be null");
-    }
-    workflowList = workflows;
+    workflowList = Args.notNull(workflows, "workflowList");
   }
 
   /**
@@ -268,11 +258,7 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
    * @param errorHandler the <code>MessageErrorHandler</code> to use, may not be null
    */
   public void setMessageErrorHandler(ProcessingExceptionHandler errorHandler) {
-
-    if (errorHandler == null) {
-      throw new IllegalArgumentException("param may not be null");
-    }
-    messageErrorHandler = errorHandler;
+    messageErrorHandler = Args.notNull(errorHandler, "messageErrorHandler");
   }
 
   /**
@@ -316,10 +302,7 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
    * @param m the active <code>MessageErrorHandler</code>
    */
   public void registerActiveMsgErrorHandler(ProcessingExceptionHandler m) {
-    if (m == null) {
-      throw new IllegalArgumentException("Error Handler is null");
-    }
-    activeErrorHandler = m;
+    activeErrorHandler = Args.notNull(m, "activeErrorHandler");
   }
 
   /**
