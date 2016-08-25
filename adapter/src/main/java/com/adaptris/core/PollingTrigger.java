@@ -21,7 +21,6 @@ import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.annotation.GenerateBeanInfo;
 import com.adaptris.annotation.MarshallingCDATA;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -36,7 +35,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("polling-trigger")
-@GenerateBeanInfo
 @AdapterComponent
 @ComponentProfile(summary = "Generate a static trigger message on a schedule", tag = "consumer,base",
     recommended = {NullConnection.class})
@@ -94,9 +92,6 @@ public class PollingTrigger extends AdaptrisPollingConsumer {
    * @param s the template message to use
    */
   public void setTemplate(String s) {
-    if (s == null) {
-      throw new IllegalArgumentException("param is null");
-    }
     template = s;
   }
 
