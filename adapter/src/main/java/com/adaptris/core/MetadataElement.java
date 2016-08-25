@@ -16,9 +16,8 @@
 
 package com.adaptris.core;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import com.adaptris.annotation.GenerateBeanInfo;
+import com.adaptris.core.util.Args;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.KeyValuePair;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -88,12 +87,7 @@ public class MetadataElement extends KeyValuePair implements Cloneable {
    */
   @Override
   public void setKey(String key) {
-    if (isEmpty(key)) {
-      throw new IllegalArgumentException("illegal key [" + key + "]");
-    }
-    else {
-      super.setKey(key);
-    }
+    super.setKey(Args.notBlank(key, "key"));
   }
 
   /**
