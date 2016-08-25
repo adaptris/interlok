@@ -26,7 +26,39 @@ public interface StandardMessageErrorDigesterJmxMBean extends ChildRuntimeInfoCo
 
   int getTotalErrorCount();
 
+  /**
+   * Remove an entry from this digester.
+   * 
+   * @param entry the entry
+   * @return whether or not the entry was successfully removed.
+   * @deprecated since 3.4.1; use {@link #remove(MessageDigestErrorEntry, boolean)} instead.
+   */
   boolean remove(MessageDigestErrorEntry entry);
 
+  /**
+   * Remove an entry from this digester.
+   * 
+   * @param uniqueId the messageID of the entry
+   * @return whether or not the entry was successfully removed.
+   * @deprecated since 3.4.1; use {@link #remove(String, boolean)} instead.
+   */
   boolean remove(String uniqueId);
+
+  /**
+   * Remove an entry from this digester.
+   * 
+   * @param entry the entry
+   * @param deleteFile whether or not to attempt to delete the underlying file (if possible).
+   * @return whether or not the entry was successfully removed.
+   */
+  boolean remove(MessageDigestErrorEntry entry, boolean deleteFile);
+
+  /**
+   * Remove an entry from this digester.
+   * 
+   * @param uniqueId the messageID of the entry
+   * @param deleteFile whether or not to attempt to delete the underlying file (if possible).
+   * @return whether or not the entry was successfully removed.
+   */
+  boolean remove(String uniqueId, boolean deleteFile);
 }

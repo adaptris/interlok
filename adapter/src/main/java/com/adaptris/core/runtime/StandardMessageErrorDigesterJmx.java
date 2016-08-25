@@ -127,4 +127,14 @@ public class StandardMessageErrorDigesterJmx implements StandardMessageErrorDige
   public boolean remove(String uniqueId) {
     return wrappedComponent.remove(uniqueId);
   }
+
+  @Override
+  public boolean remove(MessageDigestErrorEntry entry, boolean attemptFileDelete) {
+    return wrappedComponent.remove(entry, attemptFileDelete);
+  }
+
+  @Override
+  public boolean remove(String uniqueId, boolean attemptFileDelete) {
+    return wrappedComponent.remove(uniqueId, attemptFileDelete);
+  }
 }
