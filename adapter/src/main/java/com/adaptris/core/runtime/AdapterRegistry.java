@@ -27,6 +27,7 @@ import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -422,7 +423,8 @@ public class AdapterRegistry implements AdapterRegistryMBean {
   }
 
   @Override
-  public void reloadFromVersionControl() throws MalformedObjectNameException, CoreException, MalformedURLException, IOException {
+  public void reloadFromVersionControl()
+      throws MalformedObjectNameException, CoreException, MalformedURLException, IOException {
     assertNotNull(runtimeVCS, EXCEPTION_MSG_NO_VCR);
     // first of all destroy all adapters.
     for (ObjectName o : getAdapters()) {
@@ -432,8 +434,15 @@ public class AdapterRegistry implements AdapterRegistryMBean {
     runtimeVCS.update();
     // Reconfigure Logging; likely to not be required because we create and watch...
     // config.reconfigureLogging();
-
     createAdapter(new URLString(config.findAdapterResource()));
+  }
+
+  @Override
+  public Set<ObjectName> reloadFromConfig() throws MalformedObjectNameException, CoreException, MalformedURLException, IOException {
+    for (ObjectName o : getAdapters()) {
+      destroyAdapter(o);
+    }
+    return new HashSet<ObjectName>(Arrays.asList(createAdapter(new URLString(config.findAdapterResource()))));
   }
 
   // For testing.
