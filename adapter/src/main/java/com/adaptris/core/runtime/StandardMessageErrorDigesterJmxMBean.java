@@ -33,6 +33,7 @@ public interface StandardMessageErrorDigesterJmxMBean extends ChildRuntimeInfoCo
    * @return whether or not the entry was successfully removed.
    * @deprecated since 3.4.1; use {@link #remove(MessageDigestErrorEntry, boolean)} instead.
    */
+  @Deprecated
   boolean remove(MessageDigestErrorEntry entry);
 
   /**
@@ -42,6 +43,7 @@ public interface StandardMessageErrorDigesterJmxMBean extends ChildRuntimeInfoCo
    * @return whether or not the entry was successfully removed.
    * @deprecated since 3.4.1; use {@link #remove(String, boolean)} instead.
    */
+  @Deprecated
   boolean remove(String uniqueId);
 
   /**
