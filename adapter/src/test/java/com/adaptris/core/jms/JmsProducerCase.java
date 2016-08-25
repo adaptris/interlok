@@ -82,22 +82,11 @@ public abstract class JmsProducerCase extends JmsProducerExample {
 
   public void testSetPriority() throws Exception {
     DefinedJmsProducer p = createDummyProducer();
-    assertEquals(1, p.getPriority());
-    try {
-      p.setPriority(-1);
-      fail();
-    }
-    catch (IllegalArgumentException e) {
-
-    }
-
-    try {
-      p.setPriority(999);
-      fail();
-    }
-    catch (IllegalArgumentException e) {
-
-    }
+    assertEquals(Integer.valueOf(1), p.getPriority());
+    assertEquals(1, p.messagePriority());
+    p.setPriority(null);
+    assertEquals(null, p.getPriority());
+    assertEquals(4, p.messagePriority());
   }
 
   public void testOverrideDeliveryMode() throws Exception {

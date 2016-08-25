@@ -57,6 +57,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
   // which means
   // that we need execute setupSession multiple times...
   private transient String CURRENT_MESSAGE_ID = "";
+  private static final int DEFAULT_PRIORITY = 4;
 
   private static final String EXPIRATION_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
   private static final String EXPIRATION_DATE_REGEXP =
@@ -90,7 +91,8 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
   @Min(0)
   @Max(9)
   @AdvancedConfig
-  private int priority;
+  @InputFieldDefault(value = "4")
+  private Integer priority;
   @Min(0)
   @AdvancedConfig
   @InputFieldDefault(value = "0")
@@ -150,7 +152,6 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
     // defaults
     setAcknowledgeMode(AcknowledgeMode.Mode.CLIENT_ACKNOWLEDGE.name());
     setDeliveryMode(DeliveryMode.Mode.PERSISTENT.name());
-    setPriority(4);
     setMessageTranslator(new TextMessageTranslator());
     setCorrelationIdSource(new NullCorrelationIdSource());
     setSessionFactory(new DefaultProducerSessionFactory());
@@ -308,7 +309,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
   }
 
   protected int calculatePriority(AdaptrisMessage msg, Integer defaultPriority) {
-    int priority = defaultPriority != null ? defaultPriority.intValue() : 0;
+    int priority = defaultPriority != null ? defaultPriority.intValue() : DEFAULT_PRIORITY;
     if (msg.headersContainsKey(JMS_PRIORITY)) {
       priority = Integer.parseInt(msg.getMetadataValue(JMS_PRIORITY));
     }
@@ -348,7 +349,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
    * 
    * @return the JMS priority
    */
-  public int getPriority() {
+  public Integer getPriority() {
     return priority;
   }
 
@@ -359,12 +360,12 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
    * 
    * @param i the JMS priority
    */
-  public void setPriority(int i) {
-    if (i < 0 || i > 9) {
-      throw new IllegalArgumentException("invalid priority " + i);
-    }
-
+  public void setPriority(Integer i) {
     priority = i;
+  }
+
+  protected int messagePriority() {
+    return getPriority() == null ? DEFAULT_PRIORITY : getPriority().intValue();
   }
 
   /**
