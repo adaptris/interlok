@@ -92,10 +92,11 @@ public abstract class LoggingConfigurator {
   protected void bridgeJavaUtilLogging() {
     if (ENABLE_JUL_LOGGING_BRIDGE) {
       if (!SLF4JBridgeHandler.isInstalled()) {
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+        SLF4JBridgeHandler.install();
         if (DBG) {
           System.err.println("(Info) LoggingConfigurator : java.util.logging -> slf4j bridge installed");
         }
-        SLF4JBridgeHandler.install();
       }
     }
   }
