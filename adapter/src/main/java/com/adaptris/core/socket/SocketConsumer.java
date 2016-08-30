@@ -37,6 +37,7 @@ import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageConsumerImp;
 import com.adaptris.core.AdaptrisMessageListener;
+import com.adaptris.core.ClosedState;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.ManagedThreadFactory;
@@ -68,6 +69,7 @@ public class SocketConsumer extends AdaptrisMessageConsumerImp {
 
   public SocketConsumer() {
     socketTimeout = 60000;
+    changeState(ClosedState.getInstance());
   }
 
   /**

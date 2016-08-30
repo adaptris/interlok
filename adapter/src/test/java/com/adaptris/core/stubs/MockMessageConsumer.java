@@ -20,12 +20,10 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageConsumerImp;
 import com.adaptris.core.AdaptrisMessageListener;
 import com.adaptris.core.ClosedState;
-import com.adaptris.core.ComponentState;
 import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.InitialisedState;
 import com.adaptris.core.StartedState;
-import com.adaptris.core.StateManagedComponent;
 import com.adaptris.core.StoppedState;
 
 /**
@@ -35,9 +33,7 @@ import com.adaptris.core.StoppedState;
  * <code>AdaptrisMessageListener</code>.
  * </p>
  */
-public class MockMessageConsumer extends AdaptrisMessageConsumerImp implements StateManagedComponent {
-
-  private ComponentState state = ClosedState.getInstance();
+public class MockMessageConsumer extends AdaptrisMessageConsumerImp {
 
   public MockMessageConsumer() {
     super();
@@ -72,44 +68,20 @@ public class MockMessageConsumer extends AdaptrisMessageConsumerImp implements S
   public void prepare() throws CoreException {
   }
 
-  public void requestInit() throws CoreException {
-    state.requestInit(this);
-  }
-
-  public void requestStart() throws CoreException {
-    state.requestStart(this);
-  }
-
-  public void requestStop() {
-    state.requestStop(this);
-  }
-
-  public void requestClose() {
-    state.requestClose(this);
-  }
-
-  public ComponentState retrieveComponentState() {
-    return state;
-  }
-
   public void init() throws CoreException {
-    state = InitialisedState.getInstance();
+    changeState(InitialisedState.getInstance());
   }
 
   public void start() throws CoreException {
-    state = StartedState.getInstance();
+    changeState(StartedState.getInstance());
   }
 
   public void stop() {
-    state = StoppedState.getInstance();
+    changeState(StoppedState.getInstance());
   }
 
   public void close() {
-    state = ClosedState.getInstance();
-  }
-  
-  public void changeState(ComponentState newState) {
-    state = newState;
+    changeState(ClosedState.getInstance());
   }
 
   @Override

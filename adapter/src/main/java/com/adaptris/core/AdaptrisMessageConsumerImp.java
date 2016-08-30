@@ -25,12 +25,18 @@ import javax.validation.Valid;
  * </p>
  */
 public abstract class AdaptrisMessageConsumerImp extends
-    AdaptrisMessageWorkerImp implements AdaptrisMessageConsumer {
+    AdaptrisMessageWorkerImp implements AdaptrisMessageConsumer, StateManagedComponent {
 
+  private transient ComponentState consumerState;
+  
   private transient AdaptrisMessageListener listener;
   @Valid
   private ConsumeDestination destination;
 
+  
+  public AdaptrisMessageConsumerImp() {
+    changeState(ClosedState.getInstance());
+  }
   /**
    * <p>
    * Sets the <code>AdaptrisMessageListener</code> to use.
@@ -92,5 +98,38 @@ public abstract class AdaptrisMessageConsumerImp extends
     newName.append(getDestination().getDeliveryThreadName());
     Thread.currentThread().setName(newName.toString());
     return oldName;
+  }
+  
+  public void changeState(ComponentState newState) {
+    consumerState = newState;
+  }
+
+  public ComponentState retrieveComponentState() {
+    return consumerState;
+  }
+
+  public void requestInit() throws CoreException {
+    checkStateExists();
+    consumerState.requestInit(this);
+  }
+
+  public void requestStart() throws CoreException {
+    checkStateExists();
+    consumerState.requestStart(this);
+  }
+
+  public void requestStop() {
+    checkStateExists();
+    consumerState.requestStop(this);
+  }
+
+  public void requestClose() {
+    checkStateExists();
+    consumerState.requestClose(this);
+  }
+  
+  private void checkStateExists() {
+    if(this.consumerState == null)
+      this.changeState(ClosedState.getInstance());
   }
 }

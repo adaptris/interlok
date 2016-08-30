@@ -47,6 +47,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageConsumerImp;
+import com.adaptris.core.ClosedState;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.WorkflowImp;
@@ -88,6 +89,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   public BasicJettyConsumer() {
     super();
     jettyServlet = new BasicServlet();
+    changeState(ClosedState.getInstance());
   }
 
 
