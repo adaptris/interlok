@@ -23,6 +23,7 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -51,6 +52,7 @@ public class AddFormattedMetadataService extends ServiceImp {
   @XStreamImplicit(itemFieldName = "argument-metadata-key")
   private List<String> argumentMetadataKeys;
   @NotBlank
+  @AffectsMetadata
   private String metadataKey;
 
   public AddFormattedMetadataService() {

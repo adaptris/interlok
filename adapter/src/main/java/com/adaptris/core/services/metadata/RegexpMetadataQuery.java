@@ -23,6 +23,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
@@ -39,6 +40,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class RegexpMetadataQuery {
 
   @NotBlank
+  @AffectsMetadata
   private String metadataKey = null;
   @NotBlank
   private String queryExpression = null;

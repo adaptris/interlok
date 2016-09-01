@@ -27,6 +27,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -106,6 +107,7 @@ public class AddMetadataService extends ServiceImp {
   @Valid
   @NotNull
   @AutoPopulated
+  @AffectsMetadata
   private Set<MetadataElement> metadataElements;
 
   /**

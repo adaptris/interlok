@@ -24,6 +24,7 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -55,6 +56,7 @@ public class MetadataAppenderService extends ServiceImp {
   private List<String> appendKeys;
   @NotBlank
   @AutoPopulated
+  @AffectsMetadata
   private String resultKey;
 
   /**

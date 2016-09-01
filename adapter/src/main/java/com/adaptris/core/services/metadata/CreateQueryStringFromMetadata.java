@@ -27,6 +27,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
@@ -54,6 +55,7 @@ public class CreateQueryStringFromMetadata extends ServiceImp {
   @XStreamImplicit(itemFieldName = "metadata-key")
   private List<String> metadataKeys;
   @NotBlank
+  @AffectsMetadata
   private String resultKey;
   @AdvancedConfig
   private String querySeparator;
