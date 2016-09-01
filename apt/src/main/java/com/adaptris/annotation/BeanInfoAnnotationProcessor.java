@@ -51,6 +51,7 @@ import org.apache.velocity.VelocityContext;
 {
     "beanInfoDebug", "beanInfoVelocityTemplate", "beanInfoMappingFile"
 })
+@SuppressWarnings("deprecation")
 public class BeanInfoAnnotationProcessor extends TemplateAnnotationProcessor {
 
   private static final String OPTION_VERBOSE = "beanInfoDebug";
