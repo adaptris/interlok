@@ -87,7 +87,13 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("fs-consumer")
 @AdapterComponent
 @ComponentProfile(summary = "Pickup messages from the filesystem", tag = "consumer,fs,filesystem",
-    recommended = {NullConnection.class})
+    metadata =
+    {
+        "originalname", "lastmodified", "fsFileSize", "fsConsumeDir", "fsParentDir"
+    }, recommended =
+    {
+        NullConnection.class
+    })
 @DisplayOrder(order = {"poller", "createDirs", "fileFilterImp", "fileSorter", "wipSuffix", "resetWipFiles"})
 public class FsConsumer extends FsConsumerImpl {
 

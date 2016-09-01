@@ -54,7 +54,13 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("fs-producer")
 @AdapterComponent
 @ComponentProfile(summary = "Write the current message to the filesystem", tag = "producer,fs,filesystem",
-    recommended = {NullConnection.class})
+    recommended =
+    {
+        NullConnection.class
+    }, metadata =
+    {
+        "producedname", "fsProduceDir"
+    })
 @DisplayOrder(order = {"createDirs", "filenameCreator", "tempDirectory", "fsWorker"})
 public class FsProducer extends ProduceOnlyProducerImp {
 

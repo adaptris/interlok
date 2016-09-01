@@ -42,7 +42,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("traversing-fs-consumer")
 @AdapterComponent
-@ComponentProfile(summary = "Pickup messages from the filesystem; traversing sub-directories", tag = "consumer,fs,filesystem",
+@ComponentProfile(summary = "Pickup messages from the filesystem; traversing sub-directories", tag = "consumer,fs,filesystem", metadata =
+{
+    "originalname", "lastmodified", "fsFileSize", "fsConsumeDir", "fsParentDir"
+},
     recommended = {NullConnection.class})
 @DisplayOrder(order = {"poller", "createDirs", "fileFilterImp", "fileSorter", "wipSuffix", "resetWipFiles"})
 public class TraversingFsConsumer extends FsConsumer {
