@@ -23,6 +23,7 @@ import java.util.Set;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
@@ -46,6 +47,7 @@ import com.adaptris.core.ServiceImp;
 public abstract class ReformatMetadata extends ServiceImp {
 
   @NotBlank
+  @AffectsMetadata
   private String metadataKeyRegexp;
 
   public ReformatMetadata() {

@@ -21,6 +21,7 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -50,6 +51,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"metadataKey", "generator"})
 public class GenerateUniqueMetadataValueService extends ServiceImp {
 
+  @AffectsMetadata
   private String metadataKey;
   @NotNull
   @AutoPopulated

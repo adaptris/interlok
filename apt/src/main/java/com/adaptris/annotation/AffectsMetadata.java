@@ -22,19 +22,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation that aids the UI with presentation around the ordering of fields.
- * 
- * @author lchan
+ * Marker to identify fields in classes that may modify metadata.
  * 
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
-public @interface DisplayOrder {
+@Target(ElementType.FIELD)
+public @interface AffectsMetadata {
 
-  /**
-   * Returns an array of strings that suggests the display order for the UI.
-   * @return a string array.
-   * @since 3.2.0
-   */
-  String[]order() default {};
 }

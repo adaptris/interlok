@@ -26,6 +26,7 @@ import org.apache.commons.io.IOUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
@@ -55,6 +56,7 @@ public class PayloadHashingService extends ServiceImp {
   @NotBlank
   private String hashAlgorithm;
   @NotBlank
+  @AffectsMetadata
   private String metadataKey;
 
   public PayloadHashingService() {

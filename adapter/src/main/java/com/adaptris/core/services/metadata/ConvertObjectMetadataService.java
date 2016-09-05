@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
@@ -56,6 +57,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class ConvertObjectMetadataService extends ServiceImp {
 
   @NotBlank
+  @AffectsMetadata
   private String objectMetadataKeyRegexp;
 
   private transient Pattern objectMetadataKeyPattern;

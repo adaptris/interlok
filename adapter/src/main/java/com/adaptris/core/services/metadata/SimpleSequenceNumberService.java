@@ -33,6 +33,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
@@ -77,6 +78,7 @@ public class SimpleSequenceNumberService extends ServiceImp {
   @InputFieldDefault(value = "true")
   private Boolean alwaysReplaceMetadata;
   @NotBlank
+  @AffectsMetadata
   private String metadataKey;
   private OverflowBehaviour overflowBehaviour;
   @NotBlank
