@@ -75,6 +75,22 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
     assertEquals(entry.getTranslatorType(), msg.getMetadataValue(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_TYPE));
     assertFalse(msg.containsKey(JdbcDataQueryService.class.getCanonicalName()));
   }
+  
+  public void testMetadataWithResultCount() throws Exception {
+    createDatabase();
+    List<AdapterTypeVersion> dbItems = generate(10);
+    AdapterTypeVersion entry = dbItems.get(0);
+
+    populateDatabase(dbItems, false);
+    JdbcDataQueryService s = createMetadataService();
+    FirstRowMetadataTranslator t = new FirstRowMetadataTranslator();
+    t.setResultCountMetadataItem("resultCount");
+    s.setResultSetTranslator(t);
+    AdaptrisMessage msg = createMessage(entry);
+    execute(s, msg);
+    assertTrue(msg.headersContainsKey("resultCount"));
+    assertEquals("1", msg.getMetadataValue("resultCount"));
+  }
 
   public void testRedmineID_4173() throws Exception {
 //    testDateStatementParameter();
