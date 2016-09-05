@@ -16,7 +16,6 @@
 
 package com.adaptris.core.services.jdbc;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
@@ -77,6 +76,22 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * The output messages will be constructed by the same MessageFactory as the incoming message. If a MessageFactory has been configured
  * then that one will be used instead (useful in case the incoming message is file-backed, for example). 
  * </p>
+ * <p>
+ * If you want to see how many rows were processed you can set one/both of the following;
+ * <table>
+ * <tr>
+ * <th>Item</th>
+ * <th>Description</th>
+ * <th>Value</th>
+ * </tr>
+ * <tr>
+ * <td>result-count-metadata-item</td><td>If set to TRUE will specify the metadata item to contain the number of rows returned by your query</td><td>Boolean</td>
+ * </tr>
+ * <tr>
+ * <td>update-count-metadata-item</td><td>If set to TRUE will specify the metadata item to contain the number of rows updated by your SQL statement</td><td>Boolean</td>
+ * </tr>
+ * </table>
+ * <p>
  * 
  * @config jdbc-splitting-xml-payload-translator
  * 
@@ -149,7 +164,7 @@ public class SplittingXmlPayloadTranslator extends XmlPayloadTranslatorImpl {
    * Split the JdbcResult into possibly multiple output messages. Each ResultSet will start in a new message if there are multiple.
    */
   @Override
-  public void translate(JdbcResult source, AdaptrisMessage inputMessage) throws SQLException, ServiceException {
+  public void translateResult(JdbcResult source, AdaptrisMessage inputMessage) throws SQLException, ServiceException {
     final AdaptrisMessageFactory factory = getMessageFactory() == null ? inputMessage.getFactory() : getMessageFactory();
 
     try {

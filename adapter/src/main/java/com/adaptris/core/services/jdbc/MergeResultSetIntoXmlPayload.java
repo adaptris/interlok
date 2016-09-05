@@ -40,6 +40,23 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * Merge the ResultSet contents into an existing XML Payload.
  * 
+ * <p>
+ * If you want to see how many rows were processed you can set one/both of the following;
+ * <table>
+ * <tr>
+ * <th>Item</th>
+ * <th>Description</th>
+ * <th>Value</th>
+ * </tr>
+ * <tr>
+ * <td>result-count-metadata-item</td><td>If set to TRUE will specify the metadata item to contain the number of rows returned by your query</td><td>Boolean</td>
+ * </tr>
+ * <tr>
+ * <td>update-count-metadata-item</td><td>If set to TRUE will specify the metadata item to contain the number of rows updated by your SQL statement</td><td>Boolean</td>
+ * </tr>
+ * </table>
+ * <p>
+ * 
  * @config jdbc-merge-into-xml-payload
  * 
  * 
@@ -65,7 +82,7 @@ public class MergeResultSetIntoXmlPayload extends XmlPayloadTranslatorImpl {
   }
 
   @Override
-  public void translate(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException {
+  public void translateResult(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException {
     if (mergeImplementation == null) {
       throw new ServiceException("No Document Merge implementation configured.");
     }

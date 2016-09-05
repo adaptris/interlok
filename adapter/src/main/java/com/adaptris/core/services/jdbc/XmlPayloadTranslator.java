@@ -65,6 +65,22 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * a valid XML element name. If the actual name (in the database table definition) is not valid, the query should specify an alias
  * name in the query. E.g: <code>SELECT "col 1" AS "col1" FROM mytable;</code>
  * </p>
+ * <p>
+ * If you want to see how many rows were processed you can set one/both of the following;
+ * <table>
+ * <tr>
+ * <th>Item</th>
+ * <th>Description</th>
+ * <th>Value</th>
+ * </tr>
+ * <tr>
+ * <td>result-count-metadata-item</td><td>If set to TRUE will specify the metadata item to contain the number of rows returned by your query</td><td>Boolean</td>
+ * </tr>
+ * <tr>
+ * <td>update-count-metadata-item</td><td>If set to TRUE will specify the metadata item to contain the number of rows updated by your SQL statement</td><td>Boolean</td>
+ * </tr>
+ * </table>
+ * <p>
  * 
  * @config jdbc-xml-payload-translator
  * 
@@ -84,7 +100,7 @@ public class XmlPayloadTranslator extends XmlPayloadTranslatorImpl {
   }
 
   @Override
-  public void translate(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException {
+  public void translateResult(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException {
     try {
       Document d = toDocument(source, target);
       writeXmlDocument(d, target);

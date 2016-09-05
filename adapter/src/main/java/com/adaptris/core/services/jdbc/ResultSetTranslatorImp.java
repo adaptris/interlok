@@ -16,7 +16,9 @@
 
 package com.adaptris.core.services.jdbc;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -29,9 +31,13 @@ import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.jdbc.types.ColumnTranslator;
+import com.adaptris.jdbc.JdbcResult;
 import com.adaptris.jdbc.JdbcResultRow;
+import com.adaptris.jdbc.JdbcResultSet;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
@@ -88,11 +94,22 @@ public abstract class ResultSetTranslatorImp implements ResultSetTranslator {
   @Valid
   @XStreamImplicit
   private List<ColumnTranslator> columnTranslators;
+  
+  private String resultCountMetadataItem;
+  private String updateCountMetadataItem;
 
   protected ResultSetTranslatorImp() {
     setColumnNameStyle(ColumnStyle.NoStyle);
     setColumnTranslators(new ArrayList<ColumnTranslator>());
   }
+  
+  public final void translate(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException {
+    this.updateMetadataUpdateCount(target, source);
+    this.updateMetadataQueryCount(target, source);
+    this.translateResult(source, target);
+  }
+  
+  public abstract void translateResult(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException;
 
   @Override
   public void close() {
@@ -155,6 +172,30 @@ public abstract class ResultSetTranslatorImp implements ResultSetTranslator {
     if (isDisplayColumnErrors()) {
       log.debug("Unable to retrieve data item " + column, e);
     }
+  }
+  
+  protected void updateMetadataQueryCount(AdaptrisMessage message, JdbcResult jdbcResult) {
+    if(!StringUtils.isEmpty(this.getResultCountMetadataItem())) {
+      int total = 0;
+      for(JdbcResultSet resultSet : jdbcResult.getResultSets()) {
+        Iterator<JdbcResultRow> iterator = resultSet.getRows().iterator();
+        while(iterator.hasNext()) {
+          total ++;
+          iterator.next();
+        }
+      }
+      this.updateMetadata(message, total, getResultCountMetadataItem());
+    }
+  }
+  
+  protected void updateMetadataUpdateCount(AdaptrisMessage message, JdbcResult jdbcResult) {
+    if(!StringUtils.isEmpty(this.getUpdateCountMetadataItem())) {
+      this.updateMetadata(message, jdbcResult.getNumRowsUpdated(), getUpdateCountMetadataItem());
+    }
+  }
+  
+  protected void updateMetadata(AdaptrisMessage message, int numResults, String metadataItemName) {
+    message.addMessageHeader(metadataItemName, Integer.toString(numResults));
   }
 
   /**
@@ -231,4 +272,20 @@ public abstract class ResultSetTranslatorImp implements ResultSetTranslator {
 
   @Override
   public void prepare() throws CoreException {}
+
+  public String getResultCountMetadataItem() {
+    return resultCountMetadataItem;
+  }
+
+  public void setResultCountMetadataItem(String resultCountMetadataItem) {
+    this.resultCountMetadataItem = resultCountMetadataItem;
+  }
+
+  public String getUpdateCountMetadataItem() {
+    return updateCountMetadataItem;
+  }
+
+  public void setUpdateCountMetadataItem(String updateCountMetadataItem) {
+    this.updateCountMetadataItem = updateCountMetadataItem;
+  }
 }
