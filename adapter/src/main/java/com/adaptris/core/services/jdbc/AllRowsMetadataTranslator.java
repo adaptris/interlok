@@ -43,10 +43,25 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * be prefixed with the result set counter, plus the {@link #getResultSetCounterPrefix()} If there is only 1 result set, no prefix
  * will be applied for the result set count.
  * </p>
- * 
  * <p>
  * The counter starts from 1
  * </p>
+ * <p>
+ * If you want to see how many rows were processed you can set one/both of the following;
+ * <table>
+ * <tr>
+ * <th>Item</th>
+ * <th>Description</th>
+ * <th>Value</th>
+ * </tr>
+ * <tr>
+ * <td>result-count-metadata-item</td><td>If set to TRUE will specify the metadata item to contain the number of rows returned by your query</td><td>Boolean</td>
+ * </tr>
+ * <tr>
+ * <td>update-count-metadata-item</td><td>If set to TRUE will specify the metadata item to contain the number of rows updated by your SQL statement</td><td>Boolean</td>
+ * </tr>
+ * </table>
+ * <p>
  * 
  * @config jdbc-all-rows-metadata-translator
  * 
@@ -60,6 +75,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
     "rowTotalMetadataKey"})
 public class AllRowsMetadataTranslator extends MetadataResultSetTranslatorImpl {
 
+  /**
+   * @deprecated
+   * Use result-count-metadata-item to specify the key to which the result count will be set.
+   */
+  @Deprecated
   private String rowTotalMetadataKey;
 
   public AllRowsMetadataTranslator() {
@@ -67,7 +87,7 @@ public class AllRowsMetadataTranslator extends MetadataResultSetTranslatorImpl {
   }
 
   @Override
-  public void translate(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException {
+  public void translateResult(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException {
 
     List<MetadataElement> added = new ArrayList<MetadataElement>();
     int resultSetCount = 0;
