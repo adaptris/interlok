@@ -87,13 +87,13 @@ public class AllRowsMetadataTranslator extends MetadataResultSetTranslatorImpl {
   }
 
   @Override
-  public void translateResult(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException {
+  public long translateResult(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException {
 
     List<MetadataElement> added = new ArrayList<MetadataElement>();
-    int resultSetCount = 0;
+    long resultSetCount = 0;
     for (JdbcResultSet resultSet : source.getResultSets()) {
       int counter = 0;
-      String resultSetPrefix = source.countResultSets() > 1 ? Integer.toString(resultSetCount) + getResultSetCounterPrefix() : "";
+      String resultSetPrefix = source.countResultSets() > 1 ? Long.toString(resultSetCount) + getResultSetCounterPrefix() : "";
       for (JdbcResultRow row : resultSet.getRows()) {
         for (int i = 0; i < row.getFieldCount(); i++) {
           MetadataElement md = new MetadataElement(resultSetPrefix + getMetadataKeyPrefix() + getSeparator()
@@ -103,18 +103,21 @@ public class AllRowsMetadataTranslator extends MetadataResultSetTranslatorImpl {
           }
           target.addMetadata(md);
         }
-
         counter++;
       }
+      // In the event that we have multiple selects (unlikely from a JdbcDataQuery) then
+      // row-total will have the total for each result set
+      // resultSetCount will have the total for all resultSets.
       if (!isEmpty(getRowTotalMetadataKey())) {
         target.addMetadata(resultSetPrefix + getRowTotalMetadataKey(), String.valueOf(counter));
       }      
-      resultSetCount++;
+      resultSetCount += counter;
     }
 
     if (log.isTraceEnabled()) {
       log.debug("Added metadata : " + added);
     }
+    return resultSetCount;
   }
 
   public String getRowTotalMetadataKey() {

@@ -311,4 +311,13 @@ public abstract class XmlPayloadTranslatorImpl extends ResultSetTranslatorImp {
     }
   }
 
+  protected class DocumentWrapper {
+    Document document;
+    long resultSetCount;
+
+    DocumentWrapper(Document d, long count) {
+      resultSetCount = count;
+      document = d;
+    }
+  }
 }

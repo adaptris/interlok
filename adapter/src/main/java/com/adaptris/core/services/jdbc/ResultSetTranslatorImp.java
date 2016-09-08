@@ -18,7 +18,6 @@ package com.adaptris.core.services.jdbc;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -37,7 +36,6 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.jdbc.types.ColumnTranslator;
 import com.adaptris.jdbc.JdbcResult;
 import com.adaptris.jdbc.JdbcResultRow;
-import com.adaptris.jdbc.JdbcResultSet;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
@@ -105,11 +103,14 @@ public abstract class ResultSetTranslatorImp implements ResultSetTranslator {
   
   public final void translate(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException {
     this.updateMetadataUpdateCount(target, source);
-    this.updateMetadataQueryCount(target, source);
-    this.translateResult(source, target);
+    this.updateMetadataQueryCount(target, this.translateResult(source, target));;
   }
   
-  public abstract void translateResult(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException;
+  /**
+   * Translate the result returning the number of rows translated.
+   * 
+   */
+  public abstract long translateResult(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException;
 
   @Override
   public void close() {
@@ -174,17 +175,9 @@ public abstract class ResultSetTranslatorImp implements ResultSetTranslator {
     }
   }
   
-  protected void updateMetadataQueryCount(AdaptrisMessage message, JdbcResult jdbcResult) {
+  protected void updateMetadataQueryCount(AdaptrisMessage message, long numResults) {
     if(!StringUtils.isEmpty(this.getResultCountMetadataItem())) {
-      int total = 0;
-      for(JdbcResultSet resultSet : jdbcResult.getResultSets()) {
-        Iterator<JdbcResultRow> iterator = resultSet.getRows().iterator();
-        while(iterator.hasNext()) {
-          total ++;
-          iterator.next();
-        }
-      }
-      this.updateMetadata(message, total, getResultCountMetadataItem());
+      this.updateMetadata(message, numResults, getResultCountMetadataItem());
     }
   }
   
@@ -194,8 +187,8 @@ public abstract class ResultSetTranslatorImp implements ResultSetTranslator {
     }
   }
   
-  protected void updateMetadata(AdaptrisMessage message, int numResults, String metadataItemName) {
-    message.addMessageHeader(metadataItemName, Integer.toString(numResults));
+  protected void updateMetadata(AdaptrisMessage message, long numResults, String metadataItemName) {
+    message.addMessageHeader(metadataItemName, String.valueOf(numResults));
   }
 
   /**

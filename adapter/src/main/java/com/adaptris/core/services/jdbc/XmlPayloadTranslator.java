@@ -100,10 +100,12 @@ public class XmlPayloadTranslator extends XmlPayloadTranslatorImpl {
   }
 
   @Override
-  public void translateResult(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException {
+  public long translateResult(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException {
+    long resultSetCount = 0;
     try {
-      Document d = toDocument(source, target);
-      writeXmlDocument(d, target);
+      DocumentWrapper d = toDocument(source, target);
+      writeXmlDocument(d.document, target);
+      resultSetCount = d.resultSetCount;
     }
     catch (SQLException e) {
       throw e;
@@ -113,14 +115,16 @@ public class XmlPayloadTranslator extends XmlPayloadTranslatorImpl {
     }
     finally {
     }
+    return resultSetCount;
   }
 
-  private Document toDocument(JdbcResult rs, AdaptrisMessage msg) throws Exception {
+  private DocumentWrapper toDocument(JdbcResult rs, AdaptrisMessage msg) throws Exception {
     XmlUtils xu = createXmlUtils(msg);
     DocumentBuilderFactoryBuilder factoryBuilder = documentFactoryBuilder(msg);
     DocumentBuilderFactory factory = factoryBuilder.configure(DocumentBuilderFactory.newInstance());
     DocumentBuilder builder = factory.newDocumentBuilder();
     Document doc = builder.newDocument();
+    DocumentWrapper result = new DocumentWrapper(doc, 0);
     ColumnStyle elementNameStyle = getColumnNameStyle();
 
     Element results = doc.createElement(elementNameStyle.format(ELEMENT_NAME_RESULTS));
@@ -144,8 +148,9 @@ public class XmlPayloadTranslator extends XmlPayloadTranslatorImpl {
       for (Element element : elements) {
         results.appendChild(element);
       }
+      result.resultSetCount += elements.size();
     }
-    return doc;
+    return result;
   }
 
   private DocumentBuilderFactoryBuilder documentFactoryBuilder(AdaptrisMessage msg) {

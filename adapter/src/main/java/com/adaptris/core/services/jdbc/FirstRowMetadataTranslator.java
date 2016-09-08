@@ -71,10 +71,10 @@ public class FirstRowMetadataTranslator extends MetadataResultSetTranslatorImpl 
   }
 
   @Override
-  public void translateResult(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException {
+  public long translateResult(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException {
     List<MetadataElement> added = new ArrayList<MetadataElement>();
 
-    int resultSetCount = 0;
+    long resultSetCount = 0;
     Iterator<JdbcResultRow> iter;
     for (JdbcResultSet resultSet : source.getResultSets()) {
       if (resultSet.getRows() != null 
@@ -85,7 +85,7 @@ public class FirstRowMetadataTranslator extends MetadataResultSetTranslatorImpl 
           for (int i = 0; i < storedProcedureResultRow.getFieldCount(); i++) {
             String column = storedProcedureResultRow.getFieldName(i);
             String resultSetPrefix = source.countResultSets() > 1
-                ? Integer.toString(resultSetCount) + getResultSetCounterPrefix()
+                ? Long.toString(resultSetCount) + getResultSetCounterPrefix()
                 : "";
             MetadataElement md = new MetadataElement(resultSetPrefix + getMetadataKeyPrefix() + getSeparator()
                 + getColumnNameStyle().format(column), toString(storedProcedureResultRow, i));
@@ -104,6 +104,7 @@ public class FirstRowMetadataTranslator extends MetadataResultSetTranslatorImpl 
         resultSetCount++;
       }
     }
+    return resultSetCount;
   }
 
 }
