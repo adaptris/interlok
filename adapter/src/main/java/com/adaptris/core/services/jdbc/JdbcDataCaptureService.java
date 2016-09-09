@@ -170,7 +170,7 @@ public class JdbcDataCaptureService extends JdbcDataCaptureServiceImpl {
       catch (Exception e) {
         // do nothing - it is acceptable to get a non-xml document
         // all XPath queries will return null
-        log.debug("Ignoring Exception [" + e.getMessage() + "]");
+        log.trace("Treating as NON-XML Document, Ignoring Exception [" + e.getMessage() + "]");
       }
 
       // initially set the NodeList to be the whole document
