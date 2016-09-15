@@ -16,44 +16,24 @@
 
 package com.adaptris.core.services.jdbc;
 
-import static com.adaptris.core.util.XmlHelper.createDocument;
-
-import java.sql.Connection;
 import java.sql.PreparedStatement;
-
-import javax.validation.Valid;
-import javax.xml.namespace.NamespaceContext;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import java.sql.SQLException;
 
 import com.adaptris.annotation.AdapterComponent;
-import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
-import com.adaptris.core.ServiceException;
 import com.adaptris.core.jdbc.DatabaseConnection;
-import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
-import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.core.util.JdbcUtil;
-import com.adaptris.util.KeyValuePairSet;
-import com.adaptris.util.text.xml.SimpleNamespaceContext;
-import com.adaptris.util.text.xml.XPath;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * <p>
  * Capture Data from a AdaptrisMessage and store it in a JDBC-compliant database.
+ * <p>
+ * While not deprecated; you are encouraged to use {@link JdbcBatchingDataCaptureService} instead for performance reasons. Set the
+ * {@link JdbcBatchingDataCaptureService#setBatchWindow(Integer) to {@code 1} to have functionally equivalent behaviour to this
+ * class.
  * </p>
  * 
  * @config jdbc-data-capture-service
- * 
- * 
  * @author sellidge
  */
 @XStreamAlias("jdbc-data-capture-service")
@@ -62,19 +42,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
     recommended = {DatabaseConnection.class})
 @DisplayOrder(order = {"connection", "statement", "iterationXpath", "iterates", "statementParameters", "parameterApplicator",
     "xmlDocumentFactoryConfig", "namespaceContext", "saveReturnedKeys", "saveReturnedKeysColumn", "saveReturnedKeysTable"})
-public class JdbcDataCaptureService extends JdbcDataCaptureServiceImpl {
-  @AdvancedConfig
-  private String iterationXpath = null;
-  @AdvancedConfig
-  @InputFieldDefault(value = "false")
-  private Boolean iterates = null;
-  @AdvancedConfig
-  @Valid
-  private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
-  @AdvancedConfig
-  @Valid
-  private KeyValuePairSet namespaceContext;
-
+public class JdbcDataCaptureService extends JdbcIteratingDataCaptureServiceImpl {
 
   public JdbcDataCaptureService() {
     super();
@@ -87,205 +55,13 @@ public class JdbcDataCaptureService extends JdbcDataCaptureServiceImpl {
     setStatement(statement);
   }
 
-
-  /**
-   * <p>
-   * An Xpath that can be iterated on.
-   * </p>
-   * <p>
-   * An Iteration Xpath defines some repeating element or value in the payload.
-   * </p>
-   *
-   * @see #setIterates(Boolean)
-   * @param xpath the xpath
-   */
-  public void setIterationXpath(String xpath) {
-    iterationXpath = xpath;
-  }
-
-  /**
-   * Get the configured iteration xpath.
-   *
-   * @return the xpath.
-   */
-  public String getIterationXpath() {
-    return iterationXpath;
-  }
-
-  /**
-   * <p>
-   * Set the service to iterate on the given xpath.
-   * </p>
-   * <p>
-   * If set to true, then it is expected that there is a configured iteration
-   * xpath available for use. If this is not the case, then results are
-   * undefined, and depends on the underlying Xpath implementation
-   * </p>
-   *
-   * @see #setIterationXpath(String)
-   * @param iterates the flag.
-   */
-  public void setIterates(Boolean iterates) {
-    this.iterates = iterates;
-  }
-
-  /**
-   * Get the configured iteration flag.
-   *
-   * @return the flag.
-   */
-  public Boolean getIterates() {
-    return iterates;
-  }
-
-  private boolean iterates() {
-    return getIterates() != null ? getIterates().booleanValue() : false;
-  }
-
-  protected void initJdbcService() throws CoreException {
-    super.initJdbcService();
-  }
-
-  /**
-   * @see com.adaptris.core.Service#doService
-   *      (com.adaptris.core.AdaptrisMessage)
-   */
   @Override
-  public void doService(AdaptrisMessage msg) throws ServiceException {
-    log.trace("Beginning doService in " + getUniqueId() != null ? getUniqueId() : this.getClass().getSimpleName());
-    Connection conn = null;
-    NamespaceContext namespaceCtx = SimpleNamespaceContext.create(getNamespaceContext(), msg);
-    try {
-      DocumentBuilderFactoryBuilder builder = documentFactoryBuilder();
-      if (namespaceCtx != null) {
-        builder.setNamespaceAware(true);
-      }
-      XPath xpath = new XPath(namespaceCtx);
-      configureActor(msg);
-      conn = actor.getSqlConnection();
-      Document doc = builder.configure(DocumentBuilderFactory.newInstance()).newDocumentBuilder().newDocument();
-      try {
-        doc = createDocument(msg, builder);
-      }
-      catch (Exception e) {
-        // do nothing - it is acceptable to get a non-xml document
-        // all XPath queries will return null
-        log.trace("Treating as NON-XML Document, Ignoring Exception [" + e.getMessage() + "]");
-      }
-
-      // initially set the NodeList to be the whole document
-      // this ensures it will have one node only and will therefore
-      // enable the remaining structure to cope with the optionally
-      // iterative process structure
-      NodeList nodes = xpath.selectNodeList(doc, "/");
-
-      if (iterates()) {
-        nodes = xpath.selectNodeList(doc, getIterationXpath());
-      }
-
-      // This is a kludge to ensure that we don't get a null pointer exception
-      // in the event of a null NodeList and yet still manage to reach the
-      // executeUpdate call.
-      if (nodes == null) {
-        nodes = new NodeList() {
-          @Override
-          public int getLength() {
-            return 1;
-          }
-
-          @Override
-          public Node item(int i) {
-            return null;
-          }
-        };
-      }
-
-      log.trace("Iterating " + nodes.getLength() + " times for statement " + getStatement());
-      PreparedStatement insert = actor.getInsertStatement();
-      for (int i = 0; i < nodes.getLength(); i++) {
-        log.trace("---Begin execution of iteration {}", i);
-        insert.clearParameters();
-        Node n = nodes.item(i);
-
-        StatementParameterList cloneParameterList = new StatementParameterList();
-        // set the statement arguments
-        StatementParameterList spList = getStatementParameters();
-        for (int args = 1; args <= spList.size(); args++) {
-          JdbcStatementParameter param = spList.get(args - 1);
-          String queryResult = null;
-          // Due to iteratesXpath, we don't use getqueryValue from
-          // statementParameter.
-          if (isXpathParam(param)) {
-            StatementParameter spParam = (StatementParameter) param;
-            queryResult = xpath.selectSingleTextItem(n, spParam.getQueryString());
-            cloneParameterList.add(new StatementParameter(queryResult, spParam.getQueryClass(),
-                StatementParameterImpl.QueryType.constant, spParam.getConvertNull(), spParam.getName()));
-          } else {
-            cloneParameterList.add(param.makeCopy());
-          }
-        }
-        
-        this.getParameterApplicator().applyStatementParameters(msg, insert, cloneParameterList, getStatement());
-
-        insert.executeUpdate();
-        log.trace("---End execution of iteration {}", i);
-      }
-
-      // Will only store the generated keys from the last query
-      saveKeys(msg);
-      commit(conn, msg);
-    }
-    catch (Exception e) {
-      rollback(conn, msg);
-      throw ExceptionHelper.wrapServiceException(e);
-    } finally {
-      JdbcUtil.closeQuietly(conn);
-    }
-    return;
+  protected void executeUpdate(PreparedStatement insert) throws SQLException {
+    insert.executeUpdate();
   }
 
-  private boolean isXpathParam(JdbcStatementParameter param) {
-    if (param instanceof StatementParameter) {
-      if (StatementParameter.QueryType.xpath.equals(((StatementParameter) param).getQueryType())) {
-        return true;
-      }
-    }
-    return false;
+  @Override
+  protected void finishUpdate(PreparedStatement insert) throws SQLException {
+    // empty.
   }
-
-  /**
-   * @return the namespaceContext
-   */
-  public KeyValuePairSet getNamespaceContext() {
-    return namespaceContext;
-  }
-
-  /**
-   * Set the namespace context for resolving namespaces.
-   * <ul>
-   * <li>The key is the namespace prefix</li>
-   * <li>The value is the namespace uri</li>
-   * </ul>
-   * 
-   * @param kvps the namespace context
-   * @see SimpleNamespaceContext#create(KeyValuePairSet)
-   */
-  public void setNamespaceContext(KeyValuePairSet kvps) {
-    this.namespaceContext = kvps;
-  }
-
-  public DocumentBuilderFactoryBuilder getXmlDocumentFactoryConfig() {
-    return xmlDocumentFactoryConfig;
-  }
-
-
-  public void setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder xml) {
-    this.xmlDocumentFactoryConfig = xml;
-  }
-
-  DocumentBuilderFactoryBuilder documentFactoryBuilder() {
-    return getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig()
-        : DocumentBuilderFactoryBuilder.newInstance().withNamespaceAware(true);
-  }
-
 }

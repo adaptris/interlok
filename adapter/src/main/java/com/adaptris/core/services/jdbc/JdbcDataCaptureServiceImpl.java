@@ -190,11 +190,12 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
     }
   }
 
-  protected void configureActor(AdaptrisMessage msg) throws SQLException {
+  protected DatabaseActor configureActor(AdaptrisMessage msg) throws SQLException {
     Connection c = getConnection(msg);
     if (!c.equals(actor.getSqlConnection())) {
       actor.reInitialise(c);
     }
+    return actor;
   }
 
   @Override
