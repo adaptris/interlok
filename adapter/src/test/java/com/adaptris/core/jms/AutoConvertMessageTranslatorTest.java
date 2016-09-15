@@ -405,6 +405,26 @@ public class AutoConvertMessageTranslatorTest extends MessageTypeTranslatorCase 
       broker.destroy();
     }
   }
+  
+  public void testAdaptrisMessageToMessageWithFallback() throws Exception {
+    EmbeddedActiveMq broker = new EmbeddedActiveMq();
+
+    AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
+    trans.setJmsOutputType("xxx");
+    try {
+      broker.start();
+      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      start(trans, session);
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
+      
+      Message result = trans.translate(msg);
+      assertNotNull(result);
+    }
+    finally {
+      stop(trans);
+      broker.destroy();
+    }
+  }
 
   private static void addToMapMessage(MapMessage msg) throws JMSException {
     for (int i = 0; i < KEYS.length; i++) {
