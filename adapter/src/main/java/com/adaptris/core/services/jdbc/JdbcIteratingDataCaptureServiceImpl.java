@@ -63,7 +63,6 @@ public abstract class JdbcIteratingDataCaptureServiceImpl extends JdbcDataCaptur
 
   public JdbcIteratingDataCaptureServiceImpl() {
     super();
-    setStatementParameters(new StatementParameterList());
   }
 
   protected void initJdbcService() throws CoreException {

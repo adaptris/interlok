@@ -46,7 +46,6 @@ public class JdbcDataCaptureService extends JdbcIteratingDataCaptureServiceImpl 
 
   public JdbcDataCaptureService() {
     super();
-    setStatementParameters(new StatementParameterList());
   }
 
 

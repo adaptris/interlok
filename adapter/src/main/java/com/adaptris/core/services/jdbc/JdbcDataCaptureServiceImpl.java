@@ -50,13 +50,8 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
   private String saveReturnedKeysTable = null;
   protected transient DatabaseActor actor;
 
-  /**
-   * <p>
-   * Creates a new instance.
-   * </p>
-   */
   public JdbcDataCaptureServiceImpl() {
-    setParameterApplicator(new SequentialParameterApplicator());
+    super();
     actor = new DatabaseActor();
   }
 

@@ -70,7 +70,6 @@ public class JdbcBatchingDataCaptureService extends JdbcIteratingDataCaptureServ
 
   public JdbcBatchingDataCaptureService() {
     super();
-    setStatementParameters(new StatementParameterList());
   }
 
   public JdbcBatchingDataCaptureService(String statement) {
