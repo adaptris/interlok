@@ -18,7 +18,6 @@ package com.adaptris.core.services.jdbc;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -29,15 +28,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.jdbc.types.ColumnTranslator;
+import com.adaptris.core.util.Args;
 import com.adaptris.jdbc.JdbcResult;
 import com.adaptris.jdbc.JdbcResultRow;
-import com.adaptris.jdbc.JdbcResultSet;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
@@ -95,7 +95,11 @@ public abstract class ResultSetTranslatorImp implements ResultSetTranslator {
   @XStreamImplicit
   private List<ColumnTranslator> columnTranslators;
   
+  @AdvancedConfig
+  @AffectsMetadata
   private String resultCountMetadataItem;
+  @AdvancedConfig
+  @AffectsMetadata
   private String updateCountMetadataItem;
 
   protected ResultSetTranslatorImp() {
@@ -105,11 +109,14 @@ public abstract class ResultSetTranslatorImp implements ResultSetTranslator {
   
   public final void translate(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException {
     this.updateMetadataUpdateCount(target, source);
-    this.updateMetadataQueryCount(target, source);
-    this.translateResult(source, target);
+    this.updateMetadataQueryCount(target, this.translateResult(source, target));;
   }
   
-  public abstract void translateResult(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException;
+  /**
+   * Translate the result returning the number of rows translated.
+   * 
+   */
+  public abstract long translateResult(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException;
 
   @Override
   public void close() {
@@ -162,10 +169,7 @@ public abstract class ResultSetTranslatorImp implements ResultSetTranslator {
     catch (Exception e) {
       logColumnErrors(column, e);
     }
-    if (result == null) {
-      result = "";
-    }
-    return result;
+    return StringUtils.defaultIfEmpty(result, "");
   }
 
   protected void logColumnErrors(int column, Exception e) {
@@ -174,17 +178,9 @@ public abstract class ResultSetTranslatorImp implements ResultSetTranslator {
     }
   }
   
-  protected void updateMetadataQueryCount(AdaptrisMessage message, JdbcResult jdbcResult) {
+  protected void updateMetadataQueryCount(AdaptrisMessage message, long numResults) {
     if(!StringUtils.isEmpty(this.getResultCountMetadataItem())) {
-      int total = 0;
-      for(JdbcResultSet resultSet : jdbcResult.getResultSets()) {
-        Iterator<JdbcResultRow> iterator = resultSet.getRows().iterator();
-        while(iterator.hasNext()) {
-          total ++;
-          iterator.next();
-        }
-      }
-      this.updateMetadata(message, total, getResultCountMetadataItem());
+      this.updateMetadata(message, numResults, getResultCountMetadataItem());
     }
   }
   
@@ -194,8 +190,8 @@ public abstract class ResultSetTranslatorImp implements ResultSetTranslator {
     }
   }
   
-  protected void updateMetadata(AdaptrisMessage message, int numResults, String metadataItemName) {
-    message.addMessageHeader(metadataItemName, Integer.toString(numResults));
+  protected void updateMetadata(AdaptrisMessage message, long numResults, String metadataItemName) {
+    message.addMessageHeader(metadataItemName, String.valueOf(numResults));
   }
 
   /**
@@ -257,17 +253,11 @@ public abstract class ResultSetTranslatorImp implements ResultSetTranslator {
    * @param list default is empty.
    */
   public void setColumnTranslators(List<ColumnTranslator> list) {
-    if (list == null) {
-      throw new IllegalArgumentException("List Column Translator may not be null");
-    }
-    columnTranslators = list;
+    columnTranslators = Args.notNull(list, "columnTranslators");
   }
 
   public void addColumnTranslator(ColumnTranslator ct) {
-    if (ct == null) {
-      throw new IllegalArgumentException("Column Translator may not be null");
-    }
-    columnTranslators.add(ct);
+    columnTranslators.add(Args.notNull(ct, "columnTranslator"));
   }
 
   @Override
@@ -277,15 +267,25 @@ public abstract class ResultSetTranslatorImp implements ResultSetTranslator {
     return resultCountMetadataItem;
   }
 
-  public void setResultCountMetadataItem(String resultCountMetadataItem) {
-    this.resultCountMetadataItem = resultCountMetadataItem;
+  /**
+   * Add the number of resultsets to metadata.
+   * 
+   * @param s the metadata to add the value against; default is null (no output)
+   */
+  public void setResultCountMetadataItem(String s) {
+    this.resultCountMetadataItem = s;
   }
 
   public String getUpdateCountMetadataItem() {
     return updateCountMetadataItem;
   }
 
-  public void setUpdateCountMetadataItem(String updateCountMetadataItem) {
-    this.updateCountMetadataItem = updateCountMetadataItem;
+  /**
+   * Add the number of result sets updated to metadata.
+   * 
+   * @param s the metadata to add the value against; default is null (no output)
+   */
+  public void setUpdateCountMetadataItem(String s) {
+    this.updateCountMetadataItem = s;
   }
 }
