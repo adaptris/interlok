@@ -23,7 +23,14 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class DoubleParameterTest {
+import com.adaptris.core.BaseCase;
+import com.adaptris.core.services.jdbc.StatementParameterImpl.QueryType;
+
+public class DoubleParameterTest extends BaseCase {
+
+  public DoubleParameterTest(String n) {
+    super(n);
+  }
 
   @Before
   public void setUp() throws Exception {
@@ -66,4 +73,11 @@ public class DoubleParameterTest {
     assertEquals(Double.valueOf(0), sp.toDouble(""));
   }
 
+  @Test
+  public void testMakeCopy() throws Exception {
+    DoubleStatementParameter sp = new DoubleStatementParameter("0.0", QueryType.constant, null, null);
+    DoubleStatementParameter copy = sp.makeCopy();
+    assertRoundtripEquality(sp, copy);
+
+  }
 }

@@ -23,9 +23,9 @@ import org.junit.Test;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.services.jdbc.StatementParameterImpl.QueryType;
 
-public class IntegerParameterTest extends BaseCase {
+public class StringParameterTest extends BaseCase {
 
-  public IntegerParameterTest(String n) {
+  public StringParameterTest(String n) {
     super(n);
   }
 
@@ -39,41 +39,30 @@ public class IntegerParameterTest extends BaseCase {
 
   @Test
   public void testConvert() throws Exception {
-    IntegerStatementParameter sp = new IntegerStatementParameter();
-    assertEquals(Integer.valueOf(55), sp.toInteger("55"));
+    StringStatementParameter sp = new StringStatementParameter();
+    assertEquals("55", sp.toString(Integer.valueOf("55")));
   }
+
 
   @Test
   public void testConvertNull() throws Exception {
-    IntegerStatementParameter sp = new IntegerStatementParameter();
+    StringStatementParameter sp = new StringStatementParameter();
     sp.setConvertNull(false);
-    try {
-      sp.toInteger(null);
-      fail("Expected Exception");
-    }
-    catch (RuntimeException expected) {
-      // expected
-    }
-    try {
-      sp.toInteger("");
-      fail("Expected Exception");
-    }
-    catch (RuntimeException expected) {
-      // expected
-    }
+    assertNull(sp.toString(null));
   }
 
   @Test
   public void testConvertWithConvertNull() throws Exception {
-    IntegerStatementParameter sp = new IntegerStatementParameter();
+    StringStatementParameter sp = new StringStatementParameter();
     sp.setConvertNull(true);
-    assertEquals(Integer.valueOf(0), sp.toInteger(""));
+    assertEquals("", sp.toString(null));
+    assertEquals("", sp.toString(""));
   }
 
   @Test
   public void testMakeCopy() throws Exception {
-    IntegerStatementParameter sp = new IntegerStatementParameter("0", QueryType.constant, null, null);
-    IntegerStatementParameter copy = sp.makeCopy();
+    StringStatementParameter sp = new StringStatementParameter("hello", QueryType.constant, null, null);
+    StringStatementParameter copy = sp.makeCopy();
     assertRoundtripEquality(sp, copy);
   }
 

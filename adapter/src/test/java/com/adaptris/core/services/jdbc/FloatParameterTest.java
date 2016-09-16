@@ -16,14 +16,18 @@
 
 package com.adaptris.core.services.jdbc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class FloatParameterTest {
+import com.adaptris.core.BaseCase;
+import com.adaptris.core.services.jdbc.StatementParameterImpl.QueryType;
+
+public class FloatParameterTest extends BaseCase {
+
+  public FloatParameterTest(String n) {
+    super(n);
+  }
 
   @Before
   public void setUp() throws Exception {
@@ -66,4 +70,11 @@ public class FloatParameterTest {
     assertEquals(Float.valueOf(0), sp.toFloat(""));
   }
 
+  @Test
+  public void testMakeCopy() throws Exception {
+    FloatStatementParameter sp = new FloatStatementParameter("0.0", QueryType.constant, null, null);
+    FloatStatementParameter copy = sp.makeCopy();
+    assertRoundtripEquality(sp, copy);
+
+  }
 }

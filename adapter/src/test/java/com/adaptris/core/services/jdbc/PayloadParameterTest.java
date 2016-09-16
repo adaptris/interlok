@@ -21,11 +21,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.adaptris.core.BaseCase;
-import com.adaptris.core.services.jdbc.StatementParameterImpl.QueryType;
 
-public class BooleanParameterTest extends BaseCase {
+public class PayloadParameterTest extends BaseCase {
 
-  public BooleanParameterTest(String n) {
+  public PayloadParameterTest(String n) {
     super(n);
   }
 
@@ -38,21 +37,23 @@ public class BooleanParameterTest extends BaseCase {
   }
 
   @Test
-  public void testConvert() throws Exception {
-    BooleanStatementParameter sp = new BooleanStatementParameter();
-    assertEquals(Boolean.TRUE, sp.toBoolean("on"));
+  public void testBinaryStream() throws Exception {
+    BinaryStreamStatementParameter sp = new BinaryStreamStatementParameter(null);
+    BinaryStreamStatementParameter copy = sp.makeCopy();
+    assertRoundtripEquality(sp, copy);
   }
 
   @Test
-  public void testConvertNull() throws Exception {
-    BooleanStatementParameter sp = new BooleanStatementParameter();
-    assertEquals(Boolean.FALSE, sp.toBoolean(""));
+  public void testBytePayload() throws Exception {
+    BytePayloadStatementParameter sp = new BytePayloadStatementParameter(null);
+    BytePayloadStatementParameter copy = sp.makeCopy();
+    assertRoundtripEquality(sp, copy);
   }
 
   @Test
-  public void testMakeCopy() throws Exception {
-    BooleanStatementParameter sp = new BooleanStatementParameter("true", QueryType.constant, null, null);
-    BooleanStatementParameter copy = sp.makeCopy();
+  public void testCharacterStream() throws Exception {
+    CharacterStreamStatementParameter sp = new CharacterStreamStatementParameter(null);
+    CharacterStreamStatementParameter copy = sp.makeCopy();
     assertRoundtripEquality(sp, copy);
   }
 }

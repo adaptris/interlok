@@ -34,6 +34,7 @@ import com.adaptris.core.jdbc.AdvancedJdbcPooledConnection;
 import com.adaptris.core.jdbc.JdbcConnection;
 import com.adaptris.core.jdbc.JdbcPooledConnection;
 import com.adaptris.core.jdbc.PooledConnectionHelper;
+import com.adaptris.core.services.jdbc.StatementParameterImpl.QueryType;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
@@ -65,15 +66,15 @@ public abstract class JdbcDataCaptureServiceCase extends JdbcServiceExample {
     IdCaptureColumn {
 
       @Override
-      public JdbcStatementParameter create() {
-        return new StatementParameter(null, String.class.getName(), StatementParameter.QueryType.id);
+      public StringStatementParameter create() {
+        return new StringStatementParameter(null, StatementParameter.QueryType.id, null, null);
       }
     },
     MetadataCaptureColumn {
 
       @Override
-      public JdbcStatementParameter create() {
-        return new StatementParameter("A Metadata Key", String.class.getName(), StatementParameter.QueryType.metadata);
+      public StringStatementParameter create() {
+        return new StringStatementParameter("A Metadata Key", StatementParameter.QueryType.metadata, null, null);
       }
     },
     XpathCaptureColumn {
@@ -413,9 +414,37 @@ public abstract class JdbcDataCaptureServiceCase extends JdbcServiceExample {
     assertTrue(msg.headersContainsKey("1"));
   }
 
-  public void testIteratesService() throws Exception {
+  public void testIteratesService_StatementParams() throws Exception {
     createDatabase();
-    JdbcDataCaptureService service = createIteratesService();
+    JdbcDataCaptureService service = createIteratesService(true);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_DOCUMENT_2);
+    msg.addMetadata(METADATA_KEY, METADATA_VALUE);
+    execute(service, msg);
+    Connection c = null;
+    PreparedStatement p = null;
+    try {
+      c = createConnection();
+      p = c.prepareStatement("SELECT * FROM jdbc_data_capture_iteration");
+      ResultSet rs = p.executeQuery();
+      int count = 0;
+      while (rs.next()) {
+        count += 1;
+        assertEquals(XML_DOCUMENT_2, rs.getString("payload_value"));
+        if (count == 1) assertEquals(ATTACHMENT_DATA, rs.getString("xpath_value"));
+        else
+          assertEquals(ATTACHMENT_DATA_2, rs.getString("xpath_value"));
+      }
+      assertEquals(2, count);
+    }
+    finally {
+      JdbcUtil.closeQuietly(p);
+      JdbcUtil.closeQuietly(c);
+    }
+  }
+
+  public void testIteratesService_StringParams() throws Exception {
+    createDatabase();
+    JdbcDataCaptureService service = createIteratesService(false);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_DOCUMENT_2);
     msg.addMetadata(METADATA_KEY, METADATA_VALUE);
     execute(service, msg);
@@ -513,16 +542,19 @@ public abstract class JdbcDataCaptureServiceCase extends JdbcServiceExample {
     return service;
   }
 
-  protected JdbcDataCaptureService createIteratesService() throws Exception {
+  protected JdbcDataCaptureService createIteratesService(boolean useStatementParam) throws Exception {
     JdbcDataCaptureService service = new JdbcDataCaptureService();
     JdbcConnection connection = new JdbcConnection();
     service.setConnection(createJdbcConnection());
     service.setIterates(true);
     service.setIterationXpath(XPATH_ITERATE);
-    service.addStatementParameter(new StatementParameter(null, String.class, StatementParameter.QueryType.payload));
-
-    service.addStatementParameter(new StatementParameter(XPATH_ITERATE_RELATIVE, String.class, StatementParameter.QueryType.xpath));
-
+    service.addStatementParameter(new StatementParameter(null, String.class, QueryType.payload));
+    if (useStatementParam) {
+      service.addStatementParameter(new StatementParameter(XPATH_ITERATE_RELATIVE, String.class, QueryType.xpath));
+    }
+    else {
+      service.addStatementParameter(new StringStatementParameter(XPATH_ITERATE_RELATIVE, QueryType.xpath, null, null));
+    }
     service.setStatement("insert into jdbc_data_capture_iteration (payload_value, xpath_value) values (?, ?)");
 
     return service;

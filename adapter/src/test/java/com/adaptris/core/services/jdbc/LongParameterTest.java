@@ -16,14 +16,18 @@
 
 package com.adaptris.core.services.jdbc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class LongParameterTest {
+import com.adaptris.core.BaseCase;
+import com.adaptris.core.services.jdbc.StatementParameterImpl.QueryType;
+
+public class LongParameterTest extends BaseCase {
+
+  public LongParameterTest(String n) {
+    super(n);
+  }
 
   @Before
   public void setUp() throws Exception {
@@ -67,4 +71,11 @@ public class LongParameterTest {
     assertEquals(Long.valueOf(0), sp.toLong(""));
   }
 
+  @Test
+  public void testMakeCopy() throws Exception {
+    LongStatementParameter sp = new LongStatementParameter("0", QueryType.constant, null, null);
+    LongStatementParameter copy = sp.makeCopy();
+    assertRoundtripEquality(sp, copy);
+
+  }
 }

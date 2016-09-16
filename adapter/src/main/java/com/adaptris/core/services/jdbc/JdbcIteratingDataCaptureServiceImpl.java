@@ -35,6 +35,7 @@ import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.services.jdbc.StatementParameterImpl.QueryType;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.JdbcUtil;
@@ -59,7 +60,6 @@ public abstract class JdbcIteratingDataCaptureServiceImpl extends JdbcDataCaptur
   @AdvancedConfig
   @Valid
   private KeyValuePairSet namespaceContext;
-
 
   public JdbcIteratingDataCaptureServiceImpl() {
     super();
@@ -164,10 +164,11 @@ public abstract class JdbcIteratingDataCaptureServiceImpl extends JdbcDataCaptur
       // Due to iteratesXpath, we don't use getqueryValue from
       // statementParameter.
       if (isXpathParam(param)) {
-        StatementParameter spParam = (StatementParameter) param;
-        queryResult = xpath.selectSingleTextItem(n, spParam.getQueryString());
-        result.add(new StatementParameter(queryResult, spParam.getQueryClass(),
-            StatementParameterImpl.QueryType.constant, spParam.getConvertNull(), spParam.getName()));
+        StatementParameterImpl actualParam = (StatementParameterImpl) param.makeCopy();
+        queryResult = xpath.selectSingleTextItem(n, actualParam.getQueryString());
+        actualParam.setQueryString(queryResult);
+        actualParam.setQueryType(QueryType.constant);
+        result.add(actualParam);
       }
       else {
         result.add(param.makeCopy());
@@ -177,8 +178,8 @@ public abstract class JdbcIteratingDataCaptureServiceImpl extends JdbcDataCaptur
   }
 
   private boolean isXpathParam(JdbcStatementParameter param) {
-    if (param instanceof StatementParameter) {
-      if (StatementParameter.QueryType.xpath.equals(((StatementParameter) param).getQueryType())) {
+    if (param instanceof StatementParameterImpl) {
+      if (StatementParameterImpl.QueryType.xpath.equals(((StatementParameterImpl) param).getQueryType())) {
         return true;
       }
     }

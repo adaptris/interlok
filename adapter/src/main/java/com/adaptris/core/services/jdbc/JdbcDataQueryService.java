@@ -207,6 +207,7 @@ public class JdbcDataQueryService extends JdbcServiceWithParameters {
   private void destroyXmlHelper(AdaptrisMessage msg) {
     msg.getObjectHeaders().remove(KEY_XML_UTILS);
     msg.getObjectHeaders().remove(KEY_NAMESPACE_CTX);
+    msg.getObjectHeaders().remove(KEY_DOCBUILDER_FAC);
   }
 
   private static boolean containsXpath(List<JdbcStatementParameter> list) {
