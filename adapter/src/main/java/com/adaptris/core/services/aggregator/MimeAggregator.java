@@ -16,12 +16,22 @@
 
 package com.adaptris.core.services.aggregator;
 
+import static com.adaptris.util.text.mime.MimeConstants.HEADER_CONTENT_ENCODING;
+import static com.adaptris.util.text.mime.MimeConstants.HEADER_CONTENT_TYPE;
 import static org.apache.commons.io.IOUtils.closeQuietly;
+import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
+import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collection;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.InternetHeaders;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeUtility;
 import javax.validation.constraints.Pattern;
 
 import com.adaptris.annotation.AdvancedConfig;
@@ -60,7 +70,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("mime-aggregator")
-@DisplayOrder(order = {"encoding", "overwriteMetadata", "partContentIdMetadataKey"})
+@DisplayOrder(order = {"encoding", "overwriteMetadata", "partContentTypeMetadataKey", "partContentIdMetadataKey"})
 public class MimeAggregator extends MessageAggregatorImpl {
 
   @Pattern(regexp = "base64|quoted-printable|uuencode|x-uuencode|x-uue|binary|7bit|8bit")
@@ -68,15 +78,16 @@ public class MimeAggregator extends MessageAggregatorImpl {
   private String encoding;
   @AdvancedConfig
   private String partContentIdMetadataKey;
+  @AdvancedConfig
+  private String partContentTypeMetadataKey;
 
   @Override
   public void joinMessage(AdaptrisMessage original, Collection<AdaptrisMessage> messages) throws CoreException {
     OutputStream out = null;
     try {
-      MultiPartOutput output = new MultiPartOutput(original.getUniqueId());
-      output.addPart(original.getPayload(), getEncoding(), original.getUniqueId());
+      MultiPartOutput output = createInitialPart(original);
       for (AdaptrisMessage m : messages) {
-        output.addPart(m.getPayload(), getEncoding(), getContentId(m));
+        output.addPart(createBodyPart(m), getMetadataValue(m, getPartContentIdMetadataKey(), m.getUniqueId()));
         overwriteMetadata(m, original);
       }
       out = original.getOutputStream();
@@ -84,11 +95,24 @@ public class MimeAggregator extends MessageAggregatorImpl {
       original.addMetadata(CoreConstants.MSG_MIME_ENCODED, Boolean.TRUE.toString());
     }
     catch (Exception e) {
-      ExceptionHelper.rethrowCoreException(e);
+      throw ExceptionHelper.wrapCoreException(e);
     }
     finally {
       closeQuietly(out);
     }
+  }
+
+  protected MimeBodyPart createBodyPart(AdaptrisMessage msg) throws MessagingException, IOException {
+    InternetHeaders hdrs = new InternetHeaders();
+    byte[] encodedData = encodeData(msg.getPayload(), getEncoding(), hdrs);
+    hdrs.addHeader(HEADER_CONTENT_TYPE, getMetadataValue(msg, getPartContentTypeMetadataKey(), "application/octet-stream"));
+    return new MimeBodyPart(hdrs, encodedData);
+  }
+
+  protected MultiPartOutput createInitialPart(AdaptrisMessage original) throws MessagingException, IOException {
+    MultiPartOutput output = new MultiPartOutput(original.getUniqueId());
+    output.addPart(createBodyPart(original), getMetadataValue(original, getPartContentIdMetadataKey(), original.getUniqueId()));
+    return output;
   }
 
   /**
@@ -123,11 +147,37 @@ public class MimeAggregator extends MessageAggregatorImpl {
     this.partContentIdMetadataKey = s;
   }
 
-  protected String getContentId(AdaptrisMessage msg) {
-    String result = msg.getUniqueId();
-    if (!isEmpty(getPartContentIdMetadataKey()) && msg.containsKey(getPartContentIdMetadataKey())) {
-      result = msg.getMetadataValue(getPartContentIdMetadataKey());
+  protected String getMetadataValue(AdaptrisMessage msg, String key, String defaultValue) {
+    String result = null;
+    if (!isEmpty(key) && msg.headersContainsKey(key)) {
+      result = msg.getMetadataValue(key);
     }
-    return result;
+    return defaultIfEmpty(result, defaultValue);
+  }
+
+  private static byte[] encodeData(byte[] data, String encoding, InternetHeaders hdrs) throws MessagingException, IOException {
+    if (!isBlank(encoding)) {
+      hdrs.setHeader(HEADER_CONTENT_ENCODING, encoding);
+    }
+    try (ByteArrayOutputStream out = new ByteArrayOutputStream(); OutputStream encodedOut = MimeUtility.encode(out, encoding)) {
+      encodedOut.write(data);
+      return out.toByteArray();
+    }
+  }
+
+  /**
+   * @return the partContentTypeMetadataKey
+   */
+  public String getPartContentTypeMetadataKey() {
+    return partContentTypeMetadataKey;
+  }
+
+  /**
+   * The key to derive the content-type.
+   * 
+   * @param s the partContentTypeMetadataKey to set
+   */
+  public void setPartContentTypeMetadataKey(String s) {
+    this.partContentTypeMetadataKey = s;
   }
 }
