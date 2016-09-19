@@ -258,16 +258,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
     private static final long serialVersionUID = 2007082301L;
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-      process(request, response);
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-      process(request, response);
-    }
-
-    private void process(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
       String oldName = renameThread();
       try {
         if (isMethodAcceptable(request.getMethod())) {
