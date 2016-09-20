@@ -29,11 +29,13 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
-import java.util.StringTokenizer;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.servlet.Servlet;
@@ -44,6 +46,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageConsumerImp;
@@ -73,8 +76,10 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   private transient List<String> acceptedMethods = new ArrayList<>(HTTP_METHODS);
 
   @InputFieldDefault(value = "false")
+  @AdvancedConfig
   private Boolean additionalDebug;
   private TimeInterval maxWaitTime;
+
 
   private long warnAfterMessageHangMillis = 20000;
 
@@ -144,7 +149,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
     }
   }
 
-  private ServletWrapper asServletWrapper() throws CoreException {
+  protected ServletWrapper asServletWrapper() throws CoreException {
     if (servletWrapper == null) {
       String destination = ensureIsPath(getDestination().getDestination());
       servletWrapper = new ServletWrapper(jettyServlet, destination);
@@ -154,7 +159,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
 
   // Ensure that if someone types in http://localhost:8080/fred/blah/blah then
   // we make sure that we return /fred/blah/blah
-  private String ensureIsPath(String s) throws CoreException {
+  protected String ensureIsPath(String s) throws CoreException {
     String result = s;
     try {
       URI uri = new URI(s);
@@ -172,7 +177,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
    */
   public void init() throws CoreException {
     if (!isEmpty(getDestination().getFilterExpression())) {
-      acceptedMethods = asList(getDestination().getFilterExpression());
+      acceptedMethods = Arrays.asList(getDestination().getFilterExpression().split(","));
       log.trace("Acceptable HTTP methods set to : {}", acceptedMethods);
     }
   }
@@ -233,44 +238,71 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   long maxWaitTime() {
     return getMaxWaitTime() != null ? getMaxWaitTime().toMilliseconds() : DEFAULT_MAX_WAIT_TIME.toMilliseconds();
   }
-
-
-  private static List<String> asList(String commaSepList) {
-    List<String> result = new ArrayList<String>();
-    if (commaSepList != null) {
-      StringTokenizer st = new StringTokenizer(commaSepList, COMMA);
-      while (st.hasMoreTokens()) {
-        result.add(st.nextToken().trim().toUpperCase());
-      }
-    }
-    return result;
+  
+  public Boolean getAdditionalDebug() {
+    return additionalDebug;
   }
+
+  public void setAdditionalDebug(Boolean additionalDebug) {
+    this.additionalDebug = additionalDebug;
+  }
+
+  boolean additionalDebug() {
+    return getAdditionalDebug() != null ? getAdditionalDebug().booleanValue() : false;
+  }
+
+  public long getWarnAfterMessageHangMillis() {
+    return warnAfterMessageHangMillis;
+  }
+
+  public void setWarnAfterMessageHangMillis(long warnAfterMessageHangMillis) {
+    this.warnAfterMessageHangMillis = warnAfterMessageHangMillis;
+  }
+
   
-  
-  /**
-   * Basic implementation.
-   * 
-   * @author lchan
-   * 
-   */
-  private class BasicServlet extends HttpServlet {
+  protected class BasicServlet extends HttpServlet {
 
     private static final long serialVersionUID = 2007082301L;
+    private transient Map<String, HttpOperation> httpHandlers = null;
+
+    protected BasicServlet() {
+    }
 
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
       String oldName = renameThread();
       try {
-        if (isMethodAcceptable(request.getMethod())) {
-          processRequest(request, response);
+        String method = request.getMethod().toUpperCase();
+        if (handlers().containsKey(method)) {
+          handlers().get(method).handle(request, response);
         }
         else {
-          write405(response);
+          addAllow(response).sendError(HttpURLConnection.HTTP_BAD_METHOD, "Method Not Allowed");
         }
       }
       finally {
         Thread.currentThread().setName(oldName);
       }
+    }
+
+    protected Map<String, HttpOperation> handlers() {
+      if (httpHandlers == null) {
+        httpHandlers = new HashMap<String, HttpOperation>();
+        HttpOperation defaultHandler = new HttpOperation() {
+          public void handle(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+            processRequest(request, response);
+          }
+        };
+        for (String m : acceptedMethods) {
+          httpHandlers.put(m.toUpperCase().trim(), defaultHandler);
+        }
+        httpHandlers.put(RequestMethod.OPTIONS.name(), new HttpOperation() {
+          public void handle(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+            addAllow(response).setStatus(HttpURLConnection.HTTP_OK);
+          }
+        });
+      }
+      return httpHandlers;
     }
 
     private void processRequest(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -302,34 +334,13 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
       }
     }
 
-    private boolean isMethodAcceptable(String method) {
-      return acceptedMethods.contains(method.toUpperCase());
-    }
-
-    private void write405(HttpServletResponse response) throws IOException, ServletException {
-      response.addHeader("Allow", StringUtils.join(acceptedMethods, COMMA));
-      response.sendError(HttpURLConnection.HTTP_BAD_METHOD, "Method Not Allowed");
+    private HttpServletResponse addAllow(HttpServletResponse response) throws IOException, ServletException {
+      response.addHeader("Allow", StringUtils.join(handlers().keySet(), COMMA));
+      return response;
     }
   }
 
-  public Boolean getAdditionalDebug() {
-    return additionalDebug;
+  public interface HttpOperation {
+    void handle(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException;
   }
-
-  public void setAdditionalDebug(Boolean additionalDebug) {
-    this.additionalDebug = additionalDebug;
-  }
-
-  boolean additionalDebug() {
-    return getAdditionalDebug() != null ? getAdditionalDebug().booleanValue() : false;
-  }
-
-  public long getWarnAfterMessageHangMillis() {
-    return warnAfterMessageHangMillis;
-  }
-
-  public void setWarnAfterMessageHangMillis(long warnAfterMessageHangMillis) {
-    this.warnAfterMessageHangMillis = warnAfterMessageHangMillis;
-  }
-
 }

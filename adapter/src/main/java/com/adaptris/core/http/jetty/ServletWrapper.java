@@ -22,7 +22,11 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.eclipse.jetty.servlet.ServletHolder;
 
-class ServletWrapper {
+/**
+ * Wrapper class around a servlet for jetty.
+ * 
+ */
+public class ServletWrapper {
   private ServletHolder servletHolder;
   private String url;
 
@@ -30,7 +34,7 @@ class ServletWrapper {
 
   }
 
-  ServletWrapper(Servlet s, String urlMapping) {
+  public ServletWrapper(Servlet s, String urlMapping) {
     servletHolder = new ServletHolder(s);
     url = urlMapping;
   }
