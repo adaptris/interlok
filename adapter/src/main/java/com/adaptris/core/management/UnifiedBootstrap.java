@@ -17,6 +17,9 @@
 package com.adaptris.core.management;
 
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.management.JMX;
 import javax.management.ObjectName;
@@ -24,6 +27,7 @@ import javax.management.ObjectName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.core.CoreException;
 import com.adaptris.core.management.vcs.RuntimeVersionControl;
 import com.adaptris.core.management.vcs.RuntimeVersionControlLoader;
 import com.adaptris.core.management.vcs.VcsException;
@@ -31,6 +35,7 @@ import com.adaptris.core.runtime.AdapterManagerMBean;
 import com.adaptris.core.runtime.AdapterRegistry;
 import com.adaptris.core.runtime.AdapterRegistryMBean;
 import com.adaptris.core.util.JmxHelper;
+import com.adaptris.util.TimeInterval;
 
 /**
  * This is the class that handles almost everything required for startup.
@@ -48,6 +53,8 @@ public class UnifiedBootstrap {
   private transient AdapterRegistryMBean adapterRegistry;
   private transient List<ManagementComponent> mgmtComponents;
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
+
+  private static final TimeInterval DEFAULT_OPERATION_TIMEOUT = new TimeInterval(2L, TimeUnit.MINUTES);
 
   private enum MgmtComponentTransition {
     START() {
@@ -110,7 +117,21 @@ public class UnifiedBootstrap {
 
   public void start() throws Exception {
     MgmtComponentTransition.START.transition(mgmtComponents);
-    AdapterRegistry.start(adapterRegistry.getAdapters());
+    tryStart(adapterRegistry.getAdapters());
+  }
+
+  private void tryStart(Set<ObjectName> adapters) throws Exception {
+    for (ObjectName obj : adapters) {
+      AdapterManagerMBean mgr = JMX.newMBeanProxy(JmxHelper.findMBeanServer(bootstrapProperties), obj, AdapterManagerMBean.class);
+      try {
+        mgr.requestStart(DEFAULT_OPERATION_TIMEOUT.toMilliseconds());
+      }
+      catch (CoreException | TimeoutException e) {
+        mgr.requestClose(DEFAULT_OPERATION_TIMEOUT.toMilliseconds());
+        log.error("Failed to fully start [{}]; adapter closed to avoid inconsistent state", obj);
+        throw e;
+      }
+    }
   }
 
   public void stop() throws Exception {
