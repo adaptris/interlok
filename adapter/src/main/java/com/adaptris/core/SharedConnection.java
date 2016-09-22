@@ -160,6 +160,11 @@ public class SharedConnection extends SharedComponent implements AdaptrisConnect
     return getProxiedConnection().getConnectionErrorHandler();
   }
 
+  @Override
+  public ConnectionErrorHandler connectionErrorHandler() {
+    return getProxiedConnection().connectionErrorHandler();
+  }
+
   @SuppressWarnings("unchecked")
   @Override
   public <T> T retrieveConnection(Class<T> type) {
