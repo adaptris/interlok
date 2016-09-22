@@ -426,8 +426,8 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
    * </p>
    */
   private void checkConnectionErrorHandlers() throws CoreException {
-    ConnectionErrorHandler cceh = getConsumeConnection().getConnectionErrorHandler();
-    ConnectionErrorHandler pceh = getProduceConnection().getConnectionErrorHandler();
+    ConnectionErrorHandler cceh = getConsumeConnection().connectionErrorHandler();
+    ConnectionErrorHandler pceh = getProduceConnection().connectionErrorHandler();
 
     if (cceh != null && pceh != null) {
       // are they actually the same object?

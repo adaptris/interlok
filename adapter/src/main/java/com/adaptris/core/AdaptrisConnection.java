@@ -98,20 +98,22 @@ public interface AdaptrisConnection extends AdaptrisComponent, ComponentLifecycl
   Set<AdaptrisMessageConsumer> retrieveMessageConsumers();
 
   /**
-   * <p>
-   * Sets the <code>ConnectionErrorHandler</code> to use.
-   * </p>
-   * @param handler the <code>ConnectionErrorHandler</code> to use
+   * Sets the {@link ConnectionErrorHandler} to use.
    */
   void setConnectionErrorHandler(ConnectionErrorHandler handler);
 
   /**
-   * <p>
-   * Returns the <code>ConnectionErrorHandler</code> to use.
-   * </p>
-   * @return the <code>ConnectionErrorHandler</code> to use
+   * Returns the configured {@link ConnectionErrorHandler}.
+   * 
    */
   ConnectionErrorHandler getConnectionErrorHandler();
+
+  /**
+   * Returns the currently active {@link ConnectionErrorHandler}
+   * 
+   * @return the active {@link ConnectionErrorHandler}, which may not be the same as the configured...
+   */
+  ConnectionErrorHandler connectionErrorHandler();
 
   /**
    * Return the connection as represented by this connection
