@@ -34,7 +34,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * @config metadata-identity-builder
  */
 @XStreamAlias("metadata-identity-builder")
-public class MetadataIdentityBuilder extends IdentityBuilderImpl {
+public class MetadataIdentityBuilder extends MetadataIdentityBuilderImpl {
 
   @XStreamImplicit(itemFieldName = "metadata-key")
   @AutoPopulated
@@ -50,11 +50,17 @@ public class MetadataIdentityBuilder extends IdentityBuilderImpl {
     setMetadataKeys(list);
   }
 
+  public MetadataIdentityBuilder(MetadataSource type, List<String> list) {
+    this();
+    setMetadataKeys(list);
+    setMetadataSource(type);
+  }
+
   @Override
   public Map<String, Object> build(AdaptrisMessage msg) {
     Map<String, Object> result = new HashMap<>();
     for (String key : getMetadataKeys()) {
-      result.put(key, msg.getMetadataValue(key));
+      result.put(key, getValue(msg, key));
     }
     return result;
   }

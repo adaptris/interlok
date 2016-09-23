@@ -18,6 +18,7 @@ package com.adaptris.core.security.access;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AutoPopulated;
@@ -38,12 +39,13 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config mapped-metadata-identity-builder
  */
 @XStreamAlias("mapped-metadata-identity-builder")
-public class MappedMetadataIdentityBuilder extends IdentityBuilderImpl {
+public class MappedMetadataIdentityBuilder extends MetadataIdentityBuilderImpl {
 
-  @AutoPopulated
-  @NotNull
   // Use a list in case someone wants to map the same metadata value onto
   // multiple identity keys.
+  @AutoPopulated
+  @NotNull
+  @Valid
   private KeyValuePairList metadataMap;
 
   public MappedMetadataIdentityBuilder() {
@@ -55,11 +57,17 @@ public class MappedMetadataIdentityBuilder extends IdentityBuilderImpl {
     setMetadataMap(map);
   }
 
+  public MappedMetadataIdentityBuilder(MetadataSource type, KeyValuePairList map) {
+    this();
+    setMetadataMap(map);
+    setMetadataSource(type);
+  }
+
   @Override
   public Map<String, Object> build(AdaptrisMessage msg) {
     Map<String, Object> result = new HashMap<>();
     for (KeyValuePair kvp : getMetadataMap()) {
-      result.put(kvp.getValue(), msg.getMetadataValue(kvp.getKey()));
+      result.put(kvp.getValue(), getValue(msg, kvp.getKey()));
     }
     return result;
   }

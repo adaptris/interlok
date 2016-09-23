@@ -30,6 +30,7 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.http.jetty.JettyHashUserRealmVerifier;
 import com.adaptris.core.security.SecurityServiceExample;
+import com.adaptris.core.security.access.MetadataIdentityBuilderImpl.MetadataSource;
 
 public class VerifyIdentityServiceTest extends SecurityServiceExample {
 
@@ -68,7 +69,8 @@ public class VerifyIdentityServiceTest extends SecurityServiceExample {
     msg.addMetadata(PASSWORD, "password");
     msg.addMetadata(ROLE, "user");
     JettyHashUserRealmVerifier verifier = new JettyHashUserRealmVerifier(PROPERTIES.getProperty(JETTY_USER_REALM));
-    MetadataIdentityBuilder builder = new MetadataIdentityBuilder(new ArrayList<String>(Arrays.asList(USER, PASSWORD, ROLE)));
+    MetadataIdentityBuilder builder = new MetadataIdentityBuilder(MetadataSource.Standard,
+        new ArrayList<String>(Arrays.asList(USER, PASSWORD, ROLE)));
 
     VerifyIdentityService service = new VerifyIdentityService(builder, verifier);
     execute(service, msg);
@@ -77,7 +79,8 @@ public class VerifyIdentityServiceTest extends SecurityServiceExample {
   @Override
   protected Object retrieveObjectForSampleConfig() {
     JettyHashUserRealmVerifier verifier = new JettyHashUserRealmVerifier("/path/to/jetty/realm.properties");
-    MetadataIdentityBuilder builder = new MetadataIdentityBuilder(new ArrayList<String>(Arrays.asList(USER, PASSWORD, ROLE)));
+    MetadataIdentityBuilder builder = new MetadataIdentityBuilder(MetadataSource.Standard,
+        new ArrayList<String>(Arrays.asList(USER, PASSWORD, ROLE)));
     return new VerifyIdentityService(builder, verifier);
   }
 
