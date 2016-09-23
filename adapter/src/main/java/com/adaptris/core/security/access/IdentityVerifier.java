@@ -17,11 +17,14 @@ package com.adaptris.core.security.access;
 
 import java.util.Map;
 
-import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ComponentLifecycle;
-import com.adaptris.core.ServiceException;
 
-public interface IdentityBuilder extends ComponentLifecycle {
+/**
+ * Used in conjunction with {@link IdentityBuilder}.
+ * 
+ */
+public interface IdentityVerifier extends ComponentLifecycle {
 
-  Map<String, Object> build(AdaptrisMessage msg) throws ServiceException;
+  boolean validate(Map<String, Object> identity);
+
 }

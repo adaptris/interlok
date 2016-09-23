@@ -15,13 +15,23 @@
 */
 package com.adaptris.core.security.access;
 
+import java.util.Collections;
 import java.util.Map;
 
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ComponentLifecycle;
-import com.adaptris.core.ServiceException;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 
-public interface IdentityBuilder extends ComponentLifecycle {
+/**
+ * A no-op identity builder.
+ * 
+ * @config empty-identity-builder
+ */
+@XStreamAlias("empty-identity-builder")
+public class EmptyIdentityBuilder extends IdentityBuilderImpl {
 
-  Map<String, Object> build(AdaptrisMessage msg) throws ServiceException;
+  @Override
+  public Map<String, Object> build(AdaptrisMessage msg) {
+    return Collections.emptyMap();
+  }
+
 }

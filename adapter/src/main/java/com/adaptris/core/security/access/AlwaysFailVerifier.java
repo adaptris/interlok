@@ -17,14 +17,19 @@ package com.adaptris.core.security.access;
 
 import java.util.Map;
 
-import com.adaptris.core.ComponentLifecycle;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Used in conjunction with {@link IdentityBuilder}.
+ * Identity verification always fails.
  * 
+ * @config always-fail-identity-verifier
  */
-public interface VerifyIdentity extends ComponentLifecycle {
+@XStreamAlias("always-fail-identity-verifier")
+public class AlwaysFailVerifier extends IdentityVerifierImpl {
 
-  boolean validate(Map<String, Object> identity);
+  @Override
+  public boolean validate(Map<String, Object> identity) {
+    return false;
+  }
 
 }

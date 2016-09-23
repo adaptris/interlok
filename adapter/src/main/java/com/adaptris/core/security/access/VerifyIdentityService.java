@@ -15,13 +15,10 @@
 */
 package com.adaptris.core.security.access;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdapterComponent;
-import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -31,6 +28,7 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -44,13 +42,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(summary = "Verify and control access based on the message contents", tag = "service,security")
 @DisplayOrder(order =
 {
-    "successId", "failureId"
+    "builder", "verifier"
 })
 public class VerifyIdentityService extends ServiceImp {
-  @AdvancedConfig
-  private String successId = null;
-  @AdvancedConfig
-  private String failureId = null;
 
   @NotNull
   @Valid
@@ -59,86 +53,63 @@ public class VerifyIdentityService extends ServiceImp {
   @NotNull
   @Valid
   @AutoPopulated
-  private VerifyIdentity verifier;
-
-  private transient boolean branchingEnabled = false;
+  private IdentityVerifier verifier;
 
   public VerifyIdentityService() {
+    setBuilder(new EmptyIdentityBuilder());
+    setVerifier(new AlwaysFailVerifier());
+  }
 
+  public VerifyIdentityService(IdentityBuilder b, IdentityVerifier v) {
+    this();
+    setBuilder(b);
+    setVerifier(v);
   }
 
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     try {
-      handleResult(getVerifier().validate(getBuilder().build(msg)), msg);
+      if (!getVerifier().validate(getBuilder().build(msg))) {
+        throw new ServiceException(getVerifier().getClass().getSimpleName() + " failed");
+      }
     }
     catch (Exception e) {
       throw ExceptionHelper.wrapServiceException(e);
     }
   }
 
-  private void handleResult(boolean result, AdaptrisMessage msg) throws ServiceException {
-    if (isBranching()) {
-      if (result) {
-        msg.setNextServiceId(getSuccessId());
-      }
-      else {
-        msg.setNextServiceId(getFailureId());
-      }
-    }
-    else {
-      if (!result) {
-        throw new ServiceException("Validation failed");
-      }
-    }
-  }
-
   @Override
   public void prepare() throws CoreException {
-    if (!isBlank(getSuccessId()) && !isBlank(getFailureId())) {
-      branchingEnabled = true;
-    }
-  }
-
-  @Override
-  public boolean isBranching() {
-    return branchingEnabled;
+    LifecycleHelper.prepare(getBuilder());
+    LifecycleHelper.prepare(getVerifier());
   }
 
   @Override
   protected void initService() throws CoreException {
+    LifecycleHelper.init(getBuilder());
+    LifecycleHelper.init(getVerifier());
+
   }
 
   public void start() throws CoreException {
     super.start();
+    LifecycleHelper.start(getBuilder());
+    LifecycleHelper.start(getVerifier());
+
   }
 
   public void stop() {
     super.stop();
+    LifecycleHelper.stop(getBuilder());
+    LifecycleHelper.stop(getVerifier());
   }
 
   @Override
   protected void closeService() {
+    LifecycleHelper.close(getBuilder());
+    LifecycleHelper.close(getVerifier());
   }
 
-
-  public String getFailureId() {
-    return failureId;
-  }
-
-
-  public void setFailureId(String s) {
-    failureId = s;
-  }
-
-
-  public String getSuccessId() {
-    return successId;
-  }
-
-  public void setSuccessId(String s) {
-    successId = s;
-  }
 
   /**
    * @return the builder
@@ -157,14 +128,14 @@ public class VerifyIdentityService extends ServiceImp {
   /**
    * @return the verifier
    */
-  public VerifyIdentity getVerifier() {
+  public IdentityVerifier getVerifier() {
     return verifier;
   }
 
   /**
    * @param verifier the verifier to set
    */
-  public void setVerifier(VerifyIdentity verifier) {
+  public void setVerifier(IdentityVerifier verifier) {
     this.verifier = Args.notNull(verifier, "verifier");
   }
 }
