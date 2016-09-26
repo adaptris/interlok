@@ -134,7 +134,7 @@ public class JettyHashUserRealmVerifier extends IdentityVerifierImpl {
       String credentials = ((String) entry.getValue()).trim();
       String roles = null;
       int c = credentials.indexOf(',');
-      if (c > 0) {
+      if (c >= 0 && credentials.length() > 0) {
         roles = credentials.substring(c + 1).trim();
         credentials = credentials.substring(0, c).trim();
       }
