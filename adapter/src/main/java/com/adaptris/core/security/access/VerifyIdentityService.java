@@ -33,6 +33,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * A simple service that allows you to verify that the message contents and/or metadata passes muster.
+ * <p>
+ * If {@link IdentityVerifier#validate(java.util.Map)} returns {@code false} then an exception is thrown. If you want to
+ * use this as a branch; then you should wrap the service inside a {@link com.adaptris.core.services.BranchingServiceEnabler}
+ * </p>
  * 
  * @author lchan
  *
