@@ -124,7 +124,6 @@ public class AggregatingFsConsumer extends AggregatingConsumerImpl<AggregatingFs
     for (AdaptrisMessage m : msgs) {
       Map<?,?> objectMetadata = m.getObjectHeaders();
       if (objectMetadata.containsKey(OBJ_METADATA_KEY_FILE)) {
-        log.trace("Deleting aggregated file : " + objectMetadata.get(OBJ_METADATA_KEY_FILENAME));
         File f = ((File) objectMetadata.get(OBJ_METADATA_KEY_FILE));
         File parent = f.getParentFile();
         String name = f.getName().replaceAll(wipSuffix().replaceAll("\\.", "\\\\."), "");
