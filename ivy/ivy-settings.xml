@@ -1,43 +1,16 @@
 <ivysettings>
   <settings defaultResolver="chain-resolver"/>
   <credentials host="development.adaptris.net" realm="Sonatype Nexus Repository Manager" username="${ivy.user}" passwd="${ivy.password}"/>
-  <property name="nexus-base-url" value="https://development.adaptris.net"/>
-  <property name="nexus-public" value="${nexus-base-url}/nexus/content/groups/public"/>
-  <property name="nexus-private" value="${nexus-base-url}/nexus/content/groups/private"/>
-  <property name="nexus-releases" value="${nexus-base-url}/nexus/content/repositories/releases"/>
-  <property name="nexus-snapshots" value="${nexus-base-url}/nexus/content/repositories/snapshots"/>
-  <property name="local-m2-repo" value="${user.home}/.m2/repository/" />
-  <property name="local-nexus-repo" value="http://localhost:8081/content/groups/public" />
+  <properties file="${user.home}/.ivy2/ivy-settings.properties"/>
+  <property name="nexus-base-url" value="https://development.adaptris.net" override="false"/>
+  <property name="nexus-public" value="${nexus-base-url}/nexus/content/groups/public" override="false"/>
+  <property name="nexus-private" value="${nexus-base-url}/nexus/content/groups/private" override="false"/>
+  <property name="nexus-releases" value="${nexus-base-url}/nexus/content/repositories/releases" override="false"/>
+  <property name="nexus-snapshots" value="${nexus-base-url}/nexus/content/repositories/snapshots" override="false"/>
+  <property name="default.ivy.repo" value="https://repo1.maven.org/maven2/" override="false"/>
   <resolvers>
-      <!-- Because we're using "custom examples conf" then we can't use an ibiblio resolver...
-           we have to use a custom URL one, so that we don't use POMS which won't contain the
-           examples conf...
-           However, this has the nasty side-effect in core of downloading the POM file for adp-core-apt
-           and sticking that into the classpath.
-           So remember to remove it using the type="jar,zip,bundle" when caching the path.
-    <url name="nexus-snapshots" m2compatible="true" checkmodified="true" changingPattern=".*SNAPSHOT.*">
-      <ivy pattern="${nexus-snapshots}/[organisation]/[module]/[revision]/ivy-[revision].xml"/>
-      <artifact pattern="${nexus-snapshots}/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"/>
-      <artifact pattern="${nexus-snapshots}/[organisation]/[module]/[revision]/[artifact]-[revision](-[classifier]).[ext]"/>
-    </url>
-    <url name="nexus-releases" m2compatible="true">
-      <ivy pattern="${nexus-releases}/[organisation]/[module]/[revision]/ivy-[revision].xml"/>
-      <artifact pattern="${nexus-releases}/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"/>
-      <artifact pattern="${nexus-releases}/repository/[organisation]/[module]/[revision]/[artifact]-[revision](-[classifier]).[ext]"/>
-    </url>
-    -->
     <chain name="chain-resolver">
-      <!--
-      <filesystem name="local-maven-repo" m2compatible="true" local="true">
-        <artifact pattern="${local-m2-repo}/[organisation]/[module]/[revision]/[module]-[revision].[ext]" />
-        <ivy pattern="${local-m2-repo}/[organisation]/[module]/[revision]/[module]-[revision].pom" />
-      </filesystem>
-      -->
-      <!--
-      <resolver ref="nexus-releases"/>
-      <resolver ref="nexus-snapshots"/>
-      -->
-      <ibiblio name="local-nexus-repo" m2compatible="true" root="${local-nexus-repo}"/>
+      <ibiblio name="default-ivy-repo" m2compatible="true" root="${default.ivy.repo}"/>
       <ibiblio name="nexus-snapshots" m2compatible="true" root="${nexus-snapshots}" changingPattern=".*SNAPSHOT.*" checkmodified="true"/>
       <ibiblio name="nexus-releases" m2compatible="true" root="${nexus-releases}"/>
       <ibiblio name="nexus-public" m2compatible="true" root="${nexus-public}"/>
