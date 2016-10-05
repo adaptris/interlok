@@ -35,21 +35,30 @@ public class MicrosoftCrypto extends PasswordImpl {
   private Base64ByteTranslator base64;
 
   public MicrosoftCrypto() throws PasswordException {
-    try {
-      base64 = new Base64ByteTranslator();
-      username = System.getProperty("user.name");
-      KeyStore ks = KeyStore.getInstance("Windows-MY");
-      ks.load(null, null);
-      privateKey = (PrivateKey) ks.getKey(username, null);
-      certificate = ks.getCertificate(username);
-    }
-    catch (Exception e) {
-      throw new PasswordException(e);
-    }
+    base64 = new Base64ByteTranslator();
+    username = System.getProperty("user.name");
   }
 
   public boolean canHandle(String type) {
     return type != null && type.startsWith(MSCAPI_STYLE);
+  }
+
+  private PrivateKey getPrivateKey() throws Exception {
+    if (privateKey == null) {
+      KeyStore ks = KeyStore.getInstance("Windows-MY");
+      ks.load(null, null);
+      privateKey = (PrivateKey) ks.getKey(username, null);
+    }
+    return privateKey;
+  }
+
+  private Certificate getCertificate() throws Exception {
+    if (certificate == null) {
+      KeyStore ks = KeyStore.getInstance("Windows-MY");
+      ks.load(null, null);
+      certificate = ks.getCertificate(username);
+    }
+    return certificate;
   }
 
   public String decode(String encrypted, String charset) throws PasswordException {
@@ -61,7 +70,7 @@ public class MicrosoftCrypto extends PasswordImpl {
     }
     try {
       Cipher cipher = Cipher.getInstance("RSA");
-      cipher.init(Cipher.DECRYPT_MODE, privateKey);
+      cipher.init(Cipher.DECRYPT_MODE, getPrivateKey());
       byte[] encryptedBytes = base64.translate(encryptedString);
       byte[] decrypted = cipher.doFinal(encryptedBytes);
       result = new String(decrypted, getEncodingToUse(charset));
@@ -76,7 +85,7 @@ public class MicrosoftCrypto extends PasswordImpl {
     byte[] encryptedBody = new byte[0];
     try {
       Cipher cipher = Cipher.getInstance("RSA");
-      cipher.init(Cipher.ENCRYPT_MODE, certificate);
+      cipher.init(Cipher.ENCRYPT_MODE, getCertificate());
       encryptedBody = cipher.doFinal(plainText.getBytes(getEncodingToUse(charset)));
     }
     catch (Exception e) {
