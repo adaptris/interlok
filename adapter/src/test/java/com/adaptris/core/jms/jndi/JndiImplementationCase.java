@@ -158,6 +158,7 @@ public abstract class JndiImplementationCase extends BaseCase {
       LifecycleHelper.init(standaloneProducer);
     }
     finally {
+      LifecycleHelper.close(standaloneProducer);
       broker.destroy();
     }
   }
@@ -180,6 +181,7 @@ public abstract class JndiImplementationCase extends BaseCase {
       LifecycleHelper.init(standaloneProducer);
     }
     finally {
+      LifecycleHelper.close(standaloneProducer);
       broker.destroy();
     }
   }
@@ -203,6 +205,7 @@ public abstract class JndiImplementationCase extends BaseCase {
       LifecycleHelper.init(standaloneProducer);
     }
     finally {
+      LifecycleHelper.close(standaloneProducer);
       broker.destroy();
     }
   }

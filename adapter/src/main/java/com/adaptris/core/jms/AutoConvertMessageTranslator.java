@@ -29,6 +29,8 @@ import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.TextMessage;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.MetadataElement;
@@ -42,6 +44,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * simplistic; the name value pairs (assumed to be String (or convertable to String)) are set as AdaptrisMessage metadata, the
  * resulting payload is empty. The mapping from AdaptrisMessage to {@linkplain MapMessage} results in all metadata being mapped as
  * name value pairs in the MapMessage; the payload is ignored.
+ * </p>
+ * <p>
+ * If you have used this translator for your consumer we add a new meta-data item to the {@linkplain AdaptrisMessage}} named "message.type".
+ * The value of this item will be one of "Text", "Bytes", "Map" or "Object".
+ * This allows you to set the following item; "convert-back-to-consumed-type" on the AutoConvertMessageTranslator for your JMS producer to "true" (default is false).
+ * In this case this translator will attempt to translate the produced message to the same message type we consumed.
  * </p>
  * <p>
  * If this converter cannot find an appropriate translator then a very basic translation will be applied. This will NOT include any
@@ -59,6 +67,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("auto-convert-message-translator")
 @DisplayOrder(order = {"metadataFilter", "moveMetadata", "moveJmsHeaders", "reportAllErrors"})
 public class AutoConvertMessageTranslator extends MessageTypeTranslatorImp {
+  
+  private static final String CONSUMED_MESSAGE_TYPE_KEY = "message.type";
+  
+  private static final boolean DEFAULT_CONVERT_BACK_TO_ORIGINAL_TYPE = false;
 
   /**
    * javax.jms.Message types that are supported by this translator.
@@ -138,6 +150,8 @@ public class AutoConvertMessageTranslator extends MessageTypeTranslatorImp {
 
   private String jmsOutputType;
   
+  private Boolean convertBackToConsumedType;
+  
   /**
    * Default constructor.
    * <p>
@@ -155,10 +169,26 @@ public class AutoConvertMessageTranslator extends MessageTypeTranslatorImp {
     MessageTypeTranslator mt = null;
 
     try {
-      for (SupportedMessageType mti : SupportedMessageType.values()) {
-        if (mti.name().equalsIgnoreCase(getJmsOutputType())) {
-          mt = mti.create(this);
-          break;
+      if(convertBackToConsumedType() && (!StringUtils.isEmpty(msg.getMetadataValue(CONSUMED_MESSAGE_TYPE_KEY)))) {
+        SupportedMessageType messageType = null;
+        try {
+          messageType = SupportedMessageType.valueOf(msg.getMetadataValue(CONSUMED_MESSAGE_TYPE_KEY));
+          mt = messageType.create(this);
+        } catch (IllegalArgumentException ex) {
+          log.warn("Cannot convert to type: " + msg.getMetadataValue(CONSUMED_MESSAGE_TYPE_KEY)); 
+          for (SupportedMessageType mti : SupportedMessageType.values()) {
+            if (mti.name().equalsIgnoreCase(getJmsOutputType())) {
+              mt = mti.create(this);
+              break;
+            }
+          }
+        }
+      } else {
+        for (SupportedMessageType mti : SupportedMessageType.values()) {
+          if (mti.name().equalsIgnoreCase(getJmsOutputType())) {
+            mt = mti.create(this);
+            break;
+          }
         }
       }
       if (mt != null) {
@@ -180,10 +210,12 @@ public class AutoConvertMessageTranslator extends MessageTypeTranslatorImp {
   public AdaptrisMessage translate(Message msg) throws JMSException {
     AdaptrisMessage result = null;
     MessageTypeTranslator mt = null;
+    String messageType = null;
     try {
       for (SupportedMessageType mti : SupportedMessageType.values()) {
         if (mti.isSupported(msg)) {
           mt = mti.create(this);
+          messageType = mti.name();
           break;
         }
       }
@@ -191,6 +223,7 @@ public class AutoConvertMessageTranslator extends MessageTypeTranslatorImp {
         start(mt);
         log.trace("Converting [" + msg.getClass().getSimpleName() + "] using [" + mt.getClass().getSimpleName() + "]");
         result = mt.translate(msg);
+        result.addMessageHeader(CONSUMED_MESSAGE_TYPE_KEY, messageType);
       }
     }
     finally {
@@ -217,6 +250,19 @@ public class AutoConvertMessageTranslator extends MessageTypeTranslatorImp {
    */
   public void setJmsOutputType(String outputType) {
     jmsOutputType = outputType;
+  }
+
+
+  public Boolean getConvertBackToConsumedType() {
+    return convertBackToConsumedType;
+  }
+  
+  public boolean convertBackToConsumedType() {
+    return convertBackToConsumedType == null ? DEFAULT_CONVERT_BACK_TO_ORIGINAL_TYPE : convertBackToConsumedType;
+  }
+
+  public void setConvertBackToConsumedType(Boolean convertBackToConsumedType) {
+    this.convertBackToConsumedType = convertBackToConsumedType;
   }
 
 

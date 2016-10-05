@@ -67,6 +67,31 @@ public class MergeResultSetIntoPayloadTest extends JdbcQueryServiceCaseXmlResult
     assertNotNull("/root/Results/Row", xu.getSingleNode("/root/Results/Row"));
   }
 
+
+  public void testContainsRowCount() throws Exception {
+    createDatabase();
+    List<AdapterTypeVersion> dbItems = generate(10);
+    AdapterTypeVersion entry = dbItems.get(0);
+
+    populateDatabase(dbItems, false);
+    JdbcDataQueryService s = createMetadataService();
+    MergeResultSetIntoXmlPayload t = new MergeResultSetIntoXmlPayload(new InsertNode("/root"));
+    t.setResultCountMetadataItem(getName());
+    s.setResultSetTranslator(t);
+    AdaptrisMessage msg = createMessage(entry);
+    execute(s, msg);
+    assertTrue(ADAPTER_ID_KEY + " exists", msg.containsKey(ADAPTER_ID_KEY));
+    assertNotSame(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
+    assertFalse(msg.containsKey(JdbcDataQueryService.class.getCanonicalName()));
+    XmlUtils xu = XmlHelper.createXmlUtils(msg);
+    log.warn(msg.getContent());
+    assertNotNull("/root/document", xu.getSingleNode("/root/document"));
+    assertNotNull("/root/Results/Row", xu.getSingleNode("/root/Results/Row"));
+    assertTrue(msg.containsKey(getName()));
+    assertEquals("1", msg.getMetadataValue(getName()));
+  }
+
+
   public void testXpathStatementParam() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);

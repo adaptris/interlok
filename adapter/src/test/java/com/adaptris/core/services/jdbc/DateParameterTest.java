@@ -26,13 +26,19 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.adaptris.core.BaseCase;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.services.jdbc.StatementParameterImpl.QueryType;
 
-public class DateParameterTest {
+public class DateParameterTest extends BaseCase {
 
   private static final String DATE_FORMAT = "yyyy-MM-dd";
   private String dateString;
   private java.sql.Date date;
+
+  public DateParameterTest(String n) {
+    super(n);
+  }
 
   @Before
   public void setUp() throws Exception {
@@ -89,5 +95,13 @@ public class DateParameterTest {
     DateStatementParameter sp = new DateStatementParameter();
     sp.setDateFormat(DATE_FORMAT);
     return sp;
+  }
+
+  @Test
+  public void testMakeCopy() throws Exception {
+    DateStatementParameter sp = new DateStatementParameter(dateString, QueryType.constant, null, null,
+        new SimpleDateFormat(DATE_FORMAT));
+    DateStatementParameter copy = sp.makeCopy();
+    assertRoundtripEquality(sp, copy);
   }
 }

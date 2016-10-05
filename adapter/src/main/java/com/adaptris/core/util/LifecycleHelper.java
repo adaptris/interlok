@@ -18,6 +18,7 @@ package com.adaptris.core.util;
 
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.ComponentLifecycle;
+import com.adaptris.core.ComponentLifecycleExtension;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.EventHandler;
 import com.adaptris.core.EventHandlerAware;
@@ -117,4 +118,15 @@ public class LifecycleHelper {
     }
   }
 
+  /**
+   * Prepare the component if it can be.
+   * 
+   * @param c a service.
+   * @throws CoreException
+   */
+  public static void prepare(ComponentLifecycle c) throws CoreException {
+    if (c != null && c instanceof ComponentLifecycleExtension) {
+      ((ComponentLifecycleExtension) c).prepare();
+    }
+  }
 }

@@ -204,7 +204,7 @@ public abstract class ServiceCase extends ExampleConfigCase {
       assertUniqueId((Service) input);
     }
     else {
-      List l = retrieveObjectsForSampleConfig();
+      List<Object> l = retrieveObjectsForSampleConfig();
       for (Object o : retrieveObjectsForSampleConfig()) {
         assertUniqueId((Service) o);
       }

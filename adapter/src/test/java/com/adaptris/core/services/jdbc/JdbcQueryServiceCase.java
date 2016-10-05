@@ -83,8 +83,8 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
     },
     StringQueryColumn {
       @Override
-      public StatementParameter create() {
-        return new StatementParameter("metadata key", String.class, StatementParameter.QueryType.metadata);
+      public StringStatementParameter create() {
+        return new StringStatementParameter("metadata key", StatementParameter.QueryType.metadata, null, null);
       }
     },
     TimestampQueryColumn {
@@ -111,8 +111,8 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
     },
     IdQueryColumn {
       @Override
-      public StatementParameter create() {
-        return new StatementParameter(null, String.class, StatementParameter.QueryType.id);
+      public StringStatementParameter create() {
+        return new StringStatementParameter(null, StatementParameter.QueryType.id, null, null);
       }
     },
     BooleanQueryColumn {

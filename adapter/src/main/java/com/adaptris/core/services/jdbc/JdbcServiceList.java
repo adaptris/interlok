@@ -35,6 +35,7 @@ import com.adaptris.core.ServiceList;
 import com.adaptris.core.jdbc.DatabaseConnection;
 import com.adaptris.core.jdbc.JdbcConstants;
 import com.adaptris.core.jdbc.JdbcService;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -112,12 +113,11 @@ public class JdbcServiceList extends ServiceList {
     }
     catch (Exception e) {
       rollback(msg, e);
-      rethrowServiceException(e);
+      throw ExceptionHelper.wrapServiceException(e);
     }
     finally {
       Connection conn = (Connection) msg.getObjectHeaders().get(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY);
-      if(conn != null)
-        JdbcUtil.closeQuietly(conn);
+      JdbcUtil.closeQuietly(conn);
     }
   }
 
@@ -163,19 +163,12 @@ public class JdbcServiceList extends ServiceList {
       JdbcUtil.rollback(sqlConnection);
     }
     catch (Exception e) {
-      rethrowServiceException(e);
+      throw ExceptionHelper.wrapServiceException(e);
     }
   }
 
   private boolean inDebugMode() {
     return getDatabaseConnection() != null && retrieveConnection().debugMode();
-  }
-
-  private void rethrowServiceException(Throwable e) throws ServiceException {
-    if (e instanceof ServiceException) {
-      throw (ServiceException) e;
-    }
-    throw new ServiceException(e);
   }
   
   private DatabaseConnection retrieveConnection() {

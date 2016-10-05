@@ -49,4 +49,13 @@ public @interface ComponentProfile {
    * @since 3.2.0
    */
   Class[]recommended() default {};
+
+  /**
+   * Returns an array of strings that contains metadata keys that may be created or have an effect on the behaviour of this
+   * component.
+   * 
+   * @return a string array.
+   * @since 3.4.1
+   */
+  String[] metadata() default {};
 }

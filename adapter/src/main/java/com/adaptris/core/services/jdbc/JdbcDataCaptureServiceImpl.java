@@ -50,13 +50,8 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
   private String saveReturnedKeysTable = null;
   protected transient DatabaseActor actor;
 
-  /**
-   * <p>
-   * Creates a new instance.
-   * </p>
-   */
   public JdbcDataCaptureServiceImpl() {
-    setParameterApplicator(new SequentialParameterApplicator());
+    super();
     actor = new DatabaseActor();
   }
 
@@ -190,11 +185,12 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
     }
   }
 
-  protected void configureActor(AdaptrisMessage msg) throws SQLException {
+  protected DatabaseActor configureActor(AdaptrisMessage msg) throws SQLException {
     Connection c = getConnection(msg);
     if (!c.equals(actor.getSqlConnection())) {
       actor.reInitialise(c);
     }
+    return actor;
   }
 
   @Override

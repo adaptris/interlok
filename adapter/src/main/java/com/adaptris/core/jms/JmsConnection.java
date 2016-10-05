@@ -32,6 +32,7 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AllowsRetriesConnection;
+import com.adaptris.core.ConnectionErrorHandler;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
 import com.adaptris.security.password.Password;
@@ -54,6 +55,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class JmsConnection extends AllowsRetriesConnection implements JmsConnectionConfig, ConnectionComparator<JmsConnection> {
 
   protected transient Connection connection;
+  private transient JmsConnectionErrorHandler connectionHandlerIfNotConfigured = new JmsConnectionErrorHandler();
 
   @InputFieldDefault(value = "")
   private String userName;
@@ -67,6 +69,7 @@ public class JmsConnection extends AllowsRetriesConnection implements JmsConnect
   @AutoPopulated
   private VendorImplementation vendorImplementation;
 
+
   /**
    * <p>
    * Create a new instance. Default settings are:
@@ -77,12 +80,11 @@ public class JmsConnection extends AllowsRetriesConnection implements JmsConnect
    * </p>
    */
   public JmsConnection() {
-    setUserName("");
-    setVendorImplementation(new StandardJndiImplementation());
+    this(new StandardJndiImplementation());
   }
 
   public JmsConnection(VendorImplementation impl) {
-    this();
+    setUserName("");
     setVendorImplementation(impl);
   }
 
@@ -104,6 +106,11 @@ public class JmsConnection extends AllowsRetriesConnection implements JmsConnect
 
   public Connection currentConnection() {
     return connection;
+  }
+
+  @Override
+  public ConnectionErrorHandler connectionErrorHandler() {
+    return getConnectionErrorHandler() != null ? getConnectionErrorHandler() : connectionHandlerIfNotConfigured;
   }
 
   /**

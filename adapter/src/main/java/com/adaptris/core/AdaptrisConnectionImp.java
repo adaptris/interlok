@@ -77,16 +77,14 @@ public abstract class AdaptrisConnectionImp implements AdaptrisConnection, State
       initConnection();
       // Intentionly after initialising the connection as the connection error
       // handler will almost certainly use it.
-      if (connectionErrorHandler != null) {
-        LifecycleHelper.init(connectionErrorHandler);
-      }
+      LifecycleHelper.init(connectionErrorHandler());
     }
   }
 
   @Override
   public final void prepare() throws CoreException {
-    if (connectionErrorHandler != null) {
-      connectionErrorHandler.registerConnection(this);
+    if (connectionErrorHandler() != null) {
+      connectionErrorHandler().registerConnection(this);
     }
     prepareConnection();
     prepared = true;
@@ -101,9 +99,7 @@ public abstract class AdaptrisConnectionImp implements AdaptrisConnection, State
   public final void start() throws CoreException {
     synchronized (lock) {
       startConnection();
-      if (connectionErrorHandler != null) {
-        LifecycleHelper.start(connectionErrorHandler);
-      }
+      LifecycleHelper.start(connectionErrorHandler());
     }
   }
 
@@ -125,9 +121,7 @@ public abstract class AdaptrisConnectionImp implements AdaptrisConnection, State
           LifecycleHelper.close(o);
         }
       }
-      if (connectionErrorHandler != null) {
-        LifecycleHelper.close(connectionErrorHandler);
-      }
+      LifecycleHelper.close(connectionErrorHandler());
       closeConnection();
     }
   }
@@ -149,9 +143,7 @@ public abstract class AdaptrisConnectionImp implements AdaptrisConnection, State
           LifecycleHelper.stop(o);
         }
       }
-      if (connectionErrorHandler != null) {
-        LifecycleHelper.stop(connectionErrorHandler);
-      }
+      LifecycleHelper.stop(connectionErrorHandler());
       stopConnection();
     }
   }
@@ -240,6 +232,11 @@ public abstract class AdaptrisConnectionImp implements AdaptrisConnection, State
   /** @see com.adaptris.core.AdaptrisConnection#getConnectionErrorHandler() */
   @Override
   public ConnectionErrorHandler getConnectionErrorHandler() {
+    return connectionErrorHandler;
+  }
+
+  @Override
+  public ConnectionErrorHandler connectionErrorHandler() {
     return connectionErrorHandler;
   }
 

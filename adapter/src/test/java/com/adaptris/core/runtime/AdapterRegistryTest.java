@@ -727,6 +727,22 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     assertEquals(1, myAdapterRegistry.getAdapters().size());
   }
 
+  public void testReloadFromConfig() throws Exception {
+    String adapterName = this.getClass().getSimpleName() + "." + getName();
+    Adapter adapter = createAdapter(adapterName, 2, 2);
+    File filename = deleteLater(adapter);
+    DefaultMarshaller.getDefaultMarshaller().marshal(adapter, filename);
+    Properties p = new Properties();
+    p.put("adapterConfigUrl.1", filename.toURI().toURL().toString());
+    AdapterRegistry myAdapterRegistry = new AdapterRegistry(new JunitBootstrapProperties(p));
+    ObjectName myObjectName = myAdapterRegistry.createAdapter(new URLString(filename));
+    assertEquals(1, myAdapterRegistry.getAdapters().size());
+
+    // This should destroy the adapter just created; and create a new one...
+    myAdapterRegistry.reloadFromConfig();
+    assertEquals(1, myAdapterRegistry.getAdapters().size());
+  }
+
   public void testGetVersionControl() throws Exception {
     AdapterRegistry myAdapterRegistry = new AdapterRegistry(new JunitBootstrapProperties(new Properties()));
     assertNull(myAdapterRegistry.getVersionControl());

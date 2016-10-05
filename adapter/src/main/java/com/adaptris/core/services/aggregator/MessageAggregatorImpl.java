@@ -19,8 +19,6 @@ package com.adaptris.core.services.aggregator;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
-import com.adaptris.core.util.ExceptionHelper;
 
 /**
  * Abstract implementation of {@link MessageAggregator}.
@@ -58,10 +56,5 @@ public abstract class MessageAggregatorImpl implements MessageAggregator {
     if (overwriteMetadata()) {
       target.setMetadata(src.getMetadata());
     }
-  }
-
-  @Deprecated
-  protected static void rethrowCoreException(Exception e) throws CoreException {
-    ExceptionHelper.rethrowCoreException(e);
   }
 }

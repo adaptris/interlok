@@ -49,6 +49,16 @@ public class ConfiguredContentTypeProviderTest {
     assertEquals("text/complicated", contentType);
   }
 
+  @Test
+  public void testGetContentType_ConfiguredCharset() throws Exception {
+    ConfiguredContentTypeProvider provider = new ConfiguredContentTypeProvider("text/complicated; charset=ISO-8859-1");
+
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage("");
+    msg.addMetadata(testName.getMethodName(), "text/complicated");
+
+    String contentType = provider.getContentType(msg);
+    assertEquals("text/complicated; charset=ISO-8859-1", contentType);
+  }
 
   @Test
   public void testGetContentType_WithCharset() throws Exception {
@@ -58,6 +68,26 @@ public class ConfiguredContentTypeProviderTest {
     msg.setContentEncoding("UTF-8");
     String contentType = provider.getContentType(msg);
     assertEquals("text/complicated; charset=UTF-8", contentType);
+  }
+
+  @Test
+  public void testGetContentType_ConfiguredWithCharset() throws Exception {
+    ConfiguredContentTypeProvider provider = new ConfiguredContentTypeProvider("text/complicated; charset=ISO-8859-1");
+
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage("");
+    msg.setContentEncoding("UTF-8");
+    String contentType = provider.getContentType(msg);
+    assertEquals("text/complicated; charset=ISO-8859-1", contentType);
+  }
+
+  @Test
+  public void testGetContentType_ConfiguredWithCrapParams() throws Exception {
+    ConfiguredContentTypeProvider provider = new ConfiguredContentTypeProvider("text/complicated; shouldbreak=");
+
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage("");
+    msg.setContentEncoding("UTF-8");
+    String contentType = provider.getContentType(msg);
+    assertEquals("text/complicated; shouldbreak=; charset=UTF-8", contentType);
   }
 
 }

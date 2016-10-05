@@ -37,6 +37,7 @@ import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageConsumerImp;
 import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.ClosedState;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
@@ -72,6 +73,7 @@ public class JmxNotificationConsumer extends AdaptrisMessageConsumerImp implemen
   public JmxNotificationConsumer() {
     setSerializer(new SimpleNotificationSerializer());
     locker = new FifoMutexLock();
+    changeState(ClosedState.getInstance());
   }
 
   @Override

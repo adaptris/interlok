@@ -30,9 +30,9 @@ public class JmsConnectionTest {
   @Test
   public void testSession() throws Exception {
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
+    JmsConnection conn = broker.getJmsConnection();
     try {
       broker.start();
-      JmsConnection conn = broker.getJmsConnection();
       LifecycleHelper.init(conn);
       LifecycleHelper.start(conn);
       Session s1 = conn.createSession(false, AcknowledgeMode.Mode.AUTO_ACKNOWLEDGE.acknowledgeMode());
@@ -40,6 +40,7 @@ public class JmsConnectionTest {
       assertNotSame(s1, s2);
     }
     finally {
+      LifecycleHelper.close(conn);
       broker.destroy();
     }
   }

@@ -18,16 +18,33 @@ package com.adaptris.core.http;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
+import javax.mail.internet.ContentType;
+import javax.mail.internet.ParseException;
+
 public abstract class ContentTypeProviderImpl implements ContentTypeProvider {
 
 
   protected String build(String mimeType, String charset) {
     StringBuilder buf = new StringBuilder();
     buf.append(mimeType);
-    if (!isBlank(charset)) {
+    if (!isBlank(charset) && !hasCharset(mimeType)) {
       buf.append("; charset=");
       buf.append(charset);
     }
     return buf.toString();
+  }
+
+  private boolean hasCharset(String mimeType) {
+    boolean result = false;
+    try {
+      ContentType ct = new ContentType(mimeType);
+      String charset = ct.getParameter("charset");
+      result = !isBlank(charset);
+    }
+    catch (ParseException e) {
+      // couldn't parse, hasn't got a charset.
+      result = false;
+    }
+    return result;
   }
 }

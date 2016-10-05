@@ -24,6 +24,7 @@ import com.adaptris.core.BaseCase;
 import com.adaptris.core.Channel;
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.ConfiguredProduceDestination;
+import com.adaptris.core.NullConnectionErrorHandler;
 import com.adaptris.core.ServiceList;
 import com.adaptris.core.StandaloneRequestor;
 import com.adaptris.core.jms.JmsReplyToWorkflow;
@@ -65,7 +66,7 @@ public class JmsReplyToWorkflowTest extends BaseCase {
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     broker.start();
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
-    Channel channel = createChannel(broker, true);
+    Channel channel = createChannel(broker);
     channel.getWorkflowList().add(workflow);
     channel.prepare();
     try {
@@ -82,7 +83,7 @@ public class JmsReplyToWorkflowTest extends BaseCase {
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     broker.start();
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
-    Channel channel = createChannel(broker, true);
+    Channel channel = createChannel(broker);
     workflow.setConsumer(new PtpConsumer(new ConfiguredConsumeDestination(getName())));
     channel.getWorkflowList().add(workflow);
     channel.prepare();
@@ -100,7 +101,7 @@ public class JmsReplyToWorkflowTest extends BaseCase {
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     broker.start();
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
-    Channel channel = createChannel(broker, true);
+    Channel channel = createChannel(broker);
     workflow.setProducer(new PtpProducer());
     channel.getWorkflowList().add(workflow);
     channel.prepare();
@@ -118,7 +119,7 @@ public class JmsReplyToWorkflowTest extends BaseCase {
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     broker.start();
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
-    Channel channel = createChannel(broker, true);
+    Channel channel = createChannel(broker);
     channel.setProduceConnection(broker.getJmsConnection());
     workflow.setProducer(new PasProducer());
     channel.getWorkflowList().add(workflow);
@@ -137,7 +138,7 @@ public class JmsReplyToWorkflowTest extends BaseCase {
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     broker.start();
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
-    Channel channel = createChannel(broker, true);
+    Channel channel = createChannel(broker);
     workflow.setProducer(new PtpProducer());
     workflow.setConsumer(new PtpConsumer(new ConfiguredConsumeDestination(getName())));
     channel.getWorkflowList().add(workflow);
@@ -154,7 +155,7 @@ public class JmsReplyToWorkflowTest extends BaseCase {
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     broker.start();
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
-    Channel channel = createChannel(broker, true);
+    Channel channel = createChannel(broker);
     workflow.setProducer(new PtpProducer());
     workflow.setConsumer(new PtpConsumer(new ConfiguredConsumeDestination(getName())));
     workflow.setServiceCollection(createServiceList());
@@ -181,7 +182,7 @@ public class JmsReplyToWorkflowTest extends BaseCase {
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     broker.start();
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
-    Channel channel = createChannel(broker, false);
+    Channel channel = createChannel(broker);
     workflow.setProducer(new PasProducer());
     workflow.setConsumer(new PasConsumer(new ConfiguredConsumeDestination(getName())));
     workflow.setServiceCollection(createServiceList());
@@ -209,7 +210,7 @@ public class JmsReplyToWorkflowTest extends BaseCase {
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     broker.start();
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
-    Channel channel = createChannel(broker, true);
+    Channel channel = createChannel(broker);
     workflow.setProducer(new PtpProducer());
     workflow.setConsumer(new PtpConsumer(new ConfiguredConsumeDestination(getName())));
 
@@ -243,7 +244,7 @@ public class JmsReplyToWorkflowTest extends BaseCase {
     broker.start();
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
     workflow.addInterceptor(interceptor);
-    Channel channel = createChannel(broker, false);
+    Channel channel = createChannel(broker);
     workflow.setProducer(new PasProducer());
     workflow.setConsumer(new PasConsumer(new ConfiguredConsumeDestination(getName())));
     workflow.setServiceCollection(createServiceList());
@@ -267,11 +268,11 @@ public class JmsReplyToWorkflowTest extends BaseCase {
     }
   }
 
-  private Channel createChannel(EmbeddedActiveMq broker, boolean isPtp) throws Exception {
+  private Channel createChannel(EmbeddedActiveMq broker) throws Exception {
     Channel channel = new MockChannel();
-    channel.setConsumeConnection(isPtp ? broker.getJmsConnection() : broker.getJmsConnection());
-    channel.setProduceConnection(isPtp ? broker.getJmsConnection() : broker.getJmsConnection());
-
+    channel.setConsumeConnection(broker.getJmsConnection());
+    channel.setProduceConnection(broker.getJmsConnection());
+    channel.getProduceConnection().setConnectionErrorHandler(new NullConnectionErrorHandler());
     return channel;
   }
 

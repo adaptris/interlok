@@ -16,7 +16,6 @@
 
 package com.adaptris.core.services.jdbc;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
@@ -77,6 +76,22 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * The output messages will be constructed by the same MessageFactory as the incoming message. If a MessageFactory has been configured
  * then that one will be used instead (useful in case the incoming message is file-backed, for example). 
  * </p>
+ * <p>
+ * If you want to see how many rows were processed you can set one/both of the following;
+ * <table>
+ * <tr>
+ * <th>Item</th>
+ * <th>Description</th>
+ * <th>Value</th>
+ * </tr>
+ * <tr>
+ * <td>result-count-metadata-item</td><td>If set to a String metadata item name will specify the metadata item to contain the number of rows returned by your query</td><td>Metadata item name</td>
+ * </tr>
+ * <tr>
+ * <td>update-count-metadata-item</td><td>If set to a String metadata item name will specify the metadata item to contain the number of rows updated by your SQL statement</td><td>Metadata item name</td>
+ * </tr>
+ * </table>
+ * <p>
  * 
  * @config jdbc-splitting-xml-payload-translator
  * 
@@ -149,9 +164,9 @@ public class SplittingXmlPayloadTranslator extends XmlPayloadTranslatorImpl {
    * Split the JdbcResult into possibly multiple output messages. Each ResultSet will start in a new message if there are multiple.
    */
   @Override
-  public void translate(JdbcResult source, AdaptrisMessage inputMessage) throws SQLException, ServiceException {
+  public long translateResult(JdbcResult source, AdaptrisMessage inputMessage) throws SQLException, ServiceException {
     final AdaptrisMessageFactory factory = getMessageFactory() == null ? inputMessage.getFactory() : getMessageFactory();
-
+    long resultSetCount = 0;
     try {
       // Handle each ResultSet separately and create as many messages as required
       for(JdbcResultSet rs: source.getResultSets()) {
@@ -162,11 +177,12 @@ public class SplittingXmlPayloadTranslator extends XmlPayloadTranslatorImpl {
           AdaptrisMessage outputMessage = factory.newMessage();
           
           // Fill the message with the requisite number of rows if this ResultSet has enough of them
-          Document doc = toDocument(outputMessage, new LimitedResultSet(rows, getMaxRowsPerMessage()));
-          writeXmlDocument(doc, outputMessage);
+          DocumentWrapper doc = toDocument(outputMessage, new LimitedResultSet(rows, getMaxRowsPerMessage()));
+          writeXmlDocument(doc.document, outputMessage);
           
           // Use the configured producer to send the message on its way
           getProducer().produce(outputMessage);
+          resultSetCount += doc.resultSetCount;
         }
       }
     } catch (ParserConfigurationException e) {
@@ -176,13 +192,15 @@ public class SplittingXmlPayloadTranslator extends XmlPayloadTranslatorImpl {
     } catch (Exception e) {
       throw new ServiceException("Failed to process message", e);
     }
+    return resultSetCount;
   }
 
-  private Document toDocument(AdaptrisMessage msg, JdbcResultSet rSet) throws ParserConfigurationException, SQLException {
+  private DocumentWrapper toDocument(AdaptrisMessage msg, JdbcResultSet rSet) throws ParserConfigurationException, SQLException {
     DocumentBuilderFactoryBuilder factoryBuilder = documentFactoryBuilder(msg);
     DocumentBuilderFactory factory = factoryBuilder.configure(DocumentBuilderFactory.newInstance());
     DocumentBuilder builder = factory.newDocumentBuilder();
     Document doc = builder.newDocument();
+    DocumentWrapper result = new DocumentWrapper(doc, 0);
     ColumnStyle elementNameStyle = getColumnNameStyle();
 
     Element results = doc.createElement(elementNameStyle.format(ELEMENT_NAME_RESULTS));
@@ -192,8 +210,8 @@ public class SplittingXmlPayloadTranslator extends XmlPayloadTranslatorImpl {
     for (Element element : elements) {
       results.appendChild(element);
     }
-   
-    return doc;
+    result.resultSetCount += elements.size();
+    return result;
   }
   
   private DocumentBuilderFactoryBuilder documentFactoryBuilder(AdaptrisMessage msg) {

@@ -264,18 +264,8 @@
             <pathelement location="${ant.core.lib}"/>
           </classpath>
           <grouping/>
-          
-          
-          
-          
-          
-          
-          
-          
-          <link offline="false" href="http://development.adaptris.com/javadocs/v3-snapshot/Interlok-API/"/>
-          
-          <link offline="false" href="http://www.quartz-scheduler.org/api/2.2.1/"/>
-          <link offline="false" href="http://development.adaptris.net/javadocs/v3-snapshot/Interlok-Common/"/>
+          <link offline="false" href="https://development.adaptris.net/javadocs/v3-snapshot/Interlok-API/"/>
+          <link offline="false" href="https://development.adaptris.net/javadocs/v3-snapshot/Interlok-Common/"/>
           <taglet name="com.adaptris.taglet.ConfigTaglet">
             <path refid="classpath.ant-tools"/>
           </taglet>

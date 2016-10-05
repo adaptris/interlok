@@ -27,7 +27,6 @@ import java.io.StringWriter;
 import java.util.Date;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
@@ -62,20 +61,15 @@ public class MessageDigestErrorEntry extends MessageDigestEntry {
         .toString();
   }
 
-  private void buildStackTrace(Exception e) {
+  private String buildStackTrace(Exception e) {
     StringWriter sw = new StringWriter();
-    PrintWriter pw = new PrintWriter(sw, true);
-    try {
+    try (PrintWriter pw = new PrintWriter(sw, true)) {
       if (e != null) {
         e.printStackTrace(pw);
       }
     }
-    finally {
-      IOUtils.closeQuietly(pw);
-      IOUtils.closeQuietly(sw);
-    }
     // if e == null, then the stackTrace will be the empty string.
-    stackTrace = sw.toString();
+    return sw.toString();
   }
 
   public void setStackTrace(String st) {
@@ -83,7 +77,7 @@ public class MessageDigestErrorEntry extends MessageDigestEntry {
   }
 
   public void setStackTrace(Exception e) {
-    buildStackTrace(e);
+    setStackTrace(buildStackTrace(e));
   }
 
   public String getStackTrace() {

@@ -66,22 +66,21 @@ public class JmsTransactedWorkflowTest extends ExampleWorkflowCase {
     assertEquals(Boolean.TRUE, workflow.getStrict());
   }
 
-  @Override
-  public void testSetConsumer() throws Exception {
-    JmsTransactedWorkflow workflow = new JmsTransactedWorkflow();
+  public void testInit_UnsupportedConsumer() throws Exception {
+    EmbeddedActiveMq broker = new EmbeddedActiveMq();
+    Channel channel = createStartableChannel(broker);
+    JmsTransactedWorkflow workflow = (JmsTransactedWorkflow) channel.getWorkflowList().get(0);
+    workflow.setConsumer(new FsConsumer(new ConfiguredConsumeDestination("file:////path/to/directory")));
     try {
-      workflow.setConsumer(new FsConsumer(new ConfiguredConsumeDestination("file:////path/to/directory")));
-      fail("setConsumer with Fsconsumer works, but shouldn't");
+      broker.start();
+      channel.requestInit();
     }
-    catch (IllegalArgumentException expected) {
-      ;
+    catch (CoreException expected) {
+      assertEquals("JmsTransactedWorkflow must be used with a JMSConsumer", expected.getMessage());
     }
-    try {
-      workflow.setConsumer(null);
-      fail();
-    }
-    catch (IllegalArgumentException expected) {
-      ;
+    finally {
+      channel.requestClose();
+      broker.destroy();
     }
   }
 
@@ -95,15 +94,22 @@ public class JmsTransactedWorkflowTest extends ExampleWorkflowCase {
     workflow.setConsumer(new PtpConsumer(new ConfiguredConsumeDestination("queue")));
   }
 
-  @Override
-  public void testSetProduceExceptionHandler() throws Exception {
-    JmsTransactedWorkflow workflow = new JmsTransactedWorkflow();
+  public void testInit_UnsupportedProduceExceptionHandler() throws Exception {
+    EmbeddedActiveMq broker = new EmbeddedActiveMq();
+    Channel channel = createStartableChannel(broker);
+    JmsTransactedWorkflow workflow = (JmsTransactedWorkflow) channel.getWorkflowList().get(0);
+    workflow.setProduceExceptionHandler(new RestartProduceExceptionHandler());
     try {
-      workflow.setProduceExceptionHandler(new RestartProduceExceptionHandler());
-      fail("setProduceExceptionHandler with RestartProduceExceptionHandler works, but shouldn't");
+      broker.start();
+      channel.requestInit();
     }
-    catch (IllegalArgumentException expected) {
-      ;
+    catch (CoreException expected) {
+      assertEquals("JmsTransactedWorkflow may not have a ProduceExceptionHandler set", expected.getMessage());
+
+    }
+    finally {
+      channel.requestClose();
+      broker.destroy();
     }
   }
 

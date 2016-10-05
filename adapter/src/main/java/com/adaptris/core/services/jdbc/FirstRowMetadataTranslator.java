@@ -39,6 +39,23 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * value is the value of the column.
  * </p>
  * 
+ * <p>
+ * If you want to see how many rows were processed you can set one/both of the following;
+ * <table>
+ * <tr>
+ * <th>Item</th>
+ * <th>Description</th>
+ * <th>Value</th>
+ * </tr>
+ * <tr>
+ * <td>result-count-metadata-item</td><td>If set to a String metadata item name will specify the metadata item to contain the number of rows returned by your query</td><td>Metadata item name</td>
+ * </tr>
+ * <tr>
+ * <td>update-count-metadata-item</td><td>If set to a String metadata item name will specify the metadata item to contain the number of rows updated by your SQL statement</td><td>Metadata item name</td>
+ * </tr>
+ * </table>
+ * <p>
+ * 
  * @config jdbc-first-row-metadata-translator
  * 
  * 
@@ -54,10 +71,10 @@ public class FirstRowMetadataTranslator extends MetadataResultSetTranslatorImpl 
   }
 
   @Override
-  public void translate(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException {
+  public long translateResult(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException {
     List<MetadataElement> added = new ArrayList<MetadataElement>();
 
-    int resultSetCount = 0;
+    long resultSetCount = 0;
     Iterator<JdbcResultRow> iter;
     for (JdbcResultSet resultSet : source.getResultSets()) {
       if (resultSet.getRows() != null 
@@ -68,7 +85,7 @@ public class FirstRowMetadataTranslator extends MetadataResultSetTranslatorImpl 
           for (int i = 0; i < storedProcedureResultRow.getFieldCount(); i++) {
             String column = storedProcedureResultRow.getFieldName(i);
             String resultSetPrefix = source.countResultSets() > 1
-                ? Integer.toString(resultSetCount) + getResultSetCounterPrefix()
+                ? Long.toString(resultSetCount) + getResultSetCounterPrefix()
                 : "";
             MetadataElement md = new MetadataElement(resultSetPrefix + getMetadataKeyPrefix() + getSeparator()
                 + getColumnNameStyle().format(column), toString(storedProcedureResultRow, i));
@@ -87,6 +104,7 @@ public class FirstRowMetadataTranslator extends MetadataResultSetTranslatorImpl 
         resultSetCount++;
       }
     }
+    return resultSetCount;
   }
 
 }

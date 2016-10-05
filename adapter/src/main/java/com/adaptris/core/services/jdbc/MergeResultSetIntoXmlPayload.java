@@ -40,6 +40,23 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * Merge the ResultSet contents into an existing XML Payload.
  * 
+ * <p>
+ * If you want to see how many rows were processed you can set one/both of the following;
+ * <table>
+ * <tr>
+ * <th>Item</th>
+ * <th>Description</th>
+ * <th>Value</th>
+ * </tr>
+ * <tr>
+ * <td>result-count-metadata-item</td><td>If set to a String metadata item name will specify the metadata item to contain the number of rows returned by your query</td><td>Metadata item name</td>
+ * </tr>
+ * <tr>
+ * <td>update-count-metadata-item</td><td>If set to a String metadata item name will specify the metadata item to contain the number of rows updated by your SQL statement</td><td>Metadata item name</td>
+ * </tr>
+ * </table>
+ * <p>
+ * 
  * @config jdbc-merge-into-xml-payload
  * 
  * 
@@ -65,17 +82,19 @@ public class MergeResultSetIntoXmlPayload extends XmlPayloadTranslatorImpl {
   }
 
   @Override
-  public void translate(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException {
+  public long translateResult(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException {
     if (mergeImplementation == null) {
       throw new ServiceException("No Document Merge implementation configured.");
     }
+    long resultSetCount = 0;
     try {
       DocumentBuilderFactoryBuilder builder =
           (DocumentBuilderFactoryBuilder) target.getObjectHeaders().get(JdbcDataQueryService.KEY_DOCBUILDER_FAC);
-      Document resultSet = createDocument(source, builder);
+      DocumentWrapper resultSet = createDocument(source, builder);
       Document original = XmlHelper.createDocument(target, builder);
-      Document result = mergeImplementation.merge(original, resultSet);
+      Document result = mergeImplementation.merge(original, resultSet.document);
       writeXmlDocument(result, target);
+      resultSetCount = resultSet.resultSetCount;
     }
     catch (SQLException e) {
       throw e;
@@ -85,13 +104,14 @@ public class MergeResultSetIntoXmlPayload extends XmlPayloadTranslatorImpl {
     }
     finally {
     }
+    return resultSetCount;
   }
 
-  private Document createDocument(JdbcResult rs, DocumentBuilderFactoryBuilder builderFactory) throws Exception {
+  private DocumentWrapper createDocument(JdbcResult rs, DocumentBuilderFactoryBuilder builderFactory) throws Exception {
     DocumentBuilderFactory factory = builderFactory.configure(DocumentBuilderFactory.newInstance());
     DocumentBuilder builder = factory.newDocumentBuilder();
     Document doc = builder.newDocument();
-
+    DocumentWrapper result = new DocumentWrapper(doc, 0);
     Element results = doc.createElement(getColumnNameStyle().format(ELEMENT_NAME_RESULTS));
     doc.appendChild(results);
     for(JdbcResultSet rSet : rs.getResultSets()) {
@@ -99,8 +119,9 @@ public class MergeResultSetIntoXmlPayload extends XmlPayloadTranslatorImpl {
       for (Element element : elements) {
         results.appendChild(element);
       }
+      result.resultSetCount += elements.size();
     }
-    return doc;
+    return result;
   }
 
   public DocumentMerge getMergeImplementation() {

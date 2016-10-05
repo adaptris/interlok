@@ -26,7 +26,7 @@ import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.FifoMutexLock;
 
-public abstract class AdaptrisPollingConsumer extends AdaptrisMessageConsumerImp implements StateManagedComponent {
+public abstract class AdaptrisPollingConsumer extends AdaptrisMessageConsumerImp {
 
   @NotNull
   @AutoPopulated
@@ -36,7 +36,6 @@ public abstract class AdaptrisPollingConsumer extends AdaptrisMessageConsumerImp
   @InputFieldDefault(value = "false")
   private Boolean reacquireLockBetweenMessages;
   // make logging from FML configurable (default false) when util is released
-  private transient ComponentState serviceState;
   // transient
   private transient FifoMutexLock lock;
 
@@ -225,38 +224,5 @@ public abstract class AdaptrisPollingConsumer extends AdaptrisMessageConsumerImp
   }
 
   protected abstract void prepareConsumer() throws CoreException;
-
-
-  @Override
-  public void changeState(ComponentState newState) {
-    serviceState = newState;
-  }
-
-
-  @Override
-  public ComponentState retrieveComponentState() {
-    return serviceState;
-  }
-
-
-  @Override
-  public void requestInit() throws CoreException {
-    serviceState.requestInit(this);
-  }
-
-  @Override
-  public void requestStart() throws CoreException {
-    serviceState.requestStart(this);
-  }
-
-  @Override
-  public void requestStop() {
-    serviceState.requestStop(this);
-  }
-
-  @Override
-  public void requestClose() {
-    serviceState.requestClose(this);
-  }
 
 }

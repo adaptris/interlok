@@ -30,6 +30,7 @@ import org.apache.commons.io.input.ReaderInputStream;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -120,6 +121,7 @@ public class MetadataToPayloadService extends ServiceImp {
 
 
   @NotBlank
+  @AffectsMetadata
   private String key;
   @NotNull
   private MetadataSource metadataSource;

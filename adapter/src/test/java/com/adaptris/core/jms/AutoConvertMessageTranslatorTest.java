@@ -53,6 +53,175 @@ public class AutoConvertMessageTranslatorTest extends MessageTypeTranslatorCase 
     super(name);
   }
 
+  public void testConvertFromConsumeTypeBytes() throws Exception {
+    EmbeddedActiveMq broker = new EmbeddedActiveMq();
+
+    AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
+    trans.setConvertBackToConsumedType(true);
+    try {
+      broker.start();
+      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      start(trans, session);
+
+      BytesMessage jmsMsg = session.createBytesMessage();
+      addProperties(jmsMsg);
+      jmsMsg.writeBytes(TEXT.getBytes());
+      jmsMsg.reset();
+
+      AdaptrisMessage msg = trans.translate(jmsMsg);
+      Message producedMessage = trans.translate(msg);
+      
+      assertEquals("Bytes", msg.getMetadataValue("message.type"));
+      assertTrue(producedMessage instanceof BytesMessage);
+    }
+    finally {
+      stop(trans);
+      broker.destroy();
+    }
+
+  }
+  
+  public void testConvertFromConsumeTypeText() throws Exception {
+    EmbeddedActiveMq broker = new EmbeddedActiveMq();
+
+    AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
+    trans.setConvertBackToConsumedType(true);
+    try {
+      broker.start();
+      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      start(trans, session);
+
+      TextMessage jmsMsg = session.createTextMessage();
+      addProperties(jmsMsg);
+      jmsMsg.setText(TEXT);
+
+      AdaptrisMessage msg = trans.translate(jmsMsg);
+      Message producedMessage = trans.translate(msg);
+      
+      assertEquals("Text", msg.getMetadataValue("message.type"));
+      assertTrue(producedMessage instanceof TextMessage);
+    }
+    finally {
+      stop(trans);
+      broker.destroy();
+    }
+
+  }
+  
+  public void testConvertFromConsumeTypeMap() throws Exception {
+    EmbeddedActiveMq broker = new EmbeddedActiveMq();
+
+    AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
+    trans.setConvertBackToConsumedType(true);
+    try {
+      broker.start();
+      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      start(trans, session);
+
+      MapMessage jmsMsg = session.createMapMessage();
+      addProperties(jmsMsg);
+      addToMapMessage(jmsMsg);
+
+      AdaptrisMessage msg = trans.translate(jmsMsg);
+      Message producedMessage = trans.translate(msg);
+      
+      assertEquals("Map", msg.getMetadataValue("message.type"));
+      assertTrue(producedMessage instanceof MapMessage);
+    }
+    finally {
+      stop(trans);
+      broker.destroy();
+    }
+
+  }
+  
+  public void testConvertFromConsumeTypeObject() throws Exception {
+    EmbeddedActiveMq broker = new EmbeddedActiveMq();
+
+    AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
+    trans.setConvertBackToConsumedType(true);
+    try {
+      broker.start();
+      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      start(trans, session);
+
+      ObjectMessage jmsMsg = session.createObjectMessage();
+      Exception e = new Exception("This is an Exception that was serialized");
+      e.fillInStackTrace();
+      jmsMsg.setObject(e);
+      addProperties(jmsMsg);
+
+      AdaptrisMessage msg = trans.translate(jmsMsg);
+      Message producedMessage = trans.translate(msg);
+      
+      assertEquals("Object", msg.getMetadataValue("message.type"));
+      assertTrue(producedMessage instanceof ObjectMessage);
+    }
+    finally {
+      stop(trans);
+      broker.destroy();
+    }
+
+  }
+  
+  public void testConvertFromConsumeTypeBytesNoMetadataKey() throws Exception {
+    EmbeddedActiveMq broker = new EmbeddedActiveMq();
+
+    AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
+    trans.setConvertBackToConsumedType(true);
+    try {
+      broker.start();
+      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      start(trans, session);
+
+      BytesMessage jmsMsg = session.createBytesMessage();
+      addProperties(jmsMsg);
+      jmsMsg.writeBytes(TEXT.getBytes());
+      jmsMsg.reset();
+
+      AdaptrisMessage msg = trans.translate(jmsMsg);
+      msg.removeMessageHeader("message.type");
+      Message producedMessage = trans.translate(msg);
+      
+      assertFalse(msg.headersContainsKey("message.type"));
+      assertTrue(producedMessage instanceof TextMessage);
+    }
+    finally {
+      stop(trans);
+      broker.destroy();
+    }
+
+  }
+  
+  public void testConvertFromConsumeTypeBytesIllegalMetadataKey() throws Exception {
+    EmbeddedActiveMq broker = new EmbeddedActiveMq();
+
+    AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
+    trans.setConvertBackToConsumedType(true);
+    try {
+      broker.start();
+      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      start(trans, session);
+
+      BytesMessage jmsMsg = session.createBytesMessage();
+      addProperties(jmsMsg);
+      jmsMsg.writeBytes(TEXT.getBytes());
+      jmsMsg.reset();
+
+      AdaptrisMessage msg = trans.translate(jmsMsg);
+      msg.addMessageHeader("message.type", "xxx.xxx");
+      Message producedMessage = trans.translate(msg);
+      
+      assertEquals("xxx.xxx", msg.getMetadataValue("message.type"));
+      assertTrue(producedMessage instanceof TextMessage);
+    }
+    finally {
+      stop(trans);
+      broker.destroy();
+    }
+
+  }
+  
   public void testBytesMessageToAdaptrisMessage() throws Exception {
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
 
@@ -230,6 +399,26 @@ public class AutoConvertMessageTranslatorTest extends MessageTypeTranslatorCase 
       
       AdaptrisMessage msg = trans.translate(jmsMsg);
       assertMetadata(msg);
+    }
+    finally {
+      stop(trans);
+      broker.destroy();
+    }
+  }
+  
+  public void testAdaptrisMessageToMessageWithFallback() throws Exception {
+    EmbeddedActiveMq broker = new EmbeddedActiveMq();
+
+    AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
+    trans.setJmsOutputType("xxx");
+    try {
+      broker.start();
+      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      start(trans, session);
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
+      
+      Message result = trans.translate(msg);
+      assertNotNull(result);
     }
     finally {
       stop(trans);

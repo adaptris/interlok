@@ -7,6 +7,7 @@
   <property name="nexus-releases" value="${nexus-base-url}/nexus/content/repositories/releases"/>
   <property name="nexus-snapshots" value="${nexus-base-url}/nexus/content/repositories/snapshots"/>
   <property name="local-m2-repo" value="${user.home}/.m2/repository/" />
+  <property name="local-nexus-repo" value="http://localhost:8081/content/groups/public" />
   <resolvers>
       <!-- Because we're using "custom examples conf" then we can't use an ibiblio resolver...
            we have to use a custom URL one, so that we don't use POMS which won't contain the
@@ -36,6 +37,7 @@
       <resolver ref="nexus-releases"/>
       <resolver ref="nexus-snapshots"/>
       -->
+      <ibiblio name="local-nexus-repo" m2compatible="true" root="${local-nexus-repo}"/>
       <ibiblio name="nexus-snapshots" m2compatible="true" root="${nexus-snapshots}" changingPattern=".*SNAPSHOT.*" checkmodified="true"/>
       <ibiblio name="nexus-releases" m2compatible="true" root="${nexus-releases}"/>
       <ibiblio name="nexus-public" m2compatible="true" root="${nexus-public}"/>

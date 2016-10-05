@@ -16,19 +16,21 @@
 
 package com.adaptris.core.services.jdbc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.adaptris.core.BaseCase;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.services.jdbc.StatementParameterImpl.QueryType;
 
-public class StatementParameterTest {
+public class StatementParameterTest extends BaseCase {
 
   private static final String STRING_VALUE = "ABCDEFG";
+
+  public StatementParameterTest(String n) {
+    super(n);
+  }
 
   @Before
   public void setUp() throws Exception {
@@ -81,6 +83,13 @@ public class StatementParameterTest {
     sp.setQueryClass(String.class.getCanonicalName());
     sp.setConvertNull(true);
     assertEquals("", sp.convertToQueryClass(null));
+  }
+
+  @Test
+  public void testMakeCopy() throws Exception {
+    StatementParameter sp = new StatementParameter("hello", String.class.getName(), QueryType.constant, null, null);
+    StatementParameter copy = sp.makeCopy();
+    assertRoundtripEquality(sp, copy);
   }
 
 }

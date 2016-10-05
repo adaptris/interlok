@@ -65,6 +65,22 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * a valid XML element name. If the actual name (in the database table definition) is not valid, the query should specify an alias
  * name in the query. E.g: <code>SELECT "col 1" AS "col1" FROM mytable;</code>
  * </p>
+ * <p>
+ * If you want to see how many rows were processed you can set one/both of the following;
+ * <table>
+ * <tr>
+ * <th>Item</th>
+ * <th>Description</th>
+ * <th>Value</th>
+ * </tr>
+ * <tr>
+ * <td>result-count-metadata-item</td><td>If set to a String metadata item name will specify the metadata item to contain the number of rows returned by your query</td><td>Metadata item name</td>
+ * </tr>
+ * <tr>
+ * <td>update-count-metadata-item</td><td>If set to a String metadata item name will specify the metadata item to contain the number of rows updated by your SQL statement</td><td>Metadata item name</td>
+ * </tr>
+ * </table>
+ * <p>
  * 
  * @config jdbc-xml-payload-translator
  * 
@@ -84,10 +100,12 @@ public class XmlPayloadTranslator extends XmlPayloadTranslatorImpl {
   }
 
   @Override
-  public void translate(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException {
+  public long translateResult(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException {
+    long resultSetCount = 0;
     try {
-      Document d = toDocument(source, target);
-      writeXmlDocument(d, target);
+      DocumentWrapper d = toDocument(source, target);
+      writeXmlDocument(d.document, target);
+      resultSetCount = d.resultSetCount;
     }
     catch (SQLException e) {
       throw e;
@@ -97,14 +115,16 @@ public class XmlPayloadTranslator extends XmlPayloadTranslatorImpl {
     }
     finally {
     }
+    return resultSetCount;
   }
 
-  private Document toDocument(JdbcResult rs, AdaptrisMessage msg) throws Exception {
+  private DocumentWrapper toDocument(JdbcResult rs, AdaptrisMessage msg) throws Exception {
     XmlUtils xu = createXmlUtils(msg);
     DocumentBuilderFactoryBuilder factoryBuilder = documentFactoryBuilder(msg);
     DocumentBuilderFactory factory = factoryBuilder.configure(DocumentBuilderFactory.newInstance());
     DocumentBuilder builder = factory.newDocumentBuilder();
     Document doc = builder.newDocument();
+    DocumentWrapper result = new DocumentWrapper(doc, 0);
     ColumnStyle elementNameStyle = getColumnNameStyle();
 
     Element results = doc.createElement(elementNameStyle.format(ELEMENT_NAME_RESULTS));
@@ -128,8 +148,9 @@ public class XmlPayloadTranslator extends XmlPayloadTranslatorImpl {
       for (Element element : elements) {
         results.appendChild(element);
       }
+      result.resultSetCount += elements.size();
     }
-    return doc;
+    return result;
   }
 
   private DocumentBuilderFactoryBuilder documentFactoryBuilder(AdaptrisMessage msg) {

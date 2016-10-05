@@ -16,23 +16,25 @@
 
 package com.adaptris.core.services.jdbc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.text.SimpleDateFormat;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.adaptris.core.BaseCase;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.services.jdbc.StatementParameterImpl.QueryType;
 
-public class TimeParameterTest {
+public class TimeParameterTest extends BaseCase {
 
   private static final String TIME_FORMAT = "HH:mm:ssZ";
   private String timeString;
   private java.sql.Time time;
+
+  public TimeParameterTest(String n) {
+    super(n);
+  }
 
   @Before
   public void setUp() throws Exception {
@@ -83,6 +85,15 @@ public class TimeParameterTest {
     long convertedTime = ((java.sql.Time) sp.toDate(null)).getTime();
     long now = System.currentTimeMillis();
     assertTrue(now >= convertedTime);
+  }
+
+  @Test
+  public void testMakeCopy() throws Exception {
+    TimestampStatementParameter sp = new TimestampStatementParameter(timeString, QueryType.constant, null, null,
+        new SimpleDateFormat(TIME_FORMAT));
+    TimestampStatementParameter copy = sp.makeCopy();
+    assertRoundtripEquality(sp, copy);
+
   }
 
   private TimeStatementParameter create() throws Exception {

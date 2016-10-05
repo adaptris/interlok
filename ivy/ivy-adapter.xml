@@ -37,8 +37,11 @@
     <dependency org="org.apache.activemq" name="activemq-kahadb-store" rev="5.10.0" conf="test->default"/>
     <dependency org="org.apache.activemq.protobuf" name="activemq-protobuf" rev="1.1" conf="test->default"/>
 
-    <dependency org="javax.validation" name="validation-api" rev="1.0.0.GA" conf="compile->default"/>
-    <dependency org="org.hibernate" name="hibernate-validator" rev="4.2.0.Final" conf="compile->default"/>
+
+    <dependency org="javax.validation" name="validation-api" rev="1.1.0.Final" conf="compile->default"/>
+    <dependency org="javax.el" name="javax.el-api" rev="2.2.4" conf="compile->default"/>
+    <dependency org="org.hibernate" name="hibernate-validator" rev="4.3.1.Final" conf="compile->default"/>
+    
     <dependency org="commons-collections" name="commons-collections"  rev="3.2.2" conf="compile->default" />
     <dependency org="commons-io" name="commons-io" rev="2.4" conf="compile->default"  />
     <dependency org="commons-lang" name="commons-lang" rev="2.6" conf="compile->default"  />
@@ -52,7 +55,12 @@
     <dependency org="org.bouncycastle" name="bcprov-ext-jdk15on" rev="1.53" conf="compile->default" />
 
     <dependency org="oro" name="oro" rev="2.0.8" conf="compile->default" />
-    <dependency org="javax.mail" name="mail" rev="1.4.7" conf="compile->default" />
+
+    <dependency org="com.sun.mail" name="javax.mail" rev="1.5.6" conf="compile->default"/>
+    <dependency org="com.sun.mail" name="smtp" rev="1.5.6" conf="compile->default"/>
+    <dependency org="com.sun.mail" name="imap" rev="1.5.6" conf="compile->default"/>
+    <dependency org="com.sun.mail" name="pop3" rev="1.5.6" conf="compile->default"/>
+
     <dependency org="org.glassfish.external" name="opendmk_jmxremote_optional_jar" rev="1.0-b01-ea" conf="compile->default"/>
     <dependency org="org.glassfish.external" name="opendmk_jdmkrt_jar" rev="1.0-b01-ea" conf="compile->default"/>
 
@@ -64,8 +72,9 @@
     <dependency org="org.slf4j" name="jul-to-slf4j" rev="1.7.18" conf="compile->default" />
     <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.18" conf="optional->default"/>
     <dependency org="log4j" name="log4j" rev="1.2.17" force="true" conf="optional->default;ant->default"/>
-    <dependency org="org.apache.logging.log4j" name="log4j-core" rev="2.4.1" conf="optional->default" />
-    <dependency org="org.apache.logging.log4j" name="log4j-api" rev="2.4.1"  conf="optional->default"/>
+    
+    <dependency org="org.apache.logging.log4j" name="log4j-core" rev="2.6.2" conf="optional->default" />
+    <dependency org="org.apache.logging.log4j" name="log4j-api" rev="2.6.2"  conf="optional->default"/>
     
 
     <dependency org="org.eclipse.jetty.aggregate" name="jetty-all" rev="8.1.16.v20140903" transitive="false" conf="compile->default" />
@@ -102,6 +111,7 @@
     <dependency org="ant-contrib" name="ant-contrib" rev="1.0b3" conf="ant->default" transitive="false"/>
     <dependency org="org.jacoco" name="org.jacoco.ant" rev="0.7.7.201606060606" conf="ant->default"/>
 
+    <exclude org="javax.mail" artifact="mail"/>
     <exclude org="c3p0"/>
     <exclude org="commons-logging"/>
     <exclude org="org.apache.geronimo"/>

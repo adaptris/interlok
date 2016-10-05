@@ -84,6 +84,23 @@ public abstract class JdbcQueryServiceCaseXmlResults extends JdbcQueryServiceCas
     logMessage(getName(), msg);
     assertEquals("UTF-8", msg.getContentEncoding());
   }
+  
+  public void testDoService_WithResultCount() throws Exception {
+    createDatabase();
+    List<AdapterTypeVersion> dbItems = generate(10);
+    AdapterTypeVersion entry = dbItems.get(0);
+    populateDatabase(dbItems, false);
+    JdbcDataQueryService s = createXmlService();
+    XmlPayloadTranslatorImpl translator = createPayloadTranslator();
+    translator.setOutputMessageEncoding("UTF-8");
+    translator.setResultCountMetadataItem("resultCount");
+    s.setResultSetTranslator(translator);
+    AdaptrisMessage msg = createMessage(entry);
+    execute(s, msg);
+    logMessage(getName(), msg);
+    assertTrue(msg.headersContainsKey("resultCount"));
+    assertEquals("1", msg.getMetadataValue("resultCount"));
+  }
 
   public void testDoService_WithEncodingUnspecified() throws Exception {
     createDatabase();

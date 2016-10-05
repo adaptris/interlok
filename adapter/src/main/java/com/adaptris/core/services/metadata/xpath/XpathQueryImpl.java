@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.InputFieldDefault;
 
 /**
@@ -39,6 +40,7 @@ public abstract class XpathQueryImpl implements XpathMetadataQuery {
   @InputFieldDefault(value = "false")
   private Boolean allowEmptyResults;
   @NotBlank
+  @AffectsMetadata
   private String metadataKey;
 
   public XpathQueryImpl() {

@@ -22,7 +22,7 @@ import static com.adaptris.core.runtime.AdapterComponentMBean.JMX_MSG_ERR_DIGEST
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.io.File;
-import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,7 +76,7 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
 
   public void testDigest() throws Exception {
     StandardMessageErrorDigester digester = createDigester();
-    File tempDir = createTempDir();
+    File tempDir = Files.createTempDirectory(this.getClass().getSimpleName()).toFile();
     tempDir.deleteOnExit();
     cleaner.track(tempDir, digester, FileDeleteStrategy.FORCE);
     doDigesting(digester, "testDigest", tempDir.getCanonicalPath());
@@ -332,6 +332,39 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
     }
   }
 
+  public void testMBean_RemoveDigestEntry_ByEntry_WithDelete() throws Exception {
+    String adapterName = this.getClass().getSimpleName() + "." + getName();
+    Adapter adapter = createAdapter(adapterName);
+    StandardMessageErrorDigester digester = createDigester();
+    digester.setUniqueId(getName());
+    adapter.setMessageErrorDigester(digester);
+    List<BaseComponentMBean> mBeans = createJmxManagers(adapter);
+    File tempDir = Files.createTempDirectory(this.getClass().getSimpleName()).toFile();
+    tempDir.deleteOnExit();
+    cleaner.track(tempDir, digester, FileDeleteStrategy.FORCE);
+    try {
+      start(adapter);
+      register(mBeans);
+      ObjectName adapterObj = createAdapterObjectName(adapterName);
+      ObjectName digesterObj = createMessageErrorDigestObjectName(adapterName, getName());
+
+      StandardMessageErrorDigesterJmxMBean errDigester = JMX.newMBeanProxy(mBeanServer, digesterObj,
+          StandardMessageErrorDigesterJmxMBean.class);
+      // The files don't actually exist; so they won't be deleted;
+      List<AdaptrisMessage> msgs = createAndDigest(digester, "testDigest", tempDir.getCanonicalPath());
+
+      assertNotNull(errDigester.getDigest());
+      assertEquals(5, errDigester.getDigest().size());
+      assertEquals(5, errDigester.getTotalErrorCount());
+      errDigester.remove(new MessageDigestErrorEntry(msgs.get(0).getUniqueId(), null), true);
+      assertEquals(4, errDigester.getDigest().size());
+      assertEquals(5, errDigester.getTotalErrorCount());
+    }
+    finally {
+      stop(adapter);
+    }
+  }
+
   public void testMBean_RemoveDigestEntry_ByMessageId() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -363,17 +396,57 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
     }
   }
 
-  private void doDigesting(StandardMessageErrorDigester digester, String errmsg, String fsLocation) throws Exception {
+  public void testMBean_RemoveDigestEntry_ByMessageId_WithDelete() throws Exception {
+    String adapterName = this.getClass().getSimpleName() + "." + getName();
+    Adapter adapter = createAdapter(adapterName);
+    StandardMessageErrorDigester digester = createDigester();
+    digester.setUniqueId(getName());
+    adapter.setMessageErrorDigester(digester);
+    List<BaseComponentMBean> mBeans = createJmxManagers(adapter);
+    File tempDir = Files.createTempDirectory(this.getClass().getSimpleName()).toFile();
+    tempDir.deleteOnExit();
+    cleaner.track(tempDir, digester, FileDeleteStrategy.FORCE);
+    try {
+      start(adapter);
+      register(mBeans);
+      ObjectName adapterObj = createAdapterObjectName(adapterName);
+      ObjectName digesterObj = createMessageErrorDigestObjectName(adapterName, getName());
+
+      StandardMessageErrorDigesterJmxMBean errDigester = JMX.newMBeanProxy(mBeanServer, digesterObj,
+          StandardMessageErrorDigesterJmxMBean.class);
+      // The files don't actually exist; so they won't be deleted;
+      List<AdaptrisMessage> msgs = createAndDigest(digester, "testDigest", tempDir.getCanonicalPath());
+
+      assertNotNull(errDigester.getDigest());
+      assertEquals(5, errDigester.getDigest().size());
+      assertEquals(5, errDigester.getTotalErrorCount());
+      errDigester.remove(msgs.get(0).getUniqueId(), true);
+      assertEquals(4, errDigester.getDigest().size());
+      assertEquals(5, errDigester.getTotalErrorCount());
+    }
+    finally {
+      stop(adapter);
+    }
+  }
+
+  private void doDigesting(StandardMessageErrorDigester digester, String errmsg, String fsLocation)
+      throws Exception {
     try {
       start(digester);
-      List<AdaptrisMessage> msgs = createListOfErrors(5, 1, errmsg, fsLocation);
-      for (AdaptrisMessage msg : msgs) {
-        digester.digest(msg);
-      }
+      createAndDigest(digester, errmsg, fsLocation);
     }
     finally {
       stop(digester);
     }
+  }
+
+  private List<AdaptrisMessage> createAndDigest(StandardMessageErrorDigester digester, String errmsg, String fsLocation)
+      throws Exception {
+    List<AdaptrisMessage> msgs = createListOfErrors(5, 1, errmsg, fsLocation);
+    for (AdaptrisMessage msg : msgs) {
+      digester.digest(msg);
+    }
+    return msgs;
   }
 
   public void testTotalCount_AcrossLifecycle() throws Exception {
@@ -452,12 +525,4 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
     }, false);
     return msg;
   }
-
-  private File createTempDir() throws IOException {
-    File result = File.createTempFile(this.getClass().getSimpleName(), "");
-    result.delete();
-    result.mkdirs();
-    return result;
-  }
-
 }

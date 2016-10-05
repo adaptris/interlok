@@ -28,6 +28,7 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.NullConnection;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.fs.FsProducer;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -65,8 +66,13 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("large-fs-producer")
 @AdapterComponent
-@ComponentProfile(summary = "Write the current message to the filesystem with large message support",
-    tag = "producer,fs,filesystem")
+@ComponentProfile(summary = "Write the current message to the filesystem with large message support", tag = "producer,fs,filesystem", recommended =
+{
+    NullConnection.class
+}, metadata =
+{
+    "producedname", "fsProduceDir"
+})
 @DisplayOrder(order = {"createDirs", "filenameCreator", "tempDirectory", "fsWorker"})
 public class LargeFsProducer extends FsProducer {
 

@@ -348,11 +348,26 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
   void reloadFromVersionControl() throws MalformedObjectNameException, CoreException, MalformedURLException, IOException;
 
   /**
+   * Recreate all adapters associated with this AdapterRegistry from their associated bootstrap file.
+   * <p>
+   * Note that the adapters will not be started as part of this process; this needs to be done separately.
+   * </p>
+   * 
+   * @throws MalformedObjectNameException if there was a problem with any objectname.
+   * @throws CoreException an error creating the underlying adapter(s).
+   * @throws IOException if there was a with reading the URL where the adapter is hosted.
+   * @throws MalformedURLException if there was a problem with the URL found from config.
+   * @return a set of object name representing for the associated {@link AdapterManagerMBean} instances created.
+   * @since 3.4.1
+   */
+  Set<ObjectName> reloadFromConfig() throws MalformedObjectNameException, CoreException, MalformedURLException, IOException;
+
+  /**
    * Attempts to unmarshal the component within this target runtime unit.
    * <p>
-   * This will verify that the component that was configured can be unmarshalled within the target
-   * runtime system. It is largely similar to the {@link #createAdapter(String)} method, however it
-   * does not try to register a new {@link AdapterManagerMBean} as part of the operation.
+   * This will verify that the component that was configured can be unmarshalled within the target runtime system. It is largely
+   * similar to the {@link #createAdapter(String)} method, however it does not try to register a new {@link AdapterManagerMBean} as
+   * part of the operation.
    * </p>
    * 
    * @param config the String representation of a component.

@@ -86,13 +86,7 @@ public abstract class BaseCase extends TestCase {
   protected transient Log log = LogFactory.getLog(this.getClass().getName());
   protected transient Logger slf4jLogger = LoggerFactory.getLogger(this.getClass());
 
-  /**
-   * <p>
-   * Creates a new instance.
-   * </p>
-   *
-   * @param name the name of the test
-   */
+
   public BaseCase(String name) {
     super(name);
   }
@@ -124,6 +118,9 @@ public abstract class BaseCase extends TestCase {
   }
 
   public static void start(ComponentLifecycle c) throws CoreException {
+    if (c instanceof ComponentLifecycleExtension) {
+      ((ComponentLifecycleExtension) c).prepare();
+    }
     LifecycleHelper.init(c);
     LifecycleHelper.start(c);
   }

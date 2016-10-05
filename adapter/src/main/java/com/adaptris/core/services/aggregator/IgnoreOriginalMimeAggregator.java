@@ -16,16 +16,13 @@
 
 package com.adaptris.core.services.aggregator;
 
-import static org.apache.commons.io.IOUtils.closeQuietly;
+import java.io.IOException;
 
-import java.io.OutputStream;
-import java.util.Collection;
+import javax.mail.MessagingException;
 
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
-import com.adaptris.core.CoreException;
-import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.text.mime.MultiPartOutput;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -55,23 +52,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class IgnoreOriginalMimeAggregator extends MimeAggregator {
 
   @Override
-  public void joinMessage(AdaptrisMessage original, Collection<AdaptrisMessage> messages) throws CoreException {
-    OutputStream out = null;
-    try {
-      MultiPartOutput output = new MultiPartOutput(original.getUniqueId());
-      for (AdaptrisMessage m : messages) {
-        output.addPart(m.getPayload(), getEncoding(), getContentId(m));
-        overwriteMetadata(m, original);
-      }
-      out = original.getOutputStream();
-      output.writeTo(out);
-      original.addMetadata(CoreConstants.MSG_MIME_ENCODED, Boolean.TRUE.toString());
-    }
-    catch (Exception e) {
-      ExceptionHelper.rethrowCoreException(e);
-    }
-    finally {
-      closeQuietly(out);
-    }
+  protected MultiPartOutput createInitialPart(AdaptrisMessage original) throws MessagingException, IOException {
+    return new MultiPartOutput(original.getUniqueId());
   }
 }

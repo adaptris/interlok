@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -50,6 +51,7 @@ import com.adaptris.core.stubs.AdaptrisMessageStub;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.stubs.StaticMockMessageProducer;
 import com.adaptris.core.stubs.StubMessageFactory;
+import com.adaptris.http.legacy.SimpleHttpProducer;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.TimeInterval;
 
@@ -271,7 +273,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new MockMessageProducer();
     MessageConsumer consumer = JettyHelper.createConsumer("/*");
-    consumer.getDestination().setFilterExpression("GET,HEAD,OPTIONS");
+    consumer.getDestination().setFilterExpression("GET,HEAD");
     Channel channel = JettyHelper.createChannel(connection, consumer, mockProducer);
     try {
       channel.requestStart();
@@ -286,9 +288,11 @@ public class HttpConsumerTest extends HttpConsumerExample {
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg, createProduceDestination(connection.getPort()));
       assertEquals("405", reply.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
-      log.info("ZZLC " + reply.toString());
       if (httpProducer instanceof JdkHttpProducer) {
-        assertEquals("GET,HEAD,OPTIONS", reply.getMetadataValue("Allow"));
+        List<String> methods = Arrays.asList(reply.getMetadataValue("Allow").split(","));
+        assertTrue(methods.contains("GET"));
+        assertTrue(methods.contains("HEAD"));
+        assertTrue(methods.contains("OPTIONS"));
       }
     }
     finally {
@@ -297,6 +301,40 @@ public class HttpConsumerTest extends HttpConsumerExample {
       PortManager.release(connection.getPort());
     }
   }
+
+  public void testConsumeWorkflow_Options_Automatic() throws Exception {
+    HttpConnection connection = createConnection(null);
+    MockMessageProducer mockProducer = new MockMessageProducer();
+    MessageConsumer consumer = JettyHelper.createConsumer("/*");
+    consumer.getDestination().setFilterExpression("GET,HEAD");
+    Channel channel = JettyHelper.createChannel(connection, consumer, mockProducer);
+    try {
+      channel.requestStart();
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+      httpProducer.setIgnoreReplyMetadata(false);
+      if (httpProducer instanceof JdkHttpProducer) {
+        ((JdkHttpProducer) httpProducer).setMethod("OPTIONS");
+        ((JdkHttpProducer) httpProducer).setReplyHttpHeadersAsMetadata(true);
+        ((JdkHttpProducer) httpProducer).setReplyMetadataPrefix(null);
+      } else {
+        ((SimpleHttpProducer) httpProducer).setMethod("OPTIONS");
+      }
+      start(httpProducer);
+      AdaptrisMessage reply = httpProducer.request(msg, createProduceDestination(connection.getPort()));
+      assertEquals("200", reply.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
+      if (httpProducer instanceof JdkHttpProducer) {
+        List<String> methods = Arrays.asList(reply.getMetadataValue("Allow").split(","));
+        assertTrue(methods.contains("GET"));
+        assertTrue(methods.contains("HEAD"));
+        assertTrue(methods.contains("OPTIONS"));
+      }
+    } finally {
+      stop(httpProducer);
+      channel.requestClose();
+      PortManager.release(connection.getPort());
+    }
+  }
+
 
   public void testConsumeWorkflow_PreserveHeaders_Legacy() throws Exception {
     HttpConnection connection = createConnection(null);
@@ -642,7 +680,6 @@ public class HttpConsumerTest extends HttpConsumerExample {
       channel.requestClose();
 
       channel.getWorkflowList().clear();
-      ;
       channel.getWorkflowList().add(workflow);
       channel.requestStart();
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);

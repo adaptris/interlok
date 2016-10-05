@@ -43,10 +43,25 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * be prefixed with the result set counter, plus the {@link #getResultSetCounterPrefix()} If there is only 1 result set, no prefix
  * will be applied for the result set count.
  * </p>
- * 
  * <p>
  * The counter starts from 1
  * </p>
+ * <p>
+ * If you want to see how many rows were processed you can set one/both of the following;
+ * <table>
+ * <tr>
+ * <th>Item</th>
+ * <th>Description</th>
+ * <th>Value</th>
+ * </tr>
+ * <tr>
+ * <td>result-count-metadata-item</td><td>If set to a String metadata item name will specify the metadata item to contain the number of rows returned by your query</td><td>Metadata item name</td>
+ * </tr>
+ * <tr>
+ * <td>update-count-metadata-item</td><td>If set to a String metadata item name will specify the metadata item to contain the number of rows updated by your SQL statement</td><td>Metadata item name</td>
+ * </tr>
+ * </table>
+ * <p>
  * 
  * @config jdbc-all-rows-metadata-translator
  * 
@@ -60,6 +75,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
     "rowTotalMetadataKey"})
 public class AllRowsMetadataTranslator extends MetadataResultSetTranslatorImpl {
 
+  /**
+   * @deprecated
+   * Use result-count-metadata-item to specify the key to which the result count will be set.
+   */
+  @Deprecated
   private String rowTotalMetadataKey;
 
   public AllRowsMetadataTranslator() {
@@ -67,13 +87,13 @@ public class AllRowsMetadataTranslator extends MetadataResultSetTranslatorImpl {
   }
 
   @Override
-  public void translate(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException {
+  public long translateResult(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException {
 
     List<MetadataElement> added = new ArrayList<MetadataElement>();
-    int resultSetCount = 0;
+    long resultSetCount = 0;
     for (JdbcResultSet resultSet : source.getResultSets()) {
       int counter = 0;
-      String resultSetPrefix = source.countResultSets() > 1 ? Integer.toString(resultSetCount) + getResultSetCounterPrefix() : "";
+      String resultSetPrefix = source.countResultSets() > 1 ? Long.toString(resultSetCount) + getResultSetCounterPrefix() : "";
       for (JdbcResultRow row : resultSet.getRows()) {
         for (int i = 0; i < row.getFieldCount(); i++) {
           MetadataElement md = new MetadataElement(resultSetPrefix + getMetadataKeyPrefix() + getSeparator()
@@ -83,18 +103,21 @@ public class AllRowsMetadataTranslator extends MetadataResultSetTranslatorImpl {
           }
           target.addMetadata(md);
         }
-
         counter++;
       }
+      // In the event that we have multiple selects (unlikely from a JdbcDataQuery) then
+      // row-total will have the total for each result set
+      // resultSetCount will have the total for all resultSets.
       if (!isEmpty(getRowTotalMetadataKey())) {
         target.addMetadata(resultSetPrefix + getRowTotalMetadataKey(), String.valueOf(counter));
       }      
-      resultSetCount++;
+      resultSetCount += counter;
     }
 
     if (log.isTraceEnabled()) {
       log.debug("Added metadata : " + added);
     }
+    return resultSetCount;
   }
 
   public String getRowTotalMetadataKey() {

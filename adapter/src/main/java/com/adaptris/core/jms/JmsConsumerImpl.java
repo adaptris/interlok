@@ -33,6 +33,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessageConsumerImp;
 import com.adaptris.core.AdaptrisMessageListener;
+import com.adaptris.core.ClosedState;
 import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.LifecycleHelper;
@@ -76,6 +77,7 @@ public abstract class JmsConsumerImpl extends AdaptrisMessageConsumerImp impleme
     acknowledgeMode = AcknowledgeMode.Mode.CLIENT_ACKNOWLEDGE.name();
     messageTranslator = new AutoConvertMessageTranslator();
     setCorrelationIdSource(new NullCorrelationIdSource());
+    changeState(ClosedState.getInstance());
   }
 
   // Here for test purposes.

@@ -69,7 +69,7 @@ public abstract class AdaptrisMessageWorkerImp implements AdaptrisMessageWorker 
       Thread thread = new ManagedThreadFactory().newThread(new Runnable() {
         @Override
         public void run() {
-          retrieveConnection(AdaptrisConnection.class).getConnectionErrorHandler().handleConnectionException();
+          retrieveConnection(AdaptrisConnection.class).connectionErrorHandler().handleConnectionException();
         }
       });
       thread.setName("Connection Exc: " + Thread.currentThread().getName());
@@ -80,7 +80,7 @@ public abstract class AdaptrisMessageWorkerImp implements AdaptrisMessageWorker 
 
   private boolean hasActiveErrorHandler() {
     AdaptrisConnection c = retrieveConnection(AdaptrisConnection.class);
-    return c != null && c.getConnectionErrorHandler() != null;
+    return c != null && c.connectionErrorHandler() != null;
   }
 
   @Override

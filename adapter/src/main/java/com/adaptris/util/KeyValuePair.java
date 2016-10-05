@@ -18,6 +18,7 @@ package com.adaptris.util;
 
 import java.io.Serializable;
 
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -66,12 +67,7 @@ public class KeyValuePair implements Serializable {
    * @param key may not be null.
    */
   public void setKey(String key) {
-    if (key == null) {
-      throw new IllegalArgumentException("illegal key [" + key + "]");
-    }
-    else {
-      this.key = key;
-    }
+    this.key = Args.notNull(key, "key");
   }
 
   /**
@@ -91,12 +87,7 @@ public class KeyValuePair implements Serializable {
    * @param value may not be null
    */
   public void setValue(String value) {
-    if (value == null) {
-      throw new IllegalArgumentException("illegal value [" + value + "]");
-    }
-    else {
-      this.value = value;
-    }
+      this.value = Args.notNull(value, "value");
   }
 
   /**

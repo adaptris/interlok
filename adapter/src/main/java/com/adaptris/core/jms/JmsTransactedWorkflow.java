@@ -22,7 +22,6 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.annotation.GenerateBeanInfo;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageConsumer;
@@ -55,7 +54,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("jms-transacted-workflow")
-@GenerateBeanInfo
 @AdapterComponent
 @ComponentProfile(summary = "JMS specific workflow that supports rollback of messages", tag = "workflow,jms")
 @DisplayOrder(order = {"strict", "waitPeriodAfterRollback", "disableDefaultMessageCount", "sendEvents", "logPayload"})
@@ -86,34 +84,19 @@ public final class JmsTransactedWorkflow extends StandardWorkflow {
       ((JmsPollingConsumerImpl) amc).setRollbackTimeout(waitPeriodAfterRollbackMs());
       ((JmsPollingConsumerImpl) amc).setTransacted(Boolean.TRUE);
     }
-    if (amc instanceof JmsConsumerImpl) {
+    else if (amc instanceof JmsConsumerImpl) {
       ((JmsConsumerImpl) amc).setRollbackTimeout(waitPeriodAfterRollbackMs());
       ((JmsConsumerImpl) amc).setTransacted(Boolean.TRUE);
+    }
+    else if (!(amc instanceof NullMessageConsumer)) {
+      throw new CoreException(this.getClass().getSimpleName() + " must be used with a JMSConsumer");
+    }
+    if (!(getProduceExceptionHandler() instanceof NullProduceExceptionHandler)) {
+      throw new CoreException(this.getClass().getSimpleName() + " may not have a ProduceExceptionHandler set");
     }
     super.initialiseWorkflow();
   }
 
-  @Override
-  public void setConsumer(AdaptrisMessageConsumer amc) {
-    if (amc instanceof JmsConsumerImpl) {
-      ((JmsConsumerImpl) amc).setTransacted(Boolean.TRUE);
-    }
-    else if (amc instanceof JmsPollingConsumerImpl) {
-      ((JmsPollingConsumerImpl) amc).setTransacted(Boolean.TRUE);
-    }
-    else if (!(amc instanceof NullMessageConsumer)) {
-      throw new IllegalArgumentException(this.getClass().getSimpleName() + " must be used with a JMSConsumer");
-    }
-    super.setConsumer(amc);
-  }
-
-  @Override
-  public void setProduceExceptionHandler(ProduceExceptionHandler peh) {
-    if (!(peh instanceof NullProduceExceptionHandler)) {
-      throw new IllegalArgumentException(this.getClass().getSimpleName() + " may not have a ProduceExceptionHandler set");
-    }
-    super.setProduceExceptionHandler(peh);
-  }
 
   @Override
   public synchronized void onAdaptrisMessage(AdaptrisMessage msg) {

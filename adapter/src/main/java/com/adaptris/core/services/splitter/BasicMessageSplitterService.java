@@ -23,7 +23,6 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.annotation.GenerateBeanInfo;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageProducer;
@@ -32,6 +31,7 @@ import com.adaptris.core.NullConnection;
 import com.adaptris.core.NullMessageProducer;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -48,7 +48,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * 
  */
-@GenerateBeanInfo
 @XStreamAlias("basic-message-splitter-service")
 @AdapterComponent
 @ComponentProfile(summary = "Split a message and produce each split message somewhere",
@@ -130,10 +129,7 @@ public class BasicMessageSplitterService extends MessageSplitterServiceImp {
    *          messages, may not be null
    */
   public void setConnection(AdaptrisConnection conn) {
-    if (conn == null) {
-      throw new IllegalArgumentException("param is null");
-    }
-    connection = conn;
+    connection = Args.notNull(conn, "connection");
   }
 
   /**
@@ -159,10 +155,7 @@ public class BasicMessageSplitterService extends MessageSplitterServiceImp {
    *          split messages, may not be null
    */
   public void setProducer(AdaptrisMessageProducer prod) {
-    if (prod == null) {
-      throw new IllegalArgumentException("param is null");
-    }
-    producer = prod;
+    producer = Args.notNull(prod, "producer");
   }
 
   /**

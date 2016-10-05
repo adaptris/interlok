@@ -233,7 +233,7 @@ public class ConnectionErrorHandlerTest extends BaseCase {
     }
 
     public void triggerError() {
-      getConnectionErrorHandler().handleConnectionException();
+      connectionErrorHandler().handleConnectionException();
     }
 
     @Override

@@ -88,6 +88,26 @@ public class XmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlResults {
     assertNotNull("/Results/Row", xu.getSingleNode("/Results/Row"));
   }
 
+  public void testContainsRowCount() throws Exception {
+    createDatabase();
+    List<AdapterTypeVersion> dbItems = generate(10);
+    AdapterTypeVersion entry = dbItems.get(0);
+
+    populateDatabase(dbItems, false);
+    JdbcDataQueryService s = createMetadataService();
+    XmlPayloadTranslator t = new XmlPayloadTranslator();
+    t.setResultCountMetadataItem(getName());
+    s.setResultSetTranslator(t);
+    AdaptrisMessage msg = createMessage(entry);
+    execute(s, msg);
+    assertTrue(ADAPTER_ID_KEY + " exists", msg.containsKey(ADAPTER_ID_KEY));
+    XmlUtils xu = XmlHelper.createXmlUtils(msg);
+    assertNull("Xpath /Results/OriginalMessage", xu.getSingleNode("/Results/OriginalMessage"));
+    assertNotNull("/Results/Row", xu.getSingleNode("/Results/Row"));
+    assertTrue(msg.containsKey(getName()));
+    assertEquals("1", msg.getMetadataValue(getName()));
+  }
+
 
   public void testXpathStatementParamWithLowerCase() throws Exception {
     createDatabase();
