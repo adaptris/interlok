@@ -16,6 +16,8 @@
 
 package com.adaptris.security.password;
 
+import static com.adaptris.security.password.Password.MSCAPI_STYLE;
+
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.Certificate;
@@ -25,7 +27,7 @@ import javax.crypto.Cipher;
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.util.text.Base64ByteTranslator;
 
-class MicrosoftCrypto extends PasswordImpl {
+public class MicrosoftCrypto extends PasswordImpl {
 
   private PrivateKey privateKey;
   private Certificate certificate;
@@ -46,12 +48,16 @@ class MicrosoftCrypto extends PasswordImpl {
     }
   }
 
+  public boolean canHandle(String type) {
+    return type != null && type.startsWith(MSCAPI_STYLE);
+  }
+
   public String decode(String encrypted, String charset) throws PasswordException {
     String encryptedString = encrypted;
     String result;
 
-    if (encrypted.startsWith(Password.MSCAPI_STYLE)) {
-      encryptedString = encrypted.substring(Password.MSCAPI_STYLE.length());
+    if (encrypted.startsWith(MSCAPI_STYLE)) {
+      encryptedString = encrypted.substring(MSCAPI_STYLE.length());
     }
     try {
       Cipher cipher = Cipher.getInstance("RSA");
@@ -76,7 +82,7 @@ class MicrosoftCrypto extends PasswordImpl {
     catch (Exception e) {
       throw new PasswordException(e);
     }
-    return Password.MSCAPI_STYLE + base64.translate(encryptedBody);
+    return MSCAPI_STYLE + base64.translate(encryptedBody);
   }
 
 }

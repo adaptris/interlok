@@ -189,6 +189,11 @@
       <zipfileset dir="${basedir}/.." prefix="META-INF">
         <include name="LICENSE"/>
       </zipfileset>
+      <service type="com.adaptris.security.password.PasswordCodec">
+        <provider classname="com.adaptris.security.password.AesCrypto"/>
+        <provider classname="com.adaptris.security.password.MicrosoftCrypto"/>
+        <provider classname="com.adaptris.security.password.PbeCrypto"/>
+      </service>
     </jar>
   </target>
 
@@ -218,15 +223,20 @@
         <include name="**/util/system/*"/>
         <include name="META-INF/**"/>
       </fileset>
+      <zipfileset dir="${basedir}/.." prefix="META-INF">
+        <include name="LICENSE"/>
+      </zipfileset>
     </jar>
   </target>
 
 
-  <target name="compile.tests" depends="compile, jar.resources">
+  <target name="compile.tests" depends="compile, jar">
     <javac source="${javac.target.version}" target="${javac.target.version}" destdir="${testclasses.build.dir}" srcdir="${testsrc.dir}"
       debug="on" debuglevel="source,lines,vars" includeAntRuntime="true">
       <classpath id="classpath.compiletests">
-        <pathelement path="${classes.build.dir}"/>
+        <fileset dir="${project.dist.dir}">
+          <include name="${jar.name}"/>
+        </fileset>
         <path refid="main.classpath"/>
       </classpath>
     </javac>
@@ -373,7 +383,9 @@
         <classpath id="classpath.runtests">
           <dirset dir="${test.resources.dir}"/>
           <path refid="main.classpath"/>
-          <pathelement path="${classes.build.dir}"/>
+          <fileset dir="${project.dist.dir}">
+            <include name="${jar.name}"/>
+          </fileset>
           <pathelement path="${testclasses.build.dir}"/>
           <!--dirset dir="${resources.dir}/config"/-->
         </classpath>
@@ -397,7 +409,9 @@
       <classpath id="classpath.runtests">
         <dirset dir="${test.resources.dir}"/>
         <path refid="main.classpath"/>
-        <pathelement path="${classes.build.dir}"/>
+        <fileset dir="${project.dist.dir}">
+          <include name="${jar.name}"/>
+        </fileset>
         <pathelement path="${testclasses.build.dir}"/>
         <!--dirset dir="${resources.dir}/config"/-->
       </classpath>
@@ -425,7 +439,7 @@
           <group title="Raw Sockets" packages="com.adaptris.core.socket:com.adaptris.core.socket.*:com.adaptris.core.transport:com.adaptris.core.transport.*:com.adaptris.transport:com.adaptris.transport.*"/>
           <group title="Adapter Management" packages="com.adaptris.core.management:com.adaptris.core.management.*:com.adaptris.failover:com.adaptris.core.runtime:com.adaptris.core.runtime.*"/>
       </grouping>
-    </interlok:create-javadocs>    
+    </interlok:create-javadocs>
   </target>
 
   <target name="findbugs.init" depends="compile, jar.resources" if="findbugs.home">
@@ -470,8 +484,8 @@
 
   <target name="test-check-for-failure" depends="jar, stubs.jar, execute-tests" unless="${ignore.test.failures}">
    <fail message="JUNIT tests failed, check output in ${tests.output.dir}" if="junit.failed"/>
-  </target>  
-  
+  </target>
+
   <target name="prepare-for-publish" depends="test-check-for-failure, test-never-fail, javadoc">
     <mkdir dir="${project.dist.dir}/adp-core/javadoc"/>
     <mkdir dir="${project.dist.dir}/adp-core/examples"/>

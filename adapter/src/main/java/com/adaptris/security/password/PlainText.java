@@ -29,4 +29,9 @@ class PlainText extends PasswordImpl {
   public String encode(String plainText, String charset) {
     return plainText;
   }
+
+  @Override
+  public boolean canHandle(String type) {
+    return true;
+  }
 }

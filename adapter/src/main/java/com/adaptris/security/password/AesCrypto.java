@@ -16,6 +16,8 @@
 
 package com.adaptris.security.password;
 
+import static com.adaptris.security.password.Password.PORTABLE_PASSWORD;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -34,7 +36,7 @@ import com.adaptris.security.exc.PasswordException;
 import com.adaptris.security.util.SecurityUtil;
 import com.adaptris.util.text.Base64ByteTranslator;
 
-class AesCrypto extends PasswordImpl {
+public class AesCrypto extends PasswordImpl {
 
   private static final String ALG = "AES";
   private static final String CIPHER = "AES/CBC/PKCS5Padding";
@@ -46,13 +48,17 @@ class AesCrypto extends PasswordImpl {
     base64 = new Base64ByteTranslator();
   }
 
+  public boolean canHandle(String type) {
+    return type != null && type.startsWith(PORTABLE_PASSWORD);
+  }
+
   public String decode(String encrypted, String charset) throws PasswordException {
 
     String encryptedString = encrypted;
     String result;
 
-    if (encrypted.startsWith(Password.PORTABLE_PASSWORD)) {
-      encryptedString = encrypted.substring(Password.PORTABLE_PASSWORD.length());
+    if (encrypted.startsWith(PORTABLE_PASSWORD)) {
+      encryptedString = encrypted.substring(PORTABLE_PASSWORD.length());
     }
     try {
       Input input = new Input(encryptedString);
@@ -88,7 +94,7 @@ class AesCrypto extends PasswordImpl {
       output.setSessionKey(sessionKey.getEncoded());
       output.setSessionVector(dataCipher.getIV());
       output.setEncryptedData(encryptedBody);
-      result = Password.PORTABLE_PASSWORD + output.write();
+      result = PORTABLE_PASSWORD + output.write();
     }
     catch (Exception e) {
       throw new PasswordException(e);
