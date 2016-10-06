@@ -18,17 +18,23 @@ package com.adaptris.core.ftp;
 
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isA;
 import static org.mockito.Matchers.matches;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import java.io.FileFilter;
+import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
 
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.CoreException;
@@ -136,22 +142,32 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
   
   public void testSingleFileWithEncoderConsume() throws Exception {
     String payload = "My file payload";
-    
-    this.setFilesToConsume(
-        new String[] { "/MySingleFile.txt" }, 
-        new String[] { payload },
-        new long[] { calendarOneYearAgo.getTimeInMillis() }
-    );
-    
-    consumer.setEncoder(new MockEncoder());
-    
-    LifecycleHelper.init(consumer);
-    LifecycleHelper.start(consumer);
-    
-    this.waitForConsumer(1, 3000);
-    
-    assertEquals(1, messageListener.getMessages().size());
-    assertEquals(payload, messageListener.getMessages().get(0).getContent());
+    String oldname = Thread.currentThread().getName();
+    try {
+      Thread.currentThread().setName(getName());
+      this.setFilesToConsume(new String[]
+      {
+          "/MySingleFile.txt"
+      }, new String[]
+      {
+          payload
+      }, new long[]
+      {
+          calendarOneYearAgo.getTimeInMillis()
+      });
+      consumer.setEncoder(new MockEncoder());
+
+      LifecycleHelper.init(consumer);
+      LifecycleHelper.start(consumer);
+
+      this.waitForConsumer(1, 3000);
+
+      assertEquals(1, messageListener.getMessages().size());
+      assertEquals(payload, messageListener.getMessages().get(0).getContent());
+    }
+    finally {
+      Thread.currentThread().setName(oldname);
+    }
   }
   
   public void testMultipleFileConsume() throws Exception {
@@ -292,14 +308,24 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
    * 
    ***********************************************************************************************/
   
-  private void setFilesToConsume(String[] fileNames, String[] filePayloads, long[] lastModified) throws Exception {
+  private void setFilesToConsume(final String[] fileNames, final String[] filePayloads, final long[] lastModified)
+      throws Exception {
     when(mockFileTransferClient.dir(DIR_ROOT)).thenReturn(fileNames);
     when(mockFileTransferClient.dir(matches(DIR_ROOT), (FileFilter) anyObject())).thenReturn(fileNames);
-    int count = 0;
-    for(String fileName : fileNames) {
-      when(mockFileTransferClient.get("/" + fileName)).thenReturn(filePayloads[count].getBytes());
-      when(mockFileTransferClient.lastModified("/" + fileName)).thenReturn(lastModified[count]);
-      count ++;
+    for (int i = 0; i < fileNames.length; i++) {
+      final int count = i;
+      when(mockFileTransferClient.get("/" + fileNames[count])).thenReturn(filePayloads[count].getBytes());
+      Mockito.doAnswer(new Answer() {
+
+        @Override
+        public Object answer(InvocationOnMock invocation) throws Throwable {
+          OutputStream out = (OutputStream) invocation.getArguments()[0];
+          out.write(filePayloads[count].getBytes());
+          return null;
+        }
+
+      }).when(mockFileTransferClient).get(isA(OutputStream.class), eq("/" + fileNames[count]));
+      when(mockFileTransferClient.lastModified("/" + fileNames[count])).thenReturn(lastModified[count]);
     }
   }
   

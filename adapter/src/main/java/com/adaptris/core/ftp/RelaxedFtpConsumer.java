@@ -19,7 +19,6 @@ package com.adaptris.core.ftp;
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 
 import java.io.FileFilter;
-import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -218,17 +217,12 @@ public class RelaxedFtpConsumer extends AdaptrisPollingConsumer {
     if (additionalDebug) {
       log.trace("Start processing [" + fullPath + "]");
     }
-    AdaptrisMessage adpMsg = null;
-    if (getEncoder() == null) {
-      adpMsg = defaultIfNull(getMessageFactory()).newMessage();
-      OutputStream out = adpMsg.getOutputStream();
-      ftpClient.get(out, fullPath);
-      out.close();
+    EncoderWrapper encWrapper = new EncoderWrapper(defaultIfNull(getMessageFactory()).newMessage(), getEncoder());
+    try (EncoderWrapper wrapper = encWrapper) {
+      ftpClient.get(wrapper, fullPath);
     }
-    else {
-      byte[] remoteBytes = ftpClient.get(fullPath);
-      adpMsg = decode(remoteBytes);
-    }
+    AdaptrisMessage adpMsg = encWrapper.build();
+
     adpMsg.addMetadata(CoreConstants.ORIGINAL_NAME_KEY, filename);
     adpMsg.addMetadata(CoreConstants.FS_FILE_SIZE, "" + adpMsg.getSize());
     retrieveAdaptrisMessageListener().onAdaptrisMessage(adpMsg);
@@ -327,4 +321,5 @@ public class RelaxedFtpConsumer extends AdaptrisPollingConsumer {
   public void setFailOnDeleteFailure(Boolean b) {
     failOnDeleteFailure = b;
   }
+
 }

@@ -20,7 +20,6 @@ import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -252,17 +251,11 @@ public class FtpConsumer extends AdaptrisPollingConsumer {
       log.trace("Renaming [" + fullPath + "] to [" + wipFile + "]");
     }
     ftpClient.rename(fullPath, wipFile);
-    AdaptrisMessage adpMsg = null;
-    if (getEncoder() == null) {
-      adpMsg = defaultIfNull(getMessageFactory()).newMessage();
-      OutputStream out = adpMsg.getOutputStream();
-      ftpClient.get(out, wipFile);
-      out.close();
+    EncoderWrapper encWrapper = new EncoderWrapper(defaultIfNull(getMessageFactory()).newMessage(), getEncoder());
+    try (EncoderWrapper wrapper = encWrapper) {
+      ftpClient.get(wrapper, wipFile);
     }
-    else {
-      byte[] remoteBytes = ftpClient.get(wipFile);
-      adpMsg = decode(remoteBytes);
-    }
+    AdaptrisMessage adpMsg = encWrapper.build();
     adpMsg.addMetadata(CoreConstants.ORIGINAL_NAME_KEY, filename);
     adpMsg.addMetadata(CoreConstants.FS_FILE_SIZE, "" + adpMsg.getSize());
     retrieveAdaptrisMessageListener().onAdaptrisMessage(adpMsg);
