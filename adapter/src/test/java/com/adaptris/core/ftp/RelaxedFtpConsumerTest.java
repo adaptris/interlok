@@ -238,7 +238,8 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
   }
   
   public void testIncorrectPathConsume() throws Exception {
-    when(mockFtpConnection.connect(consumeDestination.getDestination())).thenThrow(new FileTransferException("Expected"));
+    when(mockFtpConnection.connect(consumeDestination.getDestination()))
+        .thenThrow(new FileTransferException("testIncorrectPathConsume"));
     
     this.setFilesToConsume(
         new String[] { "/MySingleFile.txt" }, 
@@ -259,7 +260,9 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
         new long[] { calendarOneYearAgo.getTimeInMillis() }
     );
     
-    when(mockFileTransferClient.dir(DIR_ROOT)).thenThrow(new FileTransferException("Expected"));
+    when(mockFileTransferClient.dir(DIR_ROOT)).thenThrow(new FileTransferException("testDirFailsIncorrectPathConsume"));
+    when(mockFileTransferClient.dir(eq(DIR_ROOT), isA(FileFilter.class)))
+        .thenThrow(new FileTransferException("testDirFailsIncorrectPathConsume"));
     
     LifecycleHelper.init(consumer);
     LifecycleHelper.start(consumer);
