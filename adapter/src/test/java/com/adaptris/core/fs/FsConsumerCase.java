@@ -24,12 +24,18 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import javax.management.JMX;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.oro.io.AwkFilenameFilter;
 import org.apache.oro.io.GlobFilenameFilter;
 import org.apache.oro.io.Perl5FilenameFilter;
 
+import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.Channel;
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.ConsumerCase;
@@ -38,6 +44,7 @@ import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.Poller;
 import com.adaptris.core.QuartzCronPoller;
 import com.adaptris.core.StandaloneConsumer;
+import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.fs.enhanced.AlphabeticAscending;
 import com.adaptris.core.fs.enhanced.AlphabeticDescending;
 import com.adaptris.core.fs.enhanced.FileSorter;
@@ -46,6 +53,8 @@ import com.adaptris.core.fs.enhanced.LastModifiedDescending;
 import com.adaptris.core.fs.enhanced.NoSorting;
 import com.adaptris.core.fs.enhanced.SizeAscending;
 import com.adaptris.core.fs.enhanced.SizeDescending;
+import com.adaptris.core.runtime.AdapterManager;
+import com.adaptris.core.util.JmxHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.TimeInterval;
@@ -63,7 +72,8 @@ public abstract class FsConsumerCase extends ConsumerCase {
 
   private static final Poller[] POLLERS =
   {
-      new FixedIntervalPoller(new TimeInterval(60L, TimeUnit.SECONDS)), new QuartzCronPoller("0 */5 * * * ?"), new FsImmediateEventPoller()
+      new FixedIntervalPoller(new TimeInterval(60L, TimeUnit.SECONDS)), new QuartzCronPoller("0 */5 * * * ?"),
+      new FsImmediateEventPoller()
   };
 
   private static final List<Poller> POLLER_LIST = Arrays.asList(POLLERS);
@@ -587,6 +597,38 @@ public abstract class FsConsumerCase extends ConsumerCase {
     fs.setQuietInterval(null);
     assertNull(fs.getQuietInterval());
     assertEquals(defaultInterval.toMilliseconds(), fs.olderThanMs());
+  }
+
+  public void testFsMonitor() throws Exception {
+    String subdir = new GuidGenerator().safeUUID();
+
+    FsConsumerImpl fs = createConsumer(subdir);
+    fs.setUniqueId(getName());
+    Adapter adapter = new Adapter();
+    adapter.setUniqueId(getName());
+    Channel channel = new Channel();
+    channel.setUniqueId(getName());
+    StandardWorkflow wf = new StandardWorkflow();
+    wf.setUniqueId(getName());
+    wf.setConsumer(fs);
+    channel.getWorkflowList().add(wf);
+    adapter.getChannelList().add(channel);
+
+    AdapterManager am = new AdapterManager(adapter);
+    try {
+      am.registerMBean();
+      am.requestInit();
+      String objectNameString = String.format("com.adaptris:type=FsMonitor,adapter=%s,channel=%s,workflow=%s,id=%s", getName(),
+          getName(), getName(), getName());
+      MBeanServer mBeanServer = JmxHelper.findMBeanServer();
+      FsConsumerMonitorMBean mbean = JMX.newMBeanProxy(mBeanServer, ObjectName.getInstance(objectNameString),
+          FsConsumerMonitorMBean.class);
+      assertEquals(0, mbean.filesRemaining());
+    }
+    finally {
+      am.requestClose();
+      am.unregisterMBean();
+    }
   }
 
   @Override

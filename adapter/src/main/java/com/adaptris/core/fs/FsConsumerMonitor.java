@@ -17,8 +17,6 @@ package com.adaptris.core.fs;
 
 import static com.adaptris.core.runtime.AdapterComponentMBean.JMX_FS_MONITOR_TYPE;
 
-import javax.management.MalformedObjectNameException;
-
 import com.adaptris.core.runtime.ChildRuntimeInfoComponentImpl;
 import com.adaptris.core.runtime.ParentRuntimeInfoComponent;
 import com.adaptris.core.runtime.WorkflowManager;
@@ -31,7 +29,7 @@ public class FsConsumerMonitor extends ChildRuntimeInfoComponentImpl implements 
     super();
   }
 
-  FsConsumerMonitor(WorkflowManager owner, FsConsumerImpl fs) throws MalformedObjectNameException {
+  FsConsumerMonitor(WorkflowManager owner, FsConsumerImpl fs) {
     parent = owner;
     wrappedComponent = fs;
   }
