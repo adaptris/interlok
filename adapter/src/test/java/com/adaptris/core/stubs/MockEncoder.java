@@ -56,7 +56,7 @@ public class MockEncoder extends AdaptrisMessageEncoderImp {
     try {
       msg = currentMessageFactory().newMessage();
       if (!(source instanceof InputStream)) {
-        throw new IllegalArgumentException("MockEncoder can only decode from an OutputStream");
+        throw new IllegalArgumentException("MockEncoder can only decode from an InputStream");
       }
       out = msg.getOutputStream();
       IOUtils.copy((InputStream) source, out);

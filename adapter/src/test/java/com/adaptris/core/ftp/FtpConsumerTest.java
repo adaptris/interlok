@@ -346,6 +346,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
       FtpConsumer ftpConsumer = createForTests(listener, "testConsumeWithQuietPeriodAndTimezone");
       ftpConsumer.setQuietInterval(new TimeInterval(3L, TimeUnit.SECONDS));
       FtpConnection consumeConnection = create(server);
+      consumeConnection.setAdditionalDebug(true);
       consumeConnection.setServerTimezone("America/Los_Angeles");
 
       sc = new StandaloneConsumer(consumeConnection, ftpConsumer);
