@@ -127,7 +127,7 @@ public class FtpConsumer extends FtpConsumerImpl {
 
   private boolean processMessage(String fullPath, String procDir) throws Exception {
     String wipFile = fullPath + wipSuffix();
-    String filename = getFilename(fullPath);
+    String filename = FtpHelper.getFilename(fullPath);
     if (additionalDebug()) {
       log.trace("Renaming [{}] to [{}]", fullPath, wipFile);
     }

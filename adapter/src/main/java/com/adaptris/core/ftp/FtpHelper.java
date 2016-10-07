@@ -26,7 +26,7 @@ public class FtpHelper {
    * @param windowsWorkaround {@link FileTransferConnection#setWindowsWorkAround(Boolean)}.
    * @return the filename.
    */
-  public static String getUnqualifiedFilename(String s, boolean windowsWorkaround) {
+  public static String getFilename(String s, boolean windowsWorkaround) {
     String result = s;
     int slashPos = -1;
     if (windowsWorkaround) {
@@ -35,10 +35,14 @@ public class FtpHelper {
     else {
       slashPos = s.lastIndexOf(FORWARD_SLASH);
     }
-    if (slashPos >= 0) {
+    if (slashPos >= 0 && s.length() > slashPos) {
       result = s.substring(slashPos + 1);
     }
     return result;
+  }
+
+  public static String getFilename(String fullPath) {
+    return getFilename(fullPath, false);
   }
 
 }

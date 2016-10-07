@@ -17,7 +17,6 @@
 package com.adaptris.core.ftp;
 
 import static com.adaptris.core.ftp.FtpHelper.FORWARD_SLASH;
-import static com.adaptris.core.ftp.FtpHelper.getUnqualifiedFilename;
 
 import java.io.FileFilter;
 import java.io.IOException;
@@ -97,15 +96,6 @@ public abstract class FtpConsumerImpl extends AdaptrisPollingConsumer {
     return msg;
   }
 
-  protected String getFilename(String fullPath) {
-    String result = fullPath;
-    int pos = fullPath.lastIndexOf(FORWARD_SLASH);
-    if (pos >= 0 && fullPath.length() > pos) {
-      result = fullPath.substring(pos + 1);
-    }
-    return result;
-  }
-
   @Override
   protected int processMessages() {
     int count = 0;
@@ -128,7 +118,7 @@ public abstract class FtpConsumerImpl extends AdaptrisPollingConsumer {
         log.trace("There are potentially [{}] messages to process", files.length);
       }
       for (String file : files) {
-        String fileToGet = pollDirectory + FORWARD_SLASH + getUnqualifiedFilename(file, con.windowsWorkaround());
+        String fileToGet = pollDirectory + FORWARD_SLASH + FtpHelper.getFilename(file, con.windowsWorkaround());
         count += handle(fileToGet) ? 1 : 0;
         if (!continueProcessingMessages()) {
           break;

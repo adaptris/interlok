@@ -78,7 +78,7 @@ public class RelaxedFtpConsumer extends FtpConsumerImpl {
   }
 
   protected boolean fetchAndProcess(String fullPath) throws Exception {
-    String filename = getFilename(fullPath);
+    String filename = FtpHelper.getFilename(fullPath);
     if (additionalDebug()) {
       log.trace("Start processing [{}]", fullPath);
     }

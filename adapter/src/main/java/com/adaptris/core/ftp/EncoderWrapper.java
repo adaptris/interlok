@@ -26,7 +26,15 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageEncoder;
 
 
-public class EncoderWrapper extends OutputStream {
+/**
+ * OutputStream wrapper that manages the {@link AdaptrisMessageEncoder} for us.
+ * 
+ * <p>
+ * Only fit for purpose where the associated encoder handles an InputStream, so really, only MimeEncoder, but then that's the only
+ * encoder; (should that interface just change).
+ * </p>
+ */
+class EncoderWrapper extends OutputStream {
 
   private transient OutputStream wrapped;
   private transient AdaptrisMessage wrappedMsg;
