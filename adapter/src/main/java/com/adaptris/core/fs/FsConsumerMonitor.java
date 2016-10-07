@@ -13,32 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 */
+package com.adaptris.core.fs;
 
-package com.adaptris.core.interceptor;
-
-import static com.adaptris.core.runtime.AdapterComponentMBean.JMX_INFLIGHT_TYPE;
+import static com.adaptris.core.runtime.AdapterComponentMBean.JMX_FS_MONITOR_TYPE;
 
 import com.adaptris.core.runtime.ChildRuntimeInfoComponentImpl;
 import com.adaptris.core.runtime.ParentRuntimeInfoComponent;
 import com.adaptris.core.runtime.WorkflowManager;
 
-public class MessageInFlight extends ChildRuntimeInfoComponentImpl implements MessageInFlightMBean {
-
+public class FsConsumerMonitor extends ChildRuntimeInfoComponentImpl implements FsConsumerMonitorMBean {
   private transient WorkflowManager parent;
-  private transient InFlightWorkflowInterceptor wrappedComponent;
+  private transient FsConsumerImpl wrappedComponent;
 
-  private MessageInFlight() {
+  private FsConsumerMonitor() {
     super();
   }
 
-  protected MessageInFlight(WorkflowManager owner, InFlightWorkflowInterceptor interceptor) {
+  FsConsumerMonitor(WorkflowManager owner, FsConsumerImpl fs) {
     parent = owner;
-    wrappedComponent = interceptor;
+    wrappedComponent = fs;
   }
 
   @Override
   protected String getType() {
-    return JMX_INFLIGHT_TYPE;
+    return JMX_FS_MONITOR_TYPE;
   }
 
   @Override
@@ -48,15 +46,15 @@ public class MessageInFlight extends ChildRuntimeInfoComponentImpl implements Me
 
 
   @Override
-  public boolean messagesInFlight() {
-    return wrappedComponent.messagesInFlightCount() > 0;
+  public int filesRemaining() {
+    int remaining = -1;
+    try {
+      remaining = wrappedComponent.filesRemaining();
+    }
+    catch (Exception e) {
+    }
+    return remaining;
   }
-
-  @Override
-  public int messagesInFlightCount() {
-    return wrappedComponent.messagesInFlightCount();
-  }
-
 
   @Override
   public ParentRuntimeInfoComponent getParentRuntimeInfoComponent() {
