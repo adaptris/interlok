@@ -127,6 +127,11 @@ public interface AdapterComponentMBean extends BaseComponentMBean {
    */
   String JMX_INFLIGHT_TYPE = JMX_DOMAIN_NAME + ":type=InFlight";
 
+  /**
+   * The standard JMX Prefix for a given Filesystem monitor exposed via JMX which resolves to {@value}
+   * 
+   */
+  String JMX_FS_MONITOR_TYPE = JMX_DOMAIN_NAME + ":type=FsMonitor";
 
   /**
    * The standard JMX Prefix for an Interceptor which emits {@link javax.management.Notification}
