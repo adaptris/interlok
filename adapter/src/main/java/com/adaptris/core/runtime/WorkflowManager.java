@@ -18,6 +18,7 @@ package com.adaptris.core.runtime;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -31,9 +32,11 @@ import javax.management.MalformedObjectNameException;
 import javax.management.Notification;
 import javax.management.ObjectName;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ComponentState;
 import com.adaptris.core.CoreException;
@@ -91,12 +94,13 @@ public class WorkflowManager extends ComponentManagerImpl<Workflow>implements Wo
     myObjectName = ObjectName.getInstance(JMX_WORKFLOW_TYPE + ADAPTER_PREFIX + getParent().getParent().getUniqueId()
         + CHANNEL_PREFIX + getParent().getUniqueId() + ID_PREFIX + getWrappedComponent().getUniqueId());
     configureDefaultInterceptors();
-    List<WorkflowInterceptor> interceptors = managedWorkflow.getInterceptors();
-    for (WorkflowInterceptor interceptor : interceptors) {
-      ChildRuntimeInfoComponent comp = (ChildRuntimeInfoComponent) RuntimeInfoComponentFactory.create(this, interceptor);
-      if (comp != null) {
-        addChildJmxComponent(comp);
-      }
+    Collection<AdaptrisComponent> runtimeCandidates = CollectionUtils.union(managedWorkflow.getInterceptors(),
+        Arrays.asList(new AdaptrisComponent[]
+        {
+            managedWorkflow.getConsumer(), managedWorkflow.getProducer()
+        }));
+    for (AdaptrisComponent c : runtimeCandidates) {
+      addChildJmxComponentQuietly((ChildRuntimeInfoComponent) RuntimeInfoComponentFactory.create(this, c));
     }
     marshalConfig();
   }
@@ -266,6 +270,13 @@ public class WorkflowManager extends ComponentManagerImpl<Workflow>implements Wo
       result.add(cmb.createObjectName());
     }
     return result;
+  }
+
+  private boolean addChildJmxComponentQuietly(ChildRuntimeInfoComponent comp) {
+    if (comp != null) {
+      return addChildJmxComponent(comp);
+    }
+    return false;
   }
 
   @Override
