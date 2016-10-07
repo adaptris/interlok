@@ -25,7 +25,6 @@ import static com.adaptris.core.CoreConstants.ORIGINAL_NAME_KEY;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -169,7 +168,7 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
   public void init() throws CoreException {
     try {
       verifyDirectory();
-      initFileFilter();
+      fileFilter = FsHelper.createFilter(getDestination().getFilterExpression(), fileFilterImp());
     }
     catch (Exception e) {
       throw new CoreException(e);
@@ -245,31 +244,6 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
     }
     catch (Exception e) {
       throw new CoreException(e);
-    }
-  }
-
-  /**
-   * <p>
-   * NB the <code>String</code> expression that is used to filter messages is obtained from <code>ConsumeDestination</code>.
-   * </p>
-   */
-  private void initFileFilter() throws Exception {
-    String filterExp = getDestination().getFilterExpression();
-
-    if (filterExp != null) {
-      Class[] paramTypes =
-      {
-        filterExp.getClass()
-      };
-      Object[] args =
-      {
-        filterExp
-      };
-
-      Class c = Class.forName(fileFilterImp());
-      Constructor cnst = c.getDeclaredConstructor(paramTypes);
-
-      fileFilter = (FileFilter) cnst.newInstance(args);
     }
   }
 
