@@ -16,16 +16,14 @@
 
 package com.adaptris.core;
 
-import static com.adaptris.core.util.LoggingHelper.friendlyName;
-
-import java.util.Collection;
-
 import com.adaptris.annotation.*;
 import com.adaptris.core.metadata.MetadataFilter;
 import com.adaptris.core.metadata.NoOpMetadataFilter;
-import com.adaptris.core.metadata.RemoveAllMetadataFilter;
-import com.adaptris.util.KeyValuePairSet;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+import java.util.Collection;
+
+import static com.adaptris.core.util.LoggingHelper.friendlyName;
 
 /**
  * Implementation of {@linkplain ServiceCollection} that creates a new clone of {@linkplain com.adaptris.core.AdaptrisMessage} for each configured
