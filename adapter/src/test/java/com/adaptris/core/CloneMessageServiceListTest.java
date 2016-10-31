@@ -19,6 +19,8 @@ package com.adaptris.core;
 import java.util.Arrays;
 import java.util.Collection;
 
+import com.adaptris.core.metadata.NoOpMetadataFilter;
+import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
 import com.adaptris.core.services.metadata.AddMetadataService;
@@ -71,6 +73,23 @@ public class CloneMessageServiceListTest extends ServiceCollectionCase {
     assertTrue(msg.getMetadataValue(KEY1) == null);
   }
 
+  public void testNormalOperationPreserveKey() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    CloneMessageServiceList service = createServiceList();
+    RegexMetadataFilter rmf = new RegexMetadataFilter();
+    rmf.addIncludePattern(KEY1);
+    service.setOverrideMetadata(true);
+    service.setOverrideMetadataFilter(rmf);
+    for(Service srvc : service.getServices())
+      srvc.changeState(StartedState.getInstance());
+
+    service.doService(msg);
+
+    // md not present because Service applied to a clone
+    assertNotNull(msg.getMetadataValue(KEY1));
+    assertEquals(VAL1, msg.getMetadataValue(KEY1));
+  }
+
   public void testFailWithNoContinueOnFail() throws Exception {
     CloneMessageServiceList services = createServiceList();
     services.addService(new ThrowExceptionService(new ConfiguredException("Fail")));
@@ -118,6 +137,8 @@ public class CloneMessageServiceListTest extends ServiceCollectionCase {
     result.addService(new NullService());
     result.addService(new NullService());
     result.addService(new NullService());
+    result.setOverrideMetadata(false);
+    result.setOverrideMetadataFilter(new NoOpMetadataFilter());
 
     return result;
   }
