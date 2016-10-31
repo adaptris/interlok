@@ -29,8 +29,8 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
-import com.adaptris.http.util.AlwaysTrustManager;
 import com.adaptris.security.keystore.KeystoreProxy;
+import com.adaptris.security.util.AlwaysTrustManager;
 import com.adaptris.util.URLString;
 
 /**

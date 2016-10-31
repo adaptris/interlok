@@ -20,8 +20,6 @@ import java.io.InterruptedIOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.security.KeyStore;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -30,12 +28,12 @@ import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
-import javax.net.ssl.X509TrustManager;
 
 import com.adaptris.security.keystore.KeystoreFactory;
 import com.adaptris.security.keystore.KeystoreLocation;
 import com.adaptris.security.keystore.KeystoreProxy;
 import com.adaptris.security.password.Password;
+import com.adaptris.security.util.AlwaysTrustManager;
 
 /**
  * Concrete implementation of Transport.
@@ -57,14 +55,13 @@ import com.adaptris.security.password.Password;
  * <ul>
  * <li><code>transport.security.keystore.url</code> The path to the keystore
  * in the as a URL. The url may follow the rules as specified by
- * KeystoreFactory. </li>
+ * KeystoreFactory.</li>
  * <li><code>transport.security.keystore.password</code> The password to
- * access the keystore. </li>
+ * access the keystore.</li>
  * <li><code>transport.security.keystore.privatekeypassword</code> The
- * private key password </li>
+ * private key password</li>
  * <li><code>transport.socket.ssl.always.trust</code> if set to
- * <code>true</code> when this Transport instance is created, then a the
- * private class <code>AlwaysTrustManager</code> is used to verify the
+ * <code>true</code> then {@link AlwaysTrustManager} is used to verify the
  * certificate chain sent by the remote party
  * <p>
  * The purpose of this private class is to implement a <code>
@@ -74,9 +71,9 @@ import com.adaptris.security.password.Password;
  * Its use is primarily during the test phase, when the Certificate Authority or
  * the certificates themselves have not been agreed upon. It will allow any
  * certificate to be used, ensuring the encryption of the data, but not anything
- * else. </li>
+ * else.</li>
  * <li><code>transport.socket.ssl.require.client.auth</code> if set to true
- * the the client is always required to present a certificate. </li>
+ * the the client is always required to present a certificate.</li>
  * </ul>
  * <p>
  * More information about SSL/TLS can be found on the internet draft <a
@@ -102,7 +99,7 @@ public final class SSLSocketTransport extends TcpSocketTransport {
   private SSLServerSocketFactory serverSocketFactory = null;
 
   /** These are hard-coded for now */
-  private static final String SSL_CONTEXT_TYPE = "SSL";
+  private static final String SSL_CONTEXT_TYPE = "TLS";
   private static final String KEY_MANAGER_TYPE = "SunX509";
 
   static {
@@ -381,48 +378,4 @@ public final class SSLSocketTransport extends TcpSocketTransport {
     return;
   }
 
-  /**
-   * Always trust manager
-   * <p>
-   * The purpose of this class is to implement an X509TrustManager that always
-   * returns true, regardless of the situation.
-   * <p>
-   * Its use is primary during the test phase, when the Certificate Authority or
-   * the certificates themselves have not been agreed upon. It will allow any
-   * certificate to be used, ensuring the encryption of the data, but not
-   * anything else.
-   */
-  private class AlwaysTrustManager implements X509TrustManager {
-    AlwaysTrustManager() {
-    }
-
-    public X509Certificate[] getAcceptedIssuers() {
-      X509Certificate[] x = new X509Certificate[0];
-      return x;
-    }
-
-    public boolean isClientTrusted(X509Certificate[] chain) {
-      return true;
-    }
-
-    public boolean isServerTrusted(X509Certificate[] chain) {
-      return true;
-    }
-
-    @Override
-    public String toString() {
-      return "toString: AlwaysTrustManager";
-    }
-
-    public void checkClientTrusted(X509Certificate[] x509Certificate, String str)
-        throws CertificateException {
-      return;
-    }
-
-    public void checkServerTrusted(X509Certificate[] x509Certificate, String str)
-        throws CertificateException {
-      return;
-    }
-
-  }
 }
