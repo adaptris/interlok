@@ -18,8 +18,6 @@ package com.adaptris.mail;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,13 +26,13 @@ import java.util.StringTokenizer;
 
 import javax.mail.URLName;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.net.pop3.POP3Client;
 import org.apache.commons.net.pop3.POP3SClient;
 
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.security.util.AlwaysTrustManager;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -180,22 +178,6 @@ public class Pop3sReceiverFactory extends Pop3ReceiverFactory {
       if (!isEmpty(tok)) l.add(tok);
     }
     return l.toArray(new String[0]);
-  }
-
-  private class AlwaysTrustManager implements X509TrustManager {
-
-    @Override
-    public void checkClientTrusted(X509Certificate[] paramArrayOfX509Certificate, String paramString) throws CertificateException {
-    }
-
-    @Override
-    public void checkServerTrusted(X509Certificate[] paramArrayOfX509Certificate, String paramString) throws CertificateException {
-    }
-
-    @Override
-    public X509Certificate[] getAcceptedIssuers() {
-      return new X509Certificate[0];
-    }
   }
 
 }

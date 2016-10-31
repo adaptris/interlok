@@ -22,7 +22,7 @@ import javax.net.ssl.SSLContext;
 import org.apache.commons.net.pop3.POP3Client;
 import org.apache.commons.net.util.SSLContextUtils;
 
-import com.adaptris.http.util.AlwaysTrustManager;
+import com.adaptris.security.util.AlwaysTrustManager;
 import com.icegreen.greenmail.pop3.Pop3Server;
 import com.icegreen.greenmail.util.GreenMail;
 
