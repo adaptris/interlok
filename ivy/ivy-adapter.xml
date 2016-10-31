@@ -45,6 +45,7 @@
     <dependency org="commons-collections" name="commons-collections"  rev="3.2.2" conf="compile->default" />
     <dependency org="commons-io" name="commons-io" rev="2.4" conf="compile->default"  />
     <dependency org="commons-lang" name="commons-lang" rev="2.6" conf="compile->default"  />
+    <dependency org="org.apache.commons" name="commons-lang3" rev="3.5" conf="compile->default"  />
     <dependency org="commons-net" name="commons-net" rev="3.3" conf="compile->default" />
     <dependency org="commons-pool" name="commons-pool" rev="1.6" conf="compile->default" />
     <dependency org="org.apache.commons" name="commons-exec" rev="1.2" conf="compile->default" />
