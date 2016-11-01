@@ -24,8 +24,16 @@ import javax.xml.datatype.Duration;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.services.metadata.AddTimestampMetadataService;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+/**
+ * Timestamp Generator implementation that mimics the default behaviour available in {@link AddTimestampMetadataService}.
+ * 
+ * 
+ * @see AddTimestampMetadataService
+ * @since 3.5.0
+ */
 @XStreamAlias("offset-timestamp-generator")
 public class OffsetTimestampGenerator implements TimestampGenerator {
 

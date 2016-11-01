@@ -19,8 +19,16 @@ import java.util.Date;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.services.metadata.AddTimestampMetadataService;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+/**
+ * Timestamp Generator implementation that returns the last {@link Date} a message passed through the service.
+ * 
+ * 
+ * @see AddTimestampMetadataService
+ * @since 3.5.0
+ */
 @XStreamAlias("last-message-timestamp-generator")
 public class LastMessageTimestampGenerator implements TimestampGenerator {
 
