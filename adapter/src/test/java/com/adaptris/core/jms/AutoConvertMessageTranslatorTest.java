@@ -37,6 +37,8 @@ import com.adaptris.core.MetadataElement;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 
 public class AutoConvertMessageTranslatorTest extends MessageTypeTranslatorCase {
+  
+  private static final String ORIGINAL_MESSGAE_TYPE_KEY = "adpmessagetype";
 
   private static final String MAP_MSG_PREFIX = "mapMsg.";
   private static final String[] KEYS =
@@ -58,6 +60,7 @@ public class AutoConvertMessageTranslatorTest extends MessageTypeTranslatorCase 
 
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
     trans.setConvertBackToConsumedType(true);
+    trans.setRemoveOriginalMessageTypeKey(false);
     try {
       broker.start();
       Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
@@ -71,7 +74,7 @@ public class AutoConvertMessageTranslatorTest extends MessageTypeTranslatorCase 
       AdaptrisMessage msg = trans.translate(jmsMsg);
       Message producedMessage = trans.translate(msg);
       
-      assertEquals("Bytes", msg.getMetadataValue("message.type"));
+      assertEquals("Bytes", msg.getMetadataValue(ORIGINAL_MESSGAE_TYPE_KEY));
       assertTrue(producedMessage instanceof BytesMessage);
     }
     finally {
@@ -86,6 +89,7 @@ public class AutoConvertMessageTranslatorTest extends MessageTypeTranslatorCase 
 
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
     trans.setConvertBackToConsumedType(true);
+    trans.setRemoveOriginalMessageTypeKey(false);
     try {
       broker.start();
       Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
@@ -98,7 +102,73 @@ public class AutoConvertMessageTranslatorTest extends MessageTypeTranslatorCase 
       AdaptrisMessage msg = trans.translate(jmsMsg);
       Message producedMessage = trans.translate(msg);
       
-      assertEquals("Text", msg.getMetadataValue("message.type"));
+      assertTrue(producedMessage.propertyExists(ORIGINAL_MESSGAE_TYPE_KEY));
+      assertEquals("Text", msg.getMetadataValue(ORIGINAL_MESSGAE_TYPE_KEY));
+      assertTrue(producedMessage instanceof TextMessage);
+    }
+    finally {
+      stop(trans);
+      broker.destroy();
+    }
+
+  }
+  
+  public void testConvertFromConsumeTypeTextRemoveKeyAfter() throws Exception {
+    EmbeddedActiveMq broker = new EmbeddedActiveMq();
+
+    AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
+    trans.setConvertBackToConsumedType(true);
+    trans.setRemoveOriginalMessageTypeKey(true);
+    
+    assertTrue(trans.getRemoveOriginalMessageTypeKey());
+    
+    try {
+      broker.start();
+      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      start(trans, session);
+
+      TextMessage jmsMsg = session.createTextMessage();
+      addProperties(jmsMsg);
+      jmsMsg.setText(TEXT);
+
+      AdaptrisMessage msg = trans.translate(jmsMsg);
+      Message producedMessage = trans.translate(msg);
+      
+      assertFalse(producedMessage.propertyExists(ORIGINAL_MESSGAE_TYPE_KEY));
+      
+      assertFalse(msg.headersContainsKey(ORIGINAL_MESSGAE_TYPE_KEY));
+      assertTrue(producedMessage instanceof TextMessage);
+    }
+    finally {
+      stop(trans);
+      broker.destroy();
+    }
+
+  }
+  
+  public void testConvertFromConsumeTypeTextDefaultRemoveKeyAfter() throws Exception {
+    EmbeddedActiveMq broker = new EmbeddedActiveMq();
+
+    AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
+    trans.setConvertBackToConsumedType(true);
+    
+    assertNull(trans.getRemoveOriginalMessageTypeKey()); // defaults to true if null.
+    
+    try {
+      broker.start();
+      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      start(trans, session);
+
+      TextMessage jmsMsg = session.createTextMessage();
+      addProperties(jmsMsg);
+      jmsMsg.setText(TEXT);
+
+      AdaptrisMessage msg = trans.translate(jmsMsg);
+      Message producedMessage = trans.translate(msg);
+      
+      assertFalse(producedMessage.propertyExists(ORIGINAL_MESSGAE_TYPE_KEY));
+      
+      assertFalse(msg.headersContainsKey(ORIGINAL_MESSGAE_TYPE_KEY));
       assertTrue(producedMessage instanceof TextMessage);
     }
     finally {
@@ -113,6 +183,7 @@ public class AutoConvertMessageTranslatorTest extends MessageTypeTranslatorCase 
 
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
     trans.setConvertBackToConsumedType(true);
+    trans.setRemoveOriginalMessageTypeKey(false);
     try {
       broker.start();
       Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
@@ -125,7 +196,7 @@ public class AutoConvertMessageTranslatorTest extends MessageTypeTranslatorCase 
       AdaptrisMessage msg = trans.translate(jmsMsg);
       Message producedMessage = trans.translate(msg);
       
-      assertEquals("Map", msg.getMetadataValue("message.type"));
+      assertEquals("Map", msg.getMetadataValue(ORIGINAL_MESSGAE_TYPE_KEY));
       assertTrue(producedMessage instanceof MapMessage);
     }
     finally {
@@ -140,6 +211,7 @@ public class AutoConvertMessageTranslatorTest extends MessageTypeTranslatorCase 
 
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
     trans.setConvertBackToConsumedType(true);
+    trans.setRemoveOriginalMessageTypeKey(false);
     try {
       broker.start();
       Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
@@ -154,7 +226,7 @@ public class AutoConvertMessageTranslatorTest extends MessageTypeTranslatorCase 
       AdaptrisMessage msg = trans.translate(jmsMsg);
       Message producedMessage = trans.translate(msg);
       
-      assertEquals("Object", msg.getMetadataValue("message.type"));
+      assertEquals("Object", msg.getMetadataValue(ORIGINAL_MESSGAE_TYPE_KEY));
       assertTrue(producedMessage instanceof ObjectMessage);
     }
     finally {
@@ -169,6 +241,7 @@ public class AutoConvertMessageTranslatorTest extends MessageTypeTranslatorCase 
 
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
     trans.setConvertBackToConsumedType(true);
+    trans.setRemoveOriginalMessageTypeKey(false);
     try {
       broker.start();
       Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
@@ -180,10 +253,10 @@ public class AutoConvertMessageTranslatorTest extends MessageTypeTranslatorCase 
       jmsMsg.reset();
 
       AdaptrisMessage msg = trans.translate(jmsMsg);
-      msg.removeMessageHeader("message.type");
+      msg.removeMessageHeader(ORIGINAL_MESSGAE_TYPE_KEY);
       Message producedMessage = trans.translate(msg);
       
-      assertFalse(msg.headersContainsKey("message.type"));
+      assertFalse(msg.headersContainsKey(ORIGINAL_MESSGAE_TYPE_KEY));
       assertTrue(producedMessage instanceof TextMessage);
     }
     finally {
@@ -209,10 +282,10 @@ public class AutoConvertMessageTranslatorTest extends MessageTypeTranslatorCase 
       jmsMsg.reset();
 
       AdaptrisMessage msg = trans.translate(jmsMsg);
-      msg.addMessageHeader("message.type", "xxx.xxx");
+      msg.addMessageHeader(ORIGINAL_MESSGAE_TYPE_KEY, "xxx.xxx");
       Message producedMessage = trans.translate(msg);
       
-      assertEquals("xxx.xxx", msg.getMetadataValue("message.type"));
+      assertEquals("xxx.xxx", msg.getMetadataValue(ORIGINAL_MESSGAE_TYPE_KEY));
       assertTrue(producedMessage instanceof TextMessage);
     }
     finally {
