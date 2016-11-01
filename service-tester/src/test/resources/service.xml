@@ -1,0 +1,19 @@
+<service-collection class="service-list">
+    <unique-id>ServiceList</unique-id>
+    <services>
+        <add-metadata-service>
+            <unique-id>Add1</unique-id>
+            <metadata-element>
+                <key>key1</key>
+                <value>${foo}</value>
+            </metadata-element>
+        </add-metadata-service>
+        <add-metadata-service>
+            <unique-id>Add2</unique-id>
+            <metadata-element>
+                <key>key2</key>
+                <value>val2</value>
+            </metadata-element>
+        </add-metadata-service>
+    </services>
+</service-collection>
