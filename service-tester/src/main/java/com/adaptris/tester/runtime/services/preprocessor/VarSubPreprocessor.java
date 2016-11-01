@@ -46,7 +46,7 @@ public class VarSubPreprocessor implements Preprocessor {
     }
     KeyValuePairSet kvp = new KeyValuePairSet();
     for (int i = 0; i < propertyFile.size(); i++){
-      kvp.add(new KeyValuePair(Constants.VARSUB_PROPERTIES_URL_KEY + "." + i, propertyFile.get(i)));
+      kvp.addKeyValuePair(new KeyValuePair(Constants.VARSUB_PROPERTIES_URL_KEY + "." + i, propertyFile.get(i)));
     }
     return kvp;
   }
