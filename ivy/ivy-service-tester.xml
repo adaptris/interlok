@@ -23,9 +23,10 @@
   <dependencies>
   	<dependency org="com.adaptris" name="adp-core" rev="${ivy.publish.revision}" conf="compile->default" changing="true"/>
   	<dependency org="com.adaptris" name="adp-core-apt" rev="${ivy.publish.revision}" conf="compile->default;ant->default" changing="true"/>
-    <dependency org="com.adaptris" name="adp-varsub" rev="${ivy.publish.revision}" conf="compile->default" changing="true"/>
-    <dependency org="com.adaptris" name="adp-xinclude" rev="${ivy.publish.revision}" conf="compile->default" changing="true"/>
-    <dependency org="org.apache.ant" name="ant" rev="1.9.7" conf="compile->default" />
+    <dependency org="com.adaptris" name="adp-varsub" rev="${ivy.publish.revision}" conf="optional->default" changing="true"/>
+    <dependency org="com.adaptris" name="adp-xinclude" rev="${ivy.publish.revision}" conf="optional->default" changing="true"/>
+    <dependency org="com.github.tomakehurst" name="wiremock" rev="1.58" conf="optional->default"/>
+    <dependency org="org.apache.ant" name="ant" rev="1.9.7" conf="optional->default" />
     <dependency org="org.apache.logging.log4j" name="log4j-slf4j-impl" rev="2.7" conf="compile->default" />
     <dependency org="org.apache.logging.log4j" name="log4j-api" rev="2.7" conf="compile->default" />
     <dependency org="org.apache.logging.log4j" name="log4j-core" rev="2.7" conf="compile->default" />

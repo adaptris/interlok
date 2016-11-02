@@ -2,10 +2,13 @@ package com.adaptris.tester.runtime;
 
 import com.adaptris.tester.report.junit.JUnitReportTestResults;
 import com.adaptris.tester.runtime.clients.TestClient;
+import com.adaptris.tester.runtime.helpers.Helper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import org.apache.commons.io.IOUtils;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
@@ -16,10 +19,15 @@ public class ServiceTest implements TestComponent {
   private String uniqueId;
 
   private TestClient testClient;
+  private List<Helper> helpers;
   @XStreamImplicit
   private List<TestList> testLists;
 
-
+  public ServiceTest(){
+    setHelpers(new ArrayList<Helper>());
+    setTestLists(new ArrayList<TestList>());
+  }
+  
   public void setUniqueId(String uniqueId) {
     if (isEmpty(uniqueId)) {
       throw new IllegalArgumentException();
@@ -40,6 +48,26 @@ public class ServiceTest implements TestComponent {
     return testClient;
   }
 
+  public void setHelpers(List<Helper> helpers) {
+    this.helpers = helpers;
+  }
+
+  public List<Helper> getHelpers() {
+    return helpers;
+  }
+
+  public void initHelpers() throws ServiceTestException {
+    for(Helper helper : getHelpers()){
+      helper.init();
+    }
+  }
+
+  public void closeHelpers()  {
+    for(Helper helper : getHelpers()){
+      IOUtils.closeQuietly(helper);
+    }
+  }
+
   public void setTestLists(List<TestList> adapterTestLists) {
     this.testLists = adapterTestLists;
   }
@@ -53,6 +81,7 @@ public class ServiceTest implements TestComponent {
   }
 
   public JUnitReportTestResults execute() throws ServiceTestException {
+    initHelpers();
     testClient.init();
     try {
       JUnitReportTestResults results = new JUnitReportTestResults(uniqueId);
@@ -62,6 +91,7 @@ public class ServiceTest implements TestComponent {
       return results;
     } finally {
       IOUtils.closeQuietly(testClient);
+      closeHelpers();
     }
   }
 }
