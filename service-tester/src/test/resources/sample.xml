@@ -1,9 +1,7 @@
 <service-test>
     <unique-id>AdapterTest</unique-id>
     <!--test-client class="stub-test-client" /-->
-    <test-client class="jmx-test-client">
-        <jmx-url>service:jmx:jmxmp://localhost:5555</jmx-url>
-    </test-client>
+    <test-client class="embedded-jmx-test-client" />
     <test-list>
         <unique-id>TestList</unique-id>
         <test>
