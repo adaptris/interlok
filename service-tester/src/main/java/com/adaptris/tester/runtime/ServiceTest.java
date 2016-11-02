@@ -9,7 +9,9 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
@@ -27,7 +29,7 @@ public class ServiceTest implements TestComponent {
     setHelpers(new ArrayList<Helper>());
     setTestLists(new ArrayList<TestList>());
   }
-  
+
   public void setUniqueId(String uniqueId) {
     if (isEmpty(uniqueId)) {
       throw new IllegalArgumentException();
@@ -56,7 +58,7 @@ public class ServiceTest implements TestComponent {
     return helpers;
   }
 
-  public void initHelpers() throws ServiceTestException {
+  private void initHelpers() throws ServiceTestException {
     for(Helper helper : getHelpers()){
       helper.init();
     }
@@ -66,6 +68,14 @@ public class ServiceTest implements TestComponent {
     for(Helper helper : getHelpers()){
       IOUtils.closeQuietly(helper);
     }
+  }
+
+  public Map<String, String> getHelperProperties(){
+    Map<String,String> p = new HashMap<>();
+    for(Helper helper : getHelpers()){
+      p.putAll(helper.getHelperProperties());
+    }
+    return p;
   }
 
   public void setTestLists(List<TestList> adapterTestLists) {
@@ -86,7 +96,7 @@ public class ServiceTest implements TestComponent {
     try {
       JUnitReportTestResults results = new JUnitReportTestResults(uniqueId);
       for(TestList tests : getTestLists()){
-        results.addTestSuites(tests.execute(testClient));
+        results.addTestSuites(tests.execute(testClient, getHelperProperties()));
       }
       return results;
     } finally {

@@ -21,7 +21,7 @@ public class WireMockHelper implements Helper {
 
   private PortProvider portProvider;
 
-  private Map<String, Object> helperProperties;
+  private Map<String, String> helperProperties;
 
   public WireMockHelper(){
     setPortProvider(new StaticPortProvider());
@@ -31,7 +31,7 @@ public class WireMockHelper implements Helper {
   @Override
   public void init() throws ServiceTestException {
     portProvider.initPort();
-    helperProperties.put(WIRE_MOCK_HELPER_PORT_PROPERTY_NAME, portProvider.getPort());
+    helperProperties.put(WIRE_MOCK_HELPER_PORT_PROPERTY_NAME, String.valueOf(portProvider.getPort()));
     wireMockServer = new WireMockServer(portProvider.getPort(), new SingleRootFileSource(fileSource), false);
     wireMockServer.start();
   }
@@ -43,7 +43,7 @@ public class WireMockHelper implements Helper {
   }
 
   @Override
-  public Map<String, Object> getHelperProperties() {
+  public Map<String, String> getHelperProperties() {
     return helperProperties;
   }
 

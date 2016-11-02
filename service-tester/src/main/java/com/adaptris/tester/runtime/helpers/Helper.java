@@ -11,5 +11,5 @@ public interface Helper extends Closeable {
 
   void init() throws ServiceTestException;
 
-  Map<String, Object> getHelperProperties();
+  Map<String, String> getHelperProperties();
 }
