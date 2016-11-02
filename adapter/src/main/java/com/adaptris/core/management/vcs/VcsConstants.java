@@ -82,5 +82,24 @@ public class VcsConstants {
    * 
    */
   public static final String VCS_AUTHENTICATION_IMPL_KEY = "vcs.auth";
-  
+
+  /**
+   * Whether or not we attempt to use a HTTP proxy when performing connections.
+   * <p>
+   * If the target resource is a HTTP resource, then setting the standard java system properties
+   * {@code http.proxyHost, http.proxyPort} will be sufficient. This will only be used when connecting to non-http resources (such
+   * as SSH or similar).
+   * </p>
+   */
+  public static final String VCS_SSH_PROXY = "vcs.ssh.proxy";
+
+  /**
+   * The proxy username (if any).
+   */
+  public static final String VCS_SSH_PROXY_USERNAME = "vcs.ssh.proxy.username";
+
+  /**
+   * The proxy password (if any).
+   */
+  public static final String VCS_SSH_PROXY_PASSWORD = "vcs.ssh.proxy.password";
 }
