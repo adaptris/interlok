@@ -8,10 +8,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.AbstractCollection;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 @XStreamAlias("test-list")
 public class TestList extends AbstractCollection<Test> implements TestComponent {
@@ -57,10 +54,10 @@ public class TestList extends AbstractCollection<Test> implements TestComponent 
     return testCases.size();
   }
 
-  JUnitReportTestSuites execute(TestClient client) throws ServiceTestException {
+  JUnitReportTestSuites execute(TestClient client, Map<String, String> helperProperties) throws ServiceTestException {
     JUnitReportTestSuites result = new JUnitReportTestSuites(uniqueId);
     for (Test testCase : testCases) {
-      JUnitReportTestSuite suite = testCase.execute(uniqueId, client);
+      JUnitReportTestSuite suite = testCase.execute(uniqueId, client, helperProperties);
       result.addTestSuite(suite);
     }
     return result;
