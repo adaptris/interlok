@@ -58,7 +58,9 @@ public class Test implements TestComponent {
     String fqName = parentName + "." + uniqueId;
     log.debug("Running [{}]", fqName);
     JUnitReportTestSuite result = new JUnitReportTestSuite(fqName);
-    serviceToTest.addPreprocessor(new VarSubPropsPreprocessor(helperProperties));
+    if (helperProperties.size() > 0) {
+      serviceToTest.addPreprocessor(new VarSubPropsPreprocessor(helperProperties));
+    }
     long startTime = System.nanoTime();
     for (TestCase testCase : testCases) {
       result.addTestCase(testCase.execute(fqName, client, serviceToTest));
