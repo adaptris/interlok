@@ -76,6 +76,10 @@ public class MetadataValueBranchingService extends MetadataBranchingServiceImp {
     if (valueMatcher == null) {
       throw new CoreException("ValueMatcher is null; cannot continue");
     }
+    if (valueMatcher instanceof UseKeyAsServiceIdValueMatcher && !isEmpty(getDefaultServiceId())) {
+      log.warn("default-service-id set with {}, default-service-id will not be used",
+          UseKeyAsServiceIdValueMatcher.class.getSimpleName());
+    }
   }
 
 

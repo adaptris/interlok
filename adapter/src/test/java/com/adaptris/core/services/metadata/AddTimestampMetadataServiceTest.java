@@ -25,6 +25,8 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceList;
+import com.adaptris.core.services.metadata.timestamp.LastMessageTimestampGenerator;
+import com.adaptris.core.services.metadata.timestamp.OffsetTimestampGenerator;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.text.DateFormatUtil;
 
@@ -130,10 +132,11 @@ public class AddTimestampMetadataServiceTest extends MetadataServiceExample {
     }
   }
 
-  public void testOffset() throws Exception {
+  public void testLegacyOffset() throws Exception {
     AdaptrisMessage m = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     Date now = new Date();
-    AddTimestampMetadataService service = new AddTimestampMetadataService(DEFAULT_TS_FORMAT, KEY1, false, "P30D");
+    AddTimestampMetadataService service = new AddTimestampMetadataService(DEFAULT_TS_FORMAT, KEY1, false);
+    service.setOffset("P30D");
     execute(service, m);
     assertTrue(m.containsKey(KEY1));
     SimpleDateFormat sdf = new SimpleDateFormat(DEFAULT_TS_FORMAT);
@@ -146,9 +149,53 @@ public class AddTimestampMetadataServiceTest extends MetadataServiceExample {
     }
   }
 
-  public void testEmptyOffset() throws Exception {
+
+  public void testLegacyEmptyOffset() throws Exception {
     AdaptrisMessage m = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     AddTimestampMetadataService service = new AddTimestampMetadataService(DEFAULT_TS_FORMAT, DEFAULT_METADATA_KEY, false, "");
+    execute(service, m);
+    assertTrue(m.containsKey(DEFAULT_METADATA_KEY));
+    assertTrue(m.getMetadataValue(DEFAULT_METADATA_KEY) != null);
+  }
+
+  public void testOffset() throws Exception {
+    AdaptrisMessage m = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    Date now = new Date();
+    AddTimestampMetadataService service = new AddTimestampMetadataService(DEFAULT_TS_FORMAT, KEY1, false, "P30D");
+    execute(service, m);
+    assertTrue(m.containsKey(KEY1));
+    SimpleDateFormat sdf = new SimpleDateFormat(DEFAULT_TS_FORMAT);
+    String date1 = m.getMetadataValue(KEY1);
+    try {
+      Date d = sdf.parse(date1);
+      assertTrue(d.after(now));
+    } catch (ParseException e) {
+    }
+  }
+
+  public void testLastMessage() throws Exception {
+    AdaptrisMessage m = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    AddTimestampMetadataService service =
+        new AddTimestampMetadataService(DEFAULT_TS_FORMAT, KEY1, false, new LastMessageTimestampGenerator());
+    execute(service, AdaptrisMessageFactory.getDefaultInstance().newMessage());
+    Thread.sleep(1000);
+    Date now = new Date();
+    execute(service, m);
+    assertTrue(m.containsKey(KEY1));
+    SimpleDateFormat sdf = new SimpleDateFormat(DEFAULT_TS_FORMAT);
+    String date1 = m.getMetadataValue(KEY1);
+    try {
+      Date d = sdf.parse(date1);
+      assertTrue(d.before(now));
+    } catch (ParseException e) {
+    }
+  }
+
+
+  public void testEmptyOffset() throws Exception {
+    AdaptrisMessage m = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    AddTimestampMetadataService service =
+        new AddTimestampMetadataService(DEFAULT_TS_FORMAT, DEFAULT_METADATA_KEY, false, new OffsetTimestampGenerator(""));
     execute(service, m);
     assertTrue(m.containsKey(DEFAULT_METADATA_KEY));
     assertTrue(m.getMetadataValue(DEFAULT_METADATA_KEY) != null);
