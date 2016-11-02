@@ -2,12 +2,15 @@ package com.adaptris.tester.runtime.services.preprocessor;
 
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.XmlHelper;
+import com.adaptris.util.KeyValuePairSet;
+import com.adaptris.util.text.xml.SimpleNamespaceContext;
 import com.adaptris.util.text.xml.XPath;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -23,6 +26,7 @@ import java.io.StringWriter;
 public class XpathPreprocessor implements Preprocessor {
 
   private String xpath;
+  private KeyValuePairSet namespaceContext;
 
   @Override
   public String execute(String input) throws PreprocessorException {
@@ -31,7 +35,8 @@ public class XpathPreprocessor implements Preprocessor {
 
   final Node selectSingleNode(Node document, String xpath) throws PreprocessorException {
     try {
-      XPath xpathUtils = new XPath();
+      NamespaceContext ctx = SimpleNamespaceContext.create(getNamespaceContext());
+      XPath xpathUtils = new XPath(ctx);
       Node node = xpathUtils.selectSingleNode(document, getXpath());
       if (node == null){
         throw new PreprocessorException(String.format("xpath [%s] didn't return a match", xpath));
@@ -68,5 +73,26 @@ public class XpathPreprocessor implements Preprocessor {
 
   public void setXpath(String xpath) {
     this.xpath = xpath;
+  }
+
+  /**
+   * @return the namespaceContext
+   */
+  public KeyValuePairSet getNamespaceContext() {
+    return namespaceContext;
+  }
+
+  /**
+   * Set the namespace context for resolving namespaces.
+   * <ul>
+   * <li>The key is the namespace prefix</li>
+   * <li>The value is the namespace uri</li>
+   * </ul>
+   *
+   * @param kvps the namespace context
+   * @see SimpleNamespaceContext#create(KeyValuePairSet)
+   */
+  public void setNamespaceContext(KeyValuePairSet kvps) {
+    this.namespaceContext = kvps;
   }
 }
