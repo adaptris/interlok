@@ -1,5 +1,6 @@
 package com.adaptris.tester.runtime.services.preprocessor;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -11,6 +12,7 @@ import static org.junit.Assert.*;
  */
 public class XincludePreprocessorTest {
 
+  @Ignore
   @Test
   public void execute() throws Exception {
     File serviceXml = new File(this.getClass().getClassLoader().getResource("service.xml").getFile());

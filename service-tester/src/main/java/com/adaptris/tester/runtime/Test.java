@@ -56,7 +56,7 @@ public class Test implements TestComponent {
 
   JUnitReportTestSuite execute(String parentName, TestClient client, Map<String, String> helperProperties) throws ServiceTestException {
     String fqName = parentName + "." + uniqueId;
-    log.debug("Running [{}]", fqName);
+    log.info("Running [{}]", fqName);
     JUnitReportTestSuite result = new JUnitReportTestSuite(fqName);
     if (helperProperties.size() > 0) {
       serviceToTest.addPreprocessor(new VarSubPropsPreprocessor(helperProperties));
@@ -70,7 +70,7 @@ public class Test implements TestComponent {
     result.setTime((double)elapsedTime / 1000000000.0);
     DecimalFormat df = new DecimalFormat("0.000");
     df.setRoundingMode(RoundingMode.CEILING);
-    log.debug("Tests run: {}, Failures: {}, Errors: {}, Skipped: {}, Time elapsed: {} sec",
+    log.info("Tests run: {}, Failures: {}, Errors: {}, Skipped: {}, Time elapsed: {} sec",
         result.getTests(), result.getFailures(), result.getErrors(), result.getSkipped(), df.format(result.getTime()));
     return result;
   }

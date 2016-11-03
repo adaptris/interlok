@@ -13,8 +13,6 @@ import java.util.*;
 @XStreamAlias("test-list")
 public class TestList extends AbstractCollection<Test> implements TestComponent {
 
-  private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
-
   private String uniqueId;
   @XStreamImplicit
   private List<Test> testCases;
