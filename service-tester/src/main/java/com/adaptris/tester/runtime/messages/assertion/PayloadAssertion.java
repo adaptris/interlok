@@ -11,7 +11,7 @@ public abstract class PayloadAssertion extends Assertion {
   }
 
   public PayloadAssertion(String payload){
-    this.payload = payload;
+    setPayload(payload);
   }
 
   public void setPayload(String payload) {

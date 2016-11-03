@@ -13,7 +13,7 @@ public class XincludePreprocessor implements Preprocessor {
       XincludePreProcessor processor = new XincludePreProcessor(new KeyValuePairSet());
       return processor.process(input);
     } catch (CoreException e) {
-      throw new PreprocessorException(e);
+      throw new PreprocessorException("Failed to perform xinclude", e);
     }
   }
 }

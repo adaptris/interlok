@@ -7,14 +7,23 @@ import java.util.Map;
 
 import static org.junit.Assert.*;
 
-public class VarSubPropsPreprocessorTest {
+public class VarSubPropsPreprocessorTest extends PreprocessorCase {
+
+  public VarSubPropsPreprocessorTest(String name) {
+    super(name);
+  }
+
   @Test
-  public void execute() throws Exception {
+  public void testExecute() throws Exception {
+    String result = createPreprocessor().execute("Hello ${foo}");
+    assertEquals("Hello bar", result);
+  }
+
+  @Override
+  protected Preprocessor createPreprocessor(){
     Map<String, String> properties = new HashMap<>();
     properties.put("foo", "bar");
-    Preprocessor p = new VarSubPropsPreprocessor(properties);
-    String result = p.execute("Hello ${foo}");
-    assertEquals("Hello bar", result);
+    return new VarSubPropsPreprocessor(properties);
   }
 
 }

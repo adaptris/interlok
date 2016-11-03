@@ -2,27 +2,34 @@ package com.adaptris.tester.runtime.services.preprocessor;
 
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.XmlHelper;
+import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.XmlUtils;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.w3c.dom.Document;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.junit.Assert.*;
 
-public class XpathPreprocessorTest {
+public class XpathPreprocessorTest extends PreprocessorCase {
 
   private static final String XML = "<root><xml><id>blah</id></xml></root>";
+
+  public XpathPreprocessorTest(String name) {
+    super(name);
+  }
+
   @Test
-  public void execute() throws Exception {
-    XpathPreprocessor preprocessor = new XpathPreprocessor();
-    preprocessor.setXpath("//xml[./id= 'blah']");
-    String result  = preprocessor.execute(XML);
+  public void testExecute() throws Exception {
+    String result  = createPreprocessor().execute(XML);
     Document document = XmlHelper.createDocument(result, new DocumentBuilderFactoryBuilder());
     assertEquals("xml", document.getDocumentElement().getNodeName());
   }
 
   @Test
-  public void executeNoMatch() throws Exception {
+  public void testExecuteNoMatch() throws Exception {
     try {
       XpathPreprocessor preprocessor = new XpathPreprocessor();
       preprocessor.setXpath("//nomatch");
@@ -33,4 +40,13 @@ public class XpathPreprocessorTest {
     }
   }
 
+  @Override
+  protected Preprocessor createPreprocessor() {
+    Map<String, String> namespace = new HashMap<>();
+    namespace.put("xhtml", "http://www.w3.org/1999/xhtml");
+    XpathPreprocessor preprocessor = new XpathPreprocessor();
+    preprocessor.setNamespaceContext(new KeyValuePairSet(namespace));
+    preprocessor.setXpath("//xml[./id= 'blah']");
+    return preprocessor;
+  }
 }

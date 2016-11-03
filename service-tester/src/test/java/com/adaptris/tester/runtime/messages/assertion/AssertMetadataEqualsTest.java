@@ -7,12 +7,9 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+public class AssertMetadataEqualsTest extends AssertionCase{
 
-public class AssertMetadataContainsTest extends AssertionCase{
-
-  public AssertMetadataContainsTest(String name) {
+  public AssertMetadataEqualsTest(String name) {
     super(name);
   }
 
@@ -21,11 +18,10 @@ public class AssertMetadataContainsTest extends AssertionCase{
     Map<String, String> expected = new HashMap<>();
     expected.put("key1", "val1");
     Map<String, String> actual = new HashMap<>();
-    MetadataAssertion matcher = new AssertMetadataContains();
+    MetadataAssertion matcher = new AssertMetadataEquals();
     matcher.setMetadata(new KeyValuePairSet(expected));
     assertFalse(matcher.execute(new TestMessage(actual,"")).isPassed());
     actual.put("key1", "val1");
-    actual.put("key2", "val2");
     assertTrue(matcher.execute(new TestMessage(actual,"")).isPassed());
     actual.put("key1", "valother");
     assertFalse(matcher.execute(new TestMessage(actual,"")).isPassed());
@@ -42,13 +38,13 @@ public class AssertMetadataContainsTest extends AssertionCase{
   @Test
   public void testGetMessage(){
     AssertionResult result  = createAssertion().execute(new TestMessage());
-    assertEquals("Assertion Failure: [assert-metadata-contains] metadata does not contain kvp: {key1=val1}", result.getMessage());
+    assertEquals("Assertion Failure: [assert-metadata-equals]", result.getMessage());
   }
 
   @Override
   protected Assertion createAssertion() {
     Map<String, String> expected = new HashMap<>();
     expected.put("key1", "val1");
-    return new AssertMetadataContains(expected);
+    return new AssertMetadataEquals(expected);
   }
 }

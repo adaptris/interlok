@@ -1,5 +1,6 @@
 package com.adaptris.tester.runtime.services.preprocessor;
 
+import com.adaptris.annotation.MarshallingCDATA;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.KeyValuePairSet;
@@ -25,6 +26,7 @@ import java.io.StringWriter;
 @XStreamAlias("xpath-preprocessor")
 public class XpathPreprocessor implements Preprocessor {
 
+  @MarshallingCDATA
   private String xpath;
   private KeyValuePairSet namespaceContext;
 
@@ -43,7 +45,7 @@ public class XpathPreprocessor implements Preprocessor {
       }
       return node;
     } catch (XPathExpressionException e) {
-      throw new PreprocessorException(e);
+      throw new PreprocessorException("Failed to make xpath query", e);
     }
   }
 
@@ -51,7 +53,7 @@ public class XpathPreprocessor implements Preprocessor {
     try {
       return selectSingleNode(XmlHelper.createDocument(input, new DocumentBuilderFactoryBuilder()), xpath);
     } catch (ParserConfigurationException | IOException | SAXException e) {
-      throw new PreprocessorException(e);
+      throw new PreprocessorException("Failed to make xpath query", e);
     }
   }
 
@@ -62,7 +64,7 @@ public class XpathPreprocessor implements Preprocessor {
       t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
       t.transform(new DOMSource(node), new StreamResult(sw));
     } catch (TransformerException e) {
-      throw new PreprocessorException(e);
+      throw new PreprocessorException("Failed to convert node to string", e);
     }
     return sw.toString();
   }
