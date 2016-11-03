@@ -8,8 +8,9 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Root level="DEBUG">
+        <Logger name="com.adaptris.tester.runtime.Test" level="info" >
             <AppenderRef ref="Console"/>
-        </Root>
+        </Logger>
+        <Root level="off" />
     </Loggers>
 </Configuration>

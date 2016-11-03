@@ -1,6 +1,5 @@
-package com.adaptris.tester.runtime.messages;
+package com.adaptris.tester.runtime.messages.metadata;
 
-import com.adaptris.core.SerializableAdaptrisMessage;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairBag;
 import com.adaptris.util.KeyValuePairSet;
@@ -10,15 +9,17 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-@XStreamAlias("inline-test-message")
-@Deprecated
-public class InlineTestMessage extends TestMessage {
+@XStreamAlias("inline-metadata-provider")
+public class InlineMetadataProvider implements MetadataProvider {
 
-  private String payload;
   private KeyValuePairSet metadata;
 
-  public InlineTestMessage(){
-    metadata = new KeyValuePairSet();
+  public InlineMetadataProvider(){
+    this.metadata = new KeyValuePairSet();
+  }
+
+  public InlineMetadataProvider(final KeyValuePairSet metadata){
+    this.metadata = metadata;
   }
 
   public void setMetadata(KeyValuePairSet metadata) {
@@ -32,16 +33,6 @@ public class InlineTestMessage extends TestMessage {
   @Override
   public Map<String, String> getMessageHeaders() {
     return Collections.unmodifiableMap(toMap(metadata));
-  }
-
-  @Override
-  public String getPayload() {
-    return this.payload;
-  }
-
-
-  public void setPayload(String payload) {
-    this.payload = payload;
   }
 
   private Map<String, String> toMap(KeyValuePairBag bag) {

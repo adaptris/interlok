@@ -18,7 +18,7 @@ public class TestMessage{
     this.payload = payload;
   }
 
-  public Map<String, String> getMessageHeaders() {
+  public Map<String, String> getMessageHeaders()  {
     return messageHeaders;
   }
 
