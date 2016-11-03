@@ -66,7 +66,7 @@ public class NonBlockingQuartzThreadPool implements ThreadPool {
   }
 
   /**
-   * Dummy setting that matches {@link org.quartz.simpl.SimpleThreadPool#setThreadPriority(int)}
+   * Setting that matches {@code org.quartz.simpl.SimpleThreadPool#setThreadPriority(int)}
    * 
    */
   public void setThreadPriority(int prio) {
@@ -130,29 +130,29 @@ public class NonBlockingQuartzThreadPool implements ThreadPool {
 
 
   /**
-   * Dummy setting that matches {@link org.quartz.simpl.SimpleThreadPool#setThreadNamePrefix(String)}
+   * NoOp Method mirroring {@code org.quartz.simpl.SimpleThreadPool#setThreadNamePrefix(String)}
    * 
    */
   public void setThreadNamePrefix(String prfx) {
   }
 
   /**
-   * Dummy setting that matches {@link org.quartz.simpl.SimpleThreadPool#setThreadsInheritGroupOfInitializingThread(boolean)}
+   * NoOp Method mirroring {@code org.quartz.simpl.SimpleThreadPool#setThreadsInheritGroupOfInitializingThread(boolean)}
    * 
    */
   public void setThreadsInheritGroupOfInitializingThread(boolean inheritGroup) {
   }
 
   /**
-   * Dummy setting that matches
-   * {@link org.quartz.simpl.SimpleThreadPool#setThreadsInheritContextClassLoaderOfInitializingThread(boolean)}
+   * NoOp Method mirroring
+   * {@code org.quartz.simpl.SimpleThreadPool#setThreadsInheritContextClassLoaderOfInitializingThread(boolean)}
    * 
    */
   public void setThreadsInheritContextClassLoaderOfInitializingThread(boolean inheritLoader) {
   }
 
   /**
-   * Dummy setting that matches {@link org.quartz.simpl.SimpleThreadPool#setMakeThreadsDaemons(boolean)}
+   * NoOp Method mirroring {@code org.quartz.simpl.SimpleThreadPool#setMakeThreadsDaemons(boolean)}
    * 
    */
   public void setMakeThreadsDaemons(boolean b) {

@@ -33,12 +33,13 @@ import org.eclipse.jetty.util.security.Credential;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.core.CoreException;
+import com.adaptris.core.security.access.IdentityVerifier;
 import com.adaptris.core.security.access.IdentityVerifierImpl;
 import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * {@link IdentifierVerifier} implementation that uses the same file as {@link HashLoginServiceFactory} to perform identity
+ * {@link IdentityVerifier} implementation that uses the same file as {@link HashLoginServiceFactory} to perform identity
  * verification.
  * 
  * @config jetty-hash-user-realm-identity-verifier
@@ -57,7 +58,7 @@ public class JettyHashUserRealmVerifier extends IdentityVerifierImpl {
    */
   public static final String KEY_PASSWORD = "password";
   /**
-   * The key in the identity map that contains the username {@value #role}.
+   * The key in the identity map that contains the role {@value #KEY_ROLE}.
    * 
    */
   public static final String KEY_ROLE = "role";

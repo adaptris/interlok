@@ -84,8 +84,8 @@ public class MappedMetadataIdentityBuilder extends MetadataIdentityBuilderImpl {
    *
    * @param m a {@link KeyValuePairList}
    */
-  public void setMetadataMap(KeyValuePairList metadataMap) {
-    this.metadataMap = Args.notNull(metadataMap, "metadataMap");
+  public void setMetadataMap(KeyValuePairList m) {
+    this.metadataMap = Args.notNull(m, "metadataMap");
   }
 
 }

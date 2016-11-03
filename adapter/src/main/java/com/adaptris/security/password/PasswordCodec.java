@@ -63,7 +63,7 @@ public interface PasswordCodec {
    * Can this implementation handle an encoded password of this type.
    * 
    * @param type the type
-   * @return
+   * @return true or false.
    */
   boolean canHandle(String type);
 

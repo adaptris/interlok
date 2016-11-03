@@ -5,6 +5,7 @@
   	<property name="ivy.install.version" value="2.3.0"/>
   	<property name="ivy.repo" value="nexus-snapshots"/>
   	<property name="ivy.xml.file" value="ivy.xml"/>
+  	<property name="ivy.settings.xml" value="${basedir}/../ivy/ivy-settings.xml"/>
   	<property name="ivy.logging" value="quiet"/>
   	<property name="ivy.report.dir" value="${build.dir}/ivy-report"/>
   	<property name="ivy.publish.bundle.type" value="jar"/>
@@ -29,7 +30,7 @@
   </target>
 
   <target name="prepare-ivy" depends="install-ivy" description="Loads all the ivy definitions and settings">
-  	<ivy:settings file="${basedir}/../ivy/ivy-settings.xml" />
+    <ivy:settings file="${ivy.settings.xml}"/>
     <ivy:resolve file="${ivy.xml.file}" refresh="true" showprogress="false" log="${ivy.logging}"/>
 
   	<!-- set up main compile classpath using ivy dependecny management -->
