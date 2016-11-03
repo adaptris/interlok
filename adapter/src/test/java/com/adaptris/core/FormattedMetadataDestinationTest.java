@@ -23,6 +23,9 @@ import java.util.IllegalFormatConversionException;
 import java.util.List;
 import java.util.Set;
 
+import com.adaptris.core.metadata.ElementFormatter;
+import com.adaptris.core.metadata.ElementKeyAndValueFormatter;
+
 public class FormattedMetadataDestinationTest extends ExampleProduceDestinationCase {
 
   public FormattedMetadataDestinationTest(java.lang.String testName) {
@@ -202,6 +205,41 @@ public class FormattedMetadataDestinationTest extends ExampleProduceDestinationC
     catch (IllegalFormatConversionException expected) {
 
     }
+  }
+
+  /**
+   * Test the default behaviour of the ElementKeyAndValueFormatter.
+   * 
+   * @throws Exception If there is a problem during the test.
+   */
+  public void testElementFormatter() throws Exception {
+    FormattedMetadataDestination dest = new FormattedMetadataDestination();
+    dest.addMetadataKey("key1");
+    dest.setDestinationTemplate("%1$s");
+    Set<MetadataElement> metadata = new HashSet<>();
+    metadata.add(new MetadataElement("key1", "val1"));
+    ElementFormatter ef = new ElementKeyAndValueFormatter();
+    dest.setElementFormatter(ef);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("payload", metadata);
+    assertEquals("key1=val1", dest.getDestination(msg));
+  }
+  
+  /**
+   * Test the non-default behaviour of the ElementKeyAndValueFormatter (change the separator).
+   * 
+   * @throws Exception If there is a problem during the test.
+   */
+  public void testElementFormatterSeparator() throws Exception {
+    FormattedMetadataDestination dest = new FormattedMetadataDestination();
+    dest.addMetadataKey("key1");
+    dest.setDestinationTemplate("%1$s");
+    Set<MetadataElement> metadata = new HashSet<>();
+    metadata.add(new MetadataElement("key1", "val1"));
+    ElementKeyAndValueFormatter ef = new ElementKeyAndValueFormatter();
+    ef.setSeparator(":");
+    dest.setElementFormatter(ef);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("payload", metadata);
+    assertEquals("key1:val1", dest.getDestination(msg));
   }
 
   @Override
