@@ -12,10 +12,6 @@ public class AssertMetadataEquals extends MetadataAssertion {
     super();
   }
 
-  public AssertMetadataEquals(KeyValuePairSet metadata){
-    super(metadata);
-  }
-
   public AssertMetadataEquals(Map<String, String> metadata){
     super(new KeyValuePairSet(metadata));
   }

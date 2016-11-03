@@ -21,10 +21,6 @@ public abstract class MetadataAssertion extends Assertion {
     setMetadata(metadata);
   }
 
-  public MetadataAssertion(Map<String, String> metadata){
-    setMetadata(new KeyValuePairSet(metadata));
-  }
-
   public void setMetadata(KeyValuePairSet metadata) {
     this.metadata = metadata;
   }

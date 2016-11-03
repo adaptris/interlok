@@ -1,6 +1,7 @@
 package com.adaptris.tester.runtime.messages.assertion;
 
 import com.adaptris.tester.STExampleConfigCase;
+import com.adaptris.util.GuidGenerator;
 
 public abstract class AssertionCase extends STExampleConfigCase {
 
@@ -14,7 +15,10 @@ public abstract class AssertionCase extends STExampleConfigCase {
   }
   @Override
   protected Object retrieveObjectForSampleConfig() {
-    return createAssertion();
+    GuidGenerator guidGenerator = new GuidGenerator();
+    Assertion assertion = createAssertion();
+    assertion.setUniqueId(guidGenerator.getUUID());
+    return assertion;
   }
 
   protected abstract Assertion createAssertion();

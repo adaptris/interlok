@@ -12,10 +12,6 @@ public class AssertMetadataContains extends MetadataAssertion {
     super();
   }
 
-  public AssertMetadataContains(KeyValuePairSet metadata){
-    super(metadata);
-  }
-
   public AssertMetadataContains(Map<String, String> metadata){
     super(new KeyValuePairSet(metadata));
   }
