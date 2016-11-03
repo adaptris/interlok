@@ -112,7 +112,7 @@ public class RelaxedFtpConsumer extends FtpConsumerImpl {
   }
 
   /**
-   * @deprecated since 3.5.0 use {@link #getQuietInterval(TimeInterval)} instead for consistency.
+   * @deprecated since 3.5.0 use {@link #getQuietInterval()} instead for consistency.
    */
   @Deprecated
   public TimeInterval getOlderThan() {

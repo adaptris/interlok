@@ -29,7 +29,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Capture Data from a AdaptrisMessage and store it in a JDBC-compliant database.
  * <p>
  * While not deprecated; you are encouraged to use {@link JdbcBatchingDataCaptureService} instead for performance reasons. Set the
- * {@link JdbcBatchingDataCaptureService#setBatchWindow(Integer) to {@code 1} to have functionally equivalent behaviour to this
+ * {@link JdbcBatchingDataCaptureService#setBatchWindow(Integer)} to {@code 1} to have functionally equivalent behaviour to this
  * class.
  * </p>
  * 
