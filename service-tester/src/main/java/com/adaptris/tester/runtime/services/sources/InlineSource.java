@@ -1,10 +1,12 @@
 package com.adaptris.tester.runtime.services.sources;
 
+import com.adaptris.annotation.MarshallingCDATA;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XStreamAlias("inline-source")
 public class InlineSource implements Source {
 
+  @MarshallingCDATA
   public String xml;
 
   @Override

@@ -1,6 +1,5 @@
 package com.adaptris.tester.runtime.messages;
 
-import com.adaptris.core.SerializableAdaptrisMessage;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairBag;
 import com.adaptris.util.KeyValuePairSet;

@@ -1,11 +1,24 @@
 package com.adaptris.tester.runtime.messages.assertion;
 
+import com.adaptris.util.KeyValuePairSet;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 import java.util.Map;
 
 @XStreamAlias("assert-metadata-contains")
 public class AssertMetadataContains extends MetadataAssertion {
+
+  public AssertMetadataContains(){
+    super();
+  }
+
+  public AssertMetadataContains(KeyValuePairSet metadata){
+    super(metadata);
+  }
+
+  public AssertMetadataContains(Map<String, String> metadata){
+    super(new KeyValuePairSet(metadata));
+  }
 
   @Override
   public AssertionResult execute(Map<String, String> actual) {
