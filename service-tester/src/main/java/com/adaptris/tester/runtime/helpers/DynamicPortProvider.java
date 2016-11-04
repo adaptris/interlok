@@ -2,13 +2,17 @@ package com.adaptris.tester.runtime.helpers;
 
 import com.adaptris.core.PortManager;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 @XStreamAlias("dynamic-port-provider")
-public class DynamicPortProvider extends PortProvider {
+public class DynamicPortProvider implements PortProvider {
 
   private static final int DEFAULT_PORT_OFFSET = 8080;
 
   private int offset;
+
+  @XStreamOmitField
+  private int port;
 
 
   public DynamicPortProvider(){
@@ -31,6 +35,15 @@ public class DynamicPortProvider extends PortProvider {
   @Override
   public void initPort() {
     setPort(PortManager.nextUnusedPort(getOffset()));
+  }
+
+  @Override
+  public int getPort() {
+    return port;
+  }
+
+  public void setPort(int port) {
+    this.port = port;
   }
 
   @Override

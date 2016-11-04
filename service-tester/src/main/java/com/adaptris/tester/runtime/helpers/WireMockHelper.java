@@ -4,6 +4,7 @@ import com.adaptris.tester.runtime.ServiceTestException;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.common.SingleRootFileSource;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -11,7 +12,7 @@ import java.util.Map;
 
 
 @XStreamAlias("wire-mock-helper")
-public class WireMockHelper implements Helper {
+public class WireMockHelper extends Helper {
 
   private static final String WIRE_MOCK_HELPER_PORT_PROPERTY_NAME = "wire.mock.helper.port";
 
@@ -21,18 +22,17 @@ public class WireMockHelper implements Helper {
 
   private PortProvider portProvider;
 
-  private Map<String, String> helperProperties;
 
   public WireMockHelper(){
     setPortProvider(new StaticPortProvider());
-    helperProperties = new HashMap<>();
+
   }
 
   @Override
   public void init() throws ServiceTestException {
     portProvider.initPort();
-    helperProperties.put(WIRE_MOCK_HELPER_PORT_PROPERTY_NAME, String.valueOf(portProvider.getPort()));
-    wireMockServer = new WireMockServer(portProvider.getPort(), new SingleRootFileSource(fileSource), false);
+    addHelperProperty(WIRE_MOCK_HELPER_PORT_PROPERTY_NAME, String.valueOf(getPortProvider().getPort()));
+    wireMockServer = new WireMockServer(getPortProvider().getPort(), new SingleRootFileSource(getFileSource()), false);
     wireMockServer.start();
   }
 
@@ -42,10 +42,7 @@ public class WireMockHelper implements Helper {
     portProvider.releasePort();
   }
 
-  @Override
-  public Map<String, String> getHelperProperties() {
-    return helperProperties;
-  }
+
 
   public String getFileSource() {
     return fileSource;

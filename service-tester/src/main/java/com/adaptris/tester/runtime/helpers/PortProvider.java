@@ -1,28 +1,10 @@
 package com.adaptris.tester.runtime.helpers;
 
-public abstract class PortProvider {
+public interface PortProvider {
 
-  private static final int DEFAULT_PORT = 8080;
+  void initPort();
 
-  private int port;
+  int getPort();
 
-  public PortProvider(){
-    setPort(DEFAULT_PORT);
-  }
-
-  public void initPort(){
-
-  }
-
-  public final int getPort(){
-    return this.port;
-  }
-
-  public final void setPort(int port) {
-    this.port = port;
-  }
-
-  public void releasePort(){
-
-  }
+  void releasePort();
 }
