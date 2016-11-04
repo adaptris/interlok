@@ -102,9 +102,9 @@
       <attribute name="Implementation-Version" value="${ivy.publish.revision}"/>
       <attribute name="Implementation-Vendor" value="${manifest.vendor}"/>
     </manifest-->
-    <copy todir="${classes.build.dir}" overwrite="true">
+    <!--copy todir="${classes.build.dir}" overwrite="true">
       <fileset dir="${resources.dir}"/>
-    </copy>
+    </copy-->
     <propertyfile file="${classes.build.dir}/META-INF/adaptris-version">
       <entry key="component.name" value="${manifest.title}"/>
       <entry key="build.version" value="${ivy.publish.revision}"/>
