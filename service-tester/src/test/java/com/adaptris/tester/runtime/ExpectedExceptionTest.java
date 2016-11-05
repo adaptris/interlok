@@ -3,7 +3,6 @@ package com.adaptris.tester.runtime;
 import com.adaptris.core.ServiceException;
 import com.adaptris.tester.report.junit.JUnitReportTestIssue;
 import com.adaptris.tester.report.junit.JUnitReportTestIssueTyped;
-import org.junit.*;
 
 import static org.junit.Assert.*;
 

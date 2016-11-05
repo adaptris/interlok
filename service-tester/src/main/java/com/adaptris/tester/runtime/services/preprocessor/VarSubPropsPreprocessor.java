@@ -1,7 +1,6 @@
 package com.adaptris.tester.runtime.services.preprocessor;
 
 import com.adaptris.tester.utils.SimpleStringSubstitution;
-import com.adaptris.tester.utils.UtilityException;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairBag;
 import com.adaptris.util.KeyValuePairSet;
@@ -19,21 +18,17 @@ public class VarSubPropsPreprocessor implements Preprocessor {
   private KeyValuePairSet properties;
 
   public VarSubPropsPreprocessor(){
-    properties = new KeyValuePairSet();
+    setProperties(new KeyValuePairSet());
   }
 
   public VarSubPropsPreprocessor(Map<String, String> properties){
-    this.properties = new KeyValuePairSet(properties);
+    setProperties(new KeyValuePairSet(properties));
   }
 
   @Override
   public String execute(String input) throws PreprocessorException {
-    try {
-      SimpleStringSubstitution substitution = new SimpleStringSubstitution();
-      return substitution.doSubstitution(input, getKvpAsProperties(), DEFAULT_VARIABLE_PREFIX, DEFAULT_VARIABLE_POSTFIX);
-    } catch (UtilityException e){
-      throw new PreprocessorException("Failed to substitute variables", e);
-    }
+    SimpleStringSubstitution substitution = new SimpleStringSubstitution();
+    return substitution.doSubstitution(input, getKvpAsProperties(), DEFAULT_VARIABLE_PREFIX, DEFAULT_VARIABLE_POSTFIX);
   }
 
   public void setProperties(KeyValuePairSet properties) {

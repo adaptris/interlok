@@ -1,18 +1,20 @@
 package com.adaptris.tester.runtime.messages.payload;
 
+import com.adaptris.annotation.MarshallingCDATA;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XStreamAlias("inline-payload-provider")
-public class InlinePayloadProvider implements PayloadProvider {
+public class InlinePayloadProvider extends PayloadProvider {
 
+  @MarshallingCDATA
   private String payload;
 
   public InlinePayloadProvider(){
-    this.payload = "";
+    setPayload("");
   }
 
   public InlinePayloadProvider(final String payload){
-    this.payload = payload;
+    setPayload(payload);
   }
 
   @Override

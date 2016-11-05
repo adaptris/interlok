@@ -1,5 +1,6 @@
 package com.adaptris.tester.runtime.messages;
 
+import com.adaptris.annotation.MarshallingCDATA;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairBag;
 import com.adaptris.util.KeyValuePairSet;
@@ -13,11 +14,13 @@ import java.util.Map;
 @Deprecated
 public class InlineTestMessage extends TestMessage {
 
+  @MarshallingCDATA
   private String payload;
   private KeyValuePairSet metadata;
 
   public InlineTestMessage(){
-    metadata = new KeyValuePairSet();
+    setMetadata(new KeyValuePairSet());
+    setPayload("");
   }
 
   public void setMetadata(KeyValuePairSet metadata) {

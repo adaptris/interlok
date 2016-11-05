@@ -16,7 +16,11 @@ import java.util.List;
 public class VarSubPreprocessor implements Preprocessor {
 
   @XStreamImplicit
-  private List<String> propertyFile = new ArrayList<>();
+  private List<String> propertyFile;
+
+  public VarSubPreprocessor(){
+    setPropertyFile(new ArrayList<String>());
+  }
 
   @Override
   public String execute(String input) throws PreprocessorException {

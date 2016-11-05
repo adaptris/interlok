@@ -1,6 +1,12 @@
 package com.adaptris.tester.runtime.messages.payload;
 
-public interface PayloadProvider {
+import com.adaptris.tester.runtime.messages.MessageException;
 
-  String getPayload();
+public abstract class PayloadProvider {
+
+  public void init() throws MessageException {
+
+  }
+
+  public abstract String getPayload();
 }

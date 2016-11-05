@@ -1,8 +1,14 @@
 package com.adaptris.tester.runtime.messages.metadata;
 
+import com.adaptris.tester.runtime.messages.MessageException;
+
 import java.util.Map;
 
-public interface MetadataProvider {
+public abstract class MetadataProvider {
 
-   Map<String, String> getMessageHeaders();
+  public void init()throws MessageException {
+
+  }
+
+  public abstract Map<String, String> getMessageHeaders();
 }

@@ -7,9 +7,6 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 public class AssertMetadataContainsTest extends AssertionCase{
 
   public AssertMetadataContainsTest(String name) {

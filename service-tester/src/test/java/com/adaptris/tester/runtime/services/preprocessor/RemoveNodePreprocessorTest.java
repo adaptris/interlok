@@ -2,14 +2,8 @@ package com.adaptris.tester.runtime.services.preprocessor;
 
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.XmlHelper;
-import com.adaptris.util.KeyValuePair;
-import com.adaptris.util.KeyValuePairSet;
 import org.junit.Test;
 import org.w3c.dom.Document;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
 
 public class RemoveNodePreprocessorTest extends PreprocessorCase {
 

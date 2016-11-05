@@ -3,15 +3,11 @@ package com.adaptris.tester.runtime.services.preprocessor;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.KeyValuePairSet;
-import com.adaptris.util.XmlUtils;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.w3c.dom.Document;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.junit.Assert.*;
 
 public class XpathPreprocessorTest extends PreprocessorCase {
 

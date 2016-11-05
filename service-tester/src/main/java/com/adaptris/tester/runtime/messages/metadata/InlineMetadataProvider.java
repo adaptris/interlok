@@ -10,16 +10,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 @XStreamAlias("inline-metadata-provider")
-public class InlineMetadataProvider implements MetadataProvider {
+public class InlineMetadataProvider extends MetadataProvider {
 
   private KeyValuePairSet metadata;
 
   public InlineMetadataProvider(){
-    this.metadata = new KeyValuePairSet();
+    setMetadata(new KeyValuePairSet());
   }
 
   public InlineMetadataProvider(final KeyValuePairSet metadata){
-    this.metadata = metadata;
+    setMetadata(metadata);
   }
 
   public void setMetadata(KeyValuePairSet metadata) {
@@ -32,7 +32,7 @@ public class InlineMetadataProvider implements MetadataProvider {
 
   @Override
   public Map<String, String> getMessageHeaders() {
-    return Collections.unmodifiableMap(toMap(metadata));
+    return Collections.unmodifiableMap(toMap(getMetadata()));
   }
 
   private Map<String, String> toMap(KeyValuePairBag bag) {

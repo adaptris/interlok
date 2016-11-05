@@ -2,14 +2,10 @@ package com.adaptris.tester.runtime.services.sources;
 
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.XmlHelper;
-import com.adaptris.tester.runtime.services.preprocessor.PreprocessorException;
-import com.adaptris.tester.runtime.services.preprocessor.VarSubPreprocessor;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
 import java.io.File;
-
-import static org.junit.Assert.*;
 
 
 public class FileSourceTest extends SourceCase{

@@ -1,7 +1,5 @@
 package com.adaptris.tester.runtime.helpers;
 
-import junit.framework.TestCase;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
