@@ -1,7 +1,0 @@
-junit.SampleConfigCase.baseDir=${example-xml.build.dir}
-junit.PreprocessorCase.baseDir=${example-xml.build.dir}/preprocessor
-junit.SourceCase.baseDir=${example-xml.build.dir}/sources
-junit.AssertionCase.baseDir=${example-xml.build.dir}/assertions
-junit.HelperCase.baseDir=${example-xml.build.dir}/helpers
-junit.PortProviderCase.baseDir=${example-xml.build.dir}/helpers
-junit.MessagesCase.baseDir=${example-xml.build.dir}/messages

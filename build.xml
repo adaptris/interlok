@@ -64,7 +64,7 @@
         <property name="ivy.password" value="${ivy.password}"/>
         <property name="ivy.repo" value="${ivy.repo}"/>
       </ant-properties>
-    </interlok:project-build>    
+    </interlok:project-build>
     <interlok:project-build target="publish" project="adapter">
       <ant-properties>
         <property name="adp-core-version" value="${tag.version}"/>
@@ -80,15 +80,6 @@
         <property name="default.jdbc.storedproc.tests.enabled" value="false"/>
         <property name="default.security.remote.tests.enabled" value="false"/>
         <property name="ignore.test.failures" value="true"/>
-      </ant-properties>
-    </interlok:project-build>
-    <interlok:project-build target="publish" project="service-tester">
-      <ant-properties>
-        <property name="adp-core-version" value="${tag.version}"/>
-        <property name="ivy.publish.revision" value="${tag.version}"/>
-        <property name="ivy.user" value="${ivy.user}"/>
-        <property name="ivy.password" value="${ivy.password}"/>
-        <property name="ivy.repo" value="${ivy.repo}"/>
       </ant-properties>
     </interlok:project-build>
   </target>
@@ -117,7 +108,7 @@
         <property name="adp-core-version" value="3.5-SNAPSHOT"/>
         <property name="ivy.publish.revision" value="3.5-SNAPSHOT"/>
       </ant-properties>
-    </interlok:project-build>    
+    </interlok:project-build>
     <interlok:project-build target="publish" project="adapter">
       <ant-properties>
         <property name="ivy.user" value="${ivy.user}"/>
@@ -134,14 +125,6 @@
         <property name="default.security.remote.tests.enabled" value="false"/>
       </ant-properties>
     </interlok:project-build>
-    <interlok:project-build target="publish" project="service-tester">
-      <ant-properties>
-        <property name="ivy.user" value="${ivy.user}"/>
-        <property name="ivy.password" value="${ivy.password}"/>
-        <property name="adp-core-version" value="3.5-SNAPSHOT"/>
-        <property name="ivy.publish.revision" value="3.5-SNAPSHOT"/>
-      </ant-properties>
-    </interlok:project-build>
   </target>
 
   <target name="publish" depends="snapshot.publish, tagged.publish" description="Publish an artifact"/>
@@ -151,7 +134,6 @@
     <interlok:project-build target="test" project="common"/>
     <interlok:project-build target="test" project="logging"/>
     <interlok:project-build target="test" project="adapter"/>
-    <interlok:project-build target="test" project="service-tester"/>
   </target>
 
   <target name="test-no-reports" depends="init" description="Run Tests w/o Reports">
@@ -159,7 +141,6 @@
     <interlok:project-build target="test-no-reports" project="common"/>
     <interlok:project-build target="test-no-reports" project="logging"/>
     <interlok:project-build target="test-no-reports" project="adapter"/>
-    <interlok:project-build target="test-no-reports" project="service-tester"/>
 
   </target>
 </project>
