@@ -20,7 +20,7 @@ public class RemoveNodePreprocessor extends XpathPreprocessor{
       node.getParentNode().removeChild(node);
       return nodeToString(document);
     } catch (ParserConfigurationException | SAXException | IOException e) {
-      throw new PreprocessorException(e);
+      throw new PreprocessorException("Failed to remove node", e);
     }
   }
 }

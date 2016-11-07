@@ -24,7 +24,7 @@ public class VarSubPreprocessor implements Preprocessor {
       VariableSubstitutionPreProcessor processor = new VariableSubstitutionPreProcessor(createPropertyFileSet());
       return processor.process(input);
     } catch (CoreException e) {
-      throw new PreprocessorException(e);
+      throw new PreprocessorException("Failed to substitute variables", e);
     }
   }
 

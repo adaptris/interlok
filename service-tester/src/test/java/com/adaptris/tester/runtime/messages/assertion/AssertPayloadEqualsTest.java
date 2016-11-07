@@ -5,21 +5,18 @@ import org.junit.Test;
 
 import java.util.HashMap;
 
-import static org.junit.Assert.*;
+public class AssertPayloadEqualsTest extends AssertionCase {
 
-public class AssertPayloadContainsTest extends AssertionCase {
-
-  public AssertPayloadContainsTest(String name) {
+  public AssertPayloadEqualsTest(String name) {
     super(name);
   }
 
   @Test
   public void testExecute() throws Exception {
     String actual = "1234hello1234";
-    PayloadAssertion matcher = new AssertPayloadContains();
-    matcher.setPayload("hello");
+    PayloadAssertion matcher = new AssertPayloadEquals();
+    matcher.setPayload("1234hello1234");
     assertTrue(matcher.execute(new TestMessage(new HashMap<String, String>(),actual)).isPassed());
-
     matcher.setPayload("notthis");
     assertFalse(matcher.execute(new TestMessage(new HashMap<String, String>(),actual)).isPassed());
   }
@@ -32,11 +29,12 @@ public class AssertPayloadContainsTest extends AssertionCase {
   @Test
   public void testGetMessage(){
     AssertionResult result  = createAssertion().execute(new TestMessage());
-    assertEquals("Assertion Failure: [assert-payload-contains]", result.getMessage());
+    assertEquals("Assertion Failure: [assert-payload-equals]", result.getMessage());
   }
+
 
   @Override
   protected Assertion createAssertion() {
-    return new AssertPayloadContains("hello");
+    return new AssertPayloadEquals("hello");
   }
 }

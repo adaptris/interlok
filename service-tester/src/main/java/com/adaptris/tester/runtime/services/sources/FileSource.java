@@ -31,7 +31,7 @@ public class FileSource implements Source {
       final byte[] fileContents = fsWorker.get(fileToRead);
       return new String(fileContents);
     } catch (Exception e) {
-      throw new SourceException(e);
+      throw new SourceException("Failed to read file", e);
     }
   }
 

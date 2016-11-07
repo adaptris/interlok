@@ -28,6 +28,8 @@
     <property name="testclasses.build.dir"  value="${build.dir}/testclasses"/>
     <property name="test.resources.dir"  value="${basedir}/src/test/resources"/>
 
+    <property name="example-xml.build.dir"  value="${build.dir}/example-xml"/>
+    
     <property name="project.dist.dir" value="${build.dir}/dist"/>
 
     <property name="tests.output.dir"       value="${build.dir}/testoutput"/>
@@ -76,6 +78,9 @@
   <target name="init.tests" depends="compile.tests">
     <mkdir dir="${test.resources.dir}"/>
     <mkdir dir="${tests.output.dir}"/>
+    <interlok:property-source file="${test.resources.dir}/unit-tests.properties.template"/>
+    <echoproperties destfile="${testclasses.build.dir}/unit-tests.properties" prefix="junit."/>
+    <replace file="${testclasses.build.dir}/unit-tests.properties" token="junit." value=""/>
   </target>
 
   <target name="jar.resources" depends="init">
@@ -97,9 +102,9 @@
       <attribute name="Implementation-Version" value="${ivy.publish.revision}"/>
       <attribute name="Implementation-Vendor" value="${manifest.vendor}"/>
     </manifest-->
-    <copy todir="${classes.build.dir}" overwrite="true">
+    <!--copy todir="${classes.build.dir}" overwrite="true">
       <fileset dir="${resources.dir}"/>
-    </copy>
+    </copy-->
     <propertyfile file="${classes.build.dir}/META-INF/adaptris-version">
       <entry key="component.name" value="${manifest.title}"/>
       <entry key="build.version" value="${ivy.publish.revision}"/>
@@ -118,7 +123,25 @@
     </jar>
   </target>
 
-  <target name="macrodef.init" depends="ivy.macrodef"/>
+  <target name="macrodef.init" depends="ivy.macrodef" >
+    <macrodef name="property-source" uri="uri:interlok">
+      <attribute name="file" />
+      <sequential>
+        <echo message="Looking for @{file}.${env.COMPUTERNAME}"/>
+        <if>
+          <available file="@{file}.${env.COMPUTERNAME}" />
+          <then>
+            <echo message="Using @{file}.${env.COMPUTERNAME}"/>
+            <property file="@{file}.${env.COMPUTERNAME}"/>
+          </then>
+          <else>
+            <echo message="Using @{file}"/>
+            <property file="@{file}"/>
+          </else>
+        </if>
+      </sequential>
+    </macrodef>
+  </target>
 
   <target name="javadoc" depends="prepare-ivy,macrodef.init" description="Create javadocs">
     <interlok:create-javadocs sourcepath="${src.dir}" destdir="${api.doc.dir}" title="${manifest.title}">
