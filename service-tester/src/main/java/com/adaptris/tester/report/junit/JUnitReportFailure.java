@@ -14,13 +14,17 @@ public class JUnitReportFailure extends JUnitReportTestIssueTyped {
   private final static String TYPE = "failure";
   private String text;
 
-
   public JUnitReportFailure(String message) {
-    super(message, TYPE);
+    super(TYPE);
+    setMessage(message);
   }
 
   public JUnitReportFailure(String message, String text) {
-    super(message, TYPE);
+    this(message);
     this.text = text;
+  }
+
+  public String getText() {
+    return text;
   }
 }

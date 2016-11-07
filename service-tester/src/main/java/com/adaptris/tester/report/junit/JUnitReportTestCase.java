@@ -37,6 +37,10 @@ public class JUnitReportTestCase {
     return issue != null && issue.get(0) instanceof JUnitReportSkipped;
   }
 
+  public String getName() {
+    return name;
+  }
+
   public void setTestIssue(JUnitReportTestIssue failure) {
     if(failure != null) {
       issue = new ArrayList<>();
@@ -44,11 +48,23 @@ public class JUnitReportTestCase {
     }
   }
 
+  public List<JUnitReportTestIssue> getIssue() {
+    return issue;
+  }
+
   public void setTime(double time) {
     this.time = time;
   }
 
+  public double getTime() {
+    return time;
+  }
+
   public void setClassname(String classname) {
     this.classname = classname;
+  }
+
+  public String getClassname() {
+    return classname;
   }
 }

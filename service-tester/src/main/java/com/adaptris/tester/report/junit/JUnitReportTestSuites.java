@@ -15,7 +15,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-@XStreamAlias("testsuites")
 public class JUnitReportTestSuites {
 
 

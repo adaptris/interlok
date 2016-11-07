@@ -32,15 +32,13 @@ public class JUnitReportTestSuite {
   @XStreamAsAttribute
   private double time;
 
-  private final List<JUnitReportProperty> properties;
+  private final List<JUnitReportProperty> properties = new ArrayList<>();
 
   @XStreamImplicit
-  private final List<JUnitReportTestCase> testCases;
+  private final List<JUnitReportTestCase> testCases = new ArrayList<>();
 
   public JUnitReportTestSuite(String name){
     this.name = name;
-    this.testCases = new ArrayList<>();
-    this.properties = new ArrayList<>();
     this.failures = 0;
     this.errors = 0;
     this.tests = 0;
@@ -59,6 +57,10 @@ public class JUnitReportTestSuite {
     properties.add(property);
   }
 
+  public List<JUnitReportProperty> getProperties() {
+    return properties;
+  }
+
   public void addTestCase(JUnitReportTestCase testCase){
     this.testCases.add(testCase);
     this.tests++;
@@ -73,6 +75,10 @@ public class JUnitReportTestSuite {
     }
   }
 
+  public List<JUnitReportTestCase> getTestCases() {
+    return testCases;
+  }
+
   boolean hasFailures(){
     for(JUnitReportTestCase testCase : this.testCases) {
       if (testCase.isFailure() || testCase.isError()){
@@ -82,8 +88,16 @@ public class JUnitReportTestSuite {
     return false;
   }
 
+  public String getName() {
+    return name;
+  }
+
   public void setTime(double time) {
     this.time = time;
+  }
+
+  public double getTime() {
+    return time;
   }
 
   public int getTests() {
@@ -100,13 +114,5 @@ public class JUnitReportTestSuite {
 
   public int getSkipped() {
     return skipped;
-  }
-
-  public double getTime() {
-    return time;
-  }
-
-  public String getName() {
-    return name;
   }
 }

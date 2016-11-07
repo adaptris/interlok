@@ -15,11 +15,16 @@ public class JUnitReportError extends JUnitReportTestIssueTyped {
   private String text;
 
   public JUnitReportError(String message) {
-    super(message, TYPE);
+    super(TYPE);
+    setMessage(message);
   }
 
   public JUnitReportError(String message, String text) {
-    super(message, TYPE);
+    this(message);
     this.text = text;
+  }
+
+  public String getText() {
+    return text;
   }
 }

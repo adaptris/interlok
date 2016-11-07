@@ -8,11 +8,11 @@ import java.util.List;
 
 public class JUnitReportTestResults {
 
-  private final String uniqueId;
+  private final String name;
   private final List<JUnitReportTestSuites> testSuites;
 
-  public JUnitReportTestResults(final String uniqueId){
-    this.uniqueId = uniqueId;
+  public JUnitReportTestResults(final String name){
+    this.name = name;
     this.testSuites = new ArrayList<>();
   }
 
