@@ -64,7 +64,7 @@
         <property name="ivy.password" value="${ivy.password}"/>
         <property name="ivy.repo" value="${ivy.repo}"/>
       </ant-properties>
-    </interlok:project-build>    
+    </interlok:project-build>
     <interlok:project-build target="publish" project="adapter">
       <ant-properties>
         <property name="adp-core-version" value="${tag.version}"/>
@@ -82,31 +82,8 @@
         <property name="ignore.test.failures" value="true"/>
       </ant-properties>
     </interlok:project-build>
-    <!-- depends on var-sub & xinclude. Can't build this at this point
-    <interlok:project-build target="publish" project="service-tester">
-      <ant-properties>
-        <property name="adp-core-version" value="${tag.version}"/>
-        <property name="ivy.publish.revision" value="${tag.version}"/>
-        <property name="ivy.user" value="${ivy.user}"/>
-        <property name="ivy.password" value="${ivy.password}"/>
-        <property name="ivy.repo" value="${ivy.repo}"/>
-      </ant-properties>
-    </interlok:project-build>
-    -->
   </target>
 
-  <target name="service-tester.publish" depends="init, clean" if="tag.version">
-    <interlok:project-build target="publish" project="service-tester">
-      <ant-properties>
-        <property name="adp-core-version" value="${tag.version}"/>
-        <property name="ivy.publish.revision" value="${tag.version}"/>
-        <property name="ivy.user" value="${ivy.user}"/>
-        <property name="ivy.password" value="${ivy.password}"/>
-        <property name="ivy.repo" value="${ivy.repo}"/>
-      </ant-properties>
-    </interlok:project-build>
-  </target>
-  
   <target name="snapshot.publish" depends="init, clean" unless="tag.version">
     <interlok:project-build target="publish" project="apt">
       <ant-properties>
@@ -131,7 +108,7 @@
         <property name="adp-core-version" value="3.5-SNAPSHOT"/>
         <property name="ivy.publish.revision" value="3.5-SNAPSHOT"/>
       </ant-properties>
-    </interlok:project-build>    
+    </interlok:project-build>
     <interlok:project-build target="publish" project="adapter">
       <ant-properties>
         <property name="ivy.user" value="${ivy.user}"/>
@@ -146,14 +123,6 @@
         <property name="default.ftp.tests.enabled" value="false"/>
         <property name="default.jdbc.storedproc.tests.enabled" value="false"/>
         <property name="default.security.remote.tests.enabled" value="false"/>
-      </ant-properties>
-    </interlok:project-build>
-    <interlok:project-build target="publish" project="service-tester">
-      <ant-properties>
-        <property name="ivy.user" value="${ivy.user}"/>
-        <property name="ivy.password" value="${ivy.password}"/>
-        <property name="adp-core-version" value="3.5-SNAPSHOT"/>
-        <property name="ivy.publish.revision" value="3.5-SNAPSHOT"/>
       </ant-properties>
     </interlok:project-build>
   </target>
