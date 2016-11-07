@@ -3,6 +3,7 @@ package com.adaptris.tester.runtime;
 import com.adaptris.tester.report.junit.*;
 import com.adaptris.tester.runtime.clients.TestClient;
 import com.adaptris.tester.runtime.messages.TestMessage;
+import com.adaptris.tester.runtime.messages.TestMessageProvider;
 import com.adaptris.tester.runtime.services.ServiceToTest;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
@@ -19,23 +20,25 @@ public class TestCase implements TestComponent {
   private static final String TEST_FILTER =  "test.glob.filter";
 
   private String uniqueId;
+  @Deprecated
   private TestMessage inputMessage;
+  private TestMessageProvider messageProvider;
   private Assertions assertions;
   private ExpectedException expectedException;
   @XStreamOmitField
   private String globFilter;
 
   public TestCase(){
-    assertions = new Assertions();
-    expectedException = null;
+    setAssertions(new Assertions());
+    setExpectedException(null);
     if (System.getProperties().containsKey(TEST_FILTER)) {
-      globFilter = System.getProperty(TEST_FILTER);
-    } else {
-      globFilter = "*";
+      setGlobFilter(System.getProperty(TEST_FILTER));
     }
   }
+
   public TestCase(final String globFilter){
-    this.globFilter = globFilter;
+    this();
+    setGlobFilter(globFilter);
   }
 
   public void setUniqueId(String uniqueId) {
@@ -47,12 +50,22 @@ public class TestCase implements TestComponent {
     return uniqueId;
   }
 
+  @Deprecated
   public void setInputMessage(TestMessage inputMessage) {
     this.inputMessage = inputMessage;
   }
 
+  @Deprecated
   public TestMessage getInputMessage() {
     return inputMessage;
+  }
+
+  public TestMessageProvider getMessageProvider() {
+    return messageProvider;
+  }
+
+  public void setMessageProvider(TestMessageProvider messageProvider) {
+    this.messageProvider = messageProvider;
   }
 
   public void setAssertions(Assertions assertions) {
@@ -63,15 +76,35 @@ public class TestCase implements TestComponent {
     return assertions;
   }
 
+  public void setExpectedException(ExpectedException expectedException) {
+    this.expectedException = expectedException;
+  }
+
+  public ExpectedException getExpectedException() {
+    return expectedException;
+  }
+
+  private String globFilter(){
+    return getGlobFilter() == null ? "*" : getGlobFilter();
+  }
+
+  public void setGlobFilter(String globFilter) {
+    this.globFilter = globFilter;
+  }
+
+  public String getGlobFilter() {
+    return globFilter;
+  }
+
   boolean isTestToBeExecuted(final String fqName){
-    String regexFilter = createRegexFromGlob(globFilter);
+    String regexFilter = createRegexFromGlob(globFilter());
     return fqName.matches(regexFilter);
   }
 
   JUnitReportTestCase execute(String parentId, TestClient client, ServiceToTest serviceToTest) throws ServiceTestException {
     final String fqName = parentId + "." + getUniqueId();
 
-    JUnitReportTestCase result = new JUnitReportTestCase(uniqueId);
+    JUnitReportTestCase result = new JUnitReportTestCase(getUniqueId());
     if(!isTestToBeExecuted(fqName)){
       result.setTestIssue(new JUnitReportSkipped());
       result.setTime(0);
@@ -79,19 +112,25 @@ public class TestCase implements TestComponent {
     }
     long startTime = System.nanoTime();
     try {
-      TestMessage returnMessage = client.applyService(serviceToTest.getProcessedSource(), inputMessage);
-      if(expectedException != null){
-        //Exception should have been thrown
-        result.setTestIssue(new JUnitReportFailure("Assertion Failure: Expected Exception [" + expectedException.getClassName() + "]", "No Exception thrown"));
+      TestMessage input;
+      if(getInputMessage() == null){
+        input = getMessageProvider().createTestMessage();
       } else {
-        result.setTestIssue(assertions.execute(returnMessage));
+        input = getInputMessage();
+      }
+      TestMessage returnMessage = client.applyService(serviceToTest.getProcessedSource(), input);
+      if(getExpectedException() != null){
+        //Exception should have been thrown
+        result.setTestIssue(new JUnitReportFailure("Assertion Failure: Expected Exception [" + getExpectedException().getClassName() + "]", "No Exception thrown"));
+      } else {
+        result.setTestIssue(getAssertions().execute(returnMessage));
       }
     } catch (Exception e){
-      if(expectedException == null){
+      if(getExpectedException() == null){
         JUnitReportError issue = new JUnitReportError("Test Error: [" + e.toString() + "]", ExceptionUtils.getStackTrace(e));
         result.setTestIssue(issue);
       } else {
-        JUnitReportTestIssue issue = expectedException.check(e);
+        JUnitReportTestIssue issue = getExpectedException().check(e);
         result.setTestIssue(issue);
       }
 

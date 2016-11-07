@@ -40,7 +40,7 @@ public class TestMessageProvider {
     return payloadProvider;
   }
 
-  public TestMessage createTestMessage() throws MessageException{
+  public TestMessage createTestMessage() throws MessageException {
     getMetadataProvider().init();
     getPayloadProvider().init();
     return new TestMessage(getMetadataProvider().getMessageHeaders(), getPayloadProvider().getPayload());
