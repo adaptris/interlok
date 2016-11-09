@@ -7,75 +7,58 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ChildFirstClassLoader extends URLClassLoader {
-  
-  private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
-  
-  public ChildFirstClassLoader(URL[] urls) {
-    super(urls);
-  }
 
-  public ChildFirstClassLoader(URL[] urls, ClassLoader parent) {
+  private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
+
+  public ChildFirstClassLoader(final URL[] urls, final ClassLoader parent) {
     super(urls, parent);
   }
 
-  public void addURL(URL url) {
-    super.addURL(url);
-  }
-  
-  @SuppressWarnings({ "rawtypes", "unchecked" })
-  public Class loadClass(String name) throws ClassNotFoundException {
+  @Override
+  @SuppressWarnings({
+    "rawtypes", "unchecked"
+  })
+  public Class loadClass(final String name) throws ClassNotFoundException {
     return loadClass(name, false);
   }
 
-  @SuppressWarnings({ "rawtypes", "unchecked" })
-  protected Class loadClass(String name, boolean resolve) throws ClassNotFoundException {
-    
-    log.info("Attempting to load class " + name + " ; will  resolve " + resolve);
-    
+  @Override
+  @SuppressWarnings({
+    "rawtypes", "unchecked", "unused"
+  })
+  protected Class loadClass(final String name, final boolean resolve) throws ClassNotFoundException {
+
+    log.info("Attempting to load class " + name);
+
     // First, check if the class has already been loaded
-    Class c = findLoadedClass(name);
+    Class clas = findLoadedClass(name);
 
     // if not loaded, search the local (child) resources
-    if (c == null) {
+    if (clas == null) {
       log.info("Class " + name + " not already loaded");
       try {
-        for (URL url : getURLs()) {
-          log.info("Searching " + url.toString());
-        }
-        c = findClass(name);
-      } catch(ClassNotFoundException cnfe) {
+        clas = findClass(name);
+      } catch (final ClassNotFoundException e) {
         // ignore
-        log.error("Class not found " + cnfe, cnfe);
       }
     }
-    
+
     // if we could not find it, delegate to parent
     // Note that we don't attempt to catch any ClassNotFoundException
-    if (c == null) {
-      log.info("Class " + name + " still not loaded ; parent is " + getParent().toString());
+    if (clas == null) {
+      log.info("Class " + name + " still not loaded; trying parent/system classloader ");
       if (getParent() != null) {
-        c = getParent().loadClass(name);
+        clas = getParent().loadClass(name);
       } else {
-        c = getSystemClassLoader().loadClass(name);
+        clas = getSystemClassLoader().loadClass(name);
       }
     }
-    log.info("Class " + name + " is " + c);
+    log.info("Class " + name + " loaded as " + clas);
 
     if (resolve) {
-      log.info("Resolving class " + c.getName());
-      resolveClass(c);
+      resolveClass(clas);
     }
 
-    return c;
+    return clas;
   }
-  
-  public static void main(String[] args) throws Exception {
-    ChildFirstClassLoader cfcl = new ChildFirstClassLoader(new URL[] { new URL("file:///C/Adaptris/Interlok3.4.0/webapps/adapter-web-gui.war") });
-    Class c = cfcl.loadClass("org.jboss.logging.AbstractMdcLoggerProvider");
-    System.out.println(c.getName());
-    // jboss-logging-3.1.3.GA.jar
-    // org\jboss\logging\
-    // AbstractMdcLoggerProvider.class
-  }
-
 }
