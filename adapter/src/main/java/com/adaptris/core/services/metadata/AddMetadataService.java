@@ -31,6 +31,7 @@ import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
@@ -61,7 +62,10 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @XStreamAlias("add-metadata-service")
 @AdapterComponent
 @ComponentProfile(summary = "Add Static Metadata to a Message", tag = "service,metadata")
-@DisplayOrder(order = {"metadataElements"})
+@DisplayOrder(order =
+{
+    "metadataElements"
+})
 public class AddMetadataService extends ServiceImp {
 
   private static final String UNIQUE_ID_MNENOMIC = "$UNIQUE_ID$";
@@ -110,6 +114,9 @@ public class AddMetadataService extends ServiceImp {
   @AffectsMetadata
   private Set<MetadataElement> metadataElements;
 
+  @InputFieldDefault(value = "true")
+  private Boolean overwrite;
+
   /**
    * <p>
    * Creates a new instance.
@@ -139,8 +146,10 @@ public class AddMetadataService extends ServiceImp {
       if (HANDLERS.containsKey(e.getValue())) {
         addMe = new MetadataElement(e.getKey(), HANDLERS.get(e.getValue()).getValue(msg));
       }
-      msg.addMetadata(addMe);
-      addedMetadata.add(addMe);
+      if (overwrite(msg, addMe.getKey())) {
+        msg.addMetadata(addMe);
+        addedMetadata.add(addMe);
+      }
     }
     log.debug("metadata added " + addedMetadata);
   }
@@ -154,27 +163,12 @@ public class AddMetadataService extends ServiceImp {
 
   }
 
-
-  /** @see java.lang.Object#toString() */
-  @Override
-  public String toString() {
-    StringBuffer result = new StringBuffer();
-    result.append("[");
-    result.append(this.getClass().getName());
-    result.append("] ");
-    result.append("metadata [" + metadataElements + "]");
-
-    return result.toString();
-  }
-
   /**
    * <p>
-   * Returns the <code>MetadataElement</code>s that will be added to the
-   * <code>AdaptrisMessage</code>.
+   * Returns the <code>MetadataElement</code>s that will be added to the <code>AdaptrisMessage</code>.
    * </p>
    *
-   * @return the <code>MetadataElement</code>s that will be added to the
-   *         <code>AdaptrisMessage</code>
+   * @return the <code>MetadataElement</code>s that will be added to the <code>AdaptrisMessage</code>
    */
   public Set<MetadataElement> getMetadataElements() {
     return metadataElements;
@@ -182,12 +176,10 @@ public class AddMetadataService extends ServiceImp {
 
   /**
    * <p>
-   * Sets the <code>MetadataElement</code>s that will be added to the
-   * <code>AdaptrisMessage</code>.
+   * Sets the <code>MetadataElement</code>s that will be added to the <code>AdaptrisMessage</code>.
    * </p>
    *
-   * @param s the <code>MetadataElement</code>s that will be added to the
-   *          <code>AdaptrisMessage</code>
+   * @param s the <code>MetadataElement</code>s that will be added to the <code>AdaptrisMessage</code>
    */
   public void setMetadataElements(Set<MetadataElement> s) {
     metadataElements = s;
@@ -195,12 +187,10 @@ public class AddMetadataService extends ServiceImp {
 
   /**
    * <p>
-   * Adds a <code>MetadataElement</code>s to the <code>Set</code> that will be
-   * added to the <code>AdaptrisMessage</code>.
+   * Adds a <code>MetadataElement</code>s to the <code>Set</code> that will be added to the <code>AdaptrisMessage</code>.
    * </p>
    *
-   * @param element a <code>MetadataElement</code>s to add to the
-   *          <code>AdaptrisMessage</code>
+   * @param element a <code>MetadataElement</code>s to add to the <code>AdaptrisMessage</code>
    */
   public void addMetadataElement(MetadataElement element) {
     metadataElements.add(element);
@@ -223,5 +213,33 @@ public class AddMetadataService extends ServiceImp {
   public void prepare() throws CoreException {
   }
 
+  /**
+   * @return the overwrite
+   */
+  public Boolean getOverwrite() {
+    return overwrite;
+  }
+
+  /**
+   * @param overwrite the overwrite to set
+   */
+  public void setOverwrite(Boolean overwrite) {
+    this.overwrite = overwrite;
+  }
+
+  boolean overwrite() {
+    return getOverwrite() != null ? getOverwrite().booleanValue() : true;
+  }
+
+  boolean overwrite(AdaptrisMessage msg, String key) {
+
+    boolean result = true;
+    if (msg.headersContainsKey(key)) {
+      if (!overwrite()) {
+        result = false;
+      }
+    }
+    return result;
+  }
 
 }
