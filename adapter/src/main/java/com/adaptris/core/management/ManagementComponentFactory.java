@@ -1,18 +1,18 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.management;
 
@@ -35,13 +35,13 @@ import com.adaptris.core.management.classloader.ClassLoaderFactory;
 
 /**
  * Simple factory that creates management components.
- * 
+ *
  * @author lchan
  */
 public class ManagementComponentFactory {
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
-  
+
   private static final String COMPONENT_SEPARATOR = ":";
   private static final String PROPERTY_KEY = "class";
   private static final String RESOURCE_PATH = "META-INF/com/adaptris/core/management/components/";
@@ -49,60 +49,57 @@ public class ManagementComponentFactory {
   private static final ManagementComponentFactory INSTANCE = new ManagementComponentFactory();
 
   private transient BootstrapProperties bootstrapProperties;
-  
-  private List<Object> managementComponents = new ArrayList<>();
-  
+
+  private final List<Object> managementComponents = new ArrayList<>();
+
   private ManagementComponentFactory() {
   }
 
-  public static void create(BootstrapProperties p) throws Exception {
+  public static void create(final BootstrapProperties p) throws Exception {
     INSTANCE.createComponents(p);
   }
-  
+
   public static void initCreated() {
     INSTANCE.invokeInit();
   }
-  
+
   public static void startCreated() {
-    INSTANCE.invokeCreated("start");
+    INSTANCE.invokeCreated("start", new Class[0], new Object[0]);
   }
 
   public static void stopCreated() {
-    INSTANCE.invokeCreated("stop");
+    INSTANCE.invokeCreated("stop", new Class[0], new Object[0]);
   }
 
   public static void closeCreated() {
-    INSTANCE.invokeCreated("close");
+    INSTANCE.invokeCreated("close", new Class[0], new Object[0]);
   }
 
-  private void createComponents(BootstrapProperties p) throws Exception {
+  private void createComponents(final BootstrapProperties p) throws Exception {
     bootstrapProperties = p;
-    String componentList = getPropertyIgnoringCase(p, CFG_KEY_MANAGEMENT_COMPONENT, "");
+    final String componentList = getPropertyIgnoringCase(p, CFG_KEY_MANAGEMENT_COMPONENT, "");
     if (!isEmpty(componentList)) {
-      String components[] = componentList.split(COMPONENT_SEPARATOR);
-      for (String c : components) {
+      final String components[] = componentList.split(COMPONENT_SEPARATOR);
+      for (final String c : components) {
         managementComponents.add(resolve(c));
       }
     }
   }
-  
+
   private void invokeInit() {
-    for (Object o : managementComponents) {
-      try {
-        Method init = o.getClass().getDeclaredMethod("init", new Class[] { Properties.class });
-        init.invoke(o, new Object[] { bootstrapProperties });
-        log.debug("Called init on " + o.getClass());
-      } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-        e.printStackTrace();
-      }
-    }
+    invokeCreated("init", new Class[] {
+      Properties.class
+    }, new Object[] {
+      bootstrapProperties
+    });
   }
-  
-  private void invokeCreated(String methodName) {
-    for (Object o : managementComponents) {
+
+  private void invokeCreated(final String methodName, final Class[] paramTypes, final Object[] params) {
+    for (final Object o : managementComponents) {
       try {
-        Method init = o.getClass().getDeclaredMethod(methodName, new Class[0]);
-        init.invoke(o, new Object[0]);
+        final Method method = o.getClass().getMethod(methodName, paramTypes);
+        method.setAccessible(true);
+        method.invoke(o, params);
         log.debug("Called " + methodName + " on " + o.getClass());
       } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
         e.printStackTrace();
@@ -110,29 +107,28 @@ public class ManagementComponentFactory {
     }
   }
 
-  private Object resolve(String name) throws Exception {
+  private Object resolve(final String name) throws Exception {
     Object result = null;
-    InputStream in = this.getClass().getClassLoader().getResourceAsStream(RESOURCE_PATH + name);
-    if (in != null) {
-      Properties p = new Properties();
-      p.load(in);
-      
-      ClassLoader classLoader = getClass().getClassLoader();
-      
-      String classloaderProperty = p.getProperty(CLASSLOADER_KEY);
-      if (classloaderProperty != null) {
-        log.debug("Using custom class loader " + classloaderProperty);
-        Class<ClassLoaderFactory> clazz = (Class<ClassLoaderFactory>) Class.forName(classloaderProperty);
-        Constructor<ClassLoaderFactory> c = clazz.getConstructor(BootstrapProperties.class);
-        ClassLoaderFactory clf = c.newInstance(bootstrapProperties);
-        classLoader = clf.create(classLoader);
+    ClassLoader classLoader = getClass().getClassLoader();
+    try (final InputStream in = classLoader.getResourceAsStream(RESOURCE_PATH + name)) {
+      if (in != null) {
+        final Properties p = new Properties();
+        p.load(in);
+
+        final String classloaderProperty = p.getProperty(CLASSLOADER_KEY);
+        if (classloaderProperty != null) {
+          log.debug("Using custom class loader " + classloaderProperty);
+          final Class<ClassLoaderFactory> classLoaderFactoryClass = (Class<ClassLoaderFactory>)Class.forName(classloaderProperty);
+          final Constructor<ClassLoaderFactory> constructor = classLoaderFactoryClass.getConstructor(BootstrapProperties.class);
+          final ClassLoaderFactory classLoaderFactory = constructor.newInstance(bootstrapProperties);
+          classLoader = classLoaderFactory.create(classLoader);
+        }
+
+        result = Class.forName(p.getProperty(PROPERTY_KEY), true, classLoader).newInstance();
+      } else {
+        // If we can't find it, then let's assume it's just a class.
+        result = Class.forName(name).newInstance();
       }
-      
-      result = Class.forName(p.getProperty(PROPERTY_KEY), true, classLoader).newInstance();
-    }
-    else {
-      // If we can't find it, then let's assume it's just a class.
-      result = Class.forName(name).newInstance();
     }
     return result;
   }
