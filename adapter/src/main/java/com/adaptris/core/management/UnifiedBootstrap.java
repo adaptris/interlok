@@ -19,6 +19,7 @@ package com.adaptris.core.management;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.management.JMX;
 import javax.management.ObjectName;
@@ -123,10 +124,15 @@ public class UnifiedBootstrap {
     for (ObjectName obj : adapters) {
       AdapterManagerMBean mgr = JMX.newMBeanProxy(JmxHelper.findMBeanServer(bootstrapProperties), obj, AdapterManagerMBean.class);
       try {
-        mgr.requestStart();
+        if (Constants.DBG) {
+          mgr.requestStart();
+        }
+        else {
+          mgr.requestStart(DEFAULT_OPERATION_TIMEOUT.toMilliseconds());
+        }
       }
-      catch (CoreException e) {
-        mgr.requestClose();
+      catch (CoreException | TimeoutException e) {
+        mgr.requestClose(DEFAULT_OPERATION_TIMEOUT.toMilliseconds());
         log.error("Failed to fully start [{}]; adapter closed to avoid inconsistent state", obj);
         throw e;
       }
