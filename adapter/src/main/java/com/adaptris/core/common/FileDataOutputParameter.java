@@ -16,21 +16,22 @@
 
 package com.adaptris.core.common;
 
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.net.URL;
-
-import org.apache.commons.io.IOUtils;
-import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.MessageDrivenDestination;
 import com.adaptris.core.fs.FsHelper;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.interlok.config.DataOutputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import org.apache.commons.io.IOUtils;
+
+import javax.validation.Valid;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.net.URL;
 
 /**
  * {@code DataInputParameter} implementation that writes to a file.
@@ -38,11 +39,15 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config file-data-output-parameter
  */
 @XStreamAlias("file-data-output-parameter")
-@DisplayOrder(order = {"url"})
+@DisplayOrder(order = {"destination", "url"})
 public class FileDataOutputParameter implements DataOutputParameter<String> {
 
-  @NotBlank
+  @Deprecated
   private String url;
+
+  @Valid
+  private MessageDrivenDestination destination;
+
 
   public FileDataOutputParameter() {
 
@@ -52,7 +57,7 @@ public class FileDataOutputParameter implements DataOutputParameter<String> {
   public void insert(String data, InterlokMessage message) throws CoreException {
     OutputStream out = null;
     try {
-      URL url = FsHelper.createUrlFromString(this.getUrl(), true);
+      URL url = FsHelper.createUrlFromString(this.url(message), true);
       out = new FileOutputStream(FsHelper.createFileReference(url));
       IOUtils.write((String) data, out, message.getContentEncoding());
     } catch (Exception e) {
@@ -62,12 +67,48 @@ public class FileDataOutputParameter implements DataOutputParameter<String> {
     }
   }
 
+  protected String url(InterlokMessage msg) throws CoreException{
+    if (getDestination() != null) {
+      if (msg instanceof AdaptrisMessage) {
+        return getDestination().getDestination((AdaptrisMessage)msg);
+      } else {
+        throw new RuntimeException("Message is not instance of Adaptris Message");
+      }
+    }
+    return getUrl();
+  }
+
+  /**
+   * @deprecated since 3.5.0 use {@link #getDestination()} instead for consistency.
+   */
+  @Deprecated
   public String getUrl() {
     return url;
   }
 
+  /**
+   * @deprecated since 3.5.0 use {@link #setDestination(MessageDrivenDestination)} instead for consistency.
+   */
+  @Deprecated
   public void setUrl(String url) {
     this.url = Args.notBlank(url, "url");
   }
+
+  public MessageDrivenDestination getDestination() {
+    return destination;
+  }
+
+  /**
+   * Set the destination for the file data output.
+   *
+   * @param d the destination.
+   */
+  public void setDestination(MessageDrivenDestination d) {
+    if (d == null) {
+      throw new IllegalArgumentException("Destination is null");
+    }
+    destination = d;
+  }
+
 
 }

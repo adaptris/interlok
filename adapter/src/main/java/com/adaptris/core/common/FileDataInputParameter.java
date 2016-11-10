@@ -16,16 +16,17 @@
 
 package com.adaptris.core.common;
 
-import java.io.IOException;
-
-import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.MessageDrivenDestination;
 import com.adaptris.core.util.Args;
 import com.adaptris.interlok.types.InterlokMessage;
 import com.adaptris.util.URLString;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+import javax.validation.Valid;
+import java.io.IOException;
 
 /**
  * {@code DataInputParameter} implementation that reads from a file.
@@ -34,11 +35,14 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  *
  */
 @XStreamAlias("file-data-input-parameter")
-@DisplayOrder(order = {"url"})
+@DisplayOrder(order = {"destination","url"})
 public class FileDataInputParameter extends FileInputParameterImpl {
 
-  @NotBlank
+  @Deprecated
   private String url;
+
+  @Valid
+  private MessageDrivenDestination destination;
 
   public FileDataInputParameter() {
 
@@ -47,19 +51,53 @@ public class FileDataInputParameter extends FileInputParameterImpl {
   @Override
   public String extract(InterlokMessage message) throws CoreException {
     try {
-      return this.load(new URLString(this.getUrl()), message.getContentEncoding());
+      return this.load(new URLString(this.url(message)), message.getContentEncoding());
     } catch (IOException ex) {
       throw new CoreException(ex);
     }
   }
 
+  protected String url(InterlokMessage msg) throws CoreException{
+    if (getDestination() != null) {
+      if (msg instanceof AdaptrisMessage) {
+        return getDestination().getDestination((AdaptrisMessage)msg);
+      } else {
+        throw new RuntimeException("Message is not instance of Adaptris Message");
+      }
+    }
+    return getUrl();
+  }
+
+  /**
+   * @deprecated since 3.5.0 use {@link #getDestination()} instead for consistency.
+   */
+  @Deprecated
   public String getUrl() {
     return url;
   }
 
+  /**
+   * @deprecated since 3.5.0 use {@link #setDestination(MessageDrivenDestination)} instead for consistency.
+   */
+  @Deprecated
   public void setUrl(String url) {
     this.url = Args.notBlank(url, "url");
   }
 
+  public MessageDrivenDestination getDestination() {
+    return destination;
+  }
+
+  /**
+   * Set the destination for the file data input.
+   *
+   * @param d the destination.
+   */
+  public void setDestination(MessageDrivenDestination d) {
+    if (d == null) {
+      throw new IllegalArgumentException("Destination is null");
+    }
+    destination = d;
+  }
 
 }

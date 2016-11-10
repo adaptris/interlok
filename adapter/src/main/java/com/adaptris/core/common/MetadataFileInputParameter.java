@@ -16,25 +16,28 @@
 
 package com.adaptris.core.common;
 
-import java.io.IOException;
-
-import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.MessageDrivenDestination;
 import com.adaptris.core.util.Args;
 import com.adaptris.interlok.types.InterlokMessage;
 import com.adaptris.util.URLString;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import org.hibernate.validator.constraints.NotBlank;
+
+import java.io.IOException;
 
 /**
  * {@code DataInputParameter} implementation that reads a file specified by a metadata key.
  * @config metadata-file-input-parameter
  *
+ * @deprecated since 3.5.0 use {@link FileDataInputParameter#setDestination(MessageDrivenDestination)} using {@link com.adaptris.core.MetadataDestination} instead for consistency.
+ *
  */
 @XStreamAlias("metadata-file-input-parameter")
 @DisplayOrder(order = {"metadataKey"})
+@Deprecated
 public class MetadataFileInputParameter extends FileInputParameterImpl {
 
   @NotBlank
