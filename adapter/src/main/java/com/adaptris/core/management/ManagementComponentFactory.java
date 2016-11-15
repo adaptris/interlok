@@ -75,6 +75,10 @@ public class ManagementComponentFactory {
     INSTANCE.invokeCreated("close", new Class[0], new Object[0]);
   }
 
+  public static List<Object> getManagementComponents() {
+    return INSTANCE.managementComponents;
+  }
+
   private void createComponents(final BootstrapProperties p) throws Exception {
     bootstrapProperties = p;
     final String componentList = getPropertyIgnoringCase(p, CFG_KEY_MANAGEMENT_COMPONENT, "");
@@ -89,26 +93,31 @@ public class ManagementComponentFactory {
   private void invokeInit() {
     invokeCreated("init", new Class[] {
       Properties.class
-    }, new Object[] {
+    }, new Properties[] {
       bootstrapProperties
     });
   }
 
   private void invokeCreated(final String methodName, final Class[] paramTypes, final Object[] params) {
     for (final Object o : managementComponents) {
-      try {
-        final Method method = o.getClass().getMethod(methodName, paramTypes);
-        method.setAccessible(true);
-        method.invoke(o, params);
-        log.debug("Called " + methodName + " on " + o.getClass());
-      } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-        e.printStackTrace();
-      }
+      invokeMethod(o, methodName, paramTypes, params);
+    }
+  }
+
+  private void invokeMethod(final Object o, final String methodName, final Class[] paramTypes, final Object[] params) {
+    final Class<? extends Object> clas = o.getClass();
+    try {
+      log.trace("Attempting to call " + clas + " : " + methodName + " with params " + params);
+      final Method method = clas.getMethod(methodName, paramTypes);
+      method.setAccessible(true);
+      method.invoke(o, params);
+    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+      log.debug("Failed to call " + clas + " : " + methodName + " with params " + params, e);
     }
   }
 
   private Object resolve(final String name) throws Exception {
-    Object result = null;
+    final ClassLoader originalContectClassLoader = Thread.currentThread().getContextClassLoader();
     ClassLoader classLoader = getClass().getClassLoader();
     try (final InputStream in = classLoader.getResourceAsStream(RESOURCE_PATH + name)) {
       if (in != null) {
@@ -122,14 +131,21 @@ public class ManagementComponentFactory {
           final Constructor<ClassLoaderFactory> constructor = classLoaderFactoryClass.getConstructor(BootstrapProperties.class);
           final ClassLoaderFactory classLoaderFactory = constructor.newInstance(bootstrapProperties);
           classLoader = classLoaderFactory.create(classLoader);
+          Thread.currentThread().setContextClassLoader(classLoader);
         }
-
-        result = Class.forName(p.getProperty(PROPERTY_KEY), true, classLoader).newInstance();
-      } else {
-        // If we can't find it, then let's assume it's just a class.
-        result = Class.forName(name).newInstance();
+        final Object component = Class.forName(p.getProperty(PROPERTY_KEY), true, classLoader).newInstance();
+        if (classloaderProperty != null) {
+          invokeMethod(component, "setClassLoader", new Class[] {
+            ClassLoader.class
+          }, new ClassLoader[] {
+            classLoader
+          });
+        }
+        return component;
       }
+      return Class.forName(name).newInstance();
+    } finally {
+      Thread.currentThread().setContextClassLoader(originalContectClassLoader);
     }
-    return result;
   }
 }
