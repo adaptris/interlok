@@ -3,7 +3,6 @@ package com.adaptris.core.management.classloader;
 import static com.adaptris.core.util.PropertyHelper.getPropertyIgnoringCase;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -38,19 +37,13 @@ public class BlacklistingFactory implements ClassLoaderFactory {
         if (blacklisted.contains(name)) {
           log.debug("Blacklisting " + name + " " + url);
         } else {
-          log.debug("Whitelisting " + name);
+          log.trace("Whitelisting " + name);
           whitelist.add(url);
         }
       } catch (final URISyntaxException e) {
         // ignored
       }
     }
-    try {
-      return new ChildFirstClassLoader(new URL[] {
-        new URL("file://localhost/C:/Adaptris/Interlok-3.4.0/webapps/adapter-web-gui.war")
-      }/* whitelist.toArray(new URL[0]) */, parent);
-    } catch (final MalformedURLException e) {
-      return null;
-    }
+    return new URLClassLoader(whitelist.toArray(new URL[0]), null);
   }
 }
