@@ -16,7 +16,6 @@
 
 package com.adaptris.core.management;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -52,6 +51,7 @@ public class UnifiedBootstrap {
 
   private transient BootstrapProperties bootstrapProperties;
   private transient AdapterRegistryMBean adapterRegistry;
+  private transient List<ManagementComponent> mgmtComponents;
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   private static final TimeInterval DEFAULT_OPERATION_TIMEOUT = new TimeInterval(2L, TimeUnit.MINUTES);
@@ -108,13 +108,15 @@ public class UnifiedBootstrap {
   public void init(AdapterManagerMBean adapter) throws Exception {
     bootstrapProperties.getConfigManager().syncAdapterConfiguration(adapter);
     adapterRegistry = bootstrapProperties.getConfigManager().getAdapterRegistry();
-    ManagementComponentFactory.create(bootstrapProperties);
+    mgmtComponents = ManagementComponentFactory.create(bootstrapProperties);
     bootstrapProperties.setProperty(Constants.CFG_JMX_LOCAL_ADAPTER_UID, adapter.getUniqueId());
-    ManagementComponentFactory.initCreated();
+    for (ManagementComponent c : mgmtComponents) {
+      c.init(bootstrapProperties);
+    }
   }
 
   public void start() throws Exception {
-    ManagementComponentFactory.startCreated();
+    MgmtComponentTransition.START.transition(mgmtComponents);
     tryStart(adapterRegistry.getAdapters());
   }
 
@@ -139,7 +141,7 @@ public class UnifiedBootstrap {
 
   public void stop() throws Exception {
     AdapterRegistry.stop(adapterRegistry.getAdapters());
-    ManagementComponentFactory.stopCreated();
+    MgmtComponentTransition.STOP.transition(mgmtComponents);
   }
 
   public void close() throws Exception {
@@ -149,7 +151,7 @@ public class UnifiedBootstrap {
           AdapterManagerMBean.class);
       manager.unregisterMBean();
     }
-    ManagementComponentFactory.closeCreated();
+    MgmtComponentTransition.DESTROY.transition(mgmtComponents);
   }
 
 }
