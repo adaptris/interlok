@@ -160,7 +160,7 @@ public class DocumentBuilderFactoryBuilder {
    * @param features the features.
    */
   public void setFeatures(KeyValuePairSet features) {
-    this.features = Args.notNull(features, "Features");;
+    this.features = Args.notNull(features, "Features");
   }
 
 

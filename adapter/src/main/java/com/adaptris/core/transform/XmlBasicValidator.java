@@ -16,8 +16,11 @@
 
 package com.adaptris.core.transform;
 
+import javax.validation.Valid;
+
 import org.w3c.dom.Document;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
@@ -35,14 +38,38 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("xml-basic-validator")
 public class XmlBasicValidator extends MessageValidatorImpl {
+  @AdvancedConfig
+  @Valid
+  private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
+
+  public XmlBasicValidator() {
+
+  }
+
+  public XmlBasicValidator(DocumentBuilderFactoryBuilder builder) {
+    this();
+    setXmlDocumentFactoryConfig(builder);
+  }
 
   @Override
   public void validate(AdaptrisMessage msg) throws CoreException {
     try {
-      Document d = XmlHelper.createDocument(msg, new DocumentBuilderFactoryBuilder());
+      Document d = XmlHelper.createDocument(msg, documentFactoryBuilder());
     }
     catch (Exception e) {
       ExceptionHelper.rethrowCoreException(e);
     }
+  }
+
+  public DocumentBuilderFactoryBuilder getXmlDocumentFactoryConfig() {
+    return xmlDocumentFactoryConfig;
+  }
+
+  public void setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder xml) {
+    this.xmlDocumentFactoryConfig = xml;
+  }
+
+  DocumentBuilderFactoryBuilder documentFactoryBuilder() {
+    return getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig() : DocumentBuilderFactoryBuilder.newInstance();
   }
 }

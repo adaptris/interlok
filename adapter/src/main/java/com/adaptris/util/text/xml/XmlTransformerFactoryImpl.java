@@ -15,6 +15,7 @@
  */
 package com.adaptris.util.text.xml;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.TransformerConfigurationException;
@@ -38,6 +39,7 @@ public abstract class XmlTransformerFactoryImpl implements XmlTransformerFactory
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   @AdvancedConfig
+  @Valid
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
   @NotNull
   @AdvancedConfig
