@@ -60,7 +60,11 @@ public class JmxRemoteComponentTest extends BaseCase {
   public void setUp() throws Exception {
     super.setUp();
     unusedPort = PortManager.nextUnusedPort(5555);
-
+    ObjectName jmxObjName = new ObjectName(JmxRemoteComponent.DEFAULT_JMX_OBJECT_NAME);
+    MBeanServer mBeanServer = JmxHelper.findMBeanServer();
+    if (mBeanServer.isRegistered(jmxObjName)) {
+      mBeanServer.unregisterMBean(jmxObjName);
+    }
   }
 
   @Override
