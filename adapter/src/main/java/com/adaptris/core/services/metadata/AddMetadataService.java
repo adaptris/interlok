@@ -64,7 +64,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @ComponentProfile(summary = "Add Static Metadata to a Message", tag = "service,metadata")
 @DisplayOrder(order =
 {
-    "metadataElements"
+    "metadataElements", "overwrite"
 })
 public class AddMetadataService extends ServiceImp {
 
@@ -221,10 +221,12 @@ public class AddMetadataService extends ServiceImp {
   }
 
   /**
-   * @param overwrite the overwrite to set
+   * Whether or not to always overwrite metadata with the values configured.
+   * 
+   * @param b the overwrite to set, default is true.
    */
-  public void setOverwrite(Boolean overwrite) {
-    this.overwrite = overwrite;
+  public void setOverwrite(Boolean b) {
+    this.overwrite = b;
   }
 
   boolean overwrite() {
