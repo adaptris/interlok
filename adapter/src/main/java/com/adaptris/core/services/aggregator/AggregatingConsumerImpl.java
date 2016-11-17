@@ -42,6 +42,7 @@ public abstract class AggregatingConsumerImpl<E extends AggregatingConsumeServic
   @Valid
   private MessageAggregator messageAggregator;
   @NotNull
+  @Valid
   private ConsumeDestinationGenerator destination;
 
   public AggregatingConsumerImpl() {

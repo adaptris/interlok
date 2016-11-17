@@ -21,6 +21,7 @@ import static com.adaptris.core.CoreConstants.JETTY_QUERY_STRING;
 import static com.adaptris.core.CoreConstants.JETTY_URI;
 import static com.adaptris.core.CoreConstants.JETTY_URL;
 import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang.StringUtils.join;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -43,8 +44,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang3.StringUtils;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
@@ -335,7 +334,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
     }
 
     private HttpServletResponse addAllow(HttpServletResponse response) throws IOException, ServletException {
-      response.addHeader("Allow", StringUtils.join(handlers().keySet(), COMMA));
+      response.addHeader("Allow", join(handlers().keySet(), COMMA));
       return response;
     }
   }

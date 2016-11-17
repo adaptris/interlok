@@ -17,6 +17,10 @@
 package com.adaptris.security.password;
 
 import java.util.ArrayList;
+import java.util.ServiceLoader;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.adaptris.core.management.ClasspathInitialiser;
 import com.adaptris.security.exc.PasswordException;
@@ -29,6 +33,10 @@ import com.adaptris.security.exc.PasswordException;
  */
 public abstract class Password {
 
+
+  private static transient Password INSTANCE = new PasswordLoader();
+  
+  private static Logger log = LoggerFactory.getLogger(Password.class);
   /**
    * Password obfuscation using Microsoft Crypto API which is only available on
    * windows.
@@ -63,39 +71,6 @@ public abstract class Password {
       MSCAPI_STYLE, PORTABLE_PASSWORD, NON_PORTABLE_PASSWORD
   };
 
-  private enum Codecs {
-    DefaultPassword(PORTABLE_PASSWORD) {
-      @Override
-      PasswordCodec create() throws PasswordException {
-        return new AesCrypto();
-      }
-    },
-    AlternativePassword(NON_PORTABLE_PASSWORD) {
-      @Override
-      PasswordCodec create() throws PasswordException {
-        return new PbeCrypto();
-      }
-    },
-    MicrosoftCrypto(MSCAPI_STYLE) {
-      @Override
-      PasswordCodec create() throws PasswordException {
-        return new MicrosoftCrypto();
-      }
-    };
-
-    private String thisType;
-
-    Codecs(String s) {
-      thisType = s;
-    }
-
-    abstract PasswordCodec create() throws PasswordException;
-
-    boolean ofType(String type) {
-      return type != null && type.startsWith(thisType);
-    }
-  }
-
   /**
    * Create a password implementation of the specified type.
    *
@@ -107,18 +82,11 @@ public abstract class Password {
    * @see #PORTABLE_PASSWORD
    */
   public static PasswordCodec create(String type) throws PasswordException {
-    PasswordCodec ph = null;
-    for (Codecs f : Codecs.values()) {
-      if (f.ofType(type)) {
-        ph = f.create();
-        break;
-      }
-    }
-    if (ph == null) {
-      ph = new PlainText();
-    }
-    return ph;
+    return INSTANCE.createCodec(type);
+
   }
+
+  protected abstract PasswordCodec createCodec(String type) throws PasswordException;
 
   /**
    * Convenience method to decrypt a password.
@@ -166,4 +134,22 @@ public abstract class Password {
     encrypt(argv);
   }
 
+  private static class PasswordLoader extends Password {
+    private ServiceLoader<PasswordCodec> passwordImpls;
+
+    PasswordLoader() {
+      passwordImpls = ServiceLoader.load(PasswordCodec.class);
+    }
+    @Override
+    protected PasswordCodec createCodec(String type) throws PasswordException {
+      PasswordCodec result = new PlainText();
+      for (PasswordCodec impl : passwordImpls) {
+        if (impl.canHandle(type)) {
+          result = impl;
+        }
+      }
+      return result;
+    }
+
+  }
 }

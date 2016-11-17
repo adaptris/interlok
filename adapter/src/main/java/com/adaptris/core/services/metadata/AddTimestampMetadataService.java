@@ -20,9 +20,6 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 
 import java.util.Date;
 
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.Duration;
-
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
@@ -36,6 +33,8 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.services.metadata.timestamp.OffsetTimestampGenerator;
+import com.adaptris.core.services.metadata.timestamp.TimestampGenerator;
 import com.adaptris.util.text.DateFormatUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -59,6 +58,15 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"metadataKey", "dateFormat", "offset", "alwaysReplace"})
 public class AddTimestampMetadataService extends ServiceImp {
 
+  private static final TimestampGenerator DEFAULT_GENERATOR = new TimestampGenerator() {
+
+    @Override
+    public Date generateTimestamp(AdaptrisMessage msg) throws ServiceException {
+      return new Date();
+    }
+    
+  };
+
   @NotBlank
   @AutoPopulated
   @AffectsMetadata
@@ -69,7 +77,11 @@ public class AddTimestampMetadataService extends ServiceImp {
   @InputFieldDefault(value = "false")
   private Boolean alwaysReplace;
   @AdvancedConfig
+  @Deprecated
   private String offset;
+
+  @AdvancedConfig
+  private TimestampGenerator timestampGenerator = null;
 
   /**
    * Default constructor.
@@ -83,41 +95,24 @@ public class AddTimestampMetadataService extends ServiceImp {
     this("yyyy-MM-dd'T'HH:mm:ssZ", "timestamp");
   }
 
-  /**
-   * Convenience constructor
-   *
-   * @param format the date format
-   * @param metadataKey the metadata key
-   */
   public AddTimestampMetadataService(String format, String metadataKey) {
     this(format, metadataKey, null);
   }
 
-  /**
-   * Convenience constructor
-   *
-   * @param format the date format.
-   * @param metadataKey the metadataKey
-   * @param alwaysReplace whether to always replace the metadata key.
-   */
   public AddTimestampMetadataService(String format, String metadataKey, Boolean alwaysReplace) {
-    this(format, metadataKey, alwaysReplace, null);
+    this(format, metadataKey, alwaysReplace, "");
   }
 
-  /**
-   * Convenience constructor
-   *
-   * @param format the date format.
-   * @param metadataKey the metadataKey
-   * @param alwaysReplace whether to always replace the metadata key.
-   * @param offset the offset from "now"
-   */
   public AddTimestampMetadataService(String format, String metadataKey, Boolean alwaysReplace, String offset) {
+    this(format, metadataKey, alwaysReplace, isBlank(offset) ? (TimestampGenerator) null : new OffsetTimestampGenerator(offset));
+  }
+
+  public AddTimestampMetadataService(String format, String metadataKey, Boolean alwaysReplace, TimestampGenerator s) {
     super();
     setDateFormat(format);
     setMetadataKey(metadataKey);
     setAlwaysReplace(alwaysReplace);
-    setOffset(offset);
+    setTimestampGenerator(s);
   }
 
   /**
@@ -126,27 +121,13 @@ public class AddTimestampMetadataService extends ServiceImp {
    */
   public void doService(AdaptrisMessage msg) throws ServiceException {
     if (!msg.containsKey(getMetadataKey()) || alwaysReplace()) {
-      msg.addMetadata(getMetadataKey(), DateFormatUtil.toString(createTimestamp(), getDateFormat()));
+      msg.addMetadata(getMetadataKey(), DateFormatUtil.toString(timestampGenerator().generateTimestamp(msg), getDateFormat()));
     }
     else {
       log.trace(getMetadataKey() + " already exists, no replacement");
     }
   }
 
-  private Date createTimestamp() throws ServiceException {
-    Date timestamp = new Date();
-    try {
-      if (!isBlank(offset)) {
-        Duration duration;
-        duration = DatatypeFactory.newInstance().newDuration(offset);
-        duration.addTo(timestamp);
-      }
-    }
-    catch (Exception e) {
-      throw new ServiceException("Failed to parse " + offset + " using ISO8601", e);
-    }
-    return timestamp;
-  }
 
   @Override
   protected void initService() throws CoreException {
@@ -155,6 +136,10 @@ public class AddTimestampMetadataService extends ServiceImp {
     }
     if (isBlank(getDateFormat())) {
       throw new CoreException("No date format specified");
+    }
+    if (!isBlank(getOffset()) && getTimestampGenerator() == null) {
+      log.warn("Use of deprecated offset; use {} instead", OffsetTimestampGenerator.class.getSimpleName());
+      setTimestampGenerator(new OffsetTimestampGenerator(getOffset()));
     }
   }
 
@@ -269,7 +254,9 @@ public class AddTimestampMetadataService extends ServiceImp {
    * </p>
    *
    * @param offset the offset.
+   * @deprecated since 3.5.0 Use {@link OffsetTimestampGenerator} instead.
    */
+  @Deprecated
   public void setOffset(String offset) {
     this.offset = offset;
   }
@@ -278,4 +265,21 @@ public class AddTimestampMetadataService extends ServiceImp {
   public void prepare() throws CoreException {
   }
 
+  /**
+   * @return the timestampGenerator
+   */
+  public TimestampGenerator getTimestampGenerator() {
+    return timestampGenerator;
+  }
+
+  /**
+   * @param s the timestampGenerator to set
+   */
+  public void setTimestampGenerator(TimestampGenerator s) {
+    this.timestampGenerator = s;
+  }
+
+  TimestampGenerator timestampGenerator() {
+    return getTimestampGenerator() != null ? getTimestampGenerator() : DEFAULT_GENERATOR;
+  }
 }

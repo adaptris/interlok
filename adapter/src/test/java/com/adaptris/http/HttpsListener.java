@@ -26,8 +26,8 @@ import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
-import com.adaptris.http.util.AlwaysTrustManager;
 import com.adaptris.security.keystore.KeystoreProxy;
+import com.adaptris.security.util.AlwaysTrustManager;
 
 /**
  * This is a listener for HTTPS requests.

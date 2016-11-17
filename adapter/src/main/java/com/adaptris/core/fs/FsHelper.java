@@ -19,7 +19,9 @@ package com.adaptris.core.fs;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -135,6 +137,28 @@ public final class FsHelper {
       }
     }
   }
+
+  public static FileFilter createFilter(String filterExpression, String filterImpl) throws Exception {
+    FileFilter result = null;
+    if (isEmpty(filterExpression)) {
+      result = new NoOpFileFilter();
+    }
+    else {
+      Class[] paramTypes =
+      {
+          filterExpression.getClass()
+      };
+      Object[] args =
+      {
+          filterExpression
+      };
+      Class c = Class.forName(filterImpl);
+      Constructor cnst = c.getDeclaredConstructor(paramTypes);
+      result = (FileFilter) cnst.newInstance(args);
+    }
+    return result;
+  }
+
   public static File renameFile(File file, String suffix, FsWorker worker) throws FsException {
     File newFile = new File(file.getAbsolutePath() + suffix);
 
@@ -169,5 +193,13 @@ public final class FsHelper {
       return url.replaceAll("\\\\", "/");
     }
     return url;
+  }
+  
+  private static class NoOpFileFilter implements FileFilter {
+    @Override
+    public boolean accept(File pathname) {
+      return true;
+    }
+    
   }
 }

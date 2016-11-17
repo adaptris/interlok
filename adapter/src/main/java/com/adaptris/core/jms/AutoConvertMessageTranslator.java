@@ -29,9 +29,11 @@ import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.TextMessage;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
+import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.MetadataElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -46,10 +48,14 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * name value pairs in the MapMessage; the payload is ignored.
  * </p>
  * <p>
- * If you have used this translator for your consumer we add a new meta-data item to the {@linkplain AdaptrisMessage}} named "message.type".
+ * If you have used this translator for your consumer we add a new meta-data item to the {@linkplain AdaptrisMessage}} named "adpmessagetype".
  * The value of this item will be one of "Text", "Bytes", "Map" or "Object".
  * This allows you to set the following item; "convert-back-to-consumed-type" on the AutoConvertMessageTranslator for your JMS producer to "true" (default is false).
  * In this case this translator will attempt to translate the produced message to the same message type we consumed.
+ * </p>
+ * <p>
+ * By default the metadata item "adpmessagetype" is removed before we convert the Adaptris message to a JMS message, so that the JMS message
+ * does not contain the key.  You can override the removal of the key should you have multiple producers, by setting remove-original-message-type-key to "true".
  * </p>
  * <p>
  * If this converter cannot find an appropriate translator then a very basic translation will be applied. This will NOT include any
@@ -68,7 +74,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"metadataFilter", "moveMetadata", "moveJmsHeaders", "reportAllErrors"})
 public class AutoConvertMessageTranslator extends MessageTypeTranslatorImp {
   
-  private static final String CONSUMED_MESSAGE_TYPE_KEY = "message.type";
+  private static final String CONSUMED_MESSAGE_TYPE_KEY = "adpmessagetype";
   
   private static final boolean DEFAULT_CONVERT_BACK_TO_ORIGINAL_TYPE = false;
 
@@ -150,7 +156,12 @@ public class AutoConvertMessageTranslator extends MessageTypeTranslatorImp {
 
   private String jmsOutputType;
   
+  @AutoPopulated
+  @InputFieldDefault(value = "false")
   private Boolean convertBackToConsumedType;
+  @AutoPopulated
+  @InputFieldDefault(value = "true")
+  private Boolean removeOriginalMessageTypeKey;
   
   /**
    * Default constructor.
@@ -168,12 +179,14 @@ public class AutoConvertMessageTranslator extends MessageTypeTranslatorImp {
     Message result = null;
     MessageTypeTranslator mt = null;
 
+    boolean convertingBackToOriginal = false;
     try {
       if(convertBackToConsumedType() && (!StringUtils.isEmpty(msg.getMetadataValue(CONSUMED_MESSAGE_TYPE_KEY)))) {
         SupportedMessageType messageType = null;
         try {
           messageType = SupportedMessageType.valueOf(msg.getMetadataValue(CONSUMED_MESSAGE_TYPE_KEY));
           mt = messageType.create(this);
+          convertingBackToOriginal = true;
         } catch (IllegalArgumentException ex) {
           log.warn("Cannot convert to type: " + msg.getMetadataValue(CONSUMED_MESSAGE_TYPE_KEY)); 
           for (SupportedMessageType mti : SupportedMessageType.values()) {
@@ -192,6 +205,8 @@ public class AutoConvertMessageTranslator extends MessageTypeTranslatorImp {
         }
       }
       if (mt != null) {
+        if((convertingBackToOriginal) && (removeOriginalMessageTypeKey()))
+          msg.removeMessageHeader(CONSUMED_MESSAGE_TYPE_KEY);
         start(mt);
         result = mt.translate(msg);
       }
@@ -257,12 +272,24 @@ public class AutoConvertMessageTranslator extends MessageTypeTranslatorImp {
     return convertBackToConsumedType;
   }
   
-  public boolean convertBackToConsumedType() {
+  boolean convertBackToConsumedType() {
     return convertBackToConsumedType == null ? DEFAULT_CONVERT_BACK_TO_ORIGINAL_TYPE : convertBackToConsumedType;
   }
 
   public void setConvertBackToConsumedType(Boolean convertBackToConsumedType) {
     this.convertBackToConsumedType = convertBackToConsumedType;
+  }
+  
+  public Boolean getRemoveOriginalMessageTypeKey() {
+    return removeOriginalMessageTypeKey;
+  }
+
+  public void setRemoveOriginalMessageTypeKey(Boolean removeOriginalMessageTypeKey) {
+    this.removeOriginalMessageTypeKey = removeOriginalMessageTypeKey;
+  }
+  
+  boolean removeOriginalMessageTypeKey() {
+    return removeOriginalMessageTypeKey == null ? true : removeOriginalMessageTypeKey;
   }
 
 
@@ -291,4 +318,5 @@ public class AutoConvertMessageTranslator extends MessageTypeTranslatorImp {
       return helper.moveMetadata(msg, result);
     }
   }
+
 }

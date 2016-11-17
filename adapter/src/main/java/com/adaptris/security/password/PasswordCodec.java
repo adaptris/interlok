@@ -59,4 +59,12 @@ public interface PasswordCodec {
    */
   String decode(String encryptedPassword) throws PasswordException;
 
+  /**
+   * Can this implementation handle an encoded password of this type.
+   * 
+   * @param type the type
+   * @return true or false.
+   */
+  boolean canHandle(String type);
+
 }

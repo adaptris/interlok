@@ -16,6 +16,8 @@
 
 package com.adaptris.security.password;
 
+import static com.adaptris.security.password.Password.NON_PORTABLE_PASSWORD;
+
 import java.net.InetAddress;
 
 import javax.crypto.Cipher;
@@ -27,7 +29,7 @@ import javax.crypto.spec.PBEParameterSpec;
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.util.text.Base64ByteTranslator;
 
-class PbeCrypto extends PasswordImpl {
+public class PbeCrypto extends PasswordImpl {
 
     private static final byte[] SALT = { (byte)0xE1, (byte)0x1D, (byte)0x2B, (byte)0xE2, (byte)0x89, (byte)0x45, (byte)0x53, (byte)0xF7,
                                          (byte)0x7F, (byte)0x94, (byte)0x7D, (byte)0xF3, (byte)0x9E, (byte)0x68, (byte)0x0B, (byte)0x64,
@@ -50,11 +52,15 @@ class PbeCrypto extends PasswordImpl {
     }
   }
 
+  public boolean canHandle(String type) {
+    return type != null && type.startsWith(NON_PORTABLE_PASSWORD);
+  }
+
   public String decode(String encrypted, String charset) throws PasswordException {
     String encryptedString = encrypted;
     String result = null;
-    if (encrypted.startsWith(Password.NON_PORTABLE_PASSWORD)) {
-      encryptedString = encrypted.substring(Password.NON_PORTABLE_PASSWORD.length());
+    if (encrypted.startsWith(NON_PORTABLE_PASSWORD)) {
+      encryptedString = encrypted.substring(NON_PORTABLE_PASSWORD.length());
     }
     try {
       PBEParameterSpec pbeParamSpec = new PBEParameterSpec(SALT, ITERATIONS);
@@ -86,7 +92,7 @@ class PbeCrypto extends PasswordImpl {
     catch (Exception e) {
       throw new PasswordException(e);
     }
-    return Password.NON_PORTABLE_PASSWORD + base64.translate(encrypted);
+    return NON_PORTABLE_PASSWORD + base64.translate(encrypted);
   }
 
 }

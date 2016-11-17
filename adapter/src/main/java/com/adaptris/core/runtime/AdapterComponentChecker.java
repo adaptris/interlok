@@ -16,11 +16,6 @@
 
 package com.adaptris.core.runtime;
 
-import static com.adaptris.core.runtime.AdapterComponentMBean.ID_PREFIX;
-
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
-
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.AdaptrisMessage;
@@ -29,7 +24,6 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.DefaultSerializableMessageTranslator;
 import com.adaptris.core.Service;
-import com.adaptris.core.util.JmxHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.interlok.types.SerializableMessage;
 
@@ -39,9 +33,9 @@ import com.adaptris.interlok.types.SerializableMessage;
  * @author lchan
  * 
  */
-public class AdapterComponentChecker implements AdapterComponentCheckerMBean, ChildRuntimeInfoComponent {
+public class AdapterComponentChecker extends ChildRuntimeInfoComponentImpl
+    implements AdapterComponentCheckerMBean {
   private transient AdapterManager parent;
-  private transient ObjectName myObjectName = null;
   private transient DefaultSerializableMessageTranslator messageTranslator;
 
   private AdapterComponentChecker() {
@@ -49,55 +43,20 @@ public class AdapterComponentChecker implements AdapterComponentCheckerMBean, Ch
     messageTranslator = new DefaultSerializableMessageTranslator();
   }
 
-  public AdapterComponentChecker(AdapterManager owner) throws MalformedObjectNameException, CoreException {
+  public AdapterComponentChecker(AdapterManager owner) {
     this();
     parent = owner;
-    initMembers();
   }
   
-  private void initMembers() throws MalformedObjectNameException {
-    // Builds up a name com.adaptris:type=ComponentChecker,adapter=<adapter-id>,id=Classname
-    // There can be only one LogHandler per adapter.
-    myObjectName = ObjectName.getInstance(COMPONENT_CHECKER_TYPE + parent.createObjectHierarchyString() + ID_PREFIX
-        + this.getClass().getSimpleName());
-  }
-
-  
   @Override
-  public ObjectName getParentObjectName() throws MalformedObjectNameException {
-    return parent.createObjectName();
+  protected String getType() {
+    return COMPONENT_CHECKER_TYPE;
   }
 
   @Override
-  public String getParentId() {
-    return parent.getUniqueId();
+  protected String uniqueId() {
+    return this.getClass().getSimpleName();
   }
-
-  @Override
-  public ObjectName createObjectName() throws MalformedObjectNameException {
-    return myObjectName;
-  }
-
-  @Override
-  public void registerMBean() throws CoreException {
-    try {
-      JmxHelper.register(createObjectName(), this);
-    }
-    catch (Exception e) {
-      throw new CoreException(e);
-    }
-  }
-
-  @Override
-  public void unregisterMBean() throws CoreException {
-    try {
-      JmxHelper.unregister(createObjectName());
-    }
-    catch (Exception e) {
-      throw new CoreException(e);
-    }
-  }
-
 
   @Override
   public RuntimeInfoComponent getParentRuntimeInfoComponent() {
@@ -139,4 +98,5 @@ public class AdapterComponentChecker implements AdapterComponentCheckerMBean, Ch
     }
     return messageTranslator.translate(msg);
   }
+
 }

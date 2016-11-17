@@ -16,7 +16,7 @@
 
 package com.adaptris.core.fs;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 import com.adaptris.util.TimeInterval;
@@ -62,7 +62,7 @@ public abstract class ExpiringCacheCase extends ItemCacheCase {
       cache.update(createCacheEntries(count));
       assertCache(cache, count);
 
-      Thread.sleep(lifetime + new Random().nextInt(100) + 10);
+      Thread.sleep(lifetime + ThreadLocalRandom.current().nextInt(100) + 10);
       cache.evict();
       assertEquals(0, cache.size());
       for (int i = 0; i < count; i++) {

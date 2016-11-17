@@ -21,27 +21,33 @@ import static com.adaptris.core.CoreConstants.FS_CONSUME_DIRECTORY;
 import static com.adaptris.core.CoreConstants.FS_CONSUME_PARENT_DIR;
 import static com.adaptris.core.CoreConstants.FS_FILE_SIZE;
 import static com.adaptris.core.CoreConstants.ORIGINAL_NAME_KEY;
+import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import javax.management.MalformedObjectNameException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisPollingConsumer;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.fs.enhanced.FileSorter;
 import com.adaptris.core.fs.enhanced.NoSorting;
+import com.adaptris.core.runtime.ParentRuntimeInfoComponent;
+import com.adaptris.core.runtime.RuntimeInfoComponent;
+import com.adaptris.core.runtime.RuntimeInfoComponentFactory;
+import com.adaptris.core.runtime.WorkflowManager;
 import com.adaptris.core.util.Args;
 import com.adaptris.fs.FsException;
 import com.adaptris.fs.FsWorker;
@@ -72,6 +78,10 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
   @AutoPopulated
   @AdvancedConfig
   private FileSorter fileSorter;
+
+  static {
+    RuntimeInfoComponentFactory.registerComponentFactory(new JmxFactory());
+  }
 
   // not marshalled
   protected transient FileFilter fileFilter;
@@ -169,7 +179,7 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
   public void init() throws CoreException {
     try {
       verifyDirectory();
-      initFileFilter();
+      fileFilter = FsHelper.createFilter(getDestination().getFilterExpression(), fileFilterImp());
     }
     catch (Exception e) {
       throw new CoreException(e);
@@ -245,31 +255,6 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
     }
     catch (Exception e) {
       throw new CoreException(e);
-    }
-  }
-
-  /**
-   * <p>
-   * NB the <code>String</code> expression that is used to filter messages is obtained from <code>ConsumeDestination</code>.
-   * </p>
-   */
-  private void initFileFilter() throws Exception {
-    String filterExp = getDestination().getFilterExpression();
-
-    if (filterExp != null) {
-      Class[] paramTypes =
-      {
-        filterExp.getClass()
-      };
-      Object[] args =
-      {
-        filterExp
-      };
-
-      Class c = Class.forName(fileFilterImp());
-      Constructor cnst = c.getDeclaredConstructor(paramTypes);
-
-      fileFilter = (FileFilter) cnst.newInstance(args);
     }
   }
 
@@ -374,5 +359,26 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
     fileSorter = Args.notNull(fs, "file sorter");
   }
 
+  int filesRemaining() throws Exception {
+    return verifyDirectory().listFiles(FsHelper.createFilter(getDestination().getFilterExpression(), fileFilterImp())).length;
+
+  }
+  private static class JmxFactory extends RuntimeInfoComponentFactory {
+
+    @Override
+    protected boolean isSupported(AdaptrisComponent e) {
+      if (e != null && e instanceof FsConsumerImpl) {
+        return !isEmpty(((FsConsumerImpl) e).getUniqueId());
+      }
+      return false;
+    }
+
+    @Override
+    protected RuntimeInfoComponent createComponent(ParentRuntimeInfoComponent parent, AdaptrisComponent e)
+        throws MalformedObjectNameException {
+      return new FsConsumerMonitor((WorkflowManager) parent, (FsConsumerImpl) e);
+    }
+
+  }
 
 }

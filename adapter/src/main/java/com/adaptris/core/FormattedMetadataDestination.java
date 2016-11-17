@@ -1,18 +1,18 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core;
 
@@ -29,6 +29,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.core.metadata.ElementFormatter;
+import com.adaptris.core.metadata.ElementValueFormatter;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -60,7 +62,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * <li>"/%1$s/%3$tA/%2$s" would give us <strong>/archive/Wednesday/orders</strong></li>
  * </ul>
  * </p>
- * 
+ *
  * @config formatted-metadata-destination
  * @see String#format(String, Object...)
  * @see java.util.Formatter
@@ -80,10 +82,13 @@ public class FormattedMetadataDestination implements ProduceDestination {
   @NotBlank
   private String destinationTemplate;
 
+  private ElementFormatter elementFormatter;
+
   public FormattedMetadataDestination() {
     metadataKeys = new ArrayList<String>();
     objectMetadataKeys = new ArrayList<String>();
     destinationTemplate = "";
+    elementFormatter = new ElementValueFormatter();
   }
 
   public void addMetadataKey(String s) {
@@ -92,6 +97,14 @@ public class FormattedMetadataDestination implements ProduceDestination {
 
   public List<String> getMetadataKeys() {
     return metadataKeys;
+  }
+
+  public ElementFormatter getElementFormatter() {
+    return elementFormatter;
+  }
+
+  public void setElementFormatter(ElementFormatter elementFormatter) {
+    this.elementFormatter = elementFormatter;
   }
 
   public void setMetadataKeys(List<String> l) {
@@ -116,6 +129,7 @@ public class FormattedMetadataDestination implements ProduceDestination {
     objectMetadataKeys = l;
   }
 
+  @Override
   public String getDestination(AdaptrisMessage msg) throws CoreException {
     String destinationName = defaultIfEmpty(String.format(getDestinationTemplate(), createParams(msg)), null);
     log.debug("Dynamic destination [" + destinationName + "]");
@@ -127,12 +141,12 @@ public class FormattedMetadataDestination implements ProduceDestination {
     for (String key : metadataKeys) {
       String param = "";
       if (msg.headersContainsKey(key)) {
-        param = defaultIfEmpty(msg.getMetadataValue(key), "");
+        param = defaultIfEmpty(elementFormatter.format(msg.getMetadata(key)), "");
       }
       log.trace("Adding Metadata [{}]=[{}]", key, param);
       result.add(param);
     }
-    Map<?,?> objectMetadata = msg.getObjectHeaders();
+    Map<?, ?> objectMetadata = msg.getObjectHeaders();
     for (String key : objectMetadataKeys) {
       log.trace("Adding Object Metadata [{}]=[{}]", key, objectMetadata.get(key));
       result.add(objectMetadata.get(key));
@@ -148,6 +162,6 @@ public class FormattedMetadataDestination implements ProduceDestination {
     if (s == null) {
       throw new IllegalArgumentException("destination template may not be null");
     }
-    this.destinationTemplate = s;
+    destinationTemplate = s;
   }
 }
