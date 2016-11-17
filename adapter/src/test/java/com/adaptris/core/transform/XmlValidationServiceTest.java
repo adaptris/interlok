@@ -23,9 +23,12 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.transform.validate.NotNullContentValidation;
 import com.adaptris.transform.validate.ValidationStage;
+import com.adaptris.util.KeyValuePair;
+import com.adaptris.util.KeyValuePairSet;
 
 public class XmlValidationServiceTest extends TransformServiceExample {
 
@@ -286,7 +289,7 @@ public class XmlValidationServiceTest extends TransformServiceExample {
   }
 
   public void testSimpleValidator_IsInvalidXml_LessThan() throws Exception {
-    XmlBasicValidator validator = new XmlBasicValidator();
+    XmlBasicValidator validator = new XmlBasicValidator(new DocumentBuilderFactoryBuilder());
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("<?xml version=\"1.0\"?><Root><</Root>");
     XmlValidationService service = new XmlValidationService(validator);
     try {
@@ -304,8 +307,11 @@ public class XmlValidationServiceTest extends TransformServiceExample {
     vs.setIterationXpath("/document/names");
     vs.setElementXpath("fullName");
     vs.addRule(new NotNullContentValidation());
-
-    return new XmlValidationService(new XmlBasicValidator(), new XmlSchemaValidator("http://host/schema.xsd",
-        "optional metadata key against which a schema can be stored"), new XmlRuleValidator(vs));
+    KeyValuePair disableExternalEntities = new KeyValuePair("http://xml.org/sax/features/external-general-entities", "false");
+    KeyValuePair disableDoctypeDecl = new KeyValuePair("http://apache.org/xml/features/disallow-doctype-decl", "true");
+    return new XmlValidationService(new XmlBasicValidator(new DocumentBuilderFactoryBuilder().withNamespaceAware(true).withFeatures(
+        new KeyValuePairSet(Arrays.asList(disableExternalEntities, disableDoctypeDecl)))),
+        new XmlSchemaValidator("http://host/schema.xsd", "optional metadata key against which a schema can be stored"),
+        new XmlRuleValidator(vs));
   }
 }
