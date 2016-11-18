@@ -21,6 +21,7 @@
      <artifact name="adp-core-javadoc" type="javadoc" ext="zip" conf="javadoc"/>
      <artifact name="adp-core-examples" type="examples" ext="zip" conf="examples"/>
      <artifact type="javadoc" ext="jar" conf="javadoc" m:classifier="javadoc"/>
+     <artifact type="source" ext="jar" conf="sources" m:classifier="sources"/>
   </publications>
   <dependencies>
     <dependency org="com.thoughtworks.xstream" name="xstream" rev="1.4.7"  conf="compile->default"  transitive="false"/>

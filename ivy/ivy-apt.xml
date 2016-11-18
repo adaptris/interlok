@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ivy-module version="2.0">
+<ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
   <info organisation="com.adaptris" module="adp-core-apt" revision="${ivy.publish.revision}"/>
 
   <configurations>
@@ -18,6 +18,7 @@
   <publications>
      <artifact name="adp-core-apt" type="jar" ext="jar"/>
      <artifact name="adp-core-apt" type="pom" ext="pom"/>
+     <artifact type="source" ext="jar" conf="sources" m:classifier="sources"/>
   </publications>
   <dependencies>
     <dependency org="com.thoughtworks.xstream" name="xstream" conf="compile->default" rev="1.4.7" transitive="false"/>

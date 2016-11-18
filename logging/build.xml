@@ -69,7 +69,7 @@
       <fileset dir="${build.classes.dir}"/>
       <zipfileset dir="${basedir}/.." prefix="META-INF">
         <include name="LICENSE"/>
-      </zipfileset>    
+      </zipfileset>
     </jar>
   </target>
 
@@ -90,6 +90,13 @@
       <fileset dir="${api.doc.dir}"/>
     </jar>
     <ivy:makepom ivyfile="${ivy.xml.file}" pomfile="${project.dist.dir}/${project.name}/pom/${project.name}.pom"/>
+    <mkdir dir="${project.dist.dir}/adp-core/source"/>
+    <jar jarfile="${project.dist.dir}/${project.name}/source/${project.name}.jar">
+      <fileset dir="${src.dir}"/>
+      <zipfileset dir="${basedir}/.." prefix="META-INF">
+        <include name="LICENSE"/>
+      </zipfileset>
+    </jar>
   </target>
 
   <target name="publish" depends="prepare-for-publish">

@@ -20,6 +20,7 @@
      <artifact name="interlok-common" type="pom" ext="pom" conf="*"/>
      <artifact name="interlok-common-javadoc" type="javadoc" ext="zip" conf="javadoc"/>
      <artifact type="javadoc" ext="jar" conf="javadoc" m:classifier="javadoc"/>
+     <artifact type="source" ext="jar" conf="sources" m:classifier="sources"/>
   </publications>
   <dependencies>
     <dependency org="com.adaptris" name="adp-core-apt" rev="${ivy.publish.revision}" conf="compile->default;ant->default" changing="true"/>
