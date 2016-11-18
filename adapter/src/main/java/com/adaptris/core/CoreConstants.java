@@ -256,6 +256,12 @@ public abstract class CoreConstants {
   public static final String OBJ_METADATA_EXCEPTION = Exception.class.getName();
 
   /**
+   * The object metadata key that contains the last component that caused the exception (generally a Service).
+   *
+   */
+  public static final String OBJ_METADATA_EXCEPTION_CAUSE = Exception.class.getName() + "_Cause";
+
+  /**
    * Metadata key that contains the last response code from an HTTP Server when using JdkHttpProducer.
    * {@linkplain com.adaptris.core.http.JdkHttpProducer}
    *

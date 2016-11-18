@@ -412,8 +412,13 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
 
   @Override
   public void handleException(Service service, AdaptrisMessage msg, Exception e) throws ServiceException {
-    msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, e);
     String serviceName = friendlyName(service);
+    msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, e);
+    if (!(service instanceof ServiceCollection)) {
+      // If it's not a ServiceCollection, then it must be a Service.. which
+      // means we should add it as the thing that caused the problem.
+      msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION_CAUSE, friendlyName(service));
+    }
     if (isRestartAffectedServiceOnException()) {
       log.debug("Service restarts on error, restarting [" + serviceName + "]");
       restartService(service);
