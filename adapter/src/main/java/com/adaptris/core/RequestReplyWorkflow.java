@@ -113,7 +113,7 @@ public class RequestReplyWorkflow extends StandardWorkflow {
       }
       catch (ProduceException e) { // need to apply different event
         msg.addEvent(getReplyProducer(), false); // generate event
-        handleBadMessage("Exception processing message", e, msg);
+        handleBadMessage("Exception processing message", e, copyExceptionHeaders(reply, msg));
         handleProduceException();
       }
     }

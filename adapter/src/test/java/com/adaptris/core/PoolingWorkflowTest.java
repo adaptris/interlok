@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -355,6 +356,13 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
       submitMessages(wf, 1);
       waitForMessages(meh, 1);
       assertEquals(1, meh.messageCount());
+      for (Iterator i = meh.getMessages().iterator(); i.hasNext();) {
+        AdaptrisMessage m = (AdaptrisMessage) i.next();
+        assertNotNull(m.getObjectHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION));
+        assertNotNull(m.getObjectHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION_CAUSE));
+        assertEquals(ThrowExceptionService.class.getSimpleName(),
+            m.getObjectHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION_CAUSE));
+      }
     }
     finally {
       stop(channel);

@@ -16,11 +16,14 @@
 
 package com.adaptris.core;
 
+import static com.adaptris.core.CoreConstants.OBJ_METADATA_EXCEPTION;
+import static com.adaptris.core.CoreConstants.OBJ_METADATA_EXCEPTION_CAUSE;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.validation.Valid;
@@ -763,20 +766,29 @@ public abstract class WorkflowImp implements Workflow {
       logSuccess(msg, start);
     }
     catch (ServiceException e) {
-      handleBadMessage("Exception from ServiceCollection", e, msg);
+      handleBadMessage("Exception from ServiceCollection", e, copyExceptionHeaders(wip, msg));
     }
     catch (ProduceException e) {
       wip.addEvent(getProducer(), false); // generate event
-      handleBadMessage("Exception producing msg", e, msg);
+      handleBadMessage("Exception producing msg", e, copyExceptionHeaders(wip, msg));
       handleProduceException();
     }
     catch (Exception e) { // all other Exc. inc. runtime
-      handleBadMessage("Exception processing message", e, msg);
+      handleBadMessage("Exception processing message", e, copyExceptionHeaders(wip, msg));
     }
     finally {
       sendMessageLifecycleEvent(wip);
     }
     workflowEnd(msg, wip);
+  }
+
+  protected AdaptrisMessage copyExceptionHeaders(AdaptrisMessage workingCopy, AdaptrisMessage orig) {
+    if (workingCopy != orig) {
+      Map<Object, Object> working = workingCopy.getObjectHeaders();
+      orig.addObjectHeader(OBJ_METADATA_EXCEPTION, working.get(OBJ_METADATA_EXCEPTION));
+      orig.addObjectHeader(OBJ_METADATA_EXCEPTION_CAUSE, working.get(OBJ_METADATA_EXCEPTION_CAUSE));
+    }
+    return orig;
   }
 
   protected void handleBadMessage(String logMsg, Exception e, AdaptrisMessage msg) {

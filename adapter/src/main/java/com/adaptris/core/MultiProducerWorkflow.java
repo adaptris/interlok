@@ -106,15 +106,15 @@ public class MultiProducerWorkflow extends StandardWorkflow {
       sendProcessedMessage(wip, msg); // only if produce succeeds
     }
     catch (ServiceException e) {
-      handleBadMessage("Exception from ServiceCollection", e, msg);
+      handleBadMessage("Exception from ServiceCollection", e, copyExceptionHeaders(wip, msg));
     }
     catch (ProduceException e) {
       wip.addEvent(getProducer(), false); // generate event
-      handleBadMessage("Exception producing msg", e, msg);
+      handleBadMessage("Exception producing msg", e, copyExceptionHeaders(wip, msg));
       handleProduceException();
     }
     catch (Exception e) { // all other Exc. inc. runtime
-      handleBadMessage("Exception processing message", e, msg);
+      handleBadMessage("Exception processing message", e, copyExceptionHeaders(wip, msg));
     }
     finally {
       sendMessageLifecycleEvent(wip);

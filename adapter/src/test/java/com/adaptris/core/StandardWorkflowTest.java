@@ -336,6 +336,10 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
         AdaptrisMessage m = (AdaptrisMessage) i.next();
         assertEquals(PAYLOAD_1, m.getContent());
         assertFalse("Does not contains correct metadata key", m.containsKey(METADATA_KEY));
+        assertNotNull(m.getObjectHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION));
+        assertNotNull(m.getObjectHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION_CAUSE));
+        assertEquals(ThrowExceptionService.class.getSimpleName(),
+            m.getObjectHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION_CAUSE));
       }
     }
     finally {
