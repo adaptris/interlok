@@ -245,7 +245,7 @@ public class XmlHelper {
   @Deprecated
   public static Document createDocument(String s, boolean namespaceAware)
       throws ParserConfigurationException, IOException, SAXException {
-    return createDocument(s, new DocumentBuilderFactoryBuilder().withNamespaceAware(namespaceAware));
+    return createDocument(s, DocumentBuilderFactoryBuilder.newInstance().withNamespaceAware(namespaceAware));
   }
 
   /**
