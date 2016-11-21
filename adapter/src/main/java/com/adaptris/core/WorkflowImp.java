@@ -785,8 +785,10 @@ public abstract class WorkflowImp implements Workflow {
   protected AdaptrisMessage copyExceptionHeaders(AdaptrisMessage workingCopy, AdaptrisMessage orig) {
     if (workingCopy != orig) {
       Map<Object, Object> working = workingCopy.getObjectHeaders();
-      orig.addObjectHeader(OBJ_METADATA_EXCEPTION, working.get(OBJ_METADATA_EXCEPTION));
-      orig.addObjectHeader(OBJ_METADATA_EXCEPTION_CAUSE, working.get(OBJ_METADATA_EXCEPTION_CAUSE));
+      if (working.get(OBJ_METADATA_EXCEPTION) != null)
+        orig.addObjectHeader(OBJ_METADATA_EXCEPTION, working.get(OBJ_METADATA_EXCEPTION));
+      if (working.get(OBJ_METADATA_EXCEPTION_CAUSE) != null)
+        orig.addObjectHeader(OBJ_METADATA_EXCEPTION_CAUSE, working.get(OBJ_METADATA_EXCEPTION_CAUSE));
     }
     return orig;
   }
@@ -803,13 +805,7 @@ public abstract class WorkflowImp implements Workflow {
   }
 
   protected void logSuccess(AdaptrisMessage msg, long start) {
-    StringBuilder logStmt = new StringBuilder();
-    logStmt.append("message [");
-    logStmt.append(msg.getUniqueId());
-    logStmt.append("] processed in [");
-    logStmt.append(System.currentTimeMillis() - start);
-    logStmt.append("] ms");
-    log.info(logStmt.toString());
+    log.info("message [{}] processed in [{}] ms", msg.getUniqueId(), (System.currentTimeMillis() - start));
   }
 
   /**
