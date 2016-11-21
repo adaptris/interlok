@@ -104,7 +104,7 @@ public class JmsProducer extends JmsProducerImpl {
       produce(msg, target);
     } catch (Exception e) {
       logLinkedException("", e);
-      ExceptionHelper.rethrowProduceException(e);
+      throw ExceptionHelper.wrapProduceException(e);
     }
   }
 
@@ -123,7 +123,7 @@ public class JmsProducer extends JmsProducerImpl {
     if (captureOutgoingMessageDetails()) {
       captureOutgoingMessageDetails(jmsMsg, msg);
     }
-    log.info("msg produced to destination [" + jmsDest + "]");
+    log.info("msg produced to destination [{}]", jmsDest);
   }
 
   @Override
@@ -156,7 +156,7 @@ public class JmsProducer extends JmsProducerImpl {
     } catch (Exception e) {
       logLinkedException("", e);
       rollback();
-      ExceptionHelper.rethrowProduceException(e);
+      throw ExceptionHelper.wrapProduceException(e);
     } finally {
       JmsUtils.closeQuietly(receiver);
       JmsUtils.deleteTemporaryDestination(replyTo);
@@ -259,6 +259,10 @@ public class JmsProducer extends JmsProducerImpl {
     @Override
     public boolean noLocal() {
       return noLocal;
+    }
+
+    public String toString() {
+      return getDestination().toString();
     }
   }
 }
