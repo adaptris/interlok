@@ -28,14 +28,10 @@ package com.adaptris.core.management.webserver;
  */
 public class WebServerManagementUtil {
 
-	private static ServerManager serverManager;
+	private static ServerManager serverManager = new JettyServerManager();
 
 	public static ServerManager getServerManager() {
 		return serverManager;
-	}
-
-	public static void setServerManager(ServerManager _serverManager) {
-		serverManager = _serverManager;
 	}
 
 }

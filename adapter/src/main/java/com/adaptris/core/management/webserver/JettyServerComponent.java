@@ -293,9 +293,8 @@ public class JettyServerComponent implements ManagementComponent {
 
     @Override
     void register() {
-      final JettyServerManager jettyManager = new JettyServerManager();
+      final JettyServerManager jettyManager = (JettyServerManager)WebServerManagementUtil.getServerManager();
       jettyManager.addServer(server);
-      WebServerManagementUtil.setServerManager(jettyManager);
     }
 
     @Override
