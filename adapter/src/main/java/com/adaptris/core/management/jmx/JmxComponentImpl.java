@@ -21,9 +21,9 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.adaptris.core.management.ManagementComponent;
+import com.adaptris.core.management.MgmtComponentImpl;
 
-abstract class JmxComponentImpl implements ManagementComponent {
+abstract class JmxComponentImpl extends MgmtComponentImpl {
 
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
@@ -55,11 +55,6 @@ abstract class JmxComponentImpl implements ManagementComponent {
    * @throws Exception
    */
   protected abstract JmxComponent createJmxWrapper(Properties p) throws Exception;
-
-  @Override
-  public void setClassLoader(final ClassLoader classLoader) {
-    log.warn("Ignoring setClassLoader");
-  }
 
   @Override
   public final void init(final Properties p) throws Exception {
