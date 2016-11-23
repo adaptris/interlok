@@ -16,9 +16,11 @@
 
 package com.adaptris.core.services.metadata.compare;
 
+import com.adaptris.annotation.AffectsMetadata;
 
 public abstract class ComparatorImpl implements MetadataComparator {
   
+  @AffectsMetadata
   private String resultKey;
   
   public ComparatorImpl() {
