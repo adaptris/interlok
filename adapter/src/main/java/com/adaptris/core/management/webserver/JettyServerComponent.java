@@ -26,6 +26,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Properties;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.deploy.DeploymentManager;
 import org.eclipse.jetty.deploy.providers.WebAppProvider;
@@ -67,6 +69,7 @@ public class JettyServerComponent implements ManagementComponent {
   public static final String ATTR_BOOTSTRAP_PROPERTIES = "com.adaptris.core.webapp.local.bootstrap";
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
+  private static final long STARTUP_WAIT = TimeUnit.SECONDS.toMillis(60L);
 
   private ClassLoader classLoader;
   private Properties properties;
@@ -108,9 +111,12 @@ public class JettyServerComponent implements ManagementComponent {
   @Override
   public void start() throws Exception {
     if (classLoader == null) {
-      log.warn(getClass() + ".setClassLoader(...) has not been called!");
       classLoader = Thread.currentThread().getContextClassLoader();
     }
+    final CyclicBarrier barrier = new CyclicBarrier(2);
+    // This is to make sure we don't break the barrier before the real delay is up.
+    //
+    final long barrierDelay = STARTUP_WAIT;
     new Thread(new Runnable() {
       @Override
       public void run() {
@@ -119,12 +125,15 @@ public class JettyServerComponent implements ManagementComponent {
           Thread.currentThread().setContextClassLoader(classLoader);
           wrapper = createWrapper(properties);
           wrapper.register();
+          // Wait until at least the server is registered.
+          barrier.await(barrierDelay, TimeUnit.MILLISECONDS);
           wrapper.start();
         } catch (final Exception e) {
           log.error("Could not create wrapper", e);
         }
       }
     }).start();
+    barrier.await(barrierDelay, TimeUnit.MILLISECONDS);
   }
 
   @Override
