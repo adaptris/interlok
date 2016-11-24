@@ -1,2 +1,2 @@
 class=com.adaptris.core.management.webserver.JettyServerComponent
-classloader=com.adaptris.core.management.classloader.BlacklistingFactory
+classloader.unused=com.adaptris.core.management.classloader.BlacklistingFactory
