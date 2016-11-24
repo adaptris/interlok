@@ -167,7 +167,7 @@ public class ScriptingServiceTest extends GeneralServiceExample {
     return super.getExampleCommentHeader(o) + "<!--"
         + "\nThis allows to embed scripts written in any language that supports JSR223 (e.g. jruby)."
         + "\nThe script is executed and the AdaptrisMessage that is due to be processed is"
-        + "\nbound against the key 'message'. This can be used as a standard variable"
- + "\nwithin the script. " + "\n-->\n";
+        + "\nbound against the key 'message' and an instance of org.slf4j.Logger is also bound "
+        + "\nto key 'log'. These can be used as a standard variable within the script." + "\n-->\n";
   }
 }
