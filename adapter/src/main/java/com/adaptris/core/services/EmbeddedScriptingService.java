@@ -36,8 +36,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * manager.
  * </p>
  * <p>
- * The script is executed and the AdaptrisMessage that is due to be processed is bound against the key "message". This can be used
- * as a standard variable within the script
+ * The script is executed and the AdaptrisMessage that is due to be processed is bound against the key "message" and an instance
+ * of org.slf4j.Logger is also bound to key "log". These can be used as a standard variable within the script.
  * </p>
  * <p>
  * Note that this class can be used as the selector as part of a {@link BranchingServiceCollection}. If used as such, then you need

@@ -164,7 +164,7 @@ public class EmbeddedScriptingServiceTest extends GeneralServiceExample {
   private EmbeddedScriptingService createService(String uid) {
     EmbeddedScriptingService result = uid == null ? new EmbeddedScriptingService(SERVICE_UID) : new EmbeddedScriptingService(uid);
     result.setLanguage("jruby");
-    result.setScript("value = $message.getMetadataValue '" + MY_METADATA_KEY + "';" + "$message.addMetadata('" + MY_METADATA_KEY
+    result.setScript("value = $message.getMetadataValue '" + MY_METADATA_KEY + "'; $log.info(\"Changing " + MY_METADATA_KEY + " to: \" + value.reverse); " + "$message.addMetadata('" + MY_METADATA_KEY
         + "', value.reverse);");
     return result;
   }
@@ -201,9 +201,10 @@ public class EmbeddedScriptingServiceTest extends GeneralServiceExample {
     return super.getExampleCommentHeader(obj) + "<!--"
         + "\nThis allows to embed scripts written in any language that supports JSR223 (e.g. jruby)."
         + "\nThe script is executed and the AdaptrisMessage that is due to be processed is"
-        + "\nbound against the key 'message'. This can be used as a standard variable"
-        + "\nwithin the script. The example below simply reverses an item of metadata "
-        + "\nusing jruby as the scripting language. This isn't something that is easily supported"
-        + "\n with existing services (but why would you want to do it?)" + "\n-->\n";
+        + "\nbound against the key 'message' and an instance of org.slf4j.Logger is also bound "
+        + "\nto key 'log'. These can be used as a standard variable within the script."
+        + "\nThe example below simply reverses an item of metadata using jruby as the scripting"
+        + "\nlanguage. This isn't something that is easily supported with existing services "
+        +"\n(but why would you want to do it?)" + "\n-->\n";
   }
 }
