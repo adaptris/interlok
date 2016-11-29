@@ -87,11 +87,8 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
       return;
     }
     
-    try {
-      OutputStream out = getOutputStream();
+    try (OutputStream out = getOutputStream()) {
       out.write(bytes != null ? bytes : new byte[0]);
-      out.flush();
-      out.close();
     }
     catch (Exception e) {
       throw new RuntimeException(e);
@@ -144,23 +141,13 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
     if(inputFile == null && StringUtils.isEmpty(content)) {
       return;
     }
-
-    PrintStream p = null;
-    try {
-      if (!isEmpty(charEncoding)) {
-        p = new PrintStream(getOutputStream(), true, charEncoding);
-      }
-      else {
-        p = new PrintStream(getOutputStream(), true);
-      }
-      p.print(content != null ? content : "");
+    try (PrintStream out = (!isEmpty(charEncoding)) ? new PrintStream(getOutputStream(), true, charEncoding)
+        : new PrintStream(getOutputStream(), true)) {
+      out.print(content != null ? content : "");
       setContentEncoding(charEncoding);
     }
     catch (Exception e) {
       throw new RuntimeException(e);
-    }
-    finally {
-      IOUtils.closeQuietly(p);
     }
   }
 

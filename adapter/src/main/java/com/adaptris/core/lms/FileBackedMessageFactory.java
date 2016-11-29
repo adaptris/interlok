@@ -26,7 +26,9 @@ import org.apache.commons.io.FileDeleteStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.DefaultMessageFactory;
@@ -57,10 +59,17 @@ public class FileBackedMessageFactory extends DefaultMessageFactory {
   static final String TMP_FILE_PREFIX = "FBAM";
   private static FileCleaningTracker cleaner = new FileCleaningTracker();
 
+  @InputFieldDefault(value = "System.getProperty(java.io.tmpdir)")
   private String tempDirectory;
-  private int defaultBufferSize;
-  private long maxMemorySizeBytes;
-
+  @AdvancedConfig
+  @InputFieldDefault(value = "256Kb")
+  private Integer defaultBufferSize;
+  @AdvancedConfig
+  @InputFieldDefault(value = "10Mb")
+  private Long maxMemorySizeBytes;
+  @AdvancedConfig
+  @InputFieldDefault(value = "false")
+  private Boolean createTempDir;
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -68,17 +77,12 @@ public class FileBackedMessageFactory extends DefaultMessageFactory {
    * Default constructor.
    * <ul>
    * <li>temp-directory is based on the system property java.io.tmpdir</li>
-   * <li>
-   * max-memory-size-bytes is equivalent to 10Megabytes</li>
-   * <li>
-   * default-buffer-size is 256kilobytes</li>
+   * <li>max-memory-size-bytes is equivalent to 10Megabytes</li>
+   * <li>default-buffer-size is 256kilobytes</li>
    * </ul>
    */
   public FileBackedMessageFactory() {
     super();
-    setTempDirectory(System.getProperty("java.io.tmpdir"));
-    setMaxMemorySizeBytes(INLINE_MAX_SIZE);
-    setDefaultBufferSize(DEFAULT_BUFSIZE);
   }
 
   /**
@@ -91,7 +95,7 @@ public class FileBackedMessageFactory extends DefaultMessageFactory {
   /**
    * @return the defaultBufferSize
    */
-  public int getDefaultBufferSize() {
+  public Integer getDefaultBufferSize() {
     return defaultBufferSize;
   }
 
@@ -100,14 +104,18 @@ public class FileBackedMessageFactory extends DefaultMessageFactory {
    *
    * @param bufsiz the defaultBufferSize to set
    */
-  public void setDefaultBufferSize(int bufsiz) {
+  public void setDefaultBufferSize(Integer bufsiz) {
     defaultBufferSize = bufsiz;
+  }
+
+  protected int defaultBufferSize() {
+    return getDefaultBufferSize() != null ? getDefaultBufferSize().intValue() : DEFAULT_BUFSIZE;
   }
 
   /**
    * @return the maxSizeBeforeException
    */
-  public long getMaxMemorySizeBytes() {
+  public Long getMaxMemorySizeBytes() {
     return maxMemorySizeBytes;
   }
 
@@ -118,9 +126,14 @@ public class FileBackedMessageFactory extends DefaultMessageFactory {
    *
    * @param l the max size before exception to set
    */
-  public void setMaxMemorySizeBytes(long l) {
+  public void setMaxMemorySizeBytes(Long l) {
     maxMemorySizeBytes = l;
   }
+
+  protected long maxMemorySizeBytes() {
+    return getMaxMemorySizeBytes() != null ? getMaxMemorySizeBytes().longValue() : INLINE_MAX_SIZE;
+  }
+
 
   /**
    * Set the temporary directory where files that will be used as the basis of
@@ -132,11 +145,21 @@ public class FileBackedMessageFactory extends DefaultMessageFactory {
     this.tempDirectory = tempDirectory;
   }
 
+  protected File tempDirectory() {
+    return check(getTempDirectory() != null ? new File(getTempDirectory()) : new File(System.getProperty("java.io.tmpdir")));
+  }
+
+  private File check(File f) {
+    if (!f.exists() && createTempDir()) {
+      f.mkdirs();
+    }
+    return f;
+  }
+
   @Override
   public AdaptrisMessage newMessage() {
-    AdaptrisMessage m = new FileBackedMessageImpl(uniqueIdGenerator(), this,
-        new File(getTempDirectory()), getDefaultBufferSize(),
-        getMaxMemorySizeBytes());
+    AdaptrisMessage m =
+        new FileBackedMessageImpl(uniqueIdGenerator(), this, tempDirectory(), defaultBufferSize(), maxMemorySizeBytes());
     if (!isEmpty(getDefaultCharEncoding())) {
       m.setContentEncoding(getDefaultCharEncoding());
     }
@@ -148,5 +171,28 @@ public class FileBackedMessageFactory extends DefaultMessageFactory {
     f.deleteOnExit();
     cleaner.track(f, marker, FileDeleteStrategy.FORCE);
     return f;
+  }
+
+  /**
+   * @return the createTempDir
+   */
+  public Boolean getCreateTempDir() {
+    return createTempDir;
+  }
+
+  /**
+   * Specify whether or not to create any configured tempDir.
+   * <p>
+   * Generally speaking; if you are using the default {@code java.io.tmpdir} then you can ignore this value.
+   * </p>
+   * 
+   * @param b whether or not to create the temporary directory; defaults to false.
+   */
+  public void setCreateTempDir(Boolean b) {
+    this.createTempDir = b;
+  }
+
+  boolean createTempDir() {
+    return getCreateTempDir() != null ? getCreateTempDir().booleanValue() : false;
   }
 }

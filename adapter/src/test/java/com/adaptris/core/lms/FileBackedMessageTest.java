@@ -71,7 +71,7 @@ public class FileBackedMessageTest extends AdaptrisMessageCase {
   
   @Test
   public void testMaxSize() {
-    getMessageFactory().setMaxMemorySizeBytes(10);
+    getMessageFactory().setMaxMemorySizeBytes(10L);
     AdaptrisMessage orig = getMessageFactory().newMessage(PAYLOAD);
     try {
       byte[] bytes = orig.getPayload();
@@ -84,7 +84,7 @@ public class FileBackedMessageTest extends AdaptrisMessageCase {
   
   @Test
   public void testMaxSizeString() {
-    getMessageFactory().setMaxMemorySizeBytes(10);
+    getMessageFactory().setMaxMemorySizeBytes(10L);
     AdaptrisMessage orig = getMessageFactory().newMessage(PAYLOAD);
     try {
       String string = orig.getContent();

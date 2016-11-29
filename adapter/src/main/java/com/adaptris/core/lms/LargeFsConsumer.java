@@ -77,6 +77,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"poller", "createDirs", "fileFilterImp", "fileSorter", "wipSuffix", "resetWipFiles"})
 public class LargeFsConsumer extends FsConsumer {
 
+  private transient FileCleaningTracker tracker;
+
   public LargeFsConsumer() {
     setMessageFactory(new FileBackedMessageFactory());
   }
@@ -89,6 +91,7 @@ public class LargeFsConsumer extends FsConsumer {
   @Override
   public void init() throws CoreException {
     super.init();
+    tracker = new FileCleaningTracker();
   }
 
   @Override
@@ -104,6 +107,9 @@ public class LargeFsConsumer extends FsConsumer {
   @Override
   public void close() {
     super.close();
+    if (tracker != null) {
+      tracker.exitWhenFinished();
+    }
   }
 
   @Override
@@ -131,7 +137,7 @@ public class LargeFsConsumer extends FsConsumer {
           }
           retrieveAdaptrisMessageListener().onAdaptrisMessage(msg);
           rc++;
-          new FileCleaningTracker().track(wipFile, msg, FileDeleteStrategy.FORCE);
+          tracker.track(wipFile, msg, FileDeleteStrategy.FORCE);
         }
         else {
           log.trace(originalFile.getName() + " not deemed safe to process");
