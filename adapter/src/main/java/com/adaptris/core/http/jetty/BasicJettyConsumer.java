@@ -97,6 +97,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   private TimeInterval sendProcessingInterval;
 
   @Deprecated
+  @AdvancedConfig
   private Long warnAfterMessageHangMillis = null;
 
   static {
@@ -195,6 +196,9 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
       acceptedMethods = Arrays.asList(getDestination().getFilterExpression().split(","));
       log.trace("Acceptable HTTP methods set to : {}", acceptedMethods);
     }
+    if (getWarnAfterMessageHangMillis() != null && getWarnAfter() == null) {
+      log.warn("Use of deprecated warn-after-message-hand-millis); use warn-after instead");
+    }
   }
 
   /**
@@ -279,7 +283,6 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
    */
   @Deprecated
   public void setWarnAfterMessageHangMillis(Long w) {
-    log.warn("warn-after-message-hang-millis is deprecated; use warn-after instead");
     this.warnAfterMessageHangMillis = w;
   }
 
@@ -302,6 +305,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   long warnAfter() {
     long result = Long.MAX_VALUE;
     if (getWarnAfterMessageHangMillis() != null) {
+      log.warn("Use of deprecated warn-after-message-hand-millis); use warn-after instead");
       result = getWarnAfterMessageHangMillis().longValue();
     } else {
       result = getWarnAfter() != null ? getWarnAfter().toMilliseconds() : DEFAULT_WARN_AFTER;
