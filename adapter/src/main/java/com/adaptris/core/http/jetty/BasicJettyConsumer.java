@@ -69,6 +69,9 @@ import com.adaptris.util.TimeInterval;
  * @author $Author: lchan $
  */
 public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
+  private static final long DEFAULT_WARN_AFTER = TimeUnit.SECONDS.toMillis(20);
+  private static final long DEFAULT_EXPECT_INTERVAL = TimeUnit.SECONDS.toMillis(20);
+
   private static final TimeInterval DEFAULT_MAX_WAIT_TIME = new TimeInterval(600L, TimeUnit.SECONDS);
   private static final TimeInterval DEFAULT_INTERMEDIATE_WAIT_TIME = new TimeInterval(1L, TimeUnit.SECONDS);
   private static final String COMMA = ",";
@@ -83,9 +86,18 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   @InputFieldDefault(value = "false")
   @AdvancedConfig
   private Boolean additionalDebug;
-  private TimeInterval maxWaitTime;
 
-  private long warnAfterMessageHangMillis = 20000;
+  @AdvancedConfig
+  private TimeInterval maxWaitTime;
+  @AdvancedConfig
+  @InputFieldDefault(value = "20 Seconds")
+  private TimeInterval warnAfter;
+  @AdvancedConfig
+  @InputFieldDefault(value = "20 Seconds")
+  private TimeInterval sendProcessingInterval;
+
+  @Deprecated
+  private Long warnAfterMessageHangMillis = null;
 
   static {
     List<String> methods = new ArrayList<>();
@@ -254,12 +266,67 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
     return getAdditionalDebug() != null ? getAdditionalDebug().booleanValue() : false;
   }
 
-  public long getWarnAfterMessageHangMillis() {
+  /**
+   * @deprecated since 3.5.1 use {@link #getWarnAfter()} instead.
+   */
+  @Deprecated
+  public Long getWarnAfterMessageHangMillis() {
     return warnAfterMessageHangMillis;
   }
 
-  public void setWarnAfterMessageHangMillis(long warnAfterMessageHangMillis) {
-    this.warnAfterMessageHangMillis = warnAfterMessageHangMillis;
+  /**
+   * @deprecated since 3.5.1 use {@link #setWarnAfter(TimeInterval)} instead.
+   */
+  @Deprecated
+  public void setWarnAfterMessageHangMillis(Long w) {
+    log.warn("warn-after-message-hang-millis is deprecated; use warn-after instead");
+    this.warnAfterMessageHangMillis = w;
+  }
+
+  /**
+   * @return the warnAfter
+   */
+  public TimeInterval getWarnAfter() {
+    return warnAfter;
+  }
+
+  /**
+   * Log a warning after this interval.
+   * 
+   * @param t the warnAfter to set, default is 20 seconds.
+   */
+  public void setWarnAfter(TimeInterval t) {
+    this.warnAfter = t;
+  }
+
+  long warnAfter() {
+    long result = Long.MAX_VALUE;
+    if (getWarnAfterMessageHangMillis() != null) {
+      result = getWarnAfterMessageHangMillis().longValue();
+    } else {
+      result = getWarnAfter() != null ? getWarnAfter().toMilliseconds() : DEFAULT_WARN_AFTER;
+    }
+    return result;
+  }
+
+  /**
+   * @return the sendExpectEvery
+   */
+  public TimeInterval getSendProcessingInterval() {
+    return sendProcessingInterval;
+  }
+
+  /**
+   * If required send a 102 upon this interval.
+   * 
+   * @param t the sendExpectEvery to set, default is 20 seconds.
+   */
+  public void setSendProcessingInterval(TimeInterval t) {
+    this.sendProcessingInterval = t;
+  }
+
+  long sendProcessingInterval() {
+    return getSendProcessingInterval() != null ? getSendProcessingInterval().toMilliseconds() : DEFAULT_EXPECT_INTERVAL;
   }
 
   protected class BasicServlet extends HttpServlet {
@@ -352,11 +419,10 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
         }
         catch (InterruptedException e) {
         }
-        if ((monitor.getEndTime() - monitor.getStartTime()) > getWarnAfterMessageHangMillis()) {
+        if ((monitor.getEndTime() - monitor.getStartTime()) > warnAfter()) {
           log.warn("Message ({}) took longer than expected; {}ms", msg.getUniqueId(),
               ((monitor.getEndTime() - monitor.getStartTime())));
         }
-
       }
       cancel(task);
     }
@@ -369,8 +435,9 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
 
     private ProcessingTimerTask schedule(ProcessingTimerTask task) {
       // Every 20 seconds as per RFC2518
-      log.trace("Scheduling a EXPECT 102");
-      processingTimer.schedule(task, TimeUnit.SECONDS.toMillis(20), TimeUnit.SECONDS.toMillis(20));
+      log.trace("Scheduling a 102 Processing Response");
+      long interval = sendProcessingInterval();
+      processingTimer.schedule(task, sendProcessingInterval(), sendProcessingInterval());
       return task;
     }
 
@@ -416,4 +483,6 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
       }
     }
   }
+
+
 }

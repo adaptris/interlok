@@ -69,49 +69,6 @@ class ClientSession extends HttpSessionImp {
     displayHttpResponse();
   }
 
-  /** Read the data returned by the remote server
-   *  <p>When using HTTP/1.0 you cannot get 1xx responses from the server
-   *  because it explicitly states in RFC1945
-   *  <code><pre>
-   *  9.1  Informational 1xx
-   *
-   *  This class of status code indicates a provisional response,
-   *  consisting only of the Status-Line and optional headers, and is
-   *  terminated by an empty line. HTTP/1.0 does not define any 1xx status
-   *  codes and they are not a valid response to a HTTP/1.0 request.
-   *  However, they may be useful for experimental applications which are
-   *  outside the scope of this specification.
-   *  </pre></code>
-   *  <p>However it is possible to do so when using HTTP/1.1 (from RFC2068)
-   *  There are two possible information responses for HTTP/1.1, 100, and 101
-   *  <code><pre>
-   *  10.1.1 100 Continue
-   *
-   *  The client may continue with its request. This interim response is
-   *  used to inform the client that the initial part of the request has
-   *  been received and has not yet been rejected by the server. The client
-   *  SHOULD continue by sending the remainder of the request or, if the
-   *  request has already been completed, ignore this response. The server
-   *  MUST send a final response after the request has been completed.
-   *  10.1.2 101 Switching Protocols
-   *
-   *  The server understands and is willing to comply with the client's
-   *  request, via the Upgrade message header field (section 14.41), for a
-   *  change in the application protocol being used on this connection. The
-   *  server will switch protocols to those defined by the response's
-   *  Upgrade header field immediately after the empty line which
-   *  terminates the 101 response.
-   *
-   *  The protocol should only be switched when it is advantageous to do
-   *  so.  For example, switching to a newer version of HTTP is
-   *  advantageous over older versions, and switching to a real-time,
-   *  synchronous protocol may be advantageous when delivering resources
-   *  that use such features.
-   *  </pre></code>
-   *  <p>If a 100 CONTINUE response is received, then we stick around and
-   *  wait for another response.  If 101 is received, an IOException is
-   *  thrown.
-   */
   private void handleResponseHeaders(InputStream in)
     throws IOException, HttpException {
     boolean gotRealResponse = false;
@@ -125,7 +82,7 @@ class ClientSession extends HttpSessionImp {
             "Informational response 1xx to a " + "HTTP/1.0 Request not valid"));
       }
       switch (httpResponseLine.getResponseCode()) {
-        case 100 : // 100 CONTINUE
+      case 102: // 102 CONTINUE
           {
             // do absolutely nothing, so we just go round the loop after read
             // rest of the data.
