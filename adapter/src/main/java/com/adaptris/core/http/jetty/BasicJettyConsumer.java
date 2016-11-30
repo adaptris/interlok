@@ -437,7 +437,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
       // Every 20 seconds as per RFC2518
       log.trace("Scheduling a 102 Processing Response");
       long interval = sendProcessingInterval();
-      processingTimer.schedule(task, sendProcessingInterval(), sendProcessingInterval());
+      processingTimer.schedule(task, interval, interval);
       return task;
     }
 
