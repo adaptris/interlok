@@ -411,6 +411,8 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
         }
       }
       catch (Exception e) {
+        // In the event of an exception, cancel ourselves.
+        this.cancel();
       }
     }
   }
