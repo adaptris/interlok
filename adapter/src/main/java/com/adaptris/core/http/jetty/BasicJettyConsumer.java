@@ -37,6 +37,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 import javax.servlet.Servlet;
@@ -44,6 +46,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
@@ -69,7 +73,9 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   private static final TimeInterval DEFAULT_INTERMEDIATE_WAIT_TIME = new TimeInterval(1L, TimeUnit.SECONDS);
   private static final String COMMA = ",";
   private static final List<String> HTTP_METHODS;
-  
+  private static final String EXPECT_102_PROCESSING = "102-Processing";
+  private static final String HEADER_EXPECT = "Expect";
+
   private transient Servlet jettyServlet;
   private transient ServletWrapper servletWrapper = null;
   private transient List<String> acceptedMethods = new ArrayList<>(HTTP_METHODS);
@@ -78,7 +84,6 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   @AdvancedConfig
   private Boolean additionalDebug;
   private TimeInterval maxWaitTime;
-
 
   private long warnAfterMessageHangMillis = 20000;
 
@@ -96,7 +101,6 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
     changeState(ClosedState.getInstance());
   }
 
-
   /**
    * Create an AdaptrisMessage from the incoming servlet request and response.
    * 
@@ -107,8 +111,8 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
    * @throws ServletException
    * @see HttpServlet#service(javax.servlet.ServletRequest, javax.servlet.ServletResponse)
    */
-  public abstract AdaptrisMessage createMessage(HttpServletRequest request, HttpServletResponse response) throws IOException,
-      ServletException;
+  public abstract AdaptrisMessage createMessage(HttpServletRequest request, HttpServletResponse response)
+      throws IOException, ServletException;
 
   private boolean submitToWorkflow(AdaptrisMessage msg) {
     boolean waitForCompletion = false;
@@ -237,7 +241,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   long maxWaitTime() {
     return getMaxWaitTime() != null ? getMaxWaitTime().toMilliseconds() : DEFAULT_MAX_WAIT_TIME.toMilliseconds();
   }
-  
+
   public Boolean getAdditionalDebug() {
     return additionalDebug;
   }
@@ -258,13 +262,28 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
     this.warnAfterMessageHangMillis = warnAfterMessageHangMillis;
   }
 
-  
   protected class BasicServlet extends HttpServlet {
 
     private static final long serialVersionUID = 2007082301L;
     private transient Map<String, HttpOperation> httpHandlers = null;
+    private transient Timer processingTimer;
 
     protected BasicServlet() {
+    }
+
+    @Override
+    public void destroy() {
+      if (processingTimer != null) {
+        processingTimer.cancel();
+        processingTimer = null;
+      }
+      super.destroy();
+    }
+
+    @Override
+    public void init() throws ServletException {
+      super.init();
+      processingTimer = new Timer(true);
     }
 
     @Override
@@ -306,6 +325,12 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
 
     private void processRequest(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
       AdaptrisMessage msg = createMessage(request, response);
+      ProcessingTimerTask task = null;
+      // If we have a Expect: 102-Processing head, then let's fork a little timer thread to write one
+      //
+      if (hasExpect102(request)) {
+        task = schedule(new ProcessingTimerTask(response));
+      }
       msg.addMetadata(JETTY_URL, request.getRequestURL().toString());
       msg.addMetadata(JETTY_URI, request.getRequestURI());
       msg.addMetadata(HTTP_METHOD, request.getMethod());
@@ -327,10 +352,38 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
         }
         catch (InterruptedException e) {
         }
-        if ((monitor.getEndTime() - monitor.getStartTime()) > getWarnAfterMessageHangMillis())
-          log.warn("Message (" + msg.getUniqueId() + ") took longer than expected; "
-              + ((monitor.getEndTime() - monitor.getStartTime())) + " ms");
+        if ((monitor.getEndTime() - monitor.getStartTime()) > getWarnAfterMessageHangMillis()) {
+          log.warn("Message ({}) took longer than expected; {}ms", msg.getUniqueId(),
+              ((monitor.getEndTime() - monitor.getStartTime())));
+        }
+
       }
+      cancel(task);
+    }
+
+    private void cancel(TimerTask task) {
+      if (task != null) {
+        task.cancel();
+      }
+    }
+
+    private ProcessingTimerTask schedule(ProcessingTimerTask task) {
+      // Every 20 seconds as per RFC2518
+      log.trace("Scheduling a EXPECT 102");
+      processingTimer.schedule(task, TimeUnit.SECONDS.toMillis(20), TimeUnit.SECONDS.toMillis(20));
+      return task;
+    }
+
+    private boolean hasExpect102(HttpServletRequest request) {
+      String expectHeader = null;
+      for (Enumeration<String> e = request.getHeaderNames(); e.hasMoreElements();) {
+        String hdr = e.nextElement();
+        if (StringUtils.equalsIgnoreCase(HEADER_EXPECT, hdr)) {
+          expectHeader = request.getHeader(hdr);
+          break;
+        }
+      }
+      return StringUtils.containsIgnoreCase(expectHeader, EXPECT_102_PROCESSING);
     }
 
     private HttpServletResponse addAllow(HttpServletResponse response) throws IOException, ServletException {
@@ -341,5 +394,24 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
 
   public interface HttpOperation {
     void handle(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException;
+  }
+
+  class ProcessingTimerTask extends TimerTask {
+    private transient HttpServletResponse myResponse;
+
+    public ProcessingTimerTask(HttpServletResponse response) {
+      myResponse = response;
+    }
+
+    @Override
+    public void run() {
+      try {
+        if (!myResponse.isCommitted()) {
+          myResponse.sendError(102);
+        }
+      }
+      catch (Exception e) {
+      }
+    }
   }
 }
