@@ -27,11 +27,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * to send the response before the end of the workflow. This would be the more "correct" behaviour as per the HTTP specifications.
  * </p>
  * 
- * @config jetty-response-short-cut
+ * @config jetty-commit-response
  * @author lchan
  *
  */
-@XStreamAlias("jetty-response-short-cut")
+@XStreamAlias("jetty-commit-response")
 @AdapterComponent
 @ComponentProfile(summary = "Allows you to commit the HTTP response immediately rather than at the end of a PoolingWorkflow", tag = "service,http,https,jetty")
 public class ShortCutJettyResponse extends ServiceImp {
