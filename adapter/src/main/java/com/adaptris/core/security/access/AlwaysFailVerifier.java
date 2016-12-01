@@ -17,6 +17,7 @@ package com.adaptris.core.security.access;
 
 import java.util.Map;
 
+import com.adaptris.core.AdaptrisMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -28,7 +29,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class AlwaysFailVerifier extends IdentityVerifierImpl {
 
   @Override
-  public boolean validate(Map<String, Object> identity) {
+  public boolean validate(IdentityBuilder builder, AdaptrisMessage msg) {
     return false;
   }
 
