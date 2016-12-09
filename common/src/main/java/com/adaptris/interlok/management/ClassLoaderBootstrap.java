@@ -4,7 +4,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 /**
- * TODO
+ * Adapter bootstrap process with hierarchical class loaders; especially for Jetty.
  */
 public class ClassLoaderBootstrap {
 
@@ -17,8 +17,9 @@ public class ClassLoaderBootstrap {
 	/**
 	 * Main boot method.
 	 * 
-	 * @throws Exception
+	 * @throws Exception If anything bad happens.
 	 */
+	@SuppressWarnings("resource")
 	public void boot() throws Exception {
 		/*
 		 * put opendmk_jdmkrt_jar.jar and opendmk_jmxremote_optional_jar.jar on command line
@@ -37,7 +38,7 @@ public class ClassLoaderBootstrap {
 					new URL("file:///C:/Adaptris/Interlok-3.4.0/lib/log4j-core.jar"),
 					new URL("file:///C:/Adaptris/Interlok-3.4.0/lib/log4j-slf4j-impl.jar"),
 					
-					/* TODO: build this JAR with: WebServerManagementUtil, ...? */
+					/* TODO: build this JAR with: WebServerManagementUtil, SecurityHandlerWrapper ...? */
 					new URL("file:///C:/Adaptris/Interlok-3.4.0/lib/adp-util.jar")
 				};
 		final URLClassLoader parentClassLoader = new URLClassLoader(urls, null);
@@ -51,8 +52,9 @@ public class ClassLoaderBootstrap {
 	/**
 	 * Entry point.
 	 * 
-	 * @param argv
-	 * @throws Exception
+	 * @param argv Command line arguments; ignored.
+	 * 
+	 * @throws Exception If anything bad happens.
 	 */
 	public static void main(final String[] argv) throws Exception {
 		new ClassLoaderBootstrap().boot();
