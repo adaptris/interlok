@@ -38,7 +38,7 @@ public class ClassLoaderBootstrap {
 					new URL("file:///C:/Adaptris/Interlok-3.4.0/lib/log4j-core.jar"),
 					new URL("file:///C:/Adaptris/Interlok-3.4.0/lib/log4j-slf4j-impl.jar"),
 					
-					/* TODO: build this JAR with: WebServerManagementUtil, SecurityHandlerWrapper ...? */
+					/* TODO: build this JAR with: WebServerManagementUtil, SecurityHandlerWrapper, http? ...? */
 					new URL("file:///C:/Adaptris/Interlok-3.4.0/lib/adp-util.jar")
 				};
 		final URLClassLoader parentClassLoader = new URLClassLoader(urls, null);
