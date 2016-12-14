@@ -43,6 +43,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
+import com.adaptris.core.management.vcs.VcsConstants;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,7 +93,10 @@ public class AdapterRegistry implements AdapterRegistryMBean {
     this();
     this.config = config;
     generateObjectName();
-    runtimeVCS = RuntimeVersionControlLoader.getInstance().load();
+    runtimeVCS = RuntimeVersionControlLoader.getInstance().load(config.getProperty(VcsConstants.VSC_IMPLEMENTATION));
+    if (runtimeVCS == null) {
+      runtimeVCS = RuntimeVersionControlLoader.getInstance().load();
+    }
     if (runtimeVCS != null) {
       runtimeVCS.setBootstrapProperties(config);
     }

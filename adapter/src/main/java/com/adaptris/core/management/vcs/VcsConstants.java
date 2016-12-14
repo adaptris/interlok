@@ -24,6 +24,12 @@ package com.adaptris.core.management.vcs;
  */
 public class VcsConstants {
 
+
+  /**
+   * Implementation to load, if property not provided will attempt to load one from lib.
+   */
+  public static final String VSC_IMPLEMENTATION = "vcs.implementation";
+
   /**
    * Whether or not to always do a git checkout -f (or equivalent)
    */
