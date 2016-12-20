@@ -25,6 +25,7 @@ import java.util.concurrent.TimeoutException;
 import javax.management.JMX;
 import javax.management.ObjectName;
 
+import com.adaptris.core.management.vcs.VcsConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,7 +99,11 @@ public class UnifiedBootstrap {
   }
 
   private void configurationUpdate() throws VcsException {
-    RuntimeVersionControl versionControlSystem = RuntimeVersionControlLoader.getInstance().load();
+    RuntimeVersionControl versionControlSystem;
+    versionControlSystem = RuntimeVersionControlLoader.getInstance().load(bootstrapProperties.getProperty(VcsConstants.VSC_IMPLEMENTATION));
+    if (versionControlSystem == null) {
+      versionControlSystem = RuntimeVersionControlLoader.getInstance().load();
+    }
     if (versionControlSystem != null) {
       versionControlSystem.setBootstrapProperties(bootstrapProperties);
       versionControlSystem.update();
