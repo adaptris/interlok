@@ -106,14 +106,25 @@ public class ManagementComponentFactory {
 
   private void invokeMethod(final Object o, final String methodName, final Class[] paramTypes, final Object[] params) {
     final Class<? extends Object> clas = o.getClass();
+    List<String> types = paramTypes(paramTypes);
     try {
-      log.trace("Attempting to call " + clas + " : " + methodName + " with params " + params);
+      log.trace("{}#{}({})", clas.getName(), methodName, (types.size() > 0 ? types : ""));
       final Method method = clas.getMethod(methodName, paramTypes);
       method.setAccessible(true);
       method.invoke(o, params);
     } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-      log.debug("Failed to call " + clas + " : " + methodName + " with params " + params, e);
+      log.trace("FAILED: {}#{}({})", clas, methodName, (types.size() > 0 ? types : ""), e);
     }
+  }
+
+  private static List<String> paramTypes(Class[] params) {
+    List<String> result = new ArrayList<>();
+    for (Class p : params) {
+      if (p != null) {
+        result.add(p.getCanonicalName());
+      }
+    }
+    return result;
   }
 
   private Object resolve(final String name) throws Exception {
