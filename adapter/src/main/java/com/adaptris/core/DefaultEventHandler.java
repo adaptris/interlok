@@ -16,7 +16,11 @@
 
 package com.adaptris.core;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
@@ -35,7 +39,13 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(summary = "Sends MessageLifecycleEvents to the specified location", tag = "base,events")
 public class DefaultEventHandler extends EventHandlerBase {
 
+  @NotNull
+  @Valid
+  @AutoPopulated
   private AdaptrisConnection connection; // used for consume and produce
+  @NotNull
+  @Valid
+  @AutoPopulated
   private AdaptrisMessageProducer producer;
 
   /**
