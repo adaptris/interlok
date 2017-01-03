@@ -54,7 +54,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <ul>
  * <li>If the private key is not accepted by the target server, then an exception will be thrown.</li>
  * <li>If no private key password is specified then it is assumed to be a 0 length string.</li>
- * <li>Only a single privatekey file will be supported per SftpKeyAuthConnection instance.</li>
+ * <li>Multiple private keys are supported, provided you specify a {@link ConfigBuilder} implementation that allows it.</li>
  * <li>Specifying the username+password in the destination (e.g. <code>sftp://lchan:myPassword@1.2.3.4:22//opt/sftp</code>), will
  * override the username used to login but no other credentials. The only valid authentication is via the specified private
  * key.</li>
@@ -62,9 +62,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </ul>
  * </p>
  * <p>
- * The password associated with {@link #setPrivateKeyPassword(String)} may be encoded using any of the standard {@link
- * com.adaptris.security.password.Password}
- * mechanisms and it will be decoded when the private key is first accessed.
+ * The password associated with {@link #setPrivateKeyPassword(String)} may be encoded using any of the standard
+ * {@link com.adaptris.security.password.Password} mechanisms and it will be decoded when the private key is first accessed.
  * </p>
  * 
  * @config sftp-key-auth-connection
