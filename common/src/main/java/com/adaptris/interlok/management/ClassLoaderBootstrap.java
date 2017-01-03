@@ -18,12 +18,12 @@ public class ClassLoaderBootstrap {
 
 	/**
 	 * Main boot method.
-	 * 
+	 *
 	 * N.B. Both opendmk_jdmkrt_jar.jar and opendmk_jmxremote_optional_jar.jar
 	 * should be added to the classpath on command line. Therefore the system
 	 * classpath should have three entries, one of which is the path of this
 	 * JAR, plus the two JARs mentioned above.
-	 * 
+	 *
 	 * @throws Exception
 	 *           If anything bad happens.
 	 */
@@ -42,7 +42,6 @@ public class ClassLoaderBootstrap {
 				break;
 			}
 		}
-		
 		if (configDir == null || libDir == null) {
 			throw new RuntimeException("Classpath not configured correctly!");
 		}
@@ -52,18 +51,18 @@ public class ClassLoaderBootstrap {
 					new URL(configDir),
 					new URL(libDir + "jetty-all.jar"),
 					new URL(libDir),
-					
+
 					new URL(libDir + "geronimo-jms_1.1_spec.jar"),
 					new URL(libDir + "geronimo-servlet_3.0_spec.jar"),
-					
+
 					new URL(libDir + "log4j-1.2-api.jar"),
 					new URL(libDir + "log4j-api.jar"),
 					new URL(libDir + "log4j-core.jar"),
 					new URL(libDir + "log4j-slf4j-impl.jar"),
 					new URL(libDir + "slf4j-api.jar"),
-					
+
 					new URL(libDir + "interlok-common.jar"),
-					
+
 					new URL(libDir + "opendmk_jdmkrt_jar.jar"),
 					new URL(libDir + "opendmk_jmxremote_optional_jar.jar")
 				};
@@ -77,16 +76,16 @@ public class ClassLoaderBootstrap {
 	/**
 	 * Depending on how this bootstrap class is loaded, figure out where
 	 * the config and lib directories are.
-	 * 
+	 *
 	 * @param path
 	 *          The current classpath entry.
 	 * @param directory
 	 *          The directory to look for.
-	 * 
+	 *
 	 * @return The correct path.
-	 * 
+	 *
 	 * @throws IOException
-	 *           If something bad happend.
+	 *           If something bad happened.
 	 */
 	private static String normaliseClasspathEntry(final File path, final String directory) throws IOException {
 		File entry = new File(path.getPath() + "/../" + directory);
@@ -102,10 +101,10 @@ public class ClassLoaderBootstrap {
 
 	/**
 	 * Entry point.
-	 * 
+	 *
 	 * @param argv
 	 *          Command line arguments; ignored.
-	 * 
+	 *
 	 * @throws Exception
 	 *           If anything bad happens.
 	 */
