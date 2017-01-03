@@ -34,6 +34,7 @@ import com.adaptris.core.transaction.DummyTransactionManager;
 import com.adaptris.core.transaction.TransactionManager;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.KeyValuePair;
+import com.adaptris.util.KeyValuePairSet;
 
 public class JndiHelperTest extends BaseCase {
   private Properties env = new Properties();
@@ -331,9 +332,11 @@ public class JndiHelperTest extends BaseCase {
     AdvancedJdbcPooledConnection connection = new AdvancedJdbcPooledConnection();
     connection.setConnectUrl("jdbc:derby:memory:" + new GuidGenerator().safeUUID() + ";create=true");
     connection.setDriverImp("org.apache.derby.jdbc.EmbeddedDriver");
-    connection.getConnectionPoolProperties().add(new KeyValuePair(PooledConnectionProperties.minPoolSize.name(), "1"));
-    connection.getConnectionPoolProperties().add(new KeyValuePair(PooledConnectionProperties.acquireIncrement.name(), "1"));
-    connection.getConnectionPoolProperties().add(new KeyValuePair(PooledConnectionProperties.maxPoolSize.name(), "7"));
+    KeyValuePairSet poolProps = new KeyValuePairSet();
+    poolProps.add(new KeyValuePair(PooledConnectionProperties.minPoolSize.name(), "1"));
+    poolProps.add(new KeyValuePair(PooledConnectionProperties.acquireIncrement.name(), "1"));
+    poolProps.add(new KeyValuePair(PooledConnectionProperties.maxPoolSize.name(), "7"));
+    connection.setConnectionPoolProperties(poolProps);
     connection.setUniqueId("jdbcAdvConnectionLookup");
     connection.setLookupName("adapter:comp/env/" + getName());
 

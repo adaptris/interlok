@@ -1,5 +1,7 @@
 package com.adaptris.core.jdbc;
 
+import com.adaptris.util.KeyValuePair;
+import com.adaptris.util.KeyValuePairSet;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 public enum PooledConnectionProperties {
@@ -293,13 +295,22 @@ public enum PooledConnectionProperties {
   
   abstract void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception;
   
-  public static PooledConnectionProperties searchEnumIgnoreCase(String search) {
+  private static PooledConnectionProperties searchEnumIgnoreCase(String search) {
     for (PooledConnectionProperties each : PooledConnectionProperties.class.getEnumConstants()) {
-      if (each.name().compareToIgnoreCase(search) == 0) {
+      if (each.name().equalsIgnoreCase(search)) {
         return each;
       }
     }
     return null;
   }
 
+  public static void apply(KeyValuePairSet props, ComboPooledDataSource pool) throws Exception {
+    if (props == null) return;
+    for (KeyValuePair kvp : props.getKeyValuePairs()) {
+      PooledConnectionProperties connectionProperty = searchEnumIgnoreCase(kvp.getKey());
+      if (connectionProperty != null) {
+        connectionProperty.applyProperty(pool, kvp.getValue());
+      }
+    }
+  }
 }

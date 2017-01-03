@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.KeyValuePair;
+import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.TimeInterval;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
@@ -37,28 +38,28 @@ public class AdvancedJdbcPooledConnectionTest extends DatabaseConnectionCase<Adv
     conn1.setDriverImp(DRIVER_IMP);
     conn1.setConnectionAttempts(1);
     conn1.setConnectionRetryInterval(new TimeInterval(10L, TimeUnit.MILLISECONDS.name()));
-    conn1.getConnectionPoolProperties().add(new KeyValuePair(PooledConnectionProperties.acquireIncrement.name(), "5"));
-    conn1.getConnectionPoolProperties().add(new KeyValuePair(PooledConnectionProperties.minPoolSize.name(), "10"));
-    conn1.getConnectionPoolProperties().add(new KeyValuePair(PooledConnectionProperties.maxPoolSize.name(), "50"));
+    KeyValuePairSet poolProps = new KeyValuePairSet();
+    poolProps.add(new KeyValuePair(PooledConnectionProperties.acquireIncrement.name(), "5"));
+    poolProps.add(new KeyValuePair(PooledConnectionProperties.minPoolSize.name(), "10"));
+    poolProps.add(new KeyValuePair(PooledConnectionProperties.maxPoolSize.name(), "50"));
+    conn1.setConnectionPoolProperties(poolProps);
     return conn1;
   }
 
   // INTERLOK-107
   public void testConnectionDataSource_Poolsize() throws Exception {
-    if (!testsEnabled) {
-      return;
-    }
     String originalThread = Thread.currentThread().getName();
     Thread.currentThread().setName("testConnectionDataSource_Poolsize");
 
     AdvancedJdbcPooledConnection con = configure(createConnection());
     con.setConnectUrl("jdbc:derby:memory:" + GUID.safeUUID() + ";create=true");
     con.setDriverImp("org.apache.derby.jdbc.EmbeddedDriver");
-    con.getConnectionPoolProperties().add(new KeyValuePair(PooledConnectionProperties.acquireIncrement.name(), "5"));
-    con.getConnectionPoolProperties().add(new KeyValuePair(PooledConnectionProperties.minPoolSize.name(), "10"));
-    con.getConnectionPoolProperties().add(new KeyValuePair(PooledConnectionProperties.maxPoolSize.name(), "50"));
-    con.getConnectionPoolProperties().add(new KeyValuePair(PooledConnectionProperties.checkoutTimeout.name(), "30000"));
-
+    KeyValuePairSet poolProps = new KeyValuePairSet();
+    poolProps.add(new KeyValuePair(PooledConnectionProperties.acquireIncrement.name(), "5"));
+    poolProps.add(new KeyValuePair(PooledConnectionProperties.minPoolSize.name(), "10"));
+    poolProps.add(new KeyValuePair(PooledConnectionProperties.maxPoolSize.name(), "50"));
+    poolProps.add(new KeyValuePair(PooledConnectionProperties.checkoutTimeout.name(), "30000"));
+    con.setConnectionPoolProperties(poolProps);
     try {
       LifecycleHelper.init(con);
       LifecycleHelper.start(con);
