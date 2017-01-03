@@ -1,6 +1,7 @@
 package com.adaptris.interlok.management;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 
@@ -36,10 +37,14 @@ public class ClassLoaderBootstrap {
 		for (final URL url : urls) {
 			final File file = new File(url.getFile());
 			if (file.isDirectory()) {
-				configDir = "file:///" + new File(file.getPath() + "/../config/").getCanonicalPath();
-				libDir = "file:///" + new File(file.getPath() + "/../lib/").getCanonicalPath();
+				configDir = normaliseClasspathEntry(file, "config");
+				libDir = normaliseClasspathEntry(file, "lib");
 				break;
 			}
+		}
+		
+		if (configDir == null || libDir == null) {
+			throw new RuntimeException("Classpath not configured correctly!");
 		}
 
 		urls = new URL[]
@@ -55,14 +60,44 @@ public class ClassLoaderBootstrap {
 					new URL(libDir + "log4j-api.jar"),
 					new URL(libDir + "log4j-core.jar"),
 					new URL(libDir + "log4j-slf4j-impl.jar"),
+					new URL(libDir + "slf4j-api.jar"),
 					
-					new URL(libDir + "adp-common.jar")
+					new URL(libDir + "interlok-common.jar"),
+					
+					new URL(libDir + "opendmk_jdmkrt_jar.jar"),
+					new URL(libDir + "opendmk_jmxremote_optional_jar.jar")
 				};
 
 		final URLClassLoader parentClassLoader = new URLClassLoader(urls, null);
 		final URLClassLoader runtimeClassLoader = new URLClassLoader(new URL[] { new URL(libDir + "adp-core.jar") }, parentClassLoader);
 		final Class<?> simpleBootstrap = runtimeClassLoader.loadClass("com.adaptris.core.management.SimpleBootstrap");
 		simpleBootstrap.newInstance();
+	}
+	
+	/**
+	 * Depending on how this bootstrap class is loaded, figure out where
+	 * the config and lib directories are.
+	 * 
+	 * @param path
+	 *          The current classpath entry.
+	 * @param directory
+	 *          The directory to look for.
+	 * 
+	 * @return The correct path.
+	 * 
+	 * @throws IOException
+	 *           If something bad happend.
+	 */
+	private static String normaliseClasspathEntry(final File path, final String directory) throws IOException {
+		File entry = new File(path.getPath() + "/../" + directory);
+		if (entry.isDirectory()) {
+			return "file:///" + entry.getCanonicalPath() + "/";
+		}
+		entry = new File(path.getPath() + "/" + directory);
+		if (entry.isDirectory()) {
+			return "file:///" + entry.getCanonicalPath() + "/";
+		}
+		return null;
 	}
 
 	/**
