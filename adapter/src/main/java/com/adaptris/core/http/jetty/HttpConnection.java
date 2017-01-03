@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -47,9 +47,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * <p>
  * The key from the <code>http-properties</code> element should match the name of the underlying {@link AbstractConnector} setter.
- * 
+ *
  * <pre>
- * {@code 
+ * {@code
  *   <http-properties>
  *     <key-value-pair>
  *        <key>ReuseAddress</key>
@@ -62,9 +62,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * validation of the various properties is performed and will be passed as-is to the {@link AbstractConnector} with an attempt to
  * transform into the correct type. Invalid combinations may result in undefined behaviour.
  * </p>
- * 
+ *
  * @config jetty-http-connection
- * 
+ *
  * @author lchan
  */
 @XStreamAlias("jetty-http-connection")
@@ -76,7 +76,7 @@ public class HttpConnection extends JettyConnection {
 
   /**
    * A standard {@link AbstractConnector} property.
-   * 
+   *
    */
   public enum HttpProperty {
 
@@ -222,7 +222,7 @@ public class HttpConnection extends JettyConnection {
    * <ul>
    * <li>port = 8080</li>
    * </ul>
-   * 
+   *
    */
   public HttpConnection() {
     super();
@@ -276,7 +276,7 @@ public class HttpConnection extends JettyConnection {
 
   /**
    * Set the port to listen on.
-   * 
+   *
    * @param i the port, by default it is 8080
    */
   public void setPort(int i) {
@@ -285,7 +285,7 @@ public class HttpConnection extends JettyConnection {
 
   /**
    * Get the port to listen on for HTTP traffic.
-   * 
+   *
    * @return the port
    */
   public int getPort() {
@@ -306,7 +306,7 @@ public class HttpConnection extends JettyConnection {
 
   /**
    * Specify whether to send the Date when sending a response.
-   * 
+   *
    * @param b the sendDateHeader to set
    */
   public void setSendDateHeader(Boolean b) {
@@ -326,7 +326,7 @@ public class HttpConnection extends JettyConnection {
   }
   /**
    * Specify whether to send the server version when sending a response.
-   * 
+   *
    */
   public void setSendServerVersion(Boolean b) {
     sendServerVersion = b;
@@ -341,7 +341,7 @@ public class HttpConnection extends JettyConnection {
 
   /**
    * Specify the SecurityHandler implementation.
-   * 
+   *
    * @param s the securityHandler wrapper implementation.
    */
   public void setSecurityHandler(SecurityHandlerWrapper s) {
