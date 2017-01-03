@@ -18,15 +18,16 @@ public class ClassLoaderBootstrap {
 	/**
 	 * Main boot method.
 	 * 
+	 * N.B. Both opendmk_jdmkrt_jar.jar and opendmk_jmxremote_optional_jar.jar
+	 * should be added to the classpath on command line. Therefore the system
+	 * classpath should have three entries, one of which is the path of this
+	 * JAR, plus the two JARs mentioned above.
+	 * 
 	 * @throws Exception
 	 *           If anything bad happens.
 	 */
 	@SuppressWarnings("resource")
 	public void boot() throws Exception {
-		/*
-		 * put opendmk_jdmkrt_jar.jar and opendmk_jmxremote_optional_jar.jar on command line
-		 */
-
 		final ClassLoader sysClassLoader = ClassLoader.getSystemClassLoader();
 		URL[] urls = ((URLClassLoader)sysClassLoader).getURLs();
 		String configDir = null;
@@ -57,10 +58,9 @@ public class ClassLoaderBootstrap {
 					
 					new URL(libDir + "adp-common.jar")
 				};
+
 		final URLClassLoader parentClassLoader = new URLClassLoader(urls, null);
-
 		final URLClassLoader runtimeClassLoader = new URLClassLoader(new URL[] { new URL(libDir + "adp-core.jar") }, parentClassLoader);
-
 		final Class<?> simpleBootstrap = runtimeClassLoader.loadClass("com.adaptris.core.management.SimpleBootstrap");
 		simpleBootstrap.newInstance();
 	}
