@@ -19,7 +19,9 @@ package com.adaptris.mail;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.io.InputStream;
 import java.util.Date;
+import java.util.Properties;
 
 import javax.mail.Address;
 import javax.mail.Message;
@@ -27,6 +29,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import com.adaptris.core.BaseCase;
 import com.adaptris.core.PortManager;
 import com.icegreen.greenmail.smtp.SmtpServer;
 import com.icegreen.greenmail.util.GreenMail;
@@ -49,6 +52,30 @@ public class JunitMailHelper {
       + "<attachment encoding=\"base64\" filename=\"attachment1.txt\">dp/HSJfonUsSMM7QRBSRfg==</attachment>" + LF
       + "<!-- This is PENRY MD5 Base64 -->" + LF
       + "<attachment encoding=\"base64\" filename=\"attachment2.txt\">OdjozpCZB9PbCCLZlKregQ==</attachment>" + LF + "</document>";
+
+  private static final String PROPERTIES_RESOURCE = "unit-tests.properties";
+  private static final Boolean testsEnabled;
+  public static final String MAIL_TESTS_ENABLED = "mail.tests.enabled";
+
+  static {
+    Properties unitTestProperties = new Properties();
+    InputStream in = BaseCase.class.getClassLoader().getResourceAsStream(PROPERTIES_RESOURCE);
+    if (in == null) {
+      throw new RuntimeException("cannot locate resource [" + PROPERTIES_RESOURCE + "] on classpath");
+    }
+
+    try {
+      unitTestProperties.load(in);
+      testsEnabled = Boolean.valueOf(unitTestProperties.getProperty(MAIL_TESTS_ENABLED, "true")).booleanValue();
+    }
+    catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public static boolean testsEnabled() {
+    return testsEnabled;
+  }
 
   // Just starts a vanilla server with no settings...
   public static GreenMail startServer() throws Exception {

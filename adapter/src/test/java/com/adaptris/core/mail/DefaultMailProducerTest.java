@@ -18,6 +18,7 @@ package com.adaptris.core.mail;
 
 import static com.adaptris.mail.JunitMailHelper.DEFAULT_RECEIVER;
 import static com.adaptris.mail.JunitMailHelper.DEFAULT_SENDER;
+import static com.adaptris.mail.JunitMailHelper.testsEnabled;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -59,6 +60,8 @@ public class DefaultMailProducerTest extends MailProducerExample {
   }
 
   public void testProduce() throws Exception {
+    if (!testsEnabled()) return;
+
     GreenMail gm = JunitMailHelper.startServer();
     try {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
@@ -75,6 +78,7 @@ public class DefaultMailProducerTest extends MailProducerExample {
   }
 
   public void testProduceCC() throws Exception {
+    if (!testsEnabled()) return;
     GreenMail gm = JunitMailHelper.startServer();
     try {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
@@ -97,6 +101,7 @@ public class DefaultMailProducerTest extends MailProducerExample {
   }
 
   public void testProduceBCC() throws Exception {
+    if (!testsEnabled()) return;
     GreenMail gm = JunitMailHelper.startServer();
     try {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
@@ -119,6 +124,7 @@ public class DefaultMailProducerTest extends MailProducerExample {
   }
 
   public void testProduceWithHeaders() throws Exception {
+    if (!testsEnabled()) return;
     GreenMail gm = JunitMailHelper.startServer();
     try {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
@@ -157,6 +163,7 @@ public class DefaultMailProducerTest extends MailProducerExample {
   }
 
   public void testProduceAsAttachment() throws Exception {
+    if (!testsEnabled()) return;
     GreenMail gm = JunitMailHelper.startServer();
     try {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
@@ -181,6 +188,7 @@ public class DefaultMailProducerTest extends MailProducerExample {
   }
 
   public void testProduceAsAttachmentWithFilename() throws Exception {
+    if (!testsEnabled()) return;
     GreenMail gm = JunitMailHelper.startServer();
     try {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
@@ -207,6 +215,7 @@ public class DefaultMailProducerTest extends MailProducerExample {
   }
 
   public void testProduceAsAttachmentWithMetadataAttachmentContentType() throws Exception {
+    if (!testsEnabled()) return;
     GreenMail gm = JunitMailHelper.startServer();
     try {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
@@ -233,6 +242,7 @@ public class DefaultMailProducerTest extends MailProducerExample {
   }
 
   public void testProduceAsAttachmentWithTemplate() throws Exception {
+    if (!testsEnabled()) return;
     GreenMail gm = JunitMailHelper.startServer();
     try {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
@@ -259,6 +269,7 @@ public class DefaultMailProducerTest extends MailProducerExample {
   }
 
   public void testProduceAsAttachmentWithCharEncodingForTemplate() throws Exception {
+    if (!testsEnabled()) return;
     GreenMail gm = JunitMailHelper.startServer();
     try {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD, "UTF-8");
@@ -286,6 +297,7 @@ public class DefaultMailProducerTest extends MailProducerExample {
   }
 
   public void testProduceWithContentTypeMetadata() throws Exception {
+    if (!testsEnabled()) return;
     GreenMail gm = JunitMailHelper.startServer();
     try {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
@@ -310,6 +322,7 @@ public class DefaultMailProducerTest extends MailProducerExample {
   }
 
   public void testProduceWithContentTypeMetadataButMissingMetadata() throws Exception {
+    if (!testsEnabled()) return;
     GreenMail gm = JunitMailHelper.startServer();
     try {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
@@ -333,6 +346,7 @@ public class DefaultMailProducerTest extends MailProducerExample {
   }
 
   public void testProduceWithContentTypeMetadataButEmptyMetadata() throws Exception {
+    if (!testsEnabled()) return;
     GreenMail gm = JunitMailHelper.startServer();
     try {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);

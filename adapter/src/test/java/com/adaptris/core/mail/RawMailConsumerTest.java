@@ -16,6 +16,8 @@
 
 package com.adaptris.core.mail;
 
+import static com.adaptris.mail.JunitMailHelper.testsEnabled;
+
 import java.io.ByteArrayOutputStream;
 
 import javax.mail.internet.MimeBodyPart;
@@ -41,6 +43,7 @@ public class RawMailConsumerTest extends MailConsumerCase {
   }
 
   public void testConsumer() throws Exception {
+    if (!testsEnabled()) return;
     GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     try {
       sendMessage(gm);
@@ -63,6 +66,7 @@ public class RawMailConsumerTest extends MailConsumerCase {
   }
 
   public void testConsumer_CommonsNet() throws Exception {
+    if (!testsEnabled()) return;
     GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     try {
       sendMessage(gm);

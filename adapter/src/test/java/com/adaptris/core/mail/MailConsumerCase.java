@@ -16,6 +16,8 @@
 
 package com.adaptris.core.mail;
 
+import static com.adaptris.mail.JunitMailHelper.testsEnabled;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -88,6 +90,7 @@ public abstract class MailConsumerCase extends MailConsumerExample {
   }
 
   public void testAttemptConnectOnInit() throws Exception {
+    if (!testsEnabled()) return;
     GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     try {
       MailConsumerImp mailConsumer = createConsumerForTests(gm);
@@ -108,6 +111,7 @@ public abstract class MailConsumerCase extends MailConsumerExample {
   }
 
   public void testInit_AttemptConnectOnInitTrue() throws Exception {
+    if (!testsEnabled()) return;
     GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     try {
       MailConsumerImp mailConsumer = createConsumerForTests(gm);
@@ -127,6 +131,7 @@ public abstract class MailConsumerCase extends MailConsumerExample {
   }
 
   public void testInit_AttemptConnectOnInitFalse() throws Exception {
+    if (!testsEnabled()) return;
     GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     try {
       // It is stopped, shouldn't matter if we init, because we shouldn't try the connection

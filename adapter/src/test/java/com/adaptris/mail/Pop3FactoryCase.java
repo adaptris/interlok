@@ -19,6 +19,7 @@ package com.adaptris.mail;
 import static com.adaptris.mail.JunitMailHelper.DEFAULT_RECEIVER;
 import static com.adaptris.mail.JunitMailHelper.startServer;
 import static com.adaptris.mail.JunitMailHelper.stopServer;
+import static com.adaptris.mail.JunitMailHelper.testsEnabled;
 import static com.adaptris.mail.MailReceiverCase.DEFAULT_POP3_PASSWORD;
 import static com.adaptris.mail.MailReceiverCase.DEFAULT_POP3_USER;
 import static com.adaptris.mail.MailReceiverCase.createURLName;
@@ -42,6 +43,7 @@ public abstract class Pop3FactoryCase extends BaseCase {
   abstract Pop3ReceiverFactory configure(Pop3ReceiverFactory f);
 
   public void testCreate() throws Exception {
+    if (!testsEnabled()) return;
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     try {
       Pop3ReceiverFactory fac = create();
@@ -56,6 +58,7 @@ public abstract class Pop3FactoryCase extends BaseCase {
   }
 
   public void testCreate_NotSupported() throws Exception {
+    if (!testsEnabled()) return;
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     Pop3ReceiverFactory fac = create();
     Pop3Server server = getServer(gm);
@@ -74,6 +77,7 @@ public abstract class Pop3FactoryCase extends BaseCase {
   }
 
   public void testCreate_Connect() throws Exception {
+    if (!testsEnabled()) return;
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     Pop3ReceiverFactory fac = create();
     Pop3Server server = getServer(gm);
@@ -90,6 +94,7 @@ public abstract class Pop3FactoryCase extends BaseCase {
   }
 
   public void testCreate_Configure_Connect() throws Exception {
+    if (!testsEnabled()) return;
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     Pop3ReceiverFactory fac = configure(create());
     Pop3Server server = getServer(gm);
