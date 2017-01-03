@@ -36,6 +36,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.security.password.Password;
@@ -70,10 +71,13 @@ public class JdbcPooledConnection extends DatabaseConnection {
   @NotBlank
   private String connectUrl;
   
-  private int minimumPoolSize;
-  private int maximumPoolSize;
+  @InputFieldDefault(value = "5")
+  private Integer minimumPoolSize;
+  @InputFieldDefault(value = "50")
+  private Integer maximumPoolSize;
   @AdvancedConfig
-  private int acquireIncrement;
+  @InputFieldDefault(value = "5")
+  private Integer acquireIncrement;
   @Valid
   @AdvancedConfig
   private TimeInterval connectionAcquireWait;
@@ -86,9 +90,6 @@ public class JdbcPooledConnection extends DatabaseConnection {
   
   public JdbcPooledConnection () {
     super();
-    this.setMinimumPoolSize(DEFAULT_MINIMUM_POOL_SIZE);
-    this.setMaximumPoolSize(DEFAULT_MAXIMUM_POOL_SIZE);
-    this.setAcquireIncrement(DEFAULT_ACQUIRE_INCREMENT);
   }
   
   @Override
@@ -113,9 +114,9 @@ public class JdbcPooledConnection extends DatabaseConnection {
       connectionPool.setUser(this.getUsername());
       connectionPool.setPassword(Password.decode(this.getPassword()));
 
-      connectionPool.setMinPoolSize(this.getMinimumPoolSize());
-      connectionPool.setAcquireIncrement(this.getAcquireIncrement());
-      connectionPool.setMaxPoolSize(this.getMaximumPoolSize());
+      connectionPool.setMinPoolSize(this.minPoolSize());
+      connectionPool.setAcquireIncrement(this.acquireIncrement());
+      connectionPool.setMaxPoolSize(this.maxPoolSize());
       connectionPool.setCheckoutTimeout(connectionAcquireWait());
       connectionPool.setAcquireRetryDelay(Long.valueOf(connectionRetryInterval()).intValue());
       connectionPool.setAcquireRetryAttempts(connectionAttempts());
@@ -248,28 +249,40 @@ public class JdbcPooledConnection extends DatabaseConnection {
         .append(this.getAcquireIncrement()).append(getDriverImp()).toHashCode();
   }
 
-  public int getMinimumPoolSize() {
+  public Integer getMinimumPoolSize() {
     return minimumPoolSize;
   }
 
-  public void setMinimumPoolSize(int minimumPoolSize) {
+  public void setMinimumPoolSize(Integer minimumPoolSize) {
     this.minimumPoolSize = minimumPoolSize;
   }
 
-  public int getMaximumPoolSize() {
+  int minPoolSize() {
+    return getMinimumPoolSize() != null ? getMinimumPoolSize().intValue() : DEFAULT_MINIMUM_POOL_SIZE;
+  }
+
+  public Integer getMaximumPoolSize() {
     return maximumPoolSize;
   }
 
-  public void setMaximumPoolSize(int maximumPoolSize) {
+  public void setMaximumPoolSize(Integer maximumPoolSize) {
     this.maximumPoolSize = maximumPoolSize;
   }
 
-  public int getAcquireIncrement() {
+  int maxPoolSize() {
+    return getMaximumPoolSize() != null ? getMaximumPoolSize().intValue() : DEFAULT_MAXIMUM_POOL_SIZE;
+  }
+
+  public Integer getAcquireIncrement() {
     return acquireIncrement;
   }
 
-  public void setAcquireIncrement(int acquireIncrement) {
+  public void setAcquireIncrement(Integer acquireIncrement) {
     this.acquireIncrement = acquireIncrement;
+  }
+
+  int acquireIncrement() {
+    return getAcquireIncrement() != null ? getAcquireIncrement().intValue() : DEFAULT_ACQUIRE_INCREMENT;
   }
 
   public String getConnectUrl() {

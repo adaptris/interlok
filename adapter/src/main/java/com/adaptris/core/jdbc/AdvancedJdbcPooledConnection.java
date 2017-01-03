@@ -31,7 +31,6 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
-import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
@@ -45,20 +44,19 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * A {@link DatabaseConnection} instance that provides connection pooling via c3p0.
  * 
  * @author amcgrath
- *
+ * @see PooledConnectionProperties
  */
 @XStreamAlias("advanced-jdbc-pooled-connection")
 @AdapterComponent
 @ComponentProfile(summary = "Connect to a database using a JDBC driver; connection pooling handled via C3P0",
     tag = "connections,jdbc")
-@DisplayOrder(order = {"username", "password", "driverImp", "connectUrl", "connectionProperties"})
+@DisplayOrder(order = {"username", "password", "driverImp", "connectUrl", "connectionPoolProperties", "connectionProperties"})
 public class AdvancedJdbcPooledConnection extends DatabaseConnection {
   
   @NotBlank
   private String connectUrl;
   
   @Valid
-  @AdvancedConfig
   private KeyValuePairSet connectionPoolProperties;
   
   private transient ComboPooledDataSource connectionPool;
