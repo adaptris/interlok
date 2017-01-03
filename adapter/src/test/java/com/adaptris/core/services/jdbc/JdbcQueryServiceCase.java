@@ -34,6 +34,7 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.jdbc.JdbcConnection;
+import com.adaptris.core.jdbc.JdbcService;
 import com.adaptris.core.services.jdbc.types.BlobColumnTranslator;
 import com.adaptris.core.services.jdbc.types.ClobColumnTranslator;
 import com.adaptris.core.services.jdbc.types.DateColumnTranslator;
@@ -212,8 +213,8 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
     return null;
   }
   
-  protected List<Object> retrieveObjectsForSampleConfig() {
-    ArrayList<Object> objects = new ArrayList<>();
+  protected List<JdbcService> buildExamples() {
+    ArrayList<JdbcService> objects = new ArrayList<>();
     
     JdbcDataQueryService service = new JdbcDataQueryService();
     try {

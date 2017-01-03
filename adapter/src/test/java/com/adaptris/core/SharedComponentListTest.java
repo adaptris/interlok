@@ -16,6 +16,7 @@
 
 package com.adaptris.core;
 
+import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.util.ArrayList;
@@ -23,16 +24,19 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
-import java.util.UUID;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import com.adaptris.core.ftp.FtpConnection;
+import com.adaptris.core.http.jetty.EmbeddedConnection;
+import com.adaptris.core.jdbc.AdvancedJdbcPooledConnection;
+import com.adaptris.core.jdbc.JdbcPooledConnection;
+import com.adaptris.core.jdbc.PooledConnectionProperties;
 import com.adaptris.core.jms.JmsConnection;
-import com.adaptris.core.jms.PtpConsumer;
-import com.adaptris.core.jms.PtpProducer;
+import com.adaptris.core.jms.JmsConsumer;
+import com.adaptris.core.jms.JmsProducer;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
 import com.adaptris.core.lifecycle.FilteredSharedComponentStart;
 import com.adaptris.core.stubs.MockConnection;
@@ -41,11 +45,14 @@ import com.adaptris.core.transaction.SharedTransactionManager;
 import com.adaptris.core.transaction.TransactionManager;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.security.exc.PasswordException;
+import com.adaptris.util.KeyValuePair;
+import com.adaptris.util.KeyValuePairSet;
 
 /**
  * Base test for testing XSTream configuration vis-a-vis shared components.
  */
 public class SharedComponentListTest extends ExampleConfigCase {
+  private static final String GUID_PATTERN = "(?m)^\\s*<unique-id>[0-9a-f]{8}\\-[0-9a-f]{4}\\-[0-9a-f]{4}\\-[0-9a-f]{4}\\-[0-9a-f]{12}<\\/unique-id>$";
 
   /**
    * Key in unit-test.properties that defines where example goes unless overriden {@link #setBaseDir(String)}.
@@ -53,14 +60,6 @@ public class SharedComponentListTest extends ExampleConfigCase {
    */
   public static final String BASE_DIR_KEY = "SharedComponentConfig.baseDir";
 
-  // private static final String EXAMPLE_XML_NOTES = "<!--\n\n" + "This is an example of using shared connections. "
-  // + "\nEach connection that is shared should have an unique id associated with it; this can be "
-  // + "\nreferred to in configuration by using a 'shared-connection' connection implementation."
-  // + "\n\nNote that this is different to XStream referencing by ID (which is demonstrated by the interceptors); "
-  // + "\nwhile it is possible to share arbitrary components such as services/producers in that way, "
-  // + "\nbehaviour may be undefined as those components may not be"
-  // + "\nthreadsafe or reentrant"
-  // + "\n\n-->\n";
   private static final String EXAMPLE_XML_NOTES = "<!--\n\n" + "This is an example of using shared connections. "
       + "\nEach connection that is shared should have an unique id associated with it; this can be "
       + "\nreferred to in configuration by using a 'shared-connection' connection implementation."
@@ -68,6 +67,39 @@ public class SharedComponentListTest extends ExampleConfigCase {
       + "\nwhile it is possible to share arbitrary components such as services/producers in that way, "
       + "\nbehaviour may be undefined as those components may not be" + "\nthreadsafe or reentrant" + "\n\n-->\n";
 
+  private enum ConnectionBuilder {
+    FtpConnectionBuilder {
+      AdaptrisConnection build() {
+        FtpConnection c = new FtpConnection("goofy_edison");
+        c.setLookupName("adapter:comp/env/optional-lookup-name");
+        c.setCacheConnection(true);
+        return c;
+      }
+    },
+    PooledJdbcConnectionBuilder {
+      AdaptrisConnection build() {
+        JdbcPooledConnection connection = new JdbcPooledConnection();
+        connection.setUniqueId("vigilant_hypatia");
+        connection.setConnectUrl("jdbc:mysql://localhost:3306/insert-database");
+        return connection;
+      }
+    },
+    AdvancedPooledJdbcConnectionBuilder {
+      AdaptrisConnection build() {
+        AdvancedJdbcPooledConnection connection = new AdvancedJdbcPooledConnection();
+        connection.setUniqueId("amused_goldberg");
+        connection.setConnectUrl("jdbc:mysql://localhost:3306/query-database");
+        KeyValuePairSet poolProps = new KeyValuePairSet();
+        poolProps.add(new KeyValuePair(PooledConnectionProperties.maxPoolSize.name(), "20"));
+        poolProps.add(new KeyValuePair(PooledConnectionProperties.minPoolSize.name(), "5"));
+        connection.setConnectionPoolProperties(poolProps);
+        return connection;
+      }
+    };
+
+    abstract AdaptrisConnection build();
+
+  }
   private AdaptrisMarshaller myMarshaller;
 
   public SharedComponentListTest(String name) {
@@ -90,8 +122,16 @@ public class SharedComponentListTest extends ExampleConfigCase {
   protected String createExampleXml(Object object) throws Exception {
     String result = getExampleCommentHeader(object);
     Adapter w = (Adapter) object;
-    result = result + myMarshaller.marshal(w);
+    String marshalled = myMarshaller.marshal(w).replaceAll(GUID_PATTERN, "");
+    result = result + marshalled;
     return result;
+  }
+
+  private static String filterGuid(String uid) {
+    if (isBlank(uid) || uid.matches(GUID_PATTERN)) {
+      return "";
+    }
+    return "(" + uid + ")";
   }
 
   public void testObjectReferences() throws Exception {
@@ -116,14 +156,15 @@ public class SharedComponentListTest extends ExampleConfigCase {
     Adapter adapter = null;
     try {
       adapter = createAdapter();
-      NullConnection nullConnection = new NullConnection("a-shared-null-connection");
-      adapter.getSharedComponents().addConnection(nullConnection);
-      FtpConnection ftpConnection = new FtpConnection("a-shared-ftp-connection");
-      ftpConnection.setLookupName("adapter:comp/env/ftpConnection");
-      adapter.getSharedComponents().addConnection(ftpConnection);
-      TransactionManager transactionManager = new DummyTransactionManager("myUniqueId", "adapter:comp/env/myTransactionManager");
+      for (ConnectionBuilder b : ConnectionBuilder.values()) {
+        adapter.getSharedComponents().addConnection(b.build());
+      }
+      TransactionManager transactionManager = new DummyTransactionManager("nifty_mcclintock",
+          "adapter:comp/env/myTransactionManager");
       adapter.getSharedComponents().setTransactionManager(transactionManager);
-
+      Channel c = new Channel();
+      c.setProduceConnection(new SharedConnection("goofy_edison"));
+      c.setConsumeConnection(new EmbeddedConnection());
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -586,29 +627,19 @@ public class SharedComponentListTest extends ExampleConfigCase {
 
   private Adapter createAdapter() throws CoreException, PasswordException {
     Adapter adapter = new Adapter();
-    adapter.setUniqueId(UUID.randomUUID().toString());
+    adapter.setUniqueId("upbeat_liskov");
     JmsConnection jmsConnection = createPtpConnection("jms-connection");
-
-    // redmineID #4651 actually has massive ramifications due to the way that the GUI
-    // uses parentChannel() and parentWorkflow()...
-    // WorkflowInterceptor unlicensedInterceptor = new UnlicensedThrottlingInterceptor();
-    // WorkflowInterceptor metricsInterceptor = new MessageMetricsInterceptor();
 
     adapter.getSharedComponents().addConnection(jmsConnection);
 
-    // adapter.getSharedComponents().getInterceptors().add(unlicensedInterceptor);
-    // adapter.getSharedComponents().getInterceptors().add(metricsInterceptor);
-
     StandardWorkflow wf = new StandardWorkflow();
-    wf.setUniqueId(UUID.randomUUID().toString());
-    wf.setConsumer(new PtpConsumer(new ConfiguredConsumeDestination("SampleQ1")));
+    wf.setUniqueId("pedantic_brown");
+    wf.setConsumer(new JmsConsumer(new ConfiguredConsumeDestination("jms:queue:SampleQueue1")));
     wf.setProducer(new NullMessageProducer());
     wf.getServiceCollection().add(new StandaloneProducer(new SharedConnection("jms-connection"),
-        new PtpProducer(new ConfiguredProduceDestination("SampleQ2"))));
-    // wf.addInterceptor(unlicensedInterceptor);
-    // wf.addInterceptor(metricsInterceptor);
+        new JmsProducer(new ConfiguredProduceDestination("jms:topic:MyTopicName"))));
     Channel channel = new Channel();
-    channel.setUniqueId(UUID.randomUUID().toString());
+    channel.setUniqueId("quirky_shannon");
     channel.setConsumeConnection(new SharedConnection("jms-connection"));
     channel.getWorkflowList().add(wf);
     adapter.getChannelList().add(channel);
@@ -618,7 +649,13 @@ public class SharedComponentListTest extends ExampleConfigCase {
   private JmsConnection createPtpConnection(String uniqueId) throws PasswordException {
     JmsConnection c = new JmsConnection();
     StandardJndiImplementation jndi = new StandardJndiImplementation();
-    jndi.setJndiName("MyJndiLookupName");
+    jndi.setJndiName("Connection_Factory_To_Lookup");
+    KeyValuePairSet kvps = jndi.getJndiParams();
+    kvps.addKeyValuePair(new KeyValuePair(Context.SECURITY_PRINCIPAL, "Administrator"));
+    kvps.addKeyValuePair(new KeyValuePair(Context.SECURITY_CREDENTIALS, "Administrator"));
+    kvps.addKeyValuePair(new KeyValuePair("com.sonicsw.jndi.mfcontext.domain", "Domain1"));
+    kvps.addKeyValuePair(new KeyValuePair(Context.INITIAL_CONTEXT_FACTORY, "com.sonicsw.jndi.mfcontext.MFContextFactory"));
+    jndi.getJndiParams().addKeyValuePair(new KeyValuePair(Context.PROVIDER_URL, "tcp://localhost:2506"));
     c.setVendorImplementation(jndi);
     if (!isEmpty(uniqueId)) {
       c.setUniqueId(uniqueId);
