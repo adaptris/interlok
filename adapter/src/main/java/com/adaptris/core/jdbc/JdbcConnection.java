@@ -139,22 +139,6 @@ public class JdbcConnection extends DatabaseConnection {
     connectUrl = s;
   }
 
-  /**
-   * <p>
-   * Another <code>JdbcConnection</code> is semantically equal to <code>this</code> if the results of the following method calls on
-   * both objects are equal.
-   * <ul>
-   * <li>getConnectUrl</li>
-   * <li>getAlwaysValidateConnection</li>
-   * <li>getAutoCommit</li>
-   * <li>getDebugMode</li>
-   * <li>getDriverImp</li>
-   * <li>getTestStatement</li>
-   * </ul>
-   * </p>
-   * 
-   * @see java.lang.Object#equals(java.lang.Object)
-   */
   @Override
   public boolean equals(Object o) {
     if (o == null) {
@@ -173,15 +157,6 @@ public class JdbcConnection extends DatabaseConnection {
     return false;
   }
 
-  /**
-   * <p>
-   * Hashcode is determined by the <code>hashCode</code>s of the return values of the methods specified in <code>equals</code>.
-   * </p>
-   * 
-   * @return the hashCode
-   * @see JdbcConnection#equals
-   * @see java.lang.Object#hashCode()
-   * */
   @Override
   public int hashCode() {
     return new HashCodeBuilder(11, 17).append(getConnectUrl()).append(getAlwaysValidateConnection()).append(getAutoCommit())
