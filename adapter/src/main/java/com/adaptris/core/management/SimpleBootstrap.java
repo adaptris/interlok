@@ -27,6 +27,16 @@ package com.adaptris.core.management;
  */
 public class SimpleBootstrap extends StandardBootstrap {
 
+	/**
+	 * Special constructor for ClassLoaderBootstrap.
+	 * 
+	 * @throws Exception
+	 */
+	public SimpleBootstrap() throws Exception {
+		super(new String[0]);
+		super.boot();
+	}
+	
   public SimpleBootstrap(String[] argv) throws Exception {
     super(argv);
   }

@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,14 +40,14 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
  * A Proxy for the Jetty HashUserRealm security handler.
- * 
+ *
  * <p>
  * This class simply wraps the Jetty HashUserRealm functionality and exposes as a SecurityHandler to JettyConnection
  * </p>
  * <p>
  * You should check the Jetty documentation for more information.
  * </p>
- * 
+ *
  * @config jetty-hash-user-realm-proxy
  * @see JettyConnection
  * @deprecated use {@link ConfigurableSecurityHandler} instead; since 3.3.0
@@ -55,7 +55,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @Deprecated
 @XStreamAlias("jetty-hash-user-realm-proxy")
 public class HashUserRealmProxy implements SecurityHandlerWrapper {
-  
+
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   @NotNull
@@ -71,13 +71,13 @@ public class HashUserRealmProxy implements SecurityHandlerWrapper {
   @XStreamImplicit
   @Valid
   private List<SecurityConstraint> securityConstraints;
-  
+
   public HashUserRealmProxy() {
     securityConstraints = new ArrayList<>();
     this.setUserRealm("MediationFramework");
   }
-  
-  
+
+
   @Override
   public SecurityHandler createSecurityHandler() throws Exception {
     return configure(new ConstraintSecurityHandler());
@@ -121,7 +121,7 @@ public class HashUserRealmProxy implements SecurityHandlerWrapper {
     }
     return l.toArray(new String[0]);
   }
-  
+
   public List<SecurityConstraint> getSecurityConstraints() {
     return securityConstraints;
   }
@@ -144,7 +144,7 @@ public class HashUserRealmProxy implements SecurityHandlerWrapper {
 
   /**
    * Set the filename containing the username/password/roles.
-   * 
+   *
    * @param filename the filename.
    */
   public void setFilename(String filename) {
@@ -162,7 +162,7 @@ public class HashUserRealmProxy implements SecurityHandlerWrapper {
 
   /**
    * Specify the refresh interval (in seconds) for monitoring the password file.
-   * 
+   *
    * @see HashLoginService#setRefreshInterval(int)
    * @param i the refreshInterval to set
    */
