@@ -44,8 +44,6 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.adaptris.core.http.jetty.SecurityHandlerWrapper;
-
 /**
  * Implementation of the {@link ServerManager} interface for managing Jetty servers.
  * <p>
