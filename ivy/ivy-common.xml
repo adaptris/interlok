@@ -41,6 +41,10 @@
 
     <dependency org="log4j" name="log4j" rev="1.2.17" force="true" conf="runtime->default;ant->default"/>
 
+    <dependency org="org.eclipse.jetty.aggregate" name="jetty-all" rev="8.1.16.v20140903" transitive="false" conf="compile->default" />
+    <!-- dependency org="org.eclipse.jetty.aggregate" name="jetty-all" rev="9.1.0.v20131115" transitive="false" conf="compile->default" /-->
+    <dependency org="org.apache.geronimo.specs" name="geronimo-servlet_3.0_spec" rev="1.0" transitive="false" conf="compile->default" />
+
     <dependency org="junit" name="junit" rev="4.11" conf="test->default"/>
 
     <!-- For Various ANT Tasks -->
