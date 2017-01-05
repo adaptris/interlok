@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -50,9 +50,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * get HTTP 404 errors, then enable logging for the {@code org.eclipse.jetty} category and check how the request is routed by the
  * Jetty engine.
  * </p>
- *
+ * 
  * @config jetty-embedded-connection
- *
+ * 
  */
 @XStreamAlias("jetty-embedded-connection")
 @AdapterComponent
@@ -233,7 +233,7 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
    * of servlets and also ready for incoming HTTP requests. This value controls how long we wait for the server to start up before
    * throwing an exception.
    * </p>
-   *
+   * 
    * @param t the maxStartupWait to set, default if not specified is 10 minutes.
    */
   public void setMaxStartupWait(TimeInterval t) {
@@ -259,7 +259,7 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
    * configured inside your adapter, then results may be undefined; you are advised to configure a single {@code EmbeddedConnection}
    * as a {@code shared-component} to avoid any issues.
    * </p>
-   *
+   * 
    * @param s the securityHandler wrapper implementation.
    */
   public void setSecurityHandler(SecurityHandlerWrapper s) {

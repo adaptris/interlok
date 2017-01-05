@@ -27,27 +27,27 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  */
 @XStreamAlias("jetty-configurable-security-handler")
 public class ConfigurableSecurityHandler implements SecurityHandlerWrapper {
-
+  
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
-
+  
   @NotNull
   @Valid
   private JettyLoginServiceFactory loginService;
-
+  
   @NotNull
   @Valid
   @AutoPopulated
   private JettyAuthenticatorFactory authenticator;
-
+  
   @NotNull
   @XStreamImplicit
   private List<SecurityConstraint> securityConstraints;
-
+  
   public ConfigurableSecurityHandler() {
     setAuthenticator(new BasicAuthenticatorFactory());
     securityConstraints = new ArrayList<>();
   }
-
+  
   /**
    * @see com.adaptris.core.http.jetty.SecurityHandlerWrapper#createSecurityHandler()
    */
@@ -58,27 +58,27 @@ public class ConfigurableSecurityHandler implements SecurityHandlerWrapper {
     securityHandler.setAuthenticator(authenticator);
     LoginService loginService = getLoginService().retrieveLoginService();
     securityHandler.setLoginService(loginService);
-
+    
     log.debug("Created configurable security handler with [" + authenticator + "] [" + loginService + "]");
-
+    
     for(SecurityConstraint securityConstraint : this.getSecurityConstraints()) {
       Constraint constraint = new Constraint();
       constraint.setName(securityConstraint.getConstraintName());
       constraint.setRoles(asArray(securityConstraint.getRoles()));
       constraint.setAuthenticate(securityConstraint.isMustAuthenticate());
-
+      
       for(String path : securityConstraint.getPaths()) {
         ConstraintMapping constraintMapping = new ConstraintMapping();
         constraintMapping.setConstraint(constraint);
         constraintMapping.setPathSpec(path);
-
+        
         log.debug("Adding path [" + path + "] with constraint [" + constraint + "] to security handler");
         securityHandler.addConstraintMapping(constraintMapping);
       }
     }
     return securityHandler;
   }
-
+  
   private static String[] asArray(String s) {
     if (s == null) {
       return new String[0];
