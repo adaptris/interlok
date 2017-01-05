@@ -32,6 +32,7 @@ import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.http.HttpProducer;
 import com.adaptris.core.http.jetty.HttpConnection.HttpProperty;
 import com.adaptris.core.http.jetty.HttpsConnection.SslProperty;
+import com.adaptris.core.management.webserver.SecurityHandlerWrapper;
 import com.adaptris.core.security.ConfiguredPrivateKeyPasswordProvider;
 import com.adaptris.core.security.JunitSecurityHelper;
 import com.adaptris.core.stubs.MockMessageProducer;

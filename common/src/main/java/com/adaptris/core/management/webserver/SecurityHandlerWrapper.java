@@ -14,9 +14,11 @@
  * limitations under the License.
 */
 
-package com.adaptris.core.http.jetty;
+package com.adaptris.core.management.webserver;
 
 import org.eclipse.jetty.security.SecurityHandler;
+
+import com.adaptris.core.http.jetty.HashUserRealmProxy;
 
 /**
  * This is a proxy interface for the Jetty Security Handler implementation.

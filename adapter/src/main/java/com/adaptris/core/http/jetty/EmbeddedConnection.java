@@ -32,6 +32,7 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisConnectionImp;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.management.webserver.JettyServerManager;
+import com.adaptris.core.management.webserver.SecurityHandlerWrapper;
 import com.adaptris.core.management.webserver.ServerManager;
 import com.adaptris.core.management.webserver.WebServerManagementUtil;
 import com.adaptris.util.TimeInterval;

@@ -45,6 +45,7 @@ import com.adaptris.core.http.JdkHttpProducer;
 import com.adaptris.core.http.auth.AdapterResourceAuthenticator;
 import com.adaptris.core.http.jetty.HttpConnection.HttpProperty;
 import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
+import com.adaptris.core.management.webserver.SecurityHandlerWrapper;
 import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.services.WaitService;
 import com.adaptris.core.stubs.AdaptrisMessageStub;
