@@ -15,47 +15,29 @@
  */
 package com.adaptris.core.http.auth;
 
-import java.net.HttpURLConnection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.http.HttpConstants;
-import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Build an {@link HttpConstants#AUTHORIZATION} header from static data.
  * 
  * @author gdries
- *
+ * @deprecated since 3.6.0 use {@link com.adaptris.core.http.client.net.ConfiguredAuthorizationHeader} instead.
  */
-@XStreamAlias("http-configured-authorization-header")
-public class ConfiguredAuthorizationHeader implements HttpAuthenticator {
+@Deprecated
+public class ConfiguredAuthorizationHeader extends com.adaptris.core.http.client.net.ConfiguredAuthorizationHeader {
 
-  private String headerValue;
-  
-  public String getHeaderValue() {
-    return headerValue;
+  private static transient boolean warningLogged;
+  private transient Logger log = LoggerFactory.getLogger(this.getClass());
+
+  public ConfiguredAuthorizationHeader() {
+    super();
+    if (!warningLogged) {
+      log.warn("[{}] is deprecated, use [{}] instead", this.getClass().getSimpleName(),
+          com.adaptris.core.http.client.net.ConfiguredAuthorizationHeader.class.getName());
+      warningLogged = true;
+    }
   }
-
-  /**
-   * The value for the authorization header
-   * @param headerValue
-   */
-  public void setHeaderValue(String headerValue) {
-    this.headerValue = headerValue;
-  }
-
-  @Override
-  public void setup(String target, AdaptrisMessage msg) throws CoreException {
-  }
-
-  @Override
-  public void configureConnection(HttpURLConnection conn) {
-    conn.addRequestProperty(HttpConstants.AUTHORIZATION, headerValue);
-  }
-
-  @Override
-  public void close() {
-  }
-
 }

@@ -137,7 +137,9 @@ public class StandardHttpProducer extends HttpProducer {
       URL url = new URL(destination.getDestination(msg));
       authenticator.setup(url.toString(), msg);
       HttpURLConnection http = configure((HttpURLConnection) url.openConnection(), msg);
-      authenticator.configureConnection(http);
+      if (authenticator instanceof HttpURLConnectionAuthenticator) {
+        ((HttpURLConnectionAuthenticator) authenticator).configureConnection(http);
+      }
       writeData(getMethod(msg), msg, http);
       handleResponse(http, reply);
     } catch (Exception e) {

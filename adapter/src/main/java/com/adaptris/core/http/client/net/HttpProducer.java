@@ -41,6 +41,7 @@ import com.adaptris.core.ProduceException;
 import com.adaptris.core.RequestReplyProducerImp;
 import com.adaptris.core.http.ConfiguredContentTypeProvider;
 import com.adaptris.core.http.ContentTypeProvider;
+import com.adaptris.core.http.auth.HttpAuthenticator;
 import com.adaptris.core.http.client.ConfiguredRequestMethodProvider;
 import com.adaptris.core.http.client.RequestHeaderProvider;
 import com.adaptris.core.http.client.RequestMethodProvider;
@@ -147,6 +148,7 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
   /**
    * 
    * @param s the user name
+   * @deprecated since 3.2.0 use a {@link HttpAuthenticator} instance instead
    */
   @Deprecated
   public void setUsername(String s) {
@@ -156,9 +158,11 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
   /**
    * Set the password.
    * <p>
-   * In additional to plain text passwords, the passwords can also be encoded using the appropriate {@link com.adaptris.security.password.Password}
+   * In additional to plain text passwords, the passwords can also be encoded using the appropriate
+   * {@link com.adaptris.security.password.Password}
    * </p>
    * 
+   * @deprecated since 3.2.0 use a {@link HttpAuthenticator} instance instead
    * @param s the password
    */
   @Deprecated
@@ -170,6 +174,7 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
    * Get the username.
    * 
    * @return username
+   * @deprecated since 3.2.0 use a {@link HttpAuthenticator} instance instead
    */
   @Deprecated
   public String getUsername() {
@@ -180,6 +185,7 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
    * Get the password.
    * 
    * @return the password
+   * @deprecated since 3.2.0 use a {@link HttpAuthenticator} instance instead
    */
   @Deprecated
   public String getPassword() {

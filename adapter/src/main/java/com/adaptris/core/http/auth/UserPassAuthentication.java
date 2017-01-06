@@ -15,7 +15,6 @@
  */
 package com.adaptris.core.http.auth;
 
-import java.net.HttpURLConnection;
 import java.net.PasswordAuthentication;
 
 import com.adaptris.core.AdaptrisMessage;
@@ -37,10 +36,6 @@ public abstract class UserPassAuthentication implements HttpAuthenticator {
   protected abstract PasswordAuthentication getPasswordAuthentication(AdaptrisMessage msg)
     throws CoreException;
 
-  @Override
-  public void configureConnection(HttpURLConnection conn) {
-    // Nothing to do here
-  }
   
   @Override
   public void close() {
