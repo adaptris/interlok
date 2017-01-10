@@ -15,35 +15,47 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.core.management.BootstrapProperties;
 
+/**
+ * A blacklisting classloader factory.
+ */
 public class BlacklistingFactory implements ClassLoaderFactory {
 
-  private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
+	private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
-  private final List<String> blacklisted;
+	private final List<String> blacklisted;
 
-  public BlacklistingFactory(final BootstrapProperties p) {
-    final String s = getPropertyIgnoringCase(p, "classloader.blacklist.filenames", "");
-    blacklisted = Arrays.asList(s.split(","));
-  }
+	/**
+	 * Create a new blacklisting factory that blacklists the classes
+	 * specified in the bootstrap properties.
+	 *
+	 * @param p Bootstrap properties.
+	 */
+	public BlacklistingFactory(final BootstrapProperties p) {
+		final String s = getPropertyIgnoringCase(p, "classloader.blacklist.filenames", "");
+		blacklisted = Arrays.asList(s.split(","));
+	}
 
-  @SuppressWarnings("unused")
-  @Override
-  public URLClassLoader create(final ClassLoader parent) {
-    final URL[] parentUrls = ((URLClassLoader)parent).getURLs();
-    final List<URL> whitelist = new ArrayList<>();
-    for (final URL url : parentUrls) {
-      try {
-        final String name = new File(url.toURI()).getName();
-        if (blacklisted.contains(name)) {
-          log.debug("Blacklisting " + name + " " + url);
-        } else {
-          log.trace("Whitelisting " + name);
-          whitelist.add(url);
-        }
-      } catch (final URISyntaxException e) {
-        // ignored
-      }
-    }
-    return new URLClassLoader(whitelist.toArray(new URL[0]), null);
-  }
+	/**
+	 * {@inheritDoc}.
+	 */
+	@SuppressWarnings("unused")
+	@Override
+	public URLClassLoader create(final ClassLoader parent) {
+		final URL[] parentUrls = ((URLClassLoader)parent).getURLs();
+		final List<URL> whitelist = new ArrayList<>();
+		for (final URL url : parentUrls) {
+			try {
+				final String name = new File(url.toURI()).getName();
+				if (blacklisted.contains(name)) {
+					log.debug("Blacklisting " + name + " " + url);
+				} else {
+					log.trace("Whitelisting " + name);
+					whitelist.add(url);
+				}
+			} catch (final URISyntaxException e) {
+				// ignored
+			}
+		}
+		return new URLClassLoader(whitelist.toArray(new URL[0]), this.getClass().getClassLoader().getParent());
+	}
 }

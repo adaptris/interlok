@@ -27,6 +27,11 @@ package com.adaptris.core.management;
  */
 public class SimpleBootstrap extends StandardBootstrap {
 
+	public SimpleBootstrap() throws Exception {
+		super(new String[0]);
+		super.boot();
+	}
+	
   public SimpleBootstrap(String[] argv) throws Exception {
     super(argv);
   }
@@ -34,7 +39,7 @@ public class SimpleBootstrap extends StandardBootstrap {
   @Override
   public void boot() throws Exception {
     logVersionInformation();
-    super.standardBoot();
+    super.boot();
   }
 
   /**
