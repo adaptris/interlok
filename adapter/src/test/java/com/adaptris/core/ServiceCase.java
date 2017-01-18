@@ -83,18 +83,41 @@ public abstract class ServiceCase extends ExampleConfigCase {
       if (input instanceof ServiceImp) {
         assertMessageEventGenerator((ServiceImp) input);
       }
+      if (input instanceof ServiceCollectionImp) {
+        assertMessageEventGenerator((ServiceCollectionImp) input);
+      }
     }
     else {
-      List l = retrieveObjectsForSampleConfig();
       for (Object o : retrieveObjectsForSampleConfig()) {
-        if (o instanceof MessageEventGenerator) {
+        if (o instanceof ServiceImp) {
           assertMessageEventGenerator((ServiceImp) o);
+        }
+        if (o instanceof ServiceCollectionImp) {
+          assertMessageEventGenerator((ServiceCollectionImp) o);
         }
       }
     }
   }
 
   private void assertMessageEventGenerator(ServiceImp meg) {
+    meg.setIsConfirmation(null);
+    assertNull(meg.getIsConfirmation());
+    assertFalse(meg.isConfirmation());
+
+    meg.setIsTrackingEndpoint(null);
+    assertNull(meg.getIsTrackingEndpoint());
+    assertFalse(meg.isTrackingEndpoint());
+
+    meg.setIsConfirmation(Boolean.TRUE);
+    assertNotNull(meg.getIsConfirmation());
+    assertTrue(meg.isConfirmation());
+
+    meg.setIsTrackingEndpoint(Boolean.TRUE);
+    assertNotNull(meg.getIsTrackingEndpoint());
+    assertTrue(meg.isTrackingEndpoint());
+  }
+
+  private void assertMessageEventGenerator(ServiceCollectionImp meg) {
     meg.setIsConfirmation(null);
     assertNull(meg.getIsConfirmation());
     assertFalse(meg.isConfirmation());
