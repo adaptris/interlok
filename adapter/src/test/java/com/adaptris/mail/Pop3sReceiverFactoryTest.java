@@ -19,6 +19,7 @@ package com.adaptris.mail;
 import static com.adaptris.mail.JunitMailHelper.DEFAULT_RECEIVER;
 import static com.adaptris.mail.JunitMailHelper.startServer;
 import static com.adaptris.mail.JunitMailHelper.stopServer;
+import static com.adaptris.mail.JunitMailHelper.testsEnabled;
 import static com.adaptris.mail.MailReceiverCase.DEFAULT_POP3_PASSWORD;
 import static com.adaptris.mail.MailReceiverCase.DEFAULT_POP3_USER;
 import static com.adaptris.mail.MailReceiverCase.createURLName;
@@ -46,6 +47,7 @@ public class Pop3sReceiverFactoryTest extends Pop3FactoryCase {
 
   // By default this will *fail* because we don't have a trusted certificate.
   public void testCreate_Connect() throws Exception {
+    if (!testsEnabled()) return;
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     Pop3sReceiverFactory fac = create();
     Pop3Server server = getServer(gm);

@@ -397,14 +397,14 @@ public abstract class FileTransferConnection extends NoOpConnection {
   protected class UserInfo {
     private String user, password;
 
-    UserInfo() {
+    protected UserInfo() {
     }
 
-    UserInfo(String defaultUser) {
+    protected UserInfo(String defaultUser) {
       user = defaultUser;
     }
 
-    UserInfo(String defaultUser, String defaultPassword) throws FileTransferException {
+    protected UserInfo(String defaultUser, String defaultPassword) throws FileTransferException {
       try {
         user = defaultUser;
         password = Password.decode(defaultPassword);
@@ -414,7 +414,7 @@ public abstract class FileTransferConnection extends NoOpConnection {
       }
     }
 
-    private void parse(String fulluserpass) throws UnsupportedEncodingException {
+    protected void parse(String fulluserpass) throws UnsupportedEncodingException {
       if (isEmpty(fulluserpass)) {
         return;
       }

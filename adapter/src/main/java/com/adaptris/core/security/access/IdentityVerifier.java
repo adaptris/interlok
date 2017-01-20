@@ -15,8 +15,7 @@
 */
 package com.adaptris.core.security.access;
 
-import java.util.Map;
-
+import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ComponentLifecycle;
 
 /**
@@ -25,6 +24,6 @@ import com.adaptris.core.ComponentLifecycle;
  */
 public interface IdentityVerifier extends ComponentLifecycle {
 
-  boolean validate(Map<String, Object> identity);
+  boolean validate(IdentityBuilder builder, AdaptrisMessage msg);
 
 }

@@ -57,7 +57,30 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
   public void testConnectionErrorHandler() throws Exception {
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     MockChannel channel = createChannel(activeMqBroker, activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), true),
-        getName());
+        getName(), new JmsConnectionErrorHandler());
+    try {
+      activeMqBroker.start();
+      channel.requestStart();
+      assertEquals(StartedState.getInstance(), channel.retrieveComponentState());
+      activeMqBroker.stop();
+      Thread.sleep(1000);
+      activeMqBroker.start();
+      waitForChannelToMatchState(StartedState.getInstance(), channel);
+
+      assertEquals(StartedState.getInstance(), channel.retrieveComponentState());
+      assertEquals(2, channel.getStartCount());
+
+    }
+    finally {
+      channel.requestClose();
+      activeMqBroker.destroy();
+    }
+  }
+
+  public void testConnectionErrorHandler_NotSingleExecution() throws Exception {
+    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
+    MockChannel channel = createChannel(activeMqBroker, activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), true),
+        getName(), new JmsConnectionErrorHandler(false));
     try {
       activeMqBroker.start();
       channel.requestStart();
@@ -105,7 +128,8 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
     String queueName = getName() + "_queue";
     String topicName = getName() + "_topic";
     MockChannel channel = createChannel(activeMqBroker,
-        activeMqBroker.getJndiPasConnection(new StandardJndiImplementation(), false, queueName, topicName), topicName);
+        activeMqBroker.getJndiPasConnection(new StandardJndiImplementation(), false, queueName, topicName), topicName,
+        new JmsConnectionErrorHandler());
     try {
       activeMqBroker.start();
       channel.requestStart();
@@ -128,7 +152,7 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
   public void testBug1926() throws Exception {
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     MockChannel channel = createChannel(activeMqBroker, activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), true),
-        getName());
+        getName(), new JmsConnectionErrorHandler());
     try {
       activeMqBroker.start();
       channel.requestStart();
@@ -238,8 +262,9 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
     }
   }
 
-  private MockChannel createChannel(EmbeddedActiveMq mq, JmsConnection con, String destinationName) throws Exception {
-    return createChannel(mq.getName() + "_channel", mq, con, destinationName);
+  private MockChannel createChannel(EmbeddedActiveMq mq, JmsConnection con, String destinationName, JmsConnectionErrorHandler h)
+      throws Exception {
+    return createChannel(mq.getName() + "_channel", mq, con, destinationName, h);
   }
 
   private MockChannel createChannel(EmbeddedActiveMq mq, SharedConnection con, String destinationName) throws Exception {
@@ -253,11 +278,17 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
 
   private MockChannel createChannel(String channelName, EmbeddedActiveMq mq, JmsConnection con, String destinationName)
       throws Exception {
+    return createChannel(channelName, mq, con, destinationName, new JmsConnectionErrorHandler());
+  }
+
+  private MockChannel createChannel(String channelName, EmbeddedActiveMq mq, JmsConnection con, String destinationName,
+                                    JmsConnectionErrorHandler handler)
+      throws Exception {
     MockChannel result = new MockChannel();
     result.setUniqueId(channelName);
     con.setConnectionRetryInterval(new TimeInterval(1L, TimeUnit.SECONDS.name()));
     con.setConnectionAttempts(50);
-    con.setConnectionErrorHandler(new JmsConnectionErrorHandler());
+    con.setConnectionErrorHandler(handler);
     result.setConsumeConnection(con);
     Workflow workflow = createWorkflow(mq, destinationName);
     result.getWorkflowList().add(workflow);

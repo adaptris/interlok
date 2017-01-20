@@ -15,7 +15,6 @@
  */
 package com.adaptris.core.jdbc;
 
-import static com.adaptris.core.jdbc.PooledConnectionProperties.searchEnumIgnoreCase;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.sql.Connection;
@@ -26,20 +25,17 @@ import java.sql.Statement;
 
 import javax.sql.DataSource;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
-import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.security.password.Password;
-import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -48,28 +44,25 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * A {@link DatabaseConnection} instance that provides connection pooling via c3p0.
  * 
  * @author amcgrath
- *
+ * @see PooledConnectionProperties
  */
 @XStreamAlias("advanced-jdbc-pooled-connection")
 @AdapterComponent
 @ComponentProfile(summary = "Connect to a database using a JDBC driver; connection pooling handled via C3P0",
     tag = "connections,jdbc")
-@DisplayOrder(order = {"username", "password", "driverImp", "connectUrl", "connectionProperties"})
+@DisplayOrder(order = {"username", "password", "driverImp", "connectUrl", "connectionPoolProperties", "connectionProperties"})
 public class AdvancedJdbcPooledConnection extends DatabaseConnection {
   
   @NotBlank
   private String connectUrl;
   
-  @NotNull
-  @AutoPopulated
   @Valid
-  private KeyValuePairSet connectionProperties;
+  private KeyValuePairSet connectionPoolProperties;
   
   private transient ComboPooledDataSource connectionPool;
   
   public AdvancedJdbcPooledConnection() {
     super();
-    this.setConnectionPoolProperties(new KeyValuePairSet());
   }
   
   @Override
@@ -98,14 +91,7 @@ public class AdvancedJdbcPooledConnection extends DatabaseConnection {
       connectionPool.setAcquireRetryAttempts(connectionAttempts());
       connectionPool.setTestConnectionOnCheckin(alwaysValidateConnection());
       connectionPool.setTestConnectionOnCheckout(alwaysValidateConnection());
-      
-      for (KeyValuePair kvp : getConnectionPoolProperties().getKeyValuePairs()) {
-        PooledConnectionProperties connectionProperty = searchEnumIgnoreCase(kvp.getKey());
-        if(connectionProperty != null) {
-          connectionProperty.applyProperty(connectionPool, kvp.getValue());
-        } else
-          log.warn("Property {} not found, ignored.", kvp.getKey());
-      }
+      PooledConnectionProperties.apply(getConnectionPoolProperties(), connectionPool);
     }
     catch (Exception ex) {
       throw new CoreException(ex);
@@ -214,13 +200,18 @@ public class AdvancedJdbcPooledConnection extends DatabaseConnection {
       return true;
     
     if (ajpc instanceof AdvancedJdbcPooledConnection) {
-      AdvancedJdbcPooledConnection pooledConnection = (AdvancedJdbcPooledConnection) ajpc;
+      AdvancedJdbcPooledConnection conn = (AdvancedJdbcPooledConnection) ajpc;
       
       return new EqualsBuilder()
-        .append(pooledConnection.getConnectUrl(), this.getConnectUrl())
-        .append(pooledConnection.getDriverImp(), this.getDriverImp())
-        .append(pooledConnection.getConnectionPoolProperties(), this.getConnectionPoolProperties())
-        .isEquals();
+          .append(conn.getConnectUrl(), this.getConnectUrl())
+          .append(conn.getDriverImp(), this.getDriverImp())
+          .append(conn.getAlwaysValidateConnection(), this.getAlwaysValidateConnection())
+          .append(conn.getDebugMode(), this.getDebugMode())
+          .append(conn.getTestStatement(), this.getTestStatement())
+          .append(conn.getAutoCommit(), this.getAutoCommit())
+          .append(conn.getConnectionProperties(), this.getConnectionProperties())
+          .append(conn.getConnectionPoolProperties(), this.getConnectionPoolProperties())
+          .isEquals();
     }
     return false;
   }
@@ -229,8 +220,13 @@ public class AdvancedJdbcPooledConnection extends DatabaseConnection {
   public int hashCode() {
     return new HashCodeBuilder(17, 31)
         .append(this.getConnectUrl())
-        .append(this.getConnectionPoolProperties())
         .append(getDriverImp())
+        .append(this.getAlwaysValidateConnection())
+        .append(getDebugMode())
+        .append(getTestStatement())
+        .append(getAutoCommit())
+        .append(this.getConnectionProperties())
+        .append(getConnectionPoolProperties())
         .toHashCode();
   }
 
@@ -243,13 +239,13 @@ public class AdvancedJdbcPooledConnection extends DatabaseConnection {
   }
 
   public KeyValuePairSet getConnectionPoolProperties() {
-    return connectionProperties;
+    return connectionPoolProperties;
   }
 
-  public void setConnectionPoolProperties(KeyValuePairSet connectionProperties) {
-    this.connectionProperties = connectionProperties;
+  public void setConnectionPoolProperties(KeyValuePairSet kvps) {
+    this.connectionPoolProperties = kvps;
   }
-  
+
   public int currentBusyConnectionCount() throws SQLException {
     return connectionPool.getNumBusyConnections();
   }
@@ -261,5 +257,6 @@ public class AdvancedJdbcPooledConnection extends DatabaseConnection {
   public int currentIdleConnectionCount() throws SQLException {
     return connectionPool.getNumIdleConnections();
   }
+
 
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
 */
 
-package com.adaptris.core.http.jetty;
+package com.adaptris.core.management.webserver;
 
 import org.eclipse.jetty.security.SecurityHandler;
 

@@ -40,7 +40,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * If a host is not configured then we build default configuration from {@link #getDefaultConfiguration()}
  * </p>
  * 
- * @config sftp-per-host-config-repository
+ * @config sftp-per-host-config-builder
  */
 @XStreamAlias("sftp-per-host-config-builder")
 @DisplayOrder(order = {"hosts", "defaultConfiguration", "proxy"})

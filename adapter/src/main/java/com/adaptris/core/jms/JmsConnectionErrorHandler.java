@@ -40,6 +40,15 @@ public class JmsConnectionErrorHandler extends JmsConnectionErrorHandlerImpl imp
   private transient AtomicBoolean inOnException = new AtomicBoolean(false);
 
 
+  public JmsConnectionErrorHandler() {
+
+  }
+
+  public JmsConnectionErrorHandler(Boolean singleExecution) {
+    this();
+    setSingleExecution(singleExecution);
+  }
+
   @Override
   public void init() throws CoreException {
     super.init();
@@ -65,8 +74,7 @@ public class JmsConnectionErrorHandler extends JmsConnectionErrorHandlerImpl imp
     try {
       Thread.currentThread().setName("JMSExceptionListener for " + idForLogging);
       if (singleExecution()) {
-        if (!inOnException.get()) {
-          inOnException.set(true);
+        if (inOnException.compareAndSet(false, true)) {
           try {
             retrieveConnection(JmsConnection.class).currentConnection().setExceptionListener(null);
           } catch (JMSException ignore) {

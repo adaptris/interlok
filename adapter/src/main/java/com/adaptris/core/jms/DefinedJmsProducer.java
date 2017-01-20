@@ -28,6 +28,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
+import com.adaptris.core.util.ExceptionHelper;
 
 /**
  * <p>
@@ -62,7 +63,7 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
     }
     catch (JMSException e) {
       logLinkedException("Creating Destination", e);
-      throw new ProduceException(e);
+      throw ExceptionHelper.wrapProduceException(e);
     }
   }
 
@@ -95,20 +96,14 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
       commit();
     }
     catch (JMSException e) {
-      log.warn("Error producing to destination [" + getDestination() + "]");
+      log.warn("Error producing to destination [{}]", getDestination());
       logLinkedException("Produce", e);
       rollback();
       throw new ProduceException(e);
 
     }
     catch (CoreException e) {
-      if (e instanceof ProduceException) {
-        throw (ProduceException) e;
-      }
-      else {
-        log.warn("Error producing to destination [" + getDestination() + "]");
-        throw new ProduceException(e);
-      }
+      throw ExceptionHelper.wrapProduceException(e);
     }
   }
 
@@ -125,7 +120,7 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
     if (captureOutgoingMessageDetails()) {
       captureOutgoingMessageDetails(jmsMsg, msg);
     }
-    log.info("msg produced to destination [" + destination + "]");
+    log.info("msg produced to destination [{}]", destination);
   }
 
   /**

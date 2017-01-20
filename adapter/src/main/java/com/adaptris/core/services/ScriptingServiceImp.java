@@ -31,6 +31,8 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Base class for enabling JSR223 enabled scripting languages.
@@ -40,6 +42,8 @@ import com.adaptris.core.ServiceImp;
  * 
  */
 public abstract class ScriptingServiceImp extends ServiceImp {
+
+  private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
   @NotBlank
   private String language;
@@ -62,6 +66,7 @@ public abstract class ScriptingServiceImp extends ServiceImp {
     try {
       Bindings vars = engine.createBindings();
       vars.put("message", msg);
+      vars.put("log", log);
       input = createReader();
       engine.eval(input, vars);
     }

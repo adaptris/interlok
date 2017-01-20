@@ -18,6 +18,7 @@ package com.adaptris.core.common;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ConfiguredProduceDestination;
+import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.stubs.TempFileUtils;
 import org.apache.commons.io.FileUtils;
@@ -66,6 +67,16 @@ public class FileDataInputParameterTest {
 
     }
     assertEquals("file:////tmp/abc", p.url(m));
+  }
+  
+  @Test(expected=CoreException.class)
+  public void testNonExistingFile() throws Exception {
+    AdaptrisMessage m = new DefaultMessageFactory().newMessage();
+    FileDataInputParameter p = new FileDataInputParameter();
+    assertNull(p.url(m));
+    p.setDestination(new ConfiguredProduceDestination("file:////tmp/doesnotexist"));
+    assertEquals("file:////tmp/doesnotexist", p.url(m));
+    String result = p.extract(m);
   }
   
   @Test

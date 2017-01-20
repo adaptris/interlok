@@ -17,7 +17,8 @@
     <property name="ivy.artifact.publish.status" value="integration"/>
 
     <property name="manifest.title" value="Interlok Annotation Support"/>
-
+    <property name="project.pom.description" value="${manifest.title}"/>
+    
     <property name="src.dir" value="${basedir}/src/main/java" />
     <property name="build.dir" value="${basedir}/target" />
     <property name="build.classes.dir" value="${build.dir}/classes" />
@@ -58,7 +59,7 @@
       <fileset dir="${build.classes.dir}"/>
       <zipfileset dir="${basedir}/.." prefix="META-INF">
         <include name="LICENSE"/>
-      </zipfileset>      
+      </zipfileset>
       <service type="javax.annotation.processing.Processor">
         <provider classname="${xstream.annotation.processor}"/>
         <provider classname="${cdata.annotation.processor}"/>
@@ -74,8 +75,15 @@
   <target name="prepare-for-publish" depends="prepare-ivy, jar, macrodef.init">
     <mkdir dir="${project.dist.dir}/${project.name}/pom"/>
     <mkdir dir="${project.dist.dir}/${project.name}/jar"/>
+    <mkdir dir="${project.dist.dir}/${project.name}/source"/>
     <copy todir="${project.dist.dir}/${project.name}/jar" file="${project.dist.dir}/${project.jar.name}"/>
-    <ivy:makepom ivyfile="${ivy.xml.file}" pomfile="${project.dist.dir}/${project.name}/pom/${project.name}.pom"/>
+    <jar jarfile="${project.dist.dir}/${project.name}/source/${project.name}.jar">
+      <fileset dir="${src.dir}"/>
+      <zipfileset dir="${basedir}/.." prefix="META-INF">
+        <include name="LICENSE"/>
+      </zipfileset>
+    </jar>
+    <ivy:makepom ivyfile="${ivy.xml.file}" pomfile="${project.dist.dir}/${project.name}/pom/${project.name}.pom" description="${project.pom.description}"  conf="default,master,compile,provided,runtime,test,system,sources,javadoc,optional"/>
   </target>
 
   <target name="publish" depends="prepare-for-publish">

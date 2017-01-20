@@ -19,6 +19,7 @@
     <property name="manifest.title" value="Interlok Common Classes"/>
     <property name="manifest.vendor" value="Adaptris Ltd"/>
     <property name="manifest.section.name" value="com/adaptris/interlok"/>
+    <property name="project.pom.description" value="${manifest.title}"/>
 
     <property name="src.dir"      value="${basedir}/src/main/java" />
     <property name="testsrc.dir"  value="${basedir}/src/test/java"/>
@@ -84,7 +85,7 @@
       <fileset dir="${build.classes.dir}"/>
       <zipfileset dir="${basedir}/.." prefix="META-INF">
         <include name="LICENSE"/>
-      </zipfileset>    
+      </zipfileset>
     </jar>
   </target>
 
@@ -99,6 +100,7 @@
   <target name="prepare-for-publish" depends="prepare-ivy, jar, javadoc">
     <mkdir dir="${project.dist.dir}/${project.name}/pom"/>
     <mkdir dir="${project.dist.dir}/${project.name}/jar"/>
+    <mkdir dir="${project.dist.dir}/${project.name}/source"/>
     <mkdir dir="${project.dist.dir}/${project.name}/javadoc"/>
     <copy todir="${project.dist.dir}/${project.name}/jar" file="${project.dist.dir}/${project.jar.name}"/>
     <zip destfile="${project.dist.dir}/${project.name}/javadoc/${project.name}-javadoc.zip" compress="true" level="9">
@@ -107,7 +109,13 @@
     <jar jarfile="${project.dist.dir}/${project.name}/javadoc/${project.name}.jar">
       <fileset dir="${api.doc.dir}"/>
     </jar>
-    <ivy:makepom ivyfile="${ivy.xml.file}" pomfile="${project.dist.dir}/${project.name}/pom/${project.name}.pom"/>
+    <jar jarfile="${project.dist.dir}/${project.name}/source/${project.name}.jar">
+      <fileset dir="${src.dir}"/>
+      <zipfileset dir="${basedir}/.." prefix="META-INF">
+        <include name="LICENSE"/>
+      </zipfileset>
+    </jar>
+    <ivy:makepom ivyfile="${ivy.xml.file}" pomfile="${project.dist.dir}/${project.name}/pom/${project.name}.pom" description="${project.pom.description}"  conf="default,master,compile,provided,runtime,test,system,sources,javadoc,optional"/>
   </target>
 
   <target name="publish" depends="prepare-for-publish">

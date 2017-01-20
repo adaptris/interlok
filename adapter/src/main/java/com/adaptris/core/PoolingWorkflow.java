@@ -719,11 +719,11 @@ public class PoolingWorkflow extends WorkflowImp {
       }
       catch (ProduceException e) {
         wip.addEvent(getProducer(), false);
-        handleBadMessage("Exception producing message", e, msg);
+        handleBadMessage("Exception producing message", e, copyExceptionHeaders(wip, msg));
         handleProduceException();
       }
       catch (Exception e) {
-        handleBadMessage("Exception processing message", e, msg);
+        handleBadMessage("Exception processing message", e, copyExceptionHeaders(wip, msg));
       }
       finally {
         sendMessageLifecycleEvent(wip);

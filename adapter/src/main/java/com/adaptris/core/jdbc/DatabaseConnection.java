@@ -435,9 +435,6 @@ public abstract class DatabaseConnection extends AllowsRetriesConnection {
    * <p>
    * Force implementations to over-ride equals with a semantic implementation.
    * </p>
-   * <p>
-   * This is required in order that concrete implementations are properly stored in a <code>java.util.Collection</code>s.
-   * </p>
    * 
    * @see java.lang.Object#equals(java.lang.Object)
    */
@@ -447,9 +444,6 @@ public abstract class DatabaseConnection extends AllowsRetriesConnection {
   /**
    * <p>
    * Force implementations to over-ride hashcode.
-   * </p>
-   * <p>
-   * This is required in order that concrete implementations are properly stored in a <code>java.util.Collection</code>s.
    * </p>
    * 
    * @see java.lang.Object#hashCode()

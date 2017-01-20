@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.LifecycleHelper;
 
 /**
@@ -45,7 +46,11 @@ public abstract class EventHandlerBase implements EventHandler {
   private AdaptrisMessageFactory messageFactory;
   private String uniqueId;
   @AdvancedConfig
+  @InputFieldDefault(value = "60")
   private Integer shutdownWaitSeconds;
+  @AdvancedConfig
+  @InputFieldDefault(value = "false")
+  private Boolean logAllExceptions;
 
   protected transient EventEmissary eventProducerDelegate;
   private transient ComponentState state;
@@ -241,6 +246,24 @@ public abstract class EventHandlerBase implements EventHandler {
   protected abstract void eventHandlerClose();
 
   /**
+   * @return the logAllExceptions
+   */
+  public Boolean getLogAllExceptions() {
+    return logAllExceptions;
+  }
+
+  /**
+   * @param logAllExceptions the logAllExceptions to set
+   */
+  public void setLogAllExceptions(Boolean logAllExceptions) {
+    this.logAllExceptions = logAllExceptions;
+  }
+
+  private boolean logAllExceptions() {
+    return getLogAllExceptions() != null ? getLogAllExceptions().booleanValue() : false;
+  }
+
+  /**
    * @see com.adaptris.core.StateManagedComponent#requestInit()
    */
   @Override
@@ -296,9 +319,11 @@ public abstract class EventHandlerBase implements EventHandler {
             } else {
               producer.produce(msg);
             }
-          } catch (CoreException e) {
-            log.error("Failed to produce event [{}] to destination. Results dependent on this event may not be accurate.",
+          } catch (Exception e) {
+            if (logAllExceptions()) {
+              log.error("Failed to produce event [{}] to destination. Results dependent on this event may not be accurate.",
                 eventClass, e);
+            }
           }
           Thread.currentThread().setName(name);
         }
@@ -333,4 +358,5 @@ public abstract class EventHandlerBase implements EventHandler {
       }
     }
   }
+
 }

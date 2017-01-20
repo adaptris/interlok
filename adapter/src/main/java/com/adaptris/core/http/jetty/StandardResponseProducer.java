@@ -95,17 +95,31 @@ public class StandardResponseProducer extends ResponseProducerImpl {
       String contentType = getContentTypeProvider().getContentType(msg);
       response.setContentType(contentType);
       response.setStatus(getStatus(msg).getCode());
+      commitResponse(msg, response);
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapProduceException(e);
+    }
+  }
+
+  private void commitResponse(AdaptrisMessage msg, HttpServletResponse response) throws ProduceException {
+    try {
       handlePayload(msg, response);
       if (flushBuffers()) {
         response.flushBuffer();
       }
-    } catch (Exception e) {
-      ExceptionHelper.rethrowProduceException(e);
     }
+    catch (IOException | CoreException e) {
+      if (forwardConnectionException()) {
+        throw ExceptionHelper.wrapProduceException(e);
+      }
+      else {
+        log.trace("Failed to commit response to HTTP; client disconnected?");
+      }
+    }
+    
   }
 
   private void handlePayload(AdaptrisMessage msg, HttpServletResponse response) throws CoreException, IOException {
-
     if (sendPayload()) {
       if (getEncoder() != null) {
         getEncoder().writeMessage(msg, response);
@@ -113,10 +127,6 @@ public class StandardResponseProducer extends ResponseProducerImpl {
         if (msg.getSize() > 0) {
           try (InputStream in = new BufferedInputStream(msg.getInputStream())) {
             copy(in, response.getOutputStream());
-          } catch (IOException e) {
-            log.error("Cannot send the response, the connection already closed.");
-            if (forwardConnectionException())
-              throw e;
           }
         }
       }

@@ -145,6 +145,55 @@ public class ServiceListTest extends ServiceCollectionCase {
     }
   }
 
+  public void testFail_CheckObjectMetadata() throws Exception {
+    ServiceList services = createServiceList(false);
+    ThrowExceptionService errorService = new ThrowExceptionService(new ConfiguredException("Fail"));
+    errorService.setUniqueId(getName());
+    services.addService(errorService);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    String expectedName = String.format("%s(%s)",  ThrowExceptionService.class.getSimpleName(), getName());
+
+    try {
+      execute(services, msg);
+      fail("Expected Service Exception");
+    }
+    catch (ServiceException e) {
+      assertEquals("Fail", e.getMessage());
+      Exception captured = (Exception) msg.getObjectHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION);
+      String problemComponent = (String) msg.getObjectHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION_CAUSE);
+      assertNotNull(captured);
+      assertEquals(captured, e);
+      assertNotNull(problemComponent);
+      assertEquals(expectedName, problemComponent);
+    }
+  }
+
+  public void testFail_NestedServiceList_ObjectMetadata() throws Exception {
+    ServiceList services = createServiceList(false);
+    ThrowExceptionService errorService = new ThrowExceptionService(new ConfiguredException("Fail"));
+    errorService.setUniqueId(getName());
+    services.addService(new ServiceList(new Service[]
+    {
+        errorService
+    }));
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    String expectedName = String.format("%s(%s)", ThrowExceptionService.class.getSimpleName(), getName());
+
+    try {
+      execute(services, msg);
+      fail("Expected Service Exception");
+    }
+    catch (ServiceException e) {
+      assertEquals("Fail", e.getMessage());
+      Exception captured = (Exception) msg.getObjectHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION);
+      String problemComponent = (String) msg.getObjectHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION_CAUSE);
+      assertNotNull(captured);
+      assertEquals(captured, e);
+      assertNotNull(problemComponent);
+      assertEquals(expectedName, problemComponent);
+    }
+  }
+
   public void testFailWithNoContinueOnFailAndRuntimeException() throws Exception {
     ServiceList services = createServiceList(false);
     services.addService(new NullService() {

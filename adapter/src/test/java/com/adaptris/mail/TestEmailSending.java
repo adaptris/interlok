@@ -21,6 +21,7 @@ import static com.adaptris.mail.JunitMailHelper.DEFAULT_RECEIVER;
 import static com.adaptris.mail.JunitMailHelper.DEFAULT_SENDER;
 import static com.adaptris.mail.JunitMailHelper.XML_DOCUMENT;
 import static com.adaptris.mail.JunitMailHelper.createClient;
+import static com.adaptris.mail.JunitMailHelper.testsEnabled;
 import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayOutputStream;
@@ -46,6 +47,7 @@ public class TestEmailSending {
 
   @Test
   public void testSmtpSend() throws Exception {
+    if (!testsEnabled()) return;
     GreenMail gm = JunitMailHelper.startServer();
     try {
       SmtpClient smtp = createClient(gm);
@@ -63,6 +65,7 @@ public class TestEmailSending {
 
   @Test
   public void testSmtpSendBase64Encoded() throws Exception {
+    if (!testsEnabled()) return;
     GreenMail gm = JunitMailHelper.startServer();
     try {
       SmtpClient smtp = createClient(gm);
@@ -81,6 +84,7 @@ public class TestEmailSending {
 
   @Test
   public void testSmtpSendWithContentType() throws Exception {
+    if (!testsEnabled()) return;
     GreenMail gm = JunitMailHelper.startServer();
     try {
       SmtpClient smtp = createClient(gm);
@@ -99,6 +103,7 @@ public class TestEmailSending {
 
   @Test
   public void testSmtpSendAttachment() throws Exception {
+    if (!testsEnabled()) return;
     GreenMail gm = JunitMailHelper.startServer();
     try {
       SmtpClient smtp = createClient(gm);
@@ -122,6 +127,7 @@ public class TestEmailSending {
 
   @Test
   public void testSmtpSendAttachmentBase64Encoded() throws Exception {
+    if (!testsEnabled()) return;
 
     GreenMail gm = JunitMailHelper.startServer();
     try {
@@ -147,6 +153,7 @@ public class TestEmailSending {
 
   @Test
   public void testSmtpSendAttachmentUUEncoded() throws Exception {
+    if (!testsEnabled()) return;
 
     GreenMail gm = JunitMailHelper.startServer();
     try {

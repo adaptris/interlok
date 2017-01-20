@@ -37,6 +37,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 import javax.servlet.Servlet;
@@ -44,6 +46,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
@@ -65,11 +69,16 @@ import com.adaptris.util.TimeInterval;
  * @author $Author: lchan $
  */
 public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
+  private static final long DEFAULT_WARN_AFTER = TimeUnit.SECONDS.toMillis(20);
+  private static final long DEFAULT_EXPECT_INTERVAL = TimeUnit.SECONDS.toMillis(20);
+
   private static final TimeInterval DEFAULT_MAX_WAIT_TIME = new TimeInterval(600L, TimeUnit.SECONDS);
   private static final TimeInterval DEFAULT_INTERMEDIATE_WAIT_TIME = new TimeInterval(1L, TimeUnit.SECONDS);
   private static final String COMMA = ",";
   private static final List<String> HTTP_METHODS;
-  
+  private static final String EXPECT_102_PROCESSING = "102-Processing";
+  private static final String HEADER_EXPECT = "Expect";
+
   private transient Servlet jettyServlet;
   private transient ServletWrapper servletWrapper = null;
   private transient List<String> acceptedMethods = new ArrayList<>(HTTP_METHODS);
@@ -77,10 +86,19 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   @InputFieldDefault(value = "false")
   @AdvancedConfig
   private Boolean additionalDebug;
+
+  @AdvancedConfig
   private TimeInterval maxWaitTime;
+  @AdvancedConfig
+  @InputFieldDefault(value = "20 Seconds")
+  private TimeInterval warnAfter;
+  @AdvancedConfig
+  @InputFieldDefault(value = "20 Seconds")
+  private TimeInterval sendProcessingInterval;
 
-
-  private long warnAfterMessageHangMillis = 20000;
+  @Deprecated
+  @AdvancedConfig
+  private Long warnAfterMessageHangMillis = null;
 
   static {
     List<String> methods = new ArrayList<>();
@@ -96,7 +114,6 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
     changeState(ClosedState.getInstance());
   }
 
-
   /**
    * Create an AdaptrisMessage from the incoming servlet request and response.
    * 
@@ -107,8 +124,8 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
    * @throws ServletException
    * @see HttpServlet#service(javax.servlet.ServletRequest, javax.servlet.ServletResponse)
    */
-  public abstract AdaptrisMessage createMessage(HttpServletRequest request, HttpServletResponse response) throws IOException,
-      ServletException;
+  public abstract AdaptrisMessage createMessage(HttpServletRequest request, HttpServletResponse response)
+      throws IOException, ServletException;
 
   private boolean submitToWorkflow(AdaptrisMessage msg) {
     boolean waitForCompletion = false;
@@ -179,6 +196,9 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
       acceptedMethods = Arrays.asList(getDestination().getFilterExpression().split(","));
       log.trace("Acceptable HTTP methods set to : {}", acceptedMethods);
     }
+    if (getWarnAfterMessageHangMillis() != null && getWarnAfter() == null) {
+      log.warn("Use of deprecated warn-after-message-hand-millis); use warn-after instead");
+    }
   }
 
   /**
@@ -237,7 +257,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   long maxWaitTime() {
     return getMaxWaitTime() != null ? getMaxWaitTime().toMilliseconds() : DEFAULT_MAX_WAIT_TIME.toMilliseconds();
   }
-  
+
   public Boolean getAdditionalDebug() {
     return additionalDebug;
   }
@@ -250,21 +270,91 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
     return getAdditionalDebug() != null ? getAdditionalDebug().booleanValue() : false;
   }
 
-  public long getWarnAfterMessageHangMillis() {
+  /**
+   * @deprecated since 3.5.1 use {@link #getWarnAfter()} instead.
+   */
+  @Deprecated
+  public Long getWarnAfterMessageHangMillis() {
     return warnAfterMessageHangMillis;
   }
 
-  public void setWarnAfterMessageHangMillis(long warnAfterMessageHangMillis) {
-    this.warnAfterMessageHangMillis = warnAfterMessageHangMillis;
+  /**
+   * @deprecated since 3.5.1 use {@link #setWarnAfter(TimeInterval)} instead.
+   */
+  @Deprecated
+  public void setWarnAfterMessageHangMillis(Long w) {
+    this.warnAfterMessageHangMillis = w;
   }
 
-  
+  /**
+   * @return the warnAfter
+   */
+  public TimeInterval getWarnAfter() {
+    return warnAfter;
+  }
+
+  /**
+   * Log a warning after this interval.
+   * 
+   * @param t the warnAfter to set, default is 20 seconds.
+   */
+  public void setWarnAfter(TimeInterval t) {
+    this.warnAfter = t;
+  }
+
+  long warnAfter() {
+    long result = Long.MAX_VALUE;
+    if (getWarnAfterMessageHangMillis() != null) {
+      log.warn("Use of deprecated warn-after-message-hand-millis); use warn-after instead");
+      result = getWarnAfterMessageHangMillis().longValue();
+    } else {
+      result = getWarnAfter() != null ? getWarnAfter().toMilliseconds() : DEFAULT_WARN_AFTER;
+    }
+    return result;
+  }
+
+  /**
+   * @return the sendExpectEvery
+   */
+  public TimeInterval getSendProcessingInterval() {
+    return sendProcessingInterval;
+  }
+
+  /**
+   * If required send a 102 upon this interval.
+   * 
+   * @param t the sendExpectEvery to set, default is 20 seconds.
+   */
+  public void setSendProcessingInterval(TimeInterval t) {
+    this.sendProcessingInterval = t;
+  }
+
+  long sendProcessingInterval() {
+    return getSendProcessingInterval() != null ? getSendProcessingInterval().toMilliseconds() : DEFAULT_EXPECT_INTERVAL;
+  }
+
   protected class BasicServlet extends HttpServlet {
 
     private static final long serialVersionUID = 2007082301L;
     private transient Map<String, HttpOperation> httpHandlers = null;
+    private transient Timer processingTimer;
 
     protected BasicServlet() {
+    }
+
+    @Override
+    public void destroy() {
+      if (processingTimer != null) {
+        processingTimer.cancel();
+        processingTimer = null;
+      }
+      super.destroy();
+    }
+
+    @Override
+    public void init() throws ServletException {
+      super.init();
+      processingTimer = new Timer(true);
     }
 
     @Override
@@ -306,6 +396,12 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
 
     private void processRequest(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
       AdaptrisMessage msg = createMessage(request, response);
+      ProcessingTimerTask task = null;
+      // If we have a Expect: 102-Processing head, then let's fork a little timer thread to write one
+      //
+      if (hasExpect102(request)) {
+        task = schedule(new ProcessingTimerTask(response));
+      }
       msg.addMetadata(JETTY_URL, request.getRequestURL().toString());
       msg.addMetadata(JETTY_URI, request.getRequestURI());
       msg.addMetadata(HTTP_METHOD, request.getMethod());
@@ -327,10 +423,38 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
         }
         catch (InterruptedException e) {
         }
-        if ((monitor.getEndTime() - monitor.getStartTime()) > getWarnAfterMessageHangMillis())
-          log.warn("Message (" + msg.getUniqueId() + ") took longer than expected; "
-              + ((monitor.getEndTime() - monitor.getStartTime())) + " ms");
+        if ((monitor.getEndTime() - monitor.getStartTime()) > warnAfter()) {
+          log.warn("Message ({}) took longer than expected; {}ms", msg.getUniqueId(),
+              ((monitor.getEndTime() - monitor.getStartTime())));
+        }
       }
+      cancel(task);
+    }
+
+    private void cancel(TimerTask task) {
+      if (task != null) {
+        task.cancel();
+      }
+    }
+
+    private ProcessingTimerTask schedule(ProcessingTimerTask task) {
+      // Every 20 seconds as per RFC2518
+      log.trace("Scheduling a 102 Processing Response");
+      long interval = sendProcessingInterval();
+      processingTimer.schedule(task, interval, interval);
+      return task;
+    }
+
+    private boolean hasExpect102(HttpServletRequest request) {
+      String expectHeader = null;
+      for (Enumeration<String> e = request.getHeaderNames(); e.hasMoreElements();) {
+        String hdr = e.nextElement();
+        if (StringUtils.equalsIgnoreCase(HEADER_EXPECT, hdr)) {
+          expectHeader = request.getHeader(hdr);
+          break;
+        }
+      }
+      return StringUtils.containsIgnoreCase(expectHeader, EXPECT_102_PROCESSING);
     }
 
     private HttpServletResponse addAllow(HttpServletResponse response) throws IOException, ServletException {
@@ -342,4 +466,27 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   public interface HttpOperation {
     void handle(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException;
   }
+
+  class ProcessingTimerTask extends TimerTask {
+    private transient HttpServletResponse myResponse;
+
+    public ProcessingTimerTask(HttpServletResponse response) {
+      myResponse = response;
+    }
+
+    @Override
+    public void run() {
+      try {
+        if (!myResponse.isCommitted()) {
+          myResponse.sendError(102);
+        }
+      }
+      catch (Exception e) {
+        // In the event of an exception, cancel ourselves.
+        this.cancel();
+      }
+    }
+  }
+
+
 }

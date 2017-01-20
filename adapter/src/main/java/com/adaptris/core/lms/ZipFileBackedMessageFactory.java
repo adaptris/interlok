@@ -18,8 +18,6 @@ package com.adaptris.core.lms;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
-import java.io.File;
-
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -64,7 +62,7 @@ public class ZipFileBackedMessageFactory extends FileBackedMessageFactory {
   @Override
   public AdaptrisMessage newMessage() {
     AdaptrisMessage m = new ZipFileBackedMessageImpl(uniqueIdGenerator(), this, 
-        new File(getTempDirectory()), getDefaultBufferSize(), getMaxMemorySizeBytes(), getCompressionMode());
+        tempDirectory(), defaultBufferSize(), maxMemorySizeBytes(), getCompressionMode());
     
     if (!isEmpty(getDefaultCharEncoding())) {
       m.setContentEncoding(getDefaultCharEncoding());

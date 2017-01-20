@@ -1336,8 +1336,8 @@ public class ChannelManagerTest extends ComponentManagerCase {
 
       mBeanServer.addNotificationListener(channelObj, listener, null, null);
       ChannelManagerMBean channelManagerProxy = JMX.newMBeanProxy(mBeanServer, channelObj, ChannelManagerMBean.class);
-      channelManagerProxy.requestStart();
-      channelManagerProxy.requestStop();
+      channelManagerProxy.requestStart(2000);
+      channelManagerProxy.requestStop(2000);
       assertEquals(StoppedState.getInstance(), channelManagerProxy.getComponentState());
       listener.waitForMessages(2);
       assertEquals(2, listener.getNotifications().size());

@@ -23,6 +23,9 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
@@ -184,50 +187,44 @@ public class FailoverJdbcConnection extends DatabaseConnection {
     return result.toString();
   }
 
-  /**
-   * <p>
-   * Another <code>FailoverJdbcConnection</code> is semantically equal to
-   * <code>this</code> if the results of the following method calls on both
-   * objects are equal.
-   * <ul>
-   * <li>getConnectUrls</li>
-   * <li>getAlwaysValidateConnection</li>
-   * <li>getAutoCommit</li>
-   * <li>getDebugMode</li>
-   * <li>getDriverImp</li>
-   * <li>getTestStatement</li>
-   * </ul>
-   * </p>
-   *
-   * @see java.lang.Object#equals(java.lang.Object)
-   */
+
   @Override
   public boolean equals(Object o) {
     boolean rc = false;
+    if (o == null) 
+      return false;
+    
+    if (o == this) 
+      return true;
+    
     if (o instanceof FailoverJdbcConnection) {
-      FailoverJdbcConnection f = (FailoverJdbcConnection) o;
-      rc = getConnectUrls().equals(f.getConnectUrls()) && alwaysValidateConnection() == f.alwaysValidateConnection()
-          && autoCommit() == f.autoCommit() && debugMode() == f.debugMode() && getDriverImp().equals(f.getDriverImp())
-          && getTestStatement().equals(getTestStatement());
+      FailoverJdbcConnection c = (FailoverJdbcConnection) o;
+      
+      return new EqualsBuilder()
+          .append(c.getConnectUrls(), this.getConnectUrls())
+          .append(c.getDriverImp(), this.getDriverImp())
+          .append(c.getAlwaysValidateConnection(), this.getAlwaysValidateConnection())
+          .append(c.getDebugMode(), this.getDebugMode())
+          .append(c.getTestStatement(), this.getTestStatement())
+          .append(c.getAutoCommit(), this.getAutoCommit())
+          .append(c.getConnectionProperties(), this.getConnectionProperties())
+          .isEquals();
     }
-    return rc;
+    return false;
   }
 
-  /**
-   * <p>
-   * Hashcode is determined by the <code>hashCode</code>s of the return values
-   * of the methods specified in <code>equals</code>.
-   * </p>
-   *
-   * @return the hashCode
-   * @see FailoverJdbcConnection#equals
-   * @see java.lang.Object#hashCode()
-   * */
+
   @Override
   public int hashCode() {
-    return getConnectUrls().hashCode() + Boolean.valueOf(alwaysValidateConnection()).hashCode()
-        + Boolean.valueOf(autoCommit()).hashCode() + Boolean.valueOf(debugMode()).hashCode() + getDriverImp().hashCode()
-        + getTestStatement().hashCode();
+    return new HashCodeBuilder(29, 31)
+        .append(this.getConnectUrls())
+        .append(getDriverImp())
+        .append(this.getAlwaysValidateConnection())
+        .append(getDebugMode())
+        .append(getTestStatement())
+        .append(getAutoCommit())
+        .append(this.getConnectionProperties())
+        .toHashCode();
   }
 
   /** @see com.adaptris.core.jdbc.DatabaseConnection#getConnectionName() */

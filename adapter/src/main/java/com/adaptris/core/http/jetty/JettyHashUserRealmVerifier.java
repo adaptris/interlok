@@ -32,7 +32,9 @@ import java.util.Properties;
 import org.eclipse.jetty.util.security.Credential;
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.security.access.IdentityBuilder;
 import com.adaptris.core.security.access.IdentityVerifier;
 import com.adaptris.core.security.access.IdentityVerifierImpl;
 import com.adaptris.core.util.Args;
@@ -86,9 +88,11 @@ public class JettyHashUserRealmVerifier extends IdentityVerifierImpl {
   }
 
   @Override
-  public boolean validate(Map<String, Object> identity) {
+  public boolean validate(IdentityBuilder builder, AdaptrisMessage msg) {
     boolean result = false;
     try {
+      Map<String, Object> identity = builder.build(msg);
+      
       Map<String, AccessCredentials> myUsers = loadUsers();
       String username = (String) identity.get(KEY_USERNAME);
       if (myUsers.containsKey(username)) {

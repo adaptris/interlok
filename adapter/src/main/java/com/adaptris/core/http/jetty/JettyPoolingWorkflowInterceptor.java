@@ -36,11 +36,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(summary = "Interceptor that allows a jetty consumer to be part of a PoolingWorkflow",
     tag = "interceptor,http,https")
 public class JettyPoolingWorkflowInterceptor extends WorkflowInterceptorImpl {
-  static final String MESSAGE_MONITOR = JettyPoolingWorkflowInterceptor.class
+  public static final String MESSAGE_MONITOR = JettyPoolingWorkflowInterceptor.class
       .getCanonicalName() + ".monitor";
-
-  static final String MESSAGE_COMPLETED_PROCESSING = JettyPoolingWorkflowInterceptor.class
-      .getCanonicalName() + ".complete";
 
   public JettyPoolingWorkflowInterceptor() {
     super();

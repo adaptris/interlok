@@ -33,6 +33,7 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.jdbc.AdvancedJdbcPooledConnection;
 import com.adaptris.core.jdbc.JdbcConnection;
 import com.adaptris.core.jdbc.JdbcPooledConnection;
+import com.adaptris.core.jdbc.JdbcService;
 import com.adaptris.core.jdbc.PooledConnectionHelper;
 import com.adaptris.core.services.jdbc.StatementParameterImpl.QueryType;
 import com.adaptris.core.util.JdbcUtil;
@@ -181,8 +182,8 @@ public abstract class JdbcDataCaptureServiceCase extends JdbcServiceExample {
   protected abstract JdbcIteratingDataCaptureServiceImpl newService();
 
   @Override
-  protected List<JdbcIteratingDataCaptureServiceImpl> retrieveObjectsForSampleConfig() {
-    List<JdbcIteratingDataCaptureServiceImpl> returnedObjects = new ArrayList<>();
+  protected List<JdbcService> buildExamples() {
+    List<JdbcService> returnedObjects = new ArrayList<>();
     
     JdbcIteratingDataCaptureServiceImpl service = newService();
     JdbcConnection connection = new JdbcConnection();

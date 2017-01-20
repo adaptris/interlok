@@ -73,7 +73,7 @@ public class VerifyIdentityService extends ServiceImp {
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     try {
-      if (!getVerifier().validate(getBuilder().build(msg))) {
+      if (!getVerifier().validate(getBuilder(), msg)) {
         throw new ServiceException(getVerifier().getClass().getSimpleName() + " failed");
       }
     }

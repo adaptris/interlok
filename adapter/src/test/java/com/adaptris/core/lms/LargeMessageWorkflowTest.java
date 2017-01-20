@@ -25,6 +25,7 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.ConfiguredProduceDestination;
+import com.adaptris.core.CoreConstants;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
@@ -86,6 +87,10 @@ public class LargeMessageWorkflowTest extends StandardWorkflowTest {
         assertEquals(PAYLOAD_2, m.getContent());
         assertTrue("Contains correct metadata key", m.containsKey(METADATA_KEY));
         assertEquals(METADATA_VALUE, m.getMetadataValue(METADATA_KEY));
+        assertNotNull(m.getObjectHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION));
+        assertNotNull(m.getObjectHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION_CAUSE));
+        assertEquals(ThrowExceptionService.class.getSimpleName(),
+            m.getObjectHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION_CAUSE));
       }
     }
     finally {

@@ -30,8 +30,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
 
+import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.ServiceException;
+import com.adaptris.core.security.access.IdentityBuilder;
+import com.adaptris.core.security.access.IdentityBuilderImpl;
 import com.adaptris.core.util.LifecycleHelper;
 
 public class JettyHashUserRealmVerifierTest {
@@ -76,6 +80,15 @@ public class JettyHashUserRealmVerifierTest {
       ;
     }
   }
+  
+  private IdentityBuilder createIdentityBuilderFromMap(final Map<String, Object> map) {
+    return new IdentityBuilderImpl() {
+      @Override
+      public Map<String, Object> build(AdaptrisMessage msg) throws ServiceException {
+        return map;
+      }
+    };
+  }
 
   @Test
   public void testValidate_Basic() throws Exception {
@@ -86,7 +99,7 @@ public class JettyHashUserRealmVerifierTest {
     identityMap.put(JettyHashUserRealmVerifier.KEY_ROLE, "user");
     try {
       BaseCase.start(verify);
-      assertTrue(verify.validate(identityMap));
+      assertTrue(verify.validate(createIdentityBuilderFromMap(identityMap), null));
     }
     finally {
       BaseCase.stop(verify);
@@ -101,7 +114,7 @@ public class JettyHashUserRealmVerifierTest {
     identityMap.put(JettyHashUserRealmVerifier.KEY_PASSWORD, "password");
     try {
       BaseCase.start(verify);
-      assertFalse(verify.validate(identityMap));
+      assertFalse(verify.validate(createIdentityBuilderFromMap(identityMap), null));
     }
     finally {
       BaseCase.stop(verify);
@@ -116,9 +129,9 @@ public class JettyHashUserRealmVerifierTest {
     identityMap.put(JettyHashUserRealmVerifier.KEY_PASSWORD, "plain");
     try {
       BaseCase.start(verify);
-      assertTrue(verify.validate(identityMap));
+      assertTrue(verify.validate(createIdentityBuilderFromMap(identityMap), null));
       identityMap.put(JettyHashUserRealmVerifier.KEY_ROLE, "plain");
-      assertTrue(verify.validate(identityMap));
+      assertTrue(verify.validate(createIdentityBuilderFromMap(identityMap), null));
     }
     finally {
       BaseCase.stop(verify);
@@ -133,9 +146,9 @@ public class JettyHashUserRealmVerifierTest {
     identityMap.put(JettyHashUserRealmVerifier.KEY_PASSWORD, "");
     try {
       BaseCase.start(verify);
-      assertFalse(verify.validate(identityMap));
+      assertFalse(verify.validate(createIdentityBuilderFromMap(identityMap), null));
       identityMap.put(JettyHashUserRealmVerifier.KEY_ROLE, "justarole");
-      assertTrue(verify.validate(identityMap));
+      assertTrue(verify.validate(createIdentityBuilderFromMap(identityMap), null));
     }
     finally {
       BaseCase.stop(verify);
@@ -150,7 +163,7 @@ public class JettyHashUserRealmVerifierTest {
     identityMap.put(JettyHashUserRealmVerifier.KEY_PASSWORD, testName.getMethodName());
     try {
       BaseCase.start(verify);
-      assertFalse(verify.validate(identityMap));
+      assertFalse(verify.validate(createIdentityBuilderFromMap(identityMap), null));
     }
     finally {
       BaseCase.stop(verify);
@@ -165,7 +178,7 @@ public class JettyHashUserRealmVerifierTest {
     identityMap.put(JettyHashUserRealmVerifier.KEY_PASSWORD, testName.getMethodName());
     try {
       BaseCase.start(verify);
-      assertFalse(verify.validate(identityMap));
+      assertFalse(verify.validate(createIdentityBuilderFromMap(identityMap), null));
     }
     finally {
       BaseCase.stop(verify);

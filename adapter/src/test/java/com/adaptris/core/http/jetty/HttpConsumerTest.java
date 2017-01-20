@@ -45,6 +45,7 @@ import com.adaptris.core.http.JdkHttpProducer;
 import com.adaptris.core.http.auth.AdapterResourceAuthenticator;
 import com.adaptris.core.http.jetty.HttpConnection.HttpProperty;
 import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
+import com.adaptris.core.management.webserver.SecurityHandlerWrapper;
 import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.services.WaitService;
 import com.adaptris.core.stubs.AdaptrisMessageStub;
@@ -1088,6 +1089,32 @@ public class HttpConsumerTest extends HttpConsumerExample {
       PortManager.release(connection.getPort());
       Thread.currentThread().setName(threadName);
       assertEquals(0, AdapterResourceAuthenticator.getInstance().currentAuthenticators().size());
+    }
+  }
+
+  public void testBasicConsumeWorkflow_LongLived_Expect() throws Exception {
+    HttpConnection connection = createConnection(null);
+    MockMessageProducer mockProducer = new MockMessageProducer();
+    MessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
+    consumer.setSendProcessingInterval(new TimeInterval(1L, TimeUnit.SECONDS));
+    StandardWorkflow wf = (StandardWorkflow) JettyHelper.createWorkflow(consumer, mockProducer);
+    wf.getServiceCollection().add(new WaitService(new TimeInterval(5L, TimeUnit.SECONDS)));
+    Channel channel = JettyHelper.createChannel(connection, wf);
+    try {
+      channel.requestStart();
+
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
+      msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
+      httpProducer.getAdditionalHeaders().add(new KeyValuePair("Expect", "102-Processing"));
+      start(httpProducer);
+      AdaptrisMessage reply = httpProducer.request(msg, createProduceDestination(connection.getPort()));
+      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
+      doAssertions(mockProducer);
+    }
+    finally {
+      stop(httpProducer);
+      channel.requestClose();
+      PortManager.release(connection.getPort());
     }
   }
 

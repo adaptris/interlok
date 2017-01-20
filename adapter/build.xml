@@ -53,7 +53,8 @@
     <property name="jar.version"            value="${ivy.publish.revision}"/>
     <property name="project.name"           value="adp-${ant.project.name}"/>
     <property name="jar.name"               value="${project.name}.jar"/>
-    <property name="jar.stubs"               value="adp-stubs.jar"/>
+    <property name="jar.sources.name"       value="${project.name}-sources.jar"/>
+    <property name="jar.stubs"              value="adp-stubs.jar"/>
 
     <property name="database.user" value="user" />
     <property name="database.password" value="password" />
@@ -504,8 +505,15 @@
     <zip destfile = "${project.dist.dir}/${project.name}/examples/${project.name}-examples.zip">
       <zipfileset dir="${example-xml.build.dir}" prefix="example-xml/Interlok-Base"/>
     </zip>
+    <mkdir dir="${project.dist.dir}/adp-core/source"/>
+    <jar jarfile="${project.dist.dir}/${project.name}/source/${project.name}.jar">
+      <fileset dir="${src.dir}"/>
+      <zipfileset dir="${basedir}/.." prefix="META-INF">
+        <include name="LICENSE"/>
+      </zipfileset>
+    </jar>
     <ivy:makepom ivyfile="${ivy.adapter.xml}" pomfile="${project.dist.dir}/${project.name}/pom/${project.name}.pom"/>
-    <ivy:makepom ivyfile="${ivy.stubs.xml}" pomfile="${project.dist.dir}/adp-stubs/pom/adp-stubs.pom"/>
+    <ivy:makepom ivyfile="${ivy.stubs.xml}" description="Test Scaffolding for ustom Interlok components"  conf="default,master,compile,provided,runtime,test,system,sources,javadoc,optional" pomfile="${project.dist.dir}/adp-stubs/pom/adp-stubs.pom"/>
   </target>
 
   <target name="publish" depends="prepare-ivy, prepare-for-publish" description="publish a snapshot">

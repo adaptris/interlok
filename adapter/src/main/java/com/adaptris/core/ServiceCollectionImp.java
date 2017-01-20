@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.FifoMutexLock;
 import com.adaptris.util.GuidGenerator;
@@ -244,7 +245,8 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
           handler.handleOutOfState(service);
         }
       } catch (OutOfStateException ex) {
-        throw new OutOfStateException("Service (" + service.getUniqueId() + ") cannot be run, it is not in the correct state - " + service.retrieveComponentState().getClass().getSimpleName());
+        throw new OutOfStateException("Service (" + friendlyName(service) + ") cannot be run, it is not in the correct state - "
+            + service.retrieveComponentState().getClass().getSimpleName());
       }
     }
   }
@@ -412,22 +414,22 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
 
   @Override
   public void handleException(Service service, AdaptrisMessage msg, Exception e) throws ServiceException {
-    msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, e);
     String serviceName = friendlyName(service);
+    msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, e);
+    if (!(service instanceof ServiceCollection)) {
+      // If it's not a ServiceCollection, then it must be a Service.. which
+      // means we should add it as the thing that caused the problem.
+      msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION_CAUSE, friendlyName(service));
+    }
     if (isRestartAffectedServiceOnException()) {
-      log.debug("Service restarts on error, restarting [" + serviceName + "]");
+      log.debug("Service restarts on error, restarting [{}]", serviceName);
       restartService(service);
     } 
     if ((service != null) && (service.continueOnFailure())) {
-      log.debug("continue-on-fail is true, ignoring Exception [" + e.getMessage() + "] from [" + serviceName + "]");
+      log.debug("continue-on-fail is true, ignoring Exception [{}] from [{}]", e.getMessage(), serviceName);
     }
     else {
-      if (e instanceof ServiceException) {
-        throw (ServiceException) e;
-      }
-      else {
-        throw new ServiceException(e);
-      }
+      throw ExceptionHelper.wrapServiceException(e);
     }
   }
 

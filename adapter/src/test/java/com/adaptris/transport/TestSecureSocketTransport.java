@@ -18,6 +18,7 @@ package com.adaptris.transport;
 
 import static com.adaptris.transport.JunitSocketServer.SOCKET_PROPERTIES;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -65,6 +66,9 @@ public final class TestSecureSocketTransport {
       logR.debug("Comparing [" + receive + "] and [" + compare + "]");
       assertEquals(receive, compare);
       tLayer.close();
+    } catch (Exception e) {
+      logR.error("Test failed!", e);
+      throw e;
     }
     finally {
       if (tLayer != null) {

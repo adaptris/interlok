@@ -138,7 +138,7 @@ public class DocumentBuilderFactoryBuilder {
   }
 
   public static final DocumentBuilderFactoryBuilder newInstance() {
-    return new DocumentBuilderFactoryBuilder();
+    return new DocumentBuilderFactoryBuilder().withNamespaceAware(true);
   }
 
   public DocumentBuilderFactory configure(DocumentBuilderFactory f) throws ParserConfigurationException {
@@ -148,6 +148,9 @@ public class DocumentBuilderFactoryBuilder {
     return f;
   }
 
+  public DocumentBuilderFactory build() throws ParserConfigurationException {
+    return configure(DocumentBuilderFactory.newInstance());
+  }
 
   public KeyValuePairSet getFeatures() {
     return features;
@@ -160,7 +163,7 @@ public class DocumentBuilderFactoryBuilder {
    * @param features the features.
    */
   public void setFeatures(KeyValuePairSet features) {
-    this.features = Args.notNull(features, "Features");;
+    this.features = Args.notNull(features, "Features");
   }
 
 

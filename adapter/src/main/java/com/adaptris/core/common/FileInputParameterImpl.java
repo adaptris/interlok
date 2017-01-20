@@ -18,6 +18,7 @@ package com.adaptris.core.common;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -64,6 +65,9 @@ public abstract class FileInputParameterImpl implements DataInputParameter<Strin
       if (u != null) {
         in = u.openStream();
       }
+    }
+    if(in == null) {
+      throw new FileNotFoundException(localFile);
     }
     return in;
   }

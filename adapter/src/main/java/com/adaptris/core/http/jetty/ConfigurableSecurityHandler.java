@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.core.management.webserver.SecurityHandlerWrapper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -49,7 +50,7 @@ public class ConfigurableSecurityHandler implements SecurityHandlerWrapper {
   }
   
   /**
-   * @see com.adaptris.core.http.jetty.SecurityHandlerWrapper#createSecurityHandler()
+   * @see com.adaptris.core.management.webserver.SecurityHandlerWrapper#createSecurityHandler()
    */
   @Override
   public SecurityHandler createSecurityHandler() throws Exception {

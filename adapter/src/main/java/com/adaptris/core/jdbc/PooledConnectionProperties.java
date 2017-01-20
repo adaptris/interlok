@@ -1,7 +1,30 @@
+/*
+ * Copyright 2015 Adaptris Ltd.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.adaptris.core.jdbc;
 
+import com.adaptris.util.KeyValuePair;
+import com.adaptris.util.KeyValuePairSet;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
+/**
+ * Used with {@link AdvancedJdbcPooledConnection} to configure the underlying c3po datasource.
+ * 
+ * @author amcgrath
+ *
+ */
 public enum PooledConnectionProperties {
   
   acquireIncrement {
@@ -293,13 +316,22 @@ public enum PooledConnectionProperties {
   
   abstract void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception;
   
-  public static PooledConnectionProperties searchEnumIgnoreCase(String search) {
+  private static PooledConnectionProperties searchEnumIgnoreCase(String search) {
     for (PooledConnectionProperties each : PooledConnectionProperties.class.getEnumConstants()) {
-      if (each.name().compareToIgnoreCase(search) == 0) {
+      if (each.name().equalsIgnoreCase(search)) {
         return each;
       }
     }
     return null;
   }
 
+  public static void apply(KeyValuePairSet props, ComboPooledDataSource pool) throws Exception {
+    if (props == null) return;
+    for (KeyValuePair kvp : props.getKeyValuePairs()) {
+      PooledConnectionProperties connectionProperty = searchEnumIgnoreCase(kvp.getKey());
+      if (connectionProperty != null) {
+        connectionProperty.applyProperty(pool, kvp.getValue());
+      }
+    }
+  }
 }
