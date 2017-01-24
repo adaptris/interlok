@@ -85,6 +85,7 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
     if (ftp == null) {
       ftp = createFTPClient();
       ftp.setConnectTimeout(timeout);
+      ftp.setDataTimeout(timeout);
 
       try {
         ftp.connect(remoteHost, port);
