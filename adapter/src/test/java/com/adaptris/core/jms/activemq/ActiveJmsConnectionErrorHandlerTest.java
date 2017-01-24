@@ -171,6 +171,7 @@ public class ActiveJmsConnectionErrorHandlerTest extends ActiveJmsConnectionErro
     JmsConnection connection = activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), true);
     connection.setConnectionErrorHandler(createErrorHandler());
     connection.setUniqueId(getName());
+    connection.setConnectionRetryInterval(new TimeInterval(5L, "SECONDS"));
     adapter.getSharedComponents().addConnection(connection);
     MockChannel channel = createChannel(activeMqBroker, new SharedConnection(getName()), getName());
     MockMessageProducer producer = (MockMessageProducer) channel.getWorkflowList().get(0).getProducer();
@@ -212,6 +213,7 @@ public class ActiveJmsConnectionErrorHandlerTest extends ActiveJmsConnectionErro
     JmsConnection connection = activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), true);
     connection.setConnectionErrorHandler(createErrorHandler());
     connection.setUniqueId(getName());
+    connection.setConnectionRetryInterval(new TimeInterval(5L, "SECONDS"));
     adapter.getSharedComponents().addConnection(connection);
     MockChannel started = createChannel(activeMqBroker, new SharedConnection(getName()), getName());
     MockChannel neverStarted = createChannel(activeMqBroker, new SharedConnection(getName()), getName() + "_2");
