@@ -47,7 +47,10 @@ public class RetryMessageErrorHandlerTest extends ExampleErrorHandlerCase {
   }
 
   private RetryMessageErrorHandler createMessageErrorHandler(AdaptrisMessageProducer p) throws Exception {
-    RetryMessageErrorHandler meh = new RetryMessageErrorHandler();
+    return configure(new RetryMessageErrorHandler(), p);
+  }
+
+  private RetryMessageErrorHandler configure(RetryMessageErrorHandler meh, AdaptrisMessageProducer p) throws Exception {
     meh.setProcessingExceptionService(new ServiceList(new ArrayList<Service>(Arrays.asList(new Service[]
     {
       new StandaloneProducer(p)
@@ -249,7 +252,7 @@ public class RetryMessageErrorHandlerTest extends ExampleErrorHandlerCase {
       MockMessageProducer failProducer = new MockMessageProducer();
       RetryMessageErrorHandler meh = createMessageErrorHandler(failProducer);
       meh.setRetryInterval(DEFAULT_RETRY_INTERVAL);
-      meh.setRetryLimit(2);
+      meh.setRetryLimit(0);
       MockMessageProducer workflowProducer = new MockMessageProducer();
       Workflow workflow = createWorkflow(workflowProducer);
       Channel channel = createChannel(workflow, meh);
@@ -260,6 +263,33 @@ public class RetryMessageErrorHandlerTest extends ExampleErrorHandlerCase {
       assertEquals("Ensure stop forces fail producer", 1, failProducer.getMessages().size());
     }
     finally {
+      renameThread(name);
+    }
+  }
+
+  public void testRetryWithStoppedTimer() throws Exception {
+    String name = renameThread(getName());
+    Channel channel = null;
+    try {
+      MockMessageProducer failProducer = new MockMessageProducer();
+      RetryMessageErrorHandler meh = configure(new RetryMessageErrorHandler() {
+        public void handleProcessingException(AdaptrisMessage msg) {
+          retryTimer.cancel();
+          super.handleProcessingException(msg);
+        }
+      }, failProducer);
+      meh.setRetryInterval(DEFAULT_RETRY_INTERVAL);
+      meh.setRetryLimit(0);
+      MockMessageProducer workflowProducer = new MockMessageProducer();
+      Workflow workflow = createWorkflow(workflowProducer);
+      channel = createChannel(workflow, meh);
+      channel.prepare();
+      channel.requestStart();
+      workflow.onAdaptrisMessage(AdaptrisMessageFactory.getDefaultInstance().newMessage("XXXX"));
+      waitForMessages(failProducer, 1);
+      assertEquals("Ensure produced to fail producer", 1, failProducer.getMessages().size());
+    } finally {
+      BaseCase.stop(channel);
       renameThread(name);
     }
   }

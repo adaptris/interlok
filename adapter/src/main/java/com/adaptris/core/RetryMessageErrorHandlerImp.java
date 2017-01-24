@@ -81,7 +81,7 @@ public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExce
   private TimeInterval retryInterval;
 
   private transient State currentState;
-  private transient Timer retryTimer = null;
+  protected transient Timer retryTimer = null;
   protected transient List<AdaptrisMessage> retryList;
   protected transient List<AdaptrisMessage> inProgress;
   private transient FifoMutexLock lock;
@@ -264,7 +264,7 @@ public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExce
   }
 
   private void failMessage(AdaptrisMessage msg) {
-    log.error("Message [" + msg.getUniqueId() + "] deemed to have failed");
+    log.error("Message [{}] deemed to have failed", msg.getUniqueId());
     if (msg.getObjectHeaders().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION)) {
       Exception e = (Exception) msg.getObjectHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION);
       log.error(e.getMessage(), e);
@@ -273,8 +273,14 @@ public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExce
   }
 
   protected void scheduleNextRun(AdaptrisMessage msg) {
-    log.trace("Message [" + msg.getUniqueId() + "] should be retried");
-    retryTimer.schedule(new RetryThread(msg), retryIntervalMs());
+    log.trace("Message [{}] should be retried", msg.getUniqueId());
+    try {
+      retryTimer.schedule(new RetryThread(msg), retryIntervalMs());
+    }
+    catch (Exception e) {
+      log.warn("Failed to reschedule retry, failing message");
+      failMessage(msg);
+    }
   }
 
   /**
@@ -311,16 +317,16 @@ public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExce
           return;
         }
 
-        log.trace("Retrying message [" + msg.getUniqueId() + "]");
+        log.trace("Retrying message [{}]", msg.getUniqueId());
         Workflow workflow = registeredWorkflows().get(msg.getMetadataValue(Workflow.WORKFLOW_ID_KEY));
         if (workflow != null) {
-          log.trace("Retrying message [" + msg.getUniqueId() + "] in workflow [" + workflow.obtainWorkflowId() + "]");
+          log.trace("Retrying message [{}] in workflow [{}]", msg.getUniqueId(), workflow.obtainWorkflowId());
           workflow.onAdaptrisMessage(msg);
           inProgress.remove(msg);
         }
         else {
-          log.warn("Workflow [" + msg.getMetadataValue(Workflow.WORKFLOW_ID_KEY) + "] not registered, failing message");
-          log.warn("Registered Workflows :" + registeredWorkflows().keySet());
+          log.warn("Workflow [{}] not registered, failing message", msg.getMetadataValue(Workflow.WORKFLOW_ID_KEY));
+          log.warn("Registered Workflows :{}", registeredWorkflows().keySet());
           failMessage(msg);
           inProgress.remove(msg);
         }
