@@ -99,10 +99,20 @@ public class FormattedMetadataDestination implements ProduceDestination {
     return metadataKeys;
   }
 
+  /**
+   * Get the element formatter.
+   * 
+   * @return The element formatter.
+   */
   public ElementFormatter getElementFormatter() {
     return elementFormatter;
   }
 
+  /**
+   * Set the element formatter.
+   * 
+   * @param elementFormatter The element formatter.
+   */
   public void setElementFormatter(ElementFormatter elementFormatter) {
     this.elementFormatter = elementFormatter;
   }
