@@ -77,8 +77,11 @@ public class AddFormattedMetadataService extends ServiceImp {
         throw new ServiceException("[" + key + "] does not exist as metadata");
       }
       final String value = msg.getMetadataValue(key);
-//      values.add(value);
-      values.add(elementFormatter.format(msg.getMetadata(key)));
+      if (elementFormatter != null) {
+        values.add(elementFormatter.format(msg.getMetadata(key)));
+      } else {
+        values.add(value);
+      }
       log.trace("Adding Metadata [{}]=[{}]", key, value);
     }
     return values.toArray(new Object[values.size()]);
