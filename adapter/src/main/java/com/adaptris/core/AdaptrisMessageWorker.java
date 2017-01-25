@@ -110,12 +110,4 @@ public interface AdaptrisMessageWorker extends AdaptrisComponent, MessageEventGe
    */
   public void setMessageFactory(AdaptrisMessageFactory f);
 
-  /**
-   * <p>
-   * Returns the optional unique identifier for this Component.
-   * </p>
-   *
-   * @return the unique identifier for this Component
-   */
-  String getUniqueId();
 }

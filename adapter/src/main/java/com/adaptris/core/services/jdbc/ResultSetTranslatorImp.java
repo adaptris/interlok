@@ -101,6 +101,8 @@ public abstract class ResultSetTranslatorImp implements ResultSetTranslator {
   @AdvancedConfig
   @AffectsMetadata
   private String updateCountMetadataItem;
+  
+  private String uniqueId;
 
   protected ResultSetTranslatorImp() {
     setColumnNameStyle(ColumnStyle.NoStyle);
@@ -287,5 +289,13 @@ public abstract class ResultSetTranslatorImp implements ResultSetTranslator {
    */
   public void setUpdateCountMetadataItem(String s) {
     this.updateCountMetadataItem = s;
+  }
+
+  public String getUniqueId() {
+    return uniqueId;
+  }
+
+  public void setUniqueId(String uniqueId) {
+    this.uniqueId = uniqueId;
   }
 }

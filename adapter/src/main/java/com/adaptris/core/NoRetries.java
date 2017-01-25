@@ -35,6 +35,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "The default NO-OP failed message retrier implementation", tag = "error-handling,base")
 public class NoRetries implements FailedMessageRetrier {
+  
+  private String uniqueId;
 
   public void addWorkflow(Workflow workflow) {
     ;
@@ -65,5 +67,13 @@ public class NoRetries implements FailedMessageRetrier {
   @Override
   public void prepare() throws CoreException {
 
+  }
+
+  public String getUniqueId() {
+    return uniqueId;
+  }
+
+  public void setUniqueId(String uniqueId) {
+    this.uniqueId = uniqueId;
   }
 }

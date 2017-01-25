@@ -63,6 +63,8 @@ public final class WorkflowList extends AbstractCollection<Workflow> implements 
   private WorkflowLifecycleStrategy lifecycleStrategy;
   private transient WorkflowLifecycleStrategy defaultStrategy = new DefaultWorkflowLifecycleStrategy();
 
+  private String uniqueId;
+  
   /**
    * <p>
    * Creates a new instance.
@@ -344,6 +346,14 @@ public final class WorkflowList extends AbstractCollection<Workflow> implements 
   @Override
   public List<Workflow> subList(int fromIndex, int toIndex) {
     return workflows.subList(fromIndex, toIndex);
+  }
+
+  public String getUniqueId() {
+    return uniqueId;
+  }
+
+  public void setUniqueId(String uniqueId) {
+    this.uniqueId = uniqueId;
   }
 
 }

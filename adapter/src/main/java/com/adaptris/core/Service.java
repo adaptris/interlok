@@ -50,15 +50,6 @@ public interface Service extends AdaptrisComponent, MessageEventGenerator, State
 
   /**
    * <p>
-   * Returns the optional unique identifier for this <code>Service</code>.
-   * </p>
-   *
-   * @return the unique identifier for this <code>Service</code>
-   */
-  String getUniqueId();
-
-  /**
-   * <p>
    * Returns true if the implementation supports branching.
    * </p>
    *

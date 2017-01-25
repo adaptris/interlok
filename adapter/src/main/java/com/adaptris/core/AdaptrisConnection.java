@@ -32,14 +32,7 @@ import java.util.Set;
  */
 public interface AdaptrisConnection extends AdaptrisComponent, ComponentLifecycleExtension,
     StateManagedComponent, JndiBindable {
-
-  /**
-   * Get the unique-id that is associated with this connection.
-   *
-   * @return the unique-id
-   */
-  String getUniqueId();
-
+  
   /**
    * Return a collection of components that need to be restarted on exception.
    *

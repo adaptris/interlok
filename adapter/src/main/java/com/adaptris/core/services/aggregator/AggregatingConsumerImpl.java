@@ -44,7 +44,8 @@ public abstract class AggregatingConsumerImpl<E extends AggregatingConsumeServic
   @NotNull
   @Valid
   private ConsumeDestinationGenerator destination;
-
+  private String uniqueId;
+  
   public AggregatingConsumerImpl() {
   }
 
@@ -122,5 +123,13 @@ public abstract class AggregatingConsumerImpl<E extends AggregatingConsumeServic
   protected void stop(AdaptrisComponent ac) {
     LifecycleHelper.stop(ac);
     LifecycleHelper.close(ac);
+  }
+
+  public String getUniqueId() {
+    return uniqueId;
+  }
+
+  public void setUniqueId(String uniqueId) {
+    this.uniqueId = uniqueId;
   }
 }
