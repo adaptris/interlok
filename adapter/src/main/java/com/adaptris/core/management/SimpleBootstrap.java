@@ -27,18 +27,25 @@ package com.adaptris.core.management;
  */
 public class SimpleBootstrap extends StandardBootstrap {
 
+	/**
+	 * This default constructor is called from {@link ClassLoaderBootstrap} using
+	 * <code>Class&lt;?&gt;.getConstructor().newInstance()</code>. For this reason it
+	 * then needs to call <code>super.boot()</code>.
+	 * 
+	 * @throws Exception
+	 *           Thrown if there is any problem during the bootstrap process.
+	 */
 	public SimpleBootstrap() throws Exception {
 		super(new String[0]);
 		super.boot();
 	}
-	
+
   public SimpleBootstrap(String[] argv) throws Exception {
     super(argv);
   }
 
   @Override
   public void boot() throws Exception {
-    logVersionInformation();
     super.boot();
   }
 
