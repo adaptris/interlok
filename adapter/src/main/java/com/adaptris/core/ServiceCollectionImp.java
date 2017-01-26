@@ -50,6 +50,9 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   private static final OutOfStateHandler DEFAULT_STATE_HANDLER = new RaiseExceptionOutOfStateHandler();
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
+  @AdvancedConfig
+  private String lookupName;
+  
   private String uniqueId;
   @InputFieldDefault(value = "false")
   private Boolean restartAffectedServiceOnException;
@@ -615,6 +618,14 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
       }
     }
     return result;
+  }
+
+  public String getLookupName() {
+    return lookupName;
+  }
+
+  public void setLookupName(String lookupName) {
+    this.lookupName = lookupName;
   }
 
 }

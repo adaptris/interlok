@@ -43,6 +43,8 @@ public abstract class ServiceImp implements Service {
   private transient ComponentState serviceState;
   private transient boolean prepared = false;
   
+  @AdvancedConfig
+  private String lookupName;
   private String uniqueId;
   private transient boolean isBranching; // defaults to false
   @AdvancedConfig
@@ -267,6 +269,14 @@ public abstract class ServiceImp implements Service {
    */
   public void requestClose() {
     serviceState.requestClose(this);
+  }
+
+  public String getLookupName() {
+    return lookupName;
+  }
+
+  public void setLookupName(String lookupName) {
+    this.lookupName = lookupName;
   }
 
 }

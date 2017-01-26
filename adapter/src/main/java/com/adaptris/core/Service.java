@@ -25,7 +25,7 @@ package com.adaptris.core;
  * <code>Thread</code>s - <code>doService</code> need not be synchronized.
  * </p>
  */
-public interface Service extends AdaptrisComponent, MessageEventGenerator, StateManagedComponent, ComponentLifecycleExtension {
+public interface Service extends AdaptrisComponent, MessageEventGenerator, StateManagedComponent, ComponentLifecycleExtension, JndiBindable {
 
   /**
    * <p>
