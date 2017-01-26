@@ -53,64 +53,104 @@ public interface ResourceAuthenticator {
       return requestingHost;
     }
 
-    public final void setRequestingHost(String requestingHost) {
-      this.requestingHost = requestingHost;
+    public final void setRequestingHost(String host) {
+      this.requestingHost = host;
+    }
+
+    public ResourceTarget withRequestingHost(String host) {
+      setRequestingHost(host);
+      return this;
     }
 
     public final InetAddress getRequestingSite() {
       return requestingSite;
     }
 
-    public final void setRequestingSite(InetAddress requestingSite) {
-      this.requestingSite = requestingSite;
+    public final void setRequestingSite(InetAddress site) {
+      this.requestingSite = site;
+    }
+
+    public ResourceTarget withRequestingSite(InetAddress site) {
+      setRequestingSite(site);
+      return this;
     }
 
     public final int getRequestingPort() {
       return requestingPort;
     }
 
-    public final void setRequestingPort(int requestingPort) {
-      this.requestingPort = requestingPort;
+    public final void setRequestingPort(int port) {
+      this.requestingPort = port;
+    }
+
+    public ResourceTarget withRequestingPort(int port) {
+      setRequestingPort(port);
+      return this;
     }
 
     public final String getRequestingProtocol() {
       return requestingProtocol;
     }
 
-    public final void setRequestingProtocol(String requestingProtocol) {
-      this.requestingProtocol = requestingProtocol;
+    public final void setRequestingProtocol(String protocol) {
+      this.requestingProtocol = protocol;
+    }
+
+    public ResourceTarget withRequestingProtocol(String protocol) {
+      setRequestingProtocol(protocol);
+      return this;
     }
 
     public final String getRequestingPrompt() {
       return requestingPrompt;
     }
 
-    public final void setRequestingPrompt(String requestingPrompt) {
-      this.requestingPrompt = requestingPrompt;
+    public final void setRequestingPrompt(String prompt) {
+      this.requestingPrompt = prompt;
+    }
+
+    public ResourceTarget withRequestingPrompt(String prompt) {
+      setRequestingPrompt(prompt);
+      return this;
     }
 
     public final String getRequestingScheme() {
       return requestingScheme;
     }
 
-    public final void setRequestingScheme(String requestingScheme) {
-      this.requestingScheme = requestingScheme;
+    public final void setRequestingScheme(String scheme) {
+      this.requestingScheme = scheme;
+    }
+
+    public ResourceTarget withRequestingScheme(String scheme) {
+      setRequestingPrompt(scheme);
+      return this;
     }
 
     public final URL getRequestingURL() {
       return requestingURL;
     }
 
-    public final void setRequestingURL(URL requestingURL) {
-      this.requestingURL = requestingURL;
+    public final void setRequestingURL(URL url) {
+      this.requestingURL = url;
+    }
+
+    public ResourceTarget withRequestingURL(URL url) {
+      setRequestingURL(url);
+      return this;
     }
 
     public final RequestorType getRequestorType() {
       return requestorType;
     }
 
-    public final void setRequestorType(RequestorType requestingAuthType) {
-      this.requestorType = requestingAuthType;
+    public final void setRequestorType(RequestorType type) {
+      this.requestorType = type;
+    }
+
+    public ResourceTarget withRequestorType(RequestorType type) {
+      setRequestorType(type);
+      return this;
     }
 
     @Override
