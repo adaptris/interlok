@@ -16,6 +16,7 @@
 
 package com.adaptris.core.management;
 
+import com.adaptris.interlok.management.ClassLoaderBootstrap;
 
 /**
  * Entry point into an adapter from the commandline.
@@ -37,7 +38,7 @@ public class SimpleBootstrap extends StandardBootstrap {
 	 */
 	public SimpleBootstrap() throws Exception {
 		super(new String[0]);
-		super.boot();
+    super.standardBoot();
 	}
 
   public SimpleBootstrap(String[] argv) throws Exception {
@@ -46,7 +47,8 @@ public class SimpleBootstrap extends StandardBootstrap {
 
   @Override
   public void boot() throws Exception {
-    super.boot();
+    logVersionInformation();
+    super.standardBoot();
   }
 
   /**
