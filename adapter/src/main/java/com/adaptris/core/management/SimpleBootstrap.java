@@ -29,7 +29,7 @@ public class SimpleBootstrap extends StandardBootstrap {
 
 	public SimpleBootstrap() throws Exception {
 		super(new String[0]);
-		super.boot();
+    super.standardBoot();
 	}
 	
   public SimpleBootstrap(String[] argv) throws Exception {
@@ -39,7 +39,7 @@ public class SimpleBootstrap extends StandardBootstrap {
   @Override
   public void boot() throws Exception {
     logVersionInformation();
-    super.boot();
+    super.standardBoot();
   }
 
   /**
