@@ -17,7 +17,7 @@
 package com.adaptris.core;
 
 /**
- * Interface for objects that can be found to the internal JNDI context.
+ * Interface for objects that can be bound to the internal JNDI context.
  * 
  * @author amcgrath
  * 
