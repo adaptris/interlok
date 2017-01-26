@@ -30,10 +30,6 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
@@ -63,13 +59,14 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"connections", "lifecycleStrategy", "debug"})
 public class SharedComponentList implements AdaptrisComponent, ComponentLifecycleExtension {
 
-  private transient Logger log = LoggerFactory.getLogger(this.getClass());
   private static final DefaultLifecycleStrategy DEFAULT_STRATEGY = new DefaultLifecycleStrategy();
 
   @Valid
   @AutoPopulated
-  @NotNull
   private List<AdaptrisConnection> connections;
+  @Valid
+  @AutoPopulated
+  private List<Service> services;
   @Valid
   private TransactionManager transactionManager;
   @AdvancedConfig
@@ -77,13 +74,18 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
   private Boolean debug;
   @Valid
   private SharedComponentLifecycleStrategy lifecycleStrategy;
+  
+  private String uniqueId;
   private transient Set<String> connectionIds;
+  private transient Set<String> serviceIds;
   private transient Set<String> notYetInJndi;
   private transient InitialContext context = null;
 
   public SharedComponentList() {
     connections = new ArrayList<AdaptrisConnection>();
+    services = new ArrayList<Service>();
     connectionIds = new HashSet<>();
+    serviceIds = new HashSet<>();
     notYetInJndi = new HashSet<>();
   }
 
@@ -98,7 +100,7 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
    * 
    * @return the list of connections.
    */
-  public List<AdaptrisConnection> getConnections() {
+  public List<AdaptrisConnection> getConnections() {    
     return new ArrayList<AdaptrisConnection>(connections);
   }
 
@@ -114,13 +116,24 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
    * @throws IllegalArgumentException if one or more connections had no unique-id, or if one or more connections would be rejected
    *           because of duplication.
    */
-  public void setConnections(List<AdaptrisConnection> l) {
+  public void setConnections(List<AdaptrisConnection> l) {    
     ensureNoDuplicateIds(verifyHasUniqueId(l));
     connections.clear();
     connectionIds.clear();
     doAddConnections(l);
   }
 
+
+  public List<Service> getServices() {
+    return new ArrayList<Service>(services);
+  }
+
+  public void setServices(List<Service> serviceLists) {
+    ensureNoDuplicateIds(verifyHasUniqueId(serviceLists));
+    services.clear();
+    serviceIds.clear();
+    doAddServiceLists(serviceLists);
+  }
 
   @Override
   public void init() throws CoreException {
@@ -172,7 +185,9 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
   private synchronized void unbindAll() {
     unbindQuietly(connections);
     unbindQuietly(getTransactionManager());
+    unbindQuietly(services);
     notYetInJndi.addAll(connectionIds);
+    notYetInJndi.addAll(serviceIds);
     if(transactionManager != null)
       notYetInJndi.add(transactionManager.getUniqueId());
   }
@@ -185,21 +200,35 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
    * internal JNDI. Use this method after adding a connection to bind the connection to JNDI.
    * </p>
    * 
-   * @param connectionId the connection ID of connection to bind.
+   * @param componentId the connection ID of connection to bind.
    * @throws CoreException wrapping other exceptions.
    */
-  public void bindJNDI(String connectionId) throws CoreException {
-    AdaptrisConnection connectionToRegister = null;
-    for (AdaptrisConnection c : connections) {
-      if (c.getUniqueId().equals(connectionId)) {
-        connectionToRegister = c;
-        break;
+  public void bindJNDI(String componentId) throws CoreException {
+    
+    if(containsConnection(componentId)) {
+      AdaptrisConnection connectionToRegister = null;
+      for (AdaptrisConnection c : connections) {
+        if (c.getUniqueId().equals(componentId)) {
+          connectionToRegister = c;
+          break;
+        }
       }
+      if(connectionToRegister != null)
+        bind(getContext(), connectionToRegister, isDebug());
     }
-    if(connectionToRegister != null)
-      bind(getContext(), connectionToRegister, isDebug());
+    else if(containsServiceList(componentId)) {
+      Service serviceCollectionToRegister = null;
+      for (Service c : services) {
+        if (c.getUniqueId().equals(componentId)) {
+          serviceCollectionToRegister = c;
+          break;
+        }
+      }
+      if(serviceCollectionToRegister != null)
+        bind(getContext(), serviceCollectionToRegister, isDebug());
+    }
     else if(getTransactionManager() != null) {
-      if(connectionId.equals(getTransactionManager().getUniqueId()))
+      if(componentId.equals(getTransactionManager().getUniqueId()))
         bind(getContext(), getTransactionManager(), isDebug());
     }
   }
@@ -220,6 +249,31 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
    * @throws IllegalArgumentException if the connection has no unique-id.
    * @return true if the object was successfully added, false if there was already a connection with that unique-id
    */
+  public boolean addServiceCollection(Service c) {
+    verify(c);
+    return doAddServiceList(c);
+  }
+
+  /**
+   * Convenience method to add service collections performing verification.
+   * 
+   * @param coll the service collections to add
+   * @throws IllegalArgumentException if one or more service collections has no unique-id.
+   * @return a collection of things that were rejected.
+   */
+  public Collection<Service> addServiceCollections(Collection<Service> coll) {
+    if (coll == null) throw new IllegalArgumentException("Collection is null");
+    verifyHasUniqueId(coll);
+    return doAddServiceLists(coll);
+  }
+  
+  /**
+   * Convenience method to add a service collection performing verification.
+   * 
+   * @param c the service collection to add
+   * @throws IllegalArgumentException if the service collection has no unique-id.
+   * @return true if the object was successfully added, false if there was already a service collection with that unique-id
+   */
   public boolean addConnection(AdaptrisConnection c) {
     verify(c);
     return doAddConnection(c);
@@ -238,6 +292,25 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
     return doAddConnections(coll);
   }
 
+  private boolean doAddServiceList(Service serviceCollection) {
+    if (!containsServiceList(serviceCollection.getUniqueId())) {
+      serviceIds.add(serviceCollection.getUniqueId());
+      notYetInJndi.add(serviceCollection.getUniqueId());
+      return services.add(serviceCollection);
+    }
+    return false;
+  }
+  
+  private Collection<Service> doAddServiceLists(Collection<Service> coll) {
+    List<Service> rejected = new ArrayList<Service>();
+    for (Service c : coll) {
+      if (!doAddServiceList(c)) {
+        rejected.add(c);
+      }
+    }
+    return rejected;
+  }
+  
   private boolean doAddConnection(AdaptrisConnection c) {
     if (!containsConnection(c.getUniqueId())) {
       connectionIds.add(c.getUniqueId());
@@ -279,6 +352,29 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
     unbindQuietly(remove);
     return remove;
   }
+  
+  /**
+   * Remove a service collection by it's ID.
+   * 
+   * @param id the unique-id of the service collection to remove.
+   * @return a collection of the removed items
+   */
+  public Collection<Service> removeServiceCollection(String id) {
+    List<Service> keep = new ArrayList<>();
+    List<Service> remove = new ArrayList<>();
+    for (Service c : services) {
+      if (c.getUniqueId().equals(id)) {
+        remove.add(c);
+      }
+      else {
+        keep.add(c);
+      }
+    }
+    setServices(keep);
+    // unbind them from JNDI as well
+    unbindQuietly(remove);
+    return remove;
+  }
 
   /**
    * Does the underlying connection list contain this id.
@@ -290,30 +386,40 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
     return connectionIds.contains(id);
   }
   
+  /**
+   * Does the underlying service collection list contain this id.
+   * 
+   * @param id the ID to check for.
+   * @return true if the ID exists.
+   */
+  public boolean containsServiceList(String id) {
+    return serviceIds.contains(id);
+  }
+  
 
-  private static void verify(AdaptrisConnection c) throws IllegalArgumentException {
-    if (c == null) throw new IllegalArgumentException("Connection is null");
+  private static void verify(AdaptrisComponent c) throws IllegalArgumentException {
+    if (c == null) throw new IllegalArgumentException("Component is null");
     if (isEmpty(c.getUniqueId()))
-      throw new IllegalArgumentException("Connection " + c.getClass().getSimpleName() + "has no unique-id");
+      throw new IllegalArgumentException("Component " + c.getClass().getSimpleName() + "has no unique-id");
   }
 
-  private static Collection<AdaptrisConnection> verifyHasUniqueId(Collection<AdaptrisConnection> connections) {
-    for (AdaptrisConnection c : connections) {
+  private static Collection<? extends AdaptrisComponent> verifyHasUniqueId(Collection<? extends AdaptrisComponent> components) {
+    for (AdaptrisComponent c : components) {
       verify(c);
     }
-    return connections;
+    return components;
   }
 
-  private static Collection<AdaptrisConnection> ensureNoDuplicateIds(Collection<AdaptrisConnection> connections)
+  private static Collection<? extends AdaptrisComponent> ensureNoDuplicateIds(Collection<? extends AdaptrisComponent> components)
       throws IllegalArgumentException {
-    Set<String> connectionIds = new HashSet<>();
-    for (AdaptrisConnection c : connections) {
-      connectionIds.add(c.getUniqueId());
+    Set<String> componentIds = new HashSet<>();
+    for (AdaptrisComponent c : components) {
+      componentIds.add(c.getUniqueId());
     }
-    if (connectionIds.size() != connections.size()) {
+    if (componentIds.size() != components.size()) {
       throw new IllegalArgumentException("Shared connections has duplicate IDs; please review config");
     }
-    return connections;
+    return components;
   }
   
 
@@ -355,7 +461,7 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
     return context;
   }
 
-  private void unbindQuietly(Collection<AdaptrisConnection> connections) {
+  private void unbindQuietly(Collection<? extends AdaptrisComponent> components) {
     Context ctx = null;
     try {
       ctx = getContext();
@@ -363,12 +469,12 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
     catch (CoreException e) {
       return;
     }
-    for (AdaptrisConnection c : connections) {
+    for (AdaptrisComponent c : components) {
       JndiHelper.unbindQuietly(ctx, c, isDebug());
     }
   }
   
-  private void unbindQuietly(TransactionManager transactionManager) {
+  private void unbindQuietly(AdaptrisComponent component) {
     Context ctx = null;
     try {
       ctx = getContext();
@@ -376,7 +482,7 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
     catch (CoreException e) {
       return;
     }
-    JndiHelper.unbindQuietly(ctx, transactionManager, isDebug());
+    JndiHelper.unbindQuietly(ctx, component, isDebug());
   }
 
 
@@ -422,6 +528,14 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
   public void setTransactionManager(TransactionManager transactionManager) {
     this.transactionManager = transactionManager;
     notYetInJndi.add(transactionManager.getUniqueId());
+  }
+
+  public String getUniqueId() {
+    return uniqueId;
+  }
+
+  public void setUniqueId(String uniqueId) {
+    this.uniqueId = uniqueId;
   }
 
 }
