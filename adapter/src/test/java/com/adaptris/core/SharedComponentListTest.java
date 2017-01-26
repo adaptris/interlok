@@ -29,6 +29,8 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import com.adaptris.core.fs.FsConsumer;
+import com.adaptris.core.fs.FsProducer;
 import com.adaptris.core.ftp.FtpConnection;
 import com.adaptris.core.http.jetty.EmbeddedConnection;
 import com.adaptris.core.jdbc.AdvancedJdbcPooledConnection;
@@ -39,6 +41,7 @@ import com.adaptris.core.jms.JmsConsumer;
 import com.adaptris.core.jms.JmsProducer;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
 import com.adaptris.core.lifecycle.FilteredSharedComponentStart;
+import com.adaptris.core.services.LogMessageService;
 import com.adaptris.core.stubs.MockConnection;
 import com.adaptris.core.transaction.DummyTransactionManager;
 import com.adaptris.core.transaction.SharedTransactionManager;
@@ -60,11 +63,11 @@ public class SharedComponentListTest extends ExampleConfigCase {
    */
   public static final String BASE_DIR_KEY = "SharedComponentConfig.baseDir";
 
-  private static final String EXAMPLE_XML_NOTES = "<!--\n\n" + "This is an example of using shared connections. "
-      + "\nEach connection that is shared should have an unique id associated with it; this can be "
-      + "\nreferred to in configuration by using a 'shared-connection' connection implementation."
+  private static final String EXAMPLE_XML_NOTES = "<!--\n\n" + "This is an example of using shared connections and shared services. "
+      + "\nEach connection/service that is shared should have an unique id associated with it; this can be "
+      + "\nreferred to in configuration by using a 'shared-connection' connection or 'shared-service' service implementation."
       + "\n\nNote that this is different to XStream referencing by ID; "
-      + "\nwhile it is possible to share arbitrary components such as services/producers in that way, "
+      + "\nwhile it is possible to share arbitrary components such as producers in that way, "
       + "\nbehaviour may be undefined as those components may not be" + "\nthreadsafe or reentrant" + "\n\n-->\n";
 
   private enum ConnectionBuilder {
@@ -631,7 +634,19 @@ public class SharedComponentListTest extends ExampleConfigCase {
     JmsConnection jmsConnection = createPtpConnection("jms-connection");
 
     adapter.getSharedComponents().addConnection(jmsConnection);
+    
+    ServiceList serviceList = new ServiceList();
+    serviceList.setUniqueId("shared-service-list");
+    serviceList.add(new LogMessageService("log-message-service"));
+    
+    adapter.getSharedComponents().addServiceCollection(serviceList);
 
+    StandardWorkflow wf1 = new StandardWorkflow();
+    wf1.setUniqueId("reverent-edison");
+    wf1.setConsumer(new FsConsumer(new ConfiguredConsumeDestination("in-directory")));
+    wf1.setProducer(new FsProducer(new ConfiguredProduceDestination("out-directory")));
+    wf1.getServiceCollection().add(new SharedService("shared-service-list"));
+    
     StandardWorkflow wf = new StandardWorkflow();
     wf.setUniqueId("pedantic_brown");
     wf.setConsumer(new JmsConsumer(new ConfiguredConsumeDestination("jms:queue:SampleQueue1")));
@@ -642,6 +657,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
     channel.setUniqueId("quirky_shannon");
     channel.setConsumeConnection(new SharedConnection("jms-connection"));
     channel.getWorkflowList().add(wf);
+    channel.getWorkflowList().add(wf1);
     adapter.getChannelList().add(channel);
     return adapter;
   }
