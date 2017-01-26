@@ -15,55 +15,29 @@
  */
 package com.adaptris.core.http.auth;
 
-import java.net.HttpURLConnection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import org.apache.commons.lang.StringUtils;
-import org.hibernate.validator.constraints.NotBlank;
-
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.http.HttpConstants;
-import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Build an {@link HttpConstants#AUTHORIZATION} header from metadata.
  * 
  * @author gdries
- *
+ * @deprecated since 3.6.0 use {@link com.adaptris.core.http.client.net.ConfiguredAuthorizationHeader} instead.
  */
-@XStreamAlias("http-metadata-authorization-header")
-public class MetadataAuthorizationHeader implements HttpAuthenticator {
+@Deprecated
+public class MetadataAuthorizationHeader extends com.adaptris.core.http.client.net.MetadataAuthorizationHeader {
 
-  @NotBlank
-  private String metadataKey;
-  
-  private transient String headerValue;
-  
-  @Override
-  public void setup(String target, AdaptrisMessage msg) throws CoreException {
-    headerValue = msg.getMetadataValue(getMetadataKey());
-  }
+  private static transient boolean warningLogged;
+  private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
-  @Override
-  public void configureConnection(HttpURLConnection conn) {
-    if (!StringUtils.isBlank(headerValue)) {
-      conn.addRequestProperty(HttpConstants.AUTHORIZATION, headerValue);
+  public MetadataAuthorizationHeader() {
+    super();
+    if (!warningLogged) {
+      log.warn("[{}] is deprecated, use [{}] instead", this.getClass().getSimpleName(),
+          com.adaptris.core.http.client.net.ConfiguredAuthorizationHeader.class.getName());
+      warningLogged = true;
     }
   }
-
-  @Override
-  public void close() {
-  }
-
-  public String getMetadataKey() {
-    return metadataKey;
-  }
-
-  /**
-   * The metadata key to retrieve the value for the Authorization header from
-   */
-  public void setMetadataKey(String metadataKey) {
-    this.metadataKey = metadataKey;
-  }
-
 }

@@ -67,15 +67,10 @@ public class AdapterResourceAuthenticator extends Authenticator {
   @Override
   protected PasswordAuthentication getPasswordAuthentication() {
     PasswordAuthentication pw = null;
-    ResourceTarget target = new ResourceTarget();
-    target.setRequestorType(getRequestorType());
-    target.setRequestingHost(getRequestingHost());
-    target.setRequestingPort(getRequestingPort());
-    target.setRequestingPrompt(getRequestingPrompt());
-    target.setRequestingProtocol(getRequestingProtocol());
-    target.setRequestingScheme(getRequestingScheme());
-    target.setRequestingSite(getRequestingSite());
-    target.setRequestingURL(getRequestingURL());
+    ResourceTarget target = new ResourceTarget().withRequestorType(getRequestorType()).withRequestingHost(getRequestingHost())
+        .withRequestingPort(getRequestingPort()).withRequestingPrompt(getRequestingPrompt())
+        .withRequestingProtocol(getRequestingProtocol()).withRequestingScheme(getRequestingScheme())
+        .withRequestingSite(getRequestingSite()).withRequestingURL(getRequestingURL());
     for (ResourceAuthenticator a : configuredAuthenticators) {
       pw = a.authenticate(target);
       if (pw != null) {

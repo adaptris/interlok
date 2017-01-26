@@ -16,6 +16,7 @@
 
 package com.adaptris.core.management;
 
+import com.adaptris.interlok.management.ClassLoaderBootstrap;
 
 /**
  * Entry point into an adapter from the commandline.
@@ -27,11 +28,19 @@ package com.adaptris.core.management;
  */
 public class SimpleBootstrap extends StandardBootstrap {
 
+	/**
+	 * This default constructor is called from {@link ClassLoaderBootstrap} using
+	 * <code>Class&lt;?&gt;.getConstructor().newInstance()</code>. For this reason it
+	 * then needs to call <code>super.boot()</code>.
+	 * 
+	 * @throws Exception
+	 *           Thrown if there is any problem during the bootstrap process.
+	 */
 	public SimpleBootstrap() throws Exception {
 		super(new String[0]);
-		super.boot();
+    super.standardBoot();
 	}
-	
+
   public SimpleBootstrap(String[] argv) throws Exception {
     super(argv);
   }
@@ -39,7 +48,7 @@ public class SimpleBootstrap extends StandardBootstrap {
   @Override
   public void boot() throws Exception {
     logVersionInformation();
-    super.boot();
+    super.standardBoot();
   }
 
   /**
