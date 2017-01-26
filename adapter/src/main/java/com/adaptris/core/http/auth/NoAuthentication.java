@@ -29,7 +29,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class NoAuthentication implements HttpAuthenticator {
 
   @Override
-  public void setup(String target, AdaptrisMessage msg) throws CoreException {
+  public void setup(String target, AdaptrisMessage msg, ResourceTargetMatcher auth) throws CoreException {
     ThreadLocalCredentials.getInstance(target).removeThreadCredentials();
   }
 

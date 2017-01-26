@@ -23,11 +23,11 @@ import com.adaptris.core.CoreException;
 
 public abstract class UserPassAuthentication implements HttpAuthenticator {
 
-  private ThreadLocalCredentials threadLocalCreds;
+  private transient ThreadLocalCredentials threadLocalCreds;
   
   @Override
-  public void setup(String target, AdaptrisMessage msg) throws CoreException {
-    threadLocalCreds = ThreadLocalCredentials.getInstance(target);
+  public void setup(String target, AdaptrisMessage msg, ResourceTargetMatcher matcher) throws CoreException {
+    threadLocalCreds = ThreadLocalCredentials.getInstance(target, matcher);
     threadLocalCreds.setThreadCredentials(getPasswordAuthentication(msg));
     AdapterResourceAuthenticator.getInstance().addAuthenticator(threadLocalCreds);
     return;

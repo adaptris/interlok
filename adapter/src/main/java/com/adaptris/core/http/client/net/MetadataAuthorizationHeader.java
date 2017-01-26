@@ -23,6 +23,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.http.HttpConstants;
+import com.adaptris.core.http.auth.ResourceTargetMatcher;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -45,7 +46,7 @@ public class MetadataAuthorizationHeader implements HttpURLConnectionAuthenticat
   }
 
   @Override
-  public void setup(String target, AdaptrisMessage msg) throws CoreException {
+  public void setup(String target, AdaptrisMessage msg, ResourceTargetMatcher auth) throws CoreException {
     headerValue = msg.getMetadataValue(getMetadataKey());
   }
 

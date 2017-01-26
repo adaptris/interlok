@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,59 +33,108 @@ public class ThreadLocalCredentials implements ResourceAuthenticator {
    */
   private static Map<String, ThreadLocalCredentials> instances = Collections.synchronizedMap(new HashMap<String, ThreadLocalCredentials>());
 
+  /**
+   * Get an instance for the specified target.
+   */
   public static ThreadLocalCredentials getInstance(String target) {
+    return getInstance(target, new DefaultResourceTargetMatcher(target));
+  }
+
+  /**
+   * Get an instance for the specified target using the specified {@link ResourceTargetMatcher}.
+   * 
+   */
+  public static ThreadLocalCredentials getInstance(String target, ResourceTargetMatcher matcher) {
     ThreadLocalCredentials instance = instances.get(target);
-    if(instance == null) {
-      instance = new ThreadLocalCredentials(target);
-      instances.put(target, instance);
+    if (instance == null) {
+      if (matcher != null) {
+        instance = new ThreadLocalCredentials(target, matcher);
+        instances.put(target, instance);
+      }
+      else {
+        instance = getInstance(target);
+      }
     }
     return instance;
   }
-  
-  protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
-  
+
   /**
-   *  Keeps the current credentials. No initial value provider is set on purpose
-   *  since this ThreadLocal must always have its value set explicitly.
+   * Keeps the current credentials. No initial value provider is set on purpose since this ThreadLocal must always have its value
+   * set explicitly.
    */
   private transient final ThreadLocal<PasswordAuthentication> threadAuthentication = new ThreadLocal<PasswordAuthentication>();
 
+  protected static transient Logger log = LoggerFactory.getLogger(ThreadLocalCredentials.class);
+
   private final String target;
-  
-  private ThreadLocalCredentials(String target) {
+  private final ResourceTargetMatcher matcher;
+
+  private ThreadLocalCredentials(String target, ResourceTargetMatcher matcher) {
     this.target = target;
-  }
-  
-  @Override
-  public PasswordAuthentication authenticate(ResourceTarget target) {
-    if(this.target.equals(target.getRequestingURL().toString())) {
-      PasswordAuthentication auth = getThreadCredentials();
-      if(auth != null) {
-        log.trace("Using user={} to login to [{}]", auth.getUserName(), target.getRequestingURL());
-      }
-      return auth;
-    } else {
-      log.trace("Unmatched authentication request for {}. My target is {}", target.getRequestingURL(), this.target);
-    }
-    return null;
+    this.matcher = matcher;
   }
 
   public PasswordAuthentication getThreadCredentials() {
     return threadAuthentication.get();
   }
-  
+
   /**
    * Set the credentials for the current thread
    */
   public void setThreadCredentials(PasswordAuthentication pwauth) {
     this.threadAuthentication.set(pwauth);
   }
-  
+
   /**
    * Remove the credentials for the current thread
    */
   public void removeThreadCredentials() {
     this.threadAuthentication.set(null);
   }
-  
+
+  private String target() {
+    return target;
+  }
+
+  private ResourceTargetMatcher matcher() {
+    return matcher;
+  }
+
+  @Override
+  public PasswordAuthentication authenticate(ResourceTarget target) {
+    if (matcher().matches(target)) {
+      PasswordAuthentication auth = getThreadCredentials();
+      if (auth != null) {
+        log.trace("Using user={} to login", auth.getUserName());
+      }
+      return auth;
+    }
+    return null;
+  }
+
+  /*
+   * The default {@link ResourceTargetMatcher} that matches against {@link ResourceTarget#getRequestingURL()}.
+   *
+   */
+  private static class DefaultResourceTargetMatcher implements ResourceTargetMatcher {
+    private final String urlTarget;
+
+    private DefaultResourceTargetMatcher(String target) {
+      this.urlTarget = target;
+    }
+
+    @Override
+    public boolean matches(ResourceTarget target) {
+      boolean rc = StringUtils.equals(urlTarget, target.getRequestingURL().toString());
+      if (rc) {
+        log.trace("Matched authentication request for {}.", target.getRequestingURL());
+      }
+      else {
+        log.trace("Unmatched authentication request for {}. My target is {}", target.getRequestingURL(), urlTarget);
+      }
+      return rc;
+    }
+
+  }
+
 }

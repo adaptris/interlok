@@ -17,6 +17,7 @@ package com.adaptris.core.http.auth;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.http.ResourceAuthenticator.ResourceTarget;
 
 
 /**
@@ -32,10 +33,13 @@ public interface HttpAuthenticator extends AutoCloseable {
 
   /**
    * Initialize the HttpAuthenticator for a message and return. Any global state mutations should be done here.
+   * 
    * @param target The URL to set authenticate for
    * @param msg The message to set up for
+   * @param auth the {@link ResourceTargetMatcher} to use, if null a default one will be created based on the
+   *          {@link ResourceTarget#getRequestingURL()}
    */
-  public void setup(String target, AdaptrisMessage msg) throws CoreException;
+  public void setup(String target, AdaptrisMessage msg, ResourceTargetMatcher auth) throws CoreException;
 
 
   /**
