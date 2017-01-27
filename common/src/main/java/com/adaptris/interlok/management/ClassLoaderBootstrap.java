@@ -1,6 +1,8 @@
 package com.adaptris.interlok.management;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 
@@ -35,8 +37,12 @@ public class ClassLoaderBootstrap {
 		System.out.println("Loading " + adpCoreUrl);
 		final URLClassLoader runtimeClassLoader = new URLClassLoader(new URL[] { adpCoreUrl }, parentClassLoader);
 		Thread.currentThread().setContextClassLoader(runtimeClassLoader);
-		final Class<?> simpleBootstrap = Class.forName("com.adaptris.core.management.SimpleBootstrap", true, runtimeClassLoader);
-		simpleBootstrap.getConstructor().newInstance();
+		final Class<?> standardBootstrap = Class.forName("com.adaptris.core.management.StandardBootstrap", true, runtimeClassLoader);
+
+		final Constructor<?> constructor = standardBootstrap.getConstructor(String[].class);
+		final Object instance = constructor.newInstance((Object)new String[0]);
+		final Method boot = standardBootstrap.getMethod("boot");
+		boot.invoke(instance);
 	}
 
 	/**
