@@ -54,11 +54,7 @@ public class RelaxedFtpProducerTest extends RelaxedFtpProducerCase {
 
   @Override
   protected FtpConnection createConnectionForExamples() {
-    FtpConnection con = new FtpConnection();
-    con.setDefaultUserName("default-username-if-not-specified");
-    con.setDefaultPassword("default-password-if-not-specified");
-
-    return con;
+    return FtpExampleHelper.ftpConnection();
   }
 
   @Override

@@ -64,11 +64,8 @@ public class FtpProducerTest extends FtpProducerCase {
 
   @Override
   protected FtpConnection createConnectionForExamples() {
-    FtpConnection con = new FtpConnection();
-    con.setDefaultUserName("default-username-if-not-specified");
-    con.setDefaultPassword("default-password-if-not-specified");
+    return FtpExampleHelper.ftpConnection();
 
-    return con;
   }
 
   @Override

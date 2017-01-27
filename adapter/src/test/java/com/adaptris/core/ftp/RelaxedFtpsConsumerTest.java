@@ -30,13 +30,8 @@ public class RelaxedFtpsConsumerTest extends RelaxedFtpConsumerCase {
   }
 
   @Override
-  protected FtpConnection createConnectionForExamples() {
-    FtpConnection con = new FtpConnection();
-    con.setDefaultUserName("default-username-if-not-specified");
-    con.setDefaultPassword("default-password-if-not-specified");
-
-    con.setAdditionalDebug(false);
-    return con;
+  protected FtpSslConnection createConnectionForExamples() {
+    return FtpExampleHelper.ftpSslConnection();
   }
 
   @Override
