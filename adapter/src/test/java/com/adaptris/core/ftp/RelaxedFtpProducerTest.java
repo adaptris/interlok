@@ -64,18 +64,32 @@ public class RelaxedFtpProducerTest extends RelaxedFtpProducerCase {
 
   public void testSetFilenameCreator() throws Exception {
     RelaxedFtpProducer ftpProducer = new RelaxedFtpProducer();
-    assertNotNull(ftpProducer.getFileNameCreator());
-    assertEquals(FormattedFilenameCreator.class, ftpProducer.getFileNameCreator().getClass());
-    ftpProducer.setFileNameCreator(new MetadataFileNameCreator());
-    assertEquals(MetadataFileNameCreator.class, ftpProducer.getFileNameCreator().getClass());
+    assertNotNull(ftpProducer.getFilenameCreator());
+    assertEquals(FormattedFilenameCreator.class, ftpProducer.getFilenameCreator().getClass());
+    assertEquals(FormattedFilenameCreator.class, ftpProducer.filenameCreator().getClass());
+    ftpProducer.setFilenameCreator(new MetadataFileNameCreator());
+    assertEquals(MetadataFileNameCreator.class, ftpProducer.getFilenameCreator().getClass());
+    assertEquals(MetadataFileNameCreator.class, ftpProducer.filenameCreator().getClass());
     try {
-      ftpProducer.setFileNameCreator(null);
+      ftpProducer.setFilenameCreator(null);
       fail();
     }
     catch (IllegalArgumentException expected) {
 
     }
+    assertEquals(MetadataFileNameCreator.class, ftpProducer.getFilenameCreator().getClass());
+    assertEquals(MetadataFileNameCreator.class, ftpProducer.filenameCreator().getClass());
+
+  }
+
+  @SuppressWarnings("deprecation")
+  public void testSetFileNameCreator() throws Exception {
+    RelaxedFtpProducer ftpProducer = new RelaxedFtpProducer();
+    assertNull(ftpProducer.getFileNameCreator());
+    assertEquals(FormattedFilenameCreator.class, ftpProducer.getFilenameCreator().getClass());
+    ftpProducer.setFileNameCreator(new MetadataFileNameCreator());
     assertEquals(MetadataFileNameCreator.class, ftpProducer.getFileNameCreator().getClass());
+    assertEquals(MetadataFileNameCreator.class, ftpProducer.filenameCreator().getClass());
   }
 
   public void testProduce() throws Exception {
