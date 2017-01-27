@@ -16,8 +16,10 @@
 
 package com.adaptris.core.ftp;
 
+import java.io.IOException;
+
 import com.adaptris.filetransfer.FileTransferClient;
-import com.adaptris.filetransfer.FileTransferException;
+import com.adaptris.security.exc.PasswordException;
 import com.adaptris.security.password.Password;
 
 public abstract class FtpPasswordConnectionCase extends FtpConnectionCase {
@@ -35,7 +37,7 @@ public abstract class FtpPasswordConnectionCase extends FtpConnectionCase {
         FileTransferClient client = connection.connect(getDestinationString());
         fail();
       }
-      catch (FileTransferException expected) {
+      catch (IOException | PasswordException expected) {
 
       }
       finally {

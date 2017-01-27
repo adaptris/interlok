@@ -495,6 +495,16 @@ public class SftpClient extends FileTransferClientImp {
     }
   }
 
+  public SftpClient withKeepAliveTimeout(long seconds) throws FtpException {
+    setKeepAliveTimeout(seconds);
+    return this;
+  }
+
+  public SftpClient withAdditionalDebug(boolean onoff) {
+    setAdditionalDebug(onoff);
+    return this;
+  }
+
   @Override
   public boolean isConnected() {
     boolean result = false;

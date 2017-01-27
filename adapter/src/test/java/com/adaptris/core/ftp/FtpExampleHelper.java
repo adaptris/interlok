@@ -13,29 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 */
-
 package com.adaptris.core.ftp;
 
+public class FtpExampleHelper {
 
 
-public class RelaxedFtpsConsumerTest extends RelaxedFtpConsumerCase {
+  public static FtpSslConnection ftpSslConnection() {
+    FtpSslConnection con = new FtpSslConnection();
+    con.setDefaultUserName("default-username-if-not-specified");
+    con.setDefaultPassword("default-password-if-not-specified");
 
-  private static final String BASE_DIR_KEY = "FtpsConsumerExamples.baseDir";
-
-  public RelaxedFtpsConsumerTest(String name) {
-    super(name);
-    if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
-      setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
-    }
+    return con;
   }
 
-  @Override
-  protected FtpSslConnection createConnectionForExamples() {
-    return FtpExampleHelper.ftpSslConnection();
+  public static FtpConnection ftpConnection() {
+    FtpConnection con = new FtpConnection();
+    con.setDefaultUserName("default-username-if-not-specified");
+    con.setDefaultPassword("default-password-if-not-specified");
+
+    return con;
   }
 
-  @Override
-  protected String getScheme() {
-    return "ftps";
-  }
 }

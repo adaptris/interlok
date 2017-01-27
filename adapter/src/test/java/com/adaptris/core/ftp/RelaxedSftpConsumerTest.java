@@ -16,18 +16,16 @@
 
 package com.adaptris.core.ftp;
 
+import static com.adaptris.core.ftp.SftpExampleHelper.createConnectionsForExamples;
+import static com.adaptris.core.ftp.SftpExampleHelper.createPollers;
+import static com.adaptris.core.ftp.SftpExampleHelper.getConfigSimpleName;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.adaptris.core.ConfiguredConsumeDestination;
-import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.Poller;
-import com.adaptris.core.QuartzCronPoller;
 import com.adaptris.core.StandaloneConsumer;
-import com.adaptris.sftp.ConfigBuilder;
-import com.adaptris.sftp.OpenSSHConfigBuilder;
-
 
 public class RelaxedSftpConsumerTest extends RelaxedFtpConsumerCase {
 
@@ -46,51 +44,45 @@ public class RelaxedSftpConsumerTest extends RelaxedFtpConsumerCase {
   }
 
   @Override
-  protected SftpConnection createConnectionForExamples() {
-    SftpConnection con = new SftpConnection();
-    con.setDefaultUserName("default-username-if-not-specified");
-    con.setDefaultPassword("default-password-if-not-specified");
-    con.setKnownHostsFile("/optional/path/to/known_hosts");
-    return con;
-  }
-
-  @Override
   protected String getScheme() {
     return "sftp";
   }
 
-  private StandaloneConsumer createConsumerExample(ConfigBuilder behavior, Poller poller) {
-    SftpConnection con = createConnectionForExamples();
-    RelaxedFtpConsumer cfgConsumer = new RelaxedFtpConsumer();
+  private List createConsumerExamples(FileTransferConnection conn, Poller... pollers) {
+    List<StandaloneConsumer> result = new ArrayList();
     try {
-      con.setConfiguration(behavior);
-      con.setDefaultUserName("UserName if Not configured in destination");
-      cfgConsumer.setDestination(new ConfiguredConsumeDestination("sftp://overrideuser@hostname:port/path/to/directory", "*.xml"));
-      cfgConsumer.setPoller(poller);
+      for (Poller p : pollers) {
+        RelaxedFtpConsumer ftp = new RelaxedFtpConsumer();
+        ftp.setDestination(new ConfiguredConsumeDestination("sftp://overrideuser@hostname:port/path/to/directory", "*.xml"));
+        ftp.setPoller(p);
+        result.add(new StandaloneConsumer(conn, ftp));
+      }
     }
     catch (Exception e) {
       throw new RuntimeException(e);
     }
-    return new StandaloneConsumer(con, cfgConsumer);
+    return result;
   }
 
   @Override
-  protected List retrieveObjectsForSampleConfig() {
-    return new ArrayList(Arrays.asList(new StandaloneConsumer[]
-    {
-        createConsumerExample(new OpenSSHConfigBuilder("/path/openssh/config/file"), new QuartzCronPoller("*/20 * * * * ?")),
-        createConsumerExample(SftpConsumerTest.createInlineConfigRepo(), new QuartzCronPoller("*/20 * * * * ?")),
-        createConsumerExample(SftpConsumerTest.createPerHostConfigRepo(), new QuartzCronPoller("*/20 * * * * ?")),
-        createConsumerExample(SftpConsumerTest.createInlineConfigRepo(), new FixedIntervalPoller()),
-        createConsumerExample(SftpConsumerTest.createPerHostConfigRepo(), new FixedIntervalPoller()),
-        createConsumerExample(new OpenSSHConfigBuilder("/path/openssh/config/file"), new FixedIntervalPoller()),
-    }));
+  protected List<StandaloneConsumer> retrieveObjectsForSampleConfig() {
+    List<FileTransferConnection> connections = createConnectionsForExamples();
+    List<StandaloneConsumer> consumers = new ArrayList<>();
+    for (FileTransferConnection c : connections) {
+      consumers.addAll(createConsumerExamples(c, createPollers()));
+    }
+    return consumers;
   }
 
   @Override
   protected String createBaseFileName(Object object) {
-    SftpConnection con = (SftpConnection) ((StandaloneConsumer) object).getConnection();
-    return super.createBaseFileName(object) + "-" + con.getClass().getSimpleName() + "-"
-        + con.getConfiguration().getClass().getSimpleName();
+    FileTransferConnection con = (FileTransferConnection) ((StandaloneConsumer) object).getConnection();
+    return super.createBaseFileName(object) + "-" + con.getClass().getSimpleName() + "-" + getConfigSimpleName(con);
   }
+
+  @Override
+  protected FileTransferConnection createConnectionForExamples() {
+    throw new RuntimeException("Shouldn't get here!");
+  }
+
 }

@@ -37,6 +37,7 @@ import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.SafeGuidGenerator;
 import com.adaptris.util.TimeInterval;
 
+@SuppressWarnings("deprecation")
 public abstract class RelaxedFtpCase extends FtpConsumerExample {
   private static final TimeInterval DEFAULT_QUIET_PERIOD = new TimeInterval(1L, TimeUnit.SECONDS);
   protected static final String COLON = ":";

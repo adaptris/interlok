@@ -32,6 +32,7 @@ import com.adaptris.core.FormattedFilenameCreator;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ProduceOnlyProducerImp;
+import com.adaptris.core.util.Args;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -76,19 +77,16 @@ public class RelaxedFtpProducer extends ProduceOnlyProducerImp {
 
   private static final String SLASH = "/";
 
+  @Valid
+  @Deprecated
+  private FileNameCreator fileNameCreator;
   @NotNull
   @Valid
   @AutoPopulated
-  private FileNameCreator fileNameCreator;
+  private FileNameCreator filenameCreator;
 
-  /**
-   * Default Constructor with the following defaults.
-   * <ul>
-   * <li>fileNameCreator is {@link FormattedFilenameCreator}</li>
-   * </ul>
-   */
   public RelaxedFtpProducer() {
-    setFileNameCreator(new FormattedFilenameCreator());
+    setFilenameCreator(new FormattedFilenameCreator());
   }
 
   /**
@@ -105,6 +103,9 @@ public class RelaxedFtpProducer extends ProduceOnlyProducerImp {
    */
   @Override
   public void init() throws CoreException {
+    if (getFileNameCreator() != null) {
+      log.warn("Deprecated use of fileNameCreator detected; use filenameCreator instead");
+    }
   }
 
   /**
@@ -134,7 +135,7 @@ public class RelaxedFtpProducer extends ProduceOnlyProducerImp {
     try {
       client = conn.connect(destination.getDestination(msg));
       String dirRoot = conn.getDirectoryRoot(destination.getDestination(msg));
-      String fileName = fileNameCreator.createName(msg);
+      String fileName = filenameCreator().createName(msg);
       String destFilename = dirRoot + SLASH + fileName;
       if (dirRoot.endsWith(SLASH)) {
         destFilename = dirRoot + fileName;
@@ -165,27 +166,34 @@ public class RelaxedFtpProducer extends ProduceOnlyProducerImp {
 
 
   /**
-   * <p>
-   * Returns the <code>FileNameCreator</code> used by this object.
-   * </p>
-   *
-   * @return the <code>FileNameCreator</code> used by this object
+   * @deprecated since 3.6.0 use getFileNameCreator(FileNameCreator) instead
    */
+  @Deprecated
   public FileNameCreator getFileNameCreator() {
     return fileNameCreator;
   }
 
   /**
-   * <p>
-   * Sets the <code>FileNameCreator</code> to use. May not be null.
-   * </p>
-   *
-   * @param creator the <code>FileNameCreator</code> to use
+   * 
+   * @deprecated since 3.6.0 use setFilenameCreator(FileNameCreator) instead
    */
+  @Deprecated
   public void setFileNameCreator(FileNameCreator creator) {
-    if (creator == null) {
-      throw new IllegalArgumentException("FileNameCreator may not be null");
-    }
     fileNameCreator = creator;
+  }
+
+  public FileNameCreator getFilenameCreator() {
+    return filenameCreator;
+  }
+
+  public void setFilenameCreator(FileNameCreator creator) {
+    filenameCreator = Args.notNull(creator, "filenameCreator");
+  }
+
+  FileNameCreator filenameCreator() {
+    if (getFileNameCreator() != null) {
+      return getFileNameCreator();
+    }
+    return getFilenameCreator();
   }
 }

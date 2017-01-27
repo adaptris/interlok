@@ -40,7 +40,6 @@ import com.adaptris.core.stubs.DefectiveMessageFactory;
 import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.MimeHelper;
-import com.adaptris.ftp.FtpDataMode;
 import com.adaptris.util.text.mime.MultiPartInput;
 
 public class AggregatingFtpConsumeServiceTest extends AggregatingServiceExample {
@@ -288,10 +287,7 @@ public class AggregatingFtpConsumeServiceTest extends AggregatingServiceExample 
     mfd.setDefaultFilterExpression(".*\\*.xml");
     AggregatingFtpConsumer consumer = new AggregatingFtpConsumer(mfd);
     consumer.setMessageAggregator(new IgnoreOriginalMimeAggregator());
-    FtpConnection conn = new FtpConnection();
-    conn.setDefaultUserName("default-user-name");
-    conn.setDefaultUserName("default-password");
-    conn.setFtpDataMode(FtpDataMode.PASSIVE);
+    FtpConnection conn = FtpExampleHelper.ftpConnection();
     return new AggregatingFtpConsumeService(conn, consumer);
   }
 
