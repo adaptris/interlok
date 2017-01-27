@@ -117,6 +117,7 @@ public class SftpExampleHelper {
     return con;
   }
 
+  @SuppressWarnings("deprecation")
   public static SftpKeyAuthConnection sftpKeyAuthConnection() {
     SftpKeyAuthConnection con = new SftpKeyAuthConnection();
     con.setDefaultUserName("username");
@@ -127,6 +128,7 @@ public class SftpExampleHelper {
     return con;
   }
 
+  @SuppressWarnings("deprecation")
   public static SftpConnection sftpConnection() {
     SftpConnection con = new SftpConnection();
     con.setDefaultUserName("default-username-if-not-specified");

@@ -27,6 +27,7 @@ import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
 import com.adaptris.security.exc.PasswordException;
 
+@SuppressWarnings("deprecation")
 public class SftpKeyAuthConnectionTest extends FtpConnectionCase {
 
   // stop jsch auto-update host key

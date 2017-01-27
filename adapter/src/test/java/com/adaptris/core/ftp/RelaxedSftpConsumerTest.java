@@ -81,7 +81,7 @@ public class RelaxedSftpConsumerTest extends RelaxedFtpConsumerCase {
   }
 
   @Override
-  protected SftpConnection createConnectionForExamples() {
+  protected FileTransferConnection createConnectionForExamples() {
     throw new RuntimeException("Shouldn't get here!");
   }
 

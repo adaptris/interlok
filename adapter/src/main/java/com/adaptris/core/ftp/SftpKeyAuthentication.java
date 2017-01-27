@@ -28,11 +28,23 @@ import com.adaptris.core.util.Args;
 import com.adaptris.filetransfer.FileTransferException;
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.security.password.Password;
+import com.adaptris.sftp.ConfigBuilder;
 import com.adaptris.sftp.SftpClient;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * {@link SftpAuthenticationProvider} using keys.
+ * <p>
+ * It has the following behaviour :
+ * <ul>
+ * <li>If the private key is not accepted by the target server, then an exception will be thrown.</li>
+ * <li>Multiple private keys are supported, provided you specify a {@link ConfigBuilder} implementation that allows it.</li>
+ * <li>Specifying the username+password in the destination (e.g. <code>sftp://lchan:myPassword@1.2.3.4:22//opt/sftp</code>), will
+ * override the username used to login but no other credentials. The only valid authentication is via the specified private
+ * key.</li>
+ * <li>The private key and known_hosts file are expected to be in OpenSSH format</li>
+ * </ul>
+ * </p>
  * 
  * @author lchan
  * @config sftp-key-authentication

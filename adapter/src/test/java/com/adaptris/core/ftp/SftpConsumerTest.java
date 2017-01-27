@@ -99,7 +99,7 @@ public class SftpConsumerTest extends FtpConsumerCase {
   }
 
   @Override
-  protected SftpConnection createConnectionForExamples() {
+  protected FileTransferConnection createConnectionForExamples() {
     throw new RuntimeException("Should never be executed");
   }
 

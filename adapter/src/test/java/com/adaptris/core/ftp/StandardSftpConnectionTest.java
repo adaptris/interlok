@@ -293,6 +293,6 @@ public class StandardSftpConnectionTest extends FtpConnectionCase {
 
 
   protected void assertDefaultControlPort(int defaultControlPort) {
-    assertEquals(SftpKeyAuthConnection.DEFAULT_CONTROL_PORT, defaultControlPort);
+    assertEquals(22, defaultControlPort);
   }
 }

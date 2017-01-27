@@ -43,15 +43,15 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config sftp-connection
- * 
+ * @deprecated since 3.6.0 use {@link StandardSftpConnection} instead.
  * @author lchan
- * @author $Author: lchan $
  */
 @XStreamAlias("sftp-connection")
 @AdapterComponent
 @ComponentProfile(summary = "Connect to a server using the SSH File Transfer Protocol; authentica via a username and password",
     tag = "connections,sftp")
 @DisplayOrder(order = {"defaultUserName", "defaultPassword", "transferType", "ftpDataMode", "defaultControlPort"})
+@Deprecated
 public class SftpConnection extends FileTransferConnectionUsingPassword {
 
   private static final String SCHEME_SFTP = "sftp";
