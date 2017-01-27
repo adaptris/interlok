@@ -16,6 +16,7 @@
 
 package com.adaptris.core.ftp;
 
+import static com.adaptris.core.ftp.SftpConnectionTest.CFG_PASSWORD;
 import static com.adaptris.core.ftp.SftpKeyAuthConnectionTest.CFG_HOST;
 import static com.adaptris.core.ftp.SftpKeyAuthConnectionTest.CFG_KNOWN_HOSTS_FILE;
 import static com.adaptris.core.ftp.SftpKeyAuthConnectionTest.CFG_PRIVATE_KEY_FILE;
@@ -36,6 +37,7 @@ import org.apache.commons.io.FileUtils;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
 import com.adaptris.security.exc.PasswordException;
+import com.adaptris.security.password.Password;
 import com.adaptris.util.TimeInterval;
 
 public class StandardSftpConnectionTest extends FtpConnectionCase {
@@ -82,12 +84,44 @@ public class StandardSftpConnectionTest extends FtpConnectionCase {
   }
 
 
-  public void testConnectOnly_DefaultBehaviour() throws Exception {
+  public void testConnectOnly_KeyAuth() throws Exception {
     if (areTestsEnabled()) {
       StandardSftpConnection conn = createConnection();
       try {
         start(conn);
         FileTransferClient c = conn.connect(getDestinationString());
+        assertTrue(c.isConnected());
+        c.disconnect();
+      }
+      finally {
+        stop(conn);
+      }
+    }
+  }
+
+  public void testConnectOnly_PasswordAuth() throws Exception {
+    if (areTestsEnabled()) {
+      StandardSftpConnection conn = createConnection();
+      try {
+        conn.setAuthentication(new SftpPasswordAuthentication(PROPERTIES.getProperty(CFG_PASSWORD)));
+        start(conn);
+        FileTransferClient c = conn.connect(getDestinationString());
+        assertTrue(c.isConnected());
+        c.disconnect();
+      }
+      finally {
+        stop(conn);
+      }
+    }
+  }
+
+  public void testConnectOnly_PasswordAuth_Override() throws Exception {
+    if (areTestsEnabled()) {
+      StandardSftpConnection conn = createConnection();
+      try {
+        conn.setAuthentication(new SftpPasswordAuthentication(""));
+        start(conn);
+        FileTransferClient c = conn.connect(getDestinationStringWithOverridePassword());
         assertTrue(c.isConnected());
         c.disconnect();
       }
@@ -251,6 +285,12 @@ public class StandardSftpConnectionTest extends FtpConnectionCase {
     return "sftp://" + PROPERTIES.getProperty(CFG_USER) + "@" + PROPERTIES.getProperty(CFG_HOST) + "/"
         + PROPERTIES.getProperty(CFG_REMOTE_DIR);
   }
+
+  protected String getDestinationStringWithOverridePassword() throws Exception {
+    return "sftp://" + PROPERTIES.getProperty(CFG_USER) + ":" + Password.decode(PROPERTIES.getProperty(CFG_PASSWORD)) + "@"
+        + PROPERTIES.getProperty(CFG_HOST) + "/" + PROPERTIES.getProperty(CFG_REMOTE_DIR);
+  }
+
 
   protected void assertDefaultControlPort(int defaultControlPort) {
     assertEquals(SftpKeyAuthConnection.DEFAULT_CONTROL_PORT, defaultControlPort);
