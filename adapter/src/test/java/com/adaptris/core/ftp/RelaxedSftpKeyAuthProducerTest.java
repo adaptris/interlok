@@ -46,13 +46,7 @@ public class RelaxedSftpKeyAuthProducerTest extends RelaxedFtpProducerCase {
 
   @Override
   protected SftpKeyAuthConnection createConnectionForExamples() {
-    SftpKeyAuthConnection con = new SftpKeyAuthConnection();
-    con.setDefaultUserName("username");
-    con.setPrivateKeyFilename("/path/to/private/key/in/openssh/format");
-    con.setPrivateKeyPassword("my_super_secret_password");
-    con.setSocketTimeout(10000);
-    con.setKnownHostsFile("/optional/path/to/known_hosts");
-    return con;
+    return FtpExampleHelper.sftpKeyAuthConnection();
   }
 
   private StandaloneProducer createProducerExample(ConfigBuilder behaviour) {

@@ -49,13 +49,7 @@ public class SftpKeyAuthConsumerTest extends FtpConsumerCase {
 
   @Override
   protected SftpKeyAuthConnection createConnectionForExamples() {
-    SftpKeyAuthConnection con = new SftpKeyAuthConnection();
-    con.setDefaultUserName("username");
-    con.setPrivateKeyFilename("/path/to/private/key/in/openssh/format");
-    con.setPrivateKeyPassword("my_super_secret_password");
-    con.setSocketTimeout(10000);
-    con.setKnownHostsFile("/optional/path/to/known/hosts/file");
-    return con;
+    return FtpExampleHelper.sftpKeyAuthConnection();
   }
 
   @Override

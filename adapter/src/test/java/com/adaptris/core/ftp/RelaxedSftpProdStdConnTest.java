@@ -26,28 +26,35 @@ import com.adaptris.core.StandaloneProducer;
 import com.adaptris.sftp.ConfigBuilder;
 import com.adaptris.sftp.OpenSSHConfigBuilder;
 
-public class SftpProducerTest extends FtpProducerCase {
+public class RelaxedSftpProdStdConnTest extends RelaxedFtpProducerCase {
 
   private static final String BASE_DIR_KEY = "SftpProducerExamples.baseDir";
 
-  public SftpProducerTest(String name) {
+  public RelaxedSftpProdStdConnTest(String name) {
     super(name);
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
   }
 
+
   @Override
   protected Object retrieveObjectForSampleConfig() {
     return null;
   }
 
+  @Override
+  protected StandardSftpConnection createConnectionForExamples() {
+    return FtpExampleHelper.standardSftpConnection();
+
+  }
+
   private StandaloneProducer createProducerExample(ConfigBuilder behaviour) {
-    SftpConnection con = createConnectionForExamples();
-    FtpProducer producer = createProducerExample();
+    StandardSftpConnection con = createConnectionForExamples();
+    RelaxedFtpProducer producer = createProducerExample();
     try {
       con.setConfiguration(behaviour);
-      producer.setFilenameCreator(new FormattedFilenameCreator());
+      producer.setFileNameCreator(new FormattedFilenameCreator());
       producer.setDestination(new ConfiguredProduceDestination("sftp://sftpuser@hostname:port/path/to/directory"));
     }
     catch (Exception e) {
@@ -58,7 +65,7 @@ public class SftpProducerTest extends FtpProducerCase {
 
   @Override
   protected String createBaseFileName(Object object) {
-    SftpConnection con = (SftpConnection) ((StandaloneProducer) object).getConnection();
+    StandardSftpConnection con = (StandardSftpConnection) ((StandaloneProducer) object).getConnection();
     return super.createBaseFileName(object) + "-" + con.getClass().getSimpleName() + "-"
         + con.getConfiguration().getClass().getSimpleName();
   }
@@ -68,19 +75,13 @@ public class SftpProducerTest extends FtpProducerCase {
     return new ArrayList(Arrays.asList(new StandaloneProducer[]
     {
         createProducerExample(new OpenSSHConfigBuilder("/path/openssh/config/file")),
-        createProducerExample(SftpConsumerTest.createPerHostConfigRepo()),
         createProducerExample(SftpConsumerTest.createInlineConfigRepo()),
+        createProducerExample(SftpConsumerTest.createPerHostConfigRepo()),
     }));
-  }
-
-  @Override
-  protected SftpConnection createConnectionForExamples() {
-    return FtpExampleHelper.sftpConnection();
   }
 
   @Override
   protected String getScheme() {
     return "sftp";
   }
-
 }

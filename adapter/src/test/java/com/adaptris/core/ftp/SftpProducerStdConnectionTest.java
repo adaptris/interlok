@@ -26,11 +26,11 @@ import com.adaptris.core.StandaloneProducer;
 import com.adaptris.sftp.ConfigBuilder;
 import com.adaptris.sftp.OpenSSHConfigBuilder;
 
-public class SftpProducerTest extends FtpProducerCase {
+public class SftpProducerStdConnectionTest extends FtpProducerCase {
 
   private static final String BASE_DIR_KEY = "SftpProducerExamples.baseDir";
 
-  public SftpProducerTest(String name) {
+  public SftpProducerStdConnectionTest(String name) {
     super(name);
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
@@ -42,8 +42,18 @@ public class SftpProducerTest extends FtpProducerCase {
     return null;
   }
 
+  @Override
+  protected StandardSftpConnection createConnectionForExamples() {
+    return FtpExampleHelper.standardSftpConnection();
+  }
+
+  @Override
+  protected String getScheme() {
+    return "sftp";
+  }
+
   private StandaloneProducer createProducerExample(ConfigBuilder behaviour) {
-    SftpConnection con = createConnectionForExamples();
+    StandardSftpConnection con = createConnectionForExamples();
     FtpProducer producer = createProducerExample();
     try {
       con.setConfiguration(behaviour);
@@ -58,7 +68,7 @@ public class SftpProducerTest extends FtpProducerCase {
 
   @Override
   protected String createBaseFileName(Object object) {
-    SftpConnection con = (SftpConnection) ((StandaloneProducer) object).getConnection();
+    StandardSftpConnection con = (StandardSftpConnection) ((StandaloneProducer) object).getConnection();
     return super.createBaseFileName(object) + "-" + con.getClass().getSimpleName() + "-"
         + con.getConfiguration().getClass().getSimpleName();
   }
@@ -72,15 +82,4 @@ public class SftpProducerTest extends FtpProducerCase {
         createProducerExample(SftpConsumerTest.createInlineConfigRepo()),
     }));
   }
-
-  @Override
-  protected SftpConnection createConnectionForExamples() {
-    return FtpExampleHelper.sftpConnection();
-  }
-
-  @Override
-  protected String getScheme() {
-    return "sftp";
-  }
-
 }

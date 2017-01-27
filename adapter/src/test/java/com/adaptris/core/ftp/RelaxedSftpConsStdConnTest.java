@@ -25,17 +25,16 @@ import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.Poller;
 import com.adaptris.core.QuartzCronPoller;
 import com.adaptris.core.StandaloneConsumer;
-import com.adaptris.security.password.Password;
 import com.adaptris.sftp.ConfigBuilder;
 import com.adaptris.sftp.OpenSSHConfigBuilder;
 
 
 
-public class RelaxedSftpKeyAuthConsumerTest extends RelaxedFtpConsumerCase {
+public class RelaxedSftpConsStdConnTest extends RelaxedFtpConsumerCase {
 
   private static final String BASE_DIR_KEY = "SftpConsumerExamples.baseDir";
 
-  public RelaxedSftpKeyAuthConsumerTest(String name) {
+  public RelaxedSftpConsStdConnTest(String name) {
     super(name);
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
@@ -48,8 +47,8 @@ public class RelaxedSftpKeyAuthConsumerTest extends RelaxedFtpConsumerCase {
   }
 
   @Override
-  protected SftpKeyAuthConnection createConnectionForExamples() {
-    return FtpExampleHelper.sftpKeyAuthConnection();
+  protected StandardSftpConnection createConnectionForExamples() {
+    return FtpExampleHelper.standardSftpConnection();
   }
 
   @Override
@@ -58,11 +57,10 @@ public class RelaxedSftpKeyAuthConsumerTest extends RelaxedFtpConsumerCase {
   }
 
   private StandaloneConsumer createConsumerExample(ConfigBuilder behavior, Poller poller) {
-    SftpKeyAuthConnection con = createConnectionForExamples();
+    StandardSftpConnection con = createConnectionForExamples();
     RelaxedFtpConsumer cfgConsumer = new RelaxedFtpConsumer();
     try {
       con.setConfiguration(behavior);
-      con.setPrivateKeyPassword(Password.encode("my_super_secret_password", Password.PORTABLE_PASSWORD));
       con.setDefaultUserName("UserName if Not configured in destination");
       cfgConsumer.setDestination(new ConfiguredConsumeDestination("sftp://overrideuser@hostname:port/path/to/directory", "*.xml"));
       cfgConsumer.setPoller(poller);
@@ -87,7 +85,7 @@ public class RelaxedSftpKeyAuthConsumerTest extends RelaxedFtpConsumerCase {
 
   @Override
   protected String createBaseFileName(Object object) {
-    SftpKeyAuthConnection con = (SftpKeyAuthConnection) ((StandaloneConsumer) object).getConnection();
+    StandardSftpConnection con = (StandardSftpConnection) ((StandaloneConsumer) object).getConnection();
     return super.createBaseFileName(object) + "-" + con.getClass().getSimpleName() + "-"
         + con.getConfiguration().getClass().getSimpleName();
   }

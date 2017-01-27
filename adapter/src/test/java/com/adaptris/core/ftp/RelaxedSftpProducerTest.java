@@ -50,11 +50,7 @@ public class RelaxedSftpProducerTest extends RelaxedFtpProducerCase {
 
   @Override
   protected SftpConnection createConnectionForExamples() {
-    SftpConnection con = new SftpConnection();
-    con.setDefaultUserName("default-username-if-not-specified");
-    con.setDefaultPassword("default-password-if-not-specified");
-    con.setKnownHostsFile("/optional/path/to/known_hosts");
-    return con;
+    return FtpExampleHelper.sftpConnection();
   }
 
   private StandaloneProducer createProducerExample(ConfigBuilder behaviour) {

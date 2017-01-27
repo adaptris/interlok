@@ -52,11 +52,7 @@ public class SftpConsumerTest extends FtpConsumerCase {
 
   @Override
   protected SftpConnection createConnectionForExamples() {
-    SftpConnection con = new SftpConnection();
-    con.setDefaultUserName("default-username-if-not-specified");
-    con.setDefaultPassword("default-password-if-not-specified");
-    con.setKnownHostsFile("/optional/path/to/known/hosts/file");
-    return con;
+    return FtpExampleHelper.sftpConnection();
   }
 
   @Override
