@@ -16,6 +16,8 @@
 package com.adaptris.core.ftp;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.adaptris.sftp.ConfigBuilder;
 import com.adaptris.sftp.HostConfig;
@@ -25,6 +27,72 @@ import com.adaptris.sftp.SftpClient;
 import com.adaptris.util.KeyValuePair;
 
 public class SftpExampleHelper {
+
+  private enum ConnectionType {
+    Standard() {
+
+      @Override
+      FileTransferConnection create() {
+        return standardSftpConnection();
+      }
+
+    },
+    KeyAuth() {
+      @Override
+      FileTransferConnection create() {
+        return sftpKeyAuthConnection();
+      }
+
+    },
+    Basic() {
+      @Override
+      FileTransferConnection create() {
+        return sftpConnection();
+      }
+    };
+
+    abstract FileTransferConnection create();
+
+  };
+
+  private enum ConfigType {
+    OpenSSH() {
+
+      @Override
+      ConfigBuilder create() {
+        return createOpensshRepo();
+      }
+
+    },
+    PerHost() {
+      @Override
+      ConfigBuilder create() {
+        return createPerHostConfigRepo();
+      }
+    },
+    Inline() {
+      @Override
+      ConfigBuilder create() {
+        return createInlineConfigRepo();
+      }
+    };
+
+    abstract ConfigBuilder create();
+
+  };
+
+  public static List<FileTransferConnection> createConnectionsForExamples() {
+    List<FileTransferConnection> result = new ArrayList<>();
+    for (ConnectionType connectionType : ConnectionType.values()) {
+      for (ConfigType confType : ConfigType.values()) {
+        FileTransferConnection con = connectionType.create();
+        ConfigBuilder builder = confType.create();
+        setConfigBuilder(con, builder);
+        result.add(con);
+      }
+    }
+    return result;
+  }
 
   public static StandardSftpConnection standardSftpConnection() {
     StandardSftpConnection con = new StandardSftpConnection();
