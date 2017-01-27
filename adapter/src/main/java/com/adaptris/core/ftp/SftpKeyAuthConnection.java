@@ -22,8 +22,6 @@ import java.io.IOException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.io.FileUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -34,11 +32,9 @@ import com.adaptris.core.util.Args;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
 import com.adaptris.security.exc.PasswordException;
-import com.adaptris.security.password.Password;
 import com.adaptris.sftp.ConfigBuilder;
 import com.adaptris.sftp.InlineConfigBuilder;
 import com.adaptris.sftp.SftpClient;
-import com.adaptris.sftp.SftpException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -110,18 +106,12 @@ public class SftpKeyAuthConnection extends FileTransferConnection {
   }
 
   @Override
-  protected FileTransferClient create(String remoteHost, int port, UserInfo ui) throws IOException, FileTransferException {
-    log.debug("Connecting to " + remoteHost + ":" + port + " as user " + ui.getUser());
-    SftpClient sftp = new SftpClient(remoteHost, port, socketTimeout(), knownHosts(), getConfiguration());
-    sftp.setAdditionalDebug(additionalDebug());
-    sftp.setKeepAliveTimeout(keepAlive);
-    try {
-      byte[] privateKey = FileUtils.readFileToByteArray(new File(getPrivateKeyFilename()));
-      sftp.connect(ui.getUser(), privateKey, Password.decode(getPrivateKeyPassword()).getBytes());
-    }
-    catch (PasswordException e) {
-      throw new SftpException(e);
-    }
+  protected FileTransferClient create(String remoteHost, int port, UserInfo ui)
+      throws IOException, FileTransferException, PasswordException {
+    log.debug("Connecting to {}:{} as user {}", remoteHost, port, ui.getUser());
+    SftpClient sftp = new SftpKeyAuthentication(getPrivateKeyFilename(), getPrivateKeyPassword())
+        .connect(new SftpClient(remoteHost, port, socketTimeout(), knownHosts(), getConfiguration())
+            .withAdditionalDebug(additionalDebug()).withKeepAliveTimeout(keepAlive), ui);
     return sftp;
   }
 

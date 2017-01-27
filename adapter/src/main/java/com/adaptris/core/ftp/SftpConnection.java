@@ -30,6 +30,8 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.util.Args;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
+import com.adaptris.security.exc.PasswordException;
+import com.adaptris.security.password.Password;
 import com.adaptris.sftp.ConfigBuilder;
 import com.adaptris.sftp.InlineConfigBuilder;
 import com.adaptris.sftp.SftpClient;
@@ -94,13 +96,12 @@ public class SftpConnection extends FileTransferConnectionUsingPassword {
 
   @Override
   protected FileTransferClient create(String remoteHost, int port, UserInfo ui)
-      throws IOException, FileTransferException {
-    log.debug("Connecting to " + remoteHost + ":" + port + " as user "
-        + ui.getUser());
-    SftpClient sftp = new SftpClient(remoteHost, port, socketTimeout(), knownHosts(), getConfiguration());
-    sftp.setAdditionalDebug(additionalDebug());
-    sftp.setKeepAliveTimeout(keepAlive);
-    sftp.connect(ui.getUser(), ui.getPassword());
+      throws IOException, FileTransferException, PasswordException {
+    log.debug("Connecting to {}:{} as user {}", remoteHost, port, ui.getUser());
+
+    SftpClient sftp = new SftpClient(remoteHost, port, socketTimeout(), knownHosts(), getConfiguration())
+        .withAdditionalDebug(additionalDebug()).withKeepAliveTimeout(keepAlive);
+    sftp.connect(ui.getUser(), Password.decode(ui.getPassword()));
     return sftp;
   }
 
