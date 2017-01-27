@@ -26,7 +26,38 @@ import com.adaptris.util.KeyValuePair;
 
 public class SftpExampleHelper {
 
-  public static ConfigBuilder createOpenSSHRepo() {
+  public static StandardSftpConnection standardSftpConnection() {
+    StandardSftpConnection con = new StandardSftpConnection();
+    con.setDefaultUserName("username");
+    SftpAuthenticationWrapper auth = new SftpAuthenticationWrapper(
+        new SftpPasswordAuthentication("default password if not overriden in destination"),
+        new SftpKeyAuthentication("/path/to/private/key/in/openssh/format", "my_super_secret_password"),
+        new SftpKeyAuthentication("/another/path/to/private/key/in/openssh/format", "another_password"));
+
+    con.setAuthentication(auth);
+    con.setKnownHostsFile("/optional/path/to/known_hosts");
+    return con;
+  }
+
+  public static SftpKeyAuthConnection sftpKeyAuthConnection() {
+    SftpKeyAuthConnection con = new SftpKeyAuthConnection();
+    con.setDefaultUserName("username");
+    con.setPrivateKeyFilename("/path/to/private/key/in/openssh/format");
+    con.setPrivateKeyPassword("my_super_secret_password");
+    con.setSocketTimeout(10000);
+    con.setKnownHostsFile("/optional/path/to/known_hosts");
+    return con;
+  }
+
+  public static SftpConnection sftpConnection() {
+    SftpConnection con = new SftpConnection();
+    con.setDefaultUserName("default-username-if-not-specified");
+    con.setDefaultPassword("default-password-if-not-specified");
+    con.setKnownHostsFile("/optional/path/to/known_hosts");
+    return con;
+  }
+
+  public static ConfigBuilder createOpensshRepo() {
     return new OpenSSHConfigBuilder("/path/openssh/config/file");
   }
 

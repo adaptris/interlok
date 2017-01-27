@@ -16,79 +16,15 @@
 
 package com.adaptris.core.ftp;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import com.adaptris.core.ConfiguredConsumeDestination;
-import com.adaptris.core.FixedIntervalPoller;
-import com.adaptris.core.Poller;
-import com.adaptris.core.QuartzCronPoller;
-import com.adaptris.core.StandaloneConsumer;
-import com.adaptris.sftp.ConfigBuilder;
-import com.adaptris.sftp.OpenSSHConfigBuilder;
-
-
-
-public class SftpConsumerStdConnectionTest extends FtpConsumerCase {
-
-  private static final String BASE_DIR_KEY = "SftpConsumerExamples.baseDir";
+public class SftpConsumerStdConnectionTest extends SftpConsumerCase {
 
   public SftpConsumerStdConnectionTest(String name) {
     super(name);
-    if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
-      setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
-    }
   }
 
-  @Override
-  protected Object retrieveObjectForSampleConfig() {
-    return null;
-  }
 
   @Override
   protected StandardSftpConnection createConnectionForExamples() {
-    return FtpExampleHelper.standardSftpConnection();
+    return SftpExampleHelper.standardSftpConnection();
   }
-
-  @Override
-  protected String getScheme() {
-    return "sftp";
-  }
-
-  private StandaloneConsumer createConsumerExample(ConfigBuilder behavior, Poller poller) {
-    StandardSftpConnection con = createConnectionForExamples();
-    FtpConsumer cfgConsumer = new FtpConsumer();
-    try {
-      con.setConfiguration(behavior);
-      con.setDefaultUserName("UserName if Not configured in destination");
-      cfgConsumer.setProcDirectory("/proc");
-      cfgConsumer.setDestination(new ConfiguredConsumeDestination("sftp://overrideuser@hostname:port/path/to/directory", "*.xml"));
-      cfgConsumer.setPoller(poller);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-    return new StandaloneConsumer(con, cfgConsumer);
-  }
-
-  @Override
-  protected List retrieveObjectsForSampleConfig() {
-    return new ArrayList(Arrays.asList(new StandaloneConsumer[] {
-        createConsumerExample(new OpenSSHConfigBuilder("/path/openssh/config/file"), new QuartzCronPoller("*/20 * * * * ?")),
-        createConsumerExample(SftpConsumerTest.createInlineConfigRepo(), new QuartzCronPoller("*/20 * * * * ?")),
-        createConsumerExample(SftpConsumerTest.createPerHostConfigRepo(), new QuartzCronPoller("*/20 * * * * ?")),
-        createConsumerExample(SftpConsumerTest.createInlineConfigRepo(), new FixedIntervalPoller()),
-        createConsumerExample(SftpConsumerTest.createPerHostConfigRepo(), new FixedIntervalPoller()),
-        createConsumerExample(new OpenSSHConfigBuilder("/path/openssh/config/file"), new FixedIntervalPoller()),
-    }));
-  }
-
-
-  @Override
-  protected String createBaseFileName(Object object) {
-    StandardSftpConnection con = (StandardSftpConnection) ((StandaloneConsumer) object).getConnection();
-    return super.createBaseFileName(object) + "-" + con.getClass().getSimpleName() + "-"
-        + con.getConfiguration().getClass().getSimpleName();
-  }
-
 }

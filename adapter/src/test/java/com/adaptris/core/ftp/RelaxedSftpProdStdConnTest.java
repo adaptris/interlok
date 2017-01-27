@@ -25,7 +25,7 @@ public class RelaxedSftpProdStdConnTest extends RelaxedSftpProducerCase {
 
   @Override
   protected StandardSftpConnection createConnectionForExamples() {
-    return FtpExampleHelper.standardSftpConnection();
+    return SftpExampleHelper.standardSftpConnection();
 
   }
 }

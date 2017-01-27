@@ -40,7 +40,7 @@ public class RelaxedFtpsProducerTest extends RelaxedFtpProducerCase {
 
   @Override
   protected String getScheme() {
-    return "ftp";
+    return "ftps";
   }
 
 }

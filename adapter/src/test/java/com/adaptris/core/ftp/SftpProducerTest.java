@@ -24,7 +24,7 @@ public class SftpProducerTest extends SftpProducerCase {
 
   @Override
   protected SftpConnection createConnectionForExamples() {
-    return FtpExampleHelper.sftpConnection();
+    return SftpExampleHelper.sftpConnection();
   }
 
 }

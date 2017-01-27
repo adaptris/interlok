@@ -26,7 +26,7 @@ public class SftpKeyAuthProducerTest extends SftpProducerCase {
 
   @Override
   protected SftpKeyAuthConnection createConnectionForExamples() {
-    return FtpExampleHelper.sftpKeyAuthConnection();
+    return SftpExampleHelper.sftpKeyAuthConnection();
   }
 
 }

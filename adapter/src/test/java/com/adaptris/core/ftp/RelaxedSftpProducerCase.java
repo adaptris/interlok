@@ -16,6 +16,12 @@
 
 package com.adaptris.core.ftp;
 
+import static com.adaptris.core.ftp.SftpExampleHelper.createInlineConfigRepo;
+import static com.adaptris.core.ftp.SftpExampleHelper.createOpensshRepo;
+import static com.adaptris.core.ftp.SftpExampleHelper.createPerHostConfigRepo;
+import static com.adaptris.core.ftp.SftpExampleHelper.getConfigSimpleName;
+import static com.adaptris.core.ftp.SftpExampleHelper.setConfigBuilder;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -24,7 +30,6 @@ import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.FormattedFilenameCreator;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.sftp.ConfigBuilder;
-import com.adaptris.sftp.OpenSSHConfigBuilder;
 
 public abstract class RelaxedSftpProducerCase extends RelaxedFtpProducerCase {
 
@@ -51,7 +56,7 @@ public abstract class RelaxedSftpProducerCase extends RelaxedFtpProducerCase {
     FileTransferConnection con = createConnectionForExamples();
     RelaxedFtpProducer producer = createProducerExample();
     try {
-      SftpExampleHelper.setConfigBuilder(con, behaviour);
+      setConfigBuilder(con, behaviour);
       producer.setFileNameCreator(new FormattedFilenameCreator());
       producer.setDestination(new ConfiguredProduceDestination("sftp://sftpuser@hostname:port/path/to/directory"));
     }
@@ -65,16 +70,15 @@ public abstract class RelaxedSftpProducerCase extends RelaxedFtpProducerCase {
   protected String createBaseFileName(Object object) {
     FileTransferConnection con = (FileTransferConnection) ((StandaloneProducer) object).getConnection();
     return super.createBaseFileName(object) + "-" + con.getClass().getSimpleName() + "-"
-        + SftpExampleHelper.getConfigSimpleName(con);
+        + getConfigSimpleName(con);
   }
 
   @Override
   protected List retrieveObjectsForSampleConfig() {
     return new ArrayList(Arrays.asList(new StandaloneProducer[]
     {
-        createProducerExample(new OpenSSHConfigBuilder("/path/openssh/config/file")),
-        createProducerExample(SftpConsumerTest.createInlineConfigRepo()),
-        createProducerExample(SftpConsumerTest.createPerHostConfigRepo()),
+        createProducerExample(createOpensshRepo()), createProducerExample(createInlineConfigRepo()),
+        createProducerExample(createPerHostConfigRepo()),
     }));
   }
 

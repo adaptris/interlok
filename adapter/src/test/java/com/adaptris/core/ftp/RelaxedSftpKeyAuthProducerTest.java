@@ -24,11 +24,7 @@ public class RelaxedSftpKeyAuthProducerTest extends RelaxedSftpProducerCase {
 
   @Override
   protected SftpKeyAuthConnection createConnectionForExamples() {
-    return FtpExampleHelper.sftpKeyAuthConnection();
+    return SftpExampleHelper.sftpKeyAuthConnection();
   }
 
-  @Override
-  protected String getScheme() {
-    return "sftp";
-  }
 }
