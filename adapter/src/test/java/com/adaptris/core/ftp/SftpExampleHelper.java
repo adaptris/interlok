@@ -19,6 +19,11 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.adaptris.core.FixedIntervalPoller;
+import com.adaptris.core.GaussianIntervalPoller;
+import com.adaptris.core.Poller;
+import com.adaptris.core.QuartzCronPoller;
+import com.adaptris.core.RandomIntervalPoller;
 import com.adaptris.sftp.ConfigBuilder;
 import com.adaptris.sftp.HostConfig;
 import com.adaptris.sftp.OpenSSHConfigBuilder;
@@ -94,6 +99,11 @@ public class SftpExampleHelper {
     return result;
   }
 
+  public static Poller[] createPollers() {
+    return new Poller[] {
+        new QuartzCronPoller("*/20 * * * * ?"), new FixedIntervalPoller(), new RandomIntervalPoller(), new GaussianIntervalPoller()
+    };
+  }
   public static StandardSftpConnection standardSftpConnection() {
     StandardSftpConnection con = new StandardSftpConnection();
     con.setDefaultUserName("username");
