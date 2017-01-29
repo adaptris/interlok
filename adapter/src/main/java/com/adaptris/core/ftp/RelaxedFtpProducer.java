@@ -19,10 +19,8 @@ package com.adaptris.core.ftp;
 import java.io.InputStream;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdapterComponent;
-import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
@@ -32,7 +30,6 @@ import com.adaptris.core.FormattedFilenameCreator;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ProduceOnlyProducerImp;
-import com.adaptris.core.util.Args;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -78,15 +75,9 @@ public class RelaxedFtpProducer extends ProduceOnlyProducerImp {
   private static final String SLASH = "/";
 
   @Valid
-  @Deprecated
   private FileNameCreator fileNameCreator;
-  @NotNull
-  @Valid
-  @AutoPopulated
-  private FileNameCreator filenameCreator;
 
   public RelaxedFtpProducer() {
-    setFilenameCreator(new FormattedFilenameCreator());
   }
 
   /**
@@ -103,9 +94,6 @@ public class RelaxedFtpProducer extends ProduceOnlyProducerImp {
    */
   @Override
   public void init() throws CoreException {
-    if (getFileNameCreator() != null) {
-      log.warn("Deprecated use of fileNameCreator detected; use filenameCreator instead");
-    }
   }
 
   /**
@@ -165,35 +153,15 @@ public class RelaxedFtpProducer extends ProduceOnlyProducerImp {
   }
 
 
-  /**
-   * @deprecated since 3.6.0 use getFileNameCreator(FileNameCreator) instead
-   */
-  @Deprecated
   public FileNameCreator getFileNameCreator() {
     return fileNameCreator;
   }
 
-  /**
-   * 
-   * @deprecated since 3.6.0 use setFilenameCreator(FileNameCreator) instead
-   */
-  @Deprecated
   public void setFileNameCreator(FileNameCreator creator) {
     fileNameCreator = creator;
   }
 
-  public FileNameCreator getFilenameCreator() {
-    return filenameCreator;
-  }
-
-  public void setFilenameCreator(FileNameCreator creator) {
-    filenameCreator = Args.notNull(creator, "filenameCreator");
-  }
-
   FileNameCreator filenameCreator() {
-    if (getFileNameCreator() != null) {
-      return getFileNameCreator();
-    }
-    return getFilenameCreator();
+    return getFileNameCreator() != null ? getFileNameCreator() : new FormattedFilenameCreator();
   }
 }

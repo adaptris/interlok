@@ -118,18 +118,10 @@ public class FtpProducerTest extends FtpProducerCase {
 
   public void testSetFilenameCreator() throws Exception {
     FtpProducer ftpProducer = new FtpProducer();
-    assertNotNull(ftpProducer.getFilenameCreator());
-    assertEquals(FormattedFilenameCreator.class, ftpProducer.getFilenameCreator().getClass());
+    assertEquals(FormattedFilenameCreator.class, ftpProducer.filenameCreatorToUse().getClass());
     ftpProducer.setFilenameCreator(new MetadataFileNameCreator());
     assertEquals(MetadataFileNameCreator.class, ftpProducer.getFilenameCreator().getClass());
-    try {
-      ftpProducer.setFilenameCreator(null);
-      fail();
-    }
-    catch (IllegalArgumentException expected) {
-
-    }
-    assertEquals(MetadataFileNameCreator.class, ftpProducer.getFilenameCreator().getClass());
+    assertEquals(MetadataFileNameCreator.class, ftpProducer.filenameCreatorToUse().getClass());
   }
 
   public void testProduce() throws Exception {

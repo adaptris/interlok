@@ -32,7 +32,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * 
  * @author lchan
- * @config sftp-key-authentication
+ * @config sftp-password-authentication
  * 
  */
 @XStreamAlias("sftp-password-authentication")

@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.adaptris.core.ConfiguredProduceDestination;
-import com.adaptris.core.FormattedFilenameCreator;
 import com.adaptris.core.StandaloneProducer;
 
 public class RelaxedSftpProducerTest extends RelaxedFtpProducerCase {
@@ -55,7 +54,6 @@ public class RelaxedSftpProducerTest extends RelaxedFtpProducerCase {
   private StandaloneProducer createProducerExample(FileTransferConnection con) {
     RelaxedFtpProducer producer = createProducerExample();
     try {
-      producer.setFilenameCreator(new FormattedFilenameCreator());
       producer.setDestination(new ConfiguredProduceDestination("sftp://sftpuser@hostname:port/path/to/directory"));
     }
     catch (Exception e) {
