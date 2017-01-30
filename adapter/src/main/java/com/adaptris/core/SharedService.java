@@ -1,14 +1,24 @@
 package com.adaptris.core;
 
+import javax.validation.constraints.NotNull;
+
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
+ * <p>
  * A Service instance that references a Service made available via {@link SharedComponentList}.
+ * </p>
+ * <p>
+ * By default the looked-up service is deep cloned before being loaded into your workflows. <br/>
+ * You can turn off cloning by simply setting "clone-service=true".
+ * </p>
  * 
  * @config shared-service
  * @author amcgrath
@@ -22,6 +32,10 @@ public class SharedService extends SharedComponent implements Service {
 
   @NotBlank
   private String lookupName;
+  @NotNull
+  @AutoPopulated
+  @InputFieldDefault(value="true")
+  private Boolean cloneService;
   
   private transient Service clonedService;
   
@@ -36,7 +50,10 @@ public class SharedService extends SharedComponent implements Service {
     try {
       if (clonedService == null) {
         Service lookedUpService = (Service) triggerJndiLookup(getLookupName());
-        clonedService = this.deepClone(lookedUpService);
+        if(cloneService())
+          clonedService = this.deepClone(lookedUpService);
+        else
+          clonedService = lookedUpService;
       }
     }
     catch (CoreException e) {
@@ -156,6 +173,18 @@ public class SharedService extends SharedComponent implements Service {
 
   public void setLookupName(String lookupName) {
     this.lookupName = lookupName;
+  }
+  
+  public boolean cloneService() {
+    return this.getCloneService() != null ? true : this.getCloneService();
+  }
+
+  public Boolean getCloneService() {
+    return cloneService;
+  }
+
+  public void setCloneService(Boolean cloneService) {
+    this.cloneService = cloneService;
   }
 
 }
