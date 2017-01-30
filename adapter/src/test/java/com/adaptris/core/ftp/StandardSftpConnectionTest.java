@@ -16,8 +16,19 @@
 
 package com.adaptris.core.ftp;
 
+import static com.adaptris.core.ftp.SftpConnectionTest.CFG_PASSWORD;
+import static com.adaptris.core.ftp.SftpKeyAuthConnectionTest.CFG_HOST;
+import static com.adaptris.core.ftp.SftpKeyAuthConnectionTest.CFG_KNOWN_HOSTS_FILE;
+import static com.adaptris.core.ftp.SftpKeyAuthConnectionTest.CFG_PRIVATE_KEY_FILE;
+import static com.adaptris.core.ftp.SftpKeyAuthConnectionTest.CFG_PRIVATE_KEY_PW;
+import static com.adaptris.core.ftp.SftpKeyAuthConnectionTest.CFG_REMOTE_DIR;
+import static com.adaptris.core.ftp.SftpKeyAuthConnectionTest.CFG_TEMP_HOSTS_FILE;
+import static com.adaptris.core.ftp.SftpKeyAuthConnectionTest.CFG_UNKNOWN_HOSTS_FILE;
+import static com.adaptris.core.ftp.SftpKeyAuthConnectionTest.CFG_USER;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileCleaningTracker;
 import org.apache.commons.io.FileDeleteStrategy;
@@ -26,29 +37,16 @@ import org.apache.commons.io.FileUtils;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
 import com.adaptris.security.exc.PasswordException;
+import com.adaptris.security.password.Password;
+import com.adaptris.util.TimeInterval;
 
-@SuppressWarnings("deprecation")
-public class SftpKeyAuthConnectionTest extends FtpConnectionCase {
+public class StandardSftpConnectionTest extends FtpConnectionCase {
 
-  // stop jsch auto-update host key
-
-  protected static final String CFG_HOST = "SftpConsumerTest.host";
-  protected static final String CFG_USER = "SftpConsumerTest.username";
-  protected static final String CFG_PASSWORD = "SftpConsumerTest.password";
-  protected static final String CFG_REMOTE_DIR = "SftpConsumerTest.remotedir";
-
-  protected static final String CFG_PRIVATE_KEY_FILE = "SftpConsumerTest.privateKeyFile";
-  protected static final String CFG_PRIVATE_KEY_PW = "SftpConsumerTest.privateKeyPassword";
-
-  // DO NOT use the top two directly, use @setupTempHostsFile and the CFG_TEMP_HOSTS_FILE
-  protected static final String CFG_KNOWN_HOSTS_FILE = "SftpConsumerTest.knownHostsFile";
-  protected static final String CFG_UNKNOWN_HOSTS_FILE = "SftpConsumerTest.unknownHostsFile";
-  protected static final String CFG_TEMP_HOSTS_FILE = "SftpConsumerTest.tempHostsFile";
 
   private static FileCleaningTracker cleaner = new FileCleaningTracker();
   private Object fileTracker = new Object();
 
-  public SftpKeyAuthConnectionTest(String name) {
+  public StandardSftpConnectionTest(String name) {
     super(name);
   }
 
@@ -63,13 +61,14 @@ public class SftpKeyAuthConnectionTest extends FtpConnectionCase {
   }
 
   public void testSocketTimeout() throws Exception {
-    SftpKeyAuthConnection conn = new SftpKeyAuthConnection();
+    StandardSftpConnection conn = new StandardSftpConnection();
     assertNull(conn.getSocketTimeout());
     assertEquals(60000, conn.socketTimeout());
 
-    conn.setSocketTimeout(10);
-    assertEquals(Integer.valueOf(10), conn.getSocketTimeout());
-    assertEquals(10, conn.socketTimeout());
+    TimeInterval timeout = new TimeInterval(10L, TimeUnit.SECONDS);
+    conn.setSocketTimeout(timeout);
+    assertEquals(timeout, conn.getSocketTimeout());
+    assertEquals(10000, conn.socketTimeout());
 
     conn.setSocketTimeout(null);
     assertNull(conn.getSocketTimeout());
@@ -78,30 +77,21 @@ public class SftpKeyAuthConnectionTest extends FtpConnectionCase {
   }
 
   public void testSetKnownHostsFile() throws Exception {
-    SftpKeyAuthConnection conn = new SftpKeyAuthConnection();
+    StandardSftpConnection conn = new StandardSftpConnection();
     assertNull(conn.getKnownHostsFile());
     conn.setKnownHostsFile("abc");
     assertEquals("abc", conn.getKnownHostsFile());
   }
 
 
-  public void testConnect_InvalidPrivateKeyFile() throws Exception {
-
+  public void testConnectOnly_KeyAuth() throws Exception {
     if (areTestsEnabled()) {
-      File tempHostsFile = copyHostsFile(new File(PROPERTIES.getProperty(CFG_KNOWN_HOSTS_FILE)));
-
-      SftpKeyAuthConnection conn = createConnection();
-      conn.setConfiguration(new InlineConfigRepositoryBuilder(true).build());
-      conn.setKnownHostsFile(tempHostsFile.getCanonicalPath());
-      conn.setPrivateKeyFilename("/some/file/that/does/not/exist");
-
+      StandardSftpConnection conn = createConnection();
       try {
         start(conn);
         FileTransferClient c = conn.connect(getDestinationString());
-        fail();
-      }
-      catch (IOException expected) {
-
+        assertTrue(c.isConnected());
+        c.disconnect();
       }
       finally {
         stop(conn);
@@ -109,15 +99,64 @@ public class SftpKeyAuthConnectionTest extends FtpConnectionCase {
     }
   }
 
-  public void testConnect_InvalidPrivateKeyPassword() throws Exception {
+  public void testConnectOnly_PasswordAuth() throws Exception {
     if (areTestsEnabled()) {
-      File tempHostsFile = copyHostsFile(new File(PROPERTIES.getProperty(CFG_KNOWN_HOSTS_FILE)));
+      StandardSftpConnection conn = createConnection();
+      try {
+        conn.setAuthentication(new SftpPasswordAuthentication(PROPERTIES.getProperty(CFG_PASSWORD)));
+        start(conn);
+        FileTransferClient c = conn.connect(getDestinationString());
+        assertTrue(c.isConnected());
+        c.disconnect();
+      }
+      finally {
+        stop(conn);
+      }
+    }
+  }
 
-      SftpKeyAuthConnection conn = createConnection();
-      conn.setConfiguration(new InlineConfigRepositoryBuilder(true).build());
-      conn.setKnownHostsFile(tempHostsFile.getCanonicalPath());
-      conn.setPrivateKeyPassword("PW:ABCDEF012345");
+  public void testConnectOnly_PasswordAuth_Override() throws Exception {
+    if (areTestsEnabled()) {
+      StandardSftpConnection conn = createConnection();
+      try {
+        conn.setAuthentication(new SftpPasswordAuthentication(""));
+        start(conn);
+        FileTransferClient c = conn.connect(getDestinationStringWithOverridePassword());
+        assertTrue(c.isConnected());
+        c.disconnect();
+      }
+      finally {
+        stop(conn);
+      }
+    }
+  }
 
+  public void testConnectOnly_Composite() throws Exception {
+    if (areTestsEnabled()) {
+      StandardSftpConnection conn = createConnection();
+      try {
+        SftpAuthenticationWrapper auth = new SftpAuthenticationWrapper(
+            new SftpKeyAuthentication(PROPERTIES.getProperty(CFG_PRIVATE_KEY_FILE), "PW:abde"),
+            new SftpKeyAuthentication(PROPERTIES.getProperty(CFG_PRIVATE_KEY_FILE), PROPERTIES.getProperty(CFG_PRIVATE_KEY_PW)));
+        conn.setAuthentication(auth);
+        start(conn);
+        FileTransferClient c = conn.connect(getDestinationString());
+        assertTrue(c.isConnected());
+        c.disconnect();
+      }
+      finally {
+        stop(conn);
+      }
+    }
+  }
+
+  public void testConnectOnly_Composite_Fails() throws Exception {
+    if (areTestsEnabled()) {
+      StandardSftpConnection conn = createConnection();
+      SftpAuthenticationWrapper auth = new SftpAuthenticationWrapper(
+          new SftpKeyAuthentication(PROPERTIES.getProperty(CFG_PRIVATE_KEY_FILE), "PW:abde"),
+          new SftpKeyAuthentication("/some/path/that/does/not/exist", PROPERTIES.getProperty(CFG_PRIVATE_KEY_PW)));
+      conn.setAuthentication(auth);
       try {
         start(conn);
         FileTransferClient c = conn.connect(getDestinationString());
@@ -131,28 +170,11 @@ public class SftpKeyAuthConnectionTest extends FtpConnectionCase {
     }
   }
 
-  public void testConnectOnly_DefaultBehaviour() throws Exception {
-    if (areTestsEnabled()) {
-      File tempHostsFile = copyHostsFile(new File(PROPERTIES.getProperty(CFG_KNOWN_HOSTS_FILE)));
-
-      SftpKeyAuthConnection conn = createConnection();
-      try {
-        start(conn);
-        FileTransferClient c = conn.connect(getDestinationString());
-        assertTrue(c.isConnected());
-        c.disconnect();
-      }
-      finally {
-        stop(conn);
-      }
-    }
-  }
-
   public void testConnectOnly_StrictKnownHosts_UnknownHost() throws Exception {
     if (areTestsEnabled()) {
       File tempHostsFile = copyHostsFile(new File(PROPERTIES.getProperty(CFG_UNKNOWN_HOSTS_FILE)));
 
-      SftpKeyAuthConnection conn = createConnection();
+      StandardSftpConnection conn = createConnection();
       conn.setConfiguration(new InlineConfigRepositoryBuilder(true).build());
       conn.setKnownHostsFile(tempHostsFile.getCanonicalPath());
       try {
@@ -173,7 +195,7 @@ public class SftpKeyAuthConnectionTest extends FtpConnectionCase {
     if (areTestsEnabled()) {
       File tempHostsFile = copyHostsFile(new File(PROPERTIES.getProperty(CFG_KNOWN_HOSTS_FILE)));
 
-      SftpKeyAuthConnection conn = createConnection();
+      StandardSftpConnection conn = createConnection();
       conn.setConfiguration(new InlineConfigRepositoryBuilder(true).build());
       conn.setKnownHostsFile(tempHostsFile.getCanonicalPath());
       try {
@@ -192,7 +214,7 @@ public class SftpKeyAuthConnectionTest extends FtpConnectionCase {
     if (areTestsEnabled()) {
       File tempHostsFile = copyHostsFile(new File(PROPERTIES.getProperty(CFG_UNKNOWN_HOSTS_FILE)));
 
-      SftpKeyAuthConnection conn = createConnection();
+      StandardSftpConnection conn = createConnection();
       conn.setConfiguration(new InlineConfigRepositoryBuilder(false).build());
       conn.setKnownHostsFile(tempHostsFile.getCanonicalPath());
       try {
@@ -211,7 +233,7 @@ public class SftpKeyAuthConnectionTest extends FtpConnectionCase {
     if (areTestsEnabled()) {
       File tempHostsFile = copyHostsFile(new File(PROPERTIES.getProperty(CFG_KNOWN_HOSTS_FILE)));
 
-      SftpKeyAuthConnection conn = createConnection();
+      StandardSftpConnection conn = createConnection();
 
       conn.setConfiguration(new InlineConfigRepositoryBuilder(false).build());
       conn.setKnownHostsFile(tempHostsFile.getCanonicalPath());
@@ -232,7 +254,7 @@ public class SftpKeyAuthConnectionTest extends FtpConnectionCase {
     if (!tempDir.exists() && !tempDir.mkdirs()) {
       throw new Exception("Couldn't make directory " + tempDir.getCanonicalPath());
     }
-    File tempFile = File.createTempFile(SftpKeyAuthConnectionTest.class.getSimpleName(), "", tempDir);
+    File tempFile = File.createTempFile(StandardSftpConnectionTest.class.getSimpleName(), "", tempDir);
     FileUtils.copyFile(srcKnownHosts, tempFile);
     tempFile.deleteOnExit();
     cleaner.track(tempFile, fileTracker, FileDeleteStrategy.FORCE);
@@ -247,14 +269,13 @@ public class SftpKeyAuthConnectionTest extends FtpConnectionCase {
   }
 
   @Override
-  protected SftpKeyAuthConnection createConnection() throws Exception {
+  protected StandardSftpConnection createConnection() throws Exception {
     File tempHostsFile = copyHostsFile(new File(PROPERTIES.getProperty(CFG_KNOWN_HOSTS_FILE)));
-
-    SftpKeyAuthConnection c = new SftpKeyAuthConnection();
-    c.setPrivateKeyFilename(PROPERTIES.getProperty(CFG_PRIVATE_KEY_FILE));
-    c.setPrivateKeyPassword(PROPERTIES.getProperty(CFG_PRIVATE_KEY_PW));
+    StandardSftpConnection c = new StandardSftpConnection();
     c.setDefaultUserName(PROPERTIES.getProperty(CFG_USER));
     c.setKnownHostsFile(tempHostsFile.getCanonicalPath());
+    c.setAuthentication(
+        new SftpKeyAuthentication(PROPERTIES.getProperty(CFG_PRIVATE_KEY_FILE), PROPERTIES.getProperty(CFG_PRIVATE_KEY_PW)));
     c.setAdditionalDebug(true);
     return c;
   }
@@ -265,7 +286,13 @@ public class SftpKeyAuthConnectionTest extends FtpConnectionCase {
         + PROPERTIES.getProperty(CFG_REMOTE_DIR);
   }
 
+  protected String getDestinationStringWithOverridePassword() throws Exception {
+    return "sftp://" + PROPERTIES.getProperty(CFG_USER) + ":" + Password.decode(PROPERTIES.getProperty(CFG_PASSWORD)) + "@"
+        + PROPERTIES.getProperty(CFG_HOST) + "/" + PROPERTIES.getProperty(CFG_REMOTE_DIR);
+  }
+
+
   protected void assertDefaultControlPort(int defaultControlPort) {
-    assertEquals(SftpKeyAuthConnection.DEFAULT_CONTROL_PORT, defaultControlPort);
+    assertEquals(22, defaultControlPort);
   }
 }

@@ -29,6 +29,7 @@ import com.adaptris.security.password.Password;
 import com.adaptris.sftp.OpenSSHConfigBuilder;
 import com.adaptris.sftp.SftpClient;
 
+@SuppressWarnings("deprecation")
 public class SftpConnectionTest extends FtpPasswordConnectionCase {
 
   public static final String CFG_HOST = "SftpConsumerTest.host";

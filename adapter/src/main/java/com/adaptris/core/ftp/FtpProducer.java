@@ -22,13 +22,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 import org.apache.commons.io.IOUtils;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
-import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
@@ -109,21 +107,17 @@ public class FtpProducer extends RequestReplyProducerImp {
   @AdvancedConfig
   @InputFieldDefault(value = "true")
   private Boolean replyUsesEncoder;
-  @NotNull
   @Valid
-  @AutoPopulated
   private FileNameCreator filenameCreator;
 
   /**
    * Default Constructor with the following defaults.
    * <ul>
-   * <li>fileNameCreator is <code>FormattedFilenameCreator</code></li>
    * <li>buildDirectory is /build</li>
    * <li>destDirectory is /work</li>
    * </ul>
    */
   public FtpProducer() {
-    setFilenameCreator(new FormattedFilenameCreator());
     setDestDirectory("/work");
     setBuildDirectory("/build");
   }
@@ -188,8 +182,8 @@ public class FtpProducer extends RequestReplyProducerImp {
     return 60000;
   }
 
-  private FileNameCreator filenameCreatorToUse() {
-    return getFilenameCreator();
+  FileNameCreator filenameCreatorToUse() {
+    return getFilenameCreator() != null ? getFilenameCreator() : new FormattedFilenameCreator();
   }
 
   /**
@@ -403,17 +397,7 @@ public class FtpProducer extends RequestReplyProducerImp {
     return filenameCreator;
   }
 
-  /**
-   * <p>
-   * Sets the <code>FileNameCreator</code> to use. May not be null.
-   * </p>
-   *
-   * @param creator the <code>FileNameCreator</code> to use
-   */
   public void setFilenameCreator(FileNameCreator creator) {
-    if (creator == null) {
-      throw new IllegalArgumentException("FileNameCreator may not be null");
-    }
     filenameCreator = creator;
   }
 }

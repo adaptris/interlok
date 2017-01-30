@@ -27,6 +27,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
@@ -34,33 +35,33 @@ import com.adaptris.security.exc.PasswordException;
 import com.adaptris.sftp.ConfigBuilder;
 import com.adaptris.sftp.InlineConfigBuilder;
 import com.adaptris.sftp.SftpClient;
+import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * SFTP Connection class.
- * <p>
- * Handles URLs in the form <code>sftp://[user:pw]@host[:port]/path/to/directory/root</code>
- * </p>
+ * SFTP Connection class that connects via a configurable {@link SftpAuthenticationProvider}.
  * 
- * @config sftp-connection
- * @deprecated since 3.6.0 use {@link StandardSftpConnection} instead.
- * @author lchan
+ * @config standard-sftp-connection
+ * @since 3.6.0
  */
-@XStreamAlias("sftp-connection")
+@XStreamAlias("standard-sftp-connection")
 @AdapterComponent
-@ComponentProfile(summary = "Connect to a server using the SSH File Transfer Protocol; authentica via a username and password",
+@ComponentProfile(summary = "Connect to a server using the SSH File Transfer Protocol; authentication via a configured authentication provider",
     tag = "connections,sftp")
-@DisplayOrder(order = {"defaultUserName", "defaultPassword", "transferType", "ftpDataMode", "defaultControlPort"})
-@Deprecated
-public class SftpConnection extends FileTransferConnectionUsingPassword {
+@DisplayOrder(order = {"defaultUserName", "defaultControlPort"})
+public class StandardSftpConnection extends FileTransferConnection {
 
   private static final String SCHEME_SFTP = "sftp";
 
-  static final int DEFAULT_CONTROL_PORT = 22;
+  private static final int DEFAULT_CONTROL_PORT = 22;
   private static final int DEFAULT_TIMEOUT = 60000;
 
+  @NotNull
+  private SftpAuthenticationProvider authentication;
+
   @AdvancedConfig
-  private Integer socketTimeout;
+  @Valid
+  private TimeInterval socketTimeout;
   @AdvancedConfig
   private String knownHostsFile;
   @Valid
@@ -68,25 +69,20 @@ public class SftpConnection extends FileTransferConnectionUsingPassword {
   @AutoPopulated
   @AdvancedConfig
   private ConfigBuilder configuration;
-
   // For sending keep alives every 60 seconds on the control port when downloading stuff.
   // Could make it configurable
   private transient long keepAlive = 60;
 
-  /**
-   * Default Constructor with the following default values.
-   * <ul>
-   * <li>socketTimeout is 0</li>
-   * </ul>
-   * 
-   * @see FileTransferConnection#FileTransferConnection()
-   */
-  public SftpConnection() {
+  public StandardSftpConnection() {
     super();
     setConfiguration(new InlineConfigBuilder());
   }
 
-
+  public StandardSftpConnection(ConfigBuilder config, SftpAuthenticationProvider prov) {
+    this();
+    setConfiguration(config);
+    setAuthentication(prov);
+  }
 
   @Override
   protected boolean acceptProtocol(String s) {
@@ -97,14 +93,24 @@ public class SftpConnection extends FileTransferConnectionUsingPassword {
   protected FileTransferClient create(String remoteHost, int port, UserInfo ui)
       throws IOException, FileTransferException, PasswordException {
     log.debug("Connecting to {}:{} as user {}", remoteHost, port, ui.getUser());
-
-    SftpClient sftp = new SftpPasswordAuthentication(getDefaultPassword())
-        .connect(new SftpClient(remoteHost, port, socketTimeout(), knownHosts(), getConfiguration())
-            .withAdditionalDebug(additionalDebug()).withKeepAliveTimeout(keepAlive), ui);
+    SftpClient sftp = getAuthentication().connect(new SftpClient(remoteHost, port, socketTimeout(), knownHosts(), getConfiguration())
+        .withAdditionalDebug(additionalDebug()).withKeepAliveTimeout(keepAlive), ui);
     return sftp;
   }
 
-  public Integer getSocketTimeout() {
+  /**
+   *
+   * @see com.adaptris.core.NullConnection#initConnection()
+   */
+  @Override
+  protected void initConnection() throws CoreException {
+    if (getAuthentication() == null) {
+      throw new CoreException("No Authentication Provider configured");
+    }
+    super.initConnection();
+  }
+
+  public TimeInterval getSocketTimeout() {
     return socketTimeout;
   }
 
@@ -113,12 +119,18 @@ public class SftpConnection extends FileTransferConnectionUsingPassword {
    * 
    * @param t The socketTimeout to set, default is 60000
    */
-  public void setSocketTimeout(Integer t) {
+  public void setSocketTimeout(TimeInterval t) {
     socketTimeout = t;
   }
 
   int socketTimeout() {
-    return getSocketTimeout() != null ? getSocketTimeout().intValue() : DEFAULT_TIMEOUT;
+    return getSocketTimeout() != null ? Long.valueOf(getSocketTimeout().toMilliseconds()).intValue() : DEFAULT_TIMEOUT;
+  }
+
+
+  @Override
+  protected UserInfo createUserInfo() throws FileTransferException {
+    return new UserInfo(getDefaultUserName());
   }
 
   public String getKnownHostsFile() {
@@ -146,8 +158,6 @@ public class SftpConnection extends FileTransferConnectionUsingPassword {
     return configuration;
   }
 
-
-
   /**
    * Set the config repository.
    * <p>
@@ -160,4 +170,20 @@ public class SftpConnection extends FileTransferConnectionUsingPassword {
   public void setConfiguration(ConfigBuilder repo) {
     this.configuration = Args.notNull(repo, "configuration");
   }
+
+  /**
+   * @return the authProvider
+   */
+  public SftpAuthenticationProvider getAuthentication() {
+    return authentication;
+  }
+
+  /**
+   * @param p the authProvider to set
+   */
+  public void setAuthentication(SftpAuthenticationProvider p) {
+    this.authentication = p;
+  }
+
 }
+

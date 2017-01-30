@@ -13,29 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 */
-
 package com.adaptris.core.ftp;
 
+import java.io.IOException;
 
+import com.adaptris.core.ftp.FileTransferConnection.UserInfo;
+import com.adaptris.filetransfer.FileTransferException;
+import com.adaptris.security.exc.PasswordException;
+import com.adaptris.sftp.SftpClient;
 
-public class RelaxedFtpsConsumerTest extends RelaxedFtpConsumerCase {
+public interface SftpAuthenticationProvider {
 
-  private static final String BASE_DIR_KEY = "FtpsConsumerExamples.baseDir";
-
-  public RelaxedFtpsConsumerTest(String name) {
-    super(name);
-    if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
-      setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
-    }
-  }
-
-  @Override
-  protected FtpSslConnection createConnectionForExamples() {
-    return FtpExampleHelper.ftpSslConnection();
-  }
-
-  @Override
-  protected String getScheme() {
-    return "ftps";
-  }
+  SftpClient connect(SftpClient ftp, UserInfo userInfo) throws FileTransferException, IOException, PasswordException;
 }

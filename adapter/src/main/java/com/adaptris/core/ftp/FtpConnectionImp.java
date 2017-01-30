@@ -29,6 +29,8 @@ import com.adaptris.filetransfer.FileTransferException;
 import com.adaptris.ftp.ApacheFtpClientImpl;
 import com.adaptris.ftp.FtpDataMode;
 import com.adaptris.ftp.TransferType;
+import com.adaptris.security.exc.PasswordException;
+import com.adaptris.security.password.Password;
 
 /**
  * Abstract implementation of FTPConnection both vanilla and SSL.
@@ -148,7 +150,8 @@ public abstract class FtpConnectionImp extends FileTransferConnectionUsingPasswo
   protected abstract ApacheFtpClientImpl createFtpClient(String remoteHost, int port, int seconds) throws IOException;
 
   @Override
-  protected FileTransferClient create(String remoteHost, int port, UserInfo ui) throws IOException, FileTransferException {
+  protected FileTransferClient create(String remoteHost, int port, UserInfo ui)
+      throws IOException, FileTransferException, PasswordException {
     log.debug("Connecting to " + remoteHost + ":" + port + " as user " + ui.getUser());
 
     ApacheFtpClientImpl ftp = createFtpClient(remoteHost, port, socketTimeout());
@@ -159,10 +162,10 @@ public abstract class FtpConnectionImp extends FileTransferConnectionUsingPasswo
     }
     ftp.setAdditionalDebug(additionalDebug());
     if (!isEmpty(accountName())) {
-      ftp.connect(ui.getUser(), ui.getPassword(), accountName());
+      ftp.connect(ui.getUser(), Password.decode(ui.getPassword()), accountName());
     }
     else {
-      ftp.connect(ui.getUser(), ui.getPassword());
+      ftp.connect(ui.getUser(), Password.decode(ui.getPassword()));
     }
     ftp.setType(transferType());
     if (additionalDebug()) {

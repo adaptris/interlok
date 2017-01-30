@@ -16,15 +16,15 @@
 
 package com.adaptris.core.ftp;
 
+import static com.adaptris.core.ftp.SftpExampleHelper.createConnectionsForExamples;
+import static com.adaptris.core.ftp.SftpExampleHelper.getConfigSimpleName;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.FormattedFilenameCreator;
 import com.adaptris.core.StandaloneProducer;
-import com.adaptris.sftp.ConfigBuilder;
-import com.adaptris.sftp.OpenSSHConfigBuilder;
 
 public class SftpProducerTest extends FtpProducerCase {
 
@@ -38,15 +38,23 @@ public class SftpProducerTest extends FtpProducerCase {
   }
 
   @Override
+  protected FileTransferConnection createConnectionForExamples() {
+    throw new RuntimeException("Should never be called");
+  }
+
+  @Override
   protected Object retrieveObjectForSampleConfig() {
     return null;
   }
 
-  private StandaloneProducer createProducerExample(ConfigBuilder behaviour) {
-    SftpConnection con = createConnectionForExamples();
+  @Override
+  protected String getScheme() {
+    return "sftp";
+  }
+
+  private StandaloneProducer createProducerExample(FileTransferConnection con) {
     FtpProducer producer = createProducerExample();
     try {
-      con.setConfiguration(behaviour);
       producer.setFilenameCreator(new FormattedFilenameCreator());
       producer.setDestination(new ConfiguredProduceDestination("sftp://sftpuser@hostname:port/path/to/directory"));
     }
@@ -58,32 +66,17 @@ public class SftpProducerTest extends FtpProducerCase {
 
   @Override
   protected String createBaseFileName(Object object) {
-    SftpConnection con = (SftpConnection) ((StandaloneProducer) object).getConnection();
-    return super.createBaseFileName(object) + "-" + con.getClass().getSimpleName() + "-"
-        + con.getConfiguration().getClass().getSimpleName();
+    FileTransferConnection con = (FileTransferConnection) ((StandaloneProducer) object).getConnection();
+    return super.createBaseFileName(object) + "-" + con.getClass().getSimpleName() + "-" + getConfigSimpleName(con);
   }
 
   @Override
   protected List retrieveObjectsForSampleConfig() {
-    return new ArrayList(Arrays.asList(new StandaloneProducer[]
-    {
-        createProducerExample(new OpenSSHConfigBuilder("/path/openssh/config/file")),
-        createProducerExample(SftpConsumerTest.createPerHostConfigRepo()),
-        createProducerExample(SftpConsumerTest.createInlineConfigRepo()),
-    }));
+    List<FileTransferConnection> connections = createConnectionsForExamples();
+    List producers = new ArrayList();
+    for (FileTransferConnection c : connections) {
+      producers.add(createProducerExample(c));
+    }
+    return producers;
   }
-
-  @Override
-  protected SftpConnection createConnectionForExamples() {
-    SftpConnection con = new SftpConnection();
-    con.setDefaultPassword("The Default Password if not provided as part of the destination");
-    con.setDefaultUserName("UserName if not configured in destination");
-    return con;
-  }
-
-  @Override
-  protected String getScheme() {
-    return "sftp";
-  }
-
 }

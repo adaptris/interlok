@@ -1,6 +1,8 @@
 package com.adaptris.interlok.management;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 
@@ -23,20 +25,27 @@ public class ClassLoaderBootstrap {
 	 * @throws Exception
 	 *           If anything bad happens.
 	 */
-	@SuppressWarnings("resource")
 	public void boot(final File adpCore) throws Exception {
 		final ClassLoader sysClassLoader = ClassLoader.getSystemClassLoader();
 		final URL[] urls = ((URLClassLoader)sysClassLoader).getURLs();
 		for (final URL url : urls) {
 			System.out.println("Adding " + url + " to classpath");
 		}
-		final URLClassLoader parentClassLoader = new URLClassLoader(urls, null);
-		final URL adpCoreUrl = new URL("file:///" + adpCore.getAbsolutePath());
-		System.out.println("Loading " + adpCoreUrl);
-		final URLClassLoader runtimeClassLoader = new URLClassLoader(new URL[] { adpCoreUrl }, parentClassLoader);
-		Thread.currentThread().setContextClassLoader(runtimeClassLoader);
-		final Class<?> simpleBootstrap = Class.forName("com.adaptris.core.management.SimpleBootstrap", true, runtimeClassLoader);
-		simpleBootstrap.getConstructor().newInstance();
+
+		try (final URLClassLoader parentClassLoader = new URLClassLoader(urls, null)) {
+			final URL adpCoreUrl = new URL("file:///" + adpCore.getAbsolutePath());
+			System.out.println("Loading " + adpCoreUrl);
+
+			try (final URLClassLoader runtimeClassLoader = new URLClassLoader(new URL[] { adpCoreUrl }, parentClassLoader)) {
+				Thread.currentThread().setContextClassLoader(runtimeClassLoader);
+
+				final Class<?> standardBootstrap = Class.forName("com.adaptris.core.management.StandardBootstrap", true, runtimeClassLoader);
+				final Constructor<?> constructor = standardBootstrap.getConstructor(String[].class);
+				final Method boot = standardBootstrap.getMethod("boot");
+
+				boot.invoke(constructor.newInstance((Object)new String[0]));
+			}
+		}
 	}
 
 	/**

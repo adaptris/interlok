@@ -19,10 +19,8 @@ package com.adaptris.core.ftp;
 import java.io.InputStream;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdapterComponent;
-import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
@@ -76,19 +74,10 @@ public class RelaxedFtpProducer extends ProduceOnlyProducerImp {
 
   private static final String SLASH = "/";
 
-  @NotNull
   @Valid
-  @AutoPopulated
   private FileNameCreator fileNameCreator;
 
-  /**
-   * Default Constructor with the following defaults.
-   * <ul>
-   * <li>fileNameCreator is {@link FormattedFilenameCreator}</li>
-   * </ul>
-   */
   public RelaxedFtpProducer() {
-    setFileNameCreator(new FormattedFilenameCreator());
   }
 
   /**
@@ -134,7 +123,7 @@ public class RelaxedFtpProducer extends ProduceOnlyProducerImp {
     try {
       client = conn.connect(destination.getDestination(msg));
       String dirRoot = conn.getDirectoryRoot(destination.getDestination(msg));
-      String fileName = fileNameCreator.createName(msg);
+      String fileName = filenameCreator().createName(msg);
       String destFilename = dirRoot + SLASH + fileName;
       if (dirRoot.endsWith(SLASH)) {
         destFilename = dirRoot + fileName;
@@ -164,28 +153,15 @@ public class RelaxedFtpProducer extends ProduceOnlyProducerImp {
   }
 
 
-  /**
-   * <p>
-   * Returns the <code>FileNameCreator</code> used by this object.
-   * </p>
-   *
-   * @return the <code>FileNameCreator</code> used by this object
-   */
   public FileNameCreator getFileNameCreator() {
     return fileNameCreator;
   }
 
-  /**
-   * <p>
-   * Sets the <code>FileNameCreator</code> to use. May not be null.
-   * </p>
-   *
-   * @param creator the <code>FileNameCreator</code> to use
-   */
   public void setFileNameCreator(FileNameCreator creator) {
-    if (creator == null) {
-      throw new IllegalArgumentException("FileNameCreator may not be null");
-    }
     fileNameCreator = creator;
+  }
+
+  FileNameCreator filenameCreator() {
+    return getFileNameCreator() != null ? getFileNameCreator() : new FormattedFilenameCreator();
   }
 }
