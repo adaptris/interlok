@@ -32,11 +32,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class NoOpParameterHandler implements ParameterHandler<HttpServletRequest> {
 
   @Override
-  public void handleParameters(AdaptrisMessage message, HttpServletRequest request, String itemPrefix) {
-    // No operation
-  }
-
-  @Override
   public void handleParameters(AdaptrisMessage message, HttpServletRequest request) {}
 
 }

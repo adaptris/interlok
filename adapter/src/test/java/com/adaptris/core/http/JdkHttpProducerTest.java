@@ -149,7 +149,6 @@ public class JdkHttpProducerTest extends HttpProducerExample {
     MockMessageProducer mock = new MockMessageProducer();
     MessageConsumer mc = createConsumer(URL_TO_POST_TO);
     mc.setHeaderHandler(new MetadataHeaderHandler());
-    mc.setHeaderPrefix("");
     HttpConnection jc = createConnection();
 
     Channel c = createChannel(jc, createWorkflow(mc, mock, new ServiceList()));
