@@ -54,7 +54,6 @@ import com.adaptris.core.common.InputStreamWithEncoding;
 import com.adaptris.core.common.PayloadStreamInputParameter;
 import com.adaptris.core.common.PayloadStreamOutputParameter;
 import com.adaptris.core.http.auth.AdapterResourceAuthenticator;
-import com.adaptris.core.http.auth.ConfiguredUsernamePassword;
 import com.adaptris.core.http.auth.HttpAuthenticator;
 import com.adaptris.core.http.auth.NoAuthentication;
 import com.adaptris.core.http.client.RequestMethodProvider;
@@ -127,12 +126,8 @@ public class StandardHttpProducer extends HttpProducer {
     return doRequest(msg, destination, timeout, msg);
   }
 
-  private AdaptrisMessage doRequest(AdaptrisMessage msg, ProduceDestination destination, long timeout, AdaptrisMessage reply) throws ProduceException {
-    // If deprecated username/password are set and no authenticator is configured, transparently create a static authenticator
-    if (getAuthenticator() instanceof NoAuthentication && !isEmpty(getUsername())) {
-      setAuthenticator(new ConfiguredUsernamePassword(getUsername(), getPassword()));
-    }
-    
+  private AdaptrisMessage doRequest(AdaptrisMessage msg, ProduceDestination destination, long timeout, AdaptrisMessage reply)
+      throws ProduceException {
     try {
       URL url = new URL(destination.getDestination(msg));
       authenticator.setup(url.toString(), msg, null);
