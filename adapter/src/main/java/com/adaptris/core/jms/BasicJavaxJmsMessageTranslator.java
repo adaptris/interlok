@@ -44,8 +44,8 @@ public class BasicJavaxJmsMessageTranslator extends MessageTypeTranslatorImp {
     super();
   }
   
-  public BasicJavaxJmsMessageTranslator(boolean moveMetadata, boolean moveJmsHeaders) {
-    super(moveMetadata, moveJmsHeaders);
+  public BasicJavaxJmsMessageTranslator(boolean moveJmsHeaders) {
+    super(moveJmsHeaders);
   }
   
   /**

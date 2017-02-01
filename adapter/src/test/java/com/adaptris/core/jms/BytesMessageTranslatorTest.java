@@ -90,7 +90,6 @@ public class BytesMessageTranslatorTest extends MessageTypeTranslatorCase {
       jmsMsg.setJMSTimestamp(timestamp);
 
       trans.setMoveJmsHeaders(true);
-      trans.setMoveMetadata(true);
       start(trans, session);
       // We aren't actually producing the message, so we have to
       // switch to read-only mode.
@@ -109,32 +108,6 @@ public class BytesMessageTranslatorTest extends MessageTypeTranslatorCase {
 
       broker.destroy();
     }
-  }
-
-  @Override
-  public void testMoveMetadataJmsMessageToAdaptrisMessage_DoNotMoveMetadata() throws Exception {
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    MessageTypeTranslatorImp trans = createTranslator();
-    trans.setMoveMetadata(false);
-    try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
-      BytesMessage jmsMsg = createMessage(session);
-      addProperties(jmsMsg);
-      start(trans, session);
-      // We aren't actually producing the message, so we have to
-      // switch to read-only mode.
-      jmsMsg.reset();
-      AdaptrisMessage msg = trans.translate(jmsMsg);
-      assertFalse(msg.containsKey(INTEGER_METADATA));
-      assertFalse(msg.containsKey(STRING_METADATA));
-      assertFalse(msg.containsKey(BOOLEAN_METADATA));
-    }
-    finally {
-      stop(trans);
-      broker.destroy();
-    }
-
   }
 
   @Override

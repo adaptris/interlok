@@ -176,7 +176,7 @@ public final class BlobMessageTranslator extends MessageTypeTranslatorImp {
     m.registerSession(currentSession());
     m.registerMessageFactory(currentMessageFactory());
     m.setMoveJmsHeaders(getMoveJmsHeaders());
-    m.setMoveMetadata(getMoveMetadata());
+    m.setMetadataFilter(getMetadataFilter());
     m.setReportAllErrors(getReportAllErrors());
     LifecycleHelper.init(m);
   }
