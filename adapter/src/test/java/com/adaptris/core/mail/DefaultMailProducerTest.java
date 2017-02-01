@@ -34,6 +34,7 @@ import com.adaptris.core.CoreConstants;
 import com.adaptris.core.NullConnection;
 import com.adaptris.core.ServiceCase;
 import com.adaptris.core.StandaloneProducer;
+import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.mail.JunitMailHelper;
 import com.adaptris.mail.MessageParser;
 import com.adaptris.util.KeyValuePair;
@@ -131,9 +132,9 @@ public class DefaultMailProducerTest extends MailProducerExample {
       msg.addMetadata("X-Email-Producer", "ABCDEFG");
       StandaloneProducer producer = createProducerForTests(gm);
       MailProducer mailer = (MailProducer) producer.getProducer();
-      mailer.setSendMetadataAsHeaders(true);
-      mailer.setSendMetadataRegexp("X-Email.*");
-
+      RegexMetadataFilter filter = new RegexMetadataFilter();
+      filter.addIncludePattern("X-Email.*");
+      mailer.setMetadataFilter(filter);
       ServiceCase.execute(producer, msg);
 
       gm.waitForIncomingEmail(1);
@@ -382,8 +383,9 @@ public class DefaultMailProducerTest extends MailProducerExample {
     smtp.setSubject("Configured subject");
     smtp.setSmtpUrl("smtp://localhost:25");
     smtp.setCcList("user@domain, user@domain");
-    smtp.setSendMetadataAsHeaders(true);
-    smtp.setSendMetadataRegexp("X-MyHeaders.*");
+    RegexMetadataFilter filter = new RegexMetadataFilter();
+    filter.addIncludePattern("X-MyHeaders.*");
+    smtp.setMetadataFilter(filter);
     result.add(new StandaloneProducer(smtp));
 
     DefaultSmtpProducer smtps = new DefaultSmtpProducer();
@@ -392,8 +394,9 @@ public class DefaultMailProducerTest extends MailProducerExample {
     smtps.setSubject("Configured subject");
     smtps.setSmtpUrl("smtps://username%40gmail.com:mypassword;@smtp.gmail.com:465");
     smtps.setCcList("user@domain, user@domain");
-    smtps.setSendMetadataAsHeaders(true);
-    smtps.setSendMetadataRegexp("X-MyHeaders.*");
+    filter = new RegexMetadataFilter();
+    filter.addIncludePattern("X-MyHeaders.*");
+    smtps.setMetadataFilter(filter);
     result.add(new StandaloneProducer(smtps));
 
     return result;

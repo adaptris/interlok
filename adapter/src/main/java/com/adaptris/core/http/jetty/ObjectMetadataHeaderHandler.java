@@ -44,8 +44,7 @@ public class ObjectMetadataHeaderHandler extends HeaderHandlerImpl {
   }
 
 
-  @Override
-  public void handleHeaders(AdaptrisMessage message, HttpServletRequest request, String itemPrefix) {
+  private void handleHeaders(AdaptrisMessage message, HttpServletRequest request, String itemPrefix) {
     String prefix = defaultIfEmpty(itemPrefix, "");
     
     for (Enumeration<String> e = request.getHeaderNames(); e.hasMoreElements();) {

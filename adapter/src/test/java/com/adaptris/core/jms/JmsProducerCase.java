@@ -92,38 +92,38 @@ public abstract class JmsProducerCase extends JmsProducerExample {
   public void testOverrideDeliveryMode() throws Exception {
     DefinedJmsProducer p = createDummyProducer();
     AdaptrisMessage msg = createMessage();
-    assertEquals(DeliveryMode.NON_PERSISTENT, p.calculateDeliveryMode(msg));
+    assertEquals(DeliveryMode.NON_PERSISTENT, p.calculateDeliveryMode(msg, p.getDeliveryMode()));
     msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    assertEquals(DeliveryMode.PERSISTENT, p.calculateDeliveryMode(msg));
+    assertEquals(DeliveryMode.PERSISTENT, p.calculateDeliveryMode(msg, p.getDeliveryMode()));
   }
 
   public void testOverridePriority() throws Exception {
     DefinedJmsProducer p = createDummyProducer();
     AdaptrisMessage msg = createMessage();
-    assertEquals(HIGHEST_PRIORITY, p.calculatePriority(msg));
+    assertEquals(HIGHEST_PRIORITY, p.calculatePriority(msg, p.getPriority()));
     msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    assertEquals(1, p.calculatePriority(msg));
+    assertEquals(1, p.calculatePriority(msg, p.getPriority()));
   }
 
   public void testOverrideTimeToLive() throws Exception {
     DefinedJmsProducer p = createDummyProducer();
     AdaptrisMessage msg = createMessage();
     msg.addMetadata(JMS_EXPIRATION, String.valueOf(System.currentTimeMillis() + 9999));
-    assertTrue("Time to live > 0", p.calculateTimeToLive(msg) > 0);
+    assertTrue("Time to live > 0", p.calculateTimeToLive(msg, p.getTtl()) > 0);
     msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    assertEquals(0, p.calculateTimeToLive(msg));
+    assertEquals(0, p.calculateTimeToLive(msg, p.getTtl()));
   }
 
   public void testOverrideTimeToLiveTimestamp() throws Exception {
     DefinedJmsProducer p = createDummyProducer();
     AdaptrisMessage msg = createMessage();
     msg.addMetadata(JMS_EXPIRATION, createTimestamp(9999));
-    assertTrue("Time to live > 0", p.calculateTimeToLive(msg) > 0);
+    assertTrue("Time to live > 0", p.calculateTimeToLive(msg, p.getTtl()) > 0);
     msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    assertEquals(0, p.calculateTimeToLive(msg));
+    assertEquals(0, p.calculateTimeToLive(msg, p.getTtl()));
     msg = createMessage();
     msg.addMetadata(JMS_EXPIRATION, createTimestamp(-9999));
-    assertEquals(0, p.calculateTimeToLive(msg));
+    assertEquals(0, p.calculateTimeToLive(msg, p.getTtl()));
   }
 
   public void testSetCaptureOutgoingMessageDetails() throws Exception {

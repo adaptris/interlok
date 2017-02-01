@@ -19,6 +19,7 @@ package com.adaptris.core.mail.attachment;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.mail.MailProducerExample;
+import com.adaptris.core.metadata.RegexMetadataFilter;
 
 @SuppressWarnings("deprecation")
 public class MultiAttachmentProducerXmlTest extends MailProducerExample {
@@ -61,8 +62,9 @@ public class MultiAttachmentProducerXmlTest extends MailProducerExample {
     producer.setSubject("Configured subject");
     producer.setSmtpUrl("smtp://localhost:25");
     producer.setCcList("user@domain, user@domain");
-    producer.setSendMetadataAsHeaders(true);
-    producer.setSendMetadataRegexp("X-MyHeaders.*");
+    RegexMetadataFilter filter = new RegexMetadataFilter();
+    filter.addIncludePattern("X-Email.*");
+    producer.setMetadataFilter(filter);
 
     XmlMailCreator mmc = new XmlMailCreator();
     mmc.setAttachmentHandler(new XmlAttachmentHandler("/document/attachment",

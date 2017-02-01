@@ -17,7 +17,6 @@
 package com.adaptris.core.jms;
 
 import com.adaptris.core.metadata.MetadataFilter;
-import com.adaptris.core.metadata.RemoveAllMetadataFilter;
 
 /**
  * Interface that abstracts the handling of AdaptrisMessage metadata and JMS
@@ -41,16 +40,6 @@ public interface MetadataHandlerContext {
    */
   boolean reportAllErrors();
 
-  /**
-   * <p>
-   * Returns whether to move metadata to JMS properties and vice versa.
-   * </p>
-   * 
-   * @return whether to move metadata to JMS properties and vice versa
-   * @deprecated since 3.0.2 use {@link RemoveAllMetadataFilter} to stop any metadata from being transferred.
-   */
-  @Deprecated
-  boolean moveMetadata();
 
   /**
    * Get the metadata filter implementation to be used when converting between AdaptrisMessage and JMS Message objects.

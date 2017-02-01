@@ -32,11 +32,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class NoOpHeaderHandler implements HeaderHandler<HttpServletRequest> {
 
   @Override
-  public void handleHeaders(AdaptrisMessage message, HttpServletRequest request, String itemPrefix) {
-    // No operation
-  }
-
-  @Override
   public void handleHeaders(AdaptrisMessage message, HttpServletRequest request) {
   }
 

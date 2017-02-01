@@ -42,8 +42,7 @@ public class MetadataHeaderHandler extends HeaderHandlerImpl {
     setHeaderPrefix(prefix);
   }
 
-  @Override
-  public void handleHeaders(AdaptrisMessage message, HttpServletRequest request, String itemPrefix) {
+  private void handleHeaders(AdaptrisMessage message, HttpServletRequest request, String itemPrefix) {
     String prefix = defaultIfEmpty(itemPrefix, "");
     for (Enumeration<String> e = request.getHeaderNames(); e.hasMoreElements();) {
       String key = (String) e.nextElement();

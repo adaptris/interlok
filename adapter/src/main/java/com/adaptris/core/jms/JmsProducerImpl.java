@@ -234,14 +234,6 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
     return dest;
   }
 
-  /**
-   * @deprecated since 3.0.4; use {@link #calculateDeliveryMode(AdaptrisMessage, String)} instead.
-   */
-  @Deprecated
-  protected int calculateDeliveryMode(AdaptrisMessage msg) {
-    return calculateDeliveryMode(msg, getDeliveryMode());
-  }
-
   protected int calculateDeliveryMode(AdaptrisMessage msg, String defaultDeliveryMode) {
     int deliveryMode;
     if (msg.headersContainsKey(JMS_DELIVERY_MODE)) {
@@ -251,15 +243,6 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
     }
     log.trace("deliveryMode overridden to be " + deliveryMode);
     return deliveryMode;
-  }
-
-
-  /**
-   * @deprecated since 3.0.4; use {@link #calculateTimeToLive(AdaptrisMessage, Long)} instead.
-   */
-  @Deprecated
-  protected long calculateTimeToLive(AdaptrisMessage msg) throws JMSException {
-    return calculateTimeToLive(msg, timeToLive());
   }
 
 
@@ -298,14 +281,6 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
       result.setJMSReplyTo(replyTo);
     }
     return result;
-  }
-
-  /**
-   * @deprecated since 3.0.4 use {@link #calculatePriority(AdaptrisMessage, Integer)} instead
-   */
-  @Deprecated
-  protected int calculatePriority(AdaptrisMessage msg) {
-    return calculatePriority(msg, getPriority());
   }
 
   protected int calculatePriority(AdaptrisMessage msg, Integer defaultPriority) {
@@ -382,6 +357,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
   /**
    * @deprecated use {@link #getTtl()} instead.
    */
+  @Deprecated
   public long getTimeToLive() {
     return timeToLive();
   }

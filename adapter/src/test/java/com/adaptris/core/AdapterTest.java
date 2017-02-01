@@ -27,7 +27,7 @@ import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.PtpProducer;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
 import com.adaptris.core.runtime.AdapterManager;
-import com.adaptris.core.stubs.DummyLogHandler;
+import com.adaptris.core.stubs.MockLogHandler;
 import com.adaptris.core.stubs.MockMessageConsumer;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.stubs.StubAdapterStartUpEvent;
@@ -275,7 +275,7 @@ public class AdapterTest extends BaseCase {
   // code coverage don't you
   public void testAdapterLogHandlerFails() throws Exception {
     Adapter a = createAdapter("testAdapterLogFileHandlerFails", new StubEventHandler());
-    a.setLogHandler(new DummyLogHandler() {
+    a.setLogHandler(new MockLogHandler() {
       @Override
       public void clean() throws IOException {
         throw new IOException();

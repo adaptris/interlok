@@ -337,29 +337,6 @@ public class HttpConsumerTest extends HttpConsumerExample {
   }
 
 
-  public void testConsumeWorkflow_PreserveHeaders_Legacy() throws Exception {
-    HttpConnection connection = createConnection(null);
-    MockMessageProducer mockProducer = new MockMessageProducer();
-    MessageConsumer consumer = JettyHelper.createConsumer("/*");
-    consumer.setHeaderHandler(new MetadataHeaderHandler());
-    consumer.setHeaderPrefix("Http_Header_");
-    Channel channel = JettyHelper.createChannel(connection, consumer, mockProducer);
-    try {
-      channel.requestStart();
-      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
-      msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
-      start(httpProducer);
-      AdaptrisMessage reply = httpProducer.request(msg, createProduceDestination(connection.getPort()));
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
-      AdaptrisMessage receivedMsg = doAssertions(mockProducer);
-      assertEquals("text/xml", receivedMsg.getMetadataValue("Http_Header_Content-Type"));
-    } finally {
-      stop(httpProducer);
-      channel.requestClose();
-      PortManager.release(connection.getPort());
-    }
-  }
-
   public void testConsumeWorkflow_PreserveHeaders() throws Exception {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new MockMessageProducer();
@@ -447,40 +424,6 @@ public class HttpConsumerTest extends HttpConsumerExample {
     }
   }
 
-  public void testConsumeWorkflow_PreserveParams_WithPrefix_Legacy() throws Exception {
-    HttpConnection connection = createConnection(null);
-    MockMessageProducer mockProducer = new MockMessageProducer();
-    MessageConsumer consumer = JettyHelper.createConsumer("/*");
-    consumer.setHeaderHandler(new MetadataHeaderHandler());
-    consumer.setHeaderPrefix("Http_Header_");
-    consumer.setParameterHandler(new MetadataParameterHandler());
-    consumer.setParamPrefix("Http_Param_");
-    Channel channel = JettyHelper.createChannel(connection, consumer, mockProducer);
-    try {
-      channel.requestStart();
-      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
-      msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
-      start(httpProducer);
-      ConfiguredProduceDestination dest = createProduceDestination(connection.getPort());
-      dest.setDestination(dest.getDestination() + "?queryParam1=1&queryParam2=2&queryParam3=3");
-      AdaptrisMessage reply = httpProducer.request(msg, dest);
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
-      AdaptrisMessage receivedMsg = doAssertions(mockProducer);
-      assertTrue(receivedMsg.containsKey(CoreConstants.JETTY_QUERY_STRING));
-      assertEquals("queryParam1=1&queryParam2=2&queryParam3=3", receivedMsg.getMetadataValue(CoreConstants.JETTY_QUERY_STRING));
-      assertFalse(receivedMsg.containsKey("Http_Header_queryParam1"));
-      assertFalse(receivedMsg.containsKey("Http_Header_queryParam2"));
-      assertFalse(receivedMsg.containsKey("Http_Header_queryParam3"));
-      assertEquals("1", receivedMsg.getMetadataValue("Http_Param_queryParam1"));
-      assertEquals("2", receivedMsg.getMetadataValue("Http_Param_queryParam2"));
-      assertEquals("3", receivedMsg.getMetadataValue("Http_Param_queryParam3"));
-    } finally {
-      stop(httpProducer);
-      channel.requestClose();
-      PortManager.release(connection.getPort());
-    }
-  }
-
   public void testConsumeWorkflow_PreserveParams_WithPrefix() throws Exception {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new MockMessageProducer();
@@ -542,40 +485,6 @@ public class HttpConsumerTest extends HttpConsumerExample {
       assertEquals("3", receivedMsg.getObjectHeaders().get("Http_Param_queryParam3"));
     }
     finally {
-      stop(httpProducer);
-      channel.requestClose();
-      PortManager.release(connection.getPort());
-    }
-  }
-
-  public void testConsumeWorkflow_PreserveObjectParams_WithPrefix_Legacy() throws Exception {
-    HttpConnection connection = createConnection(null);
-    MockMessageProducer mockProducer = new MockMessageProducer();
-    MessageConsumer consumer = JettyHelper.createConsumer("/*");
-    consumer.setHeaderHandler(new ObjectMetadataHeaderHandler());
-    consumer.setHeaderPrefix("Http_Header_");
-    consumer.setParameterHandler(new ObjectMetadataParameterHandler());
-    consumer.setParamPrefix("Http_Param_");
-    Channel channel = JettyHelper.createChannel(connection, consumer, mockProducer);
-    try {
-      channel.requestStart();
-      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
-      msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
-      start(httpProducer);
-      ConfiguredProduceDestination dest = createProduceDestination(connection.getPort());
-      dest.setDestination(dest.getDestination() + "?queryParam1=1&queryParam2=2&queryParam3=3");
-      AdaptrisMessage reply = httpProducer.request(msg, dest);
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
-      AdaptrisMessage receivedMsg = doAssertions(mockProducer);
-      assertTrue(receivedMsg.containsKey(CoreConstants.JETTY_QUERY_STRING));
-      assertEquals("queryParam1=1&queryParam2=2&queryParam3=3", receivedMsg.getMetadataValue(CoreConstants.JETTY_QUERY_STRING));
-      assertFalse(receivedMsg.getObjectHeaders().containsKey("Http_Header_queryParam1"));
-      assertFalse(receivedMsg.getObjectHeaders().containsKey("Http_Header_queryParam2"));
-      assertFalse(receivedMsg.getObjectHeaders().containsKey("Http_Header_queryParam3"));
-      assertEquals("1", receivedMsg.getObjectHeaders().get("Http_Param_queryParam1"));
-      assertEquals("2", receivedMsg.getObjectHeaders().get("Http_Param_queryParam2"));
-      assertEquals("3", receivedMsg.getObjectHeaders().get("Http_Param_queryParam3"));
-    } finally {
       stop(httpProducer);
       channel.requestClose();
       PortManager.release(connection.getPort());
@@ -716,7 +625,6 @@ public class HttpConsumerTest extends HttpConsumerExample {
 
     MessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
     consumer.setHeaderHandler(new MetadataHeaderHandler());
-    consumer.setHeaderPrefix("");
 
     Channel adapter = JettyHelper.createChannel(connection, consumer, mockProducer);
     try {

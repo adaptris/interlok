@@ -91,7 +91,7 @@ public abstract class MessageTypeTranslatorCase extends BaseCase {
   public void testRoundTrip() throws Exception {
     MessageTypeTranslatorImp translator = createTranslator();
     translator.setMoveJmsHeaders(true);
-    translator.setMoveMetadata(true);
+    translator.setMetadataFilter(new NoOpMetadataFilter());
     translator.setReportAllErrors(true);
     StandaloneProducer p1 = createProducer(translator);
     StandaloneProducer p2 = roundTrip(p1);
@@ -131,18 +131,6 @@ public abstract class MessageTypeTranslatorCase extends BaseCase {
     assertFalse(translator.moveJmsHeaders());
   }
 
-  public void testSetMoveMetadata() throws Exception {
-    MessageTypeTranslatorImp translator = createTranslator();
-    assertNull(translator.getMoveMetadata());
-    assertTrue(translator.moveMetadata());
-    translator.setMoveMetadata(Boolean.FALSE);
-    assertEquals(Boolean.FALSE, translator.getMoveMetadata());
-    assertFalse(translator.moveMetadata());
-    translator.setMoveMetadata(null);
-    assertNull(translator.getMoveMetadata());
-    assertTrue(translator.moveMetadata());
-  }
-
   public void testSetReportAllErrors() throws Exception {
     MessageTypeTranslatorImp translator = createTranslator();
     assertNull(translator.getReportAllErrors());
@@ -166,30 +154,6 @@ public abstract class MessageTypeTranslatorCase extends BaseCase {
       start(trans, session);
       AdaptrisMessage msg = trans.translate(jmsMsg);
       assertMetadata(msg);
-    }
-    finally {
-      stop(trans);
-      broker.destroy();
-    }
-
-  }
-
-
-
-  public void testMoveMetadataJmsMessageToAdaptrisMessage_DoNotMoveMetadata() throws Exception {
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    MessageTypeTranslatorImp trans = createTranslator();
-    trans.setMoveMetadata(false);
-    try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
-      Message jmsMsg = createMessage(session);
-      addProperties(jmsMsg);
-      start(trans, session);
-      AdaptrisMessage msg = trans.translate(jmsMsg);
-      assertFalse(msg.containsKey(INTEGER_METADATA));
-      assertFalse(msg.containsKey(STRING_METADATA));
-      assertFalse(msg.containsKey(BOOLEAN_METADATA));
     }
     finally {
       stop(trans);
@@ -257,7 +221,6 @@ public abstract class MessageTypeTranslatorCase extends BaseCase {
       jmsMsg.setJMSTimestamp(timestamp);
 
       trans.setMoveJmsHeaders(true);
-      trans.setMoveMetadata(true);
       start(trans, session);
 
       AdaptrisMessage msg = trans.translate(jmsMsg);
@@ -286,7 +249,6 @@ public abstract class MessageTypeTranslatorCase extends BaseCase {
       addRedundantJmsHeaders(msg);
 
       trans.setMoveJmsHeaders(true);
-      trans.setMoveMetadata(true);
       start(trans, session);
 
       Message jmsMsg = trans.translate(msg);
@@ -319,30 +281,6 @@ public abstract class MessageTypeTranslatorCase extends BaseCase {
 
       Message jmsMsg = trans.translate(msg);
       assertJmsProperties(jmsMsg);
-    }
-    finally {
-      stop(trans);
-      broker.destroy();
-
-    }
-  }
-
-  public void testMoveMetadata_AdaptrisMessageToJmsMessage_DoNotMoveMetadata() throws Exception {
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    MessageTypeTranslatorImp trans = createTranslator();
-    trans.setMoveMetadata(false);
-    try {
-      broker.start();
-      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-
-      addMetadata(msg);
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
-      start(trans, session);
-
-      Message jmsMsg = trans.translate(msg);
-      assertNull(jmsMsg.getStringProperty(STRING_METADATA));
-      assertNull(jmsMsg.getStringProperty(BOOLEAN_METADATA));
-      assertNull(jmsMsg.getStringProperty(INTEGER_METADATA));
     }
     finally {
       stop(trans);
