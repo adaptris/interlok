@@ -281,7 +281,7 @@ public class BranchingServiceCollectionTest extends ServiceCollectionCase {
     assertTrue("msg " + msg, msg.getMetadataValue("service-id").equals(BRANCH_LOW));
     assertEquals(2, msg.getMessageLifecycleEvent().getMleMarkers().size());
 
-    services.setCheckServiceState(false); // this time run without checking states.
+    services.setOutOfStateHandler(new NullOutOfStateHandler()); // this time run without checking states.
     AdaptrisMessage msg2 = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     services.doService(msg2);
     assertTrue(msg2.getMetadataValue("service-id").equals(BRANCH_HIGH));
