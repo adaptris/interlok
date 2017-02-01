@@ -76,9 +76,6 @@ public class XmlTransformService extends ServiceImp {
   @AdvancedConfig
   @InputFieldDefault(value = "false")
   private Boolean allowOverride;
-  @Deprecated
-  @InputFieldDefault(value = "false")
-  private Boolean useMetadataAsStylesheetParameters;
 
   // Default to null is fine
   private String outputMessageEncoding;
@@ -112,9 +109,6 @@ public class XmlTransformService extends ServiceImp {
     }
     if (isEmpty(getUrl()) && isEmpty(getMetadataKey())) {
       throw new CoreException("metadata-key & url are both empty, cannot initialise");
-    }
-    if (useMetadataAsStylesheetParameters() && getTransformParameter() == null) {
-      log.warn("Configured with deprecated 'useMetadataAsStylesheetParameters'; use #setTransformParameter() instead.");
     }
   }
 
@@ -303,34 +297,6 @@ public class XmlTransformService extends ServiceImp {
     return getAllowOverride() != null ? getAllowOverride().booleanValue() : false;
   }
 
-  /**
-   * @return the useMetadataAsStylesheetParameters
-   * @deprecated since 3.0.0 - use a {@link XmlTransformParameter} implementation instead.
-   */
-  @Deprecated
-  public Boolean getUseMetadataAsStylesheetParameters() {
-    return useMetadataAsStylesheetParameters;
-  }
-
-  /**
-   * <p>
-   * Sets whether to pass in the message's metadata as parameters to be used in the stylesheet.
-   * False by default.
-   * </p>
-   * 
-   * @param b the useMetadataAsStylesheetParameters to set, if not specified defaults to null
-   *        (false)
-   * @deprecated since 3.0.0 - use a {@link XmlTransformParameter} implementation instead.
-   */
-  @Deprecated
-  public void setUseMetadataAsStylesheetParameters(Boolean b) {
-    this.useMetadataAsStylesheetParameters = b;
-  }
-
-  boolean useMetadataAsStylesheetParameters() {
-    return getUseMetadataAsStylesheetParameters() != null ? getUseMetadataAsStylesheetParameters().booleanValue() : false;
-  }
-
   public String getOutputMessageEncoding() {
     return outputMessageEncoding;
   }
@@ -372,16 +338,6 @@ public class XmlTransformService extends ServiceImp {
   }
 
   private XmlTransformParameter getParameterBuilder() {
-    XmlTransformParameter builder = new IgnoreMetadataParameter();
-    if (getTransformParameter() != null) {
-      builder = getTransformParameter();
-    }
-    else {
-      if (useMetadataAsStylesheetParameters()) {
-        log.warn("Configured with deprecated 'useMetadataAsStylesheetParameters'; use #setTransformParameter() instead.");
-        builder = new StringMetadataParameter();
-      }
-    }
-    return builder;
+    return getTransformParameter() != null ? getTransformParameter() : new IgnoreMetadataParameter();
   }
 }

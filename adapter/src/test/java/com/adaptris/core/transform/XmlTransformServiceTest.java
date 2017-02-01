@@ -482,20 +482,6 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     }
   }
 
-  @SuppressWarnings("deprecation")
-  public void testSingleParameter_XSLTOutput_deprecated() throws Exception {
-    AdaptrisMessage msg = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
-    msg.addMetadata("world", "World");
-    XmlTransformService service = new XmlTransformService();
-
-    service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL));
-    service.setUseMetadataAsStylesheetParameters(true);
-    execute(service, msg);
-
-    assertTrue("payload " + msg.getContent(),
-        msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
-  }
-
   public void testSingleParameter_XSLTOutput() throws Exception {
     AdaptrisMessage msg = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     msg.addMetadata("world", "World");
@@ -562,19 +548,6 @@ public class XmlTransformServiceTest extends TransformServiceExample {
         msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
   }
 
-  @SuppressWarnings("deprecation")
-  public void testSingleParameter_STXOutput_deprecated() throws Exception {
-    AdaptrisMessage msg = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
-    msg.addMetadata("world", "World");
-    XmlTransformService service = new XmlTransformService();
-    service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_STX_TRANSFORM_URL));
-    service.setXmlTransformerFactory(new StxTransformerFactory());
-    service.setUseMetadataAsStylesheetParameters(true);
-    execute(service, msg);
-    assertTrue("payload " + msg.getContent(),
-        msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
-  }
-
   public void testSingleParameter_STXOutput() throws Exception {
     AdaptrisMessage msg = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     msg.addMetadata("world", "World");
@@ -583,24 +556,6 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     service.setXmlTransformerFactory(new StxTransformerFactory());
     service.setTransformParameter(new StringMetadataParameter());
     execute(service, msg);
-    assertTrue("payload " + msg.getContent(),
-        msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
-  }
-
-  @SuppressWarnings("deprecation")
-  public void testMultiParameters_XSLTOutput_deprecated() throws Exception {
-    AdaptrisMessage msg = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
-    msg.addMetadata("world", "World");
-    msg.addMetadata("one", "World");
-    msg.addMetadata("two", "World");
-    msg.addMetadata("three", "World");
-    msg.addMetadata("four", "World");
-    XmlTransformService service = new XmlTransformService();
-
-    service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL));
-    service.setUseMetadataAsStylesheetParameters(true);
-    execute(service, msg);
-
     assertTrue("payload " + msg.getContent(),
         msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
   }
@@ -617,27 +572,6 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL));
     service.setTransformParameter(new StringMetadataParameter());
     execute(service, msg);
-    assertTrue("payload " + msg.getContent(),
-        msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
-  }
-
-  @SuppressWarnings("deprecation")
-  public void testMultipleParameters_STXOutput_deprecated() throws Exception {
-    AdaptrisMessage msg = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
-    msg.addMetadata("world", "World");
-    msg.addMetadata("one", "World");
-    msg.addMetadata("two", "World");
-    msg.addMetadata("three", "World");
-    msg.addMetadata("four", "World");
-    XmlTransformService service = new XmlTransformService();
-
-    service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_STX_TRANSFORM_URL));
-
-    service.setXmlTransformerFactory(new StxTransformerFactory());
-
-    service.setUseMetadataAsStylesheetParameters(true);
-    execute(service, msg);
-
     assertTrue("payload " + msg.getContent(),
         msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
   }
