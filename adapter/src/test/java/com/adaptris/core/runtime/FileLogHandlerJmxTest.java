@@ -145,8 +145,6 @@ public class FileLogHandlerJmxTest extends ComponentManagerCase {
     handler.setLogDirectory(LOG_DIRECTORY.getCanonicalPath());
     handler.setPeriod(1);
     handler.setLogFile(LOG_FILE);
-    handler.setStatisticsGraphLogFile(LOG_GRAPH);
-    handler.setStatisticsLogFile(LOG_STATS);
     return handler;
   }
 
