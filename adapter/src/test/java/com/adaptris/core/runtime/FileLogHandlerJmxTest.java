@@ -124,16 +124,13 @@ public class FileLogHandlerJmxTest extends ComponentManagerCase {
     AdapterManager adapterManager = new AdapterManager(adapter);
     ObjectName flhObjName = createFileHandlerObjectName(adapterManager);
     LogHandlerTest.createLogFiles(LOG_DIRECTORY, LOG_FILE, 10);
-    LogHandlerTest.createLogFiles(LOG_DIRECTORY, LOG_GRAPH, 10);
-    LogHandlerTest.createLogFiles(LOG_DIRECTORY, LOG_STATS, 10);
-    assertEquals(30, LOG_DIRECTORY.listFiles().length);
+    assertEquals(10, LOG_DIRECTORY.listFiles().length);
     try {
       adapterManager.registerMBean();
       FileLogHandlerJmxMBean fileLogHandlerProxy = JMX.newMBeanProxy(mBeanServer, flhObjName, FileLogHandlerJmxMBean.class);
       assertNotNull(fileLogHandlerProxy);
       fileLogHandlerProxy.cleanupLogfiles();
-      // Should have deleted 9 files from each set...
-      assertEquals(3, LOG_DIRECTORY.listFiles().length);
+      assertEquals(1, LOG_DIRECTORY.listFiles().length);
     }
     finally {
       adapterManager.unregisterMBean();
