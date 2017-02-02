@@ -77,18 +77,11 @@ public class WriteMetadataToFilesystemTest extends MetadataServiceExample {
 
   public void testSetMetadataFilter() throws Exception {
     WriteMetadataToFilesystem service = new WriteMetadataToFilesystem();
-    assertEquals(NoOpMetadataFilter.class, service.getMetadataFilter().getClass());
+    assertNull(service.getMetadataFilter());
     service.setMetadataFilter(new RegexMetadataFilter());
     assertEquals(RegexMetadataFilter.class, service.getMetadataFilter().getClass());
-
-    try {
-      service.setMetadataFilter(null);
-      fail();
-    }
-    catch (IllegalArgumentException e) {
-
-    }
-    assertEquals(RegexMetadataFilter.class, service.getMetadataFilter().getClass());
+    service.setMetadataFilter(null);
+    assertEquals(NoOpMetadataFilter.class, service.metadataFilter().getClass());
   }
 
   public void testOverwriteIfExists() throws Exception {
@@ -111,17 +104,11 @@ public class WriteMetadataToFilesystemTest extends MetadataServiceExample {
 
   public void testFilenameCreator() throws Exception {
     WriteMetadataToFilesystem service = new WriteMetadataToFilesystem();
-    assertEquals(FormattedFilenameCreator.class, service.getFileNameCreator().getClass());
-    service.setFileNameCreator(new EmptyFileNameCreator());
-    assertEquals(EmptyFileNameCreator.class, service.getFileNameCreator().getClass());
-    try {
-      service.setFileNameCreator(null);
-      fail();
-    }
-    catch (IllegalArgumentException e) {
-
-    }
-    assertEquals(EmptyFileNameCreator.class, service.getFileNameCreator().getClass());
+    assertEquals(FormattedFilenameCreator.class, service.filenameCreator().getClass());
+    service.setFilenameCreator(new EmptyFileNameCreator());
+    assertEquals(EmptyFileNameCreator.class, service.getFilenameCreator().getClass());
+    service.setFilenameCreator(null);
+    assertEquals(FormattedFilenameCreator.class, service.filenameCreator().getClass());
   }
 
   public void testService_Default() throws Exception {

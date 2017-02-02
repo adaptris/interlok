@@ -65,8 +65,8 @@ public class RelaxedFtpProducerTest extends RelaxedFtpProducerCase {
   public void testSetFilenameCreator() throws Exception {
     RelaxedFtpProducer ftpProducer = new RelaxedFtpProducer();
     assertEquals(FormattedFilenameCreator.class, ftpProducer.filenameCreator().getClass());
-    ftpProducer.setFileNameCreator(new MetadataFileNameCreator());
-    assertEquals(MetadataFileNameCreator.class, ftpProducer.getFileNameCreator().getClass());
+    ftpProducer.setFilenameCreator(new MetadataFileNameCreator());
+    assertEquals(MetadataFileNameCreator.class, ftpProducer.getFilenameCreator().getClass());
     assertEquals(MetadataFileNameCreator.class, ftpProducer.filenameCreator().getClass());
   }
 
