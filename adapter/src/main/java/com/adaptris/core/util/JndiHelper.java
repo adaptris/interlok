@@ -29,28 +29,19 @@ import javax.naming.NamingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.adaptris.core.AdaptrisConnection;
+import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.JndiBindable;
 import com.adaptris.core.JndiContextFactory;
 import com.adaptris.core.jdbc.DatabaseConnection;
-import com.adaptris.core.transaction.TransactionManager;
 
 public class JndiHelper {
 
   private static transient Logger log = LoggerFactory.getLogger(JndiHelper.class);
 
-  private static String createJndiName(AdaptrisConnection object) throws InvalidNameException {
+  private static String createJndiName(AdaptrisComponent object) throws InvalidNameException {
     String jndiName = null;
-    if (object.getLookupName() != null) jndiName = object.getLookupName();
-    else
-      return createJndiName(object.getUniqueId());
-
-    return jndiName;
-  }
-  
-  private static String createJndiName(TransactionManager object) throws InvalidNameException {
-    String jndiName = null;
-    if (object.getLookupName() != null) jndiName = object.getLookupName();
+    if (((JndiBindable) object).getLookupName() != null) jndiName = ((JndiBindable) object).getLookupName();
     else
       return createJndiName(object.getUniqueId());
 
@@ -72,9 +63,9 @@ public class JndiHelper {
     return jndiName;
   }
 
-  private static String createJndiJdbcName(AdaptrisConnection object) throws InvalidNameException {
+  private static String createJndiJdbcName(AdaptrisComponent object) throws InvalidNameException {
     CompositeName configuredCompositeName = null;
-    if (object.getLookupName() != null) configuredCompositeName = new CompositeName(object.getLookupName());
+    if (((JndiBindable) object).getLookupName() != null) configuredCompositeName = new CompositeName(((JndiBindable) object).getLookupName());
     else {
       int indexOfSchemeMarker = object.getUniqueId().indexOf(":"); // remove the scheme
       if (indexOfSchemeMarker > 0) configuredCompositeName = new CompositeName(object.getUniqueId().substring(
@@ -86,154 +77,99 @@ public class JndiHelper {
     return "comp/env/jdbc/" + configuredCompositeName.get(configuredCompositeName.size() - 1);
   }
 
-  public static void bind(Collection<AdaptrisConnection> connections) throws CoreException {
-    bind(createContext(), connections, false);
+  public static void bind(Collection<? extends AdaptrisComponent> components) throws CoreException {
+    bind(createContext(), components, false);
   }
   
-  public static void bind(TransactionManager transactionManager) throws CoreException {
-    bind(createContext(), transactionManager, false);
+  public static void bind(AdaptrisComponent adaptrisComponent) throws CoreException {
+    bind(createContext(), adaptrisComponent, false);
   }
 
-  public static void bind(Collection<AdaptrisConnection> connections, boolean debug) throws CoreException {
-    bind(createContext(), connections, debug);
+  public static void bind(Collection<? extends AdaptrisComponent> components, boolean debug) throws CoreException {
+    bind(createContext(), components, debug);
   }
   
-  public static void bind(TransactionManager transactionManager, boolean debug) throws CoreException {
-    bind(createContext(), transactionManager, debug);
+  public static void bind(AdaptrisComponent adaptrisComponent, boolean debug) throws CoreException {
+    bind(createContext(), adaptrisComponent, debug);
   }
 
-  public static void bind(Context ctx, Collection<AdaptrisConnection> connections, boolean debug) throws CoreException {
-    for (AdaptrisConnection connection : connections) {
-      bind(ctx, connection, debug);
+  public static void bind(Context ctx, Collection<? extends AdaptrisComponent> components, boolean debug) throws CoreException {
+    for (AdaptrisComponent concomponent : components) {
+      bind(ctx, concomponent, debug);
     }
   }
-
-  public static void bind(AdaptrisConnection con, boolean debug) throws CoreException {
-    bind(createContext(), con, debug);
-  }
-
-  public static void bind(Context ctx, TransactionManager transactionManager, boolean debug) throws CoreException {
+  
+  public static void bind(Context ctx, AdaptrisComponent component, boolean debug) throws CoreException {
     try {
-      if (transactionManager == null) {
-        if (debug) log.trace("TransactionManager is null, ignoring");
+      if (component == null) {
+        if (debug) log.trace("Component is null, ignoring");
         return;
       }
-      
-      String jndiName = createJndiName(transactionManager);
-      ctx.bind(jndiName, transactionManager);
-      if (debug) log.trace("Saved JNDI entry {} for object ({}) {}", jndiName, transactionManager.getClass().getName(), transactionManager);
-    }
-    catch (NamingException ex) {
-      if (debug) log.error("TransactionManager '{}' could not be bound into the JNDI context.", transactionManager.getUniqueId());
-      ExceptionHelper.rethrowCoreException(ex);
-    }
-  }
-  
-  public static void bind(Context ctx, AdaptrisConnection connection, boolean debug) throws CoreException {
-    try {
-      if (connection == null) {
-        if (debug) log.trace("connection is null, ignoring");
-        return;
-      }
-      if (connection instanceof DatabaseConnection) { // database connection, bind also to jdbc subcontext
-        String jndiJdbcName = createJndiJdbcName(connection);
-        ctx.bind(jndiJdbcName, ((DatabaseConnection) connection).asDataSource());
+      if (component instanceof DatabaseConnection) { // database connection, bind also to jdbc subcontext
+        String jndiJdbcName = createJndiJdbcName(component);
+        ctx.bind(jndiJdbcName, ((DatabaseConnection) component).asDataSource());
         if (debug)
-          log.trace("Saved JNDI entry {} for object ({}) {}", jndiJdbcName, ((DatabaseConnection) connection).asDataSource()
-              .getClass().getName(), ((DatabaseConnection) connection).asDataSource());
+          log.trace("Saved JNDI entry {} for object ({}) {}", jndiJdbcName, ((DatabaseConnection) component).asDataSource()
+              .getClass().getName(), ((DatabaseConnection) component).asDataSource());
       }
-      String jndiName = createJndiName(connection);
-      ctx.bind(jndiName, connection);
-      if (debug) log.trace("Saved JNDI entry {} for object ({}) {}", jndiName, connection.getClass().getName(), connection);
+      String jndiName = createJndiName(component);
+      ctx.bind(jndiName, component);
+      if (debug) log.trace("Saved JNDI entry {} for object ({}) {}", jndiName, component.getClass().getName(), component);
     }
     catch (NamingException | SQLException ex) {
-      if (debug) log.error("Connection '{}' could not be bound into the JNDI context.", connection.getUniqueId());
+      if (debug) log.error("Component '{}' could not be bound into the JNDI context.", component.getUniqueId());
       ExceptionHelper.rethrowCoreException(ex);
     }
   }
 
-  public static void unbind(Collection<AdaptrisConnection> connections) throws CoreException {
-    unbind(createContext(), connections, false);
+  public static void unbind(Collection<? extends AdaptrisComponent> components) throws CoreException {
+    unbind(createContext(), components, false);
   }
 
-  public static void unbind(Collection<AdaptrisConnection> connections, boolean debug) throws CoreException {
-    unbind(createContext(), connections, debug);
-  }
-  
-  public static void unbind(TransactionManager transactionManager, boolean debug) throws CoreException {
-    unbind(createContext(), transactionManager, debug);
-  }
-  
-  public static void unbind(TransactionManager transactionManager) throws CoreException {
-    unbind(createContext(), transactionManager, false);
+  public static void unbind(Collection<? extends AdaptrisComponent> components, boolean debug) throws CoreException {
+    unbind(createContext(), components, debug);
   }
 
-  public static void unbind(AdaptrisConnection conn, boolean debug) throws CoreException {
-    unbind(createContext(), conn, debug);
+  public static void unbind(AdaptrisComponent component, boolean debug) throws CoreException {
+    unbind(createContext(), component, debug);
   }
 
-  public static void unbind(Context ctx, Collection<AdaptrisConnection> connections, boolean debug) throws CoreException {
-    for (AdaptrisConnection connection : connections) {
-      unbind(ctx, connection, debug);
+  public static void unbind(Context ctx, Collection<? extends AdaptrisComponent> components, boolean debug) throws CoreException {
+    for (AdaptrisComponent component : components) {
+      unbind(ctx, component, debug);
     }
   }
 
-  public static void unbind(Context ctx, AdaptrisConnection connection, boolean debug) throws CoreException {
+  public static void unbind(Context ctx, AdaptrisComponent component, boolean debug) throws CoreException {
     try {
-      if (connection == null) {
-        if (debug) log.trace("connection is null, ignoring");
+      if (component == null) {
+        if (debug) log.trace("Component is null, ignoring");
         return;
       }
-      if (connection instanceof DatabaseConnection) { // database connection, bind also to jdbc subcontext
-        String jndiJdbcName = createJndiJdbcName(connection);
+      if (component instanceof DatabaseConnection) { // database connection, bind also to jdbc subcontext
+        String jndiJdbcName = createJndiJdbcName(component);
         ctx.unbind(jndiJdbcName);
         if (debug) log.trace("Deleted JNDI entry {}", jndiJdbcName);
       }
-      String jndiName = createJndiName(connection);
+      String jndiName = createJndiName(component);
       ctx.unbind(jndiName);
       if (debug) log.trace("Deleted JNDI entry {}", jndiName);
     }
     catch (NamingException ex) {
-      if (debug) log.error("Connection '{}' could not be unbound from the JNDI context.", connection.getUniqueId());
-      ExceptionHelper.rethrowCoreException(ex);
-    }
-  }
-  
-  public static void unbind(Context ctx, TransactionManager transactionManager, boolean debug) throws CoreException {
-    try {
-      if (transactionManager == null) {
-        if (debug) log.trace("TransactionManager is null, ignoring");
-        return;
-      }
-      
-      String jndiName = createJndiName(transactionManager);
-      ctx.unbind(jndiName);
-      if (debug) log.trace("Deleted JNDI entry {}", jndiName);
-    }
-    catch (NamingException ex) {
-      if (debug) log.error("TransactionManager '{}' could not be unbound from the JNDI context.", transactionManager.getUniqueId());
+      if (debug) log.error("Component '{}' could not be unbound from the JNDI context.", component.getUniqueId());
       ExceptionHelper.rethrowCoreException(ex);
     }
   }
 
-  public static void unbindQuietly(Context ctx, Collection<AdaptrisConnection> connections, boolean debug) {
-    for (AdaptrisConnection connection : connections) {
-      unbindQuietly(ctx, connection, debug);
+  public static void unbindQuietly(Context ctx, Collection<? extends AdaptrisComponent> components, boolean debug) {
+    for (AdaptrisComponent component : components) {
+      unbindQuietly(ctx, component, debug);
     }
   }
 
-  public static void unbindQuietly(Context ctx, AdaptrisConnection connection, boolean debug) {
+  public static void unbindQuietly(Context ctx, AdaptrisComponent component, boolean debug) {
     try {
-      unbind(ctx, connection, debug);
-    }
-    catch (CoreException e) {
-
-    }
-  }
-  
-  public static void unbindQuietly(Context ctx, TransactionManager transactionManager, boolean debug) {
-    try {
-      unbind(ctx, transactionManager, debug);
+      unbind(ctx, component, debug);
     }
     catch (CoreException e) {
 

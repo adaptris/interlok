@@ -25,7 +25,7 @@ package com.adaptris.core;
  * <code>Thread</code>s - <code>doService</code> need not be synchronized.
  * </p>
  */
-public interface Service extends AdaptrisComponent, MessageEventGenerator, StateManagedComponent, ComponentLifecycleExtension {
+public interface Service extends AdaptrisComponent, MessageEventGenerator, StateManagedComponent, ComponentLifecycleExtension, JndiBindable {
 
   /**
    * <p>
@@ -47,15 +47,6 @@ public interface Service extends AdaptrisComponent, MessageEventGenerator, State
    * @param uniqueId this <code>Service</code>'s unique identifier
    */
   void setUniqueId(String uniqueId);
-
-  /**
-   * <p>
-   * Returns the optional unique identifier for this <code>Service</code>.
-   * </p>
-   *
-   * @return the unique identifier for this <code>Service</code>
-   */
-  String getUniqueId();
 
   /**
    * <p>

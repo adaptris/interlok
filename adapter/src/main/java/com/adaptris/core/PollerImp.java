@@ -25,6 +25,9 @@ import org.slf4j.LoggerFactory;
  * </p>
  */
 public abstract class PollerImp implements Poller {
+  
+  private String uniqueId;
+  
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
   private transient AdaptrisPollingConsumer consumer;
@@ -94,5 +97,13 @@ public abstract class PollerImp implements Poller {
       log.trace("couldn't get lock in run (previous poll has not finished?); waiting for next scheduled poll.");
     }
     Thread.currentThread().setName(oldName);
+  }
+
+  public String getUniqueId() {
+    return uniqueId;
+  }
+
+  public void setUniqueId(String uniqueId) {
+    this.uniqueId = uniqueId;
   }
 }

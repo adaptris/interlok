@@ -54,10 +54,4 @@ public interface WorkflowInterceptor extends AdaptrisComponent, ComponentLifecyc
    */
   void registerParentWorkflow(Workflow w);
 
-  /**
-   * Get the unique-id of this WorkflowInterceptor instance.
-   *
-   * @return the unique-id
-   */
-  String getUniqueId();
 }

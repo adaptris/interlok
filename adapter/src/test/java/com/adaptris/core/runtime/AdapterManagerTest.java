@@ -901,7 +901,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
-  public void testMBean_AddSharedConnection() throws Exception {
+  public void testMBean_AddSharedConnection() throws Exception {    
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
     AdapterManager adapterManager = new AdapterManager(adapter);
@@ -911,7 +911,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     try {
       adapterManager.registerMBean();
       AdapterManagerMBean amp = JMX.newMBeanProxy(mBeanServer, adapterObj, AdapterManagerMBean.class);
-      amp.addSharedConnection(m.marshal(new NullConnection(getName())));
+      amp.addSharedConnection(m.marshal(new NullConnection(getName())));      
       Adapter marshalledAdapter = (Adapter) m.unmarshal(amp.getConfiguration());
       assertEquals(1, marshalledAdapter.getSharedComponents().getConnections().size());
       assertEquals(getName(), marshalledAdapter.getSharedComponents().getConnections().get(0).getUniqueId());

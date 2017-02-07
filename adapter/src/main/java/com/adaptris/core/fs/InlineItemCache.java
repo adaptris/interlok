@@ -47,6 +47,8 @@ public class InlineItemCache implements ProcessedItemCache {
 
   @AdvancedConfig
   private TimeInterval ageBeforeEviction;
+  
+  private String uniqueId;
 
   public InlineItemCache() {
   }
@@ -139,4 +141,12 @@ public class InlineItemCache implements ProcessedItemCache {
 
   @Override
   public void prepare() throws CoreException {}
+
+  public String getUniqueId() {
+    return uniqueId;
+  }
+
+  public void setUniqueId(String uniqueId) {
+    this.uniqueId = uniqueId;
+  }
 }

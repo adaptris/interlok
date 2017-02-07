@@ -56,7 +56,6 @@ public class StandardMessageErrorDigester extends MessageErrorDigesterImp {
    * The maximum number of messages you want to hold in this digest.
    */
   private int digestMaxSize;
-  private String uniqueId;
   private transient MessageErrorDigest messageErrorDigest;
   private transient int totalErrorCount = 0;
 
@@ -146,19 +145,6 @@ public class StandardMessageErrorDigester extends MessageErrorDigesterImp {
 
   private File toFile(String s) {
     return isEmpty(s) ? null : new File(s);
-  }
-  /**
-   * @return the uniqueId
-   */
-  public String getUniqueId() {
-    return uniqueId;
-  }
-
-  /**
-   * @param id the uniqueId to set
-   */
-  public void setUniqueId(String id) {
-    uniqueId = id;
   }
 
   private static class JmxFactory extends RuntimeInfoComponentFactory {

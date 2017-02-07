@@ -24,6 +24,8 @@ package com.adaptris.core;
  *
  */
 public abstract class LogHandlerImp implements LogHandler {
+  
+  private String uniqueId;
 
   @Override
   public void init() throws CoreException {
@@ -39,6 +41,14 @@ public abstract class LogHandlerImp implements LogHandler {
 
   @Override
   public void close() {
+  }
+
+  public String getUniqueId() {
+    return uniqueId;
+  }
+
+  public void setUniqueId(String uniqueId) {
+    this.uniqueId = uniqueId;
   }
 
 }
