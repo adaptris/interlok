@@ -90,17 +90,11 @@ public class ReadMetadataFromFilesystemTest extends MetadataServiceExample {
 
   public void testFilenameCreator() throws Exception {
     ReadMetadataFromFilesystem service = new ReadMetadataFromFilesystem();
-    assertEquals(FormattedFilenameCreator.class, service.getFileNameCreator().getClass());
-    service.setFileNameCreator(new EmptyFileNameCreator());
-    assertEquals(EmptyFileNameCreator.class, service.getFileNameCreator().getClass());
-    try {
-      service.setFileNameCreator(null);
-      fail();
-    }
-    catch (IllegalArgumentException e) {
-
-    }
-    assertEquals(EmptyFileNameCreator.class, service.getFileNameCreator().getClass());
+    assertEquals(FormattedFilenameCreator.class, service.filenameCreator().getClass());
+    service.setFilenameCreator(new EmptyFileNameCreator());
+    assertEquals(EmptyFileNameCreator.class, service.getFilenameCreator().getClass());
+    service.setFilenameCreator(null);
+    assertEquals(FormattedFilenameCreator.class, service.filenameCreator().getClass());
   }
 
   public void testService_Default() throws Exception {

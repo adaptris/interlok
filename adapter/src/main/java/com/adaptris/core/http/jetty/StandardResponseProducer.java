@@ -41,10 +41,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * Implementation of {@link com.adaptris.core.AdaptrisMessageProducer} writes to the {@code HttpServletResponse} object metadata
  * provided by the Jetty engine.
- * <p>
- * It is designed as a drop-in replacement for the now deprecated {@link ResponseProducer} making use of the new {@code
- * com.adaptris.core.http.server} interfaces.
- * </p>
  * 
  * @config jetty-standard-response-producer
  * 

@@ -574,7 +574,7 @@ public class ActiveMqJmsTransactedWorkflowTest extends BaseCase {
     workflow.setProducer(new MockMessageProducer());
     JmsConsumerImpl jmsCons = isPtp ? new PtpConsumer(new ConfiguredConsumeDestination(target, null, threadName)) : new PasConsumer(
         new ConfiguredConsumeDestination(target, null, threadName));
-    jmsCons.setMessageTranslator(new TextMessageTranslator(true, true));
+    jmsCons.setMessageTranslator(new TextMessageTranslator(true));
     workflow.setConsumer(jmsCons);
     return workflow;
   }
@@ -591,7 +591,7 @@ public class ActiveMqJmsTransactedWorkflowTest extends BaseCase {
     BasicActiveMqImplementation vendorImpl = new BasicActiveMqImplementation();
     JmsConnection jmsConn = mq.getJmsConnection(vendorImpl, true);
     jmsCons.setVendorImplementation(jmsConn.getVendorImplementation());
-    jmsCons.setMessageTranslator(new TextMessageTranslator(true, true));
+    jmsCons.setMessageTranslator(new TextMessageTranslator(true));
     jmsCons.setClientId(jmsConn.getClientId());
     workflow.setConsumer(jmsCons);
     return workflow;

@@ -75,7 +75,7 @@ public class RelaxedFtpProducer extends ProduceOnlyProducerImp {
   private static final String SLASH = "/";
 
   @Valid
-  private FileNameCreator fileNameCreator;
+  private FileNameCreator filenameCreator;
 
   public RelaxedFtpProducer() {
   }
@@ -128,7 +128,7 @@ public class RelaxedFtpProducer extends ProduceOnlyProducerImp {
       if (dirRoot.endsWith(SLASH)) {
         destFilename = dirRoot + fileName;
       }
-      log.debug("destFilename=[" + destFilename + "]");
+      log.debug("destFilename=[{}]", destFilename);
       msg.addMetadata(CoreConstants.PRODUCED_NAME_KEY, fileName);
       if (getEncoder() != null) {
         byte[] bytesToWrite = encode(msg);
@@ -153,15 +153,15 @@ public class RelaxedFtpProducer extends ProduceOnlyProducerImp {
   }
 
 
-  public FileNameCreator getFileNameCreator() {
-    return fileNameCreator;
+  public FileNameCreator getFilenameCreator() {
+    return filenameCreator;
   }
 
-  public void setFileNameCreator(FileNameCreator creator) {
-    fileNameCreator = creator;
+  public void setFilenameCreator(FileNameCreator creator) {
+    filenameCreator = creator;
   }
 
   FileNameCreator filenameCreator() {
-    return getFileNameCreator() != null ? getFileNameCreator() : new FormattedFilenameCreator();
+    return getFilenameCreator() != null ? getFilenameCreator() : new FormattedFilenameCreator();
   }
 }

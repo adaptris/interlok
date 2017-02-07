@@ -28,7 +28,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("configured-produce-destination")
 @DisplayOrder(order = {"destination"})
-public final class ConfiguredProduceDestination implements ProduceDestination {
+public final class ConfiguredProduceDestination implements MessageDrivenDestination {
 
   private String destination;
 

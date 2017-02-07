@@ -50,7 +50,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("xpath-produce-destination")
 @DisplayOrder(order = {"xpath", "defaultDestination", "namespaceContext", "xmlDocumentFactoryConfig"})
-public class XpathProduceDestination implements ProduceDestination {
+public class XpathProduceDestination implements MessageDrivenDestination {
 
   @NotNull
   @NotBlank

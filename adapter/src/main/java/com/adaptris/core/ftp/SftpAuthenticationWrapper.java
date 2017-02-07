@@ -91,7 +91,7 @@ public class SftpAuthenticationWrapper implements SftpAuthenticationProvider {
   }
 
   /**
-   * @param the providers
+   * @param list the providers
    */
   public void setProviders(List<SftpAuthenticationProvider> list) {
     this.providers = list;

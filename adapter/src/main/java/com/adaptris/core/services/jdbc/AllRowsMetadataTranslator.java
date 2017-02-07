@@ -76,8 +76,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class AllRowsMetadataTranslator extends MetadataResultSetTranslatorImpl {
 
   /**
-   * @deprecated
-   * Use result-count-metadata-item to specify the key to which the result count will be set.
+   * @deprecated since 3.4.1 Use result-count-metadata-item to specify the key to which the result count will be set.
    */
   @Deprecated
   private String rowTotalMetadataKey;
@@ -128,6 +127,8 @@ public class AllRowsMetadataTranslator extends MetadataResultSetTranslatorImpl {
    * Specify the metadata key which will contain the total number of rows converted.
    * 
    * @param key the metadata key.
+   * @deprecated since 3.4.1 Use {@link #setResultCountMetadataItem(String)} to specify the key to which the result count will be
+   *             set.
    */
   public void setRowTotalMetadataKey(String key) {
     this.rowTotalMetadataKey = key;

@@ -42,8 +42,7 @@ public class ObjectMetadataParameterHandler extends ParameterHandlerImpl {
     setParameterPrefix(prefix);
   }
 
-  @Override
-  public void handleParameters(AdaptrisMessage message, HttpServletRequest request, String itemPrefix) {
+  private void handleParameters(AdaptrisMessage message, HttpServletRequest request, String itemPrefix) {
     String prefix = defaultIfEmpty(itemPrefix, "");
     
     for (Enumeration<String> e = request.getParameterNames(); e.hasMoreElements();) {

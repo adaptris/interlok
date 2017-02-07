@@ -215,6 +215,9 @@
         <include name="**/core/jms/MockJmsConnectionErrorHandler*"/>
         <include name="**/core/jms/MessageTypeTranslatorCase*"/>
         <include name="**/core/jms/JmsConfig*"/>
+        <include name="**/core/http/HttpProducer.class"/>
+        <include name="**/core/http/jetty/ResponseProducer.class"/>
+        <include name="**/core/http/JdkHttpProducer.class"/>
         <include name="**/core/jms/**/JndiImplementationCase*"/>
         <include name="**/core/jms/ActiveJmsConnectionErrorHandlerCase*"/>
         <include name="**/core/transform/TransformServiceExample*"/>

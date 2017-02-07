@@ -45,7 +45,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("marshalled-class-destination")
 @DisplayOrder(order = {"defaultDestination", "mappings", "marshaller"})
-public final class MarshalledClassDestination implements ProduceDestination {
+public final class MarshalledClassDestination implements MessageDrivenDestination {
 
   @NotNull
   @AutoPopulated

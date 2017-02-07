@@ -290,7 +290,7 @@ public abstract class RelaxedFtpCase extends FtpConsumerExample {
         MetadataFileNameCreator mfc = new MetadataFileNameCreator();
         mfc.setDefaultName(new GuidGenerator().getUUID() + ".txt");
         mfc.setMetadataKey(new GuidGenerator().getUUID());
-        ftpProducer.setFileNameCreator(mfc);
+        ftpProducer.setFilenameCreator(mfc);
         produce(new StandaloneProducer(createConnection(), ftpProducer), count);
         waitForMessages(listener, count);
 

@@ -142,7 +142,6 @@ public class AutoConvertMessageTranslator extends MessageTypeTranslatorImp {
         throws JMSException {
       dest.setMoveJmsHeaders(source.getMoveJmsHeaders());
       dest.setReportAllErrors(source.getReportAllErrors());
-      dest.setMoveMetadata(source.getMoveMetadata());
       dest.registerMessageFactory(source.currentMessageFactory());
       dest.registerSession(source.currentSession());
       dest.setMetadataFilter(source.getMetadataFilter());

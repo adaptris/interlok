@@ -117,7 +117,6 @@ public class BlobMessageTranslatorTest extends JmsProducerExample {
       trans.registerSession(session);
       trans.registerMessageFactory(new DefaultMessageFactory());
       trans.setMoveJmsHeaders(true);
-      trans.setMoveMetadata(true);
       start(trans);
 
       AdaptrisMessage msg = trans.translate(jmsMsg);

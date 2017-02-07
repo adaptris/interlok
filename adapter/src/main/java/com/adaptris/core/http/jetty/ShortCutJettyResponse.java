@@ -23,7 +23,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * complete. You will still need to use {@link StandardResponseProducer} prior to using this service.
  * </p>
  * <p>
- * While not strictly enforced, you should consider returning a {@code 202 ACCEPTED} rather than a {@code 200 OK) if you are going
+ * While not strictly enforced, you should consider returning a {@code 202 ACCEPTED} rather than a {@code 200 OK} if you are going
  * to send the response before the end of the workflow. This would be the more "correct" behaviour as per the HTTP specifications.
  * </p>
  * 

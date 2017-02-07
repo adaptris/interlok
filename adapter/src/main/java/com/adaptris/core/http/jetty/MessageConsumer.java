@@ -17,7 +17,6 @@
 package com.adaptris.core.http.jetty;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
-import static org.apache.commons.lang.StringUtils.isBlank;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -79,13 +78,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"destination"})
 public class MessageConsumer extends BasicJettyConsumer {
 
-  @AdvancedConfig
-  @Deprecated
-  private String headerPrefix;
-  @AdvancedConfig
-  @Deprecated
-  private String paramPrefix;
-  
   @AutoPopulated
   @Valid
   @NotNull
@@ -102,30 +94,6 @@ public class MessageConsumer extends BasicJettyConsumer {
     
     this.setParameterHandler(new NoOpParameterHandler());
     this.setHeaderHandler(new NoOpHeaderHandler());
-  }
-
-
-  /**
-   * Set the header prefix for any stored headers.
-   * 
-   * @param s the header prefix
-   * @deprecated since 3.0.6, configure the behaviour on the {@link HeaderHandler} directly.
-   * 
-   */
-  @Deprecated
-  public void setHeaderPrefix(String s) {
-    headerPrefix = s;
-  }
-
-  /**
-   * get the header prefix for any stored headers.
-   *
-   * @return the header prefix
-   * @deprecated since 3.0.6, configure the behaviour on the {@link HeaderHandler} directly.
-   */
-  @Deprecated
-  public String getHeaderPrefix() {
-    return headerPrefix;
   }
 
 
@@ -167,44 +135,12 @@ public class MessageConsumer extends BasicJettyConsumer {
     return msg;
   }
 
-  @SuppressWarnings("deprecation")
   private void addParamMetadata(AdaptrisMessage msg, HttpServletRequest request) {
-    if (!isBlank(getParamPrefix())) {
-      log.warn("Deprecated Config Warning:: configured using setParamPrefix(), configure the handler instead.");
-      this.getParameterHandler().handleParameters(msg, request, this.getParamPrefix());
-    } else {
-      this.getParameterHandler().handleParameters(msg, request);
-    }
+    this.getParameterHandler().handleParameters(msg, request);
   }
 
-  @SuppressWarnings("deprecation")
   private void addHeaderMetadata(AdaptrisMessage msg, HttpServletRequest request) {
-    if (!isBlank(getHeaderPrefix())) {
-      log.warn("Deprecated Config Warning:: configured using setHeaderPrefix(), configure the handler instead.");
-      this.getHeaderHandler().handleHeaders(msg, request, this.getHeaderPrefix());
-    } else {
-      this.getHeaderHandler().handleHeaders(msg, request);
-    }
-  }
-
-  /**
-   * @return the paramPrefix
-   * @deprecated since 3.0.6, configure the behaviour on the {@link ParameterHandler} directly.
-   */
-  @Deprecated
-  public String getParamPrefix() {
-    return paramPrefix;
-  }
-
-  /**
-   * Set the prefix for any parameters that are added as metadata.
-   * 
-   * @param s the paramPrefix to set, defaults to 'null'.
-   * @deprecated since 3.0.6, configure the behaviour on the {@link ParameterHandler} directly.
-   */
-  @Deprecated
-  public void setParamPrefix(String s) {
-    paramPrefix = s;
+    this.getHeaderHandler().handleHeaders(msg, request);
   }
 
   public ParameterHandler<HttpServletRequest> getParameterHandler() {

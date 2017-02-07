@@ -1,8 +1,10 @@
 package com.adaptris.interlok.management;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 
@@ -12,6 +14,11 @@ import java.net.URLClassLoader;
 public class ClassLoaderBootstrap {
 
 	/**
+	 * Standard bootstrap class.
+	 */
+	private static final String STANDARD_BOOTSTRAP = "com.adaptris.core.management.StandardBootstrap";
+	
+	/**
 	 * Default, empty constructor.
 	 */
 	private ClassLoaderBootstrap() {
@@ -20,26 +27,26 @@ public class ClassLoaderBootstrap {
 	/**
 	 * Main boot method.
 	 *
-	 * @param adpCore File object that is adp-core.jar.
+	 * @param adpCore URI that points to adp-core.jar.
 	 *
 	 * @throws Exception
 	 *           If anything bad happens.
 	 */
-	public void boot(final File adpCore) throws Exception {
+	public void boot(final URI adpCore) throws Exception {
 		final ClassLoader sysClassLoader = ClassLoader.getSystemClassLoader();
-		final URL[] urls = ((URLClassLoader)sysClassLoader).getURLs();
+		URL[] urls = ((URLClassLoader)sysClassLoader).getURLs();
 		for (final URL url : urls) {
-			System.out.println("Adding " + url + " to classpath");
+			System.out.println("Adding " + url + " to parent class loader class path");
 		}
 
 		try (final URLClassLoader parentClassLoader = new URLClassLoader(urls, null)) {
-			final URL adpCoreUrl = new URL("file:///" + adpCore.getAbsolutePath());
-			System.out.println("Loading " + adpCoreUrl);
-
-			try (final URLClassLoader runtimeClassLoader = new URLClassLoader(new URL[] { adpCoreUrl }, parentClassLoader)) {
+			System.out.println("Loading ADP core from " + adpCore);
+			urls = new URL[] { adpCore.toURL() };
+			try (final URLClassLoader runtimeClassLoader = new URLClassLoader(urls, parentClassLoader)) {
 				Thread.currentThread().setContextClassLoader(runtimeClassLoader);
 
-				final Class<?> standardBootstrap = Class.forName("com.adaptris.core.management.StandardBootstrap", true, runtimeClassLoader);
+				System.out.println("Invoking standard boot strap : " + STANDARD_BOOTSTRAP);
+				final Class<?> standardBootstrap = Class.forName(STANDARD_BOOTSTRAP, true, runtimeClassLoader);
 				final Constructor<?> constructor = standardBootstrap.getConstructor(String[].class);
 				final Method boot = standardBootstrap.getMethod("boot");
 
@@ -59,8 +66,13 @@ public class ClassLoaderBootstrap {
 	 */
 	public static void main(final String[] argv) throws Exception {
 		if (argv.length != 1) {
-			System.err.println("Missing path to adp-core.jar");
+			throw new IllegalArgumentException("Expected path to adp-core.jar; received " + argv);
 		}
-		new ClassLoaderBootstrap().boot(new File(argv[0]));
+		final File adpCore = new File(argv[0]);
+		if (!(adpCore.exists() && adpCore.isFile())) {
+			throw new FileNotFoundException("Invalid adp-core.jar [" + argv[0] + "]");
+		}
+
+		new ClassLoaderBootstrap().boot(adpCore.toURI());
 	}
 }
