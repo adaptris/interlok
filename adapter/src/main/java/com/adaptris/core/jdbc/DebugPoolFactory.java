@@ -3,6 +3,8 @@ package com.adaptris.core.jdbc;
 import java.io.PrintWriter;
 import java.util.concurrent.TimeUnit;
 
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.CoreException;
 import com.adaptris.util.TimeInterval;
 import com.adaptris.util.stream.Slf4jLoggingOutputStream;
@@ -18,7 +20,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class DebugPoolFactory extends DefaultPoolFactory {
   private static final TimeInterval DEFAULT_MAX_UNRETURNED = new TimeInterval(1L, TimeUnit.DAYS);
 
+  @InputFieldDefault(value = "1 Day")
+  @AdvancedConfig
   private TimeInterval unreturnedConnectionTimeout;
+  @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean debugUnreturnedConnectionStackTraces;
 
   @Override
