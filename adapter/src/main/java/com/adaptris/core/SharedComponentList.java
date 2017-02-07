@@ -490,17 +490,25 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
 
     @Override
     public void init(Collection<AdaptrisConnection> conns) throws CoreException {
+      try {
       for (AdaptrisConnection c : conns) {
         LifecycleHelper.init(c);
+      }
+      } catch (Throwable t) {
+        throw new CoreException(t);
       }
     }
 
 
     @Override
     public void start(Collection<AdaptrisConnection> conns) throws CoreException {
-      for (AdaptrisConnection c : conns) {
+     try {
+       for (AdaptrisConnection c : conns) {
         LifecycleHelper.start(c);
       }
+    } catch (Throwable t) {
+      throw new CoreException(t);
+    }
     }
 
 

@@ -42,7 +42,9 @@ import com.adaptris.core.jms.JmsProducer;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
 import com.adaptris.core.lifecycle.FilteredSharedComponentStart;
 import com.adaptris.core.services.LogMessageService;
+import com.adaptris.core.stubs.MockConfirmService;
 import com.adaptris.core.stubs.MockConnection;
+import com.adaptris.core.stubs.MockService;
 import com.adaptris.core.transaction.DummyTransactionManager;
 import com.adaptris.core.transaction.SharedTransactionManager;
 import com.adaptris.core.transaction.TransactionManager;
@@ -210,6 +212,28 @@ public class SharedComponentListTest extends ExampleConfigCase {
     assertFalse(list.addConnection(new MockConnection(getName())));
     assertEquals(1, list.getConnections().size());
   }
+  
+  public void testAddService() throws Exception {
+    SharedComponentList list = new SharedComponentList();
+
+    assertEquals(0, list.getServices().size());
+    try {
+      list.addServiceCollection(null);
+      fail();
+    } catch (IllegalArgumentException expected) {
+
+    }
+    assertEquals(0, list.getServices().size());
+    // Should have no effect as you're just adding to a clone.
+    list.getServices().add(new MockService());
+    assertEquals(0, list.getServices().size());
+    MockService mockConfirmService = new MockService();
+    mockConfirmService.setUniqueId("Something");
+    list.addServiceCollection(mockConfirmService);
+
+    assertFalse(list.addServiceCollection(mockConfirmService));
+    assertEquals(1, list.getServices().size());
+  }
 
   public void testAddConnections() throws Exception {
     SharedComponentList list = new SharedComponentList();
@@ -232,6 +256,27 @@ public class SharedComponentListTest extends ExampleConfigCase {
     Collection<AdaptrisConnection> rejected =
         list.addConnections(Arrays.asList(new AdaptrisConnection[] {new MockConnection(getName()), new MockConnection(getName())}));
     assertEquals(1, list.getConnections().size());
+    assertEquals(1, rejected.size());
+  }
+  
+  public void testAddServices() throws Exception {
+    SharedComponentList list = new SharedComponentList();
+    try {
+      list.addServiceCollections(null);
+      fail();
+    } catch (IllegalArgumentException expected) {
+
+    }
+    assertEquals(0, list.getConnections().size());
+
+    // This is valid, we don't check for duplicates until later.
+    MockService service1 = new MockService();
+    MockService service2 = new MockService();
+    service2.setUniqueId(service1.getUniqueId());
+    
+    Collection<Service> rejected =
+        list.addServiceCollections(Arrays.asList(new ServiceImp[] {service1, service2}));
+    assertEquals(1, list.getServices().size());
     assertEquals(1, rejected.size());
   }
 

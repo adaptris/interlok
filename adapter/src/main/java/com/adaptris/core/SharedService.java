@@ -40,9 +40,11 @@ public class SharedService extends SharedComponent implements Service {
   private transient Service clonedService;
   
   public SharedService() {
+    this.setCloneService(true);
   }
 
   public SharedService(String lookupName) {
+    this();
     this.setLookupName(lookupName);
   }
   
@@ -176,7 +178,7 @@ public class SharedService extends SharedComponent implements Service {
   }
   
   public boolean cloneService() {
-    return this.getCloneService() != null ? true : this.getCloneService();
+    return this.getCloneService() == null ? true : this.getCloneService();
   }
 
   public Boolean getCloneService() {
