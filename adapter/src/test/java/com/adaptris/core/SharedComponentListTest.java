@@ -275,7 +275,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
     service2.setUniqueId(service1.getUniqueId());
     
     Collection<Service> rejected =
-        list.addServiceCollections(Arrays.asList(new ServiceImp[] {service1, service2}));
+        list.addServiceCollections(Arrays.asList(new Service[] {service1, service2}));
     assertEquals(1, list.getServices().size());
     assertEquals(1, rejected.size());
   }
