@@ -189,4 +189,12 @@ public class SharedService extends SharedComponent implements Service {
     this.cloneService = cloneService;
   }
 
+  public Service getClonedService() {
+    return clonedService;
+  }
+
+  public void setClonedService(Service clonedService) {
+    this.clonedService = clonedService;
+  }
+
 }
