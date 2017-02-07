@@ -132,7 +132,7 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
     ensureNoDuplicateIds(verifyHasUniqueId(serviceLists));
     services.clear();
     serviceIds.clear();
-    doAddServiceLists(serviceLists);
+    doAddServices(serviceLists);
   }
 
   @Override
@@ -216,7 +216,7 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
       if(connectionToRegister != null)
         bind(getContext(), connectionToRegister, isDebug());
     }
-    else if(containsServiceList(componentId)) {
+    else if(containsService(componentId)) {
       Service serviceCollectionToRegister = null;
       for (Service c : services) {
         if (c.getUniqueId().equals(componentId)) {
@@ -249,9 +249,9 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
    * @throws IllegalArgumentException if the connection has no unique-id.
    * @return true if the object was successfully added, false if there was already a connection with that unique-id
    */
-  public boolean addServiceCollection(Service c) {
+  public boolean addService(Service c) {
     verify(c);
-    return doAddServiceList(c);
+    return doAddService(c);
   }
 
   /**
@@ -261,10 +261,10 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
    * @throws IllegalArgumentException if one or more service collections has no unique-id.
    * @return a collection of things that were rejected.
    */
-  public Collection<Service> addServiceCollections(Collection<Service> coll) {
+  public Collection<Service> addServices(Collection<Service> coll) {
     if (coll == null) throw new IllegalArgumentException("Collection is null");
     verifyHasUniqueId(coll);
-    return doAddServiceLists(coll);
+    return doAddServices(coll);
   }
   
   /**
@@ -292,8 +292,8 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
     return doAddConnections(coll);
   }
 
-  private boolean doAddServiceList(Service serviceCollection) {
-    if (!containsServiceList(serviceCollection.getUniqueId())) {
+  private boolean doAddService(Service serviceCollection) {
+    if (!containsService(serviceCollection.getUniqueId())) {
       serviceIds.add(serviceCollection.getUniqueId());
       notYetInJndi.add(serviceCollection.getUniqueId());
       return services.add(serviceCollection);
@@ -301,10 +301,10 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
     return false;
   }
   
-  private Collection<Service> doAddServiceLists(Collection<Service> coll) {
+  private Collection<Service> doAddServices(Collection<Service> coll) {
     List<Service> rejected = new ArrayList<Service>();
     for (Service c : coll) {
-      if (!doAddServiceList(c)) {
+      if (!doAddService(c)) {
         rejected.add(c);
       }
     }
@@ -359,7 +359,7 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
    * @param id the unique-id of the service collection to remove.
    * @return a collection of the removed items
    */
-  public Collection<Service> removeServiceCollection(String id) {
+  public Collection<Service> removeService(String id) {
     List<Service> keep = new ArrayList<>();
     List<Service> remove = new ArrayList<>();
     for (Service c : services) {
@@ -392,7 +392,7 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
    * @param id the ID to check for.
    * @return true if the ID exists.
    */
-  public boolean containsServiceList(String id) {
+  public boolean containsService(String id) {
     return serviceIds.contains(id);
   }
   
@@ -490,25 +490,17 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
 
     @Override
     public void init(Collection<AdaptrisConnection> conns) throws CoreException {
-      try {
       for (AdaptrisConnection c : conns) {
         LifecycleHelper.init(c);
-      }
-      } catch (Throwable t) {
-        throw new CoreException(t);
       }
     }
 
 
     @Override
     public void start(Collection<AdaptrisConnection> conns) throws CoreException {
-     try {
-       for (AdaptrisConnection c : conns) {
+      for (AdaptrisConnection c : conns) {
         LifecycleHelper.start(c);
       }
-    } catch (Throwable t) {
-      throw new CoreException(t);
-    }
     }
 
 

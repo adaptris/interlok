@@ -218,7 +218,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
 
     assertEquals(0, list.getServices().size());
     try {
-      list.addServiceCollection(null);
+      list.addService(null);
       fail();
     } catch (IllegalArgumentException expected) {
 
@@ -229,9 +229,9 @@ public class SharedComponentListTest extends ExampleConfigCase {
     assertEquals(0, list.getServices().size());
     MockService mockConfirmService = new MockService();
     mockConfirmService.setUniqueId("Something");
-    list.addServiceCollection(mockConfirmService);
+    list.addService(mockConfirmService);
 
-    assertFalse(list.addServiceCollection(mockConfirmService));
+    assertFalse(list.addService(mockConfirmService));
     assertEquals(1, list.getServices().size());
   }
 
@@ -262,7 +262,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
   public void testAddServices() throws Exception {
     SharedComponentList list = new SharedComponentList();
     try {
-      list.addServiceCollections(null);
+      list.addServices(null);
       fail();
     } catch (IllegalArgumentException expected) {
 
@@ -275,7 +275,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
     service2.setUniqueId(service1.getUniqueId());
     
     Collection<Service> rejected =
-        list.addServiceCollections(Arrays.asList(new Service[] {service1, service2}));
+        list.addServices(Arrays.asList(new Service[] {service1, service2}));
     assertEquals(1, list.getServices().size());
     assertEquals(1, rejected.size());
   }
@@ -444,6 +444,33 @@ public class SharedComponentListTest extends ExampleConfigCase {
       stop(adapter);
     }
   }
+  
+  public void testRemoveService_unbindsJNDI() throws Exception {
+    Adapter adapter = new Adapter();
+    adapter.setUniqueId(getName());
+    
+    MockService mockService = new MockService();
+    
+    adapter.getSharedComponents().addService(mockService);
+    Properties env = new Properties();
+    env.put(Context.INITIAL_CONTEXT_FACTORY, JndiContextFactory.class.getName());
+    InitialContext initialContext = new InitialContext(env);
+
+    try {
+      start(adapter);
+      Service lookedup = (Service) initialContext.lookup("adapter:comp/env/" + mockService.getUniqueId());
+      assertNotNull(lookedup);
+      assertEquals(mockService.getUniqueId(), lookedup.getUniqueId());
+      adapter.getSharedComponents().removeService(mockService.getUniqueId());
+      try {
+        initialContext.lookup("adapter:comp/env/" + mockService.getUniqueId());
+        fail();
+      } catch (NamingException expected) {
+      }
+    } finally {
+      stop(adapter);
+    }
+  }
 
   public void testBindJNDI() throws Exception {
     Adapter adapter = new Adapter();
@@ -459,6 +486,28 @@ public class SharedComponentListTest extends ExampleConfigCase {
       NullConnection lookedup = (NullConnection) initialContext.lookup("adapter:comp/env/" + getName());
       assertNotNull(lookedup);
       assertEquals(getName(), lookedup.getUniqueId());
+      adapter.getSharedComponents().bindJNDI("ShouldGetIgnored");
+    } finally {
+      stop(adapter);
+    }
+  }
+  
+  public void testBindJNDIService() throws Exception {
+    Adapter adapter = new Adapter();
+    adapter.setUniqueId(getName());
+    Properties env = new Properties();
+    env.put(Context.INITIAL_CONTEXT_FACTORY, JndiContextFactory.class.getName());
+    InitialContext initialContext = new InitialContext(env);
+
+    try {
+      start(adapter);
+      
+      MockService mockService = new MockService();
+      adapter.getSharedComponents().addService(mockService);
+      adapter.getSharedComponents().bindJNDI(mockService.getUniqueId());
+      Service lookedup = (Service) initialContext.lookup("adapter:comp/env/" + mockService.getUniqueId());
+      assertNotNull(lookedup);
+      assertEquals(mockService.getUniqueId(), lookedup.getUniqueId());
       adapter.getSharedComponents().bindJNDI("ShouldGetIgnored");
     } finally {
       stop(adapter);
@@ -684,7 +733,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
     serviceList.setUniqueId("shared-service-list");
     serviceList.add(new LogMessageService("log-message-service"));
     
-    adapter.getSharedComponents().addServiceCollection(serviceList);
+    adapter.getSharedComponents().addService(serviceList);
 
     StandardWorkflow wf1 = new StandardWorkflow();
     wf1.setUniqueId("reverent-edison");
