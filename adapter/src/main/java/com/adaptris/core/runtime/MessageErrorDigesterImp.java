@@ -24,6 +24,8 @@ import com.adaptris.core.CoreException;
  */
 public abstract class MessageErrorDigesterImp implements MessageErrorDigester {
 
+  private String uniqueId;
+  
   @Override
   public void init() throws CoreException {
   }
@@ -42,5 +44,13 @@ public abstract class MessageErrorDigesterImp implements MessageErrorDigester {
 
   @Override
   public void prepare() throws CoreException {
+  }
+
+  public String getUniqueId() {
+    return uniqueId;
+  }
+
+  public void setUniqueId(String uniqueId) {
+    this.uniqueId = uniqueId;
   }
 }

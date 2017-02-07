@@ -28,14 +28,6 @@ public interface StateManagedComponent extends AdaptrisComponent {
 
   /**
    * <p>
-   * Returns the configured unique ID for this object.
-   * </p>
-   * @return the configured unique ID for this object
-   */
-  String getUniqueId();
-
-  /**
-   * <p>
    * Returns the last recorde <code>ComponentState</code>.
    * </p>
    * @return the current <code>ComponentState</code>

@@ -37,6 +37,8 @@ public abstract class ProducerSessionFactoryImpl implements ProducerSessionFacto
   protected transient Logger log = LoggerFactory.getLogger(this.getClass());
   protected transient ProducerSession session = null;
 
+  private String uniqueId;
+  
   @Override
   public void init() throws CoreException {
     // Reset the session.
@@ -113,5 +115,13 @@ public abstract class ProducerSessionFactoryImpl implements ProducerSessionFacto
     private void setProducer(MessageProducer producer) {
       this.producer = producer;
     }
+  }
+
+  public String getUniqueId() {
+    return uniqueId;
+  }
+
+  public void setUniqueId(String uniqueId) {
+    this.uniqueId = uniqueId;
   }
 }

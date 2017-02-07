@@ -23,6 +23,8 @@ import com.adaptris.core.CoreException;
 
 public abstract class MessageValidatorImpl implements MessageValidator {
 
+  private String uniqueId;
+  
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
   @Override
@@ -46,6 +48,16 @@ public abstract class MessageValidatorImpl implements MessageValidator {
   @Override
   public void close() {
 
+  }
+
+
+  public String getUniqueId() {
+    return uniqueId;
+  }
+
+
+  public void setUniqueId(String uniqueId) {
+    this.uniqueId = uniqueId;
   }
 
 }
