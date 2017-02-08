@@ -1,11 +1,9 @@
 package com.adaptris.core;
 
-import javax.validation.constraints.NotNull;
-
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
-import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
@@ -32,15 +30,13 @@ public class SharedService extends SharedComponent implements Service {
 
   @NotBlank
   private String lookupName;
-  @NotNull
-  @AutoPopulated
+  @AdvancedConfig
   @InputFieldDefault(value="true")
   private Boolean cloneService;
   
   private transient Service clonedService;
   
   public SharedService() {
-    this.setCloneService(true);
   }
 
   public SharedService(String lookupName) {
@@ -189,11 +185,11 @@ public class SharedService extends SharedComponent implements Service {
     this.cloneService = cloneService;
   }
 
-  public Service getClonedService() {
+  Service getClonedService() {
     return clonedService;
   }
 
-  public void setClonedService(Service clonedService) {
+  void setClonedService(Service clonedService) {
     this.clonedService = clonedService;
   }
 

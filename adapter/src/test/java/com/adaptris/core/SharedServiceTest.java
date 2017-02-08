@@ -1,15 +1,15 @@
 package com.adaptris.core;
 
+import static org.mockito.Mockito.verify;
+
+import java.util.Arrays;
+
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.adaptris.core.stubs.MockService;
 
 import junit.framework.TestCase;
-
-import static org.mockito.Mockito.verify;
-
-import java.util.Arrays;
 
 public class SharedServiceTest extends TestCase {
   
@@ -44,7 +44,8 @@ public class SharedServiceTest extends TestCase {
     adapter.prepare();
     adapter.init();
     
-    assertNotNull(sharedService.getCloneService());
+    assertNull(sharedService.getCloneService());
+    assertTrue(sharedService.cloneService());
     
     assertFalse(mockService == sharedService.getClonedService());
     assertEquals(mockService.getUniqueId(), sharedService.getClonedService().getUniqueId());
@@ -64,7 +65,8 @@ public class SharedServiceTest extends TestCase {
     adapter.init();
     
     assertNotNull(sharedService.getCloneService());
-    
+    assertFalse(sharedService.cloneService());
+
     assertTrue(mockService == sharedService.getClonedService());
     assertEquals(mockService.getUniqueId(), sharedService.getClonedService().getUniqueId());
     
