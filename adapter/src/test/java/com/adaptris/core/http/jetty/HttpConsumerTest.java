@@ -43,7 +43,7 @@ import com.adaptris.core.http.HttpConsumerExample;
 import com.adaptris.core.http.HttpProducer;
 import com.adaptris.core.http.JdkHttpProducer;
 import com.adaptris.core.http.auth.AdapterResourceAuthenticator;
-import com.adaptris.core.http.jetty.HttpConnection.HttpProperty;
+import com.adaptris.core.http.jetty.HttpConnection.ServerConnectorProperty;
 import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.management.webserver.SecurityHandlerWrapper;
 import com.adaptris.core.metadata.RegexMetadataFilter;
@@ -110,14 +110,9 @@ public class HttpConsumerTest extends HttpConsumerExample {
 
   public void testConnection_NonDefaults() throws Exception {
     HttpConnection connection = createConnection(null);
-    connection.getHttpProperties().addKeyValuePair(new KeyValuePair(HttpProperty.MaxIdleTime.name(), "30000"));
-    connection.getHttpProperties().addKeyValuePair(new KeyValuePair(HttpProperty.AcceptorPriorityOffset.name(), "0"));
-    connection.getHttpProperties().addKeyValuePair(new KeyValuePair(HttpProperty.Acceptors.name(), "10"));
-    connection.getHttpProperties().addKeyValuePair(new KeyValuePair(HttpProperty.AcceptQueueSize.name(), "10"));
-    connection.getHttpProperties().addKeyValuePair(new KeyValuePair(HttpProperty.SoLingerTime.name(), "-1"));
-    connection.getHttpProperties().addKeyValuePair(new KeyValuePair(HttpProperty.LowResourcesMaxIdleTime.name(), "30000"));
-    connection.getHttpProperties().addKeyValuePair(new KeyValuePair(HttpProperty.ResolveNames.name(), "true"));
-    connection.getHttpProperties().addKeyValuePair(new KeyValuePair(HttpProperty.ReuseAaddress.name(), "true"));
+    connection.getServerConnectorProperties().addKeyValuePair(new KeyValuePair(ServerConnectorProperty.AcceptQueueSize.name(), "10"));
+    connection.getServerConnectorProperties().addKeyValuePair(new KeyValuePair(ServerConnectorProperty.SoLingerTime.name(), "-1"));
+    connection.getServerConnectorProperties().addKeyValuePair(new KeyValuePair(ServerConnectorProperty.ReuseAaddress.name(), "true"));
     Channel channel = JettyHelper.createChannel(connection, JettyHelper.createConsumer(URL_TO_POST_TO), new MockMessageProducer());
     try {
       channel.requestStart();
@@ -1052,9 +1047,8 @@ public class HttpConsumerTest extends HttpConsumerExample {
   @Override
   protected Object retrieveObjectForSampleConfig() {
     HttpConnection connection = createConnection(createSecurityHandlerExample());
-    connection.getHttpProperties().add(new KeyValuePair(HttpProperty.SoLingerTime.name(), "-1"));
-    connection.getHttpProperties().add(new KeyValuePair(HttpProperty.ReuseAaddress.name(), "true"));
-    connection.getHttpProperties().add(new KeyValuePair(HttpProperty.ResolveNames.name(), "true"));
+    connection.getServerConnectorProperties().add(new KeyValuePair(ServerConnectorProperty.SoLingerTime.name(), "-1"));
+    connection.getServerConnectorProperties().add(new KeyValuePair(ServerConnectorProperty.ReuseAaddress.name(), "true"));
     MessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
     StandaloneConsumer result = new StandaloneConsumer(connection, consumer);
     return result;

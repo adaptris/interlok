@@ -35,7 +35,6 @@ import com.adaptris.core.http.jetty.StandardResponseProducer;
 import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.KeyValuePair;
 
 public class HttpHelper {
   public static final String CONTENT_TYPE = "content.type";
@@ -60,8 +59,6 @@ public class HttpHelper {
     HttpConnection c = new HttpConnection();
     int port = PortManager.nextUnusedPort(28080);
     c.setPort(port);
-    c.getHttpProperties().add(new KeyValuePair(HttpConnection.HttpProperty.MaxIdleTime.name(), "30000"));
-    c.setSendServerVersion(true);
     return c;
   }
 

@@ -33,10 +33,6 @@ import org.eclipse.jetty.deploy.DeploymentManager;
 import org.eclipse.jetty.deploy.providers.WebAppProvider;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
-import org.eclipse.jetty.server.handler.DefaultHandler;
-import org.eclipse.jetty.server.handler.HandlerCollection;
-import org.eclipse.jetty.server.nio.SelectChannelConnector;
-import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.xml.XmlConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -153,8 +149,7 @@ public class JettyServerComponent implements ManagementComponent {
     if (!isEmpty(jettyConfigUrl)) {
       wrapper = new JettyServerWrapperImpl(createServer(config));
     } else {
-      wrapper = new JettyServerWrapperImpl(createSimpleServer(config));
-      log.warn("You are starting Jetty without a configuration file. This is NOT suggested for production environments.");
+      log.warn("No Jetty Configuration Found; no jetty component will be started");
     }
     return wrapper;
   }
@@ -174,23 +169,6 @@ public class JettyServerComponent implements ManagementComponent {
     return server;
   }
 
-  private Server createSimpleServer(final Properties config) throws Exception {
-    log.trace("Create Server from Properties");
-    final Server server = createSimpleServer();
-
-    server.setThreadPool(createSimpleThreadPool(config));
-    server.addConnector(createConnector(config));
-
-    // Setting up handler collection
-    final HandlerCollection handlerCollection = new HandlerCollection();
-    final ContextHandlerCollection contextHandlerCollection = new ContextHandlerCollection();
-    handlerCollection.addHandler(contextHandlerCollection);
-    handlerCollection.addHandler(new DefaultHandler());
-
-    server.setHandler(handlerCollection);
-    addDeploymentManager(server, contextHandlerCollection, config);
-    return configure(server, config);
-  }
 
   // Adding monitored webapp directory if specified
   private void addDeploymentManager(final Server server, final ContextHandlerCollection ctx, final Properties config) {
@@ -205,43 +183,6 @@ public class JettyServerComponent implements ManagementComponent {
       deploymentManager.addAppProvider(webAppProvider);
       server.addBean(deploymentManager);
     }
-  }
-
-  private Server createSimpleServer() {
-    final Server server = new Server();
-    // Setting up extra options
-    server.setStopAtShutdown(true);
-    server.setSendServerVersion(true);
-    server.setSendDateHeader(true);
-    server.setGracefulShutdown(1000);
-    server.setDumpAfterStart(false);
-    server.setDumpBeforeStop(false);
-    return server;
-  }
-
-  private QueuedThreadPool createSimpleThreadPool(final Properties config) {
-    final QueuedThreadPool threadPool = new QueuedThreadPool();
-    threadPool.setName("ThreadPool");
-    threadPool.setMinThreads(10);
-    threadPool.setMaxThreads(200);
-    threadPool.setDetailedDump(false);
-    return threadPool;
-  }
-
-  // Setting up web connector
-  private SelectChannelConnector createConnector(final Properties config) {
-    final SelectChannelConnector connector = new SelectChannelConnector();
-    connector.setHost(WebServerPropertiesEnum.HOST_NAME.getValue(config, DEFAULT_JETTY_HOST_NAME));
-    connector.setPort(Integer.parseInt(WebServerPropertiesEnum.PORT.getValue(config, DEFAULT_JETTY_PORT)));
-    // connector.setName(getPropertyIgnoringCase(config, CFG_KEY_JETTY_HOST, DEFAULT_JETTY_HOST_NAME) + ":"
-    // + getPropertyIgnoringCase(config, CFG_KEY_JETTY_PORT, DEFAULT_JETTY_PORT));
-    connector.setMaxIdleTime(300000);
-    connector.setAcceptors(10);
-    connector.setStatsOn(false);
-    // connector.setConfidentialPort(8443);
-    connector.setLowResourcesConnections(20000);
-    connector.setLowResourcesMaxIdleTime(5000);
-    return connector;
   }
 
   private Server createServer(final Properties config) throws Exception {

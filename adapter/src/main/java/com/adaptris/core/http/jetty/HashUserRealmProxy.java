@@ -106,7 +106,7 @@ public class HashUserRealmProxy implements SecurityHandlerWrapper {
   private HashLoginService createLoginService() {
     HashLoginService loginService = new HashLoginService(getUserRealm(), getFilename());
     if (getRefreshInterval() != null) {
-      loginService.setRefreshInterval(getRefreshInterval());
+      loginService.setHotReload(true);
     }
     return loginService;
   }
