@@ -44,28 +44,9 @@ public interface ServerManager {
    */
   public void addServlet(Servlet servlet, HashMap<String, Object> additionalProperties) throws Exception;
 
-  /**
-   * Method for adding a webapp (war file) to the server(s).
-   *
-   * @param path - The path of the webapp.
-   * @param additionalProperties - Additional properties needed for the deployment.
-   * @throws Exception on exception.
-   */
-  public void addWebapp(String path, HashMap<String, Object> additionalProperties) throws Exception;
-
-  /**
-   * Method for adding a webapp (directory) to the server(s).
-   *
-   * @param path - The path of the webapp.
-   * @param additionalProperties - Additional properties needed for the deployment.
-   * @throws Exception on exception.
-   */
-  public void addWebappDir(String path, HashMap<String, Object> additionalProperties) throws Exception;
 
   /**
    * Method for removing a deployment from the server(s). Basically this is for removing a deployment during runtime.
-   * <p>
-   * This is for Jetty, additional methods may be needed for other servers.
    *
    * @param contextPath - The context path of the deployment.
    * @throws Exception on exception.
@@ -74,9 +55,6 @@ public interface ServerManager {
 
   /**
    * If for any reason a deployment should be started.
-   * <p>
-   * This is for Jetty, additional methods may be needed for other servers.
-   * </p>
    *
    * @throws Exception on exception.
    */
@@ -84,9 +62,6 @@ public interface ServerManager {
 
   /**
    * If for any reason a deployment should be stopped.
-   * <p>
-   * This is for Jetty, additional methods may be needed for other servers.
-   * </p>
    *
    * @throws Exception on exception.
    */
