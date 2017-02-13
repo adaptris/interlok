@@ -16,6 +16,7 @@
 
 package com.adaptris.core.management.webserver;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -39,6 +40,7 @@ import org.eclipse.jetty.servlet.ServletMapping;
 import org.eclipse.jetty.webapp.AbstractConfiguration;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.webapp.WebXmlConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +56,7 @@ import org.slf4j.LoggerFactory;
  */
 public class JettyServerManager implements ServerManager {
 
+  private static final String DEFAULT_DESCRIPTOR_XML = "com/adaptris/core/management/webserver/jetty-webdefault-failsafe.xml";
   public static final String CONTEXT_PATH = "contextPath";
   public static final String ROLES = "roles";
   public static final String SECURITY_CONSTRAINTS = "securityConstraints";
@@ -140,11 +143,13 @@ public class JettyServerManager implements ServerManager {
     if (root == null && create) {
       root = new WebAppContext();
       root.setContextPath("/");
-      root.setConfigurations(new Configuration[]
-      {
-          new AbstractConfiguration() {
-          }
-      });
+      URL defaultsURL = getClass().getClassLoader().getResource(DEFAULT_DESCRIPTOR_XML);
+      if (defaultsURL != null) {
+        root.setDefaultsDescriptor(defaultsURL.toString());
+        root.setConfigurations(new Configuration[] {new WebXmlConfiguration() {}});
+      } else {
+        root.setConfigurations(new Configuration[] {new AbstractConfiguration() {}});
+      }
       ContextHandlerCollection c = firstContextHandler(server.getHandler());
       if (c != null) {
         c.addHandler(root);

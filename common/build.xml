@@ -81,6 +81,9 @@
   <target name="jar" depends="compile">
     <interlok:create-version dir="${build.classes.dir}/META-INF" name="${manifest.title}"/>
     <interlok:create-manifest file="${build.dir}/Manifest.mf" title="${manifest.title}"/>
+    <copy todir="${build.classes.dir}" overwrite="true">
+      <fileset dir="${resources.dir}/jar"/>
+    </copy>
     <jar jarfile="${project.dist.dir}/${project.jar.name}" manifest="${build.dir}/Manifest.mf">
       <fileset dir="${build.classes.dir}"/>
       <zipfileset dir="${basedir}/.." prefix="META-INF">
