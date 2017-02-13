@@ -118,6 +118,12 @@
     <ivy:makepom ivyfile="${ivy.xml.file}" pomfile="${project.dist.dir}/${project.name}/pom/${project.name}.pom" description="${project.pom.description}"  conf="default,master,compile,provided,runtime,test,system,sources,javadoc,optional"/>
   </target>
 
+  <target name="local-ivy-publish" depends="prepare-for-publish">
+    <copy file="${project.dist.dir}/${project.jar.name}" tofile="${ivy.cache.dir}/${ivy.organisation}/${ivy.module}/jars/${project.name}-${ivy.revision}.jar"/>
+    <copy file="${project.dist.dir}/${project.name}/source/${project.name}.jar" tofile="${ivy.cache.dir}/${ivy.organisation}/${ivy.module}/sources/${project.name}-${ivy.revision}-sources.jar"/>
+    <copy file="${project.dist.dir}/${project.name}/javadoc/${project.name}.jar" tofile="${ivy.cache.dir}/${ivy.organisation}/${ivy.module}/javadocs/${project.name}-${ivy.revision}-javadoc.jar"/>
+  </target>
+
   <target name="publish" depends="prepare-for-publish">
     <interlok:publish-artifact resolver="${ivy.repo}" revision="${ivy.publish.revision}" artifact.basedir="${project.dist.dir}" ivy-config="${ivy.xml.file}"/>
   </target>
