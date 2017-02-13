@@ -43,6 +43,7 @@ import com.adaptris.core.http.HttpConsumerExample;
 import com.adaptris.core.http.HttpProducer;
 import com.adaptris.core.http.JdkHttpProducer;
 import com.adaptris.core.http.auth.AdapterResourceAuthenticator;
+import com.adaptris.core.http.jetty.HttpConnection.HttpConfigurationProperty;
 import com.adaptris.core.http.jetty.HttpConnection.ServerConnectorProperty;
 import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.management.webserver.SecurityHandlerWrapper;
@@ -1022,13 +1023,23 @@ public class HttpConsumerTest extends HttpConsumerExample {
   }
 
   protected HttpConnection createConnection(SecurityHandlerWrapper sh) {
-    HttpConnection c = new HttpConnection();
+    HttpConnection http = new HttpConnection();
     int port = PortManager.nextUnusedPort(Integer.parseInt(PROPERTIES.getProperty(JETTY_HTTP_PORT)));
-    c.setPort(port);
+    http.setPort(port);
     if (sh != null) {
-      c.setSecurityHandler(sh);
+      http.setSecurityHandler(sh);
     }
-    return c;
+
+    http.getServerConnectorProperties().clear();
+    http.getServerConnectorProperties().add(new KeyValuePair(ServerConnectorProperty.SoLingerTime.name(), "-1"));
+    http.getServerConnectorProperties().add(new KeyValuePair(ServerConnectorProperty.ReuseAaddress.name(), "true"));
+
+    http.getHttpConfiguration().clear();
+    http.getHttpConfiguration().add(new KeyValuePair(HttpConfigurationProperty.OutputBufferSize.name(), "8192"));
+    http.getHttpConfiguration().add(new KeyValuePair(HttpConfigurationProperty.SendServerVersion.name(), "false"));
+    http.getHttpConfiguration().add(new KeyValuePair(HttpConfigurationProperty.SendDateHeader.name(), "false"));
+
+    return http;
   }
 
   protected ConfiguredProduceDestination createProduceDestination(int port) {

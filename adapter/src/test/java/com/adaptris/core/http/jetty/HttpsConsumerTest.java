@@ -30,6 +30,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.PortManager;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.http.HttpProducer;
+import com.adaptris.core.http.jetty.HttpConnection.HttpConfigurationProperty;
 import com.adaptris.core.http.jetty.HttpConnection.ServerConnectorProperty;
 import com.adaptris.core.http.jetty.HttpsConnection.SslProperty;
 import com.adaptris.core.management.webserver.SecurityHandlerWrapper;
@@ -171,6 +172,12 @@ public class HttpsConsumerTest extends HttpConsumerTest {
         .add(new KeyValuePair(SslProperty.TrustStorePassword.name(), PROPERTIES.getProperty(SECURITY_PASSWORD)));
     https.getSslProperties().add(new KeyValuePair(SslProperty.TrustStoreType.name(), PROPERTIES.getProperty(KEYSTORE_TYPE)));
     https.getSslProperties().add(new KeyValuePair(SslProperty.TrustStorePath.name(), PROPERTIES.getProperty(KEYSTORE_PATH)));
+
+    https.getHttpConfiguration().clear();
+    https.getHttpConfiguration().add(new KeyValuePair(HttpConfigurationProperty.OutputBufferSize.name(), "8192"));
+    https.getHttpConfiguration().add(new KeyValuePair(HttpConfigurationProperty.SendServerVersion.name(), "false"));
+    https.getHttpConfiguration().add(new KeyValuePair(HttpConfigurationProperty.SendDateHeader.name(), "false"));
+
     if (sh != null) {
       https.setSecurityHandler(sh);
     }

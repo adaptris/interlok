@@ -214,7 +214,7 @@ public class HttpConnection extends JettyConnection {
     /**
      * @see HttpConfiguration#setSendDateHeader(boolean)
      */
-    SendDateHeander {
+    SendDateHeader {
       @Override
       void applyProperty(HttpConfiguration config, String value) throws Exception {
         config.setSendDateHeader(Boolean.valueOf(value).booleanValue());
