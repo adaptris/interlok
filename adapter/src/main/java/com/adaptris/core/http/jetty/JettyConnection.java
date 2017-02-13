@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.servlet.ServletMapping;
@@ -40,7 +41,6 @@ public abstract class JettyConnection extends AdaptrisConnectionImp implements J
 
   protected transient Server server;
   protected transient ServletContextHandler context;
-
 
   public JettyConnection() {
     super();
@@ -79,12 +79,14 @@ public abstract class JettyConnection extends AdaptrisConnectionImp implements J
       server = configure(new Server());
       context = new ServletContextHandler(ServletContextHandler.SESSIONS);
       context.setContextPath("/");
+      context.addServlet(new ServletHolder(new DefaultServlet()), "/");
       server.setHandler(createHandler(context));
     }
     catch (Exception e) {
       ExceptionHelper.rethrowCoreException(e);
     }
   }
+
 
   public void removeServlet(ServletWrapper wrapper) {
     List<ServletHolder> holdersToKeep = new ArrayList<ServletHolder>();
