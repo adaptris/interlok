@@ -21,8 +21,8 @@ import javax.validation.constraints.NotNull;
 
 import org.eclipse.jetty.http.HttpCompliance;
 import org.eclipse.jetty.security.SecurityHandler;
-import org.eclipse.jetty.server.AbstractConnectionFactory;
 import org.eclipse.jetty.server.AbstractConnector;
+import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
@@ -184,8 +184,11 @@ public class HttpConnection extends JettyConnection {
     setHttpConfiguration(new KeyValuePairSet());
   }
 
-  protected AbstractConnectionFactory createConnectionFactory() throws Exception {
-    return new HttpConnectionFactory(createConfig(), HttpCompliance.RFC2616);
+  protected ConnectionFactory[] createConnectionFactory() throws Exception {
+    return new ConnectionFactory[]
+    {
+        new HttpConnectionFactory(createConfig(), HttpCompliance.RFC2616)
+    };
   }
 
   protected HttpConfiguration createConfig() throws Exception {

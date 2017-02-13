@@ -25,6 +25,11 @@ import java.util.StringTokenizer;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.eclipse.jetty.http.HttpVersion;
+import org.eclipse.jetty.server.ConnectionFactory;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
@@ -365,12 +370,17 @@ public class HttpsConnection extends HttpConnection {
   }
 
   @Override
-  protected SslConnectionFactory createConnectionFactory() throws Exception {
-    return configure(new SslConnectionFactory());
+  protected ConnectionFactory[] createConnectionFactory() throws Exception {
+    HttpConfiguration httpsConfig = new HttpConfiguration(createConfig());
+    httpsConfig.addCustomizer(new SecureRequestCustomizer());
+    return new ConnectionFactory[] { 
+        new SslConnectionFactory(createSslContext(), HttpVersion.HTTP_1_1.asString()),
+        new HttpConnectionFactory(httpsConfig)
+    };
   }
 
-  SslConnectionFactory configure(SslConnectionFactory factory) throws Exception {
-    SslContextFactory sslContextFactory = factory.getSslContextFactory();
+  SslContextFactory createSslContext() throws Exception {
+    SslContextFactory sslContextFactory = new SslContextFactory();
     for (KeyValuePair kvp : getSslProperties().getKeyValuePairs()) {
       boolean matched = false;
       for (SslProperty sp : SslProperty.values()) {
@@ -384,7 +394,7 @@ public class HttpsConnection extends HttpConnection {
         log.trace("Ignoring unsupported Property " + kvp.getKey());
       }
     }
-    return factory;
+    return sslContextFactory;
   }
 
   public KeyValuePairSet getSslProperties() {
