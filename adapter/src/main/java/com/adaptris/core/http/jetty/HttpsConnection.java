@@ -16,12 +16,6 @@
 
 package com.adaptris.core.http.jetty;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -356,18 +350,6 @@ public class HttpsConnection extends HttpConnection {
     setSslProperties(new KeyValuePairSet());
   }
 
-  private static String[] asArray(String s) {
-    if (s == null) {
-      return new String[0];
-    }
-    StringTokenizer st = new StringTokenizer(s, ",");
-    List<String> l = new ArrayList<String>();
-    while (st.hasMoreTokens()) {
-      String tok = st.nextToken().trim();
-      if (!isEmpty(tok)) l.add(tok);
-    }
-    return l.toArray(new String[0]);
-  }
 
   @Override
   protected ConnectionFactory[] createConnectionFactory() throws Exception {

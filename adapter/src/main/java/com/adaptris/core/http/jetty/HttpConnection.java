@@ -149,6 +149,10 @@ public class HttpConnection extends JettyConnection {
   }
 
   public enum HttpConfigurationProperty {
+    /**
+     * @see HttpConfiguration#setSecureScheme(String).
+     * 
+     */
     SecureScheme {
 
       @Override
@@ -156,10 +160,178 @@ public class HttpConnection extends JettyConnection {
         config.setSecureScheme(value);        
       }
       
+    },
+    /**
+     * @see HttpConfiguration#setSecurePort(int).
+     * 
+     */
+    SecurePort {
+
+      @Override
+      void applyProperty(HttpConfiguration config, String value) throws Exception {
+        config.setSecurePort(Integer.parseInt(value));
+      }
+      
+    },
+    /**
+     * @see HttpConfiguration#setOutputBufferSize(int)
+     */
+    OutputBufferSize {
+
+      @Override
+      void applyProperty(HttpConfiguration config, String value) throws Exception {
+        config.setOutputBufferSize(Integer.parseInt(value));
+      }
+
+    },
+    /**
+     * @see HttpConfiguration#setOutputAggregationSize(int)
+     */
+    OutputAggregationSize {
+      @Override
+      void applyProperty(HttpConfiguration config, String value) throws Exception {
+        config.setOutputAggregationSize(Integer.parseInt(value));
+      }
+    },
+    /**
+     * @see HttpConfiguration#setRequestHeaderSize(int)
+     */
+    RequestHeaderSize {
+      @Override
+      void applyProperty(HttpConfiguration config, String value) throws Exception {
+        config.setRequestHeaderSize(Integer.parseInt(value));
+      }
+    },
+    /**
+     * @see HttpConfiguration#setResponseHeaderSize(int)
+     */
+    ResponseHeaderSize {
+      @Override
+      void applyProperty(HttpConfiguration config, String value) throws Exception {
+        config.setResponseHeaderSize(Integer.parseInt(value));
+      }
+    },
+    /**
+     * @see HttpConfiguration#setSendDateHeader(boolean)
+     */
+    SendDateHeander {
+      @Override
+      void applyProperty(HttpConfiguration config, String value) throws Exception {
+        config.setSendDateHeader(Boolean.valueOf(value).booleanValue());
+      }
+    },
+    /**
+     * @see HttpConfiguration#setSendServerVersion(boolean)
+     */
+    SendServerVersion {
+      @Override
+      void applyProperty(HttpConfiguration config, String value) throws Exception {
+        config.setSendServerVersion(Boolean.valueOf(value).booleanValue());
+      }
+    },
+    /**
+     * @see HttpConfiguration#setHeaderCacheSize(int)
+     */
+    HeaderCacheSize {
+      @Override
+      void applyProperty(HttpConfiguration config, String value) throws Exception {
+        config.setHeaderCacheSize(Integer.parseInt(value));
+      }
+    },
+    /**
+     * @see HttpConfiguration#setDelayDispatchUntilContent(boolean)
+     */
+    DelayDispatchUntilContent {
+      @Override
+      void applyProperty(HttpConfiguration config, String value) throws Exception {
+        config.setDelayDispatchUntilContent(Boolean.valueOf(value).booleanValue());
+      }
+    },
+    /**
+     * @see HttpConfiguration#setSendXPoweredBy(boolean)
+     */
+    SendXPoweredBy {
+      @Override
+      void applyProperty(HttpConfiguration config, String value) throws Exception {
+        config.setSendXPoweredBy(Boolean.valueOf(value).booleanValue());
+      }
+    },
+    /**
+     * @see HttpConfiguration#setFormEncodedMethods(String...)
+     */
+    FormEncodedMethods {
+      @Override
+      void applyProperty(HttpConfiguration config, String value) throws Exception {
+        config.setFormEncodedMethods(asArray(value));
+      }
+    },
+    /**
+     * @see HttpConfiguration#setMaxErrorDispatches(int)
+     */
+    MaxErrorDispatches {
+      @Override
+      void applyProperty(HttpConfiguration config, String value) throws Exception {
+        config.setMaxErrorDispatches(Integer.parseInt(value));
+      }
+    },
+    /**
+     * @see HttpConfiguration#setIdleTimeout(long)
+     */
+    IdleTimeout {
+      @Override
+      void applyProperty(HttpConfiguration config, String value) throws Exception {
+        config.setIdleTimeout(Long.parseLong(value));
+      }
+    },
+    /**
+     * @see HttpConfiguration#setBlockingTimeout(long)
+     */
+    BlockingTimeout {
+      @Override
+      void applyProperty(HttpConfiguration config, String value) throws Exception {
+        config.setBlockingTimeout(Long.parseLong(value));
+      }
+    },
+    /**
+     * @see HttpConfiguration#setMinRequestDataRate(long)
+     */
+    MinRequestDataRate {
+      @Override
+      void applyProperty(HttpConfiguration config, String value) throws Exception {
+        config.setMinRequestDataRate(Long.parseLong(value));
+      }
+    },
+    /**
+     * @see HttpConfiguration#setPersistentConnectionsEnabled(boolean)
+     */
+    PersistentConnectionsEnabled {
+      @Override
+      void applyProperty(HttpConfiguration config, String value) throws Exception {
+        config.setPersistentConnectionsEnabled(Boolean.valueOf(value).booleanValue());
+      }
     };
     abstract void applyProperty(HttpConfiguration config, String value) throws Exception;
 
   }
+
+  private HttpConfiguration configure(final HttpConfiguration httpConfig) {
+    httpConfig.setSecureScheme("http");
+    httpConfig.setSecurePort(8443);
+    httpConfig.setOutputBufferSize(32768);
+    httpConfig.setOutputAggregationSize(8192);
+    httpConfig.setRequestHeaderSize(8192);
+    httpConfig.setResponseHeaderSize(8192);
+    httpConfig.setSendDateHeader(true);
+    httpConfig.setSendServerVersion(true);
+    httpConfig.setHeaderCacheSize(512);
+    httpConfig.setDelayDispatchUntilContent(true);
+    httpConfig.setMaxErrorDispatches(10);
+    httpConfig.setBlockingTimeout(-1);
+    httpConfig.setPersistentConnectionsEnabled(true);
+    return httpConfig;
+  }
+
+
   private int port;
   @Valid
   @AdvancedConfig
