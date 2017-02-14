@@ -61,13 +61,13 @@ public class ManagedThreadFactory implements ThreadFactory {
 
   @Override
   public Thread newThread(Runnable runner) {
-    Thread t = createThread(myThreadGroup, runner);
-    CREATED_THREADS.add(t);
-    return t;
+    return createThread(myThreadGroup, runner);
   }
 
   protected Thread createThread(ThreadGroup group, Runnable r) {
-    return new Thread(group, r, createName(), 0);
+    Thread t = new Thread(group, r, createName(), 0);
+    CREATED_THREADS.add(t);
+    return t;
   }
 
   protected String createName() {
