@@ -48,6 +48,7 @@ import org.slf4j.LoggerFactory;
 import com.adaptris.core.management.Constants;
 import com.adaptris.core.management.ManagementComponent;
 import com.adaptris.core.management.webserver.WebServerProperties.WebServerPropertiesEnum;
+import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.URLString;
 
 /**
@@ -118,7 +119,7 @@ public class JettyServerComponent implements ManagementComponent {
     // This is to make sure we don't break the barrier before the real delay is up.
     //
     final long barrierDelay = STARTUP_WAIT;
-    new Thread(new Runnable() {
+    ManagedThreadFactory.createThread("EmbeddedJettyStart", new Runnable() {
       @Override
       public void run() {
         try {
