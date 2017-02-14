@@ -72,7 +72,7 @@ public class ClassDescriptor implements Serializable {
   private List<ClassDescriptorProperty> classDescriptorProperties;
   
   @XStreamImplicit(itemFieldName="sub-types")
-  private List<ClassDescriptor> subTypes;
+  private List<String> subTypes;
   
   public ClassDescriptor() {
     classDescriptorProperties = new ArrayList<>();
@@ -132,11 +132,11 @@ public class ClassDescriptor implements Serializable {
     this.classDescriptorProperties = classDescriptorProperties;
   }
 
-  public List<ClassDescriptor> getSubTypes() {
+  public List<String> getSubTypes() {
     return subTypes;
   }
 
-  public void setSubTypes(List<ClassDescriptor> subTypes) {
+  public void setSubTypes(List<String> subTypes) {
     this.subTypes = subTypes;
   }
 }

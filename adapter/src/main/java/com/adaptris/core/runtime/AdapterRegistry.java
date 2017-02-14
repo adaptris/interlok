@@ -31,14 +31,7 @@ import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 import javax.management.JMX;
 import javax.management.MBeanServer;
@@ -51,6 +44,7 @@ import javax.validation.ValidatorFactory;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.io.IOUtils;
+import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -509,8 +503,8 @@ public class AdapterRegistry implements AdapterRegistryMBean {
           fieldProperty.setClassName(field.getType().getName());
           fieldProperty.setType(field.getType().getSimpleName());
           fieldProperty.setName(field.getName());
-          fieldProperty.setAutoPopulated(field.getDeclaredAnnotation(AutoPopulated.class) == null ? false : true);
-          fieldProperty.setNullAllowed(field.getDeclaredAnnotation(NotNull.class) == null ? false : true);
+          fieldProperty.setAutoPopulated(field.getDeclaredAnnotation(AutoPopulated.class) != null);
+          fieldProperty.setNullAllowed(field.getDeclaredAnnotation(NotNull.class) != null);
           
           for(Annotation annotation : field.getDeclaredAnnotations()) {
             if(AdvancedConfig.class.isAssignableFrom(annotation.annotationType())) {
@@ -522,7 +516,14 @@ public class AdapterRegistry implements AdapterRegistryMBean {
           classDescriptor.getClassDescriptorProperties().add(fieldProperty);
         }
       }
-      
+
+      Reflections reflections = new Reflections("com.adaptris");
+      Set<Class<?>> subTypes = reflections.getSubTypesOf((Class) clazz);
+
+      Iterator<Class<?>> it = subTypes.iterator();
+      while(it.hasNext())
+        classDescriptor.getSubTypes().add(it.next().getName());
+
     } catch (ClassNotFoundException e) {
       throw new CoreException(e);
     }

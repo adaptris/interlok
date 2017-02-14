@@ -31,21 +31,12 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import com.adaptris.core.*;
 import org.apache.commons.io.FileUtils;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
-import com.adaptris.core.Adapter;
-import com.adaptris.core.AdaptrisMarshaller;
-import com.adaptris.core.ClosedState;
-import com.adaptris.core.CoreException;
-import com.adaptris.core.DefaultEventHandler;
-import com.adaptris.core.DefaultMarshaller;
-import com.adaptris.core.JndiContextFactory;
-import com.adaptris.core.NullConnection;
-import com.adaptris.core.StartedState;
-import com.adaptris.core.StoppedState;
 import com.adaptris.core.config.ConfigPreProcessorLoader;
 import com.adaptris.core.config.ConfigPreProcessors;
 import com.adaptris.core.config.DefaultPreProcessorLoader;
@@ -767,6 +758,21 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     ObjectName objName = myAdapterRegistry.createAdapter(xml);
     assertNotNull(objName);
     myAdapterRegistry.destroyAdapter(objName);
+  }
+
+  public void testGetClassDescription() throws Exception {
+    Properties custom = new Properties();
+    AdapterRegistry myAdapterRegistry = new AdapterRegistry(new JunitBootstrapProperties(custom));
+
+    String addMetadataServiceJsonDef = myAdapterRegistry.getClassDefinition("com.adaptris.core.services.metadata.AddMetadataService");
+    ClassDescriptor addMetadataServiceDef = (ClassDescriptor) new XStreamJsonMarshaller().unmarshal(addMetadataServiceJsonDef);
+
+    assertEquals("com.adaptris.core.services.metadata.AddMetadataService", addMetadataServiceDef.getClassName());
+    assertEquals("add-metadata-service", addMetadataServiceDef.getAlias());
+    assertEquals("Add Static Metadata to a Message", addMetadataServiceDef.getSummary());
+    assertEquals("service,metadata", addMetadataServiceDef.getTags());
+    assertEquals(2, addMetadataServiceDef.getClassDescriptorProperties().size());
+    assertEquals("service", addMetadataServiceDef.getClassType());
   }
 
   private class MockRuntimeVersionControl implements RuntimeVersionControl {
