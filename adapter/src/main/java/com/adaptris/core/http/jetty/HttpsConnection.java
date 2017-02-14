@@ -16,17 +16,15 @@
 
 package com.adaptris.core.http.jetty;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.ssl.SslSocketConnector;
+import org.eclipse.jetty.http.HttpVersion;
+import org.eclipse.jetty.server.ConnectionFactory;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.SecureRequestCustomizer;
+import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 import com.adaptris.annotation.AdapterComponent;
@@ -74,7 +72,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Connection that creates its own jetty engine instance and listens on the specified port",
     tag = "connections,https,jetty")
-@DisplayOrder(order = {"port", "httpProperties, sslProperties"})
+@DisplayOrder(order =
+{
+    "port", "httpConfiguration", "serverConnectorProperties", "sslProperties"
+})
 public class HttpsConnection extends HttpConnection {
   /**
    * Properties for {@link SslContextFactory}.
@@ -131,10 +132,10 @@ public class HttpsConnection extends HttpConnection {
      * 
      * @see SslContextFactory#setTrustStore(String)
      */
-    TrustStore {
+    TrustStorePath {
       @Override
       void applyProperty(SslContextFactory sslContextFactory, String value) {
-        sslContextFactory.setTrustStore(value);
+        sslContextFactory.setTrustStorePath(value);
       }
     },
     /**
@@ -343,42 +344,25 @@ public class HttpsConnection extends HttpConnection {
   @AdvancedConfig
   private KeyValuePairSet sslProperties;
 
-  /**
-   * Default Constructor.
-   * <p>
-   * Defaults are :
-   * <ul>
-   * <li>port = 8443</li>
-   * </ul>
-   * </p>
-   * <p>
-   * Other fields are null, which causes Jetty to use its internal defaults.
-   * </p>
-   */
   public HttpsConnection() {
     super();
     setPort(8443);
     setSslProperties(new KeyValuePairSet());
   }
 
-  private static String[] asArray(String s) {
-    if (s == null) {
-      return new String[0];
-    }
-    StringTokenizer st = new StringTokenizer(s, ",");
-    List<String> l = new ArrayList<String>();
-    while (st.hasMoreTokens()) {
-      String tok = st.nextToken().trim();
-      if (!isEmpty(tok)) l.add(tok);
-    }
-    return l.toArray(new String[0]);
-  }
 
   @Override
-  Connector createConnector() throws Exception {
-    SslSocketConnector connector = (SslSocketConnector) configure(new SslSocketConnector());
+  protected ConnectionFactory[] createConnectionFactory() throws Exception {
+    HttpConfiguration httpsConfig = new HttpConfiguration(createConfig());
+    httpsConfig.addCustomizer(new SecureRequestCustomizer());
+    return new ConnectionFactory[] { 
+        new SslConnectionFactory(createSslContext(), HttpVersion.HTTP_1_1.asString()),
+        new HttpConnectionFactory(httpsConfig)
+    };
+  }
 
-    SslContextFactory sslContextFactory = connector.getSslContextFactory();
+  SslContextFactory createSslContext() throws Exception {
+    SslContextFactory sslContextFactory = new SslContextFactory();
     for (KeyValuePair kvp : getSslProperties().getKeyValuePairs()) {
       boolean matched = false;
       for (SslProperty sp : SslProperty.values()) {
@@ -392,7 +376,7 @@ public class HttpsConnection extends HttpConnection {
         log.trace("Ignoring unsupported Property " + kvp.getKey());
       }
     }
-    return connector;
+    return sslContextFactory;
   }
 
   public KeyValuePairSet getSslProperties() {

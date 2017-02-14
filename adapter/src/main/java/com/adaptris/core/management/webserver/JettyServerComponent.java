@@ -31,12 +31,16 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.deploy.DeploymentManager;
 import org.eclipse.jetty.deploy.providers.WebAppProvider;
+import org.eclipse.jetty.http.HttpCompliance;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
-import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.eclipse.jetty.util.thread.ThreadPool;
 import org.eclipse.jetty.xml.XmlConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +48,7 @@ import org.slf4j.LoggerFactory;
 import com.adaptris.core.management.Constants;
 import com.adaptris.core.management.ManagementComponent;
 import com.adaptris.core.management.webserver.WebServerProperties.WebServerPropertiesEnum;
+import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.URLString;
 
 /**
@@ -60,9 +65,6 @@ import com.adaptris.util.URLString;
 public class JettyServerComponent implements ManagementComponent {
 
   public static final String DEFAULT_JETTY_PORT = "8080";
-
-  public static final String DEFAULT_JETTY_HOST_IP = "127.0.0.1";
-  public static final String DEFAULT_JETTY_HOST_NAME = "localhost";
 
   public static final String ATTR_JMX_SERVICE_URL = "com.adaptris.core.webapp.local.jmxserviceurl";
   public static final String ATTR_JMX_ADAPTER_UID = "com.adaptris.core.webapp.local.jmxuid";
@@ -117,7 +119,7 @@ public class JettyServerComponent implements ManagementComponent {
     // This is to make sure we don't break the barrier before the real delay is up.
     //
     final long barrierDelay = STARTUP_WAIT;
-    new Thread(new Runnable() {
+    ManagedThreadFactory.createThread("EmbeddedJettyStart", new Runnable() {
       @Override
       public void run() {
         try {
@@ -178,8 +180,8 @@ public class JettyServerComponent implements ManagementComponent {
     log.trace("Create Server from Properties");
     final Server server = createSimpleServer();
 
-    server.setThreadPool(createSimpleThreadPool(config));
-    server.addConnector(createConnector(config));
+    configureThreadPool(server.getThreadPool());
+    server.addConnector(createConnector(server, config));
 
     // Setting up handler collection
     final HandlerCollection handlerCollection = new HandlerCollection();
@@ -211,37 +213,44 @@ public class JettyServerComponent implements ManagementComponent {
     final Server server = new Server();
     // Setting up extra options
     server.setStopAtShutdown(true);
-    server.setSendServerVersion(true);
-    server.setSendDateHeader(true);
-    server.setGracefulShutdown(1000);
+    server.setStopTimeout(5000);
     server.setDumpAfterStart(false);
     server.setDumpBeforeStop(false);
     return server;
   }
 
-  private QueuedThreadPool createSimpleThreadPool(final Properties config) {
-    final QueuedThreadPool threadPool = new QueuedThreadPool();
-    threadPool.setName("ThreadPool");
-    threadPool.setMinThreads(10);
-    threadPool.setMaxThreads(200);
-    threadPool.setDetailedDump(false);
-    return threadPool;
+  private void configureThreadPool(ThreadPool threadPool) {
+    if (threadPool instanceof QueuedThreadPool) {
+      QueuedThreadPool qp = (QueuedThreadPool) threadPool;
+      qp.setMinThreads(10);
+      qp.setMaxThreads(200);
+      qp.setDetailedDump(false);
+      qp.setIdleTimeout(60000);
+    }
   }
 
-  // Setting up web connector
-  private SelectChannelConnector createConnector(final Properties config) {
-    final SelectChannelConnector connector = new SelectChannelConnector();
-    connector.setHost(WebServerPropertiesEnum.HOST_NAME.getValue(config, DEFAULT_JETTY_HOST_NAME));
+  private ServerConnector createConnector(Server server, final Properties config) {
+    ServerConnector connector = new ServerConnector(server, -1, -1,
+        new HttpConnectionFactory(configure(new HttpConfiguration()), HttpCompliance.RFC2616));
     connector.setPort(Integer.parseInt(WebServerPropertiesEnum.PORT.getValue(config, DEFAULT_JETTY_PORT)));
-    // connector.setName(getPropertyIgnoringCase(config, CFG_KEY_JETTY_HOST, DEFAULT_JETTY_HOST_NAME) + ":"
-    // + getPropertyIgnoringCase(config, CFG_KEY_JETTY_PORT, DEFAULT_JETTY_PORT));
-    connector.setMaxIdleTime(300000);
-    connector.setAcceptors(10);
-    connector.setStatsOn(false);
-    // connector.setConfidentialPort(8443);
-    connector.setLowResourcesConnections(20000);
-    connector.setLowResourcesMaxIdleTime(5000);
     return connector;
+  }
+
+  private HttpConfiguration configure(final HttpConfiguration httpConfig) {
+    httpConfig.setSecureScheme("http");
+    httpConfig.setSecurePort(8443);
+    httpConfig.setOutputBufferSize(32768);
+    httpConfig.setOutputAggregationSize(8192);
+    httpConfig.setRequestHeaderSize(8192);
+    httpConfig.setResponseHeaderSize(8192);
+    httpConfig.setSendDateHeader(true);
+    httpConfig.setSendServerVersion(true);
+    httpConfig.setHeaderCacheSize(512);
+    httpConfig.setDelayDispatchUntilContent(true);
+    httpConfig.setMaxErrorDispatches(10);
+    httpConfig.setBlockingTimeout(-1);
+    httpConfig.setPersistentConnectionsEnabled(true);
+    return httpConfig;
   }
 
   private Server createServer(final Properties config) throws Exception {

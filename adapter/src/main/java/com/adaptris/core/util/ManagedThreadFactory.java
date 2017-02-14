@@ -41,6 +41,7 @@ public class ManagedThreadFactory implements ThreadFactory {
   private final String prefix;
 
   private static final Logger logger = LoggerFactory.getLogger(ManagedThreadFactory.class);
+  private static final ManagedThreadFactory instance = new ManagedThreadFactory();
 
   public ManagedThreadFactory() {
     SecurityManager s = System.getSecurityManager();
@@ -48,16 +49,25 @@ public class ManagedThreadFactory implements ThreadFactory {
     prefix = ManagedThreadFactory.class.getSimpleName() + "-" + factoryNumber.getAndIncrement() + "-Thread-";
   }
 
-  
-  @Override
-  public Thread newThread(Runnable runner) {
-    Thread t = createThread(myThreadGroup, runner);
-    CREATED_THREADS.add(t);
+  public static Thread createThread(Runnable r) {
+    return instance.newThread(r);
+  }
+
+  public static Thread createThread(String name, Runnable r) {
+    Thread t = createThread(r);
+    t.setName(name);
     return t;
   }
 
+  @Override
+  public Thread newThread(Runnable runner) {
+    return createThread(myThreadGroup, runner);
+  }
+
   protected Thread createThread(ThreadGroup group, Runnable r) {
-    return new Thread(group, r, createName(), 0);
+    Thread t = new Thread(group, r, createName(), 0);
+    CREATED_THREADS.add(t);
+    return t;
   }
 
   protected String createName() {

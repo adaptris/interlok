@@ -412,7 +412,6 @@ public class StandardHttpProducerTest extends HttpProducerExample {
   public void testRequest_GetMethod_NonZeroBytes_WithErrorResponse() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     HttpConnection jc = HttpHelper.createConnection();
-    jc.setSendServerVersion(true);
     MessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
 
     ServiceList services = new ServiceList();

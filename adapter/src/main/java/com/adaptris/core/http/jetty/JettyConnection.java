@@ -16,11 +16,15 @@
 
 package com.adaptris.core.http.jetty;
 
+import static org.apache.commons.lang.StringUtils.isEmpty;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.servlet.ServletMapping;
@@ -40,7 +44,6 @@ public abstract class JettyConnection extends AdaptrisConnectionImp implements J
 
   protected transient Server server;
   protected transient ServletContextHandler context;
-
 
   public JettyConnection() {
     super();
@@ -79,12 +82,14 @@ public abstract class JettyConnection extends AdaptrisConnectionImp implements J
       server = configure(new Server());
       context = new ServletContextHandler(ServletContextHandler.SESSIONS);
       context.setContextPath("/");
+      context.addServlet(new ServletHolder(new DefaultServlet()), "/");
       server.setHandler(createHandler(context));
     }
     catch (Exception e) {
       ExceptionHelper.rethrowCoreException(e);
     }
   }
+
 
   public void removeServlet(ServletWrapper wrapper) {
     List<ServletHolder> holdersToKeep = new ArrayList<ServletHolder>();
@@ -144,6 +149,21 @@ public abstract class JettyConnection extends AdaptrisConnectionImp implements J
     catch (Exception e) {
       log.warn("Exception encountered during stop " + e.getMessage());
     }
+  }
+
+
+  protected static String[] asArray(String s) {
+    if (s == null) {
+      return new String[0];
+    }
+    StringTokenizer st = new StringTokenizer(s, ",");
+    List<String> l = new ArrayList<String>();
+    while (st.hasMoreTokens()) {
+      String tok = st.nextToken().trim();
+      if (!isEmpty(tok))
+        l.add(tok);
+    }
+    return l.toArray(new String[0]);
   }
 
   abstract Server configure(Server server) throws Exception;

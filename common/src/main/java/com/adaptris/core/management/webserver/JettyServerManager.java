@@ -16,31 +16,31 @@
 
 package com.adaptris.core.management.webserver;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.Servlet;
 
-import org.eclipse.jetty.security.ConstraintMapping;
-import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.security.SecurityHandler;
-import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandlerContainer;
 import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.servlet.ServletMapping;
-import org.eclipse.jetty.util.security.Constraint;
+import org.eclipse.jetty.webapp.AbstractConfiguration;
+import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.webapp.WebXmlConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,8 +56,7 @@ import org.slf4j.LoggerFactory;
  */
 public class JettyServerManager implements ServerManager {
 
-  public static final String HOST = "host";
-  public static final String CONNECTOR_NAMES = "connectorNames";
+  private static final String DEFAULT_DESCRIPTOR_XML = "com/adaptris/core/management/webserver/jetty-webdefault-failsafe.xml";
   public static final String CONTEXT_PATH = "contextPath";
   public static final String ROLES = "roles";
   public static final String SECURITY_CONSTRAINTS = "securityConstraints";
@@ -109,7 +108,7 @@ public class JettyServerManager implements ServerManager {
   public void addServlet(ServletHolder servlet, HashMap<String, Object> additionalProperties) throws Exception {
     boolean addedAtLeastOnce = false;
     for (Server server : servers) {
-      WebAppContext rootWar = findRootContext(server);
+      WebAppContext rootWar = findRootContext(server, true);
       if (rootWar != null) {
         reconfigureWar(rootWar, servlet, additionalProperties);
         debugLogging("{}: Current Servlet Handler: {}", rootWar.getWar(), rootWar.getServletHandler().dump());
@@ -119,9 +118,8 @@ public class JettyServerManager implements ServerManager {
       }
     }
     if (!addedAtLeastOnce) {
-      addDeployment(additionalProperties, createServletHandler(servlet, additionalProperties));
+      throw new Exception("Couldn't add servlet to any contexts");
     }
-
   }
 
 
@@ -140,189 +138,72 @@ public class JettyServerManager implements ServerManager {
     rootWar.start();
   }
 
-  @Override
-  public void addWebapp(String path, HashMap<String, Object> additionalProperties) throws Exception {
-    addDeployment(additionalProperties, createWebappHandler(path, (String) additionalProperties.get(CONTEXT_PATH),
-        (String) additionalProperties.get(CONNECTOR_NAMES)));
-  }
-
-  @Override
-  public void addWebappDir(String path, HashMap<String, Object> additionalProperties) throws Exception {
-    addDeployment(additionalProperties, createWebappDirHandler(path, (String) additionalProperties.get(CONTEXT_PATH),
-        (String) additionalProperties.get(CONNECTOR_NAMES)));
-  }
-
-  /**
-   * Adds the deployment handler to the server and creates the additional configuration if needed.
-   * 
-   * @param additionalProperties - The properties that specify the host, port and other parameters for the deployment.
-   * @param handler - The deployment handler.
-   * @throws Exception
-   */
-  @SuppressWarnings("unchecked")
-  private void addDeployment(HashMap<String, Object> additionalProperties, ServletContextHandler handler) throws Exception {
-    for (Server server : servers) {
-      String host = (String) additionalProperties.get(HOST);
-      Set<String> roles = null;
-      try {
-        roles = (Set<String>) additionalProperties.get(ROLES);
-      } catch (Exception ex) {
-      }
-      if (host == null) {
-        addHandlerToServer(server, handler, roles);
+  private WebAppContext findRootContext(Server server, boolean create) throws Exception {
+    WebAppContext root = rootContextFromHandler(server.getHandler());
+    if (root == null && create) {
+      root = new WebAppContext();
+      root.setContextPath("/");
+      URL defaultsURL = getClass().getClassLoader().getResource(DEFAULT_DESCRIPTOR_XML);
+      if (defaultsURL != null) {
+        root.setDefaultsDescriptor(defaultsURL.toString());
+        root.setConfigurations(new Configuration[] {new WebXmlConfiguration() {}});
       } else {
-        Connector[] connectors = server.getConnectors();
-        for (Connector connector : connectors) {
-          if (host.equalsIgnoreCase(connector.getHost())) {
-            addHandlerToServer(server, handler, roles);
-            break;
-          }
-        }
+        root.setConfigurations(new Configuration[] {new AbstractConfiguration() {}});
+      }
+      ContextHandlerCollection c = firstContextHandler(server.getHandler());
+      if (c != null) {
+        c.addHandler(root);
+      }
+      else {
+        // Well, we could go down a rabbit warren here, but screw it
+        // We make our root the root.
+        server.setHandler(root);
       }
     }
+    return root;
   }
 
-  /**
-   * Adds the handler to all appropriate configured handlers in the Jetty instance. The outmost handler should be a
-   * HandlerCollection otherwise the method throws an exception.
-   * 
-   * @param server - The server to which the deployment will be added.
-   * @param deploymentHandler - The handler for the deployment.
-   * @param roles - The roles for the deployment.
-   * @throws Exception
-   */
-  private void addHandlerToServer(Server server, ServletContextHandler deploymentHandler, Set<String> roles) throws Exception {
-    Handler handler = server.getHandler();
-    log.trace("Adding Handler roles : {}", roles);
-    if (handler == null) {
-      throw new NullPointerException("No configured handler!");
-    } else if (handler instanceof HandlerCollection) {
-      HandlerCollection outer = (HandlerCollection) handler;
-
-      if (roles == null) {
-        Handler[] handlers = outer.getHandlers();
-        for (Handler childHandler : handlers) {
-          if (childHandler instanceof HandlerCollection) {
-            HandlerCollection inner = (HandlerCollection) childHandler;
-            debugLogging("Adding {} to handler {}", deploymentHandler.getDisplayName(), inner);
-            inner.addHandler(deploymentHandler);
-          }
-        }
-      } else {
-        Handler[] handlers = outer.getHandlers();
-        for (Handler childHandler : handlers) {
-          if (childHandler instanceof ConstraintSecurityHandler) {
-            ConstraintSecurityHandler securityHandler = (ConstraintSecurityHandler) childHandler;
-            securityHandler.addConstraintMapping(
-                createConstraintMapping(deploymentHandler.getContextPath(), roles.toArray(new String[roles.size()])));
-            HandlerCollection inner = (HandlerCollection) securityHandler.getHandler();
-            if (inner != null) {
-              debugLogging("Adding {} to handler {}", deploymentHandler.getDisplayName(), inner);
-              inner.addHandler(deploymentHandler);
-            }
-          }
-        }
-      }
-    } else {
-      throw new Exception("Unexpected handler class: " + handler.getClass());
+  private WebAppContext rootContextFromHandler(Handler parent) {
+    if (parent == null) {
+      return null;
     }
-
-  }
-
-  private WebAppContext findRootContext(Server server) throws Exception {
     WebAppContext result = null;
-    HandlerCollection rootHandler = (HandlerCollection) server.getHandler();
-    Handler[] children = rootHandler.getHandlers();
-    for (Handler child : children) {
-      if (child instanceof HandlerCollection) {
-        Handler[] grandchildren = ((HandlerCollection) child).getChildHandlers();
-        // Now See if we want to add to the root Context or not...
-        for (Handler grandchild : grandchildren) {
-          if (grandchild instanceof WebAppContext) {
-            WebAppContext ctx = (WebAppContext) grandchild;
-            if ("/".equals(ctx.getContextPath())) {
-              result = ctx;
-              break;
-            }
-          }
+    if (parent instanceof WebAppContext) {
+      WebAppContext ctx = (WebAppContext) parent;
+      if ("/".equals(ctx.getContextPath())) {
+        result = ctx;
+      }
+    }
+    else if (parent instanceof HandlerCollection) {
+      Handler[] children = ((HandlerCollection) parent).getChildHandlers();
+      for (Handler child : children) {
+        result = rootContextFromHandler(child);
+        if (result != null) {
+          break;
         }
       }
     }
     return result;
   }
 
-  private ServletContextHandler createServletHandler(ServletHolder servlet, Map<String, Object> cfg) throws Exception {
-    String contextPath = (String) cfg.get(CONTEXT_PATH);
-    String port = (String) cfg.get(CONNECTOR_NAMES);
-    SecurityHandlerWrapper securityHandler = (SecurityHandlerWrapper) cfg.get(SECURITY_CONSTRAINTS);
-    ServletContextHandler contextHandler = new ServletContextHandler();
-    contextHandler.setDisplayName("[ServletContextHandler for " + contextPath + "]");
-    contextHandler.setAttribute(SERVLET_CONTEXT_PATH_ATTRIBUTE, contextPath);
-    contextHandler.addServlet(servlet, contextPath);
-    if (port != null) {
-      contextHandler.setConnectorNames(new String[] {port});
+  private ContextHandlerCollection firstContextHandler(Handler parent) {
+    ContextHandlerCollection result = null;
+    if (parent == null) {
+      return null;
     }
-    if (securityHandler != null) {
-      contextHandler.setSecurityHandler(securityHandler.createSecurityHandler());
+    if (parent instanceof ContextHandlerCollection) {
+      result = (ContextHandlerCollection) parent;
     }
-    return contextHandler;
-  }
-
-  /**
-   * Creates a WebappContext for the webapp (war file).
-   * 
-   * @param path - The path to the webapp.
-   * @param contextPath - The context path of the webapp.
-   * @return - The Handler for the webapp.
-   * @throws Exception
-   */
-  private WebAppContext createWebappHandler(String path, String contextPath, String port) throws Exception {
-    WebAppContext context = new WebAppContext();
-    context.setWar(path);
-    context.setContextPath(contextPath);
-    if (port != null) {
-      context.setConnectorNames(new String[] {port});
+    else if (parent instanceof HandlerCollection) {
+      Handler[] children = ((HandlerCollection) parent).getChildHandlers();
+      for (Handler child : children) {
+        result = firstContextHandler(child);
+        if (result != null) {
+          break;
+        }
+      }
     }
-
-    return context;
-  }
-
-  /**
-   * Creates a WebappContext for the webapp (directory).
-   * 
-   * @param path - The path to the webapp.
-   * @param contextPath - The context path of the webapp.
-   * @return - The Handler for the webapp.
-   * @throws Exception
-   */
-  private WebAppContext createWebappDirHandler(String path, String contextPath, String port) throws Exception {
-    WebAppContext context = new WebAppContext();
-    context.setResourceBase(path);
-    context.setContextPath(contextPath);
-    if (port != null) {
-      context.setConnectorNames(new String[] {port});
-    }
-
-    return context;
-  }
-
-  /**
-   * 
-   * @param pathSpec - The path of the deployment. We need this parameter to restrict the contraint only to this path.
-   * @param roles - The roles for the deployment.
-   * @return - The constraint.
-   */
-  private ConstraintMapping createConstraintMapping(String pathSpec, String[] roles) {
-    ConstraintMapping constraintMapping = new ConstraintMapping();
-
-    Constraint constraint = new Constraint();
-    constraint.setRoles(roles);
-    constraint.setAuthenticate(true);
-
-    constraintMapping.setConstraint(constraint);
-    constraintMapping.setPathSpec(pathSpec);
-
-    return constraintMapping;
+    return result;
   }
 
   @Override
@@ -334,7 +215,7 @@ public class JettyServerManager implements ServerManager {
 
   public void removeDeployment(ServletHolder holder, String path) throws Exception {
     for (Server server : servers) {
-      WebAppContext rootWar = findRootContext(server);
+      WebAppContext rootWar = findRootContext(server, false);
       if (rootWar != null) {
         removeServlet(rootWar, holder, path);
         // log.trace("ROOT.war config : {}", AggregateLifeCycle.dump(rootWar));
@@ -450,7 +331,7 @@ public class JettyServerManager implements ServerManager {
   public void stopDeployment(String contextPath) throws Exception {
     for (Server server : servers) {
       if (server.isStarted()) {
-        WebAppContext rootWar = findRootContext(server);
+        WebAppContext rootWar = findRootContext(server, false);
         if (rootWar != null) {
           unmapServlet(rootWar, contextPath);
         }

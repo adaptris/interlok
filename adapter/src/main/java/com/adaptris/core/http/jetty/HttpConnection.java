@@ -19,13 +19,16 @@ package com.adaptris.core.http.jetty;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.eclipse.jetty.http.HttpCompliance;
 import org.eclipse.jetty.security.SecurityHandler;
 import org.eclipse.jetty.server.AbstractConnector;
-import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
-import org.eclipse.jetty.server.nio.BlockingChannelConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 
 import com.adaptris.annotation.AdapterComponent;
@@ -33,7 +36,6 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.management.webserver.SecurityHandlerWrapper;
 import com.adaptris.util.KeyValuePair;
@@ -47,7 +49,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * information on the behaviour and configuration required.
  * </p>
  * <p>
- * The key from the <code>http-properties</code> element should match the name of the underlying {@link AbstractConnector} setter.
+ * The key from the {@code server-connector-properties} element should match the name of the underlying {@link ServerConnector}
+ * setter.
  * 
  * <pre>
  * {@code 
@@ -58,8 +61,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  *     </key-value-pair>
  *   </http-properties>
  * }
- * </pre>
- * will invoke {@link AbstractConnector#setReuseAddress(boolean)}, setting the ReuseAddress property to true. Note that no
+ * </pre> will invoke {@link ServerConnector#setReuseAddress(boolean)}, setting the ReuseAddress property to true. Note that no
  * validation of the various properties is performed and will be passed as-is to the {@link AbstractConnector} with an attempt to
  * transform into the correct type. Invalid combinations may result in undefined behaviour.
  * </p>
@@ -72,122 +74,66 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Connection that creates its own jetty engine instance and listens on the specified port",
     tag = "connections,http,jetty")
-@DisplayOrder(order = {"port", "httpProperties"})
+@DisplayOrder(order =
+{
+    "port", "httpConfiguration", "serverConnectorProperties"
+})
 public class HttpConnection extends JettyConnection {
 
   /**
-   * A standard {@link AbstractConnector} property.
+   * A standard {@link ServerConnector} property.
    * 
    */
-  public enum HttpProperty {
+  public enum ServerConnectorProperty {
 
     /**
-     * @see AbstractConnector#setMaxIdleTime(int)
-     */
-    MaxIdleTime {
-      @Override
-      void applyProperty(AbstractConnector connector, String value) throws Exception {
-        connector.setMaxIdleTime(Integer.parseInt(value));
-      }
-    },
-    /**
-     * @see AbstractConnector#setMaxBuffers(int)
-     */
-    MaxBuffers {
-      @Override
-      void applyProperty(AbstractConnector connector, String value) throws Exception {
-        connector.setMaxBuffers(Integer.parseInt(value));
-      }
-    },
-    /**
-     * @see AbstractConnector#setAcceptorPriorityOffset(int)
-     */
-    AcceptorPriorityOffset {
-      @Override
-      void applyProperty(AbstractConnector connector, String value) throws Exception {
-        connector.setAcceptorPriorityOffset(Integer.parseInt(value));
-      }
-    },
-    /**
-     * @see AbstractConnector#setAcceptors(int)
-     */
-    Acceptors {
-      @Override
-      void applyProperty(AbstractConnector connector, String value) throws Exception {
-        connector.setAcceptors(Integer.parseInt(value));
-      }
-    },
-    /**
-     * @see AbstractConnector#setAcceptQueueSize(int)
+     * @see ServerConnector#setAcceptQueueSize(int)
+     * 
      */
     AcceptQueueSize {
       @Override
-      void applyProperty(AbstractConnector connector, String value) throws Exception {
+      void applyProperty(ServerConnector connector, String value) throws Exception {
         connector.setAcceptQueueSize(Integer.parseInt(value));
       }
     },
     /**
-     * @see AbstractConnector#setSoLingerTime(int)
+     * @see ServerConnector#setAcceptorPriorityDelta(int)
+     * 
+     */
+    AcceptorPriorityDelta {
+      @Override
+      void applyProperty(ServerConnector connector, String value) throws Exception {
+        connector.setAcceptorPriorityDelta(Integer.parseInt(value));
+      }
+    },
+    /**
+     * @see ServerConnector#setIdleTimeout(long)
+     * 
+     */
+    IdleTimeout {
+      @Override
+      void applyProperty(ServerConnector connector, String value) throws Exception {
+        connector.setIdleTimeout(Long.parseLong(value));
+      }
+    },
+    /**
+     * @see ServerConnector#setInheritChannel(boolean)
+     * 
+     */
+    InheritChannel {
+      @Override
+      void applyProperty(ServerConnector connector, String value) throws Exception {
+        connector.setInheritChannel(Boolean.valueOf(value).booleanValue());
+      }
+    },
+    /**
+     * @see ServerConnector#setSoLingerTime(int)
+     * 
      */
     SoLingerTime {
       @Override
-      void applyProperty(AbstractConnector connector, String value) throws Exception {
+      void applyProperty(ServerConnector connector, String value) throws Exception {
         connector.setSoLingerTime(Integer.parseInt(value));
-      }
-    },
-    /**
-     * @see AbstractConnector#setLowResourcesMaxIdleTime(int)
-     */
-    LowResourcesMaxIdleTime {
-      @Override
-      void applyProperty(AbstractConnector connector, String value) throws Exception {
-        connector.setLowResourcesMaxIdleTime(Integer.parseInt(value));
-      }
-    },
-
-    /**
-     * @see AbstractConnector#setRequestHeaderSize(int)
-     */
-    RequestHeaderSize {
-      @Override
-      void applyProperty(AbstractConnector connector, String value) throws Exception {
-        connector.setRequestHeaderSize(Integer.parseInt(value));
-      }
-    },
-    /**
-     * @see AbstractConnector#setRequestBufferSize(int)
-     */
-    RequestBufferSize {
-      @Override
-      void applyProperty(AbstractConnector connector, String value) throws Exception {
-        connector.setRequestBufferSize(Integer.parseInt(value));
-      }
-    },
-    /**
-     * @see AbstractConnector#setResponseBufferSize(int)
-     */
-    ResponseBufferSize {
-      @Override
-      void applyProperty(AbstractConnector connector, String value) throws Exception {
-        connector.setResponseBufferSize(Integer.parseInt(value));
-      }
-    },
-    /**
-     * @see AbstractConnector#setResponseHeaderSize(int)
-     */
-    ResponseHeaderSize {
-      @Override
-      void applyProperty(AbstractConnector connector, String value) throws Exception {
-        connector.setResponseHeaderSize(Integer.parseInt(value));
-      }
-    },
-    /**
-     * @see AbstractConnector#setResolveNames(boolean)
-     */
-    ResolveNames {
-      @Override
-      void applyProperty(AbstractConnector connector, String value) throws Exception {
-        connector.setResolveNames(Boolean.valueOf(value).booleanValue());
       }
     },
     /**
@@ -195,20 +141,198 @@ public class HttpConnection extends JettyConnection {
      */
     ReuseAaddress {
       @Override
-      void applyProperty(AbstractConnector connector, String value) throws Exception {
+      void applyProperty(ServerConnector connector, String value) throws Exception {
         connector.setReuseAddress(Boolean.valueOf(value).booleanValue());
       }
     };
-    abstract void applyProperty(AbstractConnector connector, String value) throws Exception;
+    abstract void applyProperty(ServerConnector connector, String value) throws Exception;
   }
 
+  public enum HttpConfigurationProperty {
+    /**
+     * @see HttpConfiguration#setSecureScheme(String).
+     * 
+     */
+    SecureScheme {
+
+      @Override
+      void applyProperty(HttpConfiguration config, String value) throws Exception {
+        config.setSecureScheme(value);        
+      }
+      
+    },
+    /**
+     * @see HttpConfiguration#setSecurePort(int).
+     * 
+     */
+    SecurePort {
+
+      @Override
+      void applyProperty(HttpConfiguration config, String value) throws Exception {
+        config.setSecurePort(Integer.parseInt(value));
+      }
+      
+    },
+    /**
+     * @see HttpConfiguration#setOutputBufferSize(int)
+     */
+    OutputBufferSize {
+
+      @Override
+      void applyProperty(HttpConfiguration config, String value) throws Exception {
+        config.setOutputBufferSize(Integer.parseInt(value));
+      }
+
+    },
+    /**
+     * @see HttpConfiguration#setOutputAggregationSize(int)
+     */
+    OutputAggregationSize {
+      @Override
+      void applyProperty(HttpConfiguration config, String value) throws Exception {
+        config.setOutputAggregationSize(Integer.parseInt(value));
+      }
+    },
+    /**
+     * @see HttpConfiguration#setRequestHeaderSize(int)
+     */
+    RequestHeaderSize {
+      @Override
+      void applyProperty(HttpConfiguration config, String value) throws Exception {
+        config.setRequestHeaderSize(Integer.parseInt(value));
+      }
+    },
+    /**
+     * @see HttpConfiguration#setResponseHeaderSize(int)
+     */
+    ResponseHeaderSize {
+      @Override
+      void applyProperty(HttpConfiguration config, String value) throws Exception {
+        config.setResponseHeaderSize(Integer.parseInt(value));
+      }
+    },
+    /**
+     * @see HttpConfiguration#setSendDateHeader(boolean)
+     */
+    SendDateHeader {
+      @Override
+      void applyProperty(HttpConfiguration config, String value) throws Exception {
+        config.setSendDateHeader(Boolean.valueOf(value).booleanValue());
+      }
+    },
+    /**
+     * @see HttpConfiguration#setSendServerVersion(boolean)
+     */
+    SendServerVersion {
+      @Override
+      void applyProperty(HttpConfiguration config, String value) throws Exception {
+        config.setSendServerVersion(Boolean.valueOf(value).booleanValue());
+      }
+    },
+    /**
+     * @see HttpConfiguration#setHeaderCacheSize(int)
+     */
+    HeaderCacheSize {
+      @Override
+      void applyProperty(HttpConfiguration config, String value) throws Exception {
+        config.setHeaderCacheSize(Integer.parseInt(value));
+      }
+    },
+    /**
+     * @see HttpConfiguration#setDelayDispatchUntilContent(boolean)
+     */
+    DelayDispatchUntilContent {
+      @Override
+      void applyProperty(HttpConfiguration config, String value) throws Exception {
+        config.setDelayDispatchUntilContent(Boolean.valueOf(value).booleanValue());
+      }
+    },
+    /**
+     * @see HttpConfiguration#setSendXPoweredBy(boolean)
+     */
+    SendXPoweredBy {
+      @Override
+      void applyProperty(HttpConfiguration config, String value) throws Exception {
+        config.setSendXPoweredBy(Boolean.valueOf(value).booleanValue());
+      }
+    },
+    /**
+     * @see HttpConfiguration#setFormEncodedMethods(String...)
+     */
+    FormEncodedMethods {
+      @Override
+      void applyProperty(HttpConfiguration config, String value) throws Exception {
+        config.setFormEncodedMethods(asArray(value));
+      }
+    },
+    /**
+     * @see HttpConfiguration#setMaxErrorDispatches(int)
+     */
+    MaxErrorDispatches {
+      @Override
+      void applyProperty(HttpConfiguration config, String value) throws Exception {
+        config.setMaxErrorDispatches(Integer.parseInt(value));
+      }
+    },
+    /**
+     * @see HttpConfiguration#setIdleTimeout(long)
+     */
+    IdleTimeout {
+      @Override
+      void applyProperty(HttpConfiguration config, String value) throws Exception {
+        config.setIdleTimeout(Long.parseLong(value));
+      }
+    },
+    /**
+     * @see HttpConfiguration#setBlockingTimeout(long)
+     */
+    BlockingTimeout {
+      @Override
+      void applyProperty(HttpConfiguration config, String value) throws Exception {
+        config.setBlockingTimeout(Long.parseLong(value));
+      }
+    },
+    /**
+     * @see HttpConfiguration#setMinRequestDataRate(long)
+     */
+    MinRequestDataRate {
+      @Override
+      void applyProperty(HttpConfiguration config, String value) throws Exception {
+        config.setMinRequestDataRate(Long.parseLong(value));
+      }
+    },
+    /**
+     * @see HttpConfiguration#setPersistentConnectionsEnabled(boolean)
+     */
+    PersistentConnectionsEnabled {
+      @Override
+      void applyProperty(HttpConfiguration config, String value) throws Exception {
+        config.setPersistentConnectionsEnabled(Boolean.valueOf(value).booleanValue());
+      }
+    };
+    abstract void applyProperty(HttpConfiguration config, String value) throws Exception;
+
+  }
+
+  private HttpConfiguration configure(final HttpConfiguration httpConfig) {
+    httpConfig.setSecureScheme("http");
+    httpConfig.setSecurePort(8443);
+    httpConfig.setOutputBufferSize(32768);
+    httpConfig.setOutputAggregationSize(8192);
+    httpConfig.setRequestHeaderSize(8192);
+    httpConfig.setResponseHeaderSize(8192);
+    httpConfig.setSendDateHeader(true);
+    httpConfig.setSendServerVersion(true);
+    httpConfig.setHeaderCacheSize(512);
+    httpConfig.setDelayDispatchUntilContent(true);
+    httpConfig.setMaxErrorDispatches(10);
+    httpConfig.setBlockingTimeout(-1);
+    httpConfig.setPersistentConnectionsEnabled(true);
+    return httpConfig;
+  }
+
+
   private int port;
-  @AdvancedConfig
-  @InputFieldDefault(value = "false")
-  private Boolean sendDateHeader;
-  @AdvancedConfig
-  @InputFieldDefault(value = "false")
-  private Boolean sendServerVersion;
   @Valid
   @AdvancedConfig
   private SecurityHandlerWrapper securityHandler;
@@ -216,31 +340,50 @@ public class HttpConnection extends JettyConnection {
   @Valid
   @AutoPopulated
   @AdvancedConfig
-  private KeyValuePairSet httpProperties;
+  private KeyValuePairSet serverConnectorProperties;
 
-  /**
-   * Default Constructor. Defaults are :
-   * <ul>
-   * <li>port = 8080</li>
-   * </ul>
-   * 
-   */
+  @NotNull
+  @Valid
+  @AutoPopulated
+  @AdvancedConfig
+  private KeyValuePairSet httpConfiguration;
+
+
   public HttpConnection() {
     super();
     setPort(8080);
-    setHttpProperties(new KeyValuePairSet());
+    setServerConnectorProperties(new KeyValuePairSet());
+    setHttpConfiguration(new KeyValuePairSet());
   }
 
-  Connector createConnector() throws Exception {
-    BlockingChannelConnector connector = new BlockingChannelConnector();
-    return configure(connector);
+  protected ConnectionFactory[] createConnectionFactory() throws Exception {
+    return new ConnectionFactory[]
+    {
+        new HttpConnectionFactory(createConfig(), HttpCompliance.RFC2616)
+    };
+  }
+
+  protected HttpConfiguration createConfig() throws Exception {
+    HttpConfiguration cfg = new HttpConfiguration();
+    for (KeyValuePair kvp : getHttpConfiguration().getKeyValuePairs()) {
+      boolean matched = false;
+      for (HttpConfigurationProperty sp : HttpConfigurationProperty.values()) {
+        if (kvp.getKey().equalsIgnoreCase(sp.toString())) {
+          sp.applyProperty(cfg, kvp.getValue());
+          matched = true;
+          break;
+        }
+      }
+      if (!matched) {
+        log.trace("Ignoring unsupported Property " + kvp.getKey());
+      }
+    }
+    return cfg;
   }
 
   @Override
   Server configure(Server server) throws Exception {
-    server.addConnector(createConnector());
-    server.setSendServerVersion(sendServerVersion());
-    server.setSendDateHeader(sendDateHeader());
+    server.addConnector(configure(new ServerConnector(server, -1, -1, createConnectionFactory())));
     return server;
   }
 
@@ -257,11 +400,11 @@ public class HttpConnection extends JettyConnection {
     return result;
   }
 
-  AbstractConnector configure(AbstractConnector connector) throws Exception {
+  protected ServerConnector configure(ServerConnector connector) throws Exception {
     connector.setPort(getPort());
-    for (KeyValuePair kvp : getHttpProperties().getKeyValuePairs()) {
+    for (KeyValuePair kvp : getServerConnectorProperties().getKeyValuePairs()) {
       boolean matched = false;
-      for (HttpProperty sp : HttpProperty.values()) {
+      for (ServerConnectorProperty sp : ServerConnectorProperty.values()) {
         if (kvp.getKey().equalsIgnoreCase(sp.toString())) {
           sp.applyProperty(connector, kvp.getValue());
           matched = true;
@@ -293,44 +436,12 @@ public class HttpConnection extends JettyConnection {
     return port;
   }
 
-  public KeyValuePairSet getHttpProperties() {
-    return httpProperties;
+  public KeyValuePairSet getServerConnectorProperties() {
+    return serverConnectorProperties;
   }
 
-  public void setHttpProperties(KeyValuePairSet httpProperties) {
-    this.httpProperties = httpProperties;
-  }
-
-  public Boolean getSendDateHeader() {
-    return sendDateHeader;
-  }
-
-  /**
-   * Specify whether to send the Date when sending a response.
-   * 
-   * @param b the sendDateHeader to set
-   */
-  public void setSendDateHeader(Boolean b) {
-    sendDateHeader = b;
-  }
-
-  boolean sendDateHeader() {
-    return getSendDateHeader() != null ? getSendDateHeader().booleanValue() : false;
-  }
-
-  public Boolean getSendServerVersion() {
-    return sendServerVersion;
-  }
-
-  boolean sendServerVersion() {
-    return getSendServerVersion() != null ? getSendServerVersion().booleanValue() : false;
-  }
-  /**
-   * Specify whether to send the server version when sending a response.
-   * 
-   */
-  public void setSendServerVersion(Boolean b) {
-    sendServerVersion = b;
+  public void setServerConnectorProperties(KeyValuePairSet httpProperties) {
+    this.serverConnectorProperties = httpProperties;
   }
 
   /**
@@ -351,6 +462,20 @@ public class HttpConnection extends JettyConnection {
 
   @Override
   protected void prepareConnection() throws CoreException {
+  }
+
+  /**
+   * @return the httpConfiguration
+   */
+  public KeyValuePairSet getHttpConfiguration() {
+    return httpConfiguration;
+  }
+
+  /**
+   * @param kvps the httpConfiguration to set
+   */
+  public void setHttpConfiguration(KeyValuePairSet kvps) {
+    this.httpConfiguration = kvps;
   }
 
 }
