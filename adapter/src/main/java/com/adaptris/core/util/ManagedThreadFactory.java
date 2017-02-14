@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 public class ManagedThreadFactory implements ThreadFactory {
 
   private static final Set<Thread> CREATED_THREADS = Collections.newSetFromMap(new WeakHashMap<Thread, Boolean>());
+  private static final ManagedThreadFactory instance = new ManagedThreadFactory();
 
   private final ThreadGroup myThreadGroup;
   private static final AtomicInteger factoryNumber = new AtomicInteger(1);
@@ -48,7 +49,16 @@ public class ManagedThreadFactory implements ThreadFactory {
     prefix = ManagedThreadFactory.class.getSimpleName() + "-" + factoryNumber.getAndIncrement() + "-Thread-";
   }
 
-  
+  public static Thread createThread(Runnable r) {
+    return instance.newThread(r);
+  }
+
+  public static Thread createThread(String name, Runnable r) {
+    Thread t = createThread(r);
+    t.setName(name);
+    return t;
+  }
+
   @Override
   public Thread newThread(Runnable runner) {
     Thread t = createThread(myThreadGroup, runner);
