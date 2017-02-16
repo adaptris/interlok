@@ -45,6 +45,9 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.io.IOUtils;
 import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -517,7 +520,11 @@ public class AdapterRegistry implements AdapterRegistryMBean {
         }
       }
 
-      Reflections reflections = new Reflections("com.adaptris");
+      Reflections reflections = new Reflections(new ConfigurationBuilder()
+          .addClassLoader(this.getClass().getClassLoader())
+          .setUrls(ClasspathHelper.forClassLoader())
+          .addScanners(new SubTypesScanner(false)));
+      
       Set<Class<?>> subTypes = reflections.getSubTypesOf((Class) clazz);
 
       Iterator<Class<?>> it = subTypes.iterator();

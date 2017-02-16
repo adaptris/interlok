@@ -8,7 +8,6 @@ import com.adaptris.core.AdaptrisMessageConsumer;
 import com.adaptris.core.AdaptrisMessageProducer;
 import com.adaptris.core.Channel;
 import com.adaptris.core.ChannelList;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceCollection;
 import com.adaptris.core.Workflow;
@@ -34,7 +33,7 @@ public class ClassDescriptor implements Serializable {
     INTERCEPTOR,
     UNKNOWN;
     
-    public static ClassType getTypeForClass(Class<?> clazz) throws CoreException {
+    public static ClassType getTypeForClass(Class<?> clazz) {
       if(ServiceCollection.class.isAssignableFrom(clazz)) {
         return ClassType.SERVICE_COLLECTION;
       } else if(Service.class.isAssignableFrom(clazz)) {
@@ -54,7 +53,7 @@ public class ClassDescriptor implements Serializable {
       } else if(WorkflowInterceptor.class.isAssignableFrom(clazz)) {
         return ClassType.INTERCEPTOR;
       } else
-        throw new CoreException("Unknown component type: " + clazz.getName());
+        return ClassType.UNKNOWN;
     }
   }
 
