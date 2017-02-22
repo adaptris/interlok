@@ -81,7 +81,7 @@ abstract class CmdLineBootstrap {
     boolean startQuietly = Boolean.valueOf(bootProperties.getProperty(CFG_KEY_START_QUIETLY, "true")).booleanValue();
     final UnifiedBootstrap bootstrap = new UnifiedBootstrap(bootProperties);
     AdapterManagerMBean adapter = bootstrap.createAdapter();
-    if (configCheckOnly()) {
+    if (!configCheckOnly()) {
       bootstrap.init(adapter);
       Runtime.getRuntime().addShutdownHook(new ShutdownHandler(bootProperties.getConfigManager().getAdapterRegistry()));
       launchAdapter(bootstrap, startQuietly);
@@ -106,7 +106,7 @@ abstract class CmdLineBootstrap {
       if (!"true".equalsIgnoreCase(arguments.getArgument(ARG_CONFIG_CHECK))) {
         bootstrapResource = arguments.getArgument(ARG_CONFIG_CHECK);
       }
-      configCheckOnly = false;
+      configCheckOnly = true;
     }
   }
 
