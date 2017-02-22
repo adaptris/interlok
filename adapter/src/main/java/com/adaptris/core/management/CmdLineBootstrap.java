@@ -52,10 +52,10 @@ abstract class CmdLineBootstrap {
 
   private transient String bootstrapResource;
   private transient ArgUtil arguments;
-  private transient boolean startAdapter = true;
+  private transient boolean configCheckOnly = true;
 
-  protected boolean isStartAdapter() {
-    return startAdapter;
+  protected boolean configCheckOnly() {
+    return configCheckOnly;
   }
 
   protected String getBootstrapResource() {
@@ -81,10 +81,15 @@ abstract class CmdLineBootstrap {
     boolean startQuietly = Boolean.valueOf(bootProperties.getProperty(CFG_KEY_START_QUIETLY, "true")).booleanValue();
     final UnifiedBootstrap bootstrap = new UnifiedBootstrap(bootProperties);
     AdapterManagerMBean adapter = bootstrap.createAdapter();
-    if (startAdapter) {
+    if (configCheckOnly()) {
       bootstrap.init(adapter);
       Runtime.getRuntime().addShutdownHook(new ShutdownHandler(bootProperties.getConfigManager().getAdapterRegistry()));
       launchAdapter(bootstrap, startQuietly);
+    }
+    else {
+      // No starting an adapter, so just terminate.
+      System.err.println("Config check only; terminating");
+      System.exit(0);
     }
   }
 
@@ -97,8 +102,11 @@ abstract class CmdLineBootstrap {
       bootstrapResource = arguments.getArgument(ARG_BOOTSTRAP_PROPERTIES);
     }
     if (arguments.hasArgument(ARG_CONFIG_CHECK)) {
-      bootstrapResource = arguments.getArgument(ARG_CONFIG_CHECK);
-      startAdapter = false;
+      // Check if they've just passed in -configcheck with no params
+      if (!"true".equalsIgnoreCase(arguments.getArgument(ARG_CONFIG_CHECK))) {
+        bootstrapResource = arguments.getArgument(ARG_CONFIG_CHECK);
+      }
+      configCheckOnly = false;
     }
   }
 
