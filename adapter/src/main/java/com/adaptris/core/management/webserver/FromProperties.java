@@ -31,31 +31,25 @@ import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.adaptris.core.management.webserver.WebServerProperties.WebServerPropertiesEnum;
 
 /**
  * Build a jetty server from properties.
  */
-final class FromProperties implements ServerBuilder {
-
-  private static Logger log = LoggerFactory.getLogger(ServerBuilder.class);
-
-  private Properties config;
+final class FromProperties extends ServerBuilder {
 
   FromProperties(Properties initialConfig) {
-    config = initialConfig;
+    super(initialConfig);
   }
 
   @Override
-  public Server build() throws Exception {
+  Server build() throws Exception {
     log.trace("Create Server from Properties");
     final Server server = createSimpleServer();
 
     configureThreadPool(server.getThreadPool());
-    server.addConnector(createConnector(server, config));
+    server.addConnector(createConnector(server, initialProperties));
 
     // Setting up handler collection
     final HandlerCollection handlerCollection = new HandlerCollection();
@@ -64,7 +58,7 @@ final class FromProperties implements ServerBuilder {
     handlerCollection.addHandler(new DefaultHandler());
 
     server.setHandler(handlerCollection);
-    addDeploymentManager(server, contextHandlerCollection, config);
+    addDeploymentManager(server, contextHandlerCollection, initialProperties);
     return server;
   }
 

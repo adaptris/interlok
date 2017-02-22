@@ -15,22 +15,21 @@
 */
 package com.adaptris.core.management.webserver;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import static org.apache.commons.lang.StringUtils.isEmpty;
+
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.Map;
 import java.util.Properties;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.xml.XmlConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import com.adaptris.core.management.webserver.WebServerProperties.WebServerPropertiesEnum;
 import com.adaptris.core.util.PropertyHelper;
-import com.adaptris.util.URLString;
 
 /**
  * Build a jetty server from xml.
@@ -41,25 +40,21 @@ import com.adaptris.util.URLString;
  * </p>
  * 
  */
-final class FromXmlConfig implements ServerBuilder {
+final class FromXmlConfig extends ServerBuilder {
 
   private static final String JETTY_PREFIX = "jetty.";
-
-  private static Logger log = LoggerFactory.getLogger(ServerBuilder.class);
-
   private String jettyConfigUrl;
-  private Properties initialProperties;
 
-  FromXmlConfig(String configUrl, Properties initialConfig) {
-    jettyConfigUrl = configUrl;
-    initialProperties = initialConfig;
+  FromXmlConfig(Properties initialConfig) {
+    super(initialConfig);
+    jettyConfigUrl = WebServerPropertiesEnum.CONFIG_FILE.getValue(initialConfig);
   }
 
   @Override
-  public Server build() throws Exception {
+  Server build() throws Exception {
     Server server = null;
     log.trace("Create Server from XML");
-    try (InputStream in = connectToUrl(new URLString(jettyConfigUrl))) {
+    try (InputStream in = open(jettyConfigUrl)) {
       final XmlConfiguration xmlConfiguration = new XmlConfiguration(in);
       xmlConfiguration.getProperties().putAll(mergeWithSystemProperties());
       server = (Server) xmlConfiguration.configure();
@@ -70,32 +65,47 @@ final class FromXmlConfig implements ServerBuilder {
   private Map<String, String> mergeWithSystemProperties() {
     Map<String, String> result = PropertyHelper.asMap(PropertyHelper.getPropertySubset(System.getProperties(), JETTY_PREFIX));
     result.putAll(PropertyHelper.asMap(PropertyHelper.getPropertySubset(initialProperties, JETTY_PREFIX)));
+    log.trace("Additional properties for XML Config {}", result);
     return result;
   }
 
-  private InputStream connectToUrl(final URLString loc) throws IOException {
-    log.trace("Connecting to " + loc.toString());
-    if (loc.getProtocol() == null || "file".equals(loc.getProtocol())) {
-      return connectToFile(loc.getFile());
-    }
-    final URL url = new URL(loc.toString());
-    final URLConnection conn = url.openConnection();
-    return conn.getInputStream();
+  private InputStream open(String urlString) throws Exception {
+    final URL url = createUrlFromString(urlString);
+    log.trace("Connecting to configured URL {}", url.toString());
+    return url.openConnection().getInputStream();
   }
 
-  private InputStream connectToFile(final String localFile) throws IOException {
-    InputStream in = null;
-    final File f = new File(localFile);
-    if (f.exists()) {
-      in = new FileInputStream(f);
+  private static URL createUrlFromString(String s) throws Exception {
+    String destToConvert = backslashToSlash(s);
+    URI configuredUri = null;
+    try {
+      configuredUri = new URI(destToConvert);
     }
-    else {
-      final ClassLoader c = this.getClass().getClassLoader();
-      final URL u = c.getResource(localFile);
-      if (u != null) {
-        in = u.openStream();
+    catch (URISyntaxException e) {
+      // Specifically here to cope with file:///c:/ (which is
+      // technically illegal according to RFC2396 but we need
+      // to support it
+      if (destToConvert.split(":").length >= 3) {
+        configuredUri = new URI(URLEncoder.encode(destToConvert, "UTF-8"));
+      }
+      else {
+        throw e;
       }
     }
-    return in;
+    return configuredUri.getScheme() == null ? relativeConfig(configuredUri) : new URL(configuredUri.toString());
+  }
+
+  private static URL relativeConfig(URI uri) throws Exception {
+    String pwd = backslashToSlash(System.getProperty("user.dir"));
+    String path = pwd + "/" + uri;
+    URL result = new URL("file:///" + path);
+    return result;
+  }
+
+  private static String backslashToSlash(String url) {
+    if (!isEmpty(url)) {
+      return url.replaceAll("\\\\", "/");
+    }
+    return url;
   }
 }

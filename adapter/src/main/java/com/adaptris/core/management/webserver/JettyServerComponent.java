@@ -16,8 +16,6 @@
 
 package com.adaptris.core.management.webserver;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.util.Properties;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
@@ -26,9 +24,7 @@ import org.eclipse.jetty.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.adaptris.core.management.Constants;
 import com.adaptris.core.management.ManagementComponent;
-import com.adaptris.core.management.webserver.WebServerProperties.WebServerPropertiesEnum;
 import com.adaptris.core.util.ManagedThreadFactory;
 
 /**
@@ -105,7 +101,7 @@ public class JettyServerComponent implements ManagementComponent {
         try {
           log.debug("Creating Jetty wrapper");
           Thread.currentThread().setContextClassLoader(classLoader);
-          wrapper = createWrapper(properties);
+          wrapper = new JettyServerWrapperImpl(ServerBuilder.build(properties));
           wrapper.register();
           // Wait until at least the server is registered.
           barrier.await(barrierDelay, TimeUnit.MILLISECONDS);
@@ -126,34 +122,6 @@ public class JettyServerComponent implements ManagementComponent {
   @Override
   public void destroy() throws Exception {
     wrapper.destroy();
-  }
-
-  private JettyServerWrapper createWrapper(final Properties config) throws Exception {
-    final String jettyConfigUrl = WebServerPropertiesEnum.CONFIG_FILE.getValue(config, null);
-
-    JettyServerWrapperImpl wrapper = null;
-    if (!isEmpty(jettyConfigUrl)) {
-      wrapper = new JettyServerWrapperImpl(configure(new FromXmlConfig(jettyConfigUrl, config).build(), config));
-    } else {
-      wrapper = new JettyServerWrapperImpl(configure(new FromProperties(config).build(), config));
-      log.warn("You are starting Jetty without a configuration file. This is NOT suggested for production environments.");
-    }
-    return wrapper;
-  }
-
-  private Server configure(final Server server, final Properties config) throws Exception {
-    // TODO This is all wrong. Can't get server attributes from the SErvletContext
-    // OLD-SKOOL Do it via SystemProperties!!!!!
-    // Add Null Prodction in to avoid System.setProperty issues during tests.
-    // Or in fact if people decide to not enable JMXServiceUrl in bootstrap.properties
-    if (config.containsKey(Constants.CFG_JMX_LOCAL_ADAPTER_UID)) {
-      // server.setAttribute(ATTR_JMX_ADAPTER_UID, config.getProperty(Constants.CFG_JMX_LOCAL_ADAPTER_UID));
-      System.setProperty(ATTR_JMX_ADAPTER_UID, config.getProperty(Constants.CFG_JMX_LOCAL_ADAPTER_UID));
-    }
-    if (config.containsKey(Constants.BOOTSTRAP_PROPERTIES_RESOURCE_KEY)) {
-      System.setProperty(ATTR_BOOTSTRAP_PROPERTIES, config.getProperty(Constants.BOOTSTRAP_PROPERTIES_RESOURCE_KEY));
-    }
-    return server;
   }
 
   abstract class JettyServerWrapper {
