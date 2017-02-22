@@ -1,5 +1,7 @@
 package com.adaptris.core.util;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 public class PropertyHelper {
@@ -60,6 +62,23 @@ public class PropertyHelper {
       }
     }
     return value;
+  }
+
+  /**
+   * Convenience method to turn a Properties into a Map<String, String>
+   * 
+   * @param p the properties, if null, will return an empty map
+   * @return a map
+   */
+  public static Map<String, String> asMap(Properties p) {
+    Map<String, String> result = new HashMap<String, String>();
+    if (p == null) {
+      return result;
+    }
+    for (String key : p.stringPropertyNames()) {
+      result.put(key, p.getProperty(key));
+    }
+    return result;
   }
 
   /**
