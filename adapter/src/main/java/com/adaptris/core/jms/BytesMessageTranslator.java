@@ -122,7 +122,8 @@ public class BytesMessageTranslator extends MessageTypeTranslatorImp {
     @Override
     public int read() throws IOException {
       try {
-        return myMsg.readByte();
+        byte b = myMsg.readByte();
+        return b >= 0 ? b : 256+b;
       }
       catch (MessageEOFException ex) {
         return -1;

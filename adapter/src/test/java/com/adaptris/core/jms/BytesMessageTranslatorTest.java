@@ -21,6 +21,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
 
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
@@ -41,6 +42,12 @@ import com.adaptris.core.stubs.DefectiveMessageFactory;
 @SuppressWarnings("deprecation")
 public class BytesMessageTranslatorTest extends MessageTypeTranslatorCase {
 
+  private static byte[] BYTES = new byte[256]; {
+    for(int i=0; i<BYTES.length; i++) {
+      BYTES[i] = (byte)i;
+    }
+  }
+  
   public BytesMessageTranslatorTest(String name) {
     super(name);
   }
@@ -171,13 +178,13 @@ public class BytesMessageTranslatorTest extends MessageTypeTranslatorCase {
       broker.start();
       Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       BytesMessage jmsMsg = session.createBytesMessage();
-      jmsMsg.writeBytes(TEXT.getBytes());
+      jmsMsg.writeBytes(BYTES);
       addProperties(jmsMsg);
       start(trans, session);
       jmsMsg.reset();
       AdaptrisMessage msg = trans.translate(jmsMsg);
       assertMetadata(msg);
-      assertEquals(TEXT, msg.getContent());
+      assertTrue("Payload is not equal", Arrays.equals(BYTES, msg.getPayload()));
     }
     finally {
       stop(trans);
