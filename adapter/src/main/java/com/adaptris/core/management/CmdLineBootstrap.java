@@ -52,7 +52,7 @@ abstract class CmdLineBootstrap {
 
   private transient String bootstrapResource;
   private transient ArgUtil arguments;
-  private transient boolean configCheckOnly = true;
+  private transient boolean configCheckOnly = false;
 
   protected boolean configCheckOnly() {
     return configCheckOnly;
