@@ -22,7 +22,7 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.adaptris.core.AdaptrisComponent;
+import com.adaptris.core.ComponentLifecycle;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.LifecycleHelper;
@@ -110,7 +110,7 @@ public abstract class AggregatingConsumerImpl<E extends AggregatingConsumeServic
     }
   }
 
-  protected void start(AdaptrisComponent ac) throws ServiceException {
+  protected void start(ComponentLifecycle ac) throws ServiceException {
     try {
       LifecycleHelper.init(ac);
       LifecycleHelper.start(ac);
@@ -120,7 +120,7 @@ public abstract class AggregatingConsumerImpl<E extends AggregatingConsumeServic
     }
   }
 
-  protected void stop(AdaptrisComponent ac) {
+  protected void stop(ComponentLifecycle ac) {
     LifecycleHelper.stop(ac);
     LifecycleHelper.close(ac);
   }

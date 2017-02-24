@@ -49,8 +49,6 @@ import com.adaptris.core.util.LifecycleHelper;
  */
 public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator, MetadataHandlerContext {
 
-  private String uniqueId;
-
   protected transient Logger log = LoggerFactory.getLogger(this.getClass());
   protected transient Session session; // not persisted
   private transient AdaptrisMessageFactory messageFactoryToUse;
@@ -295,13 +293,4 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
     LifecycleHelper.stop(mt);
     LifecycleHelper.close(mt);
   }
-
-  public String getUniqueId() {
-    return uniqueId;
-  }
-
-  public void setUniqueId(String uniqueId) {
-    this.uniqueId = uniqueId;
-  }
-
 }
