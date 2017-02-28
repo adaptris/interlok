@@ -132,6 +132,15 @@ public class ShutdownHandler extends Thread {
     catch (InterruptedException | BrokenBarrierException | TimeoutException e) {
       log.warn("Shutdown taking too long; initiating forced shutdown");
       forceShutdown(adapterManagers);
+    } finally {
+      log.info("Stopping Management Components.");
+      try {
+        ManagementComponentFactory.stopCreated();
+        ManagementComponentFactory.closeCreated();
+      } catch (Exception ex) {
+        log.warn("Could not stop management components, logging for informational purposes only.", ex);
+      }
+      
     }
   }
 
