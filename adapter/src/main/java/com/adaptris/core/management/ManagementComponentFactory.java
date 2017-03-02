@@ -72,7 +72,7 @@ public class ManagementComponentFactory {
   }
 
   public static void closeCreated() {
-    INSTANCE.invokeCreated("close", new Class[0], new Object[0]);
+    INSTANCE.invokeCreated("destroy", new Class[0], new Object[0]);
   }
 
   public static List<Object> getManagementComponents() {
