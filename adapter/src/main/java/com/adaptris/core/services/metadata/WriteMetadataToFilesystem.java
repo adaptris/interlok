@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.Collection;
-import java.util.Set;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -33,7 +32,7 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.io.FileUtils;
 
 import com.adaptris.annotation.AdapterComponent;
-import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
@@ -41,14 +40,14 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.FileNameCreator;
 import com.adaptris.core.FormattedFilenameCreator;
-import com.adaptris.core.MetadataCollection;
+import com.adaptris.core.MessageDrivenDestination;
 import com.adaptris.core.MetadataElement;
-import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.fs.FsHelper;
 import com.adaptris.core.metadata.MetadataFilter;
 import com.adaptris.core.metadata.NoOpMetadataFilter;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -67,21 +66,21 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("write-metadata-to-filesystem")
 @AdapterComponent
 @ComponentProfile(summary = "Write the current set of metadata to the filesystem", tag = "service,metadata")
-@DisplayOrder(order = {"destination", "outputStyle", "overwriteIfExists", "fileNameCreator", "metadataFilter"})
+@DisplayOrder(order =
+{
+    "destination", "outputStyle", "overwriteIfExists", "filenameCreator", "metadataFilter"
+})
 public class WriteMetadataToFilesystem extends ServiceImp {
 
-  @NotNull
   @Valid
-  @AutoPopulated
-  private FileNameCreator fileNameCreator;
+  private FileNameCreator filenameCreator;
   private OutputStyle outputStyle;
   @NotNull
   @Valid
-  private ProduceDestination destination;
+  private MessageDrivenDestination destination;
   @InputFieldDefault(value = "false")
   private Boolean overwriteIfExists;
-  @AutoPopulated
-  @NotNull
+  @AdvancedConfig
   @Valid
   private MetadataFilter metadataFilter;
 
@@ -103,11 +102,9 @@ public class WriteMetadataToFilesystem extends ServiceImp {
 
   public WriteMetadataToFilesystem() {
     super();
-    setFileNameCreator(new FormattedFilenameCreator());
-    setMetadataFilter(new NoOpMetadataFilter());
   }
 
-  public WriteMetadataToFilesystem(ProduceDestination d) {
+  public WriteMetadataToFilesystem(MessageDrivenDestination d) {
     this();
     setDestination(d);
   }
@@ -119,7 +116,7 @@ public class WriteMetadataToFilesystem extends ServiceImp {
       String baseUrl = getDestination().getDestination(msg);
       URL url = FsHelper.createUrlFromString(baseUrl, true);
       validateDir(url);
-      File fileToWrite = new File(FsHelper.createFileReference(url), getFileNameCreator().createName(msg));
+      File fileToWrite = new File(FsHelper.createFileReference(url), filenameCreator().createName(msg));
       if (overwriteIfExists()) {
         FileUtils.deleteQuietly(fileToWrite);
       }
@@ -127,7 +124,7 @@ public class WriteMetadataToFilesystem extends ServiceImp {
         throw new IOException(fileToWrite.getCanonicalPath() + " already exists");
       }
       out = new FileOutputStream(fileToWrite);
-      getStyle(getOutputStyle()).write(getMetadataFilter().filter(msg.getMetadata()), out);
+      getStyle(getOutputStyle()).write(metadataFilter().filter(msg.getMetadata()), out);
       log.debug("Metadata produced to destination [" + fileToWrite.getCanonicalPath() + "]");
     }
     catch (Exception e) {
@@ -152,8 +149,8 @@ public class WriteMetadataToFilesystem extends ServiceImp {
   }
 
 
-  public FileNameCreator getFileNameCreator() {
-    return fileNameCreator;
+  public FileNameCreator getFilenameCreator() {
+    return filenameCreator;
   }
 
   /**
@@ -161,11 +158,12 @@ public class WriteMetadataToFilesystem extends ServiceImp {
    *
    * @param creator
    */
-  public void setFileNameCreator(FileNameCreator creator) {
-    if (creator == null) {
-      throw new IllegalArgumentException("Filename Creator is null");
-    }
-    fileNameCreator = creator;
+  public void setFilenameCreator(FileNameCreator creator) {
+    filenameCreator = creator;
+  }
+
+  FileNameCreator filenameCreator() {
+    return getFilenameCreator() != null ? getFilenameCreator() : new FormattedFilenameCreator();
   }
 
   public OutputStyle getOutputStyle() {
@@ -182,7 +180,7 @@ public class WriteMetadataToFilesystem extends ServiceImp {
     outputStyle = style;
   }
 
-  public ProduceDestination getDestination() {
+  public MessageDrivenDestination getDestination() {
     return destination;
   }
 
@@ -191,11 +189,8 @@ public class WriteMetadataToFilesystem extends ServiceImp {
    *
    * @param d the destination.
    */
-  public void setDestination(ProduceDestination d) {
-    if (d == null) {
-      throw new IllegalArgumentException("Produce Destination is null");
-    }
-    destination = d;
+  public void setDestination(MessageDrivenDestination d) {
+    destination = Args.notNull(d, "destination");
   }
 
   /**
@@ -223,11 +218,6 @@ public class WriteMetadataToFilesystem extends ServiceImp {
     return getOverwriteIfExists() != null ? getOverwriteIfExists().booleanValue() : false;
   }
 
-  private Collection<MetadataElement> filter(Set<MetadataElement> original) {
-    MetadataCollection result = getMetadataFilter().filter(original);
-    return result;
-  }
-
   private static OutputStyle getStyle(OutputStyle s) {
     return s != null ? s : OutputStyle.Text;
   }
@@ -250,10 +240,11 @@ public class WriteMetadataToFilesystem extends ServiceImp {
    * @param filter the filter.
    */
   public void setMetadataFilter(MetadataFilter filter) {
-    if (filter == null) {
-      throw new IllegalArgumentException("MetadataFilter is null");
-    }
     metadataFilter = filter;
+  }
+
+  MetadataFilter metadataFilter() {
+    return getMetadataFilter() != null ? getMetadataFilter() : new NoOpMetadataFilter();
   }
 
   @Override

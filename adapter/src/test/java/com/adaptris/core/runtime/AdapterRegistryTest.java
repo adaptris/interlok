@@ -46,6 +46,7 @@ import com.adaptris.core.JndiContextFactory;
 import com.adaptris.core.NullConnection;
 import com.adaptris.core.StartedState;
 import com.adaptris.core.StoppedState;
+import com.adaptris.core.XStreamJsonMarshaller;
 import com.adaptris.core.config.ConfigPreProcessorLoader;
 import com.adaptris.core.config.ConfigPreProcessors;
 import com.adaptris.core.config.DefaultPreProcessorLoader;
@@ -58,6 +59,7 @@ import com.adaptris.core.management.vcs.RuntimeVersionControl;
 import com.adaptris.core.management.vcs.VcsException;
 import com.adaptris.core.management.vcs.VersionControlSystem;
 import com.adaptris.core.stubs.JunitBootstrapProperties;
+import com.adaptris.core.stubs.MockConfirmService;
 import com.adaptris.core.stubs.StaticMockEventProducer;
 import com.adaptris.core.util.JmxHelper;
 import com.adaptris.util.URLString;
@@ -767,6 +769,32 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     ObjectName objName = myAdapterRegistry.createAdapter(xml);
     assertNotNull(objName);
     myAdapterRegistry.destroyAdapter(objName);
+  }
+
+  public void testGetClassDescription() throws Exception {
+    Properties custom = new Properties();
+    AdapterRegistry myAdapterRegistry = new AdapterRegistry(new JunitBootstrapProperties(custom));
+
+    String addMetadataServiceJsonDef = myAdapterRegistry.getClassDefinition("com.adaptris.core.services.metadata.AddMetadataService");
+    ClassDescriptor addMetadataServiceDef = (ClassDescriptor) new XStreamJsonMarshaller().unmarshal(addMetadataServiceJsonDef);
+
+    assertEquals("com.adaptris.core.services.metadata.AddMetadataService", addMetadataServiceDef.getClassName());
+    assertEquals("add-metadata-service", addMetadataServiceDef.getAlias());
+    assertEquals("Add Static Metadata to a Message", addMetadataServiceDef.getSummary());
+    assertEquals("service,metadata", addMetadataServiceDef.getTags());
+    assertEquals(2, addMetadataServiceDef.getClassDescriptorProperties().size());
+    assertEquals("service", addMetadataServiceDef.getClassType());
+  }
+  
+  public void testClassDescriptionGetSubTypes() throws Exception {
+    Properties custom = new Properties();
+    AdapterRegistry myAdapterRegistry = new AdapterRegistry(new JunitBootstrapProperties(custom));
+
+    String adapterRegistryTestJsonDef = myAdapterRegistry.getClassDefinition("com.adaptris.core.services.confirmation.ConfirmServiceImp");
+    ClassDescriptor adapterRegistryTestDef = (ClassDescriptor) new XStreamJsonMarshaller().unmarshal(adapterRegistryTestJsonDef);
+    
+    assertTrue(adapterRegistryTestDef.getSubTypes().size() > 0);
+    assertTrue(adapterRegistryTestDef.getSubTypes().contains(MockConfirmService.class.getName()));
   }
 
   private class MockRuntimeVersionControl implements RuntimeVersionControl {

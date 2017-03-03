@@ -36,7 +36,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  */
 @XStreamAlias("metadata-destination")
 @DisplayOrder(order = {"keys"})
-public class MetadataDestination implements ProduceDestination {
+public class MetadataDestination implements MessageDrivenDestination {
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
   @NotNull

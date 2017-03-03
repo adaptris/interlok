@@ -25,7 +25,9 @@ import org.apache.commons.io.FileUtils;
 
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
+import com.adaptris.security.exc.PasswordException;
 
+@SuppressWarnings("deprecation")
 public class SftpKeyAuthConnectionTest extends FtpConnectionCase {
 
   // stop jsch auto-update host key
@@ -76,7 +78,7 @@ public class SftpKeyAuthConnectionTest extends FtpConnectionCase {
   }
 
   public void testSetKnownHostsFile() throws Exception {
-    SftpConnection conn = new SftpConnection();
+    SftpKeyAuthConnection conn = new SftpKeyAuthConnection();
     assertNull(conn.getKnownHostsFile());
     conn.setKnownHostsFile("abc");
     assertEquals("abc", conn.getKnownHostsFile());
@@ -121,7 +123,7 @@ public class SftpKeyAuthConnectionTest extends FtpConnectionCase {
         FileTransferClient c = conn.connect(getDestinationString());
         fail();
       }
-      catch (FileTransferException expected) {
+      catch (IOException | PasswordException expected) {
       }
       finally {
         stop(conn);

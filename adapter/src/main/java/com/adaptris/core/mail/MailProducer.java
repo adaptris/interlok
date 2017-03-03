@@ -33,7 +33,6 @@ import com.adaptris.core.MetadataCollection;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ProduceOnlyProducerImp;
 import com.adaptris.core.metadata.MetadataFilter;
-import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.metadata.RemoveAllMetadataFilter;
 import com.adaptris.core.util.Args;
 import com.adaptris.mail.MailException;
@@ -86,12 +85,6 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
   @AutoPopulated
   @AdvancedConfig
   private KeyValuePairSet sessionProperties;
-  @AdvancedConfig
-  @Deprecated
-  private Boolean sendMetadataAsHeaders;
-  @AdvancedConfig
-  @Deprecated
-  private String sendMetadataRegexp = null;
   @NotNull
   @AutoPopulated
   @Valid
@@ -124,20 +117,6 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
     }
     if (getSubject() == null) {
       log.warn("No Subject configured, expecting metadata to override subject");
-    }
-    if (sendMetadataAsHeaders()) {
-      if (getSendMetadataRegexp() == null && getMetadataFilter() instanceof RemoveAllMetadataFilter) {
-        log.warn("No Metadata Regular expression configured, ignoring sendMetadataAsHeaders=true");
-        setSendMetadataAsHeaders(Boolean.FALSE);
-      }
-      else {
-        if (getSendMetadataRegexp() != null && getMetadataFilter() instanceof RemoveAllMetadataFilter) {
-          log.trace("Overriding metadata-filter with filter based on {}", getSendMetadataRegexp());
-          RegexMetadataFilter filter = new RegexMetadataFilter();
-          filter.addIncludePattern(getSendMetadataRegexp());
-          setMetadataFilter(filter);
-        }
-      }
     }
   }
 
@@ -298,51 +277,6 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
    */
   public void setBccList(String bcc) {
     bccList = bcc;
-  }
-
-  /**
-   *
-   * @return the sendMetadataAsHeaders
-   */
-  public Boolean getSendMetadataAsHeaders() {
-    return sendMetadataAsHeaders;
-  }
-
-  /**
-   * Specify whether or not to send metadata as headers.
-   *
-   * @param b the sendMetadataAsHeaders to set
-   * @deprecated since 3.0.2 use {@link #setMetadataFilter(MetadataFilter)} instead.
-   */
-  @Deprecated
-  public void setSendMetadataAsHeaders(Boolean b) {
-    sendMetadataAsHeaders = b;
-  }
-
-  @Deprecated
-  public boolean sendMetadataAsHeaders() {
-    return getSendMetadataAsHeaders() != null ? getSendMetadataAsHeaders() : false;
-  }
-  
-  /**
-   * @return the sendMetadataRegexp
-   * @deprecated since 3.0.2 use {@link #setMetadataFilter(MetadataFilter)} instead.
-   */
-  @Deprecated
-  public String getSendMetadataRegexp() {
-    return sendMetadataRegexp;
-  }
-
-  /**
-   * Set the regular expression on which metadata keys will be matched.
-   * 
-   * @param regexp the sendMetadataRegexp to set
-   * @see #setSendMetadataAsHeaders(Boolean)
-   * @deprecated since 3.0.2 use {@link #setMetadataFilter(MetadataFilter)} instead.
-   */
-  @Deprecated
-  public void setSendMetadataRegexp(String regexp) {
-    sendMetadataRegexp = regexp;
   }
 
   public MetadataFilter getMetadataFilter() {

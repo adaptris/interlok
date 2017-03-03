@@ -17,31 +17,22 @@
 package com.adaptris.core;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.RandomAccessFile;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.adaptris.core.LogHandler.LogFileType;
 
 @SuppressWarnings("deprecation")
 public class LogHandlerTest {
@@ -83,20 +74,7 @@ public class LogHandlerTest {
   @Test
   public void testNullLogHandler() throws Exception {
     NullLogHandler lh = new NullLogHandler();
-    assertFalse(lh.isCompressed());
     lh.clean();
-    assertNotNull(lh.retrieveLog(LogFileType.Standard));
-    InputStream in = lh.retrieveLog(LogFileType.Standard);
-    assertMatches(in, "(?s)^No implementation of the Logging Handler configured.*");
-  }
-
-  @Test
-  public void testFileLogHandlerSetUseCompression() throws Exception {
-    FileLogHandler fh = new FileLogHandler();
-    assertEquals(true, fh.isCompressed());
-    fh.setUseCompression(false);
-    assertEquals(false, fh.isCompressed());
-    assertEquals(false, fh.getUseCompression());
   }
 
   @Test
@@ -132,7 +110,7 @@ public class LogHandlerTest {
   public void testFileLogHandlerSetPeriod() throws Exception {
     FileLogHandler fh = new FileLogHandler();
     fh.setPeriod(1);
-    assertEquals(1, fh.getPeriod());
+    assertEquals(1, fh.period());
     try {
       fh.setPeriod(-1);
       fail();
@@ -140,51 +118,7 @@ public class LogHandlerTest {
     catch (IllegalArgumentException expected) {
 
     }
-    assertEquals(1, fh.getPeriod());
-  }
-
-  @Test
-  public void testFileLogHandlerSetStatisticsLogFile() throws Exception {
-    FileLogHandler fh = new FileLogHandler();
-    fh.setStatisticsLogFile("stats.log");
-    assertEquals("stats.log", fh.getStatisticsLogFile());
-    try {
-      fh.setStatisticsLogFile("");
-      fail();
-    }
-    catch (IllegalArgumentException expected) {
-
-    }
-    assertEquals("stats.log", fh.getStatisticsLogFile());
-    try {
-      fh.setStatisticsLogFile(null);
-      fail();
-    }
-    catch (IllegalArgumentException expected) {
-    }
-    assertEquals("stats.log", fh.getStatisticsLogFile());
-  }
-
-  @Test
-  public void testFileLogHandlerSetGraphingLogFile() throws Exception {
-    FileLogHandler fh = new FileLogHandler();
-    fh.setStatisticsGraphLogFile("graph.log");
-    assertEquals("graph.log", fh.getStatisticsGraphLogFile());
-    try {
-      fh.setStatisticsGraphLogFile("");
-      fail();
-    }
-    catch (IllegalArgumentException expected) {
-
-    }
-    assertEquals("graph.log", fh.getStatisticsGraphLogFile());
-    try {
-      fh.setStatisticsGraphLogFile(null);
-      fail();
-    }
-    catch (IllegalArgumentException expected) {
-    }
-    assertEquals("graph.log", fh.getStatisticsGraphLogFile());
+    assertEquals(1, fh.period());
   }
 
   @Test
@@ -209,134 +143,6 @@ public class LogHandlerTest {
     FileUtils.deleteQuietly(tmpDir);
   }
 
-  private void assertMatches(InputStream in, String expected) throws IOException {
-    String s = toString(in);
-    assertTrue("[" + s + "] matches [" + expected + "]", s.matches(expected));
-  }
-
-  private String toString(InputStream in) throws IOException {
-    InputStreamReader reader = new InputStreamReader(in, "UTF-8");
-    StringWriter writer = new StringWriter();
-    try {
-      IOUtils.copy(reader, writer);
-    }
-    finally {
-      IOUtils.closeQuietly(reader);
-      IOUtils.closeQuietly(writer);
-    }
-    return writer.toString();
-  }
-
-  @Test
-  public void testFileLogHandlerGetInputStream() throws Exception {
-    FileLogHandler fh = new FileLogHandler();
-    fh.setUseCompression(false);
-    assertMatches(fh.retrieveLog(LogFileType.Standard), "(?s)^Log file type .* not found, try requesting manually.*");
-    fh.setLogDirectory("ABCDE");
-    assertMatches(fh.retrieveLog(LogFileType.Standard), "(?s)^Log file type .* not found, try requesting manually.*");
-    fh.setLogDirectory(null);
-    fh.setLogFile("ABCDE");
-    assertMatches(fh.retrieveLog(LogFileType.Standard), "(?s)^Log file type .* not found, try requesting manually.*");
-    fh.setLogDirectory(LOG_DIRECTORY.getCanonicalPath());
-    fh.setLogFile("adapter.log");
-  }
-
-  @Test
-  public void testFileLogHandlerGetInputStreamNoCompression() throws Exception {
-    File logFile = createLogFile(LOG_DIRECTORY, "adapter.log");
-    FileLogHandler fh = new FileLogHandler();
-    fh.setUseCompression(false);
-    fh.setLogFile(logFile.getName());
-    fh.setLogDirectory(logFile.getParentFile().getCanonicalPath());
-    assertEquals(LOG_ENTRY, toString(fh.retrieveLog(LogFileType.Standard)));
-    FileUtils.deleteQuietly(logFile.getParentFile());
-  }
-
-  @Test
-  public void testFileLogHandlerGetInputStreamWithCompression() throws Exception {
-    File logFile = createLogFile(LOG_DIRECTORY, "adapter.log");
-    FileLogHandler fh = new FileLogHandler();
-    fh.setUseCompression(true);
-    fh.setLogFile(logFile.getName());
-    fh.setLogDirectory(logFile.getParentFile().getCanonicalPath());
-    GZIPInputStream input = null;
-    String output = null;
-    try {
-      input = new GZIPInputStream(fh.retrieveLog(LogFileType.Standard));
-      output = toString(input);
-    }
-    finally {
-      IOUtils.closeQuietly(input);
-    }
-    assertEquals(LOG_ENTRY, output);
-  }
-
-  @Test
-  public void testFileLogHandlerGetStatisticsLog() throws Exception {
-    File logFile = createLogFile(LOG_DIRECTORY, "stats.log");
-    FileLogHandler fh = new FileLogHandler();
-    fh.setUseCompression(true);
-    fh.setStatisticsLogFile(logFile.getName());
-    fh.setLogDirectory(logFile.getParentFile().getCanonicalPath());
-    GZIPInputStream input = null;
-    String output = null;
-    try {
-      input = new GZIPInputStream(fh.retrieveLog(LogFileType.Statistics));
-      output = toString(input);
-    }
-    finally {
-      IOUtils.closeQuietly(input);
-    }
-    assertEquals(LOG_ENTRY, output);
-  }
-
-  @Test
-  public void testFileLogHandlerGetStatisticsGraphingLog() throws Exception {
-    File logFile = createLogFile(LOG_DIRECTORY, "graph.log");
-    FileLogHandler fh = new FileLogHandler();
-    fh.setUseCompression(true);
-    fh.setStatisticsGraphLogFile(logFile.getName());
-    fh.setLogDirectory(logFile.getParentFile().getCanonicalPath());
-    GZIPInputStream input = null;
-    String output = null;
-    try {
-      input = new GZIPInputStream(fh.retrieveLog(LogFileType.Graphing));
-      output = toString(input);
-    }
-    finally {
-      IOUtils.closeQuietly(input);
-    }
-    assertEquals(LOG_ENTRY, output);
-  }
-
-  @Test
-  public void testFileLogHandlerGetInputStreamNonExistentFile() throws Exception {
-    FileLogHandler fh = new FileLogHandler();
-    fh.setUseCompression(false);
-    fh.setLogFile("adapter.log");
-    fh.setLogDirectory(LOG_DIRECTORY.getCanonicalPath());
-    assertMatches(fh.retrieveLog(LogFileType.Standard), "(?s)^Log file type .* not found, try requesting manually.*");
-  }
-
-  @Test
-  public void testFileLogHandlerGetInputStreamGreaterThan5Mb() throws Exception {
-    RandomAccessFile rf = new RandomAccessFile(new File(LOG_DIRECTORY, "adapter.log"), "rw");
-    rf.setLength(1024L * 7 * 1024L);
-    rf.close();
-    FileLogHandler fh = new FileLogHandler();
-    fh.setUseCompression(false);
-    fh.setLogFile("adapter.log");
-    fh.setLogDirectory(LOG_DIRECTORY.getCanonicalPath());
-    InputStream in = null;
-    try {
-      in = fh.retrieveLog(LogFileType.Standard);
-      assertNotNull(in);
-      assertEquals(5 * 1024 * 1024, in.available());
-    }
-    finally {
-      IOUtils.closeQuietly(in);
-    }
-  }
 
   public static List<Long> createLogFiles(File dir, String prefix, int count) throws Exception {
     ensureDirectory(dir);

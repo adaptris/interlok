@@ -39,7 +39,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("exception-destination")
 @DisplayOrder(order = {"exceptionMapping", "defaultDestination"})
-public class ExceptionDestination implements ProduceDestination {
+public class ExceptionDestination implements MessageDrivenDestination {
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
   @NotNull

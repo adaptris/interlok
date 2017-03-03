@@ -32,6 +32,7 @@ public class CheckComponentStateService extends MockStateManagedComponent implem
   private Boolean continueOnFail;
   private Boolean isTrackingEndpoint;
   private Boolean isConfirmation;
+  private String lookupName;
 
   private transient Log logR = LogFactory.getLog(this.getClass());
 
@@ -94,5 +95,13 @@ public class CheckComponentStateService extends MockStateManagedComponent implem
 
   public void setIsTrackingEndpoint(Boolean b) {
     isTrackingEndpoint = b;
+  }
+
+  public String getLookupName() {
+    return lookupName;
+  }
+
+  public void setLookupName(String lookupName) {
+    this.lookupName = lookupName;
   }
 }

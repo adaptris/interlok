@@ -31,6 +31,8 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.metadata.ElementFormatter;
+import com.adaptris.core.metadata.ElementValueFormatter;
 import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
@@ -54,9 +56,12 @@ public class AddFormattedMetadataService extends ServiceImp {
   @NotBlank
   @AffectsMetadata
   private String metadataKey;
+  
+  private ElementFormatter elementFormatter;
 
   public AddFormattedMetadataService() {
     setArgumentMetadataKeys(new ArrayList<String>());
+    elementFormatter = new ElementValueFormatter();
   }
 
   @Override
@@ -71,7 +76,13 @@ public class AddFormattedMetadataService extends ServiceImp {
       if (!msg.containsKey(key)) {
         throw new ServiceException("[" + key + "] does not exist as metadata");
       }
-      values.add(msg.getMetadataValue(key));
+      final String value = msg.getMetadataValue(key);
+      if (elementFormatter != null) {
+        values.add(elementFormatter.format(msg.getMetadata(key)));
+      } else {
+        values.add(value);
+      }
+      log.trace("Adding Metadata [{}]=[{}]", key, value);
     }
     return values.toArray(new Object[values.size()]);
   }
@@ -127,4 +138,21 @@ public class AddFormattedMetadataService extends ServiceImp {
     this.metadataKey = Args.notNull(metadatakey, "metadata-key");
   }
 
+  /**
+   * Get the element formatter.
+   * 
+   * @return The element formatter.
+   */
+  public ElementFormatter getElementFormatter() {
+    return elementFormatter;
+  }
+
+  /**
+   * Set the element formatter.
+   * 
+   * @param elementFormatter The element formatter.
+   */
+  public void setElementFormatter(ElementFormatter elementFormatter) {
+    this.elementFormatter = elementFormatter;
+  }
 }

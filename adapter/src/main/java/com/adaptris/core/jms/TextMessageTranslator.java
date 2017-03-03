@@ -44,8 +44,8 @@ public final class TextMessageTranslator extends MessageTypeTranslatorImp {
     super();
   }
 
-  public TextMessageTranslator(boolean moveMetadata, boolean moveJmsHeaders) {
-    super(moveMetadata, moveJmsHeaders);
+  public TextMessageTranslator(boolean moveJmsHeaders) {
+    super(moveJmsHeaders);
   }
 
   /**

@@ -49,13 +49,13 @@ class JmxLoggingNotification extends NotificationBroadcasterSupport implements J
       // It's an error, let's store the current logging into the error logs buffer.
       // and swap things up.
       errorLogs.add(currentLog);
-      currentLog = new FixedSizeList(linesOfContext);
+      currentLog = new FixedSizeList<>(linesOfContext);
     }
   }
 
   public List<String> getErrorLog(int index) {
     if (index > errorLogs.size() || errorLogs.isEmpty()) {
-      return Collections.EMPTY_LIST;
+      return Collections.emptyList();
     }
     return new ArrayList<String>(errorLogs.get(index));
   }
@@ -66,7 +66,7 @@ class JmxLoggingNotification extends NotificationBroadcasterSupport implements J
 
   public List<String> remove(int index) {
     if (index > errorLogs.size() || errorLogs.isEmpty()) {
-      return Collections.EMPTY_LIST;
+      return Collections.emptyList();
     }
     return new ArrayList<String>(errorLogs.remove(index));
   }

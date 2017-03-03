@@ -22,6 +22,7 @@ import static com.adaptris.core.services.mime.MimeJunitHelper.PAYLOAD_2;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.mail.MailProducerExample;
+import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.util.text.mime.SelectByPosition;
 
 @SuppressWarnings("deprecation")
@@ -47,8 +48,9 @@ public class MultiAttachmentProducerMimeTest extends MailProducerExample {
     producer.setSubject("Configured subject");
     producer.setSmtpUrl("smtp://localhost:25");
     producer.setCcList("user@domain, user@domain");
-    producer.setSendMetadataAsHeaders(true);
-    producer.setSendMetadataRegexp("X-MyHeaders.*");
+    RegexMetadataFilter filter = new RegexMetadataFilter();
+    filter.addIncludePattern("X-Email.*");
+    producer.setMetadataFilter(filter);
 
     MimeMailCreator mmc = new MimeMailCreator();
     mmc.setBodySelector(new SelectByPosition(1));

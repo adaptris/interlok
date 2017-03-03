@@ -376,5 +376,14 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
    * @see #createAdapter(String)
    */
   void validateConfig(String config) throws CoreException;
+  
+  /**
+   * In JSON format return the full class description, including subclasses and annotation detail.
+   * 
+   * @param className - fully qualified
+   * @return JSON class definition.
+   * @throws CoreException
+   */
+  String getClassDefinition(String className) throws CoreException;
 
 }

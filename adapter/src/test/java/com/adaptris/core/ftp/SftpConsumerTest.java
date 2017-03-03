@@ -16,23 +16,18 @@
 
 package com.adaptris.core.ftp;
 
+import static com.adaptris.core.ftp.SftpExampleHelper.createConnectionsForExamples;
+import static com.adaptris.core.ftp.SftpExampleHelper.createPollers;
+import static com.adaptris.core.ftp.SftpExampleHelper.getConfigSimpleName;
+import static com.adaptris.core.ftp.SftpExampleHelper.setConfigBuilder;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.adaptris.core.ConfiguredConsumeDestination;
-import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.Poller;
-import com.adaptris.core.QuartzCronPoller;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.sftp.ConfigBuilder;
-import com.adaptris.sftp.HostConfig;
-import com.adaptris.sftp.OpenSSHConfigBuilder;
-import com.adaptris.sftp.PerHostConfigBuilder;
-import com.adaptris.sftp.SftpClient;
-import com.adaptris.util.KeyValuePair;
-
-
 
 public class SftpConsumerTest extends FtpConsumerCase {
 
@@ -51,24 +46,15 @@ public class SftpConsumerTest extends FtpConsumerCase {
   }
 
   @Override
-  protected SftpConnection createConnectionForExamples() {
-    SftpConnection con = new SftpConnection();
-    con.setDefaultUserName("default-username-if-not-specified");
-    con.setDefaultPassword("default-password-if-not-specified");
-    con.setKnownHostsFile("/optional/path/to/known/hosts/file");
-    return con;
-  }
-
-  @Override
   protected String getScheme() {
     return "sftp";
   }
 
   private StandaloneConsumer createConsumerExample(ConfigBuilder behavior, Poller poller) {
-    SftpConnection con = createConnectionForExamples();
+    FileTransferConnection con = createConnectionForExamples();
     FtpConsumer cfgConsumer = new FtpConsumer();
     try {
-      con.setConfiguration(behavior);
+      setConfigBuilder(con, behavior);
       cfgConsumer.setProcDirectory("/proc");
       cfgConsumer.setDestination(new ConfiguredConsumeDestination("sftp://overrideuser@hostname:port/path/to/directory", "*.xml"));
       cfgConsumer.setPoller(poller);
@@ -79,39 +65,42 @@ public class SftpConsumerTest extends FtpConsumerCase {
     return new StandaloneConsumer(con, cfgConsumer);
   }
 
+  private List createConsumerExamples(FileTransferConnection conn, Poller... pollers) {
+    List<StandaloneConsumer> result = new ArrayList();
+    try {
+      for (Poller p : pollers) {
+        FtpConsumer ftp = new FtpConsumer();
+        ftp.setProcDirectory("/proc");
+        ftp.setDestination(new ConfiguredConsumeDestination("sftp://overrideuser@hostname:port/path/to/directory", "*.xml"));
+        ftp.setPoller(p);
+        result.add(new StandaloneConsumer(conn, ftp));
+      }
+    }
+    catch (Exception e) {
+        throw new RuntimeException(e);
+    }
+    return result;
+  }
+
   @Override
-  protected List retrieveObjectsForSampleConfig() {
-    return new ArrayList(Arrays.asList(new StandaloneConsumer[] {
-        createConsumerExample(new OpenSSHConfigBuilder("/path/openssh/config/file"), new QuartzCronPoller("*/20 * * * * ?")),
-        createConsumerExample(createInlineConfigRepo(), new QuartzCronPoller("*/20 * * * * ?")),
-        createConsumerExample(createPerHostConfigRepo(), new QuartzCronPoller("*/20 * * * * ?")),
-        createConsumerExample(createInlineConfigRepo(), new FixedIntervalPoller()),
-        createConsumerExample(createPerHostConfigRepo(), new FixedIntervalPoller()),
-        createConsumerExample(new OpenSSHConfigBuilder("/path/openssh/config/file"), new FixedIntervalPoller()),
-    }));
-  }
-
-
-  public static ConfigBuilder createInlineConfigRepo() {
-    return new InlineConfigRepositoryBuilder(false).build();
-  }
-
-
-  public static PerHostConfigBuilder createPerHostConfigRepo() {
-    PerHostConfigBuilder inline = new PerHostConfigBuilder();
-    HostConfig a = new HostConfig("my.host.com", null, -1, new KeyValuePair("StrictHostKeyChecking", "yes"),
-        new KeyValuePair(SftpClient.SSH_PREFERRED_AUTHENTICATIONS, SftpClient.NO_KERBEROS_AUTH));
-    HostConfig b = new HostConfig("another.host.com", null, -1, new KeyValuePair("StrictHostKeyChecking", "no"),
-        new KeyValuePair(SftpClient.SSH_PREFERRED_AUTHENTICATIONS, SftpClient.NO_KERBEROS_AUTH));
-    inline.getHosts().add(a);
-    inline.getHosts().add(b);
-    return inline;
+  protected List<StandaloneConsumer> retrieveObjectsForSampleConfig() {
+    List<FileTransferConnection> connections = createConnectionsForExamples();
+    List<StandaloneConsumer> consumers = new ArrayList<>();
+    for (FileTransferConnection c : connections) {
+      consumers.addAll(createConsumerExamples(c, createPollers()));
+    }
+    return consumers;
   }
 
   @Override
   protected String createBaseFileName(Object object) {
-    SftpConnection con = (SftpConnection) ((StandaloneConsumer) object).getConnection();
-    return super.createBaseFileName(object) + "-" + con.getClass().getSimpleName() + "-"
-        + con.getConfiguration().getClass().getSimpleName();
+    FileTransferConnection con = (FileTransferConnection) ((StandaloneConsumer) object).getConnection();
+    return super.createBaseFileName(object) + "-" + con.getClass().getSimpleName() + "-" + getConfigSimpleName(con);
   }
+
+  @Override
+  protected FileTransferConnection createConnectionForExamples() {
+    throw new RuntimeException("Should never be executed");
+  }
+
 }

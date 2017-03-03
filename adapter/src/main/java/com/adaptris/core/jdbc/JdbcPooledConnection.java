@@ -56,7 +56,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
     tag = "connections,jdbc")
 @DisplayOrder(order = {"username", "password", "driverImp", "connectUrl", "minimumPoolSize", "maximumPoolSize", "maxIdleTime",
     "acquireIncrement"})
-public class JdbcPooledConnection extends DatabaseConnection {
+public class JdbcPooledConnection extends DatabaseConnection implements JdbcPoolConfiguration {
   
   private static final int DEFAULT_MINIMUM_POOL_SIZE = 5;
   private static final int DEFAULT_MAXIMUM_POOL_SIZE = 50;
@@ -65,6 +65,7 @@ public class JdbcPooledConnection extends DatabaseConnection {
   private static final TimeInterval DEFAULT_CONN_ACQUIRE_WAIT = new TimeInterval(5L, TimeUnit.SECONDS);
   private static final TimeInterval DEFAULT_IDLE_TEST_PERIOD = new TimeInterval(60L, TimeUnit.SECONDS);
   private static final TimeInterval DEFAULT_MAX_IDLE_TIME = new TimeInterval(10L, TimeUnit.MINUTES);
+  private static final JdbcPoolFactory DEFAULT_POOL_FACTORY = new DefaultPoolFactory();
 
   private transient ComboPooledDataSource connectionPool;
   
@@ -87,6 +88,10 @@ public class JdbcPooledConnection extends DatabaseConnection {
   @Valid
   @AdvancedConfig
   private TimeInterval maxIdleTime;
+  @AdvancedConfig
+  @Valid
+  private JdbcPoolFactory poolFactory;
+
   
   public JdbcPooledConnection () {
     super();
@@ -107,23 +112,12 @@ public class JdbcPooledConnection extends DatabaseConnection {
 
   private synchronized void initPool() throws CoreException {
     try {
-      connectionPool = new ComboPooledDataSource();
+      connectionPool = poolFactory().create(this);
       connectionPool.setProperties(connectionProperties());
       connectionPool.setDriverClass(this.getDriverImp());
       connectionPool.setJdbcUrl(this.getConnectUrl());
       connectionPool.setUser(this.getUsername());
       connectionPool.setPassword(Password.decode(this.getPassword()));
-
-      connectionPool.setMinPoolSize(this.minPoolSize());
-      connectionPool.setAcquireIncrement(this.acquireIncrement());
-      connectionPool.setMaxPoolSize(this.maxPoolSize());
-      connectionPool.setCheckoutTimeout(connectionAcquireWait());
-      connectionPool.setAcquireRetryDelay(Long.valueOf(connectionRetryInterval()).intValue());
-      connectionPool.setAcquireRetryAttempts(connectionAttempts());
-      connectionPool.setTestConnectionOnCheckin(alwaysValidateConnection());
-      connectionPool.setTestConnectionOnCheckout(alwaysValidateConnection());
-      connectionPool.setIdleConnectionTestPeriod(idleConnectionTestPeriod());
-      connectionPool.setMaxIdleTime(maxIdleTime());
     }
     catch (Exception ex) {
       throw new CoreException(ex);
@@ -154,6 +148,7 @@ public class JdbcPooledConnection extends DatabaseConnection {
   protected void closeDatabaseConnection() {
     if (connectionPool != null) {
       connectionPool.close();
+      connectionPool = null;
     }
   }
 
@@ -233,12 +228,13 @@ public class JdbcPooledConnection extends DatabaseConnection {
     }
     if (o instanceof JdbcPooledConnection) {
       JdbcPooledConnection pooledConnection = (JdbcPooledConnection) o;
-      
+
       return new EqualsBuilder().append(pooledConnection.getConnectUrl(), this.getConnectUrl())
-                                .append(pooledConnection.getDriverImp(), this.getDriverImp())
-                                .append(pooledConnection.getMinimumPoolSize(), this.getMinimumPoolSize())
-                                .append(pooledConnection.getMaximumPoolSize(), this.getMaximumPoolSize())
-          .append(pooledConnection.getAcquireIncrement(), this.getAcquireIncrement()).isEquals();
+          .append(pooledConnection.getDriverImp(), this.getDriverImp())
+          .append(pooledConnection.getMinimumPoolSize(), this.getMinimumPoolSize())
+          .append(pooledConnection.getMaximumPoolSize(), this.getMaximumPoolSize())
+          .append(pooledConnection.getAcquireIncrement(), this.getAcquireIncrement())
+          .append(pooledConnection.getPoolFactory(), this.getPoolFactory()).isEquals();
     }
     return false;
   }
@@ -246,7 +242,7 @@ public class JdbcPooledConnection extends DatabaseConnection {
   @Override
   public int hashCode() {
     return new HashCodeBuilder(19, 31).append(this.getConnectUrl()).append(this.getMinimumPoolSize()).append(this.getMaximumPoolSize())
-        .append(this.getAcquireIncrement()).append(getDriverImp()).toHashCode();
+        .append(this.getAcquireIncrement()).append(getDriverImp()).append(getPoolFactory()).toHashCode();
   }
 
   public Integer getMinimumPoolSize() {
@@ -257,7 +253,7 @@ public class JdbcPooledConnection extends DatabaseConnection {
     this.minimumPoolSize = minimumPoolSize;
   }
 
-  int minPoolSize() {
+  public int minPoolSize() {
     return getMinimumPoolSize() != null ? getMinimumPoolSize().intValue() : DEFAULT_MINIMUM_POOL_SIZE;
   }
 
@@ -269,7 +265,7 @@ public class JdbcPooledConnection extends DatabaseConnection {
     this.maximumPoolSize = maximumPoolSize;
   }
 
-  int maxPoolSize() {
+  public int maxPoolSize() {
     return getMaximumPoolSize() != null ? getMaximumPoolSize().intValue() : DEFAULT_MAXIMUM_POOL_SIZE;
   }
 
@@ -281,7 +277,7 @@ public class JdbcPooledConnection extends DatabaseConnection {
     this.acquireIncrement = acquireIncrement;
   }
 
-  int acquireIncrement() {
+  public int acquireIncrement() {
     return getAcquireIncrement() != null ? getAcquireIncrement().intValue() : DEFAULT_ACQUIRE_INCREMENT;
   }
 
@@ -297,7 +293,7 @@ public class JdbcPooledConnection extends DatabaseConnection {
     return connectionAcquireWait;
   }
 
-  private int connectionAcquireWait() {
+  public int connectionAcquireWait() {
     return Long.valueOf(
         getConnectionAcquireWait() != null ? getConnectionAcquireWait().toMilliseconds() : DEFAULT_CONN_ACQUIRE_WAIT
             .toMilliseconds()).intValue();
@@ -310,7 +306,7 @@ public class JdbcPooledConnection extends DatabaseConnection {
     return idleConnectionTestPeriod;
   }
 
-  private int idleConnectionTestPeriod() {
+  public int idleConnectionTestPeriod() {
     return Long.valueOf(
         getIdleConnectionTestPeriod() == null
         ? TimeUnit.MILLISECONDS.toSeconds(DEFAULT_IDLE_TEST_PERIOD.toMilliseconds())
@@ -329,7 +325,7 @@ public class JdbcPooledConnection extends DatabaseConnection {
     this.maxIdleTime = t;
   }
 
-  private int maxIdleTime() {
+  public int maxIdleTime() {
     return Long.valueOf(
         getMaxIdleTime() != null ? TimeUnit.MILLISECONDS.toSeconds(getMaxIdleTime().toMilliseconds()) : TimeUnit.MILLISECONDS
             .toSeconds(DEFAULT_MAX_IDLE_TIME.toMilliseconds())).intValue();
@@ -345,5 +341,23 @@ public class JdbcPooledConnection extends DatabaseConnection {
 
   public int currentIdleConnectionCount() throws SQLException {
     return connectionPool.getNumIdleConnections();
+  }
+
+  /**
+   * @return the poolFactory
+   */
+  public JdbcPoolFactory getPoolFactory() {
+    return poolFactory;
+  }
+
+  /**
+   * @param f the poolFactory to set
+   */
+  public void setPoolFactory(JdbcPoolFactory f) {
+    this.poolFactory = f;
+  }
+
+  JdbcPoolFactory poolFactory() {
+    return getPoolFactory() != null ? getPoolFactory() : DEFAULT_POOL_FACTORY;
   }
 }

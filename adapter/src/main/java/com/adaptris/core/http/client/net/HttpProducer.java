@@ -17,12 +17,10 @@
 package com.adaptris.core.http.client.net;
 
 import static com.adaptris.core.http.HttpConstants.DEFAULT_SOCKET_TIMEOUT;
-import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
-import java.net.PasswordAuthentication;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -33,7 +31,6 @@ import javax.validation.constraints.NotNull;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceDestination;
@@ -47,7 +44,6 @@ import com.adaptris.core.http.client.RequestMethodProvider;
 import com.adaptris.core.http.client.RequestMethodProvider.RequestMethod;
 import com.adaptris.core.http.client.ResponseHeaderHandler;
 import com.adaptris.core.util.Args;
-import com.adaptris.security.password.Password;
 
 /**
  * 
@@ -60,13 +56,6 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
   @AutoPopulated
   @Valid
   private RequestMethodProvider methodProvider;
-
-  @Deprecated
-  private String username = null;
-  
-  @Deprecated
-  @InputFieldHint(style = "PASSWORD")
-  private String password = null;
 
   @NotNull
   @Valid
@@ -92,9 +81,6 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
   @InputFieldDefault(value = "true")
   private Boolean allowRedirect;
 
-  private transient String authString = null;
-  private transient PasswordAuthentication passwordAuth;
-
   public HttpProducer() {
     super();
     setContentTypeProvider(new ConfiguredContentTypeProvider());
@@ -114,14 +100,6 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
 
   @Override
   public void init() throws CoreException {
-    try {
-      if (!isEmpty(username)) {
-        passwordAuth = new PasswordAuthentication(username, Password.decode(password).toCharArray());
-      }
-    } catch (Exception e) {
-      throw new CoreException(e);
-    }
-
   }
 
 
@@ -142,48 +120,6 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
   @Override
   public void produce(AdaptrisMessage msg, ProduceDestination dest) throws ProduceException {
     doRequest(msg, dest, defaultTimeout());
-  }
-
-  /**
-   * 
-   * @param s the user name
-   */
-  @Deprecated
-  public void setUsername(String s) {
-    username = s;
-  }
-
-  /**
-   * Set the password.
-   * <p>
-   * In additional to plain text passwords, the passwords can also be encoded using the appropriate {@link com.adaptris.security.password.Password}
-   * </p>
-   * 
-   * @param s the password
-   */
-  @Deprecated
-  public void setPassword(String s) {
-    password = s;
-  }
-
-  /**
-   * Get the username.
-   * 
-   * @return username
-   */
-  @Deprecated
-  public String getUsername() {
-    return username;
-  }
-
-  /**
-   * Get the password.
-   * 
-   * @return the password
-   */
-  @Deprecated
-  public String getPassword() {
-    return password;
   }
 
   /**
@@ -238,10 +174,6 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
    */
   public void setIgnoreServerResponseCode(Boolean b) {
     ignoreServerResponseCode = b;
-  }
-
-  protected PasswordAuthentication getPasswordAuthentication() {
-    return passwordAuth;
   }
 
   public ContentTypeProvider getContentTypeProvider() {

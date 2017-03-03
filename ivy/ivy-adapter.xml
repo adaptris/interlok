@@ -29,6 +29,8 @@
     <dependency org="org.apache.velocity" name="velocity" rev="1.7" conf="compile->default" transitive="false"/>
     <dependency org="com.adaptris" name="adp-core-apt" rev="${ivy.publish.revision}" conf="compile->default;ant->default" changing="true"/>
     <dependency org="com.adaptris" name="interlok-common" rev="${ivy.publish.revision}" conf="compile->default" changing="true"/>
+	
+	<dependency org="org.reflections" name="reflections" rev="0.9.10" conf="compile->default" changing="true"/>
 
     <dependency org="javax.activation" name="activation" rev="1.1.1"  conf="compile->default" />
 
@@ -69,19 +71,22 @@
 
     <dependency org="com.jcraft" name="jsch" rev="0.1.53" conf="compile->default" />
 
-    <dependency org="org.slf4j" name="jcl-over-slf4j" rev="1.7.18" conf="compile->default" />
-    <dependency org="org.slf4j" name="slf4j-api" rev="1.7.18" conf="compile->default" />
-    <dependency org="org.slf4j" name="jul-to-slf4j" rev="1.7.18" conf="compile->default" />
-    <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.18" conf="optional->default"/>
+    <dependency org="org.slf4j" name="jcl-over-slf4j" rev="1.7.22" conf="compile->default" />
+    <dependency org="org.slf4j" name="slf4j-api" rev="1.7.22" conf="compile->default" />
+    <dependency org="org.slf4j" name="jul-to-slf4j" rev="1.7.22" conf="compile->default" />
+    <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.22" conf="optional->default"/>
     <dependency org="log4j" name="log4j" rev="1.2.17" force="true" conf="optional->default;ant->default"/>
 
     <dependency org="org.apache.logging.log4j" name="log4j-core" rev="2.6.2" conf="optional->default" />
     <dependency org="org.apache.logging.log4j" name="log4j-api" rev="2.6.2"  conf="optional->default"/>
 
-
-    <dependency org="org.eclipse.jetty.aggregate" name="jetty-all" rev="8.1.16.v20140903" transitive="false" conf="compile->default" />
-    <!-- dependency org="org.eclipse.jetty.aggregate" name="jetty-all" rev="9.1.0.v20131115" transitive="false" conf="compile->default" /-->
-    <dependency org="org.apache.geronimo.specs" name="geronimo-servlet_3.0_spec" rev="1.0" transitive="false" conf="compile->default" />
+<!--
+    <dependency org="org.eclipse.jetty" name="jetty-server" rev="9.4.1.v20170120" conf="compile->default" />
+    <dependency org="org.eclipse.jetty" name="jetty-http" rev="9.4.1.v20170120" conf="compile->default" />
+    <dependency org="org.eclipse.jetty" name="jetty-io" rev="9.4.1.v20170120" conf="compile->default" />
+-->
+    <dependency org="org.eclipse.jetty.aggregate" name="jetty-all" rev="9.4.1.v20170120" conf="compile->default"/>
+    <dependency org="javax.servlet" name="javax.servlet-api" rev="3.1.0" conf="compile->default"/>    
 
     <dependency org="net.sf.joost" name="joost" rev="0.9.1" conf="runtime->default"/>
     <dependency org="org.quartz-scheduler" name="quartz" rev="2.2.1" transitive="false" conf="compile->default"/>

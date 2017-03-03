@@ -20,6 +20,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +35,20 @@ public class ExternalResourcesHelper {
   public static final String EXTERNAL_URL_PREFIX = "http://" + EXTERNAL_SERVER + "/installers/adapter/latest-stable/";
 
   private static Logger log = LoggerFactory.getLogger(ExternalResourcesHelper.class);
+
+  private enum PortDefaults {
+    http(80), https(443);
+
+    private int myPort;
+
+    PortDefaults(int port) {
+      myPort = port;
+    }
+
+    int getPort() {
+      return myPort;
+    }
+  }
 
   public static String createUrl() {
     String url = EXTERNAL_URL_PREFIX + DEFAULT_EXTERNAL_RESOURCE;
@@ -59,8 +74,17 @@ public class ExternalResourcesHelper {
   }
 
   public static boolean isExternalServerAvailable(URLString server) {
-    log.debug("Checking " + server.toString());
-    return isExternalServerAvailable(server.getHost(), server.getPort());
+    log.debug("Checking {}", server.toString());
+    int port = server.getPort();
+    if (port == -1) {
+      try {
+        port = PortDefaults.valueOf(StringUtils.defaultIfEmpty(server.getProtocol(), "").toLowerCase()).getPort();
+      }
+      catch (Exception e) {
+        log.trace("No default port for {}", server.toString());
+      }
+    }
+    return isExternalServerAvailable(server.getHost(), port);
   }
 
 }

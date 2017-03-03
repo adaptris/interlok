@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<project basedir="." default="compile" name="interlok" xmlns:interlok="uri:interlok">
+<project basedir="." default="jar" name="interlok" xmlns:interlok="uri:interlok">
 
   <property file="build.properties"/>
 
@@ -89,32 +89,32 @@
       <ant-properties>
         <property name="ivy.user" value="${ivy.user}"/>
         <property name="ivy.password" value="${ivy.password}"/>
-        <property name="adp-core-version" value="3.5-SNAPSHOT"/>
-        <property name="ivy.publish.revision" value="3.5-SNAPSHOT"/>
+        <property name="adp-core-version" value="3.6-SNAPSHOT"/>
+        <property name="ivy.publish.revision" value="3.6-SNAPSHOT"/>
       </ant-properties>
     </interlok:project-build>
     <interlok:project-build target="publish" project="common">
       <ant-properties>
         <property name="ivy.user" value="${ivy.user}"/>
         <property name="ivy.password" value="${ivy.password}"/>
-        <property name="adp-core-version" value="3.5-SNAPSHOT"/>
-        <property name="ivy.publish.revision" value="3.5-SNAPSHOT"/>
+        <property name="adp-core-version" value="3.6-SNAPSHOT"/>
+        <property name="ivy.publish.revision" value="3.6-SNAPSHOT"/>
       </ant-properties>
     </interlok:project-build>
     <interlok:project-build target="publish" project="logging">
       <ant-properties>
         <property name="ivy.user" value="${ivy.user}"/>
         <property name="ivy.password" value="${ivy.password}"/>
-        <property name="adp-core-version" value="3.5-SNAPSHOT"/>
-        <property name="ivy.publish.revision" value="3.5-SNAPSHOT"/>
+        <property name="adp-core-version" value="3.6-SNAPSHOT"/>
+        <property name="ivy.publish.revision" value="3.6-SNAPSHOT"/>
       </ant-properties>
     </interlok:project-build>
     <interlok:project-build target="publish" project="adapter">
       <ant-properties>
         <property name="ivy.user" value="${ivy.user}"/>
         <property name="ivy.password" value="${ivy.password}"/>
-        <property name="adp-core-version" value="3.5-SNAPSHOT"/>
-        <property name="ivy.publish.revision" value="3.5-SNAPSHOT"/>
+        <property name="adp-core-version" value="3.6-SNAPSHOT"/>
+        <property name="ivy.publish.revision" value="3.6-SNAPSHOT"/>
         <property name="junit.test.classes" value="**/*Test*.java"/>
         <property name="junit.with.coverage" value="false"/>
         <property name="junit.forkmode" value="once"/>
@@ -141,6 +141,12 @@
     <interlok:project-build target="test-no-reports" project="common"/>
     <interlok:project-build target="test-no-reports" project="logging"/>
     <interlok:project-build target="test-no-reports" project="adapter"/>
+  </target>
 
+  <target name="jar" depends="init" description="Build all the jars">
+    <interlok:project-build target="jar" project="apt"/>
+    <interlok:project-build target="jar" project="common"/>
+    <interlok:project-build target="jar" project="logging"/>
+    <interlok:project-build target="jar" project="adapter"/>
   </target>
 </project>

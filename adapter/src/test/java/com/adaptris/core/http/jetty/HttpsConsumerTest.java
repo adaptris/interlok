@@ -30,7 +30,8 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.PortManager;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.http.HttpProducer;
-import com.adaptris.core.http.jetty.HttpConnection.HttpProperty;
+import com.adaptris.core.http.jetty.HttpConnection.HttpConfigurationProperty;
+import com.adaptris.core.http.jetty.HttpConnection.ServerConnectorProperty;
 import com.adaptris.core.http.jetty.HttpsConnection.SslProperty;
 import com.adaptris.core.management.webserver.SecurityHandlerWrapper;
 import com.adaptris.core.security.ConfiguredPrivateKeyPasswordProvider;
@@ -121,7 +122,8 @@ public class HttpsConsumerTest extends HttpConsumerTest {
     connection.getSslProperties().add(new KeyValuePair(HttpsConnection.SslProperty.KeyStoreType.name(), "JCEKS"));
     connection.getSslProperties().add(new KeyValuePair(HttpsConnection.SslProperty.TrustStorePassword.name(), "password"));
     connection.getSslProperties().add(new KeyValuePair(HttpsConnection.SslProperty.TrustStoreType.name(), "JKS"));
-    connection.getSslProperties().add(new KeyValuePair(HttpsConnection.SslProperty.TrustStore.name(), "/path/to/trust/keystore"));
+    connection.getSslProperties()
+        .add(new KeyValuePair(HttpsConnection.SslProperty.TrustStorePath.name(), "/path/to/trust/keystore"));
     StandaloneConsumer result = new StandaloneConsumer(connection, JettyHelper.createConsumer(URL_TO_POST_TO));
     return result;
   }
@@ -155,10 +157,9 @@ public class HttpsConsumerTest extends HttpConsumerTest {
     HttpsConnection https = new HttpsConnection();
     int port = PortManager.nextUnusedPort(Integer.parseInt(PROPERTIES.getProperty(JETTY_HTTPS_PORT)));
     https.setPort(port);
-    https.getHttpProperties().clear();
-    https.getHttpProperties().add(new KeyValuePair(HttpProperty.SoLingerTime.name(), "-1"));
-    https.getHttpProperties().add(new KeyValuePair(HttpProperty.ReuseAaddress.name(), "true"));
-    https.getHttpProperties().add(new KeyValuePair(HttpProperty.ResolveNames.name(), "true"));
+    https.getServerConnectorProperties().clear();
+    https.getServerConnectorProperties().add(new KeyValuePair(ServerConnectorProperty.SoLingerTime.name(), "-1"));
+    https.getServerConnectorProperties().add(new KeyValuePair(ServerConnectorProperty.ReuseAaddress.name(), "true"));
 
     https.getSslProperties().clear();
     https.getSslProperties().add(new KeyValuePair(SslProperty.KeyStorePassword.name(), PROPERTIES.getProperty(SECURITY_PASSWORD)));
@@ -170,7 +171,13 @@ public class HttpsConsumerTest extends HttpConsumerTest {
     https.getSslProperties()
         .add(new KeyValuePair(SslProperty.TrustStorePassword.name(), PROPERTIES.getProperty(SECURITY_PASSWORD)));
     https.getSslProperties().add(new KeyValuePair(SslProperty.TrustStoreType.name(), PROPERTIES.getProperty(KEYSTORE_TYPE)));
-    https.getSslProperties().add(new KeyValuePair(SslProperty.TrustStore.name(), PROPERTIES.getProperty(KEYSTORE_PATH)));
+    https.getSslProperties().add(new KeyValuePair(SslProperty.TrustStorePath.name(), PROPERTIES.getProperty(KEYSTORE_PATH)));
+
+    https.getHttpConfiguration().clear();
+    https.getHttpConfiguration().add(new KeyValuePair(HttpConfigurationProperty.OutputBufferSize.name(), "8192"));
+    https.getHttpConfiguration().add(new KeyValuePair(HttpConfigurationProperty.SendServerVersion.name(), "false"));
+    https.getHttpConfiguration().add(new KeyValuePair(HttpConfigurationProperty.SendDateHeader.name(), "false"));
+
     if (sh != null) {
       https.setSecurityHandler(sh);
     }

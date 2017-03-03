@@ -5,14 +5,14 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.http.client.net;
 
@@ -25,6 +25,7 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.net.Authenticator;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -54,7 +55,6 @@ import com.adaptris.core.common.InputStreamWithEncoding;
 import com.adaptris.core.common.PayloadStreamInputParameter;
 import com.adaptris.core.common.PayloadStreamOutputParameter;
 import com.adaptris.core.http.auth.AdapterResourceAuthenticator;
-import com.adaptris.core.http.auth.ConfiguredUsernamePassword;
 import com.adaptris.core.http.auth.HttpAuthenticator;
 import com.adaptris.core.http.auth.NoAuthentication;
 import com.adaptris.core.http.client.RequestMethodProvider;
@@ -64,34 +64,39 @@ import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.interlok.InterlokException;
 import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.interlok.config.DataOutputParameter;
+import com.adaptris.util.stream.Slf4jLoggingOutputStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Default {@link HttpProducer} implementation that uses {@link HttpURLConnection} available in a standard java runtime.
  * 
- * <p>This is designed mostly as a drop-in replacement for {@link com.adaptris.core.http.JdkHttpProducer}. It uses the new
+ * <p>
+ * This is designed mostly as a drop-in replacement for {@link com.adaptris.core.http.JdkHttpProducer}. It uses the new
  * {@code com.adaptris.core.http.client} interfaces to manage request and response headers and also the {@link DataInputParameter}
  * and {@link DataOutputParameter} interfaces to source the HTTP body and to handle the HTTP response body respectively. Without
  * specific overrides for these new fields; the behaviour should be functionally equivalent and a {@link
  * com.adaptris.core.NullConnection} is the appropriate connection type.
  * </p>
  * 
- * <p>Note that configuring a {@link com.adaptris.core.AdaptrisMessageEncoder} instance will cause the {@link DataInputParameter}
+ * <p>
+ * Note that configuring a {@link com.adaptris.core.AdaptrisMessageEncoder} instance will cause the {@link DataInputParameter}
  * and {@link DataOutputParameter} fields to be ignored.
  * </p>
+ * 
  * @config standard-http-producer
  * 
  * @author lchan
  */
 @XStreamAlias("standard-http-producer")
 @AdapterComponent
-@ComponentProfile(summary = "Make a HTTP request to a remote server using standard JRE components", tag = "producer,http,https", recommended = {NullConnection.class})
-@DisplayOrder(order = {"authenticator", "username", "password", "allowRedirect", "ignoreServerResponseCode", "methodProvider", "contentTypeProvider",
-    "requestHeaderProvider", "requestBody", "responseHeaderHandler", "responseBody"})
+@ComponentProfile(summary = "Make a HTTP request to a remote server using standard JRE components", tag = "producer,http,https",
+    recommended = {NullConnection.class})
+@DisplayOrder(order = {"authenticator", "username", "password", "allowRedirect", "ignoreServerResponseCode", "methodProvider",
+    "contentTypeProvider", "requestHeaderProvider", "requestBody", "responseHeaderHandler", "responseBody"})
 public class StandardHttpProducer extends HttpProducer {
 
   private static final String PARAM_CHARSET = "charset";
-  
+
   protected static final Collection<RequestMethodProvider.RequestMethod> METHOD_ALLOWS_OUTPUT = Collections
       .unmodifiableCollection(Arrays.asList(new RequestMethod[] {RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH}));
 
@@ -121,23 +126,21 @@ public class StandardHttpProducer extends HttpProducer {
   public void produce(AdaptrisMessage msg, ProduceDestination dest) throws ProduceException {
     doRequest(msg, dest, defaultTimeout(), defaultIfNull(getMessageFactory()).newMessage());
   }
-  
+
   @Override
   protected AdaptrisMessage doRequest(AdaptrisMessage msg, ProduceDestination destination, long timeout) throws ProduceException {
     return doRequest(msg, destination, timeout, msg);
   }
 
-  private AdaptrisMessage doRequest(AdaptrisMessage msg, ProduceDestination destination, long timeout, AdaptrisMessage reply) throws ProduceException {
-    // If deprecated username/password are set and no authenticator is configured, transparently create a static authenticator
-    if (getAuthenticator() instanceof NoAuthentication && !isEmpty(getUsername())) {
-      setAuthenticator(new ConfiguredUsernamePassword(getUsername(), getPassword()));
-    }
-    
+  private AdaptrisMessage doRequest(AdaptrisMessage msg, ProduceDestination destination, long timeout, AdaptrisMessage reply)
+      throws ProduceException {
     try {
       URL url = new URL(destination.getDestination(msg));
-      authenticator.setup(url.toString(), msg);
+      authenticator.setup(url.toString(), msg, null);
       HttpURLConnection http = configure((HttpURLConnection) url.openConnection(), msg);
-      authenticator.configureConnection(http);
+      if (authenticator instanceof HttpURLConnectionAuthenticator) {
+        ((HttpURLConnectionAuthenticator) authenticator).configureConnection(http);
+      }
       writeData(getMethod(msg), msg, http);
       handleResponse(http, reply);
     } catch (Exception e) {
@@ -189,7 +192,7 @@ public class StandardHttpProducer extends HttpProducer {
         log.trace("Ignoring HTTP Reponse code {}", responseCode);
         responseBody().insert(new InputStreamWithEncoding(http.getErrorStream(), getContentEncoding(http)), reply);
       } else {
-        throw new ProduceException("Failed to send payload, got " + responseCode);
+        fail(responseCode, new InputStreamWithEncoding(http.getErrorStream(), getContentEncoding(http)));
       }
     } else {
       if (getEncoder() != null) {
@@ -210,25 +213,40 @@ public class StandardHttpProducer extends HttpProducer {
       IOUtils.copy(autoCloseIn, autoCloseOut);
     }
   }
-  
+
   private String getContentEncoding(HttpURLConnection http) {
-    if(http.getContentEncoding() != null) {
+    if (http.getContentEncoding() != null) {
       return http.getContentEncoding();
     }
-    
+
     // Parse Content-Type header for encoding
     try {
       ContentType contentType = new ContentType(http.getContentType());
-      if(!isEmpty(contentType.getParameter(PARAM_CHARSET))) {
+      if (!isEmpty(contentType.getParameter(PARAM_CHARSET))) {
         return contentType.getParameter(PARAM_CHARSET);
       }
     } catch (ParseException e) {
       log.warn("Unable to parse Content-Type header \"{}\": {}", http.getContentType(), e.toString());
     }
-    
+
     return null;
   }
 
+  private void fail(int responseCode, InputStreamWithEncoding data) throws ProduceException {
+    if (log.isTraceEnabled()) {
+      try {
+        try (OutputStream slf4j = new Slf4jLoggingOutputStream(log, Slf4jLoggingOutputStream.LogLevel.TRACE);
+            InputStream in = new BufferedInputStream(data.inputStream);
+            PrintStream out = data.encoding == null ? new PrintStream(slf4j) : new PrintStream(slf4j, false, data.encoding)) {
+          out.println("Error Data from remote server :");
+          IOUtils.copy(in, out);
+        }
+      } catch (IOException e) {
+        log.trace("No Error Data available");
+      }
+    }
+    throw new ProduceException("Failed to send payload, got " + responseCode);
+  }
 
   public DataInputParameter<InputStream> getRequestBody() {
     return requestBody;
@@ -268,8 +286,7 @@ public class StandardHttpProducer extends HttpProducer {
   }
 
   @Override
-  public void prepare() throws CoreException {
-  }
+  public void prepare() throws CoreException {}
 
   public HttpAuthenticator getAuthenticator() {
     return authenticator;
@@ -281,5 +298,5 @@ public class StandardHttpProducer extends HttpProducer {
   public void setAuthenticator(HttpAuthenticator authenticator) {
     this.authenticator = authenticator;
   }
-  
+
 }

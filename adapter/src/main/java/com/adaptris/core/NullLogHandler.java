@@ -16,9 +16,7 @@
 
 package com.adaptris.core;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -40,26 +38,12 @@ public class NullLogHandler extends LogHandlerImp {
     "No implementation of the Logging Handler configured";
 
   /**
-   * @see com.adaptris.core.LogHandler#retrieveLog(LogFileType)
-   */
-  public InputStream retrieveLog(LogFileType type) throws IOException {
-    return new ByteArrayInputStream(DEFAULT_STRING.getBytes("UTF-8"));
-  }
-
-  /**
    * @see com.adaptris.core.LogHandler#clean()
    */
   public void clean() throws IOException {
     return;
   }
 
-  /**
-   *
-   * @see com.adaptris.core.LogHandler#isCompressed()
-   */
-  public boolean isCompressed() {
-    return false;
-  }
   @Override
   public void prepare() throws CoreException {
   }

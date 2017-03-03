@@ -18,21 +18,20 @@ package com.adaptris.core.runtime;
 import static com.adaptris.core.util.PropertyHelper.getPropertyIgnoringCase;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
+import java.beans.Transient;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 import javax.management.JMX;
 import javax.management.MBeanServer;
@@ -42,16 +41,26 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import javax.validation.constraints.NotNull;
 
-import com.adaptris.core.management.vcs.VcsConstants;
 import org.apache.commons.io.IOUtils;
+import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.EventFactory;
+import com.adaptris.core.XStreamJsonMarshaller;
 import com.adaptris.core.config.ConfigPreProcessorLoader;
 import com.adaptris.core.config.ConfigPreProcessors;
 import com.adaptris.core.config.DefaultPreProcessorLoader;
@@ -61,8 +70,10 @@ import com.adaptris.core.management.BootstrapProperties;
 import com.adaptris.core.management.Constants;
 import com.adaptris.core.management.vcs.RuntimeVersionControl;
 import com.adaptris.core.management.vcs.RuntimeVersionControlLoader;
+import com.adaptris.core.management.vcs.VcsConstants;
 import com.adaptris.core.util.JmxHelper;
 import com.adaptris.util.URLString;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @SuppressWarnings("deprecation")
 public class AdapterRegistry implements AdapterRegistryMBean {
@@ -465,6 +476,65 @@ public class AdapterRegistry implements AdapterRegistryMBean {
       // some exceptions may not be serializable for the UI.
       throw new CoreException(e.getMessage());
     }
+  }
+
+  @Override
+  public String getClassDefinition(String className) throws CoreException {
+    ClassDescriptor classDescriptor = new ClassDescriptor(className);
+    try {
+      Class<?> clazz = Class.forName(className);
+      
+      classDescriptor.setClassType(ClassDescriptor.ClassType.getTypeForClass(clazz).name().toLowerCase());
+      
+      List<String> displayOrder = new ArrayList<>();
+      for(Annotation annotation : clazz.getAnnotations()) {
+        if(XStreamAlias.class.isAssignableFrom(annotation.annotationType())) {
+          classDescriptor.setAlias(((XStreamAlias) annotation).value());
+        } else if(ComponentProfile.class.isAssignableFrom(annotation.annotationType())) {
+          classDescriptor.setTags(((ComponentProfile) annotation).tag());
+          classDescriptor.setSummary(((ComponentProfile) annotation).summary());
+        } else if(DisplayOrder.class.isAssignableFrom(annotation.annotationType())) {
+          displayOrder = Arrays.asList(((DisplayOrder) annotation).order());
+        }
+      }
+      
+      for(Field field : clazz.getDeclaredFields()) {
+        if((!Modifier.isStatic(field.getModifiers())) && (field.getDeclaredAnnotation(Transient.class) == null)) { // if we're not transient
+          ClassDescriptorProperty fieldProperty = new ClassDescriptorProperty();
+          fieldProperty.setOrder(displayOrder.contains(field.getName()) ? displayOrder.indexOf(field.getName()) + 1 : 999);
+          fieldProperty.setAdvanced(false);
+          fieldProperty.setClassName(field.getType().getName());
+          fieldProperty.setType(field.getType().getSimpleName());
+          fieldProperty.setName(field.getName());
+          fieldProperty.setAutoPopulated(field.getDeclaredAnnotation(AutoPopulated.class) != null);
+          fieldProperty.setNullAllowed(field.getDeclaredAnnotation(NotNull.class) != null);
+          
+          for(Annotation annotation : field.getDeclaredAnnotations()) {
+            if(AdvancedConfig.class.isAssignableFrom(annotation.annotationType())) {
+              fieldProperty.setAdvanced(true);
+            } else if(InputFieldDefault.class.isAssignableFrom(annotation.annotationType())) {
+              fieldProperty.setDefaultValue(((InputFieldDefault) annotation).value());
+            }
+          }
+          classDescriptor.getClassDescriptorProperties().add(fieldProperty);
+        }
+      }
+
+      Reflections reflections = new Reflections(new ConfigurationBuilder()
+          .addClassLoader(this.getClass().getClassLoader())
+          .setUrls(ClasspathHelper.forClassLoader())
+          .addScanners(new SubTypesScanner(false)));
+      
+      Set<Class<?>> subTypes = reflections.getSubTypesOf((Class) clazz);
+
+      Iterator<Class<?>> it = subTypes.iterator();
+      while(it.hasNext())
+        classDescriptor.getSubTypes().add(it.next().getName());
+
+    } catch (ClassNotFoundException e) {
+      throw new CoreException(e);
+    }
+    return new XStreamJsonMarshaller().marshal(classDescriptor);
   }
 
 }

@@ -20,9 +20,10 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
 
-import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageTranslator;
+import com.adaptris.core.ComponentLifecycle;
+import com.adaptris.core.ComponentLifecycleExtension;
 
 // abstract factory pattern
 
@@ -32,7 +33,7 @@ import com.adaptris.core.AdaptrisMessageTranslator;
  * <code>javax.jms.Message</code>s, and vice versa.
  * </p>
  */
-public interface MessageTypeTranslator extends AdaptrisComponent,
+public interface MessageTypeTranslator extends ComponentLifecycle, ComponentLifecycleExtension,
     AdaptrisMessageTranslator {
 
   /**

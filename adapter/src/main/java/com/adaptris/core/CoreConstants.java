@@ -269,19 +269,6 @@ public abstract class CoreConstants {
   public static final String HTTP_PRODUCER_RESPONSE_CODE = "adphttpresponse";
 
   /**
-   * Metadata key that contains the IDoc compound type.
-   * <p>
-   * This is the value of the field <code>DOCTYP</code> and is only relevant for SAP systems up to 3.1I according to the SAP Java
-   * Connector documentation.
-   * </p>
-   *
-   * @deprecated since 2.6.2; not used by JCO3
-   */
-  @Deprecated
-  public static final String JCO_DOCTYP = "jcodoctyp";
-
-
-  /**
    * Metadata key that contains the IDoc type.
    * <p>
    * This is the value of the field <code>IDOCTYP</code>.
@@ -290,16 +277,6 @@ public abstract class CoreConstants {
    */
   public static final String JCO_IDOCTYP = "jcoidoctyp";
 
-  /**
-   * Metadata key that contains the IDoc Message type.
-   * <p>
-   * This is the value of the field <code>MESTYP</code>.
-   * </p>
-   *
-   * @deprecated since 2.6.2; not used by JCO3
-   */
-  @Deprecated
-  public static final String JCO_MESTYP = "jcomestyp";
 
   /**
    * Metadata key for the <code>HttpServletResponse</code> object metadata made available from Jetty.

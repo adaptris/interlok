@@ -16,7 +16,6 @@
 
 package com.adaptris.core.management;
 
-
 /**
  * Entry point into an adapter from the commandline.
  * <p>
@@ -27,11 +26,6 @@ package com.adaptris.core.management;
  */
 public class SimpleBootstrap extends StandardBootstrap {
 
-	public SimpleBootstrap() throws Exception {
-		super(new String[0]);
-    super.standardBoot();
-	}
-	
   public SimpleBootstrap(String[] argv) throws Exception {
     super(argv);
   }

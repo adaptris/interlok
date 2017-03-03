@@ -65,6 +65,8 @@ public class ChannelList extends AbstractCollection<Channel> implements Adaptris
   @AdvancedConfig
   private ChannelLifecycleStrategy lifecycleStrategy;
 
+  private String uniqueId;
+  
   /**
    * <p>
    * Creates a new instance.
@@ -390,5 +392,13 @@ public class ChannelList extends AbstractCollection<Channel> implements Adaptris
   @Override
   public List<Channel> subList(int fromIndex, int toIndex) {
     return channels.subList(fromIndex, toIndex);
+  }
+
+  public String getUniqueId() {
+    return uniqueId;
+  }
+
+  public void setUniqueId(String uniqueId) {
+    this.uniqueId = uniqueId;
   }
 }

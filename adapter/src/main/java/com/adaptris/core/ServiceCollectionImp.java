@@ -50,6 +50,9 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   private static final OutOfStateHandler DEFAULT_STATE_HANDLER = new RaiseExceptionOutOfStateHandler();
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
+  @AdvancedConfig
+  private String lookupName;
+  
   private String uniqueId;
   @InputFieldDefault(value = "false")
   private Boolean restartAffectedServiceOnException;
@@ -63,9 +66,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   @InputFieldDefault(value = "false")
   private Boolean isConfirmation;
   @AdvancedConfig
-  @Deprecated
-  private Boolean checkServiceState;
-  @AdvancedConfig
+  @Valid
   private OutOfStateHandler outOfStateHandler;
   @AutoPopulated
   @NotNull
@@ -574,24 +575,6 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
     return collection;
   }
 
-  /**
-   * 
-   * @deprecated since 3.0.6 configure an explicit {@link OutOfStateHandler} using {@link #setOutOfStateHandler(OutOfStateHandler)}.
-   */
-  @Deprecated
-  public Boolean getCheckServiceState() {
-    return checkServiceState;
-  }
-
-  /**
-   * 
-   * @deprecated since 3.0.6 configure an explicit {@link OutOfStateHandler} using {@link #setOutOfStateHandler(OutOfStateHandler)}.
-   */
-  @Deprecated
-  public void setCheckServiceState(Boolean checkServiceState) {
-    this.checkServiceState = checkServiceState;
-  }
-
   public OutOfStateHandler getOutOfStateHandler() {
     return outOfStateHandler;
   }
@@ -606,15 +589,15 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   }
 
   private OutOfStateHandler outOfStateHandler() {
-    OutOfStateHandler result = getOutOfStateHandler() != null ? getOutOfStateHandler() : DEFAULT_STATE_HANDLER;
-    if (getCheckServiceState() != null) {
-      log.warn("setCheckService() is deprecated; explicitly configure using #setOutOfStateHandler() instead");
-      // They've asked for no service-state checking; and OOSH isn't configured...
-      if (Boolean.FALSE.equals(getCheckServiceState()) && result == DEFAULT_STATE_HANDLER) {
-        result = new NullOutOfStateHandler();
-      }
-    }
-    return result;
+    return getOutOfStateHandler() != null ? getOutOfStateHandler() : DEFAULT_STATE_HANDLER;
+  }
+
+  public String getLookupName() {
+    return lookupName;
+  }
+
+  public void setLookupName(String lookupName) {
+    this.lookupName = lookupName;
   }
 
 }

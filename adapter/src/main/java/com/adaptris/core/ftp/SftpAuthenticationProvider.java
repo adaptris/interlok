@@ -13,19 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 */
+package com.adaptris.core.ftp;
 
-package com.adaptris.core.stubs;
-
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
-public class DummyLogHandler extends MockLogHandler {
-  public boolean isCompressed() {
-    return false;
-  }
+import com.adaptris.core.ftp.FileTransferConnection.UserInfo;
+import com.adaptris.filetransfer.FileTransferException;
+import com.adaptris.security.exc.PasswordException;
+import com.adaptris.sftp.SftpClient;
 
-  public InputStream retrieveLog(LogFileType type) throws IOException {
-    return new ByteArrayInputStream(LOG_EXTRACT.getBytes());
-  }
+public interface SftpAuthenticationProvider {
+
+  SftpClient connect(SftpClient ftp, UserInfo userInfo) throws FileTransferException, IOException, PasswordException;
 }

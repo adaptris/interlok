@@ -31,7 +31,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdapterComponent;
-import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
@@ -39,11 +39,12 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.FileNameCreator;
 import com.adaptris.core.FormattedFilenameCreator;
+import com.adaptris.core.MessageDrivenDestination;
 import com.adaptris.core.MetadataElement;
-import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.fs.FsHelper;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -63,18 +64,21 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("read-metadata-from-filesystem")
 @AdapterComponent
 @ComponentProfile(summary = "Read a set of metadata from the filesystem and add/replace current metadata", tag = "service,metadata")
-@DisplayOrder(order = {"destination", "inputStyle", "overwriteExistingMetadata", "fileNameCreator"})
+@DisplayOrder(order =
+{
+    "destination", "inputStyle", "overwriteExistingMetadata", "filenameCreator"
+})
 public class ReadMetadataFromFilesystem extends ServiceImp {
 
   private InputStyle inputStyle;
   @NotNull
   @Valid
-  private ProduceDestination destination;
+  private MessageDrivenDestination destination;
   @InputFieldDefault(value = "false")
   private Boolean overwriteExistingMetadata;
-  @NotNull
-  @AutoPopulated
-  private FileNameCreator fileNameCreator;
+  @AdvancedConfig
+  @Valid
+  private FileNameCreator filenameCreator;
 
   public enum InputStyle {
     Text {
@@ -101,10 +105,9 @@ public class ReadMetadataFromFilesystem extends ServiceImp {
 
   public ReadMetadataFromFilesystem() {
     super();
-    setFileNameCreator(new FormattedFilenameCreator());
   }
 
-  public ReadMetadataFromFilesystem(ProduceDestination d) {
+  public ReadMetadataFromFilesystem(MessageDrivenDestination d) {
     this();
     setDestination(d);
   }
@@ -117,7 +120,7 @@ public class ReadMetadataFromFilesystem extends ServiceImp {
     try {
       String baseUrl = getDestination().getDestination(msg);
       URL url = FsHelper.createUrlFromString(baseUrl, true);
-      File fileToRead = new File(FsHelper.createFileReference(url), getFileNameCreator().createName(msg));
+      File fileToRead = new File(FsHelper.createFileReference(url), filenameCreator().createName(msg));
       filenameToRead = fileToRead.getCanonicalPath();
       log.trace("Reading " + filenameToRead);
       in = new FileInputStream(fileToRead);
@@ -164,25 +167,17 @@ public class ReadMetadataFromFilesystem extends ServiceImp {
     inputStyle = style;
   }
 
-  public ProduceDestination getDestination() {
+  public MessageDrivenDestination getDestination() {
     return destination;
   }
 
   /**
    * Set the destination where things have been written.
-   * <p>
-   * Although from a naming perspective it makes no sense to use a 'ProduceDestination' when you are consuming data;
-   * {@link ProduceDestination} allows us to derive the destination from the message and lets us keep the configuration largely the
-   * same as {@link WriteMetadataToFilesystem}
-   * </p>
    *
    * @param d the destination.
    */
-  public void setDestination(ProduceDestination d) {
-    if (d == null) {
-      throw new IllegalArgumentException("Destination is null");
-    }
-    destination = d;
+  public void setDestination(MessageDrivenDestination d) {
+    destination = Args.notNull(d, "destination");
   }
 
   /**
@@ -210,8 +205,8 @@ public class ReadMetadataFromFilesystem extends ServiceImp {
     return s != null ? s : InputStyle.Text;
   }
 
-  public FileNameCreator getFileNameCreator() {
-    return fileNameCreator;
+  public FileNameCreator getFilenameCreator() {
+    return filenameCreator;
   }
 
   /**
@@ -219,11 +214,12 @@ public class ReadMetadataFromFilesystem extends ServiceImp {
    *
    * @param creator
    */
-  public void setFileNameCreator(FileNameCreator creator) {
-    if (creator == null) {
-      throw new IllegalArgumentException("Creator is null");
-    }
-    fileNameCreator = creator;
+  public void setFilenameCreator(FileNameCreator creator) {
+    filenameCreator = creator;
+  }
+
+  FileNameCreator filenameCreator() {
+    return getFilenameCreator() != null ? getFilenameCreator() : new FormattedFilenameCreator();
   }
 
   @Override

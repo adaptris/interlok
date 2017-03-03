@@ -27,7 +27,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.ProduceDestination;
+import com.adaptris.core.MessageDrivenDestination;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -39,7 +39,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("jms-reply-to-destination")
 @DisplayOrder(order = {"objectMetadataKey"})
-public class JmsReplyToDestination implements ProduceDestination {
+public class JmsReplyToDestination implements MessageDrivenDestination {
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
 

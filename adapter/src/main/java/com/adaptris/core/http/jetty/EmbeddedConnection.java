@@ -59,14 +59,15 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Connection that uses the embedded Jetty engine management component for requests",
     tag = "connections,http,https,jetty")
-@DisplayOrder(order = {"host", "connectorName"})
+@DisplayOrder(order =
+{
+    "roles", "securityHandler", "maxStartupWait"
+})
 public class EmbeddedConnection extends AdaptrisConnectionImp implements JettyServletRegistrar {
   private static final int DEFAULT_WAIT_INTERVAL_MS = 250;
 
   private static final TimeInterval DEFAULT_MAX_WAIT = new TimeInterval(10l, TimeUnit.MINUTES);
 
-  private String host;
-  private String connectorName;
   @AdvancedConfig
   private Set<String> roles;
   @AdvancedConfig
@@ -123,32 +124,6 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
   protected void prepareConnection() throws CoreException {
   }
 
-  public String getHost() {
-    return host;
-  }
-
-  /**
-   * Set the hostname against which to register any consumers.
-   *
-   * @param s the host, defaults to null
-   */
-  public void setHost(String s) {
-    host = s;
-  }
-
-  public String getConnectorName() {
-    return connectorName;
-  }
-
-  /**
-   * Set the jetty connector against which to register any consumers.
-   *
-   * @param name - the connector name, defaults to null.
-   */
-  public void setConnectorName(String name) {
-    connectorName = name;
-  }
-
   public Set<String> getRoles() {
     return roles;
   }
@@ -167,8 +142,6 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
     try {
       JettyServerManager serverManager = (JettyServerManager) WebServerManagementUtil.getServerManager();
       HashMap<String, Object> additionalProperties = new HashMap<String, Object>();
-      additionalProperties.put(JettyServerManager.HOST, getHost());
-      additionalProperties.put(JettyServerManager.CONNECTOR_NAMES, getConnectorName());
       additionalProperties.put(JettyServerManager.ROLES, getRoles());
       additionalProperties.put(JettyServerManager.CONTEXT_PATH, wrapper.getUrl());
       additionalProperties.put(JettyServerManager.SECURITY_CONSTRAINTS, getSecurityHandler());

@@ -24,8 +24,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import junit.framework.TestCase;
-
 import com.adaptris.core.AdaptrisMessageConsumer;
 import com.adaptris.core.EventHandlerAware;
 import com.adaptris.core.Service;
@@ -38,6 +36,8 @@ import com.adaptris.core.services.metadata.AddMetadataService;
 import com.adaptris.core.services.metadata.XpathMetadataService;
 import com.adaptris.core.services.metadata.xpath.ConfiguredXpathQuery;
 import com.thoughtworks.xstream.core.util.FastField;
+
+import junit.framework.TestCase;
 
 public class XStreamUtilsTest extends TestCase {
 

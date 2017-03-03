@@ -27,6 +27,7 @@ public class HashLoginServiceFactory implements JettyLoginServiceFactory {
   @NotBlank
   private String filename;
   @AdvancedConfig
+  @Deprecated
   private Integer refreshInterval;
 
   public HashLoginServiceFactory() {
@@ -43,7 +44,7 @@ public class HashLoginServiceFactory implements JettyLoginServiceFactory {
   public LoginService retrieveLoginService() {
     HashLoginService loginService = new HashLoginService(getUserRealm(), getFilename());
     if (getRefreshInterval() != null) {
-      loginService.setRefreshInterval(getRefreshInterval());
+      loginService.setHotReload(true);
     }
     return loginService;
   }
@@ -72,7 +73,9 @@ public class HashLoginServiceFactory implements JettyLoginServiceFactory {
 
   /**
    * @return the refreshInterval
+   * @deprecated since 3.6.0 refresh interval has no effect.
    */
+  @Deprecated
   public Integer getRefreshInterval() {
     return refreshInterval;
   }
@@ -81,9 +84,10 @@ public class HashLoginServiceFactory implements JettyLoginServiceFactory {
   /**
    * Specify the refresh interval (in seconds) for monitoring the password file.
    * 
-   * @see HashLoginService#setRefreshInterval(int)
+   * @deprecated since 3.6.0 refresh interval has no effect.
    * @param i the refreshInterval to set
    */
+  @Deprecated
   public void setRefreshInterval(Integer i) {
     this.refreshInterval = i;
   }

@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -32,6 +33,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.metadata.MetadataFilter;
 import com.adaptris.core.metadata.NoOpMetadataFilter;
+import com.adaptris.core.metadata.RemoveAllMetadataFilter;
 import com.adaptris.core.util.LifecycleHelper;
 
 // abstract factory pattern
@@ -47,22 +49,19 @@ import com.adaptris.core.util.LifecycleHelper;
  */
 public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator, MetadataHandlerContext {
 
-
   protected transient Logger log = LoggerFactory.getLogger(this.getClass());
   protected transient Session session; // not persisted
   private transient AdaptrisMessageFactory messageFactoryToUse;
   protected transient MetadataHandler helper;
 
+  private static final MetadataFilter DEFAULT_FILTER = new RemoveAllMetadataFilter();
   /**
    * Set the filter that will be used return a subset of the messages metdata to be copied over during the translate.
    */
   @AdvancedConfig
   @Valid
+  @AutoPopulated
   private MetadataFilter metadataFilter;
-  @AdvancedConfig
-  @Deprecated
-  @InputFieldDefault(value = "true")
-  private Boolean moveMetadata;
   @AdvancedConfig
   @InputFieldDefault(value = "false")
   private Boolean moveJmsHeaders;
@@ -84,53 +83,9 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
     helper = new MetadataHandler(this);
   }
 
-  public MessageTypeTranslatorImp(boolean moveMetadata, boolean moveJmsHeaders) {
+  public MessageTypeTranslatorImp(boolean moveJmsHeaders) {
     this();
-    setMoveMetadata(moveMetadata);
     setMoveJmsHeaders(moveJmsHeaders);
-  }
-
-  /**
-   * <p>
-   * Creates a new instance. true.
-   * </p>
-   *
-   * @param b <code>true</code> if metadata should be moved between the two
-   *          message formats, otherwise <code>false</code>
-   */
-  MessageTypeTranslatorImp(boolean b) {
-    moveMetadata = b;
-  }
-
-  /**
-   * <p>
-   * Sets whether to move metadata to JMS properties and vice versa.
-   * </p>
-   * 
-   * @param b whether to move metadata to JMS properties and vice versa
-   * @see MetadataHandlerContext#moveMetadata()
-   * @deprecated since 3.0.2 use {@link #setMetadataFilter(com.adaptris.core.metadata.MetadataFilter)} with a {@link
-   * com.adaptris.core.metadata.RemoveAllMetadataFilter} to stop JMS
-   * properties being propagated.
-   */
-  @Deprecated
-  public void setMoveMetadata(Boolean b) {
-    moveMetadata = b;
-  }
-
-  /**
-   * <p>
-   * Returns whether to move metadata to JMS properties and vice versa.
-   * </p>
-   * 
-   * @return whether to move metadata to JMS properties and vice versa
-   * @see MetadataHandlerContext#moveMetadata()
-   * @deprecated since 3.0.2 use {@link #setMetadataFilter(com.adaptris.core.metadata.MetadataFilter)} with a {@link
-   * com.adaptris.core.metadata.RemoveAllMetadataFilter} to stop JMS properties being propagated.
-   */
-  @Deprecated
-  public Boolean getMoveMetadata() {
-    return moveMetadata;
   }
 
   /**
@@ -153,6 +108,7 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
   public void setMetadataFilter(MetadataFilter mf) {
     metadataFilter = mf;
   }
+
 
   public void registerSession(Session s) {
     session = s;
@@ -271,11 +227,6 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
     return getReportAllErrors() != null ? getReportAllErrors().booleanValue() : false;
   }
 
-  @Override
-  public boolean moveMetadata() {
-    return getMoveMetadata() != null ? getMoveMetadata().booleanValue() : true;
-
-  }
 
   @Override
   public MetadataFilter metadataFilter() {
@@ -320,7 +271,6 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
     AutoConvertMessageTranslator result = new AutoConvertMessageTranslator();
     if (mt instanceof MessageTypeTranslatorImp) {
       result.setMoveJmsHeaders(((MessageTypeTranslatorImp) mt).getMoveJmsHeaders());
-      result.setMoveMetadata(((MessageTypeTranslatorImp) mt).getMoveMetadata());
       result.setReportAllErrors(((MessageTypeTranslatorImp) mt).getReportAllErrors());
       result.setMetadataFilter(((MessageTypeTranslatorImp) mt).getMetadataFilter());
       result.registerMessageFactory(mt.currentMessageFactory());
@@ -343,5 +293,4 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
     LifecycleHelper.stop(mt);
     LifecycleHelper.close(mt);
   }
-
 }

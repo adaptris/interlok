@@ -32,8 +32,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.NoOpConnection;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
-import com.adaptris.ftp.FtpException;
-import com.adaptris.security.password.Password;
+import com.adaptris.security.exc.PasswordException;
 
 /**
  * Class containing common configuration for all FTP Connection types.
@@ -249,9 +248,8 @@ public abstract class FileTransferConnection extends NoOpConnection {
    * @param hostUrl the host to connect to which can be in the form of an url or simply just the hostname in which case the default
    *          credentials and port numbers are used.
    * @return an FtpClient that is ready to use.
-   * @throws FtpException for FTP specific errors.
    */
-  public FileTransferClient connect(String hostUrl) throws FileTransferException, IOException {
+  public FileTransferClient connect(String hostUrl) throws FileTransferException, IOException, PasswordException {
     FileTransferClient client = lookup(hostUrl);
     if (client == null) {
       client = create(hostUrl);
@@ -260,7 +258,7 @@ public abstract class FileTransferConnection extends NoOpConnection {
     return client;
   }
 
-  private FileTransferClient create(String hostUrl) throws FileTransferException, IOException {
+  private FileTransferClient create(String hostUrl) throws FileTransferException, IOException, PasswordException {
     String remoteHost = hostUrl;
     UserInfo ui = createUserInfo();
     int port = defaultControlPort();
@@ -342,8 +340,10 @@ public abstract class FileTransferConnection extends NoOpConnection {
    * @return a <code>FileTransferClient</code> object
    * @throws IOException wrapping a general comms error.
    * @throws FileTransferException if a protocol specific exception occurred.
+   * @throws PasswordException
    */
-  protected abstract FileTransferClient create(String host, int port, UserInfo ui) throws IOException, FileTransferException;
+  protected abstract FileTransferClient create(String host, int port, UserInfo ui)
+      throws IOException, FileTransferException, PasswordException;
 
   /**
    * <p>
@@ -394,7 +394,7 @@ public abstract class FileTransferConnection extends NoOpConnection {
 
   protected abstract UserInfo createUserInfo() throws FileTransferException;
 
-  protected class UserInfo {
+  public class UserInfo {
     private String user, password;
 
     protected UserInfo() {
@@ -405,13 +405,8 @@ public abstract class FileTransferConnection extends NoOpConnection {
     }
 
     protected UserInfo(String defaultUser, String defaultPassword) throws FileTransferException {
-      try {
-        user = defaultUser;
-        password = Password.decode(defaultPassword);
-      }
-      catch (Exception e) {
-        throw new FileTransferException(e);
-      }
+      user = defaultUser;
+      password = defaultPassword;
     }
 
     protected void parse(String fulluserpass) throws UnsupportedEncodingException {

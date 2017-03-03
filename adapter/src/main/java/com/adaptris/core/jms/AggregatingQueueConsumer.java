@@ -157,6 +157,7 @@ public class AggregatingQueueConsumer extends AggregatingConsumerImpl<Aggregatin
   protected void startMessageTranslator(JmsActorConfig cfg, AdaptrisMessageFactory factory) throws CoreException {
     messageTranslator.registerSession(cfg.currentSession());
     messageTranslator.registerMessageFactory(factory);
+    messageTranslator.prepare();
     start(messageTranslator);
   }
 

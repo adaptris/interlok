@@ -40,7 +40,7 @@
     </patternset>
 
     <!-- Apache Ivy -->
-    <property name="ivy.publish.revision"   value="3.5-SNAPSHOT"/>
+    <property name="ivy.publish.revision"   value="3.6-SNAPSHOT"/>
     <property name="ivy.artifact.publish.status" value="integration"/>
     <property name="ivy.dir" value="${basedir}/../ivy"/>
     <property name="ivy.xml.file" value="${ivy.dir}/ivy-adapter.xml"/>
@@ -215,6 +215,9 @@
         <include name="**/core/jms/MockJmsConnectionErrorHandler*"/>
         <include name="**/core/jms/MessageTypeTranslatorCase*"/>
         <include name="**/core/jms/JmsConfig*"/>
+        <include name="**/core/http/HttpProducer.class"/>
+        <include name="**/core/http/jetty/ResponseProducer.class"/>
+        <include name="**/core/http/JdkHttpProducer.class"/>
         <include name="**/core/jms/**/JndiImplementationCase*"/>
         <include name="**/core/jms/ActiveJmsConnectionErrorHandlerCase*"/>
         <include name="**/core/transform/TransformServiceExample*"/>

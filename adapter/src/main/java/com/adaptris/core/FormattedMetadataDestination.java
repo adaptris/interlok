@@ -69,7 +69,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  */
 @XStreamAlias("formatted-metadata-destination")
 @DisplayOrder(order = {"destinationTemplate", "metadataKeys", "objectMetadataKeys"})
-public class FormattedMetadataDestination implements ProduceDestination {
+public class FormattedMetadataDestination implements MessageDrivenDestination {
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
   @XStreamImplicit(itemFieldName = "metadata-key")
@@ -99,10 +99,20 @@ public class FormattedMetadataDestination implements ProduceDestination {
     return metadataKeys;
   }
 
+  /**
+   * Get the element formatter.
+   * 
+   * @return The element formatter.
+   */
   public ElementFormatter getElementFormatter() {
     return elementFormatter;
   }
 
+  /**
+   * Set the element formatter.
+   * 
+   * @param elementFormatter The element formatter.
+   */
   public void setElementFormatter(ElementFormatter elementFormatter) {
     this.elementFormatter = elementFormatter;
   }

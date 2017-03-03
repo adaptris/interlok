@@ -22,4 +22,11 @@ package com.adaptris.core;
  */
 public interface AdaptrisComponent extends ComponentLifecycle, ComponentLifecycleExtension {
 
+  
+  /**
+   * Get the unique-id that is associated with this component.
+   *
+   * @return the unique-id
+   */
+  public String getUniqueId();
 }

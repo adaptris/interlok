@@ -43,6 +43,8 @@ public abstract class ServiceImp implements Service {
   private transient ComponentState serviceState;
   private transient boolean prepared = false;
   
+  @AdvancedConfig
+  private String lookupName;
   private String uniqueId;
   private transient boolean isBranching; // defaults to false
   @AdvancedConfig
@@ -267,6 +269,22 @@ public abstract class ServiceImp implements Service {
    */
   public void requestClose() {
     serviceState.requestClose(this);
+  }
+
+  public String getLookupName() {
+    return lookupName;
+  }
+
+  /**
+   * Specify the lookup name (if required) when adding this service as a shared component.
+   * <p>
+   * If you don't know what to fill in here, leave it blank, and the adapter will use the unique-id instead.
+   * </p>
+   * 
+   * @param lookupName the lookup name.
+   */
+  public void setLookupName(String lookupName) {
+    this.lookupName = lookupName;
   }
 
 }

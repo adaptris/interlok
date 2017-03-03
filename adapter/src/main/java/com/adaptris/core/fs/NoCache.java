@@ -29,6 +29,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("fs-no-processed-item-cache")
 public class NoCache implements ProcessedItemCache {
+  
+  private String uniqueId;
 
   public NoCache() {
   }
@@ -100,5 +102,13 @@ public class NoCache implements ProcessedItemCache {
 
   @Override
   public void evict() {
+  }
+
+  public String getUniqueId() {
+    return uniqueId;
+  }
+
+  public void setUniqueId(String uniqueId) {
+    this.uniqueId = uniqueId;
   }
 }

@@ -8,13 +8,6 @@ import com.adaptris.core.JndiBindable;
 
 public interface TransactionManager extends AdaptrisComponent, JndiBindable {
   
-  /**
-   * Get the unique-id that is associated with this connection.
-   *
-   * @return the unique-id
-   */
-  String getUniqueId();
-  
   void registerXAResource(String name, XAConnectionFactory connectionFactory) throws Exception;
   
   void deRegisterXAResource(String name, XAConnectionFactory connectionFactory) throws Exception;

@@ -16,10 +16,16 @@
 
 package com.adaptris.core.services.metadata;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.FormattedMetadataDestination;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.metadata.ElementFormatter;
+import com.adaptris.core.metadata.ElementKeyAndValueFormatter;
 
 public class AddFormattedMetadataServiceTest extends MetadataServiceExample {
 
@@ -64,5 +70,23 @@ public class AddFormattedMetadataServiceTest extends MetadataServiceExample {
     return service;
   }
 
+  /**
+   * Test the default behaviour of the ElementKeyAndValueFormatter.
+   * 
+   * @throws Exception If there is a problem during the test.
+   */
+  public void testElementFormatter() throws Exception {
+    AddFormattedMetadataService service = retrieveObjectForSampleConfig();
+    service.setFormatString("%s ; %s");
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+
+    msg.addMetadata("MetadataKey1", "Hello");
+    msg.addMetadata("MetadataKey2", "World");
+    service.setElementFormatter(new ElementKeyAndValueFormatter());
+
+    service.doService(msg);
+    // {destinationMetadataKey=[MetadataKey1=Hello] = [MetadataKey2=World], MetadataKey1=Hello, MetadataKey2=World}
+    assertEquals("MetadataKey1=Hello ; MetadataKey2=World", msg.getMessageHeaders().get("destinationMetadataKey"));
+  }
 
 }

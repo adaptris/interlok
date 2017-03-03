@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.MetadataCollection;
 import com.adaptris.core.MetadataElement;
+import com.adaptris.core.metadata.RemoveAllMetadataFilter;
 
 /**
  * Class that abstracts the handling of AdaptrisMessage metadata and JMS Headers away from the MessageTypeTranslator.
@@ -201,17 +202,16 @@ public class MetadataHandler {
    * @throws JMSException
    */
   public final AdaptrisMessage moveMetadata(Message in, AdaptrisMessage out) throws JMSException {
-    if (context.moveMetadata()) {
+    if (!(context.metadataFilter() instanceof RemoveAllMetadataFilter)) {
       MetadataCollection metadata = createMetadataCollection(in);
       MetadataCollection filtered = context.metadataFilter().filter(metadata);
       for (MetadataElement e : filtered) {
         out.addMetadata(e);
       }
-      if (!isEmpty(in.getStringProperty(MESSAGE_UNIQUE_ID_KEY))) {
-        out.setUniqueId(in.getStringProperty(MESSAGE_UNIQUE_ID_KEY));
-      }
     }
-
+    if (!isEmpty(in.getStringProperty(MESSAGE_UNIQUE_ID_KEY))) {
+      out.setUniqueId(in.getStringProperty(MESSAGE_UNIQUE_ID_KEY));
+    }
     if (context.moveJmsHeaders()) {
       this.moveJmsHeaders(in, out);
     }
@@ -262,16 +262,14 @@ public class MetadataHandler {
    */
   public final Message moveMetadata(AdaptrisMessage in, Message out) throws JMSException {
 
-    if (context.moveMetadata()) {
-      MetadataCollection metadataCollection = context.metadataFilter().filter(in);
-      for (MetadataElement element : metadataCollection) {
-        if (!isReserved(element.getKey())) {
-          log.trace("Setting JMS Metadata " + element);
-          out.setStringProperty(element.getKey(), element.getValue());
-        }
+    MetadataCollection metadataCollection = context.metadataFilter().filter(in);
+    for (MetadataElement element : metadataCollection) {
+      if (!isReserved(element.getKey())) {
+        log.trace("Setting JMS Metadata " + element);
+        out.setStringProperty(element.getKey(), element.getValue());
       }
-      out.setStringProperty(MESSAGE_UNIQUE_ID_KEY, in.getUniqueId());
     }
+    out.setStringProperty(MESSAGE_UNIQUE_ID_KEY, in.getUniqueId());
     if (context.moveJmsHeaders()) {
       moveJmsHeaders(in, out);
     }

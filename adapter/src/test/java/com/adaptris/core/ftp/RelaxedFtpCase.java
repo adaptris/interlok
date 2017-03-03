@@ -37,6 +37,7 @@ import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.SafeGuidGenerator;
 import com.adaptris.util.TimeInterval;
 
+@SuppressWarnings("deprecation")
 public abstract class RelaxedFtpCase extends FtpConsumerExample {
   private static final TimeInterval DEFAULT_QUIET_PERIOD = new TimeInterval(1L, TimeUnit.SECONDS);
   protected static final String COLON = ":";
@@ -289,7 +290,7 @@ public abstract class RelaxedFtpCase extends FtpConsumerExample {
         MetadataFileNameCreator mfc = new MetadataFileNameCreator();
         mfc.setDefaultName(new GuidGenerator().getUUID() + ".txt");
         mfc.setMetadataKey(new GuidGenerator().getUUID());
-        ftpProducer.setFileNameCreator(mfc);
+        ftpProducer.setFilenameCreator(mfc);
         produce(new StandaloneProducer(createConnection(), ftpProducer), count);
         waitForMessages(listener, count);
 

@@ -12,11 +12,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.logging.jmx;
 
-import java.lang.management.ManagementFactory;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -46,17 +45,17 @@ public class JmxLogger {
     notifier = new JmxLoggingNotification(lines, errors);
   }
 
-  public synchronized void start() throws InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException {
+  public synchronized void start() throws InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException, InstanceNotFoundException {
     queueProducer = Executors.newCachedThreadPool();
-    this.setupQueueConsumer();
-    ManagementFactory.getPlatformMBeanServer().registerMBean(notifier, loggerObjectName);
+    setupQueueConsumer();
+    JmxLoggerRegistry.registerJmxLogger(loggerObjectName, this, notifier);
     started = true;
   }
 
   public synchronized void stop() throws MBeanRegistrationException, InstanceNotFoundException {
     queueProducer.shutdownNow();
     queueConsumer.shutdownNow();
-    ManagementFactory.getPlatformMBeanServer().unregisterMBean(loggerObjectName);
+    JmxLoggerRegistry.unregisterJmxLogger(loggerObjectName, this);
     started = false;
   }
 
@@ -69,6 +68,7 @@ public class JmxLogger {
       return;
     }
     queueProducer.execute(new Runnable() {
+      @Override
       public void run() {
         queue.put(event);
       }
@@ -78,6 +78,7 @@ public class JmxLogger {
   private void setupQueueConsumer() {
     queueConsumer = Executors.newSingleThreadExecutor();
     queueConsumer.execute(new Runnable() {
+      @Override
       public void run() {
         try {
           while (true) {

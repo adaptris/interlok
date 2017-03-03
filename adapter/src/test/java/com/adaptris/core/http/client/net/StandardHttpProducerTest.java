@@ -38,10 +38,8 @@ import com.adaptris.core.common.MetadataStreamOutputParameter;
 import com.adaptris.core.http.HttpConstants;
 import com.adaptris.core.http.HttpProducerExample;
 import com.adaptris.core.http.MetadataContentTypeProvider;
-import com.adaptris.core.http.auth.ConfiguredAuthorizationHeader;
 import com.adaptris.core.http.auth.ConfiguredUsernamePassword;
 import com.adaptris.core.http.auth.HttpAuthenticator;
-import com.adaptris.core.http.auth.MetadataAuthorizationHeader;
 import com.adaptris.core.http.auth.MetadataUsernamePassword;
 import com.adaptris.core.http.client.ConfiguredRequestMethodProvider;
 import com.adaptris.core.http.client.MetadataRequestMethodProvider;
@@ -414,7 +412,6 @@ public class StandardHttpProducerTest extends HttpProducerExample {
   public void testRequest_GetMethod_NonZeroBytes_WithErrorResponse() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     HttpConnection jc = HttpHelper.createConnection();
-    jc.setSendServerVersion(true);
     MessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
 
     ServiceList services = new ServiceList();

@@ -24,7 +24,6 @@ import java.io.Reader;
 import java.io.Writer;
 
 import javax.xml.namespace.NamespaceContext;
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -44,7 +43,6 @@ import com.adaptris.util.text.xml.Resolver;
 import com.adaptris.util.text.xml.Validator;
 import com.adaptris.util.text.xml.XPath;
 import com.adaptris.util.text.xml.XmlTransformerFactory;
-import com.adaptris.util.text.xml.XmlTransformer;
 import com.adaptris.util.text.xml.XsltTransformerFactory;
 
 /**
@@ -219,19 +217,6 @@ public class XmlUtils {
    */
   public void setDestination(OutputStream wtr) {
     out = new StreamResult(wtr);
-  }
-
-  /**
-   * Method which transforms the source document, using the stylesheet found at the system id specified.
-   * 
-   * @deprecated since 3.1.0 with no replacement.
-   * @param xsl the style sheet
-   * @throws Exception if there was a failure to create a transformer.
-   */
-  @Deprecated
-  public void transform(String xsl) throws Exception {
-    Transformer transformer = xmlTransformerFactory.createTransformer(xsl, entityResolver);
-    new XmlTransformer().transform(transformer, (new DOMSource(currentDoc)), out, xsl);
   }
 
   /**
@@ -752,22 +737,6 @@ public class XmlUtils {
     // of.setLineWidth(0);
     // XMLSerializer xs = new XMLSerializer(writer, of);
     // xs.serialize(docToWrite);
-  }
-
-  /**
-   * Method which enables the creation of a new DOM Document, should you wish to
-   * create a DOM Object from scratch
-   *
-   * @throws Exception on error.
-   * @return a node representing the Document.
-   * @deprecated since 3.1.0 with no replacement.
-   * 
-   */
-  @Deprecated
-  public static Node createDocument() throws Exception {
-    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-    DocumentBuilder db = dbf.newDocumentBuilder();
-    return db.newDocument();
   }
 
   public Document getCurrentDoc() {
