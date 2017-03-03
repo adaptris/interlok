@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 
+import org.apache.log4j.LogManager;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.helpers.Loader;
 import org.apache.log4j.xml.DOMConfigurator;
@@ -129,5 +130,10 @@ final class LegacyLog4jConfigurator extends LoggingConfigurator {
 
     }
     return url;
+  }
+
+  @Override
+  public void requestShutdown() {
+    LogManager.shutdown();
   }
 }

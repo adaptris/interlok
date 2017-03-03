@@ -22,6 +22,7 @@ import static com.adaptris.core.management.Constants.DBG;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import com.adaptris.core.management.logging.LoggingConfigurator;
 import com.adaptris.core.runtime.AdapterManagerMBean;
 import com.adaptris.core.util.ManagedThreadFactory;
 
@@ -87,9 +88,10 @@ abstract class CmdLineBootstrap {
       launchAdapter(bootstrap, startQuietly);
     }
     else {
+      // INTERLOK-1455 Shutdown the logging subsystem if we're only just doing a config check.
+      LoggingConfigurator.newConfigurator().requestShutdown();
       // No starting an adapter, so just terminate.
       System.err.println("Config check only; terminating");
-      System.exit(0);
     }
   }
 

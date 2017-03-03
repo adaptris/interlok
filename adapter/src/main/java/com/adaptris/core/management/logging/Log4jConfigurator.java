@@ -20,8 +20,10 @@ import static com.adaptris.core.management.Constants.DBG;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.LoggerContext;
 
 /**
@@ -67,4 +69,18 @@ final class Log4jConfigurator extends LoggingConfigurator {
     return result;
   }
 
+  @Override
+  public void requestShutdown() {
+    if (DBG) System.err.println("(Info) Log4j2Init.shutdown()");
+    LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+    Map<String, Appender> appenders = ctx.getConfiguration().getAppenders();
+    for (String s : appenders.keySet()) {
+      Appender app = appenders.get(s);
+      if (DBG) System.err.println("(Info) Stopping " + app.getClass());
+      app.stop();
+    }
+    // INTERLOK-1455 appears that
+    // ctx.terminate()
+    // or LogManager.shutdown() don't quite work exactly as expected.
+  }
 }
