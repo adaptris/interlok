@@ -18,9 +18,7 @@ package com.adaptris.core.services.metadata;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
-import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 
@@ -53,17 +51,6 @@ public class PayloadFromMetadataTest extends MetadataServiceExample {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("zzzzzzzz");
     msg.addMetadata(DEFAULT_METADATA_KEY, "Hello");
     return msg;
-  }
-
-  public void testInit() throws Exception {
-    PayloadFromMetadataService service = new PayloadFromMetadataService();
-    try {
-      LifecycleHelper.init(service);
-      fail();
-    }
-    catch (CoreException expected) {
-      ;
-    }
   }
 
   public void testValid() throws Exception {
