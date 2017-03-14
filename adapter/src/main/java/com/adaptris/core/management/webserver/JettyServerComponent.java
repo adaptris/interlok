@@ -151,8 +151,10 @@ public class JettyServerComponent implements ManagementComponent {
     @Override
     void start() {
       try {
-        server.start();
-        log.debug(JettyServerComponent.class.getSimpleName() + " Started");
+        if (server.isStopped()) {
+          server.start();
+          log.debug(JettyServerComponent.class.getSimpleName() + " Started");
+        }
       } catch (final Exception ex) {
         log.error("Exception while starting Jetty", ex);
       }

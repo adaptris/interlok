@@ -48,20 +48,20 @@ public class ShutdownHandler extends Thread {
 
   private transient Logger log = LoggerFactory.getLogger(Thread.class.getName());
 
-  private transient AdapterRegistryMBean adapterRegistry;
   private transient Thread mainThread;
   private transient ManagedThreadFactory threadFactory = new ManagedThreadFactory();
+  private transient BootstrapProperties bootProperties;
 
   /**
    * <p>
    * Creates a new instance.
    * </p>
    *
-   * @param controller the adapter to shut down
+   * @param bp the adapter to shut down
    */
-  public ShutdownHandler(AdapterRegistryMBean controller) {
+  public ShutdownHandler(BootstrapProperties bp) throws Exception {
     mainThread = Thread.currentThread();
-    adapterRegistry = controller;
+    this.bootProperties = bp;
   }
 
   /**
@@ -80,6 +80,7 @@ public class ShutdownHandler extends Thread {
     System.out.println("Running ShutdownHandler, please wait...");
     log.info("Running ShutdownHandler...");
     try {
+      AdapterRegistryMBean adapterRegistry = bootProperties.getConfigManager().getAdapterRegistry();
       log.trace("Sending Shutdown events for all adapters");
       AdapterRegistry.sendShutdownEvent(adapterRegistry.getAdapters());
       log.info("Shutting down Adapter(s)");
@@ -135,8 +136,8 @@ public class ShutdownHandler extends Thread {
     } finally {
       log.info("Stopping Management Components.");
       try {
-        ManagementComponentFactory.stopCreated();
-        ManagementComponentFactory.closeCreated();
+        ManagementComponentFactory.stopCreated(bootProperties);
+        ManagementComponentFactory.closeCreated(bootProperties);
       } catch (Exception ex) {
         log.warn("Could not stop management components, logging for informational purposes only.", ex);
       }

@@ -182,7 +182,9 @@ public class JmxRemoteComponent extends JmxComponentImpl {
 
     @Override
     public void start() throws Exception {
-      jmxServer.start();
+      if (!jmxServer.isActive()) {
+        jmxServer.start();
+      }
     }
 
     @Override
@@ -201,8 +203,13 @@ public class JmxRemoteComponent extends JmxComponentImpl {
     @Override
     public void register() throws Exception {
       MBeanServer mBeanServer = JmxHelper.findMBeanServer(config);
-      mBeanServer.registerMBean(jmxServer, serverName);
-      log.trace("MBean [" + serverName + "] registered");
+      try {
+        mBeanServer.registerMBean(jmxServer, serverName);
+        log.trace("MBean [" + serverName + "] registered");
+      } catch (Exception e) {
+        unregister();
+        register();
+      }
     }
 
   }
