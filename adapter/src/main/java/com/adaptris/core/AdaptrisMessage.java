@@ -380,4 +380,17 @@ public interface AdaptrisMessage extends InterlokMessage {
    * @return true if the passed message is equivalent for tracking
    */
   boolean equivalentForTracking(AdaptrisMessage other);
+
+  /**
+   * Resolve against this message's metadata.
+   * 
+   * <p>
+   * This is a helper method that allows you to pass in {@code %message{key1}} and get the metadata associated {@code key1}. Strings
+   * that do not match that format will be returned as is.
+   * </p>
+   * 
+   * @param s string to resolve.
+   * @return the original string, an item of metadata, or null (if the metadata key does not exist).
+   */
+  String resolve(String s);
 }
