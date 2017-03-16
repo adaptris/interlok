@@ -84,7 +84,7 @@ abstract class CmdLineBootstrap {
     AdapterManagerMBean adapter = bootstrap.createAdapter();
     if (!configCheckOnly()) {
       bootstrap.init(adapter);
-      Runtime.getRuntime().addShutdownHook(new ShutdownHandler(bootProperties.getConfigManager().getAdapterRegistry()));
+      Runtime.getRuntime().addShutdownHook(new ShutdownHandler(bootProperties));
       launchAdapter(bootstrap, startQuietly);
     }
     else {

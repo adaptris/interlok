@@ -17,7 +17,6 @@
 package com.adaptris.core.management;
 
 import java.util.List;
-import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,9 +39,8 @@ public class ManagementComponentFactoryTest extends BaseCase {
     try {
       p.setProperty(Constants.CFG_KEY_MANAGEMENT_COMPONENT, "jmx");
       p.setProperty(Constants.CFG_KEY_JMX_SERVICE_URL_KEY, "service:jmx:jmxmp://localhost:" + port);
-      ManagementComponentFactory.create(p);
-      final List<Object> list = ManagementComponentFactory.getManagementComponents();
-      assertEquals(4, list.size());
+      final List<Object> list = ManagementComponentFactory.create(p);
+      assertEquals(1, list.size());
       // assertEquals(JmxRemoteComponent.class, list.get(0).getClass());
       testLifecycle(list, p, false);
     } finally {
@@ -56,8 +54,7 @@ public class ManagementComponentFactoryTest extends BaseCase {
     try {
       p.setProperty(Constants.CFG_KEY_MANAGEMENT_COMPONENT, "jetty");
       p.setProperty(WebServerPropertiesEnum.PORT.getOverridingBootstrapPropertyKey(), String.valueOf(port));
-      ManagementComponentFactory.create(p);
-      final List<Object> list = ManagementComponentFactory.getManagementComponents();
+      final List<Object> list = ManagementComponentFactory.create(p);
       assertEquals(1, list.size());
       // assertEquals(JettyServerComponent.class, list.get(0).getClass());
       testLifecycle(list, p, true);
@@ -71,9 +68,9 @@ public class ManagementComponentFactoryTest extends BaseCase {
     final int port = PortManager.nextUnusedPort(8080);
     try {
       p.setProperty(Constants.CFG_KEY_MANAGEMENT_COMPONENT, DummyManagementComponent.class.getCanonicalName() + ":" + "jmx");
-      ManagementComponentFactory.create(p);
-      final List<Object> list = ManagementComponentFactory.getManagementComponents();
-      assertEquals(3, list.size());
+
+      final List<Object> list = ManagementComponentFactory.create(p);
+      assertEquals(2, list.size());
       // assertEquals(DummyManagementComponent.class, list.get(0).getClass());
       // assertEquals(JmxRemoteComponent.class, list.get(1).getClass());
       testLifecycle(list, p, false);
@@ -82,20 +79,20 @@ public class ManagementComponentFactoryTest extends BaseCase {
     }
   }
 
-  private void testLifecycle(final List<Object> list, final Properties p, final boolean sleepAWhile) throws Exception {
+  private void testLifecycle(final List<Object> list, final BootstrapProperties p, final boolean sleepAWhile) throws Exception {
     final long aWhile = 500;
-    ManagementComponentFactory.initCreated();
+    ManagementComponentFactory.initCreated(p);
     if (sleepAWhile) {
       Thread.sleep(aWhile);
     }
-    ManagementComponentFactory.startCreated();
+    ManagementComponentFactory.startCreated(p);
     if (sleepAWhile) {
       Thread.sleep(aWhile);
     }
-    ManagementComponentFactory.stopCreated();
+    ManagementComponentFactory.stopCreated(p);
     if (sleepAWhile) {
       Thread.sleep(aWhile);
     }
-    ManagementComponentFactory.closeCreated();
+    ManagementComponentFactory.closeCreated(p);
   }
 }

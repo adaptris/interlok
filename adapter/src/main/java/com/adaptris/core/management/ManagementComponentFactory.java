@@ -25,7 +25,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -48,58 +50,64 @@ public class ManagementComponentFactory {
   private static final String CLASSLOADER_KEY = "classloader";
   private static final ManagementComponentFactory INSTANCE = new ManagementComponentFactory();
 
-  private transient BootstrapProperties bootstrapProperties;
-
-  private final List<Object> managementComponents = new ArrayList<>();
+  private final Map<Properties, List<Object>> managementComponents = new HashMap<>();
 
   private ManagementComponentFactory() {
   }
 
-  public static void create(final BootstrapProperties p) throws Exception {
-    INSTANCE.createComponents(p);
+  public static List<Object> create(final BootstrapProperties p) throws Exception {
+    if (!INSTANCE.getManagementComponents().containsKey(p)) {
+      List<Object> obj = INSTANCE.createComponents(p);
+      INSTANCE.getManagementComponents().put(p,obj );
+    }
+    return INSTANCE.getManagementComponents().get(p);
   }
 
-  public static void initCreated() {
-    INSTANCE.invokeInit();
+  public static void initCreated(BootstrapProperties p) {
+    INSTANCE.invokeInit(p, INSTANCE.getManagementComponents().get(p));
   }
 
-  public static void startCreated() {
-    INSTANCE.invokeCreated("start", new Class[0], new Object[0]);
+  public static void startCreated(BootstrapProperties p) {
+    INSTANCE.invoke(INSTANCE.getManagementComponents().get(p), "start", new Class[0], new Object[0]);
   }
 
-  public static void stopCreated() {
-    INSTANCE.invokeCreated("stop", new Class[0], new Object[0]);
+  public static void stopCreated(BootstrapProperties p) {
+    INSTANCE.invoke(INSTANCE.getManagementComponents().get(p), "stop", new Class[0], new Object[0]);
   }
 
-  public static void closeCreated() {
-    INSTANCE.invokeCreated("destroy", new Class[0], new Object[0]);
+  public static void closeCreated(BootstrapProperties p) {
+    INSTANCE.invoke(INSTANCE.getManagementComponents().get(p), "destroy", new Class[0], new Object[0]);
   }
 
-  public static List<Object> getManagementComponents() {
-    return INSTANCE.managementComponents;
+  private Map<Properties, List<Object>> getManagementComponents() {
+    return managementComponents;
   }
 
-  private void createComponents(final BootstrapProperties p) throws Exception {
-    bootstrapProperties = p;
+  private List<Object> createComponents(final BootstrapProperties p) throws Exception {
+    List<Object> result = new ArrayList<>();
     final String componentList = getPropertyIgnoringCase(p, CFG_KEY_MANAGEMENT_COMPONENT, "");
     if (!isEmpty(componentList)) {
       final String components[] = componentList.split(COMPONENT_SEPARATOR);
       for (final String c : components) {
-        managementComponents.add(resolve(c));
+        result.add(resolve(c, p));
       }
     }
+    return result;
   }
 
-  private void invokeInit() {
-    invokeCreated("init", new Class[] {
+  private void invokeInit(Properties initProperties, List<Object> mgmtComponents) {
+    invoke(mgmtComponents, "init", new Class[] {
       Properties.class
     }, new Properties[] {
-      bootstrapProperties
+        initProperties
     });
   }
 
-  private void invokeCreated(final String methodName, final Class[] paramTypes, final Object[] params) {
-    for (final Object o : managementComponents) {
+  private void invoke(List<Object> objects, final String methodName, final Class[] paramTypes, final Object[] params) {
+    if (objects == null) {
+      return;
+    }
+    for (final Object o : objects) {
       invokeMethod(o, methodName, paramTypes, params);
     }
   }
@@ -127,7 +135,7 @@ public class ManagementComponentFactory {
     return result;
   }
 
-  private Object resolve(final String name) throws Exception {
+  private Object resolve(final String name, BootstrapProperties bootstrapProperties) throws Exception {
     final ClassLoader originalContectClassLoader = Thread.currentThread().getContextClassLoader();
     ClassLoader classLoader = getClass().getClassLoader();
     try (final InputStream in = classLoader.getResourceAsStream(RESOURCE_PATH + name)) {
@@ -159,4 +167,5 @@ public class ManagementComponentFactory {
       Thread.currentThread().setContextClassLoader(originalContectClassLoader);
     }
   }
+
 }

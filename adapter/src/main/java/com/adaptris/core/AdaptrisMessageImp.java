@@ -32,6 +32,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -65,9 +67,12 @@ import com.adaptris.util.KeyValuePairSet;
  */
 public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
-  private IdGenerator guidGenerator;
-  private transient Logger log = LoggerFactory.getLogger(AdaptrisMessage.class);
+  private static final String RESOLVE_REGEXP = "%message\\{([\\w]+)\\}";
 
+  private transient Logger log = LoggerFactory.getLogger(AdaptrisMessage.class);
+  private transient Pattern resolverPattern = Pattern.compile(RESOLVE_REGEXP);
+
+  private IdGenerator guidGenerator;
   // persistent fields
   private String uniqueId;
   private KeyValuePairSet metadata;
@@ -403,6 +408,19 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     }
 
     nextServiceId = s;
+  }
+
+  @Override
+  public String resolve(String s) {
+    if (s == null) {
+      return null;
+    }
+    Matcher m = resolverPattern.matcher(s);
+    String result = s;
+    if (m.matches()) {
+      result = getMetadataValue(m.group(1));
+    }
+    return result;
   }
 
   private MleMarker getNextMleMarker(MessageEventGenerator meg, boolean successful, String confId) {

@@ -23,7 +23,7 @@ package com.adaptris.core.management;
  *
  */
 public final class Constants {
-  public static final boolean DBG = Boolean.getBoolean("adp.bootstrap.debug");
+  public static final boolean DBG = Boolean.getBoolean("adp.bootstrap.debug") || Boolean.getBoolean("interlok.bootstrap.debug");
   public static final boolean ENABLE_JUL_LOGGING_BRIDGE = Boolean.getBoolean("jul.log4j.bridge");
   /**
    * Key representing the name of the file that was used to bootstrap the adapter.
