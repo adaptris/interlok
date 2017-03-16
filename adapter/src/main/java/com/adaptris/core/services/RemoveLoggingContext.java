@@ -39,7 +39,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config remove-logging-context-service
  * 
  */
-@XStreamAlias("remote-logging-context-service")
+@XStreamAlias("remove-logging-context-service")
 @AdapterComponent
 @ComponentProfile(summary = "Remove a mapped diagnostic context for logging; useful for filtering", tag = "service,logging,debug")
 @DisplayOrder(order =
