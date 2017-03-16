@@ -120,6 +120,9 @@ public abstract class ComponentManagerImpl<E extends StateManagedComponent> exte
         catch (Exception e) {
           current.getUncaughtExceptionHandler().uncaughtException(current, e);
         }
+        catch (Throwable t) {
+          current.getUncaughtExceptionHandler().uncaughtException(current, new CoreException(t));
+        }
       }
     });
     sendLifecycleNotification(NOTIF_MSG_INITIALISED, getComponentState());
@@ -152,6 +155,9 @@ public abstract class ComponentManagerImpl<E extends StateManagedComponent> exte
         }
         catch (Exception e) {
           current.getUncaughtExceptionHandler().uncaughtException(current, e);
+        }
+        catch (Throwable t) {
+          current.getUncaughtExceptionHandler().uncaughtException(current, new CoreException(t));
         }
       }
     });
