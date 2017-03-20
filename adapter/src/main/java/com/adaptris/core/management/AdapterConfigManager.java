@@ -29,12 +29,6 @@ import com.adaptris.core.runtime.AdapterRegistryMBean;
  *
  */
 public interface AdapterConfigManager {
-
-  /**
-   * System property that specifies a different {@link AdapterRegistryMBean} implementation to the default.
-   * 
-   */
-  String ADAPTER_REGISTRY_IMPL = "com.adaptris.adapter.registry.impl";
   
   /**
    * Bootstrap property that lists the configuration pre-processors separated by colons.

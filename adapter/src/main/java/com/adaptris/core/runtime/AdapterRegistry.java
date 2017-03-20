@@ -15,32 +15,32 @@
  */
 
 package com.adaptris.core.runtime;
-import static com.adaptris.core.util.PropertyHelper.getPropertyIgnoringCase;
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.beans.Transient;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
+import javax.management.InstanceNotFoundException;
 import javax.management.JMX;
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.io.IOUtils;
@@ -61,16 +61,8 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.EventFactory;
 import com.adaptris.core.XStreamJsonMarshaller;
-import com.adaptris.core.config.ConfigPreProcessorLoader;
-import com.adaptris.core.config.ConfigPreProcessors;
-import com.adaptris.core.config.DefaultPreProcessorLoader;
 import com.adaptris.core.event.AdapterShutdownEvent;
 import com.adaptris.core.fs.FsHelper;
-import com.adaptris.core.management.BootstrapProperties;
-import com.adaptris.core.management.Constants;
-import com.adaptris.core.management.vcs.RuntimeVersionControl;
-import com.adaptris.core.management.vcs.RuntimeVersionControlLoader;
-import com.adaptris.core.management.vcs.VcsConstants;
 import com.adaptris.core.util.JmxHelper;
 import com.adaptris.util.URLString;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -83,50 +75,34 @@ public class AdapterRegistry implements AdapterRegistryMBean {
   private static final String EXCEPTION_MSG_MBEAN_NULL = "AdapterManagerMBean is null";
   private static final String EXCEPTION_MSG_NO_VCR = "No Runtime Version Control";
 
-  private final Set<ObjectName> registeredAdapters;
+  private final Set<ObjectName> registeredAdapters = new HashSet<ObjectName>();
   private transient ObjectName myObjectName;
   private transient MBeanServer mBeanServer;
   private static transient Logger log = LoggerFactory.getLogger(AdapterRegistry.class);
-  private transient BootstrapProperties config = new BootstrapProperties();
-  private transient ConfigPreProcessorLoader configurationPreProcessorLoader;
-  private transient Map<ObjectName, URLString> configurationURLs;
-  private transient RuntimeVersionControl runtimeVCS;
-  private transient ValidatorFactory validatorFactory = null;
+  private transient Map<ObjectName, URLString> configurationURLs = new HashMap<>();
+  private transient Map<ObjectName, AdapterBuilder> builderByObjectName = new HashMap<>();
+  private transient Map<Properties, AdapterBuilder> builderByProps = new HashMap<>();
+  private transient AdapterBuilder defaultBuilder;
 
   private AdapterRegistry() throws MalformedObjectNameException {
-    registeredAdapters = new HashSet<ObjectName>();
     mBeanServer = JmxHelper.findMBeanServer();
-    configurationPreProcessorLoader = new DefaultPreProcessorLoader();
-    configurationURLs = new HashMap<ObjectName, URLString>();
+    myObjectName = ObjectName.getInstance(STANDARD_REGISTRY_JMX_NAME);
   }
 
-  public AdapterRegistry(BootstrapProperties config) throws MalformedObjectNameException {
-    this();
-    this.config = config;
-    generateObjectName();
-    runtimeVCS = RuntimeVersionControlLoader.getInstance().load(config.getProperty(VcsConstants.VSC_IMPLEMENTATION));
-    if (runtimeVCS == null) {
-      runtimeVCS = RuntimeVersionControlLoader.getInstance().load();
-    }
-    if (runtimeVCS != null) {
-      runtimeVCS.setBootstrapProperties(config);
-    }
-    boolean enableValidation =
-        Boolean.valueOf(getPropertyIgnoringCase(config, Constants.CFG_KEY_VALIDATE_CONFIG, Constants.DEFAULT_VALIDATE_CONFIG))
-        .booleanValue();
-    if (enableValidation) {
-      validatorFactory = Validation.buildDefaultValidatorFactory();
-    }
-  }
-
-  private void generateObjectName() throws MalformedObjectNameException {
-    String name = config.getProperty(CFG_KEY_REGISTRY_JMX_ID);
-    if (!isEmpty(name)) {
-      myObjectName = ObjectName.getInstance(JMX_REGISTRY_TYPE + REGISTRY_PREFIX + name);
+  public static AdapterRegistryMBean findInstance(Properties cfg) throws MalformedObjectNameException, CoreException {
+    MBeanServer mbs = JmxHelper.findMBeanServer();
+    AdapterRegistryMBean result = null;
+    ObjectName objName = ObjectName.getInstance(STANDARD_REGISTRY_JMX_NAME);
+    if (mbs.isRegistered(objName)) {
+      result = JMX.newMBeanProxy(mbs, objName, AdapterRegistryMBean.class);
+      result.addConfiguration(cfg);
     }
     else {
-      myObjectName = ObjectName.getInstance(STANDARD_REGISTRY_JMX_NAME);
+      result = new AdapterRegistry();
+      result.registerMBean();
+      result.addConfiguration(cfg);
     }
+    return result;
   }
 
   @Override
@@ -149,6 +125,9 @@ public class AdapterRegistry implements AdapterRegistryMBean {
   public void unregisterMBean() throws CoreException {
     try {
       JmxHelper.unregister(createObjectName());
+      for (AdapterBuilder builder : builderByProps.values()) {
+        builder.unregisterMBean();
+      }
     }
     catch (Exception e) {
       throw new CoreException(e);
@@ -195,11 +174,6 @@ public class AdapterRegistry implements AdapterRegistryMBean {
   @Override
   public void putConfigurationURL(ObjectName adapterName, String configUrl) throws IOException {
     putConfigurationURL(adapterName, new URLString(configUrl));
-  }
-
-  // For testing so we don't really care
-  void setConfigurationPreProcessorLoader(ConfigPreProcessorLoader cppl) {
-    configurationPreProcessorLoader = cppl;
   }
 
   @Override
@@ -256,8 +230,7 @@ public class AdapterRegistry implements AdapterRegistryMBean {
   @Override
   public ObjectName createAdapter(URLString url) throws IOException, MalformedObjectNameException, CoreException {
     assertNotNull(url, EXCEPTION_MSG_URL_NULL);
-    String xml = loadPreProcessors().process(url.getURL());
-    return register((Adapter) DefaultMarshaller.getDefaultMarshaller().unmarshal(xml), url);
+    return defaultBuilder.createAdapter(url);
   }
 
   @Override
@@ -269,8 +242,7 @@ public class AdapterRegistry implements AdapterRegistryMBean {
   @Override
   public ObjectName createAdapter(String xml) throws IOException, MalformedObjectNameException, CoreException {
     assertNotNull(xml, EXCEPTION_MSG_XML_NULL);
-    xml = loadPreProcessors().process(xml);
-    return register((Adapter) DefaultMarshaller.getDefaultMarshaller().unmarshal(xml), null);
+    return defaultBuilder.createAdapter(xml);
   }
 
   @Override
@@ -295,9 +267,8 @@ public class AdapterRegistry implements AdapterRegistryMBean {
     }
   }
 
-  private ObjectName register(Adapter adapter, URLString configUrl) throws CoreException, MalformedObjectNameException {
-    Adapter adapterToRegister = validate(adapter);
-    AdapterManager manager = new AdapterManager(adapterToRegister);
+  ObjectName register(Adapter adapter, URLString configUrl) throws CoreException, MalformedObjectNameException {
+    AdapterManager manager = new AdapterManager(adapter);
     ObjectName adapterName = manager.createObjectName();
     addRegisteredAdapter(adapterName);
     manager.registerMBean();
@@ -305,32 +276,7 @@ public class AdapterRegistry implements AdapterRegistryMBean {
     return adapterName;
   }
 
-  private Adapter validate(Adapter adapter) throws CoreException {
-    if (validatorFactory == null) {
-      return adapter;
-    }
-    Validator validator = validatorFactory.getValidator();
-    checkViolations(validator.validate(adapter));
-    return adapter;
-  }
 
-  private void checkViolations(Set<ConstraintViolation<Adapter>> violations) throws CoreException {
-    StringWriter writer = new StringWriter();
-    if (violations.size() == 0) {
-      return;
-    }
-    try (PrintWriter p = new PrintWriter(writer)) {
-      p.println();
-      for (ConstraintViolation v : violations) {
-        String logString = String.format("Adapter Validation Error: [%1$s]=[%2$s]", v.getPropertyPath(), v.getMessage());
-        p.println(logString);
-        log.warn(logString);
-      }
-    } finally {
-      IOUtils.closeQuietly(writer);
-    }
-    throw new CoreException(writer.toString());
-  }
 
   @Override
   public void destroyAdapter(AdapterManagerMBean adapter) throws CoreException, MalformedObjectNameException {
@@ -417,10 +363,6 @@ public class AdapterRegistry implements AdapterRegistryMBean {
     }
   }
 
-  private ConfigPreProcessors loadPreProcessors() throws CoreException {
-    return configurationPreProcessorLoader.load(config);
-  }
-
   private static void assertNotNull(Object o, String msg) throws CoreException {
     if (o == null) {
       throw new CoreException(msg);
@@ -429,27 +371,31 @@ public class AdapterRegistry implements AdapterRegistryMBean {
 
   @Override
   public Properties getConfiguration() {
-    return new Properties(config);
+    return defaultBuilder.getConfiguration();
   }
 
   @Override
   public String getVersionControl() {
-    return runtimeVCS != null ? runtimeVCS.getImplementationName() : null;
+    String name = null;
+    for (AdapterBuilder builder : builderByProps.values()) {
+      name = builder.getVersionControl();
+      if (name != null) break;
+    }
+    return name;
   }
 
   @Override
   public void reloadFromVersionControl()
       throws MalformedObjectNameException, CoreException, MalformedURLException, IOException {
-    assertNotNull(runtimeVCS, EXCEPTION_MSG_NO_VCR);
-    // first of all destroy all adapters.
+
+    assertNotNull(getVersionControl(), EXCEPTION_MSG_NO_VCR);
     for (ObjectName o : getAdapters()) {
       destroyAdapter(o);
     }
-    // Next update runtimeVCS
-    runtimeVCS.update();
-    // Reconfigure Logging; likely to not be required because we create and watch...
-    // config.reconfigureLogging();
-    createAdapter(new URLString(config.findAdapterResource()));
+    for (AdapterBuilder builder : builderByProps.values()) {
+      builder.updateVCS();
+      builder.createAdapter();
+    }
   }
 
   @Override
@@ -457,19 +403,54 @@ public class AdapterRegistry implements AdapterRegistryMBean {
     for (ObjectName o : getAdapters()) {
       destroyAdapter(o);
     }
-    return new HashSet<ObjectName>(Arrays.asList(createAdapter(new URLString(config.findAdapterResource()))));
+    Set<ObjectName> result = new HashSet<>();
+    for (AdapterBuilder builder : builderByProps.values()) {
+      result.add(builder.createAdapter());
+    }
+    return result;
   }
 
-  // For testing.
-  void overrideRuntimeVCS(RuntimeVersionControl newVcs) {
-    runtimeVCS = newVcs;
+  @Override
+  public ObjectName reloadFromConfig(ObjectName obj) throws MalformedObjectNameException, CoreException, IOException {
+    return reload(obj, false);
+  }
+
+  @Override
+  public ObjectName reloadFromVersionControl(ObjectName obj) throws MalformedObjectNameException, CoreException, IOException {
+    return reload(obj, true);
+  }
+
+  private ObjectName reload(ObjectName obj, boolean vcsUpdate) throws MalformedObjectNameException, CoreException, IOException {
+    destroyAdapter(obj);
+    ObjectName newAdapter = null;
+    synchronized (builderByObjectName) {
+      AdapterBuilder builder = builderByObjectName.containsKey(obj) ? builderByObjectName.get(obj) : defaultBuilder;
+      if (vcsUpdate) builder.updateVCS();
+      newAdapter = builder.createAdapter();
+      builderByObjectName.put(newAdapter, builder);
+    }
+    return newAdapter;
+  }
+
+  @Override
+  public void addConfiguration(Properties cfg) throws MalformedObjectNameException, CoreException {
+    synchronized (builderByProps) {
+      AdapterBuilder builder = builderByProps.containsKey(cfg) ? builderByProps.get(cfg) : new AdapterBuilder(this, cfg);
+      if (defaultBuilder == null) {
+        defaultBuilder = builder;
+      }
+      if (!mBeanServer.isRegistered(builder.createObjectName())) {
+        builder.registerMBean();
+      }
+      builderByProps.put(cfg, builder);
+    }
   }
 
   @Override
   public void validateConfig(String config) throws CoreException {
     try {
       assertNotNull(config, EXCEPTION_MSG_XML_NULL);
-      String xml = loadPreProcessors().process(config);
+      String xml = defaultBuilder.loadPreProcessors().process(config);
       DefaultMarshaller.getDefaultMarshaller().unmarshal(xml);
     } catch (CoreException e) {
       // We do this so that we don't have nested causes as it's possible that
@@ -537,4 +518,35 @@ public class AdapterRegistry implements AdapterRegistryMBean {
     return new XStreamJsonMarshaller().marshal(classDescriptor);
   }
 
+  @Override
+  public Set<ObjectName> getBuilders() {
+    Set<ObjectName> result = new HashSet<>();
+    for (AdapterBuilder b : builderByProps.values()) {
+      result.add(b.createObjectName());
+    }
+    return result;
+  }
+
+  @Override
+  public ObjectName getBuilder(ObjectName p) throws InstanceNotFoundException {
+    AdapterBuilder b = builderByObjectName.get(p);
+    if (b == null) {
+      throw new InstanceNotFoundException("No Builder for " + p);
+    }
+    return b.createObjectName();
+  }
+
+  @Override
+  public AdapterBuilderMBean getBuilder(Properties p) throws InstanceNotFoundException {
+    AdapterBuilder b = builderByProps.get(p);
+    if (b == null) {
+      throw new InstanceNotFoundException("No Builder for " + p);
+    }
+    return b;
+  }
+
+
+  Set<AdapterBuilder> builders() {
+    return new HashSet<AdapterBuilder>(builderByProps.values());
+  }
 }
