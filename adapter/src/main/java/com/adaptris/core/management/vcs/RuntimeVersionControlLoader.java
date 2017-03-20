@@ -29,7 +29,6 @@ public class RuntimeVersionControlLoader {
 
   private transient Logger log = LoggerFactory.getLogger(RuntimeVersionControlLoader.class);
   private ServiceLoader<RuntimeVersionControl> runtimeVersionControls;
-  private transient RuntimeVersionControl usableVersionControl = null;
 
   private RuntimeVersionControlLoader() {
     runtimeVersionControls = ServiceLoader.load(RuntimeVersionControl.class);
@@ -42,32 +41,33 @@ public class RuntimeVersionControlLoader {
     return INSTANCE;
   }
 
-  public synchronized RuntimeVersionControl load() {
-    if (usableVersionControl == null) {
-      usableVersionControl = firstLoad();
-    }
-    return usableVersionControl;
+  public RuntimeVersionControl load() {
+    // INTERLOK-1500
+    return newInstance(loadFirst());
   }
 
-  private RuntimeVersionControl firstLoad() {
-    RuntimeVersionControl returnedVersionControlSystem = null;
-
-    int systemsFound = 0;
+  private RuntimeVersionControl loadFirst() {
+    RuntimeVersionControl result = null;
     for(RuntimeVersionControl vcs : runtimeVersionControls) {
-      systemsFound ++;
-      log.info("Found version control system for [{}]", vcs.getImplementationName());
-      returnedVersionControlSystem = vcs;
+      log.trace("Found version control system for [{}]", vcs.getImplementationName());
+      result = vcs;
+      break;
     }
+    return newInstance(result);
+  }
 
-    if(systemsFound == 0) {
-      log.info("No version control systems found.");
-      return null;
-    } else if(systemsFound == 1) {
-      return returnedVersionControlSystem;
-    } else {
-      log.info("Multiple version control systems found, using [{}]", returnedVersionControlSystem.getImplementationName());
-      return returnedVersionControlSystem;
+  private RuntimeVersionControl newInstance(RuntimeVersionControl vcs) {
+    // This is a dirty shim so that we can have multiple RVC's in play
+    // ServiceLoader only loads a single instance; but we need multiple instances.
+    RuntimeVersionControl result = vcs;
+    try {
+      if (result != null) {
+        result = result.getClass().newInstance();
+      }
     }
+    catch (InstantiationException | IllegalAccessException e) {
+    }
+    return result;
   }
 
   /**
@@ -112,8 +112,8 @@ public class RuntimeVersionControlLoader {
         break;
       }
     }
-
-    return returnedVcs;
+    // INTERLOK-1500
+    return newInstance(returnedVcs);
   }
 
 }
