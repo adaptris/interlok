@@ -551,4 +551,18 @@ public abstract class AdaptrisMessageCase {
   }
 
 
+  @Test
+  public void testResolve() throws Exception {
+    AdaptrisMessage msg = createMessage();
+    assertNull(msg.resolve(null));
+    assertEquals("", msg.resolve(""));
+    assertEquals("Hello World", msg.resolve("Hello World"));
+    assertEquals(VAL1, msg.resolve("%message{key1}"));
+    assertEquals(VAL2, msg.resolve("%message{key2}"));
+    assertEquals(String.format("%s_%s", VAL1, VAL2), msg.resolve("%message{key1}_%message{key2}"));
+    assertEquals(String.format("%s_%s", VAL1, VAL1), msg.resolve("%message{key1}_%message{key1}"));
+    assertEquals(String.format("SELECT * FROM TABLE where key1=%s and key2=%s", VAL1, VAL2),
+        msg.resolve("SELECT * FROM TABLE where key1=%message{key1} and key2=%message{key2}"));
+  }
+
 }

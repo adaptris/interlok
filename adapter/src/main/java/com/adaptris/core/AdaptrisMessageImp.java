@@ -67,7 +67,9 @@ import com.adaptris.util.KeyValuePairSet;
  */
 public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
-  private static final String RESOLVE_REGEXP = "%message\\{([\\w]+)\\}";
+  // If we have %message{key1}%message{key2} group(1) is key2
+  // Which is then replaced so it all works out int the end.
+  private static final String RESOLVE_REGEXP = "^.*%message\\{([\\w]+)\\}.*$";
 
   private transient Logger log = LoggerFactory.getLogger(AdaptrisMessage.class);
   private transient Pattern resolverPattern = Pattern.compile(RESOLVE_REGEXP);
@@ -415,10 +417,14 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     if (s == null) {
       return null;
     }
-    Matcher m = resolverPattern.matcher(s);
     String result = s;
-    if (m.matches()) {
-      result = getMetadataValue(m.group(1));
+    Matcher m = resolverPattern.matcher(s);
+    while (m.matches()) {
+      String key = m.group(1);
+      String metadataValue = getMetadataValue(key);
+      String toReplace = "%message{" + key + "}";
+      result = result.replace(toReplace, metadataValue);
+      m = resolverPattern.matcher(result);
     }
     return result;
   }
