@@ -324,9 +324,7 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
    * 
    * @return the version control system that is currently configured for adapter runtime (null if none is available).
    * @since 3.0.3
-   * @deprecated since 3.6.1 get it via {@link #getBuilder(ObjectName)} instead.
    */
-  @Deprecated
   String getVersionControl();
 
   /**
@@ -428,6 +426,15 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
    * @throws InstanceNotFoundException if there was no associated builder.
    */
   ObjectName getBuilder(ObjectName p) throws InstanceNotFoundException;
+
+  /**
+   * Get a reference to the {@link AdapterBuilderMBean} instance that built the corresponding {@link AdapterManagerMBean} instance.
+   * 
+   * @param p a reference to the {@link AdapterManagerMBean}
+   * @return a reference to the {@link AdapterBuilderMBean}
+   * @throws InstanceNotFoundException if there was no associated builder.
+   */
+  AdapterBuilderMBean getBuilderMBean(ObjectName p) throws InstanceNotFoundException;
 
   /**
    * Get the {@link AdapterBuilderMBean} associated with given {@code Properties} object.

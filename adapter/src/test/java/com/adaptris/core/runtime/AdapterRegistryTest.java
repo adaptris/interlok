@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Properties;
 
+import javax.management.InstanceNotFoundException;
 import javax.management.JMX;
 import javax.management.ObjectName;
 import javax.naming.Context;
@@ -291,6 +292,8 @@ public class AdapterRegistryTest extends ComponentManagerCase {
         .findInstance(new JunitBootstrapProperties(new Properties()));
     ObjectName objName = myAdapterRegistry.createAdapter(xml);
     assertNotNull(objName);
+    assertNotNull(myAdapterRegistry.getBuilder(objName));
+    assertNotNull(myAdapterRegistry.getBuilderMBean(objName));
     assertTrue(mBeanServer.isRegistered(objName));
     AdapterManagerMBean manager = JMX.newMBeanProxy(mBeanServer, objName, AdapterManagerMBean.class);
     assertNotNull(manager);
@@ -308,6 +311,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     String xml = DefaultMarshaller.getDefaultMarshaller().marshal(adapter);
     ObjectName objName = registry.createAdapter(xml);
     assertNotNull(objName);
+    assertNotNull(registry.getBuilder(objName));
     assertTrue(mBeanServer.isRegistered(objName));
     AdapterManagerMBean manager = JMX.newMBeanProxy(mBeanServer, objName, AdapterManagerMBean.class);
     assertNotNull(manager);
@@ -458,9 +462,16 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     Adapter adapter = createAdapter(adapterName, 2, 2);
     String xml = DefaultMarshaller.getDefaultMarshaller().marshal(adapter);
     ObjectName objName = myAdapterRegistry.createAdapter(xml);
+    assertNotNull(myAdapterRegistry.getBuilder(objName));
     AdapterManagerMBean manager = JMX.newMBeanProxy(mBeanServer, objName, AdapterManagerMBean.class);
     manager.requestStart();
     myAdapterRegistry.destroyAdapter(manager);
+    try {
+      myAdapterRegistry.getBuilder(objName);
+      fail();
+    } catch (InstanceNotFoundException expected) {
+
+    }
     assertFalse(mBeanServer.isRegistered(objName));
     assertEquals(0, myAdapterRegistry.getAdapters().size());
   }
@@ -474,9 +485,16 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     Adapter adapter = createAdapter(adapterName, 2, 2);
     String xml = DefaultMarshaller.getDefaultMarshaller().marshal(adapter);
     ObjectName objName = registry.createAdapter(xml);
+    assertNotNull(registry.getBuilder(objName));
     AdapterManagerMBean manager = JMX.newMBeanProxy(mBeanServer, objName, AdapterManagerMBean.class);
     manager.requestStart();
     registry.destroyAdapter(manager);
+    try {
+      registry.getBuilder(objName);
+      fail();
+    } catch (InstanceNotFoundException expected) {
+
+    }
     assertFalse(mBeanServer.isRegistered(objName));
     assertEquals(0, registry.getAdapters().size());
   }

@@ -267,12 +267,16 @@ public class AdapterRegistry implements AdapterRegistryMBean {
     }
   }
 
-  ObjectName register(Adapter adapter, URLString configUrl) throws CoreException, MalformedObjectNameException {
+  ObjectName register(AdapterBuilder builder, Adapter adapter, URLString configUrl)
+      throws CoreException, MalformedObjectNameException {
     AdapterManager manager = new AdapterManager(adapter);
     ObjectName adapterName = manager.createObjectName();
     addRegisteredAdapter(adapterName);
     manager.registerMBean();
     putConfigurationURL(adapterName, configUrl);
+    synchronized (builderByObjectName) {
+      builderByObjectName.put(adapterName, builder);
+    }
     return adapterName;
   }
 
@@ -285,6 +289,9 @@ public class AdapterRegistry implements AdapterRegistryMBean {
     adapter.requestClose();
     adapter.unregisterMBean();
     removeRegisteredAdapter(name);
+    synchronized (builderByObjectName) {
+      builderByObjectName.remove(name);
+    }
   }
 
   @Override
@@ -534,6 +541,15 @@ public class AdapterRegistry implements AdapterRegistryMBean {
       throw new InstanceNotFoundException("No Builder for " + p);
     }
     return b.createObjectName();
+  }
+
+  @Override
+  public AdapterBuilderMBean getBuilderMBean(ObjectName p) throws InstanceNotFoundException {
+    AdapterBuilderMBean b = builderByObjectName.get(p);
+    if (b == null) {
+      throw new InstanceNotFoundException("No Builder for " + p);
+    }
+    return b;
   }
 
   @Override

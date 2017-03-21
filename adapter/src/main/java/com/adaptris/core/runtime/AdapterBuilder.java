@@ -101,7 +101,7 @@ class AdapterBuilder implements AdapterBuilderMBean {
 
   public ObjectName createAdapter(URLString url) throws IOException, MalformedObjectNameException, CoreException {
     String xml = loadPreProcessors().process(url.getURL());
-    return parent.register(validate((Adapter) DefaultMarshaller.getDefaultMarshaller().unmarshal(xml)), url);
+    return parent.register(this, validate((Adapter) DefaultMarshaller.getDefaultMarshaller().unmarshal(xml)), url);
   }
 
   public ObjectName createAdapterFromUrl(String url) throws IOException, MalformedObjectNameException, CoreException {
@@ -110,7 +110,7 @@ class AdapterBuilder implements AdapterBuilderMBean {
 
   public ObjectName createAdapter(String xml) throws IOException, MalformedObjectNameException, CoreException {
     xml = loadPreProcessors().process(xml);
-    return parent.register(validate((Adapter) DefaultMarshaller.getDefaultMarshaller().unmarshal(xml)), null);
+    return parent.register(this, validate((Adapter) DefaultMarshaller.getDefaultMarshaller().unmarshal(xml)), null);
   }
 
   public void updateVCS() throws CoreException {
