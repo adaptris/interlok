@@ -84,8 +84,16 @@ public class FtpSslConnection extends FtpConnectionImp {
     return implicitSsl;
   }
 
-  public void setImplicitSsl(Boolean implicitSsl) {
-    this.implicitSsl = implicitSsl;
+  /**
+   * Set the connection to use Implicit SSL
+   * <p>
+   * For an explanation of implicit SSL, check <a href="https://en.wikipedia.org/wiki/FTPS"/>wikipedia</a>.
+   * </p>
+   * 
+   * @param b defaults to null (false)
+   */
+  public void setImplicitSsl(Boolean b) {
+    this.implicitSsl = b;
   }
 
   private boolean implicitSSL() {
