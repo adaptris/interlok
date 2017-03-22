@@ -99,7 +99,7 @@ public class LoggingContextInterceptorTest {
 
   @Test
   public void testInterceptor_WorkflowName() throws Exception {
-    LoggingContextWorkflowInterceptor interceptor = new LoggingContextWorkflowInterceptor();
+    LoggingContextWorkflowInterceptor interceptor = new LoggingContextWorkflowInterceptor(null);
     StandardWorkflow wf = StatisticsMBeanCase.createWorkflow("workflow", interceptor);
     MockMessageProducer prod = new MockMessageProducer();
     wf.setProducer(prod);
@@ -121,7 +121,7 @@ public class LoggingContextInterceptorTest {
 
   @Test
   public void testInterceptor_ChannelName() throws Exception {
-    LoggingContextWorkflowInterceptor interceptor = new LoggingContextWorkflowInterceptor();
+    LoggingContextWorkflowInterceptor interceptor = new LoggingContextWorkflowInterceptor(null);
     StandardWorkflow wf = StatisticsMBeanCase.createWorkflow(null, interceptor);
     MockMessageProducer prod = new MockMessageProducer();
     wf.setProducer(prod);
