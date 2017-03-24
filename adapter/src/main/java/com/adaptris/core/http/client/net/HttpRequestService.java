@@ -25,8 +25,11 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
@@ -67,6 +70,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config http-request-service
  */
 @XStreamAlias("http-request-service")
+@AdapterComponent
+@ComponentProfile(summary = "Make a HTTP request to a remote server using standard JRE components", tag = "service,http,https")
+@DisplayOrder(order = {"url", "method", "contentType", "authentication", "requestHeaderProvider", "responseHeaderHandler"})
 public class HttpRequestService extends ServiceImp {
 
   @NotBlank
