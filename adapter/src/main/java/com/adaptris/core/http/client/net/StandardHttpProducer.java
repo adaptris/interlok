@@ -36,11 +36,13 @@ import java.util.Collections;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.ParseException;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import org.apache.commons.io.IOUtils;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
@@ -110,6 +112,10 @@ public class StandardHttpProducer extends HttpProducer {
   @AdvancedConfig
   private DataOutputParameter<InputStreamWithEncoding> responseBody;
 
+  @Valid
+  @AdvancedConfig
+  @NotNull
+  @AutoPopulated
   private HttpAuthenticator authenticator = new NoAuthentication();
 
   public StandardHttpProducer() {
