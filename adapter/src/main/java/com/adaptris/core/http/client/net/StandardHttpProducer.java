@@ -35,6 +35,7 @@ import java.util.Collections;
 
 import javax.mail.internet.ContentType;
 import javax.mail.internet.ParseException;
+import javax.net.ssl.HttpsURLConnection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -73,16 +74,19 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Default {@link HttpProducer} implementation that uses {@link HttpURLConnection} available in a standard java runtime.
  * 
  * <p>
- * This is designed mostly as a drop-in replacement for {@link com.adaptris.core.http.JdkHttpProducer}. It uses the new
- * {@code com.adaptris.core.http.client} interfaces to manage request and response headers and also the {@link DataInputParameter}
- * and {@link DataOutputParameter} interfaces to source the HTTP body and to handle the HTTP response body respectively. Without
- * specific overrides for these new fields; the behaviour should be functionally equivalent and a {@link
- * com.adaptris.core.NullConnection} is the appropriate connection type.
+ * This uses {@code com.adaptris.core.http.client} interfaces to manage request and response headers and also the
+ * {@link DataInputParameter} and {@link DataOutputParameter} interfaces to source the HTTP body and to handle the HTTP response
+ * body respectively. Without specific overrides for these new fields then they default to the payload body.
  * </p>
- * 
  * <p>
- * Note that configuring a {@link com.adaptris.core.AdaptrisMessageEncoder} instance will cause the {@link DataInputParameter}
- * and {@link DataOutputParameter} fields to be ignored.
+ * Note that configuring a {@link com.adaptris.core.AdaptrisMessageEncoder} instance will cause the {@link DataInputParameter} and
+ * {@link DataOutputParameter} fields to be ignored.
+ * </p>
+ * <p>
+ * When interacting with HTTPS sites, then you may need to configure a truststore / keystore system properties if non-default
+ * certificate handling is required. As this uses {@link HttpsURLConnection} under the covers; then please consult <a href=
+ * "https://docs.oracle.com/javase/8/docs/technotes/guides/security/jsse/JSSERefGuide.html#InstallationAndCustomization">Oracles
+ * JSSE documentation</a> for a full discussion of the required system properties.
  * </p>
  * 
  * @config standard-http-producer
