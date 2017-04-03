@@ -43,9 +43,7 @@ public class HashLoginServiceFactory implements JettyLoginServiceFactory {
   @Override
   public LoginService retrieveLoginService() {
     HashLoginService loginService = new HashLoginService(getUserRealm(), getFilename());
-    if (getRefreshInterval() != null) {
-      loginService.setHotReload(true);
-    }
+    loginService.setHotReload(true);
     return loginService;
   }
 

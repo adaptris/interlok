@@ -16,6 +16,10 @@
 
 package com.adaptris.core.common;
 
+import java.io.IOException;
+
+import org.hibernate.validator.constraints.NotBlank;
+
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
@@ -24,9 +28,6 @@ import com.adaptris.core.util.Args;
 import com.adaptris.interlok.types.InterlokMessage;
 import com.adaptris.util.URLString;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import org.hibernate.validator.constraints.NotBlank;
-
-import java.io.IOException;
 
 /**
  * {@code DataInputParameter} implementation that reads a file specified by a metadata key.
@@ -39,13 +40,17 @@ import java.io.IOException;
 @DisplayOrder(order = {"metadataKey"})
 @Deprecated
 public class MetadataFileInputParameter extends FileInputParameterImpl {
+  private static transient boolean warningLogged;
 
   @NotBlank
   @AutoPopulated
   private String metadataKey;
 
   public MetadataFileInputParameter() {
-
+    if (!warningLogged) {
+      log.warn("[{}] is deprecated, use [{}] instead", this.getClass().getSimpleName(), FileDataInputParameter.class.getName());
+      warningLogged = true;
+    }
   }
 
   @Override
