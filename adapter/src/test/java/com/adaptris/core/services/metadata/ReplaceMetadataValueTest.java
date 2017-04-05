@@ -84,15 +84,6 @@ public class ReplaceMetadataValueTest extends MetadataServiceExample {
       ;
     }
     service.setSearchValue(SEARCH_VALUE_RAW);
-    service.setReplacementValue(null);
-    try {
-      service.init();
-      fail();
-    }
-    catch (CoreException expected) {
-      ;
-    }
-    service.setSearchValue(SEARCH_VALUE_RAW);
     service.setReplacementValue(REPLACEMENT_VALUE_RAW);
     try {
       service.init();

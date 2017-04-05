@@ -16,6 +16,9 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
+import static org.apache.commons.lang.StringUtils.isEmpty;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -55,7 +58,6 @@ public class ReplaceMetadataValue extends ReformatMetadata {
 
   @NotBlank
   private String searchValue;
-  @NotBlank
   private String replacementValue;
   @InputFieldDefault(value = "false")
   private Boolean replaceAll;
@@ -77,10 +79,7 @@ public class ReplaceMetadataValue extends ReformatMetadata {
 
   @Override
   protected void initService() throws CoreException {
-    if (getReplacementValue() == null) {
-      throw new CoreException("Replacement Value is 'null'");
-    }
-    if (getSearchValue() == null) {
+    if (isEmpty(getSearchValue())) {
       throw new CoreException("Search Value is 'null'");
     }
     matchGroupPattern = Pattern.compile(MATCH_GROUP_REGEX);
@@ -96,7 +95,7 @@ public class ReplaceMetadataValue extends ReformatMetadata {
   @Override
   protected String reformat(String src, String msgCharset) {
     Matcher searchMatcher = searchPattern.matcher(src);
-    String replacement = buildReplacementValue(searchMatcher, getReplacementValue());
+    String replacement = buildReplacementValue(searchMatcher, replacementValue());
     return replaceAll() ? searchMatcher.replaceAll(replacement) : searchMatcher.replaceFirst(replacement);
   }
 
@@ -141,6 +140,10 @@ public class ReplaceMetadataValue extends ReformatMetadata {
    */
   public void setReplacementValue(String s) {
     this.replacementValue = s;
+  }
+
+  String replacementValue() {
+    return defaultIfEmpty(getReplacementValue(), "");
   }
 
   public Boolean getReplaceAll() {
