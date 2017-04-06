@@ -25,14 +25,14 @@ import javax.script.ScriptEngineManager;
 
 import org.apache.commons.io.IOUtils;
 import org.hibernate.validator.constraints.NotBlank;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Base class for enabling JSR223 enabled scripting languages.
@@ -89,6 +89,9 @@ public abstract class ScriptingServiceImp extends ServiceImp {
     engine = fatController.getEngineByName(getLanguage());
     if (engine == null) {
       throw new CoreException("Could not find a ScriptEngine instance for [" + getLanguage() + "]");
+    }
+    if (getBranching() != null) {
+      log.warn("[branching] is deprecated, use [branching-enabled] instead");
     }
   }
 
