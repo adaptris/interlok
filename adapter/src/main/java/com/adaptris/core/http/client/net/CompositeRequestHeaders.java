@@ -18,6 +18,7 @@ package com.adaptris.core.http.client.net;
 
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.validation.constraints.NotNull;
@@ -50,6 +51,10 @@ public class CompositeRequestHeaders implements RequestHeaderProvider<HttpURLCon
     providers = new ArrayList<RequestHeaderProvider<HttpURLConnection>>();
   }
 
+  public CompositeRequestHeaders(RequestHeaderProvider<HttpURLConnection>... hdrs) {
+    this();
+    setProviders(new ArrayList<RequestHeaderProvider<HttpURLConnection>>(Arrays.asList(hdrs)));
+  }
 
   @Override
   public HttpURLConnection addHeaders(AdaptrisMessage msg, HttpURLConnection target) {
