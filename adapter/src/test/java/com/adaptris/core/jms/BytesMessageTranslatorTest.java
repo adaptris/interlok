@@ -48,6 +48,12 @@ public class BytesMessageTranslatorTest extends MessageTypeTranslatorCase {
     }
   }
   
+  private static byte[] BYTES_ALT = new byte[256]; {
+    for (int i = 0, j = -10; i < BYTES_ALT.length; i++, j++) {
+      BYTES_ALT[i] = (byte) j;
+    }
+  }
+  
   public BytesMessageTranslatorTest(String name) {
     super(name);
   }
@@ -191,6 +197,27 @@ public class BytesMessageTranslatorTest extends MessageTypeTranslatorCase {
       broker.destroy();
     }
   }
+
+  public void testBytesMessageToAdaptrisMessage_Alt() throws Exception {
+    EmbeddedActiveMq broker = new EmbeddedActiveMq();
+    MessageTypeTranslatorImp trans = createTranslator();
+    try {
+      broker.start();
+      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      BytesMessage jmsMsg = session.createBytesMessage();
+      jmsMsg.writeBytes(BYTES_ALT);
+      addProperties(jmsMsg);
+      start(trans, session);
+      jmsMsg.reset();
+      AdaptrisMessage msg = trans.translate(jmsMsg);
+      assertMetadata(msg);
+      assertTrue(Arrays.equals(BYTES_ALT, msg.getPayload()));
+    } finally {
+      stop(trans);
+      broker.destroy();
+    }
+  }
+
 
 
   public void testBytesMessageToAdaptrisMessage_StreamFailure() throws Exception {
