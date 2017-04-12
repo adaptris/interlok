@@ -1,6 +1,9 @@
 package com.adaptris.core.transaction;
 
 import javax.jms.XAConnectionFactory;
+import javax.transaction.NotSupportedException;
+import javax.transaction.SystemException;
+import javax.transaction.Transaction;
 import javax.transaction.xa.XAResource;
 
 import com.adaptris.core.AdaptrisComponent;
@@ -16,11 +19,15 @@ public interface TransactionManager extends AdaptrisComponent, JndiBindable {
   
   void delistXAResource(String name, XAResource xaResource, int status) throws Exception;
   
-  void beginTransaction() throws Exception;
+  void beginTransaction() throws SystemException, NotSupportedException;
+  
+  Transaction getTransaction() throws SystemException;
+  
+  String currentTransactionId();
   
   boolean commit() throws Exception;
   
-  void rollback() throws Exception ;
+  void rollback() throws Exception;
   
   boolean transactionIsActive() throws Exception;
 

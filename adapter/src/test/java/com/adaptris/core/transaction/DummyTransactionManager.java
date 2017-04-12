@@ -1,6 +1,9 @@
 package com.adaptris.core.transaction;
 
 import javax.jms.XAConnectionFactory;
+import javax.transaction.NotSupportedException;
+import javax.transaction.SystemException;
+import javax.transaction.Transaction;
 import javax.transaction.xa.XAResource;
 
 import com.adaptris.core.CoreException;
@@ -78,9 +81,21 @@ public class DummyTransactionManager implements TransactionManager {
   }
 
   @Override
-  public void beginTransaction() throws Exception {
+  public void beginTransaction() throws SystemException, NotSupportedException {
     // TODO Auto-generated method stub
     
+  }
+  
+  @Override
+  public String currentTransactionId() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public Transaction getTransaction() {
+    // TODO Auto-generated method stub
+    return null;
   }
 
   @Override

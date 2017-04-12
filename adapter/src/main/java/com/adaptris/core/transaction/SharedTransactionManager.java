@@ -1,6 +1,9 @@
 package com.adaptris.core.transaction;
 
 import javax.jms.XAConnectionFactory;
+import javax.transaction.NotSupportedException;
+import javax.transaction.SystemException;
+import javax.transaction.Transaction;
 import javax.transaction.xa.XAResource;
 
 import org.hibernate.validator.constraints.NotBlank;
@@ -101,8 +104,18 @@ public class SharedTransactionManager extends SharedComponent implements Transac
   }
 
   @Override
-  public void beginTransaction() throws Exception {
+  public void beginTransaction() throws SystemException, NotSupportedException {
     proxiedTransactionManager().beginTransaction();
+  }
+  
+  @Override
+  public Transaction getTransaction() throws SystemException {
+    return proxiedTransactionManager().getTransaction();
+  }
+  
+  @Override
+  public String currentTransactionId() {
+    return proxiedTransactionManager().currentTransactionId();
   }
 
   @Override
