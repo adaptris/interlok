@@ -21,10 +21,12 @@ import java.net.MalformedURLException;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.management.InstanceNotFoundException;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
 import com.adaptris.core.CoreException;
+import com.adaptris.core.management.BootstrapProperties;
 import com.adaptris.util.URLString;
 
 /**
@@ -34,19 +36,6 @@ import com.adaptris.util.URLString;
  *
  */
 public interface AdapterRegistryMBean extends BaseComponentMBean {
-
-  /**
-   * Bootstrap property key that defines the id for the adapter registry.
-   * <p>
-   * If {@value} is not defined then the default object name ({@value #STANDARD_REGISTRY_JMX_NAME} will be used, otherwise the value
-   * of this property will be used to generate the ID portion of the associated objectname (which will always be of type
-   * {@value #JMX_REGISTRY_TYPE}).
-   * </p>
-   * 
-   * @see #STANDARD_REGISTRY_JMX_NAME
-   * 
-   */
-  String CFG_KEY_REGISTRY_JMX_ID = "adapterRegistry.object.id";
 
   /**
    * The type for the adapter registry.
@@ -138,14 +127,16 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
    * @throws IOException an error accessing the URL.
    * @throws CoreException an error creating the underlying adapter.
    * @throws MalformedObjectNameException if there was a problem
+   * @deprecated since 3.6.1 get it via {@link #getBuilder(BootstrapProperties)} instead.
    */
+  @Deprecated
   ObjectName createAdapter(URLString url) throws IOException, MalformedObjectNameException, CoreException;
 
   /**
    * Create an adapter from the given URL.
    * <p>
-   * Create an adapter from the given URL; the license associated with this adapter is one that was
-   * derived from <code>bootstrap.properties</code>.
+   * Create an adapter from the given URL; the license associated with this adapter is one that was derived from
+   * <code>bootstrap.properties</code>.
    * </p>
    * 
    * @param url the url
@@ -153,7 +144,9 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
    * @throws IOException an error accessing the URL.
    * @throws CoreException an error creating the underlying adapter.
    * @throws MalformedObjectNameException if there was a problem
+   * @deprecated since 3.6.1
    */
+  @Deprecated
   ObjectName createAdapterFromUrl(String url) throws IOException, MalformedObjectNameException, CoreException;
 
   /**
@@ -270,7 +263,10 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
    * @throws IOException an error accessing the URL.
    * @throws CoreException an error creating the underlying adapter.
    * @throws MalformedObjectNameException if there was a problem with the objectname.
+   * @deprecated since 3.6.1 get it via {@link #getBuilder(BootstrapProperties)} instead.
+   * 
    */
+  @Deprecated
   ObjectName createAdapter(String xml) throws IOException, MalformedObjectNameException, CoreException;
 
   /**
@@ -282,8 +278,6 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
    */
   void addAdapter(AdapterManagerMBean adapter) throws MalformedObjectNameException, CoreException;
 
-  // Call close() on the adapter, wait for it to close
-  // Unregister the adapter mbean from JMX...
   /**
    * Close the underlying adapter and unregister from JMX.
    * <p>
@@ -298,8 +292,6 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
    */
   void destroyAdapter(AdapterManagerMBean adapter) throws CoreException, MalformedObjectNameException;
 
-  // Call close() on the adapter, wait for it to close
-  // Unregister the adapter mbean from JMX...
   /**
    * Close the underlying adapter and unregister from JMX.
    * 
@@ -321,12 +313,14 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
    * 
    * @return a set of properties.
    * @since 3.0.3
+   * @deprecated since 3.6.1 get it via {@link #getBuilder(ObjectName)} instead.
    */
+  @Deprecated
   Properties getConfiguration();
 
   /**
-   * Return the version control system that is currently in use based on {@linkplain
-   * com.adaptris.core.management.vcs.RuntimeVersionControl#getImplementationName()}
+   * Return the version control system that is currently in use based on
+   * {@linkplain com.adaptris.core.management.vcs.RuntimeVersionControl#getImplementationName()}
    * 
    * @return the version control system that is currently configured for adapter runtime (null if none is available).
    * @since 3.0.3
@@ -362,6 +356,7 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
    */
   Set<ObjectName> reloadFromConfig() throws MalformedObjectNameException, CoreException, MalformedURLException, IOException;
 
+
   /**
    * Attempts to unmarshal the component within this target runtime unit.
    * <p>
@@ -376,14 +371,82 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
    * @see #createAdapter(String)
    */
   void validateConfig(String config) throws CoreException;
-  
+
   /**
    * In JSON format return the full class description, including subclasses and annotation detail.
    * 
    * @param className - fully qualified
    * @return JSON class definition.
    * @throws CoreException
+   * @since 3.6.0
    */
   String getClassDefinition(String className) throws CoreException;
+
+  /**
+   * Recreate the adapters associated with the specified objectname from their associated bootstrap file.
+   * <p>
+   * Note that the adapter will not be started as part of this process; this needs to be done separately.
+   * </p>
+   * 
+   * @param obj the ObjectName to reload from config.
+   * @throws MalformedObjectNameException if there was a problem with any objectname.
+   * @throws CoreException an error creating the underlying adapter(s).
+   * @throws IOException if there was a with reading the URL where the adapter is hosted.
+   * @throws MalformedURLException if there was a problem with the URL found from config.
+   * @return The ObjectName representing for the associated {@link AdapterManagerMBean} instances created.
+   * @since 3.6.1
+   */
+  ObjectName reloadFromConfig(ObjectName obj)
+      throws MalformedObjectNameException, CoreException, IOException, MalformedURLException;
+
+  /**
+   * Recreate the adapter associated with the specified objectname from their associated bootstrap file.
+   * <p>
+   * Note that the adapter will not be started as part of this process; this needs to be done separately.
+   * </p>
+   * 
+   * @param obj the ObjectName to restart.
+   * @throws MalformedObjectNameException if there was a problem with any objectname.
+   * @throws CoreException an error creating the underlying adapter(s).
+   * @throws IOException if there was a with reading the URL where the adapter is hosted.
+   * @throws MalformedURLException if there was a problem with the URL found from config.
+   * @return The ObjectName representing for the associated {@link AdapterManagerMBean} instances created.
+   * @since 3.6.1
+   */
+  ObjectName reloadFromVersionControl(ObjectName obj)
+      throws MalformedObjectNameException, CoreException, IOException, MalformedURLException;
+
+  void addConfiguration(Properties p) throws MalformedObjectNameException, CoreException;
+
+  /**
+   * Get a reference to the {@link AdapterBuilderMBean} instance that built the corresponding {@link AdapterManagerMBean} instance.
+   * 
+   * @param p a reference to the {@link AdapterManagerMBean}
+   * @return a reference to the {@link AdapterBuilderMBean}
+   * @throws InstanceNotFoundException if there was no associated builder.
+   */
+  ObjectName getBuilder(ObjectName p) throws InstanceNotFoundException;
+
+  /**
+   * Get a reference to the {@link AdapterBuilderMBean} instance that built the corresponding {@link AdapterManagerMBean} instance.
+   * 
+   * @param p a reference to the {@link AdapterManagerMBean}
+   * @return a reference to the {@link AdapterBuilderMBean}
+   * @throws InstanceNotFoundException if there was no associated builder.
+   */
+  AdapterBuilderMBean getBuilderMBean(ObjectName p) throws InstanceNotFoundException;
+
+  /**
+   * Get the {@link AdapterBuilderMBean} associated with given {@code Properties} object.
+   * 
+   */
+  AdapterBuilderMBean getBuilder(Properties p) throws InstanceNotFoundException;
+
+  /**
+   * Get All the builders.
+   * 
+   * @return all the available builders.
+   */
+  Set<ObjectName> getBuilders();
 
 }

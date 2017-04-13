@@ -515,8 +515,8 @@
         <include name="LICENSE"/>
       </zipfileset>
     </jar>
-    <ivy:makepom ivyfile="${ivy.adapter.xml}" pomfile="${project.dist.dir}/${project.name}/pom/${project.name}.pom"/>
-    <ivy:makepom ivyfile="${ivy.stubs.xml}" description="Test Scaffolding for ustom Interlok components"  conf="default,master,compile,provided,runtime,test,system,sources,javadoc,optional" pomfile="${project.dist.dir}/adp-stubs/pom/adp-stubs.pom"/>
+    <ivy:makepom ivyfile="${ivy.adapter.xml}" description="Interlok Adapter Base" conf="default,master,compile,provided,runtime,test,system,sources,javadoc,optional" pomfile="${project.dist.dir}/${project.name}/pom/${project.name}.pom"/>
+    <ivy:makepom ivyfile="${ivy.stubs.xml}" description="Test Scaffolding for custom Interlok components"  conf="default,master,compile,provided,runtime,test,system,sources,javadoc,optional" pomfile="${project.dist.dir}/adp-stubs/pom/adp-stubs.pom"/>
   </target>
 
   <target name="publish" depends="prepare-ivy, prepare-for-publish" description="publish a snapshot">

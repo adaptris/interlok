@@ -305,7 +305,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   long warnAfter() {
     long result = Long.MAX_VALUE;
     if (getWarnAfterMessageHangMillis() != null) {
-      log.warn("Use of deprecated warn-after-message-hand-millis); use warn-after instead");
+      log.warn("Use of deprecated warn-after-message-hang-millis); use warn-after instead");
       result = getWarnAfterMessageHangMillis().longValue();
     } else {
       result = getWarnAfter() != null ? getWarnAfter().toMilliseconds() : DEFAULT_WARN_AFTER;

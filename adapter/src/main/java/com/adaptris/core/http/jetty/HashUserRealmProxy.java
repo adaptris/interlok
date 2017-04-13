@@ -56,7 +56,8 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @Deprecated
 @XStreamAlias("jetty-hash-user-realm-proxy")
 public class HashUserRealmProxy implements SecurityHandlerWrapper {
-  
+  private static transient boolean warningLogged;
+
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   @NotNull
@@ -74,6 +75,11 @@ public class HashUserRealmProxy implements SecurityHandlerWrapper {
   private List<SecurityConstraint> securityConstraints;
   
   public HashUserRealmProxy() {
+    if (!warningLogged) {
+      log.warn("[{}] is deprecated, use [{}] instead", this.getClass().getSimpleName(),
+          ConfigurableSecurityHandler.class.getName());
+      warningLogged = true;
+    }
     securityConstraints = new ArrayList<>();
     this.setUserRealm("MediationFramework");
   }

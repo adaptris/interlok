@@ -151,8 +151,10 @@ public class JettyServerComponent implements ManagementComponent {
     @Override
     void start() {
       try {
-        server.start();
-        log.trace(JettyServerComponent.class.getSimpleName() + " Started");
+        if (server.isStopped()) {
+          server.start();
+          log.debug(JettyServerComponent.class.getSimpleName() + " Started");
+        }
       } catch (final Exception ex) {
         log.error("Exception while starting Jetty", ex);
       }
@@ -163,7 +165,7 @@ public class JettyServerComponent implements ManagementComponent {
       try {
         server.stop();
         server.join();
-        log.trace(JettyServerComponent.class.getSimpleName() + " Stopped");
+        log.debug(JettyServerComponent.class.getSimpleName() + " Stopped");
       } catch (final Exception ex) {
         log.error("Exception while stopping Jetty", ex);
       }
@@ -176,7 +178,7 @@ public class JettyServerComponent implements ManagementComponent {
         final JettyServerManager jettyManager = (JettyServerManager)WebServerManagementUtil.getServerManager();
         jettyManager.removeServer(server);
         server.destroy();
-        log.trace(JettyServerComponent.class.getSimpleName() + " Destroyed");
+        log.debug(JettyServerComponent.class.getSimpleName() + " Destroyed");
       } catch (final Exception ex) {
         log.error("Exception while destroying Jetty", ex);
       }

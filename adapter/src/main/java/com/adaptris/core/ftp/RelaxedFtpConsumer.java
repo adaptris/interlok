@@ -106,6 +106,7 @@ public class RelaxedFtpConsumer extends FtpConsumerImpl {
       return getQuietInterval().toMilliseconds();
     }
     if (getOlderThan() != null) {
+      log.warn("[older-than] is deprecated; use [quiet-interval] instead");
       return getOlderThan().toMilliseconds();
     }
     return DEFAULT_OLDER_THAN.toMilliseconds();

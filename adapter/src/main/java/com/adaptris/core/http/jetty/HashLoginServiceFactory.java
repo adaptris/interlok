@@ -5,6 +5,8 @@ import javax.validation.constraints.NotNull;
 import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.security.LoginService;
 import org.hibernate.validator.constraints.NotBlank;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -19,6 +21,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("jetty-hash-login-service")
 public class HashLoginServiceFactory implements JettyLoginServiceFactory {
+  private transient Logger log = LoggerFactory.getLogger(this.getClass());
+
   @NotNull
   @NotBlank
   @AutoPopulated
@@ -43,9 +47,10 @@ public class HashLoginServiceFactory implements JettyLoginServiceFactory {
   @Override
   public LoginService retrieveLoginService() {
     HashLoginService loginService = new HashLoginService(getUserRealm(), getFilename());
-    if (getRefreshInterval() != null) {
-      loginService.setHotReload(true);
+    if (refreshInterval != null) {
+      log.warn("[refresh-interval] is deprecated, and has no effect");
     }
+    loginService.setHotReload(true);
     return loginService;
   }
 

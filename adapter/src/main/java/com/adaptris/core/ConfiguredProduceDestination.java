@@ -94,7 +94,7 @@ public final class ConfiguredProduceDestination implements MessageDrivenDestinat
    *      #getDestination(com.adaptris.core.AdaptrisMessage)
    */
   public String getDestination(AdaptrisMessage msg) {
-    return destination;
+    return msg.resolve(destination);
   }
 
   /**

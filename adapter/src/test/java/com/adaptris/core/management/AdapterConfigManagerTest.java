@@ -19,7 +19,6 @@ package com.adaptris.core.management;
 import java.util.Properties;
 
 import com.adaptris.core.BaseCase;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.management.config.XStreamConfigManager;
 import com.adaptris.core.runtime.AdapterRegistry;
 import com.adaptris.core.stubs.JunitBootstrapProperties;
@@ -46,27 +45,6 @@ public class AdapterConfigManagerTest extends BaseCase {
     AdapterConfigManager configManager = bootstrap.getConfigManager();
     assertNotNull(configManager.getAdapterRegistry());
     assertEquals(AdapterRegistry.class, configManager.getAdapterRegistry().getClass());
-  }
-
-  public void testGetAdapterRegistryMBean_CustomImpl() throws Exception {
-    AdapterConfigManager configManager = bootstrap.getConfigManager();
-    System.setProperty(AdapterConfigManager.ADAPTER_REGISTRY_IMPL, AdapterRegistry.class.getCanonicalName());
-    assertNotNull(configManager.getAdapterRegistry());
-    assertEquals(AdapterRegistry.class, configManager.getAdapterRegistry().getClass());
-    System.setProperty(AdapterConfigManager.ADAPTER_REGISTRY_IMPL, "");
-  }
-
-  public void testGetAdapterRegistryMBean_MissingImpl() throws Exception {
-    AdapterConfigManager configManager = bootstrap.getConfigManager();
-    System.setProperty(AdapterConfigManager.ADAPTER_REGISTRY_IMPL, "com.xyz.abcde");
-    try {
-      configManager.getAdapterRegistry();
-      fail();
-    }
-    catch (CoreException expected) {
-
-    }
-    System.setProperty(AdapterConfigManager.ADAPTER_REGISTRY_IMPL, "");
   }
 
 }

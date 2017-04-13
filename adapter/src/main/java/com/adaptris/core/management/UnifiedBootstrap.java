@@ -25,13 +25,13 @@ import java.util.concurrent.TimeoutException;
 import javax.management.JMX;
 import javax.management.ObjectName;
 
-import com.adaptris.core.management.vcs.VcsConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.core.CoreException;
 import com.adaptris.core.management.vcs.RuntimeVersionControl;
 import com.adaptris.core.management.vcs.RuntimeVersionControlLoader;
+import com.adaptris.core.management.vcs.VcsConstants;
 import com.adaptris.core.management.vcs.VcsException;
 import com.adaptris.core.runtime.AdapterManagerMBean;
 import com.adaptris.core.runtime.AdapterRegistry;
@@ -54,6 +54,7 @@ public class UnifiedBootstrap {
   private transient BootstrapProperties bootstrapProperties;
   private transient AdapterRegistryMBean adapterRegistry;
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
+  private transient List<Object> mgmtComponents = new ArrayList<>();
 
   private static final TimeInterval DEFAULT_OPERATION_TIMEOUT = new TimeInterval(2L, TimeUnit.MINUTES);
 
@@ -113,13 +114,13 @@ public class UnifiedBootstrap {
   public void init(AdapterManagerMBean adapter) throws Exception {
     bootstrapProperties.getConfigManager().syncAdapterConfiguration(adapter);
     adapterRegistry = bootstrapProperties.getConfigManager().getAdapterRegistry();
-    ManagementComponentFactory.create(bootstrapProperties);
     bootstrapProperties.setProperty(Constants.CFG_JMX_LOCAL_ADAPTER_UID, adapter.getUniqueId());
-    ManagementComponentFactory.initCreated();
+    mgmtComponents = ManagementComponentFactory.create(bootstrapProperties);
+    ManagementComponentFactory.initCreated(bootstrapProperties);
   }
 
   public void start() throws Exception {
-    ManagementComponentFactory.startCreated();
+    ManagementComponentFactory.startCreated(bootstrapProperties);
     tryStart(adapterRegistry.getAdapters());
   }
 
@@ -144,7 +145,7 @@ public class UnifiedBootstrap {
 
   public void stop() throws Exception {
     AdapterRegistry.stop(adapterRegistry.getAdapters());
-    ManagementComponentFactory.stopCreated();
+    ManagementComponentFactory.stopCreated(bootstrapProperties);
   }
 
   public void close() throws Exception {
@@ -154,7 +155,7 @@ public class UnifiedBootstrap {
           AdapterManagerMBean.class);
       manager.unregisterMBean();
     }
-    ManagementComponentFactory.closeCreated();
+    ManagementComponentFactory.closeCreated(bootstrapProperties);
   }
 
 }

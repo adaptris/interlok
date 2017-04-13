@@ -30,7 +30,7 @@
     <dependency org="com.adaptris" name="adp-core-apt" rev="${ivy.publish.revision}" conf="compile->default;ant->default" changing="true"/>
     <dependency org="com.adaptris" name="interlok-common" rev="${ivy.publish.revision}" conf="compile->default" changing="true"/>
 	
-	<dependency org="org.reflections" name="reflections" rev="0.9.10" conf="compile->default" changing="true"/>
+    <dependency org="org.reflections" name="reflections" rev="0.9.10" conf="compile->default" changing="true"/>
 
     <dependency org="javax.activation" name="activation" rev="1.1.1"  conf="compile->default" />
 
@@ -53,10 +53,9 @@
     <dependency org="commons-pool" name="commons-pool" rev="1.6" conf="compile->default" />
     <dependency org="org.apache.commons" name="commons-exec" rev="1.2" conf="compile->default" />
 
-    <dependency org="org.bouncycastle" name="bcprov-jdk15on" rev="1.53" conf="compile->default" />
-    <dependency org="org.bouncycastle" name="bcpkix-jdk15on" rev="1.53" conf="compile->default" />
-    <dependency org="org.bouncycastle" name="bcmail-jdk15on" rev="1.53" conf="compile->default" />
-    <dependency org="org.bouncycastle" name="bcprov-ext-jdk15on" rev="1.53" conf="compile->default" />
+    <dependency org="org.bouncycastle" name="bcprov-jdk15on" rev="1.56" conf="compile->default" />
+    <dependency org="org.bouncycastle" name="bcpkix-jdk15on" rev="1.56" conf="compile->default" />
+    <dependency org="org.bouncycastle" name="bcmail-jdk15on" rev="1.56" conf="compile->default" />
 
     <dependency org="oro" name="oro" rev="2.0.8" conf="compile->default" />
 
@@ -69,16 +68,16 @@
     <dependency org="org.glassfish.external" name="opendmk_jdmkrt_jar" rev="1.0-b01-ea" conf="compile->default"/>
 
 
-    <dependency org="com.jcraft" name="jsch" rev="0.1.53" conf="compile->default" />
+    <dependency org="com.jcraft" name="jsch" rev="0.1.54" conf="compile->default" />
 
-    <dependency org="org.slf4j" name="jcl-over-slf4j" rev="1.7.22" conf="compile->default" />
-    <dependency org="org.slf4j" name="slf4j-api" rev="1.7.22" conf="compile->default" />
-    <dependency org="org.slf4j" name="jul-to-slf4j" rev="1.7.22" conf="compile->default" />
-    <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.22" conf="optional->default"/>
+    <dependency org="org.slf4j" name="jcl-over-slf4j" rev="1.7.24" conf="compile->default" />
+    <dependency org="org.slf4j" name="slf4j-api" rev="1.7.24" conf="compile->default" />
+    <dependency org="org.slf4j" name="jul-to-slf4j" rev="1.7.24" conf="compile->default" />
+    <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.24" conf="optional->default"/>
     <dependency org="log4j" name="log4j" rev="1.2.17" force="true" conf="optional->default;ant->default"/>
 
-    <dependency org="org.apache.logging.log4j" name="log4j-core" rev="2.6.2" conf="optional->default" />
-    <dependency org="org.apache.logging.log4j" name="log4j-api" rev="2.6.2"  conf="optional->default"/>
+    <dependency org="org.apache.logging.log4j" name="log4j-core" rev="2.8.1" conf="optional->default" />
+    <dependency org="org.apache.logging.log4j" name="log4j-api" rev="2.8.1"  conf="optional->default"/>
 
 <!--
     <dependency org="org.eclipse.jetty" name="jetty-server" rev="9.4.1.v20170120" conf="compile->default" />
@@ -105,7 +104,7 @@
     <dependency org="com.icegreen" name="greenmail" rev="1.4.0" conf="test->default"/>
     <dependency org="org.apache.derby" name="derby" rev="10.10.1.1" conf="runtime->default"/>
     <dependency org="org.mockito" name="mockito-all" rev="1.9.5" conf="test->default"/>
-    <dependency org="mysql" name="mysql-connector-java" rev="5.1.30" conf="test->default"/>
+    <dependency org="mysql" name="mysql-connector-java" rev="5.1.40" conf="test->default"/>
     <!--
     <dependency org="com.microsoft" name="sql-server-jdbc" rev="4.0" conf="test->default"/>
     -->

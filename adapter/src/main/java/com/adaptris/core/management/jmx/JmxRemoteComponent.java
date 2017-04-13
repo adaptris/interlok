@@ -182,7 +182,9 @@ public class JmxRemoteComponent extends JmxComponentImpl {
 
     @Override
     public void start() throws Exception {
-      jmxServer.start();
+      if (!jmxServer.isActive()) {
+        jmxServer.start();
+      }
     }
 
     @Override

@@ -32,6 +32,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -65,9 +67,14 @@ import com.adaptris.util.KeyValuePairSet;
  */
 public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
-  private IdGenerator guidGenerator;
-  private transient Logger log = LoggerFactory.getLogger(AdaptrisMessage.class);
+  // If we have %message{key1}%message{key2} group(1) is key2
+  // Which is then replaced so it all works out int the end.
+  private static final String RESOLVE_REGEXP = "^.*%message\\{([\\w!\"#&'\\*\\+,\\-\\.:=]+)\\}.*$";
 
+  private transient Logger log = LoggerFactory.getLogger(AdaptrisMessage.class);
+  private transient Pattern resolverPattern = Pattern.compile(RESOLVE_REGEXP);
+
+  private IdGenerator guidGenerator;
   // persistent fields
   private String uniqueId;
   private KeyValuePairSet metadata;
@@ -403,6 +410,23 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     }
 
     nextServiceId = s;
+  }
+
+  @Override
+  public String resolve(String s) {
+    if (s == null) {
+      return null;
+    }
+    String result = s;
+    Matcher m = resolverPattern.matcher(s);
+    while (m.matches()) {
+      String key = m.group(1);
+      String metadataValue = getMetadataValue(key);
+      String toReplace = "%message{" + key + "}";
+      result = result.replace(toReplace, metadataValue);
+      m = resolverPattern.matcher(result);
+    }
+    return result;
   }
 
   private MleMarker getNextMleMarker(MessageEventGenerator meg, boolean successful, String confId) {

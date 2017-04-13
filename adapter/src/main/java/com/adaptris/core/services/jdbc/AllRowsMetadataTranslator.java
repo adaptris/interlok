@@ -24,6 +24,7 @@ import java.util.List;
 
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
 import com.adaptris.jdbc.JdbcResult;
@@ -117,6 +118,14 @@ public class AllRowsMetadataTranslator extends MetadataResultSetTranslatorImpl {
       log.debug("Added metadata : " + added);
     }
     return resultSetCount;
+  }
+
+  @Override
+  public void init() throws CoreException {
+    super.init();
+    if (!isEmpty(getRowTotalMetadataKey())) {
+      log.warn("[row-total-metadata-key] is deprecated; use [result-count-metadata-item] instead.");
+    }
   }
 
   public String getRowTotalMetadataKey() {

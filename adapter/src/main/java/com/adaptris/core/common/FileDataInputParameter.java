@@ -16,6 +16,10 @@
 
 package com.adaptris.core.common;
 
+import java.io.IOException;
+
+import javax.validation.Valid;
+
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -24,9 +28,6 @@ import com.adaptris.core.util.Args;
 import com.adaptris.interlok.types.InterlokMessage;
 import com.adaptris.util.URLString;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-
-import javax.validation.Valid;
-import java.io.IOException;
 
 /**
  * {@code DataInputParameter} implementation that reads from a file.
@@ -57,14 +58,15 @@ public class FileDataInputParameter extends FileInputParameterImpl {
     }
   }
 
-  protected String url(InterlokMessage msg) throws CoreException{
+  protected String url(InterlokMessage msg) throws CoreException {
     if (getDestination() != null) {
       if (msg instanceof AdaptrisMessage) {
-        return getDestination().getDestination((AdaptrisMessage)msg);
+        return getDestination().getDestination((AdaptrisMessage) msg);
       } else {
         throw new RuntimeException("Message is not instance of Adaptris Message");
       }
     }
+    log.warn("[url] is deprecated, use [destination] instead");
     return getUrl();
   }
 

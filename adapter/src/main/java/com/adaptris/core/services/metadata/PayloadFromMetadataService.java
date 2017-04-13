@@ -16,11 +16,12 @@
 
 package com.adaptris.core.services.metadata;
 
-import java.util.Iterator;
 import java.util.regex.Matcher;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
@@ -65,6 +66,7 @@ public class PayloadFromMetadataService extends ServiceImp {
   @Valid
   private KeyValuePairSet metadataTokens;
   @MarshallingCDATA
+  @InputFieldDefault(value = "")
   private String template = null;
   @InputFieldDefault(value = "true")
   private Boolean escapeBackslash;
@@ -82,18 +84,15 @@ public class PayloadFromMetadataService extends ServiceImp {
    * @see com.adaptris.core.Service#doService(com.adaptris.core.AdaptrisMessage)
    */
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    String payload = template;
-    for (Iterator i = metadataTokens.getKeyValuePairs().iterator(); i.hasNext();) {
-      KeyValuePair kvp = (KeyValuePair) i.next();
+    String payload = StringUtils.defaultIfEmpty(template, "");
+    for (KeyValuePair kvp : getMetadataTokens().getKeyValuePairs()) {
       if (msg.getMetadataValue(kvp.getKey()) != null) {
-        log.trace("Replacing " + kvp.getValue() + " with "
-            + msg.getMetadataValue(kvp.getKey()));
-        payload = payload.replaceAll(kvp.getValue(), munge(msg
-            .getMetadataValue(kvp.getKey())));
+        log.trace("Replacing {} with {}", kvp.getValue(), msg.getMetadataValue(kvp.getKey()));
+        payload = payload.replaceAll(kvp.getValue(), munge(msg.getMetadataValue(kvp.getKey())));
       }
       else {
-        log.trace(kvp.getKey() + " returns no value; no substitution");
-      }
+        log.trace("{} returns no value; no substitution", kvp.getKey());
+      }      
     }
     msg.setContent(payload, msg.getContentEncoding());
   }
@@ -110,9 +109,6 @@ public class PayloadFromMetadataService extends ServiceImp {
 
   @Override
   protected void initService() throws CoreException {
-    if (getTemplate() == null) {
-      throw new CoreException("Template is null");
-    }
   }
 
   @Override

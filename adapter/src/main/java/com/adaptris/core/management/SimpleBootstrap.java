@@ -16,6 +16,8 @@
 
 package com.adaptris.core.management;
 
+import com.adaptris.core.management.logging.LoggingConfigurator;
+
 /**
  * Entry point into an adapter from the commandline.
  * <p>
@@ -47,6 +49,12 @@ public class SimpleBootstrap extends StandardBootstrap {
    * @throws Exception upon some unrecoverable error.
    */
   public static void main(String[] argv) throws Exception {
-    new SimpleBootstrap(argv).boot();
+    try {
+      new SimpleBootstrap(argv).boot();
+    }
+    catch (Exception e) {
+      LoggingConfigurator.newConfigurator().requestShutdown();
+      throw e;
+    }
   }
 }

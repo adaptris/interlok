@@ -82,7 +82,14 @@ public class StandardBootstrap extends CmdLineBootstrap {
    * @throws Exception upon some unrecoverable error.
    */
   public static void main(String[] argv) throws Exception {
-    new StandardBootstrap(argv).boot();
+    try {
+      new StandardBootstrap(argv).boot();
+    }
+    catch (Exception e) {
+      LoggingConfigurator.newConfigurator().requestShutdown();
+      throw e;
+    }
+
   }
 
 }

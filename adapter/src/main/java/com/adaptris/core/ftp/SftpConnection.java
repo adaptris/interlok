@@ -53,6 +53,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"defaultUserName", "defaultPassword", "transferType", "ftpDataMode", "defaultControlPort"})
 @Deprecated
 public class SftpConnection extends FileTransferConnectionUsingPassword {
+  private static transient boolean warningLogged;
 
   private static final String SCHEME_SFTP = "sftp";
 
@@ -83,6 +84,10 @@ public class SftpConnection extends FileTransferConnectionUsingPassword {
    */
   public SftpConnection() {
     super();
+    if (!warningLogged) {
+      log.warn("[{}] is deprecated, use [{}] instead", this.getClass().getSimpleName(), StandardSftpConnection.class.getName());
+      warningLogged = true;
+    }
     setConfiguration(new InlineConfigBuilder());
   }
 

@@ -37,7 +37,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * WorkflowInterceptor implementation that exposes acts as the source for {@link MessageInFlightMBean}.
  * 
  * 
- * @config message-metrics-interceptor
+ * @config in-flight-workflow-interceptor
  * 
  */
 @XStreamAlias("in-flight-workflow-interceptor")

@@ -16,6 +16,16 @@
 
 package com.adaptris.core.common;
 
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.net.URL;
+
+import javax.validation.Valid;
+
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -26,12 +36,6 @@ import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.interlok.config.DataOutputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import org.apache.commons.io.IOUtils;
-
-import javax.validation.Valid;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.net.URL;
 
 /**
  * {@code DataInputParameter} implementation that writes to a file.
@@ -41,6 +45,7 @@ import java.net.URL;
 @XStreamAlias("file-data-output-parameter")
 @DisplayOrder(order = {"destination", "url"})
 public class FileDataOutputParameter implements DataOutputParameter<String> {
+  private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Deprecated
   private String url;
@@ -75,6 +80,7 @@ public class FileDataOutputParameter implements DataOutputParameter<String> {
         throw new RuntimeException("Message is not instance of Adaptris Message");
       }
     }
+    log.warn("[url] is deprecated, use [destination] instead");
     return getUrl();
   }
 

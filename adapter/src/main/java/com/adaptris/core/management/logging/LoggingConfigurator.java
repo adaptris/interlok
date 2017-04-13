@@ -63,6 +63,10 @@ public abstract class LoggingConfigurator {
           public boolean initialiseFrom(URL url) {
             return true;
           }
+
+          @Override
+          public void requestShutdown() {
+          }
         };
       }
     };
@@ -88,6 +92,8 @@ public abstract class LoggingConfigurator {
   public abstract void defaultInitialisation();
 
   public abstract boolean initialiseFrom(URL url);
+
+  public abstract void requestShutdown();
 
   protected void bridgeJavaUtilLogging() {
     if (ENABLE_JUL_LOGGING_BRIDGE) {

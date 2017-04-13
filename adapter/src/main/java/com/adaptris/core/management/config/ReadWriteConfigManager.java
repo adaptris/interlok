@@ -24,6 +24,7 @@ import javax.management.MalformedObjectNameException;
 
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.runtime.AdapterBuilderMBean;
 import com.adaptris.core.runtime.AdapterManagerMBean;
 import com.adaptris.core.util.JmxHelper;
 import com.adaptris.util.URLString;
@@ -54,8 +55,9 @@ abstract class ReadWriteConfigManager extends ConfigManagerImpl {
     if (adapterConfigUrl == null) {
       return createAdapter();
     }
+    AdapterBuilderMBean builder = getAdapterRegistry().getBuilder(bootstrapProperties);
     return JMX.newMBeanProxy(JmxHelper.findMBeanServer(bootstrapProperties),
-        getAdapterRegistry().createAdapter(new URLString(adapterConfigUrl)), AdapterManagerMBean.class);
+        builder.createAdapter(new URLString(adapterConfigUrl)), AdapterManagerMBean.class);
   }
 
 

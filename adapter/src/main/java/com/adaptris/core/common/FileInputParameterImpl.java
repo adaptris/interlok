@@ -26,11 +26,15 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.util.URLString;
 
 public abstract class FileInputParameterImpl implements DataInputParameter<String> {
+
+  protected transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   public FileInputParameterImpl() {}
 

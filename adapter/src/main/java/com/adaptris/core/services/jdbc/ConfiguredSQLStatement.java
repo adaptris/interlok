@@ -31,7 +31,7 @@ public class ConfiguredSQLStatement implements JdbcStatementCreator {
   
   @Override
   public String createStatement(AdaptrisMessage msg) {
-    return statement;
+    return msg.resolve(statement);
   }
 
   public String getStatement() {
