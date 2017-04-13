@@ -88,7 +88,7 @@
     <dependency org="javax.servlet" name="javax.servlet-api" rev="3.1.0" conf="compile->default"/>    
 
     <dependency org="net.sf.joost" name="joost" rev="0.9.1" conf="runtime->default"/>
-    <dependency org="org.quartz-scheduler" name="quartz" rev="2.2.1" transitive="false" conf="compile->default"/>
+    <dependency org="org.quartz-scheduler" name="quartz" rev="2.2.3" conf="compile->default"/>
     <!--
     <dependency org="saxpath" name="saxpath" rev="1.0-FCS" conf="compile->default" />
     <dependency org="xalan" name="xalan" rev="2.7.2" conf="compile->default" />
@@ -119,6 +119,7 @@
 
     <exclude org="javax.mail" artifact="mail"/>
     <exclude org="c3p0"/>
+    <exclude org="xalan" artifact="xalan"/>
     <exclude org="commons-logging"/>
     <exclude org="org.apache.geronimo"/>
     <exclude org="cglib"/>
