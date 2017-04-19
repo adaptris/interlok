@@ -20,8 +20,7 @@ import static com.adaptris.core.jms.JmsProducerCase.assertMessages;
 import static com.adaptris.core.jms.JmsProducerCase.createMessage;
 
 import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 import com.adaptris.core.AdaptrisPollingConsumer;
@@ -29,7 +28,7 @@ import com.adaptris.core.BaseCase;
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.PollerImp;
+import com.adaptris.core.RandomIntervalPoller;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandardWorkflow;
@@ -166,49 +165,30 @@ public class ActiveMqPasPollingConsumerTest extends BaseCase {
     return consumer;
   }
 
-  static class Sometime extends PollerImp {
-    private long pollIntervalMs = new Random().nextInt(1000) + 100;
-    private Timer timer;
-    private Polly polly;
+  static class Sometime extends RandomIntervalPoller {
+    private boolean hasTriggered = false;
 
     public Sometime() {
+      super(new TimeInterval(1L, TimeUnit.SECONDS));
     }
 
     @Override
-    public void init() throws CoreException {
-    }
-
-    @Override
-    public void start() throws CoreException {
-      timer = new Timer(true);
-      polly = new Polly();
-      timer.schedule(polly, 100L, pollIntervalMs);
-    }
-
-    @Override
-    public void stop() {
-      if (timer != null) {
-        timer.cancel();
+    protected void scheduleTask() {
+      if (executor != null && !executor.isShutdown()) {
+        long delay = ThreadLocalRandom.current().nextLong(1000);
+        pollerTask = executor.schedule(new MyPollerTask(), delay, TimeUnit.MILLISECONDS);
       }
     }
 
-    @Override
-    public void close() {
-    }
-
-    @Override
-    public void prepare() throws CoreException {}
     boolean hasTriggered() {
-      return polly.hasTriggered;
+      return hasTriggered;
     }
 
-    private class Polly extends TimerTask {
-
-      boolean hasTriggered = false;
-
+    private class MyPollerTask implements Runnable {
       @Override
       public void run() {
         processMessages();
+        scheduleTask();
         hasTriggered = true;
       }
     }

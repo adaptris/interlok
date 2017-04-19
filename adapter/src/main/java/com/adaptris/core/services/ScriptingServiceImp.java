@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.DynamicPollingTemplate;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 
@@ -41,7 +42,7 @@ import com.adaptris.core.ServiceImp;
  * @author lchan
  * 
  */
-public abstract class ScriptingServiceImp extends ServiceImp {
+public abstract class ScriptingServiceImp extends ServiceImp implements DynamicPollingTemplate.TemplateProvider {
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 

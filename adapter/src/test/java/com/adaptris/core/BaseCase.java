@@ -118,9 +118,7 @@ public abstract class BaseCase extends TestCase {
   }
 
   public static void start(ComponentLifecycle c) throws CoreException {
-    if (c instanceof ComponentLifecycleExtension) {
-      ((ComponentLifecycleExtension) c).prepare();
-    }
+    LifecycleHelper.prepare(c);
     LifecycleHelper.init(c);
     LifecycleHelper.start(c);
   }

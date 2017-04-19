@@ -88,4 +88,9 @@ public class EmbeddedScriptingService extends ScriptingServiceImp {
     return new StringReader(getScript() == null ? "" : getScript());
   }
 
+  public EmbeddedScriptingService withScript(String lang, String script) {
+    setScript(script);
+    setLanguage(lang);
+    return this;
+  }
 }
