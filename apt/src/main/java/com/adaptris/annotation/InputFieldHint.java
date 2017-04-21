@@ -39,4 +39,12 @@ public @interface InputFieldHint {
 	 * The UI friendly name for the field; particularly enum's.
 	 */
 	String friendly() default "";
+
+  /**
+   * Whether or not this field allows the new {@code %message{}} style expressions
+   * 
+   * @return true if enabled.
+   * @since 3.6.2
+   */
+  boolean expression() default false;
 }
