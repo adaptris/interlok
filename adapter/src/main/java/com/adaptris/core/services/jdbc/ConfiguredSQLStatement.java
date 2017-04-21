@@ -19,6 +19,7 @@ public class ConfiguredSQLStatement implements JdbcStatementCreator {
 
   @NotBlank
   @InputFieldHint(style = "SQL")
+  @InputFieldHint(expression = true)
   private String statement;
 
 

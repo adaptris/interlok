@@ -31,6 +31,7 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConfiguredProduceDestination;
@@ -77,14 +78,17 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class HttpRequestService extends ServiceImp implements DynamicPollingTemplate.TemplateProvider {
 
   @NotBlank
+  @InputFieldHint(expression = true)
   private String url;
   @NotBlank
   @AutoPopulated
   @InputFieldDefault(value = "text/plain")
+  @InputFieldHint(expression = true)
   private String contentType;
   @NotBlank
   @AutoPopulated
   @InputFieldDefault(value = "POST")
+  @InputFieldHint(expression = true)
   private String method;
 
   @AdvancedConfig

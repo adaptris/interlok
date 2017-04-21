@@ -22,10 +22,12 @@ import org.slf4j.MDC;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -46,8 +48,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class AddLoggingContext extends ServiceImp {
 
   @NotBlank
+  @InputFieldHint(expression = true)
   private String key;
   @NotBlank
+  @InputFieldHint(expression = true)
   private String value;
 
   public AddLoggingContext() {
@@ -91,7 +95,7 @@ public class AddLoggingContext extends ServiceImp {
    * @param key the key to set
    */
   public void setKey(String key) {
-    this.key = key;
+    this.key = Args.notBlank(key, "key");
   }
 
   public String getValue() {
@@ -104,7 +108,7 @@ public class AddLoggingContext extends ServiceImp {
    * @param value the value to set
    */
   public void setValue(String value) {
-    this.value = value;
+    this.value = Args.notBlank(value, "value");
   }
 
 }
