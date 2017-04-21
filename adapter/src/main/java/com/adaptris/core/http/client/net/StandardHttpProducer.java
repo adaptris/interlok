@@ -35,7 +35,6 @@ import java.util.Collections;
 
 import javax.mail.internet.ContentType;
 import javax.mail.internet.ParseException;
-import javax.net.ssl.HttpsURLConnection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -46,6 +45,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageImp;
 import com.adaptris.core.CoreConstants;
@@ -97,14 +97,22 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Make a HTTP request to a remote server using standard JRE components", tag = "producer,http,https",
     recommended = {NullConnection.class})
-@DisplayOrder(order = {"authenticator", "username", "password", "allowRedirect", "ignoreServerResponseCode", "methodProvider",
+@DisplayOrder(order =
+{
+    "authenticator", "allowRedirect", "ignoreServerResponseCode", "alwaysSendPayload", "methodProvider",
     "contentTypeProvider", "requestHeaderProvider", "requestBody", "responseHeaderHandler", "responseBody"})
 public class StandardHttpProducer extends HttpProducer {
 
   private static final String PARAM_CHARSET = "charset";
 
-  protected static final Collection<RequestMethodProvider.RequestMethod> METHOD_ALLOWS_OUTPUT = Collections
+  private static final Collection<RequestMethodProvider.RequestMethod> METHOD_ALLOWS_OUTPUT = Collections
       .unmodifiableCollection(Arrays.asList(new RequestMethod[] {RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH}));
+
+  private static final Collection<RequestMethodProvider.RequestMethod> NEVER_OUTPUT = Collections
+      .unmodifiableCollection(Arrays.asList(new RequestMethod[]
+  {
+      RequestMethod.TRACE
+  }));
 
   private transient DataInputParameter<InputStream> defaultRequest = new PayloadStreamInputParameter();
   private transient DataOutputParameter<InputStreamWithEncoding> defaultResponse = new PayloadStreamOutputParameter();
@@ -121,6 +129,10 @@ public class StandardHttpProducer extends HttpProducer {
   @NotNull
   @AutoPopulated
   private HttpAuthenticator authenticator = new NoAuthentication();
+
+  @AdvancedConfig
+  @InputFieldDefault(value = "false")
+  private Boolean alwaysSendPayload;
 
   public StandardHttpProducer() {
     super();
@@ -154,7 +166,7 @@ public class StandardHttpProducer extends HttpProducer {
       writeData(getMethod(msg), msg, http);
       handleResponse(http, reply);
     } catch (Exception e) {
-      ExceptionHelper.rethrowProduceException(e);
+      throw ExceptionHelper.wrapProduceException(e);
     } finally {
       authenticator.close();
     }
@@ -177,20 +189,31 @@ public class StandardHttpProducer extends HttpProducer {
 
   private void writeData(RequestMethod methodToUse, AdaptrisMessage src, HttpURLConnection dest)
       throws IOException, InterlokException {
-    if (!METHOD_ALLOWS_OUTPUT.contains(methodToUse)) {
-      if (src.getSize() > 0) {
-        log.trace("Ignoring payload with use of {} method", methodToUse.name());
-      }
+    // INTERLOK-1569
+    if (NEVER_OUTPUT.contains(methodToUse)) {
       return;
     }
-    dest.setDoOutput(true);
-    if (getEncoder() != null) {
-      getEncoder().writeMessage(src, dest);
-    } else {
-      copyAndClose(requestBody().extract(src), dest.getOutputStream());
+    if (doOutput(methodToUse)) {
+      dest.setDoOutput(true);
+      if (getEncoder() != null) {
+        getEncoder().writeMessage(src, dest);
+      }
+      else {
+        copyAndClose(requestBody().extract(src), dest.getOutputStream());
+      }
     }
   }
 
+  private boolean doOutput(RequestMethod m) {
+    if (alwaysSendPayload()) {
+      return true;
+    }
+    if (!METHOD_ALLOWS_OUTPUT.contains(m)) {
+      log.trace("Ignoring payload with use of {} method", m.name());
+      return false;
+    }
+    return true;
+  }
 
   private void handleResponse(HttpURLConnection http, AdaptrisMessage reply) throws IOException, InterlokException {
     int responseCode = http.getResponseCode();
@@ -228,7 +251,6 @@ public class StandardHttpProducer extends HttpProducer {
     if (http.getContentEncoding() != null) {
       return http.getContentEncoding();
     }
-
     // Parse Content-Type header for encoding
     try {
       ContentType contentType = new ContentType(http.getContentType());
@@ -236,9 +258,8 @@ public class StandardHttpProducer extends HttpProducer {
         return contentType.getParameter(PARAM_CHARSET);
       }
     } catch (ParseException e) {
-      log.warn("Unable to parse Content-Type header \"{}\": {}", http.getContentType(), e.toString());
+      log.trace("Unable to parse Content-Type header \"{}\": {}", http.getContentType(), e.toString());
     }
-
     return null;
   }
 
@@ -309,4 +330,27 @@ public class StandardHttpProducer extends HttpProducer {
     this.authenticator = authenticator;
   }
 
+  /**
+   * @return the alwaysSendPayload
+   */
+  public Boolean getAlwaysSendPayload() {
+    return alwaysSendPayload;
+  }
+
+  /**
+   * Specify whether or not to always attempt to send the payload as the entity body.
+   * <p>
+   * Only the TRACE method explicitly forbids an entity body; other methods are technically unrestricted. However, best practice
+   * suggests that entity bodies are only included for the POST/PUT/(PATCH) methods.
+   * </p>
+   * 
+   * @param b set this to true to always attempt to send a body (apart from TRACE), default false.
+   */
+  public void setAlwaysSendPayload(Boolean b) {
+    this.alwaysSendPayload = b;
+  }
+
+  boolean alwaysSendPayload() {
+    return getAlwaysSendPayload() != null ? getAlwaysSendPayload().booleanValue() : false;
+  }
 }

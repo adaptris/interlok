@@ -20,21 +20,32 @@ import static com.adaptris.core.http.jetty.JettyHelper.createChannel;
 import static com.adaptris.core.http.jetty.JettyHelper.createConsumer;
 import static com.adaptris.core.http.jetty.JettyHelper.createWorkflow;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 
+import org.apache.commons.io.IOUtils;
+
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.AdaptrisMessageEncoderImp;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreConstants;
+import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.NullConnection;
 import com.adaptris.core.ProduceException;
+import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceList;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandaloneRequestor;
 import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.common.MetadataStreamOutputParameter;
+import com.adaptris.core.common.PayloadStreamInputParameter;
 import com.adaptris.core.http.HttpConstants;
 import com.adaptris.core.http.HttpProducerExample;
 import com.adaptris.core.http.MetadataContentTypeProvider;
@@ -58,8 +69,11 @@ import com.adaptris.core.services.metadata.PayloadFromMetadataService;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.util.KeyValuePair;
 
+import sun.net.www.protocol.http.HttpURLConnection;
+
 public class StandardHttpProducerTest extends HttpProducerExample {
   private static final String TEXT = "ABCDEFG";
+  private static final String ALT_TEXT = "HIJKLMNOP";
 
   public StandardHttpProducerTest(String name) {
     super(name);
@@ -383,14 +397,11 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     MessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
     Channel c = createChannel(jc, createWorkflow(mc, mock, new ServiceList()));
     StandardWorkflow workflow = (StandardWorkflow) c.getWorkflowList().get(0);
-    PayloadFromMetadataService pms = new PayloadFromMetadataService();
-    pms.setTemplate(TEXT);
-    workflow.getServiceCollection().add(pms);
     workflow.getServiceCollection().add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200)));
     StandardHttpProducer stdHttp = new StandardHttpProducer(HttpHelper.createProduceDestination(c));
     stdHttp.setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethodProvider.RequestMethod.GET));
     StandaloneRequestor producer = new StandaloneRequestor(stdHttp);
-    AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage(ALT_TEXT);
     try {
       start(c);
       start(producer);
@@ -404,7 +415,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     assertEquals(1, mock.messageCount());
     AdaptrisMessage m2 = mock.getMessages().get(0);
     assertEquals("GET", m2.getMetadataValue(CoreConstants.HTTP_METHOD));
-    assertEquals(TEXT, msg.getContent());
+    assertEquals(0, m2.getSize());
   }
 
   public void testRequest_GetMethod_NonZeroBytes_WithErrorResponse() throws Exception {
@@ -421,7 +432,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     stdHttp.setIgnoreServerResponseCode(true);
     stdHttp.setResponseHeaderHandler(new ResponseHeadersAsMetadata("HTTP_"));
     StandaloneRequestor producer = new StandaloneRequestor(stdHttp);
-    AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage(ALT_TEXT);
     try {
       start(c);
       start(producer);
@@ -632,6 +643,113 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     assertEquals("some value", m2.getMetadataValue(HttpConstants.AUTHORIZATION));
   }
 
+  public void testRequest_GetMethod_WithErrorResponse() throws Exception {
+    MockMessageProducer mock = new MockMessageProducer();
+    HttpConnection jc = HttpHelper.createConnection();
+    MessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
+
+    ServiceList services = new ServiceList();
+    services.add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.UNAUTHORIZED_401)));
+    Channel c = createChannel(jc, createWorkflow(mc, mock, services));
+    StandardHttpProducer stdHttp = new StandardHttpProducer(HttpHelper.createProduceDestination(c));
+    stdHttp.setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethodProvider.RequestMethod.GET));
+    StandaloneRequestor producer = new StandaloneRequestor(stdHttp);
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage(ALT_TEXT);
+    try {
+      start(c);
+      start(producer);
+      producer.doService(msg);
+      fail();
+    }
+    catch (ServiceException expected) {
+
+    }
+    finally {
+      stop(c);
+      stop(producer);
+    }
+    assertEquals(1, mock.messageCount());
+  }
+
+  public void testRequest_DeleteMethod_AlwaysSendPayload() throws Exception {
+    MockMessageProducer mock = new MockMessageProducer();
+    HttpConnection jc = HttpHelper.createConnection();
+    MessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
+    Channel c = createChannel(jc, createWorkflow(mc, mock, new ServiceList()));
+    StandardWorkflow workflow = (StandardWorkflow) c.getWorkflowList().get(0);
+    workflow.getServiceCollection().add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200)));
+    StandardHttpProducer stdHttp = new StandardHttpProducer(HttpHelper.createProduceDestination(c));
+    stdHttp.setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethodProvider.RequestMethod.DELETE));
+    stdHttp.setRequestBody(new PayloadStreamInputParameter());
+    stdHttp.setAlwaysSendPayload(true);
+    StandaloneRequestor producer = new StandaloneRequestor(stdHttp);
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage(ALT_TEXT);
+    try {
+      start(c);
+      start(producer);
+      producer.doService(msg);
+      waitForMessages(mock, 1);
+    }
+    finally {
+      stop(c);
+      stop(producer);
+    }
+    assertEquals(1, mock.messageCount());
+    AdaptrisMessage m2 = mock.getMessages().get(0);
+    assertEquals("DELETE", m2.getMetadataValue(CoreConstants.HTTP_METHOD));
+    assertEquals(ALT_TEXT, m2.getContent());
+  }
+
+  public void testRequest_TraceMethod_AlwaysSendPayload() throws Exception {
+    MockMessageProducer mock = new MockMessageProducer();
+    HttpConnection jc = HttpHelper.createConnection();
+    MessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
+    Channel c = createChannel(jc, createWorkflow(mc, mock, new ServiceList()));
+    StandardWorkflow workflow = (StandardWorkflow) c.getWorkflowList().get(0);
+    workflow.getServiceCollection().add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200)));
+    StandardHttpProducer stdHttp = new StandardHttpProducer(HttpHelper.createProduceDestination(c));
+    stdHttp.setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethodProvider.RequestMethod.TRACE));
+    stdHttp.setAlwaysSendPayload(true);
+    StandaloneRequestor producer = new StandaloneRequestor(stdHttp);
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage(ALT_TEXT);
+    try {
+      start(c);
+      start(producer);
+      producer.doService(msg);
+      waitForMessages(mock, 1);
+    }
+    finally {
+      stop(c);
+      stop(producer);
+    }
+    assertEquals(1, mock.messageCount());
+    AdaptrisMessage m2 = mock.getMessages().get(0);
+    assertEquals("TRACE", m2.getMetadataValue(CoreConstants.HTTP_METHOD));
+    assertEquals(0, m2.getSize());
+  }
+
+  public void testProduce_WithEncoder() throws Exception {
+    MockMessageProducer mock = new MockMessageProducer();
+    Channel c = HttpHelper.createAndStartChannel(mock);
+    StandardHttpProducer stdHttp = new StandardHttpProducer(HttpHelper.createProduceDestination(c));
+    stdHttp.setEncoder(new UrlConnectionEncoder());
+    StandaloneProducer producer = new StandaloneProducer(stdHttp);
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
+    try {
+      c.requestStart();
+      start(producer);
+      producer.doService(msg);
+      waitForMessages(mock, 1);
+    }
+    finally {
+      HttpHelper.stopChannelAndRelease(c);
+      stop(producer);
+    }
+    assertEquals(1, mock.messageCount());
+    AdaptrisMessage m2 = mock.getMessages().get(0);
+    assertEquals(TEXT, m2.getContent());
+  }
+
   @Override
   protected Object retrieveObjectForSampleConfig() {
     StandardHttpProducer producer = new StandardHttpProducer(new ConfiguredProduceDestination("http://myhost.com/url/to/post/to"));
@@ -649,4 +767,37 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     return result;
   }
 
+  private class UrlConnectionEncoder extends AdaptrisMessageEncoderImp {
+
+    @Override
+    public void writeMessage(AdaptrisMessage msg, Object target) throws CoreException {
+      try {
+        HttpURLConnection http = (HttpURLConnection) target;
+        copyAndClose(msg.getInputStream(), http.getOutputStream());
+      }
+      catch (IOException e) {
+        throw new CoreException(e);
+      }
+    }
+
+    @Override
+    public AdaptrisMessage readMessage(Object source) throws CoreException {
+      AdaptrisMessage msg = currentMessageFactory().newMessage();
+      try {
+        HttpURLConnection http = (HttpURLConnection) source;
+        copyAndClose(http.getInputStream(), msg.getOutputStream());
+      }
+      catch (IOException e) {
+        throw new CoreException(e);
+      }
+      return msg;
+    }
+
+    private void copyAndClose(InputStream input, OutputStream out) throws IOException, CoreException {
+      try (InputStream autoCloseIn = new BufferedInputStream(input); OutputStream autoCloseOut = new BufferedOutputStream(out)) {
+        IOUtils.copy(autoCloseIn, autoCloseOut);
+      }
+    }
+
+  }
 }
