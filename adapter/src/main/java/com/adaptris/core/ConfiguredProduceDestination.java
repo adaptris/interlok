@@ -17,6 +17,8 @@
 package com.adaptris.core;
 
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -30,6 +32,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"destination"})
 public final class ConfiguredProduceDestination implements MessageDrivenDestination {
 
+  @InputFieldHint(expression = true)
   private String destination;
 
   /**
@@ -116,9 +119,6 @@ public final class ConfiguredProduceDestination implements MessageDrivenDestinat
    * @param s the name of the destination
    */
   public void setDestination(String s) {
-    if (s == null) {
-      throw new IllegalArgumentException("param may not be null");
-    }
-    destination = s;
+    destination = Args.notNull(s, "destination");
   }
 }
