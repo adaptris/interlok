@@ -25,6 +25,7 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.util.Arrays;
 
 import org.apache.commons.io.IOUtils;
@@ -68,8 +69,6 @@ import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.services.metadata.PayloadFromMetadataService;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.util.KeyValuePair;
-
-import sun.net.www.protocol.http.HttpURLConnection;
 
 public class StandardHttpProducerTest extends HttpProducerExample {
   private static final String TEXT = "ABCDEFG";
