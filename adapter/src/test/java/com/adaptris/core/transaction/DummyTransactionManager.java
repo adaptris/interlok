@@ -8,8 +8,16 @@ import com.adaptris.core.CoreException;
 public class DummyTransactionManager implements TransactionManager {
   
   private String uniqueId;
-  
   private String lookupName;
+  
+  private enum TransactionState {
+    NOT_IN_TRANSACTION,
+    IN_TRANSACTION,
+    COMMIT,
+    ROLLBACK;
+  }
+
+  private transient TransactionState state = TransactionState.NOT_IN_TRANSACTION;
   
   public DummyTransactionManager() {
   }
@@ -21,32 +29,22 @@ public class DummyTransactionManager implements TransactionManager {
 
   @Override
   public void init() throws CoreException {
-    // TODO Auto-generated method stub
-    
   }
 
   @Override
   public void start() throws CoreException {
-    // TODO Auto-generated method stub
-    
   }
 
   @Override
   public void stop() {
-    // TODO Auto-generated method stub
-    
   }
 
   @Override
   public void close() {
-    // TODO Auto-generated method stub
-    
   }
 
   @Override
   public void prepare() throws CoreException {
-    // TODO Auto-generated method stub
-    
   }
 
   @Override
@@ -61,50 +59,39 @@ public class DummyTransactionManager implements TransactionManager {
 
   @Override
   public void registerXAResource(String name, XAConnectionFactory connectionFactory) throws Exception {
-    // TODO Auto-generated method stub
-    
   }
 
   @Override
   public void enlistXAResource(String name, XAResource xaResource) throws Exception {
-    // TODO Auto-generated method stub
-    
   }
 
   @Override
   public void delistXAResource(String name, XAResource xaResource, int status) throws Exception {
-    // TODO Auto-generated method stub
-    
   }
 
   @Override
   public void beginTransaction() throws Exception {
-    // TODO Auto-generated method stub
-    
+    state = TransactionState.IN_TRANSACTION;
   }
 
   @Override
   public boolean commit() throws Exception {
-    // TODO Auto-generated method stub
-    return false;
+    state = TransactionState.COMMIT;
+    return true;
   }
 
   @Override
   public void rollback() throws Exception {
-    // TODO Auto-generated method stub
-    
+    state = TransactionState.ROLLBACK;
   }
 
   @Override
   public boolean transactionIsActive() throws Exception {
-    // TODO Auto-generated method stub
-    return false;
+    return state == TransactionState.IN_TRANSACTION;
   }
 
   @Override
   public void setRollbackOnly() throws Exception {
-    // TODO Auto-generated method stub
-    
   }
 
   public void setUniqueId(String uniqueId) {
@@ -117,8 +104,6 @@ public class DummyTransactionManager implements TransactionManager {
 
   @Override
   public void deRegisterXAResource(String name, XAConnectionFactory connectionFactory) throws Exception {
-    // TODO Auto-generated method stub
-    
   }
 
 }
