@@ -26,7 +26,11 @@ import com.adaptris.core.ServiceImp;
  * Utilty class which can be extended by <code>Service</code>s which need to
  * set up confirmations.
  * </p>
+ * 
+ * @deprecated since 3.6.2 No-one has ever produced a confirmation service. This will be removed.
+ * 
  */
+@Deprecated
 public abstract class SetUpConfirmationServiceImp extends ServiceImp {
 
   /**

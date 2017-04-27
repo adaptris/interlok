@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.core.services.confirmation.ConfirmServiceImp;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.GuidGenerator;
 
@@ -55,6 +54,7 @@ public abstract class ServiceImp implements Service {
   private Boolean isTrackingEndpoint;
   @AdvancedConfig
   @InputFieldDefault(value = "false")
+  @Deprecated
   private Boolean isConfirmation;
 
   /**
@@ -175,6 +175,11 @@ public abstract class ServiceImp implements Service {
     isTrackingEndpoint = b;
   }
 
+  /**
+   * 
+   * @deprecated since 3.6.2 No-one has ever produced a confirmation service. This will be removed.
+   */
+  @Deprecated
   public Boolean getIsConfirmation() {
     return isConfirmation;
   }
@@ -183,8 +188,10 @@ public abstract class ServiceImp implements Service {
    * whether or not this service is configured a confirmation.
    * 
    * @param b true/false, default if not specified is false.
-   * @see ConfirmServiceImp
+   * @deprecated since 3.6.2 No-one has ever produced a confirmation service. This will be removed.
+   * 
    */
+  @Deprecated
   public void setIsConfirmation(Boolean b) {
     isConfirmation = b;
   }
