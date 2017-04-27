@@ -106,10 +106,14 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware {
     }
     final CyclicBarrier gate = new CyclicBarrier(splitMessages.size() + 1);
     final ServiceExceptionHandler handler = new ServiceExceptionHandler();
+    long count = 0;
     for (AdaptrisMessage splitMsg : splitMessages) {
+      count++;
+      splitMsg.addMetadata(MessageSplitterServiceImp.KEY_CURRENT_SPLIT_MESSAGE_COUNT, Long.toString(count));
       ServiceExecutor exe = new ServiceExecutor(handler, gate, cloneService(service), splitMsg);
       executors.execute(exe);
     }
+    msg.addMetadata(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT, Long.toString(count));
     waitFor(gate, handler);
     log.trace("Finished waiting for operations ");
     checkForExceptions(handler);
