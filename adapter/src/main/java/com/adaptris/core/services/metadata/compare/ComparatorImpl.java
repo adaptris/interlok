@@ -16,11 +16,16 @@
 
 package com.adaptris.core.services.metadata.compare;
 
+import org.hibernate.validator.constraints.NotBlank;
+
 import com.adaptris.annotation.AffectsMetadata;
+import com.adaptris.annotation.AutoPopulated;
 
 public abstract class ComparatorImpl implements MetadataComparator {
   
   @AffectsMetadata
+  @AutoPopulated
+  @NotBlank
   private String resultKey;
   
   public ComparatorImpl() {
