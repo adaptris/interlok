@@ -64,6 +64,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   private Boolean isTrackingEndpoint;
   @AdvancedConfig
   @InputFieldDefault(value = "false")
+  @Deprecated
   private Boolean isConfirmation;
   @AdvancedConfig
   @Valid
@@ -151,10 +152,18 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
     isTrackingEndpoint = b;
   }
 
+  /**
+   * @deprecated since 3.6.2 No-one has ever produced a confirmation service. This will be removed.
+   */
+  @Deprecated
   public Boolean getIsConfirmation() {
     return isConfirmation;
   }
 
+  /**
+   * @deprecated since 3.6.2 No-one has ever produced a confirmation service. This will be removed.
+   */
+  @Deprecated
   public void setIsConfirmation(Boolean b) {
     isConfirmation = b;
   }
