@@ -32,7 +32,10 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
@@ -42,6 +45,7 @@ import org.slf4j.LoggerFactory;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.management.logging.LoggingConfigurator;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.PropertyHelper;
 import com.adaptris.util.URLString;
 
@@ -53,10 +57,25 @@ import com.adaptris.util.URLString;
 public class BootstrapProperties extends Properties {
 
   private static final long serialVersionUID = 2010101401L;
+  private static final String[] BOOTSTRAP_PROP_OVERRIDE =
+      {Constants.CFG_KEY_CONFIG_URL, Constants.CFG_KEY_LOGGING_URL, Constants.CFG_KEY_JMX_SERVICE_URL_KEY};
+
+  private static final String[] BOOTSTRAP_SYSPROP_OVERRIDE =
+      {"interlok.config.url", "interlok.logging.url", "interlok.jmxserviceurl"};
+
+  private static final Map<String, String> BOOTSTRAP_OVERRIDES;
 
   private transient URLString primaryUrl;
   private static transient Logger log = LoggerFactory.getLogger(BootstrapProperties.class);
   private transient AdapterConfigManager configManager = null;
+
+  static {
+    Map<String, String> overrides = new HashMap<>();
+    for (int i = 0; i < BOOTSTRAP_SYSPROP_OVERRIDE.length; i++) {
+      overrides.put(BOOTSTRAP_SYSPROP_OVERRIDE[i], BOOTSTRAP_PROP_OVERRIDE[i]);
+    }
+    BOOTSTRAP_OVERRIDES = Collections.unmodifiableMap(overrides);
+  }
 
 
   public BootstrapProperties() {
@@ -65,43 +84,42 @@ public class BootstrapProperties extends Properties {
 
   public BootstrapProperties(String resourceName) throws Exception {
     this();
-    putAll(createProperties(resourceName));
+    putAll(overrideWithSystemProperties(createProperties(resourceName)));
     setProperty(Constants.BOOTSTRAP_PROPERTIES_RESOURCE_KEY, resourceName);
   }
 
   public BootstrapProperties(Properties p) {
     this();
-    putAll(p);
+    putAll(overrideWithSystemProperties(p));
   }
 
   private static Properties createProperties(final String resourceName) throws Exception {
-    String propertiesFile = resourceName;
+    String propertiesFile = StringUtils.defaultIfBlank(resourceName, DEFAULT_PROPS_RESOURCE);
     Properties config = new Properties();
-    InputStream in = null;
-    if (propertiesFile == null) {
-      propertiesFile = DEFAULT_PROPS_RESOURCE;
-    }
-
-    log.trace("Properties resource is [" + propertiesFile + "]");
-
-    File f = new File(propertiesFile);
-    if (f.exists()) {
-      in = new FileInputStream(f);
-    }
-    else {
-      in = BootstrapProperties.class.getClassLoader().getResourceAsStream(propertiesFile);
-    }
-    if (in == null) {
-      throw new IOException("cannot locate resource [" + propertiesFile + "]");
-    }
-    try {
-      config.load(in);
-    } finally {
-      in.close();
+    log.trace("Properties resource is [{}]", propertiesFile);
+    try (InputStream r = Args.notNull(openResource(propertiesFile), "resourceName")) {
+      config.load(r);
     }
     return config;
   }
 
+  private static InputStream openResource(String r) throws Exception {
+    if (new File(r).exists()) {
+      return new FileInputStream(r);
+    }
+    return BootstrapProperties.class.getClassLoader().getResourceAsStream(r);
+  }
+
+  private static Properties overrideWithSystemProperties(Properties p) {
+    for (Map.Entry<String, String> kv : BOOTSTRAP_OVERRIDES.entrySet()) {
+      String override = System.getProperty(kv.getKey());
+      if (!StringUtils.isBlank(override)) {
+        log.trace("Overriding [{}] with [{}]", kv.getValue(), override);
+        p.setProperty(kv.getValue(), override);
+      }
+    }
+    return p;
+  }
   /**
    * Convenience method to create an adapter based on the existing bootstrap properties
    * @return the adapter object.
@@ -128,7 +146,7 @@ public class BootstrapProperties extends Properties {
       list.add(url);
     }
     if (DBG) {
-      log.trace("Configuration URLS [" + list + "]");
+      log.trace("Configuration URLS [{}]", list);
     }
 
     return list.toArray(new String[0]);
@@ -141,7 +159,7 @@ public class BootstrapProperties extends Properties {
     for (int i = 0; i < urls.length; i++) {
 
       if (DBG) {
-        log.trace("trying [" + urls[i] + "]");
+        log.trace("trying [{}]", urls[i]);
       }
 
       if (i == 0) {
@@ -162,7 +180,7 @@ public class BootstrapProperties extends Properties {
       }
     }
     if (adapterXml == null) {
-      log.trace("Sourcing configuration from [" + Constants.CFG_KEY_CONFIG_RESOURCE + "] property");
+      log.trace("Sourcing configuration from [{}] property", Constants.CFG_KEY_CONFIG_RESOURCE);
       adapterXml = getProperty(Constants.CFG_KEY_CONFIG_RESOURCE);
     }
     return adapterXml;
@@ -186,7 +204,7 @@ public class BootstrapProperties extends Properties {
    */
   private boolean checkExists(URLString u) {
     if (DBG) {
-      log.trace("Checking availability of [" + u.toString() + "]");
+      log.trace("Checking availability of [{}]", u.toString());
     }
     boolean rc = true;
     try {
@@ -224,7 +242,7 @@ public class BootstrapProperties extends Properties {
   public synchronized AdapterConfigManager getConfigManager() throws Exception {
     if (configManager == null) {
       configManager = (AdapterConfigManager) Class.forName(
-          getPropertyIgnoringCase(this, CFG_KEY_CONFIG_MANAGER, DEFAULT_CONFIG_MANAGER))
+          PropertyHelper.getPropertyIgnoringCase(this, CFG_KEY_CONFIG_MANAGER, DEFAULT_CONFIG_MANAGER))
           .newInstance();
       configManager.configure(this);
     }
