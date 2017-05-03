@@ -62,8 +62,8 @@ public @interface ComponentProfile {
   /**
    * Whether or not this class can be used as the first service with a {@code BranchingServiceCollection}.
    * 
-   * @return true if isBranching() will return true (at runtime).
+   * @return true if isBranching() will return true (at runtime), default is false.
    * @since 3.6.2
    */
-  boolean branchSelector() default true;
+  boolean branchSelector() default false;
 }
