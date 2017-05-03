@@ -46,7 +46,8 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  */
 @XStreamAlias("syntax-branching-service")
 @AdapterComponent
-@ComponentProfile(summary = "Perform a branch based on the derived syntax of the message", tag = "service,branching")
+@ComponentProfile(summary = "Perform a branch based on the derived syntax of the message", tag = "service,branching",
+    branchSelector = true)
 public class SyntaxBranchingService extends BranchingServiceImp {
 
   @NotNull

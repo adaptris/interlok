@@ -47,7 +47,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("branching-service-enabler")
 @AdapterComponent
-@ComponentProfile(summary = "Wraps another service, performing a branch based on its success", tag = "service, branching")
+@ComponentProfile(summary = "Wraps another service, performing a branch based on its success", tag = "service, branching",
+    branchSelector = true)
 @DisplayOrder(order =
 {
     "service", "successId", "failureId"

@@ -60,7 +60,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("scripting-service")
 @AdapterComponent
-@ComponentProfile(summary = "Execute a JSR223 script stored on the filesystem", tag = "service,scripting")
+@ComponentProfile(summary = "Execute a JSR223 script stored on the filesystem", tag = "service,scripting", branchSelector = true)
 @DisplayOrder(order = {"language", "scriptFilename", "branchingEnabled"})
 public class ScriptingService extends ScriptingServiceImp {
 
