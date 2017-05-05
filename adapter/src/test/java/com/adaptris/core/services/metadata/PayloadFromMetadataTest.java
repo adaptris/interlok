@@ -64,6 +64,7 @@ public class PayloadFromMetadataTest extends MetadataServiceExample {
 
   public void testNoMetadataMatch() throws Exception {
     PayloadFromMetadataService service = createService();
+    service.setQuiet(true);
     AdaptrisMessage msg = createMessage();
     msg.removeMetadata(new MetadataElement(DEFAULT_METADATA_KEY, ""));
     execute(service, msg);

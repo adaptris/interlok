@@ -24,6 +24,7 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.lang.StringUtils;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -70,6 +71,9 @@ public class PayloadFromMetadataService extends ServiceImp {
   private String template = null;
   @InputFieldDefault(value = "true")
   private Boolean escapeBackslash;
+  @AdvancedConfig
+  @InputFieldDefault(value = "false")
+  private Boolean quiet;
 
   public PayloadFromMetadataService() {
     setMetadataTokens(new KeyValuePairSet());
@@ -87,12 +91,16 @@ public class PayloadFromMetadataService extends ServiceImp {
     String payload = StringUtils.defaultIfEmpty(template, "");
     for (KeyValuePair kvp : getMetadataTokens().getKeyValuePairs()) {
       if (msg.getMetadataValue(kvp.getKey()) != null) {
-        log.trace("Replacing {} with {}", kvp.getValue(), msg.getMetadataValue(kvp.getKey()));
+        if (!quiet()) {
+          log.trace("Replacing {} with {}", kvp.getValue(), msg.getMetadataValue(kvp.getKey()));
+        }
         payload = payload.replaceAll(kvp.getValue(), munge(msg.getMetadataValue(kvp.getKey())));
       }
       else {
-        log.trace("{} returns no value; no substitution", kvp.getKey());
-      }      
+        if (!quiet()) {
+          log.trace("{} returns no value; no substitution", kvp.getKey());
+        }
+      }
     }
     msg.setContent(payload, msg.getContentEncoding());
   }
@@ -176,9 +184,27 @@ public class PayloadFromMetadataService extends ServiceImp {
     return getEscapeBackslash() != null ? getEscapeBackslash().booleanValue() : true;
   }
 
+  public Boolean getQuiet() {
+    return quiet;
+  }
+
+  /**
+   * Normally this service logs everything that is being replaced; set to true to stop it.
+   * 
+   * @param quiet true or false, default false if not specified.
+   */
+  public void setQuiet(Boolean quiet) {
+    this.quiet = quiet;
+  }
+
+  private boolean quiet() {
+    return getQuiet() != null ? getQuiet().booleanValue() : false;
+  }
+
   @Override
   public void prepare() throws CoreException {
   }
+
 
 
 }
