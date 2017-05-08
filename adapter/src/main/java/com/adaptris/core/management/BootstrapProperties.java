@@ -58,10 +58,15 @@ public class BootstrapProperties extends Properties {
 
   private static final long serialVersionUID = 2010101401L;
   private static final String[] BOOTSTRAP_PROP_OVERRIDE =
-      {Constants.CFG_KEY_CONFIG_URL, Constants.CFG_KEY_LOGGING_URL, Constants.CFG_KEY_JMX_SERVICE_URL_KEY};
+  {
+      Constants.CFG_KEY_CONFIG_URL, Constants.CFG_KEY_LOGGING_URL, Constants.CFG_KEY_JMX_SERVICE_URL_KEY,
+      Constants.CFG_KEY_MANAGEMENT_COMPONENT
+  };
 
   private static final String[] BOOTSTRAP_SYSPROP_OVERRIDE =
-      {"interlok.config.url", "interlok.logging.url", "interlok.jmxserviceurl"};
+  {
+      "interlok.config.url", "interlok.logging.url", "interlok.jmxserviceurl", "interlok.mgmt,components"
+  };
 
   private static final Map<String, String> BOOTSTRAP_OVERRIDES;
 
