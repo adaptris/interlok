@@ -21,6 +21,7 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 import java.util.Date;
 
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldHint;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 
@@ -67,6 +68,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"filenameFormat"})
 public class FormattedFilenameCreator implements FileNameCreator {
 
+  @InputFieldHint(expression = true)
   private String filenameFormat;
 
   public FormattedFilenameCreator() {
@@ -75,7 +77,7 @@ public class FormattedFilenameCreator implements FileNameCreator {
 
   @Override
   public String createName(AdaptrisMessage msg) {
-    return String.format(getFilenameFormat(), msg.getUniqueId(), new Date());
+    return String.format(msg.resolve(getFilenameFormat()), msg.getUniqueId(), new Date());
   }
 
   public String getFilenameFormat() {
