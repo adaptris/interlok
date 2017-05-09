@@ -65,7 +65,7 @@ public class BootstrapProperties extends Properties {
 
   private static final String[] BOOTSTRAP_SYSPROP_OVERRIDE =
   {
-      "interlok.config.url", "interlok.logging.url", "interlok.jmxserviceurl", "interlok.mgmt,components"
+          "interlok.config.url", "interlok.logging.url", "interlok.jmxserviceurl", "interlok.mgmt.components"
   };
 
   private static final Map<String, String> BOOTSTRAP_OVERRIDES;
