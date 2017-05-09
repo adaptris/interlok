@@ -16,8 +16,6 @@
 
 package com.adaptris.core.services.jdbc.raw;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
@@ -29,6 +27,7 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.jdbc.JdbcDataCaptureServiceImpl;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.JdbcUtil;
+import com.adaptris.core.util.LoggingHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -61,19 +60,19 @@ public class JdbcRawDataCaptureService extends JdbcDataCaptureServiceImpl {
 
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    log.trace("Beginning doService in " + (!isEmpty(getUniqueId()) ? getUniqueId() : this.getClass().getSimpleName()));
+    log.trace("Beginning doService in {}", LoggingHelper.friendlyName(this));
     Connection conn = null;
 
     try {
       configureActor(msg);
       conn = actor.getSqlConnection();
-      PreparedStatement insert = actor.getInsertStatement();
+      PreparedStatement insert = actor.getInsertStatement(msg);
       
       this.getParameterApplicator().applyStatementParameters(msg, insert, this.getStatementParameters(), getStatement());      
       
       insert.executeUpdate();
       // Will only store the generated keys from the last query
-      saveKeys(msg);
+      saveKeys(msg, insert);
       commit(conn, msg);
     }
     catch (Exception e) {

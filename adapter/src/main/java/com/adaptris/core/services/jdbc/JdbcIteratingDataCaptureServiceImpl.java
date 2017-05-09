@@ -81,7 +81,7 @@ public abstract class JdbcIteratingDataCaptureServiceImpl extends JdbcDataCaptur
       Document doc = createDocument(namespaceCtx, msg);
       NodeList nodes = nodesToProcess(doc, xpath);
       log.debug("Iterating {} times for statement [{}]", nodes.getLength(), getStatement());
-      PreparedStatement insert = actor.getInsertStatement();
+      PreparedStatement insert = actor.getInsertStatement(msg);
       insert.clearParameters();
       int count = 0;
       for (int i = 0; i < nodes.getLength(); i++) {
@@ -94,7 +94,7 @@ public abstract class JdbcIteratingDataCaptureServiceImpl extends JdbcDataCaptur
       }
       finishUpdate(insert);
       // Will only store the generated keys from the last query
-      saveKeys(msg);
+      saveKeys(msg, insert);
       commit(conn, msg);
     }
     catch (Exception e) {

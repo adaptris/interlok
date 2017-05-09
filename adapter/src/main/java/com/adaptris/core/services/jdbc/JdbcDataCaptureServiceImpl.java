@@ -16,6 +16,8 @@
 
 package com.adaptris.core.services.jdbc;
 
+import static org.apache.commons.lang.StringUtils.isBlank;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -39,16 +41,20 @@ import com.adaptris.core.util.JdbcUtil;
 public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParameters {
 
   @NotNull
-  @InputFieldHint(style = "SQL")
+  @InputFieldHint(style = "SQL", expression = true)
   private String statement = null;
   @AdvancedConfig
   @InputFieldDefault(value = "false")
   private Boolean saveReturnedKeys = null;
   @AdvancedConfig
+  @Deprecated
   private String saveReturnedKeysColumn = null;
   @AdvancedConfig
+  @Deprecated
   private String saveReturnedKeysTable = null;
   protected transient DatabaseActor actor;
+
+  private static boolean warningLogged = false;
 
   public JdbcDataCaptureServiceImpl() {
     super();
@@ -57,7 +63,13 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
 
   @Override
   protected void initJdbcService() throws CoreException {
-
+    if (!isBlank(getSaveReturnedKeysColumn()) || !isBlank(getSaveReturnedKeysTable())) {
+      if (!warningLogged) {
+        log.warn("saveReturnedKeysColumn/saveReturnedKeysTable is deprecated; "
+                + "surely your JDBC driver supports Statement#RETURN_GENERATED_KEYS by now");
+        warningLogged = true;
+      }
+    }
   }
 
   @Override
@@ -92,9 +104,6 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
     return statement;
   }
   
-  private String prepareStringStatement() {
-    return this.getParameterApplicator().prepareParametersToStatement(getStatement());
-  }
 
   public boolean saveReturnedKeys() {
     return getSaveReturnedKeys() != null ? getSaveReturnedKeys().booleanValue() : false;
@@ -120,8 +129,13 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
 
   /**
    * The column that forms the return value for the SQL statement.
-   *
+   * <p>
+   * This is only applicable of the JDBC driver in question doesn't support {@link Statement#RETURN_GENERATED_KEYS}
+   * </p>
+   * 
    * @param col the column
+   * @deprecated since 3.6.2 {@link Statement#RETURN_GENERATED_KEYS} has been available since java 1.4, surely your JDBC driver is
+   *             newer than that!
    */
   public void setSaveReturnedKeysColumn(String col) {
     saveReturnedKeysColumn = col;
@@ -129,8 +143,13 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
 
   /**
    * Return the column that forms the return value for the SQL statement.
-   *
+   * <p>
+   * This is only applicable of the JDBC driver in question doesn't support {@link Statement#RETURN_GENERATED_KEYS}
+   * </p>
+   * 
    * @return the column
+   * @deprecated since 3.6.2 {@link Statement#RETURN_GENERATED_KEYS} has been available since java 1.4, surely your JDBC driver is
+   *             newer than that!
    */
   public String getSaveReturnedKeysColumn() {
     return saveReturnedKeysColumn;
@@ -139,7 +158,13 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
   /**
    * The table the contains the return value for the SQL statement.
    *
+   * <p>
+   * This is only applicable of the JDBC driver in question doesn't support {@link Statement#RETURN_GENERATED_KEYS}
+   * </p>
+   * 
    * @param table the table
+   * @deprecated since 3.6.2 {@link Statement#RETURN_GENERATED_KEYS} has been available since java 1.4, surely your JDBC driver is
+   *             newer than that!
    */
   public void setSaveReturnedKeysTable(String table) {
     saveReturnedKeysTable = table;
@@ -147,21 +172,26 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
 
   /**
    * Get the table that contains the return value.
-   *
+   * <p>
+   * This is only applicable of the JDBC driver in question doesn't support {@link Statement#RETURN_GENERATED_KEYS}
+   * </p>
+   * 
    * @return the table.
+   * @deprecated since 3.6.2 {@link Statement#RETURN_GENERATED_KEYS} has been available since java 1.4, surely your JDBC driver is
+   *             newer than that!
    */
   public String getSaveReturnedKeysTable() {
     return saveReturnedKeysTable;
   }
 
-  protected void saveKeys(AdaptrisMessage msg) throws SQLException {
+  protected void saveKeys(AdaptrisMessage msg, Statement stmt) throws SQLException {
     ResultSet rs = null;
     Statement savedKeysQuery = null;
 
     try {
       if (saveReturnedKeys()) {
         if (!actor.isOldJbc()) {
-          rs = actor.getInsertStatement().getGeneratedKeys();
+          rs = stmt.getGeneratedKeys();
           rs.next();
           ResultSetMetaData rsmd = rs.getMetaData();
           for (int i = 1; i <= rsmd.getColumnCount(); i++) {
@@ -198,6 +228,7 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
 
   protected class DatabaseActor {
     private PreparedStatement insertStatement = null;
+    private String lastInsertStatement = "";
     private Connection sqlConnection;
     private boolean oldJDBC;
 
@@ -208,32 +239,39 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
     void reInitialise(Connection c) throws SQLException {
       destroy();
       sqlConnection = c;
-      prepareStatements();
     }
 
-    private void prepareStatements() throws SQLException {
+    public PreparedStatement getInsertStatement(AdaptrisMessage msg) throws SQLException {
+      String currentStatement = getParameterApplicator().prepareParametersToStatement(msg.resolve(getStatement()));
+      if (!lastInsertStatement.equals(currentStatement) || insertStatement == null) {
+        insertStatement = prepare(currentStatement);
+        lastInsertStatement = currentStatement;
+      }
+      return insertStatement;
+    }
+
+    private PreparedStatement prepare(String statement) throws SQLException {
+      PreparedStatement result = null;
       if (saveReturnedKeys()) {
         try {
-          insertStatement = prepareStatement(sqlConnection, prepareStringStatement(), Statement.RETURN_GENERATED_KEYS);
+          result = prepareStatement(sqlConnection, statement, Statement.RETURN_GENERATED_KEYS);
         }
         catch (Throwable error) {
           oldJDBC = true;
-          insertStatement = prepareStatement(sqlConnection, prepareStringStatement());
+          result = prepareStatement(sqlConnection, statement);
         }
       }
       else {
-        insertStatement = prepareStatement(sqlConnection, prepareStringStatement());
+        result = prepareStatement(sqlConnection, statement);
       }
+      return result;
     }
 
     void destroy() {
       JdbcUtil.closeQuietly(insertStatement);
       JdbcUtil.closeQuietly(sqlConnection);
       sqlConnection = null;
-    }
-
-    public PreparedStatement getInsertStatement() {
-      return insertStatement;
+      insertStatement = null;
     }
 
     public Connection getSqlConnection() {
