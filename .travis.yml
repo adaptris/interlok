@@ -1,7 +1,14 @@
 language: java
 script: ant -Divy.logging=default test
-jdk: 
+jdk:
   - oraclejdk8
+
+cache:
+  directories:
+    - $HOME/.ivy2
+
+notifications:
+  email: false
 
 branches:
   only:
