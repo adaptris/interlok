@@ -1,0 +1,8 @@
+language: java
+script: ant test
+jdk: 
+  - openjdk8
+
+branches:
+  only:
+  - develop
