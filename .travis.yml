@@ -1,4 +1,5 @@
 language: java
+sudo: false
 script: ant -Divy.logging=default -Djava.security.egd=file:/dev/./urandom jar
 jdk:
   - oraclejdk8
