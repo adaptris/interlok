@@ -1,5 +1,5 @@
 language: java
-script: ant -Divy.logging=default test
+script: ant -Divy.logging=default -Djava.security.egd=file:/dev/./urandom jar
 jdk:
   - oraclejdk8
 
