@@ -381,18 +381,4 @@ public interface AdaptrisMessage extends InterlokMessage {
    */
   boolean equivalentForTracking(AdaptrisMessage other);
 
-  /**
-   * Resolve against this message's metadata.
-   * 
-   * <p>
-   * This is a helper method that allows you to pass in {@code %message{key1}} and get the metadata associated with {@code key1}.
-   * Strings that do not match that format will be returned as is. Support for punctuation characters is down to the implementaiton;
-   * the standard implementations only support a limited subset of punctuation characters in addition to standard word characters
-   * ({@code [a-zA-Z_0-9]}); They are {@code _!"#&'+,-.:=}.
-   * </p>
-   * 
-   * @param s string to resolve.
-   * @return the original string, an item of metadata, or null (if the metadata key does not exist).
-   */
-  String resolve(String s);
 }
