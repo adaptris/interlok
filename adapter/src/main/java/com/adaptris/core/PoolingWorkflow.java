@@ -16,14 +16,18 @@
 
 package com.adaptris.core;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
+
+import javax.validation.Valid;
 
 import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericObjectPool;
@@ -32,6 +36,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.FifoMutexLock;
@@ -100,21 +105,38 @@ public class PoolingWorkflow extends WorkflowImp {
    *
    */
   private static final TimeInterval DEFAULT_SHUTDOWN_WAIT = new TimeInterval(1L, TimeUnit.MINUTES.name());
+  /**
+   * The default wait time for pool initialisation
+   *
+   */
+  private static final TimeInterval DEFAULT_INIT_WAIT = new TimeInterval(1L, TimeUnit.MINUTES.name());
 
+  @InputFieldDefault(value = "10")
   private Integer poolSize;
+  @InputFieldDefault(value = "1")
   private Integer minIdle;
+  @InputFieldDefault(value = "10")
   private Integer maxIdle;
 
   @AdvancedConfig
+  @InputFieldDefault(value = "1 minute")
+  @Valid
   private TimeInterval threadKeepAlive;
   @AdvancedConfig
+  @InputFieldDefault(value = "1 minute")
+  @Valid
   private TimeInterval shutdownWaitTime;
+  @AdvancedConfig
+  @InputFieldDefault(value = "1 minute")
+  @Valid
+  private TimeInterval initWaitTime;
 
   @AdvancedConfig
+  @InputFieldDefault(value = "5")
   private Integer threadPriority;
 
   private transient ExecutorService threadPool;
-  private transient GenericObjectPool objectPool;
+  private transient GenericObjectPool<Worker> objectPool;
   private transient FifoMutexLock poolLock;
   private transient AdaptrisMarshaller serviceListMarshaller;
   private transient String currentThreadName;
@@ -380,19 +402,36 @@ public class PoolingWorkflow extends WorkflowImp {
   }
 
   private void populatePool() throws CoreException {
+    int size = minIdle();
+    ExecutorService populator = Executors.newCachedThreadPool();
     try {
-      int size = minIdle();
-      Worker[] workers = new Worker[size];
-      log.trace("Creating " + size + " objects for initial population of the pool");
+      final CyclicBarrier barrier = new CyclicBarrier(size + 1);
+      log.trace("Creating {} objects for initial population of the pool", size);
+      final List<Worker> workers = new ArrayList<Worker>(size);
       for (int i = 0; i < size; i++) {
-        workers[i] = (Worker) objectPool.borrowObject();
+        populator.execute(new Runnable() {
+          @Override
+          public void run() {
+            try {
+              Worker w = objectPool.borrowObject();
+              workers.add(w);
+              barrier.await(initWaitTimeMs(), TimeUnit.MILLISECONDS);
+            }
+            catch (Exception e) {
+              barrier.reset();
+            }
+          }
+        });
       }
+      barrier.await(initWaitTimeMs(), TimeUnit.MILLISECONDS);
       for (Worker worker : workers) {
         objectPool.returnObject(worker);
       }
     }
     catch (Exception e) {
       throw new CoreException(e);
+    } finally {
+      populator.shutdownNow();
     }
   }
 
@@ -504,6 +543,30 @@ public class PoolingWorkflow extends WorkflowImp {
     return getThreadPriority() != null ? getThreadPriority().intValue() : Thread.NORM_PRIORITY;
   }
 
+
+  /**
+   * @return the initWaitTime
+   */
+  public TimeInterval getInitWaitTime() {
+    return initWaitTime;
+  }
+
+  /**
+   * Set the amount of time to wait for object pool population.
+   * <p>
+   * Upon start the object pool is populated with the {@link #minIdle()} number of workers.
+   * </p>
+   * 
+   * @param t the initWaitTime to set, default if not specified is 1 minute
+   */
+  public void setInitWaitTime(TimeInterval t) {
+    this.initWaitTime = t;
+  }
+
+  public long initWaitTimeMs() {
+    return getInitWaitTime() != null ? getInitWaitTime().toMilliseconds() : DEFAULT_INIT_WAIT.toMilliseconds();
+  }
+
   /**
    * Return the total number of objects in the pool. This includes active and idle objects.
    *
@@ -576,7 +639,7 @@ public class PoolingWorkflow extends WorkflowImp {
   /**
    * The Manager private class. This is responsible for creating objects when requested by the object pool
    */
-  private class WorkerFactory implements PoolableObjectFactory {
+  private class WorkerFactory implements PoolableObjectFactory<Worker> {
 
     WorkerFactory() {
     }
@@ -585,7 +648,7 @@ public class PoolingWorkflow extends WorkflowImp {
      * @see PoolableObjectFactory#makeObject()
      */
     @Override
-    public Object makeObject() throws Exception {
+    public Worker makeObject() throws Exception {
       Worker w = null;
       try {
         w = new Worker();
@@ -602,7 +665,7 @@ public class PoolingWorkflow extends WorkflowImp {
      * @see PoolableObjectFactory#destroyObject(java.lang.Object)
      */
     @Override
-    public void destroyObject(Object arg0) throws Exception {
+    public void destroyObject(Worker arg0) throws Exception {
       ((Worker) arg0).stop();
     }
 
@@ -610,7 +673,7 @@ public class PoolingWorkflow extends WorkflowImp {
      * @see PoolableObjectFactory#validateObject(java.lang.Object)
      */
     @Override
-    public boolean validateObject(Object arg0) {
+    public boolean validateObject(Worker arg0) {
       return ((Worker) arg0).isValid();
     }
 
@@ -618,14 +681,14 @@ public class PoolingWorkflow extends WorkflowImp {
      * @see PoolableObjectFactory#activateObject(java.lang.Object)
      */
     @Override
-    public void activateObject(Object arg0) throws Exception {
+    public void activateObject(Worker arg0) throws Exception {
     }
 
     /**
      * @see PoolableObjectFactory#passivateObject(java.lang.Object)
      */
     @Override
-    public void passivateObject(Object arg0) throws Exception {
+    public void passivateObject(Worker arg0) throws Exception {
     }
 
   }
@@ -638,7 +701,7 @@ public class PoolingWorkflow extends WorkflowImp {
     WorkerThread(String name, AdaptrisMessage msg) throws Exception {
       logicalId = name;
       message = msg;
-      slave = (Worker) objectPool.borrowObject();
+      slave = objectPool.borrowObject();
     }
 
     private AdaptrisMessage getMessage() {
@@ -739,6 +802,7 @@ public class PoolingWorkflow extends WorkflowImp {
       return className;
     }
   }
+
 
 
 }
