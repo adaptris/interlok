@@ -81,6 +81,14 @@ public class JdbcRawDataCaptureServiceTest extends JdbcServiceExample {
     doBasicCaptureAsserts(1);
   }
 
+  public void testService_Resolveable() throws Exception {
+    createDatabase();
+    JdbcRawDataCaptureService service = createResolveableStatement(true);
+    AdaptrisMessage msg = createMessage();
+    execute(service, msg);
+    doBasicCaptureAsserts(1);
+  }
+
   private void doBasicCaptureAsserts(int expectedCount) throws Exception {
     Connection c = null;
     PreparedStatement p = null;
@@ -276,6 +284,35 @@ public class JdbcRawDataCaptureServiceTest extends JdbcServiceExample {
     return service;
   }
   
+  private JdbcRawDataCaptureService createResolveableStatement(boolean createConnection) {
+    JdbcRawDataCaptureService service = new JdbcRawDataCaptureService();
+    if (createConnection) {
+      JdbcConnection connection = new JdbcConnection();
+      connection.setConnectUrl(PROPERTIES.getProperty(JDBC_CAPTURE_SERVICE_URL));
+      connection.setDriverImp(PROPERTIES.getProperty(JDBC_CAPTURE_SERVICE_DRIVER));
+      service.setConnection(connection);
+    }
+    service.addStatementParameter(new DateStatementParameter("timestamp", StatementParameter.QueryType.metadata,
+        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")));
+    service.addStatementParameter(new TimestampStatementParameter("timestamp", StatementParameter.QueryType.metadata,
+        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")));
+    service.addStatementParameter(new TimeStatementParameter("timestamp", StatementParameter.QueryType.metadata,
+        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")));
+    service.addStatementParameter(new StatementParameter(null, "java.lang.String", StatementParameter.QueryType.payload));
+    service.addStatementParameter(new BytePayloadStatementParameter());
+    service.addStatementParameter(new CharacterStreamStatementParameter());
+    service.addStatementParameter(new BinaryStreamStatementParameter());
+    service.addStatementParameter(new StatementParameter(null, "java.lang.String", StatementParameter.QueryType.id));
+    service
+        .addStatementParameter(new StatementParameter(CONSTANT_VALUE, "java.lang.String", StatementParameter.QueryType.constant));
+
+    service.setStatement("insert into jdbc_raw_data_capture_basic "
+        + "(string_value, date_value, timestamp_value, time_value, payload_clob, payload_blob, payload_clob2, payload_blob2, id_value, constant_value) "
+        + "values ('%message{jdbcRawDataCaptureServiceTest}', ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    return service;
+  }
+
+
   private JdbcRawDataCaptureService createServiceNamedParameters(boolean createConnection) {
     JdbcRawDataCaptureService service = new JdbcRawDataCaptureService();
     if (createConnection) {
