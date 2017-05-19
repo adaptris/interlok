@@ -47,10 +47,11 @@ public class ConfiguredStatementCreator implements CallableStatementCreator {
   
   @Override
   public String createCall(String procedureName, int parameterCount) {
-    if(statement.indexOf("$") >= 0)
-      return statement.replace("$", procedureName);
+    String result = getStatement();
+    if (result.indexOf("$") >= 0)
+      return result.replace("$", procedureName);
     
-    return statement;
+    return result;
   }
 
   public String getStatement() {
