@@ -20,9 +20,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * Create a string similar to {@code SELECT my_stored_procedure(?,?,?)}
  * 
- * @config postgres-statement-creator
+ * @config postgresql-statement-creator
  */
-@XStreamAlias("postgres-statement-creator")
+@XStreamAlias("postgresql-statement-creator")
 public class PostgresStatementCreator {
 
   public String createCall(String procedureName, int parameterCount) {
