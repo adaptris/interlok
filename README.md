@@ -1,6 +1,6 @@
-# Overview #
+# Interlok [![Build Status](https://travis-ci.org/adaptris/interlok.svg?branch=develop)](https://travis-ci.org/adaptris/interlok)
 
-This is the base repository for Interlok. It contains the base adapter pared of all 3rd party dependencies other than open source ones. Additional components can be found in the [Interlok Optional][bb-interlok-optional] repository. There is a single dependency (commented out) on Microsoft SQL Server JDBC provider which is not required unless you explicitly want to test JDBC against SQL Server.
+This is the base repository for Interlok. It contains the base adapter pared of all 3rd party dependencies other than open source ones. There is a single dependency (commented out) on Microsoft SQL Server JDBC provider which is not required unless you explicitly want to test JDBC against SQL Server.
 
 ## Setting up your Development Environment ##
 
@@ -79,5 +79,3 @@ If you've made some changes, and you want to check that the downstream projects 
 
 
 And that's it.
-
-[bb-interlok-optional]: https://bitbucket.org/adaptris/interlok-optional
