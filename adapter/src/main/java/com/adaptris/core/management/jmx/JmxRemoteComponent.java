@@ -35,6 +35,7 @@ import com.adaptris.core.management.ManagementComponent;
 import com.adaptris.core.management.properties.PropertyResolver;
 import com.adaptris.core.runtime.AdapterComponentMBean;
 import com.adaptris.core.util.JmxHelper;
+import com.adaptris.core.util.ManagedThreadFactory;
 
 /**
  * Implementation of the {@link ManagementComponent} interface for JSR160.
@@ -182,9 +183,22 @@ public class JmxRemoteComponent extends JmxComponentImpl {
 
     @Override
     public void start() throws Exception {
-      if (!jmxServer.isActive()) {
-        jmxServer.start();
-      }
+
+      ManagedThreadFactory.createThread("JmxRemoteComponent", new Runnable() {
+        @Override
+        public void run() {
+          try {
+            log.debug("Starting JMXConnectorServer : {}", serverName);
+            if (!jmxServer.isActive()) {
+              jmxServer.start();
+            }
+            log.debug("Started JMXConnectorServer : {}", serverName);
+          } catch (final Exception e) {
+            log.error("Could not start JMXConnectorServer", e);
+          }
+        }
+      }).start();
+
     }
 
     @Override
@@ -205,6 +219,11 @@ public class JmxRemoteComponent extends JmxComponentImpl {
       MBeanServer mBeanServer = JmxHelper.findMBeanServer(config);
       mBeanServer.registerMBean(jmxServer, serverName);
       log.trace("MBean [" + serverName + "] registered");
+    }
+
+    @Override
+    public boolean isStarted() {
+      return jmxServer.isActive();
     }
 
   }

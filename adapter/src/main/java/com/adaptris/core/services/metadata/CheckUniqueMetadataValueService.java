@@ -65,7 +65,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(
     summary = "Perform a branch by checking a metadata key and comparing it against a list of previously received values",
-    tag = "service,branching")
+    tag = "service,branching", branchSelector = true)
 @DisplayOrder(order = {"metadataKeyToCheck", "nextServiceIdIfUnique", "nextServiceIdIfDuplicate", "storeFileUrl",
     "numberOfPreviousValuesToStore"})
 public class CheckUniqueMetadataValueService extends BranchingServiceImp {

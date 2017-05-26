@@ -53,7 +53,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("embedded-scripting-service")
 @AdapterComponent
-@ComponentProfile(summary = "Execute an embedded JSR223 script", tag = "service,scripting")
+@ComponentProfile(summary = "Execute an embedded JSR223 script", tag = "service,scripting", branchSelector = true)
 @DisplayOrder(order = {"language", "script", "branchingEnabled"})
 public class EmbeddedScriptingService extends ScriptingServiceImp {
 
@@ -88,4 +88,9 @@ public class EmbeddedScriptingService extends ScriptingServiceImp {
     return new StringReader(getScript() == null ? "" : getScript());
   }
 
+  public EmbeddedScriptingService withScript(String lang, String script) {
+    setScript(script);
+    setLanguage(lang);
+    return this;
+  }
 }

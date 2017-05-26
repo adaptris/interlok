@@ -49,7 +49,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("metadata-value-branching-service")
 @AdapterComponent
-@ComponentProfile(summary = "Perform a branch based on a match of a metadata value", tag = "service,branching")
+@ComponentProfile(summary = "Perform a branch based on a match of a metadata value", tag = "service,branching",
+    branchSelector = true)
 @DisplayOrder(order = {"metadataKeys", "valueMatcher", "metadataToServiceIdMappings", "defaultServiceId"})
 public class MetadataValueBranchingService extends MetadataBranchingServiceImp {
 

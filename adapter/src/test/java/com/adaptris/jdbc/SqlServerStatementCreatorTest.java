@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Adaptris Ltd.
+ * Copyright 2017 Adaptris Ltd.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 */
+package com.adaptris.jdbc;
 
-package com.adaptris.core.services.metadata.compare;
+import static org.junit.Assert.assertEquals;
 
-import com.adaptris.core.MetadataElement;
-import com.adaptris.core.ServiceException;
+import org.junit.Test;
 
-/** Compare two items of metadata returning the result of the comparison.
- * 
- * @author lchan
- *
- */
-public interface MetadataComparator {
+public class SqlServerStatementCreatorTest {
 
-  MetadataElement compare(MetadataElement firstItem, MetadataElement secondItem) throws ServiceException;
+  @Test
+  public void testCreate() {
+    SqlServerStatementCreator creator = new SqlServerStatementCreator();
+    assertEquals("{ CALL mystoredProcedure(?, ?)}", creator.createCall("mystoredProcedure", 2));
+    assertEquals("{ CALL mystoredProcedure}", creator.createCall("mystoredProcedure", 0));
+  }
 }

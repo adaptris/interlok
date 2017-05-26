@@ -25,8 +25,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import junit.framework.TestCase;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -35,6 +33,7 @@ import com.adaptris.core.Service;
 import com.adaptris.core.ServiceCollection;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceList;
+import com.adaptris.core.services.WaitService;
 import com.adaptris.core.services.aggregator.MessageAggregator;
 import com.adaptris.core.services.aggregator.MimeAggregator;
 import com.adaptris.core.services.aggregator.XmlDocumentAggregator;
@@ -46,6 +45,8 @@ import com.adaptris.util.TimeInterval;
 import com.adaptris.util.text.mime.MultiPartInput;
 import com.adaptris.util.text.xml.InsertNode;
 import com.adaptris.util.text.xml.XPath;
+
+import junit.framework.TestCase;
 
 @SuppressWarnings("deprecation")
 public class SplitJoinServiceTest extends TestCase {
@@ -107,6 +108,18 @@ public class SplitJoinServiceTest extends TestCase {
     service.init();
     service.close();
   }
+
+  // public void testSetMaxThreads() throws Exception {
+  // SplitJoinService service = new SplitJoinService();
+  // assertNull(service.getMaxThreads());
+  // assertEquals(0, service.maxThreads());
+  // service.setMaxThreads(10);
+  // assertEquals(10, service.maxThreads());
+  // service.setMaxThreads(null);
+  // assertNull(service.getMaxThreads());
+  // assertEquals(0, service.maxThreads());
+  // }
+
 
   public void testService_WithException() throws Exception {
     // This is a 100 line message, so we expect to get 11 parts.
@@ -243,6 +256,45 @@ public class SplitJoinServiceTest extends TestCase {
     // Should now be 6 document nodes
     XPath xpath = new XPath();
     assertEquals(6, xpath.selectNodeList(XmlHelper.createDocument(msg), ENVELOPE_DOCUMENT).getLength());
+  }
+
+  // public void testService_MaxThreads() throws Exception {
+  // String oldname = Thread.currentThread().getName();
+  // Thread.currentThread().setName(getName());
+  // try {
+  // // This is a 100 line message, so we expect to get 11 parts.
+  // AdaptrisMessage msg = SplitterCase.createLineCountMessageInput();
+  // SplitJoinService service = new SplitJoinService();
+  // service.setMaxThreads(3);
+  // // The service doesn't actually matter right now.
+  // service.setService(wrap(new NullService()));
+  // service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
+  // service.setSplitter(new LineCountSplitter());
+  // service.setAggregator(new MimeAggregator());
+  // execute(service, msg);
+  // MultiPartInput input = MimeHelper.create(msg, false);
+  // assertEquals(11, input.size());
+  // } finally {
+  // Thread.currentThread().setName(oldname);
+  // }
+  // }
+
+  public void testService_Timeout() throws Exception {
+    String oldname = Thread.currentThread().getName();
+    Thread.currentThread().setName(getName());
+    try {
+      AdaptrisMessage msg = SplitterCase.createLineCountMessageInput();
+      SplitJoinService service = new SplitJoinService();
+      service.setService(wrap(new WaitService(new TimeInterval(11L, TimeUnit.SECONDS))));
+      service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
+      service.setSplitter(new LineCountSplitter());
+      service.setAggregator(new MimeAggregator());
+      execute(service, msg);
+    } catch (ServiceException expected) {
+      assertEquals("Exception waiting for all services to complete", expected.getMessage());
+    } finally {
+      Thread.currentThread().setName(oldname);
+    }
   }
 
   public static ServiceCollection wrap(Service... services) {

@@ -181,4 +181,18 @@ public class RegexMetadataFilter implements MetadataFilter {
   public void addExcludePattern(String pattern) {
     getExcludePatterns().add(pattern);
   }
+
+  public RegexMetadataFilter withExcludePatterns(String... patterns) {
+    for (String p : patterns) {
+      this.addExcludePattern(p);
+    }
+    return this;
+  }
+
+  public RegexMetadataFilter withIncludePatterns(String... patterns) {
+    for (String p : patterns) {
+      this.addIncludePattern(p);
+    }
+    return this;
+  }
 }

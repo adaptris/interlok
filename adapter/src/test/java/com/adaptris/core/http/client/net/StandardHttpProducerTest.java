@@ -20,21 +20,33 @@ import static com.adaptris.core.http.jetty.JettyHelper.createChannel;
 import static com.adaptris.core.http.jetty.JettyHelper.createConsumer;
 import static com.adaptris.core.http.jetty.JettyHelper.createWorkflow;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.util.Arrays;
 
+import org.apache.commons.io.IOUtils;
+
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.AdaptrisMessageEncoderImp;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreConstants;
+import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.NullConnection;
 import com.adaptris.core.ProduceException;
+import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceList;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandaloneRequestor;
 import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.common.MetadataStreamOutputParameter;
+import com.adaptris.core.common.PayloadStreamInputParameter;
 import com.adaptris.core.http.HttpConstants;
 import com.adaptris.core.http.HttpProducerExample;
 import com.adaptris.core.http.MetadataContentTypeProvider;
@@ -56,9 +68,11 @@ import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.services.metadata.PayloadFromMetadataService;
 import com.adaptris.core.stubs.MockMessageProducer;
+import com.adaptris.util.KeyValuePair;
 
 public class StandardHttpProducerTest extends HttpProducerExample {
   private static final String TEXT = "ABCDEFG";
+  private static final String ALT_TEXT = "HIJKLMNOP";
 
   public StandardHttpProducerTest(String name) {
     super(name);
@@ -94,7 +108,6 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     assertFalse(p.ignoreServerResponseCode());
   }
 
-
   public void testProduceWithContentTypeMetadata() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     Channel c = HttpHelper.createAndStartChannel(mock);
@@ -119,7 +132,6 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     assertEquals("text/complicated", m2.getMetadataValue("Content-Type"));
   }
 
-
   public void testProduce_MetadataRequestHeaders() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     Channel c = HttpHelper.createAndStartChannel(mock);
@@ -133,7 +145,8 @@ public class StandardHttpProducerTest extends HttpProducerExample {
       start(producer);
       producer.doService(msg);
       waitForMessages(mock, 1);
-    } finally {
+    }
+    finally {
       HttpHelper.stopChannelAndRelease(c);
       stop(producer);
     }
@@ -142,7 +155,6 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     assertTrue(m2.headersContainsKey(getName()));
     assertEquals(getName(), m2.getMetadataValue(getName()));
   }
-
 
   public void testProduce_WithMetadataMethod() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
@@ -165,7 +177,8 @@ public class StandardHttpProducerTest extends HttpProducerExample {
       start(producer);
       producer.doService(msg);
       waitForMessages(mock, 1);
-    } finally {
+    }
+    finally {
       HttpHelper.stopChannelAndRelease(c);
       stop(producer);
     }
@@ -174,7 +187,6 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     assertEquals("GET", m2.getMetadataValue(CoreConstants.HTTP_METHOD));
     assertEquals(TEXT, msg.getContent());
   }
-
 
   public void testRequest_GetMethod_ZeroBytes() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
@@ -248,7 +260,6 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     workflow.getServiceCollection().add(pms);
     workflow.getServiceCollection().add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200)));
 
-
     StandardHttpProducer stdHttp = new StandardHttpProducer(HttpHelper.createProduceDestination(c));
     stdHttp.setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethodProvider.RequestMethod.POST));
     stdHttp.setResponseBody(new MetadataStreamOutputParameter(getName()));
@@ -260,7 +271,8 @@ public class StandardHttpProducerTest extends HttpProducerExample {
       start(producer);
       producer.doService(msg);
       waitForMessages(mock, 1);
-    } finally {
+    }
+    finally {
       HttpHelper.stopChannelAndRelease(c);
       stop(producer);
     }
@@ -272,7 +284,6 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     assertTrue(msg.headersContainsKey(getName()));
     assertEquals(TEXT, msg.getMetadataValue(getName()));
   }
-
 
   public void testRequest_EmptyReply() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
@@ -292,7 +303,8 @@ public class StandardHttpProducerTest extends HttpProducerExample {
       start(producer);
       producer.doService(msg);
       waitForMessages(mock, 1);
-    } finally {
+    }
+    finally {
       HttpHelper.stopChannelAndRelease(c);
       stop(producer);
     }
@@ -301,8 +313,6 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     assertEquals("POST", m2.getMetadataValue(CoreConstants.HTTP_METHOD));
     assertEquals(0, msg.getSize());
   }
-
-
 
   public void testRequest_MetadataResponseHeaders() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
@@ -319,7 +329,8 @@ public class StandardHttpProducerTest extends HttpProducerExample {
       start(producer);
       producer.doService(msg);
       waitForMessages(mock, 1);
-    } finally {
+    }
+    finally {
       HttpHelper.stopChannelAndRelease(c);
       stop(producer);
     }
@@ -329,7 +340,6 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     assertEquals("text/complicated", m2.getMetadataValue("Content-Type"));
     assertTrue(msg.headersContainsKey("Server"));
   }
-
 
   public void testRequest_ObjectMetadataResponseHeaders() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
@@ -346,7 +356,8 @@ public class StandardHttpProducerTest extends HttpProducerExample {
       start(producer);
       producer.doService(msg);
       waitForMessages(mock, 1);
-    } finally {
+    }
+    finally {
       HttpHelper.stopChannelAndRelease(c);
       stop(producer);
     }
@@ -370,7 +381,8 @@ public class StandardHttpProducerTest extends HttpProducerExample {
       start(producer);
       producer.doService(msg);
       waitForMessages(mock, 1);
-    } finally {
+    }
+    finally {
       HttpHelper.stopChannelAndRelease(c);
       stop(producer);
     }
@@ -378,21 +390,17 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     assertTrue(msg.getObjectHeaders().containsKey("Server"));
   }
 
-
   public void testRequest_GetMethod_NonZeroBytes() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     HttpConnection jc = HttpHelper.createConnection();
     MessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
     Channel c = createChannel(jc, createWorkflow(mc, mock, new ServiceList()));
     StandardWorkflow workflow = (StandardWorkflow) c.getWorkflowList().get(0);
-    PayloadFromMetadataService pms = new PayloadFromMetadataService();
-    pms.setTemplate(TEXT);
-    workflow.getServiceCollection().add(pms);
     workflow.getServiceCollection().add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200)));
     StandardHttpProducer stdHttp = new StandardHttpProducer(HttpHelper.createProduceDestination(c));
     stdHttp.setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethodProvider.RequestMethod.GET));
     StandaloneRequestor producer = new StandaloneRequestor(stdHttp);
-    AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage(ALT_TEXT);
     try {
       start(c);
       start(producer);
@@ -406,9 +414,9 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     assertEquals(1, mock.messageCount());
     AdaptrisMessage m2 = mock.getMessages().get(0);
     assertEquals("GET", m2.getMetadataValue(CoreConstants.HTTP_METHOD));
-    assertEquals(TEXT, msg.getContent());
+    assertEquals(0, m2.getSize());
   }
-  
+
   public void testRequest_GetMethod_NonZeroBytes_WithErrorResponse() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     HttpConnection jc = HttpHelper.createConnection();
@@ -423,7 +431,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     stdHttp.setIgnoreServerResponseCode(true);
     stdHttp.setResponseHeaderHandler(new ResponseHeadersAsMetadata("HTTP_"));
     StandaloneRequestor producer = new StandaloneRequestor(stdHttp);
-    AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage(ALT_TEXT);
     try {
       start(c);
       start(producer);
@@ -434,7 +442,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
       stop(c);
       stop(producer);
     }
-    
+
     assertEquals(1, mock.messageCount());
     AdaptrisMessage m2 = mock.getMessages().get(0);
     assertEquals("GET", m2.getMetadataValue(CoreConstants.HTTP_METHOD));
@@ -455,8 +463,8 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     Thread.currentThread().setName(getName());
 
     ConfigurableSecurityHandler csh = new ConfigurableSecurityHandler();
-    HashLoginServiceFactory hsl =
-        new HashLoginServiceFactory("InterlokJetty", PROPERTIES.getProperty(HttpConsumerTest.JETTY_USER_REALM));
+    HashLoginServiceFactory hsl = new HashLoginServiceFactory("InterlokJetty",
+        PROPERTIES.getProperty(HttpConsumerTest.JETTY_USER_REALM));
     hsl.setRefreshInterval(100);
     csh.setLoginService(hsl);
     SecurityConstraint securityConstraint = new SecurityConstraint();
@@ -471,7 +479,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     Channel channel = JettyHelper.createChannel(jc, consumer, mockProducer);
 
     HttpAuthenticator auth = getAuthenticator(getName(), getName());
-    
+
     StandardHttpProducer stdHttp = new StandardHttpProducer();
     stdHttp.setIgnoreServerResponseCode(false);
     stdHttp.registerConnection(new NullConnection());
@@ -483,7 +491,8 @@ public class StandardHttpProducerTest extends HttpProducerExample {
       AdaptrisMessage reply = stdHttp.request(msg, HttpHelper.createProduceDestination(channel));
       waitForMessages(mockProducer, 1);
       assertEquals(TEXT, mockProducer.getMessages().get(0).getContent());
-    } finally {
+    }
+    finally {
       stop(stdHttp);
       HttpHelper.stopChannelAndRelease(channel);
       Thread.currentThread().setName(threadName);
@@ -494,8 +503,8 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     String threadName = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
     ConfigurableSecurityHandler csh = new ConfigurableSecurityHandler();
-    HashLoginServiceFactory hsl =
-        new HashLoginServiceFactory("InterlokJetty", PROPERTIES.getProperty(HttpConsumerTest.JETTY_USER_REALM));
+    HashLoginServiceFactory hsl = new HashLoginServiceFactory("InterlokJetty",
+        PROPERTIES.getProperty(HttpConsumerTest.JETTY_USER_REALM));
     hsl.setRefreshInterval(100);
     csh.setLoginService(hsl);
     SecurityConstraint securityConstraint = new SecurityConstraint();
@@ -512,7 +521,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     MetadataUsernamePassword auth = new MetadataUsernamePassword();
     auth.setUsernameMetadataKey("user-key");
     auth.setPasswordMetadataKey("pass-key");
-    
+
     StandardHttpProducer stdHttp = new StandardHttpProducer();
     stdHttp.setIgnoreServerResponseCode(false);
     stdHttp.registerConnection(new NullConnection());
@@ -526,20 +535,20 @@ public class StandardHttpProducerTest extends HttpProducerExample {
       AdaptrisMessage reply = stdHttp.request(msg, HttpHelper.createProduceDestination(channel));
       waitForMessages(mockProducer, 1);
       assertEquals(TEXT, mockProducer.getMessages().get(0).getContent());
-    } finally {
+    }
+    finally {
       stop(stdHttp);
       HttpHelper.stopChannelAndRelease(channel);
       Thread.currentThread().setName(threadName);
     }
   }
 
-
   public void testProduce_WithUsernamePassword_BadCredentials() throws Exception {
     String threadName = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
     ConfigurableSecurityHandler csh = new ConfigurableSecurityHandler();
-    HashLoginServiceFactory hsl =
-        new HashLoginServiceFactory("InterlokJetty", PROPERTIES.getProperty(HttpConsumerTest.JETTY_USER_REALM));
+    HashLoginServiceFactory hsl = new HashLoginServiceFactory("InterlokJetty",
+        PROPERTIES.getProperty(HttpConsumerTest.JETTY_USER_REALM));
     hsl.setRefreshInterval(100);
     csh.setLoginService(hsl);
     SecurityConstraint securityConstraint = new SecurityConstraint();
@@ -554,7 +563,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     Channel channel = JettyHelper.createChannel(jc, consumer, mockProducer);
 
     HttpAuthenticator auth = getAuthenticator(getName(), getName());
-    
+
     StandardHttpProducer stdHttp = new StandardHttpProducer();
     stdHttp.setIgnoreServerResponseCode(false);
     stdHttp.registerConnection(new NullConnection());
@@ -565,9 +574,11 @@ public class StandardHttpProducerTest extends HttpProducerExample {
       start(stdHttp);
       AdaptrisMessage reply = stdHttp.request(msg, HttpHelper.createProduceDestination(channel));
       fail();
-    } catch (ProduceException expected) {
+    }
+    catch (ProduceException expected) {
 
-    } finally {
+    }
+    finally {
       stop(stdHttp);
       HttpHelper.stopChannelAndRelease(channel);
       Thread.currentThread().setName(threadName);
@@ -578,14 +589,14 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     MockMessageProducer mock = new MockMessageProducer();
     Channel c = HttpHelper.createAndStartChannel(mock);
     StandardHttpProducer stdHttp = new StandardHttpProducer(HttpHelper.createProduceDestination(c));
-    
+
     ConfiguredAuthorizationHeader authenticator = new ConfiguredAuthorizationHeader();
     authenticator.setHeaderValue("some value");
     stdHttp.setAuthenticator(authenticator);
-    
+
     StandaloneProducer producer = new StandaloneProducer(stdHttp);
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
-    
+
     try {
       c.requestStart();
       start(producer);
@@ -601,20 +612,20 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     assertTrue(m2.headersContainsKey(HttpConstants.AUTHORIZATION));
     assertEquals("some value", m2.getMetadataValue(HttpConstants.AUTHORIZATION));
   }
-  
+
   public void testProduceWithMetadataAuthorizationHeader() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     Channel c = HttpHelper.createAndStartChannel(mock);
     StandardHttpProducer stdHttp = new StandardHttpProducer(HttpHelper.createProduceDestination(c));
-    
+
     MetadataAuthorizationHeader authenticator = new MetadataAuthorizationHeader();
     authenticator.setMetadataKey("ah-key");
     stdHttp.setAuthenticator(authenticator);
-    
+
     StandaloneProducer producer = new StandaloneProducer(stdHttp);
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
     msg.addMetadata("ah-key", "some value");
-    
+
     try {
       c.requestStart();
       start(producer);
@@ -629,12 +640,125 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     AdaptrisMessage m2 = mock.getMessages().get(0);
     assertTrue(m2.headersContainsKey(HttpConstants.AUTHORIZATION));
     assertEquals("some value", m2.getMetadataValue(HttpConstants.AUTHORIZATION));
+  }
+
+  public void testRequest_GetMethod_WithErrorResponse() throws Exception {
+    MockMessageProducer mock = new MockMessageProducer();
+    HttpConnection jc = HttpHelper.createConnection();
+    MessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
+
+    ServiceList services = new ServiceList();
+    services.add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.UNAUTHORIZED_401)));
+    Channel c = createChannel(jc, createWorkflow(mc, mock, services));
+    StandardHttpProducer stdHttp = new StandardHttpProducer(HttpHelper.createProduceDestination(c));
+    stdHttp.setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethodProvider.RequestMethod.GET));
+    StandaloneRequestor producer = new StandaloneRequestor(stdHttp);
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage(ALT_TEXT);
+    try {
+      start(c);
+      start(producer);
+      producer.doService(msg);
+      fail();
+    }
+    catch (ServiceException expected) {
+
+    }
+    finally {
+      stop(c);
+      stop(producer);
+    }
+    assertEquals(1, mock.messageCount());
+  }
+
+  public void testRequest_DeleteMethod_AlwaysSendPayload() throws Exception {
+    MockMessageProducer mock = new MockMessageProducer();
+    HttpConnection jc = HttpHelper.createConnection();
+    MessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
+    Channel c = createChannel(jc, createWorkflow(mc, mock, new ServiceList()));
+    StandardWorkflow workflow = (StandardWorkflow) c.getWorkflowList().get(0);
+    workflow.getServiceCollection().add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200)));
+    StandardHttpProducer stdHttp = new StandardHttpProducer(HttpHelper.createProduceDestination(c));
+    stdHttp.setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethodProvider.RequestMethod.DELETE));
+    stdHttp.setRequestBody(new PayloadStreamInputParameter());
+    stdHttp.setAlwaysSendPayload(true);
+    StandaloneRequestor producer = new StandaloneRequestor(stdHttp);
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage(ALT_TEXT);
+    try {
+      start(c);
+      start(producer);
+      producer.doService(msg);
+      waitForMessages(mock, 1);
+    }
+    finally {
+      stop(c);
+      stop(producer);
+    }
+    assertEquals(1, mock.messageCount());
+    AdaptrisMessage m2 = mock.getMessages().get(0);
+    assertEquals("DELETE", m2.getMetadataValue(CoreConstants.HTTP_METHOD));
+    assertEquals(ALT_TEXT, m2.getContent());
+  }
+
+  public void testRequest_TraceMethod_AlwaysSendPayload() throws Exception {
+    MockMessageProducer mock = new MockMessageProducer();
+    HttpConnection jc = HttpHelper.createConnection();
+    MessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
+    Channel c = createChannel(jc, createWorkflow(mc, mock, new ServiceList()));
+    StandardWorkflow workflow = (StandardWorkflow) c.getWorkflowList().get(0);
+    workflow.getServiceCollection().add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200)));
+    StandardHttpProducer stdHttp = new StandardHttpProducer(HttpHelper.createProduceDestination(c));
+    stdHttp.setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethodProvider.RequestMethod.TRACE));
+    stdHttp.setAlwaysSendPayload(true);
+    StandaloneRequestor producer = new StandaloneRequestor(stdHttp);
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage(ALT_TEXT);
+    try {
+      start(c);
+      start(producer);
+      producer.doService(msg);
+      waitForMessages(mock, 1);
+    }
+    finally {
+      stop(c);
+      stop(producer);
+    }
+    assertEquals(1, mock.messageCount());
+    AdaptrisMessage m2 = mock.getMessages().get(0);
+    assertEquals("TRACE", m2.getMetadataValue(CoreConstants.HTTP_METHOD));
+    assertEquals(0, m2.getSize());
+  }
+
+  public void testProduce_WithEncoder() throws Exception {
+    MockMessageProducer mock = new MockMessageProducer();
+    Channel c = HttpHelper.createAndStartChannel(mock);
+    StandardHttpProducer stdHttp = new StandardHttpProducer(HttpHelper.createProduceDestination(c));
+    stdHttp.setEncoder(new UrlConnectionEncoder());
+    StandaloneProducer producer = new StandaloneProducer(stdHttp);
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
+    try {
+      c.requestStart();
+      start(producer);
+      producer.doService(msg);
+      waitForMessages(mock, 1);
+    }
+    finally {
+      HttpHelper.stopChannelAndRelease(c);
+      stop(producer);
+    }
+    assertEquals(1, mock.messageCount());
+    AdaptrisMessage m2 = mock.getMessages().get(0);
+    assertEquals(TEXT, m2.getContent());
   }
 
   @Override
   protected Object retrieveObjectForSampleConfig() {
     StandardHttpProducer producer = new StandardHttpProducer(new ConfiguredProduceDestination("http://myhost.com/url/to/post/to"));
-
+    CompositeRequestHeaders headers = new CompositeRequestHeaders(
+        new MetadataRequestHeaders(new RegexMetadataFilter().withIncludePatterns("X-HTTP.*").withExcludePatterns("X-NotHttp.*")),
+        new ConfiguredRequestHeaders().withHeaders(new KeyValuePair("SOAPAction", "urn:hello")));
+    producer.setRequestHeaderProvider(headers);
+    producer.setResponseHeaderHandler(
+        new CompositeResponseHeaderHandler(new ResponseHeadersAsMetadata("resp_hdr_"),
+            new ResponseHeadersAsObjectMetadata("resp_hdr_")));
     producer.setAuthenticator(getAuthenticator("username", "password"));
 
     StandaloneProducer result = new StandaloneProducer(producer);
@@ -642,4 +766,37 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     return result;
   }
 
+  private class UrlConnectionEncoder extends AdaptrisMessageEncoderImp {
+
+    @Override
+    public void writeMessage(AdaptrisMessage msg, Object target) throws CoreException {
+      try {
+        HttpURLConnection http = (HttpURLConnection) target;
+        copyAndClose(msg.getInputStream(), http.getOutputStream());
+      }
+      catch (IOException e) {
+        throw new CoreException(e);
+      }
+    }
+
+    @Override
+    public AdaptrisMessage readMessage(Object source) throws CoreException {
+      AdaptrisMessage msg = currentMessageFactory().newMessage();
+      try {
+        HttpURLConnection http = (HttpURLConnection) source;
+        copyAndClose(http.getInputStream(), msg.getOutputStream());
+      }
+      catch (IOException e) {
+        throw new CoreException(e);
+      }
+      return msg;
+    }
+
+    private void copyAndClose(InputStream input, OutputStream out) throws IOException, CoreException {
+      try (InputStream autoCloseIn = new BufferedInputStream(input); OutputStream autoCloseOut = new BufferedOutputStream(out)) {
+        IOUtils.copy(autoCloseIn, autoCloseOut);
+      }
+    }
+
+  }
 }

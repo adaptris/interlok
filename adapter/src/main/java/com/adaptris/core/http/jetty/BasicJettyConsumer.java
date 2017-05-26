@@ -69,7 +69,6 @@ import com.adaptris.util.TimeInterval;
  * @author $Author: lchan $
  */
 public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
-  private static final long DEFAULT_WARN_AFTER = TimeUnit.SECONDS.toMillis(20);
   private static final long DEFAULT_EXPECT_INTERVAL = TimeUnit.SECONDS.toMillis(20);
 
   private static final TimeInterval DEFAULT_MAX_WAIT_TIME = new TimeInterval(600L, TimeUnit.SECONDS);
@@ -90,7 +89,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   @AdvancedConfig
   private TimeInterval maxWaitTime;
   @AdvancedConfig
-  @InputFieldDefault(value = "20 Seconds")
+  @InputFieldDefault(value = "Never")
   private TimeInterval warnAfter;
   @AdvancedConfig
   @InputFieldDefault(value = "20 Seconds")
@@ -296,7 +295,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   /**
    * Log a warning after this interval.
    * 
-   * @param t the warnAfter to set, default is 20 seconds.
+   * @param t the warnAfter to set, default is to never warn.
    */
   public void setWarnAfter(TimeInterval t) {
     this.warnAfter = t;
@@ -305,10 +304,9 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   long warnAfter() {
     long result = Long.MAX_VALUE;
     if (getWarnAfterMessageHangMillis() != null) {
-      log.warn("Use of deprecated warn-after-message-hang-millis); use warn-after instead");
       result = getWarnAfterMessageHangMillis().longValue();
     } else {
-      result = getWarnAfter() != null ? getWarnAfter().toMilliseconds() : DEFAULT_WARN_AFTER;
+      result = getWarnAfter() != null ? getWarnAfter().toMilliseconds() : Long.MAX_VALUE;
     }
     return result;
   }

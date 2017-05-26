@@ -49,6 +49,7 @@ import com.adaptris.core.runtime.MessageErrorDigester;
 import com.adaptris.core.runtime.StandardMessageErrorDigester;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -198,7 +199,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
       log.error("Caught un-handled RuntimeException", e);
       throw new CoreException(e);
     }
-
+    log.info("{} Initialised", LoggingHelper.friendlyName(this));
   }
 
   /**
@@ -309,6 +310,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
       handleLifecycleEvent(AdapterStartEvent.class, true);
 
       lastStartTime = new Date();
+      log.info("{} Started", LoggingHelper.friendlyName(this));
     } catch (CoreException | RuntimeException e) {
       handleLifecycleEvent(AdapterStartEvent.class, false);
       ExceptionHelper.rethrowCoreException(e);
@@ -361,6 +363,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
       log.trace("Failed to stop component cleanly, logging exception for informational purposes only", e);
     }
     LifecycleHelper.stop(getSharedComponents());
+    log.info("{} Stopped", LoggingHelper.friendlyName(this));
   }
 
   /**
@@ -379,6 +382,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
     }
     LifecycleHelper.close(getSharedComponents());
     eventHandler.requestClose();
+    log.info("{} Closed", LoggingHelper.friendlyName(this));
   }
 
   // Castor gets & sets...

@@ -1,0 +1,16 @@
+language: java
+sudo: false
+script: ant -Divy.logging=default -Djava.security.egd=file:/dev/./urandom jar
+jdk:
+  - oraclejdk8
+
+cache:
+  directories:
+    - $HOME/.ivy2
+
+notifications:
+  email: false
+
+branches:
+  only:
+  - develop

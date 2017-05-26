@@ -15,7 +15,7 @@
 */
 package com.adaptris.core.management.webserver;
 
-import static com.adaptris.core.management.webserver.JettyServerComponent.ATTR_BOOTSTRAP_PROPERTIES;
+import static com.adaptris.core.management.webserver.JettyServerComponent.ATTR_BOOTSTRAP_KEYS;
 import static com.adaptris.core.management.webserver.JettyServerComponent.ATTR_JMX_ADAPTER_UID;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
@@ -60,7 +60,9 @@ abstract class ServerBuilder {
       System.setProperty(ATTR_JMX_ADAPTER_UID, config.getProperty(Constants.CFG_JMX_LOCAL_ADAPTER_UID));
     }
     if (config.containsKey(Constants.BOOTSTRAP_PROPERTIES_RESOURCE_KEY)) {
-      System.setProperty(ATTR_BOOTSTRAP_PROPERTIES, config.getProperty(Constants.BOOTSTRAP_PROPERTIES_RESOURCE_KEY));
+      for (String s : ATTR_BOOTSTRAP_KEYS) {
+        System.setProperty(s, config.getProperty(Constants.BOOTSTRAP_PROPERTIES_RESOURCE_KEY));
+      }
     }
     return server;
   }

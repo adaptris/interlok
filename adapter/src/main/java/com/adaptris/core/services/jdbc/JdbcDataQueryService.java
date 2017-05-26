@@ -37,6 +37,7 @@ import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.DynamicPollingTemplate;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.jdbc.DatabaseConnection;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
@@ -65,7 +66,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
     recommended = {DatabaseConnection.class})
 @DisplayOrder(order = {"connection", "statementCreator", "statementParameters", "resultSetTranslator", "parameterApplicator",
  "namespaceContext", "xmlDocumentFactoryConfig", "ignoreExecuteQueryErrors"})
-public class JdbcDataQueryService extends JdbcServiceWithParameters {
+public class JdbcDataQueryService extends JdbcServiceWithParameters implements DynamicPollingTemplate.TemplateProvider {
 
   static final String KEY_XML_UTILS = "XmlUtils_" + JdbcDataQueryService.class.getCanonicalName();
   static final String KEY_NAMESPACE_CTX = "NamespaceCtx_" + JdbcDataQueryService.class.getCanonicalName();

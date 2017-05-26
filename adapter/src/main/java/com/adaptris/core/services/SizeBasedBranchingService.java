@@ -41,7 +41,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("size-based-branching-service")
 @AdapterComponent
-@ComponentProfile(summary = "Perform a branch based on the size of the message", tag = "service,branching")
+@ComponentProfile(summary = "Perform a branch based on the size of the message", tag = "service,branching", branchSelector = true)
 @DisplayOrder(order = {"greaterThanServiceId", "smallerThanServiceId", "sizeCriteriaBytes"})
 public class SizeBasedBranchingService extends BranchingServiceImp {
   @NotBlank

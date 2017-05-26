@@ -17,6 +17,9 @@
 package com.adaptris.core;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
+import static org.apache.commons.lang.StringUtils.isEmpty;
+
+import javax.validation.Valid;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
@@ -27,7 +30,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * Periodically sends a template message to trigger other <code>Workflow</code> s.
+ * Periodically sends a template message to trigger a {@link Workflow}
  * </p>
  * 
  * @config polling-trigger
@@ -38,17 +41,49 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Generate a static trigger message on a schedule", tag = "consumer,base",
     recommended = {NullConnection.class})
-@DisplayOrder(order = {"template"})
+@DisplayOrder(order = {"poller", "messageProvider"})
 public class PollingTrigger extends AdaptrisPollingConsumer {
 
-	@MarshallingCDATA
+  @MarshallingCDATA
+  @Deprecated
   private String template;
+  @Valid
+  private MessageProvider messageProvider;
+
   private static final ConfiguredConsumeDestination DEFAULT_DEST = new ConfiguredConsumeDestination(
       "PollingTrigger");
 
+  public PollingTrigger() {
+
+  }
+
+  @Deprecated
+  public PollingTrigger(Poller p, String t) {
+    this();
+    setPoller(p);
+    setTemplate(t);
+  }
+
+  public PollingTrigger(Poller p, MessageProvider t) {
+    this();
+    setPoller(p);
+    setMessageProvider(t);
+  }
+
+  public PollingTrigger(Poller p) {
+    this();
+    setPoller(p);
+  }
 
   @Override
   protected void prepareConsumer() throws CoreException {
+    if (getMessageProvider() == null) {
+      if (!isEmpty(getTemplate())) {
+        log.warn("template is deprecated; use a message-provider instead");
+      }
+      setMessageProvider(new StaticPollingTemplate(getTemplate()));
+    }
+    LifecycleHelper.prepare(getMessageProvider());
   }
 
   /**
@@ -61,27 +96,42 @@ public class PollingTrigger extends AdaptrisPollingConsumer {
    */
   @Override
   protected int processMessages() {
-    AdaptrisMessage msg;
-    if (template != null) {
-      msg = defaultIfNull(getMessageFactory()).newMessage(template);
+    int count = 0;
+    try {
+      AdaptrisMessage msg = getMessageProvider().createMessage(defaultIfNull(getMessageFactory()));
+      retrieveAdaptrisMessageListener().onAdaptrisMessage(msg);
+      count = 1;
     }
-    else {
-      msg = defaultIfNull(getMessageFactory()).newMessage(new byte[0]);
+    catch (Exception e) {
+      log.warn("Failed to create trigger message; next attempt on next poll");
+      log.trace(e.getMessage(), e);
     }
-    retrieveAdaptrisMessageListener().onAdaptrisMessage(msg);
-    return 1;
+    return count;
   }
 
-  /**
-   *
-   * @see com.adaptris.core.AdaptrisPollingConsumer#init()
-   */
   @Override
   public void init() throws CoreException {
-    // Unlike the normal AdaptrisPollingConsumer we don't care about the
-    // consume Destination, only about the poller.
     getPoller().registerConsumer(this);
+    LifecycleHelper.init(getMessageProvider());
     LifecycleHelper.init(getPoller());
+  }
+
+  @Override
+  public void start() throws CoreException {
+    LifecycleHelper.start(getMessageProvider());
+    super.start();
+  }
+
+  @Override
+  public void stop() {
+    LifecycleHelper.stop(getMessageProvider());
+    super.stop();
+  }
+
+  @Override
+  public void close() {
+    LifecycleHelper.close(getMessageProvider());
+    super.close();
   }
 
   /**
@@ -90,7 +140,9 @@ public class PollingTrigger extends AdaptrisPollingConsumer {
    * </p>
    *
    * @param s the template message to use
+   * @deprecated since 3.6.2 use {@link #setMessageProvider(MessageProvider)} instead.
    */
+  @Deprecated
   public void setTemplate(String s) {
     template = s;
   }
@@ -101,7 +153,9 @@ public class PollingTrigger extends AdaptrisPollingConsumer {
    * </p>
    *
    * @return the template message to use
+   * @deprecated since 3.6.2 use {@link #getMessageProvider()} instead.
    */
+  @Deprecated
   public String getTemplate() {
     return template;
   }
@@ -120,4 +174,30 @@ public class PollingTrigger extends AdaptrisPollingConsumer {
     Thread.currentThread().setName(newName.toString());
     return oldName;
   }
+
+  /**
+   * @return the templateProvider
+   */
+  public MessageProvider getMessageProvider() {
+    return messageProvider;
+  }
+
+  /**
+   * @param p the templateProvider to set
+   */
+  public void setMessageProvider(MessageProvider p) {
+    this.messageProvider = p;
+  }
+
+  /**
+   * How to generate the template that will be sent to the workflow.
+   * 
+   * @author lchan
+   *
+   */
+  public interface MessageProvider extends ComponentLifecycle {
+
+    AdaptrisMessage createMessage(AdaptrisMessageFactory fac) throws CoreException;
+  }
+
 }

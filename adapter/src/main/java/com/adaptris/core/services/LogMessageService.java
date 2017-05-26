@@ -46,6 +46,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class LogMessageService extends ServiceImp {
 
   public static enum LoggingLevel {
+    /** Deprecated since 3.6.2 with no replacement */
+    @Deprecated
     FATAL {
       @Override
       void log(Logger logger, String s) {

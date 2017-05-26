@@ -71,8 +71,11 @@ public interface MessageEventGenerator {
    * <p>
    * Returns true if this event is a confirmation, otherwise false.
    * </p>
+   * 
    * @return true if this event is a confirmation, otherwise false
+   * @deprecated since 3.6.2 No-one has ever produced a confirmation service. This will be removed.
    */
+  @Deprecated
   boolean isConfirmation();
 
 }

@@ -40,13 +40,19 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"disableDefaultMessageCount", "sendEvents", "logPayload"})
 public class StandardWorkflow extends WorkflowImp {
 
-  /**
-   * <p>
-   * Creates a new instance with defaults to prevent NullPointerExceptions.
-   * </p>
-   */
   public StandardWorkflow() {
     super();
+  }
+
+  public StandardWorkflow(AdaptrisMessageConsumer consumer, AdaptrisMessageProducer producer) {
+    this(consumer, new ServiceList(), producer);
+  }
+
+  public StandardWorkflow(AdaptrisMessageConsumer consumer, ServiceCollection services, AdaptrisMessageProducer producer) {
+    this();
+    setConsumer(consumer);
+    setServiceCollection(services != null ? services : new ServiceList());
+    setProducer(producer);
   }
 
   /**

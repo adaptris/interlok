@@ -85,6 +85,7 @@ public class JmxRemoteComponentTest extends BaseCase {
     try {
       assertTrue(mBeanServer.isRegistered(jmxObjName));
       jmxr.start();
+      waitFor(jmxr);
       jmxr.stop();
     }
     finally {
@@ -120,6 +121,7 @@ public class JmxRemoteComponentTest extends BaseCase {
     try {
       assertFalse(mBeanServer.isRegistered(jmxObjName));
       jmxr.start();
+      waitFor(jmxr);
       jmxr.stop();
     }
     finally {
@@ -137,6 +139,7 @@ public class JmxRemoteComponentTest extends BaseCase {
       jmxr.init(p);
       assertTrue(mBeanServer.isRegistered(jmxObjName));
       jmxr.start();
+      waitFor(jmxr);
       jmxr.stop();
     }
     finally {
@@ -183,6 +186,7 @@ public class JmxRemoteComponentTest extends BaseCase {
     try {
       jmxr.init(p);
       jmxr.start();
+      waitFor(jmxr);
       jmxc = createClientConnector(p.getProperty(Constants.CFG_KEY_JMX_SERVICE_URL_KEY), DEFAULT_USERNAME_PASSWORD, DEFAULT_USERNAME_PASSWORD);
       MBeanServerConnection myMbeanServer = jmxc.getMBeanServerConnection();
       assertTrue(Arrays.asList(myMbeanServer.getDomains()).contains("com.adaptris"));
@@ -203,6 +207,7 @@ public class JmxRemoteComponentTest extends BaseCase {
     try {
       jmxr.init(p);
       jmxr.start();
+      waitFor(jmxr);
       jmxc = createClientConnector(p.getProperty(Constants.CFG_KEY_JMX_SERVICE_URL_KEY), DEFAULT_USERNAME_PASSWORD, DEFAULT_USERNAME_PASSWORD);
       MBeanServerConnection myMbeanServer = jmxc.getMBeanServerConnection();
       assertTrue(Arrays.asList(myMbeanServer.getDomains()).contains("com.adaptris"));
@@ -222,6 +227,7 @@ public class JmxRemoteComponentTest extends BaseCase {
     try {
       jmxr.init(p);
       jmxr.start();
+      waitFor(jmxr);
       jmxc = createClientConnector(p.getProperty(Constants.CFG_KEY_JMX_SERVICE_URL_KEY), DEFAULT_USERNAME_PASSWORD, "Hello World");
       fail();
     } catch (Exception expected) {
@@ -268,6 +274,19 @@ public class JmxRemoteComponentTest extends BaseCase {
         
       }
     }
+  }
+
+  private static void waitFor(JmxRemoteComponent component) throws Exception {
+    waitFor(component, MAX_WAIT);
+  }
+
+  private static void waitFor(JmxRemoteComponent component, long maxWaitMs) throws Exception {
+    long waitTime = 0;
+    while (waitTime < maxWaitMs && !component.isStarted()) {
+      waitTime += DEFAULT_WAIT_INTERVAL;
+      Thread.sleep(DEFAULT_WAIT_INTERVAL);
+    }
+    assertTrue(component.isStarted());
   }
 
 }

@@ -44,7 +44,12 @@ public class JettyServerComponent implements ManagementComponent {
 
   public static final String ATTR_JMX_SERVICE_URL = "com.adaptris.core.webapp.local.jmxserviceurl";
   public static final String ATTR_JMX_ADAPTER_UID = "com.adaptris.core.webapp.local.jmxuid";
-  public static final String ATTR_BOOTSTRAP_PROPERTIES = "com.adaptris.core.webapp.local.bootstrap";
+  private static final String ATTR_BOOTSTRAP_PROPERTIES = "com.adaptris.core.webapp.local.bootstrap";
+  private static final String ATTR_BOOTSTRAP_PROPERTIES_ALT = "interlok.webapp.local.bootstrap";
+
+  public static final String[] ATTR_BOOTSTRAP_KEYS = {
+      ATTR_BOOTSTRAP_PROPERTIES, ATTR_BOOTSTRAP_PROPERTIES_ALT
+  };
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
   private static final long STARTUP_WAIT = TimeUnit.SECONDS.toMillis(60L);

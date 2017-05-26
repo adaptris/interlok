@@ -31,10 +31,12 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.DynamicPollingTemplate;
 import com.adaptris.core.NullConnection;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
@@ -73,17 +75,20 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Make a HTTP request to a remote server using standard JRE components", tag = "service,http,https")
 @DisplayOrder(order = {"url", "method", "contentType", "authentication", "requestHeaderProvider", "responseHeaderHandler"})
-public class HttpRequestService extends ServiceImp {
+public class HttpRequestService extends ServiceImp implements DynamicPollingTemplate.TemplateProvider {
 
   @NotBlank
+  @InputFieldHint(expression = true)
   private String url;
   @NotBlank
   @AutoPopulated
   @InputFieldDefault(value = "text/plain")
+  @InputFieldHint(expression = true)
   private String contentType;
   @NotBlank
   @AutoPopulated
   @InputFieldDefault(value = "POST")
+  @InputFieldHint(expression = true)
   private String method;
 
   @AdvancedConfig

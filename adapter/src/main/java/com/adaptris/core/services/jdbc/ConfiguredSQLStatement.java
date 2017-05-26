@@ -18,7 +18,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class ConfiguredSQLStatement implements JdbcStatementCreator {
 
   @NotBlank
-  @InputFieldHint(style = "SQL")
+  @InputFieldHint(style = "SQL", expression = true)
   private String statement;
 
 

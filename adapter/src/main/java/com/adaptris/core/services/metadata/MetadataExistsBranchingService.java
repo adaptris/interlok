@@ -40,7 +40,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("metadata-exists-branching-service")
 @AdapterComponent
-@ComponentProfile(summary = "Perform a branch based on whether one or more metadata keys exist or not", tag = "service,branching")
+@ComponentProfile(summary = "Perform a branch based on whether one or more metadata keys exist or not", tag = "service,branching",
+    branchSelector = true)
 @DisplayOrder(order = {"metadataKeys", "metadataExistsServiceId", "defaultServiceId"})
 public class MetadataExistsBranchingService 
   extends MetadataBranchingServiceImp {

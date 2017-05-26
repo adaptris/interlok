@@ -210,9 +210,7 @@ public class QuartzCronPollerTest extends BaseCase {
   }
 
   private StandardWorkflow createWorkflow(ConsumeDestination d, QuartzCronPoller poller, AdaptrisMessageProducer prod) {
-    PollingTrigger trigger = new PollingTrigger();
-    trigger.setTemplate(PAYLOAD);
-    trigger.setPoller(poller);
+    PollingTrigger trigger = new PollingTrigger(poller, new StaticPollingTemplate(PAYLOAD));
     if (d != null) {
       trigger.setDestination(d);
     }

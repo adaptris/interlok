@@ -102,4 +102,9 @@ public class MockChannel extends Channel {
   public int getCloseCount() {
     return closeCount;
   }
+
+  public Channel withWorkflow(Workflow w) {
+    getWorkflowList().add(w);
+    return this;
+  }
 }

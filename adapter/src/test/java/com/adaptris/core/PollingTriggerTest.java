@@ -21,23 +21,27 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import com.adaptris.core.services.EmbeddedScriptingService;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageProducer;
-import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 
 public class PollingTriggerTest extends ConsumerCase {
 
-  private PollingTrigger trigger;
-  private MockMessageProducer mockProducer;
-  private StandardWorkflow workflow;
   private static final String PAYLOAD = "The Quick Brown Fox Jumps Over The Lazy Dog";
 
   private static final Poller[] POLLERS =
   {
-      new FixedIntervalPoller(new TimeInterval(1L, TimeUnit.MINUTES))
-      ,new QuartzCronPoller()
-      ,new GaussianIntervalPoller(new TimeInterval(5L,TimeUnit.SECONDS),new TimeInterval(6L, TimeUnit.SECONDS))
+      new FixedIntervalPoller(new TimeInterval(1L, TimeUnit.MINUTES)),
+      new RandomIntervalPoller(new TimeInterval(1L, TimeUnit.MINUTES)), new QuartzCronPoller(),
+      new GaussianIntervalPoller(new TimeInterval(5L, TimeUnit.SECONDS), new TimeInterval(6L, TimeUnit.SECONDS))
+  };
+
+  private static final PollingTrigger.MessageProvider[] TEMPLATES =
+  {
+      new StaticPollingTemplate("Hello World"),
+      new DynamicPollingTemplate(
+          new EmbeddedScriptingService().withScript("javascript", "message.setContent('Hello World', 'UTF-8')"))
   };
 
   private static final List<Poller> POLLER_LIST = Arrays.asList(POLLERS);
@@ -48,66 +52,116 @@ public class PollingTriggerTest extends ConsumerCase {
   }
 
   @Override
-  protected void setUp() throws Exception {
-    trigger = new PollingTrigger();
-    FixedIntervalPoller fp = new FixedIntervalPoller();
-    fp.setPollInterval(new TimeInterval(1L, TimeUnit.SECONDS));
-    trigger.setPoller(fp);
-    workflow = new StandardWorkflow();
-    mockProducer = new MockMessageProducer();
-    workflow.setConsumer(trigger);
-    workflow.setProducer(mockProducer);
-    Channel channel = new MockChannel();
-    channel.getWorkflowList().add(workflow);
-    channel.prepare();
-  }
-
-  @Override
   protected void tearDown() throws Exception {
   }
 
-  public void testInit() throws Exception {
-    LifecycleHelper.init(workflow);
-    LifecycleHelper.close(workflow);
-
+  @SuppressWarnings("deprecation")
+  public void testTriggerWithNonNullMessages_Legacy() throws Exception {
+    Trigger trigger = new Trigger();
+    MockMessageProducer mockProducer = new MockMessageProducer();
+    Channel c = createChannel( new PollingTrigger(trigger, PAYLOAD), mockProducer);
+    try {
+      BaseCase.start(c);
+      trigger.fire();
+      AdaptrisMessage msg = mockProducer.getMessages().get(0);
+      assertEquals(PAYLOAD, msg.getContent());
+    }
+    finally {
+      BaseCase.stop(c);
+    }
   }
 
-
-  public void testStartWithNonNullMessages() throws Exception {
-    trigger.setTemplate(PAYLOAD);
-    workflow.init();
-    workflow.start();
-    waitForMessages(mockProducer, 1);
-    workflow.stop();
-    workflow.close();
-    AdaptrisMessage msg = mockProducer.getMessages().get(0);
-    assertEquals("Payloads", PAYLOAD, msg.getContent());
+  public void testTriggerWithStaticTemplate() throws Exception {
+    Trigger trigger = new Trigger();
+    MockMessageProducer mockProducer = new MockMessageProducer();
+    Channel c = createChannel(new PollingTrigger(trigger, new StaticPollingTemplate(PAYLOAD)), mockProducer);
+    c.getWorkflowList().getWorkflows().get(0).getConsumer()
+        .setDestination(new ConfiguredConsumeDestination(getName(), null, getName()));
+    try {
+      BaseCase.start(c);
+      trigger.fire();
+      AdaptrisMessage msg = mockProducer.getMessages().get(0);
+      assertEquals(PAYLOAD, msg.getContent());
+    }
+    finally {
+      BaseCase.stop(c);
+    }
   }
 
-  public void testStartWithEmptyMessages() throws Exception {
-    workflow.init();
-    workflow.start();
-    waitForMessages(mockProducer, 1);
-    workflow.stop();
-    workflow.close();
-    AdaptrisMessage msg = mockProducer.getMessages().get(0);
-      assertEquals("Payload Size", 0, msg.getPayload().length);
+  public void testTriggerWithDynamicTemplate() throws Exception {
+    Trigger trigger = new Trigger();
+    String script = "message.setContent('" + PAYLOAD + "', 'UTF-8')";
+    MockMessageProducer mockProducer = new MockMessageProducer();
+    Channel c = createChannel(new PollingTrigger(trigger,
+        new DynamicPollingTemplate(new EmbeddedScriptingService().withScript("nashorn", script))), mockProducer);
+    try {
+      BaseCase.start(c);
+      trigger.fire();
+      AdaptrisMessage msg = mockProducer.getMessages().get(0);
+      assertEquals(PAYLOAD, msg.getContent());
+    }
+    finally {
+      BaseCase.stop(c);
+    }
+  }
+
+  public void testTriggerWithDynamicTemplate_NoConfig() throws Exception {
+    Trigger trigger = new Trigger();
+    MockMessageProducer mockProducer = new MockMessageProducer();
+    Channel c = createChannel(new PollingTrigger(trigger, new DynamicPollingTemplate()), mockProducer);
+    try {
+      BaseCase.start(c);
+      trigger.fire();
+      AdaptrisMessage msg = mockProducer.getMessages().get(0);
+      assertEquals(0, msg.getSize());
+    }
+    finally {
+      BaseCase.stop(c);
+    }
+  }
+
+  public void testTrigger_TemplateFails() throws Exception {
+    String script = "message.setContent('" + PAYLOAD + "')"; // setContent must have a encoding...
+    Trigger trigger = new Trigger();
+    MockMessageProducer mockProducer = new MockMessageProducer();
+    Channel c = createChannel(new PollingTrigger(trigger,
+        new DynamicPollingTemplate(new EmbeddedScriptingService().withScript("nashorn", script))), mockProducer);
+    try {
+      BaseCase.start(c);
+      trigger.fire();
+      assertEquals(0, mockProducer.getMessages().size());
+    }
+    finally {
+      BaseCase.stop(c);
+    }
+  }
+
+  public void testTriggerWithEmptyMessages() throws Exception {
+    Trigger trigger = new Trigger();
+    MockMessageProducer mockProducer = new MockMessageProducer();
+    Channel c = createChannel(new PollingTrigger(trigger), mockProducer);
+    try {
+      BaseCase.start(c);
+      trigger.fire();
+      AdaptrisMessage msg = mockProducer.getMessages().get(0);
+      assertEquals(0, msg.getSize());
+    }
+    finally {
+      BaseCase.stop(c);
+    }
   }
 
   @Override
   protected List retrieveObjectsForSampleConfig() {
     ArrayList result = new ArrayList();
-    for (Poller t : POLLER_LIST) {
-      StandaloneConsumer p = retrieveSampleConfig();
-      ((AdaptrisPollingConsumer) p.getConsumer()).setPoller(t);
-      result.add(p);
+    for (Poller p : POLLER_LIST) {
+      for (PollingTrigger.MessageProvider t : TEMPLATES) {
+        result.add(new StandaloneConsumer(new PollingTrigger(p, t)));
+      }
     }
     return result;
   }
 
-  /**
-   * @see com.adaptris.core.ExampleConfigCase#retrieveObjectForSampleConfig()
-   */
   @Override
   protected Object retrieveObjectForSampleConfig() {
     return null;
@@ -115,21 +169,34 @@ public class PollingTriggerTest extends ConsumerCase {
 
   @Override
   protected String createBaseFileName(Object object) {
-    AdaptrisPollingConsumer p = (AdaptrisPollingConsumer) ((StandaloneConsumer) object)
-        .getConsumer();
-    return super.createBaseFileName(object) + "-"
+    PollingTrigger p = (PollingTrigger) ((StandaloneConsumer) object).getConsumer();
+    return super.createBaseFileName(object) + "-" + p.getMessageProvider().getClass().getSimpleName() + "-"
         + p.getPoller().getClass().getSimpleName();
   }
 
-  /**
-   *
-   * @see com.adaptris.core.ExampleConfigCase#retrieveObjectForSampleConfig()
-   */
-  protected StandaloneConsumer retrieveSampleConfig() {
-    PollingTrigger pt = new PollingTrigger();
-    pt.setTemplate("The trigger message");
-    StandaloneConsumer result = new StandaloneConsumer();
-    result.setConsumer(pt);
-    return result;
+  private Channel createChannel(PollingTrigger trigger, MockMessageProducer mock) throws Exception {
+    return new MockChannel().withWorkflow(new StandardWorkflow(trigger, mock));
+  }
+
+  private class Trigger extends PollerImp {
+
+    public void init() throws CoreException {
+    }
+
+    public void start() throws CoreException {
+    }
+
+    public void stop() {
+    }
+
+    public void close() {
+    }
+
+    public void prepare() throws CoreException {
+    }
+
+    public void fire() {
+      processMessages();
+    }
   }
 }

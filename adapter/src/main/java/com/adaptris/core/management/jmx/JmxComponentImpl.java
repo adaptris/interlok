@@ -44,6 +44,11 @@ abstract class JmxComponentImpl extends MgmtComponentImpl {
     @Override
     public void register() throws Exception {
     }
+
+    @Override
+    public boolean isStarted() {
+      return true;
+    }
   };
 
   /**
@@ -78,6 +83,10 @@ abstract class JmxComponentImpl extends MgmtComponentImpl {
     wrapper.unregister();
   }
 
+  public boolean isStarted() {
+    return wrapper.isStarted();
+  }
+
   protected abstract class JmxComponent {
     /**
      * Start the component.
@@ -106,5 +115,12 @@ abstract class JmxComponentImpl extends MgmtComponentImpl {
      * @throws Exception
      */
     public abstract void register() throws Exception;
+
+    /**
+     * Check if the component is started
+     * 
+     * @return
+     */
+    public abstract boolean isStarted();
   }
 }

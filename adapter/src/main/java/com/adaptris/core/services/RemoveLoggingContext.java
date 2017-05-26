@@ -22,6 +22,7 @@ import org.slf4j.MDC;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -49,6 +50,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class RemoveLoggingContext extends ServiceImp {
 
   @NotBlank
+  @InputFieldHint(expression = true)
   private String key;
 
   public RemoveLoggingContext() {

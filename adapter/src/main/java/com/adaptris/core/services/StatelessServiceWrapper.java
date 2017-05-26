@@ -271,6 +271,7 @@ public class StatelessServiceWrapper extends ServiceImp implements EventHandlerA
   }
 
   @Override
+  @Deprecated
   public Boolean getIsConfirmation() {
     try {
       MessageEventGeneratorProxy what = getProxy(getService());
@@ -281,6 +282,7 @@ public class StatelessServiceWrapper extends ServiceImp implements EventHandlerA
     }
   }
 
+  @Deprecated
   @Override
   public void setIsConfirmation(Boolean b) {
     try {

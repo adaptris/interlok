@@ -106,10 +106,14 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware {
     }
     final CyclicBarrier gate = new CyclicBarrier(splitMessages.size() + 1);
     final ServiceExceptionHandler handler = new ServiceExceptionHandler();
+    long count = 0;
     for (AdaptrisMessage splitMsg : splitMessages) {
+      count++;
+      splitMsg.addMetadata(MessageSplitterServiceImp.KEY_CURRENT_SPLIT_MESSAGE_COUNT, Long.toString(count));
       ServiceExecutor exe = new ServiceExecutor(handler, gate, cloneService(service), splitMsg);
       executors.execute(exe);
     }
+    msg.addMetadata(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT, Long.toString(count));
     waitFor(gate, handler);
     log.trace("Finished waiting for operations ");
     checkForExceptions(handler);
@@ -137,32 +141,31 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware {
     List<AdaptrisMessage> msgs = new ArrayList<AdaptrisMessage>();
     try {
       msgs = toList(getSplitter().splitMessage(m));
-    }
-    catch (CoreException e) {
+    } catch (CoreException e) {
       throw ExceptionHelper.wrapServiceException(e);
     }
     return msgs;
   }
 
   /**
-   * Convert the Iterable into a List. If it's already a list, just return it. If not, 
+   * Convert the Iterable into a List. If it's already a list, just return it. If not,
    * it will be iterated and the resulting list returned.
    */
   private List<AdaptrisMessage> toList(Iterable<AdaptrisMessage> iter) {
-    if(iter instanceof List) {
-      return (List<AdaptrisMessage>)iter;
+    if (iter instanceof List) {
+      return (List<AdaptrisMessage>) iter;
     }
-    
+
     List<AdaptrisMessage> result = new ArrayList<AdaptrisMessage>();
-    
-    try(CloseableIterable<AdaptrisMessage> messages = CloseableIterable.FACTORY.ensureCloseable(iter)) {
-      for(AdaptrisMessage msg: messages) {
+
+    try (CloseableIterable<AdaptrisMessage> messages = CloseableIterable.FACTORY.ensureCloseable(iter)) {
+      for (AdaptrisMessage msg : messages) {
         result.add(msg);
       }
     } catch (IOException e) {
       log.warn("Could not close Iterable!", e);
     }
-    
+
     return result;
   }
 

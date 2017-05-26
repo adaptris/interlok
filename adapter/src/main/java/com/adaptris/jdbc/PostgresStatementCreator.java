@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Adaptris Ltd.
+ * Copyright 2017 Adaptris Ltd.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,38 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 */
-
 package com.adaptris.jdbc;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Oracle CallableStatement generator.
+ * Create a string similar to {@code SELECT my_stored_procedure(?,?,?)}
  * 
- * @config oracle-statement-creator
- * 
+ * @config postgresql-statement-creator
  */
-@XStreamAlias("oracle-statement-creator")
-public class OracleStatementCreator implements CallableStatementCreator {
+@XStreamAlias("postgresql-statement-creator")
+public class PostgresStatementCreator {
 
-  /**
-   * Creates a String of <code>begin ? := procedureName(?,?,?,?,?); end; </code> which should be suitable for Oracle databases.
-   * 
-   * @see CallableStatementCreator#createCall(java.lang.String, int)
-   */
   public String createCall(String procedureName, int parameterCount) {
-    StringBuffer sb = new StringBuffer();
-    sb.append("begin ? := ");
-    sb.append(procedureName);
+    StringBuffer sb = new StringBuffer("SELECT ").append(procedureName);
     sb.append("(");
 
-    for (int i = 0; i < parameterCount-1; i++) {
+    for (int i = 0; i < parameterCount; i++) {
       sb.append("?");
-      if (i < parameterCount - 2) {
+      if (i < parameterCount - 1) {
         sb.append(", ");
       }
     }
-    sb.append("); end;");
+    sb.append(");");
+
     return sb.toString();
   }
 }

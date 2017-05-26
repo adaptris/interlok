@@ -16,24 +16,34 @@
 
 package com.adaptris.core.services.metadata.compare;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.Service;
+import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.metadata.MetadataServiceExample;
 import com.adaptris.core.util.LifecycleHelper;
 
 public class MetadataComparisonServiceTest extends MetadataServiceExample {
 
-  private static final String EXAMPLE_RESULT_KEY = "metadata key that will contain true or false post service";
+  private static final String EXAMPLE_RESULT_KEY = "metadata key that will contain the result post service";
   private static final String KEY_1 = "key1";
   private static final String KEY_2 = "key2";
 
   private enum ComparatorCreator {
+    CompareTimestamps {
 
+      @Override
+      CompareTimestamps create() {
+        return new CompareTimestamps(EXAMPLE_RESULT_KEY);
+      }
+
+    },
     EndsWith {
 
       @Override
@@ -219,6 +229,42 @@ public class MetadataComparisonServiceTest extends MetadataServiceExample {
     assertEquals("true", msg.getMetadataValue(EqualsIgnoreCase.class.getCanonicalName()));
   }
 
+  public void testCompareTimestamp() throws Exception {
+    MetadataComparisonService s = new MetadataComparisonService(KEY_1, KEY_2, new CompareTimestamps());
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+    msg.addMetadata(KEY_1, sdf.format(new Date(1)));
+    msg.addMetadata(KEY_2, sdf.format(new Date()));
+    execute(s, msg);
+    assertEquals("-1", msg.getMetadataValue(CompareTimestamps.class.getCanonicalName()));
+  }
+
+  public void testCompareTimestamp_WithFormat() throws Exception {
+    MetadataComparisonService s =
+        new MetadataComparisonService(KEY_1, KEY_2, new CompareTimestamps("CompareTimestamps", "yyyy-MM-dd"));
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    msg.addMetadata(KEY_1, sdf.format(new Date(1)));
+    msg.addMetadata(KEY_2, sdf.format(new Date()));
+    execute(s, msg);
+    assertEquals("-1", msg.getMetadataValue("CompareTimestamps"));
+  }
+
+
+  public void testCompareTimestamp_Fails() throws Exception {
+    MetadataComparisonService s =
+        new MetadataComparisonService(KEY_1, KEY_2, new CompareTimestamps());
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    msg.addMetadata(KEY_1, sdf.format(new Date(1)));
+    msg.addMetadata(KEY_2, sdf.format(new Date()));
+    try {
+      execute(s, msg);
+      fail();
+    } catch (ServiceException expected) {
+
+    }
+  }
 
   @Override
   protected Object retrieveObjectForSampleConfig() {

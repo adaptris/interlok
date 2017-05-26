@@ -18,6 +18,7 @@ package com.adaptris.core.services.metadata;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
@@ -47,6 +48,8 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @DisplayOrder(order = {"metadataKey", "formatString", "argumentMetadataKeys"})
 public class AddFormattedMetadataService extends ServiceImp {
 
+  private static final ElementValueFormatter DEF_FORMATTER = new ElementValueFormatter();
+
   @NotBlank
   private String formatString;
   @NotNull
@@ -56,12 +59,11 @@ public class AddFormattedMetadataService extends ServiceImp {
   @NotBlank
   @AffectsMetadata
   private String metadataKey;
-  
+  @Valid
   private ElementFormatter elementFormatter;
 
   public AddFormattedMetadataService() {
     setArgumentMetadataKeys(new ArrayList<String>());
-    elementFormatter = new ElementValueFormatter();
   }
 
   @Override
@@ -73,16 +75,11 @@ public class AddFormattedMetadataService extends ServiceImp {
   private Object[] resolveMetadata(AdaptrisMessage msg) throws ServiceException {
     List<String> values = new ArrayList<>();
     for (String key : argumentMetadataKeys) {
-      if (!msg.containsKey(key)) {
+      if (!msg.headersContainsKey(key)) {
         throw new ServiceException("[" + key + "] does not exist as metadata");
       }
-      final String value = msg.getMetadataValue(key);
-      if (elementFormatter != null) {
-        values.add(elementFormatter.format(msg.getMetadata(key)));
-      } else {
-        values.add(value);
-      }
-      log.trace("Adding Metadata [{}]=[{}]", key, value);
+      values.add(elementFormatter().format(msg.getMetadata(key)));
+      log.trace("Adding Metadata [{}]=[{}]", key, msg.getMetadataValue(key));
     }
     return values.toArray(new Object[values.size()]);
   }
@@ -154,5 +151,9 @@ public class AddFormattedMetadataService extends ServiceImp {
    */
   public void setElementFormatter(ElementFormatter elementFormatter) {
     this.elementFormatter = elementFormatter;
+  }
+
+  ElementFormatter elementFormatter() {
+    return getElementFormatter() != null ? getElementFormatter() : DEF_FORMATTER;
   }
 }

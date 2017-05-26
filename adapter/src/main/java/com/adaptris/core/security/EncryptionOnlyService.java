@@ -19,6 +19,7 @@ package com.adaptris.core.security;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.core.BranchingServiceCollection;
 import com.adaptris.security.Output;
 import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.adaptris.security.keystore.Alias;
@@ -26,6 +27,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Perform encryption only.
+ * <p>
+ * This may be used as part of a {@link BranchingServiceCollection} if both {@link #setFailId(String)} and
+ * {@link #setSuccessId(String)} are configured.
+ * </p>
  * 
  * @config encrypt-only-service
  * 
@@ -33,7 +38,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("encrypt-only-service")
 @AdapterComponent
-@ComponentProfile(summary = "Encrypt the contents of the message", tag = "service,security")
+@ComponentProfile(summary = "Encrypt the contents of the message", tag = "service,security", branchSelector = true)
 @DisplayOrder(order = {"localPartner", "remotePartner", "remotePartnerMetadataKey", "encryptionAlgorithm", "keystoreUrls",
     "privateKeyPasswordProvider"})
 public class EncryptionOnlyService extends EncryptionService {

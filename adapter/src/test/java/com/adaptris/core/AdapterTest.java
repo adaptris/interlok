@@ -735,10 +735,8 @@ public class AdapterTest extends BaseCase {
     WorkflowList wf = new WorkflowList();
     for (int i = 0; i < count; i++) {
       StandardWorkflow swf = new StandardWorkflow();
-      PollingTrigger pt = new PollingTrigger();
+      PollingTrigger pt = new PollingTrigger(new QuartzCronPoller("*/1 * * * * ?"), new StaticPollingTemplate("<dummy>"));
       pt.setDestination(new ConfiguredConsumeDestination(prefix + "_wf" + i));
-      pt.setTemplate("<dummy>");
-      pt.setPoller(new QuartzCronPoller("*/1 * * * * ?"));
       swf.setConsumer(pt);
       wf.add(swf);
     }
