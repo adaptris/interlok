@@ -66,4 +66,9 @@ public @interface ComponentProfile {
    * @since 3.6.2
    */
   boolean branchSelector() default false;
+
+  /**
+   * The Author of the component; if not specified defaults to the empty string and will not be displayed.
+   */
+  String author() default "";
 }
