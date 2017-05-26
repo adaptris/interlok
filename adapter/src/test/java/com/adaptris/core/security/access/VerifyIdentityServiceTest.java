@@ -31,6 +31,8 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.http.jetty.JettyHashUserRealmVerifier;
 import com.adaptris.core.security.SecurityServiceExample;
 import com.adaptris.core.security.access.MetadataIdentityBuilderImpl.MetadataSource;
+import com.adaptris.util.KeyValuePair;
+import com.adaptris.util.KeyValuePairSet;
 
 public class VerifyIdentityServiceTest extends SecurityServiceExample {
 
@@ -74,6 +76,45 @@ public class VerifyIdentityServiceTest extends SecurityServiceExample {
 
     VerifyIdentityService service = new VerifyIdentityService(builder, verifier);
     execute(service, msg);
+  }
+
+  public void testMetadataVerification() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    msg.addMetadata(USER, "user");
+    msg.addMetadata(PASSWORD, "password");
+    msg.addMetadata("dbUser", "user");
+    msg.addMetadata("dbPassword", "password");
+    MetadataIdentityVerifier verifier = new MetadataIdentityVerifier(new KeyValuePairSet(Arrays.asList(new KeyValuePair[]
+    {
+        new KeyValuePair(USER, "dbUser"), new KeyValuePair(PASSWORD, "dbPassword")
+    })));
+    MetadataIdentityBuilder builder = new MetadataIdentityBuilder(MetadataSource.Standard,
+        new ArrayList<String>(Arrays.asList(USER, PASSWORD)));
+
+    VerifyIdentityService service = new VerifyIdentityService(builder, verifier);
+    execute(service, msg);
+  }
+
+  public void testMetadataVerification_Fails() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    msg.addMetadata(USER, "user");
+    msg.addMetadata(PASSWORD, "password");
+    msg.addMetadata("dbUser", "user");
+    msg.addMetadata("dbPassword", "NotThePassword");
+    MetadataIdentityVerifier verifier = new MetadataIdentityVerifier(new KeyValuePairSet(Arrays.asList(new KeyValuePair[] {
+        new KeyValuePair(USER, "dbUser"), new KeyValuePair(PASSWORD, "dbPassword")
+    })));
+    MetadataIdentityBuilder builder = new MetadataIdentityBuilder(MetadataSource.Standard,
+        new ArrayList<String>(Arrays.asList(USER, PASSWORD)));
+
+    VerifyIdentityService service = new VerifyIdentityService(builder, verifier);
+    try {
+      execute(service, msg);
+      fail();
+    }
+    catch (ServiceException expected) {
+
+    }
   }
 
   @Override
