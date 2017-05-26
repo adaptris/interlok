@@ -73,6 +73,7 @@ public class MetadataIdentityVerifier extends IdentityVerifierImpl {
       rc = (count == identity.size());
     }
     catch (ServiceException e) {
+      log.debug(e.getMessage(), e);
       rc = false;
     }
     return rc;
