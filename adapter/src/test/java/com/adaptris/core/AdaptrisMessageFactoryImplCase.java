@@ -196,6 +196,55 @@ public abstract class AdaptrisMessageFactoryImplCase {
   }
 
   @Test
+  public void testCreateMessageFromSource_NullKeysToKeep() throws Exception {
+    String pld = TEST_PAYLOAD;
+    AdaptrisMessage orig = getMessageFactory().newMessage(pld);
+    orig.addMetadata(new MetadataElement("key1", "val1"));
+    orig.addMetadata(new MetadataElement("key2", "val2"));
+    orig.addEvent(new MessageEventGenerator() {
+
+      public String createName() {
+        return "event";
+      }
+
+      public String createQualifier() {
+        return "qualifier";
+      }
+
+      public Boolean getIsTrackingEndpoint() {
+        return Boolean.FALSE;
+      }
+
+      public Boolean getIsConfirmation() {
+        return Boolean.FALSE;
+      }
+
+      public boolean isConfirmation() {
+        return false;
+      }
+
+      public boolean isTrackingEndpoint() {
+        return false;
+      }
+
+      public void setIsConfirmation(Boolean b) {}
+
+      public void setIsTrackingEndpoint(Boolean b) {}
+    }, true);
+
+    AdaptrisMessage dest = getMessageFactory().newMessage(orig, null);
+    assertEquals(0, dest.getPayload().length);
+    assertEquals("Metadata Key Values", orig.getMetadataValue("key1"), dest.getMetadataValue("key1"));
+    assertTrue(orig.headersContainsKey("key2"));
+    assertTrue(dest.headersContainsKey("key2"));
+    assertEquals("MessageId", orig.getUniqueId(), dest.getUniqueId());
+    assertEquals("Mle MessageId", orig.getMessageLifecycleEvent().getMessageUniqueId(),
+        dest.getMessageLifecycleEvent().getMessageUniqueId());
+    assertEquals("MarkerSizes", orig.getMessageLifecycleEvent().getMleMarkers().size(),
+        dest.getMessageLifecycleEvent().getMleMarkers().size());
+  }
+
+  @Test
   public void testCreate() {
     AdaptrisMessage msg = getMessageFactory().newMessage();
     assertEquals(0, msg.getPayload().length);

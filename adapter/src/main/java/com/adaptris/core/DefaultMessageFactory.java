@@ -96,15 +96,18 @@ public class DefaultMessageFactory extends AdaptrisMessageFactory {
   }
 
   @Override
-  public AdaptrisMessage newMessage(AdaptrisMessage source,
-                                    Collection metadataKeysToPreserve)
+  public AdaptrisMessage newMessage(AdaptrisMessage source, Collection<String> metadataKeysToPreserve)
       throws CloneNotSupportedException {
     AdaptrisMessage result = newMessage();
     result.setUniqueId(source.getUniqueId());
-    for (Iterator i = metadataKeysToPreserve.iterator(); i.hasNext();) {
-      String key = (String) i.next();
-      if (source.headersContainsKey(key)) {
-        result.addMetadata(key, source.getMetadataValue(key));
+    if (metadataKeysToPreserve == null) {
+      result.setMetadata(source.getMetadata());
+    } else {
+      for (Iterator i = metadataKeysToPreserve.iterator(); i.hasNext();) {
+        String key = (String) i.next();
+        if (source.headersContainsKey(key)) {
+          result.addMetadata(key, source.getMetadataValue(key));
+        }
       }
     }
     MessageLifecycleEvent mle = result.getMessageLifecycleEvent();
