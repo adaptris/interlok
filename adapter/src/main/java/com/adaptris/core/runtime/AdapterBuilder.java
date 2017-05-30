@@ -17,6 +17,7 @@
 package com.adaptris.core.runtime;
 
 import static com.adaptris.core.util.PropertyHelper.getPropertyIgnoringCase;
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -144,11 +145,14 @@ class AdapterBuilder implements AdapterBuilderMBean {
   }
 
   private Adapter validate(Adapter adapter) throws CoreException {
-    if (validatorFactory == null) {
-      return adapter;
+    if (validatorFactory != null) {
+      Validator validator = validatorFactory.getValidator();
+      checkViolations(validator.validate(adapter));
+    } else {
+      if (isBlank(adapter.getUniqueId())) {
+        throw new CoreException("Adapter Unique ID is null/empty");
+      }
     }
-    Validator validator = validatorFactory.getValidator();
-    checkViolations(validator.validate(adapter));
     return adapter;
   }
 

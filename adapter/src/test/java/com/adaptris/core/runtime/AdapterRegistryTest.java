@@ -301,6 +301,18 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     assertEquals(1, myAdapterRegistry.getAdapters().size());
   }
 
+  public void testCreateAdapter_NoUniqueId_NoValidation() throws Exception {
+    String xml = DefaultMarshaller.getDefaultMarshaller().marshal(new Adapter());
+    AdapterRegistry myAdapterRegistry =
+        (AdapterRegistry) AdapterRegistry.findInstance(new JunitBootstrapProperties(new Properties()));
+    try {
+      ObjectName objName = myAdapterRegistry.createAdapter(xml);
+      fail();
+    } catch (CoreException expected) {
+      assertEquals("Adapter Unique ID is null/empty", expected.getMessage());
+    }
+  }
+
   public void testProxy_CreateAdapter_String() throws Exception {
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
