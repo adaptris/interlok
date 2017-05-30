@@ -49,16 +49,16 @@ public class Execution {
     return source;
   }
 
-  public void setSource(DataInputParameter<String> sourceXpathExpression) {
-    this.source = Args.notNull(sourceXpathExpression, "src");
+  public void setSource(DataInputParameter<String> src) {
+    this.source = Args.notNull(src, "src");
   }
 
   public DataOutputParameter<String> getTarget() {
     return target;
   }
 
-  public void setTarget(DataOutputParameter<String> targetDataDestination) {
-    this.target = Args.notNull(targetDataDestination, "target");
+  public void setTarget(DataOutputParameter<String> target) {
+    this.target = Args.notNull(target, "target");
   }
 
 }
