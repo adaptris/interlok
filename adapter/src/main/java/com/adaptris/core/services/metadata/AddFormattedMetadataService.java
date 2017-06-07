@@ -24,10 +24,12 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -51,6 +53,7 @@ public class AddFormattedMetadataService extends ServiceImp {
   private static final ElementValueFormatter DEF_FORMATTER = new ElementValueFormatter();
 
   @NotBlank
+  @InputFieldHint(expression = true)
   private String formatString;
   @NotNull
   @AutoPopulated
@@ -60,6 +63,7 @@ public class AddFormattedMetadataService extends ServiceImp {
   @AffectsMetadata
   private String metadataKey;
   @Valid
+  @AdvancedConfig
   private ElementFormatter elementFormatter;
 
   public AddFormattedMetadataService() {
@@ -68,7 +72,8 @@ public class AddFormattedMetadataService extends ServiceImp {
 
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    String formattedValue = String.format(formatString, resolveMetadata(msg));
+    String toFormat = msg.resolve(getFormatString());
+    String formattedValue = String.format(toFormat, resolveMetadata(msg));
     msg.addMessageHeader(getMetadataKey(), formattedValue);
   }
 
