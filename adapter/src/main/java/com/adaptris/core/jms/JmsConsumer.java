@@ -33,19 +33,16 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * JMS Consumer implementation that can target queues or topics via an RFC6167 style destination.
  * <p>
- * This differs from the standard {@link PtpConsumer} and {@link PasConsumer} in that it supports a
- * destination that is specified in RFC6167 style. For instance {@code jms:queue:myQueueName} will
- * consume from a queue called {@code myQueueName} and {@code jms:topic:myTopicName} from a topic
- * called {@code myTopicName}
+ * This differs from the standard {@link PtpConsumer} and {@link PasConsumer} in that it supports a destination that is specified in
+ * RFC6167 style. For instance {@code jms:queue:myQueueName} will consume from a queue called {@code myQueueName} and
+ * {@code jms:topic:myTopicName} from a topic called {@code myTopicName}
  * </p>
  * <p>
- * While RFC6167 defines the ability to use jndi to lookup the (as part of the 'jndi' variant
- * section); this is not supported. There is also support for {@code subscriptionId} which indicates
- * the subscriptionId that should be used when attaching a subscriber to a topic;
- * {@code jms:topic:MyTopicName?subscriptionId=myId} would return a
- * {@link JmsDestination#subscriptionId()} of {@code myId}. If a subscription ID is not specified,
- * then a durable subscriber is never created; specifying a subscription ID automatically means a
- * durable subscriber.
+ * While RFC6167 defines the ability to use jndi to lookup the (as part of the 'jndi' variant section); this is not supported. There
+ * is also support for {@code subscriptionId} which indicates the subscriptionId that should be used when attaching a subscriber to
+ * a topic; {@code jms:topic:MyTopicName?subscriptionId=myId} would return a {@link JmsDestination#subscriptionId()} of
+ * {@code myId}. If a subscription ID is not specified, then a durable subscriber is never created; specifying a subscription ID
+ * automatically means a durable subscriber.
  * </p>
  * For instance you could have the following destinations:
  * <ul>
@@ -55,7 +52,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </ul>
  * </p>
  * 
- * @config jms-producer
+ * @config jms-consumer
  * 
  */
 @XStreamAlias("jms-consumer")
