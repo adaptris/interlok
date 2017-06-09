@@ -34,9 +34,7 @@ junitsecurity.keystore.single.x509url.uppercaseAlias=X509
 junitsecurity.keystore.single.x509url=file:///${test.resources.dir}/security/good.cer?keystoreType\=X509&keystoreAlias\=${junitsecurity.keystore.single.x509url.alias}
 junitsecurity.keystore.single.x509url.uppercase=file:///${test.resources.dir}/security/good.cer?keystoreType\=X509&keystoreAlias\=${junitsecurity.keystore.single.x509url.uppercaseAlias}
 junitsecurity.keystore.single.pkcs12url.alias=pkcs12
-junitsecurity.keystore.single.pkcs12url.uppercaseAlias=PKCS12
 junitsecurity.keystore.single.pkcs12url=file:///${test.resources.dir}/security/pkey.pfx?keystoreType\=PKCS12&keystoreAlias\=${junitsecurity.keystore.single.pkcs12url.alias}
-junitsecurity.keystore.single.pkcs12url.uppercase=file:///${test.resources.dir}/security/pkey.pfx?keystoreType\=PKCS12&keystoreAlias\=${junitsecurity.keystore.single.pkcs12url.uppercaseAlias}
 junitsecurity.keystore.single.xmlkeyinfourl.alias=xmlkeyinfo
 junitsecurity.keystore.single.xmlkeyinfourl.uppercaseAlias=XMLKEYINFO
 junitsecurity.keystore.single.xmlkeyinfourl=file:///${test.resources.dir}/security/xml-key-info.xml?keystoreType\=XmlKeyInfo&keystoreAlias\=${junitsecurity.keystore.single.xmlkeyinfourl.alias}

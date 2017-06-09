@@ -61,7 +61,6 @@ public class Config {
   static final String KEYSTORE_TEST_NEW_URL = "keystore.new.keystoreUrl";
   static final String KEYSTORE_TEST_NEW_PW = "keystore.new.keystorePassword";
   static final String KEYSTORE_SINGLE_X509_URL = "keystore.single.x509url";
-  static final String KEYSTORE_SINGLE_PKCS12_URL = "keystore.single.pkcs12url";
   static final String KEYSTORE_SINGLE_XML_KEY_INFO_URL = "keystore.single.xmlkeyinfourl";
   static final String KEYSTORE_SINGLE_XML_KEY_INFO_ALIAS = "keystore.single.xmlkeyinfourl.alias";
   static final String KEYSTORE_SINGLE_X509_ALIAS = "keystore.single.x509url.alias";
@@ -71,7 +70,6 @@ public class Config {
   static final String KEYSTORE_SINGLE_PKCS12_URL_UPPERCASE = "keystore.single.pkcs12url.uppercase";
 
   static final String KEYSTORE_SINGLE_X509_ALIAS_UPPERCASE = "keystore.single.x509url.uppercaseAlias";
-  static final String KEYSTORE_SINGLE_PKCS12_ALIAS_UPPERCASE = "keystore.single.pkcs12url.uppercaseAlias";
 
   static final String KEYSTORE_SINGLE_XML_KEY_INFO_URL_UPPERCASE = "keystore.single.xmlkeyinfourl.uppercase";
   static final String KEYSTORE_SINGLE_XML_KEY_INFO_ALIAS_UPPERCASE = "keystore.single.xmlkeyinfourl.uppercaseAlias";
