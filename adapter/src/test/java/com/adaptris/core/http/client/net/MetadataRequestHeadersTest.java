@@ -77,6 +77,26 @@ public class MetadataRequestHeadersTest extends RequestHeadersCase {
     }
   }
 
-
+  @Test
+  public void testAddHeaders_Flatten() throws Exception {
+    Channel c = null;
+    HttpURLConnection urlC = null;
+    try {
+      c = HttpHelper.createAndStartChannel();
+      URL url = new URL(HttpHelper.createProduceDestination(c).getDestination());
+      urlC = (HttpURLConnection) url.openConnection();
+      MetadataRequestHeaders headers = new MetadataRequestHeaders();
+      headers.setUnfold(true);
+      headers.setFilter(new RegexMetadataFilter());
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("");
+      String name = testName.getMethodName();
+      msg.addMetadata(name, name + "\r\n     " + name);
+      urlC = headers.addHeaders(msg, urlC);
+      assertTrue(contains(urlC, name, name + " " + name));
+    }
+    finally {
+      HttpHelper.stopChannelAndRelease(c);
+    }
+  }
 
 }
