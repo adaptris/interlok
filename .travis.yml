@@ -2,7 +2,7 @@ language: java
 sudo: required
 dist: trusty
 
-script: ant -Divy.logging=default test-no-reports
+script: ant -Divy.logging=default test
 
 addons:
   apt:
@@ -13,6 +13,9 @@ addons:
 
 before_install:
   - sudo service haveged start
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
 
 jdk:
   - oraclejdk8
