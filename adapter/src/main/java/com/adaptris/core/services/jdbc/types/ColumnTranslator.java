@@ -44,7 +44,6 @@ public interface ColumnTranslator {
    * @param rs the result set
    * @param column the column index
    * @return The String representation of the column
-   * @throws SQLException
    */
   String translate(JdbcResultRow rs, int column) throws SQLException, IOException;
 
@@ -54,8 +53,6 @@ public interface ColumnTranslator {
    * @param rs the result set
    * @param columnName the column name
    * @return The String representation of the column
-   * @throws SQLException
    */
   String translate(JdbcResultRow rs, String columnName) throws SQLException, IOException;
-
 }

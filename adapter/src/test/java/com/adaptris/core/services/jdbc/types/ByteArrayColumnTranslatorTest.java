@@ -16,6 +16,8 @@
 
 package com.adaptris.core.services.jdbc.types;
 
+import java.io.StringWriter;
+
 import com.adaptris.jdbc.JdbcResultRow;
 
 import junit.framework.TestCase;
@@ -61,9 +63,25 @@ public class ByteArrayColumnTranslatorTest extends TestCase {
     
     try {
       translator.translate(row, "testField");
+      fail();
     } catch(Exception ex) {
       //pass, expected
     }
   }
   
+  public void testBlobWrite() throws Exception {
+    BlobColumnTranslator translator = new BlobColumnTranslator();
+    TestBlob blob = new TestBlob();
+    String myData = new String("SomeData");
+    blob.setBytes(0, myData.getBytes());
+
+    JdbcResultRow row = new JdbcResultRow();
+    row.setFieldValue("testField", blob);
+
+    StringWriter writer = new StringWriter();
+    translator.write(row, 0, writer);
+    String translated = writer.toString();
+
+    assertEquals("SomeData", translated);
+  }
 }
