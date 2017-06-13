@@ -35,17 +35,15 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author Aaron McGrath
  */
 @XStreamAlias("execute-update-callable-statement-executor")
-public class ExecuteUpdateCallableStatementExecutor implements CallableStatementExecutor {
+public class ExecuteUpdateCallableStatementExecutor extends CallableStatementExecutorImpl {
 
   @Override
   public JdbcResult executeCallableStatement(CallableStatement statement) throws SQLException {
     int updatedCount = statement.executeUpdate();
-    
-    JdbcResult result = new JdbcResultBuilder()
-      .setResultSet(statement)
-      .setRowsUpdatedCount(updatedCount)
-      .build();
-    
+
+    JdbcResult result = new JdbcResultBuilder().setResultSet(statement, ignoreMoreResultsException())
+        .setRowsUpdatedCount(updatedCount).build();
+
     return result;
   }
 

@@ -33,17 +33,13 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author Aaron McGrath
  */
 @XStreamAlias("execute-callable-statement-executor")
-public class ExecuteCallableStatementExecutor implements CallableStatementExecutor {
+public class ExecuteCallableStatementExecutor extends CallableStatementExecutorImpl {
 
   @Override
-  public JdbcResult executeCallableStatement(CallableStatement statement) throws SQLException{
+  public JdbcResult executeCallableStatement(CallableStatement statement) throws SQLException {
     boolean hasResultSet = statement.execute();
-    
-    JdbcResult result = new JdbcResultBuilder()
-    .setHasResultSet(hasResultSet)
-    .setResultSet(statement)
-    .build();
-
+    JdbcResult result = new JdbcResultBuilder().setHasResultSet(hasResultSet).setResultSet(statement, ignoreMoreResultsException())
+        .build();
     return result;
   }
 
