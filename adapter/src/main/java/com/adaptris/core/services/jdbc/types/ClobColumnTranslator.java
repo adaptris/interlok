@@ -16,12 +16,12 @@
 
 package com.adaptris.core.services.jdbc.types;
 
-import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.copy;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.sql.Clob;
 import java.sql.SQLException;
 
@@ -37,7 +37,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("jdbc-type-clob-column-translator")
-public class ClobColumnTranslator implements ColumnTranslator {
+public class ClobColumnTranslator implements ColumnWriter, ColumnTranslator {
 
   public ClobColumnTranslator() {
 
@@ -53,16 +53,25 @@ public class ClobColumnTranslator implements ColumnTranslator {
     return toString((Clob) rs.getFieldValue(columnName));
   }
 
+  @Override
+  public void write(JdbcResultRow rs, String columnName, Writer out) throws SQLException, IOException {
+    write((Clob) rs.getFieldValue(columnName), out);
+  }
+
+  @Override
+  public void write(JdbcResultRow rs, int column, Writer out) throws SQLException, IOException {
+    write((Clob) rs.getFieldValue(column), out);
+  }
+
+  private void write(Clob blob, Writer out) throws SQLException, IOException {
+    try (Reader input = blob.getCharacterStream()) {
+      copy(input, out);
+    }
+  }
+
   private String toString(Clob clob) throws SQLException, IOException {
     StringWriter output = new StringWriter();
-    Reader input = clob.getCharacterStream();
-    try {
-      copy(input, output);
-    }
-    finally {
-      closeQuietly(input);
-      closeQuietly(output);
-    }
+    write(clob, output);
     return output.toString();
   }
 }

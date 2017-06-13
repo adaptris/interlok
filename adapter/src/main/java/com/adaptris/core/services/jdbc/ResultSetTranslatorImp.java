@@ -24,15 +24,13 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.jdbc.types.ColumnTranslator;
 import com.adaptris.core.util.Args;
@@ -46,7 +44,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * @author lchan
  * 
  */
-public abstract class ResultSetTranslatorImp implements ResultSetTranslator {
+public abstract class ResultSetTranslatorImp extends ResultSetTranslatorBase {
 
   /**
    * Represents how column names are formatted.
@@ -81,7 +79,6 @@ public abstract class ResultSetTranslatorImp implements ResultSetTranslator {
     public abstract String format(String s);
   };
 
-  protected transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   @AdvancedConfig
   @InputFieldDefault(value = "false")
@@ -102,6 +99,7 @@ public abstract class ResultSetTranslatorImp implements ResultSetTranslator {
   @AffectsMetadata
   private String updateCountMetadataItem;
   
+  @Deprecated
   private String uniqueId;
 
   protected ResultSetTranslatorImp() {
@@ -120,21 +118,6 @@ public abstract class ResultSetTranslatorImp implements ResultSetTranslator {
    */
   public abstract long translateResult(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException;
 
-  @Override
-  public void close() {
-  }
-
-  @Override
-  public void init() throws CoreException {
-  }
-
-  @Override
-  public void start() throws CoreException {
-  }
-
-  @Override
-  public void stop() {
-  }
 
   private String getValue(JdbcResultRow rs, int column) {
     String value = null;
@@ -262,9 +245,6 @@ public abstract class ResultSetTranslatorImp implements ResultSetTranslator {
     columnTranslators.add(Args.notNull(ct, "columnTranslator"));
   }
 
-  @Override
-  public void prepare() throws CoreException {}
-
   public String getResultCountMetadataItem() {
     return resultCountMetadataItem;
   }
@@ -291,10 +271,21 @@ public abstract class ResultSetTranslatorImp implements ResultSetTranslator {
     this.updateCountMetadataItem = s;
   }
 
+  /**
+   * Not required as this component doesn't need to extend {@link AdaptrisComponent}
+   * 
+   * @deprecated since 3.6.3
+   */
+  @Deprecated
   public String getUniqueId() {
     return uniqueId;
   }
 
+  /**
+   * Not required as this component doesn't need to extend {@link AdaptrisComponent}
+   * 
+   * @deprecated since 3.6.3
+   */
   public void setUniqueId(String uniqueId) {
     this.uniqueId = uniqueId;
   }

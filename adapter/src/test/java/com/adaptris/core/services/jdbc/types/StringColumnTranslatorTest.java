@@ -16,6 +16,8 @@
 
 package com.adaptris.core.services.jdbc.types;
 
+import java.io.StringWriter;
+
 import com.adaptris.jdbc.JdbcResultRow;
 
 import junit.framework.TestCase;
@@ -75,6 +77,28 @@ public class StringColumnTranslatorTest extends TestCase {
     
     String translated = translator.translate(row, 0);
     assertEquals("111.000000", translated);
+  }
+
+  public void testSTriongWrite() throws Exception {
+    JdbcResultRow row = new JdbcResultRow();
+    row.setFieldValue("testField", new String("SomeData"));
+
+    StringWriter writer = new StringWriter();
+    translator.write(row, 0, writer);
+    String translated = writer.toString();
+
+    assertEquals("SomeData", translated);
+  }
+
+  public void testClobWrite_ByName() throws Exception {
+    JdbcResultRow row = new JdbcResultRow();
+    row.setFieldValue("testField", new String("SomeData"));
+
+    StringWriter writer = new StringWriter();
+    translator.write(row, "testField", writer);
+    String translated = writer.toString();
+
+    assertEquals("SomeData", translated);
   }
 
 }

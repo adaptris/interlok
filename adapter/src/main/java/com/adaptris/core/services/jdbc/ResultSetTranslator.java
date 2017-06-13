@@ -18,8 +18,9 @@ package com.adaptris.core.services.jdbc;
 
 import java.sql.SQLException;
 
-import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.ComponentLifecycle;
+import com.adaptris.core.ComponentLifecycleExtension;
 import com.adaptris.core.ServiceException;
 import com.adaptris.jdbc.JdbcResult;
 
@@ -29,7 +30,7 @@ import com.adaptris.jdbc.JdbcResult;
  * @author lchan
  *
  */
-public interface ResultSetTranslator extends AdaptrisComponent {
+public interface ResultSetTranslator extends ComponentLifecycle, ComponentLifecycleExtension {
 
   /**
    * Translate the contents of the result set into the AdaptrisMessage object. Only use

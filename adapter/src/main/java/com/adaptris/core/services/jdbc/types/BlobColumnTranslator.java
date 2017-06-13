@@ -16,12 +16,12 @@
 
 package com.adaptris.core.services.jdbc.types;
 
-import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.copy;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.sql.Blob;
 import java.sql.SQLException;
 
@@ -37,13 +37,17 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("jdbc-type-blob-column-translator")
-public class BlobColumnTranslator implements ColumnTranslator {
-
-  private String characterEncoding;
+public class BlobColumnTranslator extends ColumnWriterWithCharEncoding {
 
   public BlobColumnTranslator() {
 
   }
+
+  public BlobColumnTranslator(String charEncoding) {
+    this();
+    setCharacterEncoding(charEncoding);
+  }
+
   @Override
   public String translate(JdbcResultRow rs, int column) throws SQLException, IOException {
     return toString((Blob) rs.getFieldValue(column));
@@ -54,30 +58,26 @@ public class BlobColumnTranslator implements ColumnTranslator {
     return toString((Blob) rs.getFieldValue(columnName));
   }
 
+  @Override
+  public void write(JdbcResultRow rs, int column, Writer out) throws SQLException, IOException {
+    write((Blob) rs.getFieldValue(column), out);
+  }
+
+  @Override
+  public void write(JdbcResultRow rs, String columnName, Writer out) throws SQLException, IOException {
+    write((Blob) rs.getFieldValue(columnName), out);
+  }
+
+  private void write(Blob blob, Writer out) throws SQLException, IOException {
+    try (Reader input = toReader(blob.getBinaryStream())) {
+      copy(input, out);
+    }
+  }
+
   private String toString(Blob blob) throws SQLException, IOException {
-    ByteArrayOutputStream output = new ByteArrayOutputStream();
-    InputStream input = blob.getBinaryStream();
-    try {
-      copy(input, output);
-    }
-    finally {
-      closeQuietly(input);
-      closeQuietly(output);
-    }
-    return getCharacterEncoding() != null ? output.toString(getCharacterEncoding()) : output.toString();
-  }
-
-  public String getCharacterEncoding() {
-    return characterEncoding;
-  }
-
-  /**
-   * Set the character encoding used to convert the column into a String.
-   *
-   * @param charEnc the character encoding, if null then the platform encoding is assumed.
-   */
-  public void setCharacterEncoding(String charEnc) {
-    characterEncoding = charEnc;
+    StringWriter output = new StringWriter();
+    write(blob, output);
+    return output.toString();
   }
 
 }

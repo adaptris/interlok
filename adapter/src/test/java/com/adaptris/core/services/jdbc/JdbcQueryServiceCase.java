@@ -168,51 +168,23 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
     super(arg0);
   }
 
-  protected abstract ResultSetTranslatorImp createTranslatorForConfig();
+  protected abstract ResultSetTranslator createTranslatorForConfig();
 
-//  @Override
-//  protected Object retrieveObjectForSampleConfig() {
-//    JdbcDataQueryService service = new JdbcDataQueryService();
-//    try {
-//      JdbcConnection connection = new JdbcConnection("jdbc:mysql://localhost:3306/mydatabase", "com.mysql.jdbc.Driver");
-//      KeyValuePairSet connectionProperties = new KeyValuePairSet();
-//      connectionProperties.add(new KeyValuePair("useCompression", "true"));
-//      connection.setConnectionProperties(connectionProperties);
-//      connection.setConnectionAttempts(2);
-//      connection.setConnectionRetryInterval(new TimeInterval(3L, "SECONDS"));
-//      service.setConnection(connection);
-//      ResultSetTranslatorImp rst = createTranslatorForConfig();
-//      rst.addColumnTranslator(new StringColumnTranslator());
-//      rst.addColumnTranslator(new DateColumnTranslator());
-//      rst.addColumnTranslator(new IntegerColumnTranslator());
-//      rst.addColumnTranslator(new BlobColumnTranslator());
-//      rst.addColumnTranslator(new ClobColumnTranslator());
-//      service.setResultSetTranslator(rst);
-//      String additionalParams = "";
-//      boolean first = true;
-//      for (QueryClasses qc : QueryClasses.values()) {
-//        service.addStatementParameter(qc.create());
-//        if (first) {
-//          additionalParams += qc.name() + "=?";
-//          first = false;
-//        }
-//        else {
-//          additionalParams += " AND " + qc.name() + "=?";
-//
-//        }
-//      }
-//      service.setStatement("SELECT StringColumn1, DateColumn2, IntegerColumn3, BlobColumn, ClobColumn FROM tablename WHERE " + additionalParams);
-//    }
-//    catch (Exception e) {
-//      throw new RuntimeException(e);
-//    }
-//    return service;
-//  }
-  
   protected Object retrieveObjectForSampleConfig() {
     return null;
   }
   
+  protected ResultSetTranslator configureForExample(ResultSetTranslator rst) {
+    if (rst instanceof ResultSetTranslatorImp) {
+      ((ResultSetTranslatorImp) rst).addColumnTranslator(new StringColumnTranslator());
+      ((ResultSetTranslatorImp) rst).addColumnTranslator(new DateColumnTranslator());
+      ((ResultSetTranslatorImp) rst).addColumnTranslator(new IntegerColumnTranslator());
+      ((ResultSetTranslatorImp) rst).addColumnTranslator(new BlobColumnTranslator());
+      ((ResultSetTranslatorImp) rst).addColumnTranslator(new ClobColumnTranslator());
+    }
+    return rst;
+  }
+
   protected List<JdbcService> buildExamples() {
     ArrayList<JdbcService> objects = new ArrayList<>();
     
@@ -225,13 +197,7 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
       connection.setConnectionAttempts(2);
       connection.setConnectionRetryInterval(new TimeInterval(3L, "SECONDS"));
       service.setConnection(connection);
-      ResultSetTranslatorImp rst = createTranslatorForConfig();
-      rst.addColumnTranslator(new StringColumnTranslator());
-      rst.addColumnTranslator(new DateColumnTranslator());
-      rst.addColumnTranslator(new IntegerColumnTranslator());
-      rst.addColumnTranslator(new BlobColumnTranslator());
-      rst.addColumnTranslator(new ClobColumnTranslator());
-      service.setResultSetTranslator(rst);
+      service.setResultSetTranslator(configureForExample(createTranslatorForConfig()));
       String additionalParams = "";
       boolean first = true;
       for (QueryClasses qc : QueryClasses.values()) {
@@ -263,14 +229,9 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
       connection.setConnectionAttempts(2);
       connection.setConnectionRetryInterval(new TimeInterval(3L, "SECONDS"));
       service2.setConnection(connection);
-      ResultSetTranslatorImp rst = createTranslatorForConfig();
-      rst.addColumnTranslator(new StringColumnTranslator());
-      rst.addColumnTranslator(new DateColumnTranslator());
-      rst.addColumnTranslator(new IntegerColumnTranslator());
-      rst.addColumnTranslator(new BlobColumnTranslator());
-      rst.addColumnTranslator(new ClobColumnTranslator());
       service2.setParameterApplicator(new NamedParameterApplicator());
-      service2.setResultSetTranslator(rst);
+      service2.setResultSetTranslator(configureForExample(createTranslatorForConfig()));
+
       String additionalParams = "";
       boolean first = true;
       int count = 0;

@@ -17,7 +17,10 @@
 package com.adaptris.core.services.jdbc.types;
 
 import java.io.IOException;
+import java.io.Writer;
 import java.sql.SQLException;
+
+import org.apache.commons.io.IOUtils;
 
 import com.adaptris.jdbc.JdbcResultRow;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -32,7 +35,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("jdbc-type-string-column-translator")
-public class StringColumnTranslator extends FormattableColumnTranslator {
+public class StringColumnTranslator extends FormattableColumnTranslator implements ColumnWriter {
 
   public StringColumnTranslator() {
   }
@@ -45,6 +48,16 @@ public class StringColumnTranslator extends FormattableColumnTranslator {
   @Override
   public String translate(JdbcResultRow rs, String columnName) throws SQLException, IOException {
     return toString(rs.getFieldValue(columnName));
+  }
+
+  @Override
+  public void write(JdbcResultRow rs, String columnName, Writer out) throws SQLException, IOException {
+    IOUtils.write(toString(rs.getFieldValue(columnName)), out);
+  }
+
+  @Override
+  public void write(JdbcResultRow rs, int column, Writer out) throws SQLException, IOException {
+    IOUtils.write(toString(rs.getFieldValue(column)), out);
   }
 
 }
