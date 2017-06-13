@@ -16,6 +16,7 @@
 
 package com.adaptris.core.services.jdbc.types;
 
+import java.io.StringWriter;
 import java.sql.Clob;
 
 import javax.sql.rowset.serial.SerialClob;
@@ -58,6 +59,7 @@ public class ClobColumnTranslatorTest extends TestCase {
     
     try {
       translator.translate(row, 0);
+      fail();
     } catch (Exception ex) {
       // pass, expected
     }
@@ -69,9 +71,34 @@ public class ClobColumnTranslatorTest extends TestCase {
     
     try {
       translator.translate(row, "testField");
+      fail();
     } catch (Exception ex) {
       // pass, expected
     }
   }
   
+  public void testClobWrite() throws Exception {
+    Clob clob = new SerialClob("SomeData".toCharArray());
+    JdbcResultRow row = new JdbcResultRow();
+    row.setFieldValue("testField", clob);
+
+    StringWriter writer = new StringWriter();
+    translator.write(row, 0, writer);
+    String translated = writer.toString();
+
+    assertEquals("SomeData", translated);
+  }
+
+  public void testClobWrite_ByName() throws Exception {
+    Clob clob = new SerialClob("SomeData".toCharArray());
+    JdbcResultRow row = new JdbcResultRow();
+    row.setFieldValue("testField", clob);
+
+    StringWriter writer = new StringWriter();
+    translator.write(row, "testField", writer);
+    String translated = writer.toString();
+
+    assertEquals("SomeData", translated);
+  }
+
 }

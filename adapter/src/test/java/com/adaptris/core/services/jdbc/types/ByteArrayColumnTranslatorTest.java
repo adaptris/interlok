@@ -69,19 +69,29 @@ public class ByteArrayColumnTranslatorTest extends TestCase {
     }
   }
   
-  public void testBlobWrite() throws Exception {
-    BlobColumnTranslator translator = new BlobColumnTranslator();
-    TestBlob blob = new TestBlob();
-    String myData = new String("SomeData");
-    blob.setBytes(0, myData.getBytes());
+  public void testBytesWrite() throws Exception {
 
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", blob);
+    row.setFieldValue("testField", "SomeData".getBytes());
 
     StringWriter writer = new StringWriter();
     translator.write(row, 0, writer);
     String translated = writer.toString();
 
     assertEquals("SomeData", translated);
+
+  }
+
+  public void testBytesWrite_ByName() throws Exception {
+
+    JdbcResultRow row = new JdbcResultRow();
+    row.setFieldValue("testField", "SomeData".getBytes());
+
+    StringWriter writer = new StringWriter();
+    translator.write(row, "testField", writer);
+    String translated = writer.toString();
+
+    assertEquals("SomeData", translated);
+
   }
 }
