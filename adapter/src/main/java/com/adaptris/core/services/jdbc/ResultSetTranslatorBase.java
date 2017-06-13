@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Adaptris Ltd.
+ * Copyright 2015 Adaptris Ltd.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,26 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 */
+
 package com.adaptris.core.services.jdbc;
 
-import java.sql.SQLException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ServiceException;
-import com.adaptris.jdbc.JdbcResult;
-import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.adaptris.core.CoreException;
 
-/**
- * Ignores the result set completely.
- * 
- * @config jdbc-noop-result-set-translator
- *
- */
-@XStreamAlias("jdbc-noop-result-set-translator")
-public class NoOpResultSetTranslator extends ResultSetTranslatorBase {
+public abstract class ResultSetTranslatorBase implements ResultSetTranslator {
+  protected transient Logger log = LoggerFactory.getLogger(this.getClass());
+
+  public ResultSetTranslatorBase() {
+    super();
+  }
+
 
   @Override
-  public void translate(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException {
-  }
+  public void init() throws CoreException {  }
+
+  @Override
+  public void start() throws CoreException {  }
+
+  @Override
+  public void stop() {  }
+
+  @Override
+  public void close() {  }
+
+  @Override
+  public void prepare() throws CoreException {  }
 
 }
