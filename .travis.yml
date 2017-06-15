@@ -2,6 +2,16 @@ language: java
 sudo: required
 dist: trusty
 
+before_script:
+  - echo "default.jdbc.storedproc.tests.enabled=true" >> adapter/build.properties
+  - echo "default.jdbc.storedproc.url=jdbc:mysql://localhost:3306/" >> adapter/build.properties
+  - echo "default.jdbc.storedproc.driver=com.mysql.jdbc.Driver" >> adapter/build.properties
+  - echo "default.jdbc.storedproc.database=ci_travis" >> adapter/build.properties
+  - echo "default.jdbc.storedproc.username=root" >> adapter/build.properties
+  - echo "default.jdbc.storedproc.password=" >> adapter/build.properties
+  - echo "default.jdbc.storedproc.vendor=mysql" >> adapter/build.properties
+  - echo "default.jdbc.storedproc.teststatement=" >> adapter/build.properties
+
 script: ant -Divy.logging=default test
 
 addons:
@@ -19,6 +29,9 @@ after_success:
 
 jdk:
   - oraclejdk8
+
+services:
+  - mysql
 
 cache:
   apt: true
