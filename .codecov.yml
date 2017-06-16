@@ -1,0 +1,3 @@
+ignore:
+  - "**/core/management/**/*.class"
+  - "**/core/jdbc/DataSourceWrapper.class"
