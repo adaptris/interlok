@@ -36,6 +36,7 @@ import com.adaptris.security.exc.PasswordException;
 import com.adaptris.security.password.Password;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
+import com.adaptris.util.SimpleBeanUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -373,7 +374,9 @@ public class HttpsConnection extends HttpConnection {
         }
       }
       if (!matched) {
-        log.trace("Ignoring unsupported Property " + kvp.getKey());
+        if (!SimpleBeanUtil.callSetter(sslContextFactory, "set" + kvp.getKey(), kvp.getValue())) {
+          log.trace("Ignoring unsupported Property {}", kvp.getKey());
+        }
       }
     }
     return sslContextFactory;

@@ -40,6 +40,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.management.webserver.SecurityHandlerWrapper;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
+import com.adaptris.util.SimpleBeanUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -314,24 +315,6 @@ public class HttpConnection extends JettyConnection {
 
   }
 
-  private HttpConfiguration configure(final HttpConfiguration httpConfig) {
-    httpConfig.setSecureScheme("http");
-    httpConfig.setSecurePort(8443);
-    httpConfig.setOutputBufferSize(32768);
-    httpConfig.setOutputAggregationSize(8192);
-    httpConfig.setRequestHeaderSize(8192);
-    httpConfig.setResponseHeaderSize(8192);
-    httpConfig.setSendDateHeader(true);
-    httpConfig.setSendServerVersion(true);
-    httpConfig.setHeaderCacheSize(512);
-    httpConfig.setDelayDispatchUntilContent(true);
-    httpConfig.setMaxErrorDispatches(10);
-    httpConfig.setBlockingTimeout(-1);
-    httpConfig.setPersistentConnectionsEnabled(true);
-    return httpConfig;
-  }
-
-
   private int port;
   @Valid
   @AdvancedConfig
@@ -375,7 +358,9 @@ public class HttpConnection extends JettyConnection {
         }
       }
       if (!matched) {
-        log.trace("Ignoring unsupported Property " + kvp.getKey());
+        if (!SimpleBeanUtil.callSetter(cfg, "set" + kvp.getKey(), kvp.getValue())) {
+          log.trace("Ignoring unsupported Property {}", kvp.getKey());
+        }
       }
     }
     return cfg;
@@ -412,7 +397,9 @@ public class HttpConnection extends JettyConnection {
         }
       }
       if (!matched) {
-        log.trace("Ignoring unsupported Property " + kvp.getKey());
+        if (!SimpleBeanUtil.callSetter(connector, "set" + kvp.getKey(), kvp.getValue())) {
+          log.trace("Ignoring unsupported Property {}", kvp.getKey());
+        }
       }
     }
     return connector;

@@ -17,6 +17,7 @@ package com.adaptris.core.jdbc;
 
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
+import com.adaptris.util.SimpleBeanUtil;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 /**
@@ -331,6 +332,9 @@ public enum PooledConnectionProperties {
       PooledConnectionProperties connectionProperty = searchEnumIgnoreCase(kvp.getKey());
       if (connectionProperty != null) {
         connectionProperty.applyProperty(pool, kvp.getValue());
+      }
+      else {
+        SimpleBeanUtil.callSetter(pool, "set" + kvp.getKey(), kvp.getValue());
       }
     }
   }
