@@ -36,6 +36,7 @@ import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.jdbc.JdbcResult;
 import com.adaptris.jdbc.JdbcResultRow;
 import com.adaptris.jdbc.JdbcResultSet;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Takes the first result set, and the specified column (optional) and makes that the payload.
@@ -45,8 +46,9 @@ import com.adaptris.jdbc.JdbcResultSet;
  * 
  * @author lchan
  * 
- * 
+ * @config jdbc-simple-output
  */
+@XStreamAlias("jdbc-simple-output")
 public class SimplePayloadResultSetTranslator extends ResultSetTranslatorBase {
 
   private static final ColumnWriter DEFAULT_COLUMN_WRITER = new ColumnWriter() {
