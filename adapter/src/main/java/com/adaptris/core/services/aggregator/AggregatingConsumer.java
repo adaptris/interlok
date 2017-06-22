@@ -16,8 +16,9 @@
 
 package com.adaptris.core.services.aggregator;
 
-import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.ComponentLifecycle;
+import com.adaptris.core.ComponentLifecycleExtension;
 import com.adaptris.core.ServiceException;
 
 /**
@@ -26,7 +27,7 @@ import com.adaptris.core.ServiceException;
  * @author lchan
  * 
  */
-public interface AggregatingConsumer<T extends AggregatingConsumeService> extends AdaptrisComponent {
+public interface AggregatingConsumer<T extends AggregatingConsumeService> extends ComponentLifecycle, ComponentLifecycleExtension {
 
   /**
    * Perform the aggregation.

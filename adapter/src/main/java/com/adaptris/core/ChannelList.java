@@ -51,7 +51,8 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @XStreamAlias("channel-list")
 @AdapterComponent
 @ComponentProfile(summary = "A Collection of Channels", tag = "base")
-public class ChannelList extends AbstractCollection<Channel> implements AdaptrisComponent, List<Channel>,
+public class ChannelList extends AbstractCollection<Channel>
+    implements ComponentLifecycle, List<Channel>,
     ComponentLifecycleExtension {
   private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
@@ -65,6 +66,7 @@ public class ChannelList extends AbstractCollection<Channel> implements Adaptris
   @AdvancedConfig
   private ChannelLifecycleStrategy lifecycleStrategy;
 
+  @Deprecated
   private String uniqueId;
   
   /**
@@ -394,10 +396,22 @@ public class ChannelList extends AbstractCollection<Channel> implements Adaptris
     return channels.subList(fromIndex, toIndex);
   }
 
+  /**
+   * Not required as this component doesn't need to extend {@link AdaptrisComponent}
+   * 
+   * @deprecated since 3.6.3
+   */
+  @Deprecated
   public String getUniqueId() {
     return uniqueId;
   }
 
+  /**
+   * Not required as this component doesn't need to extend {@link AdaptrisComponent}
+   * 
+   * @deprecated since 3.6.3
+   */
+  @Deprecated
   public void setUniqueId(String uniqueId) {
     this.uniqueId = uniqueId;
   }

@@ -16,8 +16,8 @@
 
 package com.adaptris.core.services.aggregator;
 
-import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisConnection;
+import com.adaptris.core.ComponentLifecycle;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
@@ -36,8 +36,9 @@ public abstract class AggregatingConsumeServiceImpl<E extends AdaptrisConnection
   public AggregatingConsumeServiceImpl() {
   }
 
-  protected void start(AdaptrisComponent ac) throws ServiceException {
+  protected void start(ComponentLifecycle ac) throws ServiceException {
     try {
+      LifecycleHelper.prepare(ac);
       LifecycleHelper.init(ac);
       LifecycleHelper.start(ac);
     }
@@ -46,7 +47,7 @@ public abstract class AggregatingConsumeServiceImpl<E extends AdaptrisConnection
     }
   }
 
-  protected void stop(AdaptrisComponent ac) {
+  protected void stop(ComponentLifecycle ac) {
     LifecycleHelper.stop(ac);
     LifecycleHelper.close(ac);
   }

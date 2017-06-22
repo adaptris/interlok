@@ -57,7 +57,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "A Collection of Shared Components", tag = "base")
 @DisplayOrder(order = {"connections", "lifecycleStrategy", "debug"})
-public class SharedComponentList implements AdaptrisComponent, ComponentLifecycleExtension {
+public class SharedComponentList implements ComponentLifecycle, ComponentLifecycleExtension {
 
   private static final DefaultLifecycleStrategy DEFAULT_STRATEGY = new DefaultLifecycleStrategy();
 
@@ -75,6 +75,7 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
   @Valid
   private SharedComponentLifecycleStrategy lifecycleStrategy;
   
+  @Deprecated
   private String uniqueId;
   private transient Set<String> connectionIds;
   private transient Set<String> serviceIds;
@@ -530,10 +531,22 @@ public class SharedComponentList implements AdaptrisComponent, ComponentLifecycl
     notYetInJndi.add(transactionManager.getUniqueId());
   }
 
+  /**
+   * Not required as this component doesn't need to extend {@link AdaptrisComponent}
+   * 
+   * @deprecated since 3.6.3
+   */
+  @Deprecated
   public String getUniqueId() {
     return uniqueId;
   }
 
+  /**
+   * Not required as this component doesn't need to extend {@link AdaptrisComponent}
+   * 
+   * @deprecated since 3.6.3
+   */
+  @Deprecated
   public void setUniqueId(String uniqueId) {
     this.uniqueId = uniqueId;
   }

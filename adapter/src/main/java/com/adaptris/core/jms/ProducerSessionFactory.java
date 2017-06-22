@@ -18,8 +18,9 @@ package com.adaptris.core.jms;
 
 import javax.jms.JMSException;
 
-import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.ComponentLifecycle;
+import com.adaptris.core.ComponentLifecycleExtension;
 
 /**
  * Handles the creation of a JMS Session and MessageProducer for {@link JmsProducerImpl} instances.
@@ -27,7 +28,7 @@ import com.adaptris.core.AdaptrisMessage;
  * @author lchan
  * 
  */
-public interface ProducerSessionFactory extends AdaptrisComponent {
+public interface ProducerSessionFactory extends ComponentLifecycle, ComponentLifecycleExtension {
 
   /**
    * Create or reuse an existing session.

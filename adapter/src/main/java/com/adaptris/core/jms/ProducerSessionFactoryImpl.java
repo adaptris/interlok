@@ -24,6 +24,7 @@ import javax.jms.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.CoreException;
 
 /**
@@ -37,6 +38,7 @@ public abstract class ProducerSessionFactoryImpl implements ProducerSessionFacto
   protected transient Logger log = LoggerFactory.getLogger(this.getClass());
   protected transient ProducerSession session = null;
 
+  @Deprecated
   private String uniqueId;
   
   @Override
@@ -117,10 +119,22 @@ public abstract class ProducerSessionFactoryImpl implements ProducerSessionFacto
     }
   }
 
+  /**
+   * Not required as this component doesn't need to extend {@link AdaptrisComponent}
+   * 
+   * @deprecated since 3.6.3
+   */
+  @Deprecated
   public String getUniqueId() {
     return uniqueId;
   }
 
+  /**
+   * Not required as this component doesn't need to extend {@link AdaptrisComponent}
+   * 
+   * @deprecated since 3.6.3
+   */
+  @Deprecated
   public void setUniqueId(String uniqueId) {
     this.uniqueId = uniqueId;
   }

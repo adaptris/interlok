@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.CoreException;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -48,6 +49,7 @@ public class InlineItemCache implements ProcessedItemCache {
   @AdvancedConfig
   private TimeInterval ageBeforeEviction;
   
+  @Deprecated
   private String uniqueId;
 
   public InlineItemCache() {
@@ -142,10 +144,22 @@ public class InlineItemCache implements ProcessedItemCache {
   @Override
   public void prepare() throws CoreException {}
 
+  /**
+   * Not required as this component doesn't need to extend {@link AdaptrisComponent}
+   * 
+   * @deprecated since 3.6.3
+   */
+  @Deprecated
   public String getUniqueId() {
     return uniqueId;
   }
 
+  /**
+   * Not required as this component doesn't need to extend {@link AdaptrisComponent}
+   * 
+   * @deprecated since 3.6.3
+   */
+  @Deprecated
   public void setUniqueId(String uniqueId) {
     this.uniqueId = uniqueId;
   }
