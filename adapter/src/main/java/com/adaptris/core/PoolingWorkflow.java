@@ -254,12 +254,7 @@ public class PoolingWorkflow extends WorkflowImp {
     LifecycleHelper.start(getProducer());
     createObjectPool();
     populatePool();
-    try {
-      friendlyWorkflowName = getConsumer().getDestination().getDeliveryThreadName();
-    }
-    catch (Exception e) {
-      friendlyWorkflowName = this.getClass().getSimpleName();
-    }
+    friendlyWorkflowName = friendlyName();
     LifecycleHelper.start(getConsumer());
   }
 
@@ -731,7 +726,7 @@ public class PoolingWorkflow extends WorkflowImp {
     }
 
     private String getThreadName() {
-      return currentThreadName + "@T-" + Integer.toHexString(Thread.currentThread().hashCode());
+      return currentThreadName + "(" + Integer.toHexString(Thread.currentThread().hashCode()) + ")";
     }
   }
 

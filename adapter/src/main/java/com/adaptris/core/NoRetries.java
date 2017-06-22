@@ -21,6 +21,7 @@ import java.util.Collection;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.core.util.LoggingHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -76,4 +77,10 @@ public class NoRetries implements FailedMessageRetrier {
   public void setUniqueId(String uniqueId) {
     this.uniqueId = uniqueId;
   }
+
+  @Override
+  public String friendlyName() {
+    return LoggingHelper.friendlyName(this);
+  }
+
 }

@@ -45,4 +45,11 @@ public interface AdaptrisMessageListener {
    * @param msg the <code>AdaptrisMessage</code> to process
    */
   void onAdaptrisMessage(AdaptrisMessage msg);
+
+  /**
+   * Get the friendly name for this component.
+   * 
+   * @return the friendly name.
+   */
+  String friendlyName();
 }

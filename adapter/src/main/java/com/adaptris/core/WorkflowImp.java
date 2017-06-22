@@ -458,6 +458,10 @@ public abstract class WorkflowImp implements Workflow {
     return uniqueId;
   }
 
+  public String friendlyName() {
+    return obtainWorkflowId();
+  }
+
   /**
    * <p>
    * Sets the <code>ServiceCollection</code> to use. May not be null.

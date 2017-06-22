@@ -163,15 +163,15 @@ public class PollingTrigger extends AdaptrisPollingConsumer {
   @Override
   protected String renameThread() {
     String oldName = Thread.currentThread().getName();
-
-    StringBuffer newName = new StringBuffer();
+    String newName = DEFAULT_DEST.getDeliveryThreadName();
     if (super.getDestination() != null) {
-      newName.append(super.getDestination().getDeliveryThreadName());
+      newName = super.getDestination().getDeliveryThreadName();
     }
-    else {
-      newName.append(DEFAULT_DEST.getDeliveryThreadName());
+    if (newName == null) {
+      newName = retrieveAdaptrisMessageListener().friendlyName();
     }
-    Thread.currentThread().setName(newName.toString());
+    
+    Thread.currentThread().setName(newName);
     return oldName;
   }
 
