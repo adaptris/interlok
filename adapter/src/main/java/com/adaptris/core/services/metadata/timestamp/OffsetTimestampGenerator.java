@@ -22,6 +22,7 @@ import java.util.Date;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.metadata.AddTimestampMetadataService;
@@ -37,6 +38,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("offset-timestamp-generator")
 public class OffsetTimestampGenerator implements TimestampGenerator {
 
+  @InputFieldHint(expression = true)
   private String offset;
 
   public OffsetTimestampGenerator() {
@@ -56,7 +58,7 @@ public class OffsetTimestampGenerator implements TimestampGenerator {
     try {
       if (!isBlank(offset)) {
         Duration duration;
-        duration = DatatypeFactory.newInstance().newDuration(offset);
+        duration = DatatypeFactory.newInstance().newDuration(msg.resolve(offset));
         duration.addTo(timestamp);
       }
     } catch (Exception e) {
