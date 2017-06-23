@@ -16,6 +16,7 @@
 
 package com.adaptris.core.common;
 
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.interlok.InterlokException;
 import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
@@ -37,6 +38,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("constant-data-input-parameter")
 public class ConstantDataInputParameter implements DataInputParameter<String> {
 
+  @InputFieldHint(expression = true)
   private String value;
   
   public ConstantDataInputParameter() {
@@ -49,7 +51,7 @@ public class ConstantDataInputParameter implements DataInputParameter<String> {
 
   @Override
   public String extract(InterlokMessage m) throws InterlokException {
-    return getValue();
+    return m.resolve(getValue());
   }
 
 
