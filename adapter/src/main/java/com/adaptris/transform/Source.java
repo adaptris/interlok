@@ -538,22 +538,6 @@ public class Source {
     this.byteStream = null;
   }
 
-  /** @see Object#toString()
-   * <p>Returns a string representation of the class.</p>
-   */
-  public String toString() {
-    return (
-      getClass().getName()
-        + ':'
-        + this.url
-        + ':'
-        + this.charStream
-        + ':'
-        + this.byteStream
-        + '@'
-        + Integer.toHexString(hashCode()));
-  }
-
   // //////////////////////////////////////
   //  private  methods
   // //////////////////////////////////////

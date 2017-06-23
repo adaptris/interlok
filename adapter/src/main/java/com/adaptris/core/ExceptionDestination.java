@@ -78,20 +78,6 @@ public class ExceptionDestination implements MessageDrivenDestination {
     return destinationName;
   }
 
-  @Override
-  public String toString() {
-    StringBuffer result = new StringBuffer();
-    result.append("[");
-    result.append(this.getClass().getName());
-    result.append("] mappings [");
-    result.append(exceptionMapping);
-    result.append("] default destination [");
-    result.append(defaultDestination);
-    result.append("]");
-
-    return result.toString();
-  }
-
   public KeyValuePairCollection getExceptionMapping() {
     return exceptionMapping;
   }

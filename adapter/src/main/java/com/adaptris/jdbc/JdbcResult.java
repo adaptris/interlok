@@ -105,19 +105,4 @@ public class JdbcResult implements Closeable {
     }
     JdbcUtil.closeQuietly(getStatement());
   }
-
-  public String toString() {
-    StringBuffer buffer = new StringBuffer();
-    buffer.append(this.getClass().getSimpleName() + "\n");
-    buffer.append("HasResultSet = " + this.isHasResultSet() + "\n");
-    buffer.append("Parameters;\n");
-    for(StoredProcedureParameter param : this.getParameters())
-      buffer.append("\t" + param.toString() + "\n");
-    buffer.append("ResultSets;\n");
-    for(JdbcResultSet resultSet : this.getResultSets())
-      buffer.append("\t" + resultSet.toString() + "\n");
-    
-    return buffer.toString();
-  }
-
 }

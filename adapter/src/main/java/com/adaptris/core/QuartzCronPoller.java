@@ -396,25 +396,6 @@ public class QuartzCronPoller extends PollerImp {
     cronExpression = s;
   }
 
-  /** @see java.lang.Object#toString() */
-  @Override
-  public String toString() {
-    StringBuffer result = new StringBuffer();
-    result.append(super.toString());
-    result.append(" consumer [");
-
-    if (retrieveConsumer() == null) {
-      result.append("null");
-    }
-    else {
-      result.append(retrieveConsumer().getClass().getName());
-    }
-
-    result.append("]");
-
-    return result.toString();
-  }
-
   public String getName() {
     return registeredQuartzId;
   }

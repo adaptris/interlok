@@ -208,21 +208,6 @@ public class FsConsumer extends FsConsumerImpl {
   }
 
   /**
-   * @see java.lang.Object#toString()
-   */
-  @Override
-  public String toString() {
-    StringBuffer result = new StringBuffer();
-    result.append(super.toString());
-    result.append("] wip suffix=[");
-    result.append(wipSuffix);
-    result.append("] reset wip files=[");
-    result.append(resetWipFiles());
-    result.append("]");
-    return result.toString();
-  }
-
-  /**
    * <p>
    * Sets the work-in-progress suffix to use. May not be null or empty. This suffix is added to the original file name while the
    * file is being processed.

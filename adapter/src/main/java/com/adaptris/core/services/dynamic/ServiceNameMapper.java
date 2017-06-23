@@ -113,17 +113,6 @@ public class ServiceNameMapper {
     return result;
   }
 
-  /** @see java.lang.Object#toString() */
-  @Override
-  public String toString() {
-    StringBuffer result = new StringBuffer(this.getClass().getName());
-    result.append(" name [");
-    result.append(getServiceName());
-    result.append("[ trading relationship - ");
-    result.append(getServiceName());
-
-    return result.toString();
-  }
 
   // getters & setters...
 

@@ -119,15 +119,6 @@ public class CopyMetadataService extends ServiceImp {
     this.metadataKeys = m;
   }
 
-  /** @see java.lang.Object#toString() */
-  @Override
-  public String toString() {
-    StringBuffer result = new StringBuffer(super.toString());
-    result.append(this.getMetadataKeys());
-
-    return result.toString();
-  }
-
   @Override
   public void prepare() throws CoreException {
   }

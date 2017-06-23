@@ -21,6 +21,9 @@ import java.security.MessageDigest;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.ParseException;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 import com.adaptris.util.text.Conversion;
 
 /**
@@ -62,9 +65,8 @@ public class MailContent {
 
   @Override
   public String toString() {
-    return "[" + this.getClass() + "] ContentType=[" + getContentType()
-        + "] Payload(MD5)=["
-        + (payloadHash == null ? "Not available" : payloadHash) + "]";
+    return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("ContentType", getContentType())
+        .append("payloadHash", payloadHash).toString();
   }
 
   private static String calculateHash(byte[] b) {

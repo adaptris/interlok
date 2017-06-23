@@ -107,18 +107,6 @@ public class ProcessorHandle {
     return this.aware;
   }
 
-  /**
-   *  @see java.lang.Object#toString()
-   */
-  public String toString() {
-    return (
-      getClass().getName()
-        + ':'
-        + getProcessorName()
-        + '@'
-        + Integer.toHexString(hashCode()));
-  }
-
   private void _setProcessorName(String processorName) {
     if (processorName != null)
       this.processorName = processorName.trim().toLowerCase();

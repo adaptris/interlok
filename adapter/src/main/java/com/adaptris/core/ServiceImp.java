@@ -17,7 +17,6 @@
 package com.adaptris.core;
 
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
-import static org.apache.commons.lang.StringUtils.isBlank;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,22 +100,6 @@ public abstract class ServiceImp implements Service {
   @Override
   public String createQualifier() {
     return defaultIfEmpty(getUniqueId(), "");
-  }
-
-  @Override
-  public String toString() {
-    StringBuffer result = new StringBuffer();
-    result.append("[");
-    result.append(this.getClass().getName());
-    if (!isBlank(getUniqueId())) {
-      result.append("] unique ID [");
-      result.append(getUniqueId());
-    }
-    result.append("] continue on fail [");
-    result.append(getContinueOnFail());
-    result.append("]");
-
-    return result.toString();
   }
 
   @Override

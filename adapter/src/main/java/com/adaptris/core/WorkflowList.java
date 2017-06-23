@@ -141,25 +141,6 @@ public final class WorkflowList extends AbstractCollection<Workflow>
     return getLifecycleStrategy() != null ? getLifecycleStrategy() : defaultStrategy;
   }
 
-  // /** @see java.lang.Object#toString() */
-  // @Override
-  // public String toString() {
-  // StringBuffer result = new StringBuffer();
-  //
-  // result.append("[");
-  // result.append(this.getClass().getName());
-  // result.append("] ");
-  //
-  // result.append("count [" + workflows.size() + "] ");
-  //
-  // for (int i = 0; i < workflows.size(); i++) {
-  // result.append("\n\nworkflow [" + (i + 1) + "] ");
-  // result.append(workflows.get(i));
-  // }
-  //
-  // return result.toString();
-  // }
-
   /**
    * <p>
    * Returns a <code>List</code> of <code>Workflow</code>s.

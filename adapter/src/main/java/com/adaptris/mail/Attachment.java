@@ -16,6 +16,8 @@
 
 package com.adaptris.mail;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,6 +93,8 @@ public final class Attachment {
    */
   @Override
   public String toString() {
-    return "filename [" + filename + "] content-type [" + contentType + "]";
+    return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("filename", getFilename())
+        .append("contentType", getContentType())
+        .toString();
   }
 }

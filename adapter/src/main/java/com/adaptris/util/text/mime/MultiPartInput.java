@@ -421,14 +421,5 @@ public class MultiPartInput implements Enumeration, Iterator {
       return contentId.hashCode();
     }
 
-    /**
-     *
-     * @see java.lang.Object#toString()
-     *
-     */
-    @Override
-    public String toString() {
-      return super.toString() + " Content-Id=[" + contentId + "]";
-    }
   }
 }

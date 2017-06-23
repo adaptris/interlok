@@ -20,6 +20,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -188,18 +191,12 @@ public class MessageLifecycleEvent extends Event implements Cloneable, Serializa
     return workflowId;
   }
 
-  /** @see java.lang.Object#toString() */
   @Override
   public String toString() {
-    StringBuffer result = new StringBuffer();
-
-    result.append(super.toString());
-    result.append(" message id [");
-    result.append(messageUniqueId);
-    result.append("] message events ");
-    result.append(mleMarkers);
-
-    return result.toString();
+    return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("id", getMessageUniqueId())
+        .append("channelID", getChannelId())
+        .append("workflowID", getWorkflowId())
+        .append("messageEvents", getMleMarkers()).toString();
   }
 
   @Override

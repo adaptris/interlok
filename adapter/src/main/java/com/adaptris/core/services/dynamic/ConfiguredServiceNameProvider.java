@@ -67,15 +67,6 @@ public class ConfiguredServiceNameProvider extends ServiceNameProviderImp {
     return result;
   }
 
-  /** @see java.lang.Object#toString() */
-  @Override
-  public String toString() {
-    StringBuffer result = new StringBuffer(this.getClass().getName());
-    result.append(" ");
-    result.append(this.getServiceNameMappers());
-
-    return result.toString();
-  }
 
   // properties
 

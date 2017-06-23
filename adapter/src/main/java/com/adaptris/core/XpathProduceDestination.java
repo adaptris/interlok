@@ -115,16 +115,6 @@ public class XpathProduceDestination implements MessageDrivenDestination {
     return hc;
   }
 
-  /** @see java.lang.Object#toString() */
-  @Override
-  public String toString() {
-    StringBuffer sb = new StringBuffer();
-    sb.append("[").append(this.getClass().getName());
-    sb.append("=[xpath=[").append(xpath).append("],default=[");
-    sb.append(defaultDestination).append("]]");
-    return sb.toString();
-  }
-
   /**
    * @see ProduceDestination#getDestination(com.adaptris.core.AdaptrisMessage)
    */

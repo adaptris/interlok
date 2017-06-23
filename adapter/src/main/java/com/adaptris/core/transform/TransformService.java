@@ -158,21 +158,6 @@ public abstract class TransformService extends ServiceImp {
   public void prepare() throws CoreException {
   }
 
-
-  /** @see java.lang.Object#toString() */
-  @Override
-  public String toString() {
-    StringBuffer result = new StringBuffer();
-
-    result.append("[");
-    result.append(this.getClass().getName());
-    result.append("] url [");
-    result.append(url);
-    result.append("]");
-
-    return result.toString();
-  }
-
   /**
    * <p>
    * Sets the URL of the transformation style sheet.

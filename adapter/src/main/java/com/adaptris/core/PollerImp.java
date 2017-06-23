@@ -55,14 +55,6 @@ public abstract class PollerImp implements Poller {
     consumer = c;
   }
 
-  /** @see java.lang.Object#toString() */
-  @Override
-  public String toString() {
-    StringBuffer result = new StringBuffer();
-    result.append(this.getClass().getName());
-
-    return result.toString();
-  }
 
   /**
    * <p>

@@ -96,21 +96,6 @@ public class MetadataTradingRelationshipCreator
     return result;
   }
 
-  /** @see java.lang.Object#toString() */
-  @Override
-  public String toString() {
-    StringBuffer result = new StringBuffer(this.getClass().getName());
-    result.append(" source key [");
-    result.append(this.getSourceKey());
-    result.append("] destination key [");
-    result.append(this.getDestinationKey());
-    result.append("] type key [");
-    result.append(this.getTypeKey());
-    result.append("]");
-
-    return result.toString();
-  }
-
   // getters & setters...
 
   /**

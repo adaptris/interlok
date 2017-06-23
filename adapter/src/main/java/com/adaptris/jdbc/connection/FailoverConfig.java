@@ -23,6 +23,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 /**
  * Class that is used to configure a failover database connection.
  *
@@ -254,26 +257,15 @@ public final class FailoverConfig implements Cloneable {
     return hashcode;
   }
 
-  /**
-   * @see java.lang.Object#toString()
-   */
   @Override
   public String toString() {
-    StringBuffer sb = new StringBuffer(this.getClass().getSimpleName());
-    sb.append("[");
-    sb.append(getDatabaseDriver());
-    sb.append("] [");
-    sb.append(getConnectionUrls());
-    sb.append("] testStatement [");
-    sb.append(getTestStatement());
-    sb.append("] debug [");
-    sb.append(getDebugMode());
-    sb.append("] autoCommit [");
-    sb.append(getAutoCommit());
-    sb.append("] alwaysValidate [");
-    sb.append(getAlwaysValidateConnection());
-    sb.append("]");
-    return sb.toString();
+    return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("driver", getDatabaseDriver())
+        .append("connectionUrls", getConnectionUrls())
+        .append("testStatement", getTestStatement())
+        .append("debugMode", getDebugMode())
+        .append("autoCommit", getAutoCommit())
+        .append("alwaysValidate", getAlwaysValidateConnection())
+        .toString();
   }
 
   /**

@@ -155,14 +155,6 @@ public class MapMetadataService extends ServiceImp {
     this.metadataKeyMap = m;
   }
 
-  /** @see java.lang.Object#toString() */
-  @Override
-  public String toString() {
-    StringBuffer result = new StringBuffer(super.toString());
-    result.append(this.getMetadataKeyMap());
-    return result.toString();
-  }
-
   /**
    * @return the metadataKey
    */

@@ -311,12 +311,6 @@ public class TcpSocketTransport extends Transport implements SocketConstants {
     }
   }
 
-  @Override
-  public String toString() {
-    return this.getClass().getSimpleName() + " [blockSize=" + blockSize + ", config=" + config + ", host=" + host + ", listenPort="
-        + listenPort + ", port=" + port + ", serverSocket=" + serverSocket + ", socketTimeout=" + socketTimeout + "]";
-  }
-
   /**
    * Print informatino about the socket.
    *

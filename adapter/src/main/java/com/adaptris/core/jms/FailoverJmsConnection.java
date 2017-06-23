@@ -190,19 +190,6 @@ public class FailoverJmsConnection extends JmsConnection {
     current.createConnection(factory);
   }
 
-  /** @see java.lang.Object#toString() */
-  @Override
-  public String toString() {
-    StringBuffer result = new StringBuffer();
-    result.append("[").append(this.getClass().getName()).append(
-        "] connections=[");
-    for (Iterator i = connections.iterator(); i.hasNext();) {
-      result.append("[" + i.next().toString() + "]");
-    }
-    result.append("]");
-    return result.toString();
-  }
-
   public List<JmsConnection> getConnections() {
     return connections;
   }

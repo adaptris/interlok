@@ -20,6 +20,8 @@ import java.io.Serializable;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -197,23 +199,18 @@ public class MleMarker implements Cloneable, Serializable {
     return super.clone();
   }
 
-  /** @see java.lang.Object#toString() */
   @Override
   public String toString() {
-    StringBuffer result = new StringBuffer();
-    result.append("[");
-    result.append(this.getClass().getName());
-    result.append("] name [");
-    result.append(name);
-    result.append("] qualifier [");
-    result.append(qualifier);
-    result.append("] was successful [");
-    result.append(wasSuccessful);
-    result.append("] unique id [");
-    result.append(uniqueId);
-    result.append("]");
-
-    return result.toString();
+    return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("id", getUniqueId())
+        .append("name", getName())
+        .append("qualifier", getQualifier())
+        .append("creationTime", getCreationTime())
+        .append("wasSuccessful", getWasSuccessful())
+        .append("sequenceNumber", getSequenceNumber())
+        .append("confirmationId", getConfirmationId())
+        .append("isConfirmation", getIsConfirmation())
+        .append("isTrackingEndpoint", getIsTrackingEndpoint())
+        .toString();
   }
 
   /** @see java.lang.Object#equals(java.lang.Object) */
