@@ -20,6 +20,7 @@ addons:
       - oracle-java8-installer
       - oracle-java8-unlimited-jce-policy
       - haveged
+      - ant-optional
 
 before_install:
   - sudo service haveged start
