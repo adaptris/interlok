@@ -145,24 +145,31 @@ public class XpathSplitterTest extends SplitterCase {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_MESSAGE);
     String obj = "ABCDEFG";
     msg.addObjectHeader(obj, obj);
-    XpathMessageSplitter splitter = new XpathMessageSplitter(ENVELOPE_DOCUMENT, ENCODING_UTF8);
-    List<AdaptrisMessage> result = splitter.splitMessage(msg);
-    assertEquals("Number of messages", 3, result.size());
-    for (AdaptrisMessage m : result) {
-      assertFalse("No Object Metadata", m.getObjectHeaders().containsKey(obj));
+    XpathMessageSplitter splitter = new XpathMessageSplitter(ENVELOPE_DOCUMENT);
+    int count = 0;
+    try (CloseableIterable<AdaptrisMessage> closeable = splitter.splitMessage(msg)) {
+      for (AdaptrisMessage m : closeable) {
+        assertFalse("No Object Metadata", m.getObjectHeaders().containsKey(obj));
+        count++;
+      }
     }
+    assertEquals("Number of messages", 3, count);
+
   }
 
   public void testSplit_AlternativeMessageFactory() throws Exception {
-    AdaptrisMessage msg = new StubMessageFactory().newMessage(XML_MESSAGE);
+    AdaptrisMessage msg = new StubMessageFactory().newMessage(XML_MESSAGE, ENCODING_UTF8);
     String obj = "ABCDEFG";
     msg.addObjectHeader(obj, obj);
-    XpathMessageSplitter splitter = new XpathMessageSplitter(ENVELOPE_DOCUMENT, ENCODING_UTF8);
-    List<AdaptrisMessage> result = splitter.splitMessage(msg);
-    assertEquals("Number of messages", 3, result.size());
-    for (AdaptrisMessage m : result) {
-      assertEquals(StubMessageFactory.class, m.getFactory().getClass());
+    XpathMessageSplitter splitter = new XpathMessageSplitter(ENVELOPE_DOCUMENT);
+    int count = 0;
+    try (CloseableIterable<AdaptrisMessage> closeable = splitter.splitMessage(msg)) {
+      for (AdaptrisMessage m : closeable) {
+        assertEquals(StubMessageFactory.class, m.getFactory().getClass());
+        count++;
+      }
     }
+    assertEquals("Number of messages", 3, count);
   }
 
   public void testSplitWithObjectMetadata() throws Exception {
@@ -171,12 +178,15 @@ public class XpathSplitterTest extends SplitterCase {
     msg.addObjectHeader(obj, obj);
     XpathMessageSplitter splitter = new XpathMessageSplitter(ENVELOPE_DOCUMENT, ENCODING_UTF8);
     splitter.setCopyObjectMetadata(true);
-    List<AdaptrisMessage> result = splitter.splitMessage(msg);
-    assertEquals("Number of messages", 3, result.size());
-    for (AdaptrisMessage m : result) {
-      assertTrue("Object Metadata", m.getObjectHeaders().containsKey(obj));
-      assertEquals(obj, m.getObjectHeaders().get(obj));
+    int count = 0;
+    try (CloseableIterable<AdaptrisMessage> closeable = splitter.splitMessage(msg)) {
+      for (AdaptrisMessage m : closeable) {
+        assertTrue("Object Metadata", m.getObjectHeaders().containsKey(obj));
+        assertEquals(obj, m.getObjectHeaders().get(obj));
+        count++;
+      }
     }
+    assertEquals("Number of messages", 3, count);
   }
 
   public void testSplitThrowsException() throws Exception {
@@ -184,11 +194,13 @@ public class XpathSplitterTest extends SplitterCase {
     msg.setContent(XML_MESSAGE, msg.getContentEncoding());
     XpathMessageSplitter splitter = new XpathMessageSplitter(ENVELOPE_DOCUMENT, ENCODING_UTF8);
     splitter.setMessageFactory(new DefectiveMessageFactory());
-    try {
-      List<AdaptrisMessage> result = splitter.splitMessage(msg);
-      fail();
+    try (CloseableIterable<AdaptrisMessage> closeable = splitter.splitMessage(msg)) {
+      int count = 0;
+      for (AdaptrisMessage m : closeable) {
+        count++;
+      }
     }
-    catch (CoreException expected) {
+    catch (RuntimeException expected) {
 
     }
   }
@@ -200,15 +212,18 @@ public class XpathSplitterTest extends SplitterCase {
     String srcValue = srcXpath.selectSingleTextItem(srcXml, ISSUE_2658_SRC_XPATH);
 
     XpathMessageSplitter splitter = new XpathMessageSplitter(ISSUE_2658_XPATH, "UTF-8");
-    List<AdaptrisMessage> result = splitter.splitMessage(msg);
-    assertEquals("Number of messages", 2, result.size());
 
-    for (AdaptrisMessage m : result) {
-      Document destXml = createDocument(m.getPayload());
-      XPath destXpath = new XPath();
-      String destValue = destXpath.selectSingleTextItem(destXml, ISSUE_2658_DEST_XPATH);
-      assertEquals(srcValue, destValue);
+    int count = 0;
+    try (CloseableIterable<AdaptrisMessage> closeable = splitter.splitMessage(msg)) {
+      for (AdaptrisMessage m : closeable) {
+        Document destXml = createDocument(m.getPayload());
+        XPath destXpath = new XPath();
+        String destValue = destXpath.selectSingleTextItem(destXml, ISSUE_2658_DEST_XPATH);
+        assertEquals(srcValue, destValue);
+        count++;
+      }
     }
+    assertEquals("Number of messages", 2, count);
   }
 
   public void testDoServiceWithXmlSplitter() throws Exception {
@@ -222,9 +237,14 @@ public class XpathSplitterTest extends SplitterCase {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XpathMetadataServiceTest.XML_WITH_NAMESPACE);
     XpathMessageSplitter splitter = new XpathMessageSplitter("/svrl:schematron-output/svrl:failed-assert", "UTF-8");
     splitter.setNamespaceContext(XpathMetadataServiceTest.createContextEntries());
-    List<AdaptrisMessage> result = splitter.splitMessage(msg);
     // Should be 2 splits
-    assertEquals("Number of messages", 2, result.size());
+    int count = 0;
+    try (CloseableIterable<AdaptrisMessage> closeable = splitter.splitMessage(msg)) {
+      for (AdaptrisMessage m : closeable) {
+        count++;
+      }
+    }
+    assertEquals("Number of messages", 2, count);
   }
 
   public void testSplit_DocTypeNotAllowed() throws Exception {
@@ -235,7 +255,7 @@ public class XpathSplitterTest extends SplitterCase {
     builder.getFeatures().add(new KeyValuePair("http://apache.org/xml/features/disallow-doctype-decl", "true"));
     splitter.setXmlDocumentFactoryConfig(builder);
     try {
-      List<AdaptrisMessage> result = splitter.splitMessage(msg);
+      splitter.splitMessage(msg);
       fail();
     } catch (CoreException expected) {
       assertTrue(expected.getMessage().contains("DOCTYPE is disallowed"));
