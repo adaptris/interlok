@@ -199,7 +199,7 @@ public class XmlHelper {
   private static DocumentBuilder newDocumentBuilder(DocumentBuilderFactoryBuilder cfg) throws ParserConfigurationException {
     DocumentBuilderFactoryBuilder b = defaultIfNull(cfg);
     DocumentBuilderFactory domFactory = b.configure(DocumentBuilderFactory.newInstance());
-    DocumentBuilder builder = domFactory.newDocumentBuilder();
+    DocumentBuilder builder = cfg.configure(domFactory.newDocumentBuilder());
     builder.setErrorHandler(new DefaultErrorHandler());
     return builder;
   }
