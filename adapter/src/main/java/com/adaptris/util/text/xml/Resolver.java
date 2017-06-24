@@ -55,15 +55,16 @@ public class Resolver implements EntityResolver, URIResolver {
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
-  private transient HashMap hm = new FixedSizeMap();
+  private transient HashMap<String, StringBuffer> hm = new FixedSizeMap<String, StringBuffer>();
 
   @AdvancedConfig
   @InputFieldDefault(value = "50")
   private Integer maxDestinationCacheSize;
 
 
-  private void cache(URL url) throws Exception {
+  private String retrieveAndCache(URL url) throws Exception {
     String key = url.toExternalForm();
+    String result = null;
     if (!hm.containsKey(key)) {
       URLConnection urlConn = url.openConnection();
       InputStream inputStream = urlConn.getInputStream();
@@ -76,7 +77,13 @@ public class Resolver implements EntityResolver, URIResolver {
       }
       log.trace("Retrieved and cached {}", key);
       hm.put(key, sb);
+      result = sb.toString();
     }
+    else {
+      log.trace("Resolve from cache {}", key);
+      result = hm.get(key).toString();
+    }
+    return result;
   }
 
   /**
@@ -89,15 +96,13 @@ public class Resolver implements EntityResolver, URIResolver {
     InputSource result = null;
     try {
       URL myUrl = new URL(systemId); // throws MalformedURLException
-      cache(myUrl);
-      StringBuffer tmp = (StringBuffer) hm.get(myUrl.toExternalForm());
-      InputSource ret = new InputSource(new StringReader(tmp.toString()));
+      InputSource ret = new InputSource(new StringReader(retrieveAndCache(myUrl)));
       ret.setPublicId(publicId);
       ret.setSystemId(systemId);
       result = ret;
     }
     catch (Exception e) {
-      log.trace("Couldn't handle {}, fallback to default parser behaviour", systemId);
+      log.trace("Couldn't handle [{}][{}], fallback to default parser behaviour", publicId, systemId);
       result = null;
     }
     return result;
@@ -108,6 +113,8 @@ public class Resolver implements EntityResolver, URIResolver {
    */
   @Override
   public Source resolve(String href, String base) throws TransformerException {
+    log.trace("Resolving [{}][{}]", href, base);
+    StreamSource result = null;
     try {
 
       URL myUrl = null;
@@ -121,19 +128,14 @@ public class Resolver implements EntityResolver, URIResolver {
         String url = base.substring(0, end + 1);
         myUrl = new URL(url + href);
       }
-
-      cache(myUrl);
-
-      StringBuffer tmp = (StringBuffer) hm.get(myUrl.toExternalForm());
-      StreamSource ret = new StreamSource(new StringReader(tmp.toString()),
-          myUrl.toExternalForm());
-
-      return ret;
+      StreamSource ret = new StreamSource(new StringReader(retrieveAndCache(myUrl)), myUrl.toExternalForm());
+      result = ret;
     }
     catch (Exception e) {
-      throw new TransformerException("Failed to resolve href=" + href
-          + ", base=" + base, e);
+      log.trace("Couldn't handle [{}][{}], fallback to default parser behaviour", href, base);
+      result = null;
     }
+    return result;
   }
 
   /**
@@ -159,6 +161,10 @@ public class Resolver implements EntityResolver, URIResolver {
 
   public int maxDestinationCacheSize() {
     return getMaxDestinationCacheSize() != null ? getMaxDestinationCacheSize().intValue() : DEFAULT_MAX_CACHE_SIZE;
+  }
+
+  int size() {
+    return hm.size();
   }
 
   private class FixedSizeMap<K, V> extends LinkedHashMap<K, V> {

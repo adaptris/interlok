@@ -229,7 +229,7 @@ public class XpathMessageSplitter extends MessageSplitterImp {
       }
       DocumentBuilderFactory docBuilderFactory = factoryBuilder.configure(DocumentBuilderFactory.newInstance());
       xml = new XmlUtils(namespaceCtx, docBuilderFactory);
-      docBuilder = docBuilderFactory.newDocumentBuilder();
+      docBuilder = factoryBuilder.configure(docBuilderFactory.newDocumentBuilder());
       nodeList = resolveXpath(originalMessage, namespaceCtx, factoryBuilder);
       encoding = evaluateEncoding(originalMessage);
       nodeListIndex = 0;

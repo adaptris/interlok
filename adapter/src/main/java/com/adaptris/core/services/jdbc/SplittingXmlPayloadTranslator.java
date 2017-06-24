@@ -198,7 +198,7 @@ public class SplittingXmlPayloadTranslator extends XmlPayloadTranslatorImpl {
   private DocumentWrapper toDocument(AdaptrisMessage msg, JdbcResultSet rSet) throws ParserConfigurationException, SQLException {
     DocumentBuilderFactoryBuilder factoryBuilder = documentFactoryBuilder(msg);
     DocumentBuilderFactory factory = factoryBuilder.configure(DocumentBuilderFactory.newInstance());
-    DocumentBuilder builder = factory.newDocumentBuilder();
+    DocumentBuilder builder = factoryBuilder.configure(factory.newDocumentBuilder());
     Document doc = builder.newDocument();
     DocumentWrapper result = new DocumentWrapper(doc, 0);
     ColumnStyle elementNameStyle = getColumnNameStyle();

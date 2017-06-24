@@ -146,6 +146,12 @@ public class DocumentBuilderFactoryBuilder {
     return new DocumentBuilderFactoryBuilder().withNamespaceAware(true);
   }
 
+  /**
+   * Configure a document builder factory
+   * 
+   * @param f
+   * @return a reconfigured document builder factory
+   */
   public DocumentBuilderFactory configure(DocumentBuilderFactory f) throws ParserConfigurationException {
     for (FactoryConfiguration c : FactoryConfiguration.values()) {
       c.applyConfig(this, f);
@@ -153,11 +159,30 @@ public class DocumentBuilderFactoryBuilder {
     return f;
   }
 
-  public DocumentBuilder configure(DocumentBuilder docBuilder) {
+  /**
+   * Configure a document builder.
+   * 
+   * @param db
+   * @return a reconfigured document builder
+   */
+  public DocumentBuilder configure(DocumentBuilder db) {
     if (getEntityResolver() != null) {
-      docBuilder.setEntityResolver(getEntityResolver());
+      db.setEntityResolver(getEntityResolver());
     }
-    return docBuilder;
+    return db;
+  }
+
+  /**
+   * Convenience to create a new {@code DocumentBuilder} instance.
+   * 
+   * @param f a DocumentBuilderFactory
+   * @return a configured DocumentBuilder
+   * @throws ParserConfigurationException
+   * @see {@link #configure(DocumentBuilder)}
+   * @see (@link #configure(DocumentBuilderFactory)}
+   */
+  public DocumentBuilder newDocumentBuilder(DocumentBuilderFactory f) throws ParserConfigurationException {
+    return configure(configure(f).newDocumentBuilder());
   }
 
   public DocumentBuilderFactory build() throws ParserConfigurationException {

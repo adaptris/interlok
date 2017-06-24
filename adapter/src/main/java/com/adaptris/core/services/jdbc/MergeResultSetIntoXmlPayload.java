@@ -108,8 +108,7 @@ public class MergeResultSetIntoXmlPayload extends XmlPayloadTranslatorImpl {
   }
 
   private DocumentWrapper createDocument(JdbcResult rs, DocumentBuilderFactoryBuilder builderFactory) throws Exception {
-    DocumentBuilderFactory factory = builderFactory.configure(DocumentBuilderFactory.newInstance());
-    DocumentBuilder builder = factory.newDocumentBuilder();
+    DocumentBuilder builder = builderFactory.newDocumentBuilder(DocumentBuilderFactory.newInstance());
     Document doc = builder.newDocument();
     DocumentWrapper result = new DocumentWrapper(doc, 0);
     Element results = doc.createElement(getColumnNameStyle().format(ELEMENT_NAME_RESULTS));
