@@ -44,6 +44,14 @@ public final class FsHelper {
   }
 
   /**
+   * Go straight to a {@link File} from a url style string.
+   * 
+   */
+  public static File toFile(String s) throws Exception {
+    return createFileReference(createUrlFromString(s, true));
+  }
+
+  /**
    * Create a file reference from a URL using the platform default encoding for the URL.
    * 
    * @see #createFileReference(URL, String)
@@ -72,10 +80,11 @@ public final class FsHelper {
   }
 
   /**
+   * Creates a {@link URL} based on the passed destination.
    * <p>
-   * Creates a {@link URL} based on the passed destination. If a <i>scheme</i> is present and is equal to <code>"file"</code> then
-   * the <code>URL</code> is deemed to be <b>absolute</b> and is used as is. If the <i>scheme</i> is <code>null</code> the
-   * <code>URL</code> is deemed to of scheme <code>"file"</code> and <b>relative</b> to the current working directory.
+   * If a {@code scheme} is present and is equal to {@code file} then the URL is deemed to be <strong>absolute</strong> and is used
+   * as is. If the {@code scheme} is null then the URL is considered a {@code "file"} URL, and <strong>relative</strong>> to the
+   * current working directory.
    * </p>
    * <p>
    * Note that this method will not convert backslashes into forward slashes, so passing in a string like {@code ..\dir\} will fail
@@ -94,10 +103,11 @@ public final class FsHelper {
   }
 
   /**
+   * Creates a {@link URL} based on the passed destination.
    * <p>
-   * Creates a {@link URL} based on the passed destination. If a <i>scheme</i> is present and is equal to <code>"file"</code> then
-   * the <code>URL</code> is deemed to be <b>absolute</b> and is used as is. If the <i>scheme</i> is <code>null</code> the
-   * <code>URL</code> is deemed to of scheme <code>"file"</code> and <b>relative</b> to the current working directory.
+   * If a {@code scheme} is present and is equal to {@code file} then the URL is deemed to be <strong>absolute</strong> and is used
+   * as is. If the {@code scheme} is null then the URL is considered a {@code "file"} URL, and <strong>relative</strong>> to the
+   * current working directory.
    * </p>
    * 
    * @param s the string to convert to a URL.
