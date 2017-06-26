@@ -31,6 +31,7 @@ import java.net.URL;
 
 import org.apache.commons.io.IOUtils;
 
+import com.adaptris.util.URLHelper;
 import com.adaptris.util.URLString;
 
 /**
@@ -190,7 +191,7 @@ public abstract class AbstractMarshaller implements AdaptrisMarshaller {
    */
   @Deprecated
   protected InputStream connectToUrl(URLString loc) throws IOException {
-    return loc.connect();
+    return URLHelper.connect(loc);
   }
 
 }

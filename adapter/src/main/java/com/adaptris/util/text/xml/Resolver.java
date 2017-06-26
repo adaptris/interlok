@@ -38,6 +38,7 @@ import org.xml.sax.SAXException;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.util.URLHelper;
 import com.adaptris.util.URLString;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -69,7 +70,7 @@ public class Resolver implements EntityResolver, URIResolver {
     String key = url.toString();
     InputStream result = null;
     if (!hm.containsKey(key)) {
-      try (InputStream input = url.connect(); ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+      try (InputStream input = URLHelper.connect(url); ByteArrayOutputStream output = new ByteArrayOutputStream()) {
         IOUtils.copy(input, output);
         hm.put(key, output);
         result = new ByteArrayInputStream(output.toByteArray());

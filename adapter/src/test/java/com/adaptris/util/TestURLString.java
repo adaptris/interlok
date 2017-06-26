@@ -16,20 +16,36 @@
 
 package com.adaptris.util;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import junit.framework.TestCase;
+import com.adaptris.core.BaseCase;
 
 /**
  *
  * @author lchan
  */
-public class TestURLString extends TestCase {
+public class TestURLString extends BaseCase {
 
   private static Log logR = LogFactory.getLog(TestURLString.class);
+
+  private static final String TEST_DIR = "urlstring.dir";
+  private static final String TEST_SERIALIZED_FILE = "urlstring.serialized";
+
+  protected File testOutputDir;
+
+  @Override
+  protected void setUp() throws Exception {
+    testOutputDir = new File(PROPERTIES.getProperty(TEST_DIR));
+    testOutputDir.mkdirs();
+  }
 
   private static final String testUrl = "http://myuser:mypassword@localhost:8888//url";
   private static String username = "myuser";
@@ -111,5 +127,24 @@ public class TestURLString extends TestCase {
     url = new URLString(httpURL_2);
     // The first / should get dropped but we're still OK.
     assertEquals(httpURL, url.getURL().toString());
+  }
+
+  public void testSerialize() throws Exception {
+    String httpURL = "http://config.f4f.com/v3config/adapter.xml";
+    URLString url = new URLString(httpURL);
+    File f = new File(testOutputDir, new GuidGenerator().getUUID());
+    try (ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(f))) {
+      output.writeObject(url);
+    }
+  }
+
+  public void testUnserialize() throws Exception {
+    String httpURL = "http://config.f4f.com/v3config/adapter.xml";
+
+    File f = new File(PROPERTIES.getProperty(TEST_SERIALIZED_FILE));
+    try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(f))) {
+      URLString url = (URLString) in.readObject();
+      assertEquals(httpURL, url.toString());
+    }
   }
 }

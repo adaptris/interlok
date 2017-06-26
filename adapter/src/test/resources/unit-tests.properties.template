@@ -251,3 +251,7 @@ junit.metadata.MetadataToFileSystem.baseDirUrl=file:///${build.dir}/junit/metada
 
 junit.resolver.mapped.url=file://localhost/${test.resources.dir}/jetty-configure.dtd
 
+junit.urlstring.dir=${build.dir}/junit/urlstring
+junit.urlstring.serialized=${test.resources.dir}/urlstring.serialized
+
+
