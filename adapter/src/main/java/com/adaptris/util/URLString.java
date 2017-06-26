@@ -20,13 +20,16 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.util.BitSet;
 import java.util.Locale;
@@ -704,6 +707,49 @@ public class URLString implements Serializable {
       return "/" + getFile();
     }
     return getFile();
+  }
+
+  /**
+   * <p>
+   * Connect to the URL specified by this URLString
+   * </p>
+   *
+   * @param loc the URL location.
+   * @return an InputStream containing the contents of the URL specified.
+   * @throws IOException on error.
+   */
+  public InputStream connect() throws IOException {
+    if (getProtocol() == null || "file".equals(getProtocol())) {
+      return connectToFile(getFile());
+    }
+    URL url = new URL(toString());
+    URLConnection conn = url.openConnection();
+    return conn.getInputStream();
+  }
+
+  /**
+   * <p>
+   * Create an InputStream from a local file.
+   * </p>
+   *
+   * @param localFile the local file.
+   * @return an InputStream from the local file.
+   * @throws IOException on error.
+   */
+  private InputStream connectToFile(String localFile) throws IOException {
+    InputStream in = null;
+    File f = new File(localFile);
+    if (f.exists()) {
+      in = new FileInputStream(f);
+    }
+    else {
+      ClassLoader c = this.getClass().getClassLoader();
+      URL u = c.getResource(localFile);
+      if (u != null) {
+        in = u.openStream();
+      }
+    }
+    return in;
   }
 
 }

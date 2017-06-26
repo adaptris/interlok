@@ -17,7 +17,6 @@
 package com.adaptris.core;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -29,7 +28,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
 import java.net.URL;
-import java.net.URLConnection;
 
 import org.apache.commons.io.IOUtils;
 
@@ -188,41 +186,11 @@ public abstract class AbstractMarshaller implements AdaptrisMarshaller {
    * @param loc the URL location.
    * @return an InputStream containing the contents of the URL specified.
    * @throws IOException on error.
+   * @deprecated since 3.6.3; use URLString#connect() instead.
    */
+  @Deprecated
   protected InputStream connectToUrl(URLString loc) throws IOException {
-    if (loc.getProtocol() == null || "file".equals(loc.getProtocol())) {
-      return connectToFile(loc.getFile());
-    }
-    URL url = new URL(loc.toString());
-    URLConnection conn = url.openConnection();
-    //    ProxyUtil.applyBasicProxyAuthorisation(conn);
-    return conn.getInputStream();
-  }
-
-  /**
-   * <p>
-   * Create an InputStream from a local file.
-   * </p>
-   *
-   * @param localFile the local file.
-   * @return an InputStream from the local file.
-   * @throws IOException on error.
-   */
-  private InputStream connectToFile(String localFile) throws IOException {
-    InputStream in = null;
-    File f = new File(localFile);
-    if (f.exists()) {
-      in = new FileInputStream(f);
-    }
-    else {
-      ClassLoader c = this.getClass().getClassLoader();
-      URL u = c.getResource(localFile);
-
-      if (u != null) {
-        in = u.openStream();
-      }
-    }
-    return in;
+    return loc.connect();
   }
 
 }
