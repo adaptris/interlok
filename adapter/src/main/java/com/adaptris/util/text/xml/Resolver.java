@@ -16,12 +16,10 @@
 
 package com.adaptris.util.text.xml;
 
-import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -31,6 +29,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.EntityResolver;
@@ -39,6 +38,7 @@ import org.xml.sax.SAXException;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.util.URLString;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -53,35 +53,31 @@ public class Resolver implements EntityResolver, URIResolver {
 
   private static final int DEFAULT_MAX_CACHE_SIZE = 50;
 
-  private transient Logger log = LoggerFactory.getLogger(this.getClass());
+  protected transient Logger log = LoggerFactory.getLogger(this.getClass());
 
-  private transient HashMap<String, StringBuffer> hm = new FixedSizeMap<String, StringBuffer>();
+  private transient HashMap<String, ByteArrayOutputStream> hm = new FixedSizeMap<String, ByteArrayOutputStream>();
 
   @AdvancedConfig
   @InputFieldDefault(value = "50")
   private Integer maxDestinationCacheSize;
 
+  @AdvancedConfig
+  @InputFieldDefault(value = "false")
+  private Boolean additionalDebug;
 
-  private String retrieveAndCache(URL url) throws Exception {
-    String key = url.toExternalForm();
-    String result = null;
+  protected InputStream retrieveAndCache(URLString url) throws Exception {
+    String key = url.toString();
+    InputStream result = null;
     if (!hm.containsKey(key)) {
-      URLConnection urlConn = url.openConnection();
-      InputStream inputStream = urlConn.getInputStream();
-      StringBuffer sb = new StringBuffer();
-      String buffer = null;
-      try (BufferedReader inBuf = new BufferedReader(new InputStreamReader(inputStream))) {
-        while ((buffer = inBuf.readLine()) != null) {
-          sb.append(buffer);
-        }
+      try (InputStream input = url.connect(); ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+        IOUtils.copy(input, output);
+        hm.put(key, output);
+        result = new ByteArrayInputStream(output.toByteArray());
       }
-      log.trace("Retrieved and cached {}", key);
-      hm.put(key, sb);
-      result = sb.toString();
     }
     else {
-      log.trace("Resolve from cache {}", key);
-      result = hm.get(key).toString();
+      debugLog("Resolve from cache {}", key);
+      result = new ByteArrayInputStream(hm.get(key).toByteArray());
     }
     return result;
   }
@@ -92,17 +88,16 @@ public class Resolver implements EntityResolver, URIResolver {
   @Override
   public InputSource resolveEntity(String publicId, String systemId)
       throws SAXException {
-    log.trace("Resolving [{}][{}]", publicId, systemId);
+    debugLog("Resolving [{}][{}]", publicId, systemId);
     InputSource result = null;
     try {
-      URL myUrl = new URL(systemId); // throws MalformedURLException
-      InputSource ret = new InputSource(new StringReader(retrieveAndCache(myUrl)));
+      InputSource ret = new InputSource(retrieveAndCache(new URLString(systemId)));
       ret.setPublicId(publicId);
       ret.setSystemId(systemId);
       result = ret;
     }
     catch (Exception e) {
-      log.trace("Couldn't handle [{}][{}], fallback to default parser behaviour", publicId, systemId);
+      debugLog("Couldn't handle [{}][{}], fallback to default parser behaviour", publicId, systemId);
       result = null;
     }
     return result;
@@ -113,12 +108,10 @@ public class Resolver implements EntityResolver, URIResolver {
    */
   @Override
   public Source resolve(String href, String base) throws TransformerException {
-    log.trace("Resolving [{}][{}]", href, base);
+    debugLog("Resolving [{}][{}]", href, base);
     StreamSource result = null;
     try {
-
       URL myUrl = null;
-
       try {
         myUrl = new URL(href);
       }
@@ -128,11 +121,11 @@ public class Resolver implements EntityResolver, URIResolver {
         String url = base.substring(0, end + 1);
         myUrl = new URL(url + href);
       }
-      StreamSource ret = new StreamSource(new StringReader(retrieveAndCache(myUrl)), myUrl.toExternalForm());
+      StreamSource ret = new StreamSource(retrieveAndCache(new URLString(myUrl)), myUrl.toExternalForm());
       result = ret;
     }
     catch (Exception e) {
-      log.trace("Couldn't handle [{}][{}], fallback to default parser behaviour", href, base);
+      debugLog("Couldn't handle [{}][{}], fallback to default parser behaviour", href, base);
       result = null;
     }
     return result;
@@ -161,6 +154,24 @@ public class Resolver implements EntityResolver, URIResolver {
 
   public int maxDestinationCacheSize() {
     return getMaxDestinationCacheSize() != null ? getMaxDestinationCacheSize().intValue() : DEFAULT_MAX_CACHE_SIZE;
+  }
+
+  public Boolean getAdditionalDebug() {
+    return additionalDebug;
+  }
+
+  public void setAdditionalDebug(Boolean b) {
+    this.additionalDebug = b;
+  }
+
+  private boolean additionalDebug() {
+    return getAdditionalDebug() != null ? getAdditionalDebug().booleanValue() : false;
+  }
+
+  protected void debugLog(String msg, Object... objects) {
+    if (additionalDebug()) {
+      log.trace(msg, objects);
+    }
   }
 
   int size() {

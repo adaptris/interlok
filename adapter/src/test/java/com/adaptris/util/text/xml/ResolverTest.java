@@ -30,6 +30,7 @@ public class ResolverTest {
   private static final String HREF = "http://www.eclipse.org/jetty/configure.dtd";
   private static final String BASE = "http://www.eclipse.org/jetty/";
   private static final String UNRESOLVEABLE = "unhandledProtocol://zzlc.zzlc.zzlc/configure.dtd";
+
   @Test
   public void testEntityResolver() throws Exception {
     Resolver resolver = new Resolver();
@@ -49,6 +50,7 @@ public class ResolverTest {
   @Test
   public void testResolveURI() throws Exception {
     Resolver resolver = new Resolver();
+    resolver.setAdditionalDebug(Boolean.TRUE);
     assertNotNull(resolver.resolve(HREF_RELATIVE, BASE));
     assertEquals(1, resolver.size());
     assertNotNull(resolver.resolve(HREF_RELATIVE, BASE));

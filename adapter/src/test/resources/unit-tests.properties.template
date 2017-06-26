@@ -249,5 +249,6 @@ junit.scripting.basedir=${build.dir}/scripting
 
 junit.metadata.MetadataToFileSystem.baseDirUrl=file:///${build.dir}/junit/metadata-to-fs
 
-junit.cache.ehcache.xml=${test.resources.dir}/ehcache.xml
+junit.resolver.mapped.url=file://localhost/${test.resources.dir}/jetty-configure.dtd
+junit.resolver.mapped.relative=./src/test/resources/jetty-configure.dtd
 
