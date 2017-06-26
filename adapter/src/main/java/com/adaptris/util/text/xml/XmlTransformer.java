@@ -152,7 +152,7 @@ public class XmlTransformer {
   private Source createSource(InputStream in) throws ParserConfigurationException, SAXException, IOException {
     Source result = null;
     if (builder != null) {
-      DocumentBuilder docBuilder = builder.configure(DocumentBuilderFactory.newInstance()).newDocumentBuilder();
+      DocumentBuilder docBuilder = builder.newDocumentBuilder(DocumentBuilderFactory.newInstance());
       result = new DOMSource(docBuilder.parse(in));
     } else {
       result = new StreamSource(in);
@@ -163,7 +163,7 @@ public class XmlTransformer {
   private Source createSource(Reader in) throws ParserConfigurationException, SAXException, IOException {
     Source result = null;
     if (builder != null) {
-      DocumentBuilder docBuilder = builder.configure(DocumentBuilderFactory.newInstance()).newDocumentBuilder();
+      DocumentBuilder docBuilder = builder.newDocumentBuilder(DocumentBuilderFactory.newInstance());
       result = new DOMSource(docBuilder.parse(new InputSource(in)));
     } else {
       result = new StreamSource(in);

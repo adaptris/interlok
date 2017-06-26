@@ -65,11 +65,7 @@ public class XsltTransformerFactory extends XmlTransformerFactoryImpl {
   }
 
   public Transformer createTransformer(String url, EntityResolver entityResolver) throws Exception {
-    DocumentBuilderFactory dfactory = DocumentBuilderFactory.newInstance();
-    dfactory.setCoalescing(true);
-    dfactory.setNamespaceAware(true);
-
-    DocumentBuilder docBuilder = dfactory.newDocumentBuilder();
+    DocumentBuilder docBuilder = documentFactoryBuilder().newDocumentBuilder(DocumentBuilderFactory.newInstance());
     if (entityResolver != null) {
       docBuilder.setEntityResolver(entityResolver);
     }
