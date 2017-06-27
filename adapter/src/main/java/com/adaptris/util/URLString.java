@@ -23,8 +23,6 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.UnknownHostException;
-import java.util.Locale;
 
 import javax.mail.URLName;
 
@@ -107,6 +105,10 @@ public class URLString implements Serializable {
    * Our hash code.
    */
   private int hashCode = 0;
+
+  protected URLString() {
+
+  }
 
   /**
    * Creates a URLString object from the specified protocol, host, port number, file, username, and
@@ -282,78 +284,16 @@ public class URLString implements Serializable {
     return new URL(getProtocol(), getHost(), getPort(), slashPrefix(getFile()));
   }
 
-  /**
-   * Compares two URLStrings. The result is true if and only if the argument is not null and is a
-   * URLString object that represents the same URLString as this object. Two URLString objects are
-   * equal if they have the same protocol and the same host, the same port number on the host, the
-   * same username, and the same file on the host. The fields (host, username, file) are also
-   * considered the same if they are both null.
-   * <p>
-   * 
-   * Hosts are considered equal if the names are equal (case independent) or if host name lookups
-   * for them both succeed and they both reference the same IP address.
-   * <p>
-   * 
-   * Note that URLString has no knowledge of default port numbers for particular protocols, so
-   * "imap://host" and "imap://host:143" would not compare as equal.
-   * <p>
-   * 
-   * Note also that the password field is not included in the comparison, nor is any reference field
-   * appended to the filename.
-   */
+
   @Override
   public boolean equals(Object obj) {
+    if (obj == null)
+      return false;
     if (!(obj instanceof URLString)) {
       return false;
     }
     URLString u2 = (URLString) obj;
-
-    // compare protocols
-    if (u2.protocol == null || !u2.protocol.equals(protocol)) {
-      return false;
-    }
-
-    // compare hosts
-    InetAddress a1 = getHostAddress(), a2 = u2.getHostAddress();
-    // if we have internet address for both, and they're not the same, fail
-    if (a1 != null && a2 != null) {
-      if (!a1.equals(a2)) {
-        return false;
-        // else, if we have host names for both, and they're not the same, fail
-      }
-    } else if (host != null && u2.host != null) {
-      if (!host.equalsIgnoreCase(u2.host)) {
-        return false;
-        // else, if not both null
-      }
-    } else if (host != u2.host) {
-      return false;
-    }
-    // at this point, hosts match
-
-    // compare usernames
-    if (!(username == u2.username || username != null && username.equals(u2.username))) {
-      return false;
-    }
-
-    // Forget about password since it doesn't
-    // really denote a different store.
-
-    // compare files
-    String f1 = file == null ? "" : file;
-    String f2 = u2.file == null ? "" : u2.file;
-
-    if (!f1.equals(f2)) {
-      return false;
-    }
-
-    // compare ports
-    if (port != u2.port) {
-      return false;
-    }
-
-    // all comparisons succeeded, they're equal
-    return true;
+    return toString().equals(u2.toString());
   }
 
   /**
@@ -361,46 +301,7 @@ public class URLString implements Serializable {
    */
   @Override
   public int hashCode() {
-    if (hashCode != 0) {
-      return hashCode;
-    }
-    if (protocol != null) {
-      hashCode += protocol.hashCode();
-    }
-    InetAddress addr = getHostAddress();
-    if (addr != null) {
-      hashCode += addr.hashCode();
-    } else if (host != null) {
-      hashCode += host.toLowerCase(Locale.ENGLISH).hashCode();
-    }
-    if (username != null) {
-      hashCode += username.hashCode();
-    }
-    if (file != null) {
-      hashCode += file.hashCode();
-    }
-    hashCode += port;
-    return hashCode;
-  }
-
-  /**
-   * Get the IP address of our host. Look up the name the first time and remember that we've done
-   * so, whether the lookup fails or not.
-   */
-  private synchronized InetAddress getHostAddress() {
-    if (hostAddressKnown) {
-      return hostAddress;
-    }
-    if (host == null) {
-      return null;
-    }
-    try {
-      hostAddress = InetAddress.getByName(host);
-    } catch (UnknownHostException ex) {
-      hostAddress = null;
-    }
-    hostAddressKnown = true;
-    return hostAddress;
+    return toString().hashCode();
   }
 
   private String slashPrefix(String file) {
