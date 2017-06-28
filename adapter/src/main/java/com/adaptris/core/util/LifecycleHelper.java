@@ -129,4 +129,31 @@ public class LifecycleHelper {
       ((ComponentLifecycleExtension) c).prepare();
     }
   }
+
+  /**
+   * Prepare initialise and start
+   * 
+   */
+  public static <T extends ComponentLifecycle> T initAndStart(T c) throws CoreException {
+    LifecycleHelper.prepare(c);
+    LifecycleHelper.init(c);
+    try {
+      LifecycleHelper.start(c);
+    } catch (CoreException e) {
+      LifecycleHelper.close(c);
+      throw e;
+    }
+    return c;
+  }
+
+  /**
+   * Stop and Close.
+   * 
+   */
+  public static <T extends ComponentLifecycle> T stopAndClose(T c) {
+    LifecycleHelper.stop(c);
+    LifecycleHelper.close(c);
+    return c;
+  }
+
 }
