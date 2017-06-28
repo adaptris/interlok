@@ -39,7 +39,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
- * Direct HTTP support as a service rather wrapped via {@link StandaloneProducer} or {@link StandaloneRequestor}.
+ * Branch support for HTTP via interrogation of the HTTP status.
  * 
  * <p>
  * This service allows you to branch based on the {@code HTTP status code} returned by the web server. Use a specific
@@ -62,7 +62,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  */
 @XStreamAlias("branching-http-request-service")
 @AdapterComponent
-@ComponentProfile(summary = "Make a HTTP request to a remote server using standard JRE components", tag = "service,http,https")
+@ComponentProfile(summary = "Make a HTTP request to a remote server using standard JRE components", tag = "service,http,https,branching", branchSelector = true)
 @DisplayOrder(order = {"url", "method", "contentType", "defaultServiceId", "authentication", "requestHeaderProvider",
     "responseHeaderHandler", "statusMatches"})
 public class BranchingHttpRequestService extends HttpRequestServiceImpl {
