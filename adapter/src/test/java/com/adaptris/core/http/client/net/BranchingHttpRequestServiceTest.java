@@ -23,6 +23,8 @@ import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.NullService;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.http.HttpServiceExample;
+import com.adaptris.core.http.client.ExactMatch;
+import com.adaptris.core.http.client.RangeMatch;
 import com.adaptris.core.services.LogMessageService;
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;

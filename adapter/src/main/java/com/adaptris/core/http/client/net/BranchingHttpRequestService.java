@@ -31,6 +31,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandaloneRequestor;
+import com.adaptris.core.http.client.StatusEvaluator;
 import com.adaptris.core.services.BranchingServiceEnabler;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;

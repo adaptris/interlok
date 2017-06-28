@@ -21,6 +21,9 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import com.adaptris.core.http.client.ExactMatch;
+import com.adaptris.core.http.client.RangeMatch;
+
 public class StatusMatchTest {
 
   @Test
