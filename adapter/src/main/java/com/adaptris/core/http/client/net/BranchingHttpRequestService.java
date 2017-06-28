@@ -71,7 +71,7 @@ public class BranchingHttpRequestService extends HttpRequestServiceImpl {
   @NotNull
   @AutoPopulated
   @Valid
-  @XStreamImplicit(itemFieldName = "status-match")
+  @XStreamImplicit
   private List<StatusEvaluator> statusMatches;
 
   // Allow this to be null, which just means no branching...
@@ -128,10 +128,10 @@ public class BranchingHttpRequestService extends HttpRequestServiceImpl {
   }
 
   /**
-   * @param responseMatches the responseMatches to set
+   * @param matchers the statusMatches to set
    */
-  public void setStatusMatches(List<StatusEvaluator> responseMatches) {
-    this.statusMatches = Args.notNull(responseMatches, "responseMatches");
+  public void setStatusMatches(List<StatusEvaluator> matchers) {
+    this.statusMatches = Args.notNull(matchers, "statusMatches");
   }
 
   /**

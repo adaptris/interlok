@@ -22,7 +22,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * Implementation of {@link StatusEvaluator} for use with {@link BranchingHttpRequestService}.
  * <p>
- * Matches a service id against range of values e.g. lower=200, upper=299 to match all "success" codes.
+ * Matches a service id against range of values (inclusive) e.g. lower=200, upper=299 to match all "success" codes.
  * </p>
  * 
  * @config http-status-range-match
