@@ -17,6 +17,9 @@ package com.adaptris.core.http.client.net;
 
 import java.net.HttpURLConnection;
 
+import org.hibernate.validator.constraints.NotBlank;
+
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.http.HttpConstants;
@@ -32,7 +35,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("http-configured-authorization-header")
 public class ConfiguredAuthorizationHeader implements HttpURLConnectionAuthenticator {
 
+  @InputFieldHint(expression = true)
+  @NotBlank
   private String headerValue;
+
+  private transient String actualHeaderValue;
   
   public ConfiguredAuthorizationHeader() {
 
@@ -52,11 +59,12 @@ public class ConfiguredAuthorizationHeader implements HttpURLConnectionAuthentic
 
   @Override
   public void setup(String target, AdaptrisMessage msg, ResourceTargetMatcher auth) throws CoreException {
+    actualHeaderValue = msg.resolve(getHeaderValue());
   }
 
   @Override
   public void configureConnection(HttpURLConnection conn) {
-    conn.addRequestProperty(HttpConstants.AUTHORIZATION, headerValue);
+    conn.addRequestProperty(HttpConstants.AUTHORIZATION, actualHeaderValue);
   }
 
   @Override
