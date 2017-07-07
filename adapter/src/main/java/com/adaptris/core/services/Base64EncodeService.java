@@ -40,7 +40,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("base64-encode-service")
 @AdapterComponent
-@ComponentProfile(summary = "Base64 encode the message", tag = "service")
+@ComponentProfile(summary = "Base64 encode the message", tag = "service,base64")
 public class Base64EncodeService extends ServiceImp {
 
   /**
