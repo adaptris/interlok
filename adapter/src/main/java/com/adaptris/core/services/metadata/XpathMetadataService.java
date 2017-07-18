@@ -56,7 +56,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  */
 @XStreamAlias("xpath-metadata-service")
 @AdapterComponent
-@ComponentProfile(summary = "Extract data via XPath and store it as metadata", tag = "service,metadata,xml")
+@ComponentProfile(summary = "Extract data via XPath and store it as metadata", tag = "service,metadata,xml,xpath")
 @DisplayOrder(order = {"xpathQueries", "namespaceContext", "xmlDocumentFactoryConfig"})
 public class XpathMetadataService extends ServiceImp {
 

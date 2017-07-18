@@ -62,7 +62,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config jms-poller
  * 
- *          VendorImplementation
  */
 @XStreamAlias("jms-poller")
 @AdapterComponent

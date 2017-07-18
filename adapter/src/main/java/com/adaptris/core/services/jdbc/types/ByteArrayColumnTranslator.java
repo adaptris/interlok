@@ -16,12 +16,13 @@
 
 package com.adaptris.core.services.jdbc.types;
 
-import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.copy;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.sql.SQLException;
 
 import com.adaptris.jdbc.JdbcResultRow;
@@ -40,9 +41,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("jdbc-type-byte-array-column-translator")
-public class ByteArrayColumnTranslator implements ColumnTranslator {
-
-  private String characterEncoding;
+public class ByteArrayColumnTranslator extends ColumnWriterWithCharEncoding {
 
   public ByteArrayColumnTranslator() {
   }
@@ -57,29 +56,25 @@ public class ByteArrayColumnTranslator implements ColumnTranslator {
     return toString((byte[]) rs.getFieldValue(columnName));
   }
 
+  @Override
+  public void write(JdbcResultRow rs, int column, Writer out) throws SQLException, IOException {
+    write((byte[]) rs.getFieldValue(column), out);
+  }
+
+  @Override
+  public void write(JdbcResultRow rs, String columnName, Writer out) throws SQLException, IOException {
+    write((byte[]) rs.getFieldValue(columnName), out);
+  }
+
+  private void write(byte[] bytes, Writer out) throws SQLException, IOException {
+    try (Reader input = toReader(new ByteArrayInputStream(bytes))) {
+      copy(input, out);
+    }
+  }
+
   private String toString(byte[] bytes) throws SQLException, IOException {
-    ByteArrayOutputStream output = new ByteArrayOutputStream();
-    ByteArrayInputStream input = new ByteArrayInputStream(bytes);
-    try {
-      copy(input, output);
-    }
-    finally {
-      closeQuietly(input);
-      closeQuietly(output);
-    }
-    return getCharacterEncoding() != null ? output.toString(getCharacterEncoding()) : output.toString();
-  }
-
-  public String getCharacterEncoding() {
-    return characterEncoding;
-  }
-
-  /**
-   * Set the character encoding used to convert the column into a String.
-   *
-   * @param charEnc the character encoding, if null then the platform encoding is assumed.
-   */
-  public void setCharacterEncoding(String charEnc) {
-    characterEncoding = charEnc;
+    StringWriter output = new StringWriter();
+    write(bytes, output);
+    return output.toString();
   }
 }

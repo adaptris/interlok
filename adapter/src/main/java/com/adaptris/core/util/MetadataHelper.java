@@ -19,11 +19,12 @@ package com.adaptris.core.util;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Properties;
 import java.util.Set;
 
 import com.adaptris.core.MetadataElement;
+import com.adaptris.util.KeyValuePair;
+import com.adaptris.util.KeyValuePairBag;
 
 public final class MetadataHelper {
 
@@ -36,13 +37,18 @@ public final class MetadataHelper {
   }
 
   public static Set<MetadataElement> convertFromProperties(Properties p) throws IOException {
-    HashSet set = new HashSet();
-    // Oh to be able to use stringPropertyNames which is a dirty jdk1.6 method.
-    for (Iterator i = p.keySet().iterator(); i.hasNext();) {
-      String key = (String) i.next();
-      set.add(new MetadataElement(key, p.getProperty(key)));
+    HashSet<MetadataElement> set = new HashSet<>();
+    for (String s : p.stringPropertyNames()) {
+      set.add(new MetadataElement(s, p.getProperty(s)));
     }
     return set;
+  }
 
+  public static Set<MetadataElement> convertFromKeyValuePairs(KeyValuePairBag bag) {
+    final HashSet<MetadataElement> set = new HashSet<>();
+    for (KeyValuePair e : bag) {
+      set.add(new MetadataElement(e));
+    }
+    return set;
   }
 }

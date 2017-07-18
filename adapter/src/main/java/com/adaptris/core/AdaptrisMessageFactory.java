@@ -158,12 +158,11 @@ public abstract class AdaptrisMessageFactory {
    * </p>
    *
    * @param source the original AdaptrisMessage
-   * @param metadataKeysToPreserve a list of keys to transfer to the new Message
-   * @return a new <code>AdaptrisMessage</code>
+   * @param metadataKeysToPreserve a list of keys to transfer to the new Message; if null, then all keys.
+   * @return a new {@code AdaptrisMessage}
    * @throws CloneNotSupportedException if the MleMarkers could not be cloned.
    */
-  public abstract AdaptrisMessage newMessage(AdaptrisMessage source,
-                                             Collection metadataKeysToPreserve)
+  public abstract AdaptrisMessage newMessage(AdaptrisMessage source, Collection<String> metadataKeysToPreserve)
       throws CloneNotSupportedException;
 
   /**

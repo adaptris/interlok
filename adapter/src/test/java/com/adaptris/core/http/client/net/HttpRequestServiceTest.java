@@ -326,7 +326,7 @@ public class HttpRequestServiceTest extends HttpServiceExample {
     }
   }
 
-  private HttpAuthenticator getAuthenticator(String username, String password) {
+  protected static HttpAuthenticator buildAuthenticator(String username, String password) {
     ConfiguredUsernamePassword auth = new ConfiguredUsernamePassword();
     auth.setUsername(username);
     auth.setPassword(password);
@@ -352,7 +352,7 @@ public class HttpRequestServiceTest extends HttpServiceExample {
     MessageConsumer consumer = JettyHelper.createConsumer(HttpHelper.URL_TO_POST_TO);
     Channel channel = JettyHelper.createChannel(jc, consumer, mockProducer);
 
-    HttpAuthenticator auth = getAuthenticator(getName(), getName());
+    HttpAuthenticator auth = buildAuthenticator(getName(), getName());
     
     HttpRequestService service = new HttpRequestService(HttpHelper.createProduceDestination(channel).getDestination());
     service.setMethod("POST");
@@ -372,7 +372,7 @@ public class HttpRequestServiceTest extends HttpServiceExample {
   @Override
   protected Object retrieveObjectForSampleConfig() {
     HttpRequestService service = new HttpRequestService("http://myhost.com/url/to/post/to");
-    service.setAuthenticator(getAuthenticator("username", "password"));
+    service.setAuthenticator(buildAuthenticator("username", "password"));
     return service;
   }
 

@@ -16,20 +16,38 @@
 
 package com.adaptris.util;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.lang.reflect.Constructor;
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import junit.framework.TestCase;
+import com.adaptris.core.BaseCase;
+import com.adaptris.core.stubs.TempFileUtils;
 
 /**
  *
  * @author lchan
  */
-public class TestURLString extends TestCase {
+public class TestURLString extends BaseCase {
 
   private static Log logR = LogFactory.getLog(TestURLString.class);
+
+  private static final String TEST_DIR = "urlstring.dir";
+  private static final String TEST_SERIALIZED_FILE = "urlstring.serialized";
+
+  protected File testOutputDir;
+
+  @Override
+  protected void setUp() throws Exception {
+    testOutputDir = new File(PROPERTIES.getProperty(TEST_DIR));
+    testOutputDir.mkdirs();
+  }
 
   private static final String testUrl = "http://myuser:mypassword@localhost:8888//url";
   private static String username = "myuser";
@@ -65,6 +83,15 @@ public class TestURLString extends TestCase {
     assertEquals(testUrl, url.toString());
   }
 
+  public void testUrlByFile() throws Exception {
+    Object marker = new Object();
+    File trackedFile = TempFileUtils.createTrackedFile(marker);
+    URLString url = new URLString(trackedFile);
+    assertEquals("file", url.getProtocol());
+    assertEquals(trackedFile.getCanonicalPath(), new File(url.getFile()).getCanonicalPath());
+  }
+
+
   public void testUrlByComponents() throws Exception {
     URLString url = new URLString(protocol, host, port, file, username, password);
     assertEquals(protocol, url.getProtocol());
@@ -80,6 +107,7 @@ public class TestURLString extends TestCase {
     URLString url = new URLString("config.xml");
     logR.trace(url.getFile());
     assertEquals("config.xml", url.getFile());
+    assertEquals("config.xml", url.toString());
 
   }
 
@@ -98,6 +126,41 @@ public class TestURLString extends TestCase {
     assertEquals(buggyURL, url.toString());
   }
 
+  public void testEquals() throws Exception {
+    URLString url1 = new URLString("http://config.f4f.com/v3config/adapter.xml");
+    URLString url_pw = new URLString("http://user%40btinternet.com:password@mail.btinternet.com/");
+    assertFalse(url1.equals(new Object()));
+    assertFalse(url1.equals(null));
+
+    assertTrue(newInstance().equals(newInstance()));
+    assertEquals(url1, new URLString("http://config.f4f.com/v3config/adapter.xml"));
+    assertEquals(url1.hashCode(), new URLString("http://config.f4f.com/v3config/adapter.xml").hashCode());
+
+    assertNotSame(url1, new URLString("http://config.f4f.xxx/v3config/adapter.xml"));
+    assertNotSame(url1.hashCode(), new URLString("http://config.f4f.xxx/v3config/adapter.xml").hashCode());
+
+    assertNotSame(url1, new URLString("http://config.f4f.com/xxxx/adapter.xml"));
+    assertNotSame(url1.hashCode(), new URLString("http://config.f4f.com/xxxx/adapter.xml").hashCode());
+
+    assertNotSame(url1, new URLString("http://config.f4f.com/v3config/xxx.xml"));
+    assertNotSame(url1.hashCode(), new URLString("http://config.f4f.com/v3config/xxx.xml").hashCode());
+
+    assertNotSame(url1, new URLString("https://config.f4f.com/v3config/adapter.xml"));
+    assertNotSame(url1.hashCode(), new URLString("https://config.f4f.com/v3config/adapter.xml").hashCode());
+
+    assertNotSame(url1, url_pw);
+    assertNotSame(url1.hashCode(), url_pw.hashCode());
+
+    assertEquals(url_pw, new URLString("http://user%40btinternet.com:password@mail.btinternet.com/"));
+    assertEquals(url_pw.hashCode(), new URLString("http://user%40btinternet.com:password@mail.btinternet.com/").hashCode());
+
+    assertNotSame(url_pw, new URLString("http://user%40btinternet.com:password1@mail.btinternet.com/"));
+    assertNotSame(url_pw.hashCode(), new URLString("http://user%40btinternet.com:password1@mail.btinternet.com/").hashCode());
+
+    assertNotSame(url_pw, new URLString("http://user:password@mail.btinternet.com/"));
+    assertNotSame(url_pw.hashCode(), new URLString("http://user:password@mail.btinternet.com/").hashCode());
+  }
+
   public void testGetURL() throws Exception {
     String httpURL = "http://config.f4f.com/v3config/adapter.xml";
     URLString url = new URLString(httpURL);
@@ -111,5 +174,66 @@ public class TestURLString extends TestCase {
     url = new URLString(httpURL_2);
     // The first / should get dropped but we're still OK.
     assertEquals(httpURL, url.getURL().toString());
+  }
+
+  public void testSerialize() throws Exception {
+    URLString url = new URLString("http://config.f4f.com/v3config/adapter.xml");
+    URLString roundtrip = roundTrip(url);
+    assertEquals(url, roundtrip);
+    assertEquals("http://config.f4f.com/v3config/adapter.xml", roundtrip.toString());
+
+    url = new URLString("http://user:password@mail.btinternet.com/");
+    roundtrip = roundTrip(url);
+    assertEquals(url, roundtrip);
+    assertEquals("http://user:password@mail.btinternet.com/", roundtrip.toString());
+
+    url = new URLString("http://user@mail.btinternet.com/");
+    roundtrip = roundTrip(url);
+    assertEquals(url, roundtrip);
+    assertEquals("http://user@mail.btinternet.com/", roundtrip.toString());
+
+  }
+
+
+  public void testUnserialize() throws Exception {
+    String httpURL = "http://config.f4f.com/v3config/adapter.xml";
+    URLString urlString = new URLString(httpURL);
+    File f = new File(PROPERTIES.getProperty(TEST_SERIALIZED_FILE));
+    try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(f))) {
+      URLString url = (URLString) in.readObject();
+      assertEquals(httpURL, url.toString());
+      assertEquals(urlString, url);
+      assertEquals(urlString.hashCode(), url.hashCode());
+    }
+  }
+
+  private URLString roundTrip(URLString url) throws Exception {
+    URLString roundtrip = null;
+    File f = new File(testOutputDir, new GuidGenerator().getUUID());
+    try (ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(f))) {
+      output.writeObject(url);
+    }
+    try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(f))) {
+      roundtrip = (URLString) in.readObject();
+    }
+    return roundtrip;
+  }
+
+  private URLString newInstance() throws Exception {
+    Constructor[] ctors = URLString.class.getDeclaredConstructors();
+    Constructor ctor = noArg(ctors);
+    ctor.setAccessible(true);
+    return (URLString) ctor.newInstance();
+  }
+
+  Constructor noArg(Constructor[] ctors) {
+    Constructor result = null;
+    for (Constructor ctor : ctors) {
+      if (ctor.getGenericParameterTypes().length == 0) {
+        result = ctor;
+        break;
+      }
+    }
+    return result;
   }
 }

@@ -18,6 +18,7 @@ package com.adaptris.core;
 
 import java.util.concurrent.TimeUnit;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdapterComponent;
@@ -67,11 +68,14 @@ public class RequestReplyWorkflow extends StandardWorkflow {
   private Boolean retainUniqueId;
   @NotNull
   @AutoPopulated
+  @Valid
   private ServiceCollection replyServiceCollection;
   @NotNull
   @AutoPopulated
+  @Valid
   private AdaptrisMessageProducer replyProducer;
   @AdvancedConfig
+  @Valid
   private TimeInterval replyTimeout;
 
   /**

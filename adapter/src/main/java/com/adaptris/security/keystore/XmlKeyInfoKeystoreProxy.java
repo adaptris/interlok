@@ -87,9 +87,8 @@ class XmlKeyInfoKeystoreProxy extends SingleEntryKeystoreProxy {
 
     InputStream in = getKeystoreLocation().openInput();
     try {
-      DocumentBuilderFactory dbf = DocumentBuilderFactoryBuilder.newInstance().configure(DocumentBuilderFactory.newInstance());
-      dbf.setNamespaceAware(true);
-      Document doc = dbf.newDocumentBuilder().parse(in);
+      Document doc = DocumentBuilderFactoryBuilder.newInstance().withNamespaceAware(true)
+          .newDocumentBuilder(DocumentBuilderFactory.newInstance()).parse(in);
       loadCertificates(doc);
     }
     // TODO add back this code one Cobertura can handle Java7 multicatch

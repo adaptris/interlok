@@ -86,12 +86,6 @@ public final class ConfiguredProduceDestination implements MessageDrivenDestinat
     return destination.hashCode();
   }
 
-  /** @see java.lang.Object#toString() */
-  @Override
-  public String toString() {
-    return "destination [" + destination + "]";
-  }
-
   /**
    * @see com.adaptris.core.ProduceDestination
    *      #getDestination(com.adaptris.core.AdaptrisMessage)

@@ -19,6 +19,8 @@ package com.adaptris.core.mail.attachment;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.ParseException;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
  * Representation of an attachment to a mail message.
@@ -50,6 +52,6 @@ public final class MailAttachment extends MailContent {
 
   @Override
   public String toString() {
-    return super.toString() + " filename=[" + getFilename() + "]";
+    return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("filename", getFilename()).toString();
   }
 }

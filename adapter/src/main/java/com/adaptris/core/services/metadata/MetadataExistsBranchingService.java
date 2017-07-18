@@ -27,6 +27,7 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -89,20 +90,7 @@ public class MetadataExistsBranchingService
    * metadata (other than "") exists against any of the configured keys
    */
   public void setMetadataExistsServiceId(String s) {
-    if (s == null || "".equals(s)) {
-      throw new IllegalArgumentException("null param");
-    }
-    this.metadataExistsServiceId = s;
+    this.metadataExistsServiceId = Args.notBlank(s, "metadataExistsServiceId");
   }
-  
-  /** @see java.lang.Object#toString() */
-  public String toString() {
-    StringBuffer result = new StringBuffer(super.toString());
-    
-    result.append(" metadata exists Service ID [");
-    result.append(this.getMetadataExistsServiceId());
-    result.append("]");
-    
-    return result.toString();
-  }
+
 }

@@ -49,7 +49,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("reformat-date-service")
 @AdapterComponent
-@ComponentProfile(summary = "Reformat a data value stored in metadata", tag = "service,metadata")
+@ComponentProfile(summary = "Reformat a data value stored in metadata", tag = "service,metadata,timestamp,datetime")
 @DisplayOrder(order = {"metadataKeyRegexp", "sourceDateFormat", "destinationDateFormat"})
 public class ReformatDateService extends ReformatMetadata {
 

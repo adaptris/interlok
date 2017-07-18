@@ -69,13 +69,5 @@ public class JdbcResultRow {
     else
       return null;
   }
-  
-  public String toString() {
-    StringBuffer buffer = new StringBuffer();
-    for(int counter = 0; counter < this.getFieldCount(); counter ++) {
-      buffer.append(this.getFieldName(counter) + " = " + this.getFieldValue(counter) + "; ");
-    }
-    
-    return buffer.toString();
-  }
+
 }

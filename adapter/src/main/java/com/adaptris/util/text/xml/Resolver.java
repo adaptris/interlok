@@ -16,67 +16,71 @@
 
 package com.adaptris.util.text.xml;
 
-import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import com.adaptris.util.text.Conversion;
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.util.URLHelper;
+import com.adaptris.util.URLString;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
+ * Simple resolver that caches URLs that it has previously encountered.
+ * 
  * @author Stuart Ellidge
- *
- * Class which implements EntityResolver and URIResolver. It caches in memory
- * previously retrieved documents.
+ * 
+ * @config simple-entity-resolver
  */
+@XStreamAlias("simple-entity-resolver")
 public class Resolver implements EntityResolver, URIResolver {
 
-  private HashMap hm = new HashMap();
+  private static final int DEFAULT_MAX_CACHE_SIZE = 50;
 
-  private void cache(URL url) throws Exception {
-    String key = url.toExternalForm();
+  protected transient Logger log = LoggerFactory.getLogger(this.getClass());
 
+  private transient HashMap<String, ByteArrayOutputStream> hm = new FixedSizeMap<String, ByteArrayOutputStream>();
+
+  @AdvancedConfig
+  @InputFieldDefault(value = "50")
+  private Integer maxDestinationCacheSize;
+
+  @AdvancedConfig
+  @InputFieldDefault(value = "false")
+  private Boolean additionalDebug;
+
+  protected InputStream retrieveAndCache(URLString url) throws Exception {
+    String key = url.toString();
+    InputStream result = null;
     if (!hm.containsKey(key)) {
-      String useProxy = System.getProperty("proxySet", "false");
-      String proxyUser = System.getProperty("proxyUser");
-      String proxyPass = System.getProperty("proxyPass");
-
-      URLConnection urlConn = url.openConnection();
-
-      if ("true".equals(useProxy)) {
-        if (proxyUser != null) {
-          String authString = proxyUser + ":" + proxyPass;
-          String auth = "Basic "
-              + Conversion.byteArrayToBase64String(authString.getBytes());
-          urlConn.setRequestProperty("Proxy-Authorization", auth);
-        }
+      try (InputStream input = URLHelper.connect(url); ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+        IOUtils.copy(input, output);
+        hm.put(key, output);
+        result = new ByteArrayInputStream(output.toByteArray());
       }
-
-      InputStream inputStream = urlConn.getInputStream();
-
-      StringBuffer sb = new StringBuffer();
-      String buffer = null;
-      BufferedReader inBuf = new BufferedReader(new InputStreamReader(
-          inputStream));
-
-      while ((buffer = inBuf.readLine()) != null) {
-        sb.append(buffer);
-      }
-
-      hm.put(key, sb);
     }
+    else {
+      debugLog("Resolve from cache {}", key);
+      result = new ByteArrayInputStream(hm.get(key).toByteArray());
+    }
+    return result;
   }
 
   /**
@@ -85,23 +89,19 @@ public class Resolver implements EntityResolver, URIResolver {
   @Override
   public InputSource resolveEntity(String publicId, String systemId)
       throws SAXException {
-    //System.out.println("PUBLIC=" + publicId + ", SYSTEM=" + systemId);
+    debugLog("Resolving [{}][{}]", publicId, systemId);
+    InputSource result = null;
     try {
-
-      URL myUrl = new URL(systemId); // throws MalformedURLException
-      cache(myUrl);
-
-      StringBuffer tmp = (StringBuffer) hm.get(myUrl.toExternalForm());
-      InputSource ret = new InputSource(new StringReader(tmp.toString()));
+      InputSource ret = new InputSource(retrieveAndCache(new URLString(systemId)));
       ret.setPublicId(publicId);
       ret.setSystemId(systemId);
-
-      return ret;
+      result = ret;
     }
     catch (Exception e) {
-      throw new SAXException("Failed to resolveEntity publicId=" + publicId
-          + ", systemId=" + systemId, e);
+      debugLog("Couldn't handle [{}][{}], fallback to default parser behaviour", publicId, systemId);
+      result = null;
     }
+    return result;
   }
 
   /**
@@ -109,11 +109,10 @@ public class Resolver implements EntityResolver, URIResolver {
    */
   @Override
   public Source resolve(String href, String base) throws TransformerException {
-    //System.out.println("HREF=" + href + ", BASE=" + base);
+    debugLog("Resolving [{}][{}]", href, base);
+    StreamSource result = null;
     try {
-
       URL myUrl = null;
-
       try {
         myUrl = new URL(href);
       }
@@ -123,18 +122,74 @@ public class Resolver implements EntityResolver, URIResolver {
         String url = base.substring(0, end + 1);
         myUrl = new URL(url + href);
       }
-
-      cache(myUrl);
-
-      StringBuffer tmp = (StringBuffer) hm.get(myUrl.toExternalForm());
-      StreamSource ret = new StreamSource(new StringReader(tmp.toString()),
-          myUrl.toExternalForm());
-
-      return ret;
+      StreamSource ret = new StreamSource(retrieveAndCache(new URLString(myUrl)), myUrl.toExternalForm());
+      result = ret;
     }
     catch (Exception e) {
-      throw new TransformerException("Failed to resolve href=" + href
-          + ", base=" + base, e);
+      debugLog("Couldn't handle [{}][{}], fallback to default parser behaviour", href, base);
+      result = null;
+    }
+    return result;
+  }
+
+  /**
+   * Get the max number of entries in the cache.
+   *
+   * @return the maximum number of entries.
+   */
+  public Integer getMaxDestinationCacheSize() {
+    return maxDestinationCacheSize;
+  }
+
+  /**
+   * Set the max number of entries in the cache.
+   * <p>
+   * Entries will be removed on a least recently accessed basis.
+   * </p>
+   *
+   * @param maxSize the maximum number of entries, default 16
+   */
+  public void setMaxDestinationCacheSize(Integer maxSize) {
+    maxDestinationCacheSize = maxSize;
+  }
+
+  public int maxDestinationCacheSize() {
+    return getMaxDestinationCacheSize() != null ? getMaxDestinationCacheSize().intValue() : DEFAULT_MAX_CACHE_SIZE;
+  }
+
+  public Boolean getAdditionalDebug() {
+    return additionalDebug;
+  }
+
+  public void setAdditionalDebug(Boolean b) {
+    this.additionalDebug = b;
+  }
+
+  private boolean additionalDebug() {
+    return getAdditionalDebug() != null ? getAdditionalDebug().booleanValue() : false;
+  }
+
+  protected void debugLog(String msg, Object... objects) {
+    if (additionalDebug()) {
+      log.trace(msg, objects);
+    }
+  }
+
+  int size() {
+    return hm.size();
+  }
+
+  private class FixedSizeMap<K, V> extends LinkedHashMap<K, V> {
+
+    private static final long serialVersionUID = 2011031601L;
+
+    public FixedSizeMap() {
+      super(DEFAULT_MAX_CACHE_SIZE, 0.75f, true);
+    }
+
+    @Override
+    protected boolean removeEldestEntry(Map.Entry eldest) {
+      return size() > maxDestinationCacheSize();
     }
   }
 

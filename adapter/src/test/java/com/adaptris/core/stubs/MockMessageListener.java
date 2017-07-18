@@ -68,4 +68,9 @@ public class MockMessageListener implements AdaptrisMessageListener, MessageCoun
   public int messageCount() {
     return producer.messageCount();
   }
+
+  @Override
+  public String friendlyName() {
+    return "MockMessageListener";
+  }
 }

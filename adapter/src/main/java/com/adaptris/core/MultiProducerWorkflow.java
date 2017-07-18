@@ -177,16 +177,6 @@ public class MultiProducerWorkflow extends StandardWorkflow {
     }
   }
 
-  /** @see java.lang.Object#toString() */
-  @Override
-  public String toString() {
-    StringBuffer result = new StringBuffer(super.toString());
-    result.append(" ");
-    result.append(getStandaloneProducers());
-
-    return result.toString();
-  }
-
   /**
    * <p>
    * Adds a <code>StandaloneProducer</code> to the <code>List</code> of

@@ -1,0 +1,3 @@
+ignore:
+  - "**/core/management/**/*.java"
+  - "**/core/jdbc/DataSourceWrapper.java"

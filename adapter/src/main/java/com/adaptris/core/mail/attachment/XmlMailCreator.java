@@ -20,7 +20,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -65,7 +67,7 @@ public class XmlMailCreator implements MailContentCreator {
     InputStream in = null;
     try {
       in = msg.getInputStream();
-      Document d = documentFactoryBuilder().configure(DocumentBuilderFactory.newInstance()).newDocumentBuilder().parse(in);
+      Document d = documentBuilder().parse(in);
       result = attachmentHandler.resolve(d);
     }
     catch (Exception e) {
@@ -89,7 +91,7 @@ public class XmlMailCreator implements MailContentCreator {
     InputStream in = null;
     try {
       in = msg.getInputStream();
-      Document d = documentFactoryBuilder().configure(DocumentBuilderFactory.newInstance()).newDocumentBuilder().parse(in);
+      Document d = documentBuilder().parse(in);
       result = bodyHandler.resolve(d);
     }
     catch (Exception e) {
@@ -142,8 +144,10 @@ public class XmlMailCreator implements MailContentCreator {
     this.xmlDocumentFactoryConfig = xml;
   }
 
-  DocumentBuilderFactoryBuilder documentFactoryBuilder() {
-    return getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig()
+  DocumentBuilder documentBuilder() throws ParserConfigurationException {
+    DocumentBuilderFactoryBuilder fac = getXmlDocumentFactoryConfig() != null
+        ? getXmlDocumentFactoryConfig()
         : DocumentBuilderFactoryBuilder.newInstance().withNamespaceAware(true);
+    return fac.newDocumentBuilder(DocumentBuilderFactory.newInstance());
   }
 }

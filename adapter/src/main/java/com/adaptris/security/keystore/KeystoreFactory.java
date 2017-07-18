@@ -65,13 +65,13 @@ public abstract class KeystoreFactory {
 
   private static final String[] CUSTOM_TYPES =
   {
-      Constants.KEYSTORE_X509, Constants.KEYSTORE_PKCS12,
+      Constants.KEYSTORE_X509,
       Constants.KEYSTORE_XMLKEYINFO
   };
 
   private static final Class<?>[] CUSTOM_TYPES_IMPS =
   {
-      X509KeystoreProxy.class, PKCS12KeystoreProxy.class,
+      X509KeystoreProxy.class,
       XmlKeyInfoKeystoreProxy.class
   };
 

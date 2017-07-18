@@ -26,6 +26,7 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
+import com.adaptris.util.SimpleBeanUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -65,7 +66,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class AdvancedActiveMqImplementation extends BasicActiveMqImplementation {
 
   /**
-   * Properties matched against various ActiveMQConnectionFactory methods.
+   * Non-Exhaustive list that matches various ActiveMQConnectionFactory methods.
    */
   public enum ConnectionFactoryProperty {
 
@@ -250,15 +251,6 @@ public class AdvancedActiveMqImplementation extends BasicActiveMqImplementation 
       }
     },
     /**
-     * @see ActiveMQConnectionFactory#setObjectMessageSerializationDefered(boolean)
-     */
-    ObjectMessageSerializationDefered {
-      @Override
-      void applyProperty(ActiveMQConnectionFactory cf, String o) {
-        cf.setObjectMessageSerializationDefered(Boolean.valueOf(o));
-      }
-    },
-    /**
      * @see ActiveMQConnectionFactory#setOptimizeAcknowledge(boolean)
      */
     OptimizeAcknowledge {
@@ -428,7 +420,9 @@ public class AdvancedActiveMqImplementation extends BasicActiveMqImplementation 
         }
       }
       if (!matched) {
-        log.trace("Ignoring unsupported Property " + kvp.getKey());
+        if (!SimpleBeanUtil.callSetter(cf, "set" + kvp.getKey(), kvp.getValue())) {
+          log.trace("Ignoring unsupported Property {}", kvp.getKey());
+        }
       }
     }
     return cf;

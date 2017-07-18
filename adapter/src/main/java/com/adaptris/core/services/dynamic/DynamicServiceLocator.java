@@ -65,7 +65,6 @@ public class DynamicServiceLocator extends ServiceImp implements EventHandlerAwa
   private MatchingStrategy matchingStrategy;
   @NotNull
   @Valid
-  @AdvancedConfig
   private ServiceNameProvider serviceNameProvider;
   @NotNull
   @Valid

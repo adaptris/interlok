@@ -112,18 +112,4 @@ public class MetadataDestination implements MessageDrivenDestination {
 
     return destinationName;
   }
-
-  /** @see java.lang.Object#toString() */
-  @Override
-  public String toString() {
-    StringBuffer result = new StringBuffer();
-
-    result.append("[");
-    result.append(this.getClass().getName());
-    result.append("] keys [");
-    result.append(keys);
-    result.append("]");
-
-    return result.toString();
-  }
 }

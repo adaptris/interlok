@@ -25,7 +25,6 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.xml.namespace.NamespaceContext;
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
@@ -231,9 +230,8 @@ public class XPathService extends ServiceImp {
   }
 
   private Document buildDocument(String xmlData) throws ParserConfigurationException, SAXException, IOException {
-    DocumentBuilderFactory factory = documentFactoryBuilder().configure(DocumentBuilderFactory.newInstance());
-    DocumentBuilder builder = factory.newDocumentBuilder();
-    return builder.parse(new InputSource(new StringReader(xmlData)));
+    return documentFactoryBuilder().newDocumentBuilder(DocumentBuilderFactory.newInstance())
+        .parse(new InputSource(new StringReader(xmlData)));
   }
 
   private String serializeNode(NodeList nodeList) throws TransformerException {

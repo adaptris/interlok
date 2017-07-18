@@ -19,8 +19,11 @@ package com.adaptris.core;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
+import com.adaptris.core.util.MetadataHelper;
+import com.adaptris.util.KeyValuePairBag;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -46,29 +49,22 @@ public class MetadataCollection extends ArrayList<MetadataElement> {
     super();
   }
 
-  /**
-   * Constructor. Allows you to create an instance of <code>MetadataCollection</code> from a <code>Set</code>
-   *
-   * @param elements a
-   */
   public MetadataCollection(Set<MetadataElement> elements) {
-    super();
-    for (MetadataElement e : elements) {
-      add(e);
-    }
+    super(elements);
   }
 
-  /**
-   * Constructor. Allows you to create an instance of <code>MetadataCollection</code> from another instance of
-   * <code>MetadataCollection</code>, which will result in a direct copy.
-   *
-   * @param metadataCollection collection of metadata.
-   */
   public MetadataCollection(MetadataCollection metadataCollection) {
-    super();
+    super(metadataCollection);
+  }
 
-    for (MetadataElement element : metadataCollection) {
-      add(element);
+  public MetadataCollection(KeyValuePairBag elements) {
+    this(MetadataHelper.convertFromKeyValuePairs(elements));
+  }
+
+  public MetadataCollection(Map<String, String> elements) {
+    this();
+    for (Map.Entry<String, String> e : elements.entrySet()) {
+      add(new MetadataElement(e.getKey(), e.getValue()));
     }
   }
 

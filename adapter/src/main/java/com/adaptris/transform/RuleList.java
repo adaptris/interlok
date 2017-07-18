@@ -221,32 +221,4 @@ public class RuleList {
     return ruleKeys.size();
   }
 
-  /** @see Object#toString()
-   */
-  public String toString() {
-    return (getClass().getName() + '@' + Integer.toHexString(hashCode()));
-  }
-
-  // //////////////////////////////////////
-  // private methods
-  // //////////////////////////////////////
-
-  /*
-  ********************************
-  // TV 30/04/01 : not meant to be used
-  
-    private void _add(Source rule)
-    {
-      if (rule == null)
-         throw new IllegalArgumentException();
-  
-      remove(rule);
-  
-      ruleKeys.add(rule);
-      ruleValues.add(rule);
-    }
-  
-  ********************************
-  */
-
 } // class RuleList

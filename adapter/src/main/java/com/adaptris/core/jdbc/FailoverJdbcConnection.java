@@ -169,25 +169,6 @@ public class FailoverJdbcConnection extends DatabaseConnection {
     connectUrls = l;
   }
 
-  /** @see java.lang.Object#toString() */
-  @Override
-  public String toString() {
-    StringBuffer result = new StringBuffer();
-
-    result.append("[");
-    result.append(this.getClass().getName());
-    result.append("] driverImp [");
-    result.append(getDriverImp());
-    result.append("] connectUrls [");
-    result.append(getConnectUrls());
-    result.append("] autoCommit [");
-    result.append(autoCommit());
-    result.append("]");
-
-    return result.toString();
-  }
-
-
   @Override
   public boolean equals(Object o) {
     boolean rc = false;

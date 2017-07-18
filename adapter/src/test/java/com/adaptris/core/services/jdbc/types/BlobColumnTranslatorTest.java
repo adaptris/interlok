@@ -20,6 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.Arrays;
 
@@ -29,16 +30,15 @@ import junit.framework.TestCase;
 
 public class BlobColumnTranslatorTest extends TestCase {
   
-  private BlobColumnTranslator translator;
   
   public void setUp() throws Exception {
-    translator = new BlobColumnTranslator();
   }
   
-  public void testBlobToString() throws Exception {
+  public void testBlobToString_WithEncoding() throws Exception {
+    BlobColumnTranslator translator = new BlobColumnTranslator("UTF-8");
     TestBlob blob = new TestBlob();
     String myData = new String("SomeData");
-    blob.setBytes(0, myData.getBytes());
+    blob.setBytes(0, myData.getBytes("UTF-8"));
     
     JdbcResultRow row = new JdbcResultRow();
     row.setFieldValue("testField", blob);
@@ -48,7 +48,22 @@ public class BlobColumnTranslatorTest extends TestCase {
     assertEquals("SomeData", translated);
   }
   
+  public void testBlobToString() throws Exception {
+    BlobColumnTranslator translator = new BlobColumnTranslator();
+    TestBlob blob = new TestBlob();
+    String myData = new String("SomeData");
+    blob.setBytes(0, myData.getBytes());
+
+    JdbcResultRow row = new JdbcResultRow();
+    row.setFieldValue("testField", blob);
+
+    String translated = translator.translate(row, 0);
+
+    assertEquals("SomeData", translated);
+  }
+
   public void testBlobToStringWithColumnName() throws Exception {
+    BlobColumnTranslator translator = new BlobColumnTranslator();
     TestBlob blob = new TestBlob();
     String myData = new String("SomeData");
     blob.setBytes(0, myData.getBytes());
@@ -62,14 +77,48 @@ public class BlobColumnTranslatorTest extends TestCase {
   }
   
   public void testBlobToStringWrongType() throws Exception {
+    BlobColumnTranslator translator = new BlobColumnTranslator();
     JdbcResultRow row = new JdbcResultRow();
     row.setFieldValue("testField", "SomeData");
     
     try {
       translator.translate(row, "testField");
+      fail();
     } catch (Exception ex) {
       // pass, expected
     }
+  }
+
+  public void testBlobWrite_WithEncoding() throws Exception {
+    BlobColumnTranslator translator = new BlobColumnTranslator("UTF-8");
+    TestBlob blob = new TestBlob();
+    String myData = new String("SomeData");
+    blob.setBytes(0, myData.getBytes("UTF-8"));
+
+    JdbcResultRow row = new JdbcResultRow();
+    row.setFieldValue("testField", blob);
+
+    StringWriter writer = new StringWriter();
+    translator.write(row, 0, writer);
+    String translated = writer.toString();
+
+    assertEquals("SomeData", translated);
+  }
+
+  public void testBlobWrite() throws Exception {
+    BlobColumnTranslator translator = new BlobColumnTranslator();
+    TestBlob blob = new TestBlob();
+    String myData = new String("SomeData");
+    blob.setBytes(0, myData.getBytes());
+
+    JdbcResultRow row = new JdbcResultRow();
+    row.setFieldValue("testField", blob);
+
+    StringWriter writer = new StringWriter();
+    translator.write(row, 0, writer);
+    String translated = writer.toString();
+
+    assertEquals("SomeData", translated);
   }
 
   private class TestBlob implements java.sql.Blob {

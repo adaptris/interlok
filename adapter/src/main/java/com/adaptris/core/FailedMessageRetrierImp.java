@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.core.util.LoggingHelper;
 
 /**
  * <p>
@@ -207,5 +208,10 @@ public abstract class FailedMessageRetrierImp implements FailedMessageRetrier {
     getStandaloneConsumer().prepare();
   }
 
+
+  @Override
+  public String friendlyName() {
+    return LoggingHelper.friendlyName(this);
+  }
 
 }

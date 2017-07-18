@@ -18,6 +18,7 @@ package com.adaptris.core;
 
 import javax.validation.Valid;
 
+import com.adaptris.core.util.Args;
 
 /**
  * <p>
@@ -81,10 +82,7 @@ public abstract class AdaptrisMessageConsumerImp extends
    */
   @Override
   public void setDestination(ConsumeDestination dest) {
-    if (dest == null) {
-      throw new IllegalArgumentException();
-    }
-    destination = dest;
+    destination = Args.notNull(dest, "destination");
   }
 
   /**
@@ -94,9 +92,11 @@ public abstract class AdaptrisMessageConsumerImp extends
    */
   protected String renameThread() {
     String oldName = Thread.currentThread().getName();
-    StringBuffer newName = new StringBuffer();
-    newName.append(getDestination().getDeliveryThreadName());
-    Thread.currentThread().setName(newName.toString());
+    String newName = getDestination().getDeliveryThreadName();
+    if (newName == null) {
+      newName = retrieveAdaptrisMessageListener().friendlyName();
+    }
+    Thread.currentThread().setName(newName);
     return oldName;
   }
   

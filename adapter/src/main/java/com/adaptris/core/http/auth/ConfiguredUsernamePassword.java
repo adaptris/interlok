@@ -35,9 +35,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"username", "password"})
 public class ConfiguredUsernamePassword extends UserPassAuthentication {
 
+  @InputFieldHint(expression = true)
   private String username = null;
   
-  @InputFieldHint(style = "PASSWORD")
+  @InputFieldHint(style = "PASSWORD", expression = true)
   private String password = null;
 
   public ConfiguredUsernamePassword() {}
@@ -51,7 +52,7 @@ public class ConfiguredUsernamePassword extends UserPassAuthentication {
   @Override
   protected PasswordAuthentication getPasswordAuthentication(AdaptrisMessage msg) throws CoreException {
     try {
-      return new PasswordAuthentication(username, Password.decode(password).toCharArray());
+      return new PasswordAuthentication(msg.resolve(getUsername()), Password.decode(msg.resolve(getPassword())).toCharArray());
     } catch (PasswordException e) {
       throw new CoreException("Unable to decode password", e);
     }

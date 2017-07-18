@@ -257,17 +257,6 @@ public class Target {
     target = new StreamResult();
   }
 
-  /**@see Object#toString()
-   */
-  public String toString() {
-    return (
-      getClass().getName()
-        + ':'
-        + this.target
-        + '@'
-        + Integer.toHexString(hashCode()));
-  }
-
   // //////////////////////////////////////
   //  private  methods
   // //////////////////////////////////////

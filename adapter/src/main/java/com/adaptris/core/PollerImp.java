@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class PollerImp implements Poller {
   
+  @Deprecated
   private String uniqueId;
   
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
@@ -54,14 +55,6 @@ public abstract class PollerImp implements Poller {
     consumer = c;
   }
 
-  /** @see java.lang.Object#toString() */
-  @Override
-  public String toString() {
-    StringBuffer result = new StringBuffer();
-    result.append(this.getClass().getName());
-
-    return result.toString();
-  }
 
   /**
    * <p>
@@ -99,10 +92,22 @@ public abstract class PollerImp implements Poller {
     Thread.currentThread().setName(oldName);
   }
 
+  /**
+   * Not required as this component doesn't need to extend {@link AdaptrisComponent}
+   * 
+   * @deprecated since 3.6.3
+   */
+  @Deprecated
   public String getUniqueId() {
     return uniqueId;
   }
 
+  /**
+   * Not required as this component doesn't need to extend {@link AdaptrisComponent}
+   * 
+   * @deprecated since 3.6.3
+   */
+  @Deprecated
   public void setUniqueId(String uniqueId) {
     this.uniqueId = uniqueId;
   }

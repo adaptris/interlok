@@ -18,6 +18,9 @@ package com.adaptris.core.util;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
+import java.lang.reflect.Method;
+
+import com.adaptris.core.ComponentLifecycle;
 import com.adaptris.core.Service;
 import com.adaptris.core.StateManagedComponent;
 
@@ -45,6 +48,24 @@ public final class LoggingHelper {
     }
     // return comp.getClass().getSimpleName() + "(" + (isBlank(comp.getUniqueId()) ? "" : comp.getUniqueId()) + ")";
     return comp.getClass().getSimpleName() + filterGuid(comp.getUniqueId());
+  }
+
+  public static String friendlyName(ComponentLifecycle comp) {
+    if (comp == null) {
+      return "";
+    }
+    return comp.getClass().getSimpleName() + filterGuid(reflectiveUniqueID(comp));
+  }
+
+  private static String reflectiveUniqueID(ComponentLifecycle comp) {
+    String result = "";
+    try {
+      Method m = comp.getClass().getMethod("getUniqueId");
+      result = m.invoke(comp).toString();
+    }
+    catch (Exception e) {
+    }
+    return result;
   }
 
   private static String filterGuid(String uid) {

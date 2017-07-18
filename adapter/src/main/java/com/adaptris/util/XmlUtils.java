@@ -24,7 +24,9 @@ import java.io.Reader;
 import java.io.Writer;
 
 import javax.xml.namespace.NamespaceContext;
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -145,7 +147,7 @@ public class XmlUtils {
         }
       }
       else {
-        currentDoc = docBuilderFactory.newDocumentBuilder().parse(xml);
+        currentDoc = documentBuilder().parse(xml);
       }
       isValid = true;
     }
@@ -154,6 +156,13 @@ public class XmlUtils {
     }
   }
 
+  private DocumentBuilder documentBuilder() throws ParserConfigurationException {
+    DocumentBuilder builder = docBuilderFactory.newDocumentBuilder();
+    if (entityResolver != null) {
+      builder.setEntityResolver(entityResolver);
+    }
+    return builder;
+  }
   /**
    * Method which sets the source XML document for this class. Source document
    * must be specified before any additional methods can be successfully called.

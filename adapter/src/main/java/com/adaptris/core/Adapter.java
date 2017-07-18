@@ -206,8 +206,8 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
    */
   private synchronized void initialise() throws CoreException {
     eventHandler.requestStart();
-    List<AdaptrisComponent> toInit =
-        Arrays.asList(getSharedComponents(), getMessageErrorDigester(), messageErrorHandler, channelList, failedMessageRetrier);
+    List<ComponentLifecycle> toInit = Arrays.asList((ComponentLifecycle) getSharedComponents(), getMessageErrorDigester(),
+        getMessageErrorHandler(), getChannelList(), getFailedMessageRetrier());
     try {
       for (ComponentLifecycle c : toInit) {
         LifecycleHelper.init(c);
@@ -285,8 +285,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
 
   private void warnOnErrorHandlerBehaviour(StateManagedComponent comp, ProcessingExceptionHandler h) {
     if (!h.hasConfiguredBehaviour()) {
-      log.warn("[" + friendlyName(comp) + "] has a MessageErrorHandler with no behaviour; "
-          + "messages may be discarded upon exception");
+      log.warn("[{}] has a MessageErrorHandler with no behaviour; messages may be discarded upon exception", friendlyName(comp));
     }
   }
 
@@ -296,22 +295,23 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
   @Override
   public void start() throws CoreException {
 
-    List<AdaptrisComponent> toStart =
-        Arrays.asList(getMessageErrorDigester(), messageErrorHandler, channelList, failedMessageRetrier, getSharedComponents());
+    List<ComponentLifecycle> toStart =
+        Arrays.asList(getMessageErrorDigester(), getMessageErrorHandler(), getChannelList(), getFailedMessageRetrier(),
+            (ComponentLifecycle) getSharedComponents());
 
     try {
-      LifecycleHelper.start(getMessageErrorDigester());
-      LifecycleHelper.start(messageErrorHandler);
-      LifecycleHelper.start(channelList);
-      LifecycleHelper.start(failedMessageRetrier);
-      LifecycleHelper.start(getSharedComponents());
-
+      for (ComponentLifecycle c : toStart) {
+        LifecycleHelper.start(c);
+      }
       startHeartbeat();
       handleLifecycleEvent(AdapterStartEvent.class, true);
-
       lastStartTime = new Date();
       log.info("{} Started", LoggingHelper.friendlyName(this));
     } catch (CoreException | RuntimeException e) {
+      log.error("Failed to start Adapter; stopping components");
+      for (ComponentLifecycle c : reverse(toStart)) {
+        LifecycleHelper.stop(c);
+      }
       handleLifecycleEvent(AdapterStartEvent.class, false);
       ExceptionHelper.rethrowCoreException(e);
     }

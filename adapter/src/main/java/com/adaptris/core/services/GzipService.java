@@ -41,7 +41,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("gzip-service")
 @AdapterComponent
-@ComponentProfile(summary = "GZIP the contents of the message", tag = "service")
+@ComponentProfile(summary = "GZIP the contents of the message", tag = "service,zip")
 public class GzipService extends ServiceImp {
 
   /**

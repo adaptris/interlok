@@ -50,7 +50,8 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @XStreamAlias("workflow-list")
 @AdapterComponent
 @ComponentProfile(summary = "A Collection of Workflows", tag = "base")
-public final class WorkflowList extends AbstractCollection<Workflow> implements AdaptrisComponent, List<Workflow> {
+public final class WorkflowList extends AbstractCollection<Workflow>
+    implements ComponentLifecycle, ComponentLifecycleExtension, List<Workflow> {
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
   @Valid
@@ -63,6 +64,7 @@ public final class WorkflowList extends AbstractCollection<Workflow> implements 
   private WorkflowLifecycleStrategy lifecycleStrategy;
   private transient WorkflowLifecycleStrategy defaultStrategy = new DefaultWorkflowLifecycleStrategy();
 
+  @Deprecated
   private String uniqueId;
   
   /**
@@ -138,25 +140,6 @@ public final class WorkflowList extends AbstractCollection<Workflow> implements 
   private WorkflowLifecycleStrategy lifecycleStrategy() {
     return getLifecycleStrategy() != null ? getLifecycleStrategy() : defaultStrategy;
   }
-
-  // /** @see java.lang.Object#toString() */
-  // @Override
-  // public String toString() {
-  // StringBuffer result = new StringBuffer();
-  //
-  // result.append("[");
-  // result.append(this.getClass().getName());
-  // result.append("] ");
-  //
-  // result.append("count [" + workflows.size() + "] ");
-  //
-  // for (int i = 0; i < workflows.size(); i++) {
-  // result.append("\n\nworkflow [" + (i + 1) + "] ");
-  // result.append(workflows.get(i));
-  // }
-  //
-  // return result.toString();
-  // }
 
   /**
    * <p>
@@ -348,10 +331,22 @@ public final class WorkflowList extends AbstractCollection<Workflow> implements 
     return workflows.subList(fromIndex, toIndex);
   }
 
+  /**
+   * Not required as this component doesn't need to extend {@link AdaptrisComponent}
+   * 
+   * @deprecated since 3.6.3
+   */
+  @Deprecated
   public String getUniqueId() {
     return uniqueId;
   }
 
+  /**
+   * Not required as this component doesn't need to extend {@link AdaptrisComponent}
+   * 
+   * @deprecated since 3.6.3
+   */
+  @Deprecated
   public void setUniqueId(String uniqueId) {
     this.uniqueId = uniqueId;
   }

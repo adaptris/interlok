@@ -285,8 +285,8 @@ public class FfTransform extends TransformFramework {
   // (passed to the transform method) into its optimised format.
   private DocumentBuilder _getDocumentBuilder() throws Exception {
     try {
-      DocumentBuilderFactory dbf = DocumentBuilderFactoryBuilder.newInstance().configure(DocumentBuilderFactory.newInstance());
-      return dbf.newDocumentBuilder();
+      return DocumentBuilderFactoryBuilder.newInstance().withNamespaceAware(true)
+          .newDocumentBuilder(DocumentBuilderFactory.newInstance());
     } catch (Exception e) {
       throw new Exception(e.getMessage());
     }

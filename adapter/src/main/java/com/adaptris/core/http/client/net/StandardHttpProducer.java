@@ -239,6 +239,7 @@ public class StandardHttpProducer extends HttpProducer {
     }
     getResponseHeaderHandler().handle(http, reply);
     reply.addMetadata(new MetadataElement(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE, String.valueOf(http.getResponseCode())));
+    reply.addObjectHeader(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE, Integer.valueOf(http.getResponseCode()));
   }
 
   private void copyAndClose(InputStream input, OutputStream out) throws IOException, CoreException {

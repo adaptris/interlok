@@ -24,6 +24,8 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.MetadataCollection;
 import com.adaptris.core.MetadataElement;
@@ -46,6 +48,10 @@ public class MetadataRequestHeaders implements RequestHeaderProvider<HttpURLConn
   @Valid
   private MetadataFilter filter;
 
+  @AdvancedConfig
+  @InputFieldDefault(value = "false")
+  private Boolean unfold;
+
   public MetadataRequestHeaders() {
   }
 
@@ -58,8 +64,9 @@ public class MetadataRequestHeaders implements RequestHeaderProvider<HttpURLConn
   public HttpURLConnection addHeaders(AdaptrisMessage msg, HttpURLConnection target) {
     MetadataCollection metadataSubset = getFilter().filter(msg);
     for (MetadataElement me : metadataSubset) {
-      log.trace("Adding Request Property [{}: {}]", me.getKey(), me.getValue());
-      target.addRequestProperty(me.getKey(), me.getValue());
+      String value = unfold(me.getValue());
+      log.trace("Adding Request Property [{}: {}]", me.getKey(), value);
+      target.addRequestProperty(me.getKey(), value);
     }
     return target;
   }
@@ -77,4 +84,31 @@ public class MetadataRequestHeaders implements RequestHeaderProvider<HttpURLConn
     this.filter = Args.notNull(mf, "metadata filter");
   }
 
+  public Boolean getUnfold() {
+    return unfold;
+  }
+
+  /**
+   * Unfold headers onto a single line.
+   * <p>
+   * RFC7230 deprecates the folding of headers onto multiple lines; so HTTP headers are expected to be single line. This param
+   * allows you to enforce that unfolding metadata values happens before writing them as request properties.
+   * </p>
+   * 
+   * @param b true to unfold values (default is false to preserve legacy behaviour).
+   */
+  public void setUnfold(Boolean b) {
+    this.unfold = b;
+  }
+
+  boolean unfold() {
+    return getUnfold() != null ? getUnfold().booleanValue() : false;
+  }
+
+  String unfold(String s) {
+    if (unfold()) {
+      return s.replaceAll("\\s\\r\\n\\s+", " ").replaceAll("\\r\\n\\s+", " ");
+    }
+    return s;
+  }
 }

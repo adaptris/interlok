@@ -16,11 +16,12 @@
 
 package com.adaptris.core.transform;
 
-import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.ComponentLifecycle;
+import com.adaptris.core.ComponentLifecycleExtension;
 import com.adaptris.core.CoreException;
 
-public interface MessageValidator extends AdaptrisComponent {
+public interface MessageValidator extends ComponentLifecycle, ComponentLifecycleExtension {
 
   void validate(AdaptrisMessage msg) throws CoreException;
 

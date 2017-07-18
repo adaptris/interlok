@@ -102,7 +102,7 @@ public class WaitService extends ServiceImp {
   protected void closeService() {
   }
 
-  long waitMs() {
+  protected long waitMs() {
     long maxWaitMs = getWaitInterval() != null ? getWaitInterval().toMilliseconds() : DEFAULT_WAIT.toMilliseconds();
     return randomizeWait() ? ThreadLocalRandom.current().nextLong(maxWaitMs) : maxWaitMs;
   }
@@ -138,7 +138,7 @@ public class WaitService extends ServiceImp {
     this.randomize = b;
   }
 
-  boolean randomizeWait() {
+  protected boolean randomizeWait() {
     return getRandomize() != null ? getRandomize().booleanValue() : false;
   }
 }

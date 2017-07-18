@@ -2,14 +2,17 @@ package com.adaptris.core.util;
 
 import java.util.Map;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.xml.namespace.NamespaceContext;
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.EntityResolver;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -49,6 +52,10 @@ public class DocumentBuilderFactoryBuilder {
   private Boolean coalescing;
   @AdvancedConfig
   private Boolean xincludeAware;
+
+  @AdvancedConfig
+  @Valid
+  private EntityResolver entityResolver;
 
   private static final Logger log = LoggerFactory.getLogger(DocumentBuilderFactoryBuilder.class);
 
@@ -123,10 +130,8 @@ public class DocumentBuilderFactoryBuilder {
 
       @Override
       void applyConfig(DocumentBuilderFactoryBuilder b, DocumentBuilderFactory f) throws ParserConfigurationException {
-        log.trace("{} additional features", b.getFeatures().size());
         for (KeyValuePair entry : b.getFeatures()) {
           f.setFeature(entry.getKey(), BooleanUtils.toBoolean(entry.getValue()));
-          // log.debug("{} is now {}", entry.getKey(), f.getFeature(entry.getKey()));
         }
       }
     };
@@ -141,11 +146,43 @@ public class DocumentBuilderFactoryBuilder {
     return new DocumentBuilderFactoryBuilder().withNamespaceAware(true);
   }
 
+  /**
+   * Configure a document builder factory
+   * 
+   * @param f
+   * @return a reconfigured document builder factory
+   */
   public DocumentBuilderFactory configure(DocumentBuilderFactory f) throws ParserConfigurationException {
     for (FactoryConfiguration c : FactoryConfiguration.values()) {
       c.applyConfig(this, f);
     }
     return f;
+  }
+
+  /**
+   * Configure a document builder.
+   * 
+   * @param db
+   * @return a reconfigured document builder
+   */
+  public DocumentBuilder configure(DocumentBuilder db) {
+    if (getEntityResolver() != null) {
+      db.setEntityResolver(getEntityResolver());
+    }
+    return db;
+  }
+
+  /**
+   * Convenience to create a new {@code DocumentBuilder} instance.
+   * 
+   * @param f a DocumentBuilderFactory
+   * @return a configured DocumentBuilder
+   * @throws ParserConfigurationException
+   * @see {@link #configure(DocumentBuilder)}
+   * @see (@link #configure(DocumentBuilderFactory)}
+   */
+  public DocumentBuilder newDocumentBuilder(DocumentBuilderFactory f) throws ParserConfigurationException {
+    return configure(configure(f).newDocumentBuilder());
   }
 
   public DocumentBuilderFactory build() throws ParserConfigurationException {
@@ -305,5 +342,13 @@ public class DocumentBuilderFactoryBuilder {
   public DocumentBuilderFactoryBuilder withXIncludeAware(Boolean b) {
     setXincludeAware(b);
     return this;
+  }
+
+  public EntityResolver getEntityResolver() {
+    return entityResolver;
+  }
+
+  public void setEntityResolver(EntityResolver e) {
+    this.entityResolver = e;
   }
 }

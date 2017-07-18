@@ -227,9 +227,7 @@ public class SocketConsumer extends AdaptrisMessageConsumerImp {
           Socket s = serverSocket.accept();
           s.setSoTimeout(getSocketTimeout());
           Worker w = new Worker(s);
-          String threadName = getDestination() == null ? "SocketWorker@"
-              + w.hashCode() : getDestination().getDeliveryThreadName() + "@"
-              + w.hashCode();
+          String threadName = retrieveAdaptrisMessageListener().friendlyName() + "@" + w.hashCode();
 
           Thread t = threadFactory.newThread(w);
           t.setName(threadName);

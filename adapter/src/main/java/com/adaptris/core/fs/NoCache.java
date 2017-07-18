@@ -16,6 +16,7 @@
 
 package com.adaptris.core.fs;
 
+import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.CoreException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -29,7 +30,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("fs-no-processed-item-cache")
 public class NoCache implements ProcessedItemCache {
-  
+
+  @Deprecated
   private String uniqueId;
 
   public NoCache() {
@@ -104,10 +106,22 @@ public class NoCache implements ProcessedItemCache {
   public void evict() {
   }
 
+  /**
+   * Not required as this component doesn't need to extend {@link AdaptrisComponent}
+   * 
+   * @deprecated since 3.6.3
+   */
+  @Deprecated
   public String getUniqueId() {
     return uniqueId;
   }
 
+  /**
+   * Not required as this component doesn't need to extend {@link AdaptrisComponent}
+   * 
+   * @deprecated since 3.6.3
+   */
+  @Deprecated
   public void setUniqueId(String uniqueId) {
     this.uniqueId = uniqueId;
   }

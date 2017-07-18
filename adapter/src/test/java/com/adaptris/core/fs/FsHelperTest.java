@@ -76,7 +76,7 @@ public class FsHelperTest extends BaseCase {
   }
 
   public void testRelativeURL() throws Exception {
-    File f = FsHelper.createFileReference(FsHelper.createUrlFromString("file://localhost/./fred", true));
+    File f = FsHelper.toFile("file://localhost/./fred");
     assertEquals("fred", f.getName());
     assertEquals("." + File.separator + "fred", f.getPath());
   }

@@ -117,21 +117,6 @@ public class StandaloneProducer extends ServiceImp implements AdaptrisMessageSen
   }
 
 
-  /** @see java.lang.Object#toString() */
-  @Override
-  public String toString() {
-    StringBuffer result = new StringBuffer();
-
-    result.append("[");
-    result.append(this.getClass().getName());
-    result.append("] ");
-    result.append(connection);
-    result.append(" ");
-    result.append(producer);
-
-    return result.toString();
-  }
-
   // sets and gets...
 
   /**

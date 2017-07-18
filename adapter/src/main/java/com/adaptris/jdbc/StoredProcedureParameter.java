@@ -88,16 +88,5 @@ public class StoredProcedureParameter {
   public void setOutValue(Object outValue) {
     this.outValue = outValue;
   }
-
-  public String toString() {
-    StringBuffer buffer = new StringBuffer();
-    buffer.append("Name = " + this.getName() + "; ");
-    buffer.append("Order = " + this.getOrder() + "; ");
-    buffer.append("InValue = " + this.getInValue() + "; ");
-    buffer.append("OutValue = " + this.getOutValue() + "; ");
-    buffer.append("ParameterType = " + this.getParameterType() + "; ");
-    buffer.append("ParameterValueType = " + this.getParameterValueType());
-    return buffer.toString();
-  }
   
 }

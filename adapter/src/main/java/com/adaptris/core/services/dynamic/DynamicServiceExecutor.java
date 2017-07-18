@@ -30,7 +30,6 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
-import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -90,36 +89,15 @@ public class DynamicServiceExecutor extends ServiceImp implements EventHandlerAw
   public void doService(AdaptrisMessage msg) throws ServiceException {
     try {
       Service service = createService(msg);
-      log.trace("Created service [" + friendlyName(service) + "]");
-      prepare(service);
-      start(service);
+      log.trace("Created service [{}]", friendlyName(service));
+      LifecycleHelper.registerEventHandler(service, eventHandler);
+      LifecycleHelper.initAndStart(service);
       service.doService(msg);
-      stop(service);
+      LifecycleHelper.stopAndClose(service);
     }
     catch (IOException | CoreException e) {
       throw ExceptionHelper.wrapServiceException(e);
     }
-  }
-
-  private void prepare(Service service) throws CoreException {
-    LifecycleHelper.registerEventHandler(service, eventHandler);
-    service.prepare();
-  }
-
-  private static void start(AdaptrisComponent c) throws CoreException {
-    LifecycleHelper.init(c);
-    try {
-      LifecycleHelper.start(c);
-    }
-    catch (CoreException e) {
-      LifecycleHelper.close(c);
-      throw e;
-    }
-  }
-
-  private static void stop(AdaptrisComponent c) {
-    LifecycleHelper.stop(c);
-    LifecycleHelper.close(c);
   }
 
   private Service createService(AdaptrisMessage msg) throws CoreException, IOException {

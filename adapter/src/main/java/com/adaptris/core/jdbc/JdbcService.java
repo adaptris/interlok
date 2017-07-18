@@ -118,16 +118,6 @@ public abstract class JdbcService extends ServiceImp {
    */
   protected abstract void stopService();
 
-  /** @see java.lang.Object#toString() */
-  @Override
-  public String toString() {
-    StringBuffer result = new StringBuffer(super.toString());
-    result.append(" ");
-    result.append(connection);
-
-    return result.toString();
-  }
-
   /**
    * <p>
    * Sets the <code>AdaptrisConnection</code> to use.

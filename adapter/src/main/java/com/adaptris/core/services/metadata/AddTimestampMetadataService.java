@@ -54,7 +54,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("add-timestamp-metadata-service")
 @AdapterComponent
-@ComponentProfile(summary = "Add a timestamp as metadata", tag = "service,metadata")
+@ComponentProfile(summary = "Add a timestamp as metadata", tag = "service,metadata,timestamp,datetime")
 @DisplayOrder(order = {"metadataKey", "dateFormat", "offset", "alwaysReplace"})
 public class AddTimestampMetadataService extends ServiceImp {
 

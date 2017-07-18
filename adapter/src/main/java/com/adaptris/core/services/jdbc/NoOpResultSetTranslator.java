@@ -18,7 +18,6 @@ package com.adaptris.core.services.jdbc;
 import java.sql.SQLException;
 
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.jdbc.JdbcResult;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -30,32 +29,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  *
  */
 @XStreamAlias("jdbc-noop-result-set-translator")
-public class NoOpResultSetTranslator implements ResultSetTranslator {
-
-  @Override
-  public String getUniqueId() {
-    return null;
-  }
-
-  @Override
-  public void init() throws CoreException {
-  }
-
-  @Override
-  public void start() throws CoreException {
-  }
-
-  @Override
-  public void stop() {
-  }
-
-  @Override
-  public void close() {
-  }
-
-  @Override
-  public void prepare() throws CoreException {
-  }
+public class NoOpResultSetTranslator extends ResultSetTranslatorBase {
 
   @Override
   public void translate(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException {

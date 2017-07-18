@@ -26,8 +26,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -35,6 +33,8 @@ import com.adaptris.security.exc.KeystoreException;
 import com.adaptris.security.keystore.CompositeKeystore;
 import com.adaptris.security.keystore.KeystoreFactory;
 import com.adaptris.security.keystore.KeystoreLocation;
+
+import junit.framework.TestCase;
 
 /**
  * Test Composite Keystore Functionality.
@@ -169,24 +169,17 @@ public class TestCompositeKeystore extends TestCase {
 
   public void testKeystoreAliasCaseBug890() throws Exception {
     CompositeKeystore composite = new CompositeKeystore();
-    String pkAlias = cfg
-        .getProperty(Config.KEYSTORE_SINGLE_PKCS12_ALIAS_UPPERCASE);
     String x509Alias = cfg
         .getProperty(Config.KEYSTORE_SINGLE_X509_ALIAS_UPPERCASE);
     String x509KeyInfoAlias = cfg
         .getProperty(Config.KEYSTORE_SINGLE_XML_KEY_INFO_ALIAS_UPPERCASE);
     composite.addKeystore(KeystoreFactory.getDefault().create(
-        cfg.getProperty(Config.KEYSTORE_SINGLE_PKCS12_URL_UPPERCASE),
-        cfg.getProperty(Config.KEYSTORE_COMMON_KEYSTORE_PW).toCharArray()));
-    composite.addKeystore(KeystoreFactory.getDefault().create(
         cfg.getProperty(Config.KEYSTORE_SINGLE_X509_URL_UPPERCASE), null));
     composite.addKeystore(KeystoreFactory.getDefault().create(
         cfg.getProperty(Config.KEYSTORE_SINGLE_XML_KEY_INFO_URL_UPPERCASE),
         null));
-    assertTrue(composite.containsAlias(pkAlias));
     assertTrue(composite.containsAlias(x509Alias));
     assertTrue(composite.containsAlias(x509KeyInfoAlias));
-    assertNotNull(composite.getPrivateKey(pkAlias, null));
     assertNotNull(composite.getCertificate(x509Alias));
     assertNotNull(composite.getCertificate(x509KeyInfoAlias));
   }

@@ -143,7 +143,7 @@ public abstract class JdbcIteratingDataCaptureServiceImpl extends JdbcDataCaptur
 
   private Document createDocument(NamespaceContext ctx, AdaptrisMessage msg) throws ParserConfigurationException {
     DocumentBuilderFactoryBuilder builder = documentFactoryBuilder().withNamespaceAware(ctx);
-    Document doc = builder.configure(DocumentBuilderFactory.newInstance()).newDocumentBuilder().newDocument();
+    Document doc = builder.newDocumentBuilder(DocumentBuilderFactory.newInstance()).newDocument();
     try {
       doc = XmlHelper.createDocument(msg, builder);
     }

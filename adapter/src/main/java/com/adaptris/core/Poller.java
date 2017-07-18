@@ -22,7 +22,7 @@ package com.adaptris.core;
  * Schedules polling for <code>AdaptrisPollingConsumer</code>s.
  * </p>
  */
-public interface Poller extends AdaptrisComponent {
+public interface Poller extends ComponentLifecycle, ComponentLifecycleExtension {
   
   /**
    * <p>

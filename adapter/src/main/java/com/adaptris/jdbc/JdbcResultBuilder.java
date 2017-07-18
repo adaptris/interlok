@@ -22,7 +22,11 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class JdbcResultBuilder {
+  protected transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   private JdbcResult result;
 
@@ -46,8 +50,12 @@ public class JdbcResultBuilder {
   }
 
   public JdbcResultBuilder setResultSet(Statement statement) throws SQLException {
+    return setResultSet(statement, false);
+  }
+
+  public JdbcResultBuilder setResultSet(Statement statement, boolean moreResultsQuietly) throws SQLException {
     result.setStatement(statement);
-    result.setResultSets(this.mapResultSet(statement));
+    result.setResultSets(this.mapResultSet(statement, moreResultsQuietly));
     return this;
   }
 
@@ -64,14 +72,25 @@ public class JdbcResultBuilder {
     return new JdbcResultSetImpl(resultSet);
   }
 
-  private List<JdbcResultSet> mapResultSet(Statement statement) throws SQLException {
+  private List<JdbcResultSet> mapResultSet(Statement statement, boolean ignoreException) throws SQLException {
     ArrayList<JdbcResultSet> result = new ArrayList<JdbcResultSet>();
-
-    do {
-      JdbcResultSet singleResultSet = new JdbcResultSetImpl(statement.getResultSet());
-      result.add(singleResultSet);
-    } while(statement.getMoreResults(Statement.KEEP_CURRENT_RESULT));
-
+    try {
+      boolean multipleResultSets = statement.getConnection().getMetaData().supportsMultipleOpenResults();
+      do {
+        JdbcResultSet singleResultSet = new JdbcResultSetImpl(statement.getResultSet());
+        result.add(singleResultSet);
+        if (!multipleResultSets) break;
+      }
+      while (statement.getMoreResults(Statement.KEEP_CURRENT_RESULT));
+    }
+    catch (SQLException e) {
+      if (ignoreException) { 
+        log.debug("Ignoring SQLException({}) : {}", e.getClass().getSimpleName(), e.getMessage());
+      }
+      else {
+        throw e;
+      }
+    }
     return result;
   }
 }

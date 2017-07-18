@@ -143,24 +143,6 @@ public final class ConfiguredConsumeDestination extends ConsumeDestinationImp {
     return result;
   }
 
-  /** @see Object */
-  @Override
-  public String toString() {
-    StringBuffer result = new StringBuffer(super.toString());
-
-    result.append(" destination [");
-    result.append(destination);
-
-    if (notNull(getFilterExpression())) {
-      result.append("] filter [");
-      result.append(filterExpression);
-    }
-
-    result.append("]");
-
-    return result.toString();
-  }
-
   /**
    * @see com.adaptris.core.ConsumeDestination #setDestination(java.lang.String)
    */
