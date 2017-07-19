@@ -7,6 +7,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -26,7 +27,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "A Service that refers to another Service configured elsewhere", tag = "service,base")
 @DisplayOrder(order = {"lookupName"})
-public class SharedService extends SharedComponent implements Service {
+public class SharedService extends SharedComponent implements Service, EventHandlerAware {
 
   @NotBlank
   private String lookupName;
@@ -35,7 +36,8 @@ public class SharedService extends SharedComponent implements Service {
   private Boolean cloneService;
   
   private transient Service clonedService;
-  
+  private transient EventHandler eventHandler;
+
   public SharedService() {
   }
 
@@ -87,6 +89,7 @@ public class SharedService extends SharedComponent implements Service {
 
   @Override
   public void prepare() throws CoreException {
+    LifecycleHelper.registerEventHandler(getProxiedService(), eventHandler);
     getProxiedService().prepare();
   }
 
@@ -191,6 +194,10 @@ public class SharedService extends SharedComponent implements Service {
 
   void setClonedService(Service clonedService) {
     this.clonedService = clonedService;
+  }
+
+  public void registerEventHandler(EventHandler eh) {
+    eventHandler = eh;
   }
 
 }
