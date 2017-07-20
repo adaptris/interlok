@@ -24,7 +24,7 @@
      <artifact type="source" ext="jar" conf="sources" m:classifier="sources"/>
   </publications>
   <dependencies>
-    <dependency org="com.thoughtworks.xstream" name="xstream" rev="1.4.7"  conf="compile->default"  transitive="false"/>
+    <dependency org="com.thoughtworks.xstream" name="xstream" rev="1.4.9"  conf="compile->default"  transitive="false"/>
     <dependency org="org.codehaus.jettison" name="jettison" rev="1.2"  conf="compile->default"  transitive="false"/>
     <dependency org="org.apache.velocity" name="velocity" rev="1.7" conf="compile->default" transitive="false"/>
     <dependency org="com.adaptris" name="adp-core-apt" rev="${ivy.publish.revision}" conf="compile->default;ant->default" changing="true"/>
