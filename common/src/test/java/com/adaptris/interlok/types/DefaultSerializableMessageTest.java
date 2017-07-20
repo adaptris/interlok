@@ -31,6 +31,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
 
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.reflection.PureJavaReflectionProvider;
+
 public class DefaultSerializableMessageTest {
 
   @Rule
@@ -148,4 +151,28 @@ public class DefaultSerializableMessageTest {
     assertEquals(testName.getMethodName(), msg.getContentEncoding());
   }
 
+  @Test
+  public void testSerialize() throws Exception {
+    Map<String, String> hdrs = new HashMap<>();
+    hdrs.put(testName.getMethodName(), testName.getMethodName());
+
+    DefaultSerializableMessage input = new DefaultSerializableMessage().withUniqueId(testName.getMethodName())
+        .withMessageHeaders(hdrs).withPayload(testName.getMethodName()).withPayloadEncoding(testName.getMethodName())
+        .withNextServiceId(testName.getMethodName());
+
+    DefaultSerializableMessage msg = roundTrip(input);
+    assertEquals(testName.getMethodName(), msg.getUniqueId());
+    assertEquals(testName.getMethodName(), msg.getContent());
+    assertEquals(testName.getMethodName(), msg.getContentEncoding());
+    assertEquals(1, msg.getMessageHeaders().size());
+    assertEquals(testName.getMethodName(), msg.getMessageHeaders().get(testName.getMethodName()));
+    assertEquals(testName.getMethodName(), msg.getNextServiceId());
+
+  }
+
+  private DefaultSerializableMessage roundTrip(DefaultSerializableMessage input) throws Exception {
+    XStream m = new XStream(new PureJavaReflectionProvider());
+    m.processAnnotations(DefaultSerializableMessage.class);
+    return (DefaultSerializableMessage) m.fromXML(m.toXML(input));
+  }
 }
