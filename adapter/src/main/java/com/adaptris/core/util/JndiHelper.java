@@ -39,7 +39,7 @@ public class JndiHelper {
 
   private static transient Logger log = LoggerFactory.getLogger(JndiHelper.class);
 
-  private static String createJndiName(AdaptrisComponent object) throws InvalidNameException {
+  public static String createJndiName(AdaptrisComponent object) throws InvalidNameException {
     String jndiName = null;
     if (((JndiBindable) object).getLookupName() != null) jndiName = ((JndiBindable) object).getLookupName();
     else

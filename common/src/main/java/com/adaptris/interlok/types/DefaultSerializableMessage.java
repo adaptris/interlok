@@ -24,7 +24,6 @@ import java.util.UUID;
 import org.apache.commons.lang.StringUtils;
 
 import com.adaptris.annotation.AutoPopulated;
-import com.adaptris.annotation.GenerateBeanInfo;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -34,7 +33,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("default-serializable-message")
-@GenerateBeanInfo
 public class DefaultSerializableMessage implements SerializableMessage {
   private static final long serialVersionUID = 2015082401L;
 
