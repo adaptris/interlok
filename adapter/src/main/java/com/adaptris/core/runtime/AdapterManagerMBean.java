@@ -37,7 +37,7 @@ public interface AdapterManagerMBean extends AdapterComponentMBean, ParentRuntim
   String NOTIF_MSG_FORCE_CLOSE = "Adapter Force Close";
 
   /**
-   * Add an {@link com.adaptris.core.AdaptrisConnection} to the adapter's shared connections.
+   * Add an {@link com.adaptris.core.AdaptrisConnection} to the adapter's shared components..
    * 
    * @param xmlString the string representation of the connection.
    * @return true if the connection was added, false if the connection's unique-id already exists in the list.
@@ -48,12 +48,12 @@ public interface AdapterManagerMBean extends AdapterComponentMBean, ParentRuntim
   boolean addSharedConnection(String xmlString) throws CoreException, IllegalStateException, IllegalArgumentException;
 
   /**
-   * Add an {@link com.adaptris.core.AdaptrisConnection} to the adapter's shared connections and bind it to JNDI.
+   * Add an {@link com.adaptris.core.AdaptrisConnection} to the adapter's shared components. and bind it to JNDI.
    * <p>
    * This is primarily for adding shared connections when the Adapter is currently started. Runtime manipulation of the adapter
-   * allows you to invoke {@link #addChannel(String)} while the adapter is running. If the {@link com.adaptris.core.Channel} object contains a
-   * reference to a shared connection, then you should use this method to add the and bind the shared connection to JNDI ready for
-   * use.
+   * allows you to invoke {@link #addChannel(String)} while the adapter is running. If the {@link com.adaptris.core.Channel} object
+   * contains a reference to a shared connection, then you should use this method to add the and bind the shared connection to JNDI
+   * ready for use.
    * </p>
    * 
    * @param xmlString the string representation of the connection.
@@ -91,6 +91,72 @@ public interface AdapterManagerMBean extends AdapterComponentMBean, ParentRuntim
    * @throws CoreException wrapping any other exception
    */
   Collection<String> getSharedConnectionIds() throws CoreException;
+
+  /**
+   * Add a {@link com.adaptris.core.Service} to the adapter's shared components.
+   * 
+   * @param xmlString the string representation of the service.
+   * @return true if the service was added, false if the service unique-id already exists in the list.
+   * @throws CoreException wrapping any other exception
+   * @throws IllegalStateException if the state of the adapter is not closed.
+   * @throws IllegalArgumentException if the connection does not have an unique-id
+   */
+  boolean addSharedService(String xmlString) throws CoreException, IllegalStateException, IllegalArgumentException;
+
+  /**
+   * Add an {@link com.adaptris.core.Service} to the adapter's shared components. and bind it to JNDI.
+   * <p>
+   * This is primarily for adding shared services when the Adapter is currently started. Runtime manipulation of the adapter allows
+   * you to invoke {@link #addChannel(String)} while the adapter is running. If the {@link com.adaptris.core.Channel} object
+   * contains a reference to a shared service, then you should use this method to add the and bind the shared connection to JNDI
+   * ready for use.
+   * </p>
+   * 
+   * @param xmlString the string representation of the service.
+   * @return true if the service was added, false if the service unique-id already exists in the list.
+   * @throws CoreException wrapping any other exception
+   * @throws IllegalStateException if the state of the adapter is actually closed, in which case you should use
+   *           {@link #addSharedConnection(String)} instead..
+   * @throws IllegalArgumentException if the connection does not have an unique-id
+   */
+  boolean addAndBindSharedService(String xmlString) throws CoreException, IllegalStateException, IllegalArgumentException;
+
+  /**
+   * Remove a service from the adapter's shared components.
+   * 
+   * @param serviceId the shared service unique-id to remove.
+   * @return true if the service was removed, false otherwise.
+   * @throws CoreException wrapping any other exception
+   * @throws IllegalStateException if the state of the adapter is not closed.
+   */
+  boolean removeSharedService(String serviceId) throws CoreException, IllegalStateException;
+
+  /**
+   * Check if the associated serviceId is already present in the shared services.
+   * 
+   * @param serviceId the shared service unique-id to remove.
+   * @return true if the connection unique-id exists
+   * @throws CoreException wrapping any other exception
+   */
+  boolean containsSharedService(String serviceId) throws CoreException;
+
+  /**
+   * Get all the service unique-ids that are currently registered as a shared service.
+   * 
+   * @return collection of service-ids
+   * @throws CoreException wrapping any other exception
+   */
+  Collection<String> getSharedServiceIds() throws CoreException;
+
+  /**
+   * Convenience method to do both {@link #removeSharedService(String)} and {@code #removeSharedConnection(String)} at once.
+   * 
+   * @param id the shared id to remove.
+   * @return true if something was removed; false otherwise.
+   * @throws CoreException wrapping any other exception
+   * @throws IllegalStateException if the state of the adapter is not closed.
+   */
+  boolean removeSharedComponent(String id) throws CoreException, IllegalStateException;
 
   /**
    * Add a {@link com.adaptris.core.Channel} to this adapter.

@@ -244,6 +244,15 @@ public class SharedComponentList implements ComponentLifecycle, ComponentLifecyc
   }
 
   /**
+   * Return a list of service-ids that are registered.
+   * 
+   * @return a set of service-ids
+   */
+  public Collection<String> getServiceIds() {
+    return new ArrayList<String>(serviceIds);
+  }
+
+  /**
    * Convenience method to add a connection performing verification.
    * 
    * @param c the connection to add
