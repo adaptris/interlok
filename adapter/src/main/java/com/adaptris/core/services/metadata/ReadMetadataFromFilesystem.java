@@ -17,7 +17,6 @@
 package com.adaptris.core.services.metadata;
 
 import static com.adaptris.core.util.MetadataHelper.convertFromProperties;
-import static org.apache.commons.io.IOUtils.closeQuietly;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -114,30 +113,31 @@ public class ReadMetadataFromFilesystem extends ServiceImp {
 
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    InputStream in = null;
     String filenameToRead = "[could not create filename]";
-
     try {
       String baseUrl = getDestination().getDestination(msg);
       URL url = FsHelper.createUrlFromString(baseUrl, true);
+      File parentFile = FsHelper.createFileReference(url);
       File fileToRead = new File(FsHelper.createFileReference(url), filenameCreator().createName(msg));
+      if (parentFile.isFile()) {
+        fileToRead = parentFile;
+      }
       filenameToRead = fileToRead.getCanonicalPath();
       log.trace("Reading " + filenameToRead);
-      in = new FileInputStream(fileToRead);
-      Set<MetadataElement> set = getStyle(getInputStyle()).load(in);
-      for (MetadataElement e : set) {
-        if (overwriteExistingMetadata() || !msg.containsKey(e.getKey())) {
-          msg.addMetadata(e);
+      try (InputStream in = new FileInputStream(fileToRead)) {
+        Set<MetadataElement> set = getStyle(getInputStyle()).load(in);
+        for (MetadataElement e : set) {
+          if (overwriteExistingMetadata() || !msg.containsKey(e.getKey())) {
+            msg.addMetadata(e);
+          }
         }
+        log.trace("New Metadata for message {}", msg.getMetadata());
       }
-      log.trace("New Metadata for message " + msg.getMetadata());
     }
     catch (Exception e) {
-      log.warn("Failed to read metadata, " + filenameToRead + " is inaccessible? no changes.");
+      log.warn("Failed to read metadata, {} in inaccessible? no changes.", filenameToRead);
     }
-    finally {
-      closeQuietly(in);
-    }
+
   }
 
 
