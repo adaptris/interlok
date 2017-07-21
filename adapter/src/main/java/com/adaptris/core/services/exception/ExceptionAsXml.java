@@ -28,6 +28,7 @@ import org.w3c.dom.Document;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
@@ -56,6 +57,7 @@ public class ExceptionAsXml implements ExceptionSerializer {
   private DocumentMerge documentMerge;
   @Valid
   private ExceptionReportGenerator exceptionGenerator;
+  @InputFieldDefault(value = "UTF-8")
   private String xmlEncoding;
   @AdvancedConfig
   @Valid
