@@ -20,6 +20,7 @@ import java.util.Arrays;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.DefaultEventHandler;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceList;
@@ -37,6 +38,7 @@ public class ExceptionHandlingServiceWrapperTest extends ExceptionServiceExample
 
   public void testWithExceptionFromWrappedServices() throws Exception {
     ExceptionHandlingServiceWrapper service = create();
+    service.registerEventHandler(new DefaultEventHandler());
     service.setService(new ServiceList(new Service[]
     {
         new ThrowExceptionService(new ConfiguredException("Fail")), new AddMetadataService(Arrays.asList(new MetadataElement[]
