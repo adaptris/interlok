@@ -26,7 +26,6 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
 import com.adaptris.core.CoreException;
-import com.adaptris.core.management.BootstrapProperties;
 import com.adaptris.util.URLString;
 
 /**
@@ -127,7 +126,7 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
    * @throws IOException an error accessing the URL.
    * @throws CoreException an error creating the underlying adapter.
    * @throws MalformedObjectNameException if there was a problem
-   * @deprecated since 3.6.1 get it via {@link #getBuilder(BootstrapProperties)} instead.
+   * @deprecated since 3.6.1 get it via {@link #getBuilder(Properties)} instead.
    */
   @Deprecated
   ObjectName createAdapter(URLString url) throws IOException, MalformedObjectNameException, CoreException;
@@ -263,7 +262,7 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
    * @throws IOException an error accessing the URL.
    * @throws CoreException an error creating the underlying adapter.
    * @throws MalformedObjectNameException if there was a problem with the objectname.
-   * @deprecated since 3.6.1 get it via {@link #getBuilder(BootstrapProperties)} instead.
+   * @deprecated since 3.6.1 get it via {@link #getBuilder(Properties)} instead.
    * 
    */
   @Deprecated

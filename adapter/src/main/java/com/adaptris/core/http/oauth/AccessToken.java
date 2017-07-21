@@ -23,14 +23,14 @@ public class AccessToken {
   }
 
   /**
-   * Calls {@link #AccessToken(String, String, long)} with {@code Bearer} as the type and {@link -1} as the expiry
+   * Calls {@link #AccessToken(String, String, long)} with {@code Bearer} as the type and {@code -1} as the expiry
    */
   public AccessToken(String token) {
     this(DEFAULT_TOKEN_TYPE, token);
   }
 
   /**
-   * Calls {@link #AccessToken(String, String, long)} with {@link -1} as the expiry
+   * Calls {@link #AccessToken(String, String, long)} with {@code -1} as the expiry
    */
   public AccessToken(String type, String token) {
     this(type, token, -1);

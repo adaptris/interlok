@@ -170,7 +170,6 @@ public class HashUserRealmProxy implements SecurityHandlerWrapper {
   /**
    * Specify the refresh interval (in seconds) for monitoring the password file.
    * 
-   * @see HashLoginService#setRefreshInterval(int)
    * @param i the refreshInterval to set
    */
   public void setRefreshInterval(Integer i) {

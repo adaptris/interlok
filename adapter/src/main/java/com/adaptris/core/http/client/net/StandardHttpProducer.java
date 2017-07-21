@@ -35,6 +35,7 @@ import java.util.Collections;
 
 import javax.mail.internet.ContentType;
 import javax.mail.internet.ParseException;
+import javax.net.ssl.HttpsURLConnection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
