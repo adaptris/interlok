@@ -36,6 +36,13 @@ public interface AdapterRuntimeComponent<S extends StateManagedComponent> extend
   S getWrappedComponent();
 
   /**
+   * Get the class name that is wrapped by this MBean.
+   * 
+   * @return the class name (e.g. {@code com.adaptris.core.StandardWorkflow})
+   */
+  String getWrappedComponentClassname();
+
+  /**
    * Get all the descendants of this ParentComponent implementation.
    *
    * @return all the children, and children's children, etc...

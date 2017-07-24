@@ -2115,6 +2115,11 @@ public class AdapterManagerTest extends ComponentManagerCase {
     public void requestRestart(long timeout) throws CoreException, TimeoutException {
     }
 
+    @Override
+    public String getWrappedComponentClassname() {
+      return Channel.class.getCanonicalName();
+    }
+
   }
 
   private class AdapterChild extends StubBaseComponentMBean implements ChildRuntimeInfoComponent {

@@ -246,6 +246,11 @@ public abstract class ComponentManagerImpl<E extends StateManagedComponent> exte
     return xmlConfig;
   }
 
+  @Override
+  public String getWrappedComponentClassname() {
+    return getWrappedComponent().getClass().getCanonicalName();
+  }
+
   /**
    * Store the XML representation of the object.
    * 

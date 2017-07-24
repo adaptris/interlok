@@ -358,4 +358,5 @@ public interface AdapterComponentMBean extends BaseComponentMBean {
    * @see DefaultMarshaller#getDefaultMarshaller()
    */
   String getConfiguration() throws CoreException;
+
 }

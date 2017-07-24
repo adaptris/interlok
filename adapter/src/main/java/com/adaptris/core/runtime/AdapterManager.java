@@ -530,6 +530,4 @@ public class AdapterManager extends ComponentManagerImpl<Adapter> implements Ada
     ManagedThreadFactory.interruptManagedThreads();
     super.requestClose();
   }
-
-
 }
