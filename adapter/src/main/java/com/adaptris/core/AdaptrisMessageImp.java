@@ -421,7 +421,14 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     Matcher m = resolverPattern.matcher(s);
     while (m.matches()) {
       String key = m.group(1);
+      // Optional<String> metadataValue = (Optional<String>) Optional.ofNullable(getMetadataValue(key));
+      // metadataValue.orElseThrow(() -> new UnableToResolveMetadataException("Could not resolve " + key));
+      // String toReplace = "%message{" + key + "}";
+      // result = result.replace(toReplace, metadataValue.get());
       String metadataValue = getMetadataValue(key);
+      if (metadataValue == null) {
+        throw new UnresolvedMetadataException("Could not resolve [" + key + "] from metadata");
+      }
       String toReplace = "%message{" + key + "}";
       result = result.replace(toReplace, metadataValue);
       m = resolverPattern.matcher(result);
