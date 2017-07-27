@@ -38,6 +38,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.metadata.MetadataResolver;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -48,6 +49,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <p>This can be treated as a simplified form of {@link PayloadFromMetadataService} which does not have a template and just uses
  * the actual metadata value as the payload. It is also designed as the reverse form of {@link PayloadToMetadataService} and allows
  * you to take a piece of object metadata containing {@code byte[]} and make it the payload.
+ * </p>
+ * <p>
+ * This service will throw an error if the target metadata item does not exist.  
+ * </p>
+ * <p>
+ * This service also supports a resolvable metadata key.  {@link com.adaptris.core.metadata.MetadataResolver}
  * </p>
  * 
  * @config metadata-to-payload
@@ -75,7 +82,11 @@ public class MetadataToPayloadService extends ServiceImp {
     Standard {
       @Override
       InputStream getInputStream(AdaptrisMessage msg, String key) throws MessagingException {
-        return new ReaderInputStream(new StringReader(msg.getMetadataValue(key)));
+        String resolvedKey = MetadataResolver.resolveKey(msg, key);
+        if(msg.headersContainsKey(resolvedKey))
+          return new ReaderInputStream(new StringReader(msg.getMetadataValue(resolvedKey)));
+        else
+          throw new MessagingException("Metadata key (" + resolvedKey + ") does not exist.");
       }
     },
     /**
@@ -85,7 +96,11 @@ public class MetadataToPayloadService extends ServiceImp {
     Object {
       @Override
       InputStream getInputStream(AdaptrisMessage msg, String key) throws MessagingException {
-        return new ByteArrayInputStream((byte[]) msg.getObjectHeaders().get(key));
+        String resolvedKey = MetadataResolver.resolveKey(msg, key);
+        if(msg.getObjectHeaders().containsKey(resolvedKey)) 
+          return new ByteArrayInputStream((byte[]) msg.getObjectHeaders().get(resolvedKey));
+        else
+          throw new MessagingException("Object metadata key (" + resolvedKey + ") does not exist.");
       }
     };
     
