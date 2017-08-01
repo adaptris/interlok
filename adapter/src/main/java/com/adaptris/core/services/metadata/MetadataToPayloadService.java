@@ -38,6 +38,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.UnresolvedMetadataException;
 import com.adaptris.core.metadata.MetadataResolver;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
@@ -86,7 +87,7 @@ public class MetadataToPayloadService extends ServiceImp {
         if(msg.headersContainsKey(resolvedKey))
           return new ReaderInputStream(new StringReader(msg.getMetadataValue(resolvedKey)));
         else
-          throw new MessagingException("Metadata key (" + resolvedKey + ") does not exist.");
+          throw new UnresolvedMetadataException("Metadata key (" + resolvedKey + ") does not exist.");
       }
     },
     /**
@@ -100,7 +101,7 @@ public class MetadataToPayloadService extends ServiceImp {
         if(msg.getObjectHeaders().containsKey(resolvedKey)) 
           return new ByteArrayInputStream((byte[]) msg.getObjectHeaders().get(resolvedKey));
         else
-          throw new MessagingException("Object metadata key (" + resolvedKey + ") does not exist.");
+          throw new UnresolvedMetadataException("Object metadata key (" + resolvedKey + ") does not exist.");
       }
     };
     
