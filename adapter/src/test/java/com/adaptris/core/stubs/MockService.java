@@ -7,32 +7,33 @@ import com.adaptris.core.ServiceImp;
 
 public class MockService extends ServiceImp {
   
+  public int callCount = 0;
+
   public MockService() {
-    // TODO Auto-generated constructor stub
+  }
+
+  public MockService(String uuid) {
+    this();
+    setUniqueId(uuid);
   }
 
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    // TODO Auto-generated method stub
-    
+    callCount++;
   }
 
   @Override
   public void prepare() throws CoreException {
-    // TODO Auto-generated method stub
-    
   }
 
   @Override
   protected void initService() throws CoreException {
-    // TODO Auto-generated method stub
-    
+    callCount = 0;
   }
 
   @Override
   protected void closeService() {
-    // TODO Auto-generated method stub
-    
+    callCount = 0;
   }
 
 }
