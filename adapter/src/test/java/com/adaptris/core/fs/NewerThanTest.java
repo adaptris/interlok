@@ -21,47 +21,37 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Calendar;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 import com.adaptris.core.stubs.TempFileUtils;
 
-public class OlderThanTest {
+public class NewerThanTest {
 
   @Test
-  public void testOlderThan() throws Exception {
-    OlderThan filter = new OlderThan("-PT30S");
+  public void testNewerThan() throws Exception {
+    NewerThan filter = new NewerThan("-PT30S");
     File file = writeFile(TempFileUtils.createTrackedFile(filter));
-    file.setLastModified(yesterday());
     assertTrue(filter.accept(file));
   }
 
   @Test
-  public void testOlderThanFutureSpec() throws Exception {
-    OlderThan filter = new OlderThan("PT1H");
+  public void testNewerThanInTheFuture() throws Exception {
+    NewerThan filter = new NewerThan("PT1H");
     File file = writeFile(TempFileUtils.createTrackedFile(filter));
-    file.setLastModified(yesterday());
-    assertTrue(filter.accept(file));
+    assertFalse(filter.accept(file));
   }
 
   @Test
   public void testBadDuration() throws Exception {
-    OlderThan filter = new OlderThan("-PXXX");
+    NewerThan filter = new NewerThan("-PXXX");
     File file = writeFile(TempFileUtils.createTrackedFile(filter));
-    file.setLastModified(yesterday());
     assertFalse(filter.accept(file));
   }
 
   private File writeFile(File f) throws IOException {
     FileUtils.write(f, "Hello World");
     return f;
-  }
-
-  private long yesterday() {
-    Calendar cal = Calendar.getInstance();
-    cal.add(Calendar.DAY_OF_YEAR, -1);
-    return cal.getTime().getTime();
   }
 }

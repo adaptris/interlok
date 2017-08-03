@@ -25,7 +25,7 @@ import javax.xml.datatype.Duration;
 /**
  * {@link FileFilter} accepts files based on the last modified time of the file..
  * <p>
- * As the name suggests, files are accepted based on whether or not the last modified time is <strong>older</strong> than the
+ * As the name suggests, files are accepted based on whether or not the last modified time is <strong>newer</strong> than the
  * specified interval. This interval follows the ISO8601 convention for durations.
  * </p>
  * <p>
@@ -64,28 +64,24 @@ import javax.xml.datatype.Duration;
  *
  * @see Duration
  * @author lchan
- * @author $Author: lchan $
  */
-public class OlderThan extends LastModifiedFilter {
+public class NewerThan extends LastModifiedFilter {
 
   /**
    * Create the filefilter using an ISO8601 formatted interval.
    *
    * @param iso8601 the iso8601 interval.
    */
-  public OlderThan(String iso8601) {
+  public NewerThan(String iso8601) {
     super(iso8601);
   }
 
-  /**
-   * @see java.io.FileFilter#accept(java.io.File)
-   */
   @Override
   public boolean accept(File pathname) {
     try {
       Date filterDate = filterDate();
       Date fileDate = new Date(pathname.lastModified());
-      return fileDate.before(filterDate);
+      return fileDate.after(filterDate);
     }
     catch (Exception e) {
       return false;

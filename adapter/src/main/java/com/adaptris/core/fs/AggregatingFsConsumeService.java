@@ -27,6 +27,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.NullConnection;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.aggregator.AggregatingConsumeServiceImpl;
+import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -84,9 +85,7 @@ public class AggregatingFsConsumeService extends AggregatingConsumeServiceImpl<N
 
   @Override
   public void prepare() throws CoreException {
-    if (getFsConsumer() != null) {
-      getFsConsumer().prepare();
-    }
+    LifecycleHelper.prepare(getFsConsumer());
   }
 
 }
