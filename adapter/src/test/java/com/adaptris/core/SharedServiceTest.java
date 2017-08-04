@@ -15,14 +15,12 @@
  */
 package com.adaptris.core;
 
-import static org.mockito.Mockito.verify;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.mockito.Mockito;
-
 import com.adaptris.core.services.LogMessageService;
+import com.adaptris.core.services.exception.ConfiguredException;
+import com.adaptris.core.services.exception.ThrowExceptionService;
 import com.adaptris.core.stubs.MockService;
 import com.adaptris.core.util.LifecycleHelper;
 
@@ -116,23 +114,6 @@ public class SharedServiceTest extends ServiceCase {
     }
   }
 
-  public void testCreateName() {
-    SharedService sharedService = new SharedService(getName());
-    Service mockitoService = Mockito.mock(Service.class);
-    sharedService.setClonedService(mockitoService);
-    sharedService.createName();
-    verify(mockitoService).createName();
-  }
-
-  public void testCreateQualifier() {
-    SharedService sharedService = new SharedService(getName());
-    Service mockitoService = Mockito.mock(Service.class);
-    sharedService.setClonedService(mockitoService);
-    sharedService.createQualifier();
-
-    verify(mockitoService).createQualifier();
-  }
-
   public void testDoService() throws Exception {
     MockService mockService = new MockService(getName());
     SharedService sharedService = new SharedService(getName());
@@ -143,6 +124,33 @@ public class SharedServiceTest extends ServiceCase {
       AdaptrisMessage msg = DefaultMessageFactory.getDefaultInstance().newMessage();
       sharedService.doService(msg);
       assertEquals(1, ((MockService) sharedService.getClonedService()).callCount);
+      MleMarker marker = msg.getMessageLifecycleEvent().getMleMarkers().get(0);
+      assertEquals(MockService.class.getName(), marker.getName());
+      assertEquals(getName(), marker.getQualifier());
+      assertEquals(true, marker.getWasSuccessful());
+
+    }
+    finally {
+      LifecycleHelper.stopAndClose(adapter);
+    }
+  }
+
+  public void testDoService_WithFailure() throws Exception {
+    ThrowExceptionService mockService = new ThrowExceptionService(getName(), new ConfiguredException("Fail"));
+    SharedService sharedService = new SharedService(getName());
+    Adapter adapter = createAdapterForSharedService(sharedService, mockService);
+    AdaptrisMessage msg = DefaultMessageFactory.getDefaultInstance().newMessage();
+
+    try {
+      LifecycleHelper.initAndStart(adapter);
+      sharedService.doService(msg);
+      fail();
+    }
+    catch (ServiceException expected) {
+      MleMarker marker = msg.getMessageLifecycleEvent().getMleMarkers().get(0);
+      assertEquals(ThrowExceptionService.class.getName(), marker.getName());
+      assertEquals(getName(), marker.getQualifier());
+      assertEquals(false, marker.getWasSuccessful());
     }
     finally {
       LifecycleHelper.stopAndClose(adapter);

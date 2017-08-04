@@ -1,5 +1,7 @@
 package com.adaptris.core;
 
+import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
+
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdvancedConfig;
@@ -114,6 +116,16 @@ public abstract class SharedServiceImpl extends SharedComponent implements Servi
 
   public void setIsTrackingEndpoint(Boolean b) {
     isTrackingEndpoint = b;
+  }
+
+  @Override
+  public String createName() {
+    return this.getClass().getName();
+  }
+
+  @Override
+  public String createQualifier() {
+    return defaultIfEmpty(getUniqueId(), "");
   }
 
 }

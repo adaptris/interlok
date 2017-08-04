@@ -5,6 +5,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -84,18 +85,16 @@ public class SharedService extends SharedServiceImpl {
   }
 
   @Override
-  public String createName() {
-    return getProxiedService().createName();
-  }
-
-  @Override
-  public String createQualifier() {
-    return getProxiedService().createQualifier();
-  }
-
-  @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    getProxiedService().doService(msg);
+    Service s = getProxiedService();
+    try {
+      s.doService(msg);
+      msg.addEvent(s, true);
+    }
+    catch (Exception e) {
+      msg.addEvent(s, false);
+      throw ExceptionHelper.wrapServiceException(e);
+    }
   }
 
   @Override

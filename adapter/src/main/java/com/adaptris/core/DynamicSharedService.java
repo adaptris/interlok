@@ -1,7 +1,5 @@
 package com.adaptris.core;
 
-import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
-
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -92,17 +90,15 @@ public class DynamicSharedService extends SharedServiceImpl {
 
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    resolveAndStart(msg).doService(msg);
-  }
-
-  @Override
-  public String createName() {
-    return this.getClass().getName();
-  }
-
-  @Override
-  public String createQualifier() {
-    return defaultIfEmpty(getUniqueId(), "");
+    Service s = resolveAndStart(msg);
+    try {
+      s.doService(msg);
+      msg.addEvent(s, true);
+    }
+    catch (Exception e) {
+      msg.addEvent(s, false);
+      throw ExceptionHelper.wrapServiceException(e);
+    }
   }
 
   Map<String, Service> getCache() {

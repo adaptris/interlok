@@ -17,6 +17,8 @@ package com.adaptris.core;
 
 import static com.adaptris.core.SharedServiceTest.createAdapterForSharedService;
 
+import com.adaptris.core.services.exception.ConfiguredException;
+import com.adaptris.core.services.exception.ThrowExceptionService;
 import com.adaptris.core.util.LifecycleHelper;
 
 public class DynamicSharedServiceTest extends ServiceCase {
@@ -66,6 +68,11 @@ public class DynamicSharedServiceTest extends ServiceCase {
       sharedService.doService(msg);
       sharedService.doService(msg);
       assertEquals(1, sharedService.getCache().size());
+      MleMarker marker = msg.getMessageLifecycleEvent().getMleMarkers().get(0);
+      assertEquals(NullService.class.getName(), marker.getName());
+      assertEquals(getName(), marker.getQualifier());
+      assertEquals(true, marker.getWasSuccessful());
+
     }
     finally {
       LifecycleHelper.stopAndClose(adapter);
@@ -113,6 +120,29 @@ public class DynamicSharedServiceTest extends ServiceCase {
       LifecycleHelper.stopAndClose(adapter);
     }
     assertEquals(0, sharedService.getCache().size());
+  }
+
+  public void testDoService_WithFailure() throws Exception {
+    ThrowExceptionService mockService = new ThrowExceptionService(getName(), new ConfiguredException("Fail"));
+    DynamicSharedService sharedService = new DynamicSharedService(getName());
+    Adapter adapter = createAdapterForSharedService(sharedService, mockService);
+    AdaptrisMessage msg = DefaultMessageFactory.getDefaultInstance().newMessage();
+
+    try {
+      LifecycleHelper.initAndStart(adapter);
+      sharedService.doService(msg);
+      fail();
+    }
+    catch (ServiceException expected) {
+      assertEquals(1, sharedService.getCache().size());
+      MleMarker marker =  msg.getMessageLifecycleEvent().getMleMarkers().get(0);
+      assertEquals(ThrowExceptionService.class.getName(), marker.getName());
+      assertEquals(getName(), marker.getQualifier());
+      assertEquals(false, marker.getWasSuccessful());
+    }
+    finally {
+      LifecycleHelper.stopAndClose(adapter);
+    }
   }
 
   private class MyDynamicSharedService extends DynamicSharedService {
