@@ -30,7 +30,7 @@ public class SimpleNotificationListener implements NotificationListener, Seriali
   private static final int DEFAULT_WAIT_INTERVAL = 100;
   private static final long serialVersionUID = 2014031901L;
 
-  private List<Notification> notifications = new ArrayList<Notification>();
+  private List<Notification> notifications = new IgnoreNulls<Notification>();
 
   @Override
   public void handleNotification(Notification notification, Object handback) {
@@ -62,5 +62,15 @@ public class SimpleNotificationListener implements NotificationListener, Seriali
       return Long.compare(o1.getSequenceNumber(), o2.getSequenceNumber());
     }
 
+  }
+
+  private static class IgnoreNulls<E> extends ArrayList<E> {
+    @Override
+    public boolean add(E e) {
+      if (e == null) {
+        return false;
+      }
+      return super.add(e);
+    }
   }
 }
