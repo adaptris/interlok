@@ -87,6 +87,13 @@ public class AdapterManagerTest extends ComponentManagerCase {
     initialContext = new InitialContext(env);
   }
 
+  public void testWrappedComponentClassName() throws Exception {
+    String adapterName = this.getClass().getSimpleName() + "." + getName();
+    Adapter adapter = createAdapter(adapterName, 2, 2);
+    AdapterManager am1 = new AdapterManager(adapter);
+    assertEquals(Adapter.class.getCanonicalName(), am1.getWrappedComponentClassname());
+  }
+
   public void testEqualityHashCode() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
