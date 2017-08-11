@@ -24,6 +24,7 @@ import java.util.Properties;
 import org.apache.commons.io.IOUtils;
 
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.ConfiguredDestination;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
@@ -230,7 +231,7 @@ public class ReadMetadataFromFilesystemTest extends MetadataServiceExample {
   @Override
   protected ReadMetadataFromFilesystem retrieveObjectForSampleConfig() {
     ReadMetadataFromFilesystem service = new ReadMetadataFromFilesystem();
-    service.setDestination(new ConfiguredProduceDestination("file:////path/to/directory"));
+    service.setDestination(new ConfiguredDestination("file:////path/to/directory"));
     service.setInputStyle(InputStyle.Text);
     return service;
   }
