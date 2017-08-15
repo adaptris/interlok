@@ -39,11 +39,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Each matching metadata key from {@link ReformatMetadata#getMetadataKeyRegexp()} will taken and if the search-value matches, then
  * the replacement-value will be used as the replacement.
  * </p>
- * *
  * <p>
- * It supports the special syntax of <code>{n}</code> as the replacement value. This indicates that the corresponding match group
- * should be as part of the replacement value: This is available for legacy purposes, you can usually specify match-groups using the
- * {@code $n} syntax instead.
+ * You can specify matchgroups as part of the replacment by using the standard {@code $n} syntax. It also supports the special
+ * syntax of <code>{n}</code> to indicate match groups, but this is not guaranteed to work in all instances and is only made
+ * available for legacy purposes.
  * </p>
  * 
  * @config replace-metadata-value
@@ -132,8 +131,7 @@ public class ReplaceMetadataValue extends ReformatMetadata {
   /**
    * The replacement value.
    * <p>
-   * It supports the special syntax of {n} which indicates that the
-   * corresponding match group should be used as the replacement value
+   * The standard java regexp behaviour of using {@code $n} to indicate the corresponding match group is supported.
    * </p>
    *
    * @param s the replacement value.
