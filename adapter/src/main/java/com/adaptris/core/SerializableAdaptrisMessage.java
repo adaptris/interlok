@@ -18,6 +18,7 @@ package com.adaptris.core;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -25,10 +26,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+import com.adaptris.core.util.MetadataHelper;
 import com.adaptris.interlok.types.SerializableMessage;
-import com.adaptris.util.KeyValuePair;
-import com.adaptris.util.KeyValuePairBag;
 import com.adaptris.util.KeyValuePairSet;
+import com.adaptris.util.NameValuePair;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -65,12 +66,12 @@ public class SerializableAdaptrisMessage implements SerializableMessage {
   /**
    * A copy of the metadata.
    */
-  private KeyValuePairSet metadata;
+  private Set<MetadataElement> metadata;
 
   private String nextServiceId;
 
   public SerializableAdaptrisMessage() {
-    metadata = new KeyValuePairSet();
+    metadata = new HashSet<MetadataElement>();
     setNextServiceId("");
   }
 
@@ -118,7 +119,7 @@ public class SerializableAdaptrisMessage implements SerializableMessage {
     setContentEncoding(payloadEncoding);
   }
 
-  public KeyValuePairSet getMetadata() {
+  public Set<MetadataElement> getMetadata() {
     return metadata;
   }
 
@@ -134,9 +135,9 @@ public class SerializableAdaptrisMessage implements SerializableMessage {
    */
   public void setMetadata(KeyValuePairSet metadata) {
     if (metadata == null) {
-      this.metadata = new KeyValuePairSet();
+      this.metadata = new HashSet<MetadataElement>();
     } else {
-      this.metadata = metadata;
+      setMetadata(MetadataHelper.convertFromKeyValuePairs(metadata));
     }
   }
 
@@ -183,23 +184,25 @@ public class SerializableAdaptrisMessage implements SerializableMessage {
       }
       // Make sure that when we do the actual add, we turn it into a real key/value pair
       // this avoids additional class="" when you serialize using XStream.
-      metadata.addKeyValuePair(new KeyValuePair(e.getKey(), e.getValue()));
+      metadata.add(new MetadataElement(e.getKey(), e.getValue()));
     }
   }
 
   public void removeMetadata(MetadataElement element) {
     synchronized (metadata) {
-      metadata.removeKeyValuePair(element);
+      metadata.remove(element);
     }
   }
 
   public boolean containsKey(String key) {
-    return metadata.contains(new KeyValuePair(key, ""));
+    return metadata.contains(new MetadataElement(key, ""));
   }
 
   public String getMetadataValue(String key) { // is case-sensitive
     if (key != null) {
-      return metadata.getValue(key);
+      if (containsKey(key)) {
+        return get(key).getValue();
+      }
     }
     return null;
   }
@@ -266,13 +269,37 @@ public class SerializableAdaptrisMessage implements SerializableMessage {
         .append(getMetadata()).toHashCode();
   }
 
-  private Map<String, String> toMap(KeyValuePairBag bag) {
+  private Map<String, String> toMap(Set<MetadataElement> bag) {
     Map<String, String> result = new HashMap<>(bag.size());
-    for (KeyValuePair kvp : bag) {
+    for (MetadataElement kvp : bag) {
       result.put(kvp.getKey(), kvp.getValue());
     }
     return result;
   }
 
+
+  private NameValuePair get(final String key) {
+    for (MetadataElement e : metadata) {
+      if (e.getKey().equals(key)) {
+        return e;
+      }
+    }
+    return new NameValuePair() {
+      public void setKey(String k) {
+      }
+
+      public String getKey() {
+        return key;
+      }
+
+      public void setValue(String value) {
+      }
+
+      public String getValue() {
+        return null;
+      }
+
+    };
+  }
 
 }

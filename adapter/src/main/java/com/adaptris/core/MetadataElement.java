@@ -16,10 +16,16 @@
 
 package com.adaptris.core;
 
-import com.adaptris.annotation.GenerateBeanInfo;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+import org.hibernate.validator.constraints.NotBlank;
+
+import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.util.Args;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.KeyValuePair;
+import com.adaptris.util.NameValuePair;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -32,14 +38,21 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config metadata-element
  */
 @XStreamAlias("metadata-element")
-@GenerateBeanInfo
-public class MetadataElement extends KeyValuePair implements Cloneable {
+public class MetadataElement implements NameValuePair, Cloneable {
 
   private static transient final GuidGenerator UUID = new GuidGenerator();
   /**
    *
    */
   private static final long serialVersionUID = 2013111201L;
+
+  @NotBlank
+  private String key;
+  @InputFieldDefault(value = "")
+  @InputFieldHint(style = "BLANKABLE")
+  @NotBlank
+  private String value = "";
+
 
   /**
    * Default Constructor.
@@ -78,16 +91,43 @@ public class MetadataElement extends KeyValuePair implements Cloneable {
     setValue(value);
   }
 
-  /**
-   * <p>
-   * Sets the 'key'.
-   * </p>
-   * 
-   * @param key may not be null or the empty string.
-   */
-  @Override
+
   public void setKey(String key) {
-    super.setKey(Args.notBlank(key, "key"));
+    this.key = Args.notBlank(key, "key");
+  }
+
+  public String getKey() {
+    return key;
+  }
+
+  public void setValue(String value) {
+      this.value = Args.notNull(value, "value");
+  }
+
+  public String getValue() {
+    return value;
+  }
+
+  @Override
+  public String toString() {
+    return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("key", getKey())
+        .append("value", getValue()).toString();
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj instanceof NameValuePair) { // false if obj is null
+      if (((NameValuePair) obj).getKey().equals(getKey())) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return getKey().hashCode();
   }
 
   /**

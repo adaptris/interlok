@@ -41,7 +41,6 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.util.IdGenerator;
 import com.adaptris.util.KeyValuePair;
-import com.adaptris.util.KeyValuePairSet;
 
 /**
  * <p>
@@ -77,7 +76,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   private IdGenerator guidGenerator;
   // persistent fields
   private String uniqueId;
-  private KeyValuePairSet metadata;
+  private Set<MetadataElement> metadata;
   private String contentEncoding;
 
   // in memory only e.g. lost on send or persist
@@ -100,7 +99,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   protected AdaptrisMessageImp(IdGenerator guid, AdaptrisMessageFactory fac) {
     this();
     factory = fac;
-    metadata = new KeyValuePairSet();
+    metadata = new HashSet<MetadataElement>();
     objectMetadata = new HashMap<>();
     guidGenerator = guid;
     messageLifeCycle = new MessageLifecycleEvent();
@@ -167,14 +166,14 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
       removeMetadata(e);
     }
     e.setKey(resolveKey(this, e.getKey()));
-    metadata.addKeyValuePair(e);
+    metadata.add(e);
   }
 
   /** @see AdaptrisMessage#removeMetadata(MetadataElement) */
   @Override
   public void removeMetadata(MetadataElement element) {
     element.setKey(resolveKey(this, element.getKey()));
-    metadata.removeKeyValuePair(element);
+    metadata.remove(element);
   }
   
   /** @see AdaptrisMessage#removeMessageHeader(String) */
@@ -204,14 +203,14 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   /** @see AdaptrisMessage#clearMetadata() */
   @Override
   public synchronized void clearMetadata() {
-    metadata = new KeyValuePairSet(); // overwrite with empty
+    metadata = new HashSet<MetadataElement>();
   }
 
   /** @see AdaptrisMessage#getMetadataValue(String) */
   @Override
   public String getMetadataValue(String key) { // is case-sensitive
     if (key != null) {
-      return metadata.getValue(resolveKey(this, key));
+      return getValue(resolveKey(this, key), false);
     }
     return null;
   }
@@ -219,8 +218,10 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   /** @see AdaptrisMessage#getMetadata(String) */
   @Override
   public MetadataElement getMetadata(String key) {
-    if (key != null && containsKey(key)) {
-      return new MetadataElement(metadata.getKeyValuePair(resolveKey(this, key)));
+    String resolved = resolveKey(this, key);
+
+    if (key != null && containsKey(resolved)) {
+      return new MetadataElement(resolved, getValue(resolved, false));
     }
     return null;
   }
@@ -228,8 +229,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   @Override
   public Map<String, String> getMessageHeaders() {
     Map<String, String> newSet = new HashMap<String, String>();
-    for (Iterator<KeyValuePair> i = metadata.getKeyValuePairs().iterator(); i.hasNext();) {
-      KeyValuePair kp = i.next();
+    for (MetadataElement kp : metadata) {
       newSet.put(kp.getKey(), kp.getValue());
     }
     return newSet;
@@ -238,12 +238,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
   @Override
   public Set<MetadataElement> getMetadata() {
-    Set<MetadataElement> newSet = new HashSet<MetadataElement>();
-    for (Iterator i = metadata.getKeyValuePairs().iterator(); i.hasNext();) {
-      KeyValuePair kp = (KeyValuePair) i.next();
-      newSet.add(new MetadataElement(kp.getKey(), kp.getValue()));
-    }
-    return newSet;
+    return new HashSet<MetadataElement>(metadata);
   }
 
   @Override
@@ -447,7 +442,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     int result= 0;
     if (containsKey(CoreConstants.MLE_SEQUENCE_KEY)) {
       try {
-        result = Integer.parseInt(metadata.getValue(CoreConstants.MLE_SEQUENCE_KEY));
+        result = Integer.parseInt(getValue(CoreConstants.MLE_SEQUENCE_KEY, false));
       }
       catch (Exception e) {
         log.warn("Failed to assign next lifecycle marker number, resetting");
@@ -476,17 +471,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
    */
   @Override
   public String getMetadataValueIgnoreKeyCase(String key) {
-    String result = getMetadataValue(key);
-
-    if (result == null) { // no exact match
-      for (KeyValuePair pair : metadata.getKeyValuePairs()) {
-        if (pair.getKey().equalsIgnoreCase(key)) {
-          result = pair.getValue();
-          break;
-        }
-      }
-    }
-    return result;
+    return getValue(key, true);
   }
 
   /** @see Object#clone() */
@@ -546,5 +531,20 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     }
 
     return result;
+  }
+
+  private String getValue(String key, boolean ignoreCase) {
+    for (MetadataElement e : metadata) {
+      if (ignoreCase) {
+        if (e.getKey().equalsIgnoreCase(key)) {
+          return e.getValue();
+        }
+      } else {
+        if (e.getKey().equals(key)) {
+          return e.getValue();
+        }
+      }
+    }
+    return null;
   }
 }

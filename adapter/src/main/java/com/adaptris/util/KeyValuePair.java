@@ -16,8 +16,6 @@
 
 package com.adaptris.util;
 
-import java.io.Serializable;
-
 import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -30,12 +28,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config key-value-pair
  */
 @XStreamAlias("key-value-pair")
-public class KeyValuePair implements Serializable {
+public class KeyValuePair implements NameValuePair {
 
-  /**
-   *
-   */
-  private static final long serialVersionUID = 2013111201L;
+  private static final long serialVersionUID = 2017081501L;
 
   private String key = "";
   private String value = "";

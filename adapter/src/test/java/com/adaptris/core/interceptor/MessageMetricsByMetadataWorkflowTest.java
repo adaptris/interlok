@@ -21,8 +21,8 @@ import java.util.concurrent.TimeUnit;
 
 import com.adaptris.core.Channel;
 import com.adaptris.core.ExampleWorkflowCase;
-import com.adaptris.core.MetadataElement;
 import com.adaptris.core.StandardWorkflow;
+import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.TimeInterval;
 
 public class MessageMetricsByMetadataWorkflowTest extends ExampleWorkflowCase {
@@ -54,7 +54,7 @@ public class MessageMetricsByMetadataWorkflowTest extends ExampleWorkflowCase {
     wf.setUniqueId("MyWorkflowName");
     MessageMetricsInterceptorByMetadata ti = new MessageMetricsInterceptorByMetadata();
     ti.setUniqueId("Metrics_For_MyWorkflowName");
-    ti.setMetadataElement(new MetadataElement("messageType", "ORDER"));
+    ti.setMetadataElement(new KeyValuePair("messageType", "ORDER"));
     ti.setTimesliceDuration(new TimeInterval(60L, TimeUnit.SECONDS));
     wf.addInterceptor(ti);
     c.getWorkflowList().add(wf);
