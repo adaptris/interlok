@@ -34,6 +34,7 @@ import com.adaptris.core.BranchingServiceImp;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.http.jetty.JettyRouteSpec.RouteMatch;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -79,9 +80,10 @@ public class JettyRoutingService extends BranchingServiceImp {
     String uri = msg.getMetadataValue(JETTY_URI);
     boolean matched = false;
     for (JettyRouteSpec route : routes) {
-      if (route.matches(method, uri)) {
+      RouteMatch m = route.build(method, uri);
+      if (m.matches()) {
         log.trace("[{}][{}], matched by [{}][{}]", method, uri, route.getMethod(), route.getUrlPattern());
-        route.handleMatch(msg);
+        m.apply(msg);
         matched = true;
         break;
       }
