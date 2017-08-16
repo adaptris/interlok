@@ -29,7 +29,6 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import com.adaptris.core.util.MetadataHelper;
 import com.adaptris.interlok.types.SerializableMessage;
 import com.adaptris.util.KeyValuePairSet;
-import com.adaptris.util.NameValuePair;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -200,9 +199,7 @@ public class SerializableAdaptrisMessage implements SerializableMessage {
 
   public String getMetadataValue(String key) { // is case-sensitive
     if (key != null) {
-      if (containsKey(key)) {
-        return get(key).getValue();
-      }
+      return getValue(key);
     }
     return null;
   }
@@ -278,28 +275,13 @@ public class SerializableAdaptrisMessage implements SerializableMessage {
   }
 
 
-  private NameValuePair get(final String key) {
+  private String getValue(final String key) {
     for (MetadataElement e : metadata) {
       if (e.getKey().equals(key)) {
-        return e;
+        return e.getValue();
       }
     }
-    return new NameValuePair() {
-      public void setKey(String k) {
-      }
-
-      public String getKey() {
-        return key;
-      }
-
-      public void setValue(String value) {
-      }
-
-      public String getValue() {
-        return null;
-      }
-
-    };
+    return null;
   }
 
 }

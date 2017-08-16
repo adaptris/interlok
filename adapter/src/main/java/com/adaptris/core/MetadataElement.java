@@ -16,8 +16,8 @@
 
 package com.adaptris.core;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
+import javax.validation.constraints.NotNull;
+
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.InputFieldDefault;
@@ -44,47 +44,31 @@ public class MetadataElement implements NameValuePair, Cloneable {
   /**
    *
    */
-  private static final long serialVersionUID = 2013111201L;
+  private static final long serialVersionUID = 2017081501L;
 
   @NotBlank
   private String key;
   @InputFieldDefault(value = "")
   @InputFieldHint(style = "BLANKABLE")
-  @NotBlank
+  @NotNull
   private String value = "";
 
 
   /**
    * Default Constructor.
    * <p>
-   * By default, each metadata element is given a unique key using {@link GuidGenerator#getUUID()}, as {@link KeyValuePair} only
-   * enforces null checking, but metadata elements must have a non-empty key.
+   * By default, each metadata element is given a unique key using {@link GuidGenerator#getUUID()}.
    * </p>
    */
   public MetadataElement() {
     setKey(UUID.getUUID());
   }
 
-  /**
-   * <p>
-   * Creates a new instance.
-   * </p>
-   *
-   * @param kp the keyvalue pair this metadata element should wrap
-   */
   public MetadataElement(KeyValuePair kp) {
     this(kp.getKey(), kp.getValue());
   }
 
 
-  /**
-   * <p>
-   * Creates a new instance.
-   * </p>
-   *
-   * @param key may not be null or empty
-   * @param value may not be null or empty
-   */
   public MetadataElement(String key, String value) {
     this();
     setKey(key);
@@ -110,14 +94,13 @@ public class MetadataElement implements NameValuePair, Cloneable {
 
   @Override
   public String toString() {
-    return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("key", getKey())
-        .append("value", getValue()).toString();
+    return "key [" + key + "] value [" + value + "]";
   }
 
   @Override
   public boolean equals(Object obj) {
-    if (obj instanceof NameValuePair) { // false if obj is null
-      if (((NameValuePair) obj).getKey().equals(getKey())) {
+    if (obj instanceof MetadataElement) { // false if obj is null
+      if (((MetadataElement) obj).getKey().equals(getKey())) {
         return true;
       }
     }
