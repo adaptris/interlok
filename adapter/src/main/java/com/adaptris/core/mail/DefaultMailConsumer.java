@@ -51,7 +51,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("default-mail-consumer")
 @AdapterComponent
-@ComponentProfile(summary = "Pickup messages from a email account parsing the MIME message", tag = "consumer,email",
+@ComponentProfile(summary = "Pickup messages from a email account parsing the MIME message", tag = "consumer,email", metadata =
+{
+    "emailmessageid", "emailtotalattachments", "emailattachmentfilename", "emailattachmentcontenttype"
+}, 
     recommended = {NullConnection.class})
 @DisplayOrder(order = {"poller", "username", "password", "mailReceiverFactory", "partSelector"})
 public class DefaultMailConsumer extends ParsingMailConsumerImpl {

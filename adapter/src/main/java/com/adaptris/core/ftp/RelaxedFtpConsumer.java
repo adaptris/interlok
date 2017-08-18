@@ -52,7 +52,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("relaxed-ftp-consumer")
 @AdapterComponent
-@ComponentProfile(summary = "Pickup messages from an FTP/SFTP server without renaming the file first",
+@ComponentProfile(summary = "Pickup messages from an FTP/SFTP server without renaming the file first", metadata =
+{
+    "originalname", "fsFileSize"
+}, 
     tag = "consumer,ftp,ftps,sftp", recommended = {FileTransferConnection.class})
 @DisplayOrder(order =
 {

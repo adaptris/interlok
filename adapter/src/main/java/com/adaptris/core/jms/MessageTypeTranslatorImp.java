@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
@@ -61,9 +62,11 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
   @AdvancedConfig
   @Valid
   @AutoPopulated
+  @AffectsMetadata
   private MetadataFilter metadataFilter;
   @AdvancedConfig
   @InputFieldDefault(value = "false")
+  @AffectsMetadata
   private Boolean moveJmsHeaders;
   @AdvancedConfig
   @InputFieldDefault(value = "false")
