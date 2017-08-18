@@ -36,7 +36,7 @@ import com.adaptris.core.NullConnection;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandaloneRequestor;
-import com.adaptris.core.http.ConfiguredContentTypeProvider;
+import com.adaptris.core.http.RawContentTypeProvider;
 import com.adaptris.core.http.auth.AdapterResourceAuthenticator;
 import com.adaptris.core.http.auth.HttpAuthenticator;
 import com.adaptris.core.http.auth.NoAuthentication;
@@ -129,7 +129,7 @@ public abstract class HttpRequestServiceImpl extends ServiceImp {
     StandardHttpProducer p = new StandardHttpProducer();
     p.setMessageFactory(msg.getFactory());
     p.setDestination(new ConfiguredProduceDestination(msg.resolve(getUrl())));
-    p.setContentTypeProvider(new ConfiguredContentTypeProvider(msg.resolve(getContentType())));
+    p.setContentTypeProvider(new RawContentTypeProvider(msg.resolve(getContentType())));
     p.setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethod.valueOf(msg.resolve(getMethod()).toUpperCase())));
     p.setAuthenticator(getAuthenticator());
     p.setRequestHeaderProvider(getRequestHeaderProvider());
