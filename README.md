@@ -1,4 +1,4 @@
-# Interlok [![GitHub tag](https://img.shields.io/github/tag/adaptris/interlok.svg)]() [![Build Status](https://travis-ci.org/adaptris/interlok.svg?branch=develop)](https://travis-ci.org/adaptris/interlok) [![codecov](https://codecov.io/gh/adaptris/interlok/branch/develop/graph/badge.svg)](https://codecov.io/gh/adaptris/interlok)
+# Interlok [![GitHub tag](https://img.shields.io/github/tag/adaptris/interlok.svg)]() [![Build Status](https://travis-ci.org/adaptris/interlok.svg?branch=develop)](https://travis-ci.org/adaptris/interlok) [![codecov](https://codecov.io/gh/adaptris/interlok/branch/develop/graph/badge.svg)](https://codecov.io/gh/adaptris/interlok) [![Jenkins coverage](https://img.shields.io/jenkins/t/https/development.adaptris.net/jenkins/job/Interlok.svg)]()
 
 This is the base repository for Interlok. It contains the base adapter pared of all 3rd party dependencies other than open source ones. There is a single dependency (commented out) on Microsoft SQL Server JDBC provider which is not required unless you explicitly want to test JDBC against SQL Server.
 
