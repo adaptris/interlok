@@ -17,7 +17,6 @@
 package com.adaptris.core.management;
 
 import static com.adaptris.core.management.Constants.CFG_KEY_START_QUIETLY;
-import static com.adaptris.core.management.Constants.DBG;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -156,7 +155,7 @@ abstract class CmdLineBootstrap {
           try {
             bootstrap.start();
           }
-          catch (Exception e) {
+          catch (Throwable e) {
             System.err.println("(Error) Adapter Startup failure :" + e.getMessage());
             logException(e);
           }
@@ -170,16 +169,13 @@ abstract class CmdLineBootstrap {
     }
   }
 
-  private static void logException(Exception e) {
-    if (DBG) {
-      try (StringWriter sw = new StringWriter(); PrintWriter pw = new PrintWriter(sw, true)) {
-        pw.println("(Error) Adapter Startup Failure Exception Details");
-        e.printStackTrace(pw);
-        System.err.println(sw.toString());
-      }
-      catch (Exception exc) {
+  private static void logException(Throwable e) {
+    try (StringWriter sw = new StringWriter(); PrintWriter pw = new PrintWriter(sw, true)) {
+      pw.println("(Error) Adapter Startup Failure Exception Details");
+      e.printStackTrace(pw);
+      System.err.println(sw.toString());
+    } catch (Exception exc) {
 
-      }
     }
   }
 }
