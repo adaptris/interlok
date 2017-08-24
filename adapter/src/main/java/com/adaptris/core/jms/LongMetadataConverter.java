@@ -23,7 +23,7 @@ public class LongMetadataConverter extends MetadataConverter {
   }
 
   public LongMetadataConverter(MetadataFilter metadataFilter) {
-    super();
+    super(metadataFilter);
   }
 
   @Override
