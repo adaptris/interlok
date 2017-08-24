@@ -145,6 +145,7 @@ public class AutoConvertMessageTranslator extends MessageTypeTranslatorImp {
       dest.registerMessageFactory(source.currentMessageFactory());
       dest.registerSession(source.currentSession());
       dest.setMetadataFilter(source.getMetadataFilter());
+      dest.setMetadataConverter(source.getMetadataConverter());
       return dest;
     }
 
