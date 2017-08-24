@@ -21,6 +21,7 @@ import javax.jms.Message;
 import javax.jms.Session;
 import javax.validation.Valid;
 
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +37,9 @@ import com.adaptris.core.metadata.MetadataFilter;
 import com.adaptris.core.metadata.NoOpMetadataFilter;
 import com.adaptris.core.metadata.RemoveAllMetadataFilter;
 import com.adaptris.core.util.LifecycleHelper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 // abstract factory pattern
 
@@ -72,6 +76,10 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
   @InputFieldDefault(value = "false")
   private Boolean reportAllErrors;
 
+  @AdvancedConfig
+  @XStreamImplicit
+  private List<MetadataConverter> metadataConverter;
+
   /**
    * <p>
    * Creates a new instance. By default
@@ -82,6 +90,7 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
    * </ul>
    */
   public MessageTypeTranslatorImp() {
+    metadataConverter = new ArrayList<>();
     registerMessageFactory(new DefaultMessageFactory());
     helper = new MetadataHandler(this);
   }
@@ -152,6 +161,14 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
    */
   public Boolean getReportAllErrors() {
     return reportAllErrors;
+  }
+
+  public void setMetadataConverter(List<MetadataConverter> metadataConverter) {
+    this.metadataConverter = metadataConverter;
+  }
+
+  public List<MetadataConverter> getMetadataConverter() {
+    return metadataConverter;
   }
 
   /**
@@ -234,6 +251,11 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
   @Override
   public MetadataFilter metadataFilter() {
     return getMetadataFilter() != null ? getMetadataFilter() : new NoOpMetadataFilter();
+  }
+
+  @Override
+  public List<MetadataConverter> metadataConverters(){
+    return getMetadataConverter();
   }
 
   /**
