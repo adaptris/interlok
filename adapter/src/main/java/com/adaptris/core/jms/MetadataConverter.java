@@ -30,12 +30,12 @@ public abstract class MetadataConverter {
   public void moveMetadata(MetadataCollection metadataCollection, Message out) throws JMSException {
     for (MetadataElement element : getMetadataFilter().filter(metadataCollection)) {
       if (!MetadataHandler.isReserved(element.getKey())) {
-        setProperty(out, element);
+        setProperty(element, out);
       }
     }
   }
 
-  public abstract void setProperty(Message out, MetadataElement element) throws JMSException;
+  public abstract void setProperty(MetadataElement element, Message out) throws JMSException;
 
   public MetadataFilter getMetadataFilter() {
     return metadataFilter;

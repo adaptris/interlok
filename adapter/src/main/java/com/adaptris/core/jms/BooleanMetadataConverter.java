@@ -27,7 +27,7 @@ public class BooleanMetadataConverter extends MetadataConverter {
   }
 
   @Override
-  public void setProperty(Message out, MetadataElement element) throws JMSException {
+  public void setProperty(MetadataElement element, Message out) throws JMSException {
     log.trace("Setting JMS Metadata " + element + " as boolean");
     out.setBooleanProperty(element.getKey(), Boolean.valueOf(element.getValue()));
   }
