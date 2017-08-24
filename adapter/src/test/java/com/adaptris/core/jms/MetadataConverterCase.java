@@ -58,6 +58,7 @@ public abstract class MetadataConverterCase extends BaseCase {
       Message jmsMsg = session.createMessage();
       mc.moveMetadata(metadataCollection, jmsMsg);
       assertEquals(getStringValue(), jmsMsg.getStringProperty(HEADER));
+      assertNull(jmsMsg.getStringProperty("JMSCorrelationID"));
       assertValue(jmsMsg);
     } finally {
       broker.destroy();
