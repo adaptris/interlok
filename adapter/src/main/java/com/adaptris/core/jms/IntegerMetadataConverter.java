@@ -13,7 +13,7 @@ import javax.jms.Message;
 /**
  * @author mwarman
  */
-@XStreamAlias("integer-metadata-converter")
+@XStreamAlias("jms-integer-metadata-converter")
 public class IntegerMetadataConverter extends MetadataConverter {
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass());

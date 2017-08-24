@@ -13,7 +13,7 @@ import javax.jms.Message;
 /**
  * @author mwarman
  */
-@XStreamAlias("long-metadata-converter")
+@XStreamAlias("jms-long-metadata-converter")
 public class LongMetadataConverter extends MetadataConverter {
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass());

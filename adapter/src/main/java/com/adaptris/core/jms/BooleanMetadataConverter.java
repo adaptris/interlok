@@ -13,7 +13,7 @@ import javax.jms.Message;
 /**
  * @author mwarman
  */
-@XStreamAlias("boolean-metadata-converter")
+@XStreamAlias("jms-boolean-metadata-converter")
 public class BooleanMetadataConverter extends MetadataConverter {
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
