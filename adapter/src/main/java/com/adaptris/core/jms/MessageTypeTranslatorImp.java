@@ -46,10 +46,9 @@ import java.util.List;
 /**
  * <p>
  * Super class of classes that translate <code>AdaptrisMessage</code>s to the
- * various type of <code>javax.jms.Message</code>s, and vice versa. If the
- * <code>moveMetadata</code> flag is <code>true</code>, metadata will be moved
- * when the message is translated. If the moveJmsHeaders flag is true, JMS
- * headers will be moved as well.
+ * various type of <code>javax.jms.Message</code>s, and vice versa. Set a
+ * <code>metadataFilter</code> to move metadata when the message is translated.
+ * If the moveJmsHeaders flag is true, JMS  headers will be moved as well.
  * </p>
  */
 public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator, MetadataHandlerContext {
@@ -59,7 +58,7 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
   private transient AdaptrisMessageFactory messageFactoryToUse;
   protected transient MetadataHandler helper;
 
-  private static final MetadataFilter DEFAULT_FILTER = new RemoveAllMetadataFilter();
+  private static final MetadataFilter DEFAULT_FILTER = new NoOpMetadataFilter();
   /**
    * Set the filter that will be used return a subset of the messages metdata to be copied over during the translate.
    */
@@ -258,7 +257,7 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
 
   @Override
   public MetadataFilter metadataFilter() {
-    return getMetadataFilter() != null ? getMetadataFilter() : new NoOpMetadataFilter();
+    return getMetadataFilter() != null ? getMetadataFilter() : DEFAULT_FILTER;
   }
 
   @Override
