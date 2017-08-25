@@ -50,6 +50,11 @@ public interface MetadataHandlerContext {
    */
   MetadataFilter metadataFilter();
 
+  /**
+   * Get the list of metadata converters to uses when converting from AdaptrisMessage to JMS Message.
+   *
+   * @return the list of metadata converters
+   */
   List<MetadataConverter> metadataConverters();
 
 }

@@ -163,10 +163,18 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
     return reportAllErrors;
   }
 
+  /**
+   * Set the list of metadata converters to uses when converting from AdaptrisMessage to JMS Message.
+   * @param metadataConverter list of message converters
+   */
   public void setMetadataConverter(List<MetadataConverter> metadataConverter) {
     this.metadataConverter = metadataConverter;
   }
 
+  /**
+   * Get the list of metadata converters to uses when converting from AdaptrisMessage to JMS Message.
+   * @return list of message converters
+   */
   public List<MetadataConverter> getMetadataConverter() {
     return metadataConverter;
   }
