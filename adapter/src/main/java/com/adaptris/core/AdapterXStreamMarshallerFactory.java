@@ -213,6 +213,8 @@ public class AdapterXStreamMarshallerFactory extends AdapterMarshallerFactory {
 	 */
 	@SuppressWarnings("rawtypes")
 	protected XStream configureXStream(XStream xstream, MarshallingOutput outputMode) {
+    // CVE-2017-7957
+    xstream.denyTypes(new Class[]{ void.class, Void.class });   
 		// Configure Annotations
 		Class[] annotationClassesArray = xstreamAnnotatedClasses.toArray(new Class[0]);
 		xstream.processAnnotations(annotationClassesArray);

@@ -30,9 +30,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Use this class with {@link ThrowExceptionService} to throw an exception as part of a workflow. The exception message (i.e.
  * {@link Exception#getMessage()}) is derived from the configured metadata key. If the metadata key does not exist (or returns no
  * value) then no exception will be thrown. This behaviour differs from {@link ExceptionFromMetadata}
+ * </p>
  * 
  * @config possible-exception-from-metadata
- * @author lchan
  * 
  */
 @XStreamAlias("possible-exception-from-metadata")

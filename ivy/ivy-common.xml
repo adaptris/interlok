@@ -24,7 +24,7 @@
   </publications>
   <dependencies>
     <dependency org="com.adaptris" name="adp-core-apt" rev="${ivy.publish.revision}" conf="compile->default;ant->default" changing="true"/>
-    <dependency org="com.thoughtworks.xstream" name="xstream" conf="compile->default" rev="1.4.7" transitive="false"/>
+    <dependency org="com.thoughtworks.xstream" name="xstream" conf="compile->default" rev="1.4.9" transitive="false"/>
 
     <dependency org="commons-collections" name="commons-collections"  rev="3.2.2" conf="compile->default" />
     <dependency org="commons-io" name="commons-io" rev="2.4" conf="compile->default"  />

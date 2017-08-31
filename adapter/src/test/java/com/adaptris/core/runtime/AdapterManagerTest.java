@@ -54,6 +54,7 @@ import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.InitialisedState;
 import com.adaptris.core.JndiContextFactory;
 import com.adaptris.core.NullConnection;
+import com.adaptris.core.NullService;
 import com.adaptris.core.PoolingWorkflow;
 import com.adaptris.core.SharedConnection;
 import com.adaptris.core.StandardProcessingExceptionHandler;
@@ -84,6 +85,13 @@ public class AdapterManagerTest extends ComponentManagerCase {
     super.setUp();
     env.put(Context.INITIAL_CONTEXT_FACTORY, JndiContextFactory.class.getName());
     initialContext = new InitialContext(env);
+  }
+
+  public void testWrappedComponentClassName() throws Exception {
+    String adapterName = this.getClass().getSimpleName() + "." + getName();
+    Adapter adapter = createAdapter(adapterName, 2, 2);
+    AdapterManager am1 = new AdapterManager(adapter);
+    assertEquals(Adapter.class.getCanonicalName(), am1.getWrappedComponentClassname());
   }
 
   public void testEqualityHashCode() throws Exception {
@@ -1092,6 +1100,8 @@ public class AdapterManagerTest extends ComponentManagerCase {
       Adapter marshalledAdapter = (Adapter) m.unmarshal(amp.getConfiguration());
       assertEquals(1, marshalledAdapter.getSharedComponents().getConnections().size());
       assertEquals(getName(), marshalledAdapter.getSharedComponents().getConnections().get(0).getUniqueId());
+      assertTrue(amp.getSharedConnectionIds().contains(getName()));
+      assertTrue(amp.containsSharedConnection(getName()));
     }
     finally {
       adapterManager.requestClose();
@@ -1854,6 +1864,96 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  public void testMBean_AddSharedService() throws Exception {
+    String adapterName = this.getClass().getSimpleName() + "." + getName();
+    Adapter adapter = createAdapter(adapterName);
+    AdapterManager adapterManager = new AdapterManager(adapter);
+    ObjectName adapterObj = adapterManager.createObjectName();
+
+    AdaptrisMarshaller m = DefaultMarshaller.getDefaultMarshaller();
+    try {
+      adapterManager.registerMBean();
+      AdapterManagerMBean amp = JMX.newMBeanProxy(mBeanServer, adapterObj, AdapterManagerMBean.class);
+      amp.addSharedService(m.marshal(new NullService(getName())));
+      Adapter marshalledAdapter = (Adapter) m.unmarshal(amp.getConfiguration());
+      assertEquals(1, marshalledAdapter.getSharedComponents().getServices().size());
+      assertEquals(getName(), marshalledAdapter.getSharedComponents().getServices().get(0).getUniqueId());
+      assertTrue(marshalledAdapter.getSharedComponents().getServiceIds().contains(getName()));
+    }
+    finally {
+    }
+  }
+
+  public void testMBean_AddAndBindSharedService() throws Exception {
+    String adapterName = this.getClass().getSimpleName() + "." + getName();
+    Adapter adapter = createAdapter(adapterName);
+    AdapterManager adapterManager = new AdapterManager(adapter);
+    ObjectName adapterObj = adapterManager.createObjectName();
+
+    AdaptrisMarshaller m = DefaultMarshaller.getDefaultMarshaller();
+    List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
+    mBeans.add(adapterManager);
+    mBeans.addAll(adapterManager.getAllDescendants());
+    try {
+      register(mBeans);
+      adapterManager.requestStart();
+      AdapterManagerMBean amp = JMX.newMBeanProxy(mBeanServer, adapterObj, AdapterManagerMBean.class);
+      amp.addAndBindSharedService(m.marshal(new NullService(getName())));
+      Adapter marshalledAdapter = (Adapter) m.unmarshal(amp.getConfiguration());
+      assertEquals(1, marshalledAdapter.getSharedComponents().getServices().size());
+      assertEquals(getName(), marshalledAdapter.getSharedComponents().getServices().get(0).getUniqueId());
+      assertTrue(amp.getSharedServiceIds().contains(getName()));
+      assertTrue(amp.containsSharedService(getName()));
+    }
+    finally {
+      adapterManager.requestClose();
+    }
+  }
+
+  public void testMBean_RemoveSharedService() throws Exception {
+    String adapterName = this.getClass().getSimpleName() + "." + getName();
+    Adapter adapter = createAdapter(adapterName);
+    adapter.getSharedComponents().addService(new NullService(getName()));
+    AdapterManager adapterManager = new AdapterManager(adapter);
+    ObjectName adapterObj = adapterManager.createObjectName();
+
+    AdaptrisMarshaller m = DefaultMarshaller.getDefaultMarshaller();
+    try {
+      adapterManager.registerMBean();
+      AdapterManagerMBean amp = JMX.newMBeanProxy(mBeanServer, adapterObj, AdapterManagerMBean.class);
+      assertTrue(amp.removeSharedService(getName()));
+      assertFalse(amp.removeSharedService("HelloWorld"));
+      Adapter marshalledAdapter = (Adapter) m.unmarshal(amp.getConfiguration());
+      assertEquals(0, marshalledAdapter.getSharedComponents().getServices().size());
+    }
+    finally {
+    }
+  }
+
+  public void testMBean_RemoveSharedComponent() throws Exception {
+    String adapterName = this.getClass().getSimpleName() + "." + getName();
+    Adapter adapter = createAdapter(adapterName);
+    adapter.getSharedComponents().addService(new NullService(NullService.class.getCanonicalName()));
+    adapter.getSharedComponents().addConnection(new NullConnection(NullConnection.class.getCanonicalName()));
+    AdapterManager adapterManager = new AdapterManager(adapter);
+    ObjectName adapterObj = adapterManager.createObjectName();
+
+    AdaptrisMarshaller m = DefaultMarshaller.getDefaultMarshaller();
+    try {
+      adapterManager.registerMBean();
+      AdapterManagerMBean amp = JMX.newMBeanProxy(mBeanServer, adapterObj, AdapterManagerMBean.class);
+      assertTrue(amp.removeSharedComponent(NullService.class.getCanonicalName()));
+      assertFalse(amp.removeSharedComponent("HelloWorld"));
+      Adapter marshalledAdapter = (Adapter) m.unmarshal(amp.getConfiguration());
+      assertEquals(0, marshalledAdapter.getSharedComponents().getServices().size());
+      assertTrue(amp.removeSharedComponent(NullConnection.class.getCanonicalName()));
+      marshalledAdapter = (Adapter) m.unmarshal(amp.getConfiguration());
+      assertEquals(0, marshalledAdapter.getSharedComponents().getConnections().size());
+    }
+    finally {
+    }
+  }
+
   private class FailingAdapterManager extends AdapterManager {
 
     public FailingAdapterManager(Adapter owner) throws MalformedObjectNameException, CoreException {
@@ -2020,6 +2120,11 @@ public class AdapterManagerTest extends ComponentManagerCase {
 
     @Override
     public void requestRestart(long timeout) throws CoreException, TimeoutException {
+    }
+
+    @Override
+    public String getWrappedComponentClassname() {
+      return Channel.class.getCanonicalName();
     }
 
   }

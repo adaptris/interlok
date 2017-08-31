@@ -19,6 +19,7 @@ package com.adaptris.core.services.exception;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
@@ -34,6 +35,7 @@ import com.adaptris.core.NullService;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -105,7 +107,7 @@ public class ExceptionHandlingServiceWrapper extends ServiceImp implements Event
       log.warn("exception has occurred, applying exceptionService");
       log.trace("exception details", e);
       msg.getObjectHeaders().put(CoreConstants.OBJ_METADATA_EXCEPTION, e);
-      msg.addMetadata(getExceptionMessageMetadataKey(), e.getMessage() == null ? "" : e.getMessage());
+      msg.addMetadata(getExceptionMessageMetadataKey(), StringUtils.defaultIfBlank(e.getMessage(), ""));
       exceptionHandlingService.doService(msg);
     }
   }
@@ -157,10 +159,7 @@ public class ExceptionHandlingServiceWrapper extends ServiceImp implements Event
    * @param s the Service to wrap
    */
   public void setService(Service s) {
-    if (s == null) {
-      throw new IllegalArgumentException("null param");
-    }
-    service = s;
+    service = Args.notNull(s, "service");
   }
 
   /**
@@ -178,10 +177,7 @@ public class ExceptionHandlingServiceWrapper extends ServiceImp implements Event
    * @param s the Service to call if an exception is encountered calling the wrapped Service
    */
   public void setExceptionHandlingService(Service s) {
-    if (s == null) {
-      throw new IllegalArgumentException("null param");
-    }
-    exceptionHandlingService = s;
+    exceptionHandlingService = Args.notNull(s, "exceptionHandlingService");
   }
 
   /**
@@ -199,10 +195,7 @@ public class ExceptionHandlingServiceWrapper extends ServiceImp implements Event
    * @param s the metadata key to store the exception message against
    */
   public void setExceptionMessageMetadataKey(String s) {
-    if (s == null || "".equals(s)) {
-      throw new IllegalArgumentException("null or empty param");
-    }
-    exceptionMessageMetadataKey = s;
+    exceptionMessageMetadataKey = Args.notBlank(s, "exceptionMessageMetadataKey");
   }
 
   @Override

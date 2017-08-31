@@ -22,6 +22,8 @@ import java.security.SecureRandom;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.util.text.Conversion;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -57,7 +59,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("pseudo-random-id-generator")
 public class PseudoRandomIdGenerator implements IdGenerator {
 
+  @InputFieldDefault(value = "")
   private String prefix;
+  @AdvancedConfig
+  @InputFieldDefault(value = "true")
   private Boolean useSecureRandom;
   private final static SecureRandom SECURE_RAND = new SecureRandom();
 

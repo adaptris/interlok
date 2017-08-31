@@ -24,6 +24,7 @@ import org.w3c.dom.Document;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -41,6 +42,7 @@ public class MultiItemConfiguredXpathQuery extends ConfiguredXpathQueryImpl impl
   @NotNull
   @AdvancedConfig
   @AutoPopulated
+  @InputFieldHint(style = "BLANKABLE")
   private String separator;
 
   public MultiItemConfiguredXpathQuery() {

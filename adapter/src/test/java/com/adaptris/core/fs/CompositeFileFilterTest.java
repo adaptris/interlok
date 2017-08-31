@@ -37,11 +37,32 @@ public class CompositeFileFilterTest {
   private static final String FILTER_CUSTOM = "SizeGT=1024__@@__Perl=.*\\.xml__@@__com.adaptris.core.fs.YesOrNo=false";
   private static final String FILTER_N0CLASSDEF = "SizeGT=1024__@@__Perl=.*\\.xml__@@__com.adaptris.core.fs.Blah=false";
 
+  private static final String[] FILTER_STRINGS = {
+      "NewerThan=-PT1H",
+      "OlderThan=-PT1H",
+      "SizeGT=1024",
+      "SizeGTE=1024",
+      "SizeLT=1024",
+      "SizeLTE=1024",
+      "Perl=.*\\.xml",
+      "Awk=.*",
+      "Glob=*.xml",
+      "com.adaptris.core.fs.YesOrNo=false",
+      "IWon'tWork"
+  };
+
+  @Test
+  public void testCreate() throws Exception {
+    for (String filter : FILTER_STRINGS) {
+      CompositeFileFilter df = new CompositeFileFilter(filter, true);
+    }
+  }
+
   @Test
   public void testFilterMatches() throws Exception {
     File src = File.createTempFile(this.getClass().getSimpleName(), ".xml");
     write(2048, src);
-    CompositeFileFilter df = new CompositeFileFilter(FILTER_SIZE);
+    CompositeFileFilter df = new CompositeFileFilter(FILTER_SIZE, true);
     boolean accepted = df.accept(src);
     String text = src + ", size=" + src.length() + " should match";
     src.delete();

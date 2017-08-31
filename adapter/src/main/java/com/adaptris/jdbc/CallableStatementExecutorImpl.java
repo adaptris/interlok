@@ -15,8 +15,13 @@
 */
 package com.adaptris.jdbc;
 
+import java.sql.Statement;
+
+import com.adaptris.annotation.InputFieldDefault;
+
 public abstract class CallableStatementExecutorImpl implements CallableStatementExecutor {
 
+  @InputFieldDefault(value = "false")
   private Boolean handleMultipleResultsetsQuietly;
 
   public CallableStatementExecutorImpl() {
@@ -28,9 +33,9 @@ public abstract class CallableStatementExecutorImpl implements CallableStatement
   }
 
   /**
-   * Ignore SQL Exceptions when calling {@link Statement#getMoreResults(int))}.
+   * Ignore SQL Exceptions when calling {@link Statement#getMoreResults(int)}.
    * 
-   * @param b true to ignore exceptions from {@link Statement#getMoreResults(int))}; default null (false).
+   * @param b true to ignore exceptions from {@link Statement#getMoreResults(int)}; default null (false).
    */
   public void setHandleMultipleResultsetsQuietly(Boolean b) {
     this.handleMultipleResultsetsQuietly = b;

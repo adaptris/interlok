@@ -20,17 +20,13 @@ import java.io.File;
 import java.io.FileFilter;
 import java.util.Date;
 
-import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * {@link FileFilter} accepts files based on the last modified time of the file..
  * <p>
- * Files are accepted based on whether or not the last modified time is older than the specified interval. This interval follows the
- * ISO8601 convention for durations.
+ * As the name suggests, files are accepted based on whether or not the last modified time is <strong>older</strong> than the
+ * specified interval. This interval follows the ISO8601 convention for durations.
  * </p>
  * <p>
  * The interval is represented by the format <strong>[+-]P[n]Y[n]M[n]DT[n]H[n]M[n]S</strong>. In these representations, the [n] is
@@ -70,17 +66,7 @@ import org.slf4j.LoggerFactory;
  * @author lchan
  * @author $Author: lchan $
  */
-public class OlderThan implements FileFilter {
-  private transient Logger logR = LoggerFactory.getLogger(this.getClass().getName());
-
-  private String iso8601duration;
-  private boolean additionalDebug;
-
-  /** Default constructor
-   */
-  protected OlderThan() {
-    iso8601duration = "-P30D";
-  }
+public class OlderThan extends LastModifiedFilter {
 
   /**
    * Create the filefilter using an ISO8601 formatted interval.
@@ -88,14 +74,7 @@ public class OlderThan implements FileFilter {
    * @param iso8601 the iso8601 interval.
    */
   public OlderThan(String iso8601) {
-    this();
-    iso8601duration = iso8601;
-  }
-
-
-  // For unit testing.
-  void setAdditionalDebug(boolean b) {
-    additionalDebug = b;
+    super(iso8601);
   }
 
   /**
@@ -103,20 +82,13 @@ public class OlderThan implements FileFilter {
    */
   @Override
   public boolean accept(File pathname) {
-    Date filterDate = new Date();
-    Date fileDate = new Date(pathname.lastModified());
     try {
-      Duration duration = DatatypeFactory.newInstance().newDuration(
-          iso8601duration);
-      duration.addTo(filterDate);
-      if (additionalDebug) {
-        logR.trace("Accepting files older than " + filterDate);
-      }
+      Date filterDate = filterDate();
+      Date fileDate = new Date(pathname.lastModified());
+      return fileDate.before(filterDate);
     }
     catch (Exception e) {
       return false;
     }
-
-    return fileDate.before(filterDate);
   }
 }

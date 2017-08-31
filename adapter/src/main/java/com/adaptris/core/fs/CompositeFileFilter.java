@@ -37,10 +37,11 @@ import org.slf4j.LoggerFactory;
  * separated string (this notation was chosen so that it is unlikely to be used as a pattern matching sequence).
  * </p>
  * <p>
- * The format of the string required is <code>&lt;FILTER_TYPE>=&lt;filter-expression></code> where the following types of filter are
- * understood (case matters).
+ * The format of the string required is {@code 'FILTER_TYPE'='filter-expression'} where the following types of filter are understood
+ * (case matters).
  * </p>
  * <ul>
+ * <li>NewerThan is equivalent to using {@link NewerThan}</li>
  * <li>OlderThan is equivalent to using {@link OlderThan}</li>
  * <li>SizeGT is equivalent to using {@link SizeGreaterThan} SizeGreaterThan</li>
  * <li>SizeGTE is equivalent to using {@link SizeGreaterThanOrEqual}</li>
@@ -73,6 +74,12 @@ public class CompositeFileFilter implements FileFilter {
   private static final String FILTER_KEY_SEPARATOR = "=";
 
   private enum FilterImplementation {
+    NewerThan {
+      @Override
+      FileFilter create(String expr) {
+        return new NewerThan(expr);
+      }
+    },
     OlderThan {
       @Override
       FileFilter create(String expr) {
@@ -205,8 +212,8 @@ public class CompositeFileFilter implements FileFilter {
   public boolean accept(File pathname) {
     int result = 0;
     for (FileFilter f : filters) {
-      if (logR.isTraceEnabled() && !quietMode) {
-        logR.trace("Checking " + pathname.getAbsolutePath() + " is acceptable for " + f.getClass().getSimpleName());
+      if (!quietMode) {
+        logR.trace("Checking {} is acceptable for {}", pathname.getAbsolutePath(), f.getClass().getSimpleName());
       }
       result += f.accept(pathname) ? 1 : 0;
     }

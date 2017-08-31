@@ -565,6 +565,13 @@ public abstract class AdaptrisMessageCase {
     assertEquals(String.format("%s_%s_%s", VAL1, VAL1, "val3"), msg.resolve("%message{key1}_%message{key1}_%message{key*3}"));
     assertEquals(String.format("SELECT * FROM TABLE where key1=%s and key2=%s", VAL1, VAL2),
         msg.resolve("SELECT * FROM TABLE where key1=%message{key1} and key2=%message{key2}"));
+    try {
+      msg.resolve("%message{does_not_exist}");
+      fail();
+    }
+    catch (UnresolvedMetadataException expected) {
+      assertTrue(expected.getMessage().contains("does_not_exist"));
+    }
   }
 
 }

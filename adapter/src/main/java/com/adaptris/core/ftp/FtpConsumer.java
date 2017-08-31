@@ -64,7 +64,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("ftp-consumer")
 @AdapterComponent
-@ComponentProfile(summary = "Pickup messages from an FTP or SFTP server", tag = "consumer,ftp,ftps,sftp",
+@ComponentProfile(summary = "Pickup messages from an FTP or SFTP server", tag = "consumer,ftp,ftps,sftp", metadata =
+{
+    "originalname", "fsFileSize"
+}, 
     recommended = {FileTransferConnection.class})
 @DisplayOrder(order = {"poller", "workDirectory", "fileFilterImp", "procDirectory", "wipSuffix", "quietInterval"})
 public class FtpConsumer extends FtpConsumerImpl {

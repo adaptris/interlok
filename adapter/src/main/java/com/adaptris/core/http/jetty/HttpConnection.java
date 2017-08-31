@@ -138,7 +138,7 @@ public class HttpConnection extends JettyConnection {
       }
     },
     /**
-     * @see AbstractConnector#setReuseAddress(boolean)
+     * @see ServerConnector#setReuseAddress(boolean)
      */
     ReuseAaddress {
       @Override

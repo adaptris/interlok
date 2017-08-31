@@ -19,6 +19,7 @@ package com.adaptris.core.services.exception;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreConstants;
+import com.adaptris.core.CoreException;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
@@ -29,6 +30,7 @@ import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageConsumer;
 import com.adaptris.core.stubs.MockMessageProducer;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.XmlUtils;
 import com.adaptris.util.text.xml.InsertNode;
@@ -50,9 +52,25 @@ public class ExceptionReportServiceTest extends ExceptionServiceExample {
   protected void setUp() throws Exception {
   }
 
+  public void testPrepare() throws Exception {
+    ExceptionReportService service = new ExceptionReportService();
+    try {
+      service.prepare();
+      fail();
+    }
+    catch (CoreException expected) {
+
+    }
+    service.setExceptionGenerator(new SimpleExceptionReport());
+    service.prepare();
+    assertNotNull(service.getExceptionSerializer());
+    assertEquals(ExceptionAsXml.class, service.getExceptionSerializer().getClass());
+  }
+
   public void testNoObjectMetadata() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
-    ExceptionReportService service = new ExceptionReportService(new SimpleExceptionReport(), new ReplaceNode(XPATH_ORIGINAL_NODE));
+    ExceptionReportService service = new ExceptionReportService(new ExceptionAsXml()
+        .withExceptionGenerator(new SimpleExceptionReport()).withDocumentMerge(new ReplaceNode(XPATH_ORIGINAL_NODE)));
     execute(service, msg);
     assertEquals(XML_PAYLOAD, msg.getContent());
     XmlUtils xml = XmlHelper.createXmlUtils(msg);
@@ -62,7 +80,8 @@ public class ExceptionReportServiceTest extends ExceptionServiceExample {
   public void testNonXml() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(RAW_DATA);
     msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("This is the exception"));
-    ExceptionReportService service = new ExceptionReportService(new SimpleExceptionReport(), new ReplaceNode(XPATH_ORIGINAL_NODE));
+    ExceptionReportService service = new ExceptionReportService(new ExceptionAsXml()
+        .withExceptionGenerator(new SimpleExceptionReport()).withDocumentMerge(new ReplaceNode(XPATH_ORIGINAL_NODE)));
     try {
       execute(service, msg);
       fail("success with non-xml payload");
@@ -72,42 +91,79 @@ public class ExceptionReportServiceTest extends ExceptionServiceExample {
     }
   }
 
-  public void testReplaceNode() throws Exception {
+  @SuppressWarnings("deprecation")
+  public void testDeprecated() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
     msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("This is the exception"));
-    ExceptionReportService service = new ExceptionReportService(new SimpleExceptionReport(), new ReplaceNode(XPATH_ORIGINAL_NODE));
+    ExceptionReportService service = new ExceptionReportService();
+    service.setDocumentMerge(new ReplaceNode(XPATH_ORIGINAL_NODE));
+    service.setExceptionGenerator(new SimpleExceptionReport());
+    service.setXmlEncoding("UTF-8");
+    service.setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder.newInstance());
     execute(service, msg);
     assertNotSame(XML_PAYLOAD, msg.getContent());
     XmlUtils xml = XmlHelper.createXmlUtils(msg);
     assertNotSame(RAW_DATA, xml.getSingleNode(XPATH_ORIGINAL_NODE));
+    assertEquals("UTF-8", msg.getContentEncoding());
+  }
+
+  public void testDefaults() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
+    msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("This is the exception"));
+    ExceptionReportService service = new ExceptionReportService(new ExceptionAsXml());
+    execute(service, msg);
+    assertNotSame(XML_PAYLOAD, msg.getContent());
+    XmlUtils xml = XmlHelper.createXmlUtils(msg);
+    assertNotNull(RAW_DATA, xml.getSingleNode("/Exception"));
+    assertEquals("UTF-8", msg.getContentEncoding());
+  }
+
+  public void testReplaceNode() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
+    msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("This is the exception"));
+    ExceptionReportService service = new ExceptionReportService(new ExceptionAsXml()
+        .withExceptionGenerator(new SimpleExceptionReport()).withDocumentMerge(new ReplaceNode(XPATH_ORIGINAL_NODE))
+        .withDocumentFactoryConfig(DocumentBuilderFactoryBuilder.newInstance()));
+    execute(service, msg);
+    assertNotSame(XML_PAYLOAD, msg.getContent());
+    XmlUtils xml = XmlHelper.createXmlUtils(msg);
+    assertNotSame(RAW_DATA, xml.getSingleNode(XPATH_ORIGINAL_NODE));
+    assertEquals("UTF-8", msg.getContentEncoding());
   }
 
   public void testInsertNode() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
     msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("This is the exception"));
-    ExceptionReportService service = new ExceptionReportService(new SimpleExceptionReport(), new InsertNode(XPATH_ROOT));
+    ExceptionReportService service = new ExceptionReportService(
+        new ExceptionAsXml().withExceptionGenerator(new SimpleExceptionReport()).withDocumentMerge(new InsertNode(XPATH_ROOT))
+            .withXmlEncoding("UTF-8"));
     execute(service, msg);
     assertNotSame(XML_PAYLOAD, msg.getContent());
     XmlUtils xml = XmlHelper.createXmlUtils(msg);
     assertEquals(RAW_DATA, xml.getSingleTextItem(XPATH_ORIGINAL_NODE));
     assertNotNull(xml.getSingleNode(XPATH_ROOT + "/Exception"));
+    assertEquals("UTF-8", msg.getContentEncoding());
   }
 
   public void testBug2220() throws Exception {
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD, "UTF-8");
     msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("I had problems parsing <ABCDE>"));
-    ExceptionReportService service = new ExceptionReportService(new SimpleExceptionReport(), new InsertNode(XPATH_ROOT));
+    ExceptionReportService service = new ExceptionReportService(
+        new ExceptionAsXml().withExceptionGenerator(new SimpleExceptionReport("Exception"))
+            .withDocumentMerge(new InsertNode(XPATH_ROOT)));
     execute(service, msg);
     assertNotSame(XML_PAYLOAD, msg.getContent());
     XmlUtils xml = XmlHelper.createXmlUtils(msg);
     assertEquals(RAW_DATA, xml.getSingleTextItem(XPATH_ORIGINAL_NODE));
     assertNotNull(xml.getSingleNode(XPATH_ROOT + "/Exception"));
+    assertEquals("UTF-8", msg.getContentEncoding());
   }
 
   public void testBug2356() throws Exception {
     ServiceImp failingService = new ThrowExceptionService(new ConfiguredException("Fail"));
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
-    ExceptionReportService service = new ExceptionReportService(new SimpleExceptionReport(), new InsertNode(XPATH_ROOT));
+    ExceptionReportService service = new ExceptionReportService(
+        new ExceptionAsXml().withExceptionGenerator(new SimpleExceptionReport()).withDocumentMerge(new InsertNode(XPATH_ROOT)));
     MockMessageProducer mockProducer = new MockMessageProducer();
 
     StandardProcessingExceptionHandler speh = new StandardProcessingExceptionHandler(new ServiceList(new Service[]
@@ -141,11 +197,12 @@ public class ExceptionReportServiceTest extends ExceptionServiceExample {
 
   @Override
   protected Object retrieveObjectForSampleConfig() {
-    return new ExceptionReportService(new SimpleExceptionReport(), new InsertNode("/path/to/parent/node"));
+    return new ExceptionReportService(new ExceptionAsXml()
+        .withExceptionGenerator(new SimpleExceptionReport()).withDocumentMerge(new InsertNode("/path/to/parent/node")));
   }
 
   @Override
   protected String createBaseFileName(Object o) {
-    return super.createBaseFileName(o) + "-" + ((ExceptionReportService) o).getExceptionGenerator().getClass().getSimpleName();
+    return super.createBaseFileName(o) + "-" + ((ExceptionReportService) o).getExceptionSerializer().getClass().getSimpleName();
   }
 }

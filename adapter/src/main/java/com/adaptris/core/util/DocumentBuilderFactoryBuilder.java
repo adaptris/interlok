@@ -178,8 +178,8 @@ public class DocumentBuilderFactoryBuilder {
    * @param f a DocumentBuilderFactory
    * @return a configured DocumentBuilder
    * @throws ParserConfigurationException
-   * @see {@link #configure(DocumentBuilder)}
-   * @see (@link #configure(DocumentBuilderFactory)}
+   * @see #configure(DocumentBuilder)
+   * @see #configure(DocumentBuilderFactory)
    */
   public DocumentBuilder newDocumentBuilder(DocumentBuilderFactory f) throws ParserConfigurationException {
     return configure(configure(f).newDocumentBuilder());

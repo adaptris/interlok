@@ -30,15 +30,16 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.annotation.GenerateBeanInfo;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.transaction.TransactionManager;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.JndiHelper;
 import com.adaptris.core.util.LifecycleHelper;
@@ -49,23 +50,22 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config shared-components
  * 
- * @author lchan
- * 
  */
 @XStreamAlias("shared-components")
-@GenerateBeanInfo
 @AdapterComponent
 @ComponentProfile(summary = "A Collection of Shared Components", tag = "base")
-@DisplayOrder(order = {"connections", "lifecycleStrategy", "debug"})
+@DisplayOrder(order = {"connections", "services", "lifecycleStrategy", "debug"})
 public class SharedComponentList implements ComponentLifecycle, ComponentLifecycleExtension {
 
   private static final DefaultLifecycleStrategy DEFAULT_STRATEGY = new DefaultLifecycleStrategy();
 
   @Valid
   @AutoPopulated
+  @NotNull
   private List<AdaptrisConnection> connections;
   @Valid
   @AutoPopulated
+  @NotNull
   private List<Service> services;
   @Valid
   private TransactionManager transactionManager;
@@ -73,21 +73,17 @@ public class SharedComponentList implements ComponentLifecycle, ComponentLifecyc
   @InputFieldDefault(value = "false")
   private Boolean debug;
   @Valid
+  @AdvancedConfig
   private SharedComponentLifecycleStrategy lifecycleStrategy;
   
   @Deprecated
   private String uniqueId;
-  private transient Set<String> connectionIds;
-  private transient Set<String> serviceIds;
-  private transient Set<String> notYetInJndi;
+  private transient Object lock = new Object();
   private transient InitialContext context = null;
 
   public SharedComponentList() {
     connections = new ArrayList<AdaptrisConnection>();
     services = new ArrayList<Service>();
-    connectionIds = new HashSet<>();
-    serviceIds = new HashSet<>();
-    notYetInJndi = new HashSet<>();
   }
 
   /**
@@ -102,7 +98,7 @@ public class SharedComponentList implements ComponentLifecycle, ComponentLifecyc
    * @return the list of connections.
    */
   public List<AdaptrisConnection> getConnections() {    
-    return new ArrayList<AdaptrisConnection>(connections);
+    return new ArrayList<>(connections);
   }
 
   /**
@@ -120,24 +116,34 @@ public class SharedComponentList implements ComponentLifecycle, ComponentLifecyc
   public void setConnections(List<AdaptrisConnection> l) {    
     ensureNoDuplicateIds(verifyHasUniqueId(l));
     connections.clear();
-    connectionIds.clear();
     doAddConnections(l);
   }
 
 
+  /**
+   * Returns a clone of the shared-services
+   * 
+   * <p>
+   * This method is purely to allow the underlying XML marshaller to do it's thing, you are strongly encouraged to use the
+   * corresponding methods {@link #addService(Service)}, {@link #addServices(Collection)}, {@link #removeService(String)} instead to
+   * manipulate the contents of the list.
+   * </p>
+   * 
+   * @return the list of connections.
+   */
   public List<Service> getServices() {
-    return new ArrayList<Service>(services);
+    return new ArrayList<>(services);
   }
 
   public void setServices(List<Service> serviceLists) {
     ensureNoDuplicateIds(verifyHasUniqueId(serviceLists));
     services.clear();
-    serviceIds.clear();
     doAddServices(serviceLists);
   }
 
   @Override
   public void init() throws CoreException {
+    verifyLookupNames();
     bindNotYetBound();
     lifecycleStrategy().init(getConnections());
     LifecycleHelper.init(getTransactionManager());
@@ -165,32 +171,59 @@ public class SharedComponentList implements ComponentLifecycle, ComponentLifecyc
 
   @Override
   public void prepare() throws CoreException {
+    verifyLookupNames();
     bindNotYetBound();
     for (AdaptrisConnection c : connections) {
-      c.prepare();
+      LifecycleHelper.prepare(c);
     }
-    if(getTransactionManager() != null) {
-      if(getTransactionManager().getUniqueId() == null)
-        throw new CoreException("Transaction Manager cannot have a null unique-id");
-      getTransactionManager().prepare();
-    }
+    LifecycleHelper.prepare(getTransactionManager());
   }
 
   private synchronized void bindNotYetBound() throws CoreException {
-    for (String id : notYetInJndi) {
-      bindJNDI(id);
+    Collection<AdaptrisComponent> comps = all();
+    synchronized (lock) {
+      for (AdaptrisComponent c : comps) {
+        if (!existsInJndi(c)) {
+          bind(getContext(), c, isDebug());
+        }
+      }
     }
-    notYetInJndi.clear();
   }
   
-  private synchronized void unbindAll() {
-    unbindQuietly(connections);
-    unbindQuietly(getTransactionManager());
-    unbindQuietly(services);
-    notYetInJndi.addAll(connectionIds);
-    notYetInJndi.addAll(serviceIds);
-    if(transactionManager != null)
-      notYetInJndi.add(transactionManager.getUniqueId());
+  private boolean existsInJndi(AdaptrisComponent c) throws CoreException {
+    boolean rc = false;
+    try {
+      rc = getContext().lookup(JndiHelper.createJndiName(c)) != null;
+    }
+    catch (NamingException e) {
+      rc = false;
+    }
+    return rc;
+  }
+
+  private void unbindAll() {
+    synchronized (lock) {
+      unbindQuietly(connections);
+      unbindQuietly(services);
+      unbindQuietly(getTransactionManager());
+    }
+  }
+
+  private Collection<AdaptrisComponent> all() {
+    Collection<AdaptrisComponent> comps = new IgnoreNulls<AdaptrisComponent>();
+    comps.addAll(getServices());
+    comps.addAll(getConnections());
+    comps.add(getTransactionManager());
+    return comps;
+  }
+
+  private void verifyLookupNames() throws CoreException {
+    try {
+      ensureNoDuplicateIds(verifyHasUniqueId(all()));
+    }
+    catch (IllegalArgumentException e) {
+      throw new CoreException(e);
+    }
   }
 
   /**
@@ -205,32 +238,13 @@ public class SharedComponentList implements ComponentLifecycle, ComponentLifecyc
    * @throws CoreException wrapping other exceptions.
    */
   public void bindJNDI(String componentId) throws CoreException {
-    
-    if(containsConnection(componentId)) {
-      AdaptrisConnection connectionToRegister = null;
-      for (AdaptrisConnection c : connections) {
-        if (c.getUniqueId().equals(componentId)) {
-          connectionToRegister = c;
-          break;
-        }
+    Collection<AdaptrisComponent> comps = all();
+    String id = Args.notNull(componentId, "componentId");
+    for (AdaptrisComponent c : comps) {
+      if (id.equals(c.getUniqueId())) {
+        bind(getContext(), c, isDebug());
+        break;
       }
-      if(connectionToRegister != null)
-        bind(getContext(), connectionToRegister, isDebug());
-    }
-    else if(containsService(componentId)) {
-      Service serviceCollectionToRegister = null;
-      for (Service c : services) {
-        if (c.getUniqueId().equals(componentId)) {
-          serviceCollectionToRegister = c;
-          break;
-        }
-      }
-      if(serviceCollectionToRegister != null)
-        bind(getContext(), serviceCollectionToRegister, isDebug());
-    }
-    else if(getTransactionManager() != null) {
-      if(componentId.equals(getTransactionManager().getUniqueId()))
-        bind(getContext(), getTransactionManager(), isDebug());
     }
   }
 
@@ -240,7 +254,16 @@ public class SharedComponentList implements ComponentLifecycle, ComponentLifecyc
    * @return a set of connection-ids
    */
   public Collection<String> getConnectionIds() {
-    return new ArrayList<String>(connectionIds);
+    return idList(getConnections());
+  }
+
+  /**
+   * Return a list of service-ids that are registered.
+   * 
+   * @return a set of service-ids
+   */
+  public Collection<String> getServiceIds() {
+    return idList(getServices());
   }
 
   /**
@@ -295,8 +318,6 @@ public class SharedComponentList implements ComponentLifecycle, ComponentLifecyc
 
   private boolean doAddService(Service serviceCollection) {
     if (!containsService(serviceCollection.getUniqueId())) {
-      serviceIds.add(serviceCollection.getUniqueId());
-      notYetInJndi.add(serviceCollection.getUniqueId());
       return services.add(serviceCollection);
     }
     return false;
@@ -314,8 +335,6 @@ public class SharedComponentList implements ComponentLifecycle, ComponentLifecyc
   
   private boolean doAddConnection(AdaptrisConnection c) {
     if (!containsConnection(c.getUniqueId())) {
-      connectionIds.add(c.getUniqueId());
-      notYetInJndi.add(c.getUniqueId());
       return connections.add(c);
     }
     return false;
@@ -384,7 +403,7 @@ public class SharedComponentList implements ComponentLifecycle, ComponentLifecyc
    * @return true if the ID exists.
    */
   public boolean containsConnection(String id) {
-    return connectionIds.contains(id);
+    return getConnectionIds().contains(id);
   }
   
   /**
@@ -394,9 +413,17 @@ public class SharedComponentList implements ComponentLifecycle, ComponentLifecyc
    * @return true if the ID exists.
    */
   public boolean containsService(String id) {
-    return serviceIds.contains(id);
+    return getServiceIds().contains(id);
   }
   
+
+  private static List<String> idList(List<? extends AdaptrisComponent> comps) {
+    List<String> result = new IgnoreNulls<String>();
+    for (AdaptrisComponent c : comps) {
+      result.add(c.getUniqueId());
+    }
+    return result;
+  }
 
   private static void verify(AdaptrisComponent c) throws IllegalArgumentException {
     if (c == null) throw new IllegalArgumentException("Component is null");
@@ -418,13 +445,13 @@ public class SharedComponentList implements ComponentLifecycle, ComponentLifecyc
       componentIds.add(c.getUniqueId());
     }
     if (componentIds.size() != components.size()) {
-      throw new IllegalArgumentException("Shared connections has duplicate IDs; please review config");
+      throw new IllegalArgumentException("Found shared components with duplicate IDs; please review config");
     }
     return components;
   }
   
 
-  Boolean isDebug() {
+  boolean isDebug() {
     return getDebug() != null ? getDebug().booleanValue() : false;
   }
 
@@ -457,35 +484,54 @@ public class SharedComponentList implements ComponentLifecycle, ComponentLifecyc
       }
     }
     catch (NamingException e) {
-      ExceptionHelper.rethrowCoreException(e);
+      throw ExceptionHelper.wrapCoreException(e);
     }
     return context;
   }
 
   private void unbindQuietly(Collection<? extends AdaptrisComponent> components) {
-    Context ctx = null;
-    try {
-      ctx = getContext();
-    }
-    catch (CoreException e) {
-      return;
-    }
     for (AdaptrisComponent c : components) {
-      JndiHelper.unbindQuietly(ctx, c, isDebug());
+      unbindQuietly(c);
     }
   }
   
   private void unbindQuietly(AdaptrisComponent component) {
-    Context ctx = null;
     try {
-      ctx = getContext();
+      Context ctx = getContext();
+      JndiHelper.unbindQuietly(ctx, component, isDebug());
     }
     catch (CoreException e) {
       return;
     }
-    JndiHelper.unbindQuietly(ctx, component, isDebug());
   }
 
+  public TransactionManager getTransactionManager() {
+    return transactionManager;
+  }
+
+  public void setTransactionManager(TransactionManager tm) {
+    this.transactionManager = tm;
+  }
+
+  /**
+   * Not required as this component doesn't need to extend {@link AdaptrisComponent}
+   * 
+   * @deprecated since 3.6.3
+   */
+  @Deprecated
+  public String getUniqueId() {
+    return uniqueId;
+  }
+
+  /**
+   * Not required as this component doesn't need to extend {@link AdaptrisComponent}
+   * 
+   * @deprecated since 3.6.3
+   */
+  @Deprecated
+  public void setUniqueId(String uniqueId) {
+    this.uniqueId = uniqueId;
+  }
 
   private static class DefaultLifecycleStrategy implements SharedComponentLifecycleStrategy {
 
@@ -521,34 +567,15 @@ public class SharedComponentList implements ComponentLifecycle, ComponentLifecyc
     
   }
 
-
-  public TransactionManager getTransactionManager() {
-    return transactionManager;
-  }
-
-  public void setTransactionManager(TransactionManager transactionManager) {
-    this.transactionManager = transactionManager;
-    notYetInJndi.add(transactionManager.getUniqueId());
-  }
-
-  /**
-   * Not required as this component doesn't need to extend {@link AdaptrisComponent}
-   * 
-   * @deprecated since 3.6.3
-   */
-  @Deprecated
-  public String getUniqueId() {
-    return uniqueId;
-  }
-
-  /**
-   * Not required as this component doesn't need to extend {@link AdaptrisComponent}
-   * 
-   * @deprecated since 3.6.3
-   */
-  @Deprecated
-  public void setUniqueId(String uniqueId) {
-    this.uniqueId = uniqueId;
+  // Sadly PredicatedList throws an IllegalArgumentException if we fail the predicate; we just want to ignore.
+  private static class IgnoreNulls<E> extends ArrayList<E> {
+    @Override
+    public boolean add(E e) {
+      if (e == null) {
+        return false;
+      }
+      return super.add(e);
+    }
   }
 
 }

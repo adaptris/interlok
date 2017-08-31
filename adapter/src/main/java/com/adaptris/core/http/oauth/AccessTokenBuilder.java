@@ -11,8 +11,8 @@ public interface AccessTokenBuilder extends ComponentLifecycle {
   /**
    * Build the access token.
    * 
-   * @param msg
-   * @return
+   * @param msg the msg
+   * @return the access token.
    */
   AccessToken build(AdaptrisMessage msg) throws IOException, CoreException;
 }

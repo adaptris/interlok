@@ -25,6 +25,7 @@ import java.nio.charset.Charset;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.util.text.Base64ByteTranslator;
 import com.adaptris.util.text.ByteTranslator;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -33,7 +34,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Base64 decods an item of metadata.
  * <p>
  * Each matching metadata key from {@link ReformatMetadata#getMetadataKeyRegexp()} will be decoded, and the value overwitten with
- * the bytes after translating it into a String with the specified {@link #setEncoding()}
+ * the bytes after translating it into a String with the specified {@link AdaptrisMessage#getContentEncoding()}
  * </p>
  * 
  * @config metadata-base64-decode

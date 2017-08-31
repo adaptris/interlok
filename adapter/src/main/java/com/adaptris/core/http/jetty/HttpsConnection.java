@@ -131,7 +131,7 @@ public class HttpsConnection extends HttpConnection {
     },
     /**
      * 
-     * @see SslContextFactory#setTrustStore(String)
+     * @see SslContextFactory#setTrustStorePath(String)
      */
     TrustStorePath {
       @Override

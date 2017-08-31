@@ -100,6 +100,13 @@ public class ThrowExceptionServiceTest extends ExceptionServiceExample {
     catch (ServiceException e) {
       fail();
     }
+    try {
+      service.setExceptionGenerator(new PossibleExceptionFromMetadata());
+      execute(service, msg);
+    }
+    catch (ServiceException e) {
+      fail();
+    }
   }
 
   public void testPossibleExceptionFromMetadata_HasMetadataKey() throws Exception {
@@ -112,6 +119,13 @@ public class ThrowExceptionServiceTest extends ExceptionServiceExample {
     }
     catch (ServiceException e) {
       assertEquals(METADATA_VALUE, e.getMessage());
+    }
+    msg.addMetadata(METADATA_KEY, "");
+    try {
+      execute(service, msg);
+    }
+    catch (ServiceException e) {
+      fail();
     }
   }
 
@@ -198,6 +212,8 @@ public class ThrowExceptionServiceTest extends ExceptionServiceExample {
   public void testLastKnownExceptionNoAvailableException() throws Exception {
     ThrowExceptionService service = new ThrowExceptionService(new LastKnownException());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    execute(service, msg);
+    msg.getObjectHeaders().put(CoreConstants.OBJ_METADATA_EXCEPTION, null);
     execute(service, msg);
   }
 

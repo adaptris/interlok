@@ -24,6 +24,7 @@ import java.util.Properties;
 import org.apache.commons.io.IOUtils;
 
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.ConfiguredDestination;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
@@ -106,7 +107,21 @@ public class ReadMetadataFromFilesystemTest extends MetadataServiceExample {
     Properties p = createProperties();
     writeProperties(p, new File(propsFilename), false);
     execute(service, msg);
-    assertTrue(msg.containsKey("key5"));
+    assertTrue(msg.headersContainsKey("key5"));
+    assertEquals("v5", msg.getMetadataValue("key5"));
+  }
+
+  public void testService_DestinationIsFile() throws Exception {
+    String subDir = new GuidGenerator().safeUUID();
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage();
+    File parentDir = FsHelper.createFileReference(FsHelper.createUrlFromString(PROPERTIES.getProperty(BASE_DIR), true));
+    String propsFilename = parentDir.getCanonicalPath() + "/" + subDir + "/" + msg.getUniqueId();
+    Properties p = createProperties();
+    writeProperties(p, new File(propsFilename), false);
+
+    ReadMetadataFromFilesystem service = createService(subDir + "/" + msg.getUniqueId());
+    execute(service, msg);
+    assertTrue(msg.headersContainsKey("key5"));
     assertEquals("v5", msg.getMetadataValue("key5"));
   }
 
@@ -115,12 +130,13 @@ public class ReadMetadataFromFilesystemTest extends MetadataServiceExample {
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage();
     ReadMetadataFromFilesystem service = createService(subDir);
     service.setInputStyle(InputStyle.XML);
+    service.setFilenameCreator(new FormattedFilenameCreator());
     File parentDir = FsHelper.createFileReference(FsHelper.createUrlFromString(PROPERTIES.getProperty(BASE_DIR), true));
     String propsFilename = parentDir.getCanonicalPath() + "/" + subDir + "/" + msg.getUniqueId();
     Properties p = createProperties();
     writeProperties(p, new File(propsFilename), true);
     execute(service, msg);
-    assertTrue(msg.containsKey("key5"));
+    assertTrue(msg.headersContainsKey("key5"));
     assertEquals("v5", msg.getMetadataValue("key5"));
   }
 
@@ -133,7 +149,7 @@ public class ReadMetadataFromFilesystemTest extends MetadataServiceExample {
     Properties p = createProperties();
     writeProperties(p, new File(propsFilename), false);
     execute(service, msg);
-    assertTrue(msg.containsKey("key5"));
+    assertTrue(msg.headersContainsKey("key5"));
     assertEquals("v5", msg.getMetadataValue("key5"));
   }
 
@@ -142,7 +158,7 @@ public class ReadMetadataFromFilesystemTest extends MetadataServiceExample {
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage();
     ReadMetadataFromFilesystem service = createService(subDir);
     execute(service, msg);
-    assertFalse(msg.containsKey("key5"));
+    assertFalse(msg.headersContainsKey("key5"));
   }
 
   public void testService_OverwriteExistingMetadata() throws Exception {
@@ -156,7 +172,7 @@ public class ReadMetadataFromFilesystemTest extends MetadataServiceExample {
     Properties p = createProperties();
     writeProperties(p, new File(propsFilename), false);
     execute(service, msg);
-    assertTrue(msg.containsKey("key5"));
+    assertTrue(msg.headersContainsKey("key5"));
     assertEquals("v5", msg.getMetadataValue("key5"));
   }
 
@@ -172,7 +188,7 @@ public class ReadMetadataFromFilesystemTest extends MetadataServiceExample {
     Properties p = createProperties();
     writeProperties(p, new File(propsFilename), false);
     execute(service, msg);
-    assertTrue(msg.containsKey("key5"));
+    assertTrue(msg.headersContainsKey("key5"));
     assertEquals("MyValue", msg.getMetadataValue("key5"));
   }
 
@@ -215,7 +231,7 @@ public class ReadMetadataFromFilesystemTest extends MetadataServiceExample {
   @Override
   protected ReadMetadataFromFilesystem retrieveObjectForSampleConfig() {
     ReadMetadataFromFilesystem service = new ReadMetadataFromFilesystem();
-    service.setDestination(new ConfiguredProduceDestination("file:////path/to/directory"));
+    service.setDestination(new ConfiguredDestination("file:////path/to/directory"));
     service.setInputStyle(InputStyle.Text);
     return service;
   }

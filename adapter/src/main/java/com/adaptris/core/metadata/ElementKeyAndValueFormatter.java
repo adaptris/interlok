@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.MetadataElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -31,6 +32,7 @@ public class ElementKeyAndValueFormatter implements ElementFormatter {
 	@NotNull
 	@AutoPopulated
 	@InputFieldDefault(value = DEFAULT_SEPARATOR)
+  @InputFieldHint(style = "BLANKABLE")
 	private String separator;
 
 	/**

@@ -21,7 +21,8 @@ import org.eclipse.jetty.security.SecurityHandler;
 /**
  * This is a proxy interface for the Jetty Security Handler implementation.
  * <p>
- * There is only one supported implementation at this time, which is {@link HashUserRealmProxy}
+ * Generally you will configure a {@link com.adaptris.core.http.jetty.ConfigurableSecurityHandler} in your config file to create a
+ * {@code SecurityHandler} at the right time.
  * </p>
  * 
  * @author lchan

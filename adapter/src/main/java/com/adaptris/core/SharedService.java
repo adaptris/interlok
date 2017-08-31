@@ -1,12 +1,12 @@
 package com.adaptris.core;
 
-import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -25,17 +25,15 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("shared-service")
 @AdapterComponent
 @ComponentProfile(summary = "A Service that refers to another Service configured elsewhere", tag = "service,base")
-@DisplayOrder(order = {"lookupName"})
-public class SharedService extends SharedComponent implements Service {
+@DisplayOrder(order = {"lookupName", "cloneService"})
+public class SharedService extends SharedServiceImpl {
 
-  @NotBlank
-  private String lookupName;
   @AdvancedConfig
   @InputFieldDefault(value="true")
   private Boolean cloneService;
-  
+
   private transient Service clonedService;
-  
+
   public SharedService() {
   }
 
@@ -49,7 +47,7 @@ public class SharedService extends SharedComponent implements Service {
       if (clonedService == null) {
         Service lookedUpService = (Service) triggerJndiLookup(getLookupName());
         if(cloneService())
-          clonedService = this.deepClone(lookedUpService);
+          clonedService = deepClone(lookedUpService);
         else
           clonedService = lookedUpService;
       }
@@ -60,99 +58,43 @@ public class SharedService extends SharedComponent implements Service {
     return clonedService;
   }
   
-  private Service deepClone(Service lookedUpService) throws CoreException {
-    AdaptrisMarshaller marshaller = DefaultMarshaller.getDefaultMarshaller();
-    return (Service) marshaller.unmarshal(marshaller.marshal(lookedUpService));
-  }
-
   @Override
   public void init() throws CoreException {
-    getProxiedService().init();
+    LifecycleHelper.init(getProxiedService());
   }
 
   @Override
   public void start() throws CoreException {
-    getProxiedService().start();
+    LifecycleHelper.start(getProxiedService());
   }
 
   @Override
   public void stop() {
-    getProxiedService().stop();
+    LifecycleHelper.stop(getProxiedService());
   }
 
   @Override
   public void close() {
-    getProxiedService().close();
+    LifecycleHelper.close(getProxiedService());
   }
 
   @Override
   public void prepare() throws CoreException {
-    getProxiedService().prepare();
-  }
-
-  @Override
-  public String createName() {
-    return getProxiedService().createName();
-  }
-
-  @Override
-  public String createQualifier() {
-    return getProxiedService().createQualifier();
-  }
-
-  @Override
-  public boolean isTrackingEndpoint() {
-    return getProxiedService().isTrackingEndpoint();
-  }
-
-  @Override
-  public boolean isConfirmation() {
-    return getProxiedService().isConfirmation();
-  }
-
-  @Override
-  public ComponentState retrieveComponentState() {
-    return getProxiedService().retrieveComponentState();
-  }
-
-  @Override
-  public void changeState(ComponentState newState) {
-    getProxiedService().changeState(newState);    
-  }
-
-  @Override
-  public void requestInit() throws CoreException {
-    getProxiedService().requestInit();
-  }
-
-  @Override
-  public void requestStart() throws CoreException {
-    getProxiedService().requestStart();
-  }
-
-  @Override
-  public void requestStop() {
-    getProxiedService().requestStop();
-  }
-
-  @Override
-  public void requestClose() {
-    getProxiedService().requestClose();
+    LifecycleHelper.registerEventHandler(getProxiedService(), eventHandler);
+    LifecycleHelper.prepare(getProxiedService());
   }
 
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    getProxiedService().doService(msg);
-  }
-
-  @Override
-  public void setUniqueId(String uniqueId) {
-    getProxiedService().setUniqueId(uniqueId);
-  }
-
-  @Override
-  public String getUniqueId() {
-    return getProxiedService().getUniqueId();
+    Service s = getProxiedService();
+    try {
+      s.doService(msg);
+      msg.addEvent(s, true);
+    }
+    catch (Exception e) {
+      msg.addEvent(s, false);
+      throw ExceptionHelper.wrapServiceException(e);
+    }
   }
 
   @Override
@@ -160,20 +102,7 @@ public class SharedService extends SharedComponent implements Service {
     return getProxiedService().isBranching();
   }
 
-  @Override
-  public boolean continueOnFailure() {
-    return getProxiedService().continueOnFailure();
-  }
-
-  public String getLookupName() {
-    return lookupName;
-  }
-
-  public void setLookupName(String lookupName) {
-    this.lookupName = lookupName;
-  }
-  
-  public boolean cloneService() {
+  boolean cloneService() {
     return this.getCloneService() == null ? true : this.getCloneService();
   }
 

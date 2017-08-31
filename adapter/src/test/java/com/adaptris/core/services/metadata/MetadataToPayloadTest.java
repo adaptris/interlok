@@ -20,7 +20,6 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.services.metadata.MetadataToPayloadService.Encoding;
 import com.adaptris.core.services.metadata.MetadataToPayloadService.MetadataSource;
-import com.adaptris.core.services.metadata.PayloadToMetadataService.MetadataTarget;
 import com.adaptris.util.text.Conversion;
 
 public class MetadataToPayloadTest extends MetadataServiceExample {
@@ -41,10 +40,6 @@ public class MetadataToPayloadTest extends MetadataServiceExample {
     return new MetadataToPayloadService(DEFAULT_METADATA_KEY, target);
   }
 
-  private PayloadToMetadataService toMetadataService(MetadataTarget target) {
-    return new PayloadToMetadataService(DEFAULT_METADATA_KEY, target);
-  }
-
   private AdaptrisMessage createMessage(boolean base64) {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     if (!base64) {
@@ -62,6 +57,28 @@ public class MetadataToPayloadTest extends MetadataServiceExample {
     AdaptrisMessage msg = createMessage(false);
     execute(service, msg);
     assertEquals(DEFAULT_PAYLOAD, msg.getContent());
+  }
+  
+  public void testService_NoMetadata() throws Exception {
+    MetadataToPayloadService service = new MetadataToPayloadService("DoesNotExistKey", MetadataSource.Standard);
+    AdaptrisMessage msg = createMessage(false);
+    try {
+      execute(service, msg);
+      fail("Should fail with no key found");
+    } catch (Exception ex) {
+      // expected.
+    }
+  }
+  
+  public void testService_NoObjectMetadata() throws Exception {
+    MetadataToPayloadService service = new MetadataToPayloadService("DoesNotExistKey", MetadataSource.Object);
+    AdaptrisMessage msg = createMessage(false);
+    try {
+      execute(service, msg);
+      fail("Should fail with no key found");
+    } catch (Exception ex) {
+      // expected.
+    }
   }
 
   public void testService_Metadata_Encoded() throws Exception {

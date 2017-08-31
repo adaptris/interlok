@@ -187,7 +187,6 @@ junit.jdbc.captureservice.driver=org.apache.derby.jdbc.EmbeddedDriver
 
 
 
-junit.fs.LastModifiedFilter=${test.resources.dir}/readme.txt
 junit.fs.SizeBasedFilter=${test.resources.dir}/readme.txt
 
 

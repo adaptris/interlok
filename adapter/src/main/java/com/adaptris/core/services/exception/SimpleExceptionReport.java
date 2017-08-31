@@ -21,11 +21,13 @@ import static com.adaptris.core.util.XmlHelper.createDocument;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -47,23 +49,25 @@ public class SimpleExceptionReport implements ExceptionReportGenerator {
 
   private transient Logger logR = LoggerFactory.getLogger(this.getClass());
 
+  @InputFieldDefault(value = "Exception")
   private String elementName;
 
   public SimpleExceptionReport() {
-    setElementName("Exception");
+  }
+
+  public SimpleExceptionReport(String elementName) {
+    this();
+    setElementName(elementName);
   }
 
   public Document create(Exception e) throws Exception {
-    if (getElementName() == null || "".equals(getElementName())) {
-      throw new Exception("No configured Element name");
-    }
     StringWriter sw = new StringWriter();
     PrintWriter pw = new PrintWriter(sw, true);
-    pw.println("<" + getElementName() + ">");
+    pw.println("<" + elementName() + ">");
     pw.println("<![CDATA[");
     e.printStackTrace(pw);
     pw.println("]]>");
-    pw.println("</" + getElementName() + ">");
+    pw.println("</" + elementName() + ">");
     pw.close();
     logR.trace("Created Exception Report " + sw.toString());
     return createDocument(sw.toString(), (DocumentBuilderFactoryBuilder) null);
@@ -73,8 +77,16 @@ public class SimpleExceptionReport implements ExceptionReportGenerator {
     return elementName;
   }
 
-  public void setElementName(String elementName) {
-    this.elementName = elementName;
+  /**
+   * Set the element name for the stack trace.
+   * 
+   * @param s the element name, if not specified defaults to {@code Exception}
+   */
+  public void setElementName(String s) {
+    this.elementName = s;
   }
 
+  String elementName() {
+    return StringUtils.defaultIfBlank(getElementName(), "Exception");
+  }
 }

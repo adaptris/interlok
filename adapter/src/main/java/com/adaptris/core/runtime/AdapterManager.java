@@ -50,6 +50,7 @@ import com.adaptris.core.FailedMessageRetrier;
 import com.adaptris.core.InitialisedState;
 import com.adaptris.core.JndiContextFactory;
 import com.adaptris.core.ProcessingExceptionHandler;
+import com.adaptris.core.Service;
 import com.adaptris.core.StartedState;
 import com.adaptris.core.StoppedState;
 import com.adaptris.core.management.VersionReport;
@@ -292,8 +293,8 @@ public class AdapterManager extends ComponentManagerImpl<Adapter> implements Ada
   @Override
   public boolean addSharedConnection(String xmlString) throws CoreException, IllegalArgumentException {
     ensureState(ClosedState.getInstance());
-    AdaptrisConnection connection = (AdaptrisConnection) DefaultMarshaller.getDefaultMarshaller().unmarshal(xmlString);
-    boolean result = getWrappedComponent().getSharedComponents().addConnection(connection);
+    AdaptrisConnection comp = (AdaptrisConnection) DefaultMarshaller.getDefaultMarshaller().unmarshal(xmlString);
+    boolean result = getWrappedComponent().getSharedComponents().addConnection(comp);
     if (result) {
       marshalAndSendNotification();
     }
@@ -303,10 +304,10 @@ public class AdapterManager extends ComponentManagerImpl<Adapter> implements Ada
   @Override
   public boolean addAndBindSharedConnection(String xmlString) throws CoreException, IllegalStateException {
     ensureState(StartedState.getInstance(), InitialisedState.getInstance(), StoppedState.getInstance());
-    AdaptrisConnection connection = (AdaptrisConnection) DefaultMarshaller.getDefaultMarshaller().unmarshal(xmlString);
-    boolean result = getWrappedComponent().getSharedComponents().addConnection(connection);
+    AdaptrisConnection comp = (AdaptrisConnection) DefaultMarshaller.getDefaultMarshaller().unmarshal(xmlString);
+    boolean result = getWrappedComponent().getSharedComponents().addConnection(comp);
     if (result) {
-      getWrappedComponent().getSharedComponents().bindJNDI(connection.getUniqueId());
+      getWrappedComponent().getSharedComponents().bindJNDI(comp.getUniqueId());
       marshalAndSendNotification();
     }
     return result;
@@ -331,6 +332,55 @@ public class AdapterManager extends ComponentManagerImpl<Adapter> implements Ada
   @Override
   public Collection<String> getSharedConnectionIds() throws CoreException {
     return getWrappedComponent().getSharedComponents().getConnectionIds();
+  }
+
+  @Override
+  public boolean addSharedService(String xmlString) throws CoreException, IllegalStateException, IllegalArgumentException {
+    ensureState(ClosedState.getInstance());
+    Service comp = (Service) DefaultMarshaller.getDefaultMarshaller().unmarshal(xmlString);
+    boolean result = getWrappedComponent().getSharedComponents().addService(comp);
+    if (result) {
+      marshalAndSendNotification();
+    }
+    return result;
+  }
+
+  @Override
+  public boolean addAndBindSharedService(String xmlString) throws CoreException, IllegalStateException, IllegalArgumentException {
+    ensureState(StartedState.getInstance(), InitialisedState.getInstance(), StoppedState.getInstance());
+    Service comp = (Service) DefaultMarshaller.getDefaultMarshaller().unmarshal(xmlString);
+    boolean result = getWrappedComponent().getSharedComponents().addService(comp);
+    if (result) {
+      getWrappedComponent().getSharedComponents().bindJNDI(comp.getUniqueId());
+      marshalAndSendNotification();
+    }
+    return result;
+  }
+
+  @Override
+  public boolean removeSharedService(String serviceId) throws CoreException, IllegalStateException {
+    ensureState(ClosedState.getInstance());
+    Collection<Service> c = getWrappedComponent().getSharedComponents().removeService(serviceId);
+    boolean result = c.size() > 0;
+    if (result) {
+      marshalAndSendNotification();
+    }
+    return result;
+  }
+
+  @Override
+  public boolean containsSharedService(String serviceId) throws CoreException {
+    return getWrappedComponent().getSharedComponents().containsService(serviceId);
+  }
+
+  @Override
+  public Collection<String> getSharedServiceIds() throws CoreException {
+    return getWrappedComponent().getSharedComponents().getServiceIds();
+  }
+
+  @Override
+  public boolean removeSharedComponent(String id) throws CoreException, IllegalStateException {
+    return removeSharedConnection(id) || removeSharedService(id);
   }
 
   @Override
@@ -480,5 +530,4 @@ public class AdapterManager extends ComponentManagerImpl<Adapter> implements Ada
     ManagedThreadFactory.interruptManagedThreads();
     super.requestClose();
   }
-
 }
