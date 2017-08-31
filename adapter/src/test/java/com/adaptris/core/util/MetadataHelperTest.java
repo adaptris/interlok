@@ -29,6 +29,7 @@ import org.junit.Test;
 
 import com.adaptris.core.MetadataCollection;
 import com.adaptris.core.MetadataElement;
+import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairCollection;
 
 public class MetadataHelperTest {
@@ -56,7 +57,7 @@ public class MetadataHelperTest {
   @Test
   public void testConvertFromKeyValuePairs() {
     KeyValuePairCollection elements = new KeyValuePairCollection();
-    elements.add(new MetadataElement("test", "value"));
+    elements.add(new KeyValuePair("test", "value"));
     assertNotNull(MetadataHelper.convertFromKeyValuePairs(elements));
     assertTrue(MetadataHelper.convertFromKeyValuePairs(elements).contains(new MetadataElement("test", "")));
   }

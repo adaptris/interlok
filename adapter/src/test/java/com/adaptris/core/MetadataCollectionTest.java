@@ -28,6 +28,7 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairCollection;
 
 public class MetadataCollectionTest {
@@ -63,7 +64,7 @@ public class MetadataCollectionTest {
   @Test
   public void testContructor_KVPS() {
     KeyValuePairCollection elements = new KeyValuePairCollection();
-    elements.add(new MetadataElement("test", "value"));
+    elements.add(new KeyValuePair("test", "value"));
     MetadataCollection c = new MetadataCollection(elements);
     assertTrue(c.containsKey("test"));
   }

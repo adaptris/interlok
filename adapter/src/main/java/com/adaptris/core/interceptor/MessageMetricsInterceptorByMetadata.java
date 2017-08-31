@@ -70,7 +70,7 @@ public class MessageMetricsInterceptorByMetadata extends MessageMetricsIntercept
 
   public MessageMetricsInterceptorByMetadata(MetadataElement element) {
     this();
-    setMetadataElement(element);
+    setMetadataElement(new KeyValuePair(element.getKey(), element.getValue()));
   }
 
   public void init() throws CoreException {
