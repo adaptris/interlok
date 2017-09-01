@@ -56,7 +56,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Pickup messages from a email account without trying to parse the MIME message.",
     tag = "consumer,email", recommended = {NullConnection.class})
-@DisplayOrder(order = {"poller", "username", "password", "mailReceiverFactory"})
+@DisplayOrder(order = {"poller", "username", "password", "mailReceiverFactory", "headerHandler"})
 public class RawMailConsumer extends MailConsumerImp {
 
   @AdvancedConfig
@@ -74,15 +74,14 @@ public class RawMailConsumer extends MailConsumerImp {
     List<AdaptrisMessage> result = new ArrayList<AdaptrisMessage>();
     OutputStream out = null;
     try {
-      if (log.isTraceEnabled()) {
-        log.trace("Start Processing [" + mime.getMessageID() + "]");
-      }
+      log.trace("Start Processing [{}]", mime.getMessageID());
       AdaptrisMessage msg = defaultIfNull(getMessageFactory()).newMessage();
       out = msg.getOutputStream();
       mime.writeTo(out);
       if (useEmailMessageIdAsUniqueId() && !isEmpty(mime.getMessageID())) {
         msg.setUniqueId(mime.getMessageID());
       }
+      headerHandler().handle(mime, msg);
       result.add(msg);
     }
     catch (MessagingException e) {

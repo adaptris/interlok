@@ -29,7 +29,11 @@ import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.StandaloneConsumer;
+import com.adaptris.core.metadata.NoOpMetadataFilter;
+import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.core.stubs.MockMessageProducer;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.mail.JunitMailHelper;
 import com.adaptris.mail.Pop3ReceiverFactory;
 import com.adaptris.mail.Pop3sReceiverFactory;
@@ -46,24 +50,78 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
     super(name);
   }
 
-  public void testConsume() throws Exception {
+  @SuppressWarnings("deprecation")
+  public void testConsume_Legacy() throws Exception {
     if (!testsEnabled()) return;
     GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     try {
+
       sendMessage(gm);
-      MockMessageProducer mockProducer = new MockMessageProducer();
-      Adapter a = createAdapter(createConsumerForTests(gm), mockProducer);
-      a.requestStart();
-      waitForMessages(mockProducer, 1);
-      a.requestClose();
-      // assertEquals(1, mockProducer.getMessages().size());
-      AdaptrisMessage prdMsg = mockProducer.getMessages().get(0);
-      assertEquals("Consumed Payload", TEXT_PAYLOADS[0], prdMsg.getContent());
+      MockMessageListener mockListener = new MockMessageListener();
+      DefaultMailConsumer imp = (DefaultMailConsumer) createConsumerForTests(gm);
+      imp.setPreserveHeaders(true);
+      imp.setHeaderPrefix("");
+
+      StandaloneConsumer c = new StandaloneConsumer(imp);
+      c.registerAdaptrisMessageListener(mockListener);
+      LifecycleHelper.initAndStart(c);
+      waitForMessages(mockListener, 1);
+      LifecycleHelper.stopAndClose(c);
+      AdaptrisMessage prdMsg = mockListener.getMessages().get(0);
+      assertEquals(TEXT_PAYLOADS[0], prdMsg.getContent());
+      assertEquals(JunitMailHelper.DEFAULT_RECEIVER, prdMsg.getMetadataValue("From"));
+
     }
     finally {
       JunitMailHelper.stopServer(gm);
     }
 
+  }
+
+  public void testConsume_NoHandler() throws Exception {
+    if (!testsEnabled()) return;
+    GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
+    try {
+      sendMessage(gm);
+      MockMessageListener mockListener = new MockMessageListener();
+      MailConsumerImp imp = createConsumerForTests(gm);
+
+      StandaloneConsumer c = new StandaloneConsumer(imp);
+      c.registerAdaptrisMessageListener(mockListener);
+      LifecycleHelper.initAndStart(c);
+      waitForMessages(mockListener, 1);
+      LifecycleHelper.stopAndClose(c);
+      AdaptrisMessage prdMsg = mockListener.getMessages().get(0);
+      assertEquals(TEXT_PAYLOADS[0], prdMsg.getContent());
+      assertFalse(prdMsg.headersContainsKey("From"));
+    }
+    finally {
+      JunitMailHelper.stopServer(gm);
+    }
+  }
+
+  public void testConsume_MetadataHandler() throws Exception {
+    if (!testsEnabled()) return;
+    GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
+    try {
+
+      sendMessage(gm);
+      MockMessageListener mockListener = new MockMessageListener();
+      DefaultMailConsumer imp = (DefaultMailConsumer) createConsumerForTests(gm);
+      imp.setHeaderHandler(new MetadataMailHeaders().withHeaderFilter(new NoOpMetadataFilter()));
+
+      StandaloneConsumer c = new StandaloneConsumer(imp);
+      c.registerAdaptrisMessageListener(mockListener);
+      LifecycleHelper.initAndStart(c);
+      waitForMessages(mockListener, 1);
+      LifecycleHelper.stopAndClose(c);
+      AdaptrisMessage prdMsg = mockListener.getMessages().get(0);
+      assertEquals(TEXT_PAYLOADS[0], prdMsg.getContent());
+      assertEquals(JunitMailHelper.DEFAULT_RECEIVER, prdMsg.getMetadataValue("From"));
+    }
+    finally {
+      JunitMailHelper.stopServer(gm);
+    }
   }
 
   public void testConsume_CommonsNetPop3() throws Exception {
@@ -147,28 +205,28 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
   }
 
   public void testDefaultProducerWithDefaultConsumerWithContentDispositionRedmine727() throws Exception {
-    FileInputStream fileInputStream = new FileInputStream(PROPERTIES.getProperty(EMAIL_WITH_CD));
-    Session session = Session.getDefaultInstance(new Properties());
-    MimeMessage mimeMessage = new MimeMessage(session, fileInputStream);
-    DefaultMailConsumer mailConsumer = new DefaultMailConsumer();
-    List<AdaptrisMessage> messages = mailConsumer.createMessages(mimeMessage);
-    assertEquals(2, messages.size());
+    try (FileInputStream fileInputStream = new FileInputStream(PROPERTIES.getProperty(EMAIL_WITH_CD))) {
+      Session session = Session.getDefaultInstance(new Properties());
+      MimeMessage mimeMessage = new MimeMessage(session, fileInputStream);
+      DefaultMailConsumer mailConsumer = new DefaultMailConsumer();
+      List<AdaptrisMessage> messages = mailConsumer.createMessages(mimeMessage);
+      assertEquals(2, messages.size());
+    }
   }
 
   public void testDefaultProducerWithDefaultConsumerWithoutContentDispositionRedmine727() throws Exception {
-    FileInputStream fileInputStream = new FileInputStream(PROPERTIES.getProperty(EMAIL_WITHOUT_CD));
-    Session session = Session.getDefaultInstance(new Properties());
-    MimeMessage mimeMessage = new MimeMessage(session, fileInputStream);
-    DefaultMailConsumer mailConsumer = new DefaultMailConsumer();
-    List<AdaptrisMessage> messages = mailConsumer.createMessages(mimeMessage);
-    assertEquals(2, messages.size());
+    try (FileInputStream fileInputStream = new FileInputStream(PROPERTIES.getProperty(EMAIL_WITHOUT_CD))) {
+      Session session = Session.getDefaultInstance(new Properties());
+      MimeMessage mimeMessage = new MimeMessage(session, fileInputStream);
+      DefaultMailConsumer mailConsumer = new DefaultMailConsumer();
+      List<AdaptrisMessage> messages = mailConsumer.createMessages(mimeMessage);
+      assertEquals(2, messages.size());
+    }
   }
 
   @Override
-  protected MailConsumerImp create() {
+  protected DefaultMailConsumer create() {
     DefaultMailConsumer c = new DefaultMailConsumer();
-    c.setPreserveHeaders(true);
-    c.setHeaderPrefix("");
     c.setPartSelector(new NullPartSelector());
     return c;
   }

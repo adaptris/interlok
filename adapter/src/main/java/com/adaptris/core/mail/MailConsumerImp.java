@@ -30,6 +30,7 @@ import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisPollingConsumer;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.util.Args;
 import com.adaptris.mail.JavamailReceiverFactory;
 import com.adaptris.mail.MailException;
 import com.adaptris.mail.MailReceiver;
@@ -99,6 +100,10 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
   @AutoPopulated
   @Valid
   private MailReceiverFactory mailReceiverFactory;
+  @AdvancedConfig
+  @Valid
+  @InputFieldDefault(value = "ignore-mail-headers")
+  private MailHeaderHandler headerHandler;
 
   protected transient MailReceiver mbox;
 
@@ -108,8 +113,6 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
    * </p>
    * <ul>
    * <li>regularExpressionStyle is defaulted to "GLOB"</li>
-   * <li>preserveHeaders is defaulted to false</li>
-   * <li>headerPrefix is defaulted to ""</li>
    * <li>deleteOnReceive is defaulted to false</li>
    * </ul>
    */
@@ -117,6 +120,7 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
     // null protection...
     regularExpressionStyle = "GLOB";
     mailReceiverFactory = new JavamailReceiverFactory();
+    setHeaderHandler(new IgnoreMailHeaders());
   }
 
   @Override
@@ -131,12 +135,7 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
 
     try {
       mbox.connect();
-
-      if (log.isTraceEnabled()) {
-        log.trace("there are " + mbox.getMessages().size()
-            + " messages to process");
-      }
-
+      log.trace("there are {} messages to process", mbox.getMessages().size());
       for (MimeMessage msg : mbox.getMessages()){
         try {
           mbox.setMessageRead(msg);
@@ -147,8 +146,7 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
         }
         catch (MailException e) {
           mbox.resetMessage(msg);
-          log.debug("Error processing "
-              + (msg != null ? msg.getMessageID() : "<null>"), e);
+          log.debug("Error processing {}",(msg != null ? msg.getMessageID() : "<null>"), e);
         }
         count++;
         if (!continueProcessingMessages()) {
@@ -184,11 +182,9 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
       mbox.setRegularExpressionCompiler(getRegularExpressionStyle());
       initFilters(getDestination().getFilterExpression());
 
-      if (log.isTraceEnabled()) {
-        log.trace("From filter set to " + fromFilter);
-        log.trace("Subject filter set to " + subjectFilter);
-        log.trace("Recipient filter set to " + recipientFilter);
-      }
+      log.trace("From filter set to [{}]", fromFilter);
+      log.trace("Subject filter set to [{}]", subjectFilter);
+      log.trace("Recipient filter set to [{}]", recipientFilter);
 
       mbox.setFromFilter(fromFilter);
       mbox.setSubjectFilter(subjectFilter);
@@ -334,5 +330,22 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
    */
   public void setMailReceiverFactory(MailReceiverFactory f) {
     this.mailReceiverFactory = f;
+  }
+
+  public MailHeaderHandler getHeaderHandler() {
+    return headerHandler;
+  }
+
+  /**
+   * Specify how to handle mails headers
+   * 
+   * @param mh the handler, defaults to {@link IgnoreMailHeaders}.
+   */
+  public void setHeaderHandler(MailHeaderHandler mh) {
+    this.headerHandler = Args.notNull(mh, "headerHandler");
+  }
+
+  protected MailHeaderHandler headerHandler() {
+    return getHeaderHandler();
   }
 }

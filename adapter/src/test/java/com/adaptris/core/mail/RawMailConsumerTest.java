@@ -19,15 +19,19 @@ package com.adaptris.core.mail;
 import static com.adaptris.mail.JunitMailHelper.testsEnabled;
 
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import javax.mail.internet.MimeBodyPart;
 
-import com.adaptris.core.Adapter;
+import org.apache.commons.io.IOUtils;
+
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.stubs.MockMessageProducer;
+import com.adaptris.core.StandaloneConsumer;
+import com.adaptris.core.stubs.MockMessageListener;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.mail.JunitMailHelper;
 import com.adaptris.mail.Pop3ReceiverFactory;
-import com.adaptris.util.stream.StreamUtil;
 import com.adaptris.util.text.mime.MultiPartInput;
 import com.icegreen.greenmail.util.GreenMail;
 
@@ -37,7 +41,6 @@ public class RawMailConsumerTest extends MailConsumerCase {
     super(name);
   }
 
-  /** @see junit.framework.TestCase#setUp() */
   @Override
   protected void setUp() throws Exception {
   }
@@ -47,18 +50,36 @@ public class RawMailConsumerTest extends MailConsumerCase {
     GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     try {
       sendMessage(gm);
-      MockMessageProducer mockProducer = new MockMessageProducer();
-      Adapter a = createAdapter(createConsumerForTests(gm), mockProducer);
-      a.requestStart();
-      Thread.sleep(3000);
-      a.requestClose();
-      assertTrue(mockProducer.getMessages().size() >= 1);
-      AdaptrisMessage prdMsg = mockProducer.getMessages().get(0);
-      MultiPartInput mime = new MultiPartInput(prdMsg.getInputStream(), false);
-      MimeBodyPart part = (MimeBodyPart) mime.next();
-      ByteArrayOutputStream out = new ByteArrayOutputStream();
-      StreamUtil.copyStream(part.getInputStream(), out);
-      assertEquals("Text Payload", TEXT_PAYLOADS[0], out.toString());
+      MockMessageListener mockListener = new MockMessageListener();
+      StandaloneConsumer c = new StandaloneConsumer(createConsumerForTests(gm));
+      c.registerAdaptrisMessageListener(mockListener);
+      LifecycleHelper.initAndStart(c);
+      waitForMessages(mockListener, 1);
+      LifecycleHelper.stopAndClose(c);
+      assertTrue(mockListener.getMessages().size() >= 1);
+      compare(mockListener.getMessages().get(0), TEXT_PAYLOADS[0]);
+    }
+    finally {
+      JunitMailHelper.stopServer(gm);
+    }
+  }
+
+  public void testConsumer_MetadataHeaders() throws Exception {
+    if (!testsEnabled()) return;
+    GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
+    try {
+      sendMessage(gm);
+      MockMessageListener mockListener = new MockMessageListener();
+      MailConsumerImp imp = createConsumerForTests(gm);
+      imp.setHeaderHandler(new MetadataMailHeaders());
+      StandaloneConsumer c = new StandaloneConsumer(imp);
+      c.registerAdaptrisMessageListener(mockListener);
+      LifecycleHelper.initAndStart(c);
+      waitForMessages(mockListener, 1);
+      LifecycleHelper.stopAndClose(c);
+      AdaptrisMessage prdMsg = mockListener.getMessages().get(0);
+      compare(prdMsg, TEXT_PAYLOADS[0]);
+      assertEquals(JunitMailHelper.DEFAULT_RECEIVER, prdMsg.getMetadataValue("From"));
     }
     finally {
       JunitMailHelper.stopServer(gm);
@@ -70,18 +91,15 @@ public class RawMailConsumerTest extends MailConsumerCase {
     GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     try {
       sendMessage(gm);
-      MockMessageProducer mockProducer = new MockMessageProducer();
-      Adapter a = createAdapter(createConsumerForTests(gm, new Pop3ReceiverFactory()), mockProducer);
-      a.requestStart();
-      Thread.sleep(3000);
-      a.requestClose();
-      assertTrue(mockProducer.getMessages().size() >= 1);
-      AdaptrisMessage prdMsg = mockProducer.getMessages().get(0);
-      MultiPartInput mime = new MultiPartInput(prdMsg.getInputStream(), false);
-      MimeBodyPart part = (MimeBodyPart) mime.next();
-      ByteArrayOutputStream out = new ByteArrayOutputStream();
-      StreamUtil.copyStream(part.getInputStream(), out);
-      assertEquals("Text Payload", TEXT_PAYLOADS[0], out.toString());
+      MockMessageListener mockListener = new MockMessageListener();
+      StandaloneConsumer c = new StandaloneConsumer(createConsumerForTests(gm, new Pop3ReceiverFactory()));
+      c.registerAdaptrisMessageListener(mockListener);
+      LifecycleHelper.initAndStart(c);
+      waitForMessages(mockListener, 1);
+      LifecycleHelper.stopAndClose(c);
+
+      assertTrue(mockListener.getMessages().size() >= 1);
+      compare(mockListener.getMessages().get(0), TEXT_PAYLOADS[0]);
     }
     finally {
       JunitMailHelper.stopServer(gm);
@@ -89,7 +107,19 @@ public class RawMailConsumerTest extends MailConsumerCase {
   }
 
   @Override
-  protected MailConsumerImp create() {
+  protected RawMailConsumer create() {
     return new RawMailConsumer();
+  }
+
+  private void compare(AdaptrisMessage msg, String expected) throws Exception {
+    try (InputStream msgIn = msg.getInputStream(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+      MultiPartInput mime = new MultiPartInput(msgIn, false);
+      MimeBodyPart part = (MimeBodyPart) mime.next();
+      try (InputStream partIn = part.getInputStream(); OutputStream bout = out) {
+        IOUtils.copy(partIn, bout);
+      }
+      assertEquals(expected, out.toString());
+    }
+
   }
 }
