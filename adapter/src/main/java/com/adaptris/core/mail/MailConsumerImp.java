@@ -60,11 +60,6 @@ import com.adaptris.mail.MailReceiverFactory;
  * The default filter-expression syntax is based on Unix shell glob expressions. It can be changed by using the
  * {@link #setRegularExpressionStyle(String)} method.
  * <p>
- * Because the combination of destination and filter form the uniqueness of the workflow, it is important to configure the
- * filter-expression correctly, if 1 or more workflows contain a filter-expression that evaulates to essentially the same thing,
- * then results are undefined in the context of retries and error handling.
- * </p>
- * <p>
  * It is possible to control the underlying behaviour of this consumer through the use of various properties that will be passed to
  * the <code>javax.mail.Session</code> instance. You need to refer to the javamail documentation to see a list of the available
  * properties and meanings.
@@ -84,13 +79,6 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
   @AdvancedConfig
   @InputFieldDefault(value = "true")
   private Boolean attemptConnectOnInit;
-
-  @AdvancedConfig
-  private String fromFilter;
-  @AdvancedConfig
-  private String subjectFilter;
-  @AdvancedConfig
-  private String recipientFilter;
   @AdvancedConfig
   private String regularExpressionStyle;
   @InputFieldHint(style = "PASSWORD")
@@ -106,6 +94,9 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
   private MailHeaderHandler headerHandler;
 
   protected transient MailReceiver mbox;
+  private transient String fromFilter;
+  private transient String subjectFilter;
+  private transient String recipientFilter;
 
   /**
    * <p>

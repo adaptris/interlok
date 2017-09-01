@@ -69,7 +69,7 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
       LifecycleHelper.stopAndClose(c);
       AdaptrisMessage prdMsg = mockListener.getMessages().get(0);
       assertEquals(TEXT_PAYLOADS[0], prdMsg.getContent());
-      assertEquals(JunitMailHelper.DEFAULT_RECEIVER, prdMsg.getMetadataValue("From"));
+      assertEquals(JunitMailHelper.DEFAULT_RECEIVER, prdMsg.getMetadataValue("To"));
 
     }
     finally {
@@ -93,6 +93,7 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
       LifecycleHelper.stopAndClose(c);
       AdaptrisMessage prdMsg = mockListener.getMessages().get(0);
       assertEquals(TEXT_PAYLOADS[0], prdMsg.getContent());
+      assertFalse(prdMsg.headersContainsKey("To"));
       assertFalse(prdMsg.headersContainsKey("From"));
     }
     finally {
@@ -117,7 +118,7 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
       LifecycleHelper.stopAndClose(c);
       AdaptrisMessage prdMsg = mockListener.getMessages().get(0);
       assertEquals(TEXT_PAYLOADS[0], prdMsg.getContent());
-      assertEquals(JunitMailHelper.DEFAULT_RECEIVER, prdMsg.getMetadataValue("From"));
+      assertEquals(JunitMailHelper.DEFAULT_RECEIVER, prdMsg.getMetadataValue("To"));
     }
     finally {
       JunitMailHelper.stopServer(gm);

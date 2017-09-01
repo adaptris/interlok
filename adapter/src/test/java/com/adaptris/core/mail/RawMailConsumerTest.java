@@ -79,7 +79,7 @@ public class RawMailConsumerTest extends MailConsumerCase {
       LifecycleHelper.stopAndClose(c);
       AdaptrisMessage prdMsg = mockListener.getMessages().get(0);
       compare(prdMsg, TEXT_PAYLOADS[0]);
-      assertEquals(JunitMailHelper.DEFAULT_RECEIVER, prdMsg.getMetadataValue("From"));
+      assertEquals(JunitMailHelper.DEFAULT_RECEIVER, prdMsg.getMetadataValue("To"));
     }
     finally {
       JunitMailHelper.stopServer(gm);
