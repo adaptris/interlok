@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import org.junit.Before;
@@ -83,6 +84,25 @@ public class MetadataCollectionTest {
     elements.add(new MetadataElement("test", "value"));
     MetadataCollection c = new MetadataCollection(elements);
     assertEquals(elements, c.toSet());
+    assertEquals(0, MetadataCollection.asSet(null).size());
+  }
+
+  @Test
+  public void testAsProperties() {
+    Set<MetadataElement> elements = new HashSet<>();
+    elements.add(new MetadataElement("test", "value"));
+    Properties p = MetadataCollection.asProperties(elements);
+    assertEquals("value", p.getProperty("test"));
+    assertEquals(0, MetadataCollection.asProperties(null).size());
+  }
+
+  @Test
+  public void testAsMap() {
+    Set<MetadataElement> elements = new HashSet<>();
+    elements.add(new MetadataElement("test", "value"));
+    Map<String, String> p = MetadataCollection.asMap(elements);
+    assertEquals("value", p.get("test"));
+    assertEquals(0, MetadataCollection.asMap(null).size());
   }
 
 }
