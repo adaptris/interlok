@@ -16,8 +16,13 @@
 
 package com.adaptris.core.mail;
 
+import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
+import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang.StringUtils.split;
+
+import java.util.HashMap;
 import java.util.List;
-import java.util.StringTokenizer;
+import java.util.Map;
 
 import javax.mail.internet.MimeMessage;
 import javax.validation.Valid;
@@ -72,6 +77,7 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
   private static final String SUBJECT = "SUBJECT";
   private static final String FROM = "FROM";
 
+
   // marshalled
   @AdvancedConfig
   @InputFieldDefault(value = "false")
@@ -94,9 +100,6 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
   private MailHeaderHandler headerHandler;
 
   protected transient MailReceiver mbox;
-  private transient String fromFilter;
-  private transient String subjectFilter;
-  private transient String recipientFilter;
 
   /**
    * <p>
@@ -171,15 +174,15 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
           MailHelper.createURLName(getDestination().getDestination(), getUsername(), getPassword()));
       //mbox = new MailComNetClient("localhost", 3110, getUsername(), Password.decode(getPassword()));
       mbox.setRegularExpressionCompiler(getRegularExpressionStyle());
-      initFilters(getDestination().getFilterExpression());
+      Map<String, String> filters = initFilters(getDestination().getFilterExpression());
 
-      log.trace("From filter set to [{}]", fromFilter);
-      log.trace("Subject filter set to [{}]", subjectFilter);
-      log.trace("Recipient filter set to [{}]", recipientFilter);
+      log.trace("From filter set to [{}]", filters.get(FROM));
+      log.trace("Subject filter set to [{}]", filters.get(SUBJECT));
+      log.trace("Recipient filter set to [{}]", filters.get(RECIPIENT));
 
-      mbox.setFromFilter(fromFilter);
-      mbox.setSubjectFilter(subjectFilter);
-      mbox.setRecipientFilter(recipientFilter);
+      mbox.setFromFilter(filters.get(FROM));
+      mbox.setSubjectFilter(filters.get(SUBJECT));
+      mbox.setRecipientFilter(filters.get(RECIPIENT));
       // Make an attempt to connect just to be sure that we can
       if (attemptConnectOnInit()) {
         mbox.connect();
@@ -198,28 +201,23 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
   /**
    * Set the filtering on the consume destination.
    */
-  private void initFilters(String filterString) {
-    if (filterString == null || filterString.equalsIgnoreCase("*")
-        || filterString.equals("")) {
+  private Map<String, String> initFilters(String filterString) {
+    Map<String, String> result = new HashMap<String, String>();
+    if (isBlank(filterString) || filterString.equalsIgnoreCase("*")) {
+      return result;
+    }
+    String[] filters = split(filterString, ",");
+    for (String f : filters) {
+      addFilter(result, split(f, "=", 2));
+    }
+    return result;
+  }
+
+  private void addFilter(Map<String, String> filters, String[] nv) {
+    if (nv.length < 2) {
       return;
     }
-    StringTokenizer st = new StringTokenizer(filterString, ",");
-
-    while (st.hasMoreTokens()) {
-      String filter = st.nextToken();
-      StringTokenizer fst = new StringTokenizer(filter, "=");
-      String key = fst.nextToken().trim();
-      String value = fst.nextToken();
-      if (key.equalsIgnoreCase(FROM)) {
-        fromFilter = value;
-      }
-      if (key.equalsIgnoreCase(SUBJECT)) {
-        subjectFilter = value;
-      }
-      if (key.equalsIgnoreCase(RECIPIENT)) {
-        recipientFilter = value;
-      }
-    }
+    filters.put(defaultIfEmpty(nv[0], ""), defaultIfEmpty(nv[1], ""));
   }
 
   /**

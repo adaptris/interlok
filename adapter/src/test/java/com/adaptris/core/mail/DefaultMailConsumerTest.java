@@ -61,6 +61,7 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
       DefaultMailConsumer imp = (DefaultMailConsumer) createConsumerForTests(gm);
       imp.setPreserveHeaders(true);
       imp.setHeaderPrefix("");
+      imp.getDestination().setFilterExpression("BLAH=");
 
       StandaloneConsumer c = new StandaloneConsumer(imp);
       c.registerAdaptrisMessageListener(mockListener);
@@ -85,7 +86,7 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
       sendMessage(gm);
       MockMessageListener mockListener = new MockMessageListener();
       MailConsumerImp imp = createConsumerForTests(gm);
-
+      imp.getDestination().setFilterExpression("*");
       StandaloneConsumer c = new StandaloneConsumer(imp);
       c.registerAdaptrisMessageListener(mockListener);
       LifecycleHelper.initAndStart(c);
@@ -109,6 +110,8 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
       sendMessage(gm);
       MockMessageListener mockListener = new MockMessageListener();
       DefaultMailConsumer imp = (DefaultMailConsumer) createConsumerForTests(gm);
+      imp.setRegularExpressionStyle("PERL5");
+      imp.getDestination().setFilterExpression("SUBJECT=.*");
       imp.setHeaderHandler(new MetadataMailHeaders().withHeaderFilter(new NoOpMetadataFilter()));
 
       StandaloneConsumer c = new StandaloneConsumer(imp);

@@ -53,6 +53,7 @@ public class RawMailConsumerTest extends MailConsumerCase {
       MockMessageListener mockListener = new MockMessageListener();
       RawMailConsumer imp = (RawMailConsumer) createConsumerForTests(gm);
       imp.setUseEmailMessageIdAsUniqueId(true);
+      imp.setDeleteOnReceive(null);
       StandaloneConsumer c = new StandaloneConsumer(imp);
       c.registerAdaptrisMessageListener(mockListener);
       LifecycleHelper.initAndStart(c);
