@@ -30,6 +30,7 @@ import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisPollingConsumer;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.util.Args;
 import com.adaptris.mail.JavamailReceiverFactory;
 import com.adaptris.mail.MailException;
 import com.adaptris.mail.MailReceiver;
@@ -59,11 +60,6 @@ import com.adaptris.mail.MailReceiverFactory;
  * The default filter-expression syntax is based on Unix shell glob expressions. It can be changed by using the
  * {@link #setRegularExpressionStyle(String)} method.
  * <p>
- * Because the combination of destination and filter form the uniqueness of the workflow, it is important to configure the
- * filter-expression correctly, if 1 or more workflows contain a filter-expression that evaulates to essentially the same thing,
- * then results are undefined in the context of retries and error handling.
- * </p>
- * <p>
  * It is possible to control the underlying behaviour of this consumer through the use of various properties that will be passed to
  * the <code>javax.mail.Session</code> instance. You need to refer to the javamail documentation to see a list of the available
  * properties and meanings.
@@ -83,13 +79,6 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
   @AdvancedConfig
   @InputFieldDefault(value = "true")
   private Boolean attemptConnectOnInit;
-
-  @AdvancedConfig
-  private String fromFilter;
-  @AdvancedConfig
-  private String subjectFilter;
-  @AdvancedConfig
-  private String recipientFilter;
   @AdvancedConfig
   private String regularExpressionStyle;
   @InputFieldHint(style = "PASSWORD")
@@ -99,8 +88,15 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
   @AutoPopulated
   @Valid
   private MailReceiverFactory mailReceiverFactory;
+  @AdvancedConfig
+  @Valid
+  @InputFieldDefault(value = "ignore-mail-headers")
+  private MailHeaderHandler headerHandler;
 
   protected transient MailReceiver mbox;
+  private transient String fromFilter;
+  private transient String subjectFilter;
+  private transient String recipientFilter;
 
   /**
    * <p>
@@ -108,8 +104,6 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
    * </p>
    * <ul>
    * <li>regularExpressionStyle is defaulted to "GLOB"</li>
-   * <li>preserveHeaders is defaulted to false</li>
-   * <li>headerPrefix is defaulted to ""</li>
    * <li>deleteOnReceive is defaulted to false</li>
    * </ul>
    */
@@ -117,6 +111,7 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
     // null protection...
     regularExpressionStyle = "GLOB";
     mailReceiverFactory = new JavamailReceiverFactory();
+    setHeaderHandler(new IgnoreMailHeaders());
   }
 
   @Override
@@ -131,12 +126,7 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
 
     try {
       mbox.connect();
-
-      if (log.isTraceEnabled()) {
-        log.trace("there are " + mbox.getMessages().size()
-            + " messages to process");
-      }
-
+      log.trace("there are {} messages to process", mbox.getMessages().size());
       for (MimeMessage msg : mbox.getMessages()){
         try {
           mbox.setMessageRead(msg);
@@ -147,8 +137,7 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
         }
         catch (MailException e) {
           mbox.resetMessage(msg);
-          log.debug("Error processing "
-              + (msg != null ? msg.getMessageID() : "<null>"), e);
+          log.debug("Error processing {}",(msg != null ? msg.getMessageID() : "<null>"), e);
         }
         count++;
         if (!continueProcessingMessages()) {
@@ -184,11 +173,9 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
       mbox.setRegularExpressionCompiler(getRegularExpressionStyle());
       initFilters(getDestination().getFilterExpression());
 
-      if (log.isTraceEnabled()) {
-        log.trace("From filter set to " + fromFilter);
-        log.trace("Subject filter set to " + subjectFilter);
-        log.trace("Recipient filter set to " + recipientFilter);
-      }
+      log.trace("From filter set to [{}]", fromFilter);
+      log.trace("Subject filter set to [{}]", subjectFilter);
+      log.trace("Recipient filter set to [{}]", recipientFilter);
 
       mbox.setFromFilter(fromFilter);
       mbox.setSubjectFilter(subjectFilter);
@@ -334,5 +321,22 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
    */
   public void setMailReceiverFactory(MailReceiverFactory f) {
     this.mailReceiverFactory = f;
+  }
+
+  public MailHeaderHandler getHeaderHandler() {
+    return headerHandler;
+  }
+
+  /**
+   * Specify how to handle mails headers
+   * 
+   * @param mh the handler, defaults to {@link IgnoreMailHeaders}.
+   */
+  public void setHeaderHandler(MailHeaderHandler mh) {
+    this.headerHandler = Args.notNull(mh, "headerHandler");
+  }
+
+  protected MailHeaderHandler headerHandler() {
+    return getHeaderHandler();
   }
 }
