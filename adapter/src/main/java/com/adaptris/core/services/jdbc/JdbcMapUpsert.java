@@ -106,7 +106,7 @@ public abstract class JdbcMapUpsert extends JdbcMapInsert {
     protected List<String> columns;
     protected String statement;
 
-    UpdateWrapper(Map<String, String> obj) {
+    protected UpdateWrapper(Map<String, String> obj) {
       columns = new ArrayList<>(obj.keySet());
       columns.remove(idField());
       StringBuilder statementBuilder = new StringBuilder(String.format("UPDATE %s SET", getTable()));

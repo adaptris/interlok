@@ -106,7 +106,7 @@ public abstract class JdbcMapInsert extends JdbcService {
     protected List<String> columns;
     protected String statement;
 
-    InsertWrapper(Map<String, String> json) {
+    protected InsertWrapper(Map<String, String> json) {
       columns = new ArrayList<>(json.keySet());
       statement = String.format("INSERT into %s (%s) VALUES (%s)", getTable(), createString(true), createString(false));
     }
