@@ -77,17 +77,17 @@ public abstract class JdbcMapUpsert extends JdbcMapInsert {
       InsertWrapper inserter = new InsertWrapper(object);
       SelectWrapper selector = new SelectWrapper(object);
       UpdateWrapper updater = new UpdateWrapper(object);
-      log.trace("SELECT [{}]", selector.statement);
-      log.trace("INSERT [{}]", inserter.statement);
-      log.trace("UPDATE [{}]", updater.statement);
-      selectStmt = selector.addParams(prepareStatement(conn, selector.statement), object);
+      log.trace("SELECT [{}]", selector.statement());
+      log.trace("INSERT [{}]", inserter.statement());
+      log.trace("UPDATE [{}]", updater.statement());
+      selectStmt = selector.addParams(prepareStatement(conn, selector.statement()), object);
       rs = selectStmt.executeQuery();
       if (rs.next()) {
-        updateStmt = updater.addParams(prepareStatement(conn, updater.statement), object);
+        updateStmt = updater.addParams(prepareStatement(conn, updater.statement()), object);
         updateStmt.executeUpdate();
       }
       else {
-        insertStmt = inserter.addParams(prepareStatement(conn, inserter.statement), object);
+        insertStmt = inserter.addParams(prepareStatement(conn, inserter.statement()), object);
         insertStmt.executeUpdate();
       }
     }
@@ -102,11 +102,11 @@ public abstract class JdbcMapUpsert extends JdbcMapInsert {
     }
   }
 
-  protected class UpdateWrapper {
-    protected List<String> columns;
-    protected String statement;
+  public class UpdateWrapper implements StatementWrapper {
+    private List<String> columns;
+    private String statement;
 
-    protected UpdateWrapper(Map<String, String> obj) {
+    public UpdateWrapper(Map<String, String> obj) {
       columns = new ArrayList<>(obj.keySet());
       columns.remove(idField());
       StringBuilder statementBuilder = new StringBuilder(String.format("UPDATE %s SET", getTable()));
@@ -123,7 +123,8 @@ public abstract class JdbcMapUpsert extends JdbcMapInsert {
       statement = statementBuilder.toString();
     }
 
-    protected PreparedStatement addParams(PreparedStatement statement, Map<String, String> obj) throws SQLException {
+    @Override
+    public PreparedStatement addParams(PreparedStatement statement, Map<String, String> obj) throws SQLException {
       int paramIndex = 1;
       statement.clearParameters();
       // Set all the updates
@@ -135,19 +136,30 @@ public abstract class JdbcMapUpsert extends JdbcMapInsert {
       statement.setObject(columns.size() + 1, obj.get(idField()));
       return statement;
     }
+
+    @Override
+    public String statement() {
+      return statement;
+    }
   }
 
-  protected class SelectWrapper {
-    protected String statement;
+  public class SelectWrapper implements StatementWrapper {
+    private String statement;
 
-    SelectWrapper(Map<String, String> obj) {
+    public SelectWrapper(Map<String, String> obj) {
       statement = String.format("SELECT %s FROM %s WHERE %s = ?", idField(), getTable(), idField());
     }
 
-    protected PreparedStatement addParams(PreparedStatement statement, Map<String, String> obj) throws SQLException {
+    @Override
+    public PreparedStatement addParams(PreparedStatement statement, Map<String, String> obj) throws SQLException {
       int paramIndex = 1;
       statement.clearParameters();
       statement.setObject(1, obj.get(idField()));
+      return statement;
+    }
+
+    @Override
+    public String statement() {
       return statement;
     }
   }

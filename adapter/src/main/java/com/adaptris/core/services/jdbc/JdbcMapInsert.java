@@ -102,11 +102,17 @@ public abstract class JdbcMapInsert extends JdbcService {
     }
   }
 
-  protected class InsertWrapper {
-    protected List<String> columns;
-    protected String statement;
+  public interface StatementWrapper {
+    String statement();
 
-    protected InsertWrapper(Map<String, String> json) {
+    PreparedStatement addParams(PreparedStatement statement, Map<String, String> object) throws SQLException;
+  }
+
+  public class InsertWrapper implements StatementWrapper {
+    private List<String> columns;
+    private String statement;
+
+    public InsertWrapper(Map<String, String> json) {
       columns = new ArrayList<>(json.keySet());
       statement = String.format("INSERT into %s (%s) VALUES (%s)", getTable(), createString(true), createString(false));
     }
@@ -123,7 +129,11 @@ public abstract class JdbcMapInsert extends JdbcService {
       return sb.toString();
     }
 
-    protected PreparedStatement addParams(PreparedStatement statement, Map<String, String> obj) throws SQLException {
+    public String statement() {
+      return statement;
+    }
+
+    public PreparedStatement addParams(PreparedStatement statement, Map<String, String> obj) throws SQLException {
       int paramIndex = 1;
       statement.clearParameters();
       for (Iterator<String> i = columns.iterator(); i.hasNext(); paramIndex++) {
