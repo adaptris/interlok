@@ -43,6 +43,7 @@ import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.adaptris.security.password.Password;
 import com.adaptris.util.KeyValuePairBag;
 import com.adaptris.util.KeyValuePairSet;
+import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XStreamAlias("jmx-connection")
@@ -287,5 +288,12 @@ public class JmxConnection extends AllowsRetriesConnection {
     setAdditionalDebug(b);
     return this;
   }
+
+  public JmxConnection withRetries(Integer maxRetries, TimeInterval retryInterval) {
+    setConnectionRetryInterval(retryInterval);
+    setConnectionAttempts(maxRetries);
+    return this;
+  }
+
 
 }

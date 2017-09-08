@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
@@ -39,6 +40,7 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.jmx.JmxConnection;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -61,6 +63,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"jmxServiceUrl", "objectName", "operationName", "maxJmxConnectionCache", "operationParameters", "resultValueTranslator"})
 public class DynamicJmxOperationService extends JmxOperationImpl {
   public static final int DEFAULT_MAX_CACHE_SIZE = 16;
+
+  private static final TimeInterval DEFAULT_RETRY_INTERVAL = new TimeInterval(10L, TimeUnit.SECONDS);
+  private static final Integer MAX_RETRIES = -1;
 
   @InputFieldHint(expression = true)
   private String jmxServiceUrl;
@@ -219,7 +224,8 @@ public class DynamicJmxOperationService extends JmxOperationImpl {
   private JmxConnection cachedGet(String jmxServiceURL) throws CoreException {
     JmxConnection jmx = jmxConnectionCache.get(jmxServiceURL);
     if (jmx == null) {
-      jmx = LifecycleHelper.initAndStart(new JmxConnection().withJmxServiceUrl(jmxServiceURL));
+      jmx = LifecycleHelper
+          .initAndStart(new JmxConnection().withJmxServiceUrl(jmxServiceURL).withRetries(MAX_RETRIES, DEFAULT_RETRY_INTERVAL));
       jmxConnectionCache.put(jmxServiceURL, jmx);
     }
     return jmx;

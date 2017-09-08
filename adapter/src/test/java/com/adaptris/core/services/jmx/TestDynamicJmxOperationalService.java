@@ -222,8 +222,13 @@ public class TestDynamicJmxOperationalService extends ServiceCase {
     }
 
     void destroy() throws Exception {
+      try {
+        jmx.stop();
+      }
+      finally {
+        jmx.destroy();
+      }
       PortManager.release(port);
-      jmx.destroy();
     }
 
     private Properties createProperties(int unusedPort) {
