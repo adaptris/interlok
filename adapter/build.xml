@@ -268,12 +268,6 @@
       <entry key="adaptris.privatekey.password" value="${junit.security.password}"/>
     </propertyfile>
 
-    <!-- Properties for Transport Tests
-    -->
-    <interlok:property-source file="${test.resources.dir}/transport-test.properties.template"/>
-    <echoproperties destfile="${testclasses.build.dir}/transport-test.properties" prefix="junittransport."/>
-    <replace file="${testclasses.build.dir}/transport-test.properties" token="junittransport." value=""/>
-
     <!-- Properties for Security Tests
     -->
     <interlok:property-source file="${test.resources.dir}/security-test.properties.template"/>
