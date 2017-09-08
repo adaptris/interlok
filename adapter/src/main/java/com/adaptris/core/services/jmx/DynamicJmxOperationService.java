@@ -65,7 +65,7 @@ public class DynamicJmxOperationService extends JmxOperationImpl {
   public static final int DEFAULT_MAX_CACHE_SIZE = 16;
 
   private static final TimeInterval DEFAULT_RETRY_INTERVAL = new TimeInterval(10L, TimeUnit.SECONDS);
-  private static final Integer MAX_RETRIES = -1;
+  private static final Integer MAX_RETRIES = 6;
 
   @InputFieldHint(expression = true)
   private String jmxServiceUrl;
