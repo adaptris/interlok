@@ -23,7 +23,6 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
@@ -48,19 +47,14 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @since 3.0.3
  */
 @XStreamAlias("jmx-metadata-value-translator")
-public class MetadataValueTranslator implements ValueTranslator {
+public class MetadataValueTranslator extends ValueTranslatorImp {
   
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
   @NotBlank
   private String metadataKey;
     
-  @AutoPopulated
-  @NotBlank
-  private String type;
-  
   public MetadataValueTranslator() {
-    this.setType(DEFAULT_PARAMETER_TYPE);
   }
 
   public MetadataValueTranslator(String key, String type) {
@@ -101,14 +95,6 @@ public class MetadataValueTranslator implements ValueTranslator {
     } catch (Exception e) {
       throw new CoreException(e);
     } 
-  }
-
-  public String getType() {
-    return this.type;
-  }
-
-  public void setType(String type) {
-    this.type = Args.notBlank(type, "type");
   }
 
   public String getMetadataKey() {
