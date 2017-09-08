@@ -262,4 +262,30 @@ public class JmxConnection extends AllowsRetriesConnection {
   private String jmxServiceUrlForLogging() {
     return !isBlank(getJmxServiceUrl()) ? getJmxServiceUrl() : "Local JMX";
   }
+
+  public JmxConnection withJmxServiceUrl(String s) {
+    setJmxServiceUrl(s);
+    return this;
+  }
+
+  public JmxConnection withUsername(String s) {
+    setUsername(s);
+    return this;
+  }
+
+  public JmxConnection withPassword(String s) {
+    setPassword(s);
+    return this;
+  }
+
+  public JmxConnection withJmxProperties(KeyValuePairSet kvps) {
+    setJmxProperties(kvps);
+    return this;
+  }
+
+  public JmxConnection withAdditionalDebug(Boolean b) {
+    setAdditionalDebug(b);
+    return this;
+  }
+
 }
