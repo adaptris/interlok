@@ -76,19 +76,35 @@ public class JmxWaitServiceTest extends ServiceCase {
     }
   }
 
+  public void testNoWait() throws Exception {
+    JmxWaitService service = new JmxWaitService();
+    service.setOperationName(getName());
+    service.setObjectName("com.adaptris:type=JMX,id=" + getName());
+    when(mockInvoker.invoke((MBeanServerConnection) any(), (ObjectName) any(), anyString(), any(Object[].class),
+        any(String[].class))).thenReturn(true);
+    service.setInvoker(mockInvoker);
+    try {
+      start(service);
+      service.doService(AdaptrisMessageFactory.getDefaultInstance().newMessage());
+    }
+    finally {
+      stop(service);
+    }
+  }
+
   public void testWait() throws Exception {
     JmxWaitService service = new JmxWaitService();
     service.setOperationName(getName());
     service.setObjectName("com.adaptris:type=JMX,id=" + getName());
     when(mockInvoker.invoke((MBeanServerConnection) any(), (ObjectName) any(), anyString(), any(Object[].class),
-        any(String[].class)))
-        .thenReturn(false, true);
+        any(String[].class))).thenReturn(false, true);
     service.setInvoker(mockInvoker);
     service.setRetryInterval(new TimeInterval(1L, TimeUnit.SECONDS));
     try {
       start(service);
       service.doService(AdaptrisMessageFactory.getDefaultInstance().newMessage());
-    } finally {
+    }
+    finally {
       stop(service);
     }
   }

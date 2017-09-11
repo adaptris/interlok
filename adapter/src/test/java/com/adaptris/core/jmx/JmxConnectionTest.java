@@ -28,6 +28,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.PortManager;
 import com.adaptris.core.management.Constants;
 import com.adaptris.core.management.jmx.JmxRemoteComponent;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.TimeInterval;
 
@@ -39,9 +40,9 @@ public class JmxConnectionTest {
 
   @Test
   public void testLocalJmx() throws Exception {
-    JmxConnection conn = new JmxConnection();
-    conn.setAdditionalDebug(true);
-    conn.init();
+    JmxConnection conn = new JmxConnection().withAdditionalDebug(true);
+    LifecycleHelper.prepare(conn);
+    LifecycleHelper.init(conn);
     assertNotNull(conn.mbeanServerConnection());
   }
 
@@ -53,8 +54,9 @@ public class JmxConnectionTest {
     try {
       jmxr.init(createProperties(port));
       jmxr.start();
-      conn.setJmxServiceUrl(JMXMP_PREFIX + port);
-      conn.init();
+      conn.withJmxServiceUrl(JMXMP_PREFIX + port);
+      LifecycleHelper.prepare(conn);
+      LifecycleHelper.init(conn);
       assertNotNull(conn.mbeanServerConnection());
     } finally {
       conn.close();
@@ -70,7 +72,7 @@ public class JmxConnectionTest {
     JmxConnection conn = new JmxConnection();
     try {
       jmxr.init(createProperties(port));
-      conn.setJmxServiceUrl(JMXMP_PREFIX + port);
+      conn.withJmxServiceUrl(JMXMP_PREFIX + port);
       conn.setConnectionRetryInterval(new TimeInterval(1L, TimeUnit.SECONDS));
       conn.setConnectionAttempts(10);
       Executors.newSingleThreadScheduledExecutor().schedule(new Runnable() {
@@ -82,7 +84,8 @@ public class JmxConnectionTest {
           }
         }
       }, 2, TimeUnit.SECONDS);
-      conn.init();
+      LifecycleHelper.prepare(conn);
+      LifecycleHelper.init(conn);
       assertNotNull(conn.mbeanServerConnection());
     } finally {
       conn.close();
@@ -131,9 +134,7 @@ public class JmxConnectionTest {
     try {
       jmxr.init(createProperties(port, DEFAULT_USERNAME_PASSWORD, DEFAULT_USERNAME_PASSWORD));
       jmxr.start();
-      conn.setJmxServiceUrl(JMXMP_PREFIX + port);
-      conn.setUsername(DEFAULT_USERNAME_PASSWORD);
-      conn.setPassword(DEFAULT_USERNAME_PASSWORD);
+      conn.withJmxServiceUrl(JMXMP_PREFIX + port).withUsername(DEFAULT_USERNAME_PASSWORD).withPassword(DEFAULT_USERNAME_PASSWORD);
       conn.init();
       assertNotNull(conn.mbeanServerConnection());
     } finally {

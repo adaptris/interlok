@@ -51,10 +51,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"objectName", "operationName", "operationParameters", "resultValueTranslator"})
 public class JmxOperationCallService extends JmxOperationServiceImpl {
   
-
-  /**
-   * Should you want to translate the result of the operation back into the message, configure a single {@link ValueTranslator}.
-   */
   @Valid
   private ValueTranslator resultValueTranslator;
 
@@ -70,7 +66,8 @@ public class JmxOperationCallService extends JmxOperationServiceImpl {
   public void doService(AdaptrisMessage message) throws ServiceException {
     try {
       MBeanServerConnection mbeanConn = getConnection().retrieveConnection(JmxConnection.class).mbeanServerConnection();
-      Object result = getInvoker().invoke(mbeanConn, getObjectName(), getOperationName(), parametersToArray(message),
+      Object result = getInvoker().invoke(mbeanConn, message.resolve(getObjectName()), message.resolve(getOperationName()),
+          parametersToArray(message),
           parametersToTypeArray(message));
       if(this.getResultValueTranslator() != null)
         this.getResultValueTranslator().setValue(message, result);
@@ -89,16 +86,10 @@ public class JmxOperationCallService extends JmxOperationServiceImpl {
     this.resultValueTranslator = resultValueTranslator;
   }
 
-  /**
-   * @return the invoker
-   */
   private JmxOperationInvoker<Object> getInvoker() {
     return invoker;
   }
 
-  /**
-   * @param invoker the invoker to set
-   */
   void setInvoker(JmxOperationInvoker<Object> invoker) {
     this.invoker = invoker;
   }

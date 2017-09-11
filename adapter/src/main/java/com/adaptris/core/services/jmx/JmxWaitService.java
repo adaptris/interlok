@@ -76,11 +76,13 @@ public class JmxWaitService extends JmxOperationServiceImpl {
       MBeanServerConnection mbeanConn = getConnection().retrieveConnection(JmxConnection.class).mbeanServerConnection();
       Object[] params = parametersToArray(message);
       String[] paramTypes = parametersToTypeArray(message);
-      ObjectName objectNameInst = ObjectName.getInstance(getObjectName());
-      boolean conditionReached = evaluate(getInvoker().invoke(mbeanConn, objectNameInst, getOperationName(), params, paramTypes));
+      ObjectName objectNameInst = ObjectName.getInstance(message.resolve(getObjectName()));
+      String operation = message.resolve(getOperationName());
+      long sleepTime = retryInterval();
+      boolean conditionReached = evaluate(getInvoker().invoke(mbeanConn, objectNameInst, operation, params, paramTypes));
       while (!conditionReached) {
-        Thread.sleep(retryInterval());
-        conditionReached = evaluate(getInvoker().invoke(mbeanConn, objectNameInst, getOperationName(), params, paramTypes));
+        Thread.sleep(sleepTime);
+        conditionReached = evaluate(getInvoker().invoke(mbeanConn, objectNameInst, operation, params, paramTypes));
       }
     } catch (Exception e) {
       throw ExceptionHelper.wrapServiceException(e);

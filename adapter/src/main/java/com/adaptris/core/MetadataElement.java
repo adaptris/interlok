@@ -16,10 +16,16 @@
 
 package com.adaptris.core;
 
-import com.adaptris.annotation.GenerateBeanInfo;
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotBlank;
+
+import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.util.Args;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.KeyValuePair;
+import com.adaptris.util.NameValuePair;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -32,62 +38,79 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config metadata-element
  */
 @XStreamAlias("metadata-element")
-@GenerateBeanInfo
-public class MetadataElement extends KeyValuePair implements Cloneable {
+public class MetadataElement implements NameValuePair, Cloneable {
 
   private static transient final GuidGenerator UUID = new GuidGenerator();
   /**
    *
    */
-  private static final long serialVersionUID = 2013111201L;
+  private static final long serialVersionUID = 2017081501L;
+
+  @NotBlank
+  private String key;
+  @InputFieldDefault(value = "")
+  @InputFieldHint(style = "BLANKABLE")
+  @NotNull
+  private String value = "";
+
 
   /**
    * Default Constructor.
    * <p>
-   * By default, each metadata element is given a unique key using {@link GuidGenerator#getUUID()}, as {@link KeyValuePair} only
-   * enforces null checking, but metadata elements must have a non-empty key.
+   * By default, each metadata element is given a unique key using {@link GuidGenerator#getUUID()}.
    * </p>
    */
   public MetadataElement() {
     setKey(UUID.getUUID());
   }
 
-  /**
-   * <p>
-   * Creates a new instance.
-   * </p>
-   *
-   * @param kp the keyvalue pair this metadata element should wrap
-   */
   public MetadataElement(KeyValuePair kp) {
     this(kp.getKey(), kp.getValue());
   }
 
 
-  /**
-   * <p>
-   * Creates a new instance.
-   * </p>
-   *
-   * @param key may not be null or empty
-   * @param value may not be null or empty
-   */
   public MetadataElement(String key, String value) {
     this();
     setKey(key);
     setValue(value);
   }
 
-  /**
-   * <p>
-   * Sets the 'key'.
-   * </p>
-   * 
-   * @param key may not be null or the empty string.
-   */
-  @Override
+
   public void setKey(String key) {
-    super.setKey(Args.notBlank(key, "key"));
+    this.key = Args.notBlank(key, "key");
+  }
+
+  public String getKey() {
+    return key;
+  }
+
+  public void setValue(String value) {
+      this.value = Args.notNull(value, "value");
+  }
+
+  public String getValue() {
+    return value;
+  }
+
+  @Override
+  public String toString() {
+    return "key [" + key + "] value [" + value + "]";
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj instanceof MetadataElement) { // false if obj is null
+      if (((MetadataElement) obj).getKey().equals(getKey())) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return getKey().hashCode();
   }
 
   /**

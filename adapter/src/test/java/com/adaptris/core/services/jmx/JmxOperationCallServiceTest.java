@@ -68,6 +68,7 @@ public class JmxOperationCallServiceTest extends ServiceCase {
     callService = new JmxOperationCallService();
     callService.setInvoker(mockInvoker);
     callService.setOperationName("MyOperationName");
+    callService.setObjectName("com.adaptris:id=xxx");
     
     message = DefaultMessageFactory.getDefaultInstance().newMessage(originalPayload);
     
@@ -95,20 +96,7 @@ public class JmxOperationCallServiceTest extends ServiceCase {
     
     assertEquals(operationReturnValue, message.getContent());
   }
-  
-  public void testPayloadReturnNullPayloadType() throws Exception {
-    String operationReturnValue = "NewPayloadValue";
-    when(mockInvoker.invoke((MBeanServerConnection) any(), anyString(), anyString(), any(Object[].class), any(String[].class)))
-      .thenReturn(operationReturnValue);
     
-    PayloadValueTranslator payloadValueTranslator = new PayloadValueTranslator();
-    payloadValueTranslator.setType(null);
-    callService.setResultValueTranslator(payloadValueTranslator);
-    callService.doService(message);
-    
-    assertEquals(operationReturnValue, message.getContent());
-  }
-  
   public void testPayloadReturnWithParams() throws Exception {
     String operationReturnValue = "NewPayloadValue";
     when(mockInvoker.invoke((MBeanServerConnection) any(), anyString(), anyString(), any(Object[].class), any(String[].class)))
@@ -189,8 +177,11 @@ public class JmxOperationCallServiceTest extends ServiceCase {
     PayloadValueTranslator param1 = new PayloadValueTranslator();
     MetadataValueTranslator param2 = new MetadataValueTranslator("metadataKey", "java.lang.String");
     ObjectMetadataValueTranslator param3 = new ObjectMetadataValueTranslator("objectMetadataKey", "java.lang.Object");
-    ConstantValueTranslator param4 = new ConstantValueTranslator("1", "java.lang.Integer", true);
-    List<ValueTranslator> params = new ArrayList<>(Arrays.asList(param1, param2, param3, param4));
+    ConstantValueTranslator param4 = new ConstantValueTranslator("1", "java.lang.Integer");
+    List<ValueTranslator> params = new ArrayList<>(Arrays.asList(new ValueTranslator[]
+    {
+        param1, param2, param3, param4
+    }));
     
     JmxOperationCallService callService = new JmxOperationCallService();
     JmxConnection conn = new JmxConnection();
@@ -212,8 +203,11 @@ public class JmxOperationCallServiceTest extends ServiceCase {
     PayloadValueTranslator param1 = new PayloadValueTranslator();
     MetadataValueTranslator param2 = new MetadataValueTranslator("metadataKey", "java.lang.String");
     ObjectMetadataValueTranslator param3 = new ObjectMetadataValueTranslator("objectMetadataKey", "java.lang.Object");
-    ConstantValueTranslator param4 = new ConstantValueTranslator("1", "java.lang.Integer", true);
-    List<ValueTranslator> params = new ArrayList<>(Arrays.asList(param1, param2, param3, param4));
+    ConstantValueTranslator param4 = new ConstantValueTranslator("1", "java.lang.Integer");
+    List<ValueTranslator> params = new ArrayList<>(Arrays.asList(new ValueTranslator[]
+    {
+        param1, param2, param3, param4
+    }));
 
     JmxOperationCallService callService = new JmxOperationCallService();
     callService.setConnection(new JmxConnection());

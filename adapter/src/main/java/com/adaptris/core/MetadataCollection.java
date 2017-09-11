@@ -18,8 +18,10 @@ package com.adaptris.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import com.adaptris.core.util.MetadataHelper;
@@ -74,8 +76,7 @@ public class MetadataCollection extends ArrayList<MetadataElement> {
    * @return a set of metadata elements.
    */
   public Set<MetadataElement> toSet() {
-    Set<MetadataElement> resultSet = new HashSet<MetadataElement>(this);
-    return resultSet;
+    return asSet(this);
   }
 
   /**
@@ -92,6 +93,53 @@ public class MetadataCollection extends ArrayList<MetadataElement> {
         result = true;
         break;
       }
+    }
+    return result;
+  }
+
+  /**
+   * Helper to turn a metadata elements into {@link Set}.
+   * 
+   * @param col the collection
+   * @return a {@link Set}
+   */
+  public static Set<MetadataElement> asSet(Collection<MetadataElement> col) {
+    Set<MetadataElement> result = new HashSet<MetadataElement>();
+    if (col == null) {
+      return result;
+    }
+    result.addAll(col);
+    return result;
+  }
+
+  /**
+   * Helper to turn a set of metadata elements into {@link Properties}.
+   * 
+   * @param col the collection
+   * @return a {@link Properties}
+   */
+  public static Properties asProperties(Collection<MetadataElement> col) {
+    Properties result = new Properties();
+    if (col == null) return result;
+    for (MetadataElement e : col) {
+      result.setProperty(e.getKey(), e.getValue());
+    }
+    return result;
+  }
+
+  /**
+   * Helper to turn a set of metadata elements into {@link Map}.
+   *
+   * @param col the collection
+   * @return a {@link Map}
+   */
+  public static Map<String, String> asMap(Collection<MetadataElement> col) {
+    Map<String, String> result = new HashMap<String, String>();
+    if (col == null) {
+      return result;
+    }
+    for (MetadataElement e : col) {
+      result.put(e.getKey(), e.getValue());
     }
     return result;
   }
