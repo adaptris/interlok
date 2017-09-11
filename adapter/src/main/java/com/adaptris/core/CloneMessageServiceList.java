@@ -16,14 +16,18 @@
 
 package com.adaptris.core;
 
-import com.adaptris.annotation.*;
-import com.adaptris.core.metadata.MetadataFilter;
-import com.adaptris.core.metadata.NoOpMetadataFilter;
-import com.thoughtworks.xstream.annotations.XStreamAlias;
+import static com.adaptris.core.util.LoggingHelper.friendlyName;
 
 import java.util.Collection;
 
-import static com.adaptris.core.util.LoggingHelper.friendlyName;
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.core.metadata.MetadataFilter;
+import com.adaptris.core.metadata.NoOpMetadataFilter;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Implementation of {@linkplain ServiceCollection} that creates a new clone of {@linkplain com.adaptris.core.AdaptrisMessage} for each configured
@@ -109,13 +113,6 @@ public class CloneMessageServiceList extends ServiceCollectionImp {
 
   @Override
   protected void doStop() {
-  }
-
-  @Override
-  public void prepare() throws CoreException {
-    for (Service s : getServices()) {
-      s.prepare();
-    }
   }
 
   public MetadataFilter getOverrideMetadataFilter() {

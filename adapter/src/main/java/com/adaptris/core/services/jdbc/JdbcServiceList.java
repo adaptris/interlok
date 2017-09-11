@@ -32,6 +32,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceList;
+import com.adaptris.core.ServiceListBase;
 import com.adaptris.core.jdbc.DatabaseConnection;
 import com.adaptris.core.jdbc.JdbcConstants;
 import com.adaptris.core.jdbc.JdbcService;
@@ -81,7 +82,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(summary = "A collection of services which has an additional database connection", tag = "service,jdbc",
     recommended = {DatabaseConnection.class})
 @DisplayOrder(order = {"restartAffectedServiceOnException", "databaseConnection"})
-public class JdbcServiceList extends ServiceList {
+public class JdbcServiceList extends ServiceListBase {
 
   @Valid
   private AdaptrisConnection databaseConnection;
@@ -91,11 +92,12 @@ public class JdbcServiceList extends ServiceList {
   }
 
   public JdbcServiceList(Collection<Service> serviceList) {
-    super(serviceList);
+    this();
+    setServices(new ArrayList<>(serviceList));
   }
 
   public JdbcServiceList(Service... services) {
-    super(new ArrayList<Service>(Arrays.asList(services)));
+    this(Arrays.asList(services));
   }
 
   @Override

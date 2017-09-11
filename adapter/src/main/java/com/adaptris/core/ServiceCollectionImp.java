@@ -423,6 +423,13 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   }
 
   @Override
+  public void prepare() throws CoreException {
+    for (Service s : getServices()) {
+      LifecycleHelper.prepare(s);
+    }
+  }
+
+  @Override
   public void handleException(Service service, AdaptrisMessage msg, Exception e) throws ServiceException {
     String serviceName = friendlyName(service);
     msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, e);

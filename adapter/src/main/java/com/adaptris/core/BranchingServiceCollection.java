@@ -196,10 +196,4 @@ public class BranchingServiceCollection extends ServiceCollectionImp {
     firstServiceId = srvId;
   }
 
-  public void prepare() throws CoreException {
-    for (Service s : getServices()) {
-      s.prepare();
-    }
-  }
-
 }
