@@ -49,6 +49,8 @@ import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.metadata.RemoveAllMetadataFilter;
 import com.adaptris.core.util.LifecycleHelper;
 
+import java.util.Arrays;
+
 /**
  */
 @SuppressWarnings("deprecation")
@@ -362,6 +364,31 @@ public abstract class MessageTypeTranslatorCase extends BaseCase {
 
     }
   }
+
+  public void testMetadataConverter() throws Exception {
+    EmbeddedActiveMq broker = new EmbeddedActiveMq();
+    MessageTypeTranslatorImp trans = createTranslator();
+    trans.setMetadataConverter(
+        Arrays.asList(
+              new StringMetadataConverter(new RegexMetadataFilter().withIncludePatterns(STRING_METADATA))
+            , new IntegerMetadataConverter(new RegexMetadataFilter().withIncludePatterns(INTEGER_METADATA))
+            , new BooleanMetadataConverter(new RegexMetadataFilter().withIncludePatterns(BOOLEAN_METADATA))
+        ));
+    try {
+      broker.start();
+      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      start(trans, session);
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+      addMetadata(msg);
+      Message jmsMsg = trans.translate(msg);
+      assertJmsProperties(jmsMsg);
+    }
+    finally {
+      stop(trans);
+      broker.destroy();
+    }
+  }
+
 
   public static void assertMetadata(AdaptrisMessage msg) {
     assertMetadata(msg, new MetadataElement(STRING_METADATA, STRING_VALUE));

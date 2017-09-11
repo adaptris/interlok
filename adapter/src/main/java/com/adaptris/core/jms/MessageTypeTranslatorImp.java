@@ -21,6 +21,7 @@ import javax.jms.Message;
 import javax.jms.Session;
 import javax.validation.Valid;
 
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,15 +38,17 @@ import com.adaptris.core.metadata.NoOpMetadataFilter;
 import com.adaptris.core.metadata.RemoveAllMetadataFilter;
 import com.adaptris.core.util.LifecycleHelper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 // abstract factory pattern
 
 /**
  * <p>
  * Super class of classes that translate <code>AdaptrisMessage</code>s to the
- * various type of <code>javax.jms.Message</code>s, and vice versa. If the
- * <code>moveMetadata</code> flag is <code>true</code>, metadata will be moved
- * when the message is translated. If the moveJmsHeaders flag is true, JMS
- * headers will be moved as well.
+ * various type of <code>javax.jms.Message</code>s, and vice versa. Set a
+ * <code>metadataFilter</code> to move metadata when the message is translated.
+ * If the moveJmsHeaders flag is true, JMS  headers will be moved as well.
  * </p>
  */
 public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator, MetadataHandlerContext {
@@ -55,7 +58,7 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
   private transient AdaptrisMessageFactory messageFactoryToUse;
   protected transient MetadataHandler helper;
 
-  private static final MetadataFilter DEFAULT_FILTER = new RemoveAllMetadataFilter();
+  private static final MetadataFilter DEFAULT_FILTER = new NoOpMetadataFilter();
   /**
    * Set the filter that will be used return a subset of the messages metdata to be copied over during the translate.
    */
@@ -72,6 +75,10 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
   @InputFieldDefault(value = "false")
   private Boolean reportAllErrors;
 
+  @AdvancedConfig
+  @XStreamImplicit
+  private List<MetadataConverter> metadataConverter;
+
   /**
    * <p>
    * Creates a new instance. By default
@@ -82,6 +89,7 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
    * </ul>
    */
   public MessageTypeTranslatorImp() {
+    metadataConverter = new ArrayList<>();
     registerMessageFactory(new DefaultMessageFactory());
     helper = new MetadataHandler(this);
   }
@@ -152,6 +160,22 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
    */
   public Boolean getReportAllErrors() {
     return reportAllErrors;
+  }
+
+  /**
+   * Set the list of metadata converters to uses when converting from AdaptrisMessage to JMS Message.
+   * @param metadataConverter list of message converters
+   */
+  public void setMetadataConverter(List<MetadataConverter> metadataConverter) {
+    this.metadataConverter = metadataConverter;
+  }
+
+  /**
+   * Get the list of metadata converters to uses when converting from AdaptrisMessage to JMS Message.
+   * @return list of message converters
+   */
+  public List<MetadataConverter> getMetadataConverter() {
+    return metadataConverter;
   }
 
   /**
@@ -233,7 +257,12 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
 
   @Override
   public MetadataFilter metadataFilter() {
-    return getMetadataFilter() != null ? getMetadataFilter() : new NoOpMetadataFilter();
+    return getMetadataFilter() != null ? getMetadataFilter() : DEFAULT_FILTER;
+  }
+
+  @Override
+  public List<MetadataConverter> metadataConverters(){
+    return getMetadataConverter();
   }
 
   /**
