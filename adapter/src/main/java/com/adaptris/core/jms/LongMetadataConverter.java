@@ -1,14 +1,14 @@
 package com.adaptris.core.jms;
 
+import javax.jms.JMSException;
+import javax.jms.Message;
+
+import org.apache.commons.lang.math.NumberUtils;
+
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.metadata.MetadataFilter;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.jms.JMSException;
-import javax.jms.Message;
 
 /**
  * <code>MetadataElement</code> key and value set as property of <code>javax.jms.Message</code>
@@ -20,8 +20,6 @@ import javax.jms.Message;
 @XStreamAlias("jms-long-metadata-converter")
 @DisplayOrder(order = {"metadataFilter"})
 public class LongMetadataConverter extends MetadataConverter {
-
-  private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   /** @see MetadataConverter#MetadataConverter() */
   public LongMetadataConverter() {
@@ -42,7 +40,16 @@ public class LongMetadataConverter extends MetadataConverter {
    */
   @Override
   public void setProperty(MetadataElement element, Message out) throws JMSException {
-    log.trace("Setting JMS Metadata " + element + " as long");
-    out.setLongProperty(element.getKey(), Long.valueOf(element.getValue()));
+    try {
+      Long value = NumberUtils.createLong(element.getValue());
+      log.trace("Setting JMS Metadata {} as a long", element);
+      out.setIntProperty(element.getKey(), value.intValue());
+    }
+    catch (NumberFormatException | NullPointerException e) {
+      if (strict()) {
+        throw JmsUtils.wrapJMSException(e);
+      }
+      super.setProperty(element, out);
+    }
   }
 }

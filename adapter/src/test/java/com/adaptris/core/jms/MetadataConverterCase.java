@@ -1,15 +1,15 @@
 package com.adaptris.core.jms;
 
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
+
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.MetadataCollection;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 import com.adaptris.core.metadata.NoOpMetadataFilter;
 import com.adaptris.core.metadata.RegexMetadataFilter;
-
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
 
 /**
  * @author mwarman
@@ -27,6 +27,15 @@ public abstract class MetadataConverterCase extends BaseCase {
     assertTrue(mc.getMetadataFilter() instanceof NoOpMetadataFilter);
     mc.setMetadataFilter(new RegexMetadataFilter());
     assertTrue(mc.getMetadataFilter() instanceof RegexMetadataFilter);
+  }
+
+  public void testStrict() throws Exception {
+    MetadataConverter mc = createConverter();
+    assertFalse(mc.strict());
+    assertNull(mc.getStrictConversion());
+    mc.setStrictConversion(false);
+    assertFalse(mc.strict());
+    assertEquals(Boolean.FALSE, mc.getStrictConversion());
   }
 
   public void testSetProperty() throws Exception {

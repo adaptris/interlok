@@ -1,20 +1,15 @@
 package com.adaptris.core.jms;
 
-import com.adaptris.core.BaseCase;
-import com.adaptris.core.MetadataCollection;
-import com.adaptris.core.MetadataElement;
-import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
-import com.adaptris.core.metadata.NoOpMetadataFilter;
-import com.adaptris.core.metadata.RegexMetadataFilter;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
-import javax.jms.Session;
+
+import com.adaptris.core.metadata.NoOpMetadataFilter;
+import com.adaptris.core.metadata.RegexMetadataFilter;
 
 /**
  * @author mwarman
  */
-public class BooleanMetadataConverterTest extends MetadataConverterCase {
+public class BooleanMetadataConverterTest extends ConvertingMetadataConverterCase {
 
   private static final boolean VALUE = true;
   private static final String STRING_VALUE = String.valueOf(VALUE);
@@ -44,6 +39,5 @@ public class BooleanMetadataConverterTest extends MetadataConverterCase {
     mc = new BooleanMetadataConverter(new RegexMetadataFilter());
     assertTrue(mc.getMetadataFilter() instanceof RegexMetadataFilter);
   }
-
 
 }

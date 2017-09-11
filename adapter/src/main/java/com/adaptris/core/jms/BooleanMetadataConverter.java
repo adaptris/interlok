@@ -1,14 +1,14 @@
 package com.adaptris.core.jms;
 
+import javax.jms.JMSException;
+import javax.jms.Message;
+
+import org.apache.commons.lang.BooleanUtils;
+
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.metadata.MetadataFilter;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.jms.JMSException;
-import javax.jms.Message;
 
 /**
  *
@@ -21,8 +21,6 @@ import javax.jms.Message;
 @XStreamAlias("jms-boolean-metadata-converter")
 @DisplayOrder(order = {"metadataFilter"})
 public class BooleanMetadataConverter extends MetadataConverter {
-
-  private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   /** @see MetadataConverter#MetadataConverter() */
   public BooleanMetadataConverter() {
@@ -43,7 +41,29 @@ public class BooleanMetadataConverter extends MetadataConverter {
    */
   @Override
   public void setProperty(MetadataElement element, Message out) throws JMSException {
-    log.trace("Setting JMS Metadata " + element + " as boolean");
-    out.setBooleanProperty(element.getKey(), Boolean.valueOf(element.getValue()));
+    try {
+      Boolean value = convert(element.getValue());
+      log.trace("Setting JMS Metadata {} as boolean", element);
+      out.setBooleanProperty(element.getKey(), value.booleanValue());
+    } catch (NotBooleanException e) {
+      if (strict()) {
+        throw JmsUtils.wrapJMSException(e);
+      }
+      super.setProperty(element, out);
+    }
+  }
+
+  private Boolean convert(String value) throws NotBooleanException {
+    Boolean result = BooleanUtils.toBooleanObject(value);
+    if (result == null) {
+      throw new NotBooleanException(value + " is not boolean");
+    }
+    return result;
+  }
+
+  private class NotBooleanException extends Exception {
+    public NotBooleanException(String msg) {
+      super(msg);
+    }
   }
 }

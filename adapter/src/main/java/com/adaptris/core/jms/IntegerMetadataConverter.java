@@ -1,14 +1,16 @@
 package com.adaptris.core.jms;
 
+import javax.jms.JMSException;
+import javax.jms.Message;
+
+import org.apache.commons.lang.math.NumberUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.metadata.MetadataFilter;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.jms.JMSException;
-import javax.jms.Message;
 
 /**
  *
@@ -45,7 +47,16 @@ public class IntegerMetadataConverter extends MetadataConverter {
    */
   @Override
   public void setProperty(MetadataElement element, Message out) throws JMSException {
-    log.trace("Setting JMS Metadata " + element + " as long");
-    out.setIntProperty(element.getKey(), Integer.valueOf(element.getValue()));
+    try {
+      Integer value = NumberUtils.createInteger(element.getValue());
+      log.trace("Setting JMS Metadata {} as a int", element);
+      out.setIntProperty(element.getKey(), value.intValue());
+    }
+    catch (NumberFormatException | NullPointerException e) {
+      if (strict()) {
+        throw JmsUtils.wrapJMSException(e);
+      }
+      super.setProperty(element, out);
+    }
   }
 }

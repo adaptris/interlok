@@ -1,20 +1,15 @@
 package com.adaptris.core.jms;
 
-import com.adaptris.core.BaseCase;
-import com.adaptris.core.MetadataCollection;
-import com.adaptris.core.MetadataElement;
-import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
-import com.adaptris.core.metadata.NoOpMetadataFilter;
-import com.adaptris.core.metadata.RegexMetadataFilter;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
-import javax.jms.Session;
+
+import com.adaptris.core.metadata.NoOpMetadataFilter;
+import com.adaptris.core.metadata.RegexMetadataFilter;
 
 /**
  * @author mwarman
  */
-public class LongMetadataConverterTest extends MetadataConverterCase {
+public class LongMetadataConverterTest extends ConvertingMetadataConverterCase {
 
   private static final long VALUE = 10L;
   private static final String STRING_VALUE = String.valueOf(VALUE);
