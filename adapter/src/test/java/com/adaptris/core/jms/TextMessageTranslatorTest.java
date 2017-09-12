@@ -25,7 +25,7 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 import com.adaptris.core.metadata.RegexMetadataFilter;
 
-public class TextMessageTranslatorTest extends MessageTypeTranslatorCase {
+public class TextMessageTranslatorTest extends GenericMessageTypeTranslatorCase {
 
   public TextMessageTranslatorTest(String name) {
     super(name);

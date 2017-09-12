@@ -28,7 +28,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 
-public class BasicJavaxJmsMessageTranslatorTest extends MessageTypeTranslatorCase {
+public class BasicJavaxJmsMessageTranslatorTest extends GenericMessageTypeTranslatorCase {
   
   public BasicJavaxJmsMessageTranslatorTest(String name) {
     super(name);

@@ -16,12 +16,14 @@
 
 package com.adaptris.core.jms;
 
+import java.util.Collections;
+import java.util.List;
+
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
 import javax.validation.Valid;
 
-import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,11 +37,8 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.metadata.MetadataFilter;
 import com.adaptris.core.metadata.NoOpMetadataFilter;
-import com.adaptris.core.metadata.RemoveAllMetadataFilter;
 import com.adaptris.core.util.LifecycleHelper;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 // abstract factory pattern
 
@@ -77,7 +76,7 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
 
   @AdvancedConfig
   @XStreamImplicit
-  private List<MetadataConverter> metadataConverter;
+  private List<MetadataConverter> metadataConverters;
 
   /**
    * <p>
@@ -89,7 +88,6 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
    * </ul>
    */
   public MessageTypeTranslatorImp() {
-    metadataConverter = new ArrayList<>();
     registerMessageFactory(new DefaultMessageFactory());
     helper = new MetadataHandler(this);
   }
@@ -164,18 +162,18 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
 
   /**
    * Set the list of metadata converters to uses when converting from AdaptrisMessage to JMS Message.
-   * @param metadataConverter list of message converters
+   * @param mc list of message converters
    */
-  public void setMetadataConverter(List<MetadataConverter> metadataConverter) {
-    this.metadataConverter = metadataConverter;
+  public void setMetadataConverters(List<MetadataConverter> mc) {
+    this.metadataConverters = mc;
   }
 
   /**
    * Get the list of metadata converters to uses when converting from AdaptrisMessage to JMS Message.
    * @return list of message converters
    */
-  public List<MetadataConverter> getMetadataConverter() {
-    return metadataConverter;
+  public List<MetadataConverter> getMetadataConverters() {
+    return metadataConverters;
   }
 
   /**
@@ -262,7 +260,7 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
 
   @Override
   public List<MetadataConverter> metadataConverters(){
-    return getMetadataConverter();
+    return getMetadataConverters() != null ? getMetadataConverters() : Collections.EMPTY_LIST;
   }
 
   /**

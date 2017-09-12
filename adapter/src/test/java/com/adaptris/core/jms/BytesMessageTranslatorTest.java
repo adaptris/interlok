@@ -40,7 +40,7 @@ import com.adaptris.core.metadata.RemoveAllMetadataFilter;
 import com.adaptris.core.stubs.DefectiveMessageFactory;
 
 @SuppressWarnings("deprecation")
-public class BytesMessageTranslatorTest extends MessageTypeTranslatorCase {
+public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase {
 
   private static byte[] BYTES = new byte[256]; {
     for(int i=0; i<BYTES.length; i++) {

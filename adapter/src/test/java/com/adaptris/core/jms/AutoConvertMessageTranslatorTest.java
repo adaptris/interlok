@@ -36,7 +36,7 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 
-public class AutoConvertMessageTranslatorTest extends MessageTypeTranslatorCase {
+public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslatorCase {
   
   private static final String ORIGINAL_MESSGAE_TYPE_KEY = "adpmessagetype";
 

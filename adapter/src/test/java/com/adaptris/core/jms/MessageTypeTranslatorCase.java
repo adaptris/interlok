@@ -27,6 +27,8 @@ import static com.adaptris.core.jms.JmsConstants.JMS_REPLY_TO;
 import static com.adaptris.core.jms.JmsConstants.JMS_TIMESTAMP;
 import static com.adaptris.core.jms.JmsConstants.JMS_TYPE;
 
+import java.util.Arrays;
+
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
@@ -48,8 +50,6 @@ import com.adaptris.core.metadata.NoOpMetadataFilter;
 import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.metadata.RemoveAllMetadataFilter;
 import com.adaptris.core.util.LifecycleHelper;
-
-import java.util.Arrays;
 
 /**
  */
@@ -368,7 +368,7 @@ public abstract class MessageTypeTranslatorCase extends BaseCase {
   public void testMetadataConverter() throws Exception {
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
-    trans.setMetadataConverter(
+    trans.setMetadataConverters(
         Arrays.asList(
               new StringMetadataConverter(new RegexMetadataFilter().withIncludePatterns(STRING_METADATA))
             , new IntegerMetadataConverter(new RegexMetadataFilter().withIncludePatterns(INTEGER_METADATA))
