@@ -20,6 +20,8 @@ import static com.adaptris.core.util.LoggingHelper.friendlyName;
 
 import java.util.Collection;
 
+import javax.validation.Valid;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -60,11 +62,11 @@ public class CloneMessageServiceList extends ServiceCollectionImp {
   @InputFieldDefault(value = "false")
   private Boolean overrideMetadata;
   @AdvancedConfig
+  @Valid
   private MetadataFilter overrideMetadataFilter;
 
   public CloneMessageServiceList() {
     super();
-    overrideMetadataFilter = new NoOpMetadataFilter();
   }
 
   public CloneMessageServiceList(Collection<Service> list) {
@@ -78,9 +80,9 @@ public class CloneMessageServiceList extends ServiceCollectionImp {
       try {
         AdaptrisMessage clonedMessage = (AdaptrisMessage) msg.clone();
         service.doService(clonedMessage);
-        log.debug("service [" + friendlyName(service) + "] applied");
+        log.debug("service [{}] applied", friendlyName(service));
         if(overrideMetadata()) {
-          MetadataCollection filtered = getOverrideMetadataFilter().filter(clonedMessage);
+          MetadataCollection filtered = overrideMetadataFilter().filter(clonedMessage);
           StringBuilder filteredKeys = new StringBuilder("Metadata keys copied:");
           for (MetadataElement e : filtered) {
             filteredKeys.append(" ");
@@ -128,12 +130,12 @@ public class CloneMessageServiceList extends ServiceCollectionImp {
    * @see MetadataFilter
    */
   public void setOverrideMetadataFilter(MetadataFilter mf) {
-    if (mf == null) {
-      throw new IllegalArgumentException("Filter may not be null");
-    }
     overrideMetadataFilter = mf;
   }
 
+  MetadataFilter overrideMetadataFilter() {
+    return getOverrideMetadataFilter() != null ? getOverrideMetadataFilter() : new NoOpMetadataFilter();
+  }
 
   boolean overrideMetadata() {
     return getOverrideMetadata() == null ? false : overrideMetadata.booleanValue();

@@ -73,6 +73,16 @@ public class CloneMessageServiceListTest extends ServiceCollectionCase {
     assertTrue(msg.getMetadataValue(KEY1) == null);
   }
 
+  public void testOverrideMetadataFilter() throws Exception {
+    CloneMessageServiceList service = createServiceList();
+    assertNull(service.getOverrideMetadataFilter());
+    assertNotNull(service.overrideMetadataFilter());
+    assertEquals(NoOpMetadataFilter.class, service.overrideMetadataFilter().getClass());
+    service.setOverrideMetadataFilter(new RegexMetadataFilter());
+    assertEquals(RegexMetadataFilter.class, service.getOverrideMetadataFilter().getClass());
+    assertEquals(RegexMetadataFilter.class, service.overrideMetadataFilter().getClass());
+  }
+
   public void testNormalOperationPreserveKey() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     CloneMessageServiceList service = createServiceList();
