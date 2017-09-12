@@ -32,13 +32,7 @@ import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * <p>
- * Implementation of <code>ServiceCollection</code> which allows appropriate 'branching' <code>Service</code>s to select the next
- * <code>Service</code> to apply.
- * </p>
- * <p>
- * BranchingServiceCollection does not currently support continue-on-fail.
- * </p>
+ * Implementation of {@link ServiceCollection} which allows {@code branching} services to select the next service to apply.
  * 
  * @config branching-service-collection
  * 
