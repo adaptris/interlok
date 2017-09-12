@@ -27,8 +27,6 @@ import static com.adaptris.core.jms.JmsConstants.JMS_REPLY_TO;
 import static com.adaptris.core.jms.JmsConstants.JMS_TIMESTAMP;
 import static com.adaptris.core.jms.JmsConstants.JMS_TYPE;
 
-import java.util.Arrays;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
@@ -365,29 +363,6 @@ public abstract class MessageTypeTranslatorCase extends BaseCase {
     }
   }
 
-  public void testMetadataConverter() throws Exception {
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    MessageTypeTranslatorImp trans = createTranslator();
-    trans.setMetadataConverters(
-        Arrays.asList(
-              new StringMetadataConverter(new RegexMetadataFilter().withIncludePatterns(STRING_METADATA))
-            , new IntegerMetadataConverter(new RegexMetadataFilter().withIncludePatterns(INTEGER_METADATA))
-            , new BooleanMetadataConverter(new RegexMetadataFilter().withIncludePatterns(BOOLEAN_METADATA))
-        ));
-    try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
-      start(trans, session);
-      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-      addMetadata(msg);
-      Message jmsMsg = trans.translate(msg);
-      assertJmsProperties(jmsMsg);
-    }
-    finally {
-      stop(trans);
-      broker.destroy();
-    }
-  }
 
 
   public static void assertMetadata(AdaptrisMessage msg) {
