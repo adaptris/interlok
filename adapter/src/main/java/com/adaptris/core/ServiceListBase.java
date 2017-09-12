@@ -15,6 +15,8 @@
 */
 package com.adaptris.core;
 
+import static com.adaptris.core.CoreConstants.STOP_PROCESSING_KEY;
+import static com.adaptris.core.CoreConstants.STOP_PROCESSING_VALUE;
 import static com.adaptris.core.util.LoggingHelper.friendlyName;
 
 public abstract class ServiceListBase extends ServiceCollectionImp {
@@ -35,8 +37,7 @@ public abstract class ServiceListBase extends ServiceCollectionImp {
          * no longer apply the next ones. That's strange behaviour and contradicts what the javadoc says about
          * CoreConstants.STOP_PROCESSING_KEY
          */
-        if (CoreConstants.STOP_PROCESSING_VALUE.equals(msg.getMetadataValue(CoreConstants.STOP_PROCESSING_KEY))) {
-          log.trace("Service {} has added metadata which stops any further configured services being applied", serviceName);
+        if (haltProcessing(msg)) {
           break;
         }
 
@@ -68,4 +69,11 @@ public abstract class ServiceListBase extends ServiceCollectionImp {
   protected void doStop() {
   }
 
+  protected boolean haltProcessing(AdaptrisMessage msg) {
+    if (STOP_PROCESSING_VALUE.equals(msg.getMetadataValue(STOP_PROCESSING_KEY))) {
+      log.trace("{}={} detected, halt processing", STOP_PROCESSING_KEY, STOP_PROCESSING_VALUE);
+      return true;
+    }
+    return false;
+  }
 }
