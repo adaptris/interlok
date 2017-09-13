@@ -17,65 +17,88 @@
 package com.adaptris.core;
 
 import static com.adaptris.core.util.LoggingHelper.friendlyName;
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.ListIterator;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * <p>
- * Implementation of <code>ServiceCollection</code> in which an ordered list of <code>Service</code>s are applied to a message.
- * </p>
+ * Implementation of {@code ServiceCollection} with an ordered list of {@link Service}s.
  * 
  * @config service-list
  */
 @XStreamAlias("service-list")
 @AdapterComponent
 @ComponentProfile(summary = "A collection of services", tag = "service,base")
-@DisplayOrder(order = {"restartAffectedServiceOnException"})
-public class ServiceList extends ServiceCollectionImp {
+@DisplayOrder(order = {"allowForwardSearch", "restartAffectedServiceOnException"})
+public class ServiceList extends ServiceListBase {
+
+  @AdvancedConfig
+  @InputFieldDefault(value = "true")
+  private Boolean allowForwardSearch;
+
+  private transient LinkedHashMap<String, Integer> serviceIndex = new LinkedHashMap<>();
+  private transient boolean listIsSearchable;
 
   public ServiceList() {
     super();
   }
 
   public ServiceList(Collection<Service> serviceList) {
-    super(serviceList);
+    this();
+    setServices(new ArrayList<>(serviceList));
   }
 
-  public ServiceList(Service[] serviceList) {
-    super(new ArrayList<Service>(Arrays.asList(serviceList)));
+  public ServiceList(Service... serviceList) {
+    this(Arrays.asList(serviceList));
   }
 
   @Override
-  protected void applyServices(AdaptrisMessage msg) throws ServiceException {
-    for (Service service : this) {
-      try {
-        String serviceName = friendlyName(service);
-        
-        /* 
-         * Check this before applying any services as it may have been set deep in the ServiceList hierarchy. If we don't
-         * check this before applying a service, we'll be "randomly" applying one service at each service list, keeping the
-         * metadata and then no longer apply the next ones. That's strange behaviour and contradicts what the javadoc
-         * says about CoreConstants.STOP_PROCESSING_KEY
-         */
-        if (CoreConstants.STOP_PROCESSING_VALUE.equals(msg.getMetadataValue(CoreConstants.STOP_PROCESSING_KEY))) {
-          log.trace("Service " + serviceName + " has added metadata which stops any further configured"
-                  + " services being applied");
-          break; // apply no more Services...
-        }
-        
-        service.doService(msg);
-        // add success event
-        msg.addEvent(service, true);
-        log.debug("service [" + serviceName + "] applied");
+  protected void doInit() throws CoreException {
+    super.doInit();
+    listIsSearchable = forwardSearch();
+    if (listIsSearchable) {
+      serviceIndex.clear();
+      for (int i = 0; i < this.size(); i++) {
+        Service s = get(i);
+        serviceIndex.put(s.getUniqueId(), i);
       }
-      catch (Exception e) {
+      if (serviceIndex.size() != this.size()) {
+        // missing or duplicate ID, so lets disable allowSkip
+        log.warn("Attempt to enable forward-search capability, missing/duplicate uniqueIds, disabling forward-search");
+        listIsSearchable = false;
+      }
+    }
+  }
+
+
+  @Override
+  protected void applyServices(AdaptrisMessage msg) throws ServiceException {
+    ListIterator<Service> itr = this.listIterator();
+    while (itr.hasNext()) {
+      Service service = itr.next();
+      String serviceName = friendlyName(service);
+      if (haltProcessing(msg)) {
+        break;
+      }
+      msg.setNextServiceId("");
+      log.debug("Executing doService on [{}]", serviceName);
+      try {
+        service.doService(msg);
+        msg.addEvent(service, true);
+        // Should we resolveNext *regardless of exception?*
+        itr = resolveNext(itr, msg.getNextServiceId());
+      } catch (Exception e) {
         // add fail event
         msg.addEvent(service, false);
         handleException(service, msg, e);
@@ -83,26 +106,49 @@ public class ServiceList extends ServiceCollectionImp {
     }
   }
 
-  @Override
-  protected void doClose() {
+
+  /**
+   * @return whether or not forward-search is allowed.
+   */
+  public Boolean getAllowForwardSearch() {
+    return allowForwardSearch;
   }
 
-  @Override
-  protected void doInit() throws CoreException {
+  /**
+   * Allow services to specify the {@code next service} in a forward search mode only.
+   * 
+   * <p>
+   * If set to true, then the service-list will act like a limited {@link BranchingServiceCollection}. It will
+   * check {@link AdaptrisMessage#getNextServiceId()}, and search the remaining services for that service-id. If found it will
+   * execute that service (after clearing the next service id). Searches are forward only so you cannot jump backwards through the
+   * service-list.
+   * </p>
+   * 
+   * @param b true to allow limited skipping of (forward only) services based on {@link AdaptrisMessage#setNextServiceId(String)};
+   *        default is null(true).
+   */
+  public void setAllowForwardSearch(Boolean b) {
+    this.allowForwardSearch = b;
   }
 
-  @Override
-  protected void doStart() throws CoreException {
+  boolean forwardSearch() {
+    return getAllowForwardSearch() != null ? getAllowForwardSearch().booleanValue() : true;
   }
 
-  @Override
-  protected void doStop() {
-  }
-
-  @Override
-  public void prepare() throws CoreException {
-    for (Service s : getServices()) {
-      s.prepare();
+  private ListIterator<Service> resolveNext(ListIterator<Service> current, String serviceId) {
+    ListIterator<Service> result = current;
+    if (!listIsSearchable) {
+      return result;
     }
+    if (!isBlank(serviceId)) {
+      Integer i = serviceIndex.get(serviceId);
+      if (i != null && i >= current.nextIndex()) {
+        result = listIterator(i);
+        log.trace("Skipping to [{}]", serviceId);
+      } else {
+        log.trace("Cannot branch to [{}], no skipping", serviceId);
+      }
+    }
+    return result;
   }
 }

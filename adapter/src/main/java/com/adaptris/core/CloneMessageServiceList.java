@@ -16,14 +16,21 @@
 
 package com.adaptris.core;
 
-import com.adaptris.annotation.*;
+import static com.adaptris.core.util.LoggingHelper.friendlyName;
+
+import java.util.ArrayList;
+import java.util.Collection;
+
+import javax.validation.Valid;
+
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.metadata.MetadataFilter;
 import com.adaptris.core.metadata.NoOpMetadataFilter;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-
-import java.util.Collection;
-
-import static com.adaptris.core.util.LoggingHelper.friendlyName;
 
 /**
  * Implementation of {@linkplain ServiceCollection} that creates a new clone of {@linkplain com.adaptris.core.AdaptrisMessage} for each configured
@@ -49,23 +56,23 @@ import static com.adaptris.core.util.LoggingHelper.friendlyName;
 @AdapterComponent
 @ComponentProfile(summary = "A collection of services where each service gets a new copy of the message", tag = "service,base")
 @DisplayOrder(order = {"restartAffectedServiceOnException", "overrideMetadata", "overrideMetadataFilter"})
-public class CloneMessageServiceList extends ServiceCollectionImp {
+public class CloneMessageServiceList extends ServiceListBase {
 
 
   @AdvancedConfig
   @InputFieldDefault(value = "false")
   private Boolean overrideMetadata;
   @AdvancedConfig
+  @Valid
   private MetadataFilter overrideMetadataFilter;
 
   public CloneMessageServiceList() {
     super();
-    overrideMetadataFilter = new NoOpMetadataFilter();
   }
 
   public CloneMessageServiceList(Collection<Service> list) {
-    super(list);
-    overrideMetadataFilter = new NoOpMetadataFilter();
+    this();
+    setServices(new ArrayList<>(list));
   }
 
   @Override
@@ -73,10 +80,13 @@ public class CloneMessageServiceList extends ServiceCollectionImp {
     for (Service service : getServices()) {
       try {
         AdaptrisMessage clonedMessage = (AdaptrisMessage) msg.clone();
+        if (haltProcessing(clonedMessage)) {
+          break;
+        }
         service.doService(clonedMessage);
-        log.debug("service [" + friendlyName(service) + "] applied");
+        log.debug("service [{}] applied", friendlyName(service));
         if(overrideMetadata()) {
-          MetadataCollection filtered = getOverrideMetadataFilter().filter(clonedMessage);
+          MetadataCollection filtered = overrideMetadataFilter().filter(clonedMessage);
           StringBuilder filteredKeys = new StringBuilder("Metadata keys copied:");
           for (MetadataElement e : filtered) {
             filteredKeys.append(" ");
@@ -95,29 +105,6 @@ public class CloneMessageServiceList extends ServiceCollectionImp {
     }
   }
 
-  @Override
-  protected void doClose() {
-  }
-
-  @Override
-  protected void doInit() throws CoreException {
-  }
-
-  @Override
-  protected void doStart() throws CoreException {
-  }
-
-  @Override
-  protected void doStop() {
-  }
-
-  @Override
-  public void prepare() throws CoreException {
-    for (Service s : getServices()) {
-      s.prepare();
-    }
-  }
-
   public MetadataFilter getOverrideMetadataFilter() {
     return overrideMetadataFilter;
   }
@@ -127,16 +114,16 @@ public class CloneMessageServiceList extends ServiceCollectionImp {
    * Specify the {@link com.adaptris.core.AdaptrisMessage} metadata keys that will be overridden in the original message.
    * </p>
    *
-   * @param mf the filter defaults to {@link NoOpMetadataFilter}
+   * @param mf the filter defaults to {@link NoOpMetadataFilter} if not specified (which will mean all metadata).
    * @see MetadataFilter
    */
   public void setOverrideMetadataFilter(MetadataFilter mf) {
-    if (mf == null) {
-      throw new IllegalArgumentException("Filter may not be null");
-    }
     overrideMetadataFilter = mf;
   }
 
+  MetadataFilter overrideMetadataFilter() {
+    return getOverrideMetadataFilter() != null ? getOverrideMetadataFilter() : new NoOpMetadataFilter();
+  }
 
   boolean overrideMetadata() {
     return getOverrideMetadata() == null ? false : overrideMetadata.booleanValue();
@@ -148,12 +135,11 @@ public class CloneMessageServiceList extends ServiceCollectionImp {
 
   /**
    * <p>
-   * Sets whether to override metadata from the cloned message back to original
-   * message.
+   * Sets whether to override metadata from the cloned message back to original message.
    * </p>
    *
-   * @param b whether to override metadata from the cloned message to the original
-   *          message (default false)
+   * @param b whether to override metadata from the cloned message to the original message (default false)
+   * @see #setOverrideMetadataFilter(MetadataFilter)
    */
   public void setOverrideMetadata(Boolean b) {
     overrideMetadata = b;

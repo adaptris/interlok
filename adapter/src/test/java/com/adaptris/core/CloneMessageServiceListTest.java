@@ -24,6 +24,7 @@ import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
 import com.adaptris.core.services.metadata.AddMetadataService;
+import com.adaptris.core.util.LifecycleHelper;
 
 public class CloneMessageServiceListTest extends ServiceCollectionCase {
 
@@ -64,13 +65,48 @@ public class CloneMessageServiceListTest extends ServiceCollectionCase {
   public void testNormalOperation() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     CloneMessageServiceList service = createServiceList();
-    for(Service srvc : service.getServices())
-      srvc.changeState(StartedState.getInstance());
-    
-    service.doService(msg);
+    MarkerService marker = new MarkerService();
+    service.getServices().add(marker);
+    try {
+      LifecycleHelper.initAndStart(service);
+      service.doService(msg);
 
-    // md not present because Service applied to a clone
-    assertTrue(msg.getMetadataValue(KEY1) == null);
+      // md not present because Service applied to a clone
+      assertTrue(msg.getMetadataValue(KEY1) == null);
+      assertTrue(marker.hasTriggered);
+    }
+    finally {
+      LifecycleHelper.stopAndClose(service);
+    }
+  }
+
+  public void testHaltProcessing() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    CloneMessageServiceList service = createServiceList();
+    MarkerService marker = new MarkerService();
+    service.getServices().add(marker);
+    try {
+      LifecycleHelper.initAndStart(service);
+      msg.addMetadata(CoreConstants.STOP_PROCESSING_KEY, CoreConstants.STOP_PROCESSING_VALUE);
+      service.doService(msg);
+
+      // md not present because Service applied to a clone
+      assertTrue(msg.getMetadataValue(KEY1) == null);
+      assertFalse(marker.hasTriggered);
+    }
+    finally {
+      LifecycleHelper.stopAndClose(service);
+    }
+  }
+
+  public void testOverrideMetadataFilter() throws Exception {
+    CloneMessageServiceList service = createServiceList();
+    assertNull(service.getOverrideMetadataFilter());
+    assertNotNull(service.overrideMetadataFilter());
+    assertEquals(NoOpMetadataFilter.class, service.overrideMetadataFilter().getClass());
+    service.setOverrideMetadataFilter(new RegexMetadataFilter());
+    assertEquals(RegexMetadataFilter.class, service.getOverrideMetadataFilter().getClass());
+    assertEquals(RegexMetadataFilter.class, service.overrideMetadataFilter().getClass());
   }
 
   public void testNormalOperationPreserveKey() throws Exception {
@@ -80,14 +116,18 @@ public class CloneMessageServiceListTest extends ServiceCollectionCase {
     rmf.addIncludePattern(KEY1);
     service.setOverrideMetadata(true);
     service.setOverrideMetadataFilter(rmf);
-    for(Service srvc : service.getServices())
-      srvc.changeState(StartedState.getInstance());
+    try {
+      LifecycleHelper.initAndStart(service);
 
-    service.doService(msg);
+      service.doService(msg);
 
-    // md not present because Service applied to a clone
-    assertNotNull(msg.getMetadataValue(KEY1));
-    assertEquals(VAL1, msg.getMetadataValue(KEY1));
+      // md not present because Service applied to a clone
+      assertNotNull(msg.getMetadataValue(KEY1));
+      assertEquals(VAL1, msg.getMetadataValue(KEY1));
+    }
+    finally {
+      LifecycleHelper.stopAndClose(service);
+    }
   }
 
   public void testFailWithNoContinueOnFail() throws Exception {
@@ -138,8 +178,6 @@ public class CloneMessageServiceListTest extends ServiceCollectionCase {
     result.addService(new NullService());
     result.addService(new NullService());
     result.setOverrideMetadata(false);
-    result.setOverrideMetadataFilter(new NoOpMetadataFilter());
-
     return result;
   }
 
@@ -164,4 +202,36 @@ public class CloneMessageServiceListTest extends ServiceCollectionCase {
       return initCount;
     }
   }
+
+  private class MarkerService extends ServiceImp {
+
+    private transient boolean hasTriggered = false;
+
+    public MarkerService() {
+    }
+
+    public MarkerService(String s) {
+      this();
+      setUniqueId(s);
+    }
+
+    public void doService(AdaptrisMessage msg) throws ServiceException {
+      hasTriggered = true;
+    }
+
+    @Override
+    protected void initService() throws CoreException {
+    }
+
+    @Override
+    protected void closeService() {
+      hasTriggered = false;
+    }
+
+    @Override
+    public void prepare() throws CoreException {
+    }
+
+  }
+
 }
