@@ -148,8 +148,6 @@ public class CloneMessageServiceListTest extends ServiceCollectionCase {
     result.addService(new NullService());
     result.addService(new NullService());
     result.setOverrideMetadata(false);
-    result.setOverrideMetadataFilter(new NoOpMetadataFilter());
-
     return result;
   }
 

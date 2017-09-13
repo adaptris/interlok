@@ -17,40 +17,11 @@ package com.adaptris.core;
 
 import static com.adaptris.core.CoreConstants.STOP_PROCESSING_KEY;
 import static com.adaptris.core.CoreConstants.STOP_PROCESSING_VALUE;
-import static com.adaptris.core.util.LoggingHelper.friendlyName;
 
 public abstract class ServiceListBase extends ServiceCollectionImp {
 
   public ServiceListBase() {
     super();
-  }
-
-  @Override
-  protected void applyServices(AdaptrisMessage msg) throws ServiceException {
-    for (Service service : this) {
-      try {
-        String serviceName = friendlyName(service);
-
-        /*
-         * Check this before applying any services as it may have been set deep in the ServiceList hierarchy. If we don't check this
-         * before applying a service, we'll be "randomly" applying one service at each service list, keeping the metadata and then
-         * no longer apply the next ones. That's strange behaviour and contradicts what the javadoc says about
-         * CoreConstants.STOP_PROCESSING_KEY
-         */
-        if (haltProcessing(msg)) {
-          break;
-        }
-
-        service.doService(msg);
-        msg.addEvent(service, true);
-        log.debug("service [{}] applied", serviceName);
-      }
-      catch (Exception e) {
-        // add fail event
-        msg.addEvent(service, false);
-        handleException(service, msg, e);
-      }
-    }
   }
 
   @Override
