@@ -43,7 +43,7 @@ public class LongMetadataConverter extends MetadataConverter {
     try {
       Long value = NumberUtils.createLong(element.getValue());
       log.trace("Setting JMS Metadata {} as a long", element);
-      out.setIntProperty(element.getKey(), value.intValue());
+      out.setLongProperty(element.getKey(), value.longValue());
     }
     catch (NumberFormatException | NullPointerException e) {
       if (strict()) {
