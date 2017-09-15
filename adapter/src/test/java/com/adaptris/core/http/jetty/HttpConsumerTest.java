@@ -89,7 +89,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
   }
 
   public void testSetAdditionalDebug() throws Exception {
-    MessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
+    MessageConsumer consumer = JettyHelper.createDeprecatedConsumer(URL_TO_POST_TO);
     consumer.setAdditionalDebug(null);
     assertNull(consumer.getAdditionalDebug());
     assertEquals(false, consumer.additionalDebug());
@@ -99,7 +99,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
   }
 
   public void testSetMaxWaitTime() throws Exception {
-    MessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
+    MessageConsumer consumer = JettyHelper.createDeprecatedConsumer(URL_TO_POST_TO);
     consumer.setMaxWaitTime(null);
     assertNull(consumer.getMaxWaitTime());
     assertEquals(new TimeInterval(600L, TimeUnit.SECONDS).toMilliseconds(), consumer.maxWaitTime());
@@ -126,7 +126,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
 
   public void testChannelStarted_WorkflowStopped() throws Exception {
     HttpConnection connection = createConnection(null);
-    MessageConsumer consumer1 = JettyHelper.createConsumer(URL_TO_POST_TO);
+    JettyMessageConsumer consumer1 = JettyHelper.createConsumer(URL_TO_POST_TO);
     StandardWorkflow workflow1 = new StandardWorkflow();
     workflow1.setConsumer(consumer1);
     workflow1.getServiceCollection().add(new StandaloneProducer(new ResponseProducer(HttpStatus.OK_200)));
@@ -154,13 +154,13 @@ public class HttpConsumerTest extends HttpConsumerExample {
   public void testChannelStarted_MultipleWorkflows_OneWorkflowStopped() throws Exception {
     HttpConnection connection = createConnection(null);
 
-    MessageConsumer consumer1 = JettyHelper.createConsumer(URL_TO_POST_TO);
+    JettyMessageConsumer consumer1 = JettyHelper.createConsumer(URL_TO_POST_TO);
     StandardWorkflow workflow1 = new StandardWorkflow();
     workflow1.setConsumer(consumer1);
     workflow1.getServiceCollection().add(new StandaloneProducer(new ResponseProducer(HttpStatus.OK_200)));
     Channel channel = JettyHelper.createChannel(connection, workflow1);
 
-    MessageConsumer consumer2 = JettyHelper.createConsumer("/some/other/urlmapping/");
+    JettyMessageConsumer consumer2 = JettyHelper.createConsumer("/some/other/urlmapping/");
     StandardWorkflow workflow2 = new StandardWorkflow();
     workflow2.setConsumer(consumer2);
     workflow2.getServiceCollection().add(new StandaloneProducer(new ResponseProducer(HttpStatus.OK_200)));
@@ -191,7 +191,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new StaticMockMessageProducer();
     mockProducer.getMessages().clear();
-    MessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
+    JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
     PoolingWorkflow workflow = new PoolingWorkflow();
     ResponseProducer responder = new ResponseProducer(HttpStatus.OK_200);
     workflow.setConsumer(consumer);
@@ -220,7 +220,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new StaticMockMessageProducer();
     mockProducer.getMessages().clear();
-    MessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
+    JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
     PoolingWorkflow workflow = new PoolingWorkflow();
     workflow.setShutdownWaitTime(new TimeInterval(5L, TimeUnit.SECONDS));
     ResponseProducer responder = new ResponseProducer(HttpStatus.OK_200);
@@ -247,7 +247,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
   public void testConsumeWorkflow_NoPreserveHeaders() throws Exception {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new MockMessageProducer();
-    MessageConsumer consumer = JettyHelper.createConsumer("/*");
+    JettyMessageConsumer consumer = JettyHelper.createConsumer("/*");
     Channel channel = JettyHelper.createChannel(connection, consumer, mockProducer);
     try {
       channel.requestStart();
@@ -269,7 +269,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
   public void testConsumeWorkflow_IncorrectMethod() throws Exception {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new MockMessageProducer();
-    MessageConsumer consumer = JettyHelper.createConsumer("/*");
+    JettyMessageConsumer consumer = JettyHelper.createConsumer("/*");
     consumer.getDestination().setFilterExpression("GET,HEAD");
     Channel channel = JettyHelper.createChannel(connection, consumer, mockProducer);
     try {
@@ -302,7 +302,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
   public void testConsumeWorkflow_Options_Automatic() throws Exception {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new MockMessageProducer();
-    MessageConsumer consumer = JettyHelper.createConsumer("/*");
+    JettyMessageConsumer consumer = JettyHelper.createConsumer("/*");
     consumer.getDestination().setFilterExpression("GET,HEAD");
     Channel channel = JettyHelper.createChannel(connection, consumer, mockProducer);
     try {
@@ -336,7 +336,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
   public void testConsumeWorkflow_PreserveHeaders() throws Exception {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new MockMessageProducer();
-    MessageConsumer consumer = JettyHelper.createConsumer("/*");
+    JettyMessageConsumer consumer = JettyHelper.createConsumer("/*");
     consumer.setHeaderHandler(new MetadataHeaderHandler("Http_Header_"));
     Channel channel = JettyHelper.createChannel(connection, consumer, mockProducer);
     try {
@@ -359,7 +359,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
   public void testConsumeWorkflow_PreserveParams_NoPrefix() throws Exception {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new MockMessageProducer();
-    MessageConsumer consumer = JettyHelper.createConsumer("/*");
+    JettyMessageConsumer consumer = JettyHelper.createConsumer("/*");
     consumer.setHeaderHandler(new MetadataHeaderHandler("Http_Header_"));
     consumer.setParameterHandler(new MetadataParameterHandler());
     Channel channel = JettyHelper.createChannel(connection, consumer, mockProducer);
@@ -390,7 +390,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
   public void testConsumeWorkflow_PreserveObjectParams_NoPrefix() throws Exception {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new MockMessageProducer();
-    MessageConsumer consumer = JettyHelper.createConsumer("/*");
+    JettyMessageConsumer consumer = JettyHelper.createConsumer("/*");
     consumer.setHeaderHandler(new ObjectMetadataHeaderHandler("Http_Header_"));
     consumer.setParameterHandler(new ObjectMetadataParameterHandler());
     Channel channel = JettyHelper.createChannel(connection, consumer, mockProducer);
@@ -423,7 +423,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
   public void testConsumeWorkflow_PreserveParams_WithPrefix() throws Exception {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new MockMessageProducer();
-    MessageConsumer consumer = JettyHelper.createConsumer("/*");
+    JettyMessageConsumer consumer = JettyHelper.createConsumer("/*");
     consumer.setHeaderHandler(new MetadataHeaderHandler("Http_Header_"));
     consumer.setParameterHandler(new MetadataParameterHandler("Http_Param_"));
     Channel channel = JettyHelper.createChannel(connection, consumer, mockProducer);
@@ -457,7 +457,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
   public void testConsumeWorkflow_PreserveObjectParams_WithPrefix() throws Exception {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new MockMessageProducer();
-    MessageConsumer consumer = JettyHelper.createConsumer("/*");
+    JettyMessageConsumer consumer = JettyHelper.createConsumer("/*");
     consumer.setHeaderHandler(new ObjectMetadataHeaderHandler("Http_Header_"));
     consumer.setParameterHandler(new ObjectMetadataParameterHandler("Http_Param_"));
     Channel channel = JettyHelper.createChannel(connection, consumer, mockProducer);
@@ -619,7 +619,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new MockMessageProducer();
 
-    MessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
+    JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
     consumer.setHeaderHandler(new MetadataHeaderHandler());
 
     Channel adapter = JettyHelper.createChannel(connection, consumer, mockProducer);
@@ -661,7 +661,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
   public void testBasicConsumeWithCustomMessageImpl() throws Exception {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new MockMessageProducer();
-    MessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
+    JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
     Channel adapter = JettyHelper.createChannel(connection, consumer, mockProducer);
     try {
       consumer.setMessageFactory(new StubMessageFactory());
@@ -685,7 +685,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
   public void testDestinationNotFound() throws Exception {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new MockMessageProducer();
-    MessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
+    JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
     Channel adapter = JettyHelper.createChannel(connection, consumer, mockProducer);
     try {
       adapter.requestStart();
@@ -727,7 +727,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
 
     HttpConnection connection = createConnection(hr);
     MockMessageProducer mockProducer = new MockMessageProducer();
-    MessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
+    JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
     Channel adapter = JettyHelper.createChannel(connection, consumer, mockProducer);
 
     try {
@@ -763,7 +763,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     csh.setSecurityConstraints(Arrays.asList(securityConstraint));
     HttpConnection connection = createConnection(csh);
     MockMessageProducer mockProducer = new MockMessageProducer();
-    MessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
+    JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
     Channel adapter = JettyHelper.createChannel(connection, consumer, mockProducer);
 
     try {
@@ -801,7 +801,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
 
     HttpConnection connection = createConnection(csh);
     MockMessageProducer mockProducer = new MockMessageProducer();
-    MessageConsumer consumer = JettyHelper.createConsumer("/*");
+    JettyMessageConsumer consumer = JettyHelper.createConsumer("/*");
     Channel adapter = JettyHelper.createChannel(connection, consumer, mockProducer);
     try {
       adapter.requestStart();
@@ -837,7 +837,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
 
     HttpConnection connection = createConnection(csh);
     MockMessageProducer mockProducer = new MockMessageProducer();
-    MessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
+    JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
     Channel adapter = JettyHelper.createChannel(connection, consumer, mockProducer);
     try {
       adapter.requestStart();
@@ -894,7 +894,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
 
     HttpConnection connection = createConnection(csh);
     MockMessageProducer mockProducer = new MockMessageProducer();
-    MessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
+    JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
     Channel adapter = JettyHelper.createChannel(connection, consumer, mockProducer);
     try {
       adapter.requestStart();
@@ -954,7 +954,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
 
     HttpConnection connection = createConnection(csh);
     MockMessageProducer mockProducer = new MockMessageProducer();
-    MessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
+    JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
     Channel adapter = JettyHelper.createChannel(connection, consumer, mockProducer);
     try {
       adapter.requestStart();
@@ -999,7 +999,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
   public void testBasicConsumeWorkflow_LongLived_Expect() throws Exception {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new MockMessageProducer();
-    MessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
+    JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
     consumer.setSendProcessingInterval(new TimeInterval(1L, TimeUnit.SECONDS));
     StandardWorkflow wf = (StandardWorkflow) JettyHelper.createWorkflow(consumer, mockProducer);
     wf.getServiceCollection().add(new WaitService(new TimeInterval(5L, TimeUnit.SECONDS)));
@@ -1060,7 +1060,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     HttpConnection connection = createConnection(createSecurityHandlerExample());
     connection.getServerConnectorProperties().add(new KeyValuePair(ServerConnectorProperty.SoLingerTime.name(), "-1"));
     connection.getServerConnectorProperties().add(new KeyValuePair(ServerConnectorProperty.ReuseAaddress.name(), "true"));
-    MessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
+    JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
     StandaloneConsumer result = new StandaloneConsumer(connection, consumer);
     return result;
   }

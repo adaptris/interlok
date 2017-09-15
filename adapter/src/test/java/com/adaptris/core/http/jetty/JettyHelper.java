@@ -37,7 +37,8 @@ import com.adaptris.core.stubs.MockChannel;
  */
 public class JettyHelper {
 
-  public static Channel createChannel(AdaptrisConnection connection, MessageConsumer consumer, AdaptrisMessageProducer producer)
+  public static Channel createChannel(AdaptrisConnection connection, JettyMessageConsumer consumer,
+                                      AdaptrisMessageProducer producer)
       throws Exception {
     return createChannel(connection, createWorkflow(consumer, producer));
   }
@@ -52,24 +53,25 @@ public class JettyHelper {
     return result;
   }
 
-  public static Workflow createWorkflow(MessageConsumer consumer, AdaptrisMessageProducer producer) {
+  public static Workflow createWorkflow(JettyMessageConsumer consumer, AdaptrisMessageProducer producer) {
     return createWorkflow(consumer, producer, new StandardResponseProducer(HttpStatus.OK_200));
   }
 
-  public static Workflow createWorkflow(MessageConsumer consumer, AdaptrisMessageProducer producer, ResponseProducer responder) {
+  public static Workflow createWorkflow(JettyMessageConsumer consumer, AdaptrisMessageProducer producer,
+                                        ResponseProducer responder) {
     return createWorkflow(consumer, producer, new ServiceList(new Service[]
     {
       new StandaloneProducer(responder)
     }));
   }
 
-  public static Workflow createWorkflow(MessageConsumer consumer, AdaptrisMessageProducer producer,
+  public static Workflow createWorkflow(JettyMessageConsumer consumer, AdaptrisMessageProducer producer,
       StandardResponseProducer responder) {
     return createWorkflow(consumer, producer, new ServiceList(new Service[] {new StandaloneProducer(responder)}));
   }
 
 
-  public static Workflow createWorkflow(MessageConsumer consumer, AdaptrisMessageProducer producer, ServiceList list) {
+  public static Workflow createWorkflow(JettyMessageConsumer consumer, AdaptrisMessageProducer producer, ServiceList list) {
     StandardWorkflow wf = new StandardWorkflow();
     wf.setConsumer(consumer);
     wf.setProducer(producer);
@@ -77,7 +79,15 @@ public class JettyHelper {
     return wf;
   }
 
-  public static MessageConsumer createConsumer(String dest) {
+  public static JettyMessageConsumer createConsumer(String dest) {
+    JettyMessageConsumer consumer = new JettyMessageConsumer();
+    consumer.setAdditionalDebug(true);
+    consumer.setDestination(new ConfiguredConsumeDestination(dest));
+    return consumer;
+  }
+
+  @SuppressWarnings("deprecation")
+  public static MessageConsumer createDeprecatedConsumer(String dest) {
     MessageConsumer consumer = new MessageConsumer();
     consumer.setAdditionalDebug(true);
     consumer.setDestination(new ConfiguredConsumeDestination(dest));

@@ -29,7 +29,7 @@ import com.adaptris.core.Service;
 import com.adaptris.core.ServiceList;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.http.jetty.HttpConnection;
-import com.adaptris.core.http.jetty.MessageConsumer;
+import com.adaptris.core.http.jetty.JettyMessageConsumer;
 import com.adaptris.core.http.jetty.MetadataHeaderHandler;
 import com.adaptris.core.http.jetty.StandardResponseProducer;
 import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
@@ -46,7 +46,7 @@ public class HttpHelper {
   }
 
   public static Channel createAndStartChannel(MockMessageProducer mock) throws Exception {
-    MessageConsumer mc = createConsumer(URL_TO_POST_TO);
+    JettyMessageConsumer mc = createConsumer(URL_TO_POST_TO);
     mc.setHeaderHandler(new MetadataHeaderHandler());
     HttpConnection jc = createConnection();
     Channel c = createChannel(jc, createWorkflow(mc, mock,
