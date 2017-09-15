@@ -366,7 +366,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     if (includeEvents) {
       builder.append("message events", messageLifeCycle);
     }
-    if (includeEvents) {
+    if (includePayload) {
       builder.append("payload", getPayloadForLogging());
     }
     return builder.toString();
