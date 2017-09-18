@@ -145,10 +145,17 @@ public class XmlTransformService extends ServiceImp {
     if (isEmpty(result)) {
       throw new ServiceException("no URL configured and metadata key [" + getMetadataKey() + "] returned null");
     }
-
-    log.debug("using URL [" + result + "]");
+    result = backslashToSlash(result);
+    log.debug("using URL [{}]", result);
 
     return result;
+  }
+
+  private static String backslashToSlash(String url) {
+    if (!isEmpty(url)) {
+      return url.replaceAll("\\\\", "/");
+    }
+    return url;
   }
 
   private void doTransform(AdaptrisMessage msg, String urlToUse) throws ServiceException {
@@ -156,6 +163,7 @@ public class XmlTransformService extends ServiceImp {
     Transformer transformer = null;
 
     try {
+
       if (cacheTransforms()) {
         transformer = this.cacheAndGetTransformer(urlToUse, this.getXmlTransformerFactory());
       }

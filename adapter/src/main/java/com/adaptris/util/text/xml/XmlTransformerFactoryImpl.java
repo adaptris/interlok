@@ -111,6 +111,11 @@ public abstract class XmlTransformerFactoryImpl implements XmlTransformerFactory
 
 
 
+  /**
+   * 
+   * @deprecated since 3.6.5, XSLT 3.0 has eliminated all "recoverable errors" from the specification. If you are using a previous
+   *             version of saxon or xalan then this will still have an effect.
+   */
   public Boolean getFailOnRecoverableError() {
     return failOnRecoverableError;
   }
@@ -119,6 +124,8 @@ public abstract class XmlTransformerFactoryImpl implements XmlTransformerFactory
    * Whether or not to fail on a recoverable error.
    * 
    * @param b true to fail on a recoverable error which is the default, false otherwise.
+   * @deprecated since 3.6.5, XSLT 3.0 has eliminated all "recoverable errors" from the specification. If you are using a previous
+   *             version of saxon or xalan then this will still have an effect.
    */
   public void setFailOnRecoverableError(Boolean b) {
     this.failOnRecoverableError = b;
@@ -145,6 +152,7 @@ public abstract class XmlTransformerFactoryImpl implements XmlTransformerFactory
       // It's a recoverable exception; let it try and carry on, but let's log the error message
       // This will be the error message from <xsl:message terminate="yes">Msg</xsl:message>
       log.error("[{}]", e.getMessageAndLocation());
+      // We throw an error, but Saxon may still eat it.
       if (failOnError)
         throw e;
     }

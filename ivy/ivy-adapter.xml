@@ -92,7 +92,7 @@
     <dependency org="xalan" name="serializer" rev="2.7.2" conf="compile->default" />
     <dependency org="net.sf.saxon" name="Saxon-HE" rev="9.6.0-5" conf="compile->default" />
     -->
-    <dependency org="net.sf.saxon" name="Saxon-HE" rev="9.5.1-8" conf="compile->default" />
+    <dependency org="net.sf.saxon" name="Saxon-HE" rev="9.7.0-20" conf="compile->default" />
     <dependency org="xerces" name="xercesImpl" rev="2.11.0" conf="compile->default" />
 
     <dependency org="com.mchange" name="c3p0" rev="0.9.5.2" conf="compile->default"/>
