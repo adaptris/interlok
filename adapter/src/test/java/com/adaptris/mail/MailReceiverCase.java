@@ -97,7 +97,11 @@ public abstract class MailReceiverCase extends BaseCase {
 
   private void sendMessage(String from, String to, ServerSetup setup) throws Exception {
     GreenMailUtil.sendTextEmail(to, from, DEFAULT_SUBJECT, DEFAULT_PAYLOAD, setup);
-    }
+  }
+
+  private void sendMessage(String from, String to, String subject, ServerSetup setup) throws Exception {
+    GreenMailUtil.sendTextEmail(to, from, subject, DEFAULT_PAYLOAD, setup);
+  }
 
   public void testPop3NoFilterNoDelete() throws Exception {
     if (!testsEnabled()) return;
@@ -601,6 +605,33 @@ public abstract class MailReceiverCase extends BaseCase {
     }
     finally {
       mbox.disconnect();
+      stopServer(gm);
+    }
+  }
+
+  // INTERLOK-1849
+  public void testPop3GlobFromSubjectFilter_NullSubject() throws Exception {
+    if (!testsEnabled()) return;
+
+    GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
+    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
+    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, null, smtpServerSetup);
+    MailReceiver mbox = createClient(gm);
+    mbox.setRegularExpressionCompiler(GLOB);
+    mbox.setFromFilter(DEFAULT_SENDER);
+    mbox.setSubjectFilter("Junit*");
+
+    MailReceiver checker = createClient(gm);
+    checker.setFromFilter(DEFAULT_SENDER);
+    try {
+      mbox.connect();
+      assertEquals(0, mbox.getMessages().size());
+      checker.connect();
+      assertEquals(1, checker.getMessages().size());
+    }
+    finally {
+      mbox.disconnect();
+      checker.disconnect();
       stopServer(gm);
     }
   }

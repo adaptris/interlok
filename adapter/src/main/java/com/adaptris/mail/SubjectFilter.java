@@ -19,6 +19,7 @@ package com.adaptris.mail;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.oro.text.regex.Pattern;
 import org.apache.oro.text.regex.PatternMatcher;
 
@@ -42,7 +43,7 @@ class SubjectFilter extends MessageFilterImp {
   public boolean accept(Message m) throws MessagingException {
     boolean rc = false;
     if (pattern != null) {
-      if (matcher.contains(m.getSubject(), pattern)) {
+      if (matcher.contains(StringUtils.defaultIfEmpty(m.getSubject(), ""), pattern)) {
         rc = true;
       }
     }
