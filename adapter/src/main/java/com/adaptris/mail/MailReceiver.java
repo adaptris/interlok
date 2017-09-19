@@ -16,6 +16,7 @@
 
 package com.adaptris.mail;
 
+import java.util.Iterator;
 import java.util.List;
 
 import javax.mail.internet.MimeMessage;
@@ -26,7 +27,7 @@ import javax.mail.internet.MimeMessage;
  * 
  *
  */
-public interface MailReceiver {
+public interface MailReceiver extends Iterable<MimeMessage> {
 
 	/**
 	 * Connect to the mailbox
@@ -107,11 +108,21 @@ public interface MailReceiver {
 	public void purge(boolean delFlag);
 
 	/**
-	 * Return the list of messages currently in this object
-	 * 
-	 * @return list of MimeMessages
-	 */
-	public List<MimeMessage> getMessages();
+   * Return the list of messages currently in this object
+   * 
+   * @return list of MimeMessages
+   * @deprecated since 3.6.5 use {@link #iterator()} instead.
+   */
+  @Deprecated
+  public List<MimeMessage> getMessages();
+
+  /**
+   * Iterate over the list of messages in the mailbox.
+   * 
+   * @return an iterator of filtered messages.
+   * @throws RuntimeException if we couldn't interact with the mailbox.
+   */
+  public Iterator<MimeMessage> iterator();
 
 	/**
 	 * Mark the message as read and deleted, if purge 'on'.

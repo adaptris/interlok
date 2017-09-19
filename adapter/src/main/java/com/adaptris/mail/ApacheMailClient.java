@@ -5,14 +5,14 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.mail;
 
@@ -21,8 +21,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Properties;
@@ -34,7 +34,6 @@ import javax.mail.URLName;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.commons.net.pop3.POP3Client;
 import org.apache.commons.net.pop3.POP3MessageInfo;
 
@@ -67,12 +66,10 @@ abstract class ApacheMailClient<T extends POP3Client> extends MailClientImp {
       if (!pop3.login(mailboxUrl.getUsername(), mailboxUrl.getPassword())) {
         throw new Exception("Could not login to server, check username/password.");
       }
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       disconnectLocal();
-      rethrowMailException(e);
-    }
-    finally {
+      throw wrapException(e);
+    } finally {
       collectedMessages = new HashMap<>();
       messagesToDelete = new LinkedHashSet<>();
     }
@@ -82,42 +79,13 @@ abstract class ApacheMailClient<T extends POP3Client> extends MailClientImp {
 
   abstract void postConnectAction(T client) throws MailException, IOException;
 
+
   @Override
-  public ArrayList<MimeMessage> collectMessages() throws MailException {
-    ArrayList<MimeMessage> result = new ArrayList<MimeMessage>();
-
-    try {
-      POP3MessageInfo[] pop3messages = pop3.listMessages();
-      Session session = Session.getDefaultInstance(new Properties(), null);
-      // Convert messages to MimeMessages
-      if (pop3messages != null && pop3messages.length > 0) {
-        for (POP3MessageInfo message : pop3messages) {
-          StringWriter writer = new StringWriter();
-          BufferedReader bufferedReader = null;
-          ReaderInputStream mimeMessageInput = null;
-          try {
-            Reader reader = pop3.retrieveMessage(message.number);
-            if (reader == null) {
-              throw new Exception("Could not retrieve message header.");
-            }
-            MimeMessage mimeMsg = createMimeMessage(session, reader);
-            log.trace("Parsing message [{}] (msgNum={})", mimeMsg.getMessageID(), message.number);
-            result.add(mimeMsg);
-            collectedMessages.put(mimeMsg.getMessageID(), message.number);
-          }
-          finally {
-            IOUtils.closeQuietly(mimeMessageInput);
-            IOUtils.closeQuietly(bufferedReader);
-            IOUtils.closeQuietly(writer);
-          }
-        }
-      }
+  public Iterator<MimeMessage> iterator() {
+    if (pop3 == null) {
+      throw new IllegalStateException("Not Connected");
     }
-    catch (Exception e) {
-      throw new MailException(e);
-    }
-
-    return result;
+    return new MessageCollector();
   }
 
   private MimeMessage createMimeMessage(Session session, Reader src) throws IOException, MessagingException {
@@ -149,12 +117,11 @@ abstract class ApacheMailClient<T extends POP3Client> extends MailClientImp {
       for (String msgId : messagesToDelete) {
         try {
           Integer msgNum = collectedMessages.get(msgId);
-          log.warn("Deleting [{}] (msgNum={})", msgId, msgNum);
+          log.trace("Deleting [{}] (msgNum={})", msgId, msgNum);
           if (msgNum != null) {
             pop3.deleteMessage(msgNum.intValue());
           }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
         }
       }
     }
@@ -164,8 +131,7 @@ abstract class ApacheMailClient<T extends POP3Client> extends MailClientImp {
     try {
       pop3.logout();
       pop3.disconnect();
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
     }
   }
 
@@ -178,9 +144,8 @@ abstract class ApacheMailClient<T extends POP3Client> extends MailClientImp {
   public void setMessageRead(MimeMessage msg) throws MailException {
     try {
       messagesToDelete.add(msg.getMessageID());
-    }
-    catch (MessagingException e) {
-      rethrowMailException(e);
+    } catch (MessagingException e) {
+      throw wrapException(e);
     }
   }
 
@@ -188,20 +153,74 @@ abstract class ApacheMailClient<T extends POP3Client> extends MailClientImp {
   public void resetMessage(MimeMessage msg) throws MailException {
     try {
       messagesToDelete.remove(msg.getMessageID());
-    }
-    catch (MessagingException e) {
-      rethrowMailException(e);
+    } catch (MessagingException e) {
+      throw wrapException(e);
     }
   }
 
-  static void rethrowMailException(Throwable e) throws MailException {
-    rethrowMailException(e.getMessage(), e);
-  }
 
-  static void rethrowMailException(String msg, Throwable e) throws MailException {
-    if (e instanceof MailException) {
-      throw (MailException) e;
+
+  private class MessageCollector implements Iterator<MimeMessage> {
+
+    private transient MimeMessage nextMessage;
+    private POP3MessageInfo[] messages;
+    private int currentMessage;
+    private Session session;
+
+    private MessageCollector() {
+      try {
+        messages = pop3.listMessages();
+        if (messages == null) {
+          messages = new POP3MessageInfo[0];
+        }
+        currentMessage = 0;
+        session = Session.getDefaultInstance(new Properties(), null);
+      } catch (IOException e) {
+        throw new IllegalStateException(e);
+      }
     }
-    throw new MailException(msg, e);
+
+    @Override
+    public boolean hasNext() {
+      if (nextMessage == null) {
+        try {
+          nextMessage = buildNext();
+        } catch (MailException e) {
+          log.warn("Could not construct next MimeMessage", e);
+          throw new RuntimeException("Could not get next MimeMessage", e);
+        }
+      }
+      return nextMessage != null;
+    }
+
+    @Override
+    public MimeMessage next() {
+      MimeMessage ret = nextMessage;
+      nextMessage = null;
+      return ret;
+    }
+
+    private MimeMessage buildNext() throws MailException {
+      MimeMessage result = null;
+      if (currentMessage >= messages.length) {
+        return null;
+      }
+      POP3MessageInfo msg = messages[currentMessage++];
+      try {
+        Reader reader = pop3.retrieveMessage(msg.number);
+        if (reader == null) {
+          throw new MailException("Could not retrieve message header.");
+        }
+        result = createMimeMessage(session, reader);
+        if (!accept(result)) {
+          return buildNext();
+        }
+        log.trace("Accepted message [{}] (msgNum={})", result.getMessageID(), msg.number);
+        collectedMessages.put(result.getMessageID(), msg.number);
+      } catch (IOException | MessagingException e) {
+        throw wrapException(e);
+      }
+      return result;
+    }
   }
 }

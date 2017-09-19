@@ -129,8 +129,8 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
 
     try {
       mbox.connect();
-      log.trace("there are {} messages to process", mbox.getMessages().size());
-      for (MimeMessage msg : mbox.getMessages()){
+      // log.trace("there are {} messages to process", mbox.getMessages().size());
+      for (MimeMessage msg : mbox) {
         try {
           mbox.setMessageRead(msg);
           List<AdaptrisMessage> msgs = createMessages(msg);

@@ -43,6 +43,7 @@ import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.GreenMailUtil;
 import com.icegreen.greenmail.util.ServerSetup;
 
+@SuppressWarnings("deprecation")
 public abstract class MailReceiverCase extends BaseCase {
 
 
