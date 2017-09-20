@@ -18,25 +18,19 @@ package com.adaptris.core.services.jdbc;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.Map;
-import java.util.Properties;
 
 import org.junit.Test;
 
-import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.ServiceException;
 import com.adaptris.core.jdbc.JdbcConnection;
-import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.KeyValuePairBag;
+import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 
 public abstract class JdbcMapInsertCase {
@@ -106,7 +100,8 @@ public abstract class JdbcMapInsertCase {
       c = createConnection();
       s = c.createStatement();
       executeQuietly(s, String.format("DROP TABLE %s", TABLE_NAME));
-      s.execute(String.format("CREATE TABLE %s (firstname VARCHAR(128) NOT NULL, lastname VARCHAR(128) NOT NULL, dob VARCHAR(128))",
+      s.execute(
+          String.format("CREATE TABLE %s (firstname VARCHAR(128) NOT NULL, lastname VARCHAR(128) NOT NULL, dob DATE)",
           TABLE_NAME));
     } finally {
       JdbcUtil.closeQuietly(s);
@@ -128,37 +123,11 @@ public abstract class JdbcMapInsertCase {
     connection.setConnectUrl(JDBC_URL);
     connection.setDriverImp(JDBC_DRIVER);
     service.setConnection(connection);
-    service.setTable(TABLE_NAME);
+    KeyValuePairSet mappings = new KeyValuePairSet();
+    mappings.add(new KeyValuePair("dob", JdbcMapInsert.BasicType.Date.name()));
+    service.withTable(TABLE_NAME).withMappings(mappings);
     return t;
   }
 
-  protected class InsertProperties extends JdbcMapInsert {
-
-    @Override
-    public void doService(AdaptrisMessage msg) throws ServiceException {
-      Connection conn = null;
-      try {
-        conn = getConnection(msg);
-        handleInsert(conn, mapify(msg));
-        commit(conn, msg);
-      }
-      catch (Exception e) {
-        rollback(conn, msg);
-        throw ExceptionHelper.wrapServiceException(e);
-      }
-      finally {
-        JdbcUtil.closeQuietly(conn);
-      }
-    }
-
-
-    protected Map<String, String> mapify(AdaptrisMessage msg) throws Exception {
-      Properties result = new Properties();
-      try (InputStream in = msg.getInputStream()) {
-        result.load(in);
-      }
-      return KeyValuePairBag.asMap(new KeyValuePairSet(result));
-    }
-  }
 
 }

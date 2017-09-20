@@ -30,6 +30,7 @@ import com.adaptris.core.ServiceCase;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.JdbcUtil;
+import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairBag;
 import com.adaptris.util.KeyValuePairSet;
 
@@ -39,6 +40,30 @@ public class JdbcMapInsertTest extends JdbcMapInsertCase {
   public void testService() throws Exception {
     createDatabase();
     InsertProperties service = configureForTests(createService());
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(CONTENT);
+    ServiceCase.execute(service, msg);
+    doAssert(1);
+  }
+
+  @Test
+  public void testService_NoConverters() throws Exception {
+    createDatabase();
+    InsertProperties service = configureForTests(createService());
+    service.setFieldMappings(null);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(CONTENT);
+    ServiceCase.execute(service, msg);
+    doAssert(1);
+  }
+
+  @Test
+  public void testService_InvalidConversion() throws Exception {
+    createDatabase();
+    KeyValuePairSet mappings = new KeyValuePairSet();
+    mappings.add(new KeyValuePair("dob", "com.adaptris.does.not.Exist"));
+    mappings.add(new KeyValuePair("firstname", "java.lang.String"));
+    mappings.add(new KeyValuePair("lastname", "Date"));
+    InsertProperties service = configureForTests(createService());
+    service.setFieldMappings(mappings);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(CONTENT);
     ServiceCase.execute(service, msg);
     doAssert(1);
@@ -81,7 +106,6 @@ public class JdbcMapInsertTest extends JdbcMapInsertCase {
       }
     }
 
-
     protected Map<String, String> mapify(AdaptrisMessage msg) throws Exception {
       Properties result = new Properties();
       try (InputStream in = msg.getInputStream()) {
@@ -90,5 +114,4 @@ public class JdbcMapInsertTest extends JdbcMapInsertCase {
       return KeyValuePairBag.asMap(new KeyValuePairSet(result));
     }
   }
-
 }
