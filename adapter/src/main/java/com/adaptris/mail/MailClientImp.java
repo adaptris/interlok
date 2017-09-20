@@ -24,6 +24,7 @@ import javax.mail.Flags;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.oro.text.GlobCompiler;
 import org.apache.oro.text.regex.MalformedPatternException;
 import org.apache.oro.text.regex.PatternCompiler;
@@ -49,14 +50,6 @@ public abstract class MailClientImp implements MailReceiver {
     setRegularExpressionCompiler(DEFAULT_COMPILER.getName());
   }
 
-  /**
-   * Connect to the mailbox.
-   * <p>
-   * This will read the inbox and build a local list of messages filtering out the ones that don't fit the supplied patterns.
-   * </p>
-   * 
-   * @throws MailException if the connection failed.
-   */
   @Override
   public void connect() throws MailException {
     if (connected) {
@@ -67,6 +60,7 @@ public abstract class MailClientImp implements MailReceiver {
     // List<MimeMessage> msgs = collectMessages();
     // messages = filterMessages(msgs);
     connected = true;
+    return;
   }
 
   /**
@@ -87,11 +81,13 @@ public abstract class MailClientImp implements MailReceiver {
     return msgs;
   }
 
-  /**
-   * Disconnect from the mail server
-   */
   @Override
   public void disconnect() {
+    close();
+  }
+
+  @Override
+  public void close() {
     connected = false;
     disconnectLocal();
     messages = null;
@@ -106,56 +102,26 @@ public abstract class MailClientImp implements MailReceiver {
    */
   protected abstract void disconnectLocal();
 
-  /**
-   * Set the subject filter.
-   * <p>
-   * This filters the subject that is present in the message
-   * 
-   * @param filter the filter.
-   */
   @Override
   public void setSubjectFilter(String filter) {
     subjectFilter = filter;
   }
 
-  /**
-   * Set the sender filter.
-   * <p>
-   * This filters the sender that is present in the message
-   * 
-   * @param filter the filter.
-   */
   @Override
   public void setFromFilter(String filter) {
     fromFilter = filter;
   }
 
-  /**
-   * Set the sender filter.
-   * <p>
-   * This filters the sender that is present in the message
-   * 
-   * @param filter the filter.
-   */
   @Override
   public void setRecipientFilter(String filter) {
     recipientFilter = filter;
   }
 
-  /**
-   * Add a custom filter
-   * <p>
-   * This filters any specific user header that is present in the message
-   * 
-   * @param filter the filter.
-   * @param headerValue the header value
-   */
   @Override
   public void addCustomFilter(String headerValue, String filter) {
-    if (headerValue == null || headerValue.equals("")) {
-      return;
+    if (StringUtils.isNotEmpty(headerValue)) {
+      customFilters.add(new String[] {headerValue, filter});
     }
-    customFilters.add(new String[] {headerValue, filter});
   }
 
   /**

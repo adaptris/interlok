@@ -28,6 +28,8 @@ import javax.mail.internet.MimeMessage;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.io.IOUtils;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
@@ -152,9 +154,8 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
       log.trace("Error reading mailbox", e);
     }
     finally {
-      mbox.disconnect();
+      IOUtils.closeQuietly(mbox);
     }
-
     return count;
   }
 
