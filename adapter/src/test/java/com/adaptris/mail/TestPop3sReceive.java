@@ -26,7 +26,7 @@ import com.adaptris.security.util.AlwaysTrustManager;
 import com.icegreen.greenmail.pop3.Pop3Server;
 import com.icegreen.greenmail.util.GreenMail;
 
-public class TestPop3sReceive extends MailReceiverCase {
+public class TestPop3sReceive extends Pop3ReceiverCase {
 
   public TestPop3sReceive(String name) {
     super(name);
