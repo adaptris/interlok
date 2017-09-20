@@ -16,6 +16,8 @@
 
 package com.adaptris.mail;
 
+import java.io.Closeable;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.mail.internet.MimeMessage;
@@ -26,51 +28,40 @@ import javax.mail.internet.MimeMessage;
  * 
  *
  */
-public interface MailReceiver {
+public interface MailReceiver extends Iterable<MimeMessage>, Closeable {
 
 	/**
-	 * Connect to the mailbox
-	 * <p>
-	 * This will also:-
-	 * 		Retrieve the messages from the server
-	 * 		Filter out messages that do not fit the supplied patterns
-	 * </p>
-	 * 
-	 * @see #setFromFilter(String)
-	 * @see #addCustomFilter(String, String)
-	 * @see #setSubjectFilter(String)
-	 * @throws MailException if the connection failed.
-	 */
-	public void connect() throws MailException;
+   * Connect to the mailbox
+   * 
+   * @throws MailException if the connection failed.
+   */
+  public void connect() throws MailException;
 	
 	/**
-	 * Disconnect from the mail server.
-	 */
+   * Disconnect from the mail server.
+   * 
+   * @deprecated since 3.6.5 use {@link Closeable#close()} instead.
+   */
+  @Deprecated
 	public void disconnect();
 	
 
 	/**
-	 * Set the subject filter.
-	 * <p>
-	 * This filters the subject that is present in the message
-	 * 
-	 * @param filter the filter.
-	 */
+   * Set the subject filter.
+   * 
+   * @param filter the filter.
+   */
 	public void setSubjectFilter(String filter);
 
 	/**
-	 * Set the sender filter.
-	 * <p>
-	 * This filters the sender that is present in the message
-	 * 
-	 * @param filter the filter.
-	 */
+   * Set the sender filter.
+   * 
+   * @param filter the filter.
+   */
 	public void setFromFilter(String filter);
 	
 	/**
 	 * Set the sender filter.
-	 * <p>
-	 * This filters the sender that is present in the message
 	 * 
 	 * @param filter the filter.
 	 */
@@ -78,8 +69,6 @@ public interface MailReceiver {
 
 	/**
 	 * Add a custom filter
-	 * <p>
-	 * This filters any specific user header that is present in the message
 	 * 
 	 * @param filter the filter.
 	 * @param headerValue the header value
@@ -107,11 +96,21 @@ public interface MailReceiver {
 	public void purge(boolean delFlag);
 
 	/**
-	 * Return the list of messages currently in this object
-	 * 
-	 * @return list of MimeMessages
-	 */
-	public List<MimeMessage> getMessages();
+   * Return a filtered list of messages in the mailbox
+   * 
+   * @return list of MimeMessages
+   * @deprecated since 3.6.5 use {@link #iterator()} instead.
+   */
+  @Deprecated
+  public List<MimeMessage> getMessages();
+
+  /**
+   * Iterate over the list of messages in the mailbox.
+   * 
+   * @return an iterator of filtered messages.
+   * @throws RuntimeException if we couldn't interact with the mailbox.
+   */
+  public Iterator<MimeMessage> iterator();
 
 	/**
 	 * Mark the message as read and deleted, if purge 'on'.

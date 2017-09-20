@@ -5,24 +5,26 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.mail;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.mail.Flags;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.oro.text.GlobCompiler;
 import org.apache.oro.text.regex.MalformedPatternException;
 import org.apache.oro.text.regex.PatternCompiler;
@@ -45,18 +47,9 @@ public abstract class MailClientImp implements MailReceiver {
   protected MailClientImp() {
     filters = new ArrayList<MessageFilter>();
     customFilters = new ArrayList<String[]>();
-    messages = new ArrayList<MimeMessage>();
     setRegularExpressionCompiler(DEFAULT_COMPILER.getName());
   }
 
-  /**
-   * Connect to the mailbox.
-   * <p>
-   * This will read the inbox and build a local list of messages filtering out the ones that don't fit the supplied patterns.
-   * </p>
-   * 
-   * @throws MailException if the connection failed.
-   */
   @Override
   public void connect() throws MailException {
     if (connected) {
@@ -64,9 +57,10 @@ public abstract class MailClientImp implements MailReceiver {
     }
     setupFilters();
     connectLocal();
-    List<MimeMessage> msgs = collectMessages();
-    messages = filterMessages(msgs);
+    // List<MimeMessage> msgs = collectMessages();
+    // messages = filterMessages(msgs);
     connected = true;
+    return;
   }
 
   /**
@@ -79,19 +73,24 @@ public abstract class MailClientImp implements MailReceiver {
    */
   protected abstract void connectLocal() throws MailException;
 
-  /**
-   * Retrieve messages from the server into this client's memory.
-   */
-  protected abstract List<MimeMessage> collectMessages() throws MailException;
+  private ArrayList<MimeMessage> collectMessages() {
+    ArrayList<MimeMessage> msgs = new ArrayList<MimeMessage>();
+    for (Iterator<MimeMessage> i = iterator(); i.hasNext();) {
+      msgs.add(i.next());
+    }
+    return msgs;
+  }
 
-  /**
-   * Disconnect from the mail server
-   */
   @Override
   public void disconnect() {
+    close();
+  }
+
+  @Override
+  public void close() {
     connected = false;
     disconnectLocal();
-    messages = new ArrayList<MimeMessage>();
+    messages = null;
   }
 
   /**
@@ -103,59 +102,26 @@ public abstract class MailClientImp implements MailReceiver {
    */
   protected abstract void disconnectLocal();
 
-  /**
-   * Set the subject filter.
-   * <p>
-   * This filters the subject that is present in the message
-   * 
-   * @param filter the filter.
-   */
   @Override
   public void setSubjectFilter(String filter) {
     subjectFilter = filter;
   }
 
-  /**
-   * Set the sender filter.
-   * <p>
-   * This filters the sender that is present in the message
-   * 
-   * @param filter the filter.
-   */
   @Override
   public void setFromFilter(String filter) {
     fromFilter = filter;
   }
 
-  /**
-   * Set the sender filter.
-   * <p>
-   * This filters the sender that is present in the message
-   * 
-   * @param filter the filter.
-   */
   @Override
   public void setRecipientFilter(String filter) {
     recipientFilter = filter;
   }
 
-  /**
-   * Add a custom filter
-   * <p>
-   * This filters any specific user header that is present in the message
-   * 
-   * @param filter the filter.
-   * @param headerValue the header value
-   */
   @Override
   public void addCustomFilter(String headerValue, String filter) {
-    if (headerValue == null || headerValue.equals("")) {
-      return;
+    if (StringUtils.isNotEmpty(headerValue)) {
+      customFilters.add(new String[] {headerValue, filter});
     }
-    customFilters.add(new String[]
-    {
-        headerValue, filter
-    });
   }
 
   /**
@@ -200,12 +166,10 @@ public abstract class MailClientImp implements MailReceiver {
 
         // Note that this does nothing for ComsNetClient
         msg.saveChanges();
-      }
-      catch (Exception e) {
+      } catch (Exception e) {
         ;
       }
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       throw new MailException(e);
     }
   }
@@ -230,6 +194,12 @@ public abstract class MailClientImp implements MailReceiver {
    */
   @Override
   public List<MimeMessage> getMessages() {
+    if (!connected) {
+      throw new IllegalStateException("Not Connected");
+    }
+    if (messages == null) {
+      messages = collectMessages();
+    }
     return messages;
   }
 
@@ -253,39 +223,40 @@ public abstract class MailClientImp implements MailReceiver {
       for (String[] customFilter : customFilters) {
         filters.add(new CustomHeaderFilter(matcher, compiler.compile(customFilter[1]), customFilter[0]));
       }
-    }
-    catch (MalformedPatternException e) {
+    } catch (MalformedPatternException e) {
       throw new MailException(e.getMessage(), e);
     }
   }
 
-  private List<MimeMessage> filterMessages(List<MimeMessage> mimeMessages) throws MailException {
-    List<MimeMessage> filtered = new ArrayList<MimeMessage>();
-    for (MimeMessage m : mimeMessages) {
-      try {
-        if (m.isSet(Flags.Flag.SEEN) || m.isSet(Flags.Flag.DELETED)) {
-          continue;
-        }
-
-        int matches = 0;
-        for (MessageFilter mf : filters) {
-          if (mf.accept(m)) {
-            matches++;
-          }
-        }
-        if (matches == filters.size()) {
-          log.trace("message [{}] matches filters", m.getMessageID());
-          filtered.add(m);
-        }
-        else {
-          log.trace("Ignoring message [{}] filters not matched", m.getMessageID());
-        }
-      }
-      catch (MessagingException e) {
-        throw new MailException(e);
+  protected boolean accept(MimeMessage m) throws MessagingException {
+    boolean accept = false;
+    if (m.isSet(Flags.Flag.SEEN) || m.isSet(Flags.Flag.DELETED)) {
+      return accept;
+    }
+    int matches = 0;
+    for (MessageFilter mf : filters) {
+      if (mf.accept(m)) {
+        matches++;
       }
     }
-    return filtered;
+    if (matches == filters.size()) {
+      log.trace("message [{}] matches filters", m.getMessageID());
+      accept = true;
+    } else {
+      log.trace("Ignoring message [{}] filters not matched", m.getMessageID());
+    }
+    return accept;
   }
 
+
+  protected static MailException wrapException(Throwable e) {
+    return wrapException(e.getMessage(), e);
+  }
+
+  private static MailException wrapException(String msg, Throwable e) {
+    if (e instanceof MailException) {
+      return (MailException) e;
+    }
+    return new MailException(msg, e);
+  }
 }
