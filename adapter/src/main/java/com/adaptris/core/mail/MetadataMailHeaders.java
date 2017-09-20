@@ -67,6 +67,12 @@ public class MetadataMailHeaders implements MailHeaderHandler {
     setPrefix(prefix);
   }
 
+  public MetadataMailHeaders(String prefix, MetadataFilter filter) {
+    this();
+    setPrefix(prefix);
+    setHeaderFilter(filter);
+  }
+
   @Override
   public void handle(MimeMessage mime, AdaptrisMessage msg) throws MessagingException {
     Set<MetadataElement> metadata = new HashSet<MetadataElement>();

@@ -174,7 +174,7 @@ abstract class ApacheMailClient<T extends POP3Client> extends MailClientImp {
           messages = new POP3MessageInfo[0];
         }
         currentMessage = 0;
-        session = Session.getDefaultInstance(new Properties(), null);
+        session = Session.getInstance(new Properties(), null);
       } catch (IOException e) {
         throw new IllegalStateException(e);
       }

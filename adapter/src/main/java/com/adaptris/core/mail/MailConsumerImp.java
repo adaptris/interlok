@@ -322,6 +322,10 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
     this.mailReceiverFactory = f;
   }
 
+  /**
+   * 
+   * @since 3.6.5
+   */
   public MailHeaderHandler getHeaderHandler() {
     return headerHandler;
   }
@@ -330,6 +334,7 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
    * Specify how to handle mails headers
    * 
    * @param mh the handler, defaults to {@link IgnoreMailHeaders}.
+   * @since 3.6.5
    */
   public void setHeaderHandler(MailHeaderHandler mh) {
     this.headerHandler = Args.notNull(mh, "headerHandler");
