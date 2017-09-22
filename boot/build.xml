@@ -1,0 +1,89 @@
+<project name="boot" xmlns:interlok="uri:interlok"  xmlns:ivy="antlib:org.apache.ivy.ant"  default="jar" basedir=".">
+
+  <tstamp>
+    <format property="today" pattern="yyyy-MM-dd" locale="en"/>
+  </tstamp>
+
+  <property file="build.properties"/>
+  <import file="${basedir}/../ivy/ant-ivy-includes.xml"/>
+
+  <target name="init">
+    <property name="project.name" value="interlok-boot"/>
+    <property name="project.jar.name" value="${project.name}.jar"/>
+    <property name="ivy.publish.bundle.type" value="jar"/>
+    <property name="ivy.publish.revision" value="3.6-SNAPSHOT"/>
+    <property name="ivy.dir" value="${basedir}/../ivy"/>
+    <property name="ivy.xml.file" value="${ivy.dir}/ivy-boot.xml"/>
+    <property name="ivy.artifact.publish.status" value="integration"/>
+
+    <property name="manifest.title" value="Interlok Bootstrap"/>
+    <property name="project.pom.description" value="Wrapper around spring-boot-loader using PropertyLauncher to bootrap Interlok"/>
+
+    <property name="src.dir" value="${basedir}/src/main/java" />
+    <property name="build.dir" value="${basedir}/target" />
+    <property name="build.classes.dir" value="${build.dir}/classes" />
+    <property name="project.dist.dir" value="${build.dir}/dist"/>
+
+    <property name="resources.dir" value="${basedir}/src/main/resources"/>
+    <property name="javac.target.version"   value="1.7"/>
+    <property name="spring-boot-loader.version" value="1.5.7.RELEASE"/>
+    <property name="spring-boot-loader.local" value="${build.dir}/spring-boot-loader.jar"/>
+    <property name="spring-boot-loader.url" value="http://repo1.maven.org/maven2/org/springframework/boot/spring-boot-loader/${spring-boot-loader.version}/spring-boot-loader-${spring-boot-loader.version}.jar"/>
+
+  </target>
+
+  <target name="clean" depends="init" description="Clean up build artefacts">
+    <delete dir="${build.dir}"/>
+    <delete dir="${tests.output.dir}"/>
+    <delete>
+      <fileset file="${coverage.metadata.file}"/>
+    </delete>
+  </target>
+
+  <target name="compile" depends="init, prepare-ivy, macrodef.init">
+    <echo message="no-compile necessary"/>
+  </target>
+
+  <target name="jar" depends="compile">
+    <mkdir dir="${build.classes.dir}"/>
+    <manifest file="${build.dir}/Manifest.mf">
+      <attribute name="Manifest-Version" value="1.0"/>
+      <attribute name="Main-Class" value="org.springframework.boot.loader.PropertiesLauncher"/>
+      <attribute name="Build-Version" value="${ivy.publish.revision}"/>
+      <attribute name="Built-By" value="${user.name}"/>
+    </manifest>
+  	<get src="${spring-boot-loader.url}" dest="${spring-boot-loader.local}" usetimestamp="true"/>
+    <unzip dest="${build.classes.dir}" src="${spring-boot-loader.local}"/>
+    <delete>
+      <fileset dir="${build.classes.dir}">
+        <include name="**/MANIFEST.MF"/>
+      </fileset>
+    </delete>
+    <copy file="${resources.dir}/loader.properties" tofile="${build.classes.dir}/loader.properties" verbose="true"/>
+    <interlok:create-version dir="${build.classes.dir}/META-INF" name="${manifest.title}"/>
+    <jar jarfile="${project.dist.dir}/${project.jar.name}" manifest="${build.dir}/Manifest.mf">
+      <fileset dir="${build.classes.dir}"/>
+    </jar>
+  </target>
+
+  <target name="macrodef.init" depends="ivy.macrodef"/>
+
+  <target name="prepare-for-publish" depends="prepare-ivy, jar, macrodef.init">
+    <mkdir dir="${project.dist.dir}/${project.name}/pom"/>
+    <mkdir dir="${project.dist.dir}/${project.name}/jar"/>
+    <copy todir="${project.dist.dir}/${project.name}/jar" file="${project.dist.dir}/${project.jar.name}"/>
+    <ivy:makepom ivyfile="${ivy.xml.file}" pomfile="${project.dist.dir}/${project.name}/pom/${project.name}.pom" description="${project.pom.description}"  conf="default,master,compile,provided,runtime,test,system,sources,javadoc,optional"/>
+  </target>
+
+  <target name="publish" depends="prepare-for-publish">
+    <interlok:publish-artifact resolver="${ivy.repo}" revision="${ivy.publish.revision}" artifact.basedir="${project.dist.dir}" ivy-config="${ivy.xml.file}"/>
+  </target>
+
+  <target name="test" depends="init">
+    <echo message="Nothing to do"/>
+  </target>
+
+  <target name="test-no-reports" depends="init">
+    <echo message="Nothing to do"/>
+  </target>
+</project>
