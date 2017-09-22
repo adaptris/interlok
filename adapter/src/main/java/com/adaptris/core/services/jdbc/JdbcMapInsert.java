@@ -73,7 +73,7 @@ public abstract class JdbcMapInsert extends JdbcService {
       }
     },
     /**
-     * Handles java.lang.Boolean via {@link BooleanUtils#toBooleanObject(String)}.
+     * Handles {@link Boolean} via {@link BooleanUtils#toBooleanObject(String)}.
      * 
      */
     Boolean() {
@@ -180,7 +180,7 @@ public abstract class JdbcMapInsert extends JdbcService {
   /**
    * Set the converters for various fields in the map.
    * <p>
-   * In the event that the database doesn't auto-convert types (e.g. MySQL will convert {@link 2017-01-01} in into a DATE if that is
+   * In the event that the database doesn't auto-convert types (e.g. MySQL will convert {@code 2017-01-01} into a DATE if that is
    * the column type); you can specify the java type that the string should be converted to; if the conversion fails, then it
    * remains a string, if the type is not supported then it is assumed to be a full qualified classname with a String constructor.
    * </p>
