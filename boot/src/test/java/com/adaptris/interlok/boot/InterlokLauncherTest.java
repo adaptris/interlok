@@ -42,13 +42,23 @@ public class InterlokLauncherTest {
   public void testRebuild() throws Exception {
     InterlokLauncher launcher = new InterlokLauncher(new String[]
     {
-        "-ignoreSubDirs", "--adapterClasspath", "./lib", "--configcheck"
+        "-ignoreSubDirs", "--adapterClasspath", "./lib", "--configcheck", "bootstrap.properties"
     });
     String[] rebuild = launcher.rebuildArgs();
-    // It's the intention that empty args get "true" associated with them.
     assertEquals(2, rebuild.length);
     assertEquals("--configcheck", rebuild[0]);
-    assertEquals("true", rebuild[1]);
+    assertEquals("bootstrap.properties", rebuild[1]);
+  }
+
+  @Test
+  public void testRebuild_NoArgs() throws Exception {
+    InterlokLauncher launcher = new InterlokLauncher(new String[]
+    {
+        "my.properties"
+    });
+    String[] rebuild = launcher.rebuildArgs();
+    assertEquals(1, rebuild.length);
+    assertEquals("my.properties", rebuild[0]);
   }
 
   @Test

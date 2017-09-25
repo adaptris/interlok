@@ -62,6 +62,12 @@ public class CommandLineArgsTest {
     String[] args = CommandLineArgs.parse(argv).render();
     assertEquals(2, args.length);
     assertEquals("bootstrap.properties", args[1]);
+    args = CommandLineArgs.parse(new String[]
+    {
+        "my.properties"
+    }).render();
+    assertEquals(1, args.length);
+    assertEquals("my.properties", args[0]);
   }
 
   @Test

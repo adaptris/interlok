@@ -26,17 +26,19 @@ import java.util.regex.Pattern;
 
 public abstract class CommandLineArgs {
 
-  protected Map<String, String> argumentHash;
+  protected Map<String, String> dashArgs;
+  protected List<String> normalArgs;
 
   protected CommandLineArgs(String[] args) throws Exception {
-    argumentHash = parseArguments(args);
+    parseArguments(args);
   }
 
-  protected CommandLineArgs(Map<String, String> args) {
-    argumentHash = args;
+  protected CommandLineArgs(Map<String, String> dashedArgs, List normalArgs) {
+    this.dashArgs = dashedArgs;
+    this.normalArgs = normalArgs;
   }
 
-  protected abstract Map<String, String> parseArguments(String[] args) throws Exception;
+  protected abstract void parseArguments(String[] args) throws Exception;
 
   /**
    * Determine if the listed parameters are contained in the commandline
@@ -57,8 +59,8 @@ public abstract class CommandLineArgs {
   public String getArgument(String... paramList) {
     String rs = null;
     for (String p : paramList) {
-      if (argumentHash.containsKey(p)) {
-        rs = argumentHash.get(p);
+      if (dashArgs.containsKey(p)) {
+        rs = dashArgs.get(p);
         break;
       }
     }
@@ -78,9 +80,12 @@ public abstract class CommandLineArgs {
    */
   public String[] render() {
     List<String> result = new ArrayList<>();
-    for (Map.Entry<String, String> entry : argumentHash.entrySet()) {
+    for (Map.Entry<String, String> entry : dashArgs.entrySet()) {
       result.add(entry.getKey());
       result.add(entry.getValue());
+    }
+    for (String s : normalArgs) {
+      result.add(s);
     }
     return result.toArray(new String[0]);
   }
@@ -92,13 +97,13 @@ public abstract class CommandLineArgs {
    * @return a new instance.
    */
   public CommandLineArgs remove(String... args) {
-    Map<String, String> copy = new HashMap<>(argumentHash);
+    Map<String, String> copy = new HashMap<>(dashArgs);
     for (String arg : args) {
       copy.remove(arg);
     }
-    return new CommandLineArgs(copy) {
+    return new CommandLineArgs(copy, normalArgs) {
       @Override
-      protected Map<String, String> parseArguments(String[] args) {
+      protected void parseArguments(String[] args) {
         throw new IllegalStateException();
       }
       
@@ -123,28 +128,34 @@ public abstract class CommandLineArgs {
       super(args);
     }
 
-    protected Map<String, String> parseArguments(String[] s) throws Exception {
+    protected void parseArguments(String[] s) throws Exception {
 
-      Map<String, String> argHash = new HashMap<>();
+      dashArgs = new HashMap<>();
+      normalArgs = new ArrayList<>();
       if (s == null) {
-        return argHash;
+        return;
       }
       String pat = "^\\-{1}[\\S]+";
       Pattern pattern = Pattern.compile(pat);
       for (int i = 0; i < s.length; i++) {
         Matcher first = pattern.matcher(s[i]);
         if (first.matches()) {
-          argHash.put(s[i], Boolean.TRUE.toString());
+          dashArgs.put(s[i], Boolean.TRUE.toString());
           int j = i + 1;
           if (j < s.length) {
             Matcher second = pattern.matcher(s[j]);
             if (!second.matches()) {
-              argHash.put(s[i], s[j]);
+              dashArgs.put(s[i], s[j]);
+              i = j;
             }
           }
         }
+        else {
+          normalArgs.add(s[i]);
+        }
+
       }
-      return argHash;
+      return;
     }
   }
 }
