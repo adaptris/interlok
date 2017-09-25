@@ -5,6 +5,7 @@
   </tstamp>
 
   <property file="build.properties"/>
+  <property file="ivy.properties"/>
   <import file="${basedir}/../ivy/ant-ivy-includes.xml"/>
 
   <target name="init">
@@ -41,14 +42,18 @@
   </target>
 
   <target name="compile" depends="init, prepare-ivy, macrodef.init">
-    <echo message="no-compile necessary"/>
+    <mkdir dir="${build.classes.dir}" />
+    <javac destdir="${build.classes.dir}" srcdir="${src.dir}" debug="on" debuglevel="source,lines,vars"
+           source="${javac.target.version}" target="${javac.target.version}" includeAntRuntime="true">
+      <classpath refid="main.classpath" />
+    </javac>
   </target>
 
   <target name="jar" depends="compile">
     <mkdir dir="${build.classes.dir}"/>
     <manifest file="${build.dir}/Manifest.mf">
       <attribute name="Manifest-Version" value="1.0"/>
-      <attribute name="Main-Class" value="org.springframework.boot.loader.PropertiesLauncher"/>
+      <attribute name="Main-Class" value="com.adaptris.interlok.boot.InterlokLauncher"/>
       <attribute name="Build-Version" value="${ivy.publish.revision}"/>
       <attribute name="Built-By" value="${user.name}"/>
     </manifest>
@@ -72,6 +77,12 @@
     <mkdir dir="${project.dist.dir}/${project.name}/pom"/>
     <mkdir dir="${project.dist.dir}/${project.name}/jar"/>
     <copy todir="${project.dist.dir}/${project.name}/jar" file="${project.dist.dir}/${project.jar.name}"/>
+    <jar jarfile="${project.dist.dir}/${project.name}/source/${project.name}.jar">
+      <fileset dir="${src.dir}"/>
+      <zipfileset dir="${basedir}/.." prefix="META-INF">
+        <include name="LICENSE"/>
+      </zipfileset>
+    </jar>
     <ivy:makepom ivyfile="${ivy.xml.file}" pomfile="${project.dist.dir}/${project.name}/pom/${project.name}.pom" description="${project.pom.description}"  conf="default,master,compile,provided,runtime,test,system,sources,javadoc,optional"/>
   </target>
 

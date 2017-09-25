@@ -18,9 +18,10 @@
   <publications>
      <artifact name="interlok-boot" type="jar" ext="jar"/>
      <artifact name="interlok-boot" type="pom" ext="pom"/>
+     <artifact type="source" ext="jar" conf="sources" m:classifier="sources"/>
   </publications>
   <dependencies>
-    <dependency org="org.springframework.boot" name="spring-boot-loader" rev="1.5.7.RELEASE" conf="optional->default" transitive="false"/>
+	  <dependency org="org.springframework.boot" name="spring-boot-loader" rev="${spring-boot-loader.version}" conf="optional->default" transitive="false"/>
     <!-- For Various ANT Tasks -->
     <dependency org="ant-contrib" name="ant-contrib" rev="1.0b3" conf="ant->default" transitive="false"/>
     <dependency org="org.jacoco" name="org.jacoco.ant" rev="0.7.7.201606060606" conf="ant->default"/>
