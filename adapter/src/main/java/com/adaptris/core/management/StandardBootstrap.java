@@ -82,6 +82,7 @@ public class StandardBootstrap extends CmdLineBootstrap {
    * @throws Exception upon some unrecoverable error.
    */
   public static void main(String[] argv) throws Exception {
+    System.err.println("StandardBootstrap is deprecated, and will be removed once Java9 is formally supported");
     try {
       new StandardBootstrap(argv).boot();
     }
