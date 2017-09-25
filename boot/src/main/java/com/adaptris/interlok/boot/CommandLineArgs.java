@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 public abstract class CommandLineArgs {
@@ -118,13 +116,13 @@ public abstract class CommandLineArgs {
    * @throws Exception on error.
    */
   public static CommandLineArgs parse(String[] argv) throws Exception {
-    CommandLineArgs a = new JdkRegexpImpl(argv);
+    CommandLineArgs a = new DefaultImpl(argv);
     return a;
   }
 
-  private static final class JdkRegexpImpl extends CommandLineArgs {
+  private static final class DefaultImpl extends CommandLineArgs {
 
-    public JdkRegexpImpl(String[] args) throws Exception {
+    public DefaultImpl(String[] args) throws Exception {
       super(args);
     }
 
@@ -135,16 +133,12 @@ public abstract class CommandLineArgs {
       if (s == null) {
         return;
       }
-      String pat = "^\\-{1}[\\S]+";
-      Pattern pattern = Pattern.compile(pat);
       for (int i = 0; i < s.length; i++) {
-        Matcher first = pattern.matcher(s[i]);
-        if (first.matches()) {
+        if (s[i].startsWith("-")) {
           dashArgs.put(s[i], Boolean.TRUE.toString());
           int j = i + 1;
           if (j < s.length) {
-            Matcher second = pattern.matcher(s[j]);
-            if (!second.matches()) {
+            if (!s[j].startsWith("-")) {
               dashArgs.put(s[i], s[j]);
               i = j;
             }
