@@ -32,6 +32,7 @@ public final class BootstrapLoader {
    * @throws Exception
    */
   public static void main(String[] argv) throws Exception {
+    System.err.println("BootstrapLoader is deprecated, and will be removed once Java9 is formally supported");
     new StandardBootstrap(argv).boot();
   }
 
