@@ -187,7 +187,7 @@ public abstract class AbstractMarshaller implements AdaptrisMarshaller {
    * @param loc the URL location.
    * @return an InputStream containing the contents of the URL specified.
    * @throws IOException on error.
-   * @deprecated since 3.6.3; use URLString#connect() instead.
+   * @deprecated since 3.6.3; use {@link URLHelper#connect(URLString)} instead.
    */
   @Deprecated
   protected InputStream connectToUrl(URLString loc) throws IOException {

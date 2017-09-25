@@ -16,6 +16,9 @@
 
 package com.adaptris.core.jms;
 
+import java.util.Collections;
+import java.util.List;
+
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
@@ -25,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
@@ -33,18 +37,17 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.metadata.MetadataFilter;
 import com.adaptris.core.metadata.NoOpMetadataFilter;
-import com.adaptris.core.metadata.RemoveAllMetadataFilter;
 import com.adaptris.core.util.LifecycleHelper;
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 // abstract factory pattern
 
 /**
  * <p>
  * Super class of classes that translate <code>AdaptrisMessage</code>s to the
- * various type of <code>javax.jms.Message</code>s, and vice versa. If the
- * <code>moveMetadata</code> flag is <code>true</code>, metadata will be moved
- * when the message is translated. If the moveJmsHeaders flag is true, JMS
- * headers will be moved as well.
+ * various type of <code>javax.jms.Message</code>s, and vice versa. Set a
+ * <code>metadataFilter</code> to move metadata when the message is translated.
+ * If the moveJmsHeaders flag is true, JMS  headers will be moved as well.
  * </p>
  */
 public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator, MetadataHandlerContext {
@@ -54,20 +57,26 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
   private transient AdaptrisMessageFactory messageFactoryToUse;
   protected transient MetadataHandler helper;
 
-  private static final MetadataFilter DEFAULT_FILTER = new RemoveAllMetadataFilter();
+  private static final MetadataFilter DEFAULT_FILTER = new NoOpMetadataFilter();
   /**
    * Set the filter that will be used return a subset of the messages metdata to be copied over during the translate.
    */
   @AdvancedConfig
   @Valid
   @AutoPopulated
+  @AffectsMetadata
   private MetadataFilter metadataFilter;
   @AdvancedConfig
   @InputFieldDefault(value = "false")
+  @AffectsMetadata
   private Boolean moveJmsHeaders;
   @AdvancedConfig
   @InputFieldDefault(value = "false")
   private Boolean reportAllErrors;
+
+  @AdvancedConfig
+  @XStreamImplicit
+  private List<MetadataConverter> metadataConverters;
 
   /**
    * <p>
@@ -152,6 +161,22 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
   }
 
   /**
+   * Set the list of metadata converters to uses when converting from AdaptrisMessage to JMS Message.
+   * @param mc list of message converters
+   */
+  public void setMetadataConverters(List<MetadataConverter> mc) {
+    this.metadataConverters = mc;
+  }
+
+  /**
+   * Get the list of metadata converters to uses when converting from AdaptrisMessage to JMS Message.
+   * @return list of message converters
+   */
+  public List<MetadataConverter> getMetadataConverters() {
+    return metadataConverters;
+  }
+
+  /**
    *
    * @see com.adaptris.core.AdaptrisComponent#init()
    */
@@ -230,7 +255,12 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
 
   @Override
   public MetadataFilter metadataFilter() {
-    return getMetadataFilter() != null ? getMetadataFilter() : new NoOpMetadataFilter();
+    return getMetadataFilter() != null ? getMetadataFilter() : DEFAULT_FILTER;
+  }
+
+  @Override
+  public List<MetadataConverter> metadataConverters(){
+    return getMetadataConverters() != null ? getMetadataConverters() : Collections.EMPTY_LIST;
   }
 
   /**

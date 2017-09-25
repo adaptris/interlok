@@ -71,7 +71,6 @@ public class JettyRouteSpec {
   @NotBlank
   private String serviceId;
 
-  private transient Set<MetadataElement> matchedMetadata;
   private transient Pattern _urlPattern;
 
   public JettyRouteSpec() {
@@ -136,9 +135,10 @@ public class JettyRouteSpec {
     this.serviceId = serviceId;
   }
 
-  public boolean matches(String method, String uri) {
+  public RouteMatch build(String method, String uri) {
     int expected = (isBlank(getMethod()) ? 0 : 1) + 1;
     int rc = 0;
+    Set<MetadataElement> matchedMetadata = new HashSet<>();
     if (!isBlank(getMethod())) {
       rc += getMethod().equalsIgnoreCase(method) ? 1 : 0;
     }
@@ -147,7 +147,7 @@ public class JettyRouteSpec {
       rc++;
       matchedMetadata = createMetadata(matcher);
     }
-    return rc == expected;
+    return new RouteMatch(rc == expected, matchedMetadata);
   }
 
   private Matcher createMatcher(String uri) {
@@ -166,11 +166,24 @@ public class JettyRouteSpec {
     return result;
   }
 
-  public void handleMatch(AdaptrisMessage msg) {
-    log.trace("Adding [{}] as metadata", matchedMetadata);
-    log.trace("nextServiceID={}", getServiceId());
-    msg.setMetadata(matchedMetadata);
-    msg.setNextServiceId(getServiceId());
+  protected class RouteMatch {
+    private boolean match;
+    private Set<MetadataElement> metadata;
 
+    RouteMatch(boolean match, Set<MetadataElement> metadata) {
+      this.match = match;
+      this.metadata = metadata;
+    }
+
+    public boolean matches() {
+      return match;
+    }
+
+    public void apply(AdaptrisMessage msg) {
+      log.trace("Adding [{}] as metadata", metadata);
+      log.trace("nextServiceID={}", getServiceId());
+      msg.setMetadata(metadata);
+      msg.setNextServiceId(getServiceId());
+    }
   }
 }

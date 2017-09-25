@@ -30,7 +30,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 
-public class ObjectMessageTranslatorTest extends MessageTypeTranslatorCase {
+public class ObjectMessageTranslatorTest extends GenericMessageTypeTranslatorCase {
 
   public ObjectMessageTranslatorTest(String name) {
     super(name);

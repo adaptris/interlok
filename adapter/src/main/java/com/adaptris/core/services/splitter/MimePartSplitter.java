@@ -62,6 +62,7 @@ public class MimePartSplitter extends MessageSplitterImp {
   @InputFieldDefault(value = "false")
   private Boolean preserveHeaders;
   @AdvancedConfig
+  @InputFieldDefault(value = "")
   private String headerPrefix;
 
   /**

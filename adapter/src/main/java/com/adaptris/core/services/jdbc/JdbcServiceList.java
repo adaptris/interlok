@@ -91,11 +91,12 @@ public class JdbcServiceList extends ServiceList {
   }
 
   public JdbcServiceList(Collection<Service> serviceList) {
-    super(serviceList);
+    this();
+    setServices(new ArrayList<>(serviceList));
   }
 
   public JdbcServiceList(Service... services) {
-    super(new ArrayList<Service>(Arrays.asList(services)));
+    this(Arrays.asList(services));
   }
 
   @Override

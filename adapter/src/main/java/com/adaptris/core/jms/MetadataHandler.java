@@ -263,10 +263,11 @@ public class MetadataHandler {
   public final Message moveMetadata(AdaptrisMessage in, Message out) throws JMSException {
 
     MetadataCollection metadataCollection = context.metadataFilter().filter(in);
-    for (MetadataElement element : metadataCollection) {
-      if (!isReserved(element.getKey())) {
-        log.trace("Setting JMS Metadata " + element);
-        out.setStringProperty(element.getKey(), element.getValue());
+    if (context.metadataConverters().size() == 0){
+      new StringMetadataConverter().moveMetadata(metadataCollection, out);
+    } else {
+      for (MetadataConverter converter : context.metadataConverters()) {
+        converter.moveMetadata(metadataCollection, out);
       }
     }
     out.setStringProperty(MESSAGE_UNIQUE_ID_KEY, in.getUniqueId());

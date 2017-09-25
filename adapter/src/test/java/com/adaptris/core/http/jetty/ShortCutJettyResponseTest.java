@@ -54,7 +54,7 @@ public class ShortCutJettyResponseTest extends HttpServiceExample {
     HttpConnection connection = createConnection();
     MockMessageProducer mockProducer = new StaticMockMessageProducer();
     mockProducer.getMessages().clear();
-    MessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
+    JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
     PoolingWorkflow workflow = new PoolingWorkflow();
     workflow.setShutdownWaitTime(new TimeInterval(1L, TimeUnit.SECONDS));
     ResponseProducer responder = new ResponseProducer(HttpStatus.OK_200);

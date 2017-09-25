@@ -61,7 +61,7 @@ import com.adaptris.core.http.jetty.HashLoginServiceFactory;
 import com.adaptris.core.http.jetty.HttpConnection;
 import com.adaptris.core.http.jetty.HttpConsumerTest;
 import com.adaptris.core.http.jetty.JettyHelper;
-import com.adaptris.core.http.jetty.MessageConsumer;
+import com.adaptris.core.http.jetty.JettyMessageConsumer;
 import com.adaptris.core.http.jetty.SecurityConstraint;
 import com.adaptris.core.http.jetty.StandardResponseProducer;
 import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
@@ -159,7 +159,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
   public void testProduce_WithMetadataMethod() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     HttpConnection jc = HttpHelper.createConnection();
-    MessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
+    JettyMessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
     ServiceList sl = new ServiceList();
     PayloadFromMetadataService pms = new PayloadFromMetadataService();
     pms.setTemplate(TEXT);
@@ -191,7 +191,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
   public void testRequest_GetMethod_ZeroBytes() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     HttpConnection jc = HttpHelper.createConnection();
-    MessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
+    JettyMessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
     ServiceList sl = new ServiceList();
     PayloadFromMetadataService pms = new PayloadFromMetadataService();
     pms.setTemplate(TEXT);
@@ -222,7 +222,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
   public void testRequest_PostMethod_ZeroBytes() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     HttpConnection jc = HttpHelper.createConnection();
-    MessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
+    JettyMessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
     Channel c = createChannel(jc, createWorkflow(mc, mock, new ServiceList()));
     StandardWorkflow workflow = (StandardWorkflow) c.getWorkflowList().get(0);
     PayloadFromMetadataService pms = new PayloadFromMetadataService();
@@ -252,7 +252,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
   public void testRequest_Post_ZeroBytes_ReplyToMetadata() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     HttpConnection jc = HttpHelper.createConnection();
-    MessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
+    JettyMessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
     Channel c = createChannel(jc, createWorkflow(mc, mock, new ServiceList()));
     StandardWorkflow workflow = (StandardWorkflow) c.getWorkflowList().get(0);
     PayloadFromMetadataService pms = new PayloadFromMetadataService();
@@ -288,7 +288,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
   public void testRequest_EmptyReply() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     HttpConnection jc = HttpHelper.createConnection();
-    MessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
+    JettyMessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
     Channel c = createChannel(jc, createWorkflow(mc, mock, new ServiceList()));
     StandardWorkflow workflow = (StandardWorkflow) c.getWorkflowList().get(0);
     StandardResponseProducer responder = new StandardResponseProducer(HttpStatus.OK_200);
@@ -393,7 +393,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
   public void testRequest_GetMethod_NonZeroBytes() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     HttpConnection jc = HttpHelper.createConnection();
-    MessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
+    JettyMessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
     Channel c = createChannel(jc, createWorkflow(mc, mock, new ServiceList()));
     StandardWorkflow workflow = (StandardWorkflow) c.getWorkflowList().get(0);
     workflow.getServiceCollection().add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200)));
@@ -420,7 +420,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
   public void testRequest_GetMethod_NonZeroBytes_WithErrorResponse() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     HttpConnection jc = HttpHelper.createConnection();
-    MessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
+    JettyMessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
 
     ServiceList services = new ServiceList();
     services.add(new PayloadFromMetadataService(TEXT));
@@ -475,7 +475,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     HttpConnection jc = HttpHelper.createConnection();
     jc.setSecurityHandler(csh);
     MockMessageProducer mockProducer = new MockMessageProducer();
-    MessageConsumer consumer = JettyHelper.createConsumer(HttpHelper.URL_TO_POST_TO);
+    JettyMessageConsumer consumer = JettyHelper.createConsumer(HttpHelper.URL_TO_POST_TO);
     Channel channel = JettyHelper.createChannel(jc, consumer, mockProducer);
 
     HttpAuthenticator auth = getAuthenticator(getName(), getName());
@@ -515,7 +515,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     HttpConnection jc = HttpHelper.createConnection();
     jc.setSecurityHandler(csh);
     MockMessageProducer mockProducer = new MockMessageProducer();
-    MessageConsumer consumer = JettyHelper.createConsumer(HttpHelper.URL_TO_POST_TO);
+    JettyMessageConsumer consumer = JettyHelper.createConsumer(HttpHelper.URL_TO_POST_TO);
     Channel channel = JettyHelper.createChannel(jc, consumer, mockProducer);
 
     MetadataUsernamePassword auth = new MetadataUsernamePassword();
@@ -559,7 +559,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     HttpConnection jc = HttpHelper.createConnection();
     jc.setSecurityHandler(csh);
     MockMessageProducer mockProducer = new MockMessageProducer();
-    MessageConsumer consumer = JettyHelper.createConsumer(HttpHelper.URL_TO_POST_TO);
+    JettyMessageConsumer consumer = JettyHelper.createConsumer(HttpHelper.URL_TO_POST_TO);
     Channel channel = JettyHelper.createChannel(jc, consumer, mockProducer);
 
     HttpAuthenticator auth = getAuthenticator(getName(), getName());
@@ -645,7 +645,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
   public void testRequest_GetMethod_WithErrorResponse() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     HttpConnection jc = HttpHelper.createConnection();
-    MessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
+    JettyMessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
 
     ServiceList services = new ServiceList();
     services.add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.UNAUTHORIZED_401)));
@@ -673,7 +673,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
   public void testRequest_DeleteMethod_AlwaysSendPayload() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     HttpConnection jc = HttpHelper.createConnection();
-    MessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
+    JettyMessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
     Channel c = createChannel(jc, createWorkflow(mc, mock, new ServiceList()));
     StandardWorkflow workflow = (StandardWorkflow) c.getWorkflowList().get(0);
     workflow.getServiceCollection().add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200)));
@@ -702,7 +702,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
   public void testRequest_TraceMethod_AlwaysSendPayload() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     HttpConnection jc = HttpHelper.createConnection();
-    MessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
+    JettyMessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
     Channel c = createChannel(jc, createWorkflow(mc, mock, new ServiceList()));
     StandardWorkflow workflow = (StandardWorkflow) c.getWorkflowList().get(0);
     workflow.getServiceCollection().add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200)));

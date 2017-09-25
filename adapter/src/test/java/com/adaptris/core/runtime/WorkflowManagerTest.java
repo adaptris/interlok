@@ -48,8 +48,8 @@ import com.adaptris.core.StartedState;
 import com.adaptris.core.StoppedState;
 import com.adaptris.core.Workflow;
 import com.adaptris.core.XStreamMarshaller;
+import com.adaptris.core.http.jetty.JettyMessageConsumer;
 import com.adaptris.core.http.jetty.JettyPoolingWorkflowInterceptor;
-import com.adaptris.core.http.jetty.MessageConsumer;
 import com.adaptris.core.interceptor.InFlightWorkflowInterceptor;
 import com.adaptris.core.interceptor.MessageMetricsInterceptor;
 import com.adaptris.core.interceptor.ThrottlingInterceptor;
@@ -80,7 +80,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     Channel channel = createChannel("c1");
     ChannelManager channelManager = new ChannelManager(channel, adapterManager);
     PoolingWorkflow workflow = new PoolingWorkflow("w1");
-    workflow.setConsumer(new MessageConsumer());
+    workflow.setConsumer(new JettyMessageConsumer());
     new WorkflowManager(workflow, channelManager);
     assertEquals(3, workflow.getInterceptors().size());
     assertEquals(MessageMetricsInterceptor.class, workflow.getInterceptors().get(0).getClass());
@@ -96,7 +96,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     ChannelManager channelManager = new ChannelManager(channel, adapterManager);
     PoolingWorkflow workflow = new PoolingWorkflow("w1");
     workflow.addInterceptor(new JettyPoolingWorkflowInterceptor());
-    workflow.setConsumer(new MessageConsumer());
+    workflow.setConsumer(new JettyMessageConsumer());
     new WorkflowManager(workflow, channelManager);
 
     assertEquals(3, workflow.getInterceptors().size());
@@ -114,7 +114,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     Channel channel = createChannel("c1");
     ChannelManager channelManager = new ChannelManager(channel, adapterManager);
     StandardWorkflow workflow = createWorkflow("w1");
-    workflow.setConsumer(new MessageConsumer());
+    workflow.setConsumer(new JettyMessageConsumer());
     new WorkflowManager(workflow, channelManager);
     assertEquals(2, workflow.getInterceptors().size());
     assertEquals(MessageMetricsInterceptor.class, workflow.getInterceptors().get(0).getClass());

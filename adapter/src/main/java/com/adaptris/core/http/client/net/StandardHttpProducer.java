@@ -97,7 +97,14 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("standard-http-producer")
 @AdapterComponent
 @ComponentProfile(summary = "Make a HTTP request to a remote server using standard JRE components", tag = "producer,http,https",
-    recommended = {NullConnection.class})
+    metadata =
+    {
+        "adphttpresponse"
+
+    }, recommended =
+    {
+        NullConnection.class
+    })
 @DisplayOrder(order =
 {
     "authenticator", "allowRedirect", "ignoreServerResponseCode", "alwaysSendPayload", "methodProvider",

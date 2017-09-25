@@ -147,7 +147,7 @@ public abstract class ComponentManagerImpl<E extends StateManagedComponent> exte
         try {
           LifecycleHelper.start(getWrappedComponent());
         }
-        catch (CoreException e) {
+        catch (Exception e) {
           current.getUncaughtExceptionHandler().uncaughtException(current, e);
         }
         catch (Throwable t) {
@@ -358,9 +358,10 @@ public abstract class ComponentManagerImpl<E extends StateManagedComponent> exte
       barrier.await(timeout, TimeUnit.MILLISECONDS);
     }
     catch (BrokenBarrierException | InterruptedException gateException) {
-      ExceptionHelper.rethrowCoreException(gateException);
+      throw ExceptionHelper.wrapCoreException(gateException);
+    } finally {
+      exceptionHandler.throwFirstException();
     }
-    exceptionHandler.throwFirstException();
   }
 
   private class CoreExceptionHandler implements Thread.UncaughtExceptionHandler {

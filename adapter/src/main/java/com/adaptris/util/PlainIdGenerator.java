@@ -18,6 +18,8 @@ package com.adaptris.util;
 
 import java.security.SecureRandom;
 
+import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.util.text.Conversion;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -33,6 +35,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("plain-id-generator")
 public class PlainIdGenerator implements IdGenerator {
 
+  @InputFieldHint(style = "BLANKABLE")
+  @InputFieldDefault(value = ".")
   private String separator;
   private static SecureRandom random = new SecureRandom();
 

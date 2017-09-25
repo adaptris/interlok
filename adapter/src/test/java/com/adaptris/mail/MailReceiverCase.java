@@ -43,6 +43,7 @@ import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.GreenMailUtil;
 import com.icegreen.greenmail.util.ServerSetup;
 
+@SuppressWarnings("deprecation")
 public abstract class MailReceiverCase extends BaseCase {
 
 
@@ -61,9 +62,9 @@ public abstract class MailReceiverCase extends BaseCase {
 
   protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
-  private static final String GLOB = "GLOB";
-  private static final String PERL5 = "PERL5";
-  private static final String AWK = "AWK";
+  protected static final String GLOB = "GLOB";
+  protected static final String PERL5 = "PERL5";
+  protected static final String AWK = "AWK";
 
 
   public MailReceiverCase(String name) {
@@ -77,7 +78,7 @@ public abstract class MailReceiverCase extends BaseCase {
   }
 
 
-  public void testPop3Connect() throws Exception {
+  public void testConnect() throws Exception {
     if (!testsEnabled()) return;
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     try {
@@ -95,38 +96,16 @@ public abstract class MailReceiverCase extends BaseCase {
     }
   }
 
-  private void sendMessage(String from, String to, ServerSetup setup) throws Exception {
+  protected void sendMessage(String from, String to, ServerSetup setup) throws Exception {
     GreenMailUtil.sendTextEmail(to, from, DEFAULT_SUBJECT, DEFAULT_PAYLOAD, setup);
-    }
-
-  public void testPop3NoFilterNoDelete() throws Exception {
-    if (!testsEnabled()) return;
-
-    GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
-    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
-    MailReceiver mbox = createClient(gm);
-    try {
-      mbox.connect();
-      assertEquals(1, mbox.getMessages().size());
-      for (MimeMessage msg : mbox.getMessages()) {
-        mbox.setMessageRead(msg);
-        printMessageInfo(msg);
-        assertTo(msg, DEFAULT_RECEIVER);
-        assertFrom(msg, DEFAULT_SENDER);
-      }
-      mbox.disconnect();
-      mbox.connect();
-      assertEquals(1, mbox.getMessages().size());
-    }
-    finally {
-      mbox.disconnect();
-      stopServer(gm);
-    }
   }
 
-  public void testPop3FilterNoMatch_WithDelete() throws Exception {
+  protected void sendMessage(String from, String to, String subject, ServerSetup setup) throws Exception {
+    GreenMailUtil.sendTextEmail(to, from, subject, DEFAULT_PAYLOAD, setup);
+  }
+
+
+  public void testFilterNoMatch_WithDelete() throws Exception {
     if (!testsEnabled()) return;
     String name = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
@@ -157,7 +136,7 @@ public abstract class MailReceiverCase extends BaseCase {
     }
   }
 
-  public void testPop3FilterMatch_WithDelete() throws Exception {
+  public void testFilterMatch_WithDelete() throws Exception {
     if (!testsEnabled()) return;
     String name = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
@@ -196,7 +175,7 @@ public abstract class MailReceiverCase extends BaseCase {
     }
   }
 
-  public void testPop3GlobFromFilter() throws Exception {
+  public void testGlobFromFilter() throws Exception {
     if (!testsEnabled()) return;
 
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
@@ -216,9 +195,6 @@ public abstract class MailReceiverCase extends BaseCase {
         assertTo(msg, DEFAULT_RECEIVER);
         assertFrom(msg, DEFAULT_SENDER);
       }
-      mbox.disconnect();
-      mbox.connect();
-      assertEquals(1, mbox.getMessages().size());
     }
     finally {
       mbox.disconnect();
@@ -226,7 +202,7 @@ public abstract class MailReceiverCase extends BaseCase {
     }
   }
 
-  public void testPop3Perl5FromFilter() throws Exception {
+  public void testPerl5FromFilter() throws Exception {
     if (!testsEnabled()) return;
 
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
@@ -253,7 +229,7 @@ public abstract class MailReceiverCase extends BaseCase {
     }
   }
 
-  public void testPop3AwkFromFilter() throws Exception {
+  public void testAwkFromFilter() throws Exception {
     if (!testsEnabled()) return;
 
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
@@ -280,7 +256,7 @@ public abstract class MailReceiverCase extends BaseCase {
     }
   }
 
-  public void testPop3GlobToFilterNoMatch() throws Exception {
+  public void testGlobToFilterNoMatch() throws Exception {
     if (!testsEnabled()) return;
 
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
@@ -301,7 +277,7 @@ public abstract class MailReceiverCase extends BaseCase {
     }
   }
 
-  public void testPop3GlobToFilter() throws Exception {
+  public void testGlobToFilter() throws Exception {
     if (!testsEnabled()) return;
 
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
@@ -321,9 +297,6 @@ public abstract class MailReceiverCase extends BaseCase {
         assertTo(msg, DEFAULT_RECEIVER);
         assertFrom(msg, DEFAULT_SENDER);
       }
-      mbox.disconnect();
-      mbox.connect();
-      assertEquals(1, mbox.getMessages().size());
     }
     finally {
       mbox.disconnect();
@@ -331,7 +304,7 @@ public abstract class MailReceiverCase extends BaseCase {
     }
   }
 
-  public void testPop3Perl5ToFilter() throws Exception {
+  public void testPerl5ToFilter() throws Exception {
     if (!testsEnabled()) return;
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
@@ -357,7 +330,7 @@ public abstract class MailReceiverCase extends BaseCase {
     }
   }
 
-  public void testPop3Perl5ToFilterNoMatch() throws Exception {
+  public void testPerl5ToFilterNoMatch() throws Exception {
     if (!testsEnabled()) return;
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
@@ -377,7 +350,7 @@ public abstract class MailReceiverCase extends BaseCase {
     }
   }
 
-  public void testPop3AwkToFilter() throws Exception {
+  public void testAwkToFilter() throws Exception {
     if (!testsEnabled()) return;
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
@@ -403,7 +376,7 @@ public abstract class MailReceiverCase extends BaseCase {
     }
   }
 
-  public void testPop3AwkToFilterNoMatch() throws Exception {
+  public void testAwkToFilterNoMatch() throws Exception {
     if (!testsEnabled()) return;
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
@@ -423,7 +396,7 @@ public abstract class MailReceiverCase extends BaseCase {
     }
   }
 
-  public void testPop3GlobCustomFilter() throws Exception {
+  public void testGlobCustomFilter() throws Exception {
     if (!testsEnabled()) return;
 
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
@@ -449,7 +422,7 @@ public abstract class MailReceiverCase extends BaseCase {
     }
   }
 
-  public void testPop3Perl5CustomFilter() throws Exception {
+  public void testPerl5CustomFilter() throws Exception {
     if (!testsEnabled()) return;
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
@@ -474,7 +447,7 @@ public abstract class MailReceiverCase extends BaseCase {
     }
   }
 
-  public void testPop3AwkCustomFilter() throws Exception {
+  public void testAwkCustomFilter() throws Exception {
     if (!testsEnabled()) return;
 
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
@@ -500,7 +473,7 @@ public abstract class MailReceiverCase extends BaseCase {
     }
   }
 
-  public void testPop3GlobSubjectFilter() throws Exception {
+  public void testGlobSubjectFilter() throws Exception {
     if (!testsEnabled()) return;
 
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
@@ -526,7 +499,7 @@ public abstract class MailReceiverCase extends BaseCase {
     }
   }
 
-  public void testPop3Perl5SubjectFilter() throws Exception {
+  public void testPerl5SubjectFilter() throws Exception {
     if (!testsEnabled()) return;
 
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
@@ -552,7 +525,7 @@ public abstract class MailReceiverCase extends BaseCase {
     }
   }
 
-  public void testPop3AwkSubjectFilter() throws Exception {
+  public void testAwkSubjectFilter() throws Exception {
     if (!testsEnabled()) return;
 
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
@@ -578,7 +551,7 @@ public abstract class MailReceiverCase extends BaseCase {
     }
   }
 
-  public void testPop3GlobFromSubjectFilter() throws Exception {
+  public void testGlobFromSubjectFilter() throws Exception {
     if (!testsEnabled()) return;
 
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
@@ -605,7 +578,34 @@ public abstract class MailReceiverCase extends BaseCase {
     }
   }
 
-  public void testPop3GlobFromSubjectFilterWithDelete() throws Exception {
+  // INTERLOK-1849
+  public void testGlobFromSubjectFilter_NullSubject() throws Exception {
+    if (!testsEnabled()) return;
+
+    GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
+    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
+    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, null, smtpServerSetup);
+    MailReceiver mbox = createClient(gm);
+    mbox.setRegularExpressionCompiler(GLOB);
+    mbox.setFromFilter(DEFAULT_SENDER);
+    mbox.setSubjectFilter("Junit*");
+
+    MailReceiver checker = createClient(gm);
+    checker.setFromFilter(DEFAULT_SENDER);
+    try {
+      mbox.connect();
+      assertEquals(0, mbox.getMessages().size());
+      checker.connect();
+      assertEquals(1, checker.getMessages().size());
+    }
+    finally {
+      mbox.disconnect();
+      checker.disconnect();
+      stopServer(gm);
+    }
+  }
+
+  public void testGlobFromSubjectFilterWithDelete() throws Exception {
     if (!testsEnabled()) return;
 
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
@@ -637,7 +637,7 @@ public abstract class MailReceiverCase extends BaseCase {
     }
   }
 
-  private void printMessageInfo(MimeMessage msg) throws Exception {
+  protected void printMessageInfo(MimeMessage msg) throws Exception {
     MessageParser mp = new MessageParser(msg);
     logger.debug("Got Message :- " + msg.getSubject());
     logger.trace("With ID: " + mp.getMessageId());
@@ -654,7 +654,7 @@ public abstract class MailReceiverCase extends BaseCase {
     }
   }
 
-  static final URLName createURLName(String urlString, String uname, String pw) throws PasswordException {
+  protected static final URLName createURLName(String urlString, String uname, String pw) throws PasswordException {
     URLName url = new URLName(urlString);
     String password = url.getPassword();
     String username = url.getUsername();

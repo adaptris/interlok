@@ -46,7 +46,6 @@ public class ConstantValueTranslatorTest extends TestCase {
     String newValue = "NewValue";
     String originalValue = "OriginalValue";
     
-    constantValueTranslator.setAllowOverwrite(false);
     constantValueTranslator.setType("java.lang.String");
     constantValueTranslator.setValue(originalValue);
     

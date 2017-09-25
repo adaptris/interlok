@@ -16,7 +16,8 @@
 
 package com.adaptris.core.services.jdbc;
 
-
+import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.InputFieldHint;
 
 /**
  * Abstract class for translating result sets into metadata.
@@ -28,8 +29,13 @@ public abstract class MetadataResultSetTranslatorImpl extends ResultSetTranslato
 
   protected static final String DEFAULT_METADATA_KEY = "JdbcDataQueryServiceOutput";
 
+  @InputFieldHint(style = "BLANKABLE")
+  @InputFieldDefault(value = "JdbcDataQueryServiceOutput")
   private String metadataKeyPrefix;
+  @InputFieldHint(style = "BLANKABLE")
+  @InputFieldDefault(value = "_")
   private String separator;
+  @InputFieldHint(style = "BLANKABLE")
   private String resultSetCounterPrefix;
 
   public MetadataResultSetTranslatorImpl() {

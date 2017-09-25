@@ -16,16 +16,19 @@
 
 package com.adaptris.mail;
 
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Properties;
 
 import javax.mail.FetchProfile;
 import javax.mail.Folder;
 import javax.mail.Message;
+import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.URLName;
 import javax.mail.internet.MimeMessage;
+
+import com.adaptris.core.util.Args;
 
 /**
  * Wrapper around the JavaMail API supporting all the standard protocols that are available.
@@ -76,8 +79,8 @@ public final class MailboxClient extends MailClientImp{
   private static final String POP3_PROVIDER = "pop3";
   private static final String POP3_MAILBOX = "INBOX";
 
-  private Folder inbox;
-  private Store store;
+  private transient Folder inbox;
+  private transient Store store;
 
   private URLName url;
   private Properties sessionProperties;
@@ -142,9 +145,8 @@ public final class MailboxClient extends MailClientImp{
         password));
   }
 
-  public void setSessionProperties(Properties p) {
-    if (p == null) throw new IllegalArgumentException("Null Session Properties");
-    sessionProperties = p;
+  public void setSessionProperties(Properties p) {   
+    sessionProperties = Args.notNull(p, "sessionProperties");
   }
 
   @Override
@@ -168,32 +170,13 @@ public final class MailboxClient extends MailClientImp{
   }
 
   @Override
-  public ArrayList<MimeMessage> collectMessages() throws MailException{
-    if (inbox == null){
-    	throw new MailException("Not connected to mail server");
+  public Iterator<MimeMessage> iterator() {
+    if (inbox == null) {
+      throw new IllegalStateException("Not connected to mail server");
     }
-    
-    ArrayList<MimeMessage> msgs = new ArrayList<MimeMessage>();
-    
-    try {
-      Message[] msg = inbox.getMessages();
-
-      FetchProfile fp = new FetchProfile();
-      fp.add(FetchProfile.Item.ENVELOPE);
-
-      inbox.fetch(msg, fp);
-
-      for (int i=0;i < msg.length; i++){
-        msgs.add((MimeMessage)msg[i]);
-      }
-    }
-    catch (Exception e) {
-      throw new MailException(e);
-    }
-    
-    return msgs;	  
+    return new MessageCollector();
   }
-  
+
   /**
    * Disconnect from the mail server.
    */
@@ -202,9 +185,66 @@ public final class MailboxClient extends MailClientImp{
     try {
       inbox.close(deleteFlag);
       store.close();
+
     }
     catch (Exception e) {
-      ;
+    } finally {
+      inbox = null;
+      store = null;
     }
   }
+
+  private class MessageCollector implements Iterator<MimeMessage> {
+
+    private transient MimeMessage nextMessage;
+    private int messageCount;
+    private int currentMessage;
+
+    private MessageCollector() {
+      try {
+        messageCount = inbox.getMessageCount();
+        currentMessage = 1;
+      } catch (MessagingException e) {
+        throw new IllegalStateException(e);
+      }
+    }
+
+    @Override
+    public boolean hasNext() {
+      if (nextMessage == null) {
+        try {
+          nextMessage = buildNext();
+        } catch (MessagingException e) {
+          log.warn("Could not construct next MimeMessage", e);
+          throw new RuntimeException("Could not get next MimeMessage", e);
+        }
+      }
+      return nextMessage != null;
+    }
+
+    @Override
+    public MimeMessage next() {
+      MimeMessage ret = nextMessage;
+      nextMessage = null;
+      return ret;
+    }
+
+    private MimeMessage buildNext() throws MessagingException {
+      if (currentMessage > messageCount) {
+        return null;
+      }
+      MimeMessage m = (MimeMessage) inbox.getMessage(currentMessage++);
+      if (!accept(m)) {
+        return buildNext();
+      } else {
+        FetchProfile fp = new FetchProfile();
+        fp.add(FetchProfile.Item.ENVELOPE);
+        inbox.fetch(new Message[] {m}, fp);
+      }
+      log.trace("Accepted message [{}]", m.getMessageID());
+      return m;
+    }
+
+  }
+
 }

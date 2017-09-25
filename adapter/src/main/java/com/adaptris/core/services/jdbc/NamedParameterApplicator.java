@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -60,10 +61,12 @@ public class NamedParameterApplicator implements ParameterApplicator {
 
   @NotBlank
   @AutoPopulated
+  @InputFieldDefault(value = "#")
   private String parameterNamePrefix;
 
   @NotBlank
   @AutoPopulated
+  @InputFieldDefault(value = "#\\w*")
   private String parameterNameRegex;
 
   public NamedParameterApplicator() {

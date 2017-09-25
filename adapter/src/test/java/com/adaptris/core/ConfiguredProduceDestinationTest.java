@@ -22,25 +22,6 @@ public class ConfiguredProduceDestinationTest extends ExampleProduceDestinationC
     super(testName);
   }
 
-  public void testEquals() {
-    ConfiguredProduceDestination dest1 = new ConfiguredProduceDestination("1");
-    ConfiguredProduceDestination dest2 = new ConfiguredProduceDestination("1");
-    ConfiguredProduceDestination dest3 = new ConfiguredProduceDestination("2");
-
-    assertEquals(dest1, dest2);
-    assertNotSame(dest1, dest3);
-    assertFalse(dest1.equals(null));
-    assertFalse(dest1.equals(new Object()));
-  }
-
-  public void testHashCode() {
-    ConfiguredProduceDestination dest1 = new ConfiguredProduceDestination("1");
-    ConfiguredProduceDestination dest2 = new ConfiguredProduceDestination("1");
-    ConfiguredProduceDestination dest3 = new ConfiguredProduceDestination("2");
-    assertEquals(dest1.hashCode(), dest2.hashCode());
-    assertNotSame(dest1.hashCode(), dest3.hashCode());
-  }
-
   public void testGetDestination() {
     ConfiguredProduceDestination dest1 = new ConfiguredProduceDestination("1");
     assertEquals("1", dest1.getDestination());

@@ -18,6 +18,7 @@ package com.adaptris.core.services.dynamic;
 
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.TradingRelationship;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -35,6 +36,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class DefaultServiceNameProvider extends ServiceNameProviderImp {
 
   @AutoPopulated
+  @InputFieldHint(style = "BLANKABLE")
   private String separator;
 
   /**

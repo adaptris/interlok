@@ -16,7 +16,10 @@
 
 package com.adaptris.core.services.dynamic;
 
+import javax.validation.constraints.NotNull;
+
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.Service;
 
@@ -28,7 +31,11 @@ import com.adaptris.core.Service;
  * @author $Author: lchan $
  */
 public abstract class MarshallFileServiceStore extends MarshallServiceStore {
+  @NotNull
+  @InputFieldDefault(value = "")
   private String fileNameSuffix;
+  @NotNull
+  @InputFieldDefault(value = "")
   @AdvancedConfig
   private String fileNamePrefix;
   @AdvancedConfig

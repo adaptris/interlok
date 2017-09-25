@@ -16,65 +16,52 @@
 
 package com.adaptris.core.fs;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
+import java.io.IOException;
+import java.util.Calendar;
 
-import com.adaptris.core.BaseCase;
+import org.apache.commons.io.FileUtils;
+import org.junit.Test;
 
-public class OlderThanTest extends BaseCase {
+import com.adaptris.core.stubs.TempFileUtils;
 
-  private File file;
+public class OlderThanTest {
 
-  public OlderThanTest(java.lang.String testName) {
-    super(testName);
-  }
-
-  @Override
-  protected void setUp() throws Exception {
-    file = new File(PROPERTIES.getProperty("fs.LastModifiedFilter"));
-  }
-
-// It appears that CVS doesn't always preserve the last-modified
-// of the file actually in CVS...
-//  public void testFilterDefault() throws Exception {
-//    OlderThan filter = new OlderThan();
-//    filter.setAdditionalDebug(true);
-//    assertTrue(filter.accept(file));
-//  }
-
-  public void testOlderThan30Seconds() throws Exception {
+  @Test
+  public void testOlderThan() throws Exception {
     OlderThan filter = new OlderThan("-PT30S");
-    filter.setAdditionalDebug(true);
+    File file = writeFile(TempFileUtils.createTrackedFile(filter));
+    file.setLastModified(yesterday());
     assertTrue(filter.accept(file));
   }
 
-  public void testOlderThan1Minute() throws Exception {
-    OlderThan filter = new OlderThan("-PT1M");
-    filter.setAdditionalDebug(false);
+  @Test
+  public void testOlderThanFutureSpec() throws Exception {
+    OlderThan filter = new OlderThan("PT1H");
+    File file = writeFile(TempFileUtils.createTrackedFile(filter));
+    file.setLastModified(yesterday());
     assertTrue(filter.accept(file));
   }
 
-
-  public void testOlderThan15Years() throws Exception {
-    OlderThan filter = new OlderThan("-P15Y");
-    filter.setAdditionalDebug(true);
-    assertFalse(filter.accept(file));
-  }
-
-  public void testOlderThanChris() throws Exception {
-    OlderThan filter = new OlderThan("-P40Y6M4DT12H30M5S");
-    filter.setAdditionalDebug(true);
-    assertFalse(filter.accept(file));
-  }
-
-  public void testOlderThanHoward() throws Exception {
-    OlderThan filter = new OlderThan("-P39Y6MT12H30M5.5S");
-    filter.setAdditionalDebug(true);
-    assertFalse(filter.accept(file));
-  }
-
+  @Test
   public void testBadDuration() throws Exception {
     OlderThan filter = new OlderThan("-PXXX");
+    File file = writeFile(TempFileUtils.createTrackedFile(filter));
+    file.setLastModified(yesterday());
     assertFalse(filter.accept(file));
   }
 
+  private File writeFile(File f) throws IOException {
+    FileUtils.write(f, "Hello World");
+    return f;
+  }
+
+  private long yesterday() {
+    Calendar cal = Calendar.getInstance();
+    cal.add(Calendar.DAY_OF_YEAR, -1);
+    return cal.getTime().getTime();
+  }
 }

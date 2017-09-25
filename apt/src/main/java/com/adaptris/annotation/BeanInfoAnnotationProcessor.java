@@ -23,6 +23,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.nio.file.NoSuchFileException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -109,7 +110,7 @@ public class BeanInfoAnnotationProcessor extends TemplateAnnotationProcessor {
         names.add(className);
       }
     }
-    catch (FileNotFoundException e) {
+    catch (FileNotFoundException | NoSuchFileException e) {
       // Ignore it. The file doesn't exist yet, which it fine.
     }
   }

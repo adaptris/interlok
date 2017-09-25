@@ -23,7 +23,7 @@ import org.apache.commons.net.pop3.POP3Client;
 import com.icegreen.greenmail.pop3.Pop3Server;
 import com.icegreen.greenmail.util.GreenMail;
 
-public class TestPop3Receive extends MailReceiverCase {
+public class TestPop3Receive extends Pop3ReceiverCase {
 
   public TestPop3Receive(String name) {
     super(name);

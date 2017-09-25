@@ -20,8 +20,8 @@ import java.util.Date;
 
 import org.hibernate.validator.constraints.NotBlank;
 
-import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -37,43 +37,35 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * require your your desired class to have a string constructor, or be a {@link java.util.Date},
  * where the value is the milliseconds.
  * </p>
- * <p>
- * You can also allow this constant value to change value. Any time this translator is used as a
- * result translator, should you set "allow-overwrite" to true, then the new value will be used for
- * further invocations. The default value is false;
- * </p>
  * 
  * @author amcgrath
  * @config jmx-constant-value-translator
  * @since 3.0.3
  */
 @XStreamAlias("jmx-constant-value-translator")
-public class ConstantValueTranslator implements ValueTranslator {
+public class ConstantValueTranslator extends ValueTranslatorImp {
   
   @NotBlank
+  @InputFieldHint(expression = true)
   private String value;
   
-  @NotBlank
-  @AutoPopulated
-  private String type;
   
   @InputFieldDefault(value = "false")
+  @Deprecated
   private Boolean allowOverwrite;
   
   public ConstantValueTranslator() {
-    this.setType(DEFAULT_PARAMETER_TYPE);
   }
 
-  public ConstantValueTranslator(String value, String type, Boolean allowOverwrite) {
+  public ConstantValueTranslator(String value, String type) {
     this();
     setValue(value);
     setType(type);
-    setAllowOverwrite(allowOverwrite);
   }
 
   @Override
   public void setValue(AdaptrisMessage message, Object object) {
-    if(this.getAllowOverwrite()) {
+    if (this.allowOverwrite()) {
       if(this.getType().equals(Date.class.getName()))
         this.setValue(Long.toString(((Date) object).getTime()));
       else
@@ -83,7 +75,7 @@ public class ConstantValueTranslator implements ValueTranslator {
   
   @Override
   public Object getValue(AdaptrisMessage message) throws CoreException {
-    return this.convert(this.getValue(), this.getType());
+    return this.convert(message.resolve(this.getValue()), this.getType());
   }
 
   private Object convert(Object value, String type) throws CoreException {
@@ -108,16 +100,11 @@ public class ConstantValueTranslator implements ValueTranslator {
     this.value = value;
   }
 
-  @Override
-  public String getType() {
-    return this.type == null ? DEFAULT_PARAMETER_TYPE : this.type;
-  }
-
-  @Override
-  public void setType(String type) {
-    this.type = type;
-  }
-
+  /**
+   * 
+   * @deprecated since 3.6.5 behaviourally inconsistent and doesn't really have a good use-case.
+   */
+  @Deprecated
   public Boolean getAllowOverwrite() {
     return allowOverwrite;
   }
@@ -125,13 +112,14 @@ public class ConstantValueTranslator implements ValueTranslator {
   /**
    * Whether or not the constant can change value.
    * <p>
-   * You can also allow this constant value to change value. Any time this translator is used as a
-   * result translator, should you set "allow-overwrite" to true, then the new value will be used
-   * for further invocations. The default value is false;
+   * You can also allow this constant value to change value. Any time this translator is used as a result translator, should you set
+   * "allow-overwrite" to true, then the new value will be used for further invocations. The default value is false;
    * </p>
    * 
    * @param allowOverwrite
+   * @deprecated since 3.6.5 behaviourally inconsistent and doesn't really have a good use-case.
    */
+  @Deprecated
   public void setAllowOverwrite(Boolean allowOverwrite) {
     this.allowOverwrite = allowOverwrite;
   }
