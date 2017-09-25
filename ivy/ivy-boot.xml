@@ -22,6 +22,7 @@
   </publications>
   <dependencies>
 	  <dependency org="org.springframework.boot" name="spring-boot-loader" rev="${spring-boot-loader.version}" conf="optional->default" transitive="false"/>
+    <dependency org="junit" name="junit" rev="4.11" conf="test->default"/>
     <!-- For Various ANT Tasks -->
     <dependency org="ant-contrib" name="ant-contrib" rev="1.0b3" conf="ant->default" transitive="false"/>
     <dependency org="org.jacoco" name="org.jacoco.ant" rev="0.7.7.201606060606" conf="ant->default"/>

@@ -56,9 +56,9 @@ public abstract class CommandLineArgs {
    */
   public String getArgument(String... paramList) {
     String rs = null;
-    for (int i = 0; i < paramList.length; i++) {
-      if (argumentHash.containsKey(paramList[i])) {
-        rs = argumentHash.get(paramList[i]);
+    for (String p : paramList) {
+      if (argumentHash.containsKey(p)) {
+        rs = argumentHash.get(p);
         break;
       }
     }

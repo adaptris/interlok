@@ -21,9 +21,19 @@
     <property name="project.pom.description" value="Wrapper around spring-boot-loader using PropertyLauncher to bootrap Interlok"/>
 
     <property name="src.dir" value="${basedir}/src/main/java" />
+    <property name="testsrc.dir"  value="${basedir}/src/test/java"/>
     <property name="build.dir" value="${basedir}/target" />
     <property name="build.classes.dir" value="${build.dir}/classes" />
+    <property name="classes.build.dir" value="${build.classes.dir}" />
     <property name="project.dist.dir" value="${build.dir}/dist"/>
+    <property name="testclasses.build.dir"  value="${build.dir}/testclasses"/>
+    <property name="test.resources.dir"  value="${basedir}/src/test/resources"/>
+
+    <property name="tests.output.dir"       value="${build.dir}/testoutput"/>
+    <property name="html.tests.output.dir"  value="${tests.output.dir}/html"/>
+    <property name="junit.forkmode"         value="once"/>
+    <property name="junit.printsummary"     value="on"/>
+    <property name="junit.test.classes"     value="**/*Test*.java" />
 
     <property name="resources.dir" value="${basedir}/src/main/resources"/>
     <property name="javac.target.version"   value="1.7"/>
@@ -46,6 +56,17 @@
     <javac destdir="${build.classes.dir}" srcdir="${src.dir}" debug="on" debuglevel="source,lines,vars"
            source="${javac.target.version}" target="${javac.target.version}" includeAntRuntime="true">
       <classpath refid="main.classpath" />
+    </javac>
+  </target>
+
+  <target name="compile.tests" depends="compile">
+    <mkdir dir="${testclasses.build.dir}" />
+    <javac source="${javac.target.version}" target="${javac.target.version}" destdir="${testclasses.build.dir}" srcdir="${testsrc.dir}"
+      debug="on" debuglevel="source,lines,vars" includeAntRuntime="true">
+      <classpath id="classpath.compiletests">
+        <pathelement path="${build.classes.dir}"/>
+        <path refid="main.classpath"/>
+      </classpath>
     </javac>
   </target>
 
@@ -90,11 +111,18 @@
     <interlok:publish-artifact resolver="${ivy.repo}" revision="${ivy.publish.revision}" artifact.basedir="${project.dist.dir}" ivy-config="${ivy.xml.file}"/>
   </target>
 
-  <target name="test" depends="init">
-    <echo message="Nothing to do"/>
+  <target name="test" depends="run-tests" description="run tests">
+    <interlok:test-reports basedir="${tests.output.dir}" reportdir="${html.tests.output.dir}"/>
+    <fail message="JUNIT tests failed, check output in ${tests.output.dir}" if="junit.failed"/>
   </target>
 
-  <target name="test-no-reports" depends="init">
-    <echo message="Nothing to do"/>
+  <target name="run-tests" depends="compile.tests">
+    <mkdir dir="${tests.output.dir}"/>
+    <mkdir dir="${test.resources.dir}"/>
+    <interlok:execute-tests printsummary="${junit.printsummary}" fork="yes" showoutput="no" forkmode="${junit.forkmode}"/>
+  </target>
+
+  <target name="test-no-reports" depends="run-tests" description="Run Tests with No reports">
+    <fail message="JUNIT tests failed, check output in ${tests.output.dir}" if="junit.failed"/>
   </target>
 </project>

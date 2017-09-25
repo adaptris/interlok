@@ -62,24 +62,24 @@ public class InterlokLauncher extends Launcher {
 
   private final String DEFAULT_CLASSPATH = "./config,./lib";
 
-	private List<String> paths = new ArrayList<>();
+  private List<String> paths = new ArrayList<>();
   private CommandLineArgs commandLine;
   private boolean recursive;
 
   public InterlokLauncher(String[] argv) {
-		try {
+    try {
       commandLine = CommandLineArgs.parse(argv);
       recursive = !commandLine.hasArgument(ARG_IGNORE_SUBDIRS);
       paths = initializePaths();
-		}
-		catch (Exception ex) {
-			throw new IllegalStateException(ex);
-		}
-	}
+    }
+    catch (Exception ex) {
+      throw new IllegalStateException(ex);
+    }
+  }
 
   public static void main(String[] args) throws Exception {
     InterlokLauncher launcher = new InterlokLauncher(args);
-    launcher.launch(launcher.rebuild(args));
+    launcher.launch(launcher.rebuildArgs());
   }
 
   private List<String> initializePaths() {
@@ -87,58 +87,58 @@ public class InterlokLauncher extends Launcher {
     if (commandLine.hasArgument(ARG_ADAPTER_CLASSPATH)) {
       pathsToParse = commandLine.getArgument(ARG_ADAPTER_CLASSPATH);
     }
-		List<String> result = new ArrayList<>();
+    List<String> result = new ArrayList<>();
     for (String path : pathsToParse.split("[,|" + File.pathSeparator + "]")) {
-			result.add(cleanupPath(path));
-		}
+      result.add(cleanupPath(path));
+    }
     debug("Nested archive paths: " + result);
-		return result;
-	}
+    return result;
+  }
 
-	@Override
-	protected String getMainClass() throws Exception {
+  @Override
+  protected String getMainClass() throws Exception {
     return INTERLOK_MAIN_CLASS;
-	}
+  }
 
-  protected String[] rebuild(String... args) throws Exception {
+  protected String[] rebuildArgs() throws Exception {
     return commandLine.remove(ARG_ADAPTER_CLASSPATH).remove(ARG_IGNORE_SUBDIRS).render();
   }
 
-	@Override
-	protected List<Archive> getClassPathArchives() throws Exception {
-		List<Archive> lib = new ArrayList<>();
-		for (String path : this.paths) {
+  @Override
+  protected List<Archive> getClassPathArchives() throws Exception {
+    List<Archive> lib = new ArrayList<>();
+    for (String path : this.paths) {
       lib.addAll(createArchives(path));
-		}
-		return lib;
-	}
+    }
+    return lib;
+  }
 
-	private String cleanupPath(String path) {
-		path = path.trim();
+  private String cleanupPath(String path) {
+    path = path.trim();
     // No need for current dir path
     if (path.startsWith("./")) {
       path = path.substring(2);
     }
     if (JAR_FILTER.accept(new File(path))) {
-			return path;
-		}
-		if (path.endsWith("/*")) {
-			path = path.substring(0, path.length() - 1);
-		}
-		else {
-			// It's a directory
-			if (!path.endsWith("/") && !path.equals(".")) {
-				path = path + "/";
-			}
-		}
-		return path;
-	}
+      return path;
+    }
+    if (path.endsWith("/*")) {
+      path = path.substring(0, path.length() - 1);
+    }
+    else {
+      // It's a directory
+      if (!path.endsWith("/") && !path.equals(".")) {
+        path = path + "/";
+      }
+    }
+    return path;
+  }
 
   private static void debug(String message) {
     if (DEBUG) {
       System.err.println("(" + InterlokLauncher.class.getSimpleName() + ") " + message);
-		}
-	}
+    }
+  }
 
   private List<Archive> createArchives(String path) throws Exception {
     List<Archive> lib = new ArrayList<>();
@@ -149,7 +149,7 @@ public class InterlokLauncher extends Launcher {
     }
     else {
       if (JAR_FILTER.accept(file)) {
-        lib.add(new JarFileArchive(file));
+        addArchive(file, lib);
       }
     }
     return lib;
@@ -161,7 +161,7 @@ public class InterlokLauncher extends Launcher {
     File[] files = dir.listFiles(JAR_FILTER);
     for (File jar : files) {
       debug("Adding " + jar);
-      jars.add(new JarFileArchive(jar));
+      addArchive(jar, jars);
     }
     if (loadSubdirs) {
       File[] subDirs = dir.listFiles(new FileFilter() {
@@ -176,6 +176,12 @@ public class InterlokLauncher extends Launcher {
       }
     }
     return jars;
+  }
+
+  private static void addArchive(File f, List<Archive> list) throws IOException {
+    if (f.exists()) {
+      list.add(new JarFileArchive(f));
+    }
   }
 
   private static class JarFilter implements FileFilter {
