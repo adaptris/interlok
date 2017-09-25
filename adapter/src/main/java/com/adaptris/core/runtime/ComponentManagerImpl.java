@@ -114,14 +114,14 @@ public abstract class ComponentManagerImpl<E extends StateManagedComponent> exte
         catch (CoreException e) {
           current.getUncaughtExceptionHandler().uncaughtException(current, e);
         }
+        catch (Throwable t) {
+          current.getUncaughtExceptionHandler().uncaughtException(current, new CoreException(t));
+        }
         try {
           barrier.await(timeout, TimeUnit.MILLISECONDS);
         }
         catch (Exception e) {
           current.getUncaughtExceptionHandler().uncaughtException(current, e);
-        }
-        catch (Throwable t) {
-          current.getUncaughtExceptionHandler().uncaughtException(current, new CoreException(t));
         }
       }
     });
@@ -149,6 +149,9 @@ public abstract class ComponentManagerImpl<E extends StateManagedComponent> exte
         }
         catch (CoreException e) {
           current.getUncaughtExceptionHandler().uncaughtException(current, e);
+        }
+        catch (Throwable t) {
+          current.getUncaughtExceptionHandler().uncaughtException(current, new CoreException(t));
         }
         try {
           barrier.await(timeout, TimeUnit.MILLISECONDS);
