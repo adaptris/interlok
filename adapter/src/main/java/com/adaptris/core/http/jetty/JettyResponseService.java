@@ -60,8 +60,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * {@code http_url}.
  * </p>
  * 
- * @author lchan
- *
+ * @since 3.6.5
  */
 @XStreamAlias("jetty-response-service")
 @AdapterComponent
