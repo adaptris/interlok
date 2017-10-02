@@ -20,6 +20,8 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.boot.loader.Launcher;
@@ -46,6 +48,10 @@ public class InterlokLauncher extends Launcher {
   {
       JAR_EXT, ZIP_EXT
   };
+
+  private static final List<String> SPECIAL_DIRS = Collections.unmodifiableList(Arrays.asList(".git", ".svn", "CVS", ".hg"));
+  private static final String DEBUG_PREFIX = "(" + InterlokLauncher.class.getSimpleName() + ") ";
+
   private static final FileFilter JAR_FILTER = new JarFilter();
 
   private static final boolean DEBUG = Boolean.getBoolean("adp.bootstrap.debug") || Boolean.getBoolean("interlok.bootstrap.debug");
@@ -136,7 +142,7 @@ public class InterlokLauncher extends Launcher {
 
   private static void debug(String message) {
     if (DEBUG) {
-      System.err.println("(" + InterlokLauncher.class.getSimpleName() + ") " + message);
+      System.err.println(DEBUG_PREFIX + message);
     }
   }
 
@@ -156,8 +162,12 @@ public class InterlokLauncher extends Launcher {
   }
 
   private static List<Archive> createArchives(File dir, boolean loadSubdirs) throws IOException {
-    debug("Adding jars from " + dir);
     ArrayList<Archive> jars = new ArrayList<>();
+    if (SPECIAL_DIRS.contains(dir.getName())) {
+      debug("Ignoring special directory " + dir.getName());
+      return jars;
+    }
+    debug("Adding jars from " + dir);
     File[] files = dir.listFiles(JAR_FILTER);
     for (File jar : files) {
       debug("Adding " + jar);
