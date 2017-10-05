@@ -65,6 +65,7 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
   @Valid
   @AutoPopulated
   @AffectsMetadata
+  @InputFieldDefault(value = "no-op-metadata-filter")
   private MetadataFilter metadataFilter;
   @AdvancedConfig
   @InputFieldDefault(value = "false")
@@ -83,7 +84,6 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
    * Creates a new instance. By default
    * <ul>
    * <li>move-jms-headers = false</li>
-   * <li>move-metadata = true</li>
    * <li>report-all-errors = false</li>
    * </ul>
    */
@@ -110,7 +110,8 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
   /**
    * Set the {@link MetadataFilter} to be used when converting between JMS messages and AdaptrisMessage objects
    * 
-   * @param mf the metadata filter implementation, default is {@link com.adaptris.core.metadata.NoOpMetadataFilter}
+   * @param mf the metadata filter implementation, default is {@link com.adaptris.core.metadata.NoOpMetadataFilter} which means
+   *          <strong>ALL</strong> metadata is copied into the JMS Message, and vice-versa.
    * @see MetadataHandlerContext#metadataFilter()
    * @since 3.0.2
    */
@@ -297,16 +298,23 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
     return result;
   }
 
-  protected static AutoConvertMessageTranslator replicate(MessageTypeTranslator mt) {
+  protected static AutoConvertMessageTranslator replicate(MessageTypeTranslator mt) throws JMSException {
     AutoConvertMessageTranslator result = new AutoConvertMessageTranslator();
     if (mt instanceof MessageTypeTranslatorImp) {
-      result.setMoveJmsHeaders(((MessageTypeTranslatorImp) mt).getMoveJmsHeaders());
-      result.setReportAllErrors(((MessageTypeTranslatorImp) mt).getReportAllErrors());
-      result.setMetadataFilter(((MessageTypeTranslatorImp) mt).getMetadataFilter());
-      result.registerMessageFactory(mt.currentMessageFactory());
-      result.registerSession(mt.currentSession());
+      copyConfiguration((MessageTypeTranslatorImp) mt, result);
     }
     return result;
+  }
+
+  protected static MessageTypeTranslatorImp copyConfiguration(MessageTypeTranslatorImp source, MessageTypeTranslatorImp dest)
+      throws JMSException {
+    dest.setMoveJmsHeaders(source.getMoveJmsHeaders());
+    dest.setReportAllErrors(source.getReportAllErrors());
+    dest.setMetadataFilter(source.getMetadataFilter());
+    dest.setMetadataConverters(source.getMetadataConverters());
+    dest.registerMessageFactory(source.currentMessageFactory());
+    dest.registerSession(source.currentSession());
+    return dest;
   }
 
   protected static void start(MessageTypeTranslator mt) throws JMSException {

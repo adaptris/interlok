@@ -88,7 +88,7 @@ public class AutoConvertMessageTranslator extends MessageTypeTranslatorImp {
     Text {
       @Override
       MessageTypeTranslatorImp create(MessageTypeTranslatorImp parent) throws JMSException {
-        return configure(parent, new TextMessageTranslator());
+        return copyConfiguration(parent, new TextMessageTranslator());
       }
 
       @Override
@@ -100,7 +100,7 @@ public class AutoConvertMessageTranslator extends MessageTypeTranslatorImp {
     Bytes {
       @Override
       MessageTypeTranslatorImp create(MessageTypeTranslatorImp parent) throws JMSException {
-        return configure(parent, new BytesMessageTranslator());
+        return copyConfiguration(parent, new BytesMessageTranslator());
       }
 
       @Override
@@ -112,7 +112,7 @@ public class AutoConvertMessageTranslator extends MessageTypeTranslatorImp {
     Object {
       @Override
       MessageTypeTranslatorImp create(MessageTypeTranslatorImp parent) throws JMSException {
-        return configure(parent, new ObjectMessageTranslator());
+        return copyConfiguration(parent, new ObjectMessageTranslator());
       }
 
       @Override
@@ -124,7 +124,7 @@ public class AutoConvertMessageTranslator extends MessageTypeTranslatorImp {
     Map {
       @Override
       MessageTypeTranslatorImp create(MessageTypeTranslatorImp parent) throws JMSException {
-        return configure(parent, new NaiveMapMessageTranslator());
+        return copyConfiguration(parent, new NaiveMapMessageTranslator());
       }
 
       @Override
@@ -138,19 +138,8 @@ public class AutoConvertMessageTranslator extends MessageTypeTranslatorImp {
 
     abstract boolean isSupported(Message m) throws JMSException;
 
-    private static MessageTypeTranslatorImp configure(MessageTypeTranslatorImp source, MessageTypeTranslatorImp dest)
-        throws JMSException {
-      dest.setMoveJmsHeaders(source.getMoveJmsHeaders());
-      dest.setReportAllErrors(source.getReportAllErrors());
-      dest.registerMessageFactory(source.currentMessageFactory());
-      dest.registerSession(source.currentSession());
-      dest.setMetadataFilter(source.getMetadataFilter());
-      dest.setMetadataConverters(source.getMetadataConverters());
-      return dest;
-    }
-
     public static MessageTypeTranslatorImp createFallback(MessageTypeTranslatorImp parent) throws JMSException {
-      return configure(parent, new BasicJavaxJmsMessageTranslator());
+      return copyConfiguration(parent, new BasicJavaxJmsMessageTranslator());
     }
   }
 
