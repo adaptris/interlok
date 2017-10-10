@@ -68,6 +68,7 @@ import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.services.metadata.PayloadFromMetadataService;
 import com.adaptris.core.stubs.MockMessageProducer;
+import com.adaptris.security.password.Password;
 import com.adaptris.util.KeyValuePair;
 
 public class StandardHttpProducerTest extends HttpProducerExample {
@@ -452,10 +453,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
   }
 
   private HttpAuthenticator getAuthenticator(String username, String password) {
-    ConfiguredUsernamePassword auth = new ConfiguredUsernamePassword();
-    auth.setUsername(username);
-    auth.setPassword(password);
-    return auth;
+    return new ConfiguredUsernamePassword(username, password);
   }
 
   public void testProduce_WithUsernamePassword() throws Exception {
@@ -579,6 +577,46 @@ public class StandardHttpProducerTest extends HttpProducerExample {
 
     }
     finally {
+      stop(stdHttp);
+      HttpHelper.stopChannelAndRelease(channel);
+      Thread.currentThread().setName(threadName);
+    }
+  }
+
+  public void testProduce_WithDynamicUsernamePassword() throws Exception {
+    String threadName = Thread.currentThread().getName();
+    Thread.currentThread().setName(getName());
+
+    ConfigurableSecurityHandler csh = new ConfigurableSecurityHandler();
+    HashLoginServiceFactory hsl =
+        new HashLoginServiceFactory("InterlokJetty", PROPERTIES.getProperty(HttpConsumerTest.JETTY_USER_REALM));
+    csh.setLoginService(hsl);
+    SecurityConstraint securityConstraint = new SecurityConstraint();
+    securityConstraint.setMustAuthenticate(true);
+    securityConstraint.setRoles("user");
+    csh.setSecurityConstraints(Arrays.asList(securityConstraint));
+
+    HttpConnection jc = HttpHelper.createConnection();
+    jc.setSecurityHandler(csh);
+    MockMessageProducer mockProducer = new MockMessageProducer();
+    JettyMessageConsumer consumer = JettyHelper.createConsumer(HttpHelper.URL_TO_POST_TO);
+    Channel channel = JettyHelper.createChannel(jc, consumer, mockProducer);
+
+    String password = Password.encode(getName(), Password.PORTABLE_PASSWORD);
+    HttpAuthenticator auth = new DynamicBasicAuthorizationHeader(getName(), password);
+
+    StandardHttpProducer stdHttp = new StandardHttpProducer();
+    stdHttp.setIgnoreServerResponseCode(false);
+    stdHttp.registerConnection(new NullConnection());
+    stdHttp.setAuthenticator(auth);
+    try {
+      start(channel);
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
+      start(stdHttp);
+      AdaptrisMessage reply = stdHttp.request(msg, HttpHelper.createProduceDestination(channel));
+      waitForMessages(mockProducer, 1);
+      assertEquals(TEXT, mockProducer.getMessages().get(0).getContent());
+    } finally {
       stop(stdHttp);
       HttpHelper.stopChannelAndRelease(channel);
       Thread.currentThread().setName(threadName);
