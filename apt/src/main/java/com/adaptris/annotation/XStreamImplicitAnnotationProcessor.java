@@ -23,6 +23,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.NoSuchFileException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -103,7 +104,8 @@ public class XStreamImplicitAnnotationProcessor extends AnnotationProcessorImpl 
       while((className = r.readLine()) != null) {
         entries.add(className);
       }
-    } catch(FileNotFoundException e) {
+    }
+    catch (FileNotFoundException | NoSuchFileException e) {
       // Ignore it. The file doesn't exist yet, which it fine.
     }
   }

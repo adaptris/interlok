@@ -21,7 +21,6 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -43,17 +42,13 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @since 3.0.3
  */
 @XStreamAlias("jmx-object-metadata-value-translator")
-public class ObjectMetadataValueTranslator implements ValueTranslator {
+public class ObjectMetadataValueTranslator extends ValueTranslatorImp {
   
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
     
   @NotBlank
   private String metadataKey;
 
-  @NotBlank
-  @AutoPopulated
-  private String type;
-  
   public ObjectMetadataValueTranslator() {
     setType("java.lang.Object");
   }
@@ -78,16 +73,6 @@ public class ObjectMetadataValueTranslator implements ValueTranslator {
       message.addObjectHeader(this.getMetadataKey(), value);
     else
       log.warn("No metadata key set for metadata-value-translator, no translation occuring.");
-  }
-
-  @Override
-  public String getType() {
-    return type;
-  }
-
-  @Override
-  public void setType(String type) {
-    this.type = Args.notBlank(type, "type");
   }
 
   public String getMetadataKey() {

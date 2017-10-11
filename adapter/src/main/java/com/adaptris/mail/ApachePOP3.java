@@ -42,4 +42,6 @@ class ApachePOP3 extends ApacheMailClient<POP3Client> {
   @Override
   void postConnectAction(POP3Client client) throws MailException, IOException {
   }
+
+
 }

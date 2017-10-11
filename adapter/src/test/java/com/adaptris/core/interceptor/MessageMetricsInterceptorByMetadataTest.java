@@ -18,14 +18,15 @@ package com.adaptris.core.interceptor;
 
 import java.util.concurrent.TimeUnit;
 
-import junit.framework.TestCase;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.TimeInterval;
+
+import junit.framework.TestCase;
 
 public class MessageMetricsInterceptorByMetadataTest extends TestCase {
 
@@ -36,7 +37,7 @@ public class MessageMetricsInterceptorByMetadataTest extends TestCase {
     interceptor = new MessageMetricsInterceptorByMetadata();
     interceptor.setTimesliceDuration(new TimeInterval(5L, TimeUnit.SECONDS));
     interceptor.setTimesliceHistoryCount(2);
-    interceptor.setMetadataElement(new MetadataElement("messageType", "ORDER"));
+    interceptor.setMetadataElement(new KeyValuePair("messageType", "ORDER"));
   }
 
   @Override
@@ -75,7 +76,7 @@ public class MessageMetricsInterceptorByMetadataTest extends TestCase {
   }
 
   public void testInterceptor_MatchByRegexp() throws Exception {
-    interceptor.setMetadataElement(new MetadataElement("messageType", "ORD.*"));
+    interceptor.setMetadataElement(new KeyValuePair("messageType", "ORD.*"));
     LifecycleHelper.init(interceptor);
     LifecycleHelper.start(interceptor);
     AdaptrisMessage message = createMessage(true);

@@ -16,6 +16,9 @@
 
 package com.adaptris.core.jms;
 
+import java.util.Collections;
+import java.util.List;
+
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
@@ -34,18 +37,17 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.metadata.MetadataFilter;
 import com.adaptris.core.metadata.NoOpMetadataFilter;
-import com.adaptris.core.metadata.RemoveAllMetadataFilter;
 import com.adaptris.core.util.LifecycleHelper;
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 // abstract factory pattern
 
 /**
  * <p>
  * Super class of classes that translate <code>AdaptrisMessage</code>s to the
- * various type of <code>javax.jms.Message</code>s, and vice versa. If the
- * <code>moveMetadata</code> flag is <code>true</code>, metadata will be moved
- * when the message is translated. If the moveJmsHeaders flag is true, JMS
- * headers will be moved as well.
+ * various type of <code>javax.jms.Message</code>s, and vice versa. Set a
+ * <code>metadataFilter</code> to move metadata when the message is translated.
+ * If the moveJmsHeaders flag is true, JMS  headers will be moved as well.
  * </p>
  */
 public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator, MetadataHandlerContext {
@@ -55,7 +57,7 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
   private transient AdaptrisMessageFactory messageFactoryToUse;
   protected transient MetadataHandler helper;
 
-  private static final MetadataFilter DEFAULT_FILTER = new RemoveAllMetadataFilter();
+  private static final MetadataFilter DEFAULT_FILTER = new NoOpMetadataFilter();
   /**
    * Set the filter that will be used return a subset of the messages metdata to be copied over during the translate.
    */
@@ -63,6 +65,7 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
   @Valid
   @AutoPopulated
   @AffectsMetadata
+  @InputFieldDefault(value = "no-op-metadata-filter")
   private MetadataFilter metadataFilter;
   @AdvancedConfig
   @InputFieldDefault(value = "false")
@@ -72,12 +75,15 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
   @InputFieldDefault(value = "false")
   private Boolean reportAllErrors;
 
+  @AdvancedConfig
+  @XStreamImplicit
+  private List<MetadataConverter> metadataConverters;
+
   /**
    * <p>
    * Creates a new instance. By default
    * <ul>
    * <li>move-jms-headers = false</li>
-   * <li>move-metadata = true</li>
    * <li>report-all-errors = false</li>
    * </ul>
    */
@@ -104,7 +110,8 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
   /**
    * Set the {@link MetadataFilter} to be used when converting between JMS messages and AdaptrisMessage objects
    * 
-   * @param mf the metadata filter implementation, default is {@link com.adaptris.core.metadata.NoOpMetadataFilter}
+   * @param mf the metadata filter implementation, default is {@link com.adaptris.core.metadata.NoOpMetadataFilter} which means
+   *          <strong>ALL</strong> metadata is copied into the JMS Message, and vice-versa.
    * @see MetadataHandlerContext#metadataFilter()
    * @since 3.0.2
    */
@@ -152,6 +159,22 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
    */
   public Boolean getReportAllErrors() {
     return reportAllErrors;
+  }
+
+  /**
+   * Set the list of metadata converters to uses when converting from AdaptrisMessage to JMS Message.
+   * @param mc list of message converters
+   */
+  public void setMetadataConverters(List<MetadataConverter> mc) {
+    this.metadataConverters = mc;
+  }
+
+  /**
+   * Get the list of metadata converters to uses when converting from AdaptrisMessage to JMS Message.
+   * @return list of message converters
+   */
+  public List<MetadataConverter> getMetadataConverters() {
+    return metadataConverters;
   }
 
   /**
@@ -233,7 +256,12 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
 
   @Override
   public MetadataFilter metadataFilter() {
-    return getMetadataFilter() != null ? getMetadataFilter() : new NoOpMetadataFilter();
+    return getMetadataFilter() != null ? getMetadataFilter() : DEFAULT_FILTER;
+  }
+
+  @Override
+  public List<MetadataConverter> metadataConverters(){
+    return getMetadataConverters() != null ? getMetadataConverters() : Collections.EMPTY_LIST;
   }
 
   /**
@@ -270,16 +298,23 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
     return result;
   }
 
-  protected static AutoConvertMessageTranslator replicate(MessageTypeTranslator mt) {
+  protected static AutoConvertMessageTranslator replicate(MessageTypeTranslator mt) throws JMSException {
     AutoConvertMessageTranslator result = new AutoConvertMessageTranslator();
     if (mt instanceof MessageTypeTranslatorImp) {
-      result.setMoveJmsHeaders(((MessageTypeTranslatorImp) mt).getMoveJmsHeaders());
-      result.setReportAllErrors(((MessageTypeTranslatorImp) mt).getReportAllErrors());
-      result.setMetadataFilter(((MessageTypeTranslatorImp) mt).getMetadataFilter());
-      result.registerMessageFactory(mt.currentMessageFactory());
-      result.registerSession(mt.currentSession());
+      copyConfiguration((MessageTypeTranslatorImp) mt, result);
     }
     return result;
+  }
+
+  protected static MessageTypeTranslatorImp copyConfiguration(MessageTypeTranslatorImp source, MessageTypeTranslatorImp dest)
+      throws JMSException {
+    dest.setMoveJmsHeaders(source.getMoveJmsHeaders());
+    dest.setReportAllErrors(source.getReportAllErrors());
+    dest.setMetadataFilter(source.getMetadataFilter());
+    dest.setMetadataConverters(source.getMetadataConverters());
+    dest.registerMessageFactory(source.currentMessageFactory());
+    dest.registerSession(source.currentSession());
+    return dest;
   }
 
   protected static void start(MessageTypeTranslator mt) throws JMSException {

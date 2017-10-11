@@ -20,5 +20,15 @@
   </publications>
   <dependencies>
   	<dependency org="com.adaptris" name="adp-core" rev="${ivy.publish.revision}" conf="compile" changing="true"/>
+    <exclude org="javax.mail" artifact="mail"/>
+    <exclude org="org.eclipse.jetty.orbit" artifact="javax.mail.glassfish"/>
+    <exclude org="c3p0"/>
+    <exclude org="xalan" artifact="xalan"/>
+    <exclude org="commons-logging"/>
+    <exclude org="org.apache.geronimo"/>
+    <exclude org="cglib"/>
+    <exclude org="ant"/>
+    <exclude org="org.apache.ant" artifact="ant"/>
+    <exclude org="org.apache.ant" artifact="ant-launcher"/>
   </dependencies>
 </ivy-module>

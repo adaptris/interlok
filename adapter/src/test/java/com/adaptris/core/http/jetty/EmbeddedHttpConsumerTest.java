@@ -225,7 +225,7 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
     EmbeddedJettyHelper helper = new EmbeddedJettyHelper();
     helper.startServer();
 
-    MessageConsumer consumer1 = JettyHelper.createConsumer(URL_TO_POST_TO);
+    JettyMessageConsumer consumer1 = JettyHelper.createConsumer(URL_TO_POST_TO);
     StandardWorkflow workflow1 = new StandardWorkflow();
     workflow1.setConsumer(consumer1);
     workflow1.getServiceCollection().add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200)));
@@ -257,13 +257,13 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
     EmbeddedJettyHelper helper = new EmbeddedJettyHelper();
     helper.startServer();
 
-    MessageConsumer consumer1 = JettyHelper.createConsumer(URL_TO_POST_TO);
+    JettyMessageConsumer consumer1 = JettyHelper.createConsumer(URL_TO_POST_TO);
     StandardWorkflow workflow1 = new StandardWorkflow();
     workflow1.setConsumer(consumer1);
     workflow1.getServiceCollection().add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200)));
     Channel channel = JettyHelper.createChannel(new EmbeddedConnection(), workflow1);
 
-    MessageConsumer consumer2 = JettyHelper.createConsumer("/some/other/urlmapping/");
+    JettyMessageConsumer consumer2 = JettyHelper.createConsumer("/some/other/urlmapping/");
     StandardWorkflow workflow2 = new StandardWorkflow();
     workflow2.setConsumer(consumer2);
     workflow2.getServiceCollection().add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200)));
@@ -300,7 +300,7 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
 
     MockMessageProducer mockProducer = new StaticMockMessageProducer();
     mockProducer.getMessages().clear();
-    MessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
+    JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
     PoolingWorkflow workflow = new PoolingWorkflow();
     StandardResponseProducer responder = new StandardResponseProducer(HttpStatus.OK_200);
     workflow.setConsumer(consumer);
@@ -333,7 +333,7 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
 
     MockMessageProducer mockProducer = new StaticMockMessageProducer();
     mockProducer.getMessages().clear();
-    MessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
+    JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
     PoolingWorkflow workflow = new PoolingWorkflow();
     workflow.setShutdownWaitTime(new TimeInterval(5L, TimeUnit.SECONDS));
     StandardResponseProducer responder = new StandardResponseProducer(HttpStatus.OK_200);
@@ -377,7 +377,7 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
 
   @Override
   protected Object retrieveObjectForSampleConfig() {
-    MessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
+    JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
     StandaloneConsumer result = new StandaloneConsumer(new EmbeddedConnection(), consumer);
     return result;
   }

@@ -58,16 +58,16 @@ import com.adaptris.util.text.mime.MultiPartOutput;
 
 public class StandardResponseProducerTest extends HttpProducerExample {
 
-  private static final String CUSTOM_VALUE2 = "CustomValue2";
-  private static final String CUSTOM_VALUE1 = "CustomValue1";
-  private static final String CUSTOM_HEADER2 = "CustomHeader2";
-  private static final String CUSTOM_HEADER1 = "CustomHeader1";
-  private static final String METADATA_REGEXP = "CustomHeader.*";
-  private static final String TEXT_PLAIN = "text/plain";
-  private static final String CONTENT_TYPE = "content.type";
-  private static final String JETTY_HTTP_PORT = "jetty.http.port";
-  private static final String URL_TO_POST_TO = "/url/to/post/to";
-  private static final String TEXT = "ABCDEFG";
+  protected static final String CUSTOM_VALUE2 = "CustomValue2";
+  protected static final String CUSTOM_VALUE1 = "CustomValue1";
+  protected static final String CUSTOM_HEADER2 = "CustomHeader2";
+  protected static final String CUSTOM_HEADER1 = "CustomHeader1";
+  protected static final String METADATA_REGEXP = "CustomHeader.*";
+  protected static final String TEXT_PLAIN = "text/plain";
+  protected static final String CONTENT_TYPE = "content.type";
+  protected static final String JETTY_HTTP_PORT = "jetty.http.port";
+  protected static final String URL_TO_POST_TO = "/url/to/post/to";
+  protected static final String TEXT = "ABCDEFG";
 
   public StandardResponseProducerTest(String name) {
     super(name);
@@ -371,25 +371,25 @@ public class StandardResponseProducerTest extends HttpProducerExample {
     return new StandaloneProducer(producer);
   }
 
-  private HttpConnection createConnection() {
+  protected static HttpConnection createConnection() {
     HttpConnection c = new HttpConnection();
     c.setPort(PortManager.nextUnusedPort(Integer.parseInt(PROPERTIES.getProperty(JETTY_HTTP_PORT))));
     return c;
   }
 
-  private ConfiguredProduceDestination createProduceDestination(int port) {
+  protected static ConfiguredProduceDestination createProduceDestination(int port) {
     ConfiguredProduceDestination d = new ConfiguredProduceDestination("http://localhost:" + port + URL_TO_POST_TO);
     return d;
   }
 
-  private StandaloneRequestor createRequestor(int port) {
+  protected static StandaloneRequestor createRequestor(int port) {
     StandardHttpProducer producer = new StandardHttpProducer(createProduceDestination(port));
     producer.setContentTypeProvider(new MetadataContentTypeProvider(CONTENT_TYPE));
     producer.setResponseHeaderHandler(new ResponseHeadersAsMetadata());
     return new StandaloneRequestor(producer);
   }
 
-  private AdaptrisMessage createMessage() {
+  protected static AdaptrisMessage createMessage() {
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
     msg.addMetadata(CONTENT_TYPE, TEXT_PLAIN);
     return msg;

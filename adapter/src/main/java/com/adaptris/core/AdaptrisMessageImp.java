@@ -29,19 +29,19 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.core.util.Args;
 import com.adaptris.util.IdGenerator;
-import com.adaptris.util.KeyValuePair;
-import com.adaptris.util.KeyValuePairSet;
 
 /**
  * <p>
@@ -49,13 +49,13 @@ import com.adaptris.util.KeyValuePairSet;
  * </p>
  * <p>
  * When referring to metadata items by key you can use a form of indirection by specifying a prefix to your key ("$$").<br />
- * Using this prefix on any metadata key will not perform an action (retrieve, add etc) to that metadata item but instead will look up
- * the value of that metadata key and use the value as the metadata item key to be performed on. <br />
+ * Using this prefix on any metadata key will not perform an action (retrieve, add etc) to that metadata item but instead will look
+ * up the value of that metadata key and use the value as the metadata item key to be performed on. <br />
  * Example: <br />
  * Calling <b>addMetadata("myKey", "myValue");</b><br />
  * Will create a new metadata item with the key "myKey" and the value "myValue".<br />
- * However calling <b>addMetadata("$$myKey", "myValue")</b> will lookup the value of the metadata key named "myKey" and use that value as the 
- * key for the addMetadata() method. 
+ * However calling <b>addMetadata("$$myKey", "myValue")</b> will lookup the value of the metadata key named "myKey" and use that
+ * value as the key for the addMetadata() method.
  * </p>
  * 
  *
@@ -77,7 +77,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   private IdGenerator guidGenerator;
   // persistent fields
   private String uniqueId;
-  private KeyValuePairSet metadata;
+  private Set<MetadataElement> metadata;
   private String contentEncoding;
 
   // in memory only e.g. lost on send or persist
@@ -100,7 +100,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   protected AdaptrisMessageImp(IdGenerator guid, AdaptrisMessageFactory fac) {
     this();
     factory = fac;
-    metadata = new KeyValuePairSet();
+    metadata = new HashSet<MetadataElement>();
     objectMetadata = new HashMap<>();
     guidGenerator = guid;
     messageLifeCycle = new MessageLifecycleEvent();
@@ -116,21 +116,20 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     return factory;
   }
 
-
   @Override
   public void setCharEncoding(String charEnc) {
-      contentEncoding = charEnc;
+    contentEncoding = charEnc;
   }
 
   @Override
   public String getCharEncoding() {
     return contentEncoding;
   }
-  
+
   /** @see AdaptrisMessage#setContentEncoding(String) */
   @Override
   public void setContentEncoding(String charEnc) {
-      contentEncoding = charEnc;
+    contentEncoding = charEnc;
   }
 
   /** @see AdaptrisMessage#getContentEncoding() */
@@ -141,20 +140,20 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
   @Override
   public boolean containsKey(String key) {
-    return metadata.contains(new KeyValuePair(resolveKey(this, key), ""));
+    return metadata.contains(new MetadataElement(resolveKey(this, key), ""));
   }
-  
-  /** @see AdaptrisMessage#headersContainsKey(String)*/
+
+  /** @see AdaptrisMessage#headersContainsKey(String) */
   @Override
   public boolean headersContainsKey(String key) {
-    return metadata.contains(new KeyValuePair(resolveKey(this, key), ""));
+    return metadata.contains(new MetadataElement(resolveKey(this, key), ""));
   }
 
   @Override
   public synchronized void addMetadata(String key, String value) {
     this.addMessageHeader(resolveKey(this, key), value);
   }
-  
+
   @Override
   public void addMessageHeader(String key, String value) {
     this.addMetadata(new MetadataElement(resolveKey(this, key), value));
@@ -167,36 +166,34 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
       removeMetadata(e);
     }
     e.setKey(resolveKey(this, e.getKey()));
-    metadata.addKeyValuePair(e);
+    metadata.add(e);
   }
 
   /** @see AdaptrisMessage#removeMetadata(MetadataElement) */
   @Override
   public void removeMetadata(MetadataElement element) {
     element.setKey(resolveKey(this, element.getKey()));
-    metadata.removeKeyValuePair(element);
+    metadata.remove(element);
   }
-  
+
   /** @see AdaptrisMessage#removeMessageHeader(String) */
   @Override
   public void removeMessageHeader(String key) {
     metadata.remove(new MetadataElement(resolveKey(this, key), ""));
   }
 
-  /** @see AdaptrisMessage#setMetadata(Set) */
   @Override
-  public synchronized void setMetadata(Set set) {
+  public synchronized void setMetadata(Set<MetadataElement> set) {
     if (set != null) {
-      for (Iterator i = set.iterator(); i.hasNext();) {
-        MetadataElement e = (MetadataElement) i.next();
+      for (MetadataElement e : set) {
         addMetadata(e);
       }
     }
   }
-  
+
   @Override
   public void setMessageHeaders(Map<String, String> metadata) {
-    for(String key : metadata.values()) {
+    for (String key : metadata.values()) {
       this.addMessageHeader(key, metadata.get(key));
     }
   }
@@ -204,14 +201,14 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   /** @see AdaptrisMessage#clearMetadata() */
   @Override
   public synchronized void clearMetadata() {
-    metadata = new KeyValuePairSet(); // overwrite with empty
+    metadata = new HashSet<MetadataElement>();
   }
 
   /** @see AdaptrisMessage#getMetadataValue(String) */
   @Override
   public String getMetadataValue(String key) { // is case-sensitive
     if (key != null) {
-      return metadata.getValue(resolveKey(this, key));
+      return getValue(resolveKey(this, key));
     }
     return null;
   }
@@ -219,31 +216,26 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   /** @see AdaptrisMessage#getMetadata(String) */
   @Override
   public MetadataElement getMetadata(String key) {
-    if (key != null && containsKey(key)) {
-      return new MetadataElement(metadata.getKeyValuePair(resolveKey(this, key)));
+    String resolved = resolveKey(this, key);
+
+    if (key != null && containsKey(resolved)) {
+      return new MetadataElement(resolved, getValue(resolved));
     }
     return null;
   }
-  
+
   @Override
   public Map<String, String> getMessageHeaders() {
     Map<String, String> newSet = new HashMap<String, String>();
-    for (Iterator<KeyValuePair> i = metadata.getKeyValuePairs().iterator(); i.hasNext();) {
-      KeyValuePair kp = i.next();
+    for (MetadataElement kp : metadata) {
       newSet.put(kp.getKey(), kp.getValue());
     }
     return newSet;
   }
 
-
   @Override
   public Set<MetadataElement> getMetadata() {
-    Set<MetadataElement> newSet = new HashSet<MetadataElement>();
-    for (Iterator i = metadata.getKeyValuePairs().iterator(); i.hasNext();) {
-      KeyValuePair kp = (KeyValuePair) i.next();
-      newSet.add(new MetadataElement(kp.getKey(), kp.getValue()));
-    }
-    return newSet;
+    return new HashSet<MetadataElement>(metadata);
   }
 
   @Override
@@ -259,14 +251,16 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
   @Override
   public Reader getReader() throws IOException {
-    return getContentEncoding() != null ? new InputStreamReader(getInputStream(), getContentEncoding()) : new InputStreamReader(
-        getInputStream());
+    return getContentEncoding() != null
+        ? new InputStreamReader(getInputStream(), getContentEncoding())
+        : new InputStreamReader(getInputStream());
   }
 
   @Override
   public Writer getWriter() throws IOException {
-    return getContentEncoding() != null ? new OutputStreamWriter(getOutputStream(), getContentEncoding()) : new OutputStreamWriter(
-        getOutputStream());
+    return getContentEncoding() != null
+        ? new OutputStreamWriter(getOutputStream(), getContentEncoding())
+        : new OutputStreamWriter(getOutputStream());
   }
 
   @Override
@@ -335,12 +329,11 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   public void addObjectMetadata(String key, Object object) {
     objectMetadata.put(key, object);
   }
-  
+
   /**
    * <p>
-   * Adds an <code>Object</code> to this message as metadata. Object metadata is
-   * intended to be used within a single <code>Workflow</code> only and will not
-   * be encoded or otherwise transported between Workflows.
+   * Adds an <code>Object</code> to this message as metadata. Object metadata is intended to be used within a single
+   * <code>Workflow</code> only and will not be encoded or otherwise transported between Workflows.
    * </p>
    *
    * @param object the <code>Object</code> to set as metadata
@@ -354,7 +347,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   public Map getObjectMetadata() {
     return objectMetadata;
   }
-  
+
   @Override
   public Map<Object, Object> getObjectHeaders() {
     return objectMetadata;
@@ -368,24 +361,15 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
   @Override
   public String toString(boolean includePayload, boolean includeEvents) {
-    StringBuffer result = new StringBuffer();
-
-    result.append("[");
-    result.append(this.getClass().getName());
-    result.append("] uniqueId [");
-    result.append(uniqueId);
-    result.append("] metadata [");
-    result.append(metadata);
+    ToStringBuilder builder = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("uniqueId", getUniqueId())
+        .append("metadata", metadata);
     if (includeEvents) {
-      result.append("] message events [");
-      result.append(messageLifeCycle);
+      builder.append("message events", messageLifeCycle);
     }
     if (includePayload) {
-      result.append("] payload [");
-      result.append(getPayloadForLogging());
+      builder.append("payload", getPayloadForLogging());
     }
-    result.append("]");
-    return result.toString();
+    return builder.toString();
   }
 
   /** @see AdaptrisMessage#toString(boolean) */
@@ -402,14 +386,9 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     return nextServiceId;
   }
 
-  /** @see AdaptrisMessage#setNextServiceId(java.lang.String) */
   @Override
   public void setNextServiceId(String s) {
-    if (s == null) {
-      throw new IllegalArgumentException("Illegal service-id [" + s + "]");
-    }
-
-    nextServiceId = s;
+    nextServiceId = Args.notNull(s, nextServiceId);
   }
 
   @Override
@@ -444,10 +423,10 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   }
 
   private long nextSequenceNumber() {
-    int result= 0;
+    int result = 0;
     if (containsKey(CoreConstants.MLE_SEQUENCE_KEY)) {
       try {
-        result = Integer.parseInt(metadata.getValue(CoreConstants.MLE_SEQUENCE_KEY));
+        result = Integer.parseInt(getMetadataValue(CoreConstants.MLE_SEQUENCE_KEY));
       }
       catch (Exception e) {
         log.warn("Failed to assign next lifecycle marker number, resetting");
@@ -469,19 +448,17 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     return result;
   }
 
-
   /**
-   * @see com.adaptris.core.AdaptrisMessage
-   *      #getMetadataValueIgnoreKeyCase(java.lang.String)
+   * @see com.adaptris.core.AdaptrisMessage #getMetadataValueIgnoreKeyCase(java.lang.String)
    */
   @Override
   public String getMetadataValueIgnoreKeyCase(String key) {
     String result = getMetadataValue(key);
-
-    if (result == null) { // no exact match
-      for (KeyValuePair pair : metadata.getKeyValuePairs()) {
-        if (pair.getKey().equalsIgnoreCase(key)) {
-          result = pair.getValue();
+    if (result == null) {
+      String resolvedKey = resolveKey(this, key);
+      for (MetadataElement e : metadata) {
+        if (e.getKey().equalsIgnoreCase(resolvedKey)) {
+          result = e.getValue();
           break;
         }
       }
@@ -546,5 +523,14 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     }
 
     return result;
+  }
+
+  private String getValue(String key) {
+    for (MetadataElement e : metadata) {
+      if (e.getKey().equals(key)) {
+        return e.getValue();
+      }
+    }
+    return null;
   }
 }

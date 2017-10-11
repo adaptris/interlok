@@ -19,7 +19,7 @@ package com.adaptris.mail;
 import com.icegreen.greenmail.pop3.Pop3Server;
 import com.icegreen.greenmail.util.GreenMail;
 
-public class TestJavamailPop3Receive extends MailReceiverCase {
+public class TestJavamailPop3Receive extends Pop3ReceiverCase {
 
   public TestJavamailPop3Receive(String name) {
     super(name);

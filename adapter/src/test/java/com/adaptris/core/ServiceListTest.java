@@ -26,6 +26,7 @@ import com.adaptris.core.services.exception.ThrowExceptionService;
 import com.adaptris.core.services.metadata.AddMetadataService;
 import com.adaptris.core.stubs.CheckComponentStateService;
 import com.adaptris.core.stubs.MockStopProcessingService;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.PlainIdGenerator;
 import com.adaptris.util.TimeInterval;
 
@@ -278,6 +279,107 @@ public class ServiceListTest extends ServiceCollectionCase {
     Thread.currentThread().setName(name);
   }
 
+  public void testAllowSkip() {
+    ServiceList result = new ServiceList();
+    assertTrue(result.forwardSearch());
+    assertNull(result.getAllowForwardSearch());
+    result.setAllowForwardSearch(false);
+    assertEquals(Boolean.FALSE, result.getAllowForwardSearch());
+    assertFalse(result.forwardSearch());
+  }
+
+  public void testForwardSearch_Default() throws Exception {
+    NextServiceIdSetter first = new NextServiceIdSetter(getName(), "third");
+    MarkerService second = new MarkerService("second");
+    MarkerService third = new MarkerService("third");
+    MarkerService fourth = new MarkerService("fourth");
+    ServiceList service = new ServiceList(first, second, third, fourth);
+    try {
+      LifecycleHelper.initAndStart(service);
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+      service.doService(msg);
+      assertFalse(second.hasTriggered);
+      assertTrue(third.hasTriggered);
+      assertTrue(fourth.hasTriggered);
+    } finally {
+      LifecycleHelper.stopAndClose(service);
+    }
+  }
+
+  public void testForwardSearch_NotEnabled() throws Exception {
+    NextServiceIdSetter first = new NextServiceIdSetter(getName(), "third");
+    MarkerService second = new MarkerService("second");
+    MarkerService third = new MarkerService("third");
+    MarkerService fourth = new MarkerService("fourth");
+    ServiceList service = new ServiceList(first, second, third, fourth);
+    service.setAllowForwardSearch(false);
+    try {
+      LifecycleHelper.initAndStart(service);
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+      service.doService(msg);
+      assertTrue(second.hasTriggered);
+      assertTrue(third.hasTriggered);
+      assertTrue(fourth.hasTriggered);
+    } finally {
+      LifecycleHelper.stopAndClose(service);
+    }
+  }
+
+  public void testForwardSearch_MissingUniqueId() throws Exception {
+    NextServiceIdSetter first = new NextServiceIdSetter(getName(), "third");
+    MarkerService second = new MarkerService("");
+    MarkerService third = new MarkerService("");
+    MarkerService fourth = new MarkerService("");
+    ServiceList service = new ServiceList(first, second, third, fourth);
+    try {
+      LifecycleHelper.initAndStart(service);
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+      service.doService(msg);
+      assertTrue(second.hasTriggered);
+      assertTrue(third.hasTriggered);
+      assertTrue(fourth.hasTriggered);
+    } finally {
+      LifecycleHelper.stopAndClose(service);
+    }
+  }
+
+
+  public void testForwardSearch_NoMatch() throws Exception {
+    NextServiceIdSetter first = new NextServiceIdSetter(getName(), "99 Luftballon");
+    MarkerService second = new MarkerService("second");
+    MarkerService third = new MarkerService("third");
+    MarkerService fourth = new MarkerService("fourth");
+    ServiceList service = new ServiceList(first, second, third, fourth);
+    try {
+      LifecycleHelper.initAndStart(service);
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+      service.doService(msg);
+      assertTrue(second.hasTriggered);
+      assertTrue(third.hasTriggered);
+      assertTrue(fourth.hasTriggered);
+    } finally {
+      LifecycleHelper.stopAndClose(service);
+    }
+  }
+
+  public void testForwardSearch_BackwardsNotAllowed() throws Exception {
+    MarkerService first = new MarkerService("first");
+    NextServiceIdSetter second = new NextServiceIdSetter(getName(), "first");
+    MarkerService third = new MarkerService("third");
+    MarkerService fourth = new MarkerService("fourth");
+    ServiceList service = new ServiceList(first, second, third, fourth);
+    try {
+      LifecycleHelper.initAndStart(service);
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+      service.doService(msg);
+      assertTrue(first.hasTriggered);
+      assertTrue(third.hasTriggered);
+      assertTrue(fourth.hasTriggered);
+    } finally {
+      LifecycleHelper.stopAndClose(service);
+    }
+  }
+
   @Override
   protected Object retrieveObjectForSampleConfig() {
     ServiceList result = new ServiceList();
@@ -310,14 +412,21 @@ public class ServiceListTest extends ServiceCollectionCase {
 
   private class MarkerService extends ServiceImp {
 
-    private boolean hasTriggered = false;
+    private transient boolean hasTriggered = false;
+
+    public MarkerService() {}
+
+    public MarkerService(String s) {
+      this();
+      setUniqueId(s);
+    }
 
     public void doService(AdaptrisMessage msg) throws ServiceException {
       hasTriggered = true;
     }
+
     @Override
-    protected void initService() throws CoreException {
-    }
+    protected void initService() throws CoreException {}
 
     @Override
     protected void closeService() {
@@ -325,8 +434,32 @@ public class ServiceListTest extends ServiceCollectionCase {
     }
 
     @Override
-    public void prepare() throws CoreException {
+    public void prepare() throws CoreException {}
+
+  }
+
+  private class NextServiceIdSetter extends ServiceImp {
+
+    private transient String nextServiceId;
+
+    private NextServiceIdSetter(String myUid, String next) {
+      super();
+      setUniqueId(myUid);
+      nextServiceId = next;
     }
+
+    public void doService(AdaptrisMessage msg) throws ServiceException {
+      msg.setNextServiceId(nextServiceId);
+    }
+
+    @Override
+    protected void initService() throws CoreException {}
+
+    @Override
+    protected void closeService() {}
+
+    @Override
+    public void prepare() throws CoreException {}
 
   }
   private class ExceptionContainer {

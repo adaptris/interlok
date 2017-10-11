@@ -51,7 +51,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("exception-report-service")
 @AdapterComponent
-@ComponentProfile(summary = "Generate an XML report based on the current exception", tag = "service,error-handling")
+@ComponentProfile(summary = "Generate a report based on the current exception", tag = "service,error-handling")
 @DisplayOrder(order = {"exceptionSerializer"})
 public class ExceptionReportService extends ServiceImp {
 

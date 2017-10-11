@@ -16,8 +16,12 @@
 
 package com.adaptris.util;
 
-import java.io.Serializable;
+import javax.validation.constraints.NotNull;
 
+import org.hibernate.validator.constraints.NotBlank;
+
+import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -30,31 +34,20 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config key-value-pair
  */
 @XStreamAlias("key-value-pair")
-public class KeyValuePair implements Serializable {
+public class KeyValuePair implements NameValuePair {
 
-  /**
-   *
-   */
-  private static final long serialVersionUID = 2013111201L;
+  private static final long serialVersionUID = 2017081501L;
 
+  @NotBlank
   private String key = "";
+  @InputFieldDefault(value = "")
+  @InputFieldHint(style = "BLANKABLE")
+  @NotNull
   private String value = "";
 
-  /**
-   * <p>
-   * Creates an empty new instance.  Defaults to empty <code>String</code>s.
-   * </p>
-   */
   public KeyValuePair() {
   }
 
-  /**
-   * <p>
-   * Creates a new instance.
-   * </p>
-   * @param key may not be null
-   * @param value may not be null
-   */
   public KeyValuePair(String key, String value) {
     setKey(key);
     setValue(value);
@@ -70,12 +63,6 @@ public class KeyValuePair implements Serializable {
     this.key = Args.notNull(key, "key");
   }
 
-  /**
-   * <p>
-   * Returns the key.
-   * </p>
-   * @return the <code>String</code> key, never null
-   */
   public String getKey() {
     return key;
   }
@@ -90,22 +77,10 @@ public class KeyValuePair implements Serializable {
       this.value = Args.notNull(value, "value");
   }
 
-  /**
-   * <p>
-   * Returns the value.
-   * </p>
-   * @return the <code>String</code> value, never null
-   */
   public String getValue() {
     return value;
   }
 
-  /**
-   * <p>
-   * Returns a <code>String</code> representation of this object.
-   * </p>
-   * @return a <code>String</code> representation of this object
-   */
   @Override
   public String toString() {
     return "key [" + key + "] value [" + value + "]";

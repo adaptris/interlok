@@ -17,7 +17,6 @@
 package com.adaptris.core.mail;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
-import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -28,6 +27,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
@@ -56,7 +56,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Pickup messages from a email account without trying to parse the MIME message.",
     tag = "consumer,email", recommended = {NullConnection.class})
-@DisplayOrder(order = {"poller", "username", "password", "mailReceiverFactory"})
+@DisplayOrder(order = {"poller", "username", "password", "mailReceiverFactory", "headerHandler"})
 public class RawMailConsumer extends MailConsumerImp {
 
   @AdvancedConfig
@@ -74,21 +74,18 @@ public class RawMailConsumer extends MailConsumerImp {
     List<AdaptrisMessage> result = new ArrayList<AdaptrisMessage>();
     OutputStream out = null;
     try {
-      if (log.isTraceEnabled()) {
-        log.trace("Start Processing [" + mime.getMessageID() + "]");
-      }
+      log.trace("Start Processing [{}]", mime.getMessageID());
       AdaptrisMessage msg = defaultIfNull(getMessageFactory()).newMessage();
+      String uuid = msg.getUniqueId();
       out = msg.getOutputStream();
       mime.writeTo(out);
-      if (useEmailMessageIdAsUniqueId() && !isEmpty(mime.getMessageID())) {
-        msg.setUniqueId(mime.getMessageID());
+      if (useEmailMessageIdAsUniqueId()) {
+        msg.setUniqueId(StringUtils.defaultIfBlank(mime.getMessageID(), uuid));
       }
+      headerHandler().handle(mime, msg);
       result.add(msg);
     }
-    catch (MessagingException e) {
-      throw new MailException(e.getMessage(), e);
-    }
-    catch (IOException e) {
+    catch (MessagingException | IOException e) {
       throw new MailException(e.getMessage(), e);
     }
     finally {

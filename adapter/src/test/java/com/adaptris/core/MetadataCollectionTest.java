@@ -23,11 +23,13 @@ import static org.junit.Assert.assertTrue;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairCollection;
 
 public class MetadataCollectionTest {
@@ -63,7 +65,7 @@ public class MetadataCollectionTest {
   @Test
   public void testContructor_KVPS() {
     KeyValuePairCollection elements = new KeyValuePairCollection();
-    elements.add(new MetadataElement("test", "value"));
+    elements.add(new KeyValuePair("test", "value"));
     MetadataCollection c = new MetadataCollection(elements);
     assertTrue(c.containsKey("test"));
   }
@@ -82,6 +84,25 @@ public class MetadataCollectionTest {
     elements.add(new MetadataElement("test", "value"));
     MetadataCollection c = new MetadataCollection(elements);
     assertEquals(elements, c.toSet());
+    assertEquals(0, MetadataCollection.asSet(null).size());
+  }
+
+  @Test
+  public void testAsProperties() {
+    Set<MetadataElement> elements = new HashSet<>();
+    elements.add(new MetadataElement("test", "value"));
+    Properties p = MetadataCollection.asProperties(elements);
+    assertEquals("value", p.getProperty("test"));
+    assertEquals(0, MetadataCollection.asProperties(null).size());
+  }
+
+  @Test
+  public void testAsMap() {
+    Set<MetadataElement> elements = new HashSet<>();
+    elements.add(new MetadataElement("test", "value"));
+    Map<String, String> p = MetadataCollection.asMap(elements);
+    assertEquals("value", p.get("test"));
+    assertEquals(0, MetadataCollection.asMap(null).size());
   }
 
 }

@@ -26,7 +26,7 @@ import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 
 /**
  */
-public class MapMessageTranslatorTest extends MessageTypeTranslatorCase {
+public class MapMessageTranslatorTest extends GenericMessageTypeTranslatorCase {
   private static final String BODY_KEY1 = "bodykey1";
 
   public MapMessageTranslatorTest(String name) {

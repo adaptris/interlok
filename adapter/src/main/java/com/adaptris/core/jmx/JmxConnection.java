@@ -43,6 +43,7 @@ import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.adaptris.security.password.Password;
 import com.adaptris.util.KeyValuePairBag;
 import com.adaptris.util.KeyValuePairSet;
+import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XStreamAlias("jmx-connection")
@@ -262,4 +263,37 @@ public class JmxConnection extends AllowsRetriesConnection {
   private String jmxServiceUrlForLogging() {
     return !isBlank(getJmxServiceUrl()) ? getJmxServiceUrl() : "Local JMX";
   }
+
+  public JmxConnection withJmxServiceUrl(String s) {
+    setJmxServiceUrl(s);
+    return this;
+  }
+
+  public JmxConnection withUsername(String s) {
+    setUsername(s);
+    return this;
+  }
+
+  public JmxConnection withPassword(String s) {
+    setPassword(s);
+    return this;
+  }
+
+  public JmxConnection withJmxProperties(KeyValuePairSet kvps) {
+    setJmxProperties(kvps);
+    return this;
+  }
+
+  public JmxConnection withAdditionalDebug(Boolean b) {
+    setAdditionalDebug(b);
+    return this;
+  }
+
+  public JmxConnection withRetries(Integer maxRetries, TimeInterval retryInterval) {
+    setConnectionRetryInterval(retryInterval);
+    setConnectionAttempts(maxRetries);
+    return this;
+  }
+
+
 }

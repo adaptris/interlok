@@ -363,6 +363,8 @@ public abstract class MessageTypeTranslatorCase extends BaseCase {
     }
   }
 
+
+
   public static void assertMetadata(AdaptrisMessage msg) {
     assertMetadata(msg, new MetadataElement(STRING_METADATA, STRING_VALUE));
     assertMetadata(msg, new MetadataElement(BOOLEAN_METADATA, BOOLEAN_VALUE));
