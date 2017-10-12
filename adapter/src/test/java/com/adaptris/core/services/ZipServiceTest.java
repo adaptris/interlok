@@ -59,11 +59,12 @@ public class ZipServiceTest extends GeneralServiceExample
 		execute(new UnzipDirectoryService(), msg);
 		final String unzippedPath = msg.getContent();
 
-		File dir = new File(unzippedPath); // the root extracted directory ($TMP/$message-id)
+    File dir = new File(unzippedPath); // the root extracted directory ($TMP/$message-id)
+		dir.deleteOnExit();
 		assertTrue(dir.isDirectory());
     dir = new File(dir.getAbsolutePath(), basedir.getName());
 		assertTrue(dir.isDirectory());
-		for (final File f : dir.listFiles())
+    for (final File f : dir.listFiles())
 		{
       File f2 = new File(dir, f.getName());
 			assertTrue(f2.exists());
@@ -86,8 +87,10 @@ public class ZipServiceTest extends GeneralServiceExample
 		final String unzippedPath = msg.getContent();
 
 		final File dir = new File(unzippedPath);
+		dir.deleteOnExit();
 		assertTrue(dir.isDirectory());
-    final File file = new File(dir, "build.xml");
+		final File file = new File(dir, "build.xml");
+		file.deleteOnExit();
 		assertTrue(file.exists());
 	}
 
