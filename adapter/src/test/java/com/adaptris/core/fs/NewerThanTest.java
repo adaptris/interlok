@@ -21,6 +21,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Calendar;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
@@ -48,6 +49,16 @@ public class NewerThanTest {
     NewerThan filter = new NewerThan("-PXXX");
     File file = writeFile(TempFileUtils.createTrackedFile(filter));
     assertFalse(filter.accept(file));
+  }
+
+  @Test
+  public void testAbsolute() throws Exception {
+    // Make it 2 days ago.
+    Calendar c = Calendar.getInstance();
+    c.add(Calendar.DAY_OF_YEAR, -2);
+    NewerThan filter = new NewerThan("" + c.getTime().getTime());
+    File file = writeFile(TempFileUtils.createTrackedFile(filter));
+    assertTrue(filter.accept(file));
   }
 
   private File writeFile(File f) throws IOException {
