@@ -71,7 +71,7 @@ public class ZipFolder
 			LOG.info("Compressing single file : " + zipRoot);
 			folder = zipRoot.getParent();
 			fileList.add(zipRoot.getName());
-			source = folder;
+			source = null;
 		}
 		else
 		{

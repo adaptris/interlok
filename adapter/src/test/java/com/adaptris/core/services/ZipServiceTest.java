@@ -95,6 +95,29 @@ public class ZipServiceTest extends GeneralServiceExample
 	}
 
 	@Test
+	public void testZipDirectoryServiceSingleFileAbsolutePath() throws Exception
+	{
+		final AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+		msg.addMetadata("zip-path", new File("build.xml").getAbsolutePath());
+		final ZipDirectoryService zip = new ZipDirectoryService();
+		zip.setDirectoryPath("%message{zip-path}");
+		execute(zip, msg);
+
+		final byte[] zippedData = msg.getPayload();
+
+		msg.setPayload(zippedData);
+		execute(new UnzipDirectoryService(), msg);
+		final String unzippedPath = msg.getContent();
+
+		final File dir = new File(unzippedPath);
+		//dir.deleteOnExit();
+		assertTrue(dir.isDirectory());
+		final File file = new File(dir, "build.xml");
+		//file.deleteOnExit();
+		assertTrue(file.exists());
+	}
+
+	@Test
 	public void testZipDirectoryServiceFailure() throws Exception
 	{
 		final AdaptrisMessage msg = new DefectiveMessageFactory().newMessage();
