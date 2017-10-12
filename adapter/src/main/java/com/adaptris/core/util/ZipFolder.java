@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -60,35 +59,37 @@ public class ZipFolder
 	 */
 	public byte[] zip() throws IOException
 	{
-		File zipRoot = new File(folder);
+		final File zipRoot = new File(folder);
 		if (!zipRoot.exists())
 		{
 			LOG.error("Attempting to ZIP nonexistant directory!");
 			throw new FileNotFoundException("Attempting to ZIP nonexistant directory!");
 		}
+		final String source;
 		if (zipRoot.isFile())
 		{
-			final File uuidTempDir = new File(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-			uuidTempDir.mkdir();
-			final File copiedFile = new File(uuidTempDir, zipRoot.getName());
-			copyFile(zipRoot, copiedFile);
-			zipRoot = uuidTempDir;
-			folder = zipRoot.getAbsolutePath();
+			LOG.info("Compressing single file : " + zipRoot);
+			folder = zipRoot.getParent();
+			fileList.add(zipRoot.getName());
+			source = folder;
 		}
-
-		final String source = zipRoot.getName();
-		generateFileList(zipRoot);
+		else
+		{
+			source = zipRoot.getName();
+			generateFileList(zipRoot);
+		}
 
 		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		try (final ZipOutputStream zos = new ZipOutputStream(baos))
 		{
-			for (final String file : fileList)
+			for (final String filename : fileList)
 			{
-				zos.putNextEntry(new ZipEntry(source + File.separator + file));
-				try (final FileInputStream in = new FileInputStream(folder + File.separator + file))
+				zos.putNextEntry(new ZipEntry(new File(source, filename).getPath()));
+				final File file = new File(folder, filename);
+				try (final FileInputStream in = new FileInputStream(file))
 				{
-					LOG.debug("Add " + folder + File.separator + file + " to ZIP archive");
-					final byte[] buffer = new byte[10240];
+					LOG.debug("Add " + file.getPath() + " to ZIP archive");
+					final byte[] buffer = new byte[ONE_MEG];
 					int len;
 					while ((len = in.read(buffer)) > 0)
 					{
@@ -145,13 +146,13 @@ public class ZipFolder
 			{
 				final String fileName = ze.getName();
 
-				final File newFile = new File(folder, fileName);
+				final File file = new File(folder, fileName);
 				// create directories for sub directories in zip
-				new File(newFile.getParent()).mkdirs();
+				new File(file.getParent()).mkdirs();
 
 				if (!ze.isDirectory())
 				{
-					try (final FileOutputStream fos = new FileOutputStream(newFile))
+					try (final FileOutputStream fos = new FileOutputStream(file))
 					{
 						int len;
 						while ((len = zis.read(buffer)) > 0)
@@ -185,31 +186,6 @@ public class ZipFolder
 			{
 				generateFileList(new File(file, filename));
 			}
-		}
-	}
-
-	/**
-	 * Copy a file from one path to another.
-	 * 
-	 * @param source
-	 *            The source file to copy.
-	 * @param destination
-	 *            The target destination.
-	 * @throws IOException
-	 *             Thrown if there is a problem copying the file.
-	 */
-	private static void copyFile(final File source, final File destination) throws IOException
-	{
-		final byte[] buffer = new byte[ONE_MEG];
-		try (final FileInputStream fis = new FileInputStream(source); final FileOutputStream fos = new FileOutputStream(destination);)
-		{
-			int b;
-			do
-			{
-				b = fis.read(buffer);
-				fos.write(buffer, 0, b);
-			}
-			while (b == buffer.length);
 		}
 	}
 }

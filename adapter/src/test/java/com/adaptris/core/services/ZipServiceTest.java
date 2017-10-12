@@ -16,6 +16,8 @@
 
 package com.adaptris.core.services;
 
+import java.io.File;
+
 import org.junit.Test;
 
 import com.adaptris.core.AdaptrisMessage;
@@ -53,9 +55,39 @@ public class ZipServiceTest extends GeneralServiceExample
 		execute(new UnzipDirectoryService(), msg);
 		final String unzippedPath = msg.getContent();
 
-		System.out.println(unzippedPath);
+		File dir = new File(unzippedPath); // the root extracted directory ($TMP/$message-id)
+		assertTrue(dir.isDirectory());
+		dir = new File(dir.getAbsolutePath(), "ivy");
+		assertTrue(dir.isDirectory());
+		for (final File f : dir.listFiles())
+		{
+			File f2 = new File("ivy", f.getName());
+			assertTrue(f2.exists());
+		}
 	}
 
+	@Test
+	public void testZipDirectoryServiceSingleFile() throws Exception
+	{
+		final AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+		msg.addMetadata("zip-path", "build.xml");
+		final ZipDirectoryService zip = new ZipDirectoryService();
+		zip.setDirectoryPath("%message{zip-path}");
+		execute(zip, msg);
+
+		final byte[] zippedData = msg.getPayload();
+
+		msg.setPayload(zippedData);
+		execute(new UnzipDirectoryService(), msg);
+		final String unzippedPath = msg.getContent();
+
+		final File dir = new File(unzippedPath);
+		assertTrue(dir.isDirectory());
+		final File file = new File(dir, "build.xml");
+		assertTrue(file.exists());
+	}
+
+	@Test
 	public void testZipDirectoryServiceFailure() throws Exception
 	{
 		final AdaptrisMessage msg = new DefectiveMessageFactory().newMessage();
