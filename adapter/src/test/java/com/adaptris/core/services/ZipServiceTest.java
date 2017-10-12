@@ -17,7 +17,9 @@
 package com.adaptris.core.services;
 
 import java.io.File;
+import java.io.IOException;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 import com.adaptris.core.AdaptrisMessage;
@@ -25,6 +27,7 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.GeneralServiceExample;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.stubs.DefectiveMessageFactory;
+import com.adaptris.core.stubs.TempFileUtils;
 
 public class ZipServiceTest extends GeneralServiceExample
 {
@@ -44,9 +47,10 @@ public class ZipServiceTest extends GeneralServiceExample
 	public void testZipDirectoryService() throws Exception
 	{
 		final AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-		msg.addMetadata("zip-path", "ivy");
-		final ZipDirectoryService zip = new ZipDirectoryService();
-		zip.setDirectoryPath("%message{zip-path}");
+    File basedir = createDirectory(5);
+    msg.addMetadata("zip-path", basedir.getCanonicalPath());
+    final ZipDirectoryService zip = new ZipDirectoryService("%message{zip-path}");
+
 		execute(zip, msg);
 
 		final byte[] zippedData = msg.getPayload();
@@ -57,11 +61,11 @@ public class ZipServiceTest extends GeneralServiceExample
 
 		File dir = new File(unzippedPath); // the root extracted directory ($TMP/$message-id)
 		assertTrue(dir.isDirectory());
-		dir = new File(dir.getAbsolutePath(), "ivy");
+    dir = new File(dir.getAbsolutePath(), basedir.getName());
 		assertTrue(dir.isDirectory());
 		for (final File f : dir.listFiles())
 		{
-			File f2 = new File("ivy", f.getName());
+      File f2 = new File(dir, f.getName());
 			assertTrue(f2.exists());
 		}
 	}
@@ -70,7 +74,7 @@ public class ZipServiceTest extends GeneralServiceExample
 	public void testZipDirectoryServiceSingleFile() throws Exception
 	{
 		final AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-		msg.addMetadata("zip-path", "build.xml");
+    msg.addMetadata("zip-path", "build.xml");
 		final ZipDirectoryService zip = new ZipDirectoryService();
 		zip.setDirectoryPath("%message{zip-path}");
 		execute(zip, msg);
@@ -83,7 +87,7 @@ public class ZipServiceTest extends GeneralServiceExample
 
 		final File dir = new File(unzippedPath);
 		assertTrue(dir.isDirectory());
-		final File file = new File(dir, "build.xml");
+    final File file = new File(dir, "build.xml");
 		assertTrue(file.exists());
 	}
 
@@ -108,7 +112,16 @@ public class ZipServiceTest extends GeneralServiceExample
 	@Override
 	protected Object retrieveObjectForSampleConfig()
 	{
-		return new GzipService();
+    return new ZipDirectoryService("/path/to/directory");
 	}
+
+  private File createDirectory(int fileCount) throws IOException {
+    File root = TempFileUtils.createTrackedDir(this);
+    for (int i = 0; i < fileCount; i++) {
+      File f = TempFileUtils.createTrackedFile("zippy", "", root, this);
+      FileUtils.write(f, "Hello World");
+    }
+    return root;
+  }
 
 }

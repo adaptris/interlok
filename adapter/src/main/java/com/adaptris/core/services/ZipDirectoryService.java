@@ -3,12 +3,16 @@ package com.adaptris.core.services;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.hibernate.validator.constraints.NotBlank;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ZipFolder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -25,7 +29,18 @@ public class ZipDirectoryService extends ServiceImp
 	/**
 	 * The directory to zip.
 	 */
+  @InputFieldHint(expression = true)
+  @NotBlank
 	private String directoryPath;
+
+  public ZipDirectoryService() {
+
+  }
+
+  public ZipDirectoryService(String path) {
+    this();
+    setDirectoryPath(path);
+  }
 
 	/**
 	 * Get the directory to zip.
@@ -45,7 +60,7 @@ public class ZipDirectoryService extends ServiceImp
 	 */
 	public void setDirectoryPath(final String directoryPath)
 	{
-		this.directoryPath = directoryPath;
+    this.directoryPath = Args.notBlank(directoryPath, "directoryPath");
 	}
 
 	@Override
