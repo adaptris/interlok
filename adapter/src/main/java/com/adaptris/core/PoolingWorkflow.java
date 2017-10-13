@@ -343,7 +343,7 @@ public class PoolingWorkflow extends WorkflowImp {
   @Override
   protected void handleBadMessage(String logMsg, Exception e, AdaptrisMessage msg) {
     if (retrieveActiveMsgErrorHandler() instanceof RetryMessageErrorHandler) {
-      log.warn(msg.getUniqueId() + " failed with [" + e.getMessage() + "], it will be retried");
+      log.warn("{} failed with [{}], it will be retried", msg.getUniqueId(), e.getMessage());
     }
     else {
       log.error(logMsg, e);
@@ -401,7 +401,7 @@ public class PoolingWorkflow extends WorkflowImp {
     ExecutorService populator = Executors.newCachedThreadPool();
     try {
       final CyclicBarrier barrier = new CyclicBarrier(size + 1);
-      log.trace("Creating {} objects for initial population of the pool", size);
+      log.trace("Need more ({}) children as soon as possible to handle work. Get to it", size);
       final List<Worker> workers = new ArrayList<Worker>(size);
       for (int i = 0; i < size; i++) {
         populator.execute(new Runnable() {
@@ -443,7 +443,7 @@ public class PoolingWorkflow extends WorkflowImp {
         catch (InterruptedException e) {
         }
         if (!success) {
-          log.trace("Pool failed to shutdown in " + shutdownWaitTimeMs() + "ms, forcing shutdown");
+          log.trace("Failed to gracefully shutdown in {}ms, forced termination", shutdownWaitTimeMs());
           List<Runnable> list = threadPool.shutdownNow();
           for (Runnable l : list) {
             WorkerThread sd = (WorkerThread) l;
@@ -451,6 +451,7 @@ public class PoolingWorkflow extends WorkflowImp {
           }
         }
       }
+      log.trace("All children terminated; existence pointless");
       objectPool.close();
     }
     catch (Exception e) {
@@ -713,13 +714,13 @@ public class PoolingWorkflow extends WorkflowImp {
         objectPool.returnObject(slave);
       }
       catch (Exception e) {
-        log.trace("[" + toString() + "] failed pool re-entry, attempting to invalidate");
+        log.trace("[{}] failed pool re-entry, attempting to invalidate", toString());
         try {
           objectPool.invalidateObject(slave);
-          log.trace("[" + toString() + "] invalidated");
+          log.trace("[{}] invalidated", toString());
         }
         catch (Exception ignoredIntentionally) {
-          log.trace("[" + toString() + "] was not invalidated");
+          log.trace("[{}] not invalidated", toString());
         }
       }
       Thread.currentThread().setName(oldName);
@@ -765,7 +766,7 @@ public class PoolingWorkflow extends WorkflowImp {
       workflowStart(msg);
       try {
         long start = System.currentTimeMillis();
-        log.debug("start processing message [" + msg.toString(logPayload()) + "]");
+        log.debug("start processing message [{}]", msg.toString(logPayload()));
         wip = (AdaptrisMessage) msg.clone();
         // Set the channel id and workflow id on the message lifecycle.
         wip.getMessageLifecycleEvent().setChannelId(obtainChannel().getUniqueId());
