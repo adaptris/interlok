@@ -51,6 +51,7 @@ import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.services.WaitService;
 import com.adaptris.core.stubs.AdaptrisMessageStub;
 import com.adaptris.core.stubs.MockMessageProducer;
+import com.adaptris.core.stubs.MockWorkflowInterceptor;
 import com.adaptris.core.stubs.StaticMockMessageProducer;
 import com.adaptris.core.stubs.StubMessageFactory;
 import com.adaptris.http.legacy.SimpleHttpProducer;
@@ -89,7 +90,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
   }
 
   public void testSetAdditionalDebug() throws Exception {
-    MessageConsumer consumer = JettyHelper.createDeprecatedConsumer(URL_TO_POST_TO);
+    JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
     consumer.setAdditionalDebug(null);
     assertNull(consumer.getAdditionalDebug());
     assertEquals(false, consumer.additionalDebug());
@@ -98,15 +99,59 @@ public class HttpConsumerTest extends HttpConsumerExample {
     assertEquals(true, consumer.additionalDebug());
   }
 
+  public void testSetWarnAfter() throws Exception {
+    JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
+    assertNull(consumer.getWarnAfterMessageHangMillis());
+    assertNull(consumer.getWarnAfter());
+
+    assertEquals(Long.MAX_VALUE, consumer.warnAfter());
+    consumer.setWarnAfterMessageHangMillis(10L);
+    assertNull(consumer.getWarnAfter());
+    assertEquals(10, consumer.warnAfter());
+
+    consumer.setWarnAfterMessageHangMillis(null);
+    consumer.setWarnAfter(new TimeInterval(10L, TimeUnit.MILLISECONDS));
+    assertNotNull(consumer.getWarnAfter());
+    assertEquals(10, consumer.warnAfter());
+  }
+
+  public void testSetSendProcessingInterval() throws Exception {
+    JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
+    assertNull(consumer.getSendProcessingInterval());
+
+    assertEquals(TimeUnit.SECONDS.toMillis(20L), consumer.sendProcessingInterval());
+
+    TimeInterval t = new TimeInterval(10L, TimeUnit.MILLISECONDS);
+    consumer.setSendProcessingInterval(t);
+    assertEquals(t, consumer.getSendProcessingInterval());
+    assertEquals(10, consumer.sendProcessingInterval());
+  }
+
   public void testSetMaxWaitTime() throws Exception {
     MessageConsumer consumer = JettyHelper.createDeprecatedConsumer(URL_TO_POST_TO);
     consumer.setMaxWaitTime(null);
     assertNull(consumer.getMaxWaitTime());
-    assertEquals(new TimeInterval(600L, TimeUnit.SECONDS).toMilliseconds(), consumer.maxWaitTime());
+    assertNotNull(consumer.timeoutAction());
+    assertEquals(TimeUnit.MINUTES.toMillis(10L), consumer.timeoutAction().maxWaitTime());
     TimeInterval t = new TimeInterval(100L, TimeUnit.SECONDS);
     consumer.setMaxWaitTime(t);
     assertEquals(t, consumer.getMaxWaitTime());
-    assertEquals(t.toMilliseconds(), consumer.maxWaitTime());
+    assertNotNull(consumer.timeoutAction());
+    assertEquals(t.toMilliseconds(), consumer.timeoutAction().maxWaitTime());
+  }
+
+  public void testSetTimeoutAction() throws Exception {
+    JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
+    assertNull(consumer.getTimeoutAction());
+    assertNotNull(consumer.timeoutAction());
+    assertEquals(TimeUnit.MINUTES.toMillis(10L), consumer.timeoutAction().maxWaitTime());
+    assertEquals(HttpStatus.ACCEPTED_202.getStatusCode(), consumer.timeoutAction().status());
+    TimeoutAction t = new TimeoutAction(new TimeInterval(100L, TimeUnit.SECONDS), HttpStatus.OK_200);
+    consumer.setTimeoutAction(t);
+    assertEquals(t, consumer.getTimeoutAction());
+    assertNotNull(consumer.timeoutAction());
+    assertEquals(TimeUnit.SECONDS.toMillis(100L), consumer.timeoutAction().maxWaitTime());
+    assertEquals(HttpStatus.OK_200.getStatusCode(), consumer.timeoutAction().status());
   }
 
   public void testConnection_NonDefaults() throws Exception {
@@ -192,6 +237,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     MockMessageProducer mockProducer = new StaticMockMessageProducer();
     mockProducer.getMessages().clear();
     JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
+    consumer.setWarnAfter(new TimeInterval(10L, TimeUnit.MILLISECONDS));
     PoolingWorkflow workflow = new PoolingWorkflow();
     ResponseProducer responder = new ResponseProducer(HttpStatus.OK_200);
     workflow.setConsumer(consumer);
@@ -222,6 +268,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     mockProducer.getMessages().clear();
     JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
     PoolingWorkflow workflow = new PoolingWorkflow();
+    workflow.addInterceptor(new MockWorkflowInterceptor());
     workflow.setShutdownWaitTime(new TimeInterval(5L, TimeUnit.SECONDS));
     ResponseProducer responder = new ResponseProducer(HttpStatus.OK_200);
     workflow.setConsumer(consumer);
@@ -237,6 +284,36 @@ public class HttpConsumerTest extends HttpConsumerExample {
       AdaptrisMessage reply = httpProducer.request(msg, createProduceDestination(connection.getPort()));
       // Because of redmineID #4715 it should just "return immediatel" which flushes the stream so there's no content.
       assertEquals("Reply Payloads", "", reply.getContent());
+    }
+    finally {
+      stop(httpProducer);
+      channel.requestClose();
+    }
+  }
+
+  public void testPoolingWorkflow_TimeoutAction_TimeoutExceeded() throws Exception {
+    HttpConnection connection = createConnection(null);
+    MockMessageProducer mockProducer = new StaticMockMessageProducer();
+    mockProducer.getMessages().clear();
+    JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
+    consumer.setAdditionalDebug(false);
+    consumer.setTimeoutAction(new TimeoutAction(new TimeInterval(10L, TimeUnit.MILLISECONDS)));
+    PoolingWorkflow workflow = new PoolingWorkflow();
+    ResponseProducer responder = new ResponseProducer(HttpStatus.OK_200);
+    workflow.setConsumer(consumer);
+    workflow.getServiceCollection().add(new WaitService(new TimeInterval(1L, TimeUnit.SECONDS)));
+    workflow.getServiceCollection().add(new StandaloneProducer(mockProducer));
+    workflow.getServiceCollection().add(new StandaloneProducer(responder));
+    workflow.addInterceptor(new JettyPoolingWorkflowInterceptor());
+    Channel channel = JettyHelper.createChannel(connection, workflow);
+    try {
+      channel.requestStart();
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
+      msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
+      start(httpProducer);
+      AdaptrisMessage reply = httpProducer.request(msg, createProduceDestination(connection.getPort()));
+      assertEquals(Integer.valueOf(HttpStatus.ACCEPTED_202.getStatusCode()),
+          Integer.valueOf(reply.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE)));
     }
     finally {
       stop(httpProducer);
@@ -1033,11 +1110,13 @@ public class HttpConsumerTest extends HttpConsumerExample {
     http.getServerConnectorProperties().clear();
     http.getServerConnectorProperties().add(new KeyValuePair(ServerConnectorProperty.SoLingerTime.name(), "-1"));
     http.getServerConnectorProperties().add(new KeyValuePair(ServerConnectorProperty.ReuseAaddress.name(), "true"));
+    http.getServerConnectorProperties().add(new KeyValuePair("WillNotMatch", "true"));
 
     http.getHttpConfiguration().clear();
     http.getHttpConfiguration().add(new KeyValuePair(HttpConfigurationProperty.OutputBufferSize.name(), "8192"));
     http.getHttpConfiguration().add(new KeyValuePair(HttpConfigurationProperty.SendServerVersion.name(), "false"));
     http.getHttpConfiguration().add(new KeyValuePair(HttpConfigurationProperty.SendDateHeader.name(), "false"));
+    http.getHttpConfiguration().add(new KeyValuePair("WillNotMatch", "false"));
 
     return http;
   }

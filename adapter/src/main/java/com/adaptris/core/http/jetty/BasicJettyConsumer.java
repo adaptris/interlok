@@ -32,7 +32,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +39,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
@@ -71,7 +71,6 @@ import com.adaptris.util.TimeInterval;
 public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   private static final long DEFAULT_EXPECT_INTERVAL = TimeUnit.SECONDS.toMillis(20);
 
-  private static final TimeInterval DEFAULT_MAX_WAIT_TIME = new TimeInterval(600L, TimeUnit.SECONDS);
   private static final TimeInterval DEFAULT_INTERMEDIATE_WAIT_TIME = new TimeInterval(1L, TimeUnit.SECONDS);
   private static final String COMMA = ",";
   private static final List<String> HTTP_METHODS;
@@ -87,7 +86,13 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   private Boolean additionalDebug;
 
   @AdvancedConfig
+  @Deprecated
   private TimeInterval maxWaitTime;
+
+  @AdvancedConfig
+  @InputFieldDefault(value = "return 202")
+  private TimeoutAction timeoutAction;
+
   @AdvancedConfig
   @InputFieldDefault(value = "Never")
   private TimeInterval warnAfter;
@@ -195,9 +200,6 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
       acceptedMethods = Arrays.asList(getDestination().getFilterExpression().split(","));
       log.trace("Acceptable HTTP methods set to : {}", acceptedMethods);
     }
-    if (getWarnAfterMessageHangMillis() != null && getWarnAfter() == null) {
-      log.warn("Use of deprecated warn-after-message-hand-millis); use warn-after instead");
-    }
   }
 
   /**
@@ -232,7 +234,9 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
 
   /**
    * @return the maxWaitTime
+   * @deprecated since 3.6.6 use {@link #getTimeoutAction()} instead.
    */
+  @Deprecated
   public TimeInterval getMaxWaitTime() {
     return maxWaitTime;
   }
@@ -244,17 +248,38 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
    * the event that the wait time is exceeded, then the internal {@link javax.servlet.http.HttpServlet} instance commits the
    * response in its current state and returns control back to the Jetty engine.
    * </p>
-   * <p>
-   * </p>
    * 
    * @param maxWait the maxWaitTime to set (default 10 minutes)
+   * @deprecated since 3.6.6 use {@link #setTimeoutAction(TimeoutAction)} instead.
    */
+  @Deprecated
   public void setMaxWaitTime(TimeInterval maxWait) {
     maxWaitTime = maxWait;
   }
 
-  long maxWaitTime() {
-    return getMaxWaitTime() != null ? getMaxWaitTime().toMilliseconds() : DEFAULT_MAX_WAIT_TIME.toMilliseconds();
+  TimeoutAction timeoutAction() {
+    if (getMaxWaitTime() != null) {
+      log.warn("max-wait-time is deprecated); use timeout-action instead");
+      return new TimeoutAction(getMaxWaitTime());
+    }
+    return getTimeoutAction() != null ? getTimeoutAction() : new TimeoutAction();
+  }
+
+  public TimeoutAction getTimeoutAction() {
+    return timeoutAction;
+  }
+
+  /**
+   * Set the behaviour that should occur when the workflow takes too long to finish.
+   * <p>
+   * This setting only has an impact if the consumer is the entry point for a {@link com.adaptris.core.PoolingWorkflow} instance. In
+   * the event that the wait time is exceeded, then the behaviour specified here is done.
+   * </p>
+   * 
+   * @param action
+   */
+  public void setTimeoutAction(TimeoutAction action) {
+    this.timeoutAction = action;
   }
 
   public Boolean getAdditionalDebug() {
@@ -304,6 +329,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   long warnAfter() {
     long result = Long.MAX_VALUE;
     if (getWarnAfterMessageHangMillis() != null) {
+      log.warn("Use of deprecated warn-after-message-hand-millis; use warn-after instead");
       result = getWarnAfterMessageHangMillis().longValue();
     } else {
       result = getWarnAfter() != null ? getWarnAfter().toMilliseconds() : Long.MAX_VALUE;
@@ -409,24 +435,34 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
       msg.addObjectHeader(CoreConstants.JETTY_RESPONSE_KEY, response);
       msg.addObjectHeader(CoreConstants.JETTY_REQUEST_KEY, request);
       JettyConsumerMonitor monitor = new JettyConsumerMonitor();
-      monitor.setStartTime(new Date().getTime());
+      monitor.setStartTime(System.currentTimeMillis());
       msg.addObjectHeader(JettyPoolingWorkflowInterceptor.MESSAGE_MONITOR, monitor);
-      boolean waitFor = submitToWorkflow(msg);
+      waitFor(submitToWorkflow(msg), monitor, response, msg.getUniqueId());
+      cancel(task);
+    }
+
+    private void waitFor(boolean waitFor, JettyConsumerMonitor monitor, HttpServletResponse response, String loggingId)
+        throws IOException, ServletException {
       if (waitFor) {
+        TimeoutAction timeout = timeoutAction();
         try {
           synchronized (monitor) {
-            while ((!monitor.isMessageComplete()) && ((new Date().getTime() - monitor.getStartTime()) < maxWaitTime()))
+            while (!monitor.isMessageComplete()) {
+              timeout.checkTimeout(monitor);
               monitor.wait(DEFAULT_INTERMEDIATE_WAIT_TIME.toMilliseconds());
+            }
           }
         }
         catch (InterruptedException e) {
         }
+        catch (TimeoutException e) {
+          timeout.handleTimeout(response);
+        }
         if ((monitor.getEndTime() - monitor.getStartTime()) > warnAfter()) {
-          log.warn("Message ({}) took longer than expected; {}ms", msg.getUniqueId(),
+          log.warn("Message ({}) took longer than expected; {}ms", loggingId,
               ((monitor.getEndTime() - monitor.getStartTime())));
         }
       }
-      cancel(task);
     }
 
     private void cancel(TimerTask task) {
