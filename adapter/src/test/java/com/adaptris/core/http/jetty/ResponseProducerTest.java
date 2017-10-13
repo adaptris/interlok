@@ -23,6 +23,7 @@ import static com.adaptris.core.http.jetty.JettyHelper.createWorkflow;
 import java.util.Arrays;
 
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.BaseCase;
 import com.adaptris.core.Channel;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.DefaultMessageFactory;
@@ -34,7 +35,6 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceList;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandaloneRequestor;
-import com.adaptris.core.http.HttpProducerExample;
 import com.adaptris.core.http.JdkHttpProducer;
 import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.metadata.RegexMetadataFilter;
@@ -42,10 +42,9 @@ import com.adaptris.core.services.metadata.AddMetadataService;
 import com.adaptris.core.services.metadata.PayloadFromMetadataService;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.util.KeyValuePair;
-import com.adaptris.util.KeyValuePairSet;
 
 @SuppressWarnings("deprecation")
-public class ResponseProducerTest extends HttpProducerExample {
+public class ResponseProducerTest extends BaseCase {
 
   private static final String CUSTOM_VALUE2 = "CustomValue2";
   private static final String CUSTOM_VALUE1 = "CustomValue1";
@@ -394,21 +393,6 @@ public class ResponseProducerTest extends HttpProducerExample {
       stop(requestor);
       PortManager.release(httpConnection.getPort());
     }
-  }
-
-  @Override
-  protected Object retrieveObjectForSampleConfig() {
-    ResponseProducer producer = new ResponseProducer(HttpStatus.OK_200);
-    producer.setContentTypeKey("Content-Type-Metadata-Key");
-    KeyValuePair header1 = new KeyValuePair("key1", "val1");
-    KeyValuePair header2 = new KeyValuePair("key2", "val2");
-
-    KeyValuePairSet headers = new KeyValuePairSet();
-    headers.addKeyValuePair(header1);
-    headers.addKeyValuePair(header2);
-    producer.setAdditionalHeaders(headers);
-
-    return new StandaloneProducer(producer);
   }
 
   private HttpConnection createConnection() {
