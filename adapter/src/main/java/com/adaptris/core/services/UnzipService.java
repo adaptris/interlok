@@ -18,9 +18,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config unzip-service
  */
 @AdapterComponent
-@ComponentProfile(summary = "Zip the contents of the message", tag = "service,zip")
+@ComponentProfile(summary = "Zip the contents of the message", tag = "service,zip,unzip")
 @XStreamAlias("unzip-service")
-public class UnzipDirectoryService extends ServiceImp
+public class UnzipService extends ServiceImp
 {
 	@Override
 	public void doService(final AdaptrisMessage msg) throws ServiceException

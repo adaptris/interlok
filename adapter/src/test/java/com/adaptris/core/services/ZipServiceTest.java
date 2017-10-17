@@ -49,14 +49,14 @@ public class ZipServiceTest extends GeneralServiceExample
 		final AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     File basedir = createDirectory(5);
     msg.addMetadata("zip-path", basedir.getCanonicalPath());
-    final ZipDirectoryService zip = new ZipDirectoryService("%message{zip-path}");
+    final ZipService zip = new ZipService("%message{zip-path}");
 
 		execute(zip, msg);
 
 		final byte[] zippedData = msg.getPayload();
 
 		msg.setPayload(zippedData);
-		execute(new UnzipDirectoryService(), msg);
+		execute(new UnzipService(), msg);
 		final String unzippedPath = msg.getContent();
 
     File dir = new File(unzippedPath); // the root extracted directory ($TMP/$message-id)
@@ -76,14 +76,14 @@ public class ZipServiceTest extends GeneralServiceExample
 	{
 		final AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata("zip-path", "build.xml");
-		final ZipDirectoryService zip = new ZipDirectoryService();
+		final ZipService zip = new ZipService();
 		zip.setDirectoryPath("%message{zip-path}");
 		execute(zip, msg);
 
 		final byte[] zippedData = msg.getPayload();
 
 		msg.setPayload(zippedData);
-		execute(new UnzipDirectoryService(), msg);
+		execute(new UnzipService(), msg);
 		final String unzippedPath = msg.getContent();
 
 		final File dir = new File(unzippedPath);
@@ -99,14 +99,14 @@ public class ZipServiceTest extends GeneralServiceExample
 	{
 		final AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
 		msg.addMetadata("zip-path", new File("build.xml").getAbsolutePath());
-		final ZipDirectoryService zip = new ZipDirectoryService();
+		final ZipService zip = new ZipService();
 		zip.setDirectoryPath("%message{zip-path}");
 		execute(zip, msg);
 
 		final byte[] zippedData = msg.getPayload();
 
 		msg.setPayload(zippedData);
-		execute(new UnzipDirectoryService(), msg);
+		execute(new UnzipService(), msg);
 		final String unzippedPath = msg.getContent();
 
 		final File dir = new File(unzippedPath);
@@ -124,7 +124,7 @@ public class ZipServiceTest extends GeneralServiceExample
 		msg.addMetadata("zip-path", "ivy");
 		try
 		{
-			final ZipDirectoryService zip = new ZipDirectoryService();
+			final ZipService zip = new ZipService();
 			zip.setDirectoryPath("%message{zip-path}");
 			execute(zip, msg);
 			fail();
@@ -138,7 +138,7 @@ public class ZipServiceTest extends GeneralServiceExample
 	@Override
 	protected Object retrieveObjectForSampleConfig()
 	{
-    return new ZipDirectoryService("/path/to/directory");
+    return new ZipService("/path/to/directory");
 	}
 
   private File createDirectory(int fileCount) throws IOException {

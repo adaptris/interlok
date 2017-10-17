@@ -24,7 +24,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Zip the contents of the message", tag = "service,zip")
 @XStreamAlias("zip-service")
-public class ZipDirectoryService extends ServiceImp
+public class ZipService extends ServiceImp
 {
 	/**
 	 * The directory to zip.
@@ -33,11 +33,11 @@ public class ZipDirectoryService extends ServiceImp
   @NotBlank
 	private String directoryPath;
 
-  public ZipDirectoryService() {
+  public ZipService() {
 
   }
 
-  public ZipDirectoryService(String path) {
+  public ZipService(String path) {
     this();
     setDirectoryPath(path);
   }
