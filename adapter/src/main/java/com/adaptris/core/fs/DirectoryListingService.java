@@ -21,7 +21,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * List the contents of a directory.
  *
- * @config ls-to-metadata-service
+ * @config directory-listing-service
  */
 @AdapterComponent
 @ComponentProfile(summary = "List the contents of a directory", tag = "service,list,directory,ls")
