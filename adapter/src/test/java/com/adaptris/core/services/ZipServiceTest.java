@@ -63,10 +63,12 @@ public class ZipServiceTest extends GeneralServiceExample
 		dir.deleteOnExit();
 		assertTrue(dir.isDirectory());
 		dir = new File(dir.getAbsolutePath(), basedir.getName());
+		dir.deleteOnExit();
 		assertTrue(dir.isDirectory());
 		for (final File f : dir.listFiles())
 		{
 			final File f2 = new File(dir, f.getName());
+			f2.deleteOnExit();
 			assertTrue(f2.exists());
 		}
 	}
@@ -144,10 +146,12 @@ public class ZipServiceTest extends GeneralServiceExample
 	private File createDirectory(final int fileCount) throws IOException
 	{
 		final File root = TempFileUtils.createTrackedDir(this);
+		root.deleteOnExit();
 		for (int i = 0; i < fileCount; i++)
 		{
 			final File f = TempFileUtils.createTrackedFile("zippy", "", root, this);
 			FileUtils.write(f, "Hello World");
+			f.deleteOnExit();
 		}
 		return root;
 	}
