@@ -55,6 +55,7 @@ public class ReadFileService extends ServiceImp
 			{
 				log.info("Reading file : {}", file.getAbsolutePath());
 				final byte[] readFileToByteArray = FileUtils.readFileToByteArray(file);
+				log.info("Read {} bytes", readFileToByteArray.length);
 				message.setPayload(readFileToByteArray);
 			}
 			else
@@ -65,6 +66,7 @@ public class ReadFileService extends ServiceImp
 		}
 		catch (final InterlokException | IOException e)
 		{
+			log.error(e.getMessage());
 			throw new ServiceException(e);
 		}
 	}

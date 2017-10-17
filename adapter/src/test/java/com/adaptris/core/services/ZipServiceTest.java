@@ -110,10 +110,10 @@ public class ZipServiceTest extends GeneralServiceExample
 		final String unzippedPath = msg.getContent();
 
 		final File dir = new File(unzippedPath);
-		// dir.deleteOnExit();
+		dir.deleteOnExit();
 		assertTrue(dir.isDirectory());
 		final File file = new File(dir, "build.xml");
-		// file.deleteOnExit();
+		file.deleteOnExit();
 		assertTrue(file.exists());
 	}
 
@@ -151,5 +151,4 @@ public class ZipServiceTest extends GeneralServiceExample
 		}
 		return root;
 	}
-
 }
