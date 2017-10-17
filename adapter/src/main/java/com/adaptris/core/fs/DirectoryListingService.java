@@ -1,4 +1,4 @@
-package com.adaptris.core.services;
+package com.adaptris.core.fs;
 
 import java.io.File;
 import java.text.NumberFormat;
@@ -24,9 +24,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config ls-to-metadata-service
  */
 @AdapterComponent
-@ComponentProfile(summary = "List the contents of a sirectory", tag = "service,list,directory,ls")
-@XStreamAlias("ls-to-metadata-service")
-public class LsToMetadataService extends ServiceImp
+@ComponentProfile(summary = "List the contents of a directory", tag = "service,list,directory,ls")
+@XStreamAlias("directory-listing-service")
+public class DirectoryListingService extends ServiceImp
 {
 	/**
 	 * Whether debug mode is enabled.
@@ -36,7 +36,6 @@ public class LsToMetadataService extends ServiceImp
 	/**
 	 * The metadata key to export file listing data to.
 	 */
-	@NotNull
 	private DataInputParameter<String> metadataKey;
 
 	/**
@@ -51,8 +50,9 @@ public class LsToMetadataService extends ServiceImp
 	@Override
 	public void doService(final AdaptrisMessage message) throws ServiceException
 	{
-		if (missingRequiredParameters())
+		if (directoryPath == null)
 		{
+			log.error("Directory path is NULL, this service ({}) will not execute.", getUniqueId());
 			throw new ServiceException("Missing Required Parameters");
 		}
 
@@ -79,18 +79,41 @@ public class LsToMetadataService extends ServiceImp
 					}
 					buffer.append('\n');
 				}
-				message.addMessageHeader(metadataKey.extract(message), buffer.toString());
+				setOutput(message, buffer.toString());
 			}
 			else
 			{
 				log.warn("Directory does not exist: {}", path);
-				message.addMessageHeader(metadataKey.extract(message), "");
+				setOutput(message, "");
 			}
 		}
 		catch (final InterlokException e)
 		{
 			log.error(e.getMessage());
 			throw new ServiceException(e);
+		}
+	}
+
+	/**
+	 * Depending on whether the metadata key is set, put the directory listing output in the correct place (metadata or payload).
+	 * 
+	 * @param message
+	 *            The message.
+	 * @param output
+	 *            The directory listing.
+	 * 
+	 * @throws InterlokException
+	 *             Thrown if there is a problem with the metadata key.
+	 */
+	private void setOutput(final AdaptrisMessage message, final String output) throws InterlokException
+	{
+		if (metadataKey == null)
+		{
+			message.setContent(output, message.getContentEncoding());
+		}
+		else
+		{
+			message.addMessageHeader(metadataKey.extract(message), output);
 		}
 	}
 
@@ -118,28 +141,10 @@ public class LsToMetadataService extends ServiceImp
 	@Override
 	protected void initService() throws CoreException
 	{
-		missingRequiredParameters();
-	}
-
-	/**
-	 * Check whether the required parameters have been set.
-	 *
-	 * @return True if any required parameters are null.
-	 */
-	private boolean missingRequiredParameters()
-	{
-		boolean ok = false;
 		if (directoryPath == null)
 		{
 			log.warn("Directory path is NULL, this service ({}) will not execute.", getUniqueId());
-			ok = true;
 		}
-		if (metadataKey == null)
-		{
-			log.warn("Metadata key is NULL, this service ({}) will not execute.", getUniqueId());
-			ok = true;
-		}
-		return ok;
 	}
 
 	/**
@@ -189,7 +194,7 @@ public class LsToMetadataService extends ServiceImp
 	 *
 	 * @return True if debug mode is enabled.
 	 */
-	protected boolean isDebugModeEnabled()
+	protected boolean isDebugMode()
 	{
 		return debugMode;
 	}
