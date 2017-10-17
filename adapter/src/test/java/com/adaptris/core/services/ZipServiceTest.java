@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -47,9 +47,9 @@ public class ZipServiceTest extends GeneralServiceExample
 	public void testZipDirectoryService() throws Exception
 	{
 		final AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    File basedir = createDirectory(5);
-    msg.addMetadata("zip-path", basedir.getCanonicalPath());
-    final ZipService zip = new ZipService("%message{zip-path}");
+		final File basedir = createDirectory(5);
+		msg.addMetadata("zip-path", basedir.getCanonicalPath());
+		final ZipService zip = new ZipService("%message{zip-path}");
 
 		execute(zip, msg);
 
@@ -59,14 +59,14 @@ public class ZipServiceTest extends GeneralServiceExample
 		execute(new UnzipService(), msg);
 		final String unzippedPath = msg.getContent();
 
-    File dir = new File(unzippedPath); // the root extracted directory ($TMP/$message-id)
+		File dir = new File(unzippedPath); // the root extracted directory ($TMP/$message-id)
 		dir.deleteOnExit();
 		assertTrue(dir.isDirectory());
-    dir = new File(dir.getAbsolutePath(), basedir.getName());
+		dir = new File(dir.getAbsolutePath(), basedir.getName());
 		assertTrue(dir.isDirectory());
-    for (final File f : dir.listFiles())
+		for (final File f : dir.listFiles())
 		{
-      File f2 = new File(dir, f.getName());
+			final File f2 = new File(dir, f.getName());
 			assertTrue(f2.exists());
 		}
 	}
@@ -75,7 +75,7 @@ public class ZipServiceTest extends GeneralServiceExample
 	public void testZipDirectoryServiceSingleFile() throws Exception
 	{
 		final AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    msg.addMetadata("zip-path", "build.xml");
+		msg.addMetadata("zip-path", "build.xml");
 		final ZipService zip = new ZipService();
 		zip.setDirectoryPath("%message{zip-path}");
 		execute(zip, msg);
@@ -110,10 +110,10 @@ public class ZipServiceTest extends GeneralServiceExample
 		final String unzippedPath = msg.getContent();
 
 		final File dir = new File(unzippedPath);
-		//dir.deleteOnExit();
+		// dir.deleteOnExit();
 		assertTrue(dir.isDirectory());
 		final File file = new File(dir, "build.xml");
-		//file.deleteOnExit();
+		// file.deleteOnExit();
 		assertTrue(file.exists());
 	}
 
@@ -138,16 +138,18 @@ public class ZipServiceTest extends GeneralServiceExample
 	@Override
 	protected Object retrieveObjectForSampleConfig()
 	{
-    return new ZipService("/path/to/directory");
+		return new ZipService("/path/to/directory");
 	}
 
-  private File createDirectory(int fileCount) throws IOException {
-    File root = TempFileUtils.createTrackedDir(this);
-    for (int i = 0; i < fileCount; i++) {
-      File f = TempFileUtils.createTrackedFile("zippy", "", root, this);
-      FileUtils.write(f, "Hello World");
-    }
-    return root;
-  }
+	private File createDirectory(final int fileCount) throws IOException
+	{
+		final File root = TempFileUtils.createTrackedDir(this);
+		for (int i = 0; i < fileCount; i++)
+		{
+			final File f = TempFileUtils.createTrackedFile("zippy", "", root, this);
+			FileUtils.write(f, "Hello World");
+		}
+		return root;
+	}
 
 }

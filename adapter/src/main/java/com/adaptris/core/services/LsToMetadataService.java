@@ -53,7 +53,7 @@ public class LsToMetadataService extends ServiceImp
 	{
 		if (missingRequiredParameters())
 		{
-			return;
+			throw new ServiceException("Missing Required Parameters");
 		}
 
 		NumberFormat.getNumberInstance(Locale.UK);
