@@ -24,8 +24,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config ls-to-metadata-service
  */
 @AdapterComponent
-@ComponentProfile(summary = "List the contents of a sirectory", tag = "service,list,directory,ls")
-@XStreamAlias("ls-to-metadata-service")
+@ComponentProfile(summary = "List the contents of a directory", tag = "service,list,directory,ls")
+@XStreamAlias("directory-listing-service")
 public class DirectoryListingService extends ServiceImp
 {
 	/**
