@@ -76,7 +76,7 @@ public class DirectoryListingService extends ServiceImp
 					log.trace("Found file: {}", file.getName());
 					buffer.append(file.getName());
 					buffer.append(file.isDirectory() ? "/" : "");
-					if (debugMode)
+          if (debugMode())
 					{
 						buffer.append('\t');
 						buffer.append(humanReadableByteCount(file.length()));

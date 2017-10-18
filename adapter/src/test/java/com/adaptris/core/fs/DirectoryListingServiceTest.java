@@ -27,7 +27,7 @@ import com.adaptris.core.ServiceException;
 
 public class DirectoryListingServiceTest extends GeneralServiceExample
 {
-	private static final String DIRECTORY_PATH = "ivy";
+  private static final String DIRECTORY_PATH = System.getProperty("user.dir");
 	private static final String METADATA_KEY = "service-test";
 
 	public DirectoryListingServiceTest(final String testName)
@@ -44,6 +44,7 @@ public class DirectoryListingServiceTest extends GeneralServiceExample
 	@Test
 	public void testService() throws Exception
 	{
+
 		final AdaptrisMessage message = AdaptrisMessageFactory.getDefaultInstance().newMessage();
 		final DirectoryListingService service = (DirectoryListingService)retrieveObjectForSampleConfig();
 
@@ -55,6 +56,7 @@ public class DirectoryListingServiceTest extends GeneralServiceExample
 		{
 			assertTrue(ls.contains(file.getName()));
 		}
+
 	}
 
 	@Test
