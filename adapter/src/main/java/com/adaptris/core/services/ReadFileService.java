@@ -1,21 +1,24 @@
 package com.adaptris.core.services;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
-import com.adaptris.interlok.InterlokException;
-import com.adaptris.interlok.config.DataInputParameter;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -34,7 +37,9 @@ public class ReadFileService extends ServiceImp
 	 * The parameter for the path to the file to read.
 	 */
 	@NotNull
-	private DataInputParameter<String> filePath;
+  @Valid
+  @InputFieldHint(expression = true)
+  private String filePath;
 
 	/**
 	 * {@inheritDoc}.
@@ -50,13 +55,13 @@ public class ReadFileService extends ServiceImp
 
 		try
 		{
-			final File file = new File(filePath.extract(message));
+      final File file = new File(message.resolve(getFilePath()));
 			if (file.exists() && file.isFile())
 			{
-				log.info("Reading file : {}", file.getAbsolutePath());
-				final byte[] readFileToByteArray = FileUtils.readFileToByteArray(file);
-				log.info("Read {} bytes", readFileToByteArray.length);
-				message.setPayload(readFileToByteArray);
+        log.info("Reading file : {}", file.getAbsolutePath());
+        try (InputStream in = new FileInputStream(file); OutputStream out = message.getOutputStream()) {
+          IOUtils.copy(in, out);
+        }
 			}
 			else
 			{
@@ -64,7 +69,7 @@ public class ReadFileService extends ServiceImp
 				throw new FileNotFoundException("File " + file.getAbsolutePath() + " does not exist or is a directory!");
 			}
 		}
-		catch (final InterlokException | IOException e)
+    catch (final IOException e)
 		{
 			log.error(e.getMessage());
 			throw new ServiceException(e);
@@ -106,7 +111,7 @@ public class ReadFileService extends ServiceImp
 	 * 
 	 * @return The file path parameter.
 	 */
-	public DataInputParameter<String> getFilePath()
+  public String getFilePath()
 	{
 		return filePath;
 	}
@@ -117,7 +122,7 @@ public class ReadFileService extends ServiceImp
 	 * @param filePath
 	 *            The file path parameter.
 	 */
-	public void setFilePath(final DataInputParameter<String> filePath)
+  public void setFilePath(final String filePath)
 	{
 		this.filePath = filePath;
 	}

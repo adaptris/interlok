@@ -6,16 +6,18 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import javax.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.interlok.InterlokException;
-import com.adaptris.interlok.config.DataInputParameter;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -31,18 +33,22 @@ public class DirectoryListingService extends ServiceImp
 	/**
 	 * Whether debug mode is enabled.
 	 */
-	private boolean debugMode = false;
+  @InputFieldDefault(value = "false")
+  @AdvancedConfig
+  private Boolean debugMode;
 
 	/**
 	 * The metadata key to export file listing data to.
 	 */
-	private DataInputParameter<String> metadataKey;
+  @NotBlank
+  private String metadataKey;
 
 	/**
 	 * The folder to get a directory listing of.
 	 */
-	@NotNull
-	private DataInputParameter<String> directoryPath;
+  @NotBlank
+  @InputFieldHint(expression = true)
+  private String directoryPath;
 
 	/**
 	 * {@inheritDoc}.
@@ -59,7 +65,7 @@ public class DirectoryListingService extends ServiceImp
 		NumberFormat.getNumberInstance(Locale.UK);
 		try
 		{
-			final String path = directoryPath.extract(message);
+      final String path = message.resolve(getDirectoryPath());
 			final File directory = new File(path);
 			log.trace("ls: {} ", directory.getAbsolutePath());
 			if (directory.exists() && directory.isDirectory())
@@ -113,7 +119,7 @@ public class DirectoryListingService extends ServiceImp
 		}
 		else
 		{
-			message.addMessageHeader(metadataKey.extract(message), output);
+      message.addMessageHeader(metadataKey, output);
 		}
 	}
 
@@ -152,7 +158,7 @@ public class DirectoryListingService extends ServiceImp
 	 *
 	 * @return The directory path parameter.
 	 */
-	public DataInputParameter<String> getDirectoryPath()
+  public String getDirectoryPath()
 	{
 		return directoryPath;
 	}
@@ -163,7 +169,7 @@ public class DirectoryListingService extends ServiceImp
 	 * @param directoryPath
 	 *            The directory path parameter.
 	 */
-	public void setDirectoryPath(final DataInputParameter<String> directoryPath)
+  public void setDirectoryPath(final String directoryPath)
 	{
 		this.directoryPath = directoryPath;
 	}
@@ -173,7 +179,7 @@ public class DirectoryListingService extends ServiceImp
 	 *
 	 * @return The metadata key parameter.
 	 */
-	public DataInputParameter<String> getMetadataKey()
+  public String getMetadataKey()
 	{
 		return metadataKey;
 	}
@@ -184,7 +190,7 @@ public class DirectoryListingService extends ServiceImp
 	 * @param metadataKey
 	 *            The metadata key parameter.
 	 */
-	public void setMetadataKey(final DataInputParameter<String> metadataKey)
+  public void setMetadataKey(String metadataKey)
 	{
 		this.metadataKey = metadataKey;
 	}
@@ -194,9 +200,9 @@ public class DirectoryListingService extends ServiceImp
 	 *
 	 * @return True if debug mode is enabled.
 	 */
-	protected boolean isDebugMode()
+	protected boolean debugMode()
 	{
-		return debugMode;
+    return getDebugMode() != null ? getDebugMode().booleanValue() : false;
 	}
 
 	/**
@@ -217,7 +223,7 @@ public class DirectoryListingService extends ServiceImp
 	 */
 	public void setDebugMode(final Boolean debugMode)
 	{
-		this.debugMode = debugMode != null ? debugMode : false;
+    this.debugMode = debugMode;
 	}
 
 	/**

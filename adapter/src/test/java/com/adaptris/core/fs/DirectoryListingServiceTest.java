@@ -24,8 +24,6 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.GeneralServiceExample;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.common.ConstantDataInputParameter;
-import com.adaptris.core.fs.DirectoryListingService;
 
 public class DirectoryListingServiceTest extends GeneralServiceExample
 {
@@ -97,8 +95,8 @@ public class DirectoryListingServiceTest extends GeneralServiceExample
 	protected Object retrieveObjectForSampleConfig()
 	{
 		final DirectoryListingService service =  new DirectoryListingService();
-		service.setDirectoryPath(new ConstantDataInputParameter(DIRECTORY_PATH));
-		service.setMetadataKey(new ConstantDataInputParameter(METADATA_KEY));
+    service.setDirectoryPath(DIRECTORY_PATH);
+    service.setMetadataKey(METADATA_KEY);
 		return service;
 	}
 }

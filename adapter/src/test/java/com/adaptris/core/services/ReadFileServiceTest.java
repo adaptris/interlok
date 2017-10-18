@@ -16,17 +16,17 @@
 
 package com.adaptris.core.services;
 
+import static org.junit.Assert.assertArrayEquals;
+
 import java.io.File;
 import java.io.FileInputStream;
 
 import org.junit.Test;
-import static org.junit.Assert.assertArrayEquals;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.GeneralServiceExample;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.common.ConstantDataInputParameter;
 
 public class ReadFileServiceTest extends GeneralServiceExample
 {
@@ -84,7 +84,7 @@ public class ReadFileServiceTest extends GeneralServiceExample
 	protected Object retrieveObjectForSampleConfig()
 	{
 		final ReadFileService service = new ReadFileService();
-		service.setFilePath(new ConstantDataInputParameter(FILE));
+    service.setFilePath(FILE);
 		return service;
 	}
 }
