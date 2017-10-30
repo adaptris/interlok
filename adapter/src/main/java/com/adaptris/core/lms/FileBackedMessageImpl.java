@@ -24,7 +24,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilterInputStream;
-import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -201,8 +200,8 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
     if(outputFile == null) {
       outputFile = createTempFile();
     }
-    FileOutputStream fileOut = new FileOutputStream(outputFile);
-    return new FileFilteredOutputStream(fileOut);
+    // FileOutputStream fileOut = new FileOutputStream(outputFile);
+    return new FileFilterOutputStream(outputFile);
   }
 
   @Override
@@ -280,29 +279,25 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
     return ((FileBackedMessageFactory) getFactory()).createTempFile(tempDir, this);
   }
 
-  // Yeah I know it's bad form to have a finalizer, but really
-  // WE HAVE FILE LOCKS!
   @Override
   protected void finalize() throws Throwable {
     super.finalize();
     for (Closeable c : openStreams) {
-      try {
-        c.close();
-      }
-      catch (IOException ignored) {
-        ;
-      }
+      IOUtils.closeQuietly(c);
     }
   }
 
-  private class FileFilteredOutputStream extends FilterOutputStream {
+  // INTERLOK-1926 FilterOutputStream ultimately calls write(int) which is just crazy IO.
+  // So we extend FileOutputStream directly
+  private class FileFilterOutputStream extends FileOutputStream {
     private boolean alreadyClosed;
 
-    FileFilteredOutputStream(FileOutputStream out) throws IOException {
+    FileFilterOutputStream(File out) throws IOException {
       super(out);
       openStreams.add(this);
       alreadyClosed = false;
     }
+
 
     @Override
     public void close() throws IOException {
