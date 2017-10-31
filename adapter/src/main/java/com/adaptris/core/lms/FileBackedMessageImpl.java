@@ -23,7 +23,6 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -187,9 +186,7 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
     if(inputFile == null) {
       return IOUtils.toInputStream("");
     }
-    
-    FileInputStream in = new FileInputStream(inputFile);
-    return new FileFilterInputStream(in);
+    return new FileFilterInputStream(inputFile);
   }
 
   /**
@@ -312,8 +309,8 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
     }
   }
 
-  private class FileFilterInputStream extends FilterInputStream {
-    FileFilterInputStream(FileInputStream in) throws IOException {
+  private class FileFilterInputStream extends FileInputStream {
+    FileFilterInputStream(File in) throws IOException {
       super(in);
       openStreams.add(this);
     }
