@@ -20,6 +20,8 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 
 import java.util.Date;
 
+import javax.validation.Valid;
+
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
@@ -35,15 +37,14 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.services.metadata.timestamp.OffsetTimestampGenerator;
 import com.adaptris.core.services.metadata.timestamp.TimestampGenerator;
-import com.adaptris.util.text.DateFormatUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Adds timestamp information as metadata.
  * <p>
- * In addition to supporting all the patterns allowed by {@link  java.text.SimpleDateFormat}, this service also supports the special values
- * {@code SECONDS_SINCE_EPOCH} and {@code MILLISECONDS_SINCE_EPOCH} which describe the number of seconds and milliseconds since
- * midnight Jan 1, 1970 UTC respectively. If specified as the format, then the long value associated will be emitted.
+ * In addition to supporting all the patterns allowed by {@link java.text.SimpleDateFormat}, this service also supports the special
+ * values {@code SECONDS_SINCE_EPOCH} and {@code MILLISECONDS_SINCE_EPOCH} which describe the number of seconds and milliseconds
+ * since midnight Jan 1, 1970 UTC respectively. If specified as the format, then the long value associated will be emitted.
  * </p>
  * 
  * @config add-timestamp-metadata-service
@@ -55,8 +56,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("add-timestamp-metadata-service")
 @AdapterComponent
 @ComponentProfile(summary = "Add a timestamp as metadata", tag = "service,metadata,timestamp,datetime")
-@DisplayOrder(order = {"metadataKey", "dateFormat", "offset", "alwaysReplace"})
+@DisplayOrder(order = {"metadataKey", "dateFormat", "dateFormatBuilder", "offset", "alwaysReplace"})
 public class AddTimestampMetadataService extends ServiceImp {
+  private static final DateFormatBuilder DEFAULT_FORMAT_BUILDER = new DateFormatBuilder();
 
   private static final TimestampGenerator DEFAULT_GENERATOR = new TimestampGenerator() {
 
@@ -71,8 +73,8 @@ public class AddTimestampMetadataService extends ServiceImp {
   @AutoPopulated
   @AffectsMetadata
   private String metadataKey;
-  @NotBlank
-  @AutoPopulated
+  @AdvancedConfig
+  @Deprecated
   private String dateFormat;
   @InputFieldDefault(value = "false")
   private Boolean alwaysReplace;
@@ -81,18 +83,14 @@ public class AddTimestampMetadataService extends ServiceImp {
   private String offset;
 
   @AdvancedConfig
+  @Valid
+  @InputFieldDefault(value = "null, so now()")
   private TimestampGenerator timestampGenerator = null;
+  @Valid
+  private DateFormatBuilder dateFormatBuilder;
 
-  /**
-   * Default constructor.
-   * <ul>
-   * <li>DateFormat is "yyyy-MM-dd'T'HH:mm:ssZ"</li>
-   * <li>MetadataKey is "timestamp"</li>
-   * <li>AlwaysReplace is false</li>
-   * </ul>
-   */
   public AddTimestampMetadataService() {
-    this("yyyy-MM-dd'T'HH:mm:ssZ", "timestamp");
+    this(DateFormatBuilder.DEFAULT_DATE_FORMAT, "timestamp");
   }
 
   public AddTimestampMetadataService(String format, String metadataKey) {
@@ -109,7 +107,7 @@ public class AddTimestampMetadataService extends ServiceImp {
 
   public AddTimestampMetadataService(String format, String metadataKey, Boolean alwaysReplace, TimestampGenerator s) {
     super();
-    setDateFormat(format);
+    setDateFormatBuilder(new DateFormatBuilder(format));
     setMetadataKey(metadataKey);
     setAlwaysReplace(alwaysReplace);
     setTimestampGenerator(s);
@@ -120,8 +118,8 @@ public class AddTimestampMetadataService extends ServiceImp {
    * @see com.adaptris.core.Service#doService(com.adaptris.core.AdaptrisMessage)
    */
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    if (!msg.containsKey(getMetadataKey()) || alwaysReplace()) {
-      msg.addMetadata(getMetadataKey(), DateFormatUtil.toString(timestampGenerator().generateTimestamp(msg), getDateFormat()));
+    if (!msg.headersContainsKey(getMetadataKey()) || alwaysReplace()) {
+      msg.addMetadata(getMetadataKey(), formatBuilder().build(msg).toString(timestampGenerator().generateTimestamp(msg)));
     }
     else {
       log.trace(getMetadataKey() + " already exists, no replacement");
@@ -134,10 +132,8 @@ public class AddTimestampMetadataService extends ServiceImp {
     if (isBlank(getMetadataKey())) {
       throw new CoreException("No Metadata key specified for timestamp");
     }
-    if (isBlank(getDateFormat())) {
-      throw new CoreException("No date format specified");
-    }
-    if (!isBlank(getOffset()) && getTimestampGenerator() == null) {
+    warnDateFormat();
+    if (!isBlank(getOffset())) {
       log.warn("Use of deprecated offset; use {} instead", OffsetTimestampGenerator.class.getSimpleName());
       setTimestampGenerator(new OffsetTimestampGenerator(getOffset()));
     }
@@ -165,14 +161,18 @@ public class AddTimestampMetadataService extends ServiceImp {
 
   /**
    * @return the dateFormat
+   * @deprecated since 3.6.6 use {@link #getDateFormatBuilder()} instead
    */
+  @Deprecated
   public String getDateFormat() {
     return dateFormat;
   }
 
   /**
    * @param dateFormat the dateFormat to set
+   * @deprecated since 3.6.6 use {@link #setDateFormatBuilder(DateFormatBuilder)} instead.
    */
+  @Deprecated
   public void setDateFormat(String dateFormat) {
     this.dateFormat = dateFormat;
   }
@@ -197,6 +197,11 @@ public class AddTimestampMetadataService extends ServiceImp {
     return getAlwaysReplace() != null ? getAlwaysReplace().booleanValue() : false;
   }
 
+  /**
+   * 
+   * @deprecated since 3.5.0 Use {@link OffsetTimestampGenerator} instead.
+   */
+  @Deprecated
   public String getOffset() {
     return offset;
   }
@@ -281,5 +286,28 @@ public class AddTimestampMetadataService extends ServiceImp {
 
   TimestampGenerator timestampGenerator() {
     return getTimestampGenerator() != null ? getTimestampGenerator() : DEFAULT_GENERATOR;
+  }
+
+  public DateFormatBuilder getDateFormatBuilder() {
+    return dateFormatBuilder;
+  }
+
+  public void setDateFormatBuilder(DateFormatBuilder builder) {
+    this.dateFormatBuilder = builder;
+  }
+
+  DateFormatBuilder formatBuilder() {
+    DateFormatBuilder result = getDateFormatBuilder();
+    if (!isBlank(getDateFormat())) {
+      warnDateFormat();
+      result = new DateFormatBuilder(getDateFormat());
+    }
+    return result != null ? result : DEFAULT_FORMAT_BUILDER;
+  }
+
+  private void warnDateFormat() {
+    if (!isBlank(getDateFormat())) {
+      log.warn("date-format is deprecated, use date-format-builder instead");
+    }
   }
 }

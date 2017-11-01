@@ -30,6 +30,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.util.Args;
@@ -50,6 +51,7 @@ public class DateFormatBuilder {
   @InputFieldHint(expression = true)
   @NotBlank
   @AutoPopulated
+  @InputFieldDefault(value = DEFAULT_DATE_FORMAT)
   private String format;
   @AdvancedConfig
   @InputFieldHint(expression = true)
