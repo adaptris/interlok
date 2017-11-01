@@ -16,14 +16,16 @@
 
 package com.adaptris.core.services.metadata;
 
-import org.hibernate.validator.constraints.NotBlank;
+import static org.apache.commons.lang.StringUtils.isBlank;
+
+import javax.validation.Valid;
 
 import com.adaptris.annotation.AdapterComponent;
-import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
-import com.adaptris.util.text.DateFormatUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -50,44 +52,57 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("reformat-date-service")
 @AdapterComponent
 @ComponentProfile(summary = "Reformat a data value stored in metadata", tag = "service,metadata,timestamp,datetime")
-@DisplayOrder(order = {"metadataKeyRegexp", "sourceDateFormat", "destinationDateFormat"})
+@DisplayOrder(order = {"metadataKeyRegexp", "sourceDateFormat", "sourceFormatBuilder", "destinationDateFormat", "destinationFormatBuilder"})
 public class ReformatDateService extends ReformatMetadata {
 
-  static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
-  @NotBlank
-  @AutoPopulated
+  private static final DateFormatBuilder DEFAULT_FORMAT_BUILDER = new DateFormatBuilder();
+
+  @AdvancedConfig
+  @Deprecated
   private String sourceDateFormat;
-  @NotBlank
-  @AutoPopulated
+  @AdvancedConfig
+  @Deprecated
   private String destinationDateFormat;
 
-  /**
-   * Constructor
-   * <ul>
-   * <li>sourceDateFormat = yyyy-MM-dd'T'HH:mm:ssZ</li>
-   * <li>destinationDateFormat = yyyy-MM-dd'T'HH:mm:ssZ</li>
-   * </ul>
-   */
+  @Valid
+  private DateFormatBuilder sourceFormatBuilder;
+  @Valid
+  private DateFormatBuilder destinationFormatBuilder;
+
   public ReformatDateService() {
     super();
-    setSourceDateFormat(DEFAULT_DATE_FORMAT);
-    setDestinationDateFormat(DEFAULT_DATE_FORMAT);
   }
 
   public ReformatDateService(String regexp) {
     super(regexp);
-    setSourceDateFormat(DEFAULT_DATE_FORMAT);
-    setDestinationDateFormat(DEFAULT_DATE_FORMAT);
+  }
+
+  public ReformatDateService(String regexp, DateFormatBuilder srcFormat, DateFormatBuilder destFormat) {
+    this(regexp);
+    setSourceFormatBuilder(srcFormat);
+    setDestinationFormatBuilder(destFormat);
   }
 
   @Override
   protected String reformat(String s, String msgCharset) throws Exception {
-    return DateFormatUtil.toString(DateFormatUtil.toDate(s, getSourceDateFormat()), getDestinationDateFormat());
+    // we override reformat(String,String,AdaptrisMessage);
+    throw new IllegalStateException("reformat(String,String) called; should always be reformat(String,String,AdaptrisMessage)");
+  }
+
+  @Override
+  protected String reformat(String s, String msgCharset, AdaptrisMessage msg) throws Exception {
+    return destFormatBuilder().build(msg).toString(sourceFormatBuilder().build(msg).toDate(s));
   }
 
   @Override
   protected void initService() throws CoreException {
     super.initService();
+    if (!isBlank(getSourceDateFormat())) {
+      log.warn("source-date-format is deprecated, use source-format-builder instead");
+    }
+    if (!isBlank(getDestinationDateFormat())) {
+      log.warn("destination-date-format is deprecated, use destination-format-builder instead");
+    }
   }
 
   @Override
@@ -95,10 +110,10 @@ public class ReformatDateService extends ReformatMetadata {
     super.closeService();
   }
 
-
   /**
    * @return the sourceDateFormat
    */
+  @Deprecated
   public String getSourceDateFormat() {
     return sourceDateFormat;
   }
@@ -108,7 +123,9 @@ public class ReformatDateService extends ReformatMetadata {
    * 
    * @see java.text.SimpleDateFormat
    * @param s the sourceDateFormat to set
+   * @deprecated since 3.6.6 use {@link #setSourceFormatBuilder(DateFormatBuilder)} instead.
    */
+  @Deprecated
   public void setSourceDateFormat(String s) {
     this.sourceDateFormat = s;
   }
@@ -116,6 +133,7 @@ public class ReformatDateService extends ReformatMetadata {
   /**
    * @return the destinationDateFormat
    */
+  @Deprecated
   public String getDestinationDateFormat() {
     return destinationDateFormat;
   }
@@ -125,8 +143,45 @@ public class ReformatDateService extends ReformatMetadata {
    * 
    * @see java.text.SimpleDateFormat
    * @param s the destinationDateFormat to set
+   * @deprecated since 3.6.6 use {@link #setDestinationFormatBuilder(DateFormatBuilder)} instead.
    */
+  @Deprecated
   public void setDestinationDateFormat(String s) {
     this.destinationDateFormat = s;
   }
+
+  public DateFormatBuilder getSourceFormatBuilder() {
+    return sourceFormatBuilder;
+  }
+
+  public void setSourceFormatBuilder(DateFormatBuilder sourceFormatBuilder) {
+    this.sourceFormatBuilder = sourceFormatBuilder;
+  }
+
+  DateFormatBuilder sourceFormatBuilder() {
+    DateFormatBuilder result = getSourceFormatBuilder();
+    if (!isBlank(getSourceDateFormat())) {
+      log.warn("source-date-format is deprecated, use source-format-builder instead");
+      result = new DateFormatBuilder(getSourceDateFormat());
+    }
+    return result != null ? result : DEFAULT_FORMAT_BUILDER;
+  }
+
+  public DateFormatBuilder getDestinationFormatBuilder() {
+    return destinationFormatBuilder;
+  }
+
+  public void setDestinationFormatBuilder(DateFormatBuilder destinationFormatBuilder) {
+    this.destinationFormatBuilder = destinationFormatBuilder;
+  }
+
+  DateFormatBuilder destFormatBuilder() {
+    DateFormatBuilder result = getDestinationFormatBuilder();
+    if (!isBlank(getDestinationDateFormat())) {
+      log.warn("destination-date-format is deprecated, use destination-format-builder instead");
+      result = new DateFormatBuilder(getDestinationDateFormat());
+    }
+    return result != null ? result : DEFAULT_FORMAT_BUILDER;
+  }
+
 }
