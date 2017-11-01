@@ -20,6 +20,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -69,6 +71,28 @@ public class DateFormatUtilTest {
   }
 
   @Test
+  public void testDateParser_toDate() throws Exception {
+    Date date = new Date(System.currentTimeMillis() - 3600);
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+    String datetime = sdf.format(date);
+    assertNotNull(DateFormatUtil.toDate(datetime, "yyyy-MM-dd'T'HH:mm:ssZ"));
+  }
+
+  @Test
+  public void testDateParser_toDate_MS_Epoch() throws Exception {
+    Date date = new Date(System.currentTimeMillis() - 3600);
+    String datetime = String.valueOf(date.getTime());
+    assertNotNull(DateFormatUtil.toDate(datetime, DateFormatUtil.CustomDateFormat.MILLISECONDS_SINCE_EPOCH.name()));
+  }
+
+  @Test
+  public void testDateParser_toDate_Secs_Epoc() throws Exception {
+    Date date = new Date(System.currentTimeMillis() - 3600);
+    String datetime = String.valueOf(new BigDecimal(date.getTime()).divide(new BigDecimal(1000), RoundingMode.HALF_UP).longValue());
+    assertNotNull(DateFormatUtil.toDate(datetime, DateFormatUtil.CustomDateFormat.SECONDS_SINCE_EPOCH.name()));
+  }
+
+  @Test
   public void testDateFormatter() {
     Date date = new Date(System.currentTimeMillis() - 3600);
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
@@ -76,5 +100,26 @@ public class DateFormatUtilTest {
     assertEquals(datetime, DateFormatUtil.format(date));
   }
 
+  @Test
+  public void testDateFormatter_toString() {
+    Date date = new Date(System.currentTimeMillis() - 3600);
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+    String datetime = sdf.format(date);
+    assertEquals(datetime, DateFormatUtil.toString(date, "yyyy-MM-dd'T'HH:mm:ssZ"));
+  }
 
+  @Test
+  public void testDateFormatter_toString_MS_epoch() {
+    Date date = new Date(System.currentTimeMillis() - 3600);
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+    String datetime = String.valueOf(date.getTime());
+    assertEquals(datetime, DateFormatUtil.toString(date, DateFormatUtil.CustomDateFormat.MILLISECONDS_SINCE_EPOCH.name()));
+  }
+
+  @Test
+  public void testDateFormatter_toString_Secs_epoch() {
+    Date date = new Date(System.currentTimeMillis() - 3600);
+    String datetime = String.valueOf(new BigDecimal(date.getTime()).divide(new BigDecimal(1000), RoundingMode.HALF_UP).longValue());
+    assertEquals(datetime, DateFormatUtil.toString(date, DateFormatUtil.CustomDateFormat.SECONDS_SINCE_EPOCH.name()));
+  }
 }
