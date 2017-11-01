@@ -215,7 +215,6 @@ public class StaticIdentitySequenceNumberServiceTest extends SequenceNumberCase 
         serviceList.add(service);
         start(service);
       }
-      assertEquals(0, conn.currentBusyConnectionCount());
       PooledConnectionHelper.executeTest(serviceList, iterations, new PooledConnectionHelper.MessageCreator() {
 
         @Override

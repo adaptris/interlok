@@ -1025,7 +1025,6 @@ public class StoredProcedureProducerTest extends ProducerCase {
           serviceList.add(service);
           start(service);
         }
-        assertEquals(0, conn.currentBusyConnectionCount());
         PooledConnectionHelper.executeTest(serviceList, iterations, new PooledConnectionHelper.MessageCreator() {
           @Override
           public AdaptrisMessage createMsgForPooledConnectionTest() throws Exception {
@@ -1074,6 +1073,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
           serviceList.add(service);
           start(service);
         }
+        Thread.sleep(500);
         assertEquals(0, conn.currentBusyConnectionCount());
         PooledConnectionHelper.executeTest(serviceList, iterations, new PooledConnectionHelper.MessageCreator() {
           @Override
