@@ -275,7 +275,7 @@ public abstract class DatabaseConnection extends AllowsRetriesConnection {
    * @throws SQLException if the connection was not valid, and reconnection failed
    */
   public final Connection connect() throws SQLException {
-    return initiateConnection();
+    return attemptConnect();
   }
 
   /**
@@ -354,7 +354,7 @@ public abstract class DatabaseConnection extends AllowsRetriesConnection {
    * 
    * @throws SQLException if connection fails after exhausting the specified number of retry attempts
    */
-  private Connection initiateConnection() throws SQLException {
+  private Connection attemptConnect() throws SQLException {
     int attemptCount = 0;
     Connection sqlConnection = null;
     while (sqlConnection == null) {

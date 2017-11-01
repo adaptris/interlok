@@ -16,21 +16,13 @@
 
 package com.adaptris.core.jdbc;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.concurrent.TimeUnit;
 
-import javax.sql.DataSource;
 import javax.validation.Valid;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
@@ -38,7 +30,7 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.util.JdbcUtil;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.security.password.Password;
 import com.adaptris.util.TimeInterval;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
@@ -56,7 +48,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
     tag = "connections,jdbc")
 @DisplayOrder(order = {"username", "password", "driverImp", "connectUrl", "minimumPoolSize", "maximumPoolSize", "maxIdleTime",
     "acquireIncrement"})
-public class JdbcPooledConnection extends DatabaseConnection implements JdbcPoolConfiguration {
+public class JdbcPooledConnection extends JdbcPooledConnectionImpl implements JdbcPoolConfiguration {
   
   private static final int DEFAULT_MINIMUM_POOL_SIZE = 5;
   private static final int DEFAULT_MAXIMUM_POOL_SIZE = 50;
@@ -67,11 +59,7 @@ public class JdbcPooledConnection extends DatabaseConnection implements JdbcPool
   private static final TimeInterval DEFAULT_MAX_IDLE_TIME = new TimeInterval(10L, TimeUnit.MINUTES);
   private static final JdbcPoolFactory DEFAULT_POOL_FACTORY = new DefaultPoolFactory();
 
-  private transient ComboPooledDataSource connectionPool;
-  
-  @NotBlank
-  private String connectUrl;
-  
+
   @InputFieldDefault(value = "5")
   private Integer minimumPoolSize;
   @InputFieldDefault(value = "50")
@@ -97,127 +85,22 @@ public class JdbcPooledConnection extends DatabaseConnection implements JdbcPool
     super();
   }
   
-  @Override
-  protected Connection makeConnection() throws SQLException {
-    Connection sqlConnection = connectionPool.getConnection();
-    
-    this.validateConnection(sqlConnection);
-    return sqlConnection;
-  }
 
-  @Override
-  protected void initialiseDatabaseConnection() throws CoreException {
-    initPool();
-  }
-
-  private synchronized void initPool() throws CoreException {
+  protected synchronized ComboPooledDataSource createPool() throws CoreException {
+    ComboPooledDataSource pool = poolFactory().create(this);
     try {
-      connectionPool = poolFactory().create(this);
-      connectionPool.setProperties(connectionProperties());
-      connectionPool.setDriverClass(this.getDriverImp());
-      connectionPool.setJdbcUrl(this.getConnectUrl());
-      connectionPool.setUser(this.getUsername());
-      connectionPool.setPassword(Password.decode(this.getPassword()));
+      pool.setProperties(connectionProperties());
+      pool.setDriverClass(this.getDriverImp());
+      pool.setJdbcUrl(this.getConnectUrl());
+      pool.setUser(this.getUsername());
+      pool.setPassword(Password.decode(this.getPassword()));
     }
     catch (Exception ex) {
-      throw new CoreException(ex);
+      throw ExceptionHelper.wrapCoreException(ex);
     }
+    return pool;
   }
 
-  @Override
-  public DataSource asDataSource() throws SQLException {
-    if(connectionPool == null) {
-      try {
-        initPool();
-      } catch (CoreException ex) {
-        throw new SQLException(ex);
-      }
-    }
-    return connectionPool;
-  }
-
-  @Override
-  protected void startDatabaseConnection() throws CoreException {
-  }
-
-  @Override
-  protected void stopDatabaseConnection() {
-  }
-
-  @Override
-  protected void closeDatabaseConnection() {
-    if (connectionPool != null) {
-      connectionPool.close();
-      connectionPool = null;
-    }
-  }
-
-  @Override
-  protected String getConnectionName() {
-    return getConnectUrl();
-  }
-
-  /**
-   * <p>
-   * Validate the underlying connection.
-   * </p>
-   * 
-   * @throws SQLException if we could not validate the connection.
-   */
-  private void validateConnection(Connection sqlConnection) throws SQLException {
-    try {
-      if (alwaysValidateConnection())  testConnection(sqlConnection);
-    }
-    catch (SQLException e) {
-      throw e;
-    }
-  }
-
-  /**
-   * <p>
-   * Run the test statement against the database.
-   * </p>
-   * 
-   * @throws SQLException if the statement could not be performed.
-   */
-  private void testConnection(Connection sqlConnection) throws SQLException {
-    if (isEmpty(getTestStatement())) {
-      log.trace("No Test Statement, we will not test the JDBC connection.");
-      return;
-    }
-    Statement stmt = sqlConnection.createStatement();
-    ResultSet rs = null;
-    try {
-      if (debugMode()) {
-        rs = stmt.executeQuery(getTestStatement());
-        if (rs.next()) {
-          StringBuffer sb = new StringBuffer("TestStatement Results - ");
-          ResultSetMetaData rsm = rs.getMetaData();
-          for (int i = 1; i <= rsm.getColumnCount(); i++) {
-            sb.append("[");
-            sb.append(rsm.getColumnName(i));
-            sb.append("=");
-            try {
-              sb.append(rs.getString(i));
-            }
-            catch (Exception e) {
-              sb.append("'unknown'");
-            }
-            sb.append("] ");
-          }
-          log.trace(sb.toString());
-        }
-      }
-      else {
-        stmt.execute(getTestStatement());
-      }
-    }
-    finally {
-      JdbcUtil.closeQuietly(rs);
-      JdbcUtil.closeQuietly(stmt);
-    }
-  }
-  
   @Override
   public boolean equals(Object o) {
     if (o == null) {
@@ -281,14 +164,6 @@ public class JdbcPooledConnection extends DatabaseConnection implements JdbcPool
     return getAcquireIncrement() != null ? getAcquireIncrement().intValue() : DEFAULT_ACQUIRE_INCREMENT;
   }
 
-  public String getConnectUrl() {
-    return connectUrl;
-  }
-
-  public void setConnectUrl(String connectUrl) {
-    this.connectUrl = connectUrl;
-  }
-
   public TimeInterval getConnectionAcquireWait() {
     return connectionAcquireWait;
   }
@@ -298,6 +173,7 @@ public class JdbcPooledConnection extends DatabaseConnection implements JdbcPool
         getConnectionAcquireWait() != null ? getConnectionAcquireWait().toMilliseconds() : DEFAULT_CONN_ACQUIRE_WAIT
             .toMilliseconds()).intValue();
   }
+
   public void setConnectionAcquireWait(TimeInterval connectionAcquireWait) {
     this.connectionAcquireWait = connectionAcquireWait;
   }
