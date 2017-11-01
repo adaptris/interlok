@@ -50,9 +50,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
     "acquireIncrement"})
 public class JdbcPooledConnection extends JdbcPooledConnectionImpl implements JdbcPoolConfiguration {
   
-  private static final int DEFAULT_MINIMUM_POOL_SIZE = 5;
-  private static final int DEFAULT_MAXIMUM_POOL_SIZE = 50;
-  private static final int DEFAULT_ACQUIRE_INCREMENT = 5;
+  public static final int DEFAULT_MINIMUM_POOL_SIZE = 5;
+  public static final int DEFAULT_MAXIMUM_POOL_SIZE = 50;
+  public static final int DEFAULT_ACQUIRE_INCREMENT = 5;
   
   private static final TimeInterval DEFAULT_CONN_ACQUIRE_WAIT = new TimeInterval(5L, TimeUnit.SECONDS);
   private static final TimeInterval DEFAULT_IDLE_TEST_PERIOD = new TimeInterval(60L, TimeUnit.SECONDS);
