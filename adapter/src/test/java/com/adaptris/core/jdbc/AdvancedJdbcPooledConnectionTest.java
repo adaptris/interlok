@@ -61,6 +61,7 @@ public class AdvancedJdbcPooledConnectionTest extends DatabaseConnectionCase<Adv
 
     }
     try {
+      con.setConnectUrl("jdbc:derby:memory:" + GUID.safeUUID() + ";create=true");
       LifecycleHelper.initAndStart(con);
       fail();
     }
@@ -96,8 +97,8 @@ public class AdvancedJdbcPooledConnectionTest extends DatabaseConnectionCase<Adv
     poolProps.add(new KeyValuePair(PooledConnectionProperties.checkoutTimeout.name(), "30000"));
     con.setConnectionPoolProperties(poolProps);
     try {
-      LifecycleHelper.init(con);
-      LifecycleHelper.start(con);
+      LifecycleHelper.initAndStart(con);
+      Thread.sleep(500);
       ComboPooledDataSource poolDs = (ComboPooledDataSource) con.asDataSource();
       assertEquals(0, poolDs.getNumBusyConnections());
       Connection c1 = null;
