@@ -25,7 +25,6 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
-import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,35 +43,6 @@ public abstract class FileTransferClientImp implements FileTransferClient {
     logR = LoggerFactory.getLogger(this.getClass().getName());
   }
 
-  /**
-   * Set up SOCKS v4/v5 proxy settings. This can be used if there is a SOCKS
-   * proxy server in place that must be connected thru. Note that setting these
-   * properties directs <b>all</b> TCP sockets in this JVM to the SOCKS proxy
-   * 
-   * @param port SOCKS proxy port
-   * @param host SOCKS proxy hostname
-   */
-  public static void initSOCKS(String port, String host) {
-    Properties props = System.getProperties();
-    props.put("socksProxyPort", port);
-    props.put("socksProxyHost", host);
-    System.setProperties(props);
-  }
-
-  /**
-   * Set up SOCKS username and password for SOCKS username/password
-   * authentication. Often, no authentication will be required but the SOCKS
-   * server may be configured to request these.
-   * 
-   * @param username the SOCKS username
-   * @param password the SOCKS password
-   */
-  public static void initSOCKSAuthentication(String username, String password) {
-    Properties props = System.getProperties();
-    props.put("java.net.socks.username", username);
-    props.put("java.net.socks.password", password);
-    System.setProperties(props);
-  }
 
   /**
    * @see com.adaptris.filetransfer.FileTransferClient#put(java.lang.String,
