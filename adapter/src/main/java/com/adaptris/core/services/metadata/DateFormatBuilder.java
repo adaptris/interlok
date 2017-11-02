@@ -54,9 +54,9 @@ public class DateFormatBuilder {
   @InputFieldDefault(value = DEFAULT_DATE_FORMAT)
   private String format;
   @AdvancedConfig
-  @InputFieldHint(expression = true)
+  @InputFieldHint(expression = true, style = "java.util.Locale")
   private String languageTag;
-  @InputFieldHint(expression = true)
+  @InputFieldHint(expression = true, style = "java.util.TimeZone#getAvailableIDs")
   @AdvancedConfig
   private String timezone;
 
