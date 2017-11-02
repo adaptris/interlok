@@ -32,11 +32,13 @@ import com.adaptris.util.IdGenerator;
 
 class ZipFileBackedMessageImpl extends FileBackedMessageImpl {
 
-  private CompressionMode compressionMode;
+  private transient CompressionMode compressionMode;
+  private transient boolean failFast;
   
-  ZipFileBackedMessageImpl(IdGenerator guid, FileBackedMessageFactory fac, File tmpDir, int bufsiz, long maxSizeInline, CompressionMode compressionMode) {
-    super(guid, fac, tmpDir, bufsiz, maxSizeInline);
-    this.compressionMode = compressionMode;
+  ZipFileBackedMessageImpl(IdGenerator guid, ZipFileBackedMessageFactory fac) {
+    super(guid, fac);
+    this.compressionMode = fac.getCompressionMode();
+    this.failFast = fac.failFast();
   }
 
   /**
@@ -47,21 +49,34 @@ class ZipFileBackedMessageImpl extends FileBackedMessageImpl {
     switch(compressionMode) {
     case Uncompress:
     case Both:
-      if(inputFile != null) {
-        // Check if the file is a Zip File since ZipInputStream doesn't error for non-zip files
-        // This will throw ZipException for non-zip files (or very badly corrupted ones)
-        try(ZipFile z = new ZipFile(inputFile)){};
-      }
-      
-      ZipInputStream zin = new ZipInputStream(super.getInputStream());
-      zin.getNextEntry();
-      return zin;
-      
+      return openInputStream();
     default:
       return super.getInputStream();
     }
   }
   
+  private InputStream openInputStream() throws IOException {
+    boolean isZip = false;
+    if (inputFile != null) {
+      // Check if the file is a Zip File since ZipInputStream doesn't error for non-zip files
+      // This will throw ZipException for non-zip files (or very badly corrupted ones)
+      try (ZipFile z = new ZipFile(inputFile)) {
+        isZip = true;
+      }
+      catch (IOException e) {
+        if (failFast) {
+          throw e;
+        }
+      }
+    }
+    if (isZip) {
+      ZipInputStream zin = new ZipInputStream(super.getInputStream());
+      zin.getNextEntry();
+      return zin;
+    }
+    return super.getInputStream();
+  }
+
   /**
    * Return the size of the uncompressed data
    */
@@ -78,12 +93,10 @@ class ZipFileBackedMessageImpl extends FileBackedMessageImpl {
       while(entries.hasMoreElements()) {
         size += entries.nextElement().getSize();
       }
-      
       return size;
-    } catch (ZipException e) {
-      return 0;
-    } catch (IOException e) {
-      return 0;
+    }
+    catch (IOException e) {
+      return super.getSize();
     }
   }
 
@@ -110,9 +123,15 @@ class ZipFileBackedMessageImpl extends FileBackedMessageImpl {
     try(ZipFile zipFile = new ZipFile(sourceFile)) {
       super.initialiseFrom(sourceFile);
     } catch (ZipException ze) {
-      throw new UnsupportedOperationException(String.format(
+      if (failFast) {
+        throw new UnsupportedOperationException(String.format(
           "\"%s\" is not a valid zip file. ZipFileBackedMessageFactory can only initialize from zip files. "
           + "For uncompressed files use FileBackedMessageFactory.", sourceFile.getAbsolutePath()));
+      }
+      else {
+        log.trace("Initialising plain input from [{}]", sourceFile);
+        super.initialiseFrom(sourceFile);
+      }
     }
   }
 

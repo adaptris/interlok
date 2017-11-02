@@ -158,8 +158,7 @@ public class FileBackedMessageFactory extends DefaultMessageFactory {
 
   @Override
   public AdaptrisMessage newMessage() {
-    AdaptrisMessage m =
-        new FileBackedMessageImpl(uniqueIdGenerator(), this, tempDirectory(), defaultBufferSize(), maxMemorySizeBytes());
+    AdaptrisMessage m = new FileBackedMessageImpl(uniqueIdGenerator(), this);
     if (!isEmpty(getDefaultCharEncoding())) {
       m.setContentEncoding(getDefaultCharEncoding());
     }

@@ -17,6 +17,8 @@
 package com.adaptris.core.lms;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -81,15 +83,11 @@ public class ZipFileBackedMessageTest extends FileBackedMessageTest {
     FileBackedMessage orig = (FileBackedMessage) factory.newMessage();
     
     File srcFile = new File(BaseCase.PROPERTIES.getProperty("msg.initFromZipFile"));
-    
-    try(InputStream in = new FileInputStream(srcFile);
+    orig.initialiseFrom(srcFile);
+    try (InputStream in = orig.getInputStream();
         OutputStream out = orig.getOutputStream()) {
       IOUtils.copy(in,  out);
     }
-    
-    // Uncompressed size is 185 bytes
-    assertEquals("file size ", 185, orig.getSize()); 
-    assertEquals("payload size ", 185, orig.getPayload().length);
   }
   
   /**
@@ -107,9 +105,21 @@ public class ZipFileBackedMessageTest extends FileBackedMessageTest {
     // Exception expected
   }
   
+  @Test
+  public void testUncompressedFile_FailFast_False() throws Exception {
+    ZipFileBackedMessageFactory factory = getMessageFactory();
+    factory.setFailFast(false);
+    factory.setCompressionMode(CompressionMode.Uncompress);
+    FileBackedMessage orig = (FileBackedMessage) factory.newMessage();
+    File srcFile = new File(BaseCase.PROPERTIES.getProperty("msg.initFromFile"));
+    orig.initialiseFrom(srcFile);
+    assertEquals(srcFile.length(), orig.getSize());
+    assertNotNull(orig.getInputStream());
+  }
+
   /**
-   * This tests inputs an uncompressed stream and expects an Exception because we tell the factory that
-   * we are going to send it compressed data (compressionMode=Uncompress)
+   * This tests inputs an uncompressed stream and expects an Exception because we tell the factory that we are going to send it
+   * compressed data (compressionMode=Uncompress)
    */
   @Test(expected=ZipException.class)
   public void testInitFromUncompressedStream() throws Exception {
@@ -123,9 +133,20 @@ public class ZipFileBackedMessageTest extends FileBackedMessageTest {
         OutputStream out = orig.getOutputStream()) {
       IOUtils.copy(in,  out);
     }
-
     // Now try to get the input stream. This has to throw a ZipException because the stream is not a zip file
     orig.getInputStream();
+  }
+
+  @Test
+  @Override
+  public void testCurrentSource() throws Exception {
+    ZipFileBackedMessageFactory factory = getMessageFactory();
+    FileBackedMessage orig = (FileBackedMessage) getMessageFactory().newMessage();
+    assertNotNull(orig.currentSource());
+    File srcFile = new File(BaseCase.PROPERTIES.getProperty("msg.initFromZipFile"));
+    orig.initialiseFrom(srcFile);
+    assertNotSame(srcFile.length(), orig.getSize());
+    assertNotSame(srcFile.length(), orig.getPayload().length);
   }
 
   /**

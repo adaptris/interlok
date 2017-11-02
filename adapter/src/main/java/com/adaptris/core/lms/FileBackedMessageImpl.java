@@ -32,7 +32,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,10 +39,6 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageImp;
 import com.adaptris.util.IdGenerator;
 
-/**
- * @author lchan
- * @author $Author: lchan $
- */
 class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMessage {
   protected File tempDir;
   protected File outputFile;
@@ -51,20 +46,20 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
   private int bufferSize;
   private long maxSizeBeforeException;
 
-  private transient Logger logR = LoggerFactory.getLogger(FileBackedMessage.class);
+  protected transient Logger log = LoggerFactory.getLogger(FileBackedMessage.class);
 
   private transient Set<Closeable> openStreams;
   
   private final int MEGABYTE = 1 << 10;
 
-  FileBackedMessageImpl(IdGenerator guid, FileBackedMessageFactory fac, File tmpDir, int bufsiz, long maxSizeInline) {
+  FileBackedMessageImpl(IdGenerator guid, FileBackedMessageFactory fac) {
     super(guid, fac);
-    tempDir = tmpDir;
+    tempDir = fac.tempDirectory();
     try {
       outputFile = null;
       inputFile = null;
-      bufferSize = bufsiz;
-      maxSizeBeforeException = maxSizeInline;
+      bufferSize = fac.defaultBufferSize();
+      maxSizeBeforeException = fac.maxMemorySizeBytes();
       openStreams = new HashSet<Closeable>();
     }
     catch (Exception e) {
@@ -80,11 +75,6 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
   /** @see AdaptrisMessage#setPayload(byte[]) */
   @Override
   public void setPayload(byte[] bytes) {
-    // If we don't have a file and we're setting the payload to be empty, don't do anything
-    if(inputFile == null && (bytes == null || bytes.length == 0)) {
-      return;
-    }
-    
     try (OutputStream out = getOutputStream()) {
       out.write(bytes != null ? bytes : new byte[0]);
     }
@@ -135,10 +125,6 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
   
   @Override
   public void setContent(String content, String charEncoding) {
-    // If we don't have a file and we're setting the payload to be empty, don't do anything
-    if(inputFile == null && StringUtils.isEmpty(content)) {
-      return;
-    }
     try (PrintStream out = (!isEmpty(charEncoding)) ? new PrintStream(getOutputStream(), true, charEncoding)
         : new PrintStream(getOutputStream(), true)) {
       out.print(content != null ? content : "");
@@ -261,7 +247,7 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
       try {
         inputFile = createTempFile();
       } catch (IOException e) {
-        logR.error("Unable to create temporary file!", e);
+        log.error("Unable to create temporary file!", e);
       }
     }
     
