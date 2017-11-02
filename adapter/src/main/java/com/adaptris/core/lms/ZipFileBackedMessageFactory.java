@@ -31,7 +31,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * extract them before sending them in to the adapter.
  */
 @XStreamAlias("zip-file-backed-message-factory")
-@DisplayOrder(order = {"compressionMode", "fallback", "defaultCharEncoding", "tempDirectory", "maxMemorySizeBytes", "defaultBufferSize"})
+@DisplayOrder(order = {"compressionMode", "failFast", "defaultCharEncoding", "tempDirectory", "maxMemorySizeBytes", "defaultBufferSize"})
 public class ZipFileBackedMessageFactory extends FileBackedMessageFactory {
 
   public enum CompressionMode {
