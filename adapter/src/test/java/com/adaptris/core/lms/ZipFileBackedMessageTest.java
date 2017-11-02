@@ -108,7 +108,7 @@ public class ZipFileBackedMessageTest extends FileBackedMessageTest {
   @Test
   public void testUncompressedFile_FailFast_False() throws Exception {
     ZipFileBackedMessageFactory factory = getMessageFactory();
-    factory.setFailFast(false);
+    factory.setStrict(false);
     factory.setCompressionMode(CompressionMode.Uncompress);
     FileBackedMessage orig = (FileBackedMessage) factory.newMessage();
     File srcFile = new File(BaseCase.PROPERTIES.getProperty("msg.initFromFile"));

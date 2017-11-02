@@ -33,12 +33,12 @@ import com.adaptris.util.IdGenerator;
 class ZipFileBackedMessageImpl extends FileBackedMessageImpl {
 
   private transient CompressionMode compressionMode;
-  private transient boolean failFast;
+  private transient boolean strict;
   
   ZipFileBackedMessageImpl(IdGenerator guid, ZipFileBackedMessageFactory fac) {
     super(guid, fac);
     this.compressionMode = fac.getCompressionMode();
-    this.failFast = fac.failFast();
+    this.strict = fac.failFast();
   }
 
   /**
@@ -64,7 +64,7 @@ class ZipFileBackedMessageImpl extends FileBackedMessageImpl {
         isZip = true;
       }
       catch (IOException e) {
-        if (failFast) {
+        if (strict) {
           throw e;
         }
       }
@@ -123,7 +123,7 @@ class ZipFileBackedMessageImpl extends FileBackedMessageImpl {
     try(ZipFile zipFile = new ZipFile(sourceFile)) {
       super.initialiseFrom(sourceFile);
     } catch (ZipException ze) {
-      if (failFast) {
+      if (strict) {
         throw new UnsupportedOperationException(String.format(
           "\"%s\" is not a valid zip file. ZipFileBackedMessageFactory can only initialize from zip files. "
           + "For uncompressed files use FileBackedMessageFactory.", sourceFile.getAbsolutePath()));

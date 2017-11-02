@@ -31,7 +31,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * extract them before sending them in to the adapter.
  */
 @XStreamAlias("zip-file-backed-message-factory")
-@DisplayOrder(order = {"compressionMode", "failFast", "defaultCharEncoding", "tempDirectory", "maxMemorySizeBytes", "defaultBufferSize"})
+@DisplayOrder(order =
+{
+    "compressionMode", "strict", "defaultCharEncoding", "tempDirectory", "maxMemorySizeBytes", "defaultBufferSize"
+})
 public class ZipFileBackedMessageFactory extends FileBackedMessageFactory {
 
   public enum CompressionMode {
@@ -59,7 +62,7 @@ public class ZipFileBackedMessageFactory extends FileBackedMessageFactory {
   private CompressionMode compressionMode;
   @AdvancedConfig
   @InputFieldDefault(value = "true")
-  private Boolean failFast;
+  private Boolean strict;
   
   public ZipFileBackedMessageFactory() {
     setCompressionMode(CompressionMode.Uncompress);
@@ -90,20 +93,20 @@ public class ZipFileBackedMessageFactory extends FileBackedMessageFactory {
     this.compressionMode = compressionMode;
   }
 
-  public Boolean getFailFast() {
-    return failFast;
+  public Boolean getStrict() {
+    return strict;
   }
 
   /**
    * Whether or not we fail if the input is not a zip file.
    * 
-   * @param failFast defaults to true if not specified. If set to false, then non-zip input is handled transparently.
+   * @param b defaults to true if not specified. If set to false, then non-zip input is handled transparently.
    */
-  public void setFailFast(Boolean failFast) {
-    this.failFast = failFast;
+  public void setStrict(Boolean b) {
+    this.strict = b;
   }
   
   boolean failFast() {
-    return getFailFast() != null ? getFailFast().booleanValue() : true;
+    return getStrict() != null ? getStrict().booleanValue() : true;
   }
 }
