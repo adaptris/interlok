@@ -28,6 +28,9 @@ import com.adaptris.util.FifoMutexLock;
 
 public abstract class AdaptrisPollingConsumer extends AdaptrisMessageConsumerImp {
 
+  private static final int THERES_NO_LIMIT = Integer.MAX_VALUE - 1;
+  private static boolean warningLogged = false;
+  
   @NotNull
   @AutoPopulated
   @Valid
@@ -35,16 +38,14 @@ public abstract class AdaptrisPollingConsumer extends AdaptrisMessageConsumerImp
   @AdvancedConfig
   @InputFieldDefault(value = "false")
   private Boolean reacquireLockBetweenMessages;
+  @AdvancedConfig
+  @InputFieldDefault(value = "infinite")
+  private Integer maxMessagesPerPoll;
+
   // make logging from FML configurable (default false) when util is released
   // transient
   private transient FifoMutexLock lock;
 
-  /**
-   * <p>
-   * Creates a new instance. Default <code>Poller</code> is a
-   * <code>FixedIntervalPoller</code>.
-   * </p>
-   */
   public AdaptrisPollingConsumer() {
     changeState(ClosedState.getInstance());
     lock = new FifoMutexLock();
@@ -56,12 +57,6 @@ public abstract class AdaptrisPollingConsumer extends AdaptrisMessageConsumerImp
    */
   @Override
   public void init() throws CoreException {
-    if (getDestination().getDestination() == null) {
-      throw new CoreException("ConsumeDestination destination is null");
-    }
-    if ("".equals(getDestination().getDestination())) {
-      throw new CoreException("ConsumeDestination destination is \"\"");
-    }
     poller.registerConsumer(this);
     LifecycleHelper.init(poller);
   }
@@ -104,20 +99,44 @@ public abstract class AdaptrisPollingConsumer extends AdaptrisMessageConsumerImp
   }
 
   /**
-   * Reacquire the lock after processing messages.
    * 
-   * @return true if the lock was re-acquired, or if it was never necessary.
-   * @see #getReacquireLockBetweenMessages()
+   * @return true if it's ok to carry on.
+   * @deprecated since 3.6.6 use {@link #continueProcessingMessages(int)} instead passing in the current msg count to take advantage
+   *             of {@link #setMaxMessagesPerPoll(Integer)}. This will be removed in a future release.
    */
+  @Deprecated
   public final boolean continueProcessingMessages() {
-    if (retrieveComponentState() == StartedState.getInstance()) {
-      if (!reacquireLockBetweenMessages()) {
-        return true;
-      }
-      return reacquireLock();
-    } else {
+    if (!warningLogged) {
+      log.warn("Use of continueProcessingMessages() is deprecated; use continueProcessingMessages(int) instead. "
+          + "Future behaviour is undefined.");
+      warningLogged = true;
+    }
+    return continueProcessingMessages(0);
+  }
+
+  /**
+   * Whether or not to continue processing messages.
+   * 
+   * <p>
+   * Concrete sub-classes should call this after processing each message before they start processing the next one.
+   * </p>
+   * 
+   * @return true if it's ok to carry on.
+   * @see #setReacquireLockBetweenMessages(Boolean)
+   * @see #setMaxMessagesPerPoll(Integer)
+   */
+  public final boolean continueProcessingMessages(int currentCount) {
+    if (retrieveComponentState() != StartedState.getInstance()) {
       return false;
     }
+    if (currentCount > maxMessagesPerPoll()) {
+      // we probably should stop, you're at 2^31 - 2 in the event that no max was specified.
+      return false;
+    }
+    if (!reacquireLockBetweenMessages()) {
+      return true;
+    }
+    return reacquireLock();
   }
 
   /**
@@ -202,6 +221,29 @@ public abstract class AdaptrisPollingConsumer extends AdaptrisMessageConsumerImp
     return getReacquireLockBetweenMessages() != null ? getReacquireLockBetweenMessages().booleanValue() : false;
   }
 
+  public Integer getMaxMessagesPerPoll() {
+    return maxMessagesPerPoll;
+  }
+
+  /**
+   * Set the maximum number of messages that should be processed in any one poll trigger.
+   * <p>
+   * It can be arbitrarily useful to limit the number of messages processed per poll. For instance, you are using
+   * {@link QuartzCronPoller} and you need to ensure a time period when no activity occurs. In the event that a large number of
+   * documents are ready to process just before the no-activity-time; then without a maximum the adapter will continue processing
+   * until all documents are handled.
+   * </p>
+   * 
+   * @param max the max messages per poll, default is infinite if not specified.
+   */
+  public void setMaxMessagesPerPoll(Integer max) {
+    this.maxMessagesPerPoll = max;
+  }
+
+  private int maxMessagesPerPoll() {
+    return getMaxMessagesPerPoll() != null ? getMaxMessagesPerPoll().intValue() : THERES_NO_LIMIT;
+  }
+
   public Poller getPoller() {
     return poller;
   }
@@ -224,5 +266,6 @@ public abstract class AdaptrisPollingConsumer extends AdaptrisMessageConsumerImp
   }
 
   protected abstract void prepareConsumer() throws CoreException;
+
 
 }

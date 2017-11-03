@@ -161,7 +161,7 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
     LifecycleHelper.init(messageTranslator);
     LifecycleHelper.start(messageTranslator);
     if (additionalDebug()) {
-      log.trace("connected to broker in [" + (System.currentTimeMillis() - start) + "] ms");
+      log.trace("connected to broker in {}ms", (System.currentTimeMillis() - start));
     }
   }
 
@@ -189,8 +189,7 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
 
           if (jmsMsg != null) {
             messageHandler.onMessage(jmsMsg); // no Exc. ever
-            count++;
-            if (!continueProcessingMessages()) {
+            if (!continueProcessingMessages(++count)) {
               break;
             }
           }

@@ -88,7 +88,6 @@ public class FsMessageConsumerTest extends FsConsumerCase {
     }
   }
 
-
   public void testConsume() throws Exception {
     String subDir = new GuidGenerator().safeUUID();
     MockMessageListener stub = new MockMessageListener(10);

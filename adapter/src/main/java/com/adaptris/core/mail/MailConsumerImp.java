@@ -144,8 +144,7 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
           mbox.resetMessage(msg);
           log.debug("Error processing {}",(msg != null ? msg.getMessageID() : "<null>"), e);
         }
-        count++;
-        if (!continueProcessingMessages()) {
+        if (!continueProcessingMessages(++count)) {
           break;
         }
       }

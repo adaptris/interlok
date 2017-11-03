@@ -67,7 +67,7 @@ public class TraversingFsConsumer extends FsConsumer {
       fileList = Arrays.asList(dir.listFiles());
     }
     catch (Exception e) {
-      log.warn("Exception listing files in [" + getDestination().getDestination() + "], waiting for next scheduled poll");
+      log.warn("Exception listing files in [{}], waiting for next scheduled poll", getDestination().getDestination());
       if (logAllExceptions()) {
         log.warn(e.getMessage(), e);
       }
@@ -77,13 +77,13 @@ public class TraversingFsConsumer extends FsConsumer {
     for (File file : fileList) {
       try {
         filesProcessed += processFile(file);
-        if (!continueProcessingMessages()) {
+        if (!continueProcessingMessages(filesProcessed)) {
           break;
         }
 
       }
       catch (Exception e) {
-        log.warn("Exception processing [" + file.getName() + "], waiting for next scheduled poll");
+        log.warn("Exception processing [{}], waiting for next scheduled poll", file.getName());
         if (logAllExceptions()) {
           log.warn(e.getMessage(), e);
         }
@@ -121,23 +121,24 @@ public class TraversingFsConsumer extends FsConsumer {
 
   private void logFile(File f, String prefix) {
     // try {
-    // log.trace(prefix + f.getCanonicalPath());
+    // log.trace("{} {}", prefix, f.getCanonicalPath());
     // }
     // catch (IOException e) {
     //
     // }
 
   }
+
   private int handleFile(File originalFile) throws CoreException {
     int rc = 0;
     logFile(originalFile, "handleFile ");
 
     try {
       if (originalFile.getName().endsWith(getWipSuffix())) {
-        log.debug("ignoring part-processed file [" + originalFile.getName() + "]");
+        log.debug("ignoring part-processed file [{}]", originalFile.getName());
       }
       else if (fileFilter != null && !fileFilter.accept(originalFile)) {
-        log.trace("File [" + originalFile.getName() + "] doesn't match filter");
+        log.trace("File [{}] doesn't match filter", originalFile.getName());
       }
       else {
         if (checkModified(originalFile) && isFileAccessible(originalFile)) {
@@ -149,7 +150,7 @@ public class TraversingFsConsumer extends FsConsumer {
           rc++;
         }
         else {
-          log.trace(originalFile.getName() + " not deemed safe to process");
+          log.trace("[{}] not deemed safe to process", originalFile.getName());
         }
       }
     }

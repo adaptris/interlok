@@ -16,11 +16,14 @@
 
 package com.adaptris.core;
 
+import java.util.concurrent.TimeUnit;
+
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageConsumer;
 import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.util.TimeInterval;
 
 public class StandaloneConsumerTest extends BaseCase {
 
@@ -66,7 +69,7 @@ public class StandaloneConsumerTest extends BaseCase {
     stop(channel);
   }
 
-  public void testPollingConsumerInitialise() {
+  public void testPollingConsumerLifecycle() throws Exception {
     AdaptrisPollingConsumer consumer1 = new AdaptrisPollingConsumer() {
 
       @Override
@@ -81,19 +84,44 @@ public class StandaloneConsumerTest extends BaseCase {
     consumer1.setDestination(new ConfiguredConsumeDestination());
     StandaloneConsumer sc = new StandaloneConsumer(consumer1);
     sc.registerAdaptrisMessageListener(new MockMessageListener());
-    try {
-      LifecycleHelper.init(sc);
-      fail("initialised with null destination");
-    }
-    catch (CoreException e) {
-    }
-    consumer1.setDestination(new ConfiguredConsumeDestination(""));
-    try {
-      LifecycleHelper.init(sc);
-      fail("initialised with null destination");
-    }
-    catch (CoreException e) {
-    }
+    LifecycleHelper.initAndStart(sc);
+    LifecycleHelper.stopAndClose(sc);
+  }
+
+  @SuppressWarnings("deprecation")
+  public void testPollingConsumerContinueProcessing() throws Exception {
+    AdaptrisPollingConsumer consumer = new AdaptrisPollingConsumer() {
+
+      @Override
+      public void prepareConsumer() throws CoreException {
+      }
+
+      @Override
+      protected int processMessages() {
+        return 0;
+      }
+    };
+    consumer.setPoller(new FixedIntervalPoller(new TimeInterval(1L, TimeUnit.DAYS)));
+    consumer.setMaxMessagesPerPoll(10);
+    consumer.setReacquireLockBetweenMessages(false);
+    StandaloneConsumer sc = new StandaloneConsumer(consumer);
+    sc.registerAdaptrisMessageListener(new MockMessageListener());
+    // Not started, so should always return false.
+    assertFalse(consumer.continueProcessingMessages(1));
+    LifecycleHelper.initAndStart(sc);
+    assertTrue(consumer.continueProcessingMessages());
+    assertTrue(consumer.continueProcessingMessages());
+    assertTrue(consumer.continueProcessingMessages(5));
+    assertFalse(consumer.continueProcessingMessages(11));
+    LifecycleHelper.stopAndClose(sc);
+
+    consumer.setReacquireLockBetweenMessages(true);
+    assertFalse(consumer.continueProcessingMessages(1));
+    LifecycleHelper.initAndStart(sc);
+    assertTrue(consumer.continueProcessingMessages(5));
+    assertFalse(consumer.continueProcessingMessages(11));
+    LifecycleHelper.stopAndClose(sc);
+
   }
 
   public void testXmlRoundTrip() throws Exception {
