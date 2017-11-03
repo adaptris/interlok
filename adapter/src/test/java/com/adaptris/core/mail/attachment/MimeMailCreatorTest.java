@@ -28,7 +28,9 @@ import javax.mail.internet.MimeBodyPart;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.BaseCase;
+import com.adaptris.mail.MailException;
 import com.adaptris.util.GuidGenerator;
+import com.adaptris.util.text.mime.MimeConstants;
 import com.adaptris.util.text.mime.MultiPartOutput;
 import com.adaptris.util.text.mime.SelectByPosition;
 
@@ -65,6 +67,19 @@ public class MimeMailCreatorTest extends BaseCase {
 
   public void testBodyCreation() throws Exception {
     MimeMailCreator mmc = new MimeMailCreator();
+    try {
+      MailContent mc = mmc.createBody(create());
+    }
+    catch (MailException expected) {
+
+    }
+    try {
+      mmc.setBodySelector(new SelectByPosition(99));
+      MailContent mc = mmc.createBody(create());
+    }
+    catch (MailException expected) {
+
+    }
     mmc.setBodySelector(new SelectByPosition(1));
     MailContent mc =  mmc.createBody(create());
     log.trace(mc);
@@ -74,31 +89,48 @@ public class MimeMailCreatorTest extends BaseCase {
 
   public void testAttachmentCreation() throws Exception {
     MimeMailCreator mmc = new MimeMailCreator();
+    try {
+      List<MailAttachment> list = mmc.createAttachments(create());
+    }
+    catch (MailException expected) {
+
+    }
     mmc.setBodySelector(new SelectByPosition(1));
     List<MailAttachment> list =  mmc.createAttachments(create());
-    assertEquals(2, list.size());
+    assertEquals(3, list.size());
     MailAttachment a = list.get(0);
     log.trace(a);
     assertEquals(PAYLOAD_1, new String(a.getBytes()));
     assertEquals("attachment1.txt", a.getFilename());
+    assertEquals(MimeConstants.ENCODING_BASE64, a.getContentTransferEncoding());
     a = list.get(1);
     log.trace(a);
     assertEquals(PAYLOAD_3, new String(a.getBytes()));
     assertEquals("attachment3.txt", a.getFilename());
+    assertEquals(MimeConstants.ENCODING_BASE64, a.getContentTransferEncoding());
+    a = list.get(2);
+    assertEquals(MimeConstants.ENCODING_7BIT, a.getContentTransferEncoding());
   }
 
   protected static AdaptrisMessage create() throws Exception {
     MultiPartOutput output = new MultiPartOutput(new GuidGenerator().getUUID());
     for (int i = 0; i < PAYLOADS.length; i++) {
-      InternetHeaders hdr = new InternetHeaders();
-      hdr.addHeader("Content-Type", CONTENT_TYPES[i]);
-      hdr.addHeader("Content-Disposition", CONTENT_DISPOSITON[i]);
-      MimeBodyPart part = new MimeBodyPart(hdr, PAYLOADS[i].getBytes());
+      MimeBodyPart part = createPart(PAYLOADS[i].getBytes(), CONTENT_TYPES[i], CONTENT_DISPOSITON[i]);
       output.addPart(part, new GuidGenerator().getUUID());
     }
+    MimeBodyPart extra = createPart("Hello World".getBytes(), "application/octet-stream", "attachment;");
+    extra.addHeader(MimeConstants.HEADER_CONTENT_ENCODING, MimeConstants.ENCODING_7BIT);
+    output.addPart(extra, new GuidGenerator().getUUID());
     return AdaptrisMessageFactory.getDefaultInstance().newMessage(
         output.getBytes());
-
   }
 
+  private static MimeBodyPart createPart(byte[] bytes, String contentType, String contentDisposition) throws Exception {
+    InternetHeaders hdr = new InternetHeaders();
+    hdr.addHeader("Content-Type", contentType);
+    hdr.addHeader("Content-Disposition", contentDisposition);
+    MimeBodyPart result = new MimeBodyPart(hdr, bytes);
+    return result;
+
+  }
 }

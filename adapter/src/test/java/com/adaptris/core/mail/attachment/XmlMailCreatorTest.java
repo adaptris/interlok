@@ -23,6 +23,7 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.BaseCase;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
+import com.adaptris.util.text.mime.MimeConstants;
 
 /**
  * @author lchan
@@ -87,10 +88,30 @@ public class XmlMailCreatorTest extends BaseCase {
     log.trace(a);
     assertTrue("Check digests", MessageDigest.isEqual(calculateHash("ADP-01"), a.getBytes()));
     assertEquals("attachment1.txt", a.getFilename());
+    assertEquals(MimeConstants.ENCODING_BASE64, a.getContentTransferEncoding());
     a = attachments.get(1);
     log.trace(a);
     assertTrue("Check digests", MessageDigest.isEqual(calculateHash("PENRY"), a.getBytes()));
     assertEquals("attachment2.txt", a.getFilename());
+    assertEquals(MimeConstants.ENCODING_BASE64, a.getContentTransferEncoding());
+  }
+
+  public void testAttachmentHandler_WithEncoding() throws Exception {
+    XmlMailCreator xmc = new XmlMailCreator();
+    xmc.setAttachmentHandler(
+        new XmlAttachmentHandler("/document/attachment", "@filename", "@encoding").withAttachmentEncoding(MimeConstants.ENCODING_8BIT));
+    List<MailAttachment> attachments = xmc.createAttachments(AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_DOCUMENT));
+    assertEquals(2, attachments.size());
+    MailAttachment a = attachments.get(0);
+    log.trace(a);
+    assertTrue("Check digests", MessageDigest.isEqual(calculateHash("ADP-01"), a.getBytes()));
+    assertEquals("attachment1.txt", a.getFilename());
+    assertEquals(MimeConstants.ENCODING_8BIT, a.getContentTransferEncoding());
+    a = attachments.get(1);
+    log.trace(a);
+    assertTrue("Check digests", MessageDigest.isEqual(calculateHash("PENRY"), a.getBytes()));
+    assertEquals("attachment2.txt", a.getFilename());
+    assertEquals(MimeConstants.ENCODING_8BIT, a.getContentTransferEncoding());
   }
 
   private static byte[] calculateHash(String s) throws Exception {
