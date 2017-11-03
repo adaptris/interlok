@@ -98,20 +98,6 @@ public class BranchingServiceCollectionTest extends ServiceCollectionCase {
     catch (IllegalArgumentException expected) {
 
     }
-    try {
-      services.setFirstServiceId("");
-      fail("Null or empty first-service-id");
-    }
-    catch (IllegalArgumentException expected) {
-
-    }
-    try {
-      services.setFirstServiceId(CoreConstants.ENDPOINT_SERVICE_UNIQUE_ID);
-      fail("CoreConstants.ENDPOINT_SERVICE_UNIQUE_ID as first-service-id");
-    }
-    catch (IllegalArgumentException expected) {
-
-    }
     assertEquals(FIRST_SERVICE_ID, services.getFirstServiceId());
   }
 
