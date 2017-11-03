@@ -18,17 +18,15 @@ package com.adaptris.core.mail;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
-import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
+import com.adaptris.core.CoreException;
 import com.adaptris.core.NullConnection;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
@@ -84,20 +82,24 @@ public class DefaultSmtpProducer extends MailProducer {
   @AdvancedConfig
   @InputFieldDefault(value = "false")
   private Boolean isAttachment;
-  @NotNull
-  @AutoPopulated
   @AdvancedConfig
-  private String contentType = "text/plain";
-  @NotNull
-  @AutoPopulated
-  @Pattern(regexp = "base64|quoted-printable|uuencode|x-uuencode|x-uue|binary|7bit|8bit")
+  @InputFieldHint(expression = true)
+  @InputFieldDefault(value = "text/plain")
+  private String contentType;
   @AdvancedConfig
-  private String contentEncoding = "base64";
-  @NotNull
-  @AutoPopulated
+  @InputFieldHint(expression = true)
+  @InputFieldDefault(value = "base64")
+  private String contentEncoding = null;
   @AdvancedConfig
-  private String attachmentContentType = "application/octet-stream";
+  @InputFieldDefault(value = "application/octet-stream")
+  @InputFieldHint(expression = true)
+  private String attachmentContentType = null;
   @AdvancedConfig
+  @InputFieldDefault(value = "base64")
+  @InputFieldHint(expression = true)
+  private String attachmentContentEncoding = null;
+  @AdvancedConfig
+  @Deprecated
   private String contentTypeKey = null;
 
   /**
@@ -109,6 +111,13 @@ public class DefaultSmtpProducer extends MailProducer {
     super();
   }
 
+  @Override
+  public void init() throws CoreException {
+    super.init();
+    if (!isEmpty(getContentTypeKey())) {
+      log.warn("Use of deprecated content-type-key; use %message{metadata} in content-type instead");
+    }
+  }
 
   /**
    * @see com.adaptris.core.AdaptrisMessageProducer #produce(AdaptrisMessage,
@@ -119,42 +128,27 @@ public class DefaultSmtpProducer extends MailProducer {
       throws ProduceException {
     try {
       SmtpClient smtp = getClient(msg);
-      smtp.setEncoding(contentEncoding);
+      smtp.setEncoding(msg.resolve(contentEncoding()));
       byte[] encodedPayload = encode(msg);
       smtp.addTo(destination.getDestination(msg));
+      String ctype = getContentType(msg);
 
       if (isAttachment()) {
         String template = msg
             .getMetadataValue(CoreConstants.EMAIL_TEMPLATE_BODY);
         if (template != null) {
           if (msg.getContentEncoding() != null) {
-            smtp.setMessage(template.getBytes(msg.getContentEncoding()), contentType);
+            smtp.setMessage(template.getBytes(msg.getContentEncoding()), ctype);
           } else {
-            smtp.setMessage(template.getBytes(), contentType);
+            smtp.setMessage(template.getBytes(), ctype);
           }
         }
-        String fname = msg.headersContainsKey(CoreConstants.EMAIL_ATTACH_FILENAME)
-            ? msg.getMetadataValue(CoreConstants.EMAIL_ATTACH_FILENAME)
-            : msg.getUniqueId();
-
-        String type = msg.headersContainsKey(CoreConstants.EMAIL_ATTACH_CONTENT_TYPE)
-            ? msg.getMetadataValue(CoreConstants.EMAIL_ATTACH_CONTENT_TYPE)
-            : getAttachmentContentType();
-
-        smtp.addAttachment(encodedPayload, fname, type);
+        String fname = resolve(msg, CoreConstants.EMAIL_ATTACH_FILENAME, msg.getUniqueId());
+        String type = resolve(msg, CoreConstants.EMAIL_ATTACH_CONTENT_TYPE, msg.resolve(attachmentContentType()));
+        smtp.addAttachment(encodedPayload, fname, type, msg.resolve(attachmentContentEncoding()));
       }
       else {
-        String payloadContent = contentType;
-        if (contentTypeKey != null) {
-          if (msg.headersContainsKey(contentTypeKey)) {
-            String s = msg.getMetadataValue(contentTypeKey);
-            if (!isEmpty(s)) {
-              log.debug(contentTypeKey + " overrides configured content type");
-              payloadContent = s;
-            }
-          }
-        }
-        smtp.setMessage(encodedPayload, payloadContent);
+        smtp.setMessage(encodedPayload, ctype);
       }
       smtp.send();
     }
@@ -195,6 +189,10 @@ public class DefaultSmtpProducer extends MailProducer {
     contentType = s;
   }
 
+  String contentType() {
+    return getContentType() != null ? getContentType() : "text/plain";
+  }
+
   /**
    * Get the content type of the email.
    *
@@ -213,6 +211,7 @@ public class DefaultSmtpProducer extends MailProducer {
     contentEncoding = s;
   }
 
+
   /**
    * Get the encoding of the email.
    *
@@ -220,6 +219,10 @@ public class DefaultSmtpProducer extends MailProducer {
    */
   public String getContentEncoding() {
     return contentEncoding;
+  }
+
+  String contentEncoding() {
+    return getContentEncoding() != null ? getContentEncoding() : "base64";
   }
 
   /**
@@ -249,27 +252,70 @@ public class DefaultSmtpProducer extends MailProducer {
     return attachmentContentType;
   }
 
+  String attachmentContentType() {
+    return getAttachmentContentType() != null ? getAttachmentContentType() : "application/octet-stream";
+  }
+
   /**
    * Get the metadata key from which to extract the metadata.
    *
    * @return the contentTypeKey
+   * @deprecated since 3.6.6 {@link #setContentType(String)} supports expressions
    */
+  @Deprecated
   public String getContentTypeKey() {
     return contentTypeKey;
   }
 
   /**
-   * Set the content type metadata key that will be used to extract the Content
-   * Type.
+   * Set the content type metadata key that will be used to extract the Content Type.
    * <p>
-   * In the event that this metadata key exists, it will be used in preference
-   * to the configured content-type.
+   * In the event that this metadata key exists, it will be used in preference to the configured content-type.
    * </p>
    *
    * @param s the contentTypeKey to set
+   * @deprecated since 3.6.6 {@link #setContentType(String)} supports expressions
    */
+  @Deprecated
   public void setContentTypeKey(String s) {
     contentTypeKey = s;
   }
 
+  public String getAttachmentContentEncoding() {
+    return attachmentContentEncoding;
+  }
+
+  /**
+   * Set the attachment content encoding.
+   * 
+   * @param enc the encoding for the attachment.
+   */
+  public void setAttachmentContentEncoding(String enc) {
+    this.attachmentContentEncoding = enc;
+  }
+
+  String attachmentContentEncoding() {
+    return getAttachmentContentEncoding() != null ? getAttachmentContentEncoding() : "base64";
+  }
+
+  private String getContentType(AdaptrisMessage msg) {
+    String type = msg.resolve(contentType());
+    if (getContentTypeKey() != null) {
+      String s = msg.getMetadataValue(getContentTypeKey());
+      if (!isEmpty(s)) {
+        log.trace("{} metadata overrides configured content type", getContentTypeKey());
+        type = s;
+      }
+    }
+    log.trace("Content-Type set to {}", type);
+    return type;
+  }
+
+  private static String resolve(AdaptrisMessage msg, String metadataKey, String defaultValue) {
+    String result = defaultValue;
+    if (msg.headersContainsKey(metadataKey)) {
+      result = msg.getMetadataValue(metadataKey);
+    }
+    return result;
+  }
 }

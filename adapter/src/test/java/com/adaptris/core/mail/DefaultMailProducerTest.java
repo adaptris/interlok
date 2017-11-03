@@ -44,7 +44,6 @@ import com.icegreen.greenmail.util.GreenMail;
 @SuppressWarnings("deprecation")
 public class DefaultMailProducerTest extends MailProducerExample {
 
-  private DefaultSmtpProducer producer;
 
   public DefaultMailProducerTest(String name) {
     super(name);
@@ -52,12 +51,47 @@ public class DefaultMailProducerTest extends MailProducerExample {
 
   @Override
   protected void setUp() throws Exception {
-    producer = new DefaultSmtpProducer();
   }
 
   @Override
   protected Object retrieveObjectForSampleConfig() {
     return null;
+  }
+
+  public void testSetContentType() {
+    DefaultSmtpProducer producer = new DefaultSmtpProducer();
+    assertNull(producer.getContentType());
+    assertEquals("text/plain", producer.contentType());
+    producer.setContentType("x");
+    assertEquals("x", producer.getContentType());
+    assertEquals("x", producer.contentType());
+  }
+
+  public void testSetContentEncoding() {
+    DefaultSmtpProducer producer = new DefaultSmtpProducer();
+    assertNull(producer.getContentEncoding());
+    assertEquals("base64", producer.contentEncoding());
+    producer.setContentEncoding("x");
+    assertEquals("x", producer.getContentEncoding());
+    assertEquals("x", producer.contentEncoding());
+  }
+
+  public void testSetAttachmentContentType() {
+    DefaultSmtpProducer producer = new DefaultSmtpProducer();
+    assertNull(producer.getAttachmentContentType());
+    assertEquals("application/octet-stream", producer.attachmentContentType());
+    producer.setAttachmentContentType("x");
+    assertEquals("x", producer.getAttachmentContentType());
+    assertEquals("x", producer.attachmentContentType());
+  }
+
+  public void testSetAttachmentContentEncoding() {
+    DefaultSmtpProducer producer = new DefaultSmtpProducer();
+    assertNull(producer.getAttachmentContentEncoding());
+    assertEquals("base64", producer.attachmentContentEncoding());
+    producer.setAttachmentContentEncoding("x");
+    assertEquals("x", producer.getAttachmentContentEncoding());
+    assertEquals("x", producer.attachmentContentEncoding());
   }
 
   public void testProduce() throws Exception {
