@@ -40,7 +40,6 @@ import com.adaptris.core.AdaptrisMessageImp;
 import com.adaptris.util.IdGenerator;
 
 class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMessage {
-  protected File tempDir;
   protected File outputFile;
   protected File inputFile;
   private int bufferSize;
@@ -54,7 +53,6 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
 
   FileBackedMessageImpl(IdGenerator guid, FileBackedMessageFactory fac) {
     super(guid, fac);
-    tempDir = fac.tempDirectory();
     try {
       outputFile = null;
       inputFile = null;
@@ -259,7 +257,7 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
 //  }
 
   private File createTempFile() throws IOException {
-    return ((FileBackedMessageFactory) getFactory()).createTempFile(tempDir, this);
+    return ((FileBackedMessageFactory) getFactory()).createTempFile(this);
   }
 
   @Override
