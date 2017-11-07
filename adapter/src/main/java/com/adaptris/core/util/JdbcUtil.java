@@ -29,7 +29,7 @@ import java.sql.Statement;
  * @author lchan
  * @author $Author: lchan $
  */
-public class JdbcUtil {
+public abstract class JdbcUtil {
 
   public static void closeQuietly(Statement p) {
     try {

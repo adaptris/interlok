@@ -30,7 +30,7 @@ import com.adaptris.core.StateManagedComponent;
  * @author lchan
  * @author $Author: lchan $
  */
-public final class LoggingHelper {
+public abstract class LoggingHelper {
   
   private static final String GUID_PATTERN = "^[0-9a-f]{8}\\-[0-9a-f]{4}\\-[0-9a-f]{4}\\-[0-9a-f]{4}\\-[0-9a-f]{12}$";
 
