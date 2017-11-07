@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,7 +17,6 @@
 package com.adaptris.core.util;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,11 +29,7 @@ import java.sql.Statement;
  * @author lchan
  * @author $Author: lchan $
  */
-public final class JdbcUtil {
-
-  private JdbcUtil() {
-
-  }
+public class JdbcUtil {
 
   public static void closeQuietly(Statement p) {
     try {
@@ -42,7 +37,7 @@ public final class JdbcUtil {
         p.close();
       }
     }
-    catch (SQLException e) {
+    catch (Exception e) {
     }
   }
 
@@ -52,7 +47,7 @@ public final class JdbcUtil {
         p.close();
       }
     }
-    catch (SQLException e) {
+    catch (Exception e) {
     }
   }
 
@@ -62,7 +57,7 @@ public final class JdbcUtil {
         p.close();
       }
     }
-    catch (IOException e) {
+    catch (Exception e) {
     }
   }
 
@@ -72,7 +67,7 @@ public final class JdbcUtil {
         c.close();
       }
     }
-    catch (SQLException e) {
+    catch (Exception e) {
       ;
     }
   }
