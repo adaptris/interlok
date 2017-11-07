@@ -26,12 +26,16 @@ public abstract class ProducerCase extends ExampleConfigCase {
    */
   public static final String BASE_DIR_KEY = "ProducerCase.baseDir";
 
-  public ProducerCase(String name) {
-    super(name);
-
+  public ProducerCase() {
+    super();
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
+  }
+
+  public ProducerCase(String name) {
+    this();
+    setName(name);
   }
 
   @Override

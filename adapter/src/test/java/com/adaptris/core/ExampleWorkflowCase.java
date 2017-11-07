@@ -43,13 +43,18 @@ public abstract class ExampleWorkflowCase extends ExampleConfigCase {
   protected static final String PAYLOAD_2 = "Sixty zippers were quickly picked "
     + "from the woven jute bag";
 
-  public ExampleWorkflowCase(String name) {
-    super(name);
-
+  public ExampleWorkflowCase() {
+    super();
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
   }
+
+  public ExampleWorkflowCase(String name) {
+    this();
+    setName(name);
+  }
+
 
   @Override
   protected String createExampleXml(Object object) throws Exception {

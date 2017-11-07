@@ -43,8 +43,8 @@ public abstract class ExampleConfigCase extends BaseCase {
 
   private String baseDir;
 
-  public ExampleConfigCase(String name) {
-    super(name);
+  public ExampleConfigCase() {
+    super();
     try {
       defaultMarshaller = DefaultMarshaller.getDefaultMarshaller();
       // by default we want to marshal config w/o ID Referencing mode to remove "ID cruft".
@@ -55,6 +55,11 @@ public abstract class ExampleConfigCase extends BaseCase {
     catch (Exception e) {
       throw new RuntimeException(e);
     }
+  }
+
+  public ExampleConfigCase(String name) {
+    this();
+    setName(name);
   }
 
   public void testCreateExampleConfig() throws Exception {
