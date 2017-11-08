@@ -16,9 +16,14 @@
 
 package com.adaptris.security;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.security.SecureRandom;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
 
 import com.adaptris.security.util.SecurityUtil;
 
@@ -26,26 +31,25 @@ import com.adaptris.security.util.SecurityUtil;
  * @author lchan
  *
  */
-public class TestSecurityUtil extends TestCase {
+public class TestSecurityUtil extends SecurityUtil {
 
-  /**
-   * @param arg0
-   */
-  public TestSecurityUtil(String arg0) {
-    super(arg0);
-  }
-
-  @Override
-  protected void setUp() {
+  @Before
+  public void setUp() {
     SecurityUtil.addProvider();
   }
 
-  @Override
-  protected void tearDown() {
+  @After
+  public void tearDown() {
   }
 
+
   public void testSecureRandomInstance() throws Exception {
-      SecureRandom sr = SecurityUtil.getSecureRandom();
-      assertTrue(sr == SecurityUtil.getSecureRandom());
+    SecureRandom sr = SecurityUtil.getSecureRandom();
+    assertEquals(sr, SecurityUtil.getSecureRandom());
+    assertTrue(sr == SecurityUtil.getSecureRandom());
+  }
+
+  public void testGetAlgorithms() throws Exception {
+    assertNotNull(SecurityUtil.getAlgorithms());
   }
 }
