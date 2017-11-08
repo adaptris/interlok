@@ -400,13 +400,9 @@ public class XmlUtils {
     if (parent == null) {
       parent = createNode(subPath);
     }
-
-    NodeBuilder nb = new NodeBuilder(nodeName);
-    Node n = nb.getNode(currentDoc);
-
-    appendNode(n, parent);
-
-    return n;
+    Element newNode = currentDoc.createElement(nodeName);
+    appendNode(newNode, parent);
+    return newNode;
   }
 
   /**
