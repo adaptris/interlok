@@ -26,7 +26,7 @@ import com.adaptris.core.MetadataElement;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairBag;
 
-public final class MetadataHelper {
+public abstract class MetadataHelper {
 
   public static Properties convertToProperties(Collection<MetadataElement> s) {
     Properties result = new Properties();
