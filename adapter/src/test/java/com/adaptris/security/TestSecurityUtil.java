@@ -24,6 +24,7 @@ import java.security.SecureRandom;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 
 import com.adaptris.security.util.SecurityUtil;
 
@@ -43,12 +44,14 @@ public class TestSecurityUtil extends SecurityUtil {
   }
 
 
+  @Test
   public void testSecureRandomInstance() throws Exception {
     SecureRandom sr = SecurityUtil.getSecureRandom();
     assertEquals(sr, SecurityUtil.getSecureRandom());
     assertTrue(sr == SecurityUtil.getSecureRandom());
   }
 
+  @Test
   public void testGetAlgorithms() throws Exception {
     assertNotNull(SecurityUtil.getAlgorithms());
   }
