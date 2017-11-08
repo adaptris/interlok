@@ -89,6 +89,16 @@ public class DocumentBuilderFactoryBuilderTest {
   }
 
   @Test
+  public void testNewDocumentBuilder() throws Exception {
+    DocumentBuilderFactory f = DocumentBuilderFactory.newInstance();
+    DocumentBuilderFactoryBuilder builder = DocumentBuilderFactoryBuilder.newInstance().withCoalescing(true)
+        .withEntityResolver(new Resolver()).withExpandEntityReferences(true).withIgnoreComments(true).withIgnoreWhitespace(true)
+        .withNamespaceAware(true).withValidating(true).withXIncludeAware(true);
+
+    assertNotNull(builder.newDocumentBuilder(f));
+  }
+
+  @Test
   public void testBuild() throws Exception {
     DocumentBuilderFactoryBuilder b = DocumentBuilderFactoryBuilder.newInstance();
     assertNotNull(b.build());
@@ -124,11 +134,13 @@ public class DocumentBuilderFactoryBuilderTest {
     DocumentBuilderFactoryBuilder b = DocumentBuilderFactoryBuilder.newInstance();
     assertEquals(true, b.getNamespaceAware());
     assertEquals(true, b.build().isNamespaceAware());
-    assertEquals(b, b.withNamespaceAware(SimpleNamespaceContext.create(createNamespaceEntries())));
+    assertEquals(b, b.withNamespaceAware(createNamespaceContext()));
     assertEquals(true, b.getNamespaceAware());
     assertEquals(true, b.build().isNamespaceAware());
     assertEquals(b, b.withNamespaceAware((NamespaceContext) null));
     assertEquals(false, b.getNamespaceAware());
+    assertEquals(false, b.build().isNamespaceAware());
+    assertEquals(b, b.withNamespaceAware((Boolean) null));
     assertEquals(false, b.build().isNamespaceAware());
   }
 
@@ -154,5 +166,9 @@ public class DocumentBuilderFactoryBuilderTest {
     result.add(new KeyValuePair("xsd", "http://www.w3.org/2001/XMLSchema"));
     result.add(new KeyValuePair("xs", "http://www.w3.org/2001/XMLSchema"));
     return result;
+  }
+
+  public static NamespaceContext createNamespaceContext() {
+    return SimpleNamespaceContext.create(createNamespaceEntries());
   }
 }
