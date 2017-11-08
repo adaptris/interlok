@@ -574,4 +574,13 @@ public abstract class AdaptrisMessageCase {
     }
   }
 
+  // INTERLOK-1949 - resolve() should work with MetadataResolver...
+  @Test
+  public void testResolve_WithIndirection() throws Exception {
+    AdaptrisMessage msg = createMessage();
+    msg.addMessageHeader("key3", "key1");
+    // $$key3 --> really use key1 as the key --> VAL1
+    assertNotSame("%message{$$key3}", msg.resolve("%message{$$key3}"));
+    assertEquals(VAL1, msg.resolve("%message{$$key3}"));
+  }
 }
