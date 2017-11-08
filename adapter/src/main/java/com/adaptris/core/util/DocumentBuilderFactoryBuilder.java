@@ -351,4 +351,9 @@ public class DocumentBuilderFactoryBuilder {
   public void setEntityResolver(EntityResolver e) {
     this.entityResolver = e;
   }
+
+  public DocumentBuilderFactoryBuilder withEntityResolver(EntityResolver e) {
+    setEntityResolver(e);
+    return this;
+  }
 }
