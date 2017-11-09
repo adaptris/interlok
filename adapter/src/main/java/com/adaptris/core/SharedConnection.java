@@ -66,26 +66,26 @@ public class SharedConnection extends SharedComponent implements AdaptrisConnect
 
   @Override
   public void init() throws CoreException {
-    getProxiedConnection().init();
+    // No-Op as requestXXX invokes the underlying connection
   }
 
   @Override
   public void start() throws CoreException {
-    getProxiedConnection().start();
+    // No-Op as requestXXX invokes the underlying connection
   }
 
   @Override
   public void stop() {
-    getProxiedConnection().stop();
+    // No-Op as requestXXX invokes the underlying connection
   }
 
   @Override
   public void close() {
-    getProxiedConnection().close();
+    // No-Op as requestXXX invokes the underlying connection
   }
 
   public void changeState(ComponentState newState) {
-    getProxiedConnection().changeState(newState);
+    // No-Op as requestXXX invokes the underlying connection
   }
   
   @Override
