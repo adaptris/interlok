@@ -76,7 +76,7 @@ public class MetadataStreamOutputParameter implements DataOutputParameter<InputS
       }
       message.addMessageHeader(getMetadataKey(), builder.toString());
     } catch (IOException e) {
-      ExceptionHelper.rethrowCoreException(e);
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 

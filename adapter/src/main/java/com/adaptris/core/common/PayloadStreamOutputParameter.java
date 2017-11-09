@@ -62,7 +62,7 @@ public class PayloadStreamOutputParameter implements DataOutputParameter<InputSt
         msg.setContentEncoding(encoding);
       }
     } catch (IOException e) {
-      ExceptionHelper.rethrowCoreException(e);
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
