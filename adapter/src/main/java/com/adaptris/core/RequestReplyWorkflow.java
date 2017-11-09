@@ -27,6 +27,7 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -111,8 +112,8 @@ public class RequestReplyWorkflow extends StandardWorkflow {
         reply.setUniqueId(originalId);
       }
       try {
-        replyServiceCollection.doService(reply);
-        replyProducer.produce(reply);
+        getReplyServiceCollection().doService(reply);
+        getReplyProducer().produce(reply);
         msg.addEvent(getReplyProducer(), true);
       }
       catch (ProduceException e) { // need to apply different event
@@ -183,10 +184,7 @@ public class RequestReplyWorkflow extends StandardWorkflow {
    * @param services the <code>ServiceCollection</code> to use on the reply
    */
   public void setReplyServiceCollection(ServiceCollection services) {
-    if (services == null) {
-      throw new IllegalArgumentException("param [" + services + "]");
-    }
-    replyServiceCollection = services;
+    replyServiceCollection = Args.notNull(services, "replyServiceCollection");
   }
 
   /**
@@ -209,10 +207,7 @@ public class RequestReplyWorkflow extends StandardWorkflow {
    * @param producer the <code>AdaptrisMessageProducer</code> to use for the reply
    */
   public void setReplyProducer(AdaptrisMessageProducer producer) {
-    if (producer == null) {
-      throw new IllegalArgumentException("param [" + producer + "]");
-    }
-    replyProducer = producer;
+    replyProducer = Args.notNull(producer, "replyProducer");
   }
 
   /**
