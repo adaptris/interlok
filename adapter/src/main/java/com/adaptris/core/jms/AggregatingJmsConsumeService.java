@@ -16,7 +16,6 @@
 
 package com.adaptris.core.jms;
 
-import javax.jms.JMSException;
 import javax.jms.Session;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -33,6 +32,8 @@ import com.adaptris.core.AdaptrisMessageListener;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.aggregator.AggregatingConsumeServiceImpl;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -64,18 +65,14 @@ public class AggregatingJmsConsumeService extends AggregatingConsumeServiceImpl<
 
   @Override
   protected void initService() throws CoreException {
-    if (connection == null) {
-      throw new CoreException("Null Connection");
-    }
-    if (jmsConsumer == null) {
-      throw new CoreException("Null consumer");
-    }
-    LifecycleHelper.init(connection);
     try {
+      Args.notNull(connection, "connection");
+      Args.notNull(jmsConsumer, "jmsConsumer");
+      LifecycleHelper.init(connection);
       session = getConnection().retrieveConnection(JmsConnection.class).createSession(false, configuredAcknowledgeMode());
     }
-    catch (JMSException e) {
-      throw new CoreException(e);
+    catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
@@ -98,12 +95,8 @@ public class AggregatingJmsConsumeService extends AggregatingConsumeServiceImpl<
 
   @Override
   public void prepare() throws CoreException {
-    if (getConnection() != null) {
-      getConnection().prepare();
-    }
-    if (getJmsConsumer() != null) {
-      getJmsConsumer().prepare();
-    }
+    LifecycleHelper.prepare(getConnection());
+    LifecycleHelper.prepare(getJmsConsumer());
   }
 
   @Override
