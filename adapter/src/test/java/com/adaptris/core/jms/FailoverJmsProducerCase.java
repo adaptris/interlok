@@ -18,13 +18,21 @@ package com.adaptris.core.jms;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.Channel;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.util.TimeInterval;
 
 public abstract class FailoverJmsProducerCase extends JmsProducerCase {
 
@@ -68,4 +76,97 @@ public abstract class FailoverJmsProducerCase extends JmsProducerCase {
     }
   }
 
+  public void testNeverConnects() throws Exception {
+    EmbeddedActiveMq broker = new EmbeddedActiveMq();
+    FailoverJmsConnection connection = new FailoverJmsConnection();
+    connection.addConnection(new JmsConnection(new BasicActiveMqImplementation("tcp://localhost:123456")));
+    connection.addConnection(new JmsConnection(new BasicActiveMqImplementation("tcp://localhost:123456")));
+    connection.setConnectionRetryInterval(new TimeInterval(250L, TimeUnit.MILLISECONDS));
+    connection.setConnectionAttempts(1);
+    connection.addExceptionListener(new StandaloneConsumer());
+    connection.setRegisterOwner(true);
+    try {
+      broker.start();
+      LifecycleHelper.initAndStart(connection);
+    }
+    catch (CoreException expected) {
+
+    }
+    finally {
+      broker.destroy();
+      LifecycleHelper.stopAndClose(connection);
+    }
+  }
+
+  public void testEventuallyConnects() throws Exception {
+    final EmbeddedActiveMq broker = new EmbeddedActiveMq();
+    FailoverJmsConnection connection = new FailoverJmsConnection();
+    connection.addConnection(new JmsConnection(new BasicActiveMqImplementation("tcp://localhost:123456")));
+    connection.addConnection(broker.getJmsConnection(new BasicActiveMqImplementation(), true));
+    connection.setConnectionRetryInterval(new TimeInterval(250L, TimeUnit.MILLISECONDS));
+    connection.addExceptionListener(new StandaloneConsumer());
+    connection.setRegisterOwner(true);
+    ScheduledExecutorService es = Executors.newSingleThreadScheduledExecutor();
+    try {
+      es.schedule(new Runnable() {
+
+        @Override
+        public void run() {
+          try {
+            broker.start();
+          }
+          catch (Exception e) {
+            throw new RuntimeException(e);
+          }
+        }
+        
+      }, 2L, TimeUnit.SECONDS);
+      LifecycleHelper.initAndStart(connection);
+    }
+    finally {
+      broker.destroy();
+      LifecycleHelper.stopAndClose(connection);
+      es.shutdownNow();
+    }
+  }
+
+  public void testConnectionEquals() throws Exception {
+    EmbeddedActiveMq broker = new EmbeddedActiveMq();
+    FailoverJmsConnection connection = new FailoverJmsConnection();
+    connection.addConnection(broker.getJmsConnection(new BasicActiveMqImplementation(), true));
+    connection.addConnection(broker.getJmsConnection());
+    assertEquals(false, connection.connectionEquals(new JmsConnection(new BasicActiveMqImplementation("tcp://localhost:123456"))));
+    try {
+      broker.start();
+      LifecycleHelper.initAndStart(connection);
+      assertNotNull(connection.currentJmsConnection());
+      assertEquals(true, connection.connectionEquals(broker.getJmsConnection(new BasicActiveMqImplementation(), true)));
+    }
+    finally {
+      broker.destroy();
+      LifecycleHelper.stopAndClose(connection);
+    }
+  }
+
+  public void testDelegatedMethods() throws Exception {
+    EmbeddedActiveMq broker = new EmbeddedActiveMq();
+    FailoverJmsConnection connection = new FailoverJmsConnection();
+    connection.addConnection(broker.getJmsConnection(new BasicActiveMqImplementation(), true));
+    connection.addConnection(broker.getJmsConnection());
+    try {
+      broker.start();
+      LifecycleHelper.initAndStart(connection);
+      assertNotNull(connection.currentJmsConnection());
+      assertNotNull(connection.obtainConnectionFactory());
+      connection.createConnection(connection.obtainConnectionFactory());
+      assertNotNull(connection.configuredClientId());
+      assertEquals(true, StringUtils.isEmpty(connection.configuredPassword()));
+      assertEquals(true, StringUtils.isEmpty(connection.configuredUserName()));
+      assertEquals(BasicActiveMqImplementation.class, connection.configuredVendorImplementation().getClass());
+    }
+    finally {
+      broker.destroy();
+      LifecycleHelper.stopAndClose(connection);
+    }
+  }
 }
