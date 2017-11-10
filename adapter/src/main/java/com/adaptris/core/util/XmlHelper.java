@@ -109,7 +109,7 @@ public class XmlHelper {
     DivertConsoleOutput dc = new DivertConsoleOutput();
     InputStream input = null;
     try {
-      DocumentBuilderFactory dbf = defaultIfNull(builder).withNamespaceAware(ctx).build();
+      DocumentBuilderFactory dbf = DocumentBuilderFactoryBuilder.newInstance(builder).withNamespaceAware(ctx).build();
       result = new XmlUtils(ctx, dbf);
       input = msg.getInputStream();
       InputSource in = new InputSource(input);
@@ -188,13 +188,9 @@ public class XmlHelper {
   }
 
   private static DocumentBuilder newDocumentBuilder(DocumentBuilderFactoryBuilder cfg) throws ParserConfigurationException {
-    DocumentBuilder builder = defaultIfNull(cfg).newDocumentBuilder(DocumentBuilderFactory.newInstance());
+    DocumentBuilder builder = DocumentBuilderFactoryBuilder.newInstance(cfg).build().newDocumentBuilder();
     builder.setErrorHandler(new DefaultErrorHandler());
     return builder;
-  }
-
-  private static DocumentBuilderFactoryBuilder defaultIfNull(DocumentBuilderFactoryBuilder b) {
-    return b != null ? b : DocumentBuilderFactoryBuilder.newInstance();
   }
 
   /**

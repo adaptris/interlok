@@ -16,6 +16,8 @@
 
 package com.adaptris.util.text.xml;
 
+import static com.adaptris.core.util.DocumentBuilderFactoryBuilder.newInstance;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -25,14 +27,12 @@ import java.util.Iterator;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -120,7 +120,7 @@ public class XmlTransformer {
    * @throws Exception in the event of parsing / transform errors
    */
   public void transform(Transformer transformer, InputStream xmlIn, OutputStream xmlOut, String xsl) throws Exception {
-    transform(transformer, createSource(xmlIn), new StreamResult(xmlOut), xsl, null);
+    transform(transformer, xmlIn, xmlOut, xsl, null);
   }
 
   /**
@@ -133,7 +133,7 @@ public class XmlTransformer {
    * @throws Exception in the event of parsing / transform errors
    */
   public void transform(Transformer transformer, Reader xmlIn, Writer xmlOut, String xsl) throws Exception {
-    transform(transformer, createSource(xmlIn), new StreamResult(xmlOut), xsl, null);
+    transform(transformer, xmlIn, xmlOut, xsl, null);
   }
 
   /**
@@ -150,25 +150,15 @@ public class XmlTransformer {
   }
 
   private Source createSource(InputStream in) throws ParserConfigurationException, SAXException, IOException {
-    Source result = null;
-    if (builder != null) {
-      DocumentBuilder docBuilder = builder.newDocumentBuilder(DocumentBuilderFactory.newInstance());
-      result = new DOMSource(docBuilder.parse(in));
-    } else {
-      result = new StreamSource(in);
-    }
-    return result;
+    return createSource(newInstance(builder).build().newDocumentBuilder(), new InputSource(in));
   }
 
   private Source createSource(Reader in) throws ParserConfigurationException, SAXException, IOException {
-    Source result = null;
-    if (builder != null) {
-      DocumentBuilder docBuilder = builder.newDocumentBuilder(DocumentBuilderFactory.newInstance());
-      result = new DOMSource(docBuilder.parse(new InputSource(in)));
-    } else {
-      result = new StreamSource(in);
-    }
-    return result;
+    return createSource(newInstance(builder).build().newDocumentBuilder(), new InputSource(in));
+  }
+
+  private Source createSource(DocumentBuilder docBuilder, InputSource source) throws SAXException, IOException {
+    return new DOMSource(docBuilder.parse(source));
   }
 
 }

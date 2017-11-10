@@ -176,7 +176,6 @@ public class XpathMetadataService extends ServiceImp {
   }
 
   DocumentBuilderFactoryBuilder documentFactoryBuilder() {
-    return getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig()
- : DocumentBuilderFactoryBuilder.newInstance();
+    return DocumentBuilderFactoryBuilder.newInstance(getXmlDocumentFactoryConfig());
   }
 }

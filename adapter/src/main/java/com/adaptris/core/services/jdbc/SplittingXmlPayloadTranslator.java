@@ -217,7 +217,7 @@ public class SplittingXmlPayloadTranslator extends XmlPayloadTranslatorImpl {
   private DocumentBuilderFactoryBuilder documentFactoryBuilder(AdaptrisMessage msg) {
     DocumentBuilderFactoryBuilder factoryBuilder =
         (DocumentBuilderFactoryBuilder) msg.getObjectHeaders().get(JdbcDataQueryService.KEY_DOCBUILDER_FAC);
-    return factoryBuilder != null ? factoryBuilder : DocumentBuilderFactoryBuilder.newInstance();
+    return DocumentBuilderFactoryBuilder.newInstance(factoryBuilder);
   }
   
   public int getMaxRowsPerMessage() {
