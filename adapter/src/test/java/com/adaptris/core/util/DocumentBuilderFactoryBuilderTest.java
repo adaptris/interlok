@@ -17,6 +17,7 @@ package com.adaptris.core.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
@@ -60,6 +61,9 @@ public class DocumentBuilderFactoryBuilderTest {
     assertNotNull(b.getFeatures());
     assertEquals(0, b.getFeatures().size());
     assertEquals(true, b.getNamespaceAware());
+    
+    assertEquals(b, DocumentBuilderFactoryBuilder.newInstance(b));
+    assertNotSame(b, DocumentBuilderFactoryBuilder.newInstance(null));
   }
 
   @Test

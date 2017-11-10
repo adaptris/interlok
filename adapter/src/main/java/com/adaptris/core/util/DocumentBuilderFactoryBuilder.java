@@ -147,6 +147,16 @@ public class DocumentBuilderFactoryBuilder {
   }
 
   /**
+   * Convenient method for null protection.
+   * 
+   * @param b
+   * @return
+   */
+  public static final DocumentBuilderFactoryBuilder newInstance(DocumentBuilderFactoryBuilder b) {
+    return b == null ? newInstance() : b;
+  }
+
+  /**
    * Configure a document builder factory
    * 
    * @param f
