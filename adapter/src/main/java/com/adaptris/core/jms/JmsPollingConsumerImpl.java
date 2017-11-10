@@ -41,6 +41,7 @@ import com.adaptris.core.AdaptrisMessageListener;
 import com.adaptris.core.AdaptrisPollingConsumer;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.security.password.Password;
 import com.adaptris.util.TimeInterval;
@@ -297,10 +298,7 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
   }
 
   public void setMessageTranslator(MessageTypeTranslator m) {
-    if (m == null) {
-      throw new IllegalArgumentException("null param");
-    }
-    messageTranslator = m;
+    messageTranslator = Args.notNull(m, "messageTranslator");
   }
 
   public String getPassword() {
@@ -336,10 +334,7 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
   }
 
   public void setVendorImplementation(VendorImplementation v) {
-    if (v == null) {
-      throw new IllegalArgumentException("null param");
-    }
-    vendorImplementation = v;
+    vendorImplementation = Args.notNull(v, "vendorImplementation");
   }
 
   long receiveTimeout() {
@@ -387,10 +382,7 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
    * @param c the correlationIdSource to set
    */
   public void setCorrelationIdSource(CorrelationIdSource c) {
-    if (c == null) {
-      throw new IllegalArgumentException("null param");
-    }
-    correlationIdSource = c;
+    correlationIdSource = Args.notNull(c, "correlationIdSource");
   }
 
   @Override

@@ -27,6 +27,7 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -76,10 +77,7 @@ public class MultiItemMetadataXpathQuery extends MetadataXpathQueryImpl implemen
    * @param s the separator, default '|'
    */
   public void setSeparator(String s) {
-    if (s == null) {
-      throw new IllegalArgumentException("Configured Separator may not be null.");
-    }
-    separator = s;
+    separator = Args.notNull(s, "separator");
   }
 
 }

@@ -27,6 +27,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 
 /**
@@ -42,10 +43,7 @@ public abstract class ConnectionErrorHandlerImp implements ConnectionErrorHandle
 
   @Override
   public void registerConnection(AdaptrisConnection connection) {
-    if (connection == null) {
-      throw new IllegalArgumentException("Registered connection may not be null");
-    }
-    adpConnection = connection;
+    adpConnection = Args.notNull(connection, "connection");
   }
 
   // @Override

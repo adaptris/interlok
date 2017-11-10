@@ -21,7 +21,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -30,6 +29,8 @@ import org.apache.commons.io.IOUtils;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.MimeHelper;
 import com.adaptris.util.text.mime.PartSelector;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -61,10 +62,8 @@ public class MimeServiceExtractor implements ServiceExtractor {
   public InputStream getInputStream(AdaptrisMessage m) throws ServiceException, IOException {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     InputStream in = null;
-    if (selector == null) {
-      throw new ServiceException("No Selector, impossible to extract service");
-    }
     try {
+      Args.notNull(getSelector(), "selector");
       MimeBodyPart part = selector.select(MimeHelper.create(m, false));
       if (part != null) {
         out = new ByteArrayOutputStream();
@@ -75,8 +74,8 @@ public class MimeServiceExtractor implements ServiceExtractor {
         throw new ServiceException("Could not select a part");
       }
     }
-    catch (MessagingException e) {
-      throw new ServiceException(e);
+    catch (Exception e) {
+      throw ExceptionHelper.wrapServiceException(e);
     }
     finally {
       IOUtils.closeQuietly(out);
@@ -95,7 +94,7 @@ public class MimeServiceExtractor implements ServiceExtractor {
    * @param selector the part selector.
    */
   public void setSelector(PartSelector selector) {
-    this.selector = selector;
+    this.selector = Args.notNull(selector, "selector");
   }
 
 }

@@ -32,6 +32,8 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -91,16 +93,19 @@ public class FtpConsumer extends FtpConsumerImpl {
    */
   @Override
   public void init() throws CoreException {
-    if (workDirectory == null) {
-      throw new CoreException("No Directory specified to read from");
+    try {
+      Args.notNull(getWorkDirectory(), "workDirectory");
+      if (!workDirectory.startsWith(FORWARD_SLASH)) {
+        workDirectory = FORWARD_SLASH + workDirectory;
+      }
+      if (procDirectory != null && !procDirectory.startsWith(FORWARD_SLASH)) {
+        procDirectory = FORWARD_SLASH + procDirectory;
+      }
+      super.init();
     }
-    if (!workDirectory.startsWith(FORWARD_SLASH)) {
-      workDirectory = FORWARD_SLASH + workDirectory;
+    catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
-    if (procDirectory != null && !procDirectory.startsWith(FORWARD_SLASH)) {
-      procDirectory = FORWARD_SLASH + procDirectory;
-    }
-    super.init();
   }
 
   protected String configureWorkDir(String path) {

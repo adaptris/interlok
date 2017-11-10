@@ -30,6 +30,8 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.KeyValuePairSet;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -73,13 +75,16 @@ public class MetadataValueBranchingService extends MetadataBranchingServiceImp {
 
   @Override
   protected void initService() throws CoreException {
-    super.initService();
-    if (valueMatcher == null) {
-      throw new CoreException("ValueMatcher is null; cannot continue");
-    }
-    if (valueMatcher instanceof UseKeyAsServiceIdValueMatcher && !isEmpty(getDefaultServiceId())) {
-      log.warn("default-service-id set with {}, default-service-id will not be used",
-          UseKeyAsServiceIdValueMatcher.class.getSimpleName());
+    try {
+      super.initService();
+      Args.notNull(getValueMatcher(), "valueMatcher");
+      Args.notNull(getMetadataToServiceIdMappings(), "metadataToServiceMappings");
+      if (valueMatcher instanceof UseKeyAsServiceIdValueMatcher && !isEmpty(getDefaultServiceId())) {
+        log.warn("default-service-id set with {}, default-service-id will not be used",
+            UseKeyAsServiceIdValueMatcher.class.getSimpleName());
+      }
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
@@ -145,10 +150,7 @@ public class MetadataValueBranchingService extends MetadataBranchingServiceImp {
    * @param mappings the mapping to add
    */
   public void setMetadataToServiceIdMappings(KeyValuePairSet mappings) {
-    if (mappings == null) {
-      throw new IllegalArgumentException("null param");
-    }
-    metadataToServiceIdMappings = mappings;
+    metadataToServiceIdMappings = Args.notNull(mappings, "mappings");
   }
 
   /**
@@ -166,6 +168,6 @@ public class MetadataValueBranchingService extends MetadataBranchingServiceImp {
    *          replicate the previous functionality
    */
   public void setValueMatcher(MetadataValueMatcher mvm) {
-    valueMatcher = mvm;
+    valueMatcher = Args.notNull(mvm, "metadataValueMatcher");
   }
 }

@@ -36,6 +36,8 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.metadata.MetadataFilter;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -74,10 +76,13 @@ public final class MapMessageTranslator extends MessageTypeTranslatorImp {
    */
   @Override
   public void init() throws CoreException {
-    if (getKeyForPayload() == null || "".equals(getKeyForPayload())) {
-      throw new CoreException("key for the payload == null");
+    try {
+      Args.notBlank(getKeyForPayload(), "keyForPayload");
+      super.init();
     }
-    super.init();
+    catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
+    }
   }
 
   /**
@@ -146,7 +151,7 @@ public final class MapMessageTranslator extends MessageTypeTranslatorImp {
    * @param s the keyForPayload to set
    */
   public void setKeyForPayload(String s) {
-    keyForPayload = s;
+    keyForPayload = Args.notBlank(s, "keyForPayload");
   }
 
 

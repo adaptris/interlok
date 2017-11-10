@@ -34,6 +34,8 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.DynamicPollingTemplate;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 
 /**
  * Base class for enabling JSR223 enabled scripting languages.
@@ -83,16 +85,15 @@ public abstract class ScriptingServiceImp extends ServiceImp implements DynamicP
 
   @Override
   protected void initService() throws CoreException {
-    if (language == null) {
-      throw new CoreException("Language may not be null");
-    }
-    fatController = new ScriptEngineManager(this.getClass().getClassLoader());
-    engine = fatController.getEngineByName(getLanguage());
-    if (engine == null) {
-      throw new CoreException("Could not find a ScriptEngine instance for [" + getLanguage() + "]");
-    }
-    if (getBranching() != null) {
-      log.warn("[branching] is deprecated, use [branching-enabled] instead");
+    try {
+      Args.notBlank(language, "language");
+      fatController = new ScriptEngineManager(this.getClass().getClassLoader());
+      engine = Args.notNull(fatController.getEngineByName(getLanguage()), "scriptingEngineInstance");
+      if (getBranching() != null) {
+        log.warn("[branching] is deprecated, use [branching-enabled] instead");
+      }
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
@@ -121,7 +122,7 @@ public abstract class ScriptingServiceImp extends ServiceImp implements DynamicP
    * @param s a JSR223 supported language.
    */
   public void setLanguage(String s) {
-    language = s;
+    language = Args.notBlank(s, "language");
   }
 
   @Override

@@ -21,6 +21,8 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -167,7 +169,7 @@ public class PollingTrigger extends AdaptrisPollingConsumer {
     if (super.getDestination() != null) {
       newName = super.getDestination().getDeliveryThreadName();
     }
-    if (newName == null) {
+    if (StringUtils.isEmpty(newName)) {
       newName = retrieveAdaptrisMessageListener().friendlyName();
     }
     

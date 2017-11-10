@@ -42,6 +42,7 @@ import com.adaptris.core.NullConnection;
 import com.adaptris.core.NullMessageProducer;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.jdbc.JdbcResult;
@@ -238,10 +239,7 @@ public class SplittingXmlPayloadTranslator extends XmlPayloadTranslatorImpl {
    *          messages, may not be null
    */
   public void setConnection(AdaptrisConnection conn) {
-    if (conn == null) {
-      throw new IllegalArgumentException("param is null");
-    }
-    connection = conn;
+    connection = Args.notNull(conn, "connection");
   }
 
   /**
@@ -267,10 +265,8 @@ public class SplittingXmlPayloadTranslator extends XmlPayloadTranslatorImpl {
    *          split messages, may not be null
    */
   public void setProducer(AdaptrisMessageProducer prod) {
-    if (prod == null) {
-      throw new IllegalArgumentException("param is null");
-    }
-    producer = prod;
+    producer = Args.notNull(prod, "producer");
+
   }
 
   /**

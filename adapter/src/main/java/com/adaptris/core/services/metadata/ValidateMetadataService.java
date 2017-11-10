@@ -29,6 +29,8 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -67,11 +69,12 @@ public class ValidateMetadataService extends ServiceImp {
   }
 
   public void doService(AdaptrisMessage msg) throws ServiceException {
-
-    for (String requiredKey : requiredKeys) {
-      if (msg.getMetadataValue(requiredKey) == null || "".equals(msg.getMetadataValue(requiredKey))) {
-        throw new ServiceException("required metadata key [" + requiredKey + "] null, empty or not present");
+    try {
+      for (String requiredKey : requiredKeys) {
+        Args.notBlank(msg.getMetadataValue(requiredKey), requiredKey);
       }
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapServiceException(e);
     }
   }
 
@@ -98,7 +101,7 @@ public class ValidateMetadataService extends ServiceImp {
    *          empty values
    */
   public void setRequiredKeys(List<String> l) {
-    requiredKeys = l;
+    requiredKeys = Args.notNull(l, "requiredKeys");
   }
 
   /**
@@ -109,10 +112,7 @@ public class ValidateMetadataService extends ServiceImp {
    * @param key the key to add
    */
   public void addRequiredKey(String key) {
-    if (key == null || "".equals(key)) {
-      throw new IllegalArgumentException();
-    }
-    requiredKeys.add(key);
+    requiredKeys.add(Args.notBlank(key, "requiredKey"));
   }
 
 

@@ -23,6 +23,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -81,10 +82,10 @@ public class SelectByHeader implements PartSelector {
   }
 
   private void assertConfig() throws MessagingException {
-    if (getHeaderName() == null || "".equals(getHeaderName())) {
+    if (StringUtils.isEmpty(getHeaderName())) {
       throw new MessagingException("No configured Header name");
     }
-    if (getHeaderValueRegExp() == null || "".equals(getHeaderValueRegExp())) {
+    if (StringUtils.isEmpty(getHeaderValueRegExp())) {
       throw new MessagingException(
           "No configured Header value regular expression");
     }

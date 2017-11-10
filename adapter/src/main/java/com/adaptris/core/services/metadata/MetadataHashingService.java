@@ -20,7 +20,6 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -31,6 +30,8 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.text.Base64ByteTranslator;
 import com.adaptris.util.text.ByteTranslator;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -82,10 +83,10 @@ public class MetadataHashingService extends ReformatMetadata {
   protected void initService() throws CoreException {
     try {
       MessageDigest d = MessageDigest.getInstance(getHashAlgorithm());
-    } catch (NoSuchAlgorithmException e) {
-      throw new CoreException(e.getMessage(), e);
+      super.initService();
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
-    super.initService();
   }
 
   @Override
@@ -104,8 +105,7 @@ public class MetadataHashingService extends ReformatMetadata {
   }
 
   public final void setHashAlgorithm(String hashAlg) {
-    if (isEmpty(hashAlg)) throw new IllegalArgumentException("HashAlg may not be null");
-    this.hashAlgorithm = hashAlg;
+    this.hashAlgorithm = Args.notBlank(hashAlg, "hashAlgorithm");
   }
 
   private byte[] toBytes(String metadataValue, String charset) throws UnsupportedEncodingException {
@@ -125,8 +125,7 @@ public class MetadataHashingService extends ReformatMetadata {
    * @param translator the translator;
    */
   public final void setByteTranslator(ByteTranslator translator) {
-    if (translator == null) throw new IllegalArgumentException("Translator may not be null");
-    this.byteTranslator = translator;
+    this.byteTranslator = Args.notNull(translator, "byteTranslator");;
   }
 
 }

@@ -31,6 +31,7 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -104,7 +105,7 @@ public class MetadataAppenderService extends ServiceImp {
    * appended
    */
   public void setAppendKeys(List<String> l) {
-    appendKeys = l;
+    appendKeys = Args.notNull(l, "appendKeys");
   }
 
   /**
@@ -115,10 +116,7 @@ public class MetadataAppenderService extends ServiceImp {
    * empty.
    */
   public void addAppendKey(String string) {
-    if (string == null || "".equals(string)) {
-      throw new IllegalArgumentException("param [" + string + "]");
-    }
-    appendKeys.add(string);
+    appendKeys.add(Args.notBlank(string, "key"));
   }
 
   /**
@@ -142,10 +140,7 @@ public class MetadataAppenderService extends ServiceImp {
    * be stored against, may not be null or empty.
    */
   public void setResultKey(String string) {
-    if (string == null || "".equals(string)) {
-      throw new IllegalArgumentException("param [" + string + "]");
-    }
-    resultKey = string;
+    resultKey = Args.notBlank(string, "resultKey");
   }
 
 

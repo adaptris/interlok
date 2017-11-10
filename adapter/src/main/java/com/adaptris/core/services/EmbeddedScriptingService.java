@@ -19,6 +19,8 @@ package com.adaptris.core.services;
 import java.io.Reader;
 import java.io.StringReader;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -85,7 +87,7 @@ public class EmbeddedScriptingService extends ScriptingServiceImp {
 
   @Override
   protected Reader createReader() {
-    return new StringReader(getScript() == null ? "" : getScript());
+    return new StringReader(StringUtils.defaultIfEmpty(getScript(), ""));
   }
 
   public EmbeddedScriptingService withScript(String lang, String script) {

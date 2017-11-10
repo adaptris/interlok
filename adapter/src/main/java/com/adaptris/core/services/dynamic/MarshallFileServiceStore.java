@@ -20,8 +20,10 @@ import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.Service;
+import com.adaptris.core.util.Args;
 
 /**
  * Abstract base implementation of a file based service store that uses your choice of 
@@ -33,10 +35,12 @@ import com.adaptris.core.Service;
 public abstract class MarshallFileServiceStore extends MarshallServiceStore {
   @NotNull
   @InputFieldDefault(value = "")
+  @InputFieldHint(style = "BLANKABLE")
   private String fileNameSuffix;
   @NotNull
   @InputFieldDefault(value = "")
   @AdvancedConfig
+  @InputFieldHint(style = "BLANKABLE")
   private String fileNamePrefix;
   @AdvancedConfig
   private String defaultFileName;
@@ -79,10 +83,7 @@ public abstract class MarshallFileServiceStore extends MarshallServiceStore {
    *          <code>Service</code> name to create the name of the file to read
    */
   public void setFileNameSuffix(String s) {
-    if (s == null) {
-      throw new IllegalArgumentException("null param");
-    }
-    fileNameSuffix = s;
+    fileNameSuffix = Args.notNull(s, "filenameSuffix");
   }
 
   /**
@@ -109,10 +110,7 @@ public abstract class MarshallFileServiceStore extends MarshallServiceStore {
    *          <code>Service</code> name to create the name of the file to read
    */
   public void setFileNamePrefix(String s) {
-    if (s == null) {
-      throw new IllegalArgumentException("null param");
-    }
-    fileNamePrefix = s;
+    fileNamePrefix = Args.notNull(s, "filenamePrefix");
   }
 
   /**

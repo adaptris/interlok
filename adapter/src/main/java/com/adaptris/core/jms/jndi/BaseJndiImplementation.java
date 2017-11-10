@@ -313,9 +313,6 @@ public abstract class BaseJndiImplementation extends VendorImplementationImp {
    * @see SimpleFactoryConfiguration
    */
   public void setExtraFactoryConfiguration(ExtraFactoryConfiguration efc) {
-    if (efc == null) {
-      throw new IllegalArgumentException("Extra Factory Configuration may not be null");
-    }
     extraFactoryConfiguration = Args.notNull(efc, "extra factory configuration");
   }
 

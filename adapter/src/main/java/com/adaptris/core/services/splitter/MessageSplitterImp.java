@@ -16,6 +16,7 @@
 
 package com.adaptris.core.services.splitter;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,11 +89,11 @@ public abstract class MessageSplitterImp implements MessageSplitter {
   }
 
   boolean copyMetadata() {
-    return getCopyMetadata() == null ? true : copyMetadata.booleanValue();
+    return BooleanUtils.toBooleanDefaultIfNull(getCopyMetadata(), true);
   }
 
   boolean copyObjectMetadata() {
-    return getCopyObjectMetadata() == null ? false : copyObjectMetadata.booleanValue();
+    return BooleanUtils.toBooleanDefaultIfNull(getCopyObjectMetadata(), false);
   }
 
   /**

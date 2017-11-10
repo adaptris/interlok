@@ -286,8 +286,7 @@ public class SharedComponentList implements ComponentLifecycle, ComponentLifecyc
    * @return a collection of things that were rejected.
    */
   public Collection<Service> addServices(Collection<Service> coll) {
-    if (coll == null) throw new IllegalArgumentException("Collection is null");
-    verifyHasUniqueId(coll);
+    verifyHasUniqueId(Args.notNull(coll, "services"));
     return doAddServices(coll);
   }
   
@@ -311,8 +310,7 @@ public class SharedComponentList implements ComponentLifecycle, ComponentLifecyc
    * @return a collection of things that were rejected.
    */
   public Collection<AdaptrisConnection> addConnections(Collection<AdaptrisConnection> coll) {
-    if (coll == null) throw new IllegalArgumentException("Collection is null");
-    verifyHasUniqueId(coll);
+    verifyHasUniqueId(Args.notNull(coll, "connections"));
     return doAddConnections(coll);
   }
 
@@ -426,7 +424,7 @@ public class SharedComponentList implements ComponentLifecycle, ComponentLifecyc
   }
 
   private static void verify(AdaptrisComponent c) throws IllegalArgumentException {
-    if (c == null) throw new IllegalArgumentException("Component is null");
+    Args.notNull(c, "component");
     if (isEmpty(c.getUniqueId()))
       throw new IllegalArgumentException("Component " + c.getClass().getSimpleName() + "has no unique-id");
   }

@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageListener;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.util.Args;
 
 /**
  * <p>
@@ -113,12 +114,8 @@ public class OnMessageHandler {
    */
   public OnMessageHandler(JmsActorConfig cfg) throws CoreException {
     this();
-    if (cfg == null) {
-      throw new IllegalArgumentException("Null param");
-    }
+    onMsgConfig = Args.notNull(cfg, "onMsgConfig");
     logR = cfg.currentLogger() != null ? cfg.currentLogger() : LoggerFactory.getLogger(this.getClass());
-
-    onMsgConfig = cfg;
     verify(onMsgConfig);
   }
 

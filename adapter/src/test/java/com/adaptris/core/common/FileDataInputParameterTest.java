@@ -58,13 +58,6 @@ public class FileDataInputParameterTest {
     assertNull(p.url(m));
     p.setUrl("file:////tmp/abc");
     assertEquals("file:////tmp/abc", p.url(m));
-    try {
-      p.setUrl("");
-      fail();
-    } catch (IllegalArgumentException e) {
-
-    }
-    assertEquals("file:////tmp/abc", p.url(m));
   }
 
   @Test

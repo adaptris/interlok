@@ -16,13 +16,18 @@
 
 package com.adaptris.core.services.duplicate;
 
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectOutputStream;
+
+import org.apache.commons.io.IOUtils;
 
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -63,21 +68,12 @@ public class StoreMetadataValueService extends DuplicateMetadataValueService {
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     String value = msg.getMetadataValue(getMetadataKey());
-
-    if (value == null || "".equals(value)) {
-      throw new ServiceException
-        ("required metadata [" + getMetadataKey() + "] missing");
-    }
-
     try {
+      Args.notBlank(value, "metadataKey");
       previousValuesStore.add(value);
-
-      while (previousValuesStore.size()
-        > getNumberOfPreviousValuesToStore()) {
-
+      while (previousValuesStore.size() > getNumberOfPreviousValuesToStore()) {
         previousValuesStore.remove(0);
       }
-
       storePreviouslyReceivedValues();
     }
     catch (Exception e) {
@@ -85,19 +81,16 @@ public class StoreMetadataValueService extends DuplicateMetadataValueService {
     }
   }
 
-  private void storePreviouslyReceivedValues() {
+  private void storePreviouslyReceivedValues() throws FileNotFoundException, IOException {
     if (store != null) {
+      ObjectOutputStream o = null;
       try {
-        ObjectOutputStream o
-        = new ObjectOutputStream(new FileOutputStream(store));
-
+        o = new ObjectOutputStream(new FileOutputStream(store));
         o.writeObject(previousValuesStore);
         o.flush();
-        o.close();
       }
-      catch (Exception e) {
-        log.error("exception storing previously received values", e);
-        log.error(previousValuesStore.toString());
+      finally {
+        IOUtils.closeQuietly(o);
       }
     }
   }

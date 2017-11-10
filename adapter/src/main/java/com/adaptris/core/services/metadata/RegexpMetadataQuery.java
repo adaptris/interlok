@@ -27,6 +27,7 @@ import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -110,12 +111,7 @@ public class RegexpMetadataQuery {
    * @param s the key to store the result of the regexp query against
    */
   public void setMetadataKey(String s) {
-    if (s == null || "".equals(s)) {
-      throw new IllegalArgumentException();
-    }
-    else {
-      metadataKey = s;
-    }
+    metadataKey = Args.notBlank(s, "metadataKey");
   }
 
   /**
@@ -135,12 +131,7 @@ public class RegexpMetadataQuery {
    * @param s the regexp query expression to use
    */
   public void setQueryExpression(String s) {
-    if (s == null || "".equals(s)) {
-      throw new IllegalArgumentException();
-    }
-    else {
-      queryExpression = s;
-    }
+    queryExpression = Args.notBlank(s, "queryExpression");
   }
 
   /**

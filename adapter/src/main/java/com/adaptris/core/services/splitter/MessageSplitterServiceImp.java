@@ -21,12 +21,15 @@ import java.io.IOException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang.BooleanUtils;
+
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 
 /**
  * <p>
@@ -86,8 +89,10 @@ public abstract class MessageSplitterServiceImp extends ServiceImp {
 
   @Override
   protected void initService() throws CoreException {
-    if (splitter == null) {
-      throw new CoreException("Configured Message splitter is null");
+    try {
+      Args.notNull(getSplitter(), "splitter");
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
@@ -127,7 +132,7 @@ public abstract class MessageSplitterServiceImp extends ServiceImp {
   }
 
   public boolean ignoreSplitMessageFailures() {
-    return getIgnoreSplitMessageFailures() != null ? getIgnoreSplitMessageFailures().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getIgnoreSplitMessageFailures(), false);
   }
   /**
    * Whether or not to ignore errors on messages that are split.

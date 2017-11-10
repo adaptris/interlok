@@ -16,8 +16,6 @@
 
 package com.adaptris.core.services.routing;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +30,8 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -96,11 +96,7 @@ public class SyntaxRoutingService extends ServiceImp {
    * @param ident the SyntaxIdentifier.
    */
   public void addSyntaxIdentifier(SyntaxIdentifier ident) {
-    if (ident == null) {
-      throw new IllegalArgumentException("Identifier is null");
-    }
-
-    syntaxIdentifiers.add(ident);
+    syntaxIdentifiers.add(Args.notNull(ident, "identifier"));
   }
 
   /**
@@ -118,10 +114,7 @@ public class SyntaxRoutingService extends ServiceImp {
    * @param l the list.
    */
   public void setSyntaxIdentifiers(List<SyntaxIdentifier> l) {
-    if (l == null) {
-      throw new IllegalArgumentException("List is null");
-    }
-    syntaxIdentifiers = l;
+    syntaxIdentifiers = Args.notNull(l, "identifiers");
   }
 
   /**
@@ -130,10 +123,7 @@ public class SyntaxRoutingService extends ServiceImp {
    * @param key the key.
    */
   public void setRoutingKey(String key) {
-    if (isBlank(key)) {
-      throw new IllegalArgumentException("Null routing Key");
-    }
-    routingKey = key;
+    routingKey = Args.notBlank(key, "routingKey");
   }
 
   /**
@@ -147,8 +137,11 @@ public class SyntaxRoutingService extends ServiceImp {
 
   @Override
   protected void initService() throws CoreException {
-    if (isBlank(routingKey)) {
-      throw new CoreException("No Routing Key defined");
+    try {
+      Args.notBlank(getRoutingKey(), "routingKey");
+      Args.notNull(getSyntaxIdentifiers(), "syntaxIdentifiers");
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 

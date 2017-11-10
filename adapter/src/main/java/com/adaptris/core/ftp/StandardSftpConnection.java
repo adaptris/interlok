@@ -29,6 +29,7 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
 import com.adaptris.security.exc.PasswordException;
@@ -104,10 +105,13 @@ public class StandardSftpConnection extends FileTransferConnection {
    */
   @Override
   protected void initConnection() throws CoreException {
-    if (getAuthentication() == null) {
-      throw new CoreException("No Authentication Provider configured");
+    try {
+      Args.notNull(getAuthentication(), "authentication");
+      super.initConnection();
     }
-    super.initConnection();
+    catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
+    }
   }
 
   public TimeInterval getSocketTimeout() {

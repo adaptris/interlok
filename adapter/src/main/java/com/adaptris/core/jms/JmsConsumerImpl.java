@@ -36,6 +36,7 @@ import com.adaptris.core.AdaptrisMessageListener;
 import com.adaptris.core.ClosedState;
 import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 
 /**
@@ -203,10 +204,7 @@ public abstract class JmsConsumerImpl extends AdaptrisMessageConsumerImp impleme
    * @param translator the MessageTypeTranslator to use
    */
   public void setMessageTranslator(MessageTypeTranslator translator) {
-    if (translator == null) {
-      throw new IllegalArgumentException();
-    }
-    messageTranslator = translator;
+    messageTranslator = Args.notNull(translator, "messageTranslator");
   }
 
   /**
@@ -271,10 +269,7 @@ public abstract class JmsConsumerImpl extends AdaptrisMessageConsumerImp impleme
    * @param c the correlationIdSource to set
    */
   public void setCorrelationIdSource(CorrelationIdSource c) {
-    if (c == null) {
-      throw new IllegalArgumentException("null param");
-    }
-    correlationIdSource = c;
+    correlationIdSource = Args.notNull(c, "correlationIdSource");
   }
 
   @Override

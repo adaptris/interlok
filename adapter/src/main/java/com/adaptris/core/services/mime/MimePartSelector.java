@@ -40,6 +40,8 @@ import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.MimeHelper;
 import com.adaptris.util.stream.StreamUtil;
 import com.adaptris.util.text.mime.MultiPartInput;
@@ -142,8 +144,10 @@ public class MimePartSelector extends ServiceImp {
 
   @Override
   protected void initService() throws CoreException {
-    if (selector == null) {
-      throw new CoreException("Mime part Selector may not be null");
+    try {
+      Args.notNull(getSelector(), "selector");
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
@@ -245,7 +249,7 @@ public class MimePartSelector extends ServiceImp {
    * @param mps the selector to set
    */
   public void setSelector(PartSelector mps) {
-    selector = mps;
+    selector = Args.notNull(mps, "selector");
   }
 
   /**

@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.PlainIdGenerator;
 import com.adaptris.util.TimeInterval;
@@ -92,6 +94,8 @@ public abstract class WorkflowImp implements Workflow {
   private String uniqueId;
   @Valid
   @XStreamImplicit
+  @NotNull
+  @AutoPopulated
   private List<WorkflowInterceptor> interceptors;
 
   @Valid
@@ -138,19 +142,13 @@ public abstract class WorkflowImp implements Workflow {
    */
   @Override
   public void registerActiveMsgErrorHandler(ProcessingExceptionHandler meh) {
-    if (meh == null) {
-      throw new IllegalArgumentException("Null Active MessageErrorHandler");
-    }
-    activeErrorHandler = meh;
+    activeErrorHandler = Args.notNull(meh, "activeErrorHandler");
     meh.registerWorkflow(this);
   }
 
   @Override
   public void registerEventHandler(EventHandler eh) {
-    if (eh == null) {
-      throw new IllegalArgumentException("Null EventHandler");
-    }
-    eventHandler = eh;
+    eventHandler = Args.notNull(eh, "eventHandler");
   }
 
   @Override
@@ -470,10 +468,7 @@ public abstract class WorkflowImp implements Workflow {
    * @param services the <code>ServiceCollection</code> to use
    */
   public void setServiceCollection(ServiceCollection services) {
-    if (services == null) {
-      throw new IllegalArgumentException("Illegal ServiceCollection [" + services + "]");
-    }
-    serviceCollection = services;
+    serviceCollection = Args.notNull(services, "service");
   }
 
   /**
@@ -497,10 +492,7 @@ public abstract class WorkflowImp implements Workflow {
    * @param param the <code>AdaptrisMessageConsumer</code> to use
    */
   public void setConsumer(AdaptrisMessageConsumer param) {
-    if (param == null) {
-      throw new IllegalArgumentException("param [" + param + "]");
-    }
-    consumer = param;
+    consumer = Args.notNull(param, "consumer");
   }
 
   /**
@@ -523,10 +515,7 @@ public abstract class WorkflowImp implements Workflow {
    * @param param the <code>AdaptrisMessagePRoducer</code> to use
    */
   public void setProducer(AdaptrisMessageProducer param) {
-    if (param == null) {
-      throw new IllegalArgumentException("param [" + param + "]");
-    }
-    producer = param;
+    producer = Args.notNull(param, "producer");
   }
 
   /**
@@ -588,7 +577,7 @@ public abstract class WorkflowImp implements Workflow {
   }
 
   boolean sendEvents() {
-    return getSendEvents() != null ? getSendEvents().booleanValue() : true;
+    return BooleanUtils.toBooleanDefaultIfNull(getSendEvents(), true);
   }
 
   /**
@@ -614,7 +603,7 @@ public abstract class WorkflowImp implements Workflow {
   }
 
   boolean logPayload() {
-    return getLogPayload() != null ? getLogPayload().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getLogPayload(), false);
   }
 
   /**
@@ -630,10 +619,7 @@ public abstract class WorkflowImp implements Workflow {
    */
   @Override
   public void registerChannel(Channel ch) throws CoreException {
-    if (ch == null) {
-      throw new IllegalArgumentException("Channel is null");
-    }
-    channel = ch;
+    channel = Args.notNull(ch, "parentChannel");
     channel.getConsumeConnection().addMessageConsumer(getConsumer());
     channel.getProduceConnection().addMessageProducer(getProducer());
   }
@@ -687,10 +673,7 @@ public abstract class WorkflowImp implements Workflow {
    * @param p the produceExceptionHandler to set
    */
   public void setProduceExceptionHandler(ProduceExceptionHandler p) {
-    if (p == null) {
-      throw new IllegalArgumentException("Null ProduceExceptionHandler");
-    }
-    produceExceptionHandler = p;
+    produceExceptionHandler = Args.notNull(p, "produceExceptionHandler");
 
   }
 
@@ -708,17 +691,11 @@ public abstract class WorkflowImp implements Workflow {
   }
 
   public void setInterceptors(List<WorkflowInterceptor> list) {
-    if (list == null) {
-      throw new IllegalArgumentException("Interceptor list is null");
-    }
-    interceptors = list;
+    interceptors = Args.notNull(list, "interceptors");
   }
 
   public void addInterceptor(WorkflowInterceptor wi) {
-    if (wi == null) {
-      throw new IllegalArgumentException("Interceptor is null");
-    }
-    interceptors.add(wi);
+    interceptors.add(Args.notNull(wi, "interceptor"));
   }
 
   /**

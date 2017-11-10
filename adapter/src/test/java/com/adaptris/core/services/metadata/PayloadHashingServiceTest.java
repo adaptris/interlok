@@ -48,36 +48,6 @@ public class PayloadHashingServiceTest extends MetadataServiceExample {
     }
     catch (CoreException expected) {
     }
-    service.setHashAlgorithm(SHA256);
-    try {
-      LifecycleHelper.init(service);
-      fail();
-    }
-    catch (CoreException expected) {
-    }
-    service.setHashAlgorithm("");
-    try {
-      LifecycleHelper.init(service);
-      fail();
-    }
-    catch (CoreException expected) {
-    }
-    service.setHashAlgorithm(SHA256);
-    service.setMetadataKey("");
-    try {
-      LifecycleHelper.init(service);
-      fail();
-    }
-    catch (CoreException expected) {
-    }
-    service.setMetadataKey(METADATA_KEY);
-    service.setHashAlgorithm("BLAHBLAH");
-    try {
-      LifecycleHelper.init(service);
-      fail();
-    }
-    catch (CoreException expected) {
-    }
     service.setMetadataKey(METADATA_KEY);
     service.setHashAlgorithm(SHA256);
     LifecycleHelper.init(service);

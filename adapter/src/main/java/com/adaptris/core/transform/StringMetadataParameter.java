@@ -32,6 +32,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.MetadataCollection;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.metadata.RegexMetadataFilter;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -80,10 +81,7 @@ public class StringMetadataParameter implements XmlTransformParameter {
   }
 
   public void setMetadataFilter(RegexMetadataFilter rmf) {
-    if (rmf == null) {
-      throw new IllegalArgumentException("Metadata filter is null");
-    }
-    this.metadataFilter = rmf;
+    this.metadataFilter = Args.notNull(rmf, "metadataFilter");
   }
 
 }

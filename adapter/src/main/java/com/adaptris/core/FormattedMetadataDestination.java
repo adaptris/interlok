@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.metadata.ElementFormatter;
 import com.adaptris.core.metadata.ElementValueFormatter;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -118,10 +119,7 @@ public class FormattedMetadataDestination implements MessageDrivenDestination {
   }
 
   public void setMetadataKeys(List<String> l) {
-    if (l == null) {
-      throw new IllegalArgumentException("metadata keys may not be null");
-    }
-    metadataKeys = l;
+    metadataKeys = Args.notNull(l, "metadataKeys");
   }
 
   public void addObjectMetadataKey(String s) {
@@ -133,10 +131,7 @@ public class FormattedMetadataDestination implements MessageDrivenDestination {
   }
 
   public void setObjectMetadataKeys(List<String> l) {
-    if (l == null) {
-      throw new IllegalArgumentException("object metadata keys may not be null");
-    }
-    objectMetadataKeys = l;
+    objectMetadataKeys = Args.notNull(l, "objectMetadataKeys");
   }
 
   @Override
@@ -169,9 +164,6 @@ public class FormattedMetadataDestination implements MessageDrivenDestination {
   }
 
   public void setDestinationTemplate(String s) {
-    if (s == null) {
-      throw new IllegalArgumentException("destination template may not be null");
-    }
-    destinationTemplate = s;
+    destinationTemplate = Args.notNull(s, "destinationTemplate");
   }
 }

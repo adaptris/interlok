@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -78,9 +79,7 @@ public class KeyValuePairSet extends KeyValuePairBag implements Set<KeyValuePair
 
   @Override
   public void addKeyValuePair(KeyValuePair pair) {
-    if (pair == null) {
-      throw new IllegalArgumentException();
-    }
+    Args.notNull(pair, "keyValuePair");
     if (getKeyValuePairs().contains(pair)) {
       getKeyValuePairs().remove(pair);
     }

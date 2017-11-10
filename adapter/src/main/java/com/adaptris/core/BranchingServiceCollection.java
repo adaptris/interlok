@@ -29,6 +29,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -58,12 +59,8 @@ public class BranchingServiceCollection extends ServiceCollectionImp {
 
   @Override
   protected Service enforceRequirements(Service service) {
-    if (service == null) {
-      throw new IllegalArgumentException("null param");
-    }
-    if (StringUtils.isBlank(service.getUniqueId())) {
-      throw new IllegalArgumentException("empty unique ID");
-    }
+    Args.notNull(service, "service");
+    Args.notBlank(service.getUniqueId(), "serviceUniqueId");
     for (Service s : getServices()) {
       String existingId = s.getUniqueId();
       if (service.getUniqueId().equals(existingId)) {
@@ -141,8 +138,10 @@ public class BranchingServiceCollection extends ServiceCollectionImp {
 
   @Override
   protected void doInit() throws CoreException {
-    if (firstServiceId == null) {
-      throw new CoreException("first service ID cannot be null");
+    try {
+      Args.notNull(getFirstServiceId(), "firstServiceId");
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 

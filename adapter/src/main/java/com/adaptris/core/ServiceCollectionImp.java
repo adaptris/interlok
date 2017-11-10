@@ -29,12 +29,14 @@ import java.util.ListIterator;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.FifoMutexLock;
@@ -113,10 +115,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
 
   @Override
   public void setUniqueId(String s) {
-    if (s == null) {
-      throw new IllegalArgumentException("null param");
-    }
-    uniqueId = s;
+    uniqueId = Args.notNull(s, "uniqueId");
   }
 
   @Override
@@ -223,10 +222,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
    * @param serviceList the service list.
    */
   public void setServices(List<Service> serviceList) {
-    if (serviceList == null) {
-      throw new IllegalArgumentException("ServiceList is null");
-    }
-    services = (List<Service>) enforceRequirements(serviceList);
+    services = (List<Service>) enforceRequirements(Args.notNull(serviceList, "serviceList"));
   }
 
   @Override
@@ -463,7 +459,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   }
 
   private boolean isRestartAffectedServiceOnException() {
-    return getRestartAffectedServiceOnException() == null ? false : getRestartAffectedServiceOnException().booleanValue();
+    return BooleanUtils.toBooleanDefaultIfNull(getRestartAffectedServiceOnException(), false);
   }
 
   public Boolean getRestartAffectedServiceOnException() {
@@ -574,10 +570,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
    * @throws IllegalArgumentException if the requirements are not met
    */
   protected Service enforceRequirements(Service service) {
-    if (service == null) {
-      throw new IllegalArgumentException("Service is null");
-    }
-    return service;
+    return Args.notNull(service, "service");
   }
 
   /**

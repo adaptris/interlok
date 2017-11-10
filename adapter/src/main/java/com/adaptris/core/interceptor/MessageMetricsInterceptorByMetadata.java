@@ -32,6 +32,8 @@ import com.adaptris.core.runtime.ParentRuntimeInfoComponent;
 import com.adaptris.core.runtime.RuntimeInfoComponent;
 import com.adaptris.core.runtime.RuntimeInfoComponentFactory;
 import com.adaptris.core.runtime.WorkflowManager;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.KeyValuePair;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -74,10 +76,13 @@ public class MessageMetricsInterceptorByMetadata extends MessageMetricsIntercept
   }
 
   public void init() throws CoreException {
-    if (metadataElement == null) {
-      throw new CoreException("metadata element may not be null");
+    try {
+      Args.notNull(getMetadataElement(), "metadataElement");
+      super.init();
     }
-    super.init();
+    catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
+    }
   }
 
   public KeyValuePair getMetadataElement() {
@@ -94,10 +99,7 @@ public class MessageMetricsInterceptorByMetadata extends MessageMetricsIntercept
    * @param m the metadata element.
    */
   public void setMetadataElement(KeyValuePair m) {
-    if (m == null) {
-      throw new IllegalArgumentException("metadata-element may not be null");
-    }
-    this.metadataElement = m;
+    this.metadataElement = Args.notNull(m, "metadataElement");
   }
 
   @Override

@@ -18,11 +18,13 @@ package com.adaptris.util.text.xml;
 
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.core.util.Args;
 import com.adaptris.util.XmlUtils;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -52,7 +54,7 @@ public class InsertNode extends XpathMergeImpl {
 
   @Override
   public Document merge(Document original, Document newDoc) throws Exception {
-    if (getXpathToParentNode() == null) {
+    if (StringUtils.isEmpty(getXpathToParentNode())) {
       throw new Exception("No parent node configured");
     }
     Document resultDoc = original;
@@ -91,6 +93,6 @@ public class InsertNode extends XpathMergeImpl {
    * @param xpath
    */
   public void setXpathToParentNode(String xpath) {
-    xpathToParentNode = xpath;
+    xpathToParentNode = Args.notBlank(xpath, "xpathToParentNode");
   }
 }

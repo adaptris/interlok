@@ -244,9 +244,6 @@ public class ThrottlingInterceptor extends WorkflowInterceptorImpl {
    * @param interval
    */
   public void setTimeSliceInterval(TimeInterval interval) {
-    if (interval == null) {
-      throw new IllegalArgumentException("time-slice-interval may not be null");
-    }
     timeSliceInterval = interval;
   }
 

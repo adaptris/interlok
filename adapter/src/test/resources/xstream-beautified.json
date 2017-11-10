@@ -4,11 +4,6 @@
         "unique-id" : "SimpleAdapterTest",
         "start-up-event-imp" : "com.adaptris.core.event.StandardAdapterStartUpEvent",
         "heartbeat-event-imp" : "com.adaptris.core.HeartbeatEvent",
-        "log-handler" :
-        {
-            "@class" : "null-log-handler"
-        }
-        ,
         "shared-components" :
         {
             "connections" :

@@ -21,6 +21,7 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.adaptris.core.util.Args;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -76,9 +77,7 @@ public class AdapterStateSummary {
    * @param state the state, may not be null or empty
    */
   public void setAdapterState(String uniqueId, ComponentState state) {
-    if (state == null) {
-      throw new IllegalArgumentException("Null component state");
-    }
+    Args.notNull(state, "componentState");
     // ignore non-uniquely identified i.e. newly created Adapters
     if (uniqueId != null && !"".equals(uniqueId)) {
       this.setAdapterState(new KeyValuePair(uniqueId, state.getClass().getName()));
@@ -87,19 +86,15 @@ public class AdapterStateSummary {
 
   /**
    * <p>
-   * Sets the state of the <code>Adapter</code>. NB <code>KeyValuePair</code> does not allow nulls.
+   * Sets the state of the <code>Adapter</code>.
    * </p>
    * 
    * @param state a <code>KeyValuePair</code> of state against unique ID
    */
   public void setAdapterState(KeyValuePair state) {
-    if (state == null) {
-      throw new IllegalArgumentException("null param");
-    }
-    if (isEmpty(state.getKey()) || isEmpty(state.getValue())) {
-      throw new IllegalArgumentException("null ID or state");
-    }
-
+    Args.notNull(state, "componentState");
+    Args.notBlank(state.getKey(), "id");
+    Args.notBlank(state.getValue(), "componentState");
     adapterState = state;
   }
 
@@ -124,9 +119,7 @@ public class AdapterStateSummary {
    * @param state the state may not be null
    */
   public void addChannelState(String uniqueId, ComponentState state) {
-    if (state == null) {
-      throw new IllegalArgumentException("Null component state");
-    }
+    Args.notNull(state, "componentState");
     // ignore non-uniquely identified Channels
     if (!isEmpty(uniqueId)) {
       this.addChannelState(new KeyValuePair(uniqueId, state.getClass().getName()));
@@ -135,15 +128,13 @@ public class AdapterStateSummary {
 
   /**
    * <p>
-   * Adds the state of a <code>Channel</code> to the internal store. NB <code>KeyValuePair</code> does not allow nulls.
+   * Adds the state of a <code>Channel</code> to the internal store.
    * </p>
    * 
    * @param state the state of the <code>Channel</code> to add
    */
   public void addChannelState(KeyValuePair state) {
-    if (state == null) {
-      throw new IllegalArgumentException("null param");
-    }
+    Args.notNull(state, "componentState");
     // ignore non-uniquely identified Channel
     if (!isEmpty(state.getKey())) {
       if (isEmpty(state.getValue())) {

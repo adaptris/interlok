@@ -16,10 +16,12 @@
 
 package com.adaptris.core;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -83,13 +85,13 @@ public class MetadataTradingRelationshipCreator
   private String obtainValue(String key, AdaptrisMessage msg)
     throws CoreException {
 
-    if ("".equals(key)) {
+    if (StringUtils.isEmpty(key)) {
       throw new CoreException("empty metadata key");
     }
 
     String result = msg.getMetadataValue(key);
 
-    if (result == null || "".equals(result)) {
+    if (StringUtils.isEmpty(result)) {
       throw new CoreException("key [" + key + "] returned null or empty");
     }
 
@@ -116,10 +118,7 @@ public class MetadataTradingRelationshipCreator
    * @param s the metadata key used to obtain the destination
    */
   public void setDestinationKey(String s) {
-    if (s == null || "".equals(s)) {
-      throw new IllegalArgumentException("null or empty param");
-    }
-    this.destinationKey = s;
+    this.destinationKey = Args.notBlank(s, "destinationKey");
   }
 
   /**
@@ -139,10 +138,7 @@ public class MetadataTradingRelationshipCreator
    * @param s the metadata key used to obtain the source
    */
   public void setSourceKey(String s) {
-    if (s == null || "".equals(s)) {
-      throw new IllegalArgumentException("null or empty param");
-    }
-    this.sourceKey = s;
+    this.sourceKey = Args.notBlank(s, "sourceKey");
   }
 
   /**
@@ -162,9 +158,6 @@ public class MetadataTradingRelationshipCreator
    * @param s the metadata key used to obtain the type
    */
   public void setTypeKey(String s) {
-    if (s == null || "".equals(s)) {
-      throw new IllegalArgumentException("null or empty param");
-    }
-    this.typeKey = s;
+    this.typeKey = Args.notBlank(s, "typeKey");
   }
 }

@@ -26,6 +26,8 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -77,8 +79,10 @@ public class ThrowExceptionService extends ServiceImp {
 
   @Override
   protected void initService() throws CoreException {
-    if (exceptionGenerator == null) {
-      throw new CoreException("No Exception Generator configured");
+    try {
+      Args.notNull(getExceptionGenerator(), "exceptionGenerator");
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
@@ -96,7 +100,8 @@ public class ThrowExceptionService extends ServiceImp {
    * @param eg the generator.
    */
   public void setExceptionGenerator(ExceptionGenerator eg) {
-    exceptionGenerator = eg;
+    exceptionGenerator = Args.notNull(eg, "exceptionGenerator");
+
   }
 
   @Override

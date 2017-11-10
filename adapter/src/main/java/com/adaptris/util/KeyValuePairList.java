@@ -23,6 +23,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Properties;
 
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -68,10 +69,7 @@ public class KeyValuePairList extends KeyValuePairBag implements List<KeyValuePa
 
   @Override
   public void addKeyValuePair(KeyValuePair pair) {
-    if (pair == null) {
-      throw new IllegalArgumentException();
-    }
-    add(pair);
+    add(Args.notNull(pair, "keyValuePair"));
   }
 
   /**

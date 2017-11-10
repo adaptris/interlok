@@ -38,6 +38,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -140,10 +141,8 @@ public class SystemCommandExecutorService extends ServiceImp {
    * @see DefaultCommandBuilder
    */
   public void setCommandBuilder(CommandBuilder builder) {
-    if (builder == null) {
-      throw new IllegalArgumentException("Command Builder is null");
-    }
-    this.commandBuilder = builder;
+    this.commandBuilder = Args.notNull(builder, "commandBuilder");
+
   }
 
   @Override
@@ -172,9 +171,6 @@ public class SystemCommandExecutorService extends ServiceImp {
   }
 
   public void setOutputCapture(CommandOutputCapture outputCapture) {
-    if (outputCapture == null) {
-      throw new IllegalArgumentException("Command Output Capture is null");
-    }
-    this.outputCapture = outputCapture;
+    this.outputCapture = Args.notNull(outputCapture, "outputCapture");
   }
 }

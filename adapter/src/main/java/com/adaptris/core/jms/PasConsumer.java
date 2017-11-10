@@ -108,9 +108,6 @@ public class PasConsumer extends JmsConsumerImpl {
    * @param s the subscription ID to use for durable subscriptions
    */
   public void setSubscriptionId(String s) {
-    if (s == null || "".equals(s)) {
-      throw new IllegalArgumentException();
-    }
     subscriptionId = s;
   }
 

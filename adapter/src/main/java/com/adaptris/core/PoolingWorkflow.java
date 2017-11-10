@@ -28,7 +28,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
+import org.apache.commons.lang.math.IntRange;
 import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericObjectPool;
 
@@ -37,6 +40,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.FifoMutexLock;
@@ -111,6 +115,8 @@ public class PoolingWorkflow extends WorkflowImp {
    */
   private static final TimeInterval DEFAULT_INIT_WAIT = new TimeInterval(1L, TimeUnit.MINUTES.name());
 
+  private static final IntRange PRIORITY_RANGE = new IntRange(Thread.MIN_PRIORITY, Thread.MAX_PRIORITY);
+
   @InputFieldDefault(value = "10")
   private Integer poolSize;
   @InputFieldDefault(value = "1")
@@ -133,6 +139,8 @@ public class PoolingWorkflow extends WorkflowImp {
 
   @AdvancedConfig
   @InputFieldDefault(value = "5")
+  @Min(Thread.MIN_PRIORITY)
+  @Max(Thread.MAX_PRIORITY)
   private Integer threadPriority;
 
   private transient ExecutorService threadPool;
@@ -469,14 +477,8 @@ public class PoolingWorkflow extends WorkflowImp {
   }
 
   public void setThreadPriority(Integer i) {
-    if (i == null) {
-      throw new IllegalArgumentException("Thread Priority may not be Null");
-    }
-    if (i.intValue() > Thread.MAX_PRIORITY) {
-      throw new IllegalArgumentException("Greater than " + Thread.MAX_PRIORITY);
-    }
-    if (i.intValue() < Thread.MIN_PRIORITY) {
-      throw new IllegalArgumentException("Less than than " + Thread.MIN_PRIORITY);
+    if (!PRIORITY_RANGE.containsInteger(Args.notNull(i, "threadPriority"))) {
+      throw new IllegalArgumentException("OutOfBounds : " + PRIORITY_RANGE.toString());
     }
     threadPriority = i;
   }

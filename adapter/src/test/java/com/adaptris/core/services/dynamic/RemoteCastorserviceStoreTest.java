@@ -55,9 +55,9 @@ public class RemoteCastorserviceStoreTest extends MarshallServiceStoreCase {
 
     try {
       store.validate();
+      fail();
     }
-    catch (CoreException e) {
-      assertTrue(e.getMessage().matches(".*baseUrl.*is null.*"));
+    catch (CoreException expected) {
     }
     store.setBaseUrl("file:///fred");
     store.validate();

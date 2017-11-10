@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.core.CoreException;
 import com.adaptris.core.TradingRelationship;
+import com.adaptris.core.util.Args;
 
 /**
  * <p>
@@ -37,10 +38,7 @@ public abstract class ServiceNameProviderImp implements ServiceNameProvider {
    */
   @Override
   public String obtain(TradingRelationship t) throws CoreException {
-    if (t == null) {
-      throw new IllegalArgumentException("null param");
-    }
-
+    Args.notNull(t, "tradingRelationship");
     TradingRelationship[] ts = new TradingRelationship[1];
     ts[0] = t;
 
@@ -56,19 +54,14 @@ public abstract class ServiceNameProviderImp implements ServiceNameProvider {
    */
   @Override
   public String obtain(TradingRelationship[] matches) throws CoreException {
-    if (matches == null) {
-      throw new IllegalArgumentException("null param");
-    }
-
+    Args.notNull(matches, "tradingRelationships");
     String result = null;
 
     for (int i = 0; i < matches.length; i++) {
       result = retrieveName(matches[i]);
 
       if (result != null) {
-        log.debug
-        ("service logical name [" + result + "] matched on " + matches[i]);
-
+        log.trace("service logical name [{}] matched on [{}]", result, matches[i]);
         break;
       }
     }

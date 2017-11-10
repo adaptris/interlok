@@ -171,7 +171,7 @@ public class XStreamMarshallerTest extends MarshallingBaseCase {
   public static void adapterInstanceFieldChecks(Adapter fromXML) {
     assertNotNull(fromXML);
     assertEquals("SimpleAdapterTest", fromXML.getUniqueId());
-    assertTrue(fromXML.getLogHandler() instanceof NullLogHandler);
+    assertTrue(fromXML.logHandler() instanceof NullLogHandler);
     
     assertTrue(fromXML.getEventHandler() instanceof DefaultEventHandler);
     assertTrue(((DefaultEventHandler)fromXML.getEventHandler()).getConnection() instanceof NullConnection);

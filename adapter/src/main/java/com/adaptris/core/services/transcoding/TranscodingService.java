@@ -30,6 +30,7 @@ import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 
 public abstract class TranscodingService extends ServiceImp {
 
@@ -51,7 +52,7 @@ public abstract class TranscodingService extends ServiceImp {
    * @see Service#doService(AdaptrisMessage)
    */
   public final void doService(AdaptrisMessage msg) throws ServiceException {
-    registerEncoderMessageFactory();
+    encoder.registerMessageFactory(defaultIfNull(getMessageFactory()));
     transcodeMessage(msg);
   }
 
@@ -59,10 +60,12 @@ public abstract class TranscodingService extends ServiceImp {
 
   @Override
   protected void initService() throws CoreException {
-    if (getEncoder() == null) {
-      throw new CoreException("Encoder is null");
+    try {
+      Args.notNull(getEncoder(), "encoder");
+      encoder.registerMessageFactory(defaultIfNull(getMessageFactory()));
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
-    registerEncoderMessageFactory();
   }
 
   @Override
@@ -87,11 +90,5 @@ public abstract class TranscodingService extends ServiceImp {
 
   public void setMessageFactory(AdaptrisMessageFactory f) {
     messageFactory = f;
-  }
-
-  private void registerEncoderMessageFactory() {
-    if (encoder != null) {
-      encoder.registerMessageFactory(defaultIfNull(getMessageFactory()));
-    }
   }
 }

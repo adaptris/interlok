@@ -27,6 +27,8 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.NullConnection;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.aggregator.AggregatingConsumeServiceImpl;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -53,8 +55,13 @@ public class AggregatingFsConsumeService extends AggregatingConsumeServiceImpl<N
 
   @Override
   protected void initService() throws CoreException {
-    super.initService();
-    if (fsConsumer == null) throw new CoreException("FS Consumer is null");
+    try {
+      super.initService();
+      Args.notNull(fsConsumer, "fsConsumer");
+    }
+    catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
+    }
   }
 
   @Override
@@ -79,7 +86,7 @@ public class AggregatingFsConsumeService extends AggregatingConsumeServiceImpl<N
    * @param fsConsumer the fsConsumer to set
    */
   public void setFsConsumer(AggregatingFsConsumer fsConsumer) {
-    this.fsConsumer = fsConsumer;
+    this.fsConsumer = Args.notNull(fsConsumer, "fsConsumer");
   }
 
 

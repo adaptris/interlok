@@ -34,6 +34,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.transform.ProcessorHandle;
 import com.adaptris.transform.Source;
@@ -116,10 +117,9 @@ public class FfTransform extends TransformFramework {
    */
   @Override
   public void transform(Source in, Source rule, Target out) throws Exception {
-    if (in == null || rule == null || out == null) {
-      throw new IllegalArgumentException(
-        "Missing argument(s) to " + "transform method");
-    }
+    Args.notNull(in, "source");
+    Args.notNull(rule, "rule");
+    Args.notNull(out, "target");
 
     // First ascertain if the rule has already been added to the object.
     // If it has then use the optimised form, otherwise optimise it and add
@@ -164,10 +164,7 @@ public class FfTransform extends TransformFramework {
    */
   @Override
   public void addRule(Source rule) throws Exception {
-    if (rule == null) {
-      throw new IllegalArgumentException();
-    }
-
+    Args.notNull(rule, "rule");
     if (log != null && log.isDebugEnabled()) {
       log.debug("addRule() invoked: rule <" + rule + ">");
     }

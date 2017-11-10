@@ -25,8 +25,8 @@ import org.junit.Test;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.CoreException;
 import com.adaptris.core.GeneralServiceExample;
-import com.adaptris.core.ServiceException;
 
 public class ReadFileServiceTest extends GeneralServiceExample
 {
@@ -74,7 +74,7 @@ public class ReadFileServiceTest extends GeneralServiceExample
 			execute(service, message);
 			fail();
 		}
-		catch (@SuppressWarnings("unused") final ServiceException expected)
+    catch (@SuppressWarnings("unused") final CoreException expected)
 		{
 			/* expected result */
 		}

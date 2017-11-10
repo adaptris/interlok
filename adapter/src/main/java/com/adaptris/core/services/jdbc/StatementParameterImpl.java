@@ -20,6 +20,7 @@ import javax.validation.constraints.NotNull;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.util.Args;
 import com.adaptris.util.XmlUtils;
 
 public abstract class StatementParameterImpl extends NamedStatementParameter {
@@ -161,9 +162,6 @@ public abstract class StatementParameterImpl extends NamedStatementParameter {
   }
 
   protected QueryType getHandler(QueryType queryType) {
-    if (queryType == null) {
-      throw new IllegalArgumentException(queryType + " not supported");
-    }
-    return queryType;
+    return Args.notNull(queryType, "queryType");
   }
 }

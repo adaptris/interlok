@@ -85,10 +85,12 @@ public class XStreamJsonMarshallerTest extends MarshallingBaseCase {
     XStreamMarshallerTest.adapterInstanceFieldChecks(beautifiedAdapter);
     
     // Now marshal beautified format adapter to xml
-    String beautifiedMarshalledXML = xstreamInstance.toXML(beautifiedAdapter);
+    // String beautifiedMarshalledXML = xstreamInstance.toXML(beautifiedAdapter);
     
     // Ensure that the conversion from standard xml to beautified xml went as expected 
-    assertEquals(beautifiedMarshalledXML, standardMarshalledXML);
+    // assertEquals(beautifiedMarshalledXML, standardMarshalledXML);
+    assertRoundtripEquality(standardAdapter, beautifiedAdapter);
+
   }
   
   // Standard JSON roundtrip test

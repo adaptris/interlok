@@ -44,6 +44,7 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.fs.FsHelper;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -143,8 +144,10 @@ public class ReadMetadataFromFilesystem extends ServiceImp {
 
   @Override
   protected void initService() throws CoreException {
-    if (getDestination() == null) {
-      throw new CoreException("Null Destination");
+    try {
+      Args.notNull(getDestination(), "destination");
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 

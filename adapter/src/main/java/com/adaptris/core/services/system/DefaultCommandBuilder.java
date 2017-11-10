@@ -28,6 +28,7 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.Executor;
+import org.apache.commons.lang.BooleanUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdvancedConfig;
@@ -35,6 +36,7 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.util.Args;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -120,17 +122,12 @@ public class DefaultCommandBuilder implements CommandBuilder {
    * @param l
    */
   public void setEnvironmentMetadataKeys(List<String> l) {
-    if (l == null) {
-      throw new IllegalArgumentException("Null Environment Metadata Keys");
-    }
-    environmentMetadataKeys = l;
+    environmentMetadataKeys = Args.notNull(l, "environmentMetadataKeys");
+
   }
 
   public void addEnvironmentMetadataKey(String key) {
-    if (key == null) {
-      throw new IllegalArgumentException("Null Environment Metadata Key");
-    }
-    environmentMetadataKeys.add(key);
+    environmentMetadataKeys.add(Args.notNull(key, "environmentMetadataKey"));
   }
 
   public String getWorkingDirectory() {
@@ -156,10 +153,8 @@ public class DefaultCommandBuilder implements CommandBuilder {
    * @param env
    */
   public void setEnvironmentProperties(KeyValuePairSet env) {
-    if (env == null) {
-      throw new IllegalArgumentException("Null Environment Properties");
-    }
-    this.environmentProperties = env;
+    this.environmentProperties = Args.notNull(env, "environment properties");
+
   }
 
   public String getExecutablePath() {
@@ -189,17 +184,12 @@ public class DefaultCommandBuilder implements CommandBuilder {
    * @param l the arguments
    */
   public void setArguments(List<CommandArgument> l) {
-    if (l == null) {
-      throw new IllegalArgumentException("Command arguments are null");
-    }
-    arguments = l;
+    arguments = Args.notNull(l, "commandArguments");
+
   }
 
   public void addArgument(CommandArgument arg) {
-    if (arg == null) {
-      throw new IllegalArgumentException("Command argument is null");
-    }
-    arguments.add(arg);
+    arguments.add(Args.notNull(arg, "commandArgument"));
   }
 
 
@@ -239,6 +229,6 @@ public class DefaultCommandBuilder implements CommandBuilder {
   }
 
   boolean quoteHandling() {
-    return getQuoteHandling() != null ? getQuoteHandling().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getQuoteHandling(), false);
   }
 }

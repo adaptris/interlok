@@ -18,7 +18,6 @@ package com.adaptris.core;
 
 import static com.adaptris.core.util.LoggingHelper.friendlyName;
 import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -47,6 +46,7 @@ import com.adaptris.core.event.AdapterStopEvent;
 import com.adaptris.core.event.StandardAdapterStartUpEvent;
 import com.adaptris.core.runtime.MessageErrorDigester;
 import com.adaptris.core.runtime.StandardMessageErrorDigester;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.LoggingHelper;
@@ -69,6 +69,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
   private static final TimeInterval DEFAULT_HB_EVENT_INTERVAL = new TimeInterval(15L, TimeUnit.MINUTES.name());
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
+  private static final LogHandler DEFAULT_LOG_HANDLER = new NullLogHandler();
 
   @NotNull
   @NotBlank
@@ -83,8 +84,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
   @NotBlank
   @AdvancedConfig
   private String heartbeatEventImp;
-  @NotNull
-  @AutoPopulated
+  @AdvancedConfig
   @Valid
   private LogHandler logHandler;
   @NotNull
@@ -140,7 +140,6 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
     setMessageErrorDigester(new StandardMessageErrorDigester("ErrorDigest"));
     setFailedMessageRetrier(new NoRetries());
     setStartUpEventImp(StandardAdapterStartUpEvent.class.getName());
-    setLogHandler(new NullLogHandler());
     setHeartbeatEventImp(HeartbeatEvent.class.getName());
     setChannelList(new ChannelList());
     setSharedComponents(new SharedComponentList());
@@ -167,7 +166,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
     }
     getSharedComponents().prepare();
     try {
-      getLogHandler().clean();
+      logHandler().clean();
     } catch (IOException i) {
       log.warn("ignoring exception cleaning log files", i);
     }
@@ -395,10 +394,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
    * @param param the <code>ChannelList</code> to use.
    */
   public void setChannelList(ChannelList param) {
-    if (param == null) {
-      throw new IllegalArgumentException();
-    }
-    channelList = param;
+    channelList = Args.notNull(param, "channelList");
   }
 
   /**
@@ -420,10 +416,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
    * @param s the unique id to set
    */
   public void setUniqueId(String s) {
-    if (isEmpty(s)) {
-      throw new IllegalArgumentException();
-    }
-    uniqueId = s;
+    uniqueId = Args.notBlank(s, "uniqueId");
   }
 
   /**
@@ -446,10 +439,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
    * @param param the <code>EventHandler</code> to use.
    */
   public void setEventHandler(EventHandler param) {
-    if (param == null) {
-      throw new IllegalArgumentException();
-    }
-    eventHandler = param;
+    eventHandler = Args.notNull(param, "eventHandler");
     eventHandler.registerSourceId(getUniqueId());
   }
 
@@ -474,11 +464,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
    * @param param the <code>MessageErrorHandler</code> to use
    */
   public void setMessageErrorHandler(ProcessingExceptionHandler param) {
-
-    if (param == null) {
-      throw new IllegalArgumentException();
-    }
-    messageErrorHandler = param;
+    messageErrorHandler = Args.notNull(param, "messageErrorHandler");
   }
 
   /**
@@ -500,10 +486,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
    * @param name the name of the start up event class to use
    */
   public void setStartUpEventImp(String name) {
-    if (isEmpty(name)) {
-      throw new IllegalArgumentException();
-    }
-    startUpEventImp = name;
+    startUpEventImp = Args.notBlank(name, "startupEventImp");
   }
 
   /**
@@ -525,10 +508,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
    * @param name the class name of the heartbeat event imp to use
    */
   public void setHeartbeatEventImp(String name) {
-    if (isEmpty(name)) {
-      throw new IllegalArgumentException();
-    }
-    heartbeatEventImp = name;
+    heartbeatEventImp = Args.notBlank(name, "heartbeatEventImp");
   }
 
   /**
@@ -555,11 +535,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
    * @param retrier the <code>FailedMessageRetrier</code> to use
    */
   public void setFailedMessageRetrier(FailedMessageRetrier retrier) {
-
-    if (retrier == null) {
-      throw new IllegalArgumentException();
-    }
-    failedMessageRetrier = retrier;
+    failedMessageRetrier = Args.notNull(retrier, "failedMessageRetrier");
   }
 
   /**
@@ -579,10 +555,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
    * @param lh the log handler implementation.
    */
   public void setLogHandler(LogHandler lh) {
-    if (lh == null) {
-      throw new IllegalArgumentException();
-    }
-    logHandler = lh;
+    logHandler = Args.notNull(lh, "logHandler");
   }
 
   /**
@@ -592,6 +565,10 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
    */
   public LogHandler getLogHandler() {
     return logHandler;
+  }
+
+  public LogHandler logHandler() {
+    return getLogHandler() != null ? getLogHandler() : DEFAULT_LOG_HANDLER;
   }
 
   public TimeInterval getHeartbeatEventInterval() {

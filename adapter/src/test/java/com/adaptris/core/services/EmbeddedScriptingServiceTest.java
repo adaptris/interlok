@@ -114,14 +114,6 @@ public class EmbeddedScriptingServiceTest extends GeneralServiceExample {
     catch (Exception expected) {
       ;
     }
-    service.setLanguage("");
-    try {
-      LifecycleHelper.init(service);
-      fail("Service initialised w/o a ''");
-    }
-    catch (Exception expected) {
-      ;
-    }
     service.setLanguage("BLAHBLAHBLAH");
     try {
       LifecycleHelper.init(service);

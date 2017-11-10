@@ -23,6 +23,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -118,10 +119,7 @@ public class MleMarker implements Cloneable, Serializable {
    * @see MessageEventGenerator#createName()
    */
   public void setName(String s) {
-    if (s == null) {
-      throw new IllegalArgumentException("param is null");
-    }
-    name = s;
+    name = Args.notNull(s, "name");
   }
 
   /**

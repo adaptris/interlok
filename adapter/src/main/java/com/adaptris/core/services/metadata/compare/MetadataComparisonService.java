@@ -16,8 +16,6 @@
 
 package com.adaptris.core.services.metadata.compare;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -30,6 +28,8 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -74,14 +74,12 @@ public class MetadataComparisonService extends ServiceImp {
 
   @Override
   protected void initService() throws CoreException {
-    if (isBlank(getFirstKey())) {
-      throw new CoreException("1st Metadata Key is blank");
-    }
-    if (isBlank(getSecondKey())) {
-      throw new CoreException("2nd Metadata Key is blank");
-    }
-    if (getComparator() == null) {
-      throw new CoreException("Comparator is null");
+    try {
+      Args.notBlank(getFirstKey(), "firstKey");
+      Args.notBlank(getSecondKey(), "secondKey");
+      Args.notNull(getComparator(), "comparator");
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
@@ -100,7 +98,7 @@ public class MetadataComparisonService extends ServiceImp {
   }
 
   public void setFirstKey(String key) {
-    this.firstKey = key;
+    this.firstKey = Args.notBlank(key, "firstKey");;
   }
 
   public String getSecondKey() {
@@ -108,7 +106,8 @@ public class MetadataComparisonService extends ServiceImp {
   }
 
   public void setSecondKey(String key) {
-    this.secondKey = key;
+    this.secondKey = Args.notBlank(key, "secondKey");
+
   }
 
   public MetadataComparator getComparator() {
@@ -116,7 +115,7 @@ public class MetadataComparisonService extends ServiceImp {
   }
 
   public void setComparator(MetadataComparator mc) {
-    this.comparator = mc;
+    this.comparator = Args.notNull(mc, "comparator");
   }
 
 }

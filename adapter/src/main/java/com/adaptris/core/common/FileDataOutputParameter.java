@@ -32,6 +32,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MessageDrivenDestination;
 import com.adaptris.core.fs.FsHelper;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.interlok.config.DataOutputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
@@ -111,10 +112,7 @@ public class FileDataOutputParameter implements DataOutputParameter<String> {
    * @param d the destination.
    */
   public void setDestination(MessageDrivenDestination d) {
-    if (d == null) {
-      throw new IllegalArgumentException("Destination is null");
-    }
-    destination = d;
+    destination = Args.notNull(d, "destination");
   }
 
 

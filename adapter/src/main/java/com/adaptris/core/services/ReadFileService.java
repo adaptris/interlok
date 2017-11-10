@@ -19,6 +19,8 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -47,11 +49,6 @@ public class ReadFileService extends ServiceImp
 	@Override
 	public void doService(final AdaptrisMessage message) throws ServiceException
 	{
-		if (filePath == null)
-		{
-			log.error(ERROR);
-			throw new ServiceException(ERROR);
-		}
 
 		try
 		{
@@ -100,10 +97,11 @@ public class ReadFileService extends ServiceImp
 	@Override
 	protected void initService() throws CoreException
 	{
-		if (filePath == null)
-		{
-			log.warn(ERROR);
-		}
+    try {
+      Args.notNull(getFilePath(), "filePath");
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
+    }
 	}
 
 	/**
@@ -124,6 +122,6 @@ public class ReadFileService extends ServiceImp
 	 */
   public void setFilePath(final String filePath)
 	{
-		this.filePath = filePath;
+    this.filePath = Args.notBlank(filePath, "filePath");
 	}
 }

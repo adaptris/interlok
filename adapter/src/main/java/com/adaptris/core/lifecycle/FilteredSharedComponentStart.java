@@ -38,6 +38,7 @@ import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.SharedComponentLifecycleStrategy;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -214,10 +215,7 @@ public class FilteredSharedComponentStart implements SharedComponentLifecycleStr
    * @param l the list of connection unique ids to include, defaults to an empty list.
    */
   public void setIncludes(List<String> l) {
-    if (l == null) {
-      throw new IllegalArgumentException("Includes may not be null");
-    }
-    this.includes = l;
+    this.includes = Args.notNull(l, "includes");
   }
 
   public List<String> getExcludes() {
@@ -230,10 +228,7 @@ public class FilteredSharedComponentStart implements SharedComponentLifecycleStr
    * @param l the list of connection unique ids to exclude, defaults to an empty list.
    */
   public void setExcludes(List<String> l) {
-    if (l == null) {
-      throw new IllegalArgumentException("Excludes may not be null");
-    }
-    this.excludes = l;
+    this.excludes = Args.notNull(l, "excludes");
   }
 
   public void addInclude(String pattern) {

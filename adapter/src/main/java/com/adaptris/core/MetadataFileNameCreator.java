@@ -16,7 +16,13 @@
 
 package com.adaptris.core;
 
+import org.apache.commons.lang.StringUtils;
+import org.hibernate.validator.constraints.NotBlank;
+
+import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -33,7 +39,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"metadataKey", "defaultName"})
 public class MetadataFileNameCreator implements FileNameCreator {
 
+  @NotBlank
   private String metadataKey;
+  @NotBlank
+  @AutoPopulated
+  @InputFieldHint(style = "BLANKABLE")
   private String defaultName;
 
   /**
@@ -66,16 +76,10 @@ public class MetadataFileNameCreator implements FileNameCreator {
    *   #createName(com.adaptris.core.AdaptrisMessage)
    */
   public String createName(AdaptrisMessage msg) throws CoreException {
-    if (metadataKey == null) {
+    if (getMetadataKey() == null) {
       throw new CoreException("illegal metadata key [" + metadataKey + "]");
     }
-    String result = msg.getMetadataValue(metadataKey);
-
-    if (result == null || "".equals(result)) {
-      result = defaultName;
-    }
-
-    return result;
+    return StringUtils.defaultIfEmpty(msg.getMetadataValue(metadataKey), defaultName);
   }
 
   /**
@@ -95,10 +99,7 @@ public class MetadataFileNameCreator implements FileNameCreator {
    * @param s the metadata key to look up
    */
   public void setMetadataKey(String s) {
-    if (s == null || "".equals(s)) {
-      throw new IllegalArgumentException("illegal param");
-    }
-    metadataKey = s;
+    metadataKey = Args.notBlank(s, "metadataKey");
   }
 
   /**
@@ -122,9 +123,6 @@ public class MetadataFileNameCreator implements FileNameCreator {
    * null or empty
    */
   public void setDefaultName(String s) {
-    if (s == null || "".equals(s)) {
-      throw new IllegalArgumentException("illegal param");
-    }
-    defaultName = s;
+    defaultName = Args.notBlank(s, "defaultName");
   }
 }

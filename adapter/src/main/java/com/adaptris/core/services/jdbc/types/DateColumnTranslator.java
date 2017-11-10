@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import com.adaptris.core.util.Args;
 import com.adaptris.jdbc.JdbcResultRow;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -80,10 +81,7 @@ public class DateColumnTranslator implements ColumnTranslator {
    * @param format the format; the default is "yyyy-MM-dd'T'HH:mm:ssZ".
    */
   public void setDateFormat(String format) {
-    if (format == null) {
-      throw new IllegalArgumentException("dateFormat is null");
-    }
-    dateFormat = format;
+    dateFormat = Args.notNull(format, "dateFormat");
   }
 
 }

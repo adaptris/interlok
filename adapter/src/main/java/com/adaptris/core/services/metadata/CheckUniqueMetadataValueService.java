@@ -23,11 +23,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
@@ -37,6 +37,8 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.BranchingServiceImp;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -114,15 +116,17 @@ public class CheckUniqueMetadataValueService extends BranchingServiceImp {
 
   @Override
   protected void initService() throws CoreException {
-    if (this.getMetadataKeyToCheck() == null) {
-      throw new CoreException("metadataKeyToCheck must be set");
-    }
+    try {
+      Args.notNull(getMetadataKeyToCheck(), "metadataKeyToCheck");
+      Args.notNull(getStoreFileUrl(), "storeFileUrl");
+      this.store = new File(new URL(getStoreFileUrl()).getFile());
+      this.loadPreviouslyReceivedValues();
 
-    this.createStoreFile();
-    this.loadPreviouslyReceivedValues();
-
-    if (previousValuesStore == null) {
-      previousValuesStore = new ArrayList<Object>();
+      if (previousValuesStore == null) {
+        previousValuesStore = new ArrayList<Object>();
+      }
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
@@ -131,45 +135,21 @@ public class CheckUniqueMetadataValueService extends BranchingServiceImp {
 
   }
 
-
-  private void createStoreFile() throws CoreException {
-    if (this.getStoreFileUrl() == null) {
-      throw new CoreException("store file URL is null");
-    }
-
-    URL url = null;
-
-    try {
-      url = new URL(this.getStoreFileUrl());
-    }
-    catch (MalformedURLException e) {
-      throw new CoreException(e);
-    }
-
-    this.store = new File(url.getFile());
-  }
-
   /**
    * @see com.adaptris.core.Service
    *      #doService(com.adaptris.core.AdaptrisMessage)
    */
   public void doService(AdaptrisMessage msg) throws ServiceException {
     String value = msg.getMetadataValue(this.getMetadataKeyToCheck());
-
-    if (value == null || "".equals(value)) {
-      throw new ServiceException("required metadata [" + this.getMetadataKeyToCheck() + "] missing");
-    }
-
-    if (previousValuesStore.contains(value)) {
-      this.handleDuplicate(msg, value);
-    }
-    else {
-      try {
+    try {
+      Args.notBlank(value, "metadataValue");
+      if (previousValuesStore.contains(value)) {
+        this.handleDuplicate(msg, value);
+      } else {
         this.handleNewValue(msg, value);
       }
-      catch (Exception e) {
-        throw new ServiceException(e);
-      }
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapServiceException(e);
     }
   }
 
@@ -193,47 +173,33 @@ public class CheckUniqueMetadataValueService extends BranchingServiceImp {
   }
 
   private void handleNewValue(AdaptrisMessage msg, String value) throws Exception {
-
     msg.setNextServiceId(this.getNextServiceIdIfUnique());
-
     previousValuesStore.add(value);
-
     while (previousValuesStore.size() > this.getNumberOfPreviousValuesToStore()) {
-
       previousValuesStore.remove(0);
     }
-
     this.storePreviouslyReceivedValues();
   }
 
-  private void storePreviouslyReceivedValues() {
-    if (store != null) {
-      try {
-        ObjectOutputStream o = new ObjectOutputStream(new FileOutputStream(store));
-
-        o.writeObject(previousValuesStore);
-        o.flush();
-        o.close();
-      }
-      catch (Exception e) {
-        log.error("exception storing previously received values", e);
-        log.error(previousValuesStore.toString());
-      }
+  private void storePreviouslyReceivedValues() throws Exception {
+    ObjectOutputStream o = null;
+    try {
+      o = new ObjectOutputStream(new FileOutputStream(store));
+      o.writeObject(previousValuesStore);
+      o.flush();
+    } finally {
+      IOUtils.closeQuietly(o);
     }
   }
 
-  private void loadPreviouslyReceivedValues() throws CoreException {
-    if (store != null) {
+  private void loadPreviouslyReceivedValues() throws Exception {
+    if (store.exists()) {
+      ObjectInputStream o = null;
       try {
-        if (store.exists()) {
-          ObjectInputStream o = new ObjectInputStream(new FileInputStream(store));
-
-          previousValuesStore = (ArrayList<Object>) o.readObject();
-          o.close();
-        }
-      }
-      catch (Exception e) {
-        throw new CoreException(e);
+        o = new ObjectInputStream(new FileInputStream(store));
+        previousValuesStore = (ArrayList<Object>) o.readObject();
+      } finally {
+        IOUtils.closeQuietly(o);
       }
     }
   }

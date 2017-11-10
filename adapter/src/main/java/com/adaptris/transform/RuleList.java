@@ -18,6 +18,8 @@ package com.adaptris.transform;
 
 import java.util.ArrayList;
 
+import com.adaptris.core.util.Args;
+
 /**
  * <p>This provides a container class for objects that represent
  * transformation rules. A rule is added as a <b>key-value</b> pair where:</p>
@@ -77,9 +79,8 @@ public class RuleList {
    * @see    #getKey(int)
    */
   public void add(Source key, Object value) {
-    if (key == null || value == null)
-      throw new IllegalArgumentException();
-
+    Args.notNull(key, "key");
+    Args.notNull(value, "rule");
     // Just in case it is there already.
     remove(key);
 

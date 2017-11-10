@@ -31,6 +31,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.Args;
 import com.adaptris.security.EncryptionAlgorithm;
 import com.adaptris.security.SecurityService;
 import com.adaptris.security.SecurityServiceFactory;
@@ -111,10 +112,7 @@ public abstract class CoreSecurityService extends ServiceImp {
    * @param list the list of keystore urls.
    */
   public void setKeystoreUrls(List<ConfiguredKeystore> list) {
-    if (list == null) {
-      throw new IllegalArgumentException("Keystore URLs are null");
-    }
-    keystoreUrls = list;
+    keystoreUrls = Args.notNull(list, "keystoreUrls");
   }
 
   /**
@@ -197,10 +195,7 @@ public abstract class CoreSecurityService extends ServiceImp {
    * @param enc the encryption algorithm
    */
   public void setEncryptionAlgorithm(EncryptionAlgorithm enc) {
-    if (enc == null) {
-      throw new IllegalArgumentException("Encryption Algorithm cannot be null");
-    }
-    encryptionAlgorithm = enc;
+    encryptionAlgorithm = Args.notNull(enc, "encryptionAlgorithm");
   }
 
   /**

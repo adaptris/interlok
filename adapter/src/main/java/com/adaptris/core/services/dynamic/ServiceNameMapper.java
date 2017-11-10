@@ -16,8 +16,13 @@
 
 package com.adaptris.core.services.dynamic;
 
+import javax.validation.constraints.NotNull;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.TradingRelationship;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -31,6 +36,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"serviceName", "tradingRelationship"})
 public class ServiceNameMapper {
 
+  @NotNull
   private TradingRelationship tradingRelationship;
   private String serviceName;
 
@@ -97,7 +103,7 @@ public class ServiceNameMapper {
    */
   public String getServiceName() {
     String result = null;
-    if (serviceName == null || "".equals(serviceName)) {
+    if (StringUtils.isBlank(serviceName)) {
       StringBuffer defaultName = new StringBuffer();
       defaultName.append(getTradingRelationship().getSource());
       defaultName.append("-");
@@ -135,10 +141,7 @@ public class ServiceNameMapper {
    * @param t the <code>TradingRelationship</code>
    */
   public void setTradingRelationship(TradingRelationship t) {
-    if (t == null) {
-      throw new IllegalArgumentException("null param");
-    }
-    tradingRelationship = t;
+    tradingRelationship = Args.notNull(t, "tradingRelationship");
   }
 
   /**

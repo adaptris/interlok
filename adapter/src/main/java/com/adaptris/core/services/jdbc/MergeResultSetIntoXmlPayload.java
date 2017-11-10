@@ -30,7 +30,9 @@ import org.w3c.dom.Element;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.jdbc.JdbcResult;
 import com.adaptris.jdbc.JdbcResultSet;
@@ -83,11 +85,9 @@ public class MergeResultSetIntoXmlPayload extends XmlPayloadTranslatorImpl {
 
   @Override
   public long translateResult(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException {
-    if (mergeImplementation == null) {
-      throw new ServiceException("No Document Merge implementation configured.");
-    }
     long resultSetCount = 0;
     try {
+      Args.notNull(getMergeImplementation(), "mergeImplementation");
       DocumentBuilderFactoryBuilder builder =
           (DocumentBuilderFactoryBuilder) target.getObjectHeaders().get(JdbcDataQueryService.KEY_DOCBUILDER_FAC);
       DocumentWrapper resultSet = createDocument(source, builder);
@@ -100,7 +100,7 @@ public class MergeResultSetIntoXmlPayload extends XmlPayloadTranslatorImpl {
       throw e;
     }
     catch (Exception e) {
-      throw new ServiceException("Failed to process message", e);
+      throw ExceptionHelper.wrapServiceException(e);
     }
     finally {
     }

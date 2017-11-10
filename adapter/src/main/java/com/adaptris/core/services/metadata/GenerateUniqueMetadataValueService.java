@@ -29,6 +29,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.Args;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.IdGenerator;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -124,10 +125,7 @@ public class GenerateUniqueMetadataValueService extends ServiceImp {
    * @param idg the generator; default is {@link GuidGenerator}
    */
   public void setGenerator(IdGenerator idg) {
-    if (idg == null) {
-      throw new IllegalArgumentException("Generator may not be null");
-    }
-    generator = idg;
+    generator = Args.notNull(idg, "generator");
   }
 
   @Override

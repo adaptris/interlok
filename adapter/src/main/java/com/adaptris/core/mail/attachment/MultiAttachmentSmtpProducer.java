@@ -34,6 +34,8 @@ import com.adaptris.core.NullConnection;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.mail.MailProducer;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.mail.MailException;
 import com.adaptris.mail.SmtpClient;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -101,9 +103,12 @@ public class MultiAttachmentSmtpProducer extends MailProducer {
 
   @Override
   public void init() throws CoreException {
-    super.init();
-    if (mailCreator == null) {
-      throw new CoreException("MailCreator implementation missing");
+    try {
+      super.init();
+      Args.notNull(getMailCreator(), "mailCreator");
+    }
+    catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
