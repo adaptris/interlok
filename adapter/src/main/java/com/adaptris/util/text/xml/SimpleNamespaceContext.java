@@ -36,7 +36,7 @@ import com.adaptris.util.KeyValuePairSet;
  * @author lchan
  * 
  */
-public final class SimpleNamespaceContext {
+public abstract class SimpleNamespaceContext {
 
   /**
    * Create a NamespaceContext based on the supplied key value pairs.
