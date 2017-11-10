@@ -21,6 +21,7 @@
     <interlok:project-build target="clean" project="logging"/>
     <interlok:project-build target="clean" project="common"/>
     <interlok:project-build target="clean" project="adapter"/>
+    <interlok:project-build target="clean" project="boot"/>
     <delete dir="${basedir}/activemq-data" failonerror="false"/>
     <delete dir="${basedir}/build" failonerror="false"/>
     <delete verbose="true" failonerror="false">
