@@ -18,10 +18,10 @@ package com.adaptris.core.http.client.net;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 import static com.adaptris.core.http.HttpConstants.CONTENT_TYPE;
+import static com.adaptris.util.stream.StreamUtil.copyAndClose;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -248,12 +248,6 @@ public class StandardHttpProducer extends HttpProducer {
     getResponseHeaderHandler().handle(http, reply);
     reply.addMetadata(new MetadataElement(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE, String.valueOf(http.getResponseCode())));
     reply.addObjectHeader(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE, Integer.valueOf(http.getResponseCode()));
-  }
-
-  private void copyAndClose(InputStream input, OutputStream out) throws IOException, CoreException {
-    try (InputStream autoCloseIn = new BufferedInputStream(input); OutputStream autoCloseOut = new BufferedOutputStream(out)) {
-      IOUtils.copy(autoCloseIn, autoCloseOut);
-    }
   }
 
   private String getContentEncoding(HttpURLConnection http) {

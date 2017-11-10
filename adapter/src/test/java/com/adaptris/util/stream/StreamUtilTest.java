@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -34,7 +35,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class StreamUtilTest {
+public class StreamUtilTest extends StreamUtil {
 
   private static final String TEXT = "The Quick Brown fox jumps over the lazy dog.";
 
@@ -119,6 +120,28 @@ public class StreamUtilTest {
     assertEquals(TEXT, out.toString());
   }
 
+  @Test(expected = IOException.class)
+  public void testCopyAndCloseStreams() throws Exception {
+    int bytes = TEXT.length();
+    ByteArrayInputStream in = new ByteArrayInputStream(TEXT.getBytes());
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    StreamUtil.copyAndClose(in, out);
+    assertEquals(TEXT, out.toString());
+    StreamUtil.copyAndClose(new ErroringInputStream(), new ByteArrayOutputStream());
+  }
+
+  @Test(expected = IOException.class)
+  public void testCopyAndCloseWriter() throws Exception {
+    int bytes = TEXT.length();
+    ByteArrayInputStream in = new ByteArrayInputStream(TEXT.getBytes());
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    OutputStreamWriter writer = new OutputStreamWriter(out);
+    StreamUtil.copyAndClose(in, writer);
+    assertEquals(TEXT, out.toString());
+    StreamUtil.copyAndClose(new ErroringInputStream(), new OutputStreamWriter(new ByteArrayOutputStream()));
+
+  }
+
   private byte[] read(File f) throws IOException {
     FileInputStream in = null;
     byte[] results;
@@ -133,4 +156,25 @@ public class StreamUtilTest {
     return results;
   }
 
+  public static class ErroringInputStream extends InputStream {
+
+    ErroringInputStream() {
+    }
+
+    @Override
+    public int read() throws IOException {
+      throw new IOException("Failed to read");
+    }
+
+    @Override
+    public int read(byte[] b) throws IOException {
+      throw new IOException("Failed to read");
+    }
+
+    @Override
+    public int read(byte[] b, int off, int len) throws IOException {
+      throw new IOException("Failed to read");
+    }
+
+  }
 }
