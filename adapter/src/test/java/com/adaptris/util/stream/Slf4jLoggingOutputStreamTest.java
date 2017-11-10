@@ -16,6 +16,7 @@
 
 package com.adaptris.util.stream;
 
+import java.io.IOException;
 import java.io.PrintStream;
 
 import org.apache.commons.logging.Log;
@@ -43,7 +44,7 @@ public class Slf4jLoggingOutputStreamTest {
 
   @Test
   public void testLogTrace() throws Exception {
-    PrintStream out = new PrintStream(new Slf4jLoggingOutputStream(LogLevel.TRACE));
+    PrintStream out = new PrintStream(new Slf4jLoggingOutputStream("TRACE"));
     out.println(TEXT);
     out.flush();
     out.close();
@@ -62,6 +63,53 @@ public class Slf4jLoggingOutputStreamTest {
     PrintStream out = new PrintStream(new Slf4jLoggingOutputStream(LogLevel.INFO));
     out.println(TEXT);
     out.flush();
+    out.close();
+  }
+
+  @Test(expected = IOException.class)
+  public void testLogPostClose() throws Exception {
+    Slf4jLoggingOutputStream out = new Slf4jLoggingOutputStream(LogLevel.INFO);
+    for (int i = 0; i < TEXT.length(); i++) {
+      out.write(TEXT.charAt(i));
+    }
+    out.close();
+    out.write(TEXT.charAt(0));
+  }
+
+  @Test
+  public void testLogFlush_CR() throws Exception {
+    Slf4jLoggingOutputStream out = new Slf4jLoggingOutputStream(LogLevel.INFO);
+    out.write('\r');
+    out.flush();
+    out.write('\t');
+    out.flush();
+    out.close();
+  }
+
+  @Test
+  public void testLogFlush_LF() throws Exception {
+    Slf4jLoggingOutputStream out = new Slf4jLoggingOutputStream(LogLevel.INFO);
+    out.write('\n');
+    out.flush();
+    out.write('\t');
+    out.flush();
+    out.close();
+  }
+
+  @Test
+  public void testLogFlush_CRLF() throws Exception {
+    Slf4jLoggingOutputStream out = new Slf4jLoggingOutputStream(LogLevel.INFO);
+    out.write('\r');
+    out.write('\n');
+    out.flush();
+    out.write('A');
+    out.write('B');
+    out.flush();
+    out.write('A');
+    out.write('\r');
+    out.flush();
+    out.write('A');
+    out.write('\n');
     out.close();
   }
 

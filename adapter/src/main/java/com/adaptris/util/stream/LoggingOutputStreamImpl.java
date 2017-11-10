@@ -18,6 +18,10 @@ package com.adaptris.util.stream;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.security.MessageDigest;
+import java.util.Arrays;
+
+import com.adaptris.core.util.Args;
 
 /**
  * An OutputStream that flushes out to a logger.
@@ -39,6 +43,10 @@ import java.io.OutputStream;
  */
 abstract class LoggingOutputStreamImpl extends OutputStream {
 
+  private static final byte[] CR = new byte[] { '\r' };
+  private static final byte[] LF = new byte[] { '\n' };
+  private static final byte[] CRLF = new byte[] { '\r', '\n' };
+  
   private boolean hasBeenClosed = false;
   private byte[] buf;
 
@@ -62,10 +70,7 @@ abstract class LoggingOutputStreamImpl extends OutputStream {
   protected transient LogLevel logLevel;
 
   protected LoggingOutputStreamImpl(LogLevel level) throws IllegalArgumentException {
-    if (level == null) {
-      throw new IllegalArgumentException("LogLevel == null");
-    }
-    logLevel = level;
+    logLevel = Args.notNull(level, "logLevel");
   }
 
   protected abstract void log(LogLevel level, String s);
@@ -126,21 +131,20 @@ abstract class LoggingOutputStreamImpl extends OutputStream {
     // don't print out blank lines; flushing from PrintStream puts
     // out these
     // For linux system
-    if (count == 1 && (char) buf[0] == '\n') {
+    if (emptyLine(count, LF)) {
       reset();
       return;
     }
     // For mac system
-    if (count == 1 && (char) buf[0] == '\r') {
+    if (emptyLine(count, CR)) {
       reset();
       return;
     }
     // On windows system
-    if (count == 2 && (char) buf[0] == '\r' && (char) buf[1] == '\n') {
+    if (emptyLine(count, CRLF)) {
       reset();
       return;
     }
-
     final byte[] theBytes = new byte[count];
     System.arraycopy(buf, 0, theBytes, 0, count);
     log(logLevel, new String(theBytes));
@@ -153,4 +157,11 @@ abstract class LoggingOutputStreamImpl extends OutputStream {
     count = 0;
   }
 
+  private boolean emptyLine(int count, byte[] lineEnding) {
+    if (count != lineEnding.length) {
+      return false;
+    }
+    byte[] theBytes = Arrays.copyOf(buf, count);
+    return MessageDigest.isEqual(theBytes, lineEnding);
+  }
 }

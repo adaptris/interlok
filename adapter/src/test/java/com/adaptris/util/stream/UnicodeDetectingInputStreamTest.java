@@ -54,7 +54,8 @@ public class UnicodeDetectingInputStreamTest {
 
   @Test(expected = IllegalStateException.class)
   public void testBrokenInput() throws Exception {
-    try (UnicodeDetectingInputStream stream = new UnicodeDetectingInputStream(new ErroringInputStream(), ISO_8859_1)) {
+    try (UnicodeDetectingInputStream stream = new UnicodeDetectingInputStream(new StreamUtilTest.ErroringInputStream(),
+        ISO_8859_1)) {
       assertEquals(ISO_8859_1, stream.getDefaultEncoding());
       stream.getEncoding();
     }
@@ -143,25 +144,4 @@ public class UnicodeDetectingInputStreamTest {
     return new ByteArrayInputStream(out.toByteArray());
   }
 
-  private class ErroringInputStream extends InputStream {
-
-    ErroringInputStream() {
-    }
-
-    @Override
-    public int read() throws IOException {
-      throw new IOException("Failed to read");
-    }
-
-    @Override
-    public int read(byte[] b) throws IOException {
-      throw new IOException("Failed to read");
-    }
-
-    @Override
-    public int read(byte[] b, int off, int len) throws IOException {
-      throw new IOException("Failed to read");
-    }
-
-  }
 }
