@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.IOUtils;
 
@@ -66,10 +67,12 @@ import com.adaptris.core.http.jetty.SecurityConstraint;
 import com.adaptris.core.http.jetty.StandardResponseProducer;
 import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.metadata.RegexMetadataFilter;
+import com.adaptris.core.services.WaitService;
 import com.adaptris.core.services.metadata.PayloadFromMetadataService;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.security.password.Password;
 import com.adaptris.util.KeyValuePair;
+import com.adaptris.util.TimeInterval;
 
 public class StandardHttpProducerTest extends HttpProducerExample {
   private static final String TEXT = "ABCDEFG";
@@ -785,6 +788,43 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     assertEquals(1, mock.messageCount());
     AdaptrisMessage m2 = mock.getMessages().get(0);
     assertEquals(TEXT, m2.getContent());
+  }
+
+  // HttpURLConnection doesn't support the Expect: 102-Processing
+  // So this should throw a Produce Exception
+  public void testRequest_Get_ExpectHeader() throws Exception {
+    MockMessageProducer mock = new MockMessageProducer();
+    HttpConnection jc = HttpHelper.createConnection();
+    JettyMessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
+    mc.setSendProcessingInterval(new TimeInterval(100L, TimeUnit.MILLISECONDS));
+    ServiceList services = new ServiceList();
+    services.add(new PayloadFromMetadataService(TEXT));
+    services.add(new WaitService(new TimeInterval(2L, TimeUnit.SECONDS)));
+    services.add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200)));
+    
+    Channel c = createChannel(jc, createWorkflow(mc, mock, services));
+    StandardWorkflow workflow = (StandardWorkflow) c.getWorkflowList().get(0);
+    workflow.getServiceCollection().add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200)));
+
+    StandardHttpProducer stdHttp = new StandardHttpProducer(HttpHelper.createProduceDestination(c));
+    stdHttp.setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethodProvider.RequestMethod.GET));
+    stdHttp.setRequestHeaderProvider(
+        new ConfiguredRequestHeaders().withHeaders(new KeyValuePair(HttpConstants.EXPECT, "102-Processing")));
+    StandaloneRequestor producer = new StandaloneRequestor(stdHttp);
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage(ALT_TEXT);
+    try {
+      start(c);
+      start(producer);
+      producer.doService(msg);
+      fail();
+    }
+    catch (ProduceException | ServiceException e) {
+      assertTrue(e.getMessage().contains("Failed to send payload, got 102"));
+    }
+    finally {
+      stop(c);
+      stop(producer);
+    }
   }
 
   @Override
