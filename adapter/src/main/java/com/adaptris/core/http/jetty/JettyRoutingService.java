@@ -46,6 +46,8 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * against a list of configured routes. If a route matches the URI and the http method (if specified) then the next service id is
  * set appropriately.
  * </p>
+ * 
+ * @config jetty-routing-service
  *
  */
 @XStreamAlias("jetty-routing-service")
