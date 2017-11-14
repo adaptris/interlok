@@ -24,9 +24,12 @@ import com.adaptris.core.AdaptrisMessage;
 
 public class AllRowsMetadataTranslatorTest extends JdbcQueryServiceCase {
 
-  private static final String ALL_ROWS_QUERY = "SELECT adapter_version, message_translator_type " + "FROM adapter_type_version ";
+  private static final String ALL_ROWS_QUERY = "SELECT adapter_version, message_translator_type FROM adapter_type_version ";
+  private static final String ALL_ROWS_QUERY_ALIASES =
+      "SELECT adapter_version as MY_VERSION, message_translator_type as MY_TYPE FROM adapter_type_version ";
   
-  private static final String ALL_ROWS_QUERY_NAMED_PARAMS = "SELECT adapter_version, message_translator_type " + "FROM adapter_type_version " + "WHERE adapter_version!=#adapterVersion";
+  private static final String ALL_ROWS_QUERY_NAMED_PARAMS =
+      "SELECT adapter_version, message_translator_type FROM adapter_type_version " + "WHERE adapter_version!=#adapterVersion";
 
   public AllRowsMetadataTranslatorTest(String arg0) {
     super(arg0);
@@ -65,6 +68,34 @@ public class AllRowsMetadataTranslatorTest extends JdbcQueryServiceCase {
     assertEquals("10", msg.getMetadataValue("TotalRows"));
   }
   
+  public void testJdbcDataQueryService_Aliases() throws Exception {
+    createDatabase();
+    List<AdapterTypeVersion> dbItems = generate(10);
+    AdapterTypeVersion entry = dbItems.get(0);
+
+    populateDatabase(dbItems, false);
+    JdbcDataQueryService s = createMetadataService();
+    s.setStatementCreator(new ConfiguredSQLStatement(ALL_ROWS_QUERY_ALIASES));
+    s.getStatementParameters().clear();
+    AllRowsMetadataTranslator t = new AllRowsMetadataTranslator();
+    t.setResultCountMetadataItem("TotalRows");
+    s.setResultSetTranslator(t);
+    AdaptrisMessage msg = createMessage(entry);
+    execute(s, msg);
+    assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
+    String metadataKeyColumnVersion = t.getMetadataKeyPrefix() + t.getSeparator() + "MY_VERSION" + t.getSeparator();
+    String metadataKeyColumnType = t.getMetadataKeyPrefix() + t.getSeparator() + "MY_TYPE" + t.getSeparator();
+    for (int i = 0; i < 10; i++) {
+      assertTrue(metadataKeyColumnVersion + i, msg.headersContainsKey(metadataKeyColumnVersion + i));
+      assertTrue(metadataKeyColumnType + i, msg.headersContainsKey(metadataKeyColumnType + i));
+
+    }
+
+    assertFalse(msg.headersContainsKey(JdbcDataQueryService.class.getCanonicalName()));
+    assertTrue(msg.headersContainsKey("TotalRows"));
+    assertEquals("10", msg.getMetadataValue("TotalRows"));
+  }
+
   public void testJdbcDataQueryServiceWithResultCount() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);

@@ -151,10 +151,8 @@ public class JdbcResultSetImpl implements JdbcResultSet {
 
     JdbcResultRow row = new JdbcResultRow();
     for(int counter = 1; counter <= columnCount; counter ++) {
-      row.setFieldValue(rsmd.getColumnName(counter), resultSet.getObject(counter));
+      row.setFieldValue(rsmd.getColumnLabel(counter), resultSet.getObject(counter));
     }
-
     return row;
   }
-
 }
