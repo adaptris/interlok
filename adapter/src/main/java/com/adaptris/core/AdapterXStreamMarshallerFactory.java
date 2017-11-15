@@ -130,45 +130,15 @@ public class AdapterXStreamMarshallerFactory extends AdapterMarshallerFactory {
 	 * @return - newly created instance
 	 */
 	protected XStream createXStreamInstance(MarshallingOutput outputMode) {
-		XStream xstream = null;
-		
-		if (outputMode == MarshallingOutput.XML) {
-		  xstream = createXStreamInstance(outputMode, new PureJavaReflectionProvider(), new PrettyStaxDriver(cdataFields));
+		switch(outputMode) {
+    case XML:
+      return new MyExtremeMarshaller(new PureJavaReflectionProvider(), new PrettyStaxDriver(cdataFields)); 
+    case JSON: {
+      return new MyExtremeMarshaller(new PureJavaReflectionProvider(), (getMode() == OutputMode.STANDARD) ? new JettisonMappedXmlDriver() : new JsonPrettyStaxDriver()); 
 		}
-		else if (outputMode == MarshallingOutput.JSON) {
-		  if (getMode() == OutputMode.STANDARD) {
-		    xstream = createXStreamInstance(outputMode, new PureJavaReflectionProvider(), new JettisonMappedXmlDriver());
-		  }
-		  else {
-		    xstream = createXStreamInstance(outputMode, new PureJavaReflectionProvider(), new JsonPrettyStaxDriver());
-		  }
-		}
-		else {
-			throw new IllegalArgumentException("Marshalling option not supported by XStream Factory: " + outputMode);
-		}
-		return xstream;
-  }
-
-  /**
-   * Create XStream instance from the given parameters
-   * 
-   * @param outputMode the output mode.
-   * @param rd the reflection provider
-   * @param hsd the stream driver.
-   * @return an XStream implementation
-   */
-  protected XStream createXStreamInstance(MarshallingOutput outputMode, ReflectionProvider rd, HierarchicalStreamDriver hsd) {
-    XStream xstream = null;
-    if (outputMode == MarshallingOutput.XML) {
-      xstream = new MyExtremeMarshaller(rd, hsd);
-    }
-    else if (outputMode == MarshallingOutput.JSON) {
-      xstream = new MyExtremeMarshaller(rd, hsd);
-    }
-    else {
+		default:
       throw new IllegalArgumentException("Marshalling option not supported by XStream Factory: " + outputMode);
-    }
-    return xstream;
+		}
   }
 	 
 	/**
@@ -176,22 +146,8 @@ public class AdapterXStreamMarshallerFactory extends AdapterMarshallerFactory {
 	 * @return Xstream configured for XML output
 	 */
 	public XStream createXStream() {
-		final MarshallingOutput outputType = MarshallingOutput.XML;
-		return createXStream(outputType);
+		return createXStream(MarshallingOutput.XML);
 	}
-	
-	  /**
-   * Allows the construction of an XStream Object with the specified parameters for XML output
-   * 
-   * @param rd - ReflectionProvider
-   * @param hsd - HierarchicalStreamDriver
-   * @return an XStream implementation
-   */
-  public XStream createXStream(ReflectionProvider rd, HierarchicalStreamDriver hsd) {
-    final MarshallingOutput outputType = MarshallingOutput.XML;
-    XStream xStreamInstance = createXStreamInstance(outputType, rd, hsd);
-    return configureXStream(xStreamInstance, outputType);
-  }
   
 	/**
 	 * Public method that returns a configure XStream object instance read for use configured for the given form of output.

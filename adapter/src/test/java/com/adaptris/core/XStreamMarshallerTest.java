@@ -111,6 +111,19 @@ public class XStreamMarshallerTest extends MarshallingBaseCase {
     assertRoundtripEquality(wrapper, roundTrip);
   }
   
+  public void testBeautifiedBeanInfo() throws Exception {
+    AdapterXStreamMarshallerFactory factory = AdapterXStreamMarshallerFactory.getInstance();
+    factory.setMode(OutputMode.ALIASED_SUBCLASSES);
+    XStream xstreamInstance = factory.createXStream();
+    XStreamBeanInfoWrapper wrapper = new XStreamBeanInfoWrapper();
+    String id = wrapper.getMarshalledIdentity();
+    assertFalse(wrapper.getSetterCalled());
+    String xml = xstreamInstance.toXML(new ServiceList(wrapper));
+    XStreamBeanInfoWrapper roundTrip = (XStreamBeanInfoWrapper) ((ServiceList) xstreamInstance.fromXML(xml)).get(0);
+    assertEquals(id, roundTrip.getMarshalledIdentity());
+    assertTrue(roundTrip.getSetterCalled());
+  }
+
   // redmineID 2457 Beautifying the XStream output - Test conversion of standard config to beautified config
   public void testXStreamBeautified() throws Exception {
     // Create factory
