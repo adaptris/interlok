@@ -158,7 +158,7 @@ public class StreamUtilTest extends StreamUtil {
 
   public static class ErroringInputStream extends InputStream {
 
-    ErroringInputStream() {
+    public ErroringInputStream() {
     }
 
     @Override

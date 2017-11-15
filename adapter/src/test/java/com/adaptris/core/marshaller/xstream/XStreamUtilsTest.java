@@ -16,6 +16,16 @@
 
 package com.adaptris.core.marshaller.xstream;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,6 +34,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.io.IOUtils;
+import org.junit.Test;
+
+import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessageConsumer;
 import com.adaptris.core.EventHandlerAware;
 import com.adaptris.core.Service;
@@ -35,12 +49,12 @@ import com.adaptris.core.WorkflowInterceptor;
 import com.adaptris.core.services.metadata.AddMetadataService;
 import com.adaptris.core.services.metadata.XpathMetadataService;
 import com.adaptris.core.services.metadata.xpath.ConfiguredXpathQuery;
+import com.adaptris.util.stream.StreamUtilTest;
 import com.thoughtworks.xstream.core.util.FastField;
 
-import junit.framework.TestCase;
+public class XStreamUtilsTest extends XStreamUtils {
 
-public class XStreamUtilsTest extends TestCase {
-
+  @Test
   public void testToFieldName() {
     assertNull(XStreamUtils.toFieldName(null));
     assertEquals("", XStreamUtils.toFieldName(""));
@@ -54,14 +68,19 @@ public class XStreamUtilsTest extends TestCase {
     assertEquals("AB", XStreamUtils.toFieldName("AB"));
     assertEquals("ABCd", XStreamUtils.toFieldName("ABCd"));
     assertEquals("ABC-d", XStreamUtils.toFieldName("ABC-d"));
+    assertEquals("abc", XStreamUtils.toFieldName("Abc"));
+    assertEquals("aSimpleXmlTagname", XStreamUtils.toFieldName("a-simple-xml--tagname"));
+
   }
 
+  @Test
   public void testToXmlElementName() {
     assertNull("", XStreamUtils.toXmlElementName(null));
     assertEquals("", XStreamUtils.toXmlElementName(""));
     assertEquals("m", XStreamUtils.toXmlElementName("m"));
     assertEquals("m", XStreamUtils.toXmlElementName("M"));
     assertEquals("MM", XStreamUtils.toXmlElementName("MM"));
+    assertEquals("mm", XStreamUtils.toXmlElementName("Mm"));
     assertEquals("MMUNTOUCHEDandAbitMore", XStreamUtils.toXmlElementName("MMUNTOUCHEDandAbitMore"));
     assertEquals("my-class", XStreamUtils.toXmlElementName("myClass"));
 
@@ -73,6 +92,28 @@ public class XStreamUtilsTest extends TestCase {
 
   }
 
+  @Test
+  public void testGetClasses() throws Exception {
+    StringWriter sw = new StringWriter();
+    try (PrintWriter pw = new PrintWriter(sw)) {
+      pw.println(Adapter.class.getName());
+      pw.println(ServiceList.class.getName());
+      pw.println("hello.world");
+    }
+    try (InputStream in = IOUtils.toInputStream(sw.toString())) {
+      List<Class<?>> classes = getClasses(in);
+      assertEquals(2, classes.size());
+    }
+  }
+
+  @Test(expected = IOException.class)
+  public void testGetClasses_Exception() throws Exception {
+    try (InputStream in = new StreamUtilTest.ErroringInputStream()) {
+      List<Class<?>> classes = getClasses(in);
+    }
+  }
+
+  @Test
   public void testCreateParentFields() {
     Collection<String> resultCollection = XStreamUtils.createParentFields(WorkflowImp.class, "serviceCollection", ".");
     assertTrue(resultCollection.contains("com.adaptris.core.WorkflowImp.serviceCollection"));
@@ -80,6 +121,7 @@ public class XStreamUtilsTest extends TestCase {
     assertTrue(resultCollection.contains("com.adaptris.core.WorkflowImp-serviceCollection"));
   }
 
+  @Test
   public void testSetContainsAnyOf() {
     Set<String> testSet = new HashSet<>();
     testSet.add("cat");
@@ -95,6 +137,7 @@ public class XStreamUtilsTest extends TestCase {
     assertTrue(XStreamUtils.setContainsAnyOf(testSet, searchCollection));
   }
 
+  @Test
   public void testGetClassFieldByType() {
     Set<Field> classFieldByType = XStreamUtils.getClassFieldByType(WorkflowImp.class, ServiceCollection.class);
     assertEquals(1, classFieldByType.size());
@@ -132,6 +175,7 @@ public class XStreamUtilsTest extends TestCase {
     }
   }
 
+  @Test
   public void testGetMatchedFieldFromClass() {
     Set<FastField> seenProperties = new HashSet<>();
     Class<?> parentClass = WorkflowImp.class;
@@ -173,6 +217,7 @@ public class XStreamUtilsTest extends TestCase {
 //    assertEquals(2, assertionCount); // This ensures that we processed the interceptors field, just in case someone renamed it
 //  }
 
+  @Test
   public void testGetGenericHierarchicalTypesForField() {
     List<Field> fields = new ArrayList<>();
     fields = XStreamUtils.getFieldsForClassEnsuringUniqueFieldNames(WorkflowImp.class, fields);
@@ -202,6 +247,7 @@ public class XStreamUtilsTest extends TestCase {
     assertEquals(2, assertionCount); // This ensures that we processed the interceptors field, just in case someone renamed it
   }
 
+  @Test
   public void testGetGenericHierarchicalTypesForClass() {
     Set<Class<?>> genericTypeClassesSet = new HashSet<>(); 
     Set<Class<?>> resultClassSet = XStreamUtils.getGenericHierarchicalTypesForClass(ServiceCollection.class, genericTypeClassesSet);
@@ -223,6 +269,7 @@ public class XStreamUtilsTest extends TestCase {
     assertTrue(resultClassSet.contains(Service.class));
   }
 
+  @Test
   public void testGetImplicitCollectionFieldNameForType() {
     // Main test scenario
     String fieldNameForType = XStreamUtils.getImplicitCollectionFieldNameForType(XpathMetadataService.class, ConfiguredXpathQuery.class);

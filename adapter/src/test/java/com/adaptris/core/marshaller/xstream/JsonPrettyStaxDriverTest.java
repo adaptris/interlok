@@ -16,6 +16,7 @@
 package com.adaptris.core.marshaller.xstream;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
@@ -82,4 +83,9 @@ public class JsonPrettyStaxDriverTest {
     }
   }
 
+  @Test
+  public void testPrettyStaxDriver_CreateWriter() {
+    PrettyStaxDriver d = new PrettyStaxDriver();
+    assertNotNull(d.createWriter(new ByteArrayOutputStream()));
+  }
 }
