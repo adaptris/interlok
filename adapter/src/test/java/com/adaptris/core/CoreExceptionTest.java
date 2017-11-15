@@ -27,14 +27,26 @@ import org.junit.Test;
 import com.adaptris.core.jdbc.JdbcParameterException;
 import com.adaptris.core.management.vcs.VcsConflictException;
 import com.adaptris.core.management.vcs.VcsException;
+import com.adaptris.filetransfer.FileTransferException;
+import com.adaptris.fs.FsException;
+import com.adaptris.fs.FsFileNotFoundException;
+import com.adaptris.fs.FsFilenameExistsException;
+import com.adaptris.ftp.FtpException;
+import com.adaptris.mail.MailException;
 import com.adaptris.naming.adapter.AdapterNamingException;
+import com.adaptris.sftp.SftpException;
+import com.adaptris.util.datastore.DataStoreException;
 
 public class CoreExceptionTest {
   private static String[] EXCEPTION_NAMES =
   {
       CoreException.class.getName(), AdapterNamingException.class.getName(), JdbcParameterException.class.getName(),
       OutOfStateException.class.getName(), ProduceException.class.getName(), ServiceException.class.getName(),
-      VcsException.class.getName(), VcsConflictException.class.getName(), UnresolvedMetadataException.class.getName()
+      VcsException.class.getName(), VcsConflictException.class.getName(), UnresolvedMetadataException.class.getName(),
+
+      FileTransferException.class.getName(), FsException.class.getName(), FsFilenameExistsException.class.getName(),
+      FsFileNotFoundException.class.getName(), FtpException.class.getName(), MailException.class.getName(),
+      SftpException.class.getName(), DataStoreException.class.getName()
   };
 
   @Before
@@ -48,9 +60,14 @@ public class CoreExceptionTest {
   @Test
   public void testConstructor() throws Exception {
     for (String s : EXCEPTION_NAMES) {
-      Exception e = (Exception) Class.forName(s).newInstance();
-      assertNull(e.getCause());
-      assertNull(e.getMessage());
+      try {
+        Exception e = (Exception) Class.forName(s).newInstance();
+        assertNull(e.getCause());
+        assertNull(e.getMessage());
+      }
+      catch (InstantiationException sometimes) {
+
+      }
     }
   }
 
@@ -60,6 +77,30 @@ public class CoreExceptionTest {
     Class<?>[] paramTypes =
     {
         Throwable.class
+    };
+    Object[] args =
+    {
+        cause
+    };
+    for (String s : EXCEPTION_NAMES) {
+      try {
+        Constructor<?> cnst = Class.forName(s).getDeclaredConstructor(paramTypes);
+        Exception e = ((Exception) cnst.newInstance(args));
+        assertEquals(cause, e.getCause());
+        assertEquals(Exception.class.getName(), e.getMessage());
+      }
+      catch (NoSuchMethodException sometimes) {
+
+      }
+    }
+  }
+
+  @Test
+  public void testConstructorException() throws Exception {
+    Exception cause = new Exception();
+    Class<?>[] paramTypes =
+    {
+        Exception.class
     };
     Object[] args =
     {
@@ -107,6 +148,30 @@ public class CoreExceptionTest {
     Class<?>[] paramTypes =
     {
         String.class, Throwable.class
+    };
+    Object[] args =
+    {
+        "hello", cause
+    };
+    for (String s : EXCEPTION_NAMES) {
+      try {
+        Constructor<?> cnst = Class.forName(s).getDeclaredConstructor(paramTypes);
+        Exception e = ((Exception) cnst.newInstance(args));
+        assertEquals(cause, e.getCause());
+        assertEquals("hello", e.getMessage());
+      }
+      catch (NoSuchMethodException sometimes) {
+
+      }
+    }
+  }
+
+  @Test
+  public void testConstructorStringException() throws Exception {
+    Exception cause = new Exception();
+    Class<?>[] paramTypes =
+    {
+        String.class, Exception.class
     };
     Object[] args =
     {
