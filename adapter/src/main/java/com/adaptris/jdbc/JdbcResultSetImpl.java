@@ -22,6 +22,8 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.adaptris.core.util.JdbcUtil;
 
 public class JdbcResultSetImpl implements JdbcResultSet {
@@ -151,7 +153,8 @@ public class JdbcResultSetImpl implements JdbcResultSet {
 
     JdbcResultRow row = new JdbcResultRow();
     for(int counter = 1; counter <= columnCount; counter ++) {
-      row.setFieldValue(rsmd.getColumnLabel(counter), resultSet.getObject(counter));
+      row.setFieldValue(StringUtils.defaultIfEmpty(rsmd.getColumnLabel(counter), rsmd.getColumnName(counter)),
+          resultSet.getObject(counter));
     }
     return row;
   }
