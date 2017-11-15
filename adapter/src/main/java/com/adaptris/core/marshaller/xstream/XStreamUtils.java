@@ -17,22 +17,21 @@
 package com.adaptris.core.marshaller.xstream;
 
 import static org.apache.commons.io.IOUtils.closeQuietly;
-import static org.apache.commons.lang.StringUtils.isEmpty;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +48,7 @@ import sun.reflect.generics.reflectiveObjects.WildcardTypeImpl;
  * 
  * @author bklair
  */
-public class XStreamUtils {
+public abstract class XStreamUtils {
 	
 	private static Logger log = LoggerFactory.getLogger(XStreamUtils.class);
 	
@@ -197,16 +196,14 @@ public class XStreamUtils {
    */
   public static List<String> readResource(InputStream in) throws IOException {
     List<String> result = new ArrayList<String>();
-    BufferedReader reader = null;
     try {
-      reader = new BufferedReader(new InputStreamReader(in));
-      String line = reader.readLine();
-      while (line != null && !isEmpty(line)) {
-        result.add(line);
-        line = reader.readLine();
-      }
+      result = IOUtils.readLines(in);
+      // Well, is this more or less readable the other it's not even as
+      // though the predicate style actually returns a new list.
+      // result.removeIf(StringUtils::isBlank);
+      result.removeAll(Arrays.asList("", null));
     } finally {
-      closeQuietly(reader);
+      closeQuietly(in);
     }
     return result;
   }
@@ -225,16 +222,8 @@ public class XStreamUtils {
     for (String clazz : lines) {
       try {
         result.add(Class.forName(clazz));
-      } catch (ClassNotFoundException e) {
-        if (AdapterXStreamMarshallerFactory.XSTREAM_DBG) {
-          log.trace("Ignoring missing class [{}] :{}", e.getClass()
-              .getSimpleName(), e.getMessage());
-        }
-      } catch (NoClassDefFoundError e) {
-        if (AdapterXStreamMarshallerFactory.XSTREAM_DBG) {
-          log.trace("Ignoring missing class [{}] :{}", e.getClass()
-              .getSimpleName(), e.getMessage());
-        }
+      } catch (ClassNotFoundException | NoClassDefFoundError e) {
+        traceLogging("Ignoring missing class [{}] :{}", e.getClass().getSimpleName(), e.getMessage());
       }
     }
     return result;
@@ -276,7 +265,7 @@ public class XStreamUtils {
   static Set<Field> getClassFieldByType(Class<?> parentClass, Class<?> fieldTypeClass) {
     if (fieldTypeClass == null)
       return null;
-    log.trace("Searching for fields of type: {} within class: {}", fieldTypeClass.getSimpleName(), parentClass.getSimpleName());
+    traceLogging("Searching for fields of type: {} within class: {}", fieldTypeClass.getSimpleName(), parentClass.getSimpleName());
     List<Field> fields = new ArrayList<>();
     Set<Field> resultsSet = new HashSet<>();
     boolean isCollection = Collection.class.isAssignableFrom(fieldTypeClass);
@@ -292,19 +281,19 @@ public class XStreamUtils {
           if (hierarchicalTypesForFieldClass != null && currentGenericHierarchicalTypesForField != null) {
             currentGenericHierarchicalTypesForField.retainAll(hierarchicalTypesForFieldClass);
             String join = StringUtils.join(currentGenericHierarchicalTypesForField, ',');
-            log.trace("Intersect of generic types: '{}'", join);
+            traceLogging("Intersect of generic types: '{}'", join);
             if (currentGenericHierarchicalTypesForField.size() > 0) {
-              log.trace("Matched collection field: {} of type: {}", field.getName(), field.getType());
+              traceLogging("Matched collection field: {} of type: {}", field.getName(), field.getType());
               resultsSet.add(field);
             }
           }
           else {
-            log.trace("Matched standard collection field: {} of type: {}", field.getName(), field.getType());
+            traceLogging("Matched standard collection field: {} of type: {}", field.getName(), field.getType());
             resultsSet.add(field);
           }
         }
         else {
-          log.trace("Matched field: {} of type: {}", field.getName(), field.getType());
+          traceLogging("Matched field: {} of type: {}", field.getName(), field.getType());
           resultsSet.add(field);
         }
       }
@@ -320,7 +309,7 @@ public class XStreamUtils {
         }
       }
     }
-    log.trace("Return set of {} matched fields", resultsSet.size());
+    traceLogging("Return set of {} matched fields", resultsSet.size());
     return resultsSet;
   }
   
@@ -345,7 +334,8 @@ public class XStreamUtils {
         return currentMatchedField;
       }
       else {
-        log.trace("Field of type: {} has already been matched to class field: {}, continuing field match search", currentMatchedField.getType(), fieldCapturedName);
+        traceLogging("Field of type: {} has already been matched to class field: {}, continuing field match search",
+            currentMatchedField.getType(), fieldCapturedName);
       }
     }
     return null;
@@ -479,7 +469,6 @@ public class XStreamUtils {
                 resultClassList.add((Class<?>) innerType);  
               }
             } catch (ClassCastException e) {
-              log.error("Unexpected error", e);
               throw e;
             }
           }
@@ -548,7 +537,7 @@ public class XStreamUtils {
    * @return - Set of Classes or null
    */
   static Set<Class<?>> getGenericHierarchicalTypesForClass(Class<?> clazz, Set<Class<?>> genericTypeSet) {
-    log.trace("getGenericHierarchicalTypesForClass entry({})", clazz.getSimpleName());
+    traceLogging("getGenericHierarchicalTypesForClass entry({})", clazz.getSimpleName());
     Class<?> superclass = clazz.getSuperclass();
     if (superclass != null && superclass != Object.class) {
       getGenericHierarchicalTypesForClass(superclass, genericTypeSet);
@@ -559,7 +548,7 @@ public class XStreamUtils {
     Type[] genericSuperTypes = clazz.getGenericInterfaces();
     if (genericSuperTypes != null && genericSuperTypes.length > 0) {
       for (Type type : genericSuperTypes) {
-        log.trace("Processing type: {}", type);
+        traceLogging("Processing type: {}", type);
         getClassFromGenericType(type, genericTypesForField);
       }
       // Convert the list to a set if it has any data
@@ -578,7 +567,8 @@ public class XStreamUtils {
    * @return String - Name of field from parent class that can take the given itemType.
    */
   public static String getImplicitCollectionFieldNameForType(Class parentClass, Class itemType) {
-    log.trace("Searching for implict collection field that takes type: {} within class: {}", itemType.getSimpleName(), parentClass.getSimpleName());
+    traceLogging("Searching for implict collection field that takes type: {} within class: {}", itemType.getSimpleName(),
+        parentClass.getSimpleName());
     List<Field> fields = new ArrayList<>();
     getFieldsForClassEnsuringUniqueFieldNames(parentClass, fields);
     for (Iterator<Field> iterator = fields.iterator(); iterator.hasNext();) {
@@ -598,4 +588,10 @@ public class XStreamUtils {
     } // end for
     return null;
   } // end method
+
+  private static void traceLogging(String format, Object... objs) {
+    if (AdapterXStreamMarshallerFactory.XSTREAM_DBG) {
+      log.trace(format, objs);
+    }
+  }
 }
