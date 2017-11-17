@@ -103,6 +103,10 @@ public abstract class AllowsRetriesConnection extends AdaptrisConnectionImp {
         .toMilliseconds();
   }
 
+  protected boolean logWarning(int attemptCount) {
+    return (attemptCount == 1 || attemptCount % 5 == 0);
+  }
+
   protected String createLoggingStatement(int attempt) {
     StringBuffer result = new StringBuffer();
     result.append("pausing for [");

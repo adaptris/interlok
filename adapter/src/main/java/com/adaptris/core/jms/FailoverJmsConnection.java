@@ -110,12 +110,13 @@ public class FailoverJmsConnection extends JmsConnection {
       }
 
       if (connected == false) {
+        log.warn("Failed in all attempts to connect to brokers");
         if (attempts > connectionAttempts() && connectionAttempts() > -1) {
           throw new CoreException("Failed in all attempts to connect to brokers");
         }
         else {
           try {
-            log.info("Failed to connect to all listed brokers, sleeping");
+            log.info("Failed to connect to all listed brokers, waiting for retry");
             Thread.sleep(connectionRetryInterval());
           }
           catch (InterruptedException e2) {

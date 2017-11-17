@@ -178,7 +178,9 @@ public class JmsConnection extends AllowsRetriesConnection implements JmsConnect
       }
       catch (Exception e) {
         if (attemptCount == 1) {
-          log.warn("Cannot connect to broker [{}]", getBrokerDetailsForLogging(), e);
+          if (logWarning(attemptCount)) {
+            log.warn("Connection attempt [{}] failed for {}", attemptCount, getBrokerDetailsForLogging(), e);
+          }
           if (e instanceof JMSException) {
             if (((JMSException) e).getLinkedException() != null && additionalDebug()) {
               log.trace("Linked Exception Follows", ((JMSException) e).getLinkedException());

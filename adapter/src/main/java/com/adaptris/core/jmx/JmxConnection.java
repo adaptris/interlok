@@ -131,8 +131,8 @@ public class JmxConnection extends AllowsRetriesConnection {
         }
         connection = createConnection();
       } catch (Exception e) {
-        if (attemptCount == 1) {
-          log.warn("Cannot connect to [{}]", jmxServiceUrlForLogging(), e);
+        if (logWarning(attemptCount)) {
+          log.warn("Connection attempt [{}] failed for {}", attemptCount, jmxServiceUrlForLogging(), e);
         }
         if (connectionAttempts() != -1 && attemptCount >= connectionAttempts()) {
           log.error("Failed to connect to [{}]", getJmxServiceUrl(), e);

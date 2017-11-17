@@ -367,8 +367,8 @@ public abstract class DatabaseConnection extends AllowsRetriesConnection {
         }
       }
       catch (SQLException e) {
-        if (attemptCount == 1) {
-          log.warn("Connection attempt failed for " + getConnectionName());
+        if (logWarning(attemptCount)) {
+          log.warn("Connection attempt [{}] failed for {}", attemptCount, getConnectionName(), e);
         }
         if (connectionAttempts() != -1 && attemptCount >= connectionAttempts()) {
           log.error("Failed to make any Jdbc Connections");
