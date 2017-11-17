@@ -92,7 +92,7 @@ public class SimpleNamespaceContextTest extends SimpleNamespaceContext {
     assertNull(ctx.getPrefixes("http://www.w3.org/XML/2001/namespace"));
   }
 
-  private static KeyValuePairSet createNamespaceEntries() {
+  static KeyValuePairSet createNamespaceEntries() {
     KeyValuePairSet result = new KeyValuePairSet();
     result.add(new KeyValuePair("xsd", "http://www.w3.org/2001/XMLSchema"));
     result.add(new KeyValuePair("xs", "http://www.w3.org/2001/XMLSchema"));
