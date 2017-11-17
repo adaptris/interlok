@@ -150,7 +150,7 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
       }
     }
     catch (Exception e) {
-      log.trace("Error reading mailbox", e);
+      log.warn("Error reading mailbox; will retry on next poll", e);
     }
     finally {
       IOUtils.closeQuietly(mbox);
