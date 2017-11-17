@@ -67,7 +67,7 @@ public class XPath {
   private XPathFactory xpathFactory;
   
   public XPath() {
-    xpathFactory = build(useSaxonXpath);
+    xpathFactory = newXPathFactory();
   }
 
   public XPath(NamespaceContext ctx) {
@@ -153,6 +153,15 @@ public class XPath {
   public Node selectSingleNode(Node context, String xpath)
       throws XPathExpressionException {
     return (Node) createXpath().evaluate(xpath, context, XPathConstants.NODE);
+  }
+
+  /**
+   * Convenience method to create a new {@link XPathFactory}.
+   * 
+   * @return either a Saxon based XPathFactory or one auto-found by {@link XPathFactory#newInstance()}
+   */
+  public static XPathFactory newXPathFactory() {
+    return build(useSaxonXpath);
   }
 
   static XPathFactory build(boolean useSaxon) {
