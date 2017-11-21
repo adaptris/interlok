@@ -327,7 +327,7 @@ public class PoolingWorkflow extends WorkflowImp {
         threadPool.execute(new WorkerThread(friendlyWorkflowName, msg));
       }
       else {
-        log.warn("Attempt to process message during shutdown");
+        log.warn("Attempt to process message during shutdown; failing it");
         handleBadMessage(msg);
       }
     }
