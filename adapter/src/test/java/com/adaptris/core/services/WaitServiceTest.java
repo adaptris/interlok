@@ -20,6 +20,8 @@ import java.util.concurrent.TimeUnit;
 
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.GeneralServiceExample;
+import com.adaptris.core.ServiceException;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 
 public class WaitServiceTest extends GeneralServiceExample {
@@ -63,4 +65,37 @@ public class WaitServiceTest extends GeneralServiceExample {
     assertTrue(now < System.nanoTime());
   }
 
+  public void testDoServiceWithInterruption_NoException() throws Exception {
+    final WaitService srv =  LifecycleHelper.initAndStart(new WaitService(new TimeInterval(10L, TimeUnit.SECONDS)));
+    Thread t = new Thread(new Runnable() {
+
+      @Override
+      public void run() {
+        try {
+          srv.doService(AdaptrisMessageFactory.getDefaultInstance().newMessage("Hello"));
+        } catch (ServiceException e) {
+          fail();
+        }
+      }
+    });
+    t.start();
+    t.interrupt();
+  }
+
+  public void testDoServiceWithInterruption_Exception() throws Exception {
+    final WaitService srv = LifecycleHelper.initAndStart(new WaitService(new TimeInterval(10L, TimeUnit.SECONDS)));
+    Thread t = new Thread(new Runnable() {
+
+      @Override
+      public void run() {
+        try {
+          srv.doService(AdaptrisMessageFactory.getDefaultInstance().newMessage("Hello"));
+          fail();
+        } catch (ServiceException e) {
+        }
+      }
+    });
+    t.start();
+    t.interrupt();
+  }
 }
