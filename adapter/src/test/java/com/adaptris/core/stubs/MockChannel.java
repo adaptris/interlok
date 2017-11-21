@@ -35,6 +35,13 @@ public class MockChannel extends Channel {
     setMessageErrorHandler(new NullProcessingExceptionHandler());
   }
 
+  public MockChannel(Workflow... workflows) throws Exception {
+    this();
+    for (Workflow w : workflows) {
+      getWorkflowList().add(w);
+    }
+  }
+
   @Override
   public void prepare() throws CoreException {
     if (eh == null) {

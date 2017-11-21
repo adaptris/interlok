@@ -17,11 +17,16 @@ package com.adaptris.core.util;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.adaptris.util.TimeInterval;
 
 public class ManagedThreadFactoryTest {
 
@@ -57,12 +62,42 @@ public class ManagedThreadFactoryTest {
     t.join();
   }
 
+  @Test(expected = RejectedExecutionException.class)
+  public void testShutdownQuietlyExecutors_Quick() throws Exception {
+    ManagedThreadFactory.shutdownQuietly(null, new TimeInterval(1L, TimeUnit.SECONDS));
+    ExecutorService executor = Executors.newCachedThreadPool(new ManagedThreadFactory());
+    executor.submit(new Runnable() {
+      @Override
+      public void run() {}
+
+    });
+    ManagedThreadFactory.shutdownQuietly(executor, new TimeInterval(1L, TimeUnit.SECONDS));
+    executor.submit(new Runnable() {
+      @Override
+      public void run() {}
+
+    });
+  }
+
+
+  @Test(expected = RejectedExecutionException.class)
+  public void testShutdownQuietlyExecutors_Slow() throws Exception {
+    ExecutorService executor = Executors.newCachedThreadPool(new ManagedThreadFactory());
+    executor.submit(new StayingAlive());
+    ManagedThreadFactory.shutdownQuietly(executor, new TimeInterval(1L, TimeUnit.SECONDS));
+    executor.submit(new Runnable() {
+      @Override
+      public void run() {}
+      
+    });
+  }
+
   private class StayingAlive implements Runnable {
 
     @Override
     public void run() {
       try {
-        TimeUnit.HOURS.sleep(1);
+        TimeUnit.MINUTES.sleep(1);
       }
       catch (InterruptedException e) {
       }

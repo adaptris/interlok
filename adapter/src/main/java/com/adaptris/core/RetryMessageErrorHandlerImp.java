@@ -17,15 +17,21 @@
 package com.adaptris.core;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.Set;
+import java.util.WeakHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import com.adaptris.util.FifoMutexLock;
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.TimeInterval;
 
 /**
@@ -35,56 +41,26 @@ import com.adaptris.util.TimeInterval;
 public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExceptionHandler {
 
   private static final TimeInterval DEFAULT_RETRY_INTERVAL = new TimeInterval(10L, TimeUnit.MINUTES);
-  private static final TimeInterval DEFAULT_LOCK_TIMEOUT = new TimeInterval(1L, TimeUnit.SECONDS);
+  private static final TimeInterval DEFAULT_POOL_TIMEOUT = new TimeInterval(30L, TimeUnit.SECONDS);
 
   private static final int RETRY_LIMIT_DEFAULT = 10;
   protected static final String IS_RETRY_KEY = "autoRetryInProgress";
   protected static final String RETRY_COUNT_KEY = "autoRetryCount";
 
-  /**
-   * enumerated type for recording the current state of RetryMessageHandler implementations.
-   *
-   *
-   */
-  protected enum State {
-    CLOSED {
-      @Override
-      boolean equivalent(State s) {
-        return s == State.CLOSED;
-      }
-    },
-    INITED {
-      @Override
-      boolean equivalent(State s) {
-        return s == State.INITED || s == State.STOPPED;
-      }
-    },
-    STARTED {
-      @Override
-      boolean equivalent(State s) {
-        return s == State.STARTED;
-      }
-    },
-    STOPPED {
-      @Override
-      boolean equivalent(State s) {
-        return s == State.INITED || s == State.STOPPED;
-      }
-    };
-
-    abstract boolean equivalent(State s);
-  };
-
+  @InputFieldDefault(value = "10")
   private Integer retryLimit;
 
+  @AdvancedConfig
+  @Deprecated
   private TimeInterval lockTimeout;
+  @InputFieldDefault(value = "10 minutes")
   private TimeInterval retryInterval;
 
-  private transient State currentState;
-  protected transient Timer retryTimer = null;
+  protected transient ScheduledExecutorService executor;
   protected transient List<AdaptrisMessage> retryList;
   protected transient List<AdaptrisMessage> inProgress;
-  private transient FifoMutexLock lock;
+  private transient Set<ScheduledFuture> retries = Collections.newSetFromMap(new WeakHashMap<ScheduledFuture, Boolean>());
+  private transient ScheduledFuture sweeper = null;
 
   /**
    * Default Constructor.
@@ -99,24 +75,12 @@ public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExce
    */
   public RetryMessageErrorHandlerImp() {
     super();
-    currentState = State.CLOSED;
     retryList = Collections.synchronizedList(new ArrayList<AdaptrisMessage>());
     inProgress = Collections.synchronizedList(new ArrayList<AdaptrisMessage>());
-    lock = new FifoMutexLock();
   }
 
   @Override
   public void handleProcessingException(AdaptrisMessage msg) {
-    if (!currentState.equivalent(State.STARTED)) {
-      try {
-        start();
-      }
-      catch (CoreException e) {
-        IllegalStateException ie = new IllegalStateException("Component was not started correctly");
-        ie.initCause(e);
-        throw ie;
-      }
-    }
     if (shouldFail(msg)) {
       failMessage(msg);
     }
@@ -138,56 +102,46 @@ public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExce
       md.put(IS_RETRY_KEY, "true");
       md.put(RETRY_COUNT_KEY, String.valueOf(count));
     }
-    log.trace("Next retry on [" + msg.getUniqueId() + "] is retry " + (count + 1));
+    log.trace("Next retry on [{}] is retry {}", msg.getUniqueId(), (count + 1));
     int rl = retryLimit();
     return rl <= 0 ? false : count >= rl;
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#init() */
   @Override
   public void init() throws CoreException {
-    if (currentState.equivalent(State.INITED)) {
-      return;
-    }
     super.init();
-    currentState = State.INITED;
+    if (getLockTimeout() != null) {
+      log.warn("lock-timeout is deprecated with no replacement");
+    }
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#start() */
   @Override
   public void start() throws CoreException {
-    if (currentState.equivalent(State.STARTED)) {
-      return;
-    }
-    init();
-    retryTimer = new Timer(true);
+    executor = Executors.newScheduledThreadPool(0, new ManagedThreadFactory());
+    sweeper = executor.scheduleAtFixedRate(new CleanupTask(), 100L, retryIntervalMs(), TimeUnit.MILLISECONDS);
     super.start();
-    currentState = State.STARTED;
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#stop() */
   @Override
   public void stop() {
-    if (!currentState.equivalent(State.STARTED)) {
-      return;
-    }
-    if (retryTimer != null) {
-      retryTimer.cancel();
-    }
     failAllMessages();
+    shutdownExecutor();
     super.stop();
-    currentState = State.STOPPED;
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
   @Override
   public void close() {
-    if (currentState.equivalent(State.CLOSED)) {
-      return;
-    }
-    stop();
     super.close();
-    currentState = State.CLOSED;
+  }
+
+  private void shutdownExecutor() {
+    sweeper.cancel(true);
+    for (ScheduledFuture f : retries) {
+      f.cancel(true);
+    }
+    retries.clear();
+    ManagedThreadFactory.shutdownQuietly(executor, DEFAULT_POOL_TIMEOUT);
+    executor = null;
   }
 
   /**
@@ -217,10 +171,11 @@ public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExce
     return getRetryInterval() != null ? getRetryInterval().toMilliseconds() : DEFAULT_RETRY_INTERVAL.toMilliseconds();
   }
 
-  long lockTimeoutMs() {
-    return getLockTimeout() != null ? getLockTimeout().toMilliseconds() : DEFAULT_LOCK_TIMEOUT.toMilliseconds();
-  }
 
+  /**
+   * @deprecated since 3.6.6 has no effect.
+   */
+  @Deprecated
   public TimeInterval getLockTimeout() {
     return lockTimeout;
   }
@@ -229,8 +184,9 @@ public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExce
    * Set the interval when trying to lock to re-submit a message.
    *
    * @param interval the interval; default is 1 second if not explicitly configured.
-   *
+   * @deprecated since 3.6.6 has no effect.
    */
+  @Deprecated
   public void setLockTimeout(TimeInterval interval) {
     lockTimeout = interval;
   }
@@ -248,22 +204,14 @@ public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExce
     retryInterval = interval;
   }
 
-  private void failAllMessages() {
-    try {
-      lock.acquire();
-    }
-    catch (InterruptedException e) {
-      log.trace("Failed to shutdown component cleanly, logging exception for informational purposes only", e);
-    }
-    Iterator i = retryList.iterator();
-    while (i.hasNext()) {
-      AdaptrisMessage msg = (AdaptrisMessage) i.next();
+  protected void failAllMessages() {
+    for (AdaptrisMessage msg : new ArrayList<AdaptrisMessage>(retryList)) {
       failMessage(msg);
     }
-    lock.release();
+    retryList.clear();
   }
 
-  private void failMessage(AdaptrisMessage msg) {
+  protected void failMessage(AdaptrisMessage msg) {
     log.error("Message [{}] deemed to have failed", msg.getUniqueId());
     if (msg.getObjectHeaders().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION)) {
       Exception e = (Exception) msg.getObjectHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION);
@@ -275,7 +223,8 @@ public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExce
   protected void scheduleNextRun(AdaptrisMessage msg) {
     log.trace("Message [{}] should be retried", msg.getUniqueId());
     try {
-      retryTimer.schedule(new RetryThread(msg), retryIntervalMs());
+      ScheduledFuture f = executor.schedule(new RetryThread(msg), retryIntervalMs(), TimeUnit.MILLISECONDS);
+      retries.add(f);
     }
     catch (Exception e) {
       log.warn("Failed to reschedule retry, failing message");
@@ -283,23 +232,26 @@ public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExce
     }
   }
 
+
+  protected static Map<String, Workflow> filterStarted(Map<String, Workflow> workflows) {
+    Map<String, Workflow> result = new HashMap<>(workflows.size());
+    for (Map.Entry<String, Workflow> entry : workflows.entrySet()) {
+      if (StartedState.getInstance().equals(entry.getValue().retrieveComponentState())) {
+        result.put(entry.getKey(), entry.getValue());
+      }
+    }
+    return result;
+  }
   /**
    * Private thread used to resubmit messages.
    *
    */
-  protected class RetryThread extends TimerTask {
+  protected class RetryThread implements Runnable {
     private AdaptrisMessage msg;
 
     RetryThread(AdaptrisMessage m) {
       msg = m;
       retryList.add(msg);
-      // try {
-      // msg = (AdaptrisMessage) m.clone();
-      // }
-      // catch (Exception e) {
-      // log.trace("AdaptrisMessage not cloneable, using original");
-      // msg = m;
-      // }
     }
 
     @Override
@@ -307,43 +259,49 @@ public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExce
       String oldName = Thread.currentThread().getName();
       Thread.currentThread().setName(toString());
       try {
-        if (lock.attempt(lockTimeoutMs())) {
-          retryList.remove(msg);
-          inProgress.add(msg);
-        }
-        else {
-          log.trace("Failed to acquire lock, rescheduling");
-          retryTimer.schedule(this, retryIntervalMs());
-          return;
-        }
-
+        retryList.remove(msg);
+        inProgress.add(msg);
         log.trace("Retrying message [{}]", msg.getUniqueId());
-        Workflow workflow = registeredWorkflows().get(msg.getMetadataValue(Workflow.WORKFLOW_ID_KEY));
+        Workflow workflow = filterStarted(registeredWorkflows()).get(msg.getMetadataValue(Workflow.WORKFLOW_ID_KEY));
         if (workflow != null) {
           log.trace("Retrying message [{}] in workflow [{}]", msg.getUniqueId(), workflow.obtainWorkflowId());
           workflow.onAdaptrisMessage(msg);
-          inProgress.remove(msg);
         }
         else {
-          log.warn("Workflow [{}] not registered, failing message", msg.getMetadataValue(Workflow.WORKFLOW_ID_KEY));
-          log.warn("Registered Workflows :{}", registeredWorkflows().keySet());
+          log.warn("Workflow [{}] not registered, or not started, failing message", msg.getMetadataValue(Workflow.WORKFLOW_ID_KEY));
+          log.debug("Registered Workflows :{}", registeredWorkflows().keySet());
           failMessage(msg);
-          inProgress.remove(msg);
         }
-      }
-      catch (InterruptedException e) {
-        // We were interrupted, while waiting for a lock.
-        retryTimer.schedule(this, retryIntervalMs());
-        return;
+        inProgress.remove(msg);
       }
       finally {
-        lock.release();
         Thread.currentThread().setName(oldName);
       }
     }
 
     public String toString() {
       return "RetryMessageErrorHandler#RetryThread";
+    }
+
+  }
+
+  private class CleanupTask implements Runnable {
+
+    @Override
+    public void run() {
+      retries.removeAll(filter(new ArrayList<ScheduledFuture>(retries)));
+    }
+
+    private List<ScheduledFuture> filter(Collection<ScheduledFuture> workingSet) {
+      // surely time for a filter() lambda...
+      // return workingSet.stream().filter(future -> future.isDone()).collect(Collectors.toList());
+      List<ScheduledFuture> done = new ArrayList<>();
+      for (ScheduledFuture f : workingSet) {
+        if (f.isDone()) {
+          done.add(f);
+        }
+      }
+      return done;
     }
   }
 
