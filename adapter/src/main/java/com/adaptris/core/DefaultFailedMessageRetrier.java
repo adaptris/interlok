@@ -35,6 +35,7 @@ import com.adaptris.core.runtime.AdapterManager;
 import com.adaptris.core.runtime.ParentRuntimeInfoComponent;
 import com.adaptris.core.runtime.RuntimeInfoComponent;
 import com.adaptris.core.runtime.RuntimeInfoComponentFactory;
+import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -154,20 +155,7 @@ public class DefaultFailedMessageRetrier extends FailedMessageRetrierImp {
   }
 
   private void shutdownExecutors() {
-    if (failedMessageExecutor != null) {
-      log.trace("FailedMessageRetrier Shutdown Requested, awaiting ExecutorService Shutdown");
-      failedMessageExecutor.shutdown();
-      boolean success = false;
-      try {
-        success = failedMessageExecutor.awaitTermination(shutdownWaitTimeMs(), TimeUnit.MILLISECONDS);
-      }
-      catch (InterruptedException e) {
-      }
-      if (!success) {
-        log.trace("Pool failed to shutdown in " + shutdownWaitTimeMs() + "ms, forcing shutdown");
-        failedMessageExecutor.shutdownNow();
-      }
-    }
+    ManagedThreadFactory.shutdownQuietly(failedMessageExecutor, shutdownWaitTimeMs());
   }
 
   private long shutdownWaitTimeMs() {

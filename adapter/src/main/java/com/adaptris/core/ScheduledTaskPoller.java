@@ -58,20 +58,7 @@ public abstract class ScheduledTaskPoller extends PollerImp {
   }
 
   private void shutdownExecutor() {
-    if (executor != null) {
-      executor.shutdown();
-      boolean success = false;
-      try {
-        success = executor.awaitTermination(shutdownWaitTimeMs(), TimeUnit.MILLISECONDS);
-      }
-      catch (InterruptedException e) {
-      }
-      if (!success) {
-        log.trace("Pool failed to shutdown in {}ms, forcing shutdown", shutdownWaitTimeMs());
-        executor.shutdownNow();
-      }
-      executor = null;
-    }
+    ManagedThreadFactory.shutdownQuietly(executor, shutdownWaitTimeMs());
   }
 
   private void cancelTask() {

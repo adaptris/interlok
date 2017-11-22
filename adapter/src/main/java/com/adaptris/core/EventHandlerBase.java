@@ -29,6 +29,8 @@ import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.core.util.ManagedThreadFactory;
+import com.adaptris.util.TimeInterval;
 
 /**
  * <p>
@@ -346,17 +348,8 @@ public abstract class EventHandlerBase implements EventHandler {
 
     @Override
     public void stop() {
-      executor.shutdown();
-      try {
-        boolean stoppedOk = executor.awaitTermination(shutdownWaitSeconds(), TimeUnit.SECONDS);
-        if (!stoppedOk) {
-          log.trace("Executor did not stop within acceptable time limits");
-          executor.shutdownNow();
-        }
-      }
-      catch (InterruptedException e) {
-        ;
-      }
+      ManagedThreadFactory.shutdownQuietly(executor,
+          new TimeInterval(Integer.valueOf(shutdownWaitSeconds()).longValue(), TimeUnit.SECONDS));
     }
   }
 

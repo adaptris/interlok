@@ -210,21 +210,8 @@ public class SlowMessageNotification extends NotifyingInterceptor {
   }
 
   private void shutdownExecutor() {
-    if (executor != null) {
-      executor.shutdown();
-      boolean success = false;
-      try {
-        success =
-            executor.awaitTermination(DEFAULT_THRESHOLD.toMilliseconds(), TimeUnit.MILLISECONDS);
-      } catch (InterruptedException e) {
-      }
-      if (!success) {
-        log.trace("Pool failed to shutdown in {}ms, forcing shutdown",
-            DEFAULT_THRESHOLD.toMilliseconds());
-        executor.shutdownNow();
-      }
-      executor = null;
-    }
+    ManagedThreadFactory.shutdownQuietly(executor, DEFAULT_THRESHOLD);
+    executor = null;
   }
 
   private void sendNotification(MessageThroughputStat d) {
