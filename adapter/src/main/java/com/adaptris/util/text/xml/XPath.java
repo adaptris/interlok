@@ -122,7 +122,11 @@ public class XPath {
         else {
           node.normalize();
           Node text = node.getFirstChild();
-          retArray[i] = text.getNodeValue();
+          if (text != null) {
+            retArray[i] = text.getNodeValue();
+          } else {
+            retArray[i] = "";
+          }
         }
       }
     }
