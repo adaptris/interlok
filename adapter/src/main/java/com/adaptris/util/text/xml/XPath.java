@@ -124,8 +124,6 @@ public class XPath {
           Node text = node.getFirstChild();
           if (text != null) {
             retArray[i] = text.getNodeValue();
-          } else {
-            retArray[i] = "";
           }
         }
       }

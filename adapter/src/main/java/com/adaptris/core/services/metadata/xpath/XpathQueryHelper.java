@@ -57,7 +57,7 @@ final class XpathQueryHelper {
       }
       StringBuilder result = new StringBuilder();
       for (int i = 0; i < nodes.length; i++) {
-        result.append(nodes[i]);
+        result.append(StringUtils.defaultIfBlank(nodes[i], ""));
         if (i < nodes.length - 1) {
           result.append(sep);
         }
