@@ -34,10 +34,10 @@
 
     <dependency org="javax.activation" name="activation" rev="1.1.1"  conf="compile->default" />
 
-    <dependency org="org.apache.activemq" name="activemq-client" rev="5.10.0"  conf="compile->default"  />
-    <dependency org="org.apache.activemq" name="activemq-broker" rev="5.10.0"  conf="test->default"  />
-    <dependency org="org.apache.activemq" name="activemq-jaas" rev="5.10.0" conf="test->default"/>
-    <dependency org="org.apache.activemq" name="activemq-kahadb-store" rev="5.10.0" conf="test->default"/>
+    <dependency org="org.apache.activemq" name="activemq-client" rev="5.15.2"  conf="compile->default"  />
+    <dependency org="org.apache.activemq" name="activemq-broker" rev="5.15.2"  conf="test->default"  />
+    <dependency org="org.apache.activemq" name="activemq-jaas" rev="5.15.2" conf="test->default"/>
+    <dependency org="org.apache.activemq" name="activemq-kahadb-store" rev="5.15.2" conf="test->default"/>
     <dependency org="org.apache.activemq.protobuf" name="activemq-protobuf" rev="1.1" conf="test->default"/>
 
 
