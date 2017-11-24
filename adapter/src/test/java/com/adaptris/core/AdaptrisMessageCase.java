@@ -35,7 +35,9 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
@@ -582,5 +584,18 @@ public abstract class AdaptrisMessageCase {
     // $$key3 --> really use key1 as the key --> VAL1
     assertNotSame("%message{$$key3}", msg.resolve("%message{$$key3}"));
     assertEquals(VAL1, msg.resolve("%message{$$key3}"));
+  }
+
+  @Test
+  public void testSetMessageHeaders() throws Exception {
+    AdaptrisMessage msg = createMessage();
+    msg.clearMetadata();
+    msg.addMessageHeader("key1", "val1");
+    assertEquals(1, msg.getMessageHeaders().size());
+    Map<String, String> hdrs = new HashMap<>();
+    hdrs.put("key2", "val2");
+    hdrs.put("key3", "val3");
+    msg.setMessageHeaders(hdrs);
+    assertEquals(3, msg.getMessageHeaders().size());
   }
 }

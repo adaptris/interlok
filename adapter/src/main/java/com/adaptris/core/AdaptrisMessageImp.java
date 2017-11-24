@@ -193,8 +193,8 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
   @Override
   public void setMessageHeaders(Map<String, String> metadata) {
-    for (String key : metadata.values()) {
-      this.addMessageHeader(key, metadata.get(key));
+    for (Map.Entry<String, String> entry : metadata.entrySet()) {
+      this.addMessageHeader(entry.getKey(), entry.getValue());
     }
   }
 
