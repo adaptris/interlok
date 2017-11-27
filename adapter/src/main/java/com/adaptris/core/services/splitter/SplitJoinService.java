@@ -44,6 +44,7 @@ import com.adaptris.core.services.aggregator.MessageAggregator;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -193,14 +194,7 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware {
 
   @Override
   protected void closeService() {
-    executors.shutdown();
-    try {
-      if (!executors.awaitTermination(60, TimeUnit.SECONDS)) {
-        executors.shutdownNow();
-      }
-    } catch (InterruptedException e) {
-      log.warn("Failed to shutdown execution pool");
-    }
+    ManagedThreadFactory.shutdownQuietly(executors, new TimeInterval());
   }
 
   @Override

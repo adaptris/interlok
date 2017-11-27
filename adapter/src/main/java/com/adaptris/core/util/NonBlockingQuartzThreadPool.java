@@ -93,17 +93,7 @@ public class NonBlockingQuartzThreadPool implements ThreadPool {
     log.trace("Shutdown requested(wait={})", waitForJobsToComplete);
 
     if (waitForJobsToComplete) {
-      executor.shutdown();
-      boolean success = false;
-      try {
-        success = executor.awaitTermination(DEFAULT_SHUTDOWN_WAIT.toMilliseconds(), TimeUnit.MILLISECONDS);
-      }
-      catch (InterruptedException e) {
-
-      }
-      if (!success) {
-        executor.shutdownNow();
-      }
+      ManagedThreadFactory.shutdownQuietly(executor, DEFAULT_SHUTDOWN_WAIT);
     }
     else {
       executor.shutdownNow();
