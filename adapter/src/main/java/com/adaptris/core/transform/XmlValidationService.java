@@ -30,6 +30,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -111,7 +112,6 @@ public class XmlValidationService extends ServiceImp {
   }
 
   public void setValidators(List<MessageValidator> validators) {
-    if (validators == null) throw new IllegalArgumentException("Validators may not be null");
-    this.validators = validators;
+    this.validators = Args.notNull(validators, "validators");
   }
 }

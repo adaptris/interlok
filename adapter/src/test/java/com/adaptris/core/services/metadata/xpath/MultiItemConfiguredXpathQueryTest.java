@@ -27,6 +27,34 @@ import com.adaptris.core.util.XmlHelper;
 @SuppressWarnings("deprecation")
 public class MultiItemConfiguredXpathQueryTest extends ConfiguredXpathQueryCase {
 
+  private static final String XML_WITH_EMPTY_NODES = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n" + 
+      "<root>\n" + 
+      "  <segment_PIX>\n" + 
+      "    <segment_Contents>\n" + 
+      "      <record_>\n" + 
+      "        <PXREF1/>\n" + 
+      "      </record_>\n" + 
+      "      <record_>\n" + 
+      "        <PXREF1/>\n" + 
+      "      </record_>\n" + 
+      "      <record_>\n" + 
+      "        <PXREF1/>\n" + 
+      "      </record_>\n" + 
+      "      <record_>\n" + 
+      "        <PXREF1>91/01</PXREF1>\n" + 
+      "      </record_>\n" + 
+      "      <record_>\n" + 
+      "        <PXREF1>91/01</PXREF1>\n" + 
+      "      </record_>\n" + 
+      "      <record_>\n" + 
+      "        <PXREF1>91/01</PXREF1>\n" + 
+      "      </record_>\n" + 
+      "    </segment_Contents>\n" + 
+      "  </segment_PIX>\n" + 
+      "</root>";
+  
+  private static final String XPATH_EMPTY_NODES = "/root/segment_PIX/segment_Contents/record_/PXREF1";
+
   public MultiItemConfiguredXpathQueryTest(String testName) {
     super(testName);
   }
@@ -82,6 +110,17 @@ public class MultiItemConfiguredXpathQueryTest extends ConfiguredXpathQueryCase 
     MetadataElement result = query.resolveXpath(doc, null, query.createXpathQuery(msg));
     assertEquals("", result.getValue());
   }
+
+  public void testResolveXpath_EmptyResults_Allowed_EmptyValues() throws Exception {
+    MultiItemConfiguredXpathQuery query = init(create(), XPATH_EMPTY_NODES);
+
+    query.setAllowEmptyResults(Boolean.TRUE);
+    Document doc = XmlHelper.createDocument(XML_WITH_EMPTY_NODES);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_WITH_EMPTY_NODES);
+    MetadataElement result = query.resolveXpath(doc, null, query.createXpathQuery(msg));
+    assertEquals("|||91/01|91/01|91/01", result.getValue());
+  }
+
 
   public void testResolveXpath() throws Exception {
     MultiItemConfiguredXpathQuery query = init(create(), "//extra[@att='multi']");

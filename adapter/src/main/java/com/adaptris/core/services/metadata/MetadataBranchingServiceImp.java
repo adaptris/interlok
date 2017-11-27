@@ -19,8 +19,12 @@ package com.adaptris.core.services.metadata;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
+import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.BranchingServiceImp;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
@@ -32,6 +36,8 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 public abstract class MetadataBranchingServiceImp extends BranchingServiceImp {
 
   @XStreamImplicit(itemFieldName = "metadata-key")
+  @NotNull
+  @AutoPopulated
   private List<String> metadataKeys;
   private String defaultServiceId;
 
@@ -74,7 +80,7 @@ public abstract class MetadataBranchingServiceImp extends BranchingServiceImp {
    * keys
    */
   public void setMetadataKeys(List l) {
-    metadataKeys = l;
+    metadataKeys = Args.notNull(l, "metadataKeys");
   }
 
 
@@ -83,13 +89,11 @@ public abstract class MetadataBranchingServiceImp extends BranchingServiceImp {
    * Adds a metadata key to the end of the <code>List</code>. (List so you
    * can have the same key more than once if required.)
    * </p>
-   * @param metadataKey the metadata key to add, may not be null
+   * 
+   * @param metadataKey the metadata key to add, may not be blank
    */
   public void addMetadataKey(String metadataKey) {
-    if (metadataKey == null || "".equals(metadataKey)) {
-      throw new IllegalArgumentException("invalid metadataKey [" + metadataKey + "]");
-    }
-    getMetadataKeys().add(metadataKey);
+    getMetadataKeys().add(Args.notBlank(metadataKey, "metadataKey"));
   }
 
   @Override

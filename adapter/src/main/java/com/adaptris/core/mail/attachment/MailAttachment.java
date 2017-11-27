@@ -16,6 +16,8 @@
 
 package com.adaptris.core.mail.attachment;
 
+import static org.apache.commons.lang.StringUtils.defaultIfBlank;
+
 import javax.mail.internet.ContentType;
 import javax.mail.internet.ParseException;
 
@@ -30,11 +32,8 @@ import org.apache.commons.lang.builder.ToStringStyle;
  */
 public final class MailAttachment extends MailContent {
 
-  private String filename;
-
-  private MailAttachment() throws ParseException {
-    super();
-  }
+  private transient String filename;
+  private transient String contentTransferEncoding = "base64";
 
   public MailAttachment(byte[] bytes, String fname) throws ParseException {
     super(bytes);
@@ -50,8 +49,19 @@ public final class MailAttachment extends MailContent {
     return filename;
   }
 
+  public String getContentTransferEncoding() {
+    return contentTransferEncoding;
+  }
+
+  public MailAttachment withContentTransferEncoding(String s) {
+    contentTransferEncoding = defaultIfBlank(s, "base64");
+    return this;
+  }
+
   @Override
   public String toString() {
-    return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("filename", getFilename()).toString();
+    return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("ContentType", getContentType())
+        .append("ContentTransferEncoding", getContentTransferEncoding()).append("payloadHash", payloadHash())
+        .append("filename", getFilename()).toString();
   }
 }

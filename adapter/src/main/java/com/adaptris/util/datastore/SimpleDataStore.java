@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -324,31 +325,28 @@ public class SimpleDataStore extends DataStore {
     out.close();
   }
 
+
+
+  /**
+   * The Data file stored url format.
+   *
+   * @param string the data file.
+   * @deprecated since 3.6.6 use {@link #setDataFile(String)} instead.
+   */
+  @Deprecated
+  public void setDataFileName(String string) {
+    setDataFile(string);
+  }
+
   /**
    * Get the data filename.
    *
    * @return the filename in url format.
+   * @deprecated since 3.6.6 use {@link #setDataFile(String)} instead.
    */
+  @Deprecated
   public String getDataFileName() {
-    return dataFile;
-  }
-
-  /**
-   * Get the lock file name.
-   *
-   * @return the lock file in URL format.
-   */
-  public String getLockFileName() {
-    return lockFile;
-  }
-
-  /**
-   * Return the number of attempts to gain a lock
-   *
-   * @return the number of attempts.
-   */
-  public int getMaxAttempts() {
-    return maxAttempts;
+    return getDataFile();
   }
 
   /**
@@ -356,11 +354,38 @@ public class SimpleDataStore extends DataStore {
    *
    * @param string the data file.
    */
-  public void setDataFileName(String string) {
-    if (string == null || "".equals(string)) {
-      throw new IllegalArgumentException("Data filename must be set");
-    }
-    dataFile = string;
+  public void setDataFile(String string) {
+    dataFile = Args.notBlank(string, "dataFile");
+  }
+
+  /**
+   * Get the data filename.
+   *
+   * @return the filename in url format.
+   */
+  public String getDataFile() {
+    return dataFile;
+  }
+
+  
+  /**
+   * The lock file in url format.
+   *
+   * @param string the lock file
+   * @deprecated since 3.6.6 use {@link #setDataFile(String)} instead.
+   */
+  @Deprecated
+  public void setLockFileName(String string) {
+    setLockFile(string);
+  }
+  
+  /**
+   * Get the lock file name.
+   *
+   * @return the lock file in URL format.
+   */
+  public String getLockFileName() {
+    return getLockFile();
   }
 
   /**
@@ -368,11 +393,17 @@ public class SimpleDataStore extends DataStore {
    *
    * @param string the lock file
    */
-  public void setLockFileName(String string) {
-    if (string == null || "".equals(string)) {
-      throw new IllegalArgumentException("lock filename must be set");
-    }
-    lockFile = string;
+  public void setLockFile(String string) {
+    lockFile = Args.notBlank(string, "lockFile");
+  }
+
+  /**
+   * Get the lock file name.
+   *
+   * @return the lock file in URL format.
+   */
+  public String getLockFile() {
+    return lockFile;
   }
 
   /**
@@ -382,6 +413,16 @@ public class SimpleDataStore extends DataStore {
    */
   public void setMaxAttempts(int i) {
     maxAttempts = i;
+  }
+
+
+  /**
+   * Return the number of attempts to gain a lock
+   *
+   * @return the number of attempts.
+   */
+  public int getMaxAttempts() {
+    return maxAttempts;
   }
 
   /**

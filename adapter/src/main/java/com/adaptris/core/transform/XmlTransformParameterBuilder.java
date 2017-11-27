@@ -27,6 +27,7 @@ import javax.validation.constraints.NotNull;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -68,10 +69,7 @@ public class XmlTransformParameterBuilder implements XmlTransformParameter {
   }
 
   public void setParameterBuilders(List<XmlTransformParameter> p) {
-    if (p == null) {
-      throw new IllegalArgumentException("Parameters are null");
-    }
-    this.parameterBuilders = p;
+    this.parameterBuilders = Args.notNull(p, "parameterBuilder");
   }
 
 }

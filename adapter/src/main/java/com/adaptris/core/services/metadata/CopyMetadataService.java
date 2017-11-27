@@ -28,6 +28,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.Args;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairCollection;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -113,10 +114,7 @@ public class CopyMetadataService extends ServiceImp {
    * @param m a {@linkplain KeyValuePairCollection}
    */
   public void setMetadataKeys(KeyValuePairCollection m) {
-    if (m == null) {
-      throw new IllegalArgumentException("null param");
-    }
-    this.metadataKeys = m;
+    this.metadataKeys = Args.notNull(m, "metadataKeys");
   }
 
   @Override

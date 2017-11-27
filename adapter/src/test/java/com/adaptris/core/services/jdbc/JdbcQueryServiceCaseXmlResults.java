@@ -26,7 +26,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.services.LogMessageService;
 import com.adaptris.core.services.LogMessageService.LoggingLevel;
-import com.adaptris.core.services.jdbc.ResultSetTranslatorImp.ColumnStyle;
+import com.adaptris.core.services.jdbc.StyledResultTranslatorImp.ColumnStyle;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.KeyValuePair;

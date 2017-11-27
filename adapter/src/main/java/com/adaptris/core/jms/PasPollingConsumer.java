@@ -28,6 +28,8 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.NullConnection;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -71,19 +73,17 @@ public class PasPollingConsumer extends JmsPollingConsumerImpl {
   /** @see com.adaptris.core.AdaptrisComponent#init() */
   @Override
   public void init() throws CoreException {
-    if (this.getSubscriptionId() == null || "".equals(this.getSubscriptionId())) {
+    try {
+      Args.notBlank(getSubscriptionId(), "subscriptionId");
+      Args.notBlank(getClientId(), "clientId");
 
-      throw new CoreException("subscriptionId must be set");
+      log.trace("client ID [{}] subscription ID [{}]", this.getClientId(), this.getSubscriptionId());
+
+      super.init();
     }
-
-    if (this.getClientId() == null || "".equals(this.getClientId())) {
-      throw new CoreException("clientId must be set");
+    catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
-
-    log.trace("client ID [" + this.getClientId() + "] subscription ID ["
-        + this.getSubscriptionId() + "]");
-
-    super.init();
   }
 
   @Override

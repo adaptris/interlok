@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.validation.Valid;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -195,7 +196,7 @@ public abstract class EventHandlerBase implements EventHandler {
    */
   @Override
   public String getUniqueId() {
-    return uniqueId == null ? this.getClass().getSimpleName() : uniqueId;
+    return StringUtils.defaultIfEmpty(uniqueId, this.getClass().getSimpleName());
   }
 
   /**

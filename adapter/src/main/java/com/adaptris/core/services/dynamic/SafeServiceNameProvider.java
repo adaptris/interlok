@@ -18,6 +18,7 @@ package com.adaptris.core.services.dynamic;
 
 import com.adaptris.core.CoreException;
 import com.adaptris.core.TradingRelationship;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -40,9 +41,8 @@ public final class SafeServiceNameProvider extends DefaultServiceNameProvider {
 
   @Override
   protected String retrieveName(TradingRelationship t) throws CoreException {
-    if (t == null) {
-      throw new IllegalArgumentException("null param");
-    }
+    Args.notNull(t, "tradingRelationship");
+
 
     String name = super.retrieveName(t);
     name = name.replaceAll("\\/", "");

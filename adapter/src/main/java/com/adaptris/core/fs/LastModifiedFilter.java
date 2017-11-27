@@ -22,6 +22,7 @@ import java.util.Date;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,29 +32,34 @@ import org.slf4j.LoggerFactory;
 public abstract class LastModifiedFilter implements FileFilter {
   protected transient Logger logR = LoggerFactory.getLogger(this.getClass().getName());
 
-  private String iso8601duration;
+  private String when;
 
   /**
    * Default constructor
    */
   private LastModifiedFilter() {
-    iso8601duration = "-P30D";
+    when = "-P30D";
   }
 
   /**
    * Create the filefilter using an ISO8601 formatted interval.
    *
-   * @param iso8601 the iso8601 interval.
+   * @param s the iso8601 interval or the absolute time (MS since epoch)
    */
-  public LastModifiedFilter(String iso8601) {
+  public LastModifiedFilter(String s) {
     this();
-    iso8601duration = iso8601;
+    when = s;
   }
 
   protected Date filterDate() throws Exception {
     Date filterDate = new Date();
-      Duration duration = DatatypeFactory.newInstance().newDuration(iso8601duration);
+    if (NumberUtils.isDigits(when)) {
+      filterDate.setTime(Long.valueOf(when));
+    }
+    else {
+      Duration duration = DatatypeFactory.newInstance().newDuration(when);
       duration.addTo(filterDate);
+    }
     return filterDate;
   }
 }

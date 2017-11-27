@@ -32,11 +32,11 @@ import com.adaptris.util.KeyValuePairSet;
 
 public class XmlValidationServiceTest extends TransformServiceExample {
 
-  private static final String KEY_WILL_VALIDATE_SCHEMA = "XmlValidationServiceTest.schemaUrl";
-  private static final String KEY_WILL_NOT_VALIDATE = "XmlValidationServiceTest.schemaUrl2";
-  private static final String KEY_INVALID_SCHEMA_URL = "XmlValidationServiceTest.invalidSchemaUrl";
+  public static final String KEY_WILL_VALIDATE_SCHEMA = "XmlValidationServiceTest.schemaUrl";
+  public static final String KEY_WILL_NOT_VALIDATE = "XmlValidationServiceTest.schemaUrl2";
+  public static final String KEY_INVALID_SCHEMA_URL = "XmlValidationServiceTest.invalidSchemaUrl";
 
-  private static final String KEY_INPUT_FILE = "XmlValidationServiceTest.input.xml";
+  public static final String KEY_INPUT_FILE = "XmlValidationServiceTest.input.xml";
 
   public XmlValidationServiceTest(String arg0) {
     super(arg0);

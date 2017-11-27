@@ -180,6 +180,6 @@ public class XpathDocumentCopier extends MessageSplitterImp {
   }
 
   DocumentBuilderFactoryBuilder documentFactoryBuilder() {
-    return getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig() : DocumentBuilderFactoryBuilder.newInstance();
+    return DocumentBuilderFactoryBuilder.newInstance(getXmlDocumentFactoryConfig());
   }
 }

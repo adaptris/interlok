@@ -21,6 +21,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.core.util.Args;
 import com.adaptris.util.KeyValuePairSet;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -57,10 +58,7 @@ public class JavamailReceiverFactory implements MailReceiverFactory {
    * @param kp the properties
    */
   public void setSessionProperties(KeyValuePairSet kp) {
-    if (kp == null) {
-      throw new IllegalArgumentException("Illegal Session Propertes [" + kp + "]");
-    }
-    sessionProperties = kp;
+    sessionProperties = Args.notNull(kp, "sessionProperties");
   }
 
   private MailboxClient configure(MailboxClient mbox) {

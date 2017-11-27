@@ -147,6 +147,16 @@ public class DocumentBuilderFactoryBuilder {
   }
 
   /**
+   * Convenient method for null protection.
+   * 
+   * @param b
+   * @return
+   */
+  public static final DocumentBuilderFactoryBuilder newInstance(DocumentBuilderFactoryBuilder b) {
+    return b == null ? newInstance() : b;
+  }
+
+  /**
    * Configure a document builder factory
    * 
    * @param f
@@ -350,5 +360,10 @@ public class DocumentBuilderFactoryBuilder {
 
   public void setEntityResolver(EntityResolver e) {
     this.entityResolver = e;
+  }
+
+  public DocumentBuilderFactoryBuilder withEntityResolver(EntityResolver e) {
+    setEntityResolver(e);
+    return this;
   }
 }

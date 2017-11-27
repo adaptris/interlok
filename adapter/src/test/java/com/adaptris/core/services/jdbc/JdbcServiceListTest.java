@@ -142,7 +142,6 @@ public class JdbcServiceListTest extends ServiceCollectionCase {
         serviceList.add(service);
         start(service);
       }
-      assertEquals(0, conn.currentBusyConnectionCount());
       PooledConnectionHelper.executeTest(serviceList, iterations, new PooledConnectionHelper.MessageCreator() {
 
         @Override
@@ -182,7 +181,6 @@ public class JdbcServiceListTest extends ServiceCollectionCase {
         serviceList.add(service);
         start(service);
       }
-      assertEquals(0, conn.currentBusyConnectionCount());
       PooledConnectionHelper.executeTest(serviceList, iterations, new PooledConnectionHelper.MessageCreator() {
 
         @Override

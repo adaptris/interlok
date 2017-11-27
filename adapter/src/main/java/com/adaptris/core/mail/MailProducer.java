@@ -35,6 +35,7 @@ import com.adaptris.core.ProduceOnlyProducerImp;
 import com.adaptris.core.metadata.MetadataFilter;
 import com.adaptris.core.metadata.RemoveAllMetadataFilter;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.mail.MailException;
 import com.adaptris.mail.SmtpClient;
 import com.adaptris.security.exc.PasswordException;
@@ -112,11 +113,14 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
   /** @see com.adaptris.core.AdaptrisComponent#init() */
   @Override
   public void init() throws CoreException {
-    if (smtpUrl == null) {
-      throw new CoreException("No Connection Configuration");
+    try {
+      Args.notNull(getSmtpUrl(), "smtpUrl");
+      if (getSubject() == null) {
+        log.warn("No Subject configured, expecting metadata to override subject");
+      }
     }
-    if (getSubject() == null) {
-      log.warn("No Subject configured, expecting metadata to override subject");
+    catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
@@ -294,10 +298,7 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
    * @since 3.0.2
    */
   public void setMetadataFilter(MetadataFilter metadataFilter) {
-    if (metadataFilter == null) {
-      throw new IllegalArgumentException("Filter is null");
-    }
-    this.metadataFilter = metadataFilter;
+    this.metadataFilter = Args.notNull(metadataFilter, "metadataFilter");
   }
 
   public String getPassword() {

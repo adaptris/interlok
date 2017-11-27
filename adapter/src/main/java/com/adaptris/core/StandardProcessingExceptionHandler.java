@@ -24,6 +24,7 @@ import javax.validation.Valid;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.core.util.LoggingHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -81,7 +82,7 @@ public class StandardProcessingExceptionHandler extends RootProcessingExceptionH
     }
     catch (Exception e) {
       logErrorMessage(getProcessingExceptionService(), msg);
-      log.error("Exception handling error msg [" + msg.toString(true) + "]", e);
+      log.error("Exception handling error msg [{}]", msg.toString(true), e);
     }
     notifyParent(msg);
   }
@@ -116,8 +117,7 @@ public class StandardProcessingExceptionHandler extends RootProcessingExceptionH
 
 
   protected void logErrorMessage(Service p, AdaptrisMessage m) {
-    String id = "".equals(p.getUniqueId()) ? p.getClass().getSimpleName() : p.getUniqueId();
-    log.error(id + " failed to handle " + m.getUniqueId());
+    log.error("{} failed to handle {}", LoggingHelper.friendlyName(p), m.getUniqueId());
   }
 
   /**

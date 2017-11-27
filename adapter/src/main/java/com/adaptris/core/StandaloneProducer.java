@@ -25,6 +25,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -149,10 +150,7 @@ public class StandaloneProducer extends ServiceImp implements AdaptrisMessageSen
    * @param conn the connection to use, may not be null
    */
   public void setConnection(AdaptrisConnection conn) {
-    if (conn == null) {
-      throw new IllegalArgumentException("param = [" + conn + "]");
-    }
-    connection = conn;
+    connection = Args.notNull(conn, "connection");
   }
 
   /**
@@ -163,10 +161,7 @@ public class StandaloneProducer extends ServiceImp implements AdaptrisMessageSen
    * @param prod the producer to use, may not be null
    */
   public void setProducer(AdaptrisMessageProducer prod) {
-    if (prod == null) {
-      throw new IllegalArgumentException("param = [" + prod + "]");
-    }
-    producer = prod;
+    producer = Args.notNull(prod, "producer");
   }
 
   /**

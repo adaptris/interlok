@@ -20,7 +20,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import org.apache.commons.io.IOUtils;
 import org.hibernate.validator.constraints.NotBlank;
@@ -33,6 +32,8 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.security.util.SecurityUtil;
 import com.adaptris.util.stream.DevNullOutputStream;
 import com.adaptris.util.text.Base64ByteTranslator;
@@ -93,16 +94,12 @@ public class PayloadHashingService extends ServiceImp {
 
   @Override
   protected void initService() throws CoreException {
-    if (getHashAlgorithm() == null || "".equals(getHashAlgorithm())) {
-      throw new CoreException("hash-algorithm is null");
-    }
-    if (getMetadataKey() == null || "".equals(getMetadataKey())) {
-      throw new CoreException("metadata-key is null");
-    }
     try {
+      Args.notBlank(getHashAlgorithm(), "hashAlgorithm");
+      Args.notBlank(getMetadataKey(), "metadataKey");
       MessageDigest d = MessageDigest.getInstance(getHashAlgorithm());
-    } catch (NoSuchAlgorithmException e) {
-      throw new CoreException(e.getMessage(), e);
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
@@ -122,7 +119,7 @@ public class PayloadHashingService extends ServiceImp {
    * @param hashAlgorithm the algorithm, for example SHA256
    */
   public void setHashAlgorithm(String hashAlgorithm) {
-    this.hashAlgorithm = hashAlgorithm;
+    this.hashAlgorithm = Args.notBlank(hashAlgorithm, "hashAlgorithm");
   }
 
   public String getMetadataKey() {
@@ -135,7 +132,7 @@ public class PayloadHashingService extends ServiceImp {
    * @param metadataKey the metadata key
    */
   public void setMetadataKey(String metadataKey) {
-    this.metadataKey = metadataKey;
+    this.metadataKey = Args.notBlank(metadataKey, "metadataKey");
   }
 
   @Override

@@ -26,6 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
@@ -77,6 +78,7 @@ public class InsertNodeTest {
   @Test
   public void testInsertNode_NodeDoesNotExist() throws Exception {
     InsertNode rn = new InsertNode("/Root/AnotherNode");
+    rn.setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder.newInstance());
     Document merged = rn.merge(XmlHelper.createDocument(ORIGINAL), XmlHelper.createDocument(REPLACEMENT));
     XmlUtils xml = new XmlUtils();
     xml.setSource(merged);

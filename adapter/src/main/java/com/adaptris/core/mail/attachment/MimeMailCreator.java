@@ -16,6 +16,8 @@
 
 package com.adaptris.core.mail.attachment;
 
+import static org.apache.commons.lang.StringUtils.defaultIfBlank;
+
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +36,7 @@ import com.adaptris.mail.MailException;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.IdGenerator;
 import com.adaptris.util.stream.StreamUtil;
+import com.adaptris.util.text.mime.MimeConstants;
 import com.adaptris.util.text.mime.MultiPartInput;
 import com.adaptris.util.text.mime.PartSelector;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -83,7 +86,8 @@ public class MimeMailCreator implements MailContentCreator {
           StreamUtil.copyStream(attachment.getInputStream(), out);
           out.flush();
           attachments.add(new MailAttachment(out.toByteArray(),
-              getAttachmentFileName(attachment), getContentType(attachment)));
+              getAttachmentFileName(attachment), getContentType(attachment))
+                  .withContentTransferEncoding(getContentTransferEncoding(attachment)));
         }
       }
     }
@@ -121,11 +125,20 @@ public class MimeMailCreator implements MailContentCreator {
 
   private static ContentType getContentType(MimeBodyPart p) throws Exception {
     ContentType result = null;
-    String[] hdr = p.getHeader("Content-Type");
+    String[] hdr = p.getHeader(MimeConstants.HEADER_CONTENT_TYPE);
     if (hdr != null) {
       result = new ContentType(hdr[0]);
     }
     return result;
+  }
+
+  private static String getContentTransferEncoding(MimeBodyPart p) throws Exception {
+    String result = null;
+    String[] hdr = p.getHeader(MimeConstants.HEADER_CONTENT_ENCODING);
+    if (hdr != null) {
+      result = hdr[0];
+    }
+    return defaultIfBlank(result, "base64");
   }
 
   private String getAttachmentFileName(MimeBodyPart p) throws Exception {
@@ -144,8 +157,7 @@ public class MimeMailCreator implements MailContentCreator {
     }
     if (filename == null) {
       filename = idGenerator.create(p);
-      logR.warn("Could not determine filename for MimeBodyPart, "
-          + "assigning unique filename of " + filename);
+      logR.warn("Could not determine filename for MimeBodyPart, assigning unique filename of {}", filename);
 
     }
     return filename;

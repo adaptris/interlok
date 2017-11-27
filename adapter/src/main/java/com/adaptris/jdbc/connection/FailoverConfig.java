@@ -26,6 +26,8 @@ import java.util.Properties;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
+import com.adaptris.core.util.Args;
+
 /**
  * Class that is used to configure a failover database connection.
  *
@@ -36,7 +38,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
 public final class FailoverConfig implements Cloneable {
 
   private boolean verbose;
-  private List<String> urls;
+  private List<String> connectionUrls;
   private String databaseDriver;
   private String testStatement;
   private boolean autoCommit;
@@ -152,10 +154,7 @@ public final class FailoverConfig implements Cloneable {
    * @throws IllegalArgumentException if the string is null.
    */
   public void setConnectionUrls(List<String> list) {
-    if (list == null) {
-      throw new IllegalArgumentException("Connection URL cannot be null");
-    }
-    urls = list;
+    connectionUrls = Args.notNull(list, "connectionURLs");
   }
 
   /**
@@ -165,10 +164,7 @@ public final class FailoverConfig implements Cloneable {
    * @throws IllegalArgumentException if the string is null.
    */
   public void addConnectionUrl(String string) {
-    if (string == null) {
-      throw new IllegalArgumentException("Connection URL cannot be null");
-    }
-    urls.add(string);
+    connectionUrls.add(Args.notBlank(string, "connectionURL"));
   }
 
   /**
@@ -177,7 +173,7 @@ public final class FailoverConfig implements Cloneable {
    * @return The configured collection of urls
    */
   public List<String> getConnectionUrls() {
-    return urls;
+    return connectionUrls;
   }
 
   /**
@@ -196,10 +192,7 @@ public final class FailoverConfig implements Cloneable {
    * @throws IllegalArgumentException if the driver is null.
    */
   public void setDatabaseDriver(String string) {
-    if (string == null) {
-      throw new IllegalArgumentException("Driver cannot be null");
-    }
-    databaseDriver = string;
+    databaseDriver = Args.notBlank(string, "databaseDriver");
   }
 
   /**
@@ -218,10 +211,7 @@ public final class FailoverConfig implements Cloneable {
    * @throws IllegalArgumentException if the statement is null.
    */
   public void setTestStatement(String string) throws IllegalArgumentException {
-    if (string == null) {
-      throw new IllegalArgumentException("Test Statement cannot be null");
-    }
-    testStatement = string;
+    testStatement = Args.notNull(string, "testStatement");
   }
 
   /**
@@ -245,7 +235,7 @@ public final class FailoverConfig implements Cloneable {
   @Override
   public int hashCode() {
     int hashcode = 0;
-    Iterator i = urls.iterator();
+    Iterator i = connectionUrls.iterator();
     while (i.hasNext()) {
       hashcode += i.next().toString().hashCode();
     }

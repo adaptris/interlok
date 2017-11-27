@@ -15,24 +15,38 @@
  */
 package com.adaptris.core.common;
 
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.ConfiguredProduceDestination;
-import com.adaptris.core.CoreException;
-import com.adaptris.core.DefaultMessageFactory;
-import com.adaptris.core.stubs.TempFileUtils;
+import static com.adaptris.core.http.jetty.EmbeddedJettyHelper.URL_TO_POST_TO;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+
+import java.io.File;
+
 import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
+import org.mockito.Mockito;
 
-import java.io.File;
-
-import static org.junit.Assert.*;
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.Channel;
+import com.adaptris.core.ConfiguredProduceDestination;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.DefaultMessageFactory;
+import com.adaptris.core.http.jetty.EmbeddedConnection;
+import com.adaptris.core.http.jetty.EmbeddedJettyHelper;
+import com.adaptris.core.http.jetty.JettyHelper;
+import com.adaptris.core.stubs.MockMessageProducer;
+import com.adaptris.core.stubs.TempFileUtils;
+import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.types.InterlokMessage;
 
 public class FileDataInputParameterTest {
 
-  private static final String TEXT = "Hello World";
+  public static final String TEXT = "Hello World";
 
   @Rule
   public TestName testName = new TestName();
@@ -43,13 +57,6 @@ public class FileDataInputParameterTest {
     FileDataInputParameter p = new FileDataInputParameter();
     assertNull(p.url(m));
     p.setUrl("file:////tmp/abc");
-    assertEquals("file:////tmp/abc", p.url(m));
-    try {
-      p.setUrl("");
-      fail();
-    } catch (IllegalArgumentException e) {
-
-    }
     assertEquals("file:////tmp/abc", p.url(m));
   }
 
@@ -69,7 +76,15 @@ public class FileDataInputParameterTest {
     assertEquals("file:////tmp/abc", p.url(m));
   }
   
-  @Test(expected=CoreException.class)
+  @Test(expected=RuntimeException.class)
+  public void testInterlokMessage() throws Exception {
+    InterlokMessage msg = Mockito.mock(InterlokMessage.class);
+    FileDataInputParameter p = new FileDataInputParameter();
+    p.setDestination(new ConfiguredProduceDestination("file:////tmp/doesnotexist"));
+    p.url(msg);
+  }
+  
+  @Test(expected = CoreException.class)
   public void testNonExistingFile() throws Exception {
     AdaptrisMessage m = new DefaultMessageFactory().newMessage();
     FileDataInputParameter p = new FileDataInputParameter();
@@ -78,7 +93,7 @@ public class FileDataInputParameterTest {
     assertEquals("file:////tmp/doesnotexist", p.url(m));
     String result = p.extract(m);
   }
-  
+
   @Test
   public void testExtract() throws Exception {
     FileDataInputParameter p = new FileDataInputParameter();
@@ -101,4 +116,30 @@ public class FileDataInputParameterTest {
     assertEquals(TEXT, p.extract(msg));
   }
 
+  @Test
+  public void testExtractFromClasspath() throws Exception {
+    FileDataInputParameter p = new FileDataInputParameter();
+    p.setDestination(new ConfiguredProduceDestination("xstream-standalone.xml"));
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    assertNotNull(p.extract(msg));
+  }
+
+  @Test
+  public void testExtractFromRemote() throws Exception {
+    EmbeddedJettyHelper helper = new EmbeddedJettyHelper();
+    helper.startServer();
+
+    MockMessageProducer mockProducer = new MockMessageProducer();
+    Channel channel = JettyHelper.createChannel(new EmbeddedConnection(), JettyHelper.createConsumer(URL_TO_POST_TO), mockProducer);
+    try {
+      LifecycleHelper.initAndStart(channel);
+      FileDataInputParameter p = new FileDataInputParameter();
+      p.setDestination(helper.createProduceDestination());
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+      assertNotNull(p.extract(msg));
+    } finally {
+      LifecycleHelper.stopAndClose(channel);
+      helper.stopServer();
+    }
+  }
 }

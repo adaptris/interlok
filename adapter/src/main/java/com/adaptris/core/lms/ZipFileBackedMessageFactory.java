@@ -18,7 +18,9 @@ package com.adaptris.core.lms;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -29,7 +31,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * extract them before sending them in to the adapter.
  */
 @XStreamAlias("zip-file-backed-message-factory")
-@DisplayOrder(order = {"compressionMode", "defaultCharEncoding", "tempDirectory", "maxMemorySizeBytes", "defaultBufferSize"})
+@DisplayOrder(order =
+{
+    "compressionMode", "strict", "defaultCharEncoding", "tempDirectory", "maxMemorySizeBytes", "defaultBufferSize"
+})
 public class ZipFileBackedMessageFactory extends FileBackedMessageFactory {
 
   public enum CompressionMode {
@@ -53,7 +58,11 @@ public class ZipFileBackedMessageFactory extends FileBackedMessageFactory {
     Both
   }
   
+  @InputFieldDefault(value = "Uncompress")
   private CompressionMode compressionMode;
+  @AdvancedConfig
+  @InputFieldDefault(value = "true")
+  private Boolean strict;
   
   public ZipFileBackedMessageFactory() {
     setCompressionMode(CompressionMode.Uncompress);
@@ -61,13 +70,10 @@ public class ZipFileBackedMessageFactory extends FileBackedMessageFactory {
   
   @Override
   public AdaptrisMessage newMessage() {
-    AdaptrisMessage m = new ZipFileBackedMessageImpl(uniqueIdGenerator(), this, 
-        tempDirectory(), defaultBufferSize(), maxMemorySizeBytes(), getCompressionMode());
-    
+    AdaptrisMessage m = new ZipFileBackedMessageImpl(uniqueIdGenerator(), this);
     if (!isEmpty(getDefaultCharEncoding())) {
       m.setContentEncoding(getDefaultCharEncoding());
     }
-    
     return m;
   }
 
@@ -86,5 +92,21 @@ public class ZipFileBackedMessageFactory extends FileBackedMessageFactory {
   public void setCompressionMode(CompressionMode compressionMode) {
     this.compressionMode = compressionMode;
   }
+
+  public Boolean getStrict() {
+    return strict;
+  }
+
+  /**
+   * Whether or not we fail if the input is not a zip file.
+   * 
+   * @param b defaults to true if not specified. If set to false, then non-zip input is handled transparently.
+   */
+  public void setStrict(Boolean b) {
+    this.strict = b;
+  }
   
+  boolean failFast() {
+    return getStrict() != null ? getStrict().booleanValue() : true;
+  }
 }

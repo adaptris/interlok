@@ -16,7 +16,11 @@
 
 package com.adaptris.util.stream;
 
+import static org.apache.commons.lang.StringUtils.isEmpty;
+
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -24,16 +28,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Writer;
+
+import org.apache.commons.io.IOUtils;
 
 /**
  * Some utility methods associated with input streams.
  */
-public final class StreamUtil {
+public abstract class StreamUtil {
 
   private static final int BUFSIZE = 1024 * 1024;
-
-  private StreamUtil() {
-  }
 
   /**
    * Read from the inputstream associated with the socket and write the data
@@ -63,16 +67,16 @@ public final class StreamUtil {
       throws IOException {
 
     File tempFile = null;
-    if (dir == null || dir.equals("")) {
+    if (isEmpty(dir)) {
       tempFile = File.createTempFile("tmp", "");
     }
     else {
       tempFile = File.createTempFile("tmp", "", new File(dir));
     }
 
-    OutputStream out = new BufferedOutputStream(new FileOutputStream(tempFile));
-    copyStream(input, out, expected);
-    out.close();
+    try (OutputStream out = new BufferedOutputStream(new FileOutputStream(tempFile))) {
+      copyStream(input, out, expected);
+    }
     return tempFile;
   }
 
@@ -86,10 +90,9 @@ public final class StreamUtil {
    */
   public static void copyStream(InputStream input, OutputStream output,
                                 int expected) throws IOException {
-    if (input == null || output == null || expected == 0) {
+    if (input == null || output == null) {
       return;
     }
-
     if (expected <= 0) {
       copyStream(input, output);
     }
@@ -121,12 +124,7 @@ public final class StreamUtil {
     if (input == null || output == null) {
       return;
     }
-    byte[] bytes = new byte[BUFSIZE];
-    int bytesRead = 0;
-    while ((bytesRead = input.read(bytes, 0, bytes.length)) != -1) {
-      output.write(bytes, 0, bytesRead);
-    }
-    output.flush();
+    IOUtils.copy(input, output);
   }
 
   /**
@@ -141,11 +139,20 @@ public final class StreamUtil {
    * @return a copy of the input stream
    */
   public static InputStream makeCopy(InputStream input) throws IOException {
-
     ByteArrayOutputStream out = new ByteArrayOutputStream();
-    ByteArrayInputStream copy = null;
     copyStream(input, out);
-    copy = new ByteArrayInputStream(out.toByteArray());
-    return copy;
+    return new ByteArrayInputStream(out.toByteArray());
+  }
+
+  public static void copyAndClose(InputStream input, Writer out) throws IOException {
+    try (InputStream autoCloseIn = new BufferedInputStream(input); Writer autoCloseOut = new BufferedWriter(out)) {
+      IOUtils.copy(autoCloseIn, autoCloseOut);
+    }
+  }
+
+  public static void copyAndClose(InputStream input, OutputStream out) throws IOException {
+    try (InputStream autoCloseIn = new BufferedInputStream(input); OutputStream autoCloseOut = new BufferedOutputStream(out)) {
+      IOUtils.copy(autoCloseIn, autoCloseOut);
+    }
   }
 }

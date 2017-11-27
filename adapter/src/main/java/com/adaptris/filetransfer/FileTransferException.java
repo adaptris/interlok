@@ -50,16 +50,14 @@ public class FileTransferException extends IOException {
    * @see Exception#Exception(String, java.lang.Throwable)
    */
   public FileTransferException(String msg, Throwable t) {
-    super(msg);
-    super.initCause(t);
+    super(msg, t);
   }
   /**
    * 
    * @see Exception#Exception(java.lang.Throwable)
    */
   public FileTransferException(Throwable t) {
-    super();
-    super.initCause(t);
+    super(t);
   }
 
 

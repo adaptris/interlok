@@ -16,6 +16,9 @@
 
 package com.adaptris.util.text.xml;
 
+import static org.apache.commons.lang.BooleanUtils.toBooleanDefaultIfNull;
+import static org.apache.commons.lang.BooleanUtils.toBooleanObject;
+
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
@@ -23,6 +26,7 @@ import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
 
 /**
  * @author Stuart Ellidge
@@ -37,16 +41,42 @@ public class XPath {
 
   private NamespaceContext context = null;
 
-  public XPath() {
+  /**
+   * {@value #SYSPROP_USE_SAXON_XPATH} controls whether Saxon is explicitly enabled as an {@link XPathFactory} (defaults to true).
+   * <p>
+   * From the <a href="https://www.saxonica.com/html/documentation/xpath-api/jaxp-xpath/factory.html">saxon documentation</a> :
+   * <strong>Saxon therefore no longer identifies itself (in the JAR file manifest) as a JAXP XPath supplier. If you want to load
+   * Saxon as your XPath engine, you need to select it explicitly; it's not enough to just put it on the classpath.</strong>. If set
+   * to true, then we attempt to use {@code com.saxonica.config.EnterpriseXPathFactory},
+   * {@code com.saxonica.config.ProfessionalXPathFactory} and {@code net.sf.saxon.xpath.XPathFactoryImpl} as XPathFactory instances
+   * (in that order).
+   * <p>
+   */
+  public static final String SYSPROP_USE_SAXON_XPATH = "interlok.useSaxonXPath";
 
+  private static final boolean useSaxonXpath = toBooleanDefaultIfNull(
+      toBooleanObject(System.getProperty(SYSPROP_USE_SAXON_XPATH, "true")), true);
+
+  private static final String[] SAXON_XPATH_FACTORIES =
+  {
+      // Narrow down in terms of license... enterpise, then pro, then HE.
+      "com.saxonica.config.EnterpriseXPathFactory", "com.saxonica.config.ProfessionalXPathFactory",
+      "net.sf.saxon.xpath.XPathFactoryImpl"
+  };
+
+  private XPathFactory xpathFactory;
+  
+  public XPath() {
+    xpathFactory = newXPathFactory();
   }
 
   public XPath(NamespaceContext ctx) {
+    this();
     context = ctx;
   }
 
   private javax.xml.xpath.XPath createXpath() {
-    javax.xml.xpath.XPath result = XPathFactory.newInstance().newXPath();
+    javax.xml.xpath.XPath result = xpathFactory.newXPath();
     if (context != null) {
       result.setNamespaceContext(context);
     }
@@ -92,7 +122,9 @@ public class XPath {
         else {
           node.normalize();
           Node text = node.getFirstChild();
-          retArray[i] = text.getNodeValue();
+          if (text != null) {
+            retArray[i] = text.getNodeValue();
+          }
         }
       }
     }
@@ -124,4 +156,27 @@ public class XPath {
       throws XPathExpressionException {
     return (Node) createXpath().evaluate(xpath, context, XPathConstants.NODE);
   }
+
+  /**
+   * Convenience method to create a new {@link XPathFactory}.
+   * 
+   * @return either a Saxon based XPathFactory or one auto-found by {@link XPathFactory#newInstance()}
+   */
+  public static XPathFactory newXPathFactory() {
+    return build(useSaxonXpath);
+  }
+
+  static XPathFactory build(boolean useSaxon) {
+    if (useSaxon) {
+      for (String clazz : SAXON_XPATH_FACTORIES) {
+        try {
+          return (XPathFactory) Class.forName(clazz).newInstance();
+        } catch (Exception e) {
+          
+        }
+      }
+    }
+    return XPathFactory.newInstance();
+  }
+
 }

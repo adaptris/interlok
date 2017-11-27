@@ -18,11 +18,13 @@ package com.adaptris.util.text.xml;
 
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -50,7 +52,7 @@ public class ReplaceNode extends XpathMergeImpl {
 
   @Override
   public Document merge(Document original, Document newDoc) throws Exception {
-    if (getXpathToNode() == null) {
+    if (StringUtils.isEmpty(getXpathToNode())) {
       throw new Exception("No xpath node configured");
     }
     Document resultDoc = original;
@@ -77,6 +79,6 @@ public class ReplaceNode extends XpathMergeImpl {
    * @param xpath
    */
   public void setXpathToNode(String xpath) {
-    xpathToNode = xpath;
+    xpathToNode = Args.notBlank(xpath, "xpathToNode");
   }
 }

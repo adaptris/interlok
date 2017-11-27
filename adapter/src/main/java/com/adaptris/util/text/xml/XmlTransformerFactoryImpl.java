@@ -68,8 +68,7 @@ public abstract class XmlTransformerFactoryImpl implements XmlTransformerFactory
   }
 
   DocumentBuilderFactoryBuilder documentFactoryBuilder() {
-    return getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig()
-        : DocumentBuilderFactoryBuilder.newInstance().withNamespaceAware(true);
+    return DocumentBuilderFactoryBuilder.newInstance(getXmlDocumentFactoryConfig());
   }
 
   @Override

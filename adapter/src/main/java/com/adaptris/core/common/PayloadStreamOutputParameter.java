@@ -16,18 +16,11 @@
 
 package com.adaptris.core.common;
 
+import static com.adaptris.util.stream.StreamUtil.copyAndClose;
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Writer;
-
-import org.apache.commons.io.IOUtils;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
@@ -62,7 +55,7 @@ public class PayloadStreamOutputParameter implements DataOutputParameter<InputSt
         msg.setContentEncoding(encoding);
       }
     } catch (IOException e) {
-      ExceptionHelper.rethrowCoreException(e);
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
@@ -72,18 +65,5 @@ public class PayloadStreamOutputParameter implements DataOutputParameter<InputSt
 
   public void setContentEncoding(String contentEncoding) {
     this.contentEncoding = contentEncoding;
-  }
-
-  private void copyAndClose(InputStream input, Writer out) throws IOException {
-    try (InputStream autoCloseIn = new BufferedInputStream(input); BufferedWriter autoCloseOut = new BufferedWriter(out)) {
-      IOUtils.copy(autoCloseIn, autoCloseOut);
-    }
-  }
-
-  private void copyAndClose(InputStream input, OutputStream out) throws IOException {
-    try (InputStream autoCloseIn = new BufferedInputStream(input);
-        BufferedOutputStream autoCloseOut = new BufferedOutputStream(out)) {
-      IOUtils.copy(autoCloseIn, autoCloseOut);
-    }
   }
 }

@@ -31,6 +31,7 @@ import java.net.URL;
 
 import org.apache.commons.io.IOUtils;
 
+import com.adaptris.core.util.Args;
 import com.adaptris.util.URLHelper;
 import com.adaptris.util.URLString;
 
@@ -81,14 +82,11 @@ public abstract class AbstractMarshaller implements AdaptrisMarshaller {
    */
   @Override
   public void marshal(Object obj, URL fileUrl) throws CoreException {
-    if (obj == null || fileUrl == null) {
-      throw new IllegalArgumentException("Cannot marshall to a null URL");
-    }
-
+    Args.notNull(obj, "object");
+    Args.notNull(fileUrl, "fileUrl");
     if (!fileUrl.getProtocol().equals("file")) { // URL can only be file
       throw new CoreException("URL protocol must be file:");
     }
-
     this.marshal(obj, new File(fileUrl.getFile()));
   }
 
@@ -133,9 +131,7 @@ public abstract class AbstractMarshaller implements AdaptrisMarshaller {
    */
   @Override
   public Object unmarshal(URL fileUrl) throws CoreException {
-    if (fileUrl == null) {
-      throw new IllegalArgumentException("Cannot unmarshall null");
-    }
+    Args.notNull(fileUrl, "fileUrl");
     Reader in = null;
     try {
       in = new InputStreamReader(fileUrl.openStream());

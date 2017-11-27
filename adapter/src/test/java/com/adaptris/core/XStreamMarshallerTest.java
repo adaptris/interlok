@@ -111,9 +111,27 @@ public class XStreamMarshallerTest extends MarshallingBaseCase {
     assertRoundtripEquality(wrapper, roundTrip);
   }
   
+  public void testBeautifiedBeanInfo() throws Exception {
+    try {
+      AdapterXStreamMarshallerFactory factory = AdapterXStreamMarshallerFactory.getInstance();
+      factory.setMode(OutputMode.ALIASED_SUBCLASSES);
+      XStream xstreamInstance = factory.createXStream();
+      XStreamBeanInfoWrapper wrapper = new XStreamBeanInfoWrapper();
+      String id = wrapper.getMarshalledIdentity();
+      assertFalse(wrapper.getSetterCalled());
+      String xml = xstreamInstance.toXML(new ServiceList(wrapper));
+      XStreamBeanInfoWrapper roundTrip = (XStreamBeanInfoWrapper) ((ServiceList) xstreamInstance.fromXML(xml)).get(0);
+      assertEquals(id, roundTrip.getMarshalledIdentity());
+      assertTrue(roundTrip.getSetterCalled());
+    }
+    finally {
+      AdapterXStreamMarshallerFactory.reset();
+    }
+  }
+
   // redmineID 2457 Beautifying the XStream output - Test conversion of standard config to beautified config
   public void testXStreamBeautified() throws Exception {
-    // Create factory
+    try { // Create factory
     AdapterXStreamMarshallerFactory factory = AdapterXStreamMarshallerFactory.getInstance();
     factory.setMode(OutputMode.ALIASED_SUBCLASSES);
     
@@ -144,11 +162,16 @@ public class XStreamMarshallerTest extends MarshallingBaseCase {
     
     // Ensure that the conversion from standard xml to beautified xml went as expected 
     assertEquals(beautifiedMarshalledXML, standardMarshalledXML);
+    }
+    finally {
+      AdapterXStreamMarshallerFactory.reset();
+
+    }
   }
   
   // redmineID 2457 Beautifying the XStream output - roundtrip check
   public void testXStreamBeautifiedUnmarshal() throws Exception {
-    // Create factory
+    try { // Create factory
     assertTrue(XpathQuery.class.isAssignableFrom(ConfiguredXpathQuery.class));
     AdapterXStreamMarshallerFactory factory = AdapterXStreamMarshallerFactory.getInstance();
     factory.setMode(OutputMode.ALIASED_SUBCLASSES);
@@ -165,13 +188,18 @@ public class XStreamMarshallerTest extends MarshallingBaseCase {
     Adapter roundTripAdapter = (Adapter)xstreamInstance.fromXML(xml);
     
     assertRoundtripEquality(unmarshalledAdapter, roundTripAdapter);
+    }
+    finally {
+      AdapterXStreamMarshallerFactory.reset();
+
+    }
   }
   
   // redmineID 2457 - ensures that marshalling/unmarshalling the given files results in no loss of data
   public static void adapterInstanceFieldChecks(Adapter fromXML) {
     assertNotNull(fromXML);
     assertEquals("SimpleAdapterTest", fromXML.getUniqueId());
-    assertTrue(fromXML.getLogHandler() instanceof NullLogHandler);
+    assertTrue(fromXML.logHandler() instanceof NullLogHandler);
     
     assertTrue(fromXML.getEventHandler() instanceof DefaultEventHandler);
     assertTrue(((DefaultEventHandler)fromXML.getEventHandler()).getConnection() instanceof NullConnection);

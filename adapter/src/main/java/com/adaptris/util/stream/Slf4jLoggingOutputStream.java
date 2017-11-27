@@ -85,10 +85,6 @@ public class Slf4jLoggingOutputStream extends LoggingOutputStreamImpl {
       lev = level;
     }
 
-    boolean matches(LogLevel level) {
-      return lev.equals(level);
-    }
-
     abstract void log(Logger logger, String s);
   }
 
@@ -132,17 +128,7 @@ public class Slf4jLoggingOutputStream extends LoggingOutputStreamImpl {
 
   @Override
   protected void log(LogLevel level, String s) {
-    getLumberjack(level).log(logger, s);
+    Lumberjack.valueOf(level.name()).log(logger, s);
   }
 
-  private Lumberjack getLumberjack(LogLevel level) {
-    Lumberjack handler = Lumberjack.INFO;
-    for (Lumberjack h : Lumberjack.values()) {
-      if (h.matches(level)) {
-        handler = h;
-        break;
-      }
-    }
-    return handler;
-  }
 }

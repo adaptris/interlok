@@ -26,6 +26,8 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -61,13 +63,15 @@ public class CheckMetadataValueService extends DuplicateMetadataValueService {
 
   @Override
   protected void initService() throws CoreException {
-    if (nextServiceIdIfDuplicate == null) {
-      throw new CoreException("Next Service ID if Duplicate is null");
+    try {
+      Args.notBlank(getNextServiceIdIfDuplicate(), "nextServiceIdIfDuplicate");
+      Args.notBlank(getNextServiceIdIfUnique(), "nextServiceIdIfUnique");
+
+      super.initService();
     }
-    if (nextServiceIdIfUnique == null) {
-      throw new CoreException("Next Service ID if Unique is null");
+    catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
-    super.initService();
   }
   
   /** @see com.adaptris.core.Service
@@ -147,10 +151,7 @@ public class CheckMetadataValueService extends DuplicateMetadataValueService {
    * exists if the store of previous values
    */
   public void setNextServiceIdIfDuplicate(String s) {
-    if (isEmpty(s)) {
-      throw new IllegalArgumentException("null or empty param");
-    }
-    nextServiceIdIfDuplicate = s;
+    nextServiceIdIfDuplicate = Args.notBlank(s, "nextServiceIdIfDuplicate");
   }
 
   /**
@@ -174,9 +175,6 @@ public class CheckMetadataValueService extends DuplicateMetadataValueService {
    * does not exist if the store of previous values
    */
   public void setNextServiceIdIfUnique(String s) {
-    if (isEmpty(s)) {
-      throw new IllegalArgumentException("null or empty param");
-    }
-    nextServiceIdIfUnique = s;
+    nextServiceIdIfUnique = Args.notBlank(s, "nextServiceIdIfUnique");
   }  
 }

@@ -29,6 +29,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -58,12 +59,8 @@ public class BranchingServiceCollection extends ServiceCollectionImp {
 
   @Override
   protected Service enforceRequirements(Service service) {
-    if (service == null) {
-      throw new IllegalArgumentException("null param");
-    }
-    if (StringUtils.isBlank(service.getUniqueId())) {
-      throw new IllegalArgumentException("empty unique ID");
-    }
+    Args.notNull(service, "service");
+    Args.notBlank(service.getUniqueId(), "serviceUniqueId");
     for (Service s : getServices()) {
       String existingId = s.getUniqueId();
       if (service.getUniqueId().equals(existingId)) {
@@ -92,9 +89,7 @@ public class BranchingServiceCollection extends ServiceCollectionImp {
 
     do {
       Service service = null;
-
-      log.debug("next service id [" + nextServiceId + "]");
-
+      log.debug("next service id [{}]", nextServiceId);
       try {
         service = this.getService(nextServiceId);
         service.doService(msg);
@@ -119,19 +114,13 @@ public class BranchingServiceCollection extends ServiceCollectionImp {
       }
     }
     while (nextServiceId != CoreConstants.ENDPOINT_SERVICE_UNIQUE_ID);
+    msg.setNextServiceId("");
   }
 
-  /**
-   * <p>
-   * Obtains the <code>Service</code> for the passed <code>uniqueId</code>.
-   * Throws <code>Exception</code> if there is no corresponding
-   * <code>Service</code>.
-   * </p>
-   */
+
   private Service getService(String uniqueId) throws ServiceException {
     Service result = null;
     for (Service s : getServices()) {
-      String existingId = s.getUniqueId();
       if (s.getUniqueId().equals(uniqueId)) {
         result = s;
         break;
@@ -149,8 +138,10 @@ public class BranchingServiceCollection extends ServiceCollectionImp {
 
   @Override
   protected void doInit() throws CoreException {
-    if (firstServiceId == null) {
-      throw new CoreException("first service ID cannot be null");
+    try {
+      Args.notNull(getFirstServiceId(), "firstServiceId");
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
@@ -165,10 +156,10 @@ public class BranchingServiceCollection extends ServiceCollectionImp {
 
   /**
    * <p>
-   * Returns the unique ID of the first <code>Service</code> to apply.
+   * Returns the unique ID of the first {@link Service} to apply.
    * </p>
    *
-   * @return the unique ID of the first <code>Service</code> to apply
+   * @return the unique ID of the first {@link Service} to apply
    */
   public String getFirstServiceId() {
     return firstServiceId;
@@ -176,18 +167,13 @@ public class BranchingServiceCollection extends ServiceCollectionImp {
 
   /**
    * <p>
-   * Sets the unique ID of the first <code>Service</code> to apply. May not be
-   * null, empty or <code>CoreConstants.ENDPOINT_SERVICE_UNIQUE_ID</code>.
+   * Sets the unique ID of the first {@link Service} to apply.
    * </p>
    *
-   * @param s the unique ID of the first <code>Service</code> to apply
+   * @param s the unique ID of the first {@link Service} to apply
    */
   public void setFirstServiceId(String s) {
-    String srvId = Args.notBlank(s, "firstServiceId");
-    if (srvId.equals(CoreConstants.ENDPOINT_SERVICE_UNIQUE_ID)) {
-      throw new IllegalArgumentException("first Service cannot be end point");
-    }
-    firstServiceId = srvId;
+    firstServiceId = Args.notBlank(s, "firstServiceId");
   }
 
 }

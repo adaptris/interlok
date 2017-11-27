@@ -73,10 +73,13 @@ public class GetOauthToken extends ServiceImp {
 
   @Override
   public void prepare() throws CoreException {
-    if (getAccessTokenBuilder() == null) {
-      throw new CoreException("Null Access Token Builder");
+    try {
+      Args.notNull(getAccessTokenBuilder(), "accessTokenBuilder");
+      LifecycleHelper.prepare(getAccessTokenBuilder());
     }
-    LifecycleHelper.prepare(getAccessTokenBuilder());
+    catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
+    }
   }
 
   @Override

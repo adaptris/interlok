@@ -34,6 +34,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.Args;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairList;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -149,10 +150,7 @@ public class MapMetadataService extends ServiceImp {
    * @param m a {@link KeyValuePairList}
    */
   public void setMetadataKeyMap(KeyValuePairList m) {
-    if (m == null) {
-      throw new IllegalArgumentException("Null Metadata Key Map");
-    }
-    this.metadataKeyMap = m;
+    this.metadataKeyMap = Args.notNull(m, "metadataKeyMap");
   }
 
   /**

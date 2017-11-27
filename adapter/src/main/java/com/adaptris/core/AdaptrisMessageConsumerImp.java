@@ -18,6 +18,8 @@ package com.adaptris.core;
 
 import javax.validation.Valid;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.adaptris.core.util.Args;
 
 /**
@@ -93,7 +95,7 @@ public abstract class AdaptrisMessageConsumerImp extends
   protected String renameThread() {
     String oldName = Thread.currentThread().getName();
     String newName = getDestination().getDeliveryThreadName();
-    if (newName == null) {
+    if (StringUtils.isEmpty(newName)) {
       newName = retrieveAdaptrisMessageListener().friendlyName();
     }
     Thread.currentThread().setName(newName);

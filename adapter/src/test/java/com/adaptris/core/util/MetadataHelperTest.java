@@ -32,7 +32,7 @@ import com.adaptris.core.MetadataElement;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairCollection;
 
-public class MetadataHelperTest {
+public class MetadataHelperTest extends MetadataHelper {
 
   @Before
   public void setUp() {
@@ -42,26 +42,27 @@ public class MetadataHelperTest {
   public void testConvertToProperties() {
     MetadataCollection c = new MetadataCollection();
     c.add(new MetadataElement("test", "value"));
-    assertNotNull(MetadataHelper.convertToProperties(c));
-    assertTrue(MetadataHelper.convertToProperties(c).containsKey("test"));
+    assertNotNull(convertToProperties(c));
+    assertTrue(convertToProperties(c).containsKey("test"));
   }
 
   @Test
   public void testConvertFromProperties() throws Exception {
     Properties c = new Properties();
     c.setProperty("test", "value");
-    assertNotNull(MetadataHelper.convertFromProperties(c));
-    assertTrue(MetadataHelper.convertFromProperties(c).contains(new MetadataElement("test", "")));
+    assertNotNull(convertFromProperties(c));
+    assertTrue(convertFromProperties(c).contains(new MetadataElement("test", "")));
   }
 
   @Test
   public void testConvertFromKeyValuePairs() {
     KeyValuePairCollection elements = new KeyValuePairCollection();
     elements.add(new KeyValuePair("test", "value"));
-    assertNotNull(MetadataHelper.convertFromKeyValuePairs(elements));
-    assertTrue(MetadataHelper.convertFromKeyValuePairs(elements).contains(new MetadataElement("test", "")));
+    assertNotNull(convertFromKeyValuePairs(elements));
+    assertTrue(convertFromKeyValuePairs(elements).contains(new MetadataElement("test", "")));
   }
 
+  @Test
   public void testToSet() {
     Set<MetadataElement> elements = new HashSet<>();
     elements.add(new MetadataElement("test", "value"));

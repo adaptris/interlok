@@ -33,6 +33,8 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.jdbc.JdbcService;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.JdbcUtil;
 
 /**
@@ -157,11 +159,11 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
 
   @Override
   protected void initJdbcService() throws CoreException {
-    if (getMetadataKey() == null) {
-      throw new CoreException("MetadataKey to set the " + "sequence number against is null");
-    }
-    if (getNumberFormat() == null) {
-      throw new CoreException("Number format to format the " + "sequence number against is null");
+    try {
+      Args.notNull(getMetadataKey(), "metadataKey");
+      Args.notNull(getNumberFormat(), "numberFormat");
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 

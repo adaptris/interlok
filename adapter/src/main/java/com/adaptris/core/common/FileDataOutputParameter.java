@@ -26,6 +26,7 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -48,6 +49,7 @@ public class FileDataOutputParameter implements DataOutputParameter<String> {
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Deprecated
+  @AdvancedConfig
   private String url;
 
   @Valid
@@ -66,7 +68,7 @@ public class FileDataOutputParameter implements DataOutputParameter<String> {
       out = new FileOutputStream(FsHelper.createFileReference(url));
       IOUtils.write((String) data, out, message.getContentEncoding());
     } catch (Exception e) {
-      ExceptionHelper.rethrowCoreException(e);
+      throw ExceptionHelper.wrapCoreException(e);
     } finally {
       IOUtils.closeQuietly(out);
     }
@@ -97,7 +99,7 @@ public class FileDataOutputParameter implements DataOutputParameter<String> {
    */
   @Deprecated
   public void setUrl(String url) {
-    this.url = Args.notBlank(url, "url");
+    this.url = url;
   }
 
   public MessageDrivenDestination getDestination() {
@@ -110,10 +112,7 @@ public class FileDataOutputParameter implements DataOutputParameter<String> {
    * @param d the destination.
    */
   public void setDestination(MessageDrivenDestination d) {
-    if (d == null) {
-      throw new IllegalArgumentException("Destination is null");
-    }
-    destination = d;
+    destination = Args.notNull(d, "destination");
   }
 
 

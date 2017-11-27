@@ -18,7 +18,7 @@ package com.adaptris.core.util;
 
 import org.apache.commons.lang.StringUtils;
 
-public class Args {
+public abstract class Args {
 
   /**
    * Convenience to throw an {@link IllegalArgumentException} if the associated argument null.

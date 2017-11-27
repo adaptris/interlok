@@ -87,38 +87,7 @@ public class ScriptingServiceTest extends GeneralServiceExample {
     catch (Exception expected) {
       ;
     }
-    service.setLanguage("");
-    try {
-      service.init();
-      fail("Service initialised w/o a ''");
-    }
-    catch (Exception expected) {
-      ;
-    }
-    service.setLanguage("BLAHBLAHBLAH");
-    try {
-      service.init();
-      fail("Service initialised BLAHBLAHBLAH");
-    }
-    catch (Exception expected) {
-      ;
-    }
     service.setLanguage("jruby");
-    try {
-      service.init();
-      fail("Service initialised with no filename");
-    }
-    catch (Exception expected) {
-      ;
-    }
-    service.setScriptFilename("");
-    try {
-      service.init();
-      fail("Service initialised with no filename");
-    }
-    catch (Exception expected) {
-      ;
-    }
     service.setScriptFilename("/BLAHBLAHBLAHBLAHBLAH/BLAHBLAHBLAHBLAH");
     try {
       service.init();

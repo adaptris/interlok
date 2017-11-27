@@ -51,9 +51,9 @@ public class PrettyStaxDriver extends StaxDriver {
     this(new HashSet<String>());
   }
 
-  public PrettyStaxDriver(Set<String> pCdataFields) {
+  public PrettyStaxDriver(Collection<String> pCdataFields) {
     super();
-    this.cdataFields = pCdataFields;
+    this.cdataFields = new HashSet<>(pCdataFields);
   }
 
   @Override

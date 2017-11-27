@@ -49,6 +49,8 @@ public class InterlokLauncher extends Launcher {
       JAR_EXT, ZIP_EXT
   };
 
+  private static final String DEFAULT_CONFIG_DIR = "config";
+
   private static final List<String> SPECIAL_DIRS = Collections.unmodifiableList(Arrays.asList(".git", ".svn", "CVS", ".hg"));
   private static final String DEBUG_PREFIX = "(" + InterlokLauncher.class.getSimpleName() + ") ";
 
@@ -71,6 +73,7 @@ public class InterlokLauncher extends Launcher {
   private List<String> paths = new ArrayList<>();
   private CommandLineArgs commandLine;
   private boolean recursive;
+  private boolean defaultClasspath = true;
 
   public InterlokLauncher(String[] argv) {
     try {
@@ -92,12 +95,13 @@ public class InterlokLauncher extends Launcher {
     String pathsToParse = DEFAULT_CLASSPATH;
     if (commandLine.hasArgument(ARG_ADAPTER_CLASSPATH)) {
       pathsToParse = commandLine.getArgument(ARG_ADAPTER_CLASSPATH);
+      defaultClasspath = false;
     }
     List<String> result = new ArrayList<>();
     for (String path : pathsToParse.split("[,|" + File.pathSeparator + "]")) {
       result.add(cleanupPath(path));
     }
-    debug("Nested archive paths: " + result);
+    debug("Nested archive paths: ", result);
     return result;
   }
 
@@ -140,9 +144,13 @@ public class InterlokLauncher extends Launcher {
     return path;
   }
 
-  private static void debug(String message) {
+  private static void debug(String message, Object... objects) {
     if (DEBUG) {
-      System.err.println(DEBUG_PREFIX + message);
+      StringBuilder sb = new StringBuilder(DEBUG_PREFIX).append(message);
+      for (Object o : objects) {
+        sb.append(o.toString());
+      }
+      System.err.println(sb.toString());
     }
   }
 
@@ -150,8 +158,11 @@ public class InterlokLauncher extends Launcher {
     List<Archive> lib = new ArrayList<>();
     File file = new File(path);
     if (file.isDirectory()) {
+      debug("Added ", file);
       lib.add(new NoOpFileArchive(file));
-      lib.addAll(createArchives(file, recursive));
+      if (defaultClasspath && !file.getName().equals(DEFAULT_CONFIG_DIR)) {
+        lib.addAll(createArchives(file, recursive));
+      }
     }
     else {
       if (JAR_FILTER.accept(file)) {
@@ -164,13 +175,13 @@ public class InterlokLauncher extends Launcher {
   private static List<Archive> createArchives(File dir, boolean loadSubdirs) throws IOException {
     ArrayList<Archive> jars = new ArrayList<>();
     if (SPECIAL_DIRS.contains(dir.getName())) {
-      debug("Ignoring special directory " + dir.getName());
+      debug("Ignoring special directory ", dir.getName());
       return jars;
     }
-    debug("Adding jars from " + dir);
+    debug("Adding jars from " + dir.getCanonicalPath());
     File[] files = dir.listFiles(JAR_FILTER);
     for (File jar : files) {
-      debug("Adding " + jar);
+      debug("Adding ", jar.getName());
       addArchive(jar, jars);
     }
     if (loadSubdirs) {

@@ -298,7 +298,7 @@ public class JdbcDataQueryService extends JdbcServiceWithParameters implements D
   }
 
   DocumentBuilderFactoryBuilder documentFactoryBuilder() {
-    return getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig() : DocumentBuilderFactoryBuilder.newInstance();
+    return DocumentBuilderFactoryBuilder.newInstance(getXmlDocumentFactoryConfig());
   }
 
   public JdbcStatementCreator getStatementCreator() {

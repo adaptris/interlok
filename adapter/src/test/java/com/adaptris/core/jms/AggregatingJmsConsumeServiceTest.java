@@ -58,6 +58,26 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
     return false;
   }
   
+  public void testNoOpMethods() throws Exception {
+    EmbeddedActiveMq broker = new EmbeddedActiveMq();
+    AggregatingJmsConsumeService service = createService(broker);
+    try {
+      broker.start();
+      start(service);
+      assertNull(service.configuredCorrelationIdSource());
+      assertNull(service.configuredMessageListener());
+      assertNull(service.configuredMessageTranslator());
+      assertEquals(AcknowledgeMode.Mode.AUTO_ACKNOWLEDGE.acknowledgeMode(), service.configuredAcknowledgeMode());
+      assertEquals(0, service.rollbackTimeout());
+      assertEquals(false, service.isManagedTransaction());
+    }
+    finally {
+      stop(service);
+      broker.destroy();
+    }
+
+  }
+
   public void testService() throws Exception {
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     AggregatingJmsConsumeService service = createService(broker);

@@ -23,6 +23,7 @@ import java.util.List;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -104,10 +105,7 @@ public class MessageLifecycleEvent extends Event implements Cloneable, Serializa
    * @param event the <code>MleMarker</code> to add, may not be null
    */
   public void addMleMarker(MleMarker event) {
-    if (event == null) {
-      throw new IllegalArgumentException("param is null");
-    }
-    mleMarkers.add(event);
+    mleMarkers.add(Args.notNull(event, "markerEvent"));
   }
 
   /**
@@ -141,10 +139,7 @@ public class MessageLifecycleEvent extends Event implements Cloneable, Serializa
    * <code>MleMarker</code>s are related
    */
   public void setMessageUniqueId(String uniqueId) {
-    if (uniqueId == null) {
-      throw new IllegalArgumentException("param is null");
-    }
-    messageUniqueId = uniqueId;
+    messageUniqueId = Args.notNull(uniqueId, "uniqueId");
   }
 
   /**

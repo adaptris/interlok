@@ -44,48 +44,11 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * @author lchan
  * 
  */
-public abstract class ResultSetTranslatorImp extends ResultSetTranslatorBase {
-
-  /**
-   * Represents how column names are formatted.
-   * 
-   * 
-   */
-  public enum ColumnStyle {
-    LowerCase {
-      @Override
-      public String format(String s) {
-        return s.toLowerCase();
-      }
-    },
-    UpperCase {
-      @Override
-      public String format(String s) {
-        return s.toUpperCase();
-      }
-    },
-    Capitalize {
-      @Override
-      public String format(String s) {
-        return StringUtils.capitalize(s);
-      }
-    },
-    NoStyle {
-      @Override
-      public String format(String s) {
-        return s;
-      }
-    };
-    public abstract String format(String s);
-  };
-
+public abstract class ResultSetTranslatorImp extends StyledResultTranslatorImp {
 
   @AdvancedConfig
   @InputFieldDefault(value = "false")
   private Boolean displayColumnErrors = null;
-  @NotNull
-  @AutoPopulated
-  private ColumnStyle columnNameStyle;
   @NotNull
   @AutoPopulated
   @Valid
@@ -202,25 +165,6 @@ public abstract class ResultSetTranslatorImp extends ResultSetTranslatorBase {
 
   protected boolean isDisplayColumnErrors() {
     return displayColumnErrors == null ? false : displayColumnErrors.booleanValue();
-  }
-
-  /**
-   * Get the column name format.
-   *
-   * @return the format.
-   */
-  public ColumnStyle getColumnNameStyle() {
-    return columnNameStyle;
-  }
-
-  /**
-   * Format the column name in a specific style.
-   *
-   * @param style the style, valid values are UpperCase, LowerCase, Capitalize, NoStyle.
-   * @see ColumnStyle
-   */
-  public void setColumnNameStyle(ColumnStyle style) {
-    columnNameStyle = style;
   }
 
   public List<ColumnTranslator> getColumnTranslators() {

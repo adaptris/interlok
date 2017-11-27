@@ -17,7 +17,6 @@
 package com.adaptris.core.services.jdbc;
 
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,6 +28,8 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -87,14 +88,12 @@ public class NamedParameterApplicator implements ParameterApplicator {
       JdbcStatementParameter statementParameter =
           parameters.getParameterByName(parameterName.substring(this.getParameterNamePrefix()
           .length()));
-      if (statementParameter == null)
-        throw new ServiceException("Parameter " + parameterName + ", cannot be found in the configured parameter list");
-
       try {
+        Args.notNull(statementParameter, "statementParameter");
         statementParameter.apply(counter, statement, message);
       }
-      catch (SQLException ex) {
-        throw new ServiceException(ex);
+      catch (Exception ex) {
+        throw ExceptionHelper.wrapServiceException(ex);
       }
     }
   }

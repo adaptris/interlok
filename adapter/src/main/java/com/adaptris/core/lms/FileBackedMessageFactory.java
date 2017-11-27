@@ -32,6 +32,7 @@ import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.DefaultMessageFactory;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -158,19 +159,29 @@ public class FileBackedMessageFactory extends DefaultMessageFactory {
 
   @Override
   public AdaptrisMessage newMessage() {
-    AdaptrisMessage m =
-        new FileBackedMessageImpl(uniqueIdGenerator(), this, tempDirectory(), defaultBufferSize(), maxMemorySizeBytes());
+    AdaptrisMessage m = new FileBackedMessageImpl(uniqueIdGenerator(), this);
     if (!isEmpty(getDefaultCharEncoding())) {
       m.setContentEncoding(getDefaultCharEncoding());
     }
     return m;
   }
 
-  File createTempFile(File tempDir, Object marker) throws IOException {
+  private File createTempFile(File tempDir, Object marker) throws IOException {
     File f = File.createTempFile(TMP_FILE_PREFIX, TMP_FILE_SUFFIX, tempDir);
     f.deleteOnExit();
-    cleaner.track(f, marker, FileDeleteStrategy.FORCE);
+    cleaner.track(f, Args.notNull(marker, "marker"), FileDeleteStrategy.FORCE);
     return f;
+  }
+
+  /**
+   * Create a temp file that will be deleted when {@code marker} goes out of scope and garbage collection occurs.
+   * 
+   * @param marker the marker object
+   * @return a temporary file.
+   * @throws IOException
+   */
+  public File createTempFile(Object marker) throws IOException {
+    return createTempFile(tempDirectory(), marker);
   }
 
   /**

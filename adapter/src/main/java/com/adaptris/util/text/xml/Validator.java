@@ -42,19 +42,7 @@ public class Validator {
    * @throws Exception if a parse error is encountered
    */
   public Validator(String schema) throws Exception {
-    parser = new DOMParser();
-
-    Class poolClass = Class
-        .forName("org.apache.xerces.util.XMLGrammarPoolImpl");
-    Object grammarPool = poolClass.newInstance();
-    parser.setProperty(
-        "http://apache.org/xml/properties/internal/grammar-pool", grammarPool);
-
-    parser.setFeature("http://xml.org/sax/features/validation", true);
-    parser.setFeature("http://apache.org/xml/features/validation/schema", true);
-    parser.setProperty("http://apache.org/xml/properties/schema/"
-        + "external-noNamespaceSchemaLocation", schema);
-    parser.setErrorHandler(new ErrorChecker());
+    parser = createParser(schema);
   }
 
   /**
@@ -66,20 +54,22 @@ public class Validator {
    * @throws Exception if a parse error is encountered
    */
   public Validator(String schema, EntityResolver resolver) throws Exception {
-    parser = new DOMParser();
-
-    Class poolClass = Class
-        .forName("org.apache.xerces.util.XMLGrammarPoolImpl");
-    Object grammarPool = poolClass.newInstance();
-    parser.setProperty(
-        "http://apache.org/xml/properties/internal/grammar-pool", grammarPool);
-
-    parser.setFeature("http://xml.org/sax/features/validation", true);
-    parser.setFeature("http://apache.org/xml/features/validation/schema", true);
-    parser.setProperty("http://apache.org/xml/properties/schema"
-        + "/external-noNamespaceSchemaLocation", schema);
-    parser.setErrorHandler(new ErrorChecker());
+    this(schema);
     parser.setEntityResolver(resolver);
+  }
+
+  private DOMParser createParser(String schema) throws Exception {
+    DOMParser result = new DOMParser();
+
+    Class poolClass = Class.forName("org.apache.xerces.util.XMLGrammarPoolImpl");
+    Object grammarPool = poolClass.newInstance();
+    result.setProperty("http://apache.org/xml/properties/internal/grammar-pool", grammarPool);
+
+    result.setFeature("http://xml.org/sax/features/validation", true);
+    result.setFeature("http://apache.org/xml/features/validation/schema", true);
+    result.setProperty("http://apache.org/xml/properties/schema/external-noNamespaceSchemaLocation", schema);
+    result.setErrorHandler(new ErrorChecker());
+    return result;
   }
 
   /**
@@ -91,8 +81,7 @@ public class Validator {
    * @throws Exception if the document fails to be validated
    */
   public Document parse(InputStream xml) throws Exception {
-    parse(new InputSource(xml));
-    return parser.getDocument();
+    return parse(new InputSource(xml));
   }
 
   /**
@@ -104,8 +93,7 @@ public class Validator {
    * @throws Exception if the document fails to be validated
    */
   public Document parse(Reader xml) throws Exception {
-    parse(new InputSource(xml));
-    return parser.getDocument();
+    return parse(new InputSource(xml));
   }
 
   /**

@@ -35,13 +35,18 @@ public abstract class ExampleErrorHandlerCase extends ExampleConfigCase {
    */
   public static final String BASE_DIR_KEY = "ErrorHandlerCase.baseDir";
 
-  public ExampleErrorHandlerCase(String name) {
-    super(name);
-
+  public ExampleErrorHandlerCase() {
+    super();
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
   }
+
+  public ExampleErrorHandlerCase(String name) {
+    this();
+    setName(name);
+  }
+
 
   @Override
   protected String createExampleXml(Object object) throws Exception {

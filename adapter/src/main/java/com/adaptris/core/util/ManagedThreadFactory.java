@@ -17,13 +17,18 @@
 package com.adaptris.core.util;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.adaptris.util.TimeInterval;
 
 /**
  * Simple {@link ThreadFactory} implementation for use within the adapter.
@@ -82,5 +87,26 @@ public class ManagedThreadFactory implements ThreadFactory {
         t.interrupt();
       }
     }
+  }
+
+  public static List<Runnable> shutdownQuietly(ExecutorService executor, TimeInterval timeout) {
+    return shutdownQuietly(executor, timeout.toMilliseconds());
+  }
+
+  public static List<Runnable> shutdownQuietly(ExecutorService executor, long timeoutMs) {
+    List<Runnable> result = Collections.EMPTY_LIST;
+    if (executor != null) {
+      executor.shutdown();
+      boolean success = false;
+      try {
+        success = executor.awaitTermination(timeoutMs, TimeUnit.MILLISECONDS);
+      } catch (InterruptedException e) {
+      }
+      if (!success) {
+        logger.trace("Pool failed to shutdown in {}ms, forcing shutdown", timeoutMs);
+        result = executor.shutdownNow();
+      }
+    }
+    return result;
   }
 }

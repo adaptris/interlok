@@ -20,13 +20,13 @@ import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
-import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -34,6 +34,8 @@ import com.adaptris.core.NullConnection;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.mail.MailProducer;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.mail.MailException;
 import com.adaptris.mail.SmtpClient;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -85,11 +87,10 @@ public class MultiAttachmentSmtpProducer extends MailProducer {
   @NotNull
   @Valid
   private MailContentCreator mailCreator;
-  @NotNull
-  @AutoPopulated
-  @Pattern(regexp = "base64|quoted-printable|uuencode|x-uuencode|x-uue|binary|7bit|8bit")
   @AdvancedConfig
-  private String contentEncoding = "base64";
+  @InputFieldDefault(value = "base64")
+  @InputFieldHint(expression = true)
+  private String contentEncoding;
 
   /**
    * @see Object#Object()
@@ -102,9 +103,12 @@ public class MultiAttachmentSmtpProducer extends MailProducer {
 
   @Override
   public void init() throws CoreException {
-    super.init();
-    if (mailCreator == null) {
-      throw new CoreException("MailCreator implementation missing");
+    try {
+      super.init();
+      Args.notNull(getMailCreator(), "mailCreator");
+    }
+    catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
@@ -120,7 +124,7 @@ public class MultiAttachmentSmtpProducer extends MailProducer {
       smtp.addTo(destination.getDestination(msg));
       addBody(smtp, mailCreator.createBody(msg));
       addAttachments(smtp, mailCreator.createAttachments(msg));
-      smtp.setEncoding(getContentEncoding());
+      smtp.setEncoding(msg.resolve(contentEncoding()));
       smtp.send();
     }
     catch (Exception e) {
@@ -138,7 +142,7 @@ public class MultiAttachmentSmtpProducer extends MailProducer {
 
   private void addAttachments(SmtpClient client, List<MailAttachment> l) throws MailException {
     for (MailAttachment m : l) {
-      client.addAttachment(m.getBytes(), m.getFilename(), m.getContentType());
+      client.addAttachment(m.getBytes(), m.getFilename(), m.getContentType(), m.getContentTransferEncoding());
     }
   }
 
@@ -158,6 +162,10 @@ public class MultiAttachmentSmtpProducer extends MailProducer {
    */
   public String getContentEncoding() {
     return contentEncoding;
+  }
+
+  String contentEncoding() {
+    return getContentEncoding() != null ? getContentEncoding() : "base64";
   }
 
   /**

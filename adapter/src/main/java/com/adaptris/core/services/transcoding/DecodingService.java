@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.BooleanUtils;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
@@ -80,8 +81,8 @@ public class DecodingService extends TranscodingService {
     }
   }
 
-  boolean isOverrideMetadata(){
-    return getOverrideMetadata() == null ? false : getOverrideMetadata();
+  boolean isOverrideMetadata() {
+    return BooleanUtils.toBooleanDefaultIfNull(getOverrideMetadata(), false);
   }
 
   public Boolean getOverrideMetadata(){

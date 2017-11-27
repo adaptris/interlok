@@ -126,9 +126,6 @@ public abstract class JdbcService extends ServiceImp {
    * @param conn the <code>AdaptrisConnection</code> to use
    */
   public void setConnection(AdaptrisConnection conn) {
-    if (conn == null) {
-      throw new IllegalArgumentException();
-    }
     connection = conn;
   }
 

@@ -15,26 +15,17 @@
  */
 package com.adaptris.core.jdbc;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
 
-import javax.sql.DataSource;
 import javax.validation.Valid;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.security.password.Password;
 import com.adaptris.util.KeyValuePairSet;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
@@ -51,144 +42,36 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(summary = "Connect to a database using a JDBC driver; connection pooling handled via C3P0",
     tag = "connections,jdbc")
 @DisplayOrder(order = {"username", "password", "driverImp", "connectUrl", "connectionPoolProperties", "connectionProperties"})
-public class AdvancedJdbcPooledConnection extends DatabaseConnection {
-  
-  @NotBlank
-  private String connectUrl;
+public class AdvancedJdbcPooledConnection extends JdbcPooledConnectionImpl {
   
   @Valid
   private KeyValuePairSet connectionPoolProperties;
-  
-  private transient ComboPooledDataSource connectionPool;
-  
+
   public AdvancedJdbcPooledConnection() {
     super();
   }
   
-  @Override
-  protected Connection makeConnection() throws SQLException {
-    Connection sqlConnection = connectionPool.getConnection();
-    
-    this.validateConnection(sqlConnection);
-    return sqlConnection;
-  }
-
-  @Override
-  protected void initialiseDatabaseConnection() throws CoreException {
-    initPool();
-  }
   
-  private synchronized void initPool() throws CoreException {
+  protected synchronized ComboPooledDataSource createPool() throws CoreException {
+    ComboPooledDataSource pool = new ComboPooledDataSource();
     try {
-      connectionPool = new ComboPooledDataSource();
-      connectionPool.setProperties(connectionProperties());
-      connectionPool.setDriverClass(this.getDriverImp());
-      connectionPool.setJdbcUrl(this.getConnectUrl());
-      connectionPool.setUser(this.getUsername());
-      connectionPool.setPassword(Password.decode(this.getPassword()));
+      pool = new ComboPooledDataSource();
+      pool.setProperties(connectionProperties());
+      pool.setDriverClass(this.getDriverImp());
+      pool.setJdbcUrl(this.getConnectUrl());
+      pool.setUser(this.getUsername());
+      pool.setPassword(Password.decode(this.getPassword()));
 
-      connectionPool.setAcquireRetryDelay(Long.valueOf(connectionRetryInterval()).intValue());
-      connectionPool.setAcquireRetryAttempts(connectionAttempts());
-      connectionPool.setTestConnectionOnCheckin(alwaysValidateConnection());
-      connectionPool.setTestConnectionOnCheckout(alwaysValidateConnection());
-      PooledConnectionProperties.apply(getConnectionPoolProperties(), connectionPool);
+      pool.setAcquireRetryDelay(Long.valueOf(connectionRetryInterval()).intValue());
+      pool.setAcquireRetryAttempts(connectionAttempts());
+      pool.setTestConnectionOnCheckin(alwaysValidateConnection());
+      pool.setTestConnectionOnCheckout(alwaysValidateConnection());
+      PooledConnectionProperties.apply(getConnectionPoolProperties(), pool);
     }
     catch (Exception ex) {
       throw new CoreException(ex);
     }
-  }
-
-  @Override
-  protected void startDatabaseConnection() throws CoreException {
-  }
-
-  @Override
-  protected void stopDatabaseConnection() {
-  }
-
-  @Override
-  protected void closeDatabaseConnection() {
-    if (connectionPool != null) {
-      connectionPool.close();
-    }
-  }
-
-  @Override
-  public DataSource asDataSource() throws SQLException {
-    if(connectionPool == null) {
-      try {
-        initPool();
-      } catch (CoreException ex) {
-        throw new SQLException(ex);
-      }
-    }
-    return connectionPool;
-  }
-  
-  @Override
-  protected String getConnectionName() {
-    return getConnectUrl();
-  }
-  
-  /**
-   * <p>
-   * Validate the underlying connection.
-   * </p>
-   * 
-   * @throws SQLException if we could not validate the connection.
-   */
-  private void validateConnection(Connection sqlConnection) throws SQLException {
-    try {
-      if (alwaysValidateConnection())  testConnection(sqlConnection);
-    }
-    catch (SQLException e) {
-      throw e;
-    }
-  }
-
-  /**
-   * <p>
-   * Run the test statement against the database.
-   * </p>
-   * 
-   * @throws SQLException if the statement could not be performed.
-   */
-  private void testConnection(Connection sqlConnection) throws SQLException {
-    if (isEmpty(getTestStatement())) {
-      log.trace("No Test Statement, we will not test the JDBC connection.");
-      return;
-    }
-    Statement stmt = sqlConnection.createStatement();
-    ResultSet rs = null;
-    try {
-      if (debugMode()) {
-        rs = stmt.executeQuery(getTestStatement());
-        if (rs.next()) {
-          StringBuffer sb = new StringBuffer("TestStatement Results - ");
-          ResultSetMetaData rsm = rs.getMetaData();
-          for (int i = 1; i <= rsm.getColumnCount(); i++) {
-            sb.append("[");
-            sb.append(rsm.getColumnName(i));
-            sb.append("=");
-            try {
-              sb.append(rs.getString(i));
-            }
-            catch (Exception e) {
-              sb.append("'unknown'");
-            }
-            sb.append("] ");
-          }
-          log.trace(sb.toString());
-        }
-      }
-      else {
-        stmt.execute(getTestStatement());
-      }
-    }
-    finally {
-      JdbcUtil.closeQuietly(rs);
-      JdbcUtil.closeQuietly(stmt);
-    }
+    return pool;
   }
 
   @Override
@@ -228,14 +111,6 @@ public class AdvancedJdbcPooledConnection extends DatabaseConnection {
         .append(this.getConnectionProperties())
         .append(getConnectionPoolProperties())
         .toHashCode();
-  }
-
-  public String getConnectUrl() {
-    return connectUrl;
-  }
-
-  public void setConnectUrl(String connectUrl) {
-    this.connectUrl = connectUrl;
   }
 
   public KeyValuePairSet getConnectionPoolProperties() {

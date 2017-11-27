@@ -26,10 +26,13 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import org.apache.commons.io.IOUtils;
+import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.Service;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -43,6 +46,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"baseUrl"})
 public class RemoteMarshallServiceStore extends MarshallFileServiceStore {
 
+  @NotBlank
   private String baseUrl;
 
   /**
@@ -67,8 +71,10 @@ public class RemoteMarshallServiceStore extends MarshallFileServiceStore {
 
   @Override
   public void validate() throws CoreException {
-    if (baseUrl == null) {
-      throw new CoreException("baseUrl [" + baseUrl + "] is null");
+    try {
+      Args.notBlank(getBaseUrl(), "baseUrl");
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
@@ -105,9 +111,6 @@ public class RemoteMarshallServiceStore extends MarshallFileServiceStore {
   }
 
   public void setBaseUrl(String s) {
-    if (s == null || "".equals(s)) {
-      throw new IllegalArgumentException("null or empty param");
-    }
-    baseUrl = s;
+    baseUrl = Args.notBlank(s, "baseUrl");
   }
 }

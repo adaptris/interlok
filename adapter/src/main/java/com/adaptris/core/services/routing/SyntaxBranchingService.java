@@ -29,6 +29,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.BranchingServiceImp;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -82,11 +83,7 @@ public class SyntaxBranchingService extends BranchingServiceImp {
    * @param ident the SyntaxIdentifier.
    */
   public void addSyntaxIdentifier(SyntaxIdentifier ident) {
-    if (ident == null) {
-      throw new IllegalArgumentException("Identifier is null");
-    }
-
-    syntaxIdentifiers.add(ident);
+    syntaxIdentifiers.add(Args.notNull(ident, "identifier"));
   }
 
   /**
@@ -104,10 +101,7 @@ public class SyntaxBranchingService extends BranchingServiceImp {
    * @param l the list.
    */
   public void setSyntaxIdentifiers(List<SyntaxIdentifier> l) {
-    if (l == null) {
-      throw new IllegalArgumentException("List is null");
-    }
-    syntaxIdentifiers = l;
+    syntaxIdentifiers = Args.notNull(l, "identifiers");
   }
 
   @Override

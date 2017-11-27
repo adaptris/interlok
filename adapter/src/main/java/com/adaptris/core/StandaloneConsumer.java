@@ -25,6 +25,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -158,10 +159,7 @@ public class StandaloneConsumer implements AdaptrisMessageConsumer, StateManaged
    * @param conn the connection
    */
   public void setConnection(AdaptrisConnection conn) {
-    if (conn == null) {
-      throw new IllegalArgumentException("illegal param [" + conn + "]");
-    }
-    connection = conn;
+    connection = Args.notNull(conn, "connection");
   }
 
   /**
@@ -173,10 +171,7 @@ public class StandaloneConsumer implements AdaptrisMessageConsumer, StateManaged
    */
   @Override
   public void registerConnection(AdaptrisConnection conn) {
-    if (conn == null) {
-      throw new IllegalArgumentException("illegal param [" + conn + "]");
-    }
-    connection = conn;
+    connection = Args.notNull(conn, "connection");;
     connection.addExceptionListener(this);
   }
 
@@ -199,10 +194,7 @@ public class StandaloneConsumer implements AdaptrisMessageConsumer, StateManaged
    * @param cons the underlying <code>AdaptrisMessageConsumer</code>
    */
   public void setConsumer(AdaptrisMessageConsumer cons) {
-    if (cons == null) {
-      throw new IllegalArgumentException("illegal param [" + cons + "]");
-    }
-    consumer = cons;
+    consumer = Args.notNull(cons, "consumer");
   }
 
 

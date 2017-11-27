@@ -48,12 +48,7 @@ public class AddTimestampMetadataServiceTest extends MetadataServiceExample {
 
   public void testInitialisationCriteria() throws Exception {
     AddTimestampMetadataService service = new AddTimestampMetadataService();
-    service.setDateFormat("");
-    initWithException(service);
-    service.setDateFormat(null);
-    initWithException(service);
 
-    service = new AddTimestampMetadataService();
     service.setMetadataKey("");
     initWithException(service);
     service.setMetadataKey(null);
@@ -73,11 +68,30 @@ public class AddTimestampMetadataServiceTest extends MetadataServiceExample {
     }
   }
 
-  public void testBasicService() throws Exception {
+  public void testService() throws Exception {
     AdaptrisMessage m = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     AddTimestampMetadataService service = new AddTimestampMetadataService();
     execute(service, m);
-    assertTrue(m.containsKey(DEFAULT_METADATA_KEY));
+    assertTrue(m.headersContainsKey(DEFAULT_METADATA_KEY));
+    assertTrue(m.getMetadataValue(DEFAULT_METADATA_KEY) != null);
+  }
+
+  public void testService_Defaults() throws Exception {
+    AdaptrisMessage m = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    AddTimestampMetadataService service = new AddTimestampMetadataService();
+    service.setDateFormatBuilder(null);
+    execute(service, m);
+    assertTrue(m.headersContainsKey(DEFAULT_METADATA_KEY));
+    assertTrue(m.getMetadataValue(DEFAULT_METADATA_KEY) != null);
+  }
+
+  @SuppressWarnings("deprecation")
+  public void testService_Legacy() throws Exception {
+    AdaptrisMessage m = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    AddTimestampMetadataService service = new AddTimestampMetadataService();
+    service.setDateFormat(DateFormatBuilder.DEFAULT_DATE_FORMAT);
+    execute(service, m);
+    assertTrue(m.headersContainsKey(DEFAULT_METADATA_KEY));
     assertTrue(m.getMetadataValue(DEFAULT_METADATA_KEY) != null);
   }
 
@@ -99,7 +113,7 @@ public class AddTimestampMetadataServiceTest extends MetadataServiceExample {
     AddTimestampMetadataService service = new AddTimestampMetadataService();
     service.setAlwaysReplace(true);
     execute(service, m);
-    assertTrue(m.containsKey(DEFAULT_METADATA_KEY));
+    assertTrue(m.headersContainsKey(DEFAULT_METADATA_KEY));
     assertNotSame("123456", m.getMetadataValue(DEFAULT_METADATA_KEY));
   }
 
@@ -109,7 +123,7 @@ public class AddTimestampMetadataServiceTest extends MetadataServiceExample {
     AddTimestampMetadataService service = new AddTimestampMetadataService();
     service.setAlwaysReplace(false);
     execute(service, m);
-    assertTrue(m.containsKey(DEFAULT_METADATA_KEY));
+    assertTrue(m.headersContainsKey(DEFAULT_METADATA_KEY));
     assertEquals("123456", m.getMetadataValue(DEFAULT_METADATA_KEY));
   }
 
@@ -119,8 +133,8 @@ public class AddTimestampMetadataServiceTest extends MetadataServiceExample {
     sl.addService(new AddTimestampMetadataService(DEFAULT_TS_FORMAT, KEY1, true));
     sl.addService(new AddTimestampMetadataService("yyyy-MM-dd HH:mm:ssZ", KEY2, true));
     execute(sl, m);
-    assertTrue(m.containsKey(KEY1));
-    assertTrue(m.containsKey(KEY2));
+    assertTrue(m.headersContainsKey(KEY1));
+    assertTrue(m.headersContainsKey(KEY2));
 
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
     String key2 = m.getMetadataValue(KEY2);
@@ -132,13 +146,15 @@ public class AddTimestampMetadataServiceTest extends MetadataServiceExample {
     }
   }
 
+  @SuppressWarnings("deprecation")
   public void testLegacyOffset() throws Exception {
     AdaptrisMessage m = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     Date now = new Date();
     AddTimestampMetadataService service = new AddTimestampMetadataService(DEFAULT_TS_FORMAT, KEY1, false);
     service.setOffset("P30D");
+    service.setTimestampGenerator(null);
     execute(service, m);
-    assertTrue(m.containsKey(KEY1));
+    assertTrue(m.headersContainsKey(KEY1));
     SimpleDateFormat sdf = new SimpleDateFormat(DEFAULT_TS_FORMAT);
     String date1 = m.getMetadataValue(KEY1);
     try {
@@ -150,11 +166,13 @@ public class AddTimestampMetadataServiceTest extends MetadataServiceExample {
   }
 
 
+  @SuppressWarnings("deprecation")
   public void testLegacyEmptyOffset() throws Exception {
     AdaptrisMessage m = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    AddTimestampMetadataService service = new AddTimestampMetadataService(DEFAULT_TS_FORMAT, DEFAULT_METADATA_KEY, false, "");
+    AddTimestampMetadataService service = new AddTimestampMetadataService(DEFAULT_TS_FORMAT, KEY1, false);
+    service.setOffset("");
     execute(service, m);
-    assertTrue(m.containsKey(DEFAULT_METADATA_KEY));
+    assertTrue(m.headersContainsKey(DEFAULT_METADATA_KEY));
     assertTrue(m.getMetadataValue(DEFAULT_METADATA_KEY) != null);
   }
 
@@ -163,7 +181,7 @@ public class AddTimestampMetadataServiceTest extends MetadataServiceExample {
     Date now = new Date();
     AddTimestampMetadataService service = new AddTimestampMetadataService(DEFAULT_TS_FORMAT, KEY1, false, "P30D");
     execute(service, m);
-    assertTrue(m.containsKey(KEY1));
+    assertTrue(m.headersContainsKey(KEY1));
     SimpleDateFormat sdf = new SimpleDateFormat(DEFAULT_TS_FORMAT);
     String date1 = m.getMetadataValue(KEY1);
     try {
@@ -181,7 +199,7 @@ public class AddTimestampMetadataServiceTest extends MetadataServiceExample {
     Thread.sleep(1000);
     Date now = new Date();
     execute(service, m);
-    assertTrue(m.containsKey(KEY1));
+    assertTrue(m.headersContainsKey(KEY1));
     SimpleDateFormat sdf = new SimpleDateFormat(DEFAULT_TS_FORMAT);
     String date1 = m.getMetadataValue(KEY1);
     try {
@@ -197,7 +215,7 @@ public class AddTimestampMetadataServiceTest extends MetadataServiceExample {
     AddTimestampMetadataService service =
         new AddTimestampMetadataService(DEFAULT_TS_FORMAT, DEFAULT_METADATA_KEY, false, new OffsetTimestampGenerator(""));
     execute(service, m);
-    assertTrue(m.containsKey(DEFAULT_METADATA_KEY));
+    assertTrue(m.headersContainsKey(DEFAULT_METADATA_KEY));
     assertTrue(m.getMetadataValue(DEFAULT_METADATA_KEY) != null);
   }
 
@@ -219,7 +237,7 @@ public class AddTimestampMetadataServiceTest extends MetadataServiceExample {
         DateFormatUtil.CustomDateFormat.SECONDS_SINCE_EPOCH.name(), DEFAULT_METADATA_KEY);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     execute(service, msg);
-    assertTrue(msg.containsKey(DEFAULT_METADATA_KEY));
+    assertTrue(msg.headersContainsKey(DEFAULT_METADATA_KEY));
     assertTrue(msg.getMetadataValue(DEFAULT_METADATA_KEY).matches(REGEXP_DEST_DATE_NUMERIC));
   }
 
@@ -228,12 +246,12 @@ public class AddTimestampMetadataServiceTest extends MetadataServiceExample {
         DateFormatUtil.CustomDateFormat.MILLISECONDS_SINCE_EPOCH.name(), DEFAULT_METADATA_KEY);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     execute(service, msg);
-    assertTrue(msg.containsKey(DEFAULT_METADATA_KEY));
+    assertTrue(msg.headersContainsKey(DEFAULT_METADATA_KEY));
     assertTrue(msg.getMetadataValue(DEFAULT_METADATA_KEY).matches(REGEXP_DEST_DATE_NUMERIC));
   }
 
   @Override
-  protected Object retrieveObjectForSampleConfig() {
+  protected AddTimestampMetadataService retrieveObjectForSampleConfig() {
     return new AddTimestampMetadataService(DEFAULT_TS_FORMAT, KEY1, null, "P30D");
   }
 

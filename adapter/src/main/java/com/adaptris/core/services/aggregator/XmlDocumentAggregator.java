@@ -31,6 +31,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.XmlHelper;
@@ -145,10 +146,7 @@ public class XmlDocumentAggregator extends MessageAggregatorImpl {
    * @param dm the mergeImplementation to set
    */
   public void setMergeImplementation(DocumentMerge dm) {
-    if (dm == null) {
-      throw new IllegalArgumentException("Merge implementation may not be null");
-    }
-    this.mergeImplementation = dm;
+    this.mergeImplementation = Args.notNull(dm, "mergeImplementation");
   }
 
   public DocumentBuilderFactoryBuilder getXmlDocumentFactoryConfig() {
@@ -161,7 +159,6 @@ public class XmlDocumentAggregator extends MessageAggregatorImpl {
   }
 
   DocumentBuilderFactoryBuilder documentFactoryBuilder() {
-    return getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig()
-        : DocumentBuilderFactoryBuilder.newInstance().withNamespaceAware(true);
+    return DocumentBuilderFactoryBuilder.newInstance(getXmlDocumentFactoryConfig());
   }
 }

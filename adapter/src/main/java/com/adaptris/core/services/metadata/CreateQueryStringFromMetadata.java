@@ -36,6 +36,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -123,10 +124,7 @@ public class CreateQueryStringFromMetadata extends ServiceImp {
   }
 
   public void setMetadataKeys(List<String> metadataKeys) {
-    if (metadataKeys == null) {
-      throw new IllegalArgumentException("Metadata Keys may not be null");
-    }
-    this.metadataKeys = metadataKeys;
+    this.metadataKeys = Args.notNull(metadataKeys, "metadataKeys");
   }
 
   public String getResultKey() {

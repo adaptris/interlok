@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import javax.validation.Valid;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -40,6 +41,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class FileDataInputParameter extends FileInputParameterImpl {
 
   @Deprecated
+  @AdvancedConfig
   private String url;
 
   @Valid
@@ -83,7 +85,7 @@ public class FileDataInputParameter extends FileInputParameterImpl {
    */
   @Deprecated
   public void setUrl(String url) {
-    this.url = Args.notBlank(url, "url");
+    this.url = url;
   }
 
   public MessageDrivenDestination getDestination() {
@@ -96,10 +98,7 @@ public class FileDataInputParameter extends FileInputParameterImpl {
    * @param d the destination.
    */
   public void setDestination(MessageDrivenDestination d) {
-    if (d == null) {
-      throw new IllegalArgumentException("Destination is null");
-    }
-    destination = d;
+    destination = Args.notNull(d, "destination");
   }
 
 }

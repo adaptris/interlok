@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.IOUtils;
@@ -145,9 +144,7 @@ public class XmlMailCreator implements MailContentCreator {
   }
 
   DocumentBuilder documentBuilder() throws ParserConfigurationException {
-    DocumentBuilderFactoryBuilder fac = getXmlDocumentFactoryConfig() != null
-        ? getXmlDocumentFactoryConfig()
-        : DocumentBuilderFactoryBuilder.newInstance().withNamespaceAware(true);
-    return fac.newDocumentBuilder(DocumentBuilderFactory.newInstance());
+    DocumentBuilderFactoryBuilder fac = DocumentBuilderFactoryBuilder.newInstance(getXmlDocumentFactoryConfig());
+    return fac.build().newDocumentBuilder();
   }
 }

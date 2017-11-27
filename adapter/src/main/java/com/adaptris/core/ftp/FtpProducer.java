@@ -38,6 +38,8 @@ import com.adaptris.core.FormattedFilenameCreator;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.RequestReplyProducerImp;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -136,24 +138,26 @@ public class FtpProducer extends RequestReplyProducerImp {
    */
   @Override
   public void init() throws CoreException {
-    if (destDirectory == null) {
-      throw new CoreException("No Destination directory specified");
+    try {
+      Args.notNull(getDestDirectory(), "destDirectory");
+      Args.notNull(getBuildDirectory(), "buildDirectory");
+      if (!destDirectory.startsWith(SLASH)) {
+        destDirectory = SLASH + destDirectory;
+      }
+      if (!buildDirectory.startsWith(SLASH)) {
+        buildDirectory = SLASH + buildDirectory;
+      }
+      if (replyDirectory != null && !replyDirectory.startsWith(SLASH)) {
+        replyDirectory = SLASH + replyDirectory;
+      }
+      if (replyProcDirectory != null && !replyProcDirectory.startsWith(SLASH)) {
+        replyProcDirectory = SLASH + replyProcDirectory;
+      }
     }
-    if (buildDirectory == null) {
-      throw new CoreException("No Build directory specified");
+    catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
-    if (!destDirectory.startsWith(SLASH)) {
-      destDirectory = SLASH + destDirectory;
-    }
-    if (!buildDirectory.startsWith(SLASH)) {
-      buildDirectory = SLASH + buildDirectory;
-    }
-    if (replyDirectory != null && !replyDirectory.startsWith(SLASH)) {
-      replyDirectory = SLASH + replyDirectory;
-    }
-    if (replyProcDirectory != null && !replyProcDirectory.startsWith(SLASH)) {
-      replyProcDirectory = SLASH + replyProcDirectory;
-    }
+
   }
 
   /**

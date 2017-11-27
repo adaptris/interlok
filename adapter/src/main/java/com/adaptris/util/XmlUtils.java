@@ -29,7 +29,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -44,8 +46,6 @@ import org.xml.sax.InputSource;
 import com.adaptris.util.text.xml.Resolver;
 import com.adaptris.util.text.xml.Validator;
 import com.adaptris.util.text.xml.XPath;
-import com.adaptris.util.text.xml.XmlTransformerFactory;
-import com.adaptris.util.text.xml.XsltTransformerFactory;
 
 /**
  * Class which provides convenience methods for various aspects of XML usage.
@@ -55,62 +55,77 @@ import com.adaptris.util.text.xml.XsltTransformerFactory;
 public class XmlUtils {
 
   private static final String DEFAULT_XML_CHARSET = "ISO-8859-1";
-  private XmlTransformerFactory xmlTransformerFactory;
   private XPath xpath = null;
   private Validator validator = null;
   private NamespaceContext namespaceCtx;
 
   private Document currentDoc = null;
-  private StreamResult out = null;
 
   private boolean validate = false;
   private boolean isValid = false;
   private String parseMessage = "";
 
   private EntityResolver entityResolver = null;
-  private URIResolver uriResolver = null;
   private DocumentBuilderFactory docBuilderFactory;
 
 
   public XmlUtils() {
-    this(new Resolver(), new Resolver());
+    this(new Resolver());
+  }
+
+  public XmlUtils(EntityResolver er) {
+    this(er, (NamespaceContext) null, (DocumentBuilderFactory) null);
   }
 
   @Deprecated
   public XmlUtils(NamespaceContext ctx) {
-    this(new Resolver(), new Resolver(), ctx);
+    this(new Resolver(), ctx, null);
   }
+
 
   public XmlUtils(NamespaceContext ctx, DocumentBuilderFactory f) {
-    this(new Resolver(), new Resolver(), ctx, f);
+    this(new Resolver(), ctx, f);
   }
 
+  /**
+   * @deprecated URIResolver does nothing so use {@link #XmlUtils(EntityResolver)} instead.
+   */
+  @Deprecated
   public XmlUtils(EntityResolver er, URIResolver ur) {
-    this(er, ur, null);
+    this(er);
   }
 
+  /**
+   * @deprecated URIResolver does nothing so use {@link #XmlUtils(EntityResolver, NamespaceContext)} instead.
+   */
+  @Deprecated
   public XmlUtils(EntityResolver er, URIResolver ur, NamespaceContext ctx) {
-    this(er, ur, ctx, DocumentBuilderFactory.newInstance());
+    this(er, ctx, DocumentBuilderFactory.newInstance());
   }
 
-
+  /**
+   * @deprecated URIResolver does nothing so use {@link #XmlUtils(EntityResolver, NamespaceContext, DocumentBuilderFactory)}
+   *             instead.
+   */
+  @Deprecated
   public XmlUtils(EntityResolver er, URIResolver ur, NamespaceContext ctx, DocumentBuilderFactory dbf) {
+    this(er, ctx, dbf);
+  }
+
+  public XmlUtils(EntityResolver er, NamespaceContext ctx, DocumentBuilderFactory dbf) {
     entityResolver = er;
-    uriResolver = ur;
     namespaceCtx = ctx;
     xpath = new XPath(namespaceCtx);
-    xmlTransformerFactory = new XsltTransformerFactory();
     if (dbf == null) {
       docBuilderFactory = DocumentBuilderFactory.newInstance();
       if (ctx != null) {
         docBuilderFactory.setNamespaceAware(true);
       }
-    } else {
+    }
+    else {
       docBuilderFactory = dbf;
     }
-
   }
-
 
   /**
    * Method added to specify the Schema to Validate against. If not set,
@@ -209,26 +224,6 @@ public class XmlUtils {
   }
 
   /**
-   * Method to set the destination to write the transformed XML to. Only needed
-   * if an XSLT is to be called.
-   *
-   * @param wtr the writer.
-   */
-  public void setDestination(Writer wtr) {
-    out = new StreamResult(wtr);
-  }
-
-  /**
-   * Method to set the destination to write the transformed XML to. Only needed
-   * if an XSLT is to be called.
-   *
-   * @param wtr the writer for the destination.
-   */
-  public void setDestination(OutputStream wtr) {
-    out = new StreamResult(wtr);
-  }
-
-  /**
    * Method which returns a String representation of either a TEXT_NODE or an ATTRIBUTE_NODE, extracted from the provided Node.
    * <p/>
    * Null will be returned if the provided XPath fails to retrieve a Node of the above types.
@@ -260,12 +255,7 @@ public class XmlUtils {
    * @param xp the Xpath
    */
   public String getSingleTextItem(String xp) {
-    try {
-      return xpath.selectSingleTextItem(currentDoc, xp);
-    }
-    catch (Exception e) {
-      return null;
-    }
+    return getSingleTextItem(xp, currentDoc);
   }
 
   /**
@@ -301,12 +291,7 @@ public class XmlUtils {
    * @param xp the Xpath query.
    */
   public String[] getMultipleTextItems(String xp) {
-    try {
-      return xpath.selectMultipleTextItems(currentDoc, xp);
-    }
-    catch (Exception e) {
-      return null;
-    }
+    return getMultipleTextItems(xp, currentDoc);
   }
 
   /**
@@ -336,12 +321,7 @@ public class XmlUtils {
    * @param xp the Xpath query
    */
   public org.w3c.dom.NodeList getNodeList(String xp) {
-    try {
-      return xpath.selectNodeList(currentDoc, xp);
-    }
-    catch (Exception e) {
-      return null;
-    }
+    return getNodeList(xp, currentDoc);
   }
 
   /**
@@ -352,12 +332,7 @@ public class XmlUtils {
    * @return the Node.
    */
   public Node getSingleNode(String xp) {
-    try {
-      return xpath.selectSingleNode(currentDoc, xp);
-    }
-    catch (Exception e) {
-      return null;
-    }
+    return getSingleNode(xp, currentDoc);
   }
 
   /**
@@ -425,13 +400,9 @@ public class XmlUtils {
     if (parent == null) {
       parent = createNode(subPath);
     }
-
-    NodeBuilder nb = new NodeBuilder(nodeName);
-    Node n = nb.getNode(currentDoc);
-
-    appendNode(n, parent);
-
-    return n;
+    Element newNode = currentDoc.createElement(nodeName);
+    appendNode(newNode, parent);
+    return newNode;
   }
 
   /**
@@ -461,11 +432,8 @@ public class XmlUtils {
     if (n == null) {
       n = createNode(xp);
     }
-
-    n.normalize();
-
     try {
-      n.getFirstChild().setNodeValue(v);
+      setNodeValue(v, n);
     }
     catch (NullPointerException ne) {
       // Node has no children!
@@ -500,15 +468,7 @@ public class XmlUtils {
    */
   public void setAttribute(String xp, String name, String value)
       throws Exception {
-    Element e;
-    try {
-      e = (Element) getSingleNode(xp);
-    }
-    catch (ClassCastException ce) {
-      throw new Exception("Only Element Nodes can have attributes added");
-    }
-
-    e.setAttribute(name, value);
+    setAttribute(name, value, getSingleNode(xp));
   }
 
   /**
@@ -522,14 +482,7 @@ public class XmlUtils {
    * @throws Exception on error.
    */
   public void setAttribute(String name, String value, Node n) throws Exception {
-    Element e;
-    try {
-      e = (Element) n;
-    }
-    catch (ClassCastException ce) {
-      throw new Exception("Only Element Nodes can have attributes added");
-    }
-
+    Element e = castOrFail(n, Element.class, "Only Element Nodes can have attributes added");
     e.setAttribute(name, value);
   }
 
@@ -542,14 +495,7 @@ public class XmlUtils {
    * @throws Exception on error.
    */
   public void deleteAttribute(String name, Node n) throws Exception {
-    Element e;
-    try {
-      e = (Element) n;
-    }
-    catch (ClassCastException ce) {
-      throw new Exception("Only Element Nodes have attributes");
-    }
-
+    Element e = castOrFail(n, Element.class, "Only Element Nodes have attributes");
     e.removeAttribute(name);
   }
 
@@ -696,25 +642,8 @@ public class XmlUtils {
    * @throws Exception on error.
    */
   public void writeDocument(Node node, OutputStream output, String encoding) throws Exception {
-    Document docToWrite = null;
-
-    try {
-      docToWrite = (Document) node;
-    }
-    catch (ClassCastException ce) {
-      throw new Exception("writeDocument method can only work with Document Nodes", ce);
-    }
-    String enc = defaultIfEmpty(encoding, DEFAULT_XML_CHARSET);
-
-    Transformer serializer = TransformerFactory.newInstance().newTransformer();
-    serializer.setOutputProperty(OutputKeys.ENCODING, enc);
-    serializer.setOutputProperty(OutputKeys.INDENT, "yes");
-    serializer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-    serializer.transform(new DOMSource(docToWrite), new StreamResult(output));
-    // OutputFormat of = new OutputFormat(docToWrite, encoding, true);
-    // of.setLineWidth(0);
-    // XMLSerializer xs = new XMLSerializer(output, of);
-    // xs.serialize(docToWrite);
+    Document docToWrite = castOrFail(node, Document.class, "writeDocument method can only work with Document Nodes");
+    serialize(new DOMSource(docToWrite), new StreamResult(output), encoding);
   }
 
   /**
@@ -727,36 +656,29 @@ public class XmlUtils {
    */
   public void writeDocument(Node node, Writer writer, String encoding)
       throws Exception {
-    Document docToWrite = null;
+    Document docToWrite = castOrFail(node, Document.class, "writeDocument method can only work with Document Nodes");
+    serialize(new DOMSource(docToWrite), new StreamResult(writer), encoding);
+  }
 
-    try {
-      docToWrite = (Document) node;
-    }
-    catch (ClassCastException ce) {
-      throw new Exception("writeDocument method can only work with Document Nodes", ce);
-    }
+  private void serialize(DOMSource doc, StreamResult result, String encoding)
+      throws TransformerFactoryConfigurationError, TransformerException {
     String enc = defaultIfEmpty(encoding, DEFAULT_XML_CHARSET);
-
     Transformer serializer = TransformerFactory.newInstance().newTransformer();
     serializer.setOutputProperty(OutputKeys.ENCODING, enc);
     serializer.setOutputProperty(OutputKeys.INDENT, "yes");
     serializer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-    serializer.transform(new DOMSource(docToWrite), new StreamResult(writer));
-    // OutputFormat of = new OutputFormat(docToWrite, encoding, true);
-    // of.setLineWidth(0);
-    // XMLSerializer xs = new XMLSerializer(writer, of);
-    // xs.serialize(docToWrite);
+    serializer.transform(doc, result);
   }
 
   public Document getCurrentDoc() {
     return currentDoc;
   }
 
-  public XmlTransformerFactory getXmlTransformerFactory() {
-    return xmlTransformerFactory;
+  public <T> T castOrFail(Object o, Class<T> type, String exceptionMsg) throws Exception {
+    if (type.isAssignableFrom(o.getClass())) {
+      return (T) o;
+    }
+    throw new Exception(exceptionMsg);
   }
 
-  public void setXmlTransformerFactory(XmlTransformerFactory xmlTransformerFactory) {
-    this.xmlTransformerFactory = xmlTransformerFactory;
-  }
 }

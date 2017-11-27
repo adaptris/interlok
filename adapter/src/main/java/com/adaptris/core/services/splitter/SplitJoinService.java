@@ -180,17 +180,15 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware {
 
   @Override
   protected void initService() throws CoreException {
-    if (getSplitter() == null) {
-      throw new CoreException("Null MessageSplitter implementation");
+    try {
+      Args.notNull(getSplitter(), "splitter");
+      Args.notNull(getAggregator(), "aggregator");
+      Args.notNull(getService(), "service");
+      executors = Executors.newCachedThreadPool();
+      marshaller = DefaultMarshaller.getDefaultMarshaller();
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
-    if (getAggregator() == null) {
-      throw new CoreException("Null MessageJoiner implementation");
-    }
-    if (getService() == null) {
-      throw new CoreException("Null Service implementation");
-    }
-    executors = Executors.newCachedThreadPool();
-    marshaller = DefaultMarshaller.getDefaultMarshaller();
   }
 
   @Override
@@ -207,9 +205,7 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware {
 
   @Override
   public void prepare() throws CoreException {
-    if (getService() != null) {
-      getService().prepare();
-    }
+    LifecycleHelper.prepare(getService());
   }
 
   private Service cloneService(Service original) throws ServiceException {
@@ -241,6 +237,7 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware {
     public void run() {
       try {
         LifecycleHelper.registerEventHandler(service, eventHandler);
+        LifecycleHelper.prepare(service);
         LifecycleHelper.init(service);
         LifecycleHelper.start(service);
         service.doService(msg);

@@ -71,4 +71,11 @@ public @interface ComponentProfile {
    * The Author of the component; if not specified defaults to the empty string and will not be displayed.
    */
   String author() default "";
+  
+  /**
+   * When this component was released (use it if you're going to use the javadoc since annotation)
+   * 
+   * @since 3.6.6
+   */
+  String since() default "";
 }

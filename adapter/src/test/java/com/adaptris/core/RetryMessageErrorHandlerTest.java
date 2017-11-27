@@ -18,6 +18,8 @@ package com.adaptris.core;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import com.adaptris.core.fs.FsProducer;
@@ -31,6 +33,7 @@ import com.adaptris.core.stubs.MockConnection;
 import com.adaptris.core.stubs.MockMessageConsumer;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.SimpleIdGenerator;
 import com.adaptris.util.TimeInterval;
 
@@ -192,20 +195,19 @@ public class RetryMessageErrorHandlerTest extends ExampleErrorHandlerCase {
     }
   }
 
+  @SuppressWarnings("deprecation")
   public void testSetLockTimeout() throws Exception {
     RetryMessageErrorHandler meh = new RetryMessageErrorHandler();
     TimeInterval defaultInterval = new TimeInterval(1L, TimeUnit.SECONDS);
     TimeInterval interval = new TimeInterval(20L, TimeUnit.SECONDS);
     assertNull(meh.getLockTimeout());
-    assertEquals(defaultInterval.toMilliseconds(), meh.lockTimeoutMs());
 
     meh.setLockTimeout(interval);
     assertEquals(interval, meh.getLockTimeout());
-    assertEquals(interval.toMilliseconds(), meh.lockTimeoutMs());
-
+    LifecycleHelper.initAndStart(meh);
+    LifecycleHelper.stopAndClose(meh);
     meh.setLockTimeout(null);
     assertNull(meh.getLockTimeout());
-    assertEquals(defaultInterval.toMilliseconds(), meh.lockTimeoutMs());
   }
 
   public void testSetRetryInterval() throws Exception {
@@ -222,6 +224,21 @@ public class RetryMessageErrorHandlerTest extends ExampleErrorHandlerCase {
     meh.setRetryInterval(null);
     assertNull(meh.getRetryInterval());
     assertEquals(defaultInterval.toMilliseconds(), meh.retryIntervalMs());
+  }
+
+  public void testSetRetryLimit() throws Exception {
+    RetryMessageErrorHandler meh = new RetryMessageErrorHandler();
+    assertNull(meh.getRetryLimit());
+    assertEquals(10, meh.retryLimit());
+
+    meh.setRetryLimit(20);
+    assertEquals(Integer.valueOf(20), meh.getRetryLimit());
+    assertEquals(20, meh.retryLimit());
+
+    meh.setRetryLimit(null);
+    assertNull(meh.getRetryLimit());
+    assertEquals(10, meh.retryLimit());
+
   }
 
   public void testRetryLimit2() throws Exception {
@@ -274,7 +291,7 @@ public class RetryMessageErrorHandlerTest extends ExampleErrorHandlerCase {
       MockMessageProducer failProducer = new MockMessageProducer();
       RetryMessageErrorHandler meh = configure(new RetryMessageErrorHandler() {
         public void handleProcessingException(AdaptrisMessage msg) {
-          retryTimer.cancel();
+          ManagedThreadFactory.shutdownQuietly(executor, new TimeInterval(1L, TimeUnit.SECONDS));
           super.handleProcessingException(msg);
         }
       }, failProducer);
@@ -408,6 +425,59 @@ public class RetryMessageErrorHandlerTest extends ExampleErrorHandlerCase {
       renameThread(name);
     }
   }
+
+  public void testFailMessage() throws Exception {
+    MockMessageProducer failProducer = new MockMessageProducer();
+    RetryMessageErrorHandler meh = createMessageErrorHandler(failProducer);
+    try {
+      LifecycleHelper.initAndStart(meh);
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+      msg.getObjectHeaders().put(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception());
+      meh.failMessage(msg);
+      assertEquals(1, failProducer.getMessages().size());
+      meh.failMessage(AdaptrisMessageFactory.getDefaultInstance().newMessage());
+      assertEquals(2, failProducer.getMessages().size());
+    } finally {
+      LifecycleHelper.stopAndClose(meh);
+    }
+  }
+
+
+  public void testFilterStarted() throws Exception {
+    Map<String, Workflow> workflows = new HashMap<>();
+    StandardWorkflow started = new StandardWorkflow();
+    workflows.put("1", new StandardWorkflow());
+    MockChannel mockChannel = LifecycleHelper.initAndStart(new MockChannel(started));
+    workflows.put("2", started);
+    Map<String, Workflow> filtered = RetryMessageErrorHandlerImp.filterStarted(workflows);
+    assertEquals(1, filtered.size());
+    for (Workflow w : workflows.values()) {
+      LifecycleHelper.stopAndClose(w);
+    }
+  }
+
+  public void testHandleProcessingException_NoWorkflow() throws Exception {
+    String name = renameThread("testRetryWithSuccess");
+    try {
+      MockMessageProducer failProducer = new MockMessageProducer();
+      RetryMessageErrorHandler meh = createMessageErrorHandler(failProducer);
+      meh.setRetryInterval(DEFAULT_RETRY_INTERVAL);
+      meh.setRetryLimit(2);
+      MockMessageProducer workflowProducer = new MockMessageProducer();
+      StandardWorkflow workflow = createWorkflow(workflowProducer);
+      Channel channel = createChannel(workflow, meh);
+      workflow.setServiceCollection(new ServiceList());
+      LifecycleHelper.initAndStart(channel);
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("XXXX");
+      meh.handleProcessingException(msg);
+      waitForMessages(failProducer, 1);
+      assertEquals(0, workflowProducer.getMessages().size());
+      assertEquals(1, failProducer.getMessages().size());
+    } finally {
+      renameThread(name);
+    }
+  }
+
 
   @Override
   protected RetryMessageErrorHandler createForExamples() {

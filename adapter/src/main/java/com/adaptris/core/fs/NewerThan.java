@@ -23,10 +23,11 @@ import java.util.Date;
 import javax.xml.datatype.Duration;
 
 /**
- * {@link FileFilter} accepts files based on the last modified time of the file..
+ * {@link FileFilter} accepts files based on the last modified time of the file.
  * <p>
  * As the name suggests, files are accepted based on whether or not the last modified time is <strong>newer</strong> than the
- * specified interval. This interval follows the ISO8601 convention for durations.
+ * specified interval. The interval either follows the ISO8601 convention for durations or is the precise number of milliseconds
+ * since the epoch.
  * </p>
  * <p>
  * The interval is represented by the format <strong>[+-]P[n]Y[n]M[n]DT[n]H[n]M[n]S</strong>. In these representations, the [n] is
@@ -70,10 +71,10 @@ public class NewerThan extends LastModifiedFilter {
   /**
    * Create the filefilter using an ISO8601 formatted interval.
    *
-   * @param iso8601 the iso8601 interval.
+   * @param s the iso8601 interval or the absolute time (MS since epoch)
    */
-  public NewerThan(String iso8601) {
-    super(iso8601);
+  public NewerThan(String s) {
+    super(s);
   }
 
   @Override

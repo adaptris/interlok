@@ -47,15 +47,21 @@ public abstract class ExampleEventHandlerCase extends ExampleConfigCase {
   public static final String BASE_DIR_KEY = "EventHandlerCase.baseDir";
 
   protected AdapterMarshallerFactory marshallerFactory;
-  
-  public ExampleEventHandlerCase(String name) {
-    super(name);
+
+  public ExampleEventHandlerCase() {
+    super();
 
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
     marshallerFactory = AdapterXStreamMarshallerFactory.getInstance();
   }
+
+  public ExampleEventHandlerCase(String name) {
+    this();
+    setName(name);
+  }
+  
 
   @Override
   protected String createExampleXml(Object object) throws Exception {

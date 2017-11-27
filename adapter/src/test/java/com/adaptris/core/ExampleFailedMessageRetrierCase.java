@@ -30,13 +30,19 @@ public abstract class ExampleFailedMessageRetrierCase extends ExampleConfigCase 
    */
   public static final String BASE_DIR_KEY = "FailedMessageRetrierCase.baseDir";
 
-  public ExampleFailedMessageRetrierCase(String name) {
-    super(name);
+  public ExampleFailedMessageRetrierCase() {
+    super();
 
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
   }
+
+  public ExampleFailedMessageRetrierCase(String name) {
+    this();
+    setName(name);
+  }
+
 
   @Override
   protected String createExampleXml(Object object) throws Exception {

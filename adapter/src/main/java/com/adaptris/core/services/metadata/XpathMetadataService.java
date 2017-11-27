@@ -38,6 +38,7 @@ import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.services.metadata.xpath.XpathQuery;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.KeyValuePairSet;
@@ -148,17 +149,11 @@ public class XpathMetadataService extends ServiceImp {
    * @param xql
    */
   public void setXpathQueries(List<XpathQuery> xql) {
-    if (xql == null) {
-      throw new IllegalArgumentException("Xpath Queries are null");
-    }
-    xpathQueries = xql;
+    xpathQueries = Args.notNull(xql, "xpathQueries");
   }
 
   public void addXpathQuery(XpathQuery query) {
-    if (query == null) {
-      throw new IllegalArgumentException("XpathQuery is null");
-    }
-    xpathQueries.add(query);
+    xpathQueries.add(Args.notNull(query, "query"));
   }
 
   @Override
@@ -176,7 +171,6 @@ public class XpathMetadataService extends ServiceImp {
   }
 
   DocumentBuilderFactoryBuilder documentFactoryBuilder() {
-    return getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig()
- : DocumentBuilderFactoryBuilder.newInstance();
+    return DocumentBuilderFactoryBuilder.newInstance(getXmlDocumentFactoryConfig());
   }
 }

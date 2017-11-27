@@ -22,6 +22,7 @@ import static com.adaptris.core.marshaller.xstream.XStreamUtils.toFieldName;
 import static com.adaptris.core.marshaller.xstream.XStreamUtils.toXmlElementName;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 import com.adaptris.annotation.AnnotationConstants;
@@ -38,9 +39,9 @@ public class LowerCaseHyphenatedMapper extends MapperWrapper {
 
   private transient Set<String> xstreamImplicits;
 
-  public LowerCaseHyphenatedMapper(Mapper wrapped, Set<String> pXstreamImplicits) {
+  public LowerCaseHyphenatedMapper(Mapper wrapped, Collection<String> pXstreamImplicits) {
     super(wrapped);
-    this.xstreamImplicits = pXstreamImplicits;
+    this.xstreamImplicits = new HashSet<String>(pXstreamImplicits);
   }
 
   @SuppressWarnings("rawtypes")

@@ -37,7 +37,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @Deprecated
 @XStreamAlias("always-fail-service")
 @AdapterComponent
-@ComponentProfile(summary = "Always throws an exception", tag = "service")
+@ComponentProfile(summary = "Deprecated: use ThrowExceptionService instead", tag = "service")
 public class AlwaysFailService extends ServiceImp {
 
   private static transient boolean warningLogged;

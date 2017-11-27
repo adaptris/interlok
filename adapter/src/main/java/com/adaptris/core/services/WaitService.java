@@ -19,7 +19,10 @@ package com.adaptris.core.services;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
@@ -27,6 +30,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -49,6 +53,9 @@ public class WaitService extends ServiceImp {
   private TimeInterval waitInterval;
   @InputFieldDefault(value = "false")
   private Boolean randomize;
+  @AdvancedConfig
+  @InputFieldDefault(value = "false")
+  private Boolean exceptionOnInterrupt;
 
   /**
    * <p>
@@ -90,7 +97,7 @@ public class WaitService extends ServiceImp {
       Thread.sleep(waitMs);
     }
     catch (InterruptedException e) {
-      ;
+      handleInterrupt(e);
     }
   }
 
@@ -140,5 +147,28 @@ public class WaitService extends ServiceImp {
 
   protected boolean randomizeWait() {
     return getRandomize() != null ? getRandomize().booleanValue() : false;
+  }
+
+  /**
+   * @return the exceptionOnInterupt
+   */
+  public Boolean getExceptionOnInterrupt() {
+    return exceptionOnInterrupt;
+  }
+
+  /**
+   * Whether or not to throw an exception if an {@link InterruptedException} happens.
+   * 
+   * @param b the exceptionOnInterupt to set
+   * @since 3.6.6
+   */
+  public void setExceptionOnInterrupt(Boolean b) {
+    this.exceptionOnInterrupt = b;
+  }
+
+  void handleInterrupt(InterruptedException e) throws ServiceException {
+    if (BooleanUtils.toBooleanDefaultIfNull(getExceptionOnInterrupt(), false)) {
+      throw ExceptionHelper.wrapServiceException(e);
+    }
   }
 }

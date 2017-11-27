@@ -17,6 +17,7 @@
 package com.adaptris.core.lms;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -117,6 +118,17 @@ public class FileBackedMessageTest extends AdaptrisMessageCase {
     assertEquals("file size ", srcFile.length(), orig.getSize());
     assertEquals("payload size ", srcFile.length(), orig.getPayload().length);
   }
+
+  @Test
+  public void testCurrentSource() throws Exception {
+    FileBackedMessage orig = (FileBackedMessage) getMessageFactory().newMessage();
+    assertNotNull(orig.currentSource());
+    File srcFile = new File(BaseCase.PROPERTIES.getProperty("msg.initFromFile"));
+    orig.initialiseFrom(srcFile);
+
+    assertEquals("file size ", srcFile.length(), orig.getSize());
+    assertEquals("payload size ", srcFile.length(), orig.getPayload().length);
+  }
   
   @Test
   public void testCloneFileBackedMessageWithoutContents() throws Exception {
@@ -149,4 +161,28 @@ public class FileBackedMessageTest extends AdaptrisMessageCase {
     assertTrue("Message Size > 0 after 2nd close", fileMsg.getSize() > 0);
   }
 
+  @Test
+  public void testSetNullContent() throws Exception {
+    FileBackedMessage fileMsg = (FileBackedMessage) getMessageFactory().newMessage();
+    fileMsg.setContent(null, null);
+    assertEquals(0, fileMsg.getSize());
+
+  }
+
+  @Test
+  public void testSetNullPayload() throws Exception {
+    FileBackedMessage fileMsg = (FileBackedMessage) getMessageFactory().newMessage();
+    fileMsg.setPayload(null);
+    assertEquals(0, fileMsg.getSize());
+    fileMsg.setPayload(new byte[0]);
+    assertEquals(0, fileMsg.getSize());
+  }
+
+  @Test(expected = RuntimeException.class)
+  public void testSetContent_BadEncoding() throws Exception {
+    FileBackedMessage fileMsg = (FileBackedMessage) getMessageFactory().newMessage();
+    fileMsg.setContent("xxx", "bad-encoding-hah");
+
+    // should throw RTE.
+  }
 }

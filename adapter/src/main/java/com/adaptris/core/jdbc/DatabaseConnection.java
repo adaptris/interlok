@@ -275,7 +275,7 @@ public abstract class DatabaseConnection extends AllowsRetriesConnection {
    * @throws SQLException if the connection was not valid, and reconnection failed
    */
   public final Connection connect() throws SQLException {
-    return initiateConnection();
+    return attemptConnect();
   }
 
   /**
@@ -354,7 +354,7 @@ public abstract class DatabaseConnection extends AllowsRetriesConnection {
    * 
    * @throws SQLException if connection fails after exhausting the specified number of retry attempts
    */
-  private Connection initiateConnection() throws SQLException {
+  private Connection attemptConnect() throws SQLException {
     int attemptCount = 0;
     Connection sqlConnection = null;
     while (sqlConnection == null) {
@@ -367,8 +367,8 @@ public abstract class DatabaseConnection extends AllowsRetriesConnection {
         }
       }
       catch (SQLException e) {
-        if (attemptCount == 1) {
-          log.warn("Connection attempt failed for " + getConnectionName());
+        if (logWarning(attemptCount)) {
+          log.warn("Connection attempt [{}] failed for {}", attemptCount, getConnectionName(), e);
         }
         if (connectionAttempts() != -1 && attemptCount >= connectionAttempts()) {
           log.error("Failed to make any Jdbc Connections");

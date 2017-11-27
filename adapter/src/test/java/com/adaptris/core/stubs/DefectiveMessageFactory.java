@@ -31,10 +31,34 @@ import com.adaptris.core.DefaultMessageFactory;
  */
 public final class DefectiveMessageFactory extends DefaultMessageFactory {
 
+  public static enum WhenToBreak {
+    INPUT,
+    OUTPUT,
+    BOTH,
+    NEVER
+  };
+
+  private transient WhenToBreak whenToBreak;
+
+  public DefectiveMessageFactory() {
+    whenToBreak = WhenToBreak.BOTH;
+  }
+
+  public DefectiveMessageFactory(WhenToBreak wtb) {
+    whenToBreak = wtb;
+  }
+
   @Override
   public AdaptrisMessage newMessage() {
     AdaptrisMessage result = new DefectiveAdaptrisMessage(uniqueIdGenerator(), this);
     return result;
   }
 
+  boolean brokenInput() {
+    return (whenToBreak == WhenToBreak.INPUT) || (whenToBreak == WhenToBreak.BOTH);
+  }
+
+  boolean brokenOutput() {
+    return (whenToBreak == WhenToBreak.OUTPUT) || (whenToBreak == WhenToBreak.BOTH);
+  }
 }

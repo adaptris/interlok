@@ -19,6 +19,8 @@ package com.adaptris.util.stream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
+import java.security.MessageDigest;
+import java.util.Arrays;
 
 /**
  * Workaround for a Sun JVM bug whereby it does not handle streams that have a UTF-8 BOM.
@@ -44,6 +46,31 @@ public class UnicodeDetectingInputStream extends InputStream {
   public static final String UTF_32_LE = "UTF-32LE";
   public static final String UTF_32_BE = "UTF-32BE";
 
+  public static final byte[] UTF8_BOM = new byte[]
+  {
+      (byte) 0xEF, (byte) 0xBB, (byte) 0xBF
+  };
+
+  public static final byte[] UTF16LE_BOM = new byte[]
+  {
+      (byte) 0xFF, (byte) 0xFE
+  };
+
+  public static final byte[] UTF16BE_BOM = new byte[]
+  {
+      (byte) 0xFE, (byte) 0xFF
+  };
+
+  public static final byte[] UTF32LE_BOM = new byte[]
+  {
+      (byte) 0xFF, (byte) 0xFE, (byte) 0x00, (byte) 0x00
+  };
+
+  public static final byte[] UTF32BE_BOM = new byte[]
+  {
+      (byte) 0x00, (byte) 0x00, (byte) 0xFE, (byte) 0xFF
+  };
+
   private PushbackInputStream internalIn;
   private boolean isInited = false;
   private String defaultEnc;
@@ -66,9 +93,7 @@ public class UnicodeDetectingInputStream extends InputStream {
         init();
       }
       catch (IOException ex) {
-        IllegalStateException ise = new IllegalStateException("Init method failed.");
-        ise.initCause(ise);
-        throw ise;
+        throw new IllegalStateException("Init method failed.", ex);
       }
     }
     return encoding;
@@ -77,32 +102,33 @@ public class UnicodeDetectingInputStream extends InputStream {
   /**
    * Read-ahead four bytes and check for BOM marks. Extra bytes are unread back to the stream, only BOM bytes are skipped.
    */
-  protected void init() throws IOException {
-    if (isInited) {
-      return;
-    }
+  private void init() throws IOException {
 
     byte bom[] = new byte[BOM_SIZE];
     int n, unread;
     n = internalIn.read(bom, 0, bom.length);
-
-    if (bom[0] == (byte) 0x00 && bom[1] == (byte) 0x00 && bom[2] == (byte) 0xFE && bom[3] == (byte) 0xFF) {
+    if (areEqual(bom, UTF32BE_BOM)) {
+      // if (bom[0] == (byte) 0x00 && bom[1] == (byte) 0x00 && bom[2] == (byte) 0xFE && bom[3] == (byte) 0xFF) {
       encoding = UTF_32_BE;
       unread = n - 4;
     }
-    else if (bom[0] == (byte) 0xFF && bom[1] == (byte) 0xFE && bom[2] == (byte) 0x00 && bom[3] == (byte) 0x00) {
+    else if (areEqual(bom, UTF32LE_BOM)) {
+      // else if (bom[0] == (byte) 0xFF && bom[1] == (byte) 0xFE && bom[2] == (byte) 0x00 && bom[3] == (byte) 0x00) {
       encoding = UTF_32_LE;
       unread = n - 4;
     }
-    else if (bom[0] == (byte) 0xEF && bom[1] == (byte) 0xBB && bom[2] == (byte) 0xBF) {
+    else if (areEqual(bom, UTF8_BOM)) {
+      // else if (bom[0] == (byte) 0xEF && bom[1] == (byte) 0xBB && bom[2] == (byte) 0xBF) {
       encoding = UTF_8;
       unread = n - 3;
     }
-    else if (bom[0] == (byte) 0xFE && bom[1] == (byte) 0xFF) {
+    else if (areEqual(bom, UTF16BE_BOM)) {
+      // else if (bom[0] == (byte) 0xFE && bom[1] == (byte) 0xFF) {
       encoding = UTF_16_BE;
       unread = n - 2;
     }
-    else if (bom[0] == (byte) 0xFF && bom[1] == (byte) 0xFE) {
+    else if (areEqual(bom, UTF16LE_BOM)) {
+      // else if (bom[0] == (byte) 0xFF && bom[1] == (byte) 0xFE) {
       encoding = UTF_16_LE;
       unread = n - 2;
     }
@@ -111,13 +137,16 @@ public class UnicodeDetectingInputStream extends InputStream {
       encoding = defaultEnc;
       unread = n;
     }
-    // System.out.println("read=" + n + ", unread=" + unread);
-
     if (unread > 0) {
       internalIn.unread(bom, n - unread, unread);
     }
 
     isInited = true;
+  }
+
+  private boolean areEqual(byte[] readBom, byte[] utfBom) {
+    byte[] derivedBom = Arrays.copyOf(readBom, utfBom.length);
+    return MessageDigest.isEqual(derivedBom, utfBom);
   }
 
   @Override

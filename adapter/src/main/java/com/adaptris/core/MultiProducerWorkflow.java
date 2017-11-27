@@ -19,6 +19,7 @@ package com.adaptris.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdapterComponent;
@@ -27,6 +28,7 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -51,6 +53,7 @@ public class MultiProducerWorkflow extends StandardWorkflow {
 
   @NotNull
   @AutoPopulated
+  @Valid
   private List<StandaloneProducer> standaloneProducers;
   @AdvancedConfig
   @InputFieldDefault(value = "false")
@@ -186,10 +189,7 @@ public class MultiProducerWorkflow extends StandardWorkflow {
    * @param producer the <code>StandaloneProducer</code> to add.
    */
   public void addStandaloneProducer(StandaloneProducer producer) {
-    if (producer == null) {
-      throw new IllegalArgumentException("param is null");
-    }
-    standaloneProducers.add(producer);
+    standaloneProducers.add(Args.notNull(producer, "producer"));
   }
 
   /**
@@ -215,10 +215,7 @@ public class MultiProducerWorkflow extends StandardWorkflow {
    *          <code>StandaloneProducer</code>s used to send processed messages
    */
   public void setStandaloneProducers(List<StandaloneProducer> l) {
-    if (l == null) {
-      throw new IllegalArgumentException("null parameter for standalone producers");
-    }
-    standaloneProducers = l;
+    standaloneProducers = Args.notNull(l, "standaloneProducers");
   }
 
   /**

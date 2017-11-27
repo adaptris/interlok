@@ -26,6 +26,8 @@ import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.ComponentLifecycle;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 
 
@@ -64,16 +66,16 @@ public abstract class AggregatingConsumerImpl<E extends AggregatingConsumeServic
    * @param cmh the messageHandler to set
    */
   public void setMessageAggregator(MessageAggregator cmh) {
-    if (cmh == null) throw new IllegalArgumentException("message-aggregator is null");
-    this.messageAggregator = cmh;
+    this.messageAggregator = Args.notNull(cmh, "messageAggregator");
   }
 
   public void init() throws CoreException {
-    if (destination == null) {
-      throw new CoreException("Null Destination");
+    try {
+      Args.notNull(getDestination(), "destination");
+      Args.notNull(getMessageAggregator(), "messageAggregator");
     }
-    if (getMessageAggregator() == null) {
-      throw new CoreException("Null Message Aggregator");
+    catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
@@ -100,7 +102,7 @@ public abstract class AggregatingConsumerImpl<E extends AggregatingConsumeServic
    * @param cd the destination generator.
    */
   public void setDestination(ConsumeDestinationGenerator cd) {
-    this.destination = cd;
+    this.destination = Args.notNull(cd, "destination");
   }
 
   protected static void rethrowServiceException(Exception e) throws ServiceException {

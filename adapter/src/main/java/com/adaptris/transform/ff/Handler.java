@@ -80,19 +80,19 @@ public abstract class Handler {
    */
 
   protected void log(String type, String message) {
-    if (message == null) {
+    if (type == null) {
       logR.info(message);
     }
-    else if (message.equals("INFO")) {
+    else if (type.equals("INFO")) {
       logR.info(message);
     }
-    else if (message.equals("WARNING")) {
+    else if (type.equals("WARNING")) {
       logR.warn(message);
     }
-    else if (message.equals("ERROR")) {
+    else if (type.equals("ERROR")) {
       logR.error(message);
     }
-    else if (message.equals("DEBUG")) {
+    else if (type.equals("DEBUG")) {
       logR.debug(message);
     }
     else {

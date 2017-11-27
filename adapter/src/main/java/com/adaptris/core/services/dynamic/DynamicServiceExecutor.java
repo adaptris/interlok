@@ -39,6 +39,7 @@ import com.adaptris.core.EventHandlerAware;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -140,10 +141,8 @@ public class DynamicServiceExecutor extends ServiceImp implements EventHandlerAw
    * @param s the service extractor implementation, the default is {@link DefaultServiceExtractor}
    */
   public void setServiceExtractor(ServiceExtractor s) {
-    if (s == null) {
-      throw new IllegalArgumentException("Null ServiceExtractor");
-    }
-    this.serviceExtractor = s;
+    this.serviceExtractor = Args.notNull(s, "serviceExtractor");
+
   }
 
   public AdaptrisMarshaller getMarshaller() {

@@ -52,13 +52,13 @@ public class XmlTransformServiceTest extends TransformServiceExample {
 
   static final String KEY_XML_NODE_TRANSFORM_URL = "XmlTransformService.outputNodeTransform";
 
-  static final String KEY_XML_TEST_INPUT = "XmlTransformService.outputTestMessage";
-  static final String KEY_XML_TEST_TRANSFORM_URL = "XmlTransformService.outputTestTransform";
-  static final String KEY_XML_TEST_TRANSFORM_URL_XSL_MESSAGE = "XmlTransformService.outputTestTransformWithXslMessage";
-  static final String KEY_XML_TEST_INVALID_TRANSFORM_URL = "XmlTransformService.outputTestInvalidTransform";
-  static final String KEY_XML_TEST_FATAL_TRANSFORM_URL = "XmlTransformService.outputTestFatalTransform";
-  static final String KEY_XML_TEST_STX_TRANSFORM_URL = "XmlTransformService.outputTestStxTransform";
-  static final String KEY_XML_TEST_OUTPUT = "XmlTransformService.outputTestResult";
+  public static final String KEY_XML_TEST_INPUT = "XmlTransformService.outputTestMessage";
+  public static final String KEY_XML_TEST_TRANSFORM_URL = "XmlTransformService.outputTestTransform";
+  public static final String KEY_XML_TEST_TRANSFORM_URL_XSL_MESSAGE = "XmlTransformService.outputTestTransformWithXslMessage";
+  public static final String KEY_XML_TEST_INVALID_TRANSFORM_URL = "XmlTransformService.outputTestInvalidTransform";
+  public static final String KEY_XML_TEST_FATAL_TRANSFORM_URL = "XmlTransformService.outputTestFatalTransform";
+  public static final String KEY_XML_TEST_STX_TRANSFORM_URL = "XmlTransformService.outputTestStxTransform";
+  public static final String KEY_XML_TEST_OUTPUT = "XmlTransformService.outputTestResult";
 
   static final String KEY_ISSUE2641_INPUT = "XmlTransformService.issue2641.input";
   static final String KEY_ISSUE2641_TRANSFORM_URL = "XmlTransformService.issue2641.transform";

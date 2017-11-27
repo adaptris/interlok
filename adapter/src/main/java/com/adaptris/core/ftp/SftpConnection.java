@@ -48,7 +48,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("sftp-connection")
 @AdapterComponent
-@ComponentProfile(summary = "Connect to a server using the SSH File Transfer Protocol; authentica via a username and password",
+@ComponentProfile(
+    summary = "Deprecated: Use StandardSftpConnection instead",
     tag = "connections,sftp")
 @DisplayOrder(order = {"defaultUserName", "defaultPassword", "transferType", "ftpDataMode", "defaultControlPort"})
 @Deprecated

@@ -48,6 +48,7 @@ import com.adaptris.core.AdaptrisMessageListener;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.RequestReplyProducerImp;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 
 public abstract class JmsProducerImpl extends RequestReplyProducerImp implements JmsActorConfig {
@@ -385,10 +386,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
    * @param translator the <code>MessageTypeTranslator</code> to use
    */
   public void setMessageTranslator(MessageTypeTranslator translator) {
-    if (translator == null) {
-      throw new IllegalArgumentException();
-    }
-    messageTranslator = translator;
+    messageTranslator = Args.notNull(translator, "messageTranslator");
   }
 
   /**
@@ -445,10 +443,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
    * @param c the correlationIdSource to set
    */
   public void setCorrelationIdSource(CorrelationIdSource c) {
-    if (c == null) {
-      throw new IllegalArgumentException("null param");
-    }
-    correlationIdSource = c;
+    correlationIdSource = Args.notNull(c, "correlationIdSource");
   }
 
   /**
@@ -640,9 +635,6 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
    *        {@link DefaultProducerSessionFactory}
    */
   public void setSessionFactory(ProducerSessionFactory s) {
-    if (s == null) {
-      throw new IllegalArgumentException("ProducerSessionFactory may not be null");
-    }
-    this.sessionFactory = s;
+    this.sessionFactory = Args.notNull(s, "sessionFactory");
   }
 }

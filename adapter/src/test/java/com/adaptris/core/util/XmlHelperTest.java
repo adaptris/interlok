@@ -16,14 +16,25 @@
 
 package com.adaptris.core.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+
+import java.io.IOException;
+
+import javax.xml.namespace.NamespaceContext;
+
+import org.junit.Test;
 import org.w3c.dom.Document;
 
+import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.BaseCase;
+import com.adaptris.core.CoreException;
 import com.adaptris.util.XmlUtils;
 
 @SuppressWarnings("deprecation")
-public class XmlHelperTest extends BaseCase {
+public class XmlHelperTest extends XmlHelper {
   private static final String EXAMPLE_XML =
       "<document>" + System.lineSeparator() + "  <content>text body</content>" + System.lineSeparator()
           + "  <attachment encoding=\"base64\" filename=\"attachment1.txt\">dp/HSJfonUsSMM7QRBSRfg==</attachment>"
@@ -31,44 +42,80 @@ public class XmlHelperTest extends BaseCase {
           + "  <attachment encoding=\"base64\" filename=\"attachment2.txt\">OdjozpCZB9PbCCLZlKregQ</attachment>"
           + System.lineSeparator() + "</document>";
 
-  public XmlHelperTest(String s) {
-    super(s);
-  }
+  private static final String ILLEGAL_XML_CHAR = new String(new byte[]
+  {
+      (byte) 0x02
+  });
 
-
+  @Test
   public void testCreateDocument() throws Exception {
     Document d = XmlHelper.createDocument(EXAMPLE_XML);
     assertNotNull(d);
     XmlUtils xu = new XmlUtils();
     xu.setSource(d);
     assertEquals("text body", xu.getSingleTextItem("/document/content"));
+    assertNotNull(createDocument(EXAMPLE_XML, DocumentBuilderFactoryBuilderTest.createNamespaceContext()));
+    assertNotNull(createDocument(EXAMPLE_XML, (NamespaceContext) null));
   }
 
+  @Test
   public void testCreateDocumentFromMessage() throws Exception {
     Document d = XmlHelper.createDocument(AdaptrisMessageFactory.getDefaultInstance().newMessage(EXAMPLE_XML));
     assertNotNull(d);
     XmlUtils xu = new XmlUtils();
     xu.setSource(d);
     assertEquals("text body", xu.getSingleTextItem("/document/content"));
+    assertNotNull(createDocument(AdaptrisMessageFactory.getDefaultInstance().newMessage(EXAMPLE_XML),
+        DocumentBuilderFactoryBuilderTest.createNamespaceContext()));
+    assertNotNull(
+        createDocument(AdaptrisMessageFactory.getDefaultInstance().newMessage(EXAMPLE_XML), (NamespaceContext) null));
+
   }
 
+  @Test(expected = Exception.class)
   public void testCreateDocumentInvalidXmlMessage() throws Exception {
-    try {
-      XmlHelper.createDocument(AdaptrisMessageFactory.getDefaultInstance().newMessage("AAAAAAAA"));
-      fail("Failed");
-    }
-    catch (Exception expected) {
-
-    }
+    createDocument(AdaptrisMessageFactory.getDefaultInstance().newMessage("AAAAAAAA"));
   }
 
+  @Test(expected = Exception.class)
   public void testCreateDocumentInvalidXmlString() throws Exception {
-    try {
-      XmlHelper.createDocument("AAAAAAAA");
-      fail("Failed");
-    }
-    catch (Exception expected) {
-    }
+    createDocument("AAAAAAAA");
   }
 
+  @Test
+  public void testCreateXmlUtils() throws Exception {
+    assertNotNull(createXmlUtils(AdaptrisMessageFactory.getDefaultInstance().newMessage(EXAMPLE_XML)));
+    assertNotNull(createXmlUtils(AdaptrisMessageFactory.getDefaultInstance().newMessage(EXAMPLE_XML),
+        DocumentBuilderFactoryBuilderTest.createNamespaceContext()));
+    assertNotNull(XmlHelper.createXmlUtils(AdaptrisMessageFactory.getDefaultInstance().newMessage(EXAMPLE_XML),
+        DocumentBuilderFactoryBuilderTest.createNamespaceContext(), null));
+  }
+
+  @Test(expected = CoreException.class)
+  public void testXmlUtilsInvalidXmlString() throws Exception {
+    createXmlUtils(AdaptrisMessageFactory.getDefaultInstance().newMessage("AAAAAAAA"));
+  }
+
+  @Test(expected = CoreException.class)
+  public void testXmlUtilsBrokenInput() throws Exception {
+    AdaptrisMessage msg = mock(AdaptrisMessage.class);
+    doThrow(new IOException()).when(msg).getInputStream();
+    createXmlUtils(msg);
+  }
+
+  @Test
+  public void testSafeElementName() throws Exception {
+    assertEquals("default", safeElementName("", "default"));
+    assertEquals("hello", safeElementName("hello", "default"));
+    assertEquals("_0hello", safeElementName("0hello", "default"));
+    assertEquals("_0hel_lo", safeElementName("_0hel&lo", "default"));
+    // We add a _ to the start -> _?hello but ? is still invalid so we replace with another _ -> __hello
+    assertEquals("__hello", safeElementName("?hello", "default"));
+  }
+
+  @Test
+  public void testStripIllegalChars() throws Exception {
+    assertEquals("hello", stripIllegalXmlCharacters("hel" + ILLEGAL_XML_CHAR + "lo"));
+    assertEquals("hello", stripIllegalXmlCharacters("hello"));
+  }
 }

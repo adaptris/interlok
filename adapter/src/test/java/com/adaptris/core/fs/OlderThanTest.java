@@ -54,6 +54,15 @@ public class OlderThanTest {
     assertFalse(filter.accept(file));
   }
 
+  @Test
+  public void testAbsolute() throws Exception {
+    Calendar c = Calendar.getInstance();
+    c.add(Calendar.DAY_OF_YEAR, +1);
+    OlderThan filter = new OlderThan("" + c.getTime().getTime());
+    File file = writeFile(TempFileUtils.createTrackedFile(filter));
+    assertTrue(filter.accept(file));
+  }
+
   private File writeFile(File f) throws IOException {
     FileUtils.write(f, "Hello World");
     return f;

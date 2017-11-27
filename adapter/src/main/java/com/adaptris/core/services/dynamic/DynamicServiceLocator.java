@@ -37,6 +37,8 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.TradingRelationship;
 import com.adaptris.core.TradingRelationshipCreator;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -139,7 +141,7 @@ public class DynamicServiceLocator extends ServiceImp implements EventHandlerAwa
   private void execute(String matchedName, Service dynamicService, AdaptrisMessage msg) throws CoreException {
     String serviceName = friendlyName(dynamicService);
 
-    dynamicService.prepare();
+    LifecycleHelper.prepare(dynamicService);
     log.debug("Applying service [" + serviceName + "] from [" + matchedName + "]");
     LifecycleHelper.registerEventHandler(dynamicService, eventHandler);
     try {
@@ -174,12 +176,14 @@ public class DynamicServiceLocator extends ServiceImp implements EventHandlerAwa
 
   @Override
   protected void initService() throws CoreException {
-    if (getTradingRelationshipCreator() == null || getServiceNameProvider() == null || getServiceStore() == null) {
-
-      throw new CoreException("invalid config");
+    try {
+      Args.notNull(getTradingRelationshipCreator(), "relationshipCreator");
+      Args.notNull(getServiceNameProvider(), "serviceNameProvider");
+      Args.notNull(getServiceStore(), "serviceStore");
+      getServiceStore().validate();
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
-
-    getServiceStore().validate();
   }
 
   @Override
@@ -207,10 +211,8 @@ public class DynamicServiceLocator extends ServiceImp implements EventHandlerAwa
    * @param s the <code>ServiceStore</code> to use
    */
   public void setServiceStore(ServiceStore s) {
-    if (s == null) {
-      throw new IllegalArgumentException("Service Store may not be null");
-    }
-    serviceStore = s;
+    serviceStore = Args.notNull(s, "serviceStore");
+
   }
 
   /**
@@ -232,10 +234,7 @@ public class DynamicServiceLocator extends ServiceImp implements EventHandlerAwa
    * @param t the <code>TradingRelationshipCreator</code> to use
    */
   public void setTradingRelationshipCreator(TradingRelationshipCreator t) {
-    if (t == null) {
-      throw new IllegalArgumentException("TradingRelationshipCreator may not be null");
-    }
-    tradingRelationshipCreator = t;
+    tradingRelationshipCreator = Args.notNull(t, "tradingRelationshipCreator");
   }
 
   /**
@@ -257,10 +256,7 @@ public class DynamicServiceLocator extends ServiceImp implements EventHandlerAwa
    * @param s the <code>ServiceNameProvider</code> to use
    */
   public void setServiceNameProvider(ServiceNameProvider s) {
-    if (s == null) {
-      throw new IllegalArgumentException("ServiceNameProvider may not be null");
-    }
-    serviceNameProvider = s;
+    serviceNameProvider = Args.notNull(s, "serviceNameProvider");
   }
 
   /**
@@ -282,10 +278,7 @@ public class DynamicServiceLocator extends ServiceImp implements EventHandlerAwa
    * @param m the <code>MatchingStrategy</code> to use
    */
   public void setMatchingStrategy(MatchingStrategy m) {
-    if (m == null) {
-      throw new IllegalArgumentException("MatchingStrategy may not be null");
-    }
-    matchingStrategy = m;
+    matchingStrategy = Args.notNull(m, "matchingStrategy");
   }
 
   /**

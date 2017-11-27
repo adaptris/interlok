@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.core.util.Args;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairCollection;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -94,12 +95,7 @@ public class ExceptionDestination implements MessageDrivenDestination {
    * @param mapping the mapping.
    */
   public void setExceptionMapping(KeyValuePairCollection mapping) {
-    if (mapping != null) {
-      exceptionMapping = mapping;
-    }
-    else {
-      throw new IllegalArgumentException("Null Exception Mapping");
-    }
+    exceptionMapping = Args.notNull(mapping, "exceptionMappings");
   }
 
   public String getDefaultDestination() {
@@ -112,10 +108,6 @@ public class ExceptionDestination implements MessageDrivenDestination {
    * @param s the default destination.
    */
   public void setDefaultDestination(String s) {
-    if ("".equals(s) || s == null) {
-      throw new IllegalArgumentException("Null Default Destination");
-
-    }
-    defaultDestination = s;
+    defaultDestination = Args.notBlank(s, "defaultDestination");
   }
 }

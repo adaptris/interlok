@@ -31,6 +31,7 @@ import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.metadata.MetadataFilter;
 import com.adaptris.core.metadata.NoOpMetadataFilter;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -88,10 +89,7 @@ public class MetadataFilterService extends ServiceImp {
   }
 
   public void setFilter(MetadataFilter mf) {
-    if (mf == null) {
-      throw new IllegalArgumentException("Filter may not be null");
-    }
-    filter = mf;
+    filter = Args.notNull(mf, "filter");
   }
 
   @Override

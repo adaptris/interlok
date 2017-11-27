@@ -23,6 +23,8 @@ package com.adaptris.transform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.core.util.Args;
+
 /**
  * <p>
  * This is the central class in the package and it represents the base class of
@@ -75,12 +77,7 @@ public abstract class TransformFramework {
   // ////////////////////////////////////////////
 
   public TransformFramework(ProcessorHandle processorHandle) {
-
-    if (processorHandle == null) {
-      throw new IllegalArgumentException("Null Processor Handle");
-    }
-
-    this.processorHandle = processorHandle;
+    this.processorHandle = Args.notNull(processorHandle, "processHandle");
   }
 
   // ////////////////////////////////////////////
@@ -123,11 +120,7 @@ public abstract class TransformFramework {
    * @see #removeRule(int)
    */
   public void removeRule(Source rule) {
-    if (rule == null) {
-      throw new IllegalArgumentException();
-    }
-
-    ruleList.remove(rule);
+    ruleList.remove(Args.notNull(rule, "rule"));
 
     if (log != null) {
       log.debug("TransformFramework removeRule() invoked: rule <" + rule + ">");

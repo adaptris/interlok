@@ -19,12 +19,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.io.ByteArrayInputStream;
+import java.io.FilterInputStream;
+import java.io.IOException;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.CoreException;
 
 public class PayloadStreamOutputParameterTest {
 
@@ -86,5 +89,52 @@ public class PayloadStreamOutputParameterTest {
     p.insert(new InputStreamWithEncoding(in, null), msg);
     assertEquals(TEXT, msg.getContent());
     assertEquals(UTF_8, msg.getContentEncoding());
+  }
+
+  @Test(expected = CoreException.class)
+  public void testInsert_BrokenInput() throws Exception {
+    PayloadStreamOutputParameter p = new PayloadStreamOutputParameter();
+    p.setContentEncoding(UTF_8);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    FilterInputStream in = new FilterInputStream(new ByteArrayInputStream(new byte[0])) {
+      @Override
+      public int read() throws IOException {
+        throw new IOException("Failed to read");
+      }
+
+      @Override
+      public int read(byte[] b) throws IOException {
+        throw new IOException("Failed to read");
+      }
+
+      @Override
+      public int read(byte[] b, int off, int len) throws IOException {
+        throw new IOException("Failed to read");
+      }
+    };
+    p.insert(new InputStreamWithEncoding(in, UTF_8), msg);
+  }
+
+  @Test(expected = CoreException.class)
+  public void testInsert_Broken_BinaryInput() throws Exception {
+    PayloadStreamOutputParameter p = new PayloadStreamOutputParameter();
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    FilterInputStream in = new FilterInputStream(new ByteArrayInputStream(new byte[0])) {
+      @Override
+      public int read() throws IOException {
+        throw new IOException("Failed to read");
+      }
+
+      @Override
+      public int read(byte[] b) throws IOException {
+        throw new IOException("Failed to read");
+      }
+
+      @Override
+      public int read(byte[] b, int off, int len) throws IOException {
+        throw new IOException("Failed to read");
+      }
+    };
+    p.insert(new InputStreamWithEncoding(in, null), msg);
   }
 }

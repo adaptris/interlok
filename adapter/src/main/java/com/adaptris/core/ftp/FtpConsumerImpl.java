@@ -120,7 +120,7 @@ public abstract class FtpConsumerImpl extends AdaptrisPollingConsumer {
       for (String file : files) {
         String fileToGet = pollDirectory + FORWARD_SLASH + FtpHelper.getFilename(file, con.windowsWorkaround());
         count += handle(fileToGet) ? 1 : 0;
-        if (!continueProcessingMessages()) {
+        if (!continueProcessingMessages(count)) {
           break;
         }
       }

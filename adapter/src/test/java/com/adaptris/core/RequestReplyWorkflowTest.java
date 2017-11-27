@@ -16,6 +16,12 @@
 
 package com.adaptris.core;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -70,6 +76,23 @@ public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
     return channel;
   }
 
+  public void testReplyProducer() throws Exception {
+    MockMessageProducer producer = new MockMessageProducer();
+    RequestReplyWorkflow workflow = new RequestReplyWorkflow();
+    assertEquals(NullMessageProducer.class, workflow.getReplyProducer().getClass());
+    workflow.setReplyProducer(producer);
+    assertEquals(producer, workflow.getReplyProducer());
+  }
+
+
+  public void testReplyServiceCollection() throws Exception {
+    ServiceList replyServices = new ServiceList();
+    RequestReplyWorkflow workflow = new RequestReplyWorkflow();
+    assertEquals(ServiceList.class, workflow.getReplyServiceCollection().getClass());
+    workflow.setReplyServiceCollection(replyServices);
+    assertEquals(replyServices, workflow.getReplyServiceCollection());
+  }
+
   public void testSetReplyTimeout() throws Exception {
     TimeInterval defaultInterval = new TimeInterval(30L, TimeUnit.SECONDS);
     TimeInterval interval = new TimeInterval(60L, TimeUnit.SECONDS);
@@ -87,9 +110,11 @@ public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
     assertEquals(defaultInterval.toMilliseconds(), workflow.replyTimeout());
 
   }
+
   public void testWorkflow() throws Exception {
     Channel channel = createChannel();
     RequestReplyWorkflow workflow = (RequestReplyWorkflow) channel.getWorkflowList().get(0);
+    workflow.setRetainUniqueId(true);
     MockMessageProducer replier = (MockMessageProducer) workflow.getReplyProducer();
     MockRequestReplyProducer requestor = (MockRequestReplyProducer) workflow.getProducer();
     try {
@@ -98,6 +123,79 @@ public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
       doDefaultAssertions(requestor, replier);
       AdaptrisMessage replyMsg = replier.getMessages().get(0);
       assertTrue("Request Metadata", replyMsg.headersContainsKey(REQUEST_METADATA_KEY));
+    }
+    finally {
+      stop(channel);
+    }
+  }
+
+  public void testWorkflow_ReplyProducerFailure() throws Exception {
+    Channel channel = new MockChannel();
+    RequestReplyWorkflow workflow = new RequestReplyWorkflow();
+    workflow.setConsumer(new MockMessageConsumer());
+    MockMessageProducer errorProducer = new MockMessageProducer();
+    workflow.setMessageErrorHandler(new StandardProcessingExceptionHandler(new StandaloneProducer(errorProducer)));
+    AdaptrisMessage reply = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+
+    AdaptrisMessageProducer replier = mock(AdaptrisMessageProducer.class);
+    doThrow(new ProduceException()).when(replier).produce(any(AdaptrisMessage.class));
+    doThrow(new ProduceException()).when(replier).produce(any(AdaptrisMessage.class), any(ProduceDestination.class));
+    when(replier.createName()).thenReturn("mock");
+    when(replier.createQualifier()).thenReturn("mock");
+    when(replier.isTrackingEndpoint()).thenReturn(false);
+
+    AdaptrisMessageProducer requestor = mock(AdaptrisMessageProducer.class);
+
+    when(requestor.request(any(AdaptrisMessage.class))).thenReturn(reply);
+    when(requestor.request(any(AdaptrisMessage.class), any(ProduceDestination.class))).thenReturn(reply);
+    when(requestor.request(any(AdaptrisMessage.class), any(ProduceDestination.class), anyLong())).thenReturn(reply);
+    when(requestor.request(any(AdaptrisMessage.class), anyLong())).thenReturn(reply);
+    when(requestor.createName()).thenReturn("mock");
+    when(requestor.createQualifier()).thenReturn("mock");
+    when(requestor.isTrackingEndpoint()).thenReturn(false);
+
+    workflow.setProducer(requestor);
+    workflow.setReplyProducer(replier);
+    channel.getWorkflowList().add(workflow);
+    try {
+      start(channel);
+      submitMessages(workflow, 1);
+      assertEquals(1, errorProducer.getMessages().size());
+    }
+    finally {
+      stop(channel);
+    }
+  }
+
+  public void testWorkflow_NullReply() throws Exception {
+    Channel channel = new MockChannel();
+    RequestReplyWorkflow workflow = new RequestReplyWorkflow();
+    workflow.setConsumer(new MockMessageConsumer());
+
+
+    AdaptrisMessageProducer replier = mock(AdaptrisMessageProducer.class);
+    doThrow(new ProduceException()).when(replier).produce(any(AdaptrisMessage.class));
+    doThrow(new ProduceException()).when(replier).produce(any(AdaptrisMessage.class), any(ProduceDestination.class));
+    when(replier.createName()).thenReturn("mock");
+    when(replier.createQualifier()).thenReturn("mock");
+    when(replier.isTrackingEndpoint()).thenReturn(false);
+
+    AdaptrisMessageProducer requestor = mock(AdaptrisMessageProducer.class);
+
+    when(requestor.request(any(AdaptrisMessage.class))).thenReturn(null);
+    when(requestor.request(any(AdaptrisMessage.class), any(ProduceDestination.class))).thenReturn(null);
+    when(requestor.request(any(AdaptrisMessage.class), any(ProduceDestination.class), anyLong())).thenReturn(null);
+    when(requestor.request(any(AdaptrisMessage.class), anyLong())).thenReturn(null);
+    when(requestor.createName()).thenReturn("mock");
+    when(requestor.createQualifier()).thenReturn("mock");
+    when(requestor.isTrackingEndpoint()).thenReturn(false);
+
+    workflow.setProducer(requestor);
+    workflow.setReplyProducer(replier);
+    channel.getWorkflowList().add(workflow);
+    try {
+      start(channel);
+      submitMessages(workflow, 1);
     }
     finally {
       stop(channel);

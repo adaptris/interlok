@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.adaptris.core.TradingRelationship;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -52,10 +53,7 @@ public class ConfiguredServiceNameProvider extends ServiceNameProviderImp {
 
   @Override
   protected String retrieveName(TradingRelationship t) {
-    if (t == null) {
-      throw new IllegalArgumentException("null param");
-    }
-
+    Args.notNull(t, "relationship");
     String result = null;
     for (ServiceNameMapper candidate : serviceNameMappers) {
       if (candidate.getTradingRelationship().equals(t)) {

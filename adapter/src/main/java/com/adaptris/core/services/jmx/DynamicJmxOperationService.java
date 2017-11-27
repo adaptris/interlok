@@ -35,7 +35,6 @@ import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.NullConnection;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.jmx.JmxConnection;
 import com.adaptris.core.util.ExceptionHelper;
@@ -59,7 +58,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("jmx-dynamic-operation-service")
 @AdapterComponent
-@ComponentProfile(summary = "Execute a JMX operation", tag = "service,jmx", recommended = {NullConnection.class})
+@ComponentProfile(summary = "Execute a JMX operation", tag = "service,jmx", since = "3.6.5")
 @DisplayOrder(order = {"jmxServiceUrl", "objectName", "operationName", "maxJmxConnectionCache", "operationParameters", "resultValueTranslator"})
 public class DynamicJmxOperationService extends JmxOperationImpl {
   public static final int DEFAULT_MAX_CACHE_SIZE = 16;

@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -82,10 +83,7 @@ public class MetadataDestination implements MessageDrivenDestination {
    * @param l the <code>List</code> of keys that are used to construct the destination name
    */
   public void setKeys(List<String> l) {
-    if (l == null) {
-      throw new IllegalArgumentException("metadata keys may not be null");
-    }
-    keys = l;
+    keys = Args.notNull(l, "metadataKeys");
   }
 
   /**

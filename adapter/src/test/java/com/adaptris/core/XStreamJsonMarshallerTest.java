@@ -48,101 +48,117 @@ public class XStreamJsonMarshallerTest extends MarshallingBaseCase {
   // Reads in a standard xml adapter config and then generates a json based config
   public void testXStreamConfigXMLtoJSON() throws Exception {
     // Create factory
-    AdapterXStreamMarshallerFactory factory = AdapterXStreamMarshallerFactory.getInstance();
-    
-    // Create xstream instance
-    XStream xstreamInstance = factory.createXStream(MarshallingOutput.XML);
-    Adapter standardAdapter = null;
-    try ( InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream(XSTREAM_STANDARD_XML) ) {
-      standardAdapter = (Adapter) xstreamInstance.fromXML(resourceAsStream);
-      // Default has changed, so set the adapter to have a null-message-error-digestor INTERLOK-506
-      standardAdapter.setMessageErrorDigester(new NullMessageErrorDigester());
-    }
+    try {
+      AdapterXStreamMarshallerFactory factory = AdapterXStreamMarshallerFactory.getInstance();
 
-    // Check that the Adapter instance contains all fields
-    XStreamMarshallerTest.adapterInstanceFieldChecks(standardAdapter);
-    
-    // Now create JSON based XStream instance for output
-    factory.setMode(OutputMode.ALIASED_SUBCLASSES);
-    xstreamInstance = factory.createXStream(MarshallingOutput.JSON);
-    
-    // Now since unmarshalling an adapter autopopulates certain fields then the
-    // best way to compare is to marshal both adapters back to xml and compare
-    // them that way.
-    
-    // Now marshal standard format adapter to xml
-    String standardMarshalledXML = xstreamInstance.toXML(standardAdapter);
+      // Create xstream instance
+      XStream xstreamInstance = factory.createXStream(MarshallingOutput.XML);
+      Adapter standardAdapter = null;
+      try (InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream(XSTREAM_STANDARD_XML)) {
+        standardAdapter = (Adapter) xstreamInstance.fromXML(resourceAsStream);
+        // Default has changed, so set the adapter to have a null-message-error-digestor INTERLOK-506
+        standardAdapter.setMessageErrorDigester(new NullMessageErrorDigester());
+      }
 
-    // Read in the expected beautified file.
-    Adapter beautifiedAdapter = null;
-    try ( InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream(XSTREAM_BEAUTIFIED_JSON) ) {
-      beautifiedAdapter = (Adapter) xstreamInstance.fromXML(resourceAsStream);
-      // Default has changed, so set the adapter to have a null-message-error-digestor INTERLOK-506
-      beautifiedAdapter.setMessageErrorDigester(new NullMessageErrorDigester());
+      // Check that the Adapter instance contains all fields
+      XStreamMarshallerTest.adapterInstanceFieldChecks(standardAdapter);
+
+      // Now create JSON based XStream instance for output
+      factory.setMode(OutputMode.ALIASED_SUBCLASSES);
+      xstreamInstance = factory.createXStream(MarshallingOutput.JSON);
+
+      // Now since unmarshalling an adapter autopopulates certain fields then the
+      // best way to compare is to marshal both adapters back to xml and compare
+      // them that way.
+
+      // Now marshal standard format adapter to xml
+      String standardMarshalledXML = xstreamInstance.toXML(standardAdapter);
+
+      // Read in the expected beautified file.
+      Adapter beautifiedAdapter = null;
+      try (InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream(XSTREAM_BEAUTIFIED_JSON)) {
+        beautifiedAdapter = (Adapter) xstreamInstance.fromXML(resourceAsStream);
+        // Default has changed, so set the adapter to have a null-message-error-digestor INTERLOK-506
+        beautifiedAdapter.setMessageErrorDigester(new NullMessageErrorDigester());
+      }
+
+      // Check that the Adapter instance contains all fields
+      XStreamMarshallerTest.adapterInstanceFieldChecks(beautifiedAdapter);
+
+      // Now marshal beautified format adapter to xml
+      // String beautifiedMarshalledXML = xstreamInstance.toXML(beautifiedAdapter);
+
+      // Ensure that the conversion from standard xml to beautified xml went as expected
+      // assertEquals(beautifiedMarshalledXML, standardMarshalledXML);
+      assertRoundtripEquality(standardAdapter, beautifiedAdapter);
     }
-    
-    // Check that the Adapter instance contains all fields
-    XStreamMarshallerTest.adapterInstanceFieldChecks(beautifiedAdapter);
-    
-    // Now marshal beautified format adapter to xml
-    String beautifiedMarshalledXML = xstreamInstance.toXML(beautifiedAdapter);
-    
-    // Ensure that the conversion from standard xml to beautified xml went as expected 
-    assertEquals(beautifiedMarshalledXML, standardMarshalledXML);
+    finally {
+      AdapterXStreamMarshallerFactory.reset();
+    }
   }
   
   // Standard JSON roundtrip test
   public void testXStreamFullConfigMarshall() throws Exception {
-    // Create factory
-    AdapterXStreamMarshallerFactory factory = AdapterXStreamMarshallerFactory.getInstance();
-    factory.setMode(OutputMode.STANDARD);
+    try {
+      // Create factory
+      AdapterXStreamMarshallerFactory factory = AdapterXStreamMarshallerFactory.getInstance();
+      factory.setMode(OutputMode.STANDARD);
 
-    // Create xstream instance
-    XStream xstreamInstance = factory.createXStream(MarshallingOutput.JSON);
-    Adapter standardAdapter = null;
-    try ( InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream(XSTREAM_STANDARD_JSON) ) {
-      standardAdapter = (Adapter) xstreamInstance.fromXML(resourceAsStream);
+      // Create xstream instance
+      XStream xstreamInstance = factory.createXStream(MarshallingOutput.JSON);
+      Adapter standardAdapter = null;
+      try (InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream(XSTREAM_STANDARD_JSON)) {
+        standardAdapter = (Adapter) xstreamInstance.fromXML(resourceAsStream);
+      }
+
+      // Check that the Adapter instance contains all fields
+      XStreamMarshallerTest.adapterInstanceFieldChecks(standardAdapter);
+
+      // Now since unmarshalling an adapter autopopulates certain fields then the
+      // best way to compare is to marshal both adapters back to xml and compare
+      // them that way.
+
+      // Now marshal and then unmarshal to check that it works as intended
+      String standardMarshalledXML = xstreamInstance.toXML(standardAdapter);
+      Adapter roundTripAdapter = (Adapter) xstreamInstance.fromXML(standardMarshalledXML);
+
+      assertRoundtripEquality(standardAdapter, roundTripAdapter);
     }
-
-    // Check that the Adapter instance contains all fields
-    XStreamMarshallerTest.adapterInstanceFieldChecks(standardAdapter);
-    
-    // Now since unmarshalling an adapter autopopulates certain fields then the
-    // best way to compare is to marshal both adapters back to xml and compare
-    // them that way.
-    
-    // Now marshal and then unmarshal to check that it works as intended
-    String standardMarshalledXML = xstreamInstance.toXML(standardAdapter);
-    Adapter roundTripAdapter = (Adapter)xstreamInstance.fromXML(standardMarshalledXML);
-    
-    assertRoundtripEquality(standardAdapter, roundTripAdapter);
+    finally {
+      AdapterXStreamMarshallerFactory.reset();
+    }
   }
   
   // JSON beautified round trip test
   public void testXStreamBeautified() throws Exception {
     // Create factory
-    AdapterXStreamMarshallerFactory factory = AdapterXStreamMarshallerFactory.getInstance();
-    factory.setMode(OutputMode.ALIASED_SUBCLASSES);
+    try {
+      AdapterXStreamMarshallerFactory factory = AdapterXStreamMarshallerFactory.getInstance();
+      factory.setMode(OutputMode.ALIASED_SUBCLASSES);
 
-    // Create xstream instance
-    XStream xstreamInstance = factory.createXStream(MarshallingOutput.JSON);
-    Adapter beautifiedAdapter = null;
-    try ( InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream(XSTREAM_BEAUTIFIED_JSON) ) {
-      beautifiedAdapter = (Adapter) xstreamInstance.fromXML(resourceAsStream);
+      // Create xstream instance
+      XStream xstreamInstance = factory.createXStream(MarshallingOutput.JSON);
+      Adapter beautifiedAdapter = null;
+      try (InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream(XSTREAM_BEAUTIFIED_JSON)) {
+        beautifiedAdapter = (Adapter) xstreamInstance.fromXML(resourceAsStream);
+      }
+
+      // Check that the Adapter instance contains all fields
+      XStreamMarshallerTest.adapterInstanceFieldChecks(beautifiedAdapter);
+
+      // Now since unmarshalling an adapter autopopulates certain fields then the
+      // best way to compare is to marshal both adapters back to xml and compare
+      // them that way.
+
+      // Now marshal and then unmarshal to check that it works as intended
+      String standardMarshalledXML = xstreamInstance.toXML(beautifiedAdapter);
+      Adapter roundTripAdapter = (Adapter) xstreamInstance.fromXML(standardMarshalledXML);
+
+      assertRoundtripEquality(beautifiedAdapter, roundTripAdapter);
     }
-
-    // Check that the Adapter instance contains all fields
-    XStreamMarshallerTest.adapterInstanceFieldChecks(beautifiedAdapter);
-    
-    // Now since unmarshalling an adapter autopopulates certain fields then the
-    // best way to compare is to marshal both adapters back to xml and compare
-    // them that way.
-    
-    // Now marshal and then unmarshal to check that it works as intended
-    String standardMarshalledXML = xstreamInstance.toXML(beautifiedAdapter);
-    Adapter roundTripAdapter = (Adapter)xstreamInstance.fromXML(standardMarshalledXML);
-    
-    assertRoundtripEquality(beautifiedAdapter, roundTripAdapter);
+    finally {
+      AdapterXStreamMarshallerFactory.reset();
+    }
   }
 }
 

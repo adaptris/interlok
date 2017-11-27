@@ -28,7 +28,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
+import org.apache.commons.lang.math.IntRange;
 import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericObjectPool;
 
@@ -37,6 +40,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.FifoMutexLock;
@@ -111,6 +115,8 @@ public class PoolingWorkflow extends WorkflowImp {
    */
   private static final TimeInterval DEFAULT_INIT_WAIT = new TimeInterval(1L, TimeUnit.MINUTES.name());
 
+  private static final IntRange PRIORITY_RANGE = new IntRange(Thread.MIN_PRIORITY, Thread.MAX_PRIORITY);
+
   @InputFieldDefault(value = "10")
   private Integer poolSize;
   @InputFieldDefault(value = "1")
@@ -133,6 +139,8 @@ public class PoolingWorkflow extends WorkflowImp {
 
   @AdvancedConfig
   @InputFieldDefault(value = "5")
+  @Min(Thread.MIN_PRIORITY)
+  @Max(Thread.MAX_PRIORITY)
   private Integer threadPriority;
 
   private transient ExecutorService threadPool;
@@ -319,7 +327,7 @@ public class PoolingWorkflow extends WorkflowImp {
         threadPool.execute(new WorkerThread(friendlyWorkflowName, msg));
       }
       else {
-        log.warn("Attempt to process message during shutdown");
+        log.warn("Attempt to process message during shutdown; failing it");
         handleBadMessage(msg);
       }
     }
@@ -343,7 +351,7 @@ public class PoolingWorkflow extends WorkflowImp {
   @Override
   protected void handleBadMessage(String logMsg, Exception e, AdaptrisMessage msg) {
     if (retrieveActiveMsgErrorHandler() instanceof RetryMessageErrorHandler) {
-      log.warn(msg.getUniqueId() + " failed with [" + e.getMessage() + "], it will be retried");
+      log.warn("{} failed with [{}], it will be retried", msg.getUniqueId(), e.getMessage());
     }
     else {
       log.error(logMsg, e);
@@ -401,7 +409,7 @@ public class PoolingWorkflow extends WorkflowImp {
     ExecutorService populator = Executors.newCachedThreadPool();
     try {
       final CyclicBarrier barrier = new CyclicBarrier(size + 1);
-      log.trace("Creating {} objects for initial population of the pool", size);
+      log.trace("Need more ({}) children as soon as possible to handle work. Get to it", size);
       final List<Worker> workers = new ArrayList<Worker>(size);
       for (int i = 0; i < size; i++) {
         populator.execute(new Runnable() {
@@ -443,7 +451,7 @@ public class PoolingWorkflow extends WorkflowImp {
         catch (InterruptedException e) {
         }
         if (!success) {
-          log.trace("Pool failed to shutdown in " + shutdownWaitTimeMs() + "ms, forcing shutdown");
+          log.trace("Failed to gracefully shutdown in {}ms, forced termination", shutdownWaitTimeMs());
           List<Runnable> list = threadPool.shutdownNow();
           for (Runnable l : list) {
             WorkerThread sd = (WorkerThread) l;
@@ -451,6 +459,7 @@ public class PoolingWorkflow extends WorkflowImp {
           }
         }
       }
+      log.trace("All children terminated; existence pointless");
       objectPool.close();
     }
     catch (Exception e) {
@@ -468,14 +477,8 @@ public class PoolingWorkflow extends WorkflowImp {
   }
 
   public void setThreadPriority(Integer i) {
-    if (i == null) {
-      throw new IllegalArgumentException("Thread Priority may not be Null");
-    }
-    if (i.intValue() > Thread.MAX_PRIORITY) {
-      throw new IllegalArgumentException("Greater than " + Thread.MAX_PRIORITY);
-    }
-    if (i.intValue() < Thread.MIN_PRIORITY) {
-      throw new IllegalArgumentException("Less than than " + Thread.MIN_PRIORITY);
+    if (!PRIORITY_RANGE.containsInteger(Args.notNull(i, "threadPriority"))) {
+      throw new IllegalArgumentException("OutOfBounds : " + PRIORITY_RANGE.toString());
     }
     threadPriority = i;
   }
@@ -713,13 +716,13 @@ public class PoolingWorkflow extends WorkflowImp {
         objectPool.returnObject(slave);
       }
       catch (Exception e) {
-        log.trace("[" + toString() + "] failed pool re-entry, attempting to invalidate");
+        log.trace("[{}] failed pool re-entry, attempting to invalidate", toString());
         try {
           objectPool.invalidateObject(slave);
-          log.trace("[" + toString() + "] invalidated");
+          log.trace("[{}] invalidated", toString());
         }
         catch (Exception ignoredIntentionally) {
-          log.trace("[" + toString() + "] was not invalidated");
+          log.trace("[{}] not invalidated", toString());
         }
       }
       Thread.currentThread().setName(oldName);
@@ -765,7 +768,7 @@ public class PoolingWorkflow extends WorkflowImp {
       workflowStart(msg);
       try {
         long start = System.currentTimeMillis();
-        log.debug("start processing message [" + msg.toString(logPayload()) + "]");
+        log.debug("start processing message [{}]", msg.toString(logPayload()));
         wip = (AdaptrisMessage) msg.clone();
         // Set the channel id and workflow id on the message lifecycle.
         wip.getMessageLifecycleEvent().setChannelId(obtainChannel().getUniqueId());

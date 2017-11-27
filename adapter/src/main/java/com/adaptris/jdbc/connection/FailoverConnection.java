@@ -171,7 +171,7 @@ public final class FailoverConnection {
         return true;
       }
       catch (SQLException e) {
-        logR.trace("Could not connect to " + url);
+        logR.warn("Could not connect to " + url);
       }
       catch (PasswordException e) {
         logR.warn("Could not decode password");

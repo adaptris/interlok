@@ -27,6 +27,8 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.aggregator.AggregatingConsumeServiceImpl;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -62,10 +64,15 @@ public class AggregatingFtpConsumeService extends AggregatingConsumeServiceImpl<
 
   @Override
   protected void initService() throws CoreException {
-    super.initService();
-    if (connection == null) throw new CoreException("Null Connection");
-    if (consumer == null) throw new CoreException("Consumer is null");
-    LifecycleHelper.init(connection);
+    try {
+      super.initService();
+      Args.notNull(connection, "connection");
+      Args.notNull(consumer, "consumer");
+      LifecycleHelper.init(connection);
+    }
+    catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
+    }
   }
 
   @Override

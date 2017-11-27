@@ -26,7 +26,7 @@ import com.adaptris.core.ServiceException;
  * @author lchan
  * 
  */
-public class ExceptionHelper {
+public abstract class ExceptionHelper {
 
   public static void rethrowCoreException(Throwable e) throws CoreException {
     rethrowCoreException(e.getMessage(), e);

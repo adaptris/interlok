@@ -217,8 +217,7 @@ public abstract class JdbcIteratingDataCaptureServiceImpl extends JdbcDataCaptur
   }
 
   private DocumentBuilderFactoryBuilder documentFactoryBuilder() {
-    return getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig()
-        : DocumentBuilderFactoryBuilder.newInstance().withNamespaceAware(true);
+    return DocumentBuilderFactoryBuilder.newInstance(getXmlDocumentFactoryConfig());
   }
 
   /**

@@ -23,6 +23,8 @@ import java.util.Collection;
 
 import javax.validation.Valid;
 
+import org.apache.commons.lang.BooleanUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -126,7 +128,7 @@ public class CloneMessageServiceList extends ServiceListBase {
   }
 
   boolean overrideMetadata() {
-    return getOverrideMetadata() == null ? false : overrideMetadata.booleanValue();
+    return BooleanUtils.toBooleanDefaultIfNull(getOverrideMetadata(), false);
   }
 
   public Boolean getOverrideMetadata() {

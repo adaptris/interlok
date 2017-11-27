@@ -17,13 +17,17 @@
 package com.adaptris.core.stubs;
 
 import com.adaptris.annotation.GenerateBeanInfo;
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.ServiceException;
+import com.adaptris.core.ServiceImp;
 import com.adaptris.util.GuidGenerator;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 // For testing the @GenerateBeanInfo annotation is doing it's job for XStreamMarshaller
 @XStreamAlias("xstream-bean-info-wrapper")
 @GenerateBeanInfo
-public class XStreamBeanInfoWrapper {
+public class XStreamBeanInfoWrapper extends ServiceImp {
 
   private String marshalledIdentity;
   private transient boolean setterCalled = false;
@@ -43,6 +47,22 @@ public class XStreamBeanInfoWrapper {
 
   public boolean getSetterCalled() {
     return setterCalled;
+  }
+
+  @Override
+  public void doService(AdaptrisMessage msg) throws ServiceException {
+  }
+
+  @Override
+  public void prepare() throws CoreException {
+  }
+
+  @Override
+  protected void initService() throws CoreException {
+  }
+
+  @Override
+  protected void closeService() {
   }
 
 }

@@ -37,6 +37,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.CastorizedList;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
@@ -130,11 +131,8 @@ public class ChannelList extends AbstractCollection<Channel>
   @Override
   public void init() throws CoreException {
     log.trace("Channels that can be manipulated are: " + addressableChannels.keySet());
-    ChannelLifecycleStrategy cls = getLifecycleStrategy();
-    if (cls == null) {
-      cls = new DefaultChannelLifecycleStrategy();
-    }
-    cls.init(channels);
+    lifecycleStrategy().init(channels);
+
   }
 
   /**
@@ -147,11 +145,8 @@ public class ChannelList extends AbstractCollection<Channel>
    */
   @Override
   public void start() throws CoreException {
-    ChannelLifecycleStrategy cls = getLifecycleStrategy();
-    if (cls == null) {
-      cls = new DefaultChannelLifecycleStrategy();
-    }
-    cls.start(channels);
+    lifecycleStrategy().start(channels);
+
   }
 
   /**
@@ -162,11 +157,8 @@ public class ChannelList extends AbstractCollection<Channel>
    */
   @Override
   public void stop() {
-    ChannelLifecycleStrategy cls = getLifecycleStrategy();
-    if (cls == null) {
-      cls = new DefaultChannelLifecycleStrategy();
-    }
-    cls.stop(channels);
+    lifecycleStrategy().stop(channels);
+
   }
 
   /**
@@ -178,11 +170,7 @@ public class ChannelList extends AbstractCollection<Channel>
    */
   @Override
   public void close() {
-    ChannelLifecycleStrategy cls = getLifecycleStrategy();
-    if (cls == null) {
-      cls = new DefaultChannelLifecycleStrategy();
-    }
-    cls.close(channels);
+    lifecycleStrategy().close(channels);
   }
 
   /**
@@ -204,14 +192,11 @@ public class ChannelList extends AbstractCollection<Channel>
    * @param l the underlying <code>List</code> of <code>Channels</code>
    */
   public void setChannels(List<Channel> l) {
-    if (l == null) {
-      throw new IllegalArgumentException("Null Channels");
-    }
+    channels = Args.notNull(l, "channels");
     addressableChannels.clear();
-    for (Channel w : l) {
-      register(w);
+    for (Channel c : l) {
+      register(c);
     }
-    channels = l;
   }
 
   /**
@@ -286,6 +271,10 @@ public class ChannelList extends AbstractCollection<Channel>
     lifecycleStrategy = css;
   }
 
+  ChannelLifecycleStrategy lifecycleStrategy() {
+    return getLifecycleStrategy() != null ? getLifecycleStrategy() : new DefaultChannelLifecycleStrategy();
+  }
+
   /**
    * {@inheritDoc}
    *
@@ -320,23 +309,17 @@ public class ChannelList extends AbstractCollection<Channel>
 
   @Override
   public boolean add(Channel element) {
-    if (element == null) {
-      throw new IllegalArgumentException("Null channel element");
-    }
-    return channels.add(register(element));
+    return channels.add(register(Args.notNull(element, "channel")));
   }
 
   @Override
   public void add(int index, Channel element) {
-    if (element == null) {
-      throw new IllegalArgumentException("Null Channel element");
-    }
-    channels.add(index, register(element));
+    channels.add(index, register(Args.notNull(element, "channel")));
   }
 
   @Override
   public boolean addAll(int index, Collection<? extends Channel> c) {
-    for (Channel element : c) {
+    for (Channel element : Args.notNull(c, "channels")) {
       register(element);
     }
     return channels.addAll(index, c);

@@ -31,8 +31,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.xerces.util.XMLChar;
 import org.w3c.dom.Document;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
@@ -62,17 +61,12 @@ public class XmlHelper {
   private static final String ILLEGAL_XML = "[^" + "\u0009\r\n" + "\u0020-\uD7FF" + "\uE000-\uFFFD" + "\ud800\udc00-\udbff\udfff"
       + "]";
 
-  private static final String VALID_ELEMENT_INITIAL_CHAR = "^[:A-Z_a-z\\u00C0\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02ff\\u0370-\\u037d"
-      + "\\u037f-\\u1fff\\u200c\\u200d\\u2070-\\u218f\\u2c00-\\u2fef\\u3001-\\ud7ff"
-      + "\\uf900-\\ufdcf\\ufdf0-\\ufffd\\x10000-\\xEFFFF].*";
   
   private static final String[] INVALID_ELEMENT_CHARS =
   {
       "\\\\", "\\?", "\\*", "\\:", " ", "\\|", "&", "\\\"", "\\'", "<", ">", "\\)", "\\(", "\\/", "#"
   };
   private static final String ELEM_REPL_VALUE = "_";
-
-  private transient static Logger log = LoggerFactory.getLogger(XmlHelper.class);
 
   /**
    * Create an XMLUtils class from an AdaptrisMessage.
@@ -115,10 +109,7 @@ public class XmlHelper {
     DivertConsoleOutput dc = new DivertConsoleOutput();
     InputStream input = null;
     try {
-      DocumentBuilderFactory dbf = defaultIfNull(builder).configure(DocumentBuilderFactory.newInstance());
-      if (ctx != null) {
-        dbf.setNamespaceAware(true);
-      }
+      DocumentBuilderFactory dbf = DocumentBuilderFactoryBuilder.newInstance(builder).withNamespaceAware(ctx).build();
       result = new XmlUtils(ctx, dbf);
       input = msg.getInputStream();
       InputSource in = new InputSource(input);
@@ -197,14 +188,9 @@ public class XmlHelper {
   }
 
   private static DocumentBuilder newDocumentBuilder(DocumentBuilderFactoryBuilder cfg) throws ParserConfigurationException {
-    DocumentBuilderFactoryBuilder b = defaultIfNull(cfg);
-    DocumentBuilder builder = b.newDocumentBuilder(DocumentBuilderFactory.newInstance());
+    DocumentBuilder builder = DocumentBuilderFactoryBuilder.newInstance(cfg).build().newDocumentBuilder();
     builder.setErrorHandler(new DefaultErrorHandler());
     return builder;
-  }
-
-  private static DocumentBuilderFactoryBuilder defaultIfNull(DocumentBuilderFactoryBuilder b) {
-    return b != null ? b : DocumentBuilderFactoryBuilder.newInstance();
   }
 
   /**
@@ -277,13 +263,14 @@ public class XmlHelper {
     if (isBlank(name)) {
       name = defaultIfBlank;
     } else {
-      if (!name.matches(VALID_ELEMENT_INITIAL_CHAR)) {
+      if (!XMLChar.isNameStart((name.charAt(0)))) {
         name = ELEM_REPL_VALUE + name;
       }
       for (String invalid : INVALID_ELEMENT_CHARS) {
         name = name.replaceAll(invalid, ELEM_REPL_VALUE);
       }
     }
+    
     return name;
   }
 

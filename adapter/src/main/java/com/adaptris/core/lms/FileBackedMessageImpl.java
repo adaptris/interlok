@@ -23,8 +23,6 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FilterInputStream;
-import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -34,7 +32,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,31 +39,25 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageImp;
 import com.adaptris.util.IdGenerator;
 
-/**
- * @author lchan
- * @author $Author: lchan $
- */
 class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMessage {
-  protected File tempDir;
   protected File outputFile;
   protected File inputFile;
   private int bufferSize;
   private long maxSizeBeforeException;
 
-  private transient Logger logR = LoggerFactory.getLogger(FileBackedMessage.class);
+  protected transient Logger log = LoggerFactory.getLogger(FileBackedMessage.class);
 
   private transient Set<Closeable> openStreams;
   
   private final int MEGABYTE = 1 << 10;
 
-  FileBackedMessageImpl(IdGenerator guid, FileBackedMessageFactory fac, File tmpDir, int bufsiz, long maxSizeInline) {
+  FileBackedMessageImpl(IdGenerator guid, FileBackedMessageFactory fac) {
     super(guid, fac);
-    tempDir = tmpDir;
     try {
       outputFile = null;
       inputFile = null;
-      bufferSize = bufsiz;
-      maxSizeBeforeException = maxSizeInline;
+      bufferSize = fac.defaultBufferSize();
+      maxSizeBeforeException = fac.maxMemorySizeBytes();
       openStreams = new HashSet<Closeable>();
     }
     catch (Exception e) {
@@ -82,11 +73,6 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
   /** @see AdaptrisMessage#setPayload(byte[]) */
   @Override
   public void setPayload(byte[] bytes) {
-    // If we don't have a file and we're setting the payload to be empty, don't do anything
-    if(inputFile == null && (bytes == null || bytes.length == 0)) {
-      return;
-    }
-    
     try (OutputStream out = getOutputStream()) {
       out.write(bytes != null ? bytes : new byte[0]);
     }
@@ -137,10 +123,6 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
   
   @Override
   public void setContent(String content, String charEncoding) {
-    // If we don't have a file and we're setting the payload to be empty, don't do anything
-    if(inputFile == null && StringUtils.isEmpty(content)) {
-      return;
-    }
     try (PrintStream out = (!isEmpty(charEncoding)) ? new PrintStream(getOutputStream(), true, charEncoding)
         : new PrintStream(getOutputStream(), true)) {
       out.print(content != null ? content : "");
@@ -188,9 +170,7 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
     if(inputFile == null) {
       return IOUtils.toInputStream("");
     }
-    
-    FileInputStream in = new FileInputStream(inputFile);
-    return new FileFilterInputStream(in);
+    return new FileFilterInputStream(inputFile);
   }
 
   /**
@@ -201,8 +181,8 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
     if(outputFile == null) {
       outputFile = createTempFile();
     }
-    FileOutputStream fileOut = new FileOutputStream(outputFile);
-    return new FileFilteredOutputStream(fileOut);
+    // FileOutputStream fileOut = new FileOutputStream(outputFile);
+    return new FileFilterOutputStream(outputFile);
   }
 
   @Override
@@ -265,7 +245,7 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
       try {
         inputFile = createTempFile();
       } catch (IOException e) {
-        logR.error("Unable to create temporary file!", e);
+        log.error("Unable to create temporary file!", e);
       }
     }
     
@@ -277,32 +257,28 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
 //  }
 
   private File createTempFile() throws IOException {
-    return ((FileBackedMessageFactory) getFactory()).createTempFile(tempDir, this);
+    return ((FileBackedMessageFactory) getFactory()).createTempFile(this);
   }
 
-  // Yeah I know it's bad form to have a finalizer, but really
-  // WE HAVE FILE LOCKS!
   @Override
   protected void finalize() throws Throwable {
     super.finalize();
     for (Closeable c : openStreams) {
-      try {
-        c.close();
-      }
-      catch (IOException ignored) {
-        ;
-      }
+      IOUtils.closeQuietly(c);
     }
   }
 
-  private class FileFilteredOutputStream extends FilterOutputStream {
+  // INTERLOK-1926 FilterOutputStream ultimately calls write(int) which is just crazy IO.
+  // So we extend FileOutputStream directly
+  private class FileFilterOutputStream extends FileOutputStream {
     private boolean alreadyClosed;
 
-    FileFilteredOutputStream(FileOutputStream out) throws IOException {
+    FileFilterOutputStream(File out) throws IOException {
       super(out);
       openStreams.add(this);
       alreadyClosed = false;
     }
+
 
     @Override
     public void close() throws IOException {
@@ -317,8 +293,8 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
     }
   }
 
-  private class FileFilterInputStream extends FilterInputStream {
-    FileFilterInputStream(FileInputStream in) throws IOException {
+  private class FileFilterInputStream extends FileInputStream {
+    FileFilterInputStream(File in) throws IOException {
       super(in);
       openStreams.add(this);
     }

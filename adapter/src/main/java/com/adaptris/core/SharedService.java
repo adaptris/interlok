@@ -1,5 +1,7 @@
 package com.adaptris.core;
 
+import org.apache.commons.lang.BooleanUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -103,7 +105,7 @@ public class SharedService extends SharedServiceImpl {
   }
 
   boolean cloneService() {
-    return this.getCloneService() == null ? true : this.getCloneService();
+    return BooleanUtils.toBooleanDefaultIfNull(getCloneService(), true);
   }
 
   public Boolean getCloneService() {

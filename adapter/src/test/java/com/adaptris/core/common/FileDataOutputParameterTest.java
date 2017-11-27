@@ -15,19 +15,28 @@
  */
 package com.adaptris.core.common;
 
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.ConfiguredProduceDestination;
-import com.adaptris.core.DefaultMessageFactory;
-import com.adaptris.core.stubs.TempFileUtils;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+
+import java.io.File;
+
 import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
+import org.mockito.Mockito;
 
-import java.io.File;
-
-import static org.junit.Assert.*;
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.ConfiguredProduceDestination;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.DefaultMessageFactory;
+import com.adaptris.core.stubs.TempFileUtils;
+import com.adaptris.interlok.types.InterlokMessage;
 
 public class FileDataOutputParameterTest {
 
@@ -44,13 +53,16 @@ public class FileDataOutputParameterTest {
     assertNull(p.url(m));
     p.setUrl("file:////tmp/abc");
     assertEquals("file:////tmp/abc", p.url(m));
+    p.setDestination(new ConfiguredProduceDestination("file:////tmp/destination"));
+    assertEquals("file:////tmp/destination", p.url(m));
+    InterlokMessage msg = Mockito.mock(InterlokMessage.class);
     try {
-      p.setUrl("");
+      p.url(msg);
       fail();
-    } catch (IllegalArgumentException e) {
+    }
+    catch (RuntimeException expected) {
 
     }
-    assertEquals("file:////tmp/abc", p.url(m));
   }
 
   @Test
@@ -91,6 +103,22 @@ public class FileDataOutputParameterTest {
     // It doesn't insert into the msg; so message should still be blank
     assertNotSame(TEXT, msg.getContent());
     assertEquals(TEXT, FileUtils.readFileToString(f));
+  }
+
+  @Test
+  public void testInsertDestination_Exception() throws Exception {
+    FileDataOutputParameter p = new FileDataOutputParameter();
+    File f = TempFileUtils.createTrackedFile(testName.getMethodName(), "", p);
+    p.setDestination(new ConfiguredProduceDestination("file:///" + f.getCanonicalPath()));
+    AdaptrisMessage msg = mock(AdaptrisMessage.class);
+    doThrow(new RuntimeException()).when(msg).getContentEncoding();
+    try {
+      p.insert(TEXT, msg);
+      fail();
+    }
+    catch (CoreException expected) {
+
+    }
   }
 
 }

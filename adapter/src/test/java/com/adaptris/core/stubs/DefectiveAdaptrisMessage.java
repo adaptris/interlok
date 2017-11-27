@@ -38,22 +38,20 @@ public class DefectiveAdaptrisMessage extends DefaultAdaptrisMessageImp {
     setPayload(new byte[0]);
   }
 
-  /**
-   *
-   * @see com.adaptris.core.AdaptrisMessage#getInputStream()
-   */
   @Override
   public InputStream getInputStream() throws IOException {
-    return new ErroringInputStream(super.getInputStream());
+    if (((DefectiveMessageFactory) getFactory()).brokenInput()) {
+      return new ErroringInputStream(super.getInputStream());
+    }
+    return super.getInputStream();
   }
 
-  /**
-   *
-   * @see com.adaptris.core.AdaptrisMessage#getOutputStream()
-   */
   @Override
   public OutputStream getOutputStream() throws IOException {
-    return new ErroringOutputStream();
+    if (((DefectiveMessageFactory) getFactory()).brokenOutput()) {
+      return new ErroringOutputStream();
+    }
+    return super.getOutputStream();
   }
 
   private class ErroringOutputStream extends OutputStream {

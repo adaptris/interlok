@@ -64,7 +64,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("jetty-response-service")
 @AdapterComponent
-@ComponentProfile(summary = "Send a HTTP Response", tag = "service,http,https,jetty")
+@ComponentProfile(summary = "Send a HTTP Response", tag = "service,http,https,jetty", since = "3.6.5")
 public class JettyResponseService extends ServiceImp {
 
   @NotBlank

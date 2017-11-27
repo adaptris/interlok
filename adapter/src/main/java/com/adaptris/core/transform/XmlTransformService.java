@@ -104,7 +104,7 @@ public class XmlTransformService extends ServiceImp {
 
   @Override
   protected void initService() throws CoreException {
-    if (getUrl() == null) {
+    if (isEmpty(getUrl())) {
       overrideAllowOverride = Boolean.TRUE;
     }
     if (isEmpty(getUrl()) && isEmpty(getMetadataKey())) {

@@ -21,6 +21,7 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.TradingRelationship;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -50,10 +51,7 @@ public class DefaultServiceNameProvider extends ServiceNameProviderImp {
 
   @Override
   protected String retrieveName(TradingRelationship t) throws CoreException {
-    if (t == null) {
-      throw new IllegalArgumentException("null param");
-    }
-
+    Args.notNull(t, "relationship");
     StringBuffer result = new StringBuffer();
     result.append(t.getSource());
     result.append(this.getSeparator());
@@ -85,9 +83,7 @@ public class DefaultServiceNameProvider extends ServiceNameProviderImp {
    * @param s separator, default is '-'
    */
   public void setSeparator(String s) {
-    if (s == null) {
-      throw new IllegalArgumentException("null param");
-    }
-    this.separator = s;
+    this.separator = Args.notNull(s, "separator");
+
   }
 }

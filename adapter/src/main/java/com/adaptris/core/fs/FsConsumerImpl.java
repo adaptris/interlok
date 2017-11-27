@@ -109,7 +109,7 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
       fileList = Arrays.asList(dir.listFiles(fileFilter));
     }
     catch (Exception e) {
-      log.warn("Exception listing files in [" + getDestination().getDestination() + "], waiting for next scheduled poll");
+      log.warn("Exception listing files in [{}], waiting for next scheduled poll", getDestination().getDestination());
       if (logAllExceptions()) {
         log.trace(e.getMessage(), e);
       }
@@ -119,12 +119,12 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
     for (File file : fileList) {
       try {
         filesProcessed += processFile(file);
-        if (!continueProcessingMessages()) {
+        if (!continueProcessingMessages(filesProcessed)) {
           break;
         }
       }
       catch (Exception e) {
-        log.warn("Exception processing [" + file.getName() + "], waiting for next scheduled poll");
+        log.warn("Exception processing [{}], waiting for next scheduled poll", file.getName());
         if (logAllExceptions()) {
           log.trace(e.getMessage(), e);
         }
@@ -145,8 +145,8 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
     if (mtimeCheck > 0) {
       long now = System.currentTimeMillis();
       if (!(now - f.lastModified() >= mtimeCheck)) {
-        log.trace("[" + f.getCanonicalPath() + "] not deemed safe to process, " + "lastModified=[" + new Date(f.lastModified())
-            + "];file must be older than=[" + new Date(now - mtimeCheck) + "]");
+        log.trace("[{}] not safe to process: lastModified=[{}]; must be older than [{}]", f.getCanonicalPath(),
+            new Date(f.lastModified()), new Date(now - mtimeCheck));
         return false;
       }
     }
@@ -196,7 +196,7 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
       }
     }
     if (!fsWorker.isWriteableDir(f)) {
-      throw new Exception("please check that [" + f.getCanonicalPath() + "] exists and is writeable");
+      throw new Exception("please check that [{}]" + f.getCanonicalPath() + "] exists and is writeable");
     }
     return f;
   }

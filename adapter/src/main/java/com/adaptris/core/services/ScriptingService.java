@@ -16,8 +16,6 @@
 
 package com.adaptris.core.services;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -29,6 +27,8 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -86,19 +86,21 @@ public class ScriptingService extends ScriptingServiceImp {
    * @param s the script
    */
   public void setScriptFilename(String s) {
-    this.scriptFilename = s;
+    this.scriptFilename = Args.notBlank(s, "scriptFilename");
   }
 
   @Override
   protected void initService() throws CoreException {
-    if (isEmpty(getScriptFilename())) {
-      throw new CoreException("script filename is null");
+    try {
+      Args.notBlank(getScriptFilename(), "scriptFilename");
+      File f = new File(getScriptFilename());
+      if (!f.exists() || !f.isFile() || !f.canRead()) {
+        throw new CoreException(getScriptFilename() + " is not accessible");
+      }
+      super.initService();
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
-    File f = new File(getScriptFilename());
-    if (!f.exists() || !f.isFile() || !f.canRead()) {
-      throw new CoreException(getScriptFilename() + " is not accessible");
-    }
-    super.initService();
   }
 
   @Override

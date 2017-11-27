@@ -68,7 +68,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("sftp-key-auth-connection")
 @AdapterComponent
-@ComponentProfile(summary = "Connect to a server using the SSH File Transfer Protocol; authentication via keys",
+@ComponentProfile(summary = "Deprecated: Use StandardSftpConnection instead",
     tag = "connections,sftp")
 @DisplayOrder(order = {"defaultUserName", "privateKeyFilename", "privateKeyPassword", "defaultControlPort"})
 @Deprecated

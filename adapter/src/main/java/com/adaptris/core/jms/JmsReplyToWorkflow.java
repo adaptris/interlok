@@ -58,7 +58,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("jms-reply-to-workflow")
 @Deprecated
 @AdapterComponent
-@ComponentProfile(summary = "Custom JMS workflow with JMSReplyTo Support", tag = "workflow,jms")
+@ComponentProfile(summary = "Deprecated: use StandardWorkflow+StandaloneProducer+JmsReplyToDestination instead",
+    tag = "workflow,jms")
 @DisplayOrder(order = {"disableDefaultMessageCount", "sendEvents", "logPayload"})
 public final class JmsReplyToWorkflow extends StandardWorkflow {
   private static transient boolean warningLogged;

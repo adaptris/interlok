@@ -137,7 +137,6 @@ public class JdbcRawDataCaptureServiceTest extends JdbcServiceExample {
         serviceList.add(service);
         start(service);
       }
-      assertEquals(0, conn.currentBusyConnectionCount());
       PooledConnectionHelper.executeTest(serviceList, iterations, new PooledConnectionHelper.MessageCreator() {
 
         @Override
@@ -175,7 +174,6 @@ public class JdbcRawDataCaptureServiceTest extends JdbcServiceExample {
         serviceList.add(service);
         start(service);
       }
-      assertEquals(0, conn.currentBusyConnectionCount());
       PooledConnectionHelper.executeTest(serviceList, iterations, new PooledConnectionHelper.MessageCreator() {
 
         @Override

@@ -63,10 +63,14 @@ public class MailContent {
     return contentType.toString();
   }
 
+  protected String payloadHash() {
+    return payloadHash;
+  }
+
   @Override
   public String toString() {
     return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("ContentType", getContentType())
-        .append("payloadHash", payloadHash).toString();
+        .append("payloadHash", payloadHash()).toString();
   }
 
   private static String calculateHash(byte[] b) {

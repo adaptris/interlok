@@ -18,6 +18,7 @@ package com.adaptris.core.fs;
 
 import java.io.Serializable;
 
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -62,11 +63,7 @@ public class ProcessedItem implements Serializable {
   }
 
   public void setAbsolutePath(String s) {
-    if (s == null) {
-      throw new IllegalArgumentException("Absolute path = null");
-    }
-    absolutePath = s.replaceAll("//", "/");
-
+    absolutePath = Args.notNull(s, "absolutePath").replaceAll("//", "/");
   }
 
   public String getAbsolutePath() {

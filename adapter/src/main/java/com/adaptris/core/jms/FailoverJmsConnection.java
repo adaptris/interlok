@@ -17,7 +17,6 @@
 package com.adaptris.core.jms;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.jms.Connection;
@@ -36,6 +35,7 @@ import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.StateManagedComponent;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -94,8 +94,8 @@ public class FailoverJmsConnection extends JmsConnection {
     int attempts = 0;
     while (connected == false) {
       attempts++;
-      for (Iterator i = connections.iterator(); i.hasNext();) {
-        current = (JmsConnection) i.next();
+      for (JmsConnection con : connections) {
+        current = nullifyRetry(con);
         try {
           current.setConnectionAttempts(1);
           registerExceptionListeners(current);
@@ -110,18 +110,17 @@ public class FailoverJmsConnection extends JmsConnection {
       }
 
       if (connected == false) {
+        log.warn("Failed in all attempts to connect to brokers");
         if (attempts > connectionAttempts() && connectionAttempts() > -1) {
-          throw new CoreException(
-              "Failed in all attempts to connect to brokers");
+          throw new CoreException("Failed in all attempts to connect to brokers");
         }
         else {
           try {
-            log.info("Failed to connect to all listed brokers, sleeping");
+            log.info("Failed to connect to all listed brokers, waiting for retry");
             Thread.sleep(connectionRetryInterval());
           }
           catch (InterruptedException e2) {
-            throw new CoreException(
-                "Received interrupt before (re)connecting to brokers", e2);
+            throw new CoreException("Received interrupt before (re)connecting to brokers", e2);
           }
         }
       }
@@ -199,13 +198,7 @@ public class FailoverJmsConnection extends JmsConnection {
   }
 
   public void setConnections(List<JmsConnection> l) {
-    if (l == null) {
-      throw new IllegalArgumentException("Connection List may not be null");
-    }
-    for (JmsConnection c : l) {
-      nullifyRetry(c);
-    }
-    connections = l;
+    connections = Args.notNull(l, "connections");
   }
 
   private JmsConnection nullifyRetry(JmsConnection c) {
@@ -244,7 +237,7 @@ public class FailoverJmsConnection extends JmsConnection {
   @Override
   protected void prepareConnection() throws CoreException {
     for (JmsConnection c : connections) {
-      c.prepare();
+      LifecycleHelper.prepare(c);
     }
   }
 

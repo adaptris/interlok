@@ -30,6 +30,7 @@ import com.adaptris.core.EventHandlerAware;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -75,14 +76,15 @@ public class BranchingServiceEnabler extends BranchingServiceImp implements Even
 
   @Override
   protected void initService() throws CoreException {
-    if (getService() == null) {
-      throw new CoreException("No wrapped service");
+    try {
+      Args.notNull(getService(), "service");
+      Args.notNull(getSuccessId(), "successId");
+      Args.notNull(getFailureId(), "failureId");
+      LifecycleHelper.registerEventHandler(getService(), eventHandler);
+      LifecycleHelper.init(getService());
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
-    if (getSuccessId() == null || getFailureId() == null) {
-      throw new CoreException("No Success/Failure IDs");
-    }
-    LifecycleHelper.registerEventHandler(getService(), eventHandler);
-    LifecycleHelper.init(getService());
   }
 
   @Override

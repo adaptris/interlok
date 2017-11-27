@@ -16,8 +16,6 @@
 
 package com.adaptris.core.services.metadata;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -41,6 +39,8 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -118,11 +118,12 @@ public class SimpleSequenceNumberService extends ServiceImp {
 
   @Override
   protected void initService() throws CoreException {
-    if (isEmpty(getMetadataKey())) {
-      throw new CoreException("MetadataKey to set the sequence number against is null/empty");
-    }
-    if (isEmpty(getSequenceNumberFile())) {
-      throw new CoreException("File containing the sequence number is null/empty");
+    try {
+      Args.notBlank(getMetadataKey(), "metadataKey");
+      Args.notBlank(getNumberFormat(), "numberFormat");
+      Args.notBlank(getSequenceNumberFile(), "sequenceNumberFile");
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
@@ -183,10 +184,7 @@ public class SimpleSequenceNumberService extends ServiceImp {
    * @param key the metadataKey to set
    */
   public void setMetadataKey(String key) {
-    if (isEmpty(key)) {
-      throw new IllegalArgumentException("MetadataKey may not be null/empty");
-    }
-    metadataKey = key;
+    metadataKey = Args.notBlank(key, "metadataKey");
   }
 
   /**
@@ -209,10 +207,7 @@ public class SimpleSequenceNumberService extends ServiceImp {
    *          means it will just use the raw number.
    */
   public void setNumberFormat(String format) {
-    if (isEmpty(format)) {
-      throw new IllegalArgumentException("Numberformat may not be null/empty");
-    }
-    numberFormat = format;
+    numberFormat = Args.notBlank(format, "numberFormat");
   }
 
 
@@ -261,10 +256,7 @@ public class SimpleSequenceNumberService extends ServiceImp {
    * @param s the file.
    */
   public void setSequenceNumberFile(String s) {
-    if (isEmpty(s)) {
-      throw new IllegalArgumentException("SequenceNumberFile may not be null/empty");
-    }
-    sequenceNumberFile = s;
+    sequenceNumberFile = Args.notBlank(s, "SequenceNumberFile");
   }
 
 

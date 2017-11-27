@@ -21,7 +21,6 @@ import java.security.SecureRandom;
 import java.security.Security;
 import java.util.Arrays;
 
-import org.apache.commons.logging.Log;
 import org.bouncycastle.crypto.digests.SHA384Digest;
 import org.bouncycastle.crypto.prng.DigestRandomGenerator;
 import org.bouncycastle.crypto.prng.SP800SecureRandomBuilder;
@@ -33,15 +32,11 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
  * @see SecureRandom
  * @author $Author: lchan $
  */
-public final class SecurityUtil {
+public abstract class SecurityUtil {
 
   private static boolean initialised = false;
 
   private static SecureRandom secureRandomInstance;
-
-  /** Default constructor */
-  private SecurityUtil() {
-  }
 
   /**
    * Add a JCE provider.
@@ -62,18 +57,6 @@ public final class SecurityUtil {
   public static SecureRandom getSecureRandom() {
     initialise();
     return secureRandomInstance;
-  }
-
-  /**
-   * Print out all the algorithms provided by each provider to the specified
-   * logger.
-   *
-   * @param logR the Log to be used for this output.
-   */
-  public static void printAlgorithms(Log logR) {
-    if (logR.isDebugEnabled() && Constants.DEBUG) {
-      logR.debug(getAlgorithms());
-    }
   }
 
   public static String getAlgorithms() {

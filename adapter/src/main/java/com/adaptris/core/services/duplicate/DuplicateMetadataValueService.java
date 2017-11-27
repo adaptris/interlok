@@ -29,6 +29,8 @@ import org.hibernate.validator.constraints.NotBlank;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 
 /**
  * <p>
@@ -54,15 +56,18 @@ public abstract class DuplicateMetadataValueService extends ServiceImp {
 
   @Override
   protected void initService() throws CoreException {
-    if (getMetadataKey() == null) {
-      throw new CoreException("metadataKeyToCheck must be set");
+    try {
+      Args.notNull(getMetadataKey(), "metadataKey");
+      Args.notNull(getStoreFileUrl(), "storeFileUrl");
+      createStoreFile();
+      loadPreviouslyReceivedValues();
+
+      if (previousValuesStore == null) {
+        previousValuesStore = new ArrayList<Object>();
+      }
     }
-
-    createStoreFile();
-    loadPreviouslyReceivedValues();
-
-    if (previousValuesStore == null) {
-      previousValuesStore = new ArrayList<Object>();
+    catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
@@ -71,9 +76,6 @@ public abstract class DuplicateMetadataValueService extends ServiceImp {
 
 
   private void createStoreFile() throws CoreException {
-    if (getStoreFileUrl() == null) {
-      throw new CoreException("store file URL is null");
-    }
 
     URL url = null;
 
@@ -133,10 +135,7 @@ public abstract class DuplicateMetadataValueService extends ServiceImp {
    * @param s the metadata key whose value should be checked
    */
   public void setMetadataKey(String s) {
-    if (s == null || "".equals(s)) {
-      throw new IllegalArgumentException("null or empty param");
-    }
-    metadataKey = s;
+    metadataKey = Args.notBlank(s, "metadataKey");
   }
 
   /**
@@ -163,10 +162,7 @@ public abstract class DuplicateMetadataValueService extends ServiceImp {
    *          a file URL
    */
   public void setStoreFileUrl(String s) {
-    if (s == null || "".equals(s)) {
-      throw new IllegalArgumentException("null or empty param");
-    }
-    storeFileUrl = s;
+    storeFileUrl = Args.notNull(s, "storeFileUrl");
   }
 
 

@@ -75,19 +75,14 @@ public class NamingContext implements Context, Serializable {
   }
 
   public NamingContext(Hashtable<String, Object> environment) {
-    bindings = new HashMap<>();
-    if (environment == null)
-      this.environment = new Hashtable<String, Object>();
-    else
+    this();
+    if (environment != null) {
       this.environment = environment;
+    }
   }
   
   public NamingContext(Hashtable<String, Object> environment, Map<String, Object> objects) {
-    bindings = new HashMap<>();
-    if (environment == null)
-      this.environment = new Hashtable<String, Object>();
-    else
-      this.environment = environment;
+    this(environment);
     
     for(String name : objects.keySet()) {
       try {
@@ -100,12 +95,7 @@ public class NamingContext implements Context, Serializable {
   
   
   public NamingContext(Hashtable<String, Object> environment, String nameInNamespace) {
-    bindings = new HashMap<>();
-    if (environment == null)
-      this.environment = new Hashtable<String, Object>();
-    else
-      this.environment = environment;
-    
+    this(environment);
     this.nameInNamespace = nameInNamespace;
   }
 
@@ -154,16 +144,17 @@ public class NamingContext implements Context, Serializable {
   }
 
   private Name stripScheme(Name name) throws InvalidNameException {
-    if(!name.get(0).isEmpty()) {
+    Name result = name;
+    if (!name.isEmpty() && !name.get(0).isEmpty()) {
       int indexOfSchemeMarker = name.get(0).indexOf(":");
       if(indexOfSchemeMarker > 0) {
         if(name.size() > 1)
-          name = new CompositeName(name.get(0).substring(indexOfSchemeMarker + 1) + "/" + name.getSuffix(1).toString());
+          result = new CompositeName(name.get(0).substring(indexOfSchemeMarker + 1) + "/" + name.getSuffix(1).toString());
         else
-          name = new CompositeName(name.get(0).substring(indexOfSchemeMarker + 1));
+          result = new CompositeName(name.get(0).substring(indexOfSchemeMarker + 1));
       }
     }
-    return name;
+    return result;
   }
 
   @Override
@@ -290,7 +281,7 @@ public class NamingContext implements Context, Serializable {
           String first = name.get(0);
           Object obj = bindings.get(first);
           if (obj == null) {
-            throw new NamingException("Name not found exception: " + name.toString());
+            throw new NameNotFoundException("Name not found exception: " + name.toString());
           } else if (obj instanceof Context && name.size() > 1) {
             Context subContext = (Context) obj;
             obj = subContext.lookup(name.getSuffix(1));

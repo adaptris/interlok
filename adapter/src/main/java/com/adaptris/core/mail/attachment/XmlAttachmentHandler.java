@@ -34,6 +34,7 @@ import org.w3c.dom.NodeList;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.IdGenerator;
 import com.adaptris.util.KeyValuePairSet;
@@ -59,6 +60,9 @@ public class XmlAttachmentHandler implements AttachmentHandler {
   private String filenameXpath;
   @AdvancedConfig
   private String encodingXpath;
+  @AdvancedConfig
+  @InputFieldDefault(value = "base64")
+  private String attachmentEncoding;
   private transient IdGenerator idGenerator = null;
   @AdvancedConfig
   private KeyValuePairSet namespaceContext;
@@ -116,13 +120,13 @@ public class XmlAttachmentHandler implements AttachmentHandler {
   public List<MailAttachment> resolve(Document doc) throws Exception {
     XPath x = new XPath(SimpleNamespaceContext.create(getNamespaceContext()));
     List<MailAttachment> result = new ArrayList<MailAttachment>();
-    logR.trace("Resolving " + getXpath());
+    logR.trace("Resolving {}", getXpath());
     NodeList nl = x.selectNodeList(doc, getXpath());
     if (nl == null) {
       return result;
     }
     else {
-      logR.trace("Found " + nl.getLength() + " attachments");
+      logR.trace("Found {} attachments", nl.getLength());
     }
     for (int i = 0; i < nl.getLength(); i++) {
       Node n = nl.item(i);
@@ -130,13 +134,13 @@ public class XmlAttachmentHandler implements AttachmentHandler {
       String filename = null;
       if (getFilenameXpath() != null) {
         filename = x.selectSingleTextItem(n, getFilenameXpath());
-        logR.trace("Found filename [" + filename + "] from XPath [" + getFilenameXpath() + "]");
+        logR.trace("Found filename [{}] from XPath [{}]", filename, getFilenameXpath());
       }
       if (filename == null) {
         filename = idGenerator.create(n);
-        logR.warn("Could not determine filename for MimeBodyPart, " + "assigning unique filename of " + filename);
+        logR.warn("Could not determine filename for MimeBodyPart, assigning unique filename of {}", filename);
       }
-      result.add(new MailAttachment(getData(n), filename));
+      result.add(new MailAttachment(getData(n), filename).withContentTransferEncoding(getAttachmentEncoding()));
     }
     return result;
   }
@@ -150,7 +154,7 @@ public class XmlAttachmentHandler implements AttachmentHandler {
     InputStream encodedIn = in;
     if (getEncodingXpath() != null) {
       String encoding = x.selectSingleTextItem(n, getEncodingXpath());
-      logR.trace("Found encoding type [" + encoding + "] from XPath [" + getEncodingXpath() + "]");
+      logR.trace("Found encoding type [{}] from XPath [{}]", encoding, getEncodingXpath());
       encodedIn = MimeUtility.decode(in, encoding);
     }
     StreamUtil.copyStream(encodedIn, out);
@@ -194,5 +198,23 @@ public class XmlAttachmentHandler implements AttachmentHandler {
    */
   public void setNamespaceContext(KeyValuePairSet kvps) {
     this.namespaceContext = kvps;
+  }
+
+  public String getAttachmentEncoding() {
+    return attachmentEncoding;
+  }
+
+  /**
+   * Specify the Content-Transfer-Encoding to be associated with each attachment.
+   * 
+   * @param e the encoding; default is base64 if not specified.
+   */
+  public void setAttachmentEncoding(String e) {
+    this.attachmentEncoding = e;
+  }
+
+  public XmlAttachmentHandler withAttachmentEncoding(String s) {
+    setAttachmentEncoding(s);
+    return this;
   }
 }

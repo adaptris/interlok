@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.GuidGenerator;
 
@@ -109,10 +110,7 @@ public abstract class ServiceImp implements Service {
 
   @Override
   public void setUniqueId(String s) {
-    if (s == null) {
-      throw new IllegalArgumentException("null param");
-    }
-    uniqueId = s;
+    uniqueId = Args.notNull(s, "uniqueId");
   }
 
   @Override

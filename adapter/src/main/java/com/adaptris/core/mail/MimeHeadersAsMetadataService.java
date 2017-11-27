@@ -49,7 +49,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("mime-headers-as-metadata-service")
 @AdapterComponent
-@ComponentProfile(summary = "Parse a MimeMessage and add its headers as metadata", tag = "service,mail,metadata")
+@ComponentProfile(summary = "Parse a MimeMessage and add its headers as metadata", tag = "service,mail,metadata", since = "3.6.5")
 @DisplayOrder(order =
 {
     "handler"
