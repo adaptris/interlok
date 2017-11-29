@@ -95,25 +95,29 @@ class AdapterBuilder implements AdapterBuilderMBean {
     return result;
   }
 
-
+  @Override
   public ObjectName createAdapter() throws IOException, MalformedObjectNameException, CoreException {
     return createAdapter(new URLString(config.findAdapterResource()));
   }
 
+  @Override
   public ObjectName createAdapter(URLString url) throws IOException, MalformedObjectNameException, CoreException {
     String xml = loadPreProcessors().process(url.getURL());
     return parent.register(this, validate((Adapter) DefaultMarshaller.getDefaultMarshaller().unmarshal(xml)), url);
   }
 
+  @Override
   public ObjectName createAdapterFromUrl(String url) throws IOException, MalformedObjectNameException, CoreException {
     return createAdapter(new URLString(url));
   }
 
+  @Override
   public ObjectName createAdapter(String xml) throws IOException, MalformedObjectNameException, CoreException {
     xml = loadPreProcessors().process(xml);
     return parent.register(this, validate((Adapter) DefaultMarshaller.getDefaultMarshaller().unmarshal(xml)), null);
   }
 
+  @Override
   public void updateVCS() throws CoreException {
     if (runtimeVCS != null) {
       log.error("runtimeVCS {}", runtimeVCS);
