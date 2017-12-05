@@ -29,10 +29,10 @@ import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.mockito.Mockito;
 
 import com.adaptris.core.fs.FsHelper;
 import com.adaptris.util.GuidGenerator;
-import com.adaptris.util.system.Os;
 
 public class StandardWorkerTest extends FsCase {
 
@@ -254,30 +254,29 @@ public class StandardWorkerTest extends FsCase {
   }
 
   public void testGetFileNoWriteAccess() throws Exception {
-    if (Os.isFamily(Os.UNIX_FAMILY)) {
-      FsWorker worker = createWorker();
-      File file = new File("/etc", "hosts");
-      try {
-        worker.get(file);
-        fail();
-      }
-      catch (FsException expected) {
-
-      }
+    File file = Mockito.mock(File.class);
+    Mockito.when(file.canWrite()).thenReturn(false);
+    FsWorker worker = createWorker();
+    try {
+      worker.get(file);
+      fail();
     }
+    catch (FsException expected) {
+
+    }
+
   }
 
   public void testGetFileNoReadAccess() throws Exception {
-    if (Os.isFamily(Os.UNIX_FAMILY)) {
-      FsWorker worker = createWorker();
-      File file = new File("/etc", "sudoers");
-      try {
-        worker.get(file);
-        fail();
-      }
-      catch (FsException expected) {
+    File file = Mockito.mock(File.class);
+    Mockito.when(file.canRead()).thenReturn(false);
+    FsWorker worker = createWorker();
+    try {
+      worker.get(file);
+      fail();
+    }
+    catch (FsException expected) {
 
-      }
     }
   }
 
