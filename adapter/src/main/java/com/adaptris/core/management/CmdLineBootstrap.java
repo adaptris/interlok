@@ -78,7 +78,7 @@ abstract class CmdLineBootstrap {
   public abstract void boot() throws Exception;
 
   protected void startAdapter(BootstrapProperties bootProperties) throws Exception {
-    boolean startQuietly = Boolean.valueOf(bootProperties.getProperty(CFG_KEY_START_QUIETLY, "true")).booleanValue();
+    boolean startQuietly = bootProperties.isEnabled(CFG_KEY_START_QUIETLY);
     final UnifiedBootstrap bootstrap = new UnifiedBootstrap(bootProperties);
     AdapterManagerMBean adapter = bootstrap.createAdapter();
     if (!configCheckOnly()) {

@@ -16,7 +16,6 @@
 
 package com.adaptris.core.runtime;
 
-import static com.adaptris.core.util.PropertyHelper.getPropertyIgnoringCase;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 import java.io.IOException;
@@ -74,9 +73,7 @@ class AdapterBuilder implements AdapterBuilderMBean {
     parent = owner;
     this.config = new BootstrapProperties(cfg);
     runtimeVCS = loadVCS();
-    boolean enableValidation = Boolean
-        .valueOf(getPropertyIgnoringCase(cfg, Constants.CFG_KEY_VALIDATE_CONFIG, Constants.DEFAULT_VALIDATE_CONFIG))
-        .booleanValue();
+    boolean enableValidation = config.isEnabled(Constants.CFG_KEY_VALIDATE_CONFIG);
     if (enableValidation) {
       validatorFactory = Validation.buildDefaultValidatorFactory();
     }

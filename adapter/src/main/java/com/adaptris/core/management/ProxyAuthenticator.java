@@ -17,8 +17,6 @@
 package com.adaptris.core.management;
 
 import static com.adaptris.core.management.Constants.CFG_KEY_PROXY_AUTHENTICATOR;
-import static com.adaptris.core.management.Constants.DEFAULT_PROXY_AUTHENTICATOR;
-import static com.adaptris.core.util.PropertyHelper.getPropertyIgnoringCase;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.net.Authenticator.RequestorType;
@@ -40,8 +38,7 @@ final class ProxyAuthenticator {
   };
 
   static void register(BootstrapProperties config) {
-    if (!Boolean.valueOf(getPropertyIgnoringCase(config, CFG_KEY_PROXY_AUTHENTICATOR,
-        DEFAULT_PROXY_AUTHENTICATOR))) {
+    if (!config.isEnabled(CFG_KEY_PROXY_AUTHENTICATOR)) {
       return;
     }
     String proxyPassword = getSystemProperty(PROXY_PASSWORD_SYSPROPERTIES);
