@@ -13,25 +13,6 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 public abstract class LoggingConfigurator {
 
   private static enum AvailableLoggingImpls {
-    LOG4J_12() {
-      boolean available() {
-        boolean rc = false;
-        try {
-          Class.forName("org.apache.log4j.xml.DOMConfigurator");
-          // Try for the helper class as well, because with log4j2 + log4j bridge, DOMConfigurator
-          // might exist.
-          Class.forName("org.apache.log4j.helpers.Loader");
-          rc = true;
-        } catch (Exception e) {
-          rc = false;
-        }
-        return rc;
-      }
-
-      LoggingConfigurator create() {
-        return new LegacyLog4jConfigurator();
-      }
-    },
     LOG4J_2() {
       boolean available() {
         boolean rc = false;
