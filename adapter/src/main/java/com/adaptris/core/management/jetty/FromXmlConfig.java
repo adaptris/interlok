@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 */
-package com.adaptris.core.management.webserver;
+package com.adaptris.core.management.jetty;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
@@ -28,7 +28,7 @@ import java.util.Properties;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.xml.XmlConfiguration;
 
-import com.adaptris.core.management.webserver.WebServerProperties.WebServerPropertiesEnum;
+import com.adaptris.core.management.jetty.WebServerProperties.WebServerPropertiesEnum;
 import com.adaptris.core.util.PropertyHelper;
 
 /**

@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.PortManager;
-import com.adaptris.core.management.webserver.WebServerProperties.WebServerPropertiesEnum;
+import com.adaptris.core.management.jetty.WebServerProperties.WebServerPropertiesEnum;
 
 public class ManagementComponentFactoryTest extends BaseCase {
 

@@ -23,10 +23,10 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.PortManager;
-import com.adaptris.core.management.webserver.JettyServerComponent;
+import com.adaptris.core.management.jetty.JettyServerComponent;
+import com.adaptris.core.management.jetty.WebServerProperties.WebServerPropertiesEnum;
 import com.adaptris.core.management.webserver.ServerManager;
 import com.adaptris.core.management.webserver.WebServerManagementUtil;
-import com.adaptris.core.management.webserver.WebServerProperties.WebServerPropertiesEnum;
 
 /**
  * @author gcsiki
