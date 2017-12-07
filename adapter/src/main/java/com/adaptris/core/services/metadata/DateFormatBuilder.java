@@ -133,7 +133,7 @@ public class DateFormatBuilder {
   /**
    * Set the language tag for the {@link java.util.Locale} which is resolved via {@link Locale#forLanguageTag(String)}.
    * 
-   * @param locale the locale e.g. {@code fr_FR} or {@code en_GB}.
+   * @param locale the locale using the IETF BCP 47 language tag string e.g. {@code fr-FR} or {@code en-GB}.
    * @see Locale#forLanguageTag(String)
    */
   public void setLanguageTag(String locale) {
