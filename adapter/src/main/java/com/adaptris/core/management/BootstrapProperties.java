@@ -18,6 +18,9 @@ package com.adaptris.core.management;
 
 import static com.adaptris.core.management.Constants.CFG_KEY_CONFIG_MANAGER;
 import static com.adaptris.core.management.Constants.CFG_KEY_CONFIG_URL;
+import static com.adaptris.core.management.Constants.CFG_KEY_LOG4J12_URL;
+import static com.adaptris.core.management.Constants.CFG_KEY_LOGGING_RECONFIGURE;
+import static com.adaptris.core.management.Constants.CFG_KEY_LOGGING_URL;
 import static com.adaptris.core.management.Constants.DBG;
 import static com.adaptris.core.management.Constants.DEFAULT_CONFIG_MANAGER;
 import static com.adaptris.core.management.Constants.DEFAULT_PROPS_RESOURCE;
@@ -25,7 +28,6 @@ import static com.adaptris.core.management.Constants.PROTOCOL_FILE;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -284,21 +286,16 @@ public class BootstrapProperties extends Properties {
 
   @SuppressWarnings("deprecation")
   public void reconfigureLogging() {
-    try {
-      if (isEnabled(Constants.CFG_KEY_LOGGING_RECONFIGURE)) {
-        // Default to log4j12Url for backwards compat.
-        String loggingUrl = getPropertyIgnoringCase(this, Constants.CFG_KEY_LOGGING_URL,
-            getPropertyIgnoringCase(this, Constants.CFG_KEY_LOG4J12_URL, ""));
-        if (!StringUtils.isEmpty(loggingUrl)) {
-          log.trace("Attempting Logging reconfiguration using {}", loggingUrl);
-          if (LoggingConfigurator.newConfigurator().initialiseFrom(new URLString(loggingUrl).getURL())) {
-            log.trace("Successfully reconfigured logging using {}", loggingUrl);
-          }
+    if (isEnabled(CFG_KEY_LOGGING_RECONFIGURE)) {
+      // Default to log4j12Url for backwards compat.
+      String legacy = getPropertyIgnoringCase(this, CFG_KEY_LOG4J12_URL, "");
+      String loggingUrl = getPropertyIgnoringCase(this, CFG_KEY_LOGGING_URL, legacy);
+      if (!StringUtils.isEmpty(loggingUrl)) {
+        log.trace("Attempting Logging reconfiguration using {}", loggingUrl);
+        if (LoggingConfigurator.newConfigurator().initialiseFrom(loggingUrl)) {
+          log.trace("Successfully reconfigured logging using {}", loggingUrl);
         }
       }
-    }
-    catch (IOException ignoredIntentionally) {
-      ;
     }
   }
 
