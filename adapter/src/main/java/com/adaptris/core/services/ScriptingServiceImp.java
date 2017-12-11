@@ -87,8 +87,9 @@ public abstract class ScriptingServiceImp extends ServiceImp implements DynamicP
   protected void initService() throws CoreException {
     try {
       Args.notBlank(language, "language");
+      String error = String.format("getEngineByName('%s')", getLanguage());
       fatController = new ScriptEngineManager(this.getClass().getClassLoader());
-      engine = Args.notNull(fatController.getEngineByName(getLanguage()), "scriptingEngineInstance");
+      engine = Args.notNull(fatController.getEngineByName(getLanguage()), error);
       if (getBranching() != null) {
         log.warn("[branching] is deprecated, use [branching-enabled] instead");
       }
