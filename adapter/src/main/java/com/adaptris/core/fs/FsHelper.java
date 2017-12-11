@@ -20,6 +20,7 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.net.URI;
@@ -47,7 +48,7 @@ public final class FsHelper {
    * Go straight to a {@link File} from a url style string.
    * 
    */
-  public static File toFile(String s) throws Exception {
+  public static File toFile(String s) throws IOException, URISyntaxException {
     return createFileReference(createUrlFromString(s, true));
   }
 
@@ -98,7 +99,7 @@ public final class FsHelper {
    * @deprecated use {@link #createUrlFromString(String, boolean)} since 3.0.3
    */
   @Deprecated
-  public static URL createUrlFromString(String s) throws Exception {
+  public static URL createUrlFromString(String s) throws IOException, URISyntaxException {
     return createUrlFromString(s, false);
   }
 
@@ -114,7 +115,7 @@ public final class FsHelper {
    * @param backslashConvert whether or not to convert backslashes into forward slashes.
    * 
    */
-  public static URL createUrlFromString(String s, boolean backslashConvert) throws Exception {
+  public static URL createUrlFromString(String s, boolean backslashConvert) throws IOException, URISyntaxException {
     String destToConvert = backslashConvert ? backslashToSlash(s) : s;
     URI configuredUri = null;
     try {
@@ -189,7 +190,7 @@ public final class FsHelper {
    *         <code>System.getProperty("user.dir")</code>) plus the passed relative <code>uri</code>
    * @throws Exception wrapping any underlying <code>Exception</code>
    */
-  private static URL relativeConfig(URI uri) throws Exception {
+  private static URL relativeConfig(URI uri) throws IOException {
     String pwd = System.getProperty("user.dir");
 
     String path = pwd + "/" + uri; // ok even if uri starts with a /
