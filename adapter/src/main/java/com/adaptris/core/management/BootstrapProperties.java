@@ -300,8 +300,7 @@ public class BootstrapProperties extends Properties {
   }
 
   public boolean isEnabled(String key) {
-    String val = PropertyHelper.getPropertyIgnoringCase(this, key);
-    return BooleanUtils.toBooleanDefaultIfNull(BooleanUtils.toBooleanObject(val), enabledByDefault(key));
+    return isEnabled(this, key);
   }
 
   private static boolean enabledByDefault(String key) {
