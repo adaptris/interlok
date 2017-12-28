@@ -39,6 +39,18 @@ public class InterlokLauncherTest {
   }
 
   @Test
+  public void testMainClassServiceTest() throws Exception {
+    InterlokLauncher launcher = new InterlokLauncher(new String[]{
+        "-serviceTest", "input.xml"
+    });
+    assertEquals("com.adaptris.tester.runners.TestExecutor", launcher.getMainClass());
+    launcher = new InterlokLauncher(new String[]{
+        "--serviceTest", "input.xml"
+    });
+    assertEquals("com.adaptris.tester.runners.TestExecutor", launcher.getMainClass());
+  }
+
+  @Test
   public void testRebuild() throws Exception {
     InterlokLauncher launcher = new InterlokLauncher(new String[]
     {
