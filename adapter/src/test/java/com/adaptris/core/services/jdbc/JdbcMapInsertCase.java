@@ -46,8 +46,11 @@ public abstract class JdbcMapInsertCase {
   protected static final String JDBC_DRIVER = "org.apache.derby.jdbc.EmbeddedDriver";
   protected static final String JDBC_URL = "jdbc:derby:memory:JDCB_OBJ_DB;create=true";
   protected static final String TABLE_NAME = "people";
-
-
+  protected static final String DROP_STMT = String.format("DROP TABLE %s", TABLE_NAME);
+  protected static final String CREATE_STMT = String.format("CREATE TABLE %s (firstname VARCHAR(128) NOT NULL, lastname VARCHAR(128) NOT NULL, dob DATE)",
+      TABLE_NAME);
+  protected static final String CREATE_QUOTED = String.format(
+      "CREATE TABLE %s (\"firstname\" VARCHAR(128) NOT NULL, \"lastname\" VARCHAR(128) NOT NULL, \"dob\" DATE)", TABLE_NAME);
 
   @Test
   public void testService_Init() throws Exception {
@@ -94,16 +97,19 @@ public abstract class JdbcMapInsertCase {
   }
 
   protected static void createDatabase() throws Exception {
+    createDatabase(CREATE_STMT);
+  }
+
+  protected static void createDatabase(String createStmt) throws Exception {
     Connection c = null;
     Statement s = null;
     try {
       c = createConnection();
       s = c.createStatement();
-      executeQuietly(s, String.format("DROP TABLE %s", TABLE_NAME));
-      s.execute(
-          String.format("CREATE TABLE %s (firstname VARCHAR(128) NOT NULL, lastname VARCHAR(128) NOT NULL, dob DATE)",
-          TABLE_NAME));
-    } finally {
+      executeQuietly(s, DROP_STMT);
+      s.execute(createStmt);
+    }
+    finally {
       JdbcUtil.closeQuietly(s);
       JdbcUtil.closeQuietly(c);
     }

@@ -44,6 +44,16 @@ public class JdbcMapUpsertTest extends JdbcMapInsertCase {
   protected static final String ALICE = "alice";
   protected static final String DOB = "2017-01-01";
 
+  protected static final String INSERT_STMT = String.format("INSERT INTO %s (firstname, lastname, dob) VALUES ('%s', '%s' ,'%s')",
+      TABLE_NAME, ALICE, SMITH, UTC_0);
+
+  protected static final String INSERT_QUOTED = String
+      .format("INSERT INTO %s (\"firstname\", \"lastname\", \"dob\") VALUES ('%s', '%s' ,'%s')",
+      TABLE_NAME, ALICE, SMITH, UTC_0);
+
+  protected static final String SELECT_STMT = "SELECT * FROM %s WHERE firstname='%s'";
+  protected static final String SELECT_QUOTED = "SELECT * FROM %s WHERE \"firstname\"='%s'";
+
   @Test
   public void testDatabaseId() {
     JdbcMapUpsert upsert = (JdbcMapUpsert) createService();
@@ -55,6 +65,17 @@ public class JdbcMapUpsertTest extends JdbcMapInsertCase {
   public void testService_Insert() throws Exception {
     createDatabase();
     UpsertProperties service = configureForTests(createService());
+    service.setIdField(ID_ELEMENT_VALUE);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(CONTENT);
+    ServiceCase.execute(service, msg);
+    doAssert(1);
+  }
+
+  @Test
+  public void testService_Insert_WithBookend() throws Exception {
+    createDatabase(CREATE_QUOTED);
+    UpsertProperties service = configureForTests(createService());
+    service.withColumnBookend('"');
     service.setIdField(ID_ELEMENT_VALUE);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(CONTENT);
     ServiceCase.execute(service, msg);
@@ -87,39 +108,61 @@ public class JdbcMapUpsertTest extends JdbcMapInsertCase {
     checkDob(ALICE, DOB);
   }
 
+  @Test
+  public void testService_Update_Bookend() throws Exception {
+    createDatabase(CREATE_QUOTED);
+    populateDatabase(INSERT_QUOTED);
+    UpsertProperties service = configureForTests(createService());
+    service.withColumnBookend('"');
+    service.setIdField(ID_ELEMENT_VALUE);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(CONTENT);
+    ServiceCase.execute(service, msg);
+    doAssert(1);
+    checkDob(SELECT_QUOTED, ALICE, DOB);
+  }
+
   protected UpsertProperties createService() {
     return new UpsertProperties();
   }
 
   protected static void populateDatabase() throws Exception {
+    populateDatabase(INSERT_STMT);
+  }
+
+  protected static void populateDatabase(String insertStmt) throws Exception {
     Connection c = null;
     Statement s = null;
     try {
       c = createConnection();
       s = c.createStatement();
-      s.execute(
-          String.format("INSERT INTO %s (firstname, lastname, dob) VALUES ('%s', '%s' ,'%s')", TABLE_NAME, ALICE, SMITH,
-          UTC_0));
-    } finally {
+      s.execute(insertStmt);
+    }
+    finally {
       JdbcUtil.closeQuietly(s);
       JdbcUtil.closeQuietly(c);
     }
   }
 
   protected static void checkDob(String firstname, String dob) throws Exception {
+    checkDob(SELECT_STMT, firstname, dob);
+  }
+
+  protected static void checkDob(String selectStmt, String firstname, String dob) throws Exception {
     Connection c = null;
     Statement s = null;
     ResultSet rs = null;
     try {
       c = createConnection();
       s = c.createStatement();
-      rs = s.executeQuery(String.format("SELECT * FROM %s WHERE firstname='%s'", TABLE_NAME, firstname));
+      rs = s.executeQuery(String.format(selectStmt, TABLE_NAME, firstname));
       if (rs.next()) {
         assertEquals(dob, rs.getString("dob"));
-      } else {
+      }
+      else {
         fail("No Match for firstname: " + firstname);
       }
-    } finally {
+    }
+    finally {
       JdbcUtil.closeQuietly(s);
       JdbcUtil.closeQuietly(c);
     }
