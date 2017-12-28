@@ -96,7 +96,8 @@ public class XmlUtils {
   }
 
   /**
-   * @deprecated URIResolver does nothing so use {@link #XmlUtils(EntityResolver, NamespaceContext)} instead.
+   * @deprecated URIResolver does nothing so use {@link #XmlUtils(EntityResolver, NamespaceContext, DocumentBuilderFactory)}
+   *             instead.
    */
   @Deprecated
   public XmlUtils(EntityResolver er, URIResolver ur, NamespaceContext ctx) {

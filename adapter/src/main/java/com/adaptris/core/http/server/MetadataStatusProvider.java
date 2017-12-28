@@ -106,10 +106,12 @@ public class MetadataStatusProvider implements HttpStatusProvider {
   /**
    * Set the metadata where the status text will be taken.
    * 
-   * <p>Note that for {@link com.adaptris.core.http.jetty.ResponseProducer} any values associated with the key will be ignored as
-   * that will use {@link javax.servlet.http.HttpServletResponse#setStatus(int)} method only. This is only included for
+   * <p>
+   * Note that for {@link com.adaptris.core.http.jetty.StandardResponseProducer} any values associated with the key will be ignored
+   * as that will use {@link javax.servlet.http.HttpServletResponse#setStatus(int)} method only. This is only included for
    * completeness.
    * </p>
+   * 
    * @param k the optional key for the status text
    */
   public void setTextKey(String k) {
