@@ -29,7 +29,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * <pre>
  * {@code 
- * CREATE TABLE sequences (id VARCHAR(255) NOT NULL, seq_number INT)
+ * CREATE TABLE SEQUENCES (ID VARCHAR(255) NOT NULL, SEQ_NUMBER INT)
  * }
  * </pre> The default SQL statements reflect this; and provided that a table called 'SEQUENCES' contains at least those two columns
  * then it should work without any changes to the SQL statements. Be aware that all statements default to upper-case which will have
