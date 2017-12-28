@@ -43,8 +43,8 @@ public abstract class SequenceNumberCase extends JdbcServiceCase {
   protected static final String DEFAULT_ID = "adpMsg";
 
   private static final String EXAMPLE_COMMENT = "<!-- The default database schme is assumed to be  \n"
-      + "CREATE TABLE sequences (id VARCHAR(255) NOT NULL, seq_number INT)\n"
-      + "If you have a table called sequences with those two columns then you will not \n"
+      + "CREATE TABLE SEQUENCES (id VARCHAR(255) NOT NULL, seq_number INT)\n"
+      + "If you have a table called SEQUENCES with those two columns then you will not \n"
       + "have to change any SQL statements (i.e. they can be removed from your configuration)" + "\n-->\n";
 
   public SequenceNumberCase(String name) {

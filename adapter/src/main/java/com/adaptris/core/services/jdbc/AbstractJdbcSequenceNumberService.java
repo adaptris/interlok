@@ -41,15 +41,15 @@ import com.adaptris.core.util.JdbcUtil;
  * Abstract base class for adding sequence numbers into metadata.
  * 
  * <p>
- * The basic database schema that is assumed to be default is
+ * The default database schema is assumed to be
  * 
  * <pre>
  * {@code 
- * CREATE TABLE SEQUENCES (ID VARCHAR(255) NOT NULL, SEQ_NUMBER INT)
+ * CREATE TABLE sequences (id VARCHAR(255) NOT NULL, seq_number INT)
  * }
- * </pre>
- * The default SQL statements reflect this; and provided that a table called 'sequences' contains at least those two columns then it
- * should work without any changes to the SQL statements.
+ * </pre> The default SQL statements reflect this; and provided that a table called 'SEQUENCES' contains at least those two columns
+ * then it should work without any changes to the SQL statements. Be aware that all statements default to upper-case which will have
+ * an impact if your database is case-sensitive (such as MySQL on Linux).
  * </p>
  * <p>
  * Concrete implementations of this simply have to derive the appropriate 'id' from the AdaptrisMessage; everything else is done in
