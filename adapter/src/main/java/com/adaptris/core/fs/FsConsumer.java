@@ -21,7 +21,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
 
-import org.apache.oro.io.Perl5FilenameFilter;
+import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
@@ -192,7 +192,7 @@ public class FsConsumer extends FsConsumerImpl {
       // No point because it doesn't exist.
       return;
     }
-    Perl5FilenameFilter p5 = new Perl5FilenameFilter(".*\\" + getWipSuffix());
+    RegexFileFilter p5 = new RegexFileFilter(".*\\" + getWipSuffix());
     File[] files = dir.listFiles((FilenameFilter) p5);
     if (files == null) {
       throw new CoreException("Failed to list files in " + dir.getCanonicalPath()

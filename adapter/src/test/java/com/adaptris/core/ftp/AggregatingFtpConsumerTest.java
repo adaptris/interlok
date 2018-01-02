@@ -16,6 +16,8 @@
 
 package com.adaptris.core.ftp;
 
+import org.apache.commons.io.filefilter.RegexFileFilter;
+
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.MimeEncoder;
 
@@ -44,7 +46,7 @@ public class AggregatingFtpConsumerTest extends BaseCase {
 
   public void testFileFilterImp() throws Exception {
     AggregatingFtpConsumer consumer = new AggregatingFtpConsumer();
-    assertEquals("org.apache.oro.io.Perl5FilenameFilter", consumer.fileFilterImp());
+    assertEquals(RegexFileFilter.class.getCanonicalName(), consumer.fileFilterImp());
     assertNull(consumer.getFileFilterImp());
     consumer.setFileFilterImp(getName());
     assertNotNull(consumer.getFileFilterImp());

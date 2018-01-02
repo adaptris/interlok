@@ -62,7 +62,8 @@ import com.adaptris.util.TimeInterval;
 public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
 
   private static final TimeInterval DEFAULT_OLDER_THAN = new TimeInterval(0L, TimeUnit.MILLISECONDS);
-  private static final String DEFAULT_FILE_FILTER_IMP = "org.apache.oro.io.Perl5FilenameFilter";
+  private static final String DEFAULT_FILE_FILTER_IMP = "org.apache.commons.io.filefilter.RegexFileFilter";
+
   // marshalled
   @AdvancedConfig
   private String fileFilterImp;
@@ -187,6 +188,7 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
     super.init();
   }
 
+
   protected File verifyDirectory() throws Exception {
     File f = FsHelper.createFileReference(FsHelper.createUrlFromString(getDestination().getDestination(), true));
     if (shouldCreateDirs()) {
@@ -266,8 +268,7 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
    * Set the filename filter
    * 
    * @param string the classname of the {@link FileFilter} implementation to use, if not specified, then it defaults to
-   * "org.apache.oro.io.Perl5FilenameFilter" which uses the jakarta oro package implementation of a Perl regular expression
-   * filename filter.
+   *          {@code org.apache.commons.io.filefilter.RegexFileFilter} which uses {@link java.util.regex.Pattern}.
    * @see com.adaptris.core.ConsumeDestination#getFilterExpression()
    */
   public void setFileFilterImp(String string) {

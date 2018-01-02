@@ -47,6 +47,7 @@ public class CompositeFileFilterTest {
       "Perl=.*\\.xml",
       "Awk=.*",
       "Glob=*.xml",
+      "Regex=.*\\.xml",
       "com.adaptris.core.fs.YesOrNo=false",
       "IWon'tWork"
   };

@@ -29,20 +29,18 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.adaptris.fs.FsException;
 import com.adaptris.fs.FsFilenameExistsException;
 import com.adaptris.fs.FsWorker;
 
 /**
- * <p>
- * Helper class for <code>FsMessageConsumer</code> and <code>FsMessageProducer</code>.
- * </p>
  */
-public final class FsHelper {
+public abstract class FsHelper {
 
-  private FsHelper() {
-    // no instances
-  }
+  private static transient Logger log = LoggerFactory.getLogger(FsHelper.class);
 
   /**
    * Go straight to a {@link File} from a url style string.
@@ -167,7 +165,20 @@ public final class FsHelper {
       Constructor cnst = c.getDeclaredConstructor(paramTypes);
       result = (FileFilter) cnst.newInstance(args);
     }
-    return result;
+    return logWarningIfRequired(result);
+  }
+
+  public static FileFilter logWarningIfRequired(FileFilter f) {
+    try {
+      Class clz = Class.forName("org.apache.oro.io.RegexFilenameFilter");
+      if (clz.isAssignableFrom(f.getClass())) {
+        log.warn("{} is deprecated, use a java.util.regex.Pattern based filter instead", f.getClass().getCanonicalName());
+      }
+    }
+    catch (Exception e) {
+
+    }
+    return f;
   }
 
   public static File renameFile(File file, String suffix, FsWorker worker) throws FsException {
@@ -205,12 +216,12 @@ public final class FsHelper {
     }
     return url;
   }
-  
+
   private static class NoOpFileFilter implements FileFilter {
     @Override
     public boolean accept(File pathname) {
       return true;
     }
-    
+
   }
 }

@@ -66,7 +66,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("aggregating-fs-consumer")
 @DisplayOrder(order = {"destination", "messageAggregator", "filterFilterImp", "wipSuffix", "encoder"})
 public class AggregatingFsConsumer extends AggregatingConsumerImpl<AggregatingFsConsumeService> {
-  private static final String DEFAULT_FILE_FILTER_IMP = "org.apache.oro.io.Perl5FilenameFilter";
+  private static final String DEFAULT_FILE_FILTER_IMP = "org.apache.commons.io.filefilter.RegexFileFilter";
   private static final String DEFAULT_WIP_SUFFIX = "_wip";
   private static final String OBJ_METADATA_KEY_FILE = AggregatingFsConsumer.class.getCanonicalName() + ".file";
   private static final String OBJ_METADATA_KEY_FILENAME = AggregatingFsConsumer.class.getCanonicalName() + ".filename";

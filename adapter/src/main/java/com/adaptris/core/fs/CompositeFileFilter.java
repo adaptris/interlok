@@ -18,13 +18,10 @@ package com.adaptris.core.fs;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.oro.io.AwkFilenameFilter;
-import org.apache.oro.io.GlobFilenameFilter;
-import org.apache.oro.io.Perl5FilenameFilter;
+import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,9 +44,10 @@ import org.slf4j.LoggerFactory;
  * <li>SizeGTE is equivalent to using {@link SizeGreaterThanOrEqual}</li>
  * <li>SizeLT is equivalent to using {@link SizeLessThan}</li>
  * <li>SizeLTE is equivalent to using {@link SizeLessThanOrEqual}</li>
- * <li>Perl is equivalent to using org.apache.oro.io.Perl5FilenameFilter</li>
- * <li>Awk is equivalent to using org.apache.oro.io.AwkFilenameFilter</li>
- * <li>Glob is equivalent to using org.apache.oro.io.GlobFilenameFilter</li>
+ * <li>Regex is equivalent to using {@code org.apache.commons.io.filefilter.RegexFilter} - since 3.7.0</li>
+ * <li>Perl is equivalent to using org.apache.oro.io.Perl5FilenameFilter - <strong>deprecated since 3.7.0</strong></li>
+ * <li>Awk is equivalent to using org.apache.oro.io.AwkFilenameFilter - <strong>deprecated since 3.7.0</strong></li>
+ * <li>Glob is equivalent to using org.apache.oro.io.GlobFilenameFilter - <strong>deprecated since 3.7.0</strong></li>
  * </ul>
  * <p>
  * In the event of a unknown filter type being used, it will be assumed to be a fully qualified classname which will be constructed
@@ -69,66 +67,77 @@ import org.slf4j.LoggerFactory;
  * @author lchan
  */
 public class CompositeFileFilter implements FileFilter {
-  private transient Logger logR = LoggerFactory.getLogger(this.getClass());
+  private static transient Logger log = LoggerFactory.getLogger(CompositeFileFilter.class);
   private static final String FILTER_ITEM_SEPARATOR = "__@@__";
   private static final String FILTER_KEY_SEPARATOR = "=";
 
   private enum FilterImplementation {
     NewerThan {
       @Override
-      FileFilter create(String expr) {
-        return new NewerThan(expr);
+      String filterImpl() {
+        return NewerThan.class.getCanonicalName();
       }
     },
     OlderThan {
       @Override
-      FileFilter create(String expr) {
-        return new OlderThan(expr);
+      String filterImpl() {
+        return OlderThan.class.getCanonicalName();
       }
     },
     SizeGT {
       @Override
-      FileFilter create(String expr) {
-        return new SizeGreaterThan(expr);
+      String filterImpl() {
+        return SizeGreaterThan.class.getCanonicalName();
       }
     },
     SizeGTE {
       @Override
-      FileFilter create(String expr) {
-        return new SizeGreaterThanOrEqual(expr);
+      String filterImpl() {
+        return SizeGreaterThanOrEqual.class.getCanonicalName();
       }
     },
     SizeLT {
       @Override
-      FileFilter create(String expr) {
-        return new SizeLessThan(expr);
+      String filterImpl() {
+        return SizeLessThan.class.getCanonicalName();
       }
     },
     SizeLTE {
       @Override
-      FileFilter create(String expr) {
-        return new SizeLessThanOrEqual(expr);
+      String filterImpl() {
+        return SizeLessThanOrEqual.class.getCanonicalName();
       }
     },
+    Regex {
+      @Override
+      String filterImpl() {
+        return RegexFileFilter.class.getCanonicalName();
+      }
+    },
+
+    @Deprecated
     Perl {
       @Override
-      FileFilter create(String expr) {
-        return new Perl5FilenameFilter(expr);
+      String filterImpl() {
+        return "org.apache.oro.io.Perl5FilenameFilter";
+
       }
     },
+    @Deprecated
     Awk {
       @Override
-      FileFilter create(String expr) {
-        return new AwkFilenameFilter(expr);
+      String filterImpl() {
+        return "org.apache.oro.io.AwkFilenameFilter";
       }
     },
+    @Deprecated
     Glob {
       @Override
-      FileFilter create(String expr) {
-        return new GlobFilenameFilter(expr);
+      String filterImpl() {
+        return "org.apache.oro.io.GlobFilenameFilter";
       }
     };
-    abstract FileFilter create(String expr);
+    abstract String filterImpl();
   };
 
   private transient List<FileFilter> filters;
@@ -161,7 +170,7 @@ public class CompositeFileFilter implements FileFilter {
     for (String filterString : filterItems) {
       int pos = filterString.indexOf(FILTER_KEY_SEPARATOR);
       if (pos == -1) {
-        logR.warn("Ignoring invalid filter [" + filterString + "]");
+        log.warn("Ignoring invalid filter [{}]", filterString);
       }
       else {
         String key = filterString.substring(0, pos);
@@ -178,9 +187,9 @@ public class CompositeFileFilter implements FileFilter {
     FileFilter filter = null;
     try {
       FilterImplementation f = FilterImplementation.valueOf(impl);
-      filter = f.create(expr);
+      filter = FsHelper.createFilter(expr, f.filterImpl());
     }
-    catch (IllegalArgumentException e) {
+    catch (Exception e) {
       filter = newInstance(impl, expr);
     }
     return filter;
@@ -189,18 +198,11 @@ public class CompositeFileFilter implements FileFilter {
   private FileFilter newInstance(String clazzname, String expr) {
     FileFilter result = null;
     try {
-      logR.trace("Trying to use : " + clazzname);
-      Constructor cnst = Class.forName(clazzname).getDeclaredConstructor(new Class[]
-      {
-        String.class
-      });
-      result = (FileFilter) cnst.newInstance((Object[]) new String[]
-      {
-        expr
-      });
+      log.trace("Trying to use : {}", clazzname);
+      result = FsHelper.createFilter(expr, clazzname);
     }
     catch (Exception e) {
-      logR.trace("Error encounted attempting to use " + clazzname + ", ignoring", e);
+      log.trace("Error encounted attempting to use {}, ignoring", clazzname, e);
     }
     return result;
   }
@@ -213,7 +215,7 @@ public class CompositeFileFilter implements FileFilter {
     int result = 0;
     for (FileFilter f : filters) {
       if (!quietMode) {
-        logR.trace("Checking {} is acceptable for {}", pathname.getAbsolutePath(), f.getClass().getSimpleName());
+        log.trace("Checking {} is acceptable for {}", pathname.getAbsolutePath(), f.getClass().getSimpleName());
       }
       result += f.accept(pathname) ? 1 : 0;
     }
