@@ -502,6 +502,9 @@
     <zip destfile = "${project.dist.dir}/${project.name}/examples/${project.name}-examples.zip">
       <zipfileset dir="${example-xml.build.dir}" prefix="example-xml/Interlok-Base"/>
     </zip>
+    <jar jarfile="${project.dist.dir}/${project.name}/examples/${project.name}.jar">
+      <fileset dir="${example-xml.build.dir}"/>
+    </jar>    
     <mkdir dir="${project.dist.dir}/adp-core/source"/>
     <jar jarfile="${project.dist.dir}/${project.name}/source/${project.name}.jar">
       <fileset dir="${src.dir}"/>
