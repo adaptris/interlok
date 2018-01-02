@@ -19,9 +19,6 @@ package com.adaptris.mail;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 
-import org.apache.oro.text.regex.Pattern;
-import org.apache.oro.text.regex.PatternMatcher;
-
 
 
 /**
@@ -34,8 +31,8 @@ class CustomHeaderFilter extends MessageFilterImp {
 
   private String customHeader;
 
-  CustomHeaderFilter(PatternMatcher m, Pattern p, String hdr) {
-    super(m, p);
+  CustomHeaderFilter(MatchProxy m, String hdr) {
+    super(m);
     customHeader = hdr;
   }
 
@@ -55,7 +52,7 @@ class CustomHeaderFilter extends MessageFilterImp {
         // we don't have a match...
         if (s != null) {
           for (int i = 0; i < s.length; i++) {
-            if (matcher.contains(s[i], pattern)) {
+            if (matcher.matches(s[i])) {
               rc = true;
               break;
             }

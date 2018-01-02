@@ -20,9 +20,6 @@ import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 
-import org.apache.oro.text.regex.Pattern;
-import org.apache.oro.text.regex.PatternMatcher;
-
 
 
 /**
@@ -33,8 +30,8 @@ import org.apache.oro.text.regex.PatternMatcher;
  */
 class FromFilter extends MessageFilterImp {
 
-  FromFilter(PatternMatcher m, Pattern p) {
-    super(m, p);
+  FromFilter(MatchProxy m) {
+    super(m);
   }
 
   /**
@@ -44,18 +41,13 @@ class FromFilter extends MessageFilterImp {
   public boolean accept(Message m) throws MessagingException {
     Address[] from = m.getFrom();
     boolean rc = false;
-    if (pattern != null) {
-      if (from != null) {
-        for (int j = 0; j < from.length; j++) {
-          if (matcher.contains(from[j].toString(), pattern)) {
-            rc = true;
-            break;
-          }
+    if (from != null) {
+      for (int j = 0; j < from.length; j++) {
+        if (matcher.matches(from[j].toString())) {
+          rc = true;
+          break;
         }
       }
-    }
-    else {
-      rc = true;
     }
     return rc;
   }

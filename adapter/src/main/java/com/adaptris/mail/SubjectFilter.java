@@ -20,9 +20,6 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.oro.text.regex.Pattern;
-import org.apache.oro.text.regex.PatternMatcher;
-
 
 /**
  * Filter on the Subject.
@@ -32,8 +29,8 @@ import org.apache.oro.text.regex.PatternMatcher;
  */
 class SubjectFilter extends MessageFilterImp {
 
-  SubjectFilter(PatternMatcher m, Pattern p) {
-    super(m, p);
+  SubjectFilter(MatchProxy m) {
+    super(m);
   }
 
   /**
@@ -42,12 +39,7 @@ class SubjectFilter extends MessageFilterImp {
    */
   public boolean accept(Message m) throws MessagingException {
     boolean rc = false;
-    if (pattern != null) {
-      if (matcher.contains(StringUtils.defaultIfEmpty(m.getSubject(), ""), pattern)) {
-        rc = true;
-      }
-    }
-    else {
+    if (matcher.matches(StringUtils.defaultIfEmpty(m.getSubject(), ""))) {
       rc = true;
     }
     return rc;

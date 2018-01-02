@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Adaptris Ltd.
+ * Copyright 2018 Adaptris Ltd.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 */
-
 package com.adaptris.mail;
 
-abstract class MessageFilterImp implements MessageFilter {
-  
-  protected transient MatchProxy matcher;
+import org.apache.oro.text.regex.Pattern;
+import org.apache.oro.text.regex.PatternMatcher;
 
-  private MessageFilterImp() {
+// Uses jakarta-oro to match headers.
+@Deprecated
+@SuppressWarnings("deprecation")
+class OroMatchProxy implements MatchProxy {
 
+  private PatternMatcher matcher;
+  private Pattern pattern;
+
+  OroMatchProxy(PatternMatcher m, Pattern p) {
+    matcher = m;
+    pattern = p;
   }
 
-  MessageFilterImp(MatchProxy h) {
-    this();
-    matcher = h;
+  @Override
+  public boolean matches(String headerValue) {
+    if (matcher.contains(headerValue, pattern)) {
+      return true;
+    }
+    return false;
   }
-
 }
