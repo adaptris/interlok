@@ -16,43 +16,49 @@
 
 package com.adaptris.core.fs;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.net.URL;
 
-import com.adaptris.core.BaseCase;
+import org.junit.Test;
 
 @SuppressWarnings("deprecation")
-public class FsHelperTest extends BaseCase {
+public class FsHelperTest extends FsHelper {
 
-  public FsHelperTest(java.lang.String testName) {
-    super(testName);
-  }
-
+  @Test
   public void testUnixStyleFullURI() throws Exception {
     FsHelper.createUrlFromString("file:////home/fred");
   }
 
+  @Test
   public void testUnixStyleURI() throws Exception {
     URL url = FsHelper.createUrlFromString("/home/fred");
     assertEquals("fred", new File(url.toURI()).getName());
   }
 
+  @Test
   public void testWindowsFullURI() throws Exception {
     URL url = FsHelper.createUrlFromString("file:///c:/home/fred");
     assertEquals("fred", new File(url.toURI()).getName());
   }
 
+  @Test
   public void testFullURIWithColons() throws Exception {
     URL url = FsHelper.createUrlFromString("file:///c:/home/fred/d:/home/fred");
     assertEquals("fred", new File(url.toURI()).getName());
   }
 
+  @Test
   public void testCreateFileRef() throws Exception {
     URL url = FsHelper.createUrlFromString("file:///home/fred");
     assertEquals(new File("/home/fred"), FsHelper.createFileReference(url));
     assertEquals(new File("/home/fred"), FsHelper.createFileReference(url, "UTF-8"));
   }
 
+  @Test
   public void testCreateFileRefWithSpaces() throws Exception {
     URL url = FsHelper
         .createUrlFromString("file:///home/directory%20with/some/spaces");
@@ -60,11 +66,13 @@ public class FsHelperTest extends BaseCase {
     assertEquals(new File("/home/directory with/some/spaces"), f);
   }
 
+  @Test
   public void testCreateFileRefWithBackSlash() throws Exception {
     URL url = FsHelper.createUrlFromString("file:///c:\\home\\fred", true);
     assertEquals("fred", new File(url.toURI()).getName());
   }
 
+  @Test
   public void testWindowsURI() throws Exception {
     try {
       FsHelper.createUrlFromString("c:/home/fred");
@@ -75,12 +83,14 @@ public class FsHelperTest extends BaseCase {
     }
   }
 
+  @Test
   public void testRelativeURL() throws Exception {
     File f = FsHelper.toFile("file://localhost/./fred");
     assertEquals("fred", f.getName());
     assertEquals("." + File.separator + "fred", f.getPath());
   }
 
+  @Test
   public void testCreateUrlFromString() throws Exception {
     // 1 - valid absolute URL...
     String urlString = "file:///c:/tmp/";
@@ -114,7 +124,7 @@ public class FsHelperTest extends BaseCase {
     String urlString4 = "..\\dir\\";
 
     try {
-      log.debug(FsHelper.createUrlFromString(urlString4));
+      FsHelper.createUrlFromString(urlString4);
       fail("no Exc. from invalid URI " + urlString4);
     }
     catch (Exception e) { /* okay */
@@ -124,7 +134,7 @@ public class FsHelperTest extends BaseCase {
     String urlString5 = "c:\\dir\\";
 
     try {
-      log.debug(FsHelper.createUrlFromString(urlString5));
+      FsHelper.createUrlFromString(urlString5);
       fail("no Exc. from invalid URI " + urlString5);
     }
     catch (Exception e) { /* okay */
@@ -134,7 +144,7 @@ public class FsHelperTest extends BaseCase {
     String urlString6 = "http://file/";
 
     try {
-      log.debug(FsHelper.createUrlFromString(urlString6));
+      FsHelper.createUrlFromString(urlString6);
       fail("no Exc. from invalid URI " + urlString6);
     }
     catch (Exception e) { /* okay */
