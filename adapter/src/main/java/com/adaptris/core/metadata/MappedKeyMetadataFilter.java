@@ -17,13 +17,11 @@ package com.adaptris.core.metadata;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.hibernate.validator.constraints.NotBlank;
 
-import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.MetadataCollection;
 import com.adaptris.core.MetadataElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -49,7 +47,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  *
  */
 @XStreamAlias("mapped-key-metadata-filter")
-public class MappedKeyMetadataFilter implements MetadataFilter {
+public class MappedKeyMetadataFilter extends MetadataFilterImpl {
 
   @NotBlank
   private String prefix;
@@ -65,16 +63,6 @@ public class MappedKeyMetadataFilter implements MetadataFilter {
     this();
     setPrefix(prefix);
     setReplacement(replacement);
-  }
-
-  @Override
-  public MetadataCollection filter(AdaptrisMessage message) {
-    return filter(message.getMetadata());
-  }
-
-  @Override
-  public MetadataCollection filter(Set<MetadataElement> original) {
-    return filter(new MetadataCollection(original));
   }
 
   @Override

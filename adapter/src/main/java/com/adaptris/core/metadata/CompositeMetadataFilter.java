@@ -18,15 +18,12 @@ package com.adaptris.core.metadata;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AutoPopulated;
-import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.MetadataCollection;
-import com.adaptris.core.MetadataElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -37,7 +34,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * 
  */
 @XStreamAlias("composite-metadata-filter")
-public class CompositeMetadataFilter implements MetadataFilter {
+public class CompositeMetadataFilter extends MetadataFilterImpl {
 
   @NotNull
   @Valid
@@ -52,16 +49,6 @@ public class CompositeMetadataFilter implements MetadataFilter {
   public CompositeMetadataFilter(MetadataFilter... filters) {
     this();
     setFilters(new ArrayList<MetadataFilter>(Arrays.asList(filters)));
-  }
-
-  @Override
-  public MetadataCollection filter(AdaptrisMessage message) {
-    return filter(message.getMetadata());
-  }
-
-  @Override
-  public MetadataCollection filter(Set<MetadataElement> original) {
-    return filter(new MetadataCollection(original));
   }
 
   @Override

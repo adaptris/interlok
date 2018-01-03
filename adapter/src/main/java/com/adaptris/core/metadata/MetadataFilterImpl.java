@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Adaptris Ltd.
+ * Copyright 2018 Adaptris Ltd.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 */
-
 package com.adaptris.core.metadata;
 
 import java.util.Set;
@@ -21,29 +20,20 @@ import java.util.Set;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.MetadataCollection;
 import com.adaptris.core.MetadataElement;
-import com.thoughtworks.xstream.annotations.XStreamAlias;
 
-/**
- * Metadata Filter implementation that removes all metadata.
- * 
- * @config remove-all-metadata-filter
- * @since 3.0.2
- */
-@XStreamAlias("remove-all-metadata-filter")
-public class RemoveAllMetadataFilter extends MetadataFilterImpl
-{
+public abstract class MetadataFilterImpl implements MetadataFilter {
 
+  public MetadataFilterImpl() {
 
-  public RemoveAllMetadataFilter() {
   }
 
-  /**
-   * Returns a new empty {@link MetadataCollection}.
-   * 
-   */
   @Override
-  public MetadataCollection filter(MetadataCollection original) {
-    return new MetadataCollection();
+  public MetadataCollection filter(AdaptrisMessage message) {
+    return filter(message.getMetadata());
   }
 
+  @Override
+  public MetadataCollection filter(Set<MetadataElement> original) {
+    return filter(new MetadataCollection(original));
+  }
 }
