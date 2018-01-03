@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -44,10 +43,6 @@ import javax.management.ObjectName;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.io.IOUtils;
-import org.reflections.Reflections;
-import org.reflections.scanners.SubTypesScanner;
-import org.reflections.util.ClasspathHelper;
-import org.reflections.util.ConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,9 +62,19 @@ import com.adaptris.core.util.JmxHelper;
 import com.adaptris.util.URLString;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
+import io.github.lukehutch.fastclasspathscanner.matchprocessor.SubclassMatchProcessor;
+
 @SuppressWarnings("deprecation")
 public class AdapterRegistry implements AdapterRegistryMBean {
 
+  // Packages for fast class path we never want to scan
+  // stick a - in front of it.
+  private static final String[] FCS_BLACKLIST = {
+      "-javax", "-java", "-org.apache", "-org.codehaus", "-org.hibernate", "-org.springframework", "-com.mchange", "-com.sun",
+      "-org.bouncycastle", "-org.eclipse", "-org.jboss", "-org.slf4j", "-net.sf.saxon", "-com.google.guava", "-com.fasterxml",
+      "-io.github.lukehutch", "-com.jcraft", "-com.thoughtworks", "-org.quartz"
+  };
   private static final String EXCEPTION_MSG_XML_NULL = "XML String is null";
   private static final String EXCEPTION_MSG_URL_NULL = "URL is null";
   private static final String EXCEPTION_MSG_MBEAN_NULL = "AdapterManagerMBean is null";
@@ -468,7 +473,7 @@ public class AdapterRegistry implements AdapterRegistryMBean {
 
   @Override
   public String getClassDefinition(String className) throws CoreException {
-    ClassDescriptor classDescriptor = new ClassDescriptor(className);
+    final ClassDescriptor classDescriptor = new ClassDescriptor(className);
     try {
       Class<?> clazz = Class.forName(className);
       
@@ -507,18 +512,14 @@ public class AdapterRegistry implements AdapterRegistryMBean {
           classDescriptor.getClassDescriptorProperties().add(fieldProperty);
         }
       }
+      new FastClasspathScanner(FCS_BLACKLIST).matchSubclassesOf(clazz, new SubclassMatchProcessor() {
 
-      Reflections reflections = new Reflections(new ConfigurationBuilder()
-          .addClassLoader(this.getClass().getClassLoader())
-          .setUrls(ClasspathHelper.forClassLoader())
-          .addScanners(new SubTypesScanner(false)));
-      
-      Set<Class<?>> subTypes = reflections.getSubTypesOf((Class) clazz);
+        @Override
+        public void processMatch(Class subclass) {
+          classDescriptor.getSubTypes().add(subclass.getName());
+        }
 
-      Iterator<Class<?>> it = subTypes.iterator();
-      while(it.hasNext())
-        classDescriptor.getSubTypes().add(it.next().getName());
-
+      }).scan();
     } catch (ClassNotFoundException e) {
       throw new CoreException(e);
     }

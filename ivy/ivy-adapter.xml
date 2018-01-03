@@ -31,7 +31,10 @@
     <dependency org="com.adaptris" name="adp-core-apt" rev="${ivy.publish.revision}" conf="compile->default;ant->default" changing="true"/>
     <dependency org="com.adaptris" name="interlok-common" rev="${ivy.publish.revision}" conf="compile->default;javadoc->javadoc" changing="true"/>
 
+    <!-- switch to fast-classpath-scanner
     <dependency org="org.reflections" name="reflections" rev="0.9.11" conf="compile->default"/>
+    -->
+    <dependency org="io.github.lukehutch" name="fast-classpath-scanner" rev="2.9.4" conf="compile->default"/>
 
     <dependency org="javax.activation" name="activation" rev="1.1.1"  conf="compile->default" />
 
@@ -116,7 +119,7 @@
 
     <!-- For Various ANT Tasks -->
     <dependency org="ant-contrib" name="ant-contrib" rev="1.0b3" conf="ant->default" transitive="false"/>
-    <dependency org="org.jacoco" name="org.jacoco.ant" rev="0.7.7.201606060606" conf="ant->default"/>
+    <dependency org="org.jacoco" name="org.jacoco.ant" rev="0.7.9" conf="ant->default"/>
 
     <exclude org="javax.mail" artifact="mail"/>
     <exclude org="org.eclipse.jetty.orbit" artifact="javax.mail.glassfish"/>
