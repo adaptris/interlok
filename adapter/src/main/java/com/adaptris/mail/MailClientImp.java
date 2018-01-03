@@ -205,15 +205,9 @@ public abstract class MailClientImp implements MailReceiver {
       return;
     }
     try {
-      if (fromFilter != null) {
-        filters.add(new FromFilter(MatchProxyFactory.create(regExpHandler, fromFilter)));
-      }
-      if (subjectFilter != null) {
-        filters.add(new SubjectFilter(MatchProxyFactory.create(regExpHandler, subjectFilter)));
-      }
-      if (recipientFilter != null) {
-        filters.add(new RecipientFilter(MatchProxyFactory.create(regExpHandler, recipientFilter)));
-      }
+      filters.add(new FromFilter(MatchProxyFactory.create(regExpHandler, fromFilter)));
+      filters.add(new SubjectFilter(MatchProxyFactory.create(regExpHandler, subjectFilter)));
+      filters.add(new RecipientFilter(MatchProxyFactory.create(regExpHandler, recipientFilter)));
       for (String[] customFilter : customFilters) {
         filters.add(new CustomHeaderFilter(MatchProxyFactory.create(regExpHandler, customFilter[1]), customFilter[0]));
       }

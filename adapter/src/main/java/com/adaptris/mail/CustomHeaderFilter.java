@@ -16,9 +16,15 @@
 
 package com.adaptris.mail;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.mail.Message;
 import javax.mail.MessagingException;
 
+import org.apache.commons.lang.ArrayUtils;
+
+import com.adaptris.core.util.Args;
 
 
 /**
@@ -33,36 +39,11 @@ class CustomHeaderFilter extends MessageFilterImp {
 
   CustomHeaderFilter(MatchProxy m, String hdr) {
     super(m);
-    customHeader = hdr;
+    customHeader = Args.notBlank(hdr, "customHeader");
   }
 
-  /**
-   * 
-   * @see com.adaptris.mail.MessageFilter#accept(javax.mail.Message)
-   */
-  public boolean accept(Message m) throws MessagingException {
-    boolean rc = true;
-    String[] s = null;
-    if (customHeader != null) {
-      rc = false;
-      try {
-        s = m.getHeader(customHeader);
-        // If s is null, then that means we have no headers of
-        // of this type, in this instance,
-        // we don't have a match...
-        if (s != null) {
-          for (int i = 0; i < s.length; i++) {
-            if (matcher.matches(s[i])) {
-              rc = true;
-              break;
-            }
-          }
-        }
-      }
-      catch (Exception e) {
-        ;
-      }
-    }
-    return rc;
+  @Override
+  List<String> getHeaders(Message m) throws MessagingException {
+    return Arrays.asList(ArrayUtils.nullToEmpty(m.getHeader(customHeader)));
   }
 }

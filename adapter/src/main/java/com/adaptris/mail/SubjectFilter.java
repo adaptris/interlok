@@ -16,6 +16,9 @@
 
 package com.adaptris.mail;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.mail.Message;
 import javax.mail.MessagingException;
 
@@ -33,15 +36,11 @@ class SubjectFilter extends MessageFilterImp {
     super(m);
   }
 
-  /**
-   * 
-   * @see com.adaptris.mail.MessageFilter#accept(javax.mail.Message)
-   */
-  public boolean accept(Message m) throws MessagingException {
-    boolean rc = false;
-    if (matcher.matches(StringUtils.defaultIfEmpty(m.getSubject(), ""))) {
-      rc = true;
-    }
-    return rc;
+  @Override
+  List<String> getHeaders(Message m) throws MessagingException {
+    return Arrays.asList(new String[]
+    {
+        StringUtils.defaultIfEmpty(m.getSubject(), "")
+    });
   }
 }

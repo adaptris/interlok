@@ -16,7 +16,8 @@
 
 package com.adaptris.mail;
 
-import javax.mail.Address;
+import java.util.List;
+
 import javax.mail.Message;
 import javax.mail.MessagingException;
 
@@ -34,21 +35,8 @@ class RecipientFilter extends MessageFilterImp {
     super(m);
   }
 
-  /**
-   * 
-   * @see com.adaptris.mail.MessageFilter#accept(javax.mail.Message)
-   */
-  public boolean accept(Message m) throws MessagingException {
-    Address[] recipients = m.getAllRecipients();
-    boolean rc = false;
-    if (recipients != null) {
-      for (int j = 0; j < recipients.length; j++) {
-        if (matcher.matches(recipients[j].toString())) {
-          rc = true;
-          break;
-        }
-      }
-    }
-    return rc;
+  @Override
+  List<String> getHeaders(Message m) throws MessagingException {
+    return toList(m.getAllRecipients());
   }
 }

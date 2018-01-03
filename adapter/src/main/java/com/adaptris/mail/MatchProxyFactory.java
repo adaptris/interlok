@@ -25,8 +25,6 @@ import org.apache.oro.text.regex.Perl5Matcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.adaptris.core.util.Args;
-
 public abstract class MatchProxyFactory {
 
   private static transient Logger log = LoggerFactory.getLogger(MatchProxy.class);
@@ -114,7 +112,9 @@ public abstract class MatchProxyFactory {
 
   static MatchProxy create(String regularExpressionType, String expression) throws Exception {
     String type = StringUtils.defaultIfBlank(regularExpressionType, DEFAULT_REGEXP_STYLE);
-    Args.notNull(expression, "expression");
+    if (expression == null) {
+      return null;
+    }
     for (ProxyBuilder c : ProxyBuilder.values()) {
       if (c.matches(type)) {
         return c.build(expression);
