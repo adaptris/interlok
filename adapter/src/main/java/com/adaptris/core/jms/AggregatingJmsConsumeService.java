@@ -29,6 +29,7 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageListener;
+import com.adaptris.core.ConnectedService;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.aggregator.AggregatingConsumeServiceImpl;
@@ -48,7 +49,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Allows you to aggregate messages from a JMS Queue", tag = "service,aggregation,jms")
 @DisplayOrder(order = {"connection", "jmsConsumer"})
-public class AggregatingJmsConsumeService extends AggregatingConsumeServiceImpl<JmsConnection> implements JmsActorConfig {
+public class AggregatingJmsConsumeService extends AggregatingConsumeServiceImpl<JmsConnection>
+    implements JmsActorConfig, ConnectedService {
 
   @NotNull
   @Valid
