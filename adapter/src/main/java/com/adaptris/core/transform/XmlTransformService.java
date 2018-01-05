@@ -18,14 +18,16 @@ package com.adaptris.core.transform;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
-import java.io.Reader;
-import java.io.Writer;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.xml.transform.Transformer;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
@@ -175,9 +177,13 @@ public class XmlTransformService extends ServiceImp {
     catch (Exception ex) {
       throw new ServiceException(ex);
     }
-    try (Reader input = msg.getReader(); Writer output = msg.getWriter(getOutputMessageEncoding())) {
+    // INTERLOK-2022 Let the XML parser do its thing, rather than using a reader/writer.
+    try (InputStream input = msg.getInputStream(); OutputStream output = msg.getOutputStream()) {
       Map parameters = getParameterBuilder().createParameters(msg, null);
       xmlTransformerImpl.transform(transformer, input, output, urlToUse, parameters);
+      if (!StringUtils.isBlank(getOutputMessageEncoding())) {
+        msg.setContentEncoding(getOutputMessageEncoding());
+      }
     }
     catch (Exception e) {
       throw new ServiceException("failed to transform message", e);
