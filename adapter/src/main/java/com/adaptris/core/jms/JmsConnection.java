@@ -31,9 +31,11 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.AllowsRetriesConnection;
 import com.adaptris.core.ConnectionErrorHandler;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
 import com.adaptris.security.password.Password;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -371,4 +373,12 @@ public class JmsConnection extends AllowsRetriesConnection implements JmsConnect
     return getVendorImplementation();
   }
 
+  @Override
+  public JmsConnection cloneForTesting() throws CoreException {
+    AdaptrisMarshaller m = DefaultMarshaller.getDefaultMarshaller();
+    JmsConnection copy = (JmsConnection) m.unmarshal(m.marshal(this));
+    // Set the client id to be null.
+    copy.setClientId(null);
+    return copy;
+  }
 }

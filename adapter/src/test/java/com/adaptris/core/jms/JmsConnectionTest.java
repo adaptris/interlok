@@ -20,12 +20,16 @@ import static org.junit.Assert.assertNotSame;
 
 import javax.jms.Session;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 import com.adaptris.core.util.LifecycleHelper;
 
 public class JmsConnectionTest {
+  @Rule
+  public TestName testName = new TestName();
 
   @Test
   public void testSession() throws Exception {
@@ -43,5 +47,13 @@ public class JmsConnectionTest {
       LifecycleHelper.close(conn);
       broker.destroy();
     }
+  }
+
+  @Test
+  public void testCloneForTesting() throws Exception {
+    JmsConnection conn = new JmsConnection();
+    conn.setClientId(testName.getMethodName());
+    JmsConnection copy = conn.cloneForTesting();
+    assertNotSame(conn.getClientId(), copy.getClientId());
   }
 }
