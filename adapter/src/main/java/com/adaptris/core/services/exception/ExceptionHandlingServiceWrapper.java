@@ -16,6 +16,8 @@
 
 package com.adaptris.core.services.exception;
 
+import static com.adaptris.core.util.ServiceUtil.discardNulls;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -35,6 +37,7 @@ import com.adaptris.core.NullService;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.ServiceWrapper;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -67,7 +70,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Handle exceptions from one service via a separate service", tag = "service,error-handling")
 @DisplayOrder(order = {"exceptionMessageMetadataKey"})
-public class ExceptionHandlingServiceWrapper extends ServiceImp implements EventHandlerAware {
+public class ExceptionHandlingServiceWrapper extends ServiceImp implements EventHandlerAware, ServiceWrapper {
 
   public static final String DEFAULT_EXCEPTION_MESSAGE_METADATA_KEY = "adp.exception.wrapper.message";
 
@@ -202,5 +205,10 @@ public class ExceptionHandlingServiceWrapper extends ServiceImp implements Event
   public void prepare() throws CoreException {
     getExceptionHandlingService().prepare();
     getService().prepare();
+  }
+
+  @Override
+  public Service[] wrappedServices() {
+    return discardNulls(getService(), getExceptionHandlingService());
   }
 }

@@ -16,6 +16,7 @@
 
 package com.adaptris.core.runtime;
 
+import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.CoreException;
 import com.adaptris.interlok.types.SerializableMessage;
 
@@ -45,7 +46,20 @@ public interface AdapterComponentCheckerMBean extends BaseComponentMBean {
    * @param msg the message.
    * @return the result of applying these services.
    * @throws CoreException wrapping any other exception
+   * @deprecated since 3.7.0 use {@link #applyService(String, SerializableMessage, boolean) instead.
    */
+  @Deprecated
   SerializableMessage applyService(String xml, SerializableMessage msg) throws CoreException;
+
+  /**
+   * Apply the configured services to the msg.
+   * 
+   * @param xml String XML representation of the service (or service-list)
+   * @param msg the message.
+   * @param rewriteConnections use {@link AdaptrisConnection#cloneForTesting()} to generate a new connection.
+   * @return the result of applying these services.
+   * @throws CoreException wrapping any other exception
+   */
+  SerializableMessage applyService(String xml, SerializableMessage msg, boolean rewriteConnections) throws CoreException;
 
 }

@@ -47,6 +47,9 @@ public class ExceptionHandlingServiceWrapperTest extends ExceptionServiceExample
         }))
     }));
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    assertNotNull(service.wrappedServices());
+    // ExceptionService defaults to NullService
+    assertEquals(2, service.wrappedServices().length);
     execute(service, msg);
     assertEquals("true", msg.getMetadataValue("exceptionServiceTriggered"));
     assertNull(msg.getMetadataValue("servicesComplete"));

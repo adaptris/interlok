@@ -16,6 +16,8 @@
 
 package com.adaptris.core.services.splitter;
 
+import static com.adaptris.core.util.ServiceUtil.discardNulls;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -31,6 +33,7 @@ import com.adaptris.core.EventHandlerAware;
 import com.adaptris.core.NullService;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.ServiceWrapper;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -53,7 +56,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(summary = "Split a message and execute an arbitary number of services on the split message",
     tag = "service,splitter")
 @DisplayOrder(order = {"splitter", "service", "ignoreSplitMessageFailures", "sendEvents"})
-public class AdvancedMessageSplitterService extends MessageSplitterServiceImp implements EventHandlerAware {
+public class AdvancedMessageSplitterService extends MessageSplitterServiceImp implements EventHandlerAware, ServiceWrapper {
 
   @NotNull
   @AutoPopulated
@@ -173,7 +176,11 @@ public class AdvancedMessageSplitterService extends MessageSplitterServiceImp im
 
   @Override
   public void prepare() throws CoreException {
-    getService().prepare();
+    LifecycleHelper.prepare(getService());
   }
 
+  @Override
+  public Service[] wrappedServices() {
+    return discardNulls(getService());
+  }
 }
