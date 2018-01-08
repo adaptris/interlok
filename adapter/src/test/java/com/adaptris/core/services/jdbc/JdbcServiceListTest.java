@@ -55,14 +55,29 @@ public class JdbcServiceListTest extends ServiceCollectionCase {
   public void setUp() throws Exception {
   }
 
+  @SuppressWarnings("deprecation")
   public void testSetDatabaseConnection() {
     JdbcConnection connection = new JdbcConnection();
     JdbcServiceList list = new JdbcServiceList();
     assertNull(list.getDatabaseConnection());
     list.setDatabaseConnection(connection);
+    assertEquals(connection, list.connection());
     assertEquals(connection, list.getDatabaseConnection());
     list.setDatabaseConnection(null);
     assertEquals(null, list.getDatabaseConnection());
+    assertNull(list.connection());
+  }
+
+  public void testSetConnection() {
+    JdbcConnection connection = new JdbcConnection();
+    JdbcServiceList list = new JdbcServiceList();
+    assertNull(list.getConnection());
+    list.setConnection(connection);
+    assertEquals(connection, list.connection());
+    assertEquals(connection, list.getConnection());
+    list.setConnection(null);
+    assertEquals(null, list.getConnection());
+    assertNull(list.connection());
   }
 
   public void testServiceList_NoConnectionInObjectMetadata() throws Exception {
@@ -78,7 +93,7 @@ public class JdbcServiceListTest extends ServiceCollectionCase {
   public void testServiceList_SqlConnectionInObjectMetadata() throws Exception {
     createDatabase();
     JdbcServiceList service = createServiceCollection();
-    service.setDatabaseConnection(createJdbcConnection());
+    service.setConnection(createJdbcConnection());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
 
     execute(service, msg);
@@ -110,7 +125,7 @@ public class JdbcServiceListTest extends ServiceCollectionCase {
   public void testServiceList_SequenceNumber_Commit_AutoCommit() throws Exception {
     createDatabase();
     JdbcServiceList service = createServiceCollection();
-    service.setDatabaseConnection(createJdbcConnection());
+    service.setConnection(createJdbcConnection());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
 
     service.add(createSequenceNumberService(null, getName(), SequenceNumberCase.DEFAULT_ID));
@@ -138,7 +153,7 @@ public class JdbcServiceListTest extends ServiceCollectionCase {
         // The Connection should never be used by the wrappedService, as it will exist in objectMetadata.
         JdbcServiceList service = createServiceCollection(createSequenceNumberService(conn, guid.safeUUID()),
             createSequenceNumberService(conn, guid.safeUUID()));
-        service.setDatabaseConnection(conn);
+        service.setConnection(conn);
         serviceList.add(service);
         start(service);
       }
@@ -177,7 +192,7 @@ public class JdbcServiceListTest extends ServiceCollectionCase {
         // The Connection should never be used by the wrappedService, as it will exist in objectMetadata.
         JdbcServiceList service = createServiceCollection(createSequenceNumberService(conn, guid.safeUUID()),
             createSequenceNumberService(conn, guid.safeUUID()));
-        service.setDatabaseConnection(conn);
+        service.setConnection(conn);
         serviceList.add(service);
         start(service);
       }
@@ -203,7 +218,7 @@ public class JdbcServiceListTest extends ServiceCollectionCase {
     JdbcServiceList service = createServiceCollection();
     DatabaseConnection c = createJdbcConnection();
     c.setAutoCommit(false);
-    service.setDatabaseConnection(c);
+    service.setConnection(c);
 
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
 
@@ -220,7 +235,7 @@ public class JdbcServiceListTest extends ServiceCollectionCase {
     DatabaseConnection c = createJdbcConnection();
     c.setAutoCommit(false);
     c.setDebugMode(true);
-    service.setDatabaseConnection(c);
+    service.setConnection(c);
 
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     String oldName = Thread.currentThread().getName();
@@ -255,7 +270,7 @@ public class JdbcServiceListTest extends ServiceCollectionCase {
     JdbcServiceList service = createServiceCollection();
     DatabaseConnection c = createJdbcConnection();
     c.setAutoCommit(false);
-    service.setDatabaseConnection(c);
+    service.setConnection(c);
 
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
 
@@ -391,7 +406,7 @@ public class JdbcServiceListTest extends ServiceCollectionCase {
     connection.setConnectionAttempts(2);
     connection.setConnectionRetryInterval(new TimeInterval(3L, "SECONDS"));
     JdbcServiceList list = new JdbcServiceList();
-    list.setDatabaseConnection(connection);
+    list.setConnection(connection);
     StaticIdentitySequenceNumberService s1 = new StaticIdentitySequenceNumberService();
     s1.setIdentity("first_id");
     s1.setMetadataKey("sequence_number_1");
