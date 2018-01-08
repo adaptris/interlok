@@ -34,4 +34,5 @@ public interface ConnectedService extends Service {
    */
   AdaptrisConnection getConnection();
 
+  
 }
