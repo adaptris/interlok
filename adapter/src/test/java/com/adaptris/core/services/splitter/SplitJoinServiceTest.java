@@ -106,6 +106,8 @@ public class SplitJoinServiceTest extends TestCase {
     }
     service.setService(new NullService());
     service.init();
+    assertNotNull(service.wrappedServices());
+    assertEquals(1, service.wrappedServices().length);
     service.close();
   }
 
