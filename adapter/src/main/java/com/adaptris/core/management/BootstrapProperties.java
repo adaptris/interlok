@@ -172,7 +172,7 @@ public class BootstrapProperties extends Properties {
     try {
       value = Long.parseLong(v); // rely on parseLong throwing an exception if  v == null, v.isEmpty() or not a number
     } catch (NumberFormatException e) {
-      log.warn("Could not parse numerical value [{}] for key [{}]", v, key);
+      log.info("Could not parse numerical value [{}] for key [{}] - using default value [{}]", v, key, defaultValue);
       value = defaultValue;
     }
     return value;
