@@ -41,7 +41,9 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ComponentState;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultSerializableMessageTranslator;
+import com.adaptris.core.NullProcessingExceptionHandler;
 import com.adaptris.core.PoolingWorkflow;
+import com.adaptris.core.ProcessingExceptionHandler;
 import com.adaptris.core.SerializableAdaptrisMessage;
 import com.adaptris.core.SerializableMessageTranslator;
 import com.adaptris.core.Workflow;
@@ -97,7 +99,7 @@ public class WorkflowManager extends ComponentManagerImpl<Workflow>implements Wo
     Collection<AdaptrisComponent> runtimeCandidates = CollectionUtils.union(managedWorkflow.getInterceptors(),
         Arrays.asList(new AdaptrisComponent[]
         {
-            managedWorkflow.getConsumer(), managedWorkflow.getProducer()
+            managedWorkflow.getConsumer(), managedWorkflow.getProducer(), defaultIfNull(managedWorkflow.getMessageErrorHandler())
         }));
     for (AdaptrisComponent c : runtimeCandidates) {
       addChildJmxComponentQuietly((ChildRuntimeInfoComponent) RuntimeInfoComponentFactory.create(this, c));
@@ -394,5 +396,10 @@ public class WorkflowManager extends ComponentManagerImpl<Workflow>implements Wo
     return found;
   }
 
-
+  private ProcessingExceptionHandler defaultIfNull(ProcessingExceptionHandler configured) {
+    if (configured == null) {
+      return new NullProcessingExceptionHandler();
+    }
+    return configured;
+  }
 }
