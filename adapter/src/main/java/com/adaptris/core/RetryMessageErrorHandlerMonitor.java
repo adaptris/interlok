@@ -19,19 +19,12 @@ import static com.adaptris.core.runtime.AdapterComponentMBean.JMX_RETRY_MONITOR_
 
 import java.util.Collection;
 
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.runtime.ChildRuntimeInfoComponentImpl;
 import com.adaptris.core.runtime.ParentRuntimeInfoComponent;
 
 public class RetryMessageErrorHandlerMonitor extends ChildRuntimeInfoComponentImpl implements RetryMessageErrorHandlerMonitorMBean {
   private transient ParentRuntimeInfoComponent parent;
   private transient RetryMessageErrorHandlerImp wrappedComponent;
-  private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   private RetryMessageErrorHandlerMonitor() {
     super();
@@ -56,19 +49,6 @@ public class RetryMessageErrorHandlerMonitor extends ChildRuntimeInfoComponentIm
   @Override
   public ParentRuntimeInfoComponent getParentRuntimeInfoComponent() {
     return parent;
-  }
-
-  // Do we need to this because the default but as we end up with a name of
-  // com.adaptris:type=RetryMessageHandlerMonitor,adapter=myAdapter,channel=myChannel,workflow=myWorkflow,id=AAA
-  // for a fully nested handler.
-  // or
-  // com.adaptris:type=RetryMessageHandlerMonitor,adapter=myAdapter,id=AAA
-  // for a global adapter one.
-  @Override
-  public ObjectName createObjectName() throws MalformedObjectNameException {
-    ObjectName myObjectName = super.createObjectName();
-    log.warn("Created ObjectName : {}", myObjectName);
-    return myObjectName;
   }
 
   @Override
