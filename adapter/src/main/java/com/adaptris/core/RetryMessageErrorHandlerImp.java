@@ -69,6 +69,7 @@ public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExce
   protected transient List<AdaptrisMessage> inProgress;
   private transient Set<ScheduledFuture> retries = Collections.newSetFromMap(new WeakHashMap<ScheduledFuture, Boolean>());
   private transient ScheduledFuture sweeper = null;
+  private transient boolean failAll = false;
 
   static {
     RuntimeInfoComponentFactory.registerComponentFactory(new JmxFactory());
@@ -82,7 +83,7 @@ public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExce
 
   @Override
   public void handleProcessingException(AdaptrisMessage msg) {
-    if (shouldFail(msg)) {
+    if (shouldFail(msg) || failAll) {
       failMessage(msg);
     }
     else {
@@ -120,6 +121,7 @@ public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExce
   public void start() throws CoreException {
     executor = Executors.newScheduledThreadPool(0, new ManagedThreadFactory());
     sweeper = executor.scheduleAtFixedRate(new CleanupTask(), 100L, retryIntervalMs(), TimeUnit.MILLISECONDS);
+    failAll = false;
     super.start();
   }
 
@@ -210,6 +212,10 @@ public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExce
       failMessage(msg);
     }
     retryList.clear();
+  }
+
+  protected void failFutureMessages(boolean failFuture) {
+    this.failAll = failFuture;
   }
 
   protected Collection<String> waitingForRetry() {

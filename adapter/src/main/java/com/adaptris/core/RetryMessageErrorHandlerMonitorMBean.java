@@ -24,8 +24,11 @@ public interface RetryMessageErrorHandlerMonitorMBean extends ChildRuntimeInfoCo
   /**
    * Fail all the messages associated with the {@link RetryMessageErrorHandler} instance.
    * 
+   * @param failFutureMessages if true, then fail all future messages coming into the {@link RetryMessageErrorHandler} instance
+   *          until the next component restart.
+   * 
    */
-  void failAllMessages();
+  void failAllMessages(boolean failFutureMessages);
 
   /**
    * Get a list of all messages waiting for retry.

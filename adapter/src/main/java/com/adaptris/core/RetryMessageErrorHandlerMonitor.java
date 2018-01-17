@@ -52,8 +52,9 @@ public class RetryMessageErrorHandlerMonitor extends ChildRuntimeInfoComponentIm
   }
 
   @Override
-  public void failAllMessages() {
+  public void failAllMessages(boolean failFuture) {
     wrappedComponent.failAllMessages();
+    wrappedComponent.failFutureMessages(failFuture);
   }
 
   @Override

@@ -73,8 +73,12 @@ public class RetryMessageErrorHandlerMonitorTest extends ComponentManagerCase {
       handler.handleProcessingException(msg);
       assertEquals(1, mbean.waitingForRetry().size());
       assertTrue(mbean.waitingForRetry().contains(msg.getUniqueId()));
-      mbean.failAllMessages();
+      mbean.failAllMessages(true);
       assertEquals(1, failProducer.messageCount());
+      handler.handleProcessingException(AdaptrisMessageFactory.getDefaultInstance().newMessage());
+      // All msgs Fail.
+      assertEquals(0, mbean.waitingForRetry().size());
+      assertEquals(2, failProducer.messageCount());
     }
     finally {
       adapterManager.requestClose();
