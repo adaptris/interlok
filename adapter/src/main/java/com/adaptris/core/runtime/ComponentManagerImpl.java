@@ -297,7 +297,9 @@ public abstract class ComponentManagerImpl<E extends StateManagedComponent> exte
    */
   protected void registerSelf() throws CoreException {
     try {
-      JmxHelper.register(createObjectName(), this);
+      ObjectName objName = createObjectName();
+      log.trace("Registering {} against {}", this.getClass().getName(), objName);
+      JmxHelper.register(objName, this);
     }
     catch (Exception e) {
       throw new CoreException(e);

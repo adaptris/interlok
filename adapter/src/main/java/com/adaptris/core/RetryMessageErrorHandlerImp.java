@@ -16,10 +16,13 @@
 
 package com.adaptris.core;
 
+import static org.apache.commons.lang.StringUtils.isEmpty;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,8 +32,13 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.management.MalformedObjectNameException;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.core.runtime.ParentRuntimeInfoComponent;
+import com.adaptris.core.runtime.RuntimeInfoComponent;
+import com.adaptris.core.runtime.RuntimeInfoComponentFactory;
 import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.TimeInterval;
 
@@ -62,17 +70,10 @@ public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExce
   private transient Set<ScheduledFuture> retries = Collections.newSetFromMap(new WeakHashMap<ScheduledFuture, Boolean>());
   private transient ScheduledFuture sweeper = null;
 
-  /**
-   * Default Constructor.
-   * <p>
-   * Creates a new instance wit the following defaults
-   * </p>
-   * <ul>
-   * <li>retry-limit = 10</li>
-   * <li>retry-interval = 10 Minutes</li>
-   * <li>lock-timeout = 1 second.
-   * </ul>
-   */
+  static {
+    RuntimeInfoComponentFactory.registerComponentFactory(new JmxFactory());
+  }
+
   public RetryMessageErrorHandlerImp() {
     super();
     retryList = Collections.synchronizedList(new ArrayList<AdaptrisMessage>());
@@ -211,6 +212,22 @@ public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExce
     retryList.clear();
   }
 
+  protected Collection<String> waitingForRetry() {
+    Set<String> result = new HashSet<String>();
+    for (AdaptrisMessage msg : new ArrayList<AdaptrisMessage>(retryList)) {
+      result.add(msg.getUniqueId());
+    }
+    return result;
+  }
+
+  protected void failMessage(String s) {
+    for (AdaptrisMessage msg : new ArrayList<AdaptrisMessage>(retryList)) {
+      if (msg.getUniqueId().equals(s)) {
+        failMessage(msg);
+      }
+    }
+  }
+
   protected void failMessage(AdaptrisMessage msg) {
     log.error("Message [{}] deemed to have failed", msg.getUniqueId());
     if (msg.getObjectHeaders().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION)) {
@@ -305,4 +322,21 @@ public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExce
     }
   }
 
+  private static class JmxFactory extends RuntimeInfoComponentFactory {
+
+    @Override
+    protected boolean isSupported(AdaptrisComponent e) {
+      if (e != null && e instanceof RetryMessageErrorHandlerImp) {
+        return !isEmpty(e.getUniqueId());
+      }
+      return false;
+    }
+
+    @Override
+    protected RuntimeInfoComponent createComponent(ParentRuntimeInfoComponent parent, AdaptrisComponent e)
+        throws MalformedObjectNameException {
+      return new RetryMessageErrorHandlerMonitor(parent, (RetryMessageErrorHandlerImp) e);
+    }
+
+  }
 }
