@@ -884,9 +884,9 @@ public class ChannelManagerTest extends ComponentManagerCase {
     AdapterManager adapterManager = new AdapterManager(adapter);
     Channel c1 = createChannel(getName() + "_1");
     ChannelManager channelManager = new ChannelManager(c1, adapterManager);
-    assertFalse(channelManager.addChildJmxComponent(new ChannelChild(channelManager)));
-    assertFalse(channelManager.addChildJmxComponent(null));
-    assertEquals(0, channelManager.getChildRuntimeInfoComponents().size());
+    assertTrue(channelManager.addChildJmxComponent(new ChannelChild(channelManager)));
+    assertEquals(1, channelManager.getChildRuntimeInfoComponents().size());
+    assertEquals(1, channelManager.getAllDescendants().size());
   }
 
   public void testRemoveChildRuntimeComponent() throws Exception {
@@ -895,10 +895,13 @@ public class ChannelManagerTest extends ComponentManagerCase {
     AdapterManager adapterManager = new AdapterManager(adapter);
     Channel c1 = createChannel(getName() + "_1");
     ChannelManager channelManager = new ChannelManager(c1, adapterManager);
-    assertFalse(channelManager.addChildJmxComponent(new ChannelChild(channelManager)));
-    assertFalse(channelManager.removeChildJmxComponent(null));
-    assertFalse(channelManager.removeChildJmxComponent(new ChannelChild(channelManager)));
-    assertEquals(0, channelManager.getChildRuntimeInfoComponents().size());
+    ChannelChild child = new ChannelChild(channelManager);
+    assertTrue(channelManager.addChildJmxComponent(child));
+    assertTrue(channelManager.addChildJmxComponent(new ChannelChild(channelManager)));
+    assertTrue(channelManager.removeChildJmxComponent(child));
+    assertFalse(channelManager.removeChildJmxComponent(child));
+    assertEquals(1, channelManager.getChildRuntimeInfoComponents().size());
+    assertEquals(1, channelManager.getAllDescendants().size());
   }
 
   public void testAdapterStopped_InitChannel() throws Exception {

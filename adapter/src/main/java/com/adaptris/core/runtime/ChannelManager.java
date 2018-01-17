@@ -18,7 +18,6 @@ package com.adaptris.core.runtime;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -39,6 +38,7 @@ import com.adaptris.core.ComponentState;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.Workflow;
+import com.adaptris.core.util.Args;
 
 /**
  * Base implementation of {@link ChannelManagerMBean}.
@@ -49,10 +49,12 @@ public class ChannelManager extends ComponentManagerImpl<Channel> implements Cha
   private transient AdapterManager parent;
   private transient Set<WorkflowRuntimeManager> workflowManagers;
   private transient ObjectName myObjectName = null;
+  private transient Set<ChildRuntimeInfoComponent> childRuntimeInfoComponents;
 
   private ChannelManager() {
     super();
     workflowManagers = new HashSet<WorkflowRuntimeManager>();
+    childRuntimeInfoComponents = new HashSet<ChildRuntimeInfoComponent>();
   }
 
   public ChannelManager(Channel c, AdapterManager owner) throws MalformedObjectNameException, CoreException {
@@ -81,6 +83,8 @@ public class ChannelManager extends ComponentManagerImpl<Channel> implements Cha
         addChild(new WorkflowManager(c, this, true), true);
       }
     }
+    addChildJmxComponentQuietly(
+        (ChildRuntimeInfoComponent) RuntimeInfoComponentFactory.create(this, channel.getMessageErrorHandler()));
     marshalConfig();
   }
 
@@ -109,6 +113,9 @@ public class ChannelManager extends ComponentManagerImpl<Channel> implements Cha
     Set<ObjectName> result = new TreeSet<ObjectName>();
     for (WorkflowRuntimeManager wmb : workflowManagers) {
       result.add(wmb.createObjectName());
+    }
+    for (ChildRuntimeInfoComponent cmb : childRuntimeInfoComponents) {
+      result.add(cmb.createObjectName());
     }
     return result;
   }
@@ -226,6 +233,9 @@ public class ChannelManager extends ComponentManagerImpl<Channel> implements Cha
       result.add(c);
       result.addAll(c.getAllDescendants());
     }
+    for (ChildRuntimeInfoComponent cmb : childRuntimeInfoComponents) {
+      result.add(cmb);
+    }
     return result;
   }
 
@@ -246,17 +256,28 @@ public class ChannelManager extends ComponentManagerImpl<Channel> implements Cha
 
   @Override
   public Collection<ObjectName> getChildRuntimeInfoComponents() throws MalformedObjectNameException {
-    return new ArrayList<ObjectName>();
+    Set<ObjectName> result = new TreeSet<ObjectName>();
+    for (ChildRuntimeInfoComponent cmb : childRuntimeInfoComponents) {
+      result.add(cmb.createObjectName());
+    }
+    return result;
+  }
+
+  private boolean addChildJmxComponentQuietly(ChildRuntimeInfoComponent comp) {
+    if (comp != null) {
+      return addChildJmxComponent(comp);
+    }
+    return false;
   }
 
   @Override
   public boolean addChildJmxComponent(ChildRuntimeInfoComponent comp) {
-    return false;
+    return childRuntimeInfoComponents.add(Args.notNull(comp, "ChildRuntimeInfoComponent"));
   }
 
   @Override
   public boolean removeChildJmxComponent(ChildRuntimeInfoComponent comp) {
-    return false;
+    return childRuntimeInfoComponents.remove(Args.notNull(comp, "ChildRuntimeInfoComponent"));
   }
 
   @Override
@@ -265,9 +286,9 @@ public class ChannelManager extends ComponentManagerImpl<Channel> implements Cha
     for (WorkflowRuntimeManager c : workflowManagers) {
       c.registerMBean();
     }
-    // for (ChildRuntimeInfoComponent cmb : childRuntimeInfoComponents) {
-    // cmb.registerMBean();
-    // }
+    for (ChildRuntimeInfoComponent cmb : childRuntimeInfoComponents) {
+      cmb.registerMBean();
+    }
   }
 
   @Override
@@ -276,9 +297,9 @@ public class ChannelManager extends ComponentManagerImpl<Channel> implements Cha
     for (WorkflowRuntimeManager c : workflowManagers) {
       c.unregisterMBean();
     }
-    // for (ChildRuntimeInfoComponent cmb : childRuntimeInfoComponents) {
-    // cmb.unregisterMBean();
-    // }
+    for (ChildRuntimeInfoComponent cmb : childRuntimeInfoComponents) {
+      cmb.unregisterMBean();
+    }
   }
 
   @Override
