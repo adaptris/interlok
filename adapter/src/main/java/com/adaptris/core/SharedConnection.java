@@ -183,4 +183,9 @@ public class SharedConnection extends SharedComponent implements AdaptrisConnect
   public void prepare() throws CoreException {
     // No preparation required; already done by the underlying classes.
   }
+
+  @Override
+  public AdaptrisConnection cloneForTesting() throws CoreException {
+    return getProxiedConnection().cloneForTesting();
+  }
 }

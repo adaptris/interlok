@@ -39,9 +39,9 @@ public class ReadFileService extends ServiceImp
 	 * The parameter for the path to the file to read.
 	 */
 	@NotNull
-  @Valid
-  @InputFieldHint(expression = true)
-  private String filePath;
+	@Valid
+	@InputFieldHint(expression = true)
+	private String filePath;
 
 	/**
 	 * {@inheritDoc}.
@@ -49,16 +49,16 @@ public class ReadFileService extends ServiceImp
 	@Override
 	public void doService(final AdaptrisMessage message) throws ServiceException
 	{
-
 		try
 		{
-      final File file = new File(message.resolve(getFilePath()));
+			final File file = new File(message.resolve(getFilePath()));
 			if (file.exists() && file.isFile())
 			{
-        log.info("Reading file : {}", file.getAbsolutePath());
-        try (InputStream in = new FileInputStream(file); OutputStream out = message.getOutputStream()) {
-          IOUtils.copy(in, out);
-        }
+				log.info("Reading file : {}", file.getAbsolutePath());
+				try (InputStream in = new FileInputStream(file); OutputStream out = message.getOutputStream())
+				{
+					IOUtils.copy(in, out);
+				}
 			}
 			else
 			{
@@ -66,7 +66,7 @@ public class ReadFileService extends ServiceImp
 				throw new FileNotFoundException("File " + file.getAbsolutePath() + " does not exist or is a directory!");
 			}
 		}
-    catch (final IOException e)
+		catch (final IOException e)
 		{
 			log.error(e.getMessage());
 			throw new ServiceException(e);
@@ -97,11 +97,14 @@ public class ReadFileService extends ServiceImp
 	@Override
 	protected void initService() throws CoreException
 	{
-    try {
-      Args.notNull(getFilePath(), "filePath");
-    } catch (Exception e) {
-      throw ExceptionHelper.wrapCoreException(e);
-    }
+		try
+		{
+			Args.notNull(getFilePath(), "filePath");
+		}
+		catch (Exception e)
+		{
+			throw ExceptionHelper.wrapCoreException(e);
+		}
 	}
 
 	/**
@@ -109,7 +112,7 @@ public class ReadFileService extends ServiceImp
 	 * 
 	 * @return The file path parameter.
 	 */
-  public String getFilePath()
+	public String getFilePath()
 	{
 		return filePath;
 	}
@@ -120,8 +123,8 @@ public class ReadFileService extends ServiceImp
 	 * @param filePath
 	 *            The file path parameter.
 	 */
-  public void setFilePath(final String filePath)
+	public void setFilePath(final String filePath)
 	{
-    this.filePath = Args.notBlank(filePath, "filePath");
+		this.filePath = Args.notBlank(filePath, "filePath");
 	}
 }

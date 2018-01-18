@@ -25,6 +25,7 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.http.HttpServiceExample;
 import com.adaptris.core.http.client.ExactMatch;
 import com.adaptris.core.http.client.RangeMatch;
+import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.services.LogMessageService;
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
@@ -61,7 +62,6 @@ public class BranchingHttpRequestServiceTest extends HttpServiceExample {
       fail();
     }
     catch (ServiceException expected) {
-
     }
     finally {
       HttpHelper.stopChannelAndRelease(c);
@@ -90,7 +90,7 @@ public class BranchingHttpRequestServiceTest extends HttpServiceExample {
 
   public void testService_ExactMatch() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
-    Channel c = HttpHelper.createAndStartChannel(mock);
+    Channel c = HttpHelper.createAndStartChannel(mock, getName());
     BranchingHttpRequestService service = new BranchingHttpRequestService(HttpHelper.createProduceDestination(c).getDestination());
 
     service.setContentType("text/complicated");
@@ -102,12 +102,36 @@ public class BranchingHttpRequestServiceTest extends HttpServiceExample {
       c.requestStart();
       execute(service, msg);
       waitForMessages(mock, 1);
+      assertEquals(getName(), msg.getContent());
     }
     finally {
       HttpHelper.stopChannelAndRelease(c);
     }
     assertEquals(1, mock.messageCount());
     assertEquals("200 OK", msg.getNextServiceId());
+  }
+
+  public void testService_ExactMatch_WithError() throws Exception {
+    MockMessageProducer mock = new MockMessageProducer();
+    Channel c = HttpHelper.createAndStartChannel(mock, "This is the reply body", HttpStatus.INTERNAL_ERROR_500);
+    BranchingHttpRequestService service = new BranchingHttpRequestService(HttpHelper.createProduceDestination(c).getDestination());
+
+    service.setContentType("text/complicated");
+    service.setDefaultServiceId("DefaultServiceId");
+    service.getStatusMatches().add(new ExactMatch(500, "500 Server Error"));
+    service.getStatusMatches().add(new ExactMatch(200, "200 OK"));
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
+    try {
+      c.requestStart();
+      execute(service, msg);
+      waitForMessages(mock, 1);
+      assertEquals("This is the reply body", msg.getContent());
+    }
+    finally {
+      HttpHelper.stopChannelAndRelease(c);
+    }
+    assertEquals(1, mock.messageCount());
+    assertEquals("500 Server Error", msg.getNextServiceId());
   }
 
   public void testService_RangeMatch() throws Exception {

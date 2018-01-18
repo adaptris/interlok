@@ -157,6 +157,28 @@ public class BootstrapProperties extends Properties {
   }
 
   /**
+   * Add overloaded method to get numerical values from bootstrap.properties.
+   * 
+   * @param key
+   *      The property key to get.
+   * @param defaultValue
+   *      The default numerical value if the key isn't found (or cannot be parsed as numercial).
+   * 
+   * @return The numerical value for the given property key, or default if necessary.
+   */
+  public Long getProperty(String key, Long defaultValue) {
+    Long value = null;
+    String v = getProperty(key);
+    try {
+      value = Long.parseLong(v); // rely on parseLong throwing an exception if  v == null, v.isEmpty() or not a number
+    } catch (NumberFormatException e) {
+      log.info("Could not parse numerical value [{}] for key [{}] - using default value [{}]", v, key, defaultValue);
+      value = defaultValue;
+    }
+    return value;
+  }
+
+  /**
    * Convenience method to create an adapter based on the existing bootstrap properties
    * 
    * @return the adapter object.

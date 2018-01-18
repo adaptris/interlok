@@ -29,7 +29,7 @@ import com.adaptris.core.services.LogMessageService;
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
 import com.adaptris.util.KeyValuePair;
-import com.adaptris.util.KeyValuePairSet;
+import com.adaptris.util.KeyValuePairList;
 
 public class MetadataBranchingServiceTest extends BranchingServiceExample {
 
@@ -51,8 +51,8 @@ public class MetadataBranchingServiceTest extends BranchingServiceExample {
       }
 
       @Override
-      KeyValuePairSet createMappings() {
-        KeyValuePairSet mappings = new KeyValuePairSet();
+      KeyValuePairList createMappings() {
+        KeyValuePairList mappings = new KeyValuePairList();
         mappings.addKeyValuePair(new KeyValuePair("MatchValue1", "FirstServiceId"));
         mappings.addKeyValuePair(new KeyValuePair("MatchValue2", "SecondServiceId"));
         return mappings;
@@ -65,8 +65,8 @@ public class MetadataBranchingServiceTest extends BranchingServiceExample {
       }
 
       @Override
-      KeyValuePairSet createMappings() {
-        KeyValuePairSet mappings = new KeyValuePairSet();
+      KeyValuePairList createMappings() {
+        KeyValuePairList mappings = new KeyValuePairList();
         mappings.addKeyValuePair(new KeyValuePair("ExactCaseValue1", "FirstServiceId"));
         mappings.addKeyValuePair(new KeyValuePair("ExactCaseValue2", "SecondServiceId"));
         return mappings;
@@ -79,8 +79,8 @@ public class MetadataBranchingServiceTest extends BranchingServiceExample {
       }
 
       @Override
-      KeyValuePairSet createMappings() {
-        return new KeyValuePairSet();
+      KeyValuePairList createMappings() {
+        return new KeyValuePairList();
       }
     },
     IntegerValueCreator {
@@ -90,8 +90,8 @@ public class MetadataBranchingServiceTest extends BranchingServiceExample {
       }
 
       @Override
-      KeyValuePairSet createMappings() {
-        KeyValuePairSet result = new KeyValuePairSet();
+      KeyValuePairList createMappings() {
+        KeyValuePairList result = new KeyValuePairList();
         result.addKeyValuePair(new KeyValuePair("=10", "DefaultServiceId"));
         result.addKeyValuePair(new KeyValuePair("<5", "FirstServiceId"));
         result.addKeyValuePair(new KeyValuePair("<=9", "FirstServiceId"));
@@ -99,10 +99,27 @@ public class MetadataBranchingServiceTest extends BranchingServiceExample {
         result.addKeyValuePair(new KeyValuePair(">=15", "SecondServiceId"));
         return result;
       }
+    },
+    RegexpValueCreator {
+      @Override
+      MetadataValueMatcher create() {
+        return new RegexpValueMatcher();
+      }
+
+      @Override
+      KeyValuePairList createMappings() {
+        KeyValuePairList result = new KeyValuePairList();
+        result.addKeyValuePair(new KeyValuePair("^.*first$", "FirstServiceId"));
+        result.addKeyValuePair(new KeyValuePair("^.*1st$", "FirstServiceId"));
+        result.addKeyValuePair(new KeyValuePair("^.*second$", "SecondServiceId"));
+        result.addKeyValuePair(new KeyValuePair("^.*2nd$", "SecondServiceId"));
+        result.addKeyValuePair(new KeyValuePair(".*default$", "DefaultServiceId"));
+        return result;
+      }
     };
     abstract MetadataValueMatcher create();
 
-    abstract KeyValuePairSet createMappings();
+    abstract KeyValuePairList createMappings();
   }
 
   public MetadataBranchingServiceTest(String name) {
@@ -117,7 +134,7 @@ public class MetadataBranchingServiceTest extends BranchingServiceExample {
     MetadataValueBranchingService service = new MetadataValueBranchingService();
     service.addMetadataKey(KEY1);
     service.addMetadataKey(KEY2);
-    KeyValuePairSet mappings = new KeyValuePairSet();
+    KeyValuePairList mappings = new KeyValuePairList();
     mappings.addKeyValuePair(new KeyValuePair(VAL1VAL2, NEXT_SERVICE_ID));
     service.setMetadataToServiceIdMappings(mappings);
     service.setValueMatcher(new EqualsValueMatcher());

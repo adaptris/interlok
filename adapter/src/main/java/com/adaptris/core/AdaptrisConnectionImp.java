@@ -328,4 +328,9 @@ public abstract class AdaptrisConnectionImp implements AdaptrisConnection, State
     this.lookupName = jndiName;
   }
 
+  public AdaptrisConnection cloneForTesting() throws CoreException {
+    AdaptrisMarshaller m = DefaultMarshaller.getDefaultMarshaller();
+    return (AdaptrisConnection) m.unmarshal(m.marshal(this));
+  }
+
 }

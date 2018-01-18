@@ -16,6 +16,8 @@
 
 package com.adaptris.core.runtime;
 
+import static com.adaptris.core.runtime.AdapterComponentMBean.ID_PREFIX;
+import static com.adaptris.core.runtime.AdapterComponentMBean.JMX_RETRY_MONITOR_TYPE;
 import static com.adaptris.core.runtime.AdapterComponentMBean.NOTIF_MSG_CLOSED;
 import static com.adaptris.core.runtime.AdapterComponentMBean.NOTIF_MSG_CONFIG_UPDATED;
 import static com.adaptris.core.runtime.AdapterComponentMBean.NOTIF_MSG_INITIALISED;
@@ -44,6 +46,8 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.InitialisedState;
 import com.adaptris.core.PoolingWorkflow;
+import com.adaptris.core.RetryMessageErrorHandler;
+import com.adaptris.core.RetryMessageErrorHandlerMonitorMBean;
 import com.adaptris.core.SerializableAdaptrisMessage;
 import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.StartedState;
@@ -530,6 +534,36 @@ public class ChannelManagerTest extends ComponentManagerCase {
     assertEquals(0, channel.getWorkflowList().size());
   }
 
+  public void testChannelManager_HasRetryMonitor() throws Exception {
+    String adapterName = this.getClass().getSimpleName() + "." + getName();
+
+    Adapter adapter = createAdapter(adapterName);
+    AdapterManager adapterManager = new AdapterManager(adapter);
+
+    Channel c1 = createChannel(getName() + "_1");
+    c1.setMessageErrorHandler(new RetryMessageErrorHandler(getName()));
+
+    ChannelManager cm1 = new ChannelManager(c1, adapterManager);
+    ObjectName channelObj = cm1.createObjectName();
+    List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>(Arrays.asList(new BaseComponentMBean[]
+    {
+        adapterManager, cm1
+    }));
+    try {
+      register(mBeans);
+      ObjectName handlerObjectName = ObjectName
+          .getInstance(JMX_RETRY_MONITOR_TYPE + cm1.createObjectHierarchyString() + ID_PREFIX + getName());
+
+      ChannelManagerMBean channelManagerProxy = JMX.newMBeanProxy(mBeanServer, channelObj, ChannelManagerMBean.class);
+      assertTrue(channelManagerProxy.getChildRuntimeInfoComponents().contains(handlerObjectName));
+      RetryMessageErrorHandlerMonitorMBean monitor = JMX.newMBeanProxy(mBeanServer, handlerObjectName,
+          RetryMessageErrorHandlerMonitorMBean.class);
+    }
+    finally {
+      adapter.requestClose();
+    }
+  }
+
   public void testAdapterClosed_InitChannel() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -884,9 +918,9 @@ public class ChannelManagerTest extends ComponentManagerCase {
     AdapterManager adapterManager = new AdapterManager(adapter);
     Channel c1 = createChannel(getName() + "_1");
     ChannelManager channelManager = new ChannelManager(c1, adapterManager);
-    assertFalse(channelManager.addChildJmxComponent(new ChannelChild(channelManager)));
-    assertFalse(channelManager.addChildJmxComponent(null));
-    assertEquals(0, channelManager.getChildRuntimeInfoComponents().size());
+    assertTrue(channelManager.addChildJmxComponent(new ChannelChild(channelManager)));
+    assertEquals(1, channelManager.getChildRuntimeInfoComponents().size());
+    assertEquals(1, channelManager.getAllDescendants().size());
   }
 
   public void testRemoveChildRuntimeComponent() throws Exception {
@@ -895,10 +929,13 @@ public class ChannelManagerTest extends ComponentManagerCase {
     AdapterManager adapterManager = new AdapterManager(adapter);
     Channel c1 = createChannel(getName() + "_1");
     ChannelManager channelManager = new ChannelManager(c1, adapterManager);
-    assertFalse(channelManager.addChildJmxComponent(new ChannelChild(channelManager)));
-    assertFalse(channelManager.removeChildJmxComponent(null));
-    assertFalse(channelManager.removeChildJmxComponent(new ChannelChild(channelManager)));
-    assertEquals(0, channelManager.getChildRuntimeInfoComponents().size());
+    ChannelChild child = new ChannelChild(channelManager);
+    assertTrue(channelManager.addChildJmxComponent(child));
+    assertTrue(channelManager.addChildJmxComponent(new ChannelChild(channelManager)));
+    assertTrue(channelManager.removeChildJmxComponent(child));
+    assertFalse(channelManager.removeChildJmxComponent(child));
+    assertEquals(1, channelManager.getChildRuntimeInfoComponents().size());
+    assertEquals(1, channelManager.getAllDescendants().size());
   }
 
   public void testAdapterStopped_InitChannel() throws Exception {

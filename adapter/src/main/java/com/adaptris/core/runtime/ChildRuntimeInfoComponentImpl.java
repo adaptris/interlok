@@ -20,12 +20,16 @@ import static com.adaptris.core.runtime.AdapterComponentMBean.ID_PREFIX;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.JmxHelper;
 
 public abstract class ChildRuntimeInfoComponentImpl implements ChildRuntimeInfoComponent {
 
   private transient ObjectName myObjectName;
+  protected transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   protected ChildRuntimeInfoComponentImpl() {
   }
@@ -60,7 +64,9 @@ public abstract class ChildRuntimeInfoComponentImpl implements ChildRuntimeInfoC
   @Override
   public void registerMBean() throws CoreException {
     try {
-      JmxHelper.register(createObjectName(), this);
+      ObjectName objName = createObjectName();
+      log.trace("Registering {} against {}", this.getClass().getName(), objName);
+      JmxHelper.register(objName, this);
     }
     catch (Exception e) {
       throw new CoreException(e);

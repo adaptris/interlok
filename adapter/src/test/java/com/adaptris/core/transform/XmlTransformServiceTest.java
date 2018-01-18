@@ -28,7 +28,6 @@ import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXParseException;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -637,7 +636,9 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     DefaultMessageFactory factory = new DefaultMessageFactory();
     factory.setDefaultCharEncoding("ISO-8859-1");
     AdaptrisMessage msg = TransformHelper.createMessage(factory, PROPERTIES.getProperty(KEY_ISSUE2641_INPUT));
-    createDocument(msg.getPayload());
+    Document srcXml = createDocument(msg.getPayload());
+    XPath srcXpath = new XPath();
+    String srcValue = srcXpath.selectSingleTextItem(srcXml, ISSUE2641_SRC_XPATH);
     assertEquals("ISO-8859-1", msg.getContentEncoding());
 
     XmlTransformService service = new XmlTransformService();
@@ -645,14 +646,15 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     execute(service, msg);
 
     assertEquals("ISO-8859-1", msg.getContentEncoding());
-    try {
-      createDocument(msg.getPayload());
-      // Should fail.
-      fail("Really should have failed, UTF-8 should allow you to do this.");
-    }
-    catch (SAXParseException e) {
-      assertEquals("Invalid byte 2 of 3-byte UTF-8 sequence.", e.getMessage());
-    }
+    // We're using UTF-8 as the encoding; get bytes will give us the right thing.
+    Document destXml = createDocument(msg.getPayload());
+    XPath destXpath = new XPath();
+    String destValue = destXpath.selectSingleTextItem(destXml, ISSUE2641_DEST_XPATH);
+    log.debug("testIssue2641:: srcValue  = [" + srcValue + "]");
+    log.debug("testIssue2641:: destValue = [" + destValue + "]");
+
+    // All things being equal, they should be the same.
+    assertEquals(srcValue, destValue);
   }
 
   public void testXSLT_XslMessageTerminate() throws Exception {

@@ -16,7 +16,7 @@
 
 package com.adaptris.core.services.metadata;
 
-import com.adaptris.util.KeyValuePairSet;
+import com.adaptris.util.KeyValuePairBag;
 
 /**
  * Interface for use in {@link MetadataValueBranchingService}.
@@ -34,10 +34,10 @@ public interface MetadataValueMatcher {
   /**
    * Get the next service id from the mapping.
    * 
-   * @param serviceKey the service key generated from metadata
+   * @param metadataValue the service key generated from metadata
    * @param mappings the list of mappings from
    *          {@link MetadataValueBranchingService#getMetadataToServiceIdMappings()}
    * @return the service key that was found, null otherwise.
    */
-  String getNextServiceId(String serviceKey, KeyValuePairSet mappings);
+  String getNextServiceId(String metadataValue, KeyValuePairBag mappings);
 }

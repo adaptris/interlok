@@ -32,7 +32,9 @@ import com.adaptris.core.http.jetty.HttpConnection;
 import com.adaptris.core.http.jetty.JettyMessageConsumer;
 import com.adaptris.core.http.jetty.MetadataHeaderHandler;
 import com.adaptris.core.http.jetty.StandardResponseProducer;
+import com.adaptris.core.http.server.HttpStatusProvider;
 import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
+import com.adaptris.core.services.metadata.PayloadFromMetadataService;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
 
@@ -46,11 +48,34 @@ public class HttpHelper {
   }
 
   public static Channel createAndStartChannel(MockMessageProducer mock) throws Exception {
+    return createAndStartChannel(mock, HttpStatus.OK_200);
+  }
+
+  public static Channel createAndStartChannel(MockMessageProducer mock, HttpStatusProvider.HttpStatus status) throws Exception {
     JettyMessageConsumer mc = createConsumer(URL_TO_POST_TO);
     mc.setHeaderHandler(new MetadataHeaderHandler());
     HttpConnection jc = createConnection();
-    Channel c = createChannel(jc, createWorkflow(mc, mock,
-        new ServiceList(new Service[] {new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200))})));
+    Channel c = createChannel(jc, createWorkflow(mc, mock, new ServiceList(new Service[]
+    {
+        new StandaloneProducer(new StandardResponseProducer(status))
+    })));
+    start(c);
+    return c;
+  }
+
+  public static Channel createAndStartChannel(MockMessageProducer mock, String replyPayload) throws Exception {
+    return createAndStartChannel(mock, replyPayload, HttpStatus.OK_200);
+  }
+
+  public static Channel createAndStartChannel(MockMessageProducer mock, String replyPayload, HttpStatusProvider.HttpStatus status)
+      throws Exception {
+    JettyMessageConsumer mc = createConsumer(URL_TO_POST_TO);
+    mc.setHeaderHandler(new MetadataHeaderHandler());
+    HttpConnection jc = createConnection();
+    Channel c = createChannel(jc, createWorkflow(mc, mock, new ServiceList(new Service[]
+    {
+        new PayloadFromMetadataService(replyPayload), new StandaloneProducer(new StandardResponseProducer(status))
+    })));
     start(c);
     return c;
   }

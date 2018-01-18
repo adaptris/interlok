@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.util.KeyValuePair;
-import com.adaptris.util.KeyValuePairSet;
+import com.adaptris.util.KeyValuePairBag;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -56,7 +56,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config integer-value-matcher
  * 
- * @see MetadataValueBranchingService#setMetadataToServiceIdMappings(KeyValuePairSet)
  * @author lchan
  */
 @XStreamAlias("integer-value-matcher")
@@ -124,11 +123,7 @@ public class IntegerValueMatcher implements MetadataValueMatcher {
   public IntegerValueMatcher() {
   }
 
-  /**
-   * @see MetadataValueMatcher#getNextServiceId(java.lang.String,
-   *      KeyValuePairSet)
-   */
-  public String getNextServiceId(String serviceKey, KeyValuePairSet mappings) {
+  public String getNextServiceId(String serviceKey, KeyValuePairBag mappings) {
     String result = null;
     Integer lhs = null;
     Integer rhs = null;
@@ -136,7 +131,7 @@ public class IntegerValueMatcher implements MetadataValueMatcher {
       lhs = Integer.parseInt(serviceKey);
     }
     catch (NumberFormatException e) {
-      logR.trace("[" + serviceKey + "] not parseable as an integer");
+      logR.trace("[{}] not parseable as an integer", serviceKey);
       return result;
     }
 
@@ -149,23 +144,23 @@ public class IntegerValueMatcher implements MetadataValueMatcher {
         rhs = Integer.parseInt(m.group(2));
         Operator o = OPERATORS.get(operator);
         if (o == null) {
-          logR.trace("[" + kvp.getKey() + "] not handled, ignoring");
+          logR.trace("[{}] not handled, ignoring", kvp.getKey());
           continue;
         }
-        logR.trace("Comparing [" + lhs + "] against [" + rhs + "] using " + o.toString());
+        logR.trace("Comparing [{}] against [{}] using {}", lhs, rhs, o.toString());
         if (o.matches(lhs, rhs)) {
           result = kvp.getValue();
           break;
         }
       }
       else {
-        logR.trace("Ignoring " + kvp.getKey() + " No match for regular expression " + INTEGER_OPERATOR_PATTERN);
+        logR.trace("Ignoring {}, no match for regular expression [{}]", kvp.getKey(), INTEGER_OPERATOR_PATTERN);
       }
     }
     return result;
   }
 
-  private static Set<KeyValuePair> sort(KeyValuePairSet mappings) {
+  private static Set<KeyValuePair> sort(KeyValuePairBag mappings) {
     TreeSet<KeyValuePair> result = new TreeSet<KeyValuePair>(new NaturalOrderKeyValueComparator());
     result.addAll(mappings.getKeyValuePairs());
     return result;

@@ -16,6 +16,8 @@
 
 package com.adaptris.core.services;
 
+import static com.adaptris.core.util.ServiceUtil.discardNulls;
+
 import java.util.concurrent.TimeUnit;
 
 import javax.validation.Valid;
@@ -35,6 +37,7 @@ import com.adaptris.core.NullService;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.ServiceWrapper;
 import com.adaptris.core.StartedState;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
@@ -71,7 +74,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Retry a message periodically if the wrapped service fails", tag = "service")
 @DisplayOrder(order = {"service", "numRetries", "restartOnFailure", "delayBetweenRetries"})
-public class RetryingServiceWrapper extends ServiceImp implements EventHandlerAware {
+public class RetryingServiceWrapper extends ServiceImp implements EventHandlerAware, ServiceWrapper {
 
   private static final TimeInterval DEFAULT_DELAY = new TimeInterval(10l, TimeUnit.SECONDS);
   private static final int DEFAULT_NUM_RETRIES = 10;
@@ -224,4 +227,8 @@ public class RetryingServiceWrapper extends ServiceImp implements EventHandlerAw
     eventHandler = eh;
   }
 
+  @Override
+  public Service[] wrappedServices() {
+    return discardNulls(getService());
+  }
 }

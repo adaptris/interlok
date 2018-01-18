@@ -39,7 +39,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("change-char-encoding-service")
 @AdapterComponent
-@ComponentProfile(summary = "Change the character encoding of a message", tag = "service")
+@ComponentProfile(summary = "Change the character encoding of a message", tag = "service,encoding")
 @DisplayOrder(order = {"charEncoding"})
 public class ChangeCharEncodingService extends ServiceImp {
 

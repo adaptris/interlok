@@ -79,6 +79,8 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
     service.setSplitter(new LineCountSplitter());
     service.setService(new ServiceList());
     service.init();
+    assertNotNull(service.wrappedServices());
+    assertEquals(1, service.wrappedServices().length);
   }
 
   public void testRedmineIssue1556() throws Exception {

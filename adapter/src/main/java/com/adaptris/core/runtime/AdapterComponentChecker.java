@@ -16,6 +16,13 @@
 
 package com.adaptris.core.runtime;
 
+import static com.adaptris.core.util.LifecycleHelper.close;
+import static com.adaptris.core.util.LifecycleHelper.init;
+import static com.adaptris.core.util.LifecycleHelper.initAndStart;
+import static com.adaptris.core.util.LifecycleHelper.prepare;
+import static com.adaptris.core.util.LifecycleHelper.stopAndClose;
+import static com.adaptris.core.util.ServiceUtil.rewriteConnectionsForTesting;
+
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.AdaptrisMessage;
@@ -24,7 +31,6 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.DefaultSerializableMessageTranslator;
 import com.adaptris.core.Service;
-import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.interlok.types.SerializableMessage;
 
 /**
@@ -67,7 +73,7 @@ public class AdapterComponentChecker extends ChildRuntimeInfoComponentImpl
   public void checkInitialise(String xml) throws CoreException {
     AdaptrisMarshaller marshaller = DefaultMarshaller.getDefaultMarshaller();
     AdaptrisComponent component = (AdaptrisComponent) marshaller.unmarshal(xml);
-    component.prepare();
+    prepare(component);
     if (component instanceof AllowsRetriesConnection) {
       AllowsRetriesConnection retry = (AllowsRetriesConnection) component;
       if (retry.connectionAttempts() == -1) {
@@ -75,26 +81,31 @@ public class AdapterComponentChecker extends ChildRuntimeInfoComponentImpl
       }
     }
     try {
-      LifecycleHelper.init(component);
+      init(component);
     } finally {
-      LifecycleHelper.close(component);
+      close(component);
     }
   }
 
   @Override
   public SerializableMessage applyService(String xml, SerializableMessage serializedMsg) throws CoreException {
+    return applyService(xml, serializedMsg, true);
+  }
+
+  @Override
+  public SerializableMessage applyService(String xml, SerializableMessage serializedMsg, boolean rewriteConnections) throws CoreException {
     AdaptrisMarshaller marshaller = DefaultMarshaller.getDefaultMarshaller();
     Service service = (Service) marshaller.unmarshal(xml);
-    service.prepare();
+    if (rewriteConnections) {
+      service = rewriteConnectionsForTesting(service);
+    }
     AdaptrisMessage msg = messageTranslator.translate(serializedMsg);
     try {
-      LifecycleHelper.init(service);
-      LifecycleHelper.start(service);
+      initAndStart(service);
       service.doService(msg);
     }
     finally {
-      LifecycleHelper.stop(service);
-      LifecycleHelper.close(service);
+      stopAndClose(service);
     }
     return messageTranslator.translate(msg);
   }
