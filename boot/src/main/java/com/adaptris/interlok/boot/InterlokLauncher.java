@@ -70,9 +70,9 @@ public class InterlokLauncher extends Launcher {
       "-ignoreSubDirs", "--ignoreSubDirs"
   };
   private static final String[] ARG_FAILOVER = new String[]
-      {
-          "-failover", "--failover"
-      };
+  {
+      "-failover", "--failover"
+  };
   private static final String[] ARG_SERVICE_TEST = new String[]
   {
       "-serviceTest", "--serviceTest"
