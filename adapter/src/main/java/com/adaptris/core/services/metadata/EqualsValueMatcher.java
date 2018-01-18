@@ -16,6 +16,7 @@
 
 package com.adaptris.core.services.metadata;
 
+import com.adaptris.util.KeyValuePairBag;
 import com.adaptris.util.KeyValuePairSet;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -37,7 +38,7 @@ public class EqualsValueMatcher implements MetadataValueMatcher {
    * @see MetadataValueMatcher#getNextServiceId(java.lang.String,
    *      KeyValuePairSet)
    */
-  public String getNextServiceId(String serviceKey, KeyValuePairSet mappings) {
+  public String getNextServiceId(String serviceKey, KeyValuePairBag mappings) {
     return mappings.getValue(serviceKey);
   }
 

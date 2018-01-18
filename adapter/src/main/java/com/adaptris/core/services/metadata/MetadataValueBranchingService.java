@@ -32,7 +32,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.util.KeyValuePairSet;
+import com.adaptris.util.KeyValuePairList;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -61,15 +61,10 @@ public class MetadataValueBranchingService extends MetadataBranchingServiceImp {
   private MetadataValueMatcher valueMatcher = null;
   @NotNull
   @AutoPopulated
-  private KeyValuePairSet metadataToServiceIdMappings;
+  private KeyValuePairList metadataToServiceIdMappings;
 
-  /**
-   * <p>
-   * Creates a new instance.
-   * </p>
-   */
   public MetadataValueBranchingService() {
-    metadataToServiceIdMappings = new KeyValuePairSet();
+    metadataToServiceIdMappings = new KeyValuePairList();
   }
 
 
@@ -131,25 +126,16 @@ public class MetadataValueBranchingService extends MetadataBranchingServiceImp {
 
   // getters & sets
 
-  /**
-   * <p>
-   * Returns the <code>KeyValuePairSet</code> of metadata value / <code>Service</code> unique ID mappings.
-   * </p>
-   *
-   * @return routings
-   */
-  public KeyValuePairSet getMetadataToServiceIdMappings() {
+  public KeyValuePairList getMetadataToServiceIdMappings() {
     return metadataToServiceIdMappings;
   }
 
   /**
-   * <p>
-   * Adds a metadata value to <code>Service</code> UID mapping to the underlying <code>Set</code>.
-   * </p>
+   * Set the list of mappings between metadata / service-id
    *
    * @param mappings the mapping to add
    */
-  public void setMetadataToServiceIdMappings(KeyValuePairSet mappings) {
+  public void setMetadataToServiceIdMappings(KeyValuePairList mappings) {
     metadataToServiceIdMappings = Args.notNull(mappings, "mappings");
   }
 
