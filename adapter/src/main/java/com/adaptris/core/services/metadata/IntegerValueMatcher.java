@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairBag;
-import com.adaptris.util.KeyValuePairSet;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -57,7 +56,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config integer-value-matcher
  * 
- * @see MetadataValueBranchingService#setMetadataToServiceIdMappings(KeyValuePairSet)
  * @author lchan
  */
 @XStreamAlias("integer-value-matcher")
@@ -125,10 +123,6 @@ public class IntegerValueMatcher implements MetadataValueMatcher {
   public IntegerValueMatcher() {
   }
 
-  /**
-   * @see MetadataValueMatcher#getNextServiceId(java.lang.String,
-   *      KeyValuePairSet)
-   */
   public String getNextServiceId(String serviceKey, KeyValuePairBag mappings) {
     String result = null;
     Integer lhs = null;

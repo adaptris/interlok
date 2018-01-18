@@ -23,7 +23,7 @@ public interface ConnectedService extends Service {
   /**
    * Sets the {@code AdaptrisConnection} to use.
    *
-   * @param conn the {@code AdaptrisConnection} to use
+   * @param c the {@code AdaptrisConnection} to use
    */
   void setConnection(AdaptrisConnection c);
 

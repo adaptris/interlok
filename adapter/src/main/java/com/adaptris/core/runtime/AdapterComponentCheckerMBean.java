@@ -46,7 +46,7 @@ public interface AdapterComponentCheckerMBean extends BaseComponentMBean {
    * @param msg the message.
    * @return the result of applying these services.
    * @throws CoreException wrapping any other exception
-   * @deprecated since 3.7.0 use {@link #applyService(String, SerializableMessage, boolean) instead.
+   * @deprecated since 3.7.0 use {@link #applyService(String, SerializableMessage, boolean)} instead.
    */
   @Deprecated
   SerializableMessage applyService(String xml, SerializableMessage msg) throws CoreException;

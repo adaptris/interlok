@@ -17,7 +17,6 @@ package com.adaptris.core.services.metadata;
 
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairBag;
-import com.adaptris.util.KeyValuePairSet;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -51,7 +50,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
    </pre>
  * </p>
  * @config regex-value-matcher
- * @see MetadataValueBranchingService#setMetadataToServiceIdMappings(KeyValuePairSet)
  */
 @XStreamAlias("regex-value-matcher")
 public class RegexpValueMatcher implements MetadataValueMatcher {
