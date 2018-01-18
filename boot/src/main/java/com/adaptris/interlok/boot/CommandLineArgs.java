@@ -120,7 +120,7 @@ public abstract class CommandLineArgs {
     for (String arg : args) {
       copy.remove(arg);
     }
-    if (value != null) {
+    if (value != null && !value.equals(Boolean.TRUE.toString())){
       normalArgs.add(value);
     }
     return new CommandLineArgs(copy, normalArgs) {

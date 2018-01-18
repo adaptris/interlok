@@ -133,4 +133,14 @@ public class InterlokLauncherTest {
     assertEquals("my.properties", rebuild[0]);
   }
 
+  @Test
+  public void testRebuild_FailoverWithNoProperties() throws Exception {
+    InterlokLauncher launcher = new InterlokLauncher(new String[]
+        {
+            "--failover"
+        });
+    String[] rebuild = launcher.rebuildArgs();
+    assertEquals(0, rebuild.length);
+  }
+
 }
