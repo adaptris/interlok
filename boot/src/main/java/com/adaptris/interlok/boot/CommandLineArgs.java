@@ -109,6 +109,30 @@ public abstract class CommandLineArgs {
   }
 
   /**
+   * Converts argument from <code>--key value</code> to <code>value</code>.
+   *
+   * @param args
+   * @return a new instance.
+   */
+  public CommandLineArgs convertToNormal(String... args) {
+    Map<String, String> copy = new HashMap<>(dashArgs);
+    String value = getArgument(args);
+    for (String arg : args) {
+      copy.remove(arg);
+    }
+    if (value != null) {
+      normalArgs.add(value);
+    }
+    return new CommandLineArgs(copy, normalArgs) {
+      @Override
+      protected void parseArguments(String[] args) {
+        throw new IllegalStateException();
+      }
+
+    };
+  }
+
+  /**
    * Parse the arguments
    *
    * @param argv the list of commandline arguments.

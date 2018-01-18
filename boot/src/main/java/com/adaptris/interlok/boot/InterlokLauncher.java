@@ -131,15 +131,11 @@ public class InterlokLauncher extends Launcher {
   }
 
   protected String[] rebuildArgs() throws Exception {
-    CommandLineArgs cl = commandLine
+    return commandLine
         .remove(ARG_ADAPTER_CLASSPATH)
-        .remove(ARG_IGNORE_SUBDIRS);
-    if(failover){
-      String failoverValue = cl.getArgument(ARG_FAILOVER);
-      cl = cl.remove(ARG_FAILOVER);
-      cl.normalArgs.add(failoverValue);
-    }
-    return cl.render();
+        .remove(ARG_IGNORE_SUBDIRS)
+        .convertToNormal(ARG_FAILOVER)
+        .render();
   }
 
   @Override
