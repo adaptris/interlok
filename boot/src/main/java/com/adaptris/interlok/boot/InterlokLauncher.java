@@ -59,6 +59,7 @@ public class InterlokLauncher extends Launcher {
   private static final boolean DEBUG = Boolean.getBoolean("adp.bootstrap.debug") || Boolean.getBoolean("interlok.bootstrap.debug");
 
   private static final String INTERLOK_MAIN_CLASS = "com.adaptris.core.management.SimpleBootstrap";
+  private static final String INTERLOK_FAILOVER_MAIN_CLASS = "com.adaptris.failover.FailoverBootstrap";
   private static final String SERVICE_TEST_MAIN_CLASS = "com.adaptris.tester.runners.TestExecutor";
   private static final String[] ARG_ADAPTER_CLASSPATH = new String[]
   {
@@ -67,6 +68,10 @@ public class InterlokLauncher extends Launcher {
   private static final String[] ARG_IGNORE_SUBDIRS = new String[]
   {
       "-ignoreSubDirs", "--ignoreSubDirs"
+  };
+  private static final String[] ARG_FAILOVER = new String[]
+  {
+      "-failover", "--failover"
   };
   private static final String[] ARG_SERVICE_TEST = new String[]
   {
@@ -78,6 +83,7 @@ public class InterlokLauncher extends Launcher {
   private List<String> paths = new ArrayList<>();
   private CommandLineArgs commandLine;
   private boolean recursive;
+  private boolean failover;
   private boolean serviceTest;
   private boolean defaultClasspath = true;
 
@@ -86,6 +92,7 @@ public class InterlokLauncher extends Launcher {
       commandLine = CommandLineArgs.parse(argv);
       recursive = !commandLine.hasArgument(ARG_IGNORE_SUBDIRS);
       serviceTest = commandLine.hasArgument(ARG_SERVICE_TEST);
+      failover = commandLine.hasArgument(ARG_FAILOVER);
       paths = initializePaths();
     }
     catch (Exception ex) {
@@ -114,15 +121,21 @@ public class InterlokLauncher extends Launcher {
 
   @Override
   protected String getMainClass() throws Exception {
-    if (serviceTest){
+    if (serviceTest) {
       return SERVICE_TEST_MAIN_CLASS;
+    } else if (failover){
+      return INTERLOK_FAILOVER_MAIN_CLASS;
     } else {
       return INTERLOK_MAIN_CLASS;
     }
   }
 
   protected String[] rebuildArgs() throws Exception {
-    return commandLine.remove(ARG_ADAPTER_CLASSPATH).remove(ARG_IGNORE_SUBDIRS).render();
+    return commandLine
+        .remove(ARG_ADAPTER_CLASSPATH)
+        .remove(ARG_IGNORE_SUBDIRS)
+        .convertToNormal(ARG_FAILOVER)
+        .render();
   }
 
   @Override
