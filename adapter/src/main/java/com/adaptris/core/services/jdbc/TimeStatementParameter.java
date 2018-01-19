@@ -16,15 +16,10 @@
 
 package com.adaptris.core.services.jdbc;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
-
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.Time;
 import java.text.SimpleDateFormat;
 
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ServiceException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -41,7 +36,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("jdbc-time-statement-parameter")
 @DisplayOrder(order = {"name", "queryString", "queryType", "dateFormat", "convertNull"})
-public class TimeStatementParameter extends TimestampStatementParameter {
+public class TimeStatementParameter extends DatetimeStatementParameter<java.sql.Time> {
 
   public TimeStatementParameter() {
     super();
@@ -55,32 +50,23 @@ public class TimeStatementParameter extends TimestampStatementParameter {
     super(query, type, nullConvert, name, format);
   }
 
-  
-
-  @Override
-  protected java.util.Date toDate(Object value) throws ServiceException {
-    if (isBlank((String) value) && convertNull()) {
-      return new java.sql.Time(System.currentTimeMillis());
-    }
-    else {
-      try {
-        return new java.sql.Time(getFormatter().parse((String) value).getTime());
-      }
-      catch (Exception e) {
-        throw new ServiceException("Failed to convert input String [" + value + "] to type [java.sql.Time]", e);
-      }
-    }
-  }
-  
-  @Override
-  public void apply(int parameterIndex, PreparedStatement statement, AdaptrisMessage msg) throws SQLException, ServiceException {
-    java.sql.Time ts = (java.sql.Time) this.toDate(getQueryValue(msg));
-    log.trace("Setting argument {} to [{}]", parameterIndex, ts);
-    statement.setTime(parameterIndex, ts);
-  }
-
   @Override
   public TimeStatementParameter makeCopy() {
     return new TimeStatementParameter(getQueryString(), getQueryType(), getConvertNull(), getName(), getFormatter());
+  }
+
+  @Override
+  protected Time defaultValue() {
+    return new java.sql.Time(System.currentTimeMillis());
+  }
+
+  @Override
+  protected Time convertToType(Object value) {
+    try {
+      return new java.sql.Time(getFormatter().parse((String) value).getTime());
+    }
+    catch (Exception e) {
+      throw new IllegalArgumentException("Failed to convert input String [" + value + "] to type [java.sql.Time]", e);
+    }
   }
 }

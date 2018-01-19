@@ -16,16 +16,7 @@
 
 package com.adaptris.core.services.jdbc;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
-
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-import org.apache.commons.lang.math.NumberUtils;
-
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ServiceException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -41,7 +32,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("jdbc-long-statement-parameter")
 @DisplayOrder(order = {"name", "queryString", "queryType"})
-public class LongStatementParameter extends TypedStatementParameter {
+public class LongStatementParameter extends TypedStatementParameter<Long> {
 
   public LongStatementParameter() {
     super();
@@ -53,23 +44,17 @@ public class LongStatementParameter extends TypedStatementParameter {
   }
 
   @Override
-  public void apply(int parameterIndex, PreparedStatement statement, AdaptrisMessage msg) throws SQLException, ServiceException {
-    Long val = toLong(getQueryValue(msg));
-    log.trace("Setting argument {} to [{}]", parameterIndex, val);
-    statement.setObject(parameterIndex, val);
-  }
-
-
-  Long toLong(Object value) throws ServiceException {
-    if (isBlank((String) value) && convertNull()) {
-      return Long.valueOf(NumberUtils.toLong((String) value));
-    } else {
-      return Long.valueOf((String) value);
-    }
+  public LongStatementParameter makeCopy() {
+    return new LongStatementParameter(getQueryString(), getQueryType(), getConvertNull(), getName());
   }
 
   @Override
-  public LongStatementParameter makeCopy() {
-    return new LongStatementParameter(getQueryString(), getQueryType(), getConvertNull(), getName());
+  protected Long defaultValue() {
+    return Long.valueOf(0);
+  }
+
+  @Override
+  protected Long convertToType(Object value) {
+    return Long.valueOf((String) value);
   }
 }

@@ -16,16 +16,7 @@
 
 package com.adaptris.core.services.jdbc;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
-
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-import org.apache.commons.lang.math.NumberUtils;
-
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ServiceException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -41,7 +32,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("jdbc-short-statement-parameter")
 @DisplayOrder(order = {"name", "queryString", "queryType"})
-public class ShortStatementParameter extends TypedStatementParameter {
+public class ShortStatementParameter extends TypedStatementParameter<Short> {
 
   public ShortStatementParameter() {
     super();
@@ -52,23 +43,17 @@ public class ShortStatementParameter extends TypedStatementParameter {
   }
 
   @Override
-  public void apply(int parameterIndex, PreparedStatement statement, AdaptrisMessage msg) throws SQLException, ServiceException {
-    Short val = toShort(getQueryValue(msg));
-    log.trace("Setting argument {} to [{}]", parameterIndex, val);
-    statement.setObject(parameterIndex, val);
-  }
-
-
-  Short toShort(Object value) throws ServiceException {
-    if (isBlank((String) value) && convertNull()) {
-      return Short.valueOf(NumberUtils.toShort((String) value));
-    } else {
-      return Short.valueOf((String) value);
-    }
+  public ShortStatementParameter makeCopy() {
+    return new ShortStatementParameter(getQueryString(), getQueryType(), getConvertNull(), getName());
   }
 
   @Override
-  public ShortStatementParameter makeCopy() {
-    return new ShortStatementParameter(getQueryString(), getQueryType(), getConvertNull(), getName());
+  protected Short defaultValue() {
+    return Short.valueOf((short) 0);
+  }
+
+  @Override
+  protected Short convertToType(Object value) {
+    return Short.valueOf((String) value);
   }
 }

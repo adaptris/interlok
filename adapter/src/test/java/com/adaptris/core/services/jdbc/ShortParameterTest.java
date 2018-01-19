@@ -40,7 +40,7 @@ public class ShortParameterTest extends BaseCase {
   @Test
   public void testConvert() throws Exception {
     ShortStatementParameter sp = new ShortStatementParameter();
-    assertEquals(Short.valueOf((short) 55), sp.toShort("55"));
+    assertEquals(Short.valueOf((short) 55), sp.convert("55"));
   }
 
 
@@ -48,27 +48,16 @@ public class ShortParameterTest extends BaseCase {
   public void testConvertNull() throws Exception {
     ShortStatementParameter sp = new ShortStatementParameter();
     sp.setConvertNull(false);
-    try {
-      sp.toShort(null);
-      fail("Expected Exception");
-    }
-    catch (RuntimeException expected) {
-      // expected
-    }
-    try {
-      sp.toShort("");
-      fail("Expected Exception");
-    }
-    catch (RuntimeException expected) {
-      // expected
-    }
+    assertNull(sp.convert(null));
+    assertNotNull(sp.convert(""));
+
   }
 
   @Test
   public void testConvertWithConvertNull() throws Exception {
     ShortStatementParameter sp = new ShortStatementParameter();
     sp.setConvertNull(true);
-    assertEquals(Short.valueOf((short) 0), sp.toShort(""));
+    assertEquals(Short.valueOf((short) 0), sp.convert(""));
   }
 
   @Test

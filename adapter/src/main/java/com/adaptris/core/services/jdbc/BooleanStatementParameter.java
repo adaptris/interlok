@@ -16,14 +16,9 @@
 
 package com.adaptris.core.services.jdbc;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
 import org.apache.commons.lang.BooleanUtils;
 
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ServiceException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -38,7 +33,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("jdbc-boolean-statement-parameter")
 @DisplayOrder(order = {"name", "queryString", "queryType"})
-public class BooleanStatementParameter extends TypedStatementParameter {
+public class BooleanStatementParameter extends TypedStatementParameter<Boolean> {
 
   public BooleanStatementParameter() {
     super();
@@ -49,19 +44,17 @@ public class BooleanStatementParameter extends TypedStatementParameter {
   }
 
   @Override
-  public void apply(int parameterIndex, PreparedStatement statement, AdaptrisMessage msg) throws SQLException, ServiceException {
-    Boolean bool = toBoolean(getQueryValue(msg));
-    log.trace("Setting argument {} to [{}]", parameterIndex, bool);
-    statement.setObject(parameterIndex, bool);
-  }
-
-
-  Boolean toBoolean(Object value) throws ServiceException {
-    return Boolean.valueOf(BooleanUtils.toBoolean((String) value));
+  public BooleanStatementParameter makeCopy() {
+    return new BooleanStatementParameter(getQueryString(), getQueryType(), getConvertNull(), getName());
   }
 
   @Override
-  public BooleanStatementParameter makeCopy() {
-    return new BooleanStatementParameter(getQueryString(), getQueryType(), getConvertNull(), getName());
+  protected Boolean defaultValue() {
+    return Boolean.FALSE;
+  }
+
+  @Override
+  protected Boolean convertToType(Object o) {
+    return Boolean.valueOf(BooleanUtils.toBoolean((String) o));
   }
 }

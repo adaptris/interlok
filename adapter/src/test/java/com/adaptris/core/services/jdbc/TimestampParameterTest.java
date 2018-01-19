@@ -23,7 +23,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.adaptris.core.BaseCase;
-import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.jdbc.StatementParameterImpl.QueryType;
 
 public class TimestampParameterTest extends BaseCase {
@@ -50,7 +49,7 @@ public class TimestampParameterTest extends BaseCase {
   @Test
   public void testConvert() throws Exception {
     TimestampStatementParameter sp = create();
-    assertEquals(timestamp, sp.toDate(timestampString));
+    assertEquals(timestamp, sp.convert(timestampString));
   }
 
   @Test
@@ -59,10 +58,10 @@ public class TimestampParameterTest extends BaseCase {
     sp.setDateFormat("yyyy-MM-ddHH:mm:ss");
     sp.setConvertNull(false);
     try {
-      sp.toDate(timestampString);
-      fail("Expected ServiceException");
+      sp.convert(timestampString);
+      fail("Expected IllegalArgumentException");
     }
-    catch (ServiceException expected) {
+    catch (IllegalArgumentException expected) {
       // expected
     }
   }
@@ -71,20 +70,14 @@ public class TimestampParameterTest extends BaseCase {
   public void testConvertNull() throws Exception {
     TimestampStatementParameter sp = create();
     sp.setConvertNull(false);
-    try {
-      sp.toDate(null);
-      fail("Expected ServiceException");
-    }
-    catch (ServiceException expected) {
-      // expected
-    }
+    assertNull(sp.convert(null));
   }
 
   @Test
   public void testConvertWithConvertNull() throws Exception {
     TimestampStatementParameter sp = create();
     sp.setConvertNull(true);
-    long convertedTime = ((java.sql.Timestamp) sp.toDate(null)).getTime();
+    long convertedTime = ((java.sql.Timestamp) sp.convert(null)).getTime();
     long now = System.currentTimeMillis();
     assertTrue("now > convertedTime", now >= convertedTime);
   }

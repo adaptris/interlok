@@ -16,16 +16,7 @@
 
 package com.adaptris.core.services.jdbc;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
-
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-import org.apache.commons.lang.math.NumberUtils;
-
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ServiceException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -40,7 +31,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("jdbc-double-statement-parameter")
 @DisplayOrder(order = {"name", "queryString", "queryType"})
-public class DoubleStatementParameter extends TypedStatementParameter {
+public class DoubleStatementParameter extends TypedStatementParameter<Double> {
 
   public DoubleStatementParameter() {
     super();
@@ -51,24 +42,18 @@ public class DoubleStatementParameter extends TypedStatementParameter {
   }
 
   @Override
-  public void apply(int parameterIndex, PreparedStatement statement, AdaptrisMessage msg) throws SQLException, ServiceException {
-    Double val = toDouble(getQueryValue(msg));
-    log.trace("Setting argument {} to [{}]", parameterIndex, val);
-    statement.setObject(parameterIndex, val);
-  }
-
-
-  Double toDouble(Object value) throws ServiceException {
-    if (isBlank((String) value) && convertNull()) {
-      return Double.valueOf(NumberUtils.toDouble((String) value));
-    } else {
-      return Double.valueOf((String) value);
-    }
+  public DoubleStatementParameter makeCopy() {
+    return new DoubleStatementParameter(getQueryString(), getQueryType(), getConvertNull(), getName());
   }
 
   @Override
-  public DoubleStatementParameter makeCopy() {
-    return new DoubleStatementParameter(getQueryString(), getQueryType(), getConvertNull(), getName());
+  protected Double defaultValue() {
+    return Double.valueOf(0);
+  }
+
+  @Override
+  protected Double convertToType(Object value) {
+    return Double.valueOf((String) value);
   }
 
 }
