@@ -17,11 +17,14 @@ package com.adaptris.core.services.jdbc;
 
 import javax.validation.constraints.NotNull;
 
+import org.w3c.dom.Node;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.util.Args;
-import com.adaptris.util.XmlUtils;
+import com.adaptris.core.util.XmlHelper;
+import com.adaptris.util.text.xml.XPath;
 
 public abstract class StatementParameterImpl extends NamedStatementParameter {
   /**
@@ -44,10 +47,21 @@ public abstract class StatementParameterImpl extends NamedStatementParameter {
     },
     xpath {
       @Override
+      @SuppressWarnings("deprecation")
       String getValue(AdaptrisMessage msg, String queryString) {
-        XmlUtils xu = (XmlUtils) msg.getObjectHeaders().get(JdbcDataQueryService.KEY_XML_UTILS);
-        return xu.getSingleTextItem(queryString, xu.getSingleNode("/"));
+        // This query-type is *never* called via the jdbc-iterating-data-captures
+        // those services will resolve the xpath directly and turn
+        // things into a constant-param with the resolved value (null or otherwise).
 
+        // This then, can only be called via JdbcRawCapture, so creating a new
+        // document is fine, but *slow* if you have multiples of them
+        // configured.
+        try {
+          Node node = new XPath().selectSingleNode(XmlHelper.createDocument(msg), queryString);
+          return node != null ? node.getTextContent() : null;
+        } catch (Exception e) {
+          throw new IllegalArgumentException(queryString + " didn't work as an xpath");
+        }
       }
     },
     constant {
@@ -81,11 +95,6 @@ public abstract class StatementParameterImpl extends NamedStatementParameter {
     setQueryType(type);
     setConvertNull(nullConvert);
     setName(name);
-  }
-
-
-  public StatementParameterImpl(String query, QueryType type, Boolean nullConvert) {
-    this(query, type, nullConvert, null);
   }
 
   /**

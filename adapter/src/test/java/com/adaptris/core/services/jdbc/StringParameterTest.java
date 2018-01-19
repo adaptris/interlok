@@ -49,6 +49,7 @@ public class StringParameterTest extends BaseCase {
     StringStatementParameter sp = new StringStatementParameter();
     sp.setConvertNull(false);
     assertNull(sp.convert(null));
+    assertEquals("", sp.convert(""));
   }
 
   @Test
