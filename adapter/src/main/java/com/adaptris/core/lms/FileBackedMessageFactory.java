@@ -168,7 +168,6 @@ public class FileBackedMessageFactory extends DefaultMessageFactory {
 
   private File createTempFile(File tempDir, Object marker) throws IOException {
     File f = File.createTempFile(TMP_FILE_PREFIX, TMP_FILE_SUFFIX, tempDir);
-    f.deleteOnExit();
     cleaner.track(f, Args.notNull(marker, "marker"), FileDeleteStrategy.FORCE);
     return f;
   }
