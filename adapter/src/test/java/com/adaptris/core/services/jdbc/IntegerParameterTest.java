@@ -40,34 +40,22 @@ public class IntegerParameterTest extends BaseCase {
   @Test
   public void testConvert() throws Exception {
     IntegerStatementParameter sp = new IntegerStatementParameter();
-    assertEquals(Integer.valueOf(55), sp.toInteger("55"));
+    assertEquals(Integer.valueOf(55), sp.convert("55"));
   }
 
   @Test
   public void testConvertNull() throws Exception {
     IntegerStatementParameter sp = new IntegerStatementParameter();
     sp.setConvertNull(false);
-    try {
-      sp.toInteger(null);
-      fail("Expected Exception");
-    }
-    catch (RuntimeException expected) {
-      // expected
-    }
-    try {
-      sp.toInteger("");
-      fail("Expected Exception");
-    }
-    catch (RuntimeException expected) {
-      // expected
-    }
+    assertNull(sp.convert(null));
+    assertNotNull(sp.convert(""));
   }
 
   @Test
   public void testConvertWithConvertNull() throws Exception {
     IntegerStatementParameter sp = new IntegerStatementParameter();
     sp.setConvertNull(true);
-    assertEquals(Integer.valueOf(0), sp.toInteger(""));
+    assertEquals(Integer.valueOf(0), sp.convert(""));
   }
 
   @Test

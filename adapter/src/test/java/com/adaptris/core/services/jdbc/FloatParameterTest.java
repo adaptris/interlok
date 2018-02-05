@@ -40,34 +40,22 @@ public class FloatParameterTest extends BaseCase {
   @Test
   public void testConvert() throws Exception {
     FloatStatementParameter sp = new FloatStatementParameter();
-    assertEquals(Float.valueOf(55.0f), sp.toFloat("55.0"));
+    assertEquals(Float.valueOf(55.0f), sp.convert("55.0"));
   }
 
   @Test
   public void testConvertNull() throws Exception {
     FloatStatementParameter sp = new FloatStatementParameter();
     sp.setConvertNull(false);
-    try {
-      sp.toFloat(null);
-      fail("Expected Exception");
-    }
-    catch (RuntimeException expected) {
-      // expected
-    }
-    try {
-      sp.toFloat("");
-      fail("Expected Exception");
-    }
-    catch (RuntimeException expected) {
-      // expected
-    }
+    assertNull(sp.convert(null));
+    assertNotNull(sp.convert(""));
   }
 
   @Test
   public void testConvertWithConvertNull() throws Exception {
     FloatStatementParameter sp = new FloatStatementParameter();
     sp.setConvertNull(true);
-    assertEquals(Float.valueOf(0), sp.toFloat(""));
+    assertEquals(Float.valueOf(0), sp.convert(""));
   }
 
   @Test

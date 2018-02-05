@@ -28,6 +28,7 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.ConnectedService;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
@@ -80,11 +81,19 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "A collection of services which has an additional database connection", tag = "service,jdbc",
     recommended = {DatabaseConnection.class})
-@DisplayOrder(order = {"restartAffectedServiceOnException", "databaseConnection"})
-public class JdbcServiceList extends ServiceList {
+@DisplayOrder(order =
+{
+    "restartAffectedServiceOnException", "connection"
+})
+public class JdbcServiceList extends ServiceList implements ConnectedService {
+
+  private static transient boolean warningLogged = false;
 
   @Valid
+  @Deprecated
   private AdaptrisConnection databaseConnection;
+  @Valid
+  private AdaptrisConnection connection;
 
   public JdbcServiceList() {
     super();
@@ -102,8 +111,9 @@ public class JdbcServiceList extends ServiceList {
   @Override
   protected void applyServices(AdaptrisMessage msg) throws ServiceException {
     try {
-      if (getDatabaseConnection() != null) {
-        Connection conn = retrieveConnection().connect();
+      AdaptrisConnection c = connection();
+      if (c != null) {
+        Connection conn = c.retrieveConnection(DatabaseConnection.class).connect();
         msg.getObjectHeaders().put(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY, conn);
       }
       super.applyServices(msg);
@@ -124,41 +134,34 @@ public class JdbcServiceList extends ServiceList {
 
   @Override
   protected void doInit() throws CoreException {
-    LifecycleHelper.init(databaseConnection);
+    LifecycleHelper.init(connection());
     super.doInit();
-    if(databaseConnection != null) {
-      for (Service service : this) {
-        if(service instanceof JdbcService) {
-          ((JdbcService) service).setConnection(databaseConnection);
-        }
-      }
-    }
   }
 
   @Override
   protected void doStart() throws CoreException {
-    LifecycleHelper.start(databaseConnection);
+    LifecycleHelper.start(connection());
     super.doStart();
   }
 
   @Override
   protected void doStop() {
     super.doStop();
-    LifecycleHelper.stop(databaseConnection);
+    LifecycleHelper.stop(connection());
   }
 
   @Override
   protected void doClose() {
     super.doClose();
-    LifecycleHelper.close(databaseConnection);
+    LifecycleHelper.close(connection());
   }
 
   private void rollback(AdaptrisMessage msg, Exception exc) throws ServiceException {
     try {
-      log.warn("Exception encountered; attempting rollback due to: " + exc.getMessage());
+      log.warn("Exception encountered; attempting rollback due to: {}", exc.getMessage());
       Connection sqlConnection = (Connection) msg.getObjectHeaders().get(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY);
       if (inDebugMode()) {
-        log.trace("Rolling back SQLConnection=" + sqlConnection);
+        log.trace("Rolling back SQLConnection={}", sqlConnection);
       }
         // Theres no savepoint, we should just roll everything back.
       JdbcUtil.rollback(sqlConnection);
@@ -169,27 +172,21 @@ public class JdbcServiceList extends ServiceList {
   }
 
   private boolean inDebugMode() {
-    return getDatabaseConnection() != null && retrieveConnection().debugMode();
-  }
-  
-  private DatabaseConnection retrieveConnection() {
-    if(databaseConnection == null)
-      return null;
-    return databaseConnection.retrieveConnection(DatabaseConnection.class);
+    AdaptrisConnection c = connection();
+    return c == null ? false : c.retrieveConnection(DatabaseConnection.class).debugMode();
   }
 
   @Override
   public void prepare() throws CoreException {
     super.prepare();
-    if (databaseConnection != null) {
-      retrieveConnection().prepare();
-    }
+    LifecycleHelper.prepare(connection());
   }
   
   /**
    * Get the connection that will be used the underlying {@link JdbcService} instances.
    *
    * @return the connection.
+   * @deprecated since 3.7.0 use {@link #getConnection()} instead.
    */
   public AdaptrisConnection getDatabaseConnection() {
     return databaseConnection;
@@ -198,14 +195,40 @@ public class JdbcServiceList extends ServiceList {
   /**
    * Set the connection that will be used by all {@link JdbcService} instances in this service list.
    * <p>
-   * Traditionally, you would use a {@link DatabaseConnection} instance here, but it is an {@link com.adaptris.core.AdaptrisConnection} so that you
-   * can use a {@link com.adaptris.core.SharedConnection} where appropriate.
+   * Traditionally, you would use a {@link DatabaseConnection} instance here, but it is an
+   * {@link com.adaptris.core.AdaptrisConnection} so that you can use a {@link com.adaptris.core.SharedConnection} where
+   * appropriate.
    * </p>
    * 
    * @param c
+   * @deprecated since 3.7.0 use {@link #setConnection(AdaptrisConnection)} instead.
    */
   public void setDatabaseConnection(AdaptrisConnection c) {
     databaseConnection = c;
   }
 
+  @Override
+  public AdaptrisConnection getConnection() {
+    return connection;
+  }
+
+  /**
+   * Set the connection that will be used by all {@link JdbcService} instances in this service list.
+   * 
+   */
+  @Override
+  public void setConnection(AdaptrisConnection c) {
+    this.connection = c;
+  }
+
+  AdaptrisConnection connection() {
+    if (getDatabaseConnection() != null) {
+      if (!warningLogged) {
+        log.warn("database-connection is deprecated; use connection instead");
+        warningLogged = true;
+      }
+      return getDatabaseConnection();
+    }
+    return getConnection();
+  }
 }

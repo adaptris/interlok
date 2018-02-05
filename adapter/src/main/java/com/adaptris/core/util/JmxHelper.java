@@ -17,8 +17,6 @@
 package com.adaptris.core.util;
 
 import static com.adaptris.core.management.Constants.CFG_KEY_USE_MANAGEMENT_FACTORY_FOR_JMX;
-import static com.adaptris.core.management.Constants.DEFAULT_MANAGEMENT_FACTORY_FOR_JMX;
-import static com.adaptris.core.util.PropertyHelper.getPropertyIgnoringCase;
 
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
@@ -54,8 +52,7 @@ public class JmxHelper {
    */
   public synchronized static MBeanServer findMBeanServer(Properties p) {
     if (mbeanServer == null) {
-      mbeanServer = findMBeanServer(Boolean.valueOf(
-          getPropertyIgnoringCase(p, CFG_KEY_USE_MANAGEMENT_FACTORY_FOR_JMX, DEFAULT_MANAGEMENT_FACTORY_FOR_JMX)).booleanValue());
+      mbeanServer = findMBeanServer(BootstrapProperties.isEnabled(p, CFG_KEY_USE_MANAGEMENT_FACTORY_FOR_JMX));
     }
     return mbeanServer;
   }

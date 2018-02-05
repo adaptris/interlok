@@ -130,6 +130,11 @@ public class AdaptrisConnectionTest extends BaseCase {
     invoke(consumers, CLOSE);
   }
 
+  public void testCloneForTesting() throws Exception {
+    MockConnection mc = new MockConnection();
+    assertEquals(MockConnection.class, mc.cloneForTesting().getClass());
+  }
+
   private void assertState(List list, ComponentState state) {
     for (Object c : list) {
       assertEquals("" + state, state, ((StateManagedComponent) c).retrieveComponentState());

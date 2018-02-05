@@ -40,7 +40,7 @@ public class StringParameterTest extends BaseCase {
   @Test
   public void testConvert() throws Exception {
     StringStatementParameter sp = new StringStatementParameter();
-    assertEquals("55", sp.toString(Integer.valueOf("55")));
+    assertEquals("55", sp.convert(Integer.valueOf("55")));
   }
 
 
@@ -48,15 +48,16 @@ public class StringParameterTest extends BaseCase {
   public void testConvertNull() throws Exception {
     StringStatementParameter sp = new StringStatementParameter();
     sp.setConvertNull(false);
-    assertNull(sp.toString(null));
+    assertNull(sp.convert(null));
+    assertEquals("", sp.convert(""));
   }
 
   @Test
   public void testConvertWithConvertNull() throws Exception {
     StringStatementParameter sp = new StringStatementParameter();
     sp.setConvertNull(true);
-    assertEquals("", sp.toString(null));
-    assertEquals("", sp.toString(""));
+    assertEquals("", sp.convert(null));
+    assertEquals("", sp.convert(""));
   }
 
   @Test

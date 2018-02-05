@@ -25,16 +25,13 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.oro.text.GlobCompiler;
-import org.apache.oro.text.regex.MalformedPatternException;
-import org.apache.oro.text.regex.PatternCompiler;
-import org.apache.oro.text.regex.PatternMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class MailClientImp implements MailReceiver {
 
-  private static final Class DEFAULT_COMPILER = GlobCompiler.class;
+  private static final String DEFAULT_REGEX_STYLE = "REGEX";
+
   protected transient Logger log = LoggerFactory.getLogger(this.getClass());
   protected boolean deleteFlag = false;
   private boolean connected = false;
@@ -47,7 +44,7 @@ public abstract class MailClientImp implements MailReceiver {
   protected MailClientImp() {
     filters = new ArrayList<MessageFilter>();
     customFilters = new ArrayList<String[]>();
-    setRegularExpressionCompiler(DEFAULT_COMPILER.getName());
+    setRegularExpressionCompiler(DEFAULT_REGEX_STYLE);
   }
 
   @Override
@@ -207,23 +204,15 @@ public abstract class MailClientImp implements MailReceiver {
     if (filters.size() > 0) {
       return;
     }
-
     try {
-      PatternCompiler compiler = RegExpFactory.getCompiler(regExpHandler);
-      PatternMatcher matcher = RegExpFactory.getMatcher(compiler);
-      if (fromFilter != null) {
-        filters.add(new FromFilter(matcher, compiler.compile(fromFilter)));
-      }
-      if (subjectFilter != null) {
-        filters.add(new SubjectFilter(matcher, compiler.compile(subjectFilter)));
-      }
-      if (recipientFilter != null) {
-        filters.add(new RecipientFilter(matcher, compiler.compile(recipientFilter)));
-      }
+      filters.add(new FromFilter(MatchProxyFactory.create(regExpHandler, fromFilter)));
+      filters.add(new SubjectFilter(MatchProxyFactory.create(regExpHandler, subjectFilter)));
+      filters.add(new RecipientFilter(MatchProxyFactory.create(regExpHandler, recipientFilter)));
       for (String[] customFilter : customFilters) {
-        filters.add(new CustomHeaderFilter(matcher, compiler.compile(customFilter[1]), customFilter[0]));
+        filters.add(new CustomHeaderFilter(MatchProxyFactory.create(regExpHandler, customFilter[1]), customFilter[0]));
       }
-    } catch (MalformedPatternException e) {
+    }
+    catch (Exception e) {
       throw new MailException(e.getMessage(), e);
     }
   }

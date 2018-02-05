@@ -40,7 +40,7 @@ public class LongParameterTest extends BaseCase {
   @Test
   public void testConvert() throws Exception {
     LongStatementParameter sp = new LongStatementParameter();
-    assertEquals(Long.valueOf(55), sp.toLong("55"));
+    assertEquals(Long.valueOf(55), sp.convert("55"));
   }
 
 
@@ -48,27 +48,15 @@ public class LongParameterTest extends BaseCase {
   public void testConvertNull() throws Exception {
     LongStatementParameter sp = new LongStatementParameter();
     sp.setConvertNull(false);
-    try {
-      sp.toLong(null);
-      fail("Expected Exception");
-    }
-    catch (RuntimeException expected) {
-      // expected
-    }
-    try {
-      sp.toLong("");
-      fail("Expected Exception");
-    }
-    catch (RuntimeException expected) {
-      // expected
-    }
+    assertNull(sp.convert(null));
+    assertNotNull(sp.convert(""));
   }
 
   @Test
   public void testConvertWithConvertNull() throws Exception {
     LongStatementParameter sp = new LongStatementParameter();
     sp.setConvertNull(true);
-    assertEquals(Long.valueOf(0), sp.toLong(""));
+    assertEquals(Long.valueOf(0), sp.convert(""));
   }
 
   @Test

@@ -56,6 +56,8 @@ public class StatelessServiceWrapperTest extends GeneralServiceExample {
     assertNull(ws.getService());
     assertEquals(ws.getClass().getSimpleName(), ws.createQualifier());
     assertEquals(ws.getClass().getName(), ws.createName());
+    assertNotNull(ws.wrappedServices());
+    assertEquals(0, ws.wrappedServices().length);
 
   }
 
@@ -114,6 +116,9 @@ public class StatelessServiceWrapperTest extends GeneralServiceExample {
     assertNotSame(ws.getUniqueId(), s.getUniqueId());
     ws.setUniqueId("");
     assertEquals(StatelessServiceWrapper.class.getSimpleName(), s.createQualifier());
+    assertNotNull(s.wrappedServices());
+    assertEquals(1, s.wrappedServices().length);
+
   }
 
   public void testWrappingWrappedSettersAreCalled() throws Exception {

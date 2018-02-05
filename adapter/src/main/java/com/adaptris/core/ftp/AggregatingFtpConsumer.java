@@ -67,7 +67,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
     "destination", "messageAggregator", "filterFilterImp", "deleteAggrgatedFiles", "encoder"
 })
 public class AggregatingFtpConsumer extends AggregatingConsumerImpl<AggregatingFtpConsumeService> {
-  private static final String DEFAULT_FILE_FILTER_IMP = "org.apache.oro.io.Perl5FilenameFilter";
+  private static final String DEFAULT_FILE_FILTER_IMP = "org.apache.commons.io.filefilter.RegexFileFilter";
   private static final String OBJ_METADATA_KEY_FILENAME = AggregatingFtpConsumer.class.getCanonicalName() + ".filename";
 
   @AdvancedConfig

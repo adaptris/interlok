@@ -165,8 +165,9 @@ public abstract class JdbcIteratingDataCaptureServiceImpl extends JdbcDataCaptur
       // statementParameter.
       if (isXpathParam(param)) {
         StatementParameterImpl actualParam = (StatementParameterImpl) param.makeCopy();
-        queryResult = xpath.selectSingleTextItem(n, actualParam.getQueryString());
-        actualParam.setQueryString(queryResult);
+        Node xpathNode = xpath.selectSingleNode(n, actualParam.getQueryString());
+        // queryResult = xpath.selectSingleTextItem(n, actualParam.getQueryString());
+        actualParam.setQueryString(xpathNode != null ? xpathNode.getTextContent() : null);
         actualParam.setQueryType(QueryType.constant);
         result.add(actualParam);
       }

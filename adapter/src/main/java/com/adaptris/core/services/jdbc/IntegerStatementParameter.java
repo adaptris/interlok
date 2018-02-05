@@ -16,16 +16,7 @@
 
 package com.adaptris.core.services.jdbc;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
-
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-import org.apache.commons.lang.math.NumberUtils;
-
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ServiceException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -41,7 +32,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("jdbc-integer-statement-parameter")
 @DisplayOrder(order = {"name", "queryString", "queryType"})
-public class IntegerStatementParameter extends TypedStatementParameter {
+public class IntegerStatementParameter extends TypedStatementParameter<Integer> {
 
   public IntegerStatementParameter() {
     super();
@@ -52,24 +43,18 @@ public class IntegerStatementParameter extends TypedStatementParameter {
   }
 
   @Override
-  public void apply(int parameterIndex, PreparedStatement statement, AdaptrisMessage msg) throws SQLException, ServiceException {
-    Integer val = toInteger(getQueryValue(msg));
-    log.trace("Setting argument {} to [{}]", parameterIndex, val);
-    statement.setObject(parameterIndex, val);
-  }
-
-
-  Integer toInteger(Object value) throws ServiceException {
-    if (isBlank((String) value) && convertNull()) {
-      return Integer.valueOf(NumberUtils.toInt((String) value));
-    } else {
-      return Integer.valueOf((String) value);
-    }
+  public IntegerStatementParameter makeCopy() {
+    return new IntegerStatementParameter(getQueryString(), getQueryType(), getConvertNull(), getName());
   }
 
   @Override
-  public IntegerStatementParameter makeCopy() {
-    return new IntegerStatementParameter(getQueryString(), getQueryType(), getConvertNull(), getName());
+  protected Integer defaultValue() {
+    return Integer.valueOf(0);
+  }
+
+  @Override
+  protected Integer convertToType(Object value) {
+    return Integer.valueOf((String) value);
   }
 
 }

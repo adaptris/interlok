@@ -14,7 +14,7 @@
  * limitations under the License.
 */
 
-package com.adaptris.core.management.webserver;
+package com.adaptris.core.management.jetty;
 
 import java.util.Properties;
 

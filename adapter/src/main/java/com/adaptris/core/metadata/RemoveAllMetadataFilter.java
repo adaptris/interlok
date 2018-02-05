@@ -30,20 +30,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @since 3.0.2
  */
 @XStreamAlias("remove-all-metadata-filter")
-public class RemoveAllMetadataFilter implements MetadataFilter {
+public class RemoveAllMetadataFilter extends MetadataFilterImpl
+{
 
 
   public RemoveAllMetadataFilter() {
-  }
-
-  @Override
-  public MetadataCollection filter(AdaptrisMessage message) {
-    return filter(message.getMetadata());
-  }
-
-  @Override
-  public MetadataCollection filter(Set<MetadataElement> original) {
-    return filter(new MetadataCollection(original));
   }
 
   /**

@@ -21,6 +21,7 @@ import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisConnection;
+import com.adaptris.core.ConnectedService;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.jmx.JmxConnection;
 import com.adaptris.core.util.Args;
@@ -31,7 +32,7 @@ import com.adaptris.core.util.LifecycleHelper;
  * 
  * @since 3.3.0
  */
-public abstract class JmxOperationServiceImpl extends JmxOperationImpl {
+public abstract class JmxOperationServiceImpl extends JmxOperationImpl implements ConnectedService {
   
   @Valid
   @NotNull

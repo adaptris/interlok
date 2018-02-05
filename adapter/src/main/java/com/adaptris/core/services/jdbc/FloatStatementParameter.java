@@ -16,16 +16,7 @@
 
 package com.adaptris.core.services.jdbc;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
-
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-import org.apache.commons.lang.math.NumberUtils;
-
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ServiceException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -41,7 +32,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("jdbc-float-statement-parameter")
 @DisplayOrder(order = {"name", "queryString", "queryType"})
-public class FloatStatementParameter extends TypedStatementParameter {
+public class FloatStatementParameter extends TypedStatementParameter<Float> {
 
   public FloatStatementParameter() {
     super();
@@ -52,24 +43,18 @@ public class FloatStatementParameter extends TypedStatementParameter {
   }
 
   @Override
-  public void apply(int parameterIndex, PreparedStatement statement, AdaptrisMessage msg) throws SQLException, ServiceException {
-    Float val = toFloat(getQueryValue(msg));
-    log.trace("Setting argument {} to [{}]", parameterIndex, val);
-    statement.setObject(parameterIndex, val);
-  }
-
-
-  Float toFloat(Object value) throws ServiceException {
-    if (isBlank((String) value) && convertNull()) {
-      return Float.valueOf(NumberUtils.toFloat((String) value));
-    } else {
-      return Float.valueOf((String) value);
-    }
+  public FloatStatementParameter makeCopy() {
+    return new FloatStatementParameter(getQueryString(), getQueryType(), getConvertNull(), getName());
   }
 
   @Override
-  public FloatStatementParameter makeCopy() {
-    return new FloatStatementParameter(getQueryString(), getQueryType(), getConvertNull(), getName());
+  protected Float defaultValue() {
+    return Float.valueOf(0);
+  }
+
+  @Override
+  protected Float convertToType(Object value) {
+    return Float.valueOf((String) value);
   }
 
 }

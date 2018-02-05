@@ -102,6 +102,8 @@ public class BranchingServiceEnablerTest extends BranchingServiceExample {
     service.setSuccessId("");
     try {
       LifecycleHelper.init(service);
+      assertNotNull(service.wrappedServices());
+      assertEquals(1, service.wrappedServices().length);
     }
     finally {
       LifecycleHelper.close(service);

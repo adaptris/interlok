@@ -18,14 +18,12 @@ package com.adaptris.core.metadata;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.MetadataCollection;
 import com.adaptris.core.MetadataElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -55,7 +53,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  */
 @XStreamAlias("regex-metadata-filter")
 @DisplayOrder(order = {"includePatterns", "excludePatterns"})
-public class RegexMetadataFilter implements MetadataFilter {
+public class RegexMetadataFilter extends MetadataFilterImpl {
 
   @XStreamImplicit(itemFieldName = "include-pattern")
   @NotNull
@@ -74,16 +72,6 @@ public class RegexMetadataFilter implements MetadataFilter {
     setExcludePatterns(new ArrayList<String>());
     incPatterns = new ArrayList<Pattern>();
     excPatterns = new ArrayList<Pattern>();
-  }
-
-  @Override
-  public MetadataCollection filter(AdaptrisMessage message) {
-    return filter(message.getMetadata());
-  }
-
-  @Override
-  public MetadataCollection filter(Set<MetadataElement> original) {
-    return filter(new MetadataCollection(original));
   }
 
   @Override

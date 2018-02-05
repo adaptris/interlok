@@ -35,6 +35,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
+import com.adaptris.core.metadata.ExcludeJmsHeaders;
 import com.adaptris.core.metadata.MetadataFilter;
 import com.adaptris.core.metadata.NoOpMetadataFilter;
 import com.adaptris.core.util.LifecycleHelper;
@@ -114,6 +115,8 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
    *          <strong>ALL</strong> metadata is copied into the JMS Message, and vice-versa.
    * @see MetadataHandlerContext#metadataFilter()
    * @since 3.0.2
+   * @see ExcludeJmsHeaders
+   * @see MetadataFilter
    */
   public void setMetadataFilter(MetadataFilter mf) {
     metadataFilter = mf;

@@ -17,10 +17,10 @@
 package com.adaptris.core.services.jdbc;
 
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -43,8 +43,9 @@ public class SequentialParameterApplicator implements ParameterApplicator {
         JdbcStatementParameter statementParameter = parameters.get(i - 1);
         statementParameter.apply(i, statement, message);
       }      
-    } catch(SQLException ex) {
-      throw new ServiceException(ex);
+    }
+    catch (Exception ex) {
+      throw ExceptionHelper.wrapServiceException(ex);
     }
   }
 

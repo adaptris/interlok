@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 */
-package com.adaptris.core.management.webserver;
+package com.adaptris.core.management.jetty;
 
-import static com.adaptris.core.management.webserver.JettyServerComponent.ATTR_BOOTSTRAP_KEYS;
-import static com.adaptris.core.management.webserver.JettyServerComponent.ATTR_JMX_ADAPTER_UID;
+import static com.adaptris.core.management.jetty.JettyServerComponent.ATTR_BOOTSTRAP_KEYS;
+import static com.adaptris.core.management.jetty.JettyServerComponent.ATTR_JMX_ADAPTER_UID;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.util.Properties;
@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.core.management.Constants;
-import com.adaptris.core.management.webserver.WebServerProperties.WebServerPropertiesEnum;
+import com.adaptris.core.management.jetty.WebServerProperties.WebServerPropertiesEnum;
 
 abstract class ServerBuilder {
 

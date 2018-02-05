@@ -18,26 +18,30 @@
   <publications>
      <artifact name="adp-core" type="jar" ext="jar" conf="*"/>
      <artifact name="adp-core" type="pom" ext="pom" conf="*"/>
-     <artifact name="adp-core-javadoc" type="javadoc" ext="zip" conf="javadoc"/>
-     <artifact name="adp-core-examples" type="examples" ext="zip" conf="examples"/>
+
+
      <artifact type="javadoc" ext="jar" conf="javadoc" m:classifier="javadoc"/>
      <artifact type="source" ext="jar" conf="sources" m:classifier="sources"/>
+     <artifact type="examples" ext="jar" conf="examples" m:classifier="examples"/>
   </publications>
   <dependencies>
-    <dependency org="com.thoughtworks.xstream" name="xstream" rev="1.4.9"  conf="compile->default"  transitive="false"/>
+    <dependency org="com.thoughtworks.xstream" name="xstream" rev="1.4.10"  conf="compile->default"  transitive="false"/>
     <dependency org="org.codehaus.jettison" name="jettison" rev="1.2"  conf="compile->default"  transitive="false"/>
     <dependency org="org.apache.velocity" name="velocity" rev="1.7" conf="compile->default" transitive="false"/>
     <dependency org="com.adaptris" name="adp-core-apt" rev="${ivy.publish.revision}" conf="compile->default;ant->default" changing="true"/>
     <dependency org="com.adaptris" name="interlok-common" rev="${ivy.publish.revision}" conf="compile->default;javadoc->javadoc" changing="true"/>
 
+    <!-- switch to fast-classpath-scanner
     <dependency org="org.reflections" name="reflections" rev="0.9.11" conf="compile->default"/>
+    -->
+    <dependency org="io.github.lukehutch" name="fast-classpath-scanner" rev="2.9.4" conf="compile->default"/>
 
     <dependency org="javax.activation" name="activation" rev="1.1.1"  conf="compile->default" />
 
-    <dependency org="org.apache.activemq" name="activemq-client" rev="5.10.0"  conf="compile->default"  />
-    <dependency org="org.apache.activemq" name="activemq-broker" rev="5.10.0"  conf="test->default"  />
-    <dependency org="org.apache.activemq" name="activemq-jaas" rev="5.10.0" conf="test->default"/>
-    <dependency org="org.apache.activemq" name="activemq-kahadb-store" rev="5.10.0" conf="test->default"/>
+    <dependency org="org.apache.activemq" name="activemq-client" rev="5.15.2"  conf="compile->default"  />
+    <dependency org="org.apache.activemq" name="activemq-broker" rev="5.15.2"  conf="test->default"  />
+    <dependency org="org.apache.activemq" name="activemq-jaas" rev="5.15.2" conf="test->default"/>
+    <dependency org="org.apache.activemq" name="activemq-kahadb-store" rev="5.15.2" conf="test->default"/>
     <dependency org="org.apache.activemq.protobuf" name="activemq-protobuf" rev="1.1" conf="test->default"/>
 
 
@@ -69,14 +73,15 @@
 
     <dependency org="com.jcraft" name="jsch" rev="0.1.54" conf="compile->default" />
 
-    <dependency org="org.slf4j" name="jcl-over-slf4j" rev="1.7.24" conf="compile->default" />
-    <dependency org="org.slf4j" name="slf4j-api" rev="1.7.24" conf="compile->default" />
-    <dependency org="org.slf4j" name="jul-to-slf4j" rev="1.7.24" conf="compile->default" />
-    <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.24" conf="optional->default"/>
-    <dependency org="log4j" name="log4j" rev="1.2.17" force="true" conf="optional->default;ant->default"/>
+    <dependency org="org.slf4j" name="jcl-over-slf4j" rev="1.7.25" conf="compile->default" />
+    <dependency org="org.slf4j" name="slf4j-api" rev="1.7.25" conf="compile->default" />
+    <dependency org="org.slf4j" name="jul-to-slf4j" rev="1.7.25" conf="compile->default" />
+    <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.25" conf="optional->default"/>
+    <dependency org="log4j" name="log4j" rev="1.2.17" force="true" conf="test->default;ant->default"/>
 
-    <dependency org="org.apache.logging.log4j" name="log4j-core" rev="2.8.1" conf="optional->default" />
-    <dependency org="org.apache.logging.log4j" name="log4j-api" rev="2.8.1"  conf="optional->default"/>
+    <dependency org="org.apache.logging.log4j" name="log4j-core" rev="2.9.1" conf="optional->default" />
+    <dependency org="org.apache.logging.log4j" name="log4j-api" rev="2.9.1"  conf="optional->default"/>
+    <dependency org="org.apache.logging.log4j" name="log4j-1.2-api" rev="2.9.1"  conf="optional->default" />
 
 <!--
     <dependency org="org.eclipse.jetty" name="jetty-server" rev="9.4.1.v20170120" conf="compile->default" />
@@ -105,7 +110,7 @@
     <dependency org="org.mockito" name="mockito-all" rev="1.9.5" conf="test->default"/>
     <dependency org="mysql" name="mysql-connector-java" rev="5.1.40" conf="test->default"/>
     <!--
-    <dependency org="com.microsoft" name="sql-server-jdbc" rev="4.0" conf="test->default"/>
+    <dependency org="com.microsoft.sqlserver" name="mssql-jdbc" rev="6.2.1.jre8" conf="test->default"/>
     -->
 
     <dependency org="org.jruby" name="jruby-complete" rev="9.1.13.0" conf="test->default" transitive="false"/>
@@ -114,7 +119,7 @@
 
     <!-- For Various ANT Tasks -->
     <dependency org="ant-contrib" name="ant-contrib" rev="1.0b3" conf="ant->default" transitive="false"/>
-    <dependency org="org.jacoco" name="org.jacoco.ant" rev="0.7.7.201606060606" conf="ant->default"/>
+    <dependency org="org.jacoco" name="org.jacoco.ant" rev="0.7.9" conf="ant->default"/>
 
     <exclude org="javax.mail" artifact="mail"/>
     <exclude org="org.eclipse.jetty.orbit" artifact="javax.mail.glassfish"/>

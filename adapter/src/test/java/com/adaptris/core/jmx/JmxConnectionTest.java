@@ -55,6 +55,9 @@ public class JmxConnectionTest {
       jmxr.init(createProperties(port));
       jmxr.start();
       conn.withJmxServiceUrl(JMXMP_PREFIX + port);
+      conn.setConnectionRetryInterval(new TimeInterval(2L, TimeUnit.SECONDS));
+      conn.setAdditionalDebug(true);
+      conn.setConnectionAttempts(5);
       LifecycleHelper.prepare(conn);
       LifecycleHelper.init(conn);
       assertNotNull(conn.mbeanServerConnection());
@@ -135,6 +138,9 @@ public class JmxConnectionTest {
       jmxr.init(createProperties(port, DEFAULT_USERNAME_PASSWORD, DEFAULT_USERNAME_PASSWORD));
       jmxr.start();
       conn.withJmxServiceUrl(JMXMP_PREFIX + port).withUsername(DEFAULT_USERNAME_PASSWORD).withPassword(DEFAULT_USERNAME_PASSWORD);
+      conn.setConnectionRetryInterval(new TimeInterval(2L, TimeUnit.SECONDS));
+      conn.setAdditionalDebug(true);
+      conn.setConnectionAttempts(5);
       conn.init();
       assertNotNull(conn.mbeanServerConnection());
     } finally {
@@ -156,6 +162,9 @@ public class JmxConnectionTest {
       conn.setJmxServiceUrl(JMXMP_PREFIX + port);
       conn.setUsername(DEFAULT_USERNAME_PASSWORD);
       conn.setPassword(DEFAULT_USERNAME_PASSWORD);
+      conn.setConnectionRetryInterval(new TimeInterval(2L, TimeUnit.SECONDS));
+      conn.setAdditionalDebug(true);
+      conn.setConnectionAttempts(5);
       conn.init();
       assertNotNull(conn.mbeanServerConnection());
     } finally {

@@ -16,6 +16,8 @@
 
 package com.adaptris.core.services;
 
+import static com.adaptris.core.util.ServiceUtil.discardNulls;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -29,6 +31,7 @@ import com.adaptris.core.EventHandler;
 import com.adaptris.core.EventHandlerAware;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.ServiceWrapper;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
@@ -54,7 +57,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 {
     "service", "successId", "failureId"
 })
-public class BranchingServiceEnabler extends BranchingServiceImp implements EventHandlerAware {
+public class BranchingServiceEnabler extends BranchingServiceImp implements EventHandlerAware, ServiceWrapper {
 
   @NotNull
   @Valid
@@ -168,5 +171,10 @@ public class BranchingServiceEnabler extends BranchingServiceImp implements Even
   @Override
   public void registerEventHandler(EventHandler eh) {
     eventHandler = eh;
+  }
+
+  @Override
+  public Service[] wrappedServices() {
+    return discardNulls(getService());
   }
 }

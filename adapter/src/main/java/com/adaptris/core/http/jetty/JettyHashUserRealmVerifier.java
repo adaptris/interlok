@@ -45,6 +45,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * verification.
  * 
  * @config jetty-hash-user-realm-identity-verifier
+ * @see HashLoginServiceFactory
  */
 @XStreamAlias("jetty-hash-user-realm-identity-verifier")
 public class JettyHashUserRealmVerifier extends IdentityVerifierImpl {

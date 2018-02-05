@@ -3,35 +3,11 @@ package com.adaptris.core.management.logging;
 import static com.adaptris.core.management.Constants.DBG;
 import static com.adaptris.core.management.Constants.ENABLE_JUL_LOGGING_BRIDGE;
 
-import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.net.URLDecoder;
-
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 public abstract class LoggingConfigurator {
 
   private static enum AvailableLoggingImpls {
-    LOG4J_12() {
-      boolean available() {
-        boolean rc = false;
-        try {
-          Class.forName("org.apache.log4j.xml.DOMConfigurator");
-          // Try for the helper class as well, because with log4j2 + log4j bridge, DOMConfigurator
-          // might exist.
-          Class.forName("org.apache.log4j.helpers.Loader");
-          rc = true;
-        } catch (Exception e) {
-          rc = false;
-        }
-        return rc;
-      }
-
-      LoggingConfigurator create() {
-        return new LegacyLog4jConfigurator();
-      }
-    },
     LOG4J_2() {
       boolean available() {
         boolean rc = false;
@@ -60,7 +36,7 @@ public abstract class LoggingConfigurator {
           }
 
           @Override
-          public boolean initialiseFrom(URL url) {
+          public boolean initialiseFrom(String url) {
             return true;
           }
 
@@ -77,21 +53,9 @@ public abstract class LoggingConfigurator {
   }
   private static LoggingConfigurator configurator = null;
 
-
-  protected File createFileReference(URL url, String charset) throws UnsupportedEncodingException {
-    String charSetToUse = charset == null ? System.getProperty("file.encoding") : charset;
-    String filename = URLDecoder.decode(url.getPath(), charSetToUse);
-    // Cope with file://localhost/./config/blah -> /./config/blah is the result of getPath()
-    // Munge that properly.
-    if (filename.startsWith("/.")) {
-      filename = filename.substring(1);
-    }
-    return new File(filename);
-  }
-
   public abstract void defaultInitialisation();
 
-  public abstract boolean initialiseFrom(URL url);
+  public abstract boolean initialiseFrom(String url);
 
   public abstract void requestShutdown();
 

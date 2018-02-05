@@ -109,17 +109,18 @@ public abstract class JdbcMapUpsert extends JdbcMapInsert {
     public UpdateWrapper(Map<String, String> obj) {
       columns = new ArrayList<>(obj.keySet());
       columns.remove(idField());
+      String bookend = columnBookend();
       StringBuilder statementBuilder = new StringBuilder(String.format("UPDATE %s SET", getTable()));
       // Add all the updates.
       for (Iterator<String> i = columns.iterator(); i.hasNext();) {
         String col = i.next();
-        statementBuilder.append(String.format(" %s=? ", col));
+        statementBuilder.append(String.format(" %1$s%2$s%1$s=? ", bookend, col));
         if (i.hasNext()) {
           statementBuilder.append(",");
         }
       }
       // Add the where clause
-      statementBuilder.append(String.format(" WHERE %s=?", idField()));
+      statementBuilder.append(String.format(" WHERE %1$s%2$s%1$s=?", bookend, idField()));
       statement = statementBuilder.toString();
     }
 
@@ -147,7 +148,9 @@ public abstract class JdbcMapUpsert extends JdbcMapInsert {
     private String statement;
 
     public SelectWrapper(Map<String, String> obj) {
-      statement = String.format("SELECT %s FROM %s WHERE %s = ?", idField(), getTable(), idField());
+      String bookend = columnBookend();
+      // SELECT 'id' from table where 'id' = ?
+      statement = String.format("SELECT %1$s%2$s%1$s FROM %3$s WHERE %1$s%2$s%1$s = ?", bookend, idField(), getTable());
     }
 
     @Override

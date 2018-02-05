@@ -26,9 +26,12 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.CharUtils;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.jdbc.JdbcService;
@@ -150,6 +153,10 @@ public abstract class JdbcMapInsert extends JdbcService {
   @Valid
   private KeyValuePairSet fieldMappings;
 
+  @InputFieldDefault(value = "")
+  @AdvancedConfig
+  private Character columnBookendCharacter;
+
   public JdbcMapInsert() {
     super();
   }
@@ -172,6 +179,7 @@ public abstract class JdbcMapInsert extends JdbcService {
     setTable(s);
     return this;
   }
+
 
   public KeyValuePairSet getFieldMappings() {
     return fieldMappings;
@@ -286,9 +294,15 @@ public abstract class JdbcMapInsert extends JdbcService {
 
     private String createString(boolean columnsNotQuestionMarks) {
       StringBuilder sb = new StringBuilder();
+      String bookend = columnBookend();
       for (Iterator<String> i = columns.iterator(); i.hasNext();) {
         String s = i.next();
-        sb.append(columnsNotQuestionMarks ? s : "?");
+        if (columnsNotQuestionMarks) {
+          sb.append(bookend).append(s).append(bookend);
+        }
+        else {
+          sb.append("?");
+        }
         if (i.hasNext()) {
           sb.append(",");
         }
@@ -328,4 +342,29 @@ public abstract class JdbcMapInsert extends JdbcService {
     return result;
   }
 
+  public Character getColumnBookendCharacter() {
+    return columnBookendCharacter;
+  }
+
+  /**
+   * Set the character used to bookend the column names.
+   * <p>
+   * Sometimes you may need to bookend the column names with something like a {@code `} because the names are in fact reserved
+   * words. Specify this as required.
+   * </p>
+   * 
+   * @param c default is null (or no book-ending).
+   */
+  public void setColumnBookendCharacter(Character c) {
+    this.columnBookendCharacter = c;
+  }
+
+  public JdbcMapInsert withColumnBookend(Character c) {
+    setColumnBookendCharacter(c);
+    return this;
+  }
+
+  protected String columnBookend() {
+    return StringUtils.defaultIfEmpty(CharUtils.toString(getColumnBookendCharacter()), "");
+  }
 }

@@ -43,7 +43,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Produce a message where as part of a service chain", tag = "service")
 @DisplayOrder(order = {"connection", "producer"})
-public class StandaloneProducer extends ServiceImp implements AdaptrisMessageSender {
+public class StandaloneProducer extends ServiceImp implements AdaptrisMessageSender, ConnectedService {
 
   @Valid
   @NotNull

@@ -26,6 +26,7 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageProducer;
+import com.adaptris.core.ConnectedService;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.NullConnection;
 import com.adaptris.core.NullMessageProducer;
@@ -53,7 +54,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(summary = "Split a message and produce each split message somewhere",
     tag = "service,splitter")
 @DisplayOrder(order = {"splitter", "connection", "producer", "ignoreSplitMessageFailures"})
-public class BasicMessageSplitterService extends MessageSplitterServiceImp {
+public class BasicMessageSplitterService extends MessageSplitterServiceImp implements ConnectedService {
 
   @NotNull
   @AutoPopulated

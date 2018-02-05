@@ -40,13 +40,17 @@ public class BooleanParameterTest extends BaseCase {
   @Test
   public void testConvert() throws Exception {
     BooleanStatementParameter sp = new BooleanStatementParameter();
-    assertEquals(Boolean.TRUE, sp.toBoolean("on"));
+    assertEquals(Boolean.TRUE, sp.convert("on"));
   }
 
   @Test
   public void testConvertNull() throws Exception {
     BooleanStatementParameter sp = new BooleanStatementParameter();
-    assertEquals(Boolean.FALSE, sp.toBoolean(""));
+    sp.setConvertNull(true);
+    assertEquals(Boolean.FALSE, sp.convert(""));
+    assertEquals(Boolean.FALSE, sp.convert(null));
+    sp.setConvertNull(false);
+    assertNull(sp.convert(null));
   }
 
   @Test

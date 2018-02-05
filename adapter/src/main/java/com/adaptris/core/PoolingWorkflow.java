@@ -441,23 +441,10 @@ public class PoolingWorkflow extends WorkflowImp {
   private void shutdownPool() {
     try {
       poolLock.acquire();
-      if (threadPool != null) {
-        log.trace("ThreadPool Shutdown Requested, awaiting Pool Shutdown");
-        threadPool.shutdown();
-        boolean success = false;
-        try {
-          success = threadPool.awaitTermination(shutdownWaitTimeMs(), TimeUnit.MILLISECONDS);
-        }
-        catch (InterruptedException e) {
-        }
-        if (!success) {
-          log.trace("Failed to gracefully shutdown in {}ms, forced termination", shutdownWaitTimeMs());
-          List<Runnable> list = threadPool.shutdownNow();
-          for (Runnable l : list) {
-            WorkerThread sd = (WorkerThread) l;
-            handleBadMessage(sd.getMessage());
-          }
-        }
+      List<Runnable> list = ManagedThreadFactory.shutdownQuietly(threadPool, shutdownWaitTimeMs());
+      for (Runnable l : list) {
+        WorkerThread sd = (WorkerThread) l;
+        handleBadMessage(sd.getMessage());
       }
       log.trace("All children terminated; existence pointless");
       objectPool.close();

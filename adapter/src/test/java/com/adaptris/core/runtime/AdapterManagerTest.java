@@ -16,6 +16,8 @@
 
 package com.adaptris.core.runtime;
 
+import static com.adaptris.core.runtime.AdapterComponentMBean.ID_PREFIX;
+import static com.adaptris.core.runtime.AdapterComponentMBean.JMX_RETRY_MONITOR_TYPE;
 import static com.adaptris.core.runtime.AdapterComponentMBean.NOTIF_MSG_CLOSED;
 import static com.adaptris.core.runtime.AdapterComponentMBean.NOTIF_MSG_CONFIG_UPDATED;
 import static com.adaptris.core.runtime.AdapterComponentMBean.NOTIF_MSG_INITIALISED;
@@ -56,6 +58,8 @@ import com.adaptris.core.JndiContextFactory;
 import com.adaptris.core.NullConnection;
 import com.adaptris.core.NullService;
 import com.adaptris.core.PoolingWorkflow;
+import com.adaptris.core.RetryMessageErrorHandler;
+import com.adaptris.core.RetryMessageErrorHandlerMonitorMBean;
 import com.adaptris.core.SharedConnection;
 import com.adaptris.core.StandardProcessingExceptionHandler;
 import com.adaptris.core.StandardWorkflow;
@@ -1076,6 +1080,32 @@ public class AdapterManagerTest extends ComponentManagerCase {
       assertEquals(0, afterRemove.retrieveMessageConsumers().size());
       assertEquals(0, afterRemove.retrieveMessageProducers().size());
       assertEquals(0, afterRemove.retrieveExceptionListeners().size());
+    }
+    finally {
+      adapterManager.requestClose();
+    }
+  }
+
+  public void testMBean_HasRetryMessageErrorHandler() throws Exception {
+    String adapterName = this.getClass().getSimpleName() + "." + getName();
+    Adapter adapter = createAdapter(adapterName);
+    adapter.setMessageErrorHandler(new RetryMessageErrorHandler(getName()));
+    AdapterManager adapterManager = new AdapterManager(adapter);
+    ObjectName adapterObj = adapterManager.createObjectName();
+
+    AdaptrisMarshaller m = DefaultMarshaller.getDefaultMarshaller();
+    List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
+    mBeans.add(adapterManager);
+    mBeans.addAll(adapterManager.getAllDescendants());
+    try {
+      register(mBeans);
+      adapterManager.requestStart();
+      AdapterManagerMBean amp = JMX.newMBeanProxy(mBeanServer, adapterObj, AdapterManagerMBean.class);
+      ObjectName handlerObjectName = ObjectName
+          .getInstance(JMX_RETRY_MONITOR_TYPE + adapterManager.createObjectHierarchyString() + ID_PREFIX + getName());
+      assertTrue(amp.getChildRuntimeInfoComponents().contains(handlerObjectName));
+      RetryMessageErrorHandlerMonitorMBean monitor = JMX.newMBeanProxy(mBeanServer, handlerObjectName,
+          RetryMessageErrorHandlerMonitorMBean.class);
     }
     finally {
       adapterManager.requestClose();

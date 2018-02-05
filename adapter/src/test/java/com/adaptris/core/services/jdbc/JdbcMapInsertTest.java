@@ -46,6 +46,16 @@ public class JdbcMapInsertTest extends JdbcMapInsertCase {
   }
 
   @Test
+  public void testService_WithBookend() throws Exception {
+    createDatabase(CREATE_QUOTED);
+    InsertProperties service = configureForTests(createService());
+    service.withColumnBookend('"');
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(CONTENT);
+    ServiceCase.execute(service, msg);
+    doAssert(1);
+  }
+
+  @Test
   public void testService_NoConverters() throws Exception {
     createDatabase();
     InsertProperties service = configureForTests(createService());

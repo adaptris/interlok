@@ -49,7 +49,7 @@ public abstract class RuntimeInfoComponentFactory {
     }
     catch (Exception e) {
     }
-    if (result == null) {
+    if (result == null && c != null) {
       log.trace("No RuntimeInfoComponent for " + c.getClass());
     }
     return result;

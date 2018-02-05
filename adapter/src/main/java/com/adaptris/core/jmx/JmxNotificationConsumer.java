@@ -194,19 +194,7 @@ public class JmxNotificationConsumer extends AdaptrisMessageConsumerImp implemen
   private void shutdownScheduler() {
     try {
       locker.acquire();
-      if (scheduler != null) {
-        log.trace("Scheduler Shutdown Requested, awaiting shutdown");
-        scheduler.shutdown();
-        boolean success = false;
-        try {
-          success = scheduler.awaitTermination(DEFAULT_INTERVAL.toMilliseconds(), TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-        }
-        if (!success) {
-          log.trace("Pool failed to shutdown in 60 seconds, forcing shutdown");
-          scheduler.shutdownNow();
-        }
-      }
+      ManagedThreadFactory.shutdownQuietly(scheduler, DEFAULT_INTERVAL);
     } catch (Exception ignoredIntentionally) {
     } finally {
       scheduler = null;

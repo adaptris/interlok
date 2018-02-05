@@ -149,8 +149,8 @@ public class DocumentBuilderFactoryBuilder {
   /**
    * Convenient method for null protection.
    * 
-   * @param b
-   * @return
+   * @param b an existing DocumentBuilderFactoryBuilder instance (or null)
+   * @return a new instance or the passed parameter.
    */
   public static final DocumentBuilderFactoryBuilder newInstance(DocumentBuilderFactoryBuilder b) {
     return b == null ? newInstance() : b;

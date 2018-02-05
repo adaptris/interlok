@@ -24,6 +24,7 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.ConnectedService;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.aggregator.AggregatingConsumeServiceImpl;
@@ -43,7 +44,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Allows you to aggregate messages from an FTP server", tag = "service,aggregation,ftp")
 @DisplayOrder(order ={"consumer"})
-public class AggregatingFtpConsumeService extends AggregatingConsumeServiceImpl<FileTransferConnection> {
+public class AggregatingFtpConsumeService extends AggregatingConsumeServiceImpl<FileTransferConnection>
+    implements ConnectedService {
 
   @NotNull
   @Valid

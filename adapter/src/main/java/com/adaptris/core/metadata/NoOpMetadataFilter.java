@@ -16,11 +16,7 @@
 
 package com.adaptris.core.metadata;
 
-import java.util.Set;
-
-import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.MetadataCollection;
-import com.adaptris.core.MetadataElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -29,20 +25,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config no-op-metadata-filter
  */
 @XStreamAlias("no-op-metadata-filter")
-public class NoOpMetadataFilter implements MetadataFilter {
+public class NoOpMetadataFilter extends MetadataFilterImpl {
 
 
   public NoOpMetadataFilter() {
-  }
-
-  @Override
-  public MetadataCollection filter(AdaptrisMessage message) {
-    return filter(message.getMetadata());
-  }
-
-  @Override
-  public MetadataCollection filter(Set<MetadataElement> original) {
-    return filter(new MetadataCollection(original));
   }
 
   /**

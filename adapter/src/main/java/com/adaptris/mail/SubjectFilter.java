@@ -16,13 +16,13 @@
 
 package com.adaptris.mail;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.mail.Message;
 import javax.mail.MessagingException;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.oro.text.regex.Pattern;
-import org.apache.oro.text.regex.PatternMatcher;
-
 
 /**
  * Filter on the Subject.
@@ -32,24 +32,15 @@ import org.apache.oro.text.regex.PatternMatcher;
  */
 class SubjectFilter extends MessageFilterImp {
 
-  SubjectFilter(PatternMatcher m, Pattern p) {
-    super(m, p);
+  SubjectFilter(MatchProxy m) {
+    super(m);
   }
 
-  /**
-   * 
-   * @see com.adaptris.mail.MessageFilter#accept(javax.mail.Message)
-   */
-  public boolean accept(Message m) throws MessagingException {
-    boolean rc = false;
-    if (pattern != null) {
-      if (matcher.contains(StringUtils.defaultIfEmpty(m.getSubject(), ""), pattern)) {
-        rc = true;
-      }
-    }
-    else {
-      rc = true;
-    }
-    return rc;
+  @Override
+  List<String> getHeaders(Message m) throws MessagingException {
+    return Arrays.asList(new String[]
+    {
+        StringUtils.defaultIfEmpty(m.getSubject(), "")
+    });
   }
 }

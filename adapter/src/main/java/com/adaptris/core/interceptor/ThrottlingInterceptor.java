@@ -137,7 +137,7 @@ public class ThrottlingInterceptor extends WorkflowInterceptorImpl {
 
   @Override
   public void close() {
-    executor.shutdownNow();
+    ManagedThreadFactory.shutdownQuietly(executor, new TimeInterval());
   }
 
   //

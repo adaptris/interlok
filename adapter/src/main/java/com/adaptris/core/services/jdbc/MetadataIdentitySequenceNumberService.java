@@ -31,15 +31,15 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * Implementation of AbstractJdbcSequenceNumberService where the identity is derived from metadata.
  * <p>
- * The default database schema that is assumed to be
+ * The default database schema is assumed to be
  * 
  * <pre>
  * {@code 
- * CREATE TABLE sequences (id VARCHAR(255) NOT NULL, seq_number INT)
+ * CREATE TABLE SEQUENCES (ID VARCHAR(255) NOT NULL, SEQ_NUMBER INT)
  * }
- * </pre>
- * The default SQL statements reflect this; and provided that a table called 'sequences' contains at least those two columns then it
- * should work without any changes to the SQL statements.
+ * </pre> The default SQL statements reflect this; and provided that a table called 'SEQUENCES' contains at least those two columns
+ * then it should work without any changes to the SQL statements. Be aware that all statements default to upper-case which will have
+ * an impact if your database is case-sensitive (such as MySQL on Linux).
  * </p>
  * 
  * @config jdbc-metadata-sequence-number-service

@@ -16,6 +16,8 @@
 
 package com.adaptris.core.services.splitter;
 
+import static com.adaptris.core.util.ServiceUtil.discardNulls;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,10 +42,12 @@ import com.adaptris.core.EventHandlerAware;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.ServiceWrapper;
 import com.adaptris.core.services.aggregator.MessageAggregator;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -72,7 +76,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
     summary = "Split a message and then execute the associated services on the split items, aggregating the split messages afterwards",
     tag = "service,splitjoin")
 @DisplayOrder(order = {"splitter", "service", "aggregator", "timeout"})
-public class SplitJoinService extends ServiceImp implements EventHandlerAware {
+public class SplitJoinService extends ServiceImp implements EventHandlerAware, ServiceWrapper {
 
   private static final String GENERIC_EXCEPTION_MSG = "Exception waiting for all services to complete";
 
@@ -193,14 +197,7 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware {
 
   @Override
   protected void closeService() {
-    executors.shutdown();
-    try {
-      if (!executors.awaitTermination(60, TimeUnit.SECONDS)) {
-        executors.shutdownNow();
-      }
-    } catch (InterruptedException e) {
-      log.warn("Failed to shutdown execution pool");
-    }
+    ManagedThreadFactory.shutdownQuietly(executors, new TimeInterval());
   }
 
   @Override
@@ -212,7 +209,7 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware {
     Service result = null;
     try {
       result = (Service) marshaller.unmarshal(marshaller.marshal(original));
-      result.prepare();
+      LifecycleHelper.prepare(getService());
     }
     catch (CoreException e) {
       throw ExceptionHelper.wrapServiceException(e);
@@ -348,6 +345,11 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware {
    */
   public void setAggregator(MessageAggregator mj) {
     this.aggregator = Args.notNull(mj, "aggregator");
+  }
+
+  @Override
+  public Service[] wrappedServices() {
+    return discardNulls(getService());
   }
 
 }

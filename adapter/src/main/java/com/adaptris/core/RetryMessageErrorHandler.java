@@ -68,4 +68,9 @@ public class RetryMessageErrorHandler extends RetryMessageErrorHandlerImp {
     setProcessingExceptionService(new ServiceList(services));
   }
 
+  public RetryMessageErrorHandler(String id, Service... services) {
+    this(services);
+    setUniqueId(id);
+  }
+
 }

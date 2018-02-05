@@ -16,6 +16,8 @@
 
 package com.adaptris.core.runtime;
 
+import static com.adaptris.core.runtime.AdapterComponentMBean.ID_PREFIX;
+import static com.adaptris.core.runtime.AdapterComponentMBean.JMX_RETRY_MONITOR_TYPE;
 import static com.adaptris.core.runtime.AdapterComponentMBean.NOTIF_MSG_CLOSED;
 import static com.adaptris.core.runtime.AdapterComponentMBean.NOTIF_MSG_INITIALISED;
 import static com.adaptris.core.runtime.AdapterComponentMBean.NOTIF_MSG_STARTED;
@@ -42,6 +44,8 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.InitialisedState;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.PoolingWorkflow;
+import com.adaptris.core.RetryMessageErrorHandler;
+import com.adaptris.core.RetryMessageErrorHandlerMonitorMBean;
 import com.adaptris.core.SerializableAdaptrisMessage;
 import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.StartedState;
@@ -1391,6 +1395,35 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     }
     finally {
       mBeanServer.removeNotificationListener(workflowObj, listener);
+      adapterManager.requestClose();
+      adapterManager.unregisterMBean();
+    }
+  }
+
+  public void testWorkflowManager_HasRetryMonitor() throws Exception {
+    String adapterName = this.getClass().getSimpleName() + "." + getName();
+    Adapter adapter = createAdapter(adapterName);
+    AdapterManager adapterManager = new AdapterManager(adapter);
+    Channel channel = createChannel("c1");
+    ChannelManager channelManager = new ChannelManager(channel, adapterManager);
+    StandardWorkflow workflow = createWorkflow("w1");
+    workflow.setMessageErrorHandler(new RetryMessageErrorHandler(getName()));
+    WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
+    adapterManager.createObjectName();
+    ObjectName workflowObj = realWorkflowManager.createObjectName();
+
+    try {
+      adapterManager.registerMBean();
+      adapterManager.requestStart();
+      ObjectName handlerObjectName = ObjectName
+          .getInstance(JMX_RETRY_MONITOR_TYPE + realWorkflowManager.createObjectHierarchyString() + ID_PREFIX + getName());
+
+      WorkflowManagerMBean workflowManagerProxy = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
+      assertTrue(workflowManagerProxy.getChildRuntimeInfoComponents().contains(handlerObjectName));
+      RetryMessageErrorHandlerMonitorMBean monitor = JMX.newMBeanProxy(mBeanServer, handlerObjectName,
+          RetryMessageErrorHandlerMonitorMBean.class);
+    }
+    finally {
       adapterManager.requestClose();
       adapterManager.unregisterMBean();
     }

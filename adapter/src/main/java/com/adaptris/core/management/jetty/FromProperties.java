@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 */
-package com.adaptris.core.management.webserver;
+package com.adaptris.core.management.jetty;
 
-import static com.adaptris.core.management.webserver.JettyServerComponent.DEFAULT_JETTY_PORT;
+import static com.adaptris.core.management.jetty.JettyServerComponent.DEFAULT_JETTY_PORT;
 
 import java.util.Properties;
 
@@ -32,7 +32,7 @@ import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
 
-import com.adaptris.core.management.webserver.WebServerProperties.WebServerPropertiesEnum;
+import com.adaptris.core.management.jetty.WebServerProperties.WebServerPropertiesEnum;
 
 /**
  * Build a jetty server from properties.

@@ -187,6 +187,7 @@ public class XmlUtilsTest extends BaseCase {
   public void testGetSingleNode() throws Exception {
     XmlUtils xu = new XmlUtils();
     xu.setSource(new StringReader(multiLine));
+    assertNull(xu.getSingleNode("/root/lame"));
     Node n = xu.getSingleNode("/root/test");
     assertNotNull(n);
     assertNull(xu.getSingleNode("/root/test", null));

@@ -117,5 +117,11 @@ public interface AdaptrisConnection extends AdaptrisComponent, ComponentLifecycl
   <T> T retrieveConnection(Class<T> type);
 
 
-
+  /**
+   * Make a copy of this object for test purposes.
+   * 
+   * @return a copy of this object
+   * @throws CoreException wrapping any exceptions
+   */
+  AdaptrisConnection cloneForTesting() throws CoreException;
 }

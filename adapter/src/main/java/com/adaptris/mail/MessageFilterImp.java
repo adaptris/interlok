@@ -16,24 +16,53 @@
 
 package com.adaptris.mail;
 
-import org.apache.oro.text.regex.Pattern;
-import org.apache.oro.text.regex.PatternMatcher;
+import java.util.ArrayList;
+import java.util.List;
 
-
+import javax.mail.Address;
+import javax.mail.Message;
+import javax.mail.MessagingException;
 
 abstract class MessageFilterImp implements MessageFilter {
-  protected PatternMatcher matcher;
-  protected Pattern pattern;
   
+  protected transient MatchProxy matcher;
+
   private MessageFilterImp() {
-    
+
   }
-  
-  
-  MessageFilterImp(PatternMatcher m, Pattern p) {
+
+  MessageFilterImp(MatchProxy h) {
     this();
-    matcher = m;
-    pattern = p;
-  }  
-  
+    matcher = h;
+  }
+
+  List<String> toList(Address[] addr) {
+    List<String> result = new ArrayList<>();
+    if (addr != null) {
+      for (Address r : addr) {
+        result.add(r.toString());
+      }
+    }
+    return result;
+  }
+
+  boolean matches(List<String> list) {
+    for (String s : list) {
+      if (matcher.matches(s)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  abstract List<String> getHeaders(Message m) throws MessagingException;
+
+  public final boolean accept(Message m) throws MessagingException {
+    // no matcher, always true.
+    if (matcher == null) {
+      return true;
+    }
+    return matches(getHeaders(m));
+  }
+
 }

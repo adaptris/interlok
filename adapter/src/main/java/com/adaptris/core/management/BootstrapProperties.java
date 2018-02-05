@@ -18,6 +18,9 @@ package com.adaptris.core.management;
 
 import static com.adaptris.core.management.Constants.CFG_KEY_CONFIG_MANAGER;
 import static com.adaptris.core.management.Constants.CFG_KEY_CONFIG_URL;
+import static com.adaptris.core.management.Constants.CFG_KEY_LOG4J12_URL;
+import static com.adaptris.core.management.Constants.CFG_KEY_LOGGING_RECONFIGURE;
+import static com.adaptris.core.management.Constants.CFG_KEY_LOGGING_URL;
 import static com.adaptris.core.management.Constants.DBG;
 import static com.adaptris.core.management.Constants.DEFAULT_CONFIG_MANAGER;
 import static com.adaptris.core.management.Constants.DEFAULT_PROPS_RESOURCE;
@@ -25,7 +28,6 @@ import static com.adaptris.core.management.Constants.PROTOCOL_FILE;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -38,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +68,7 @@ public class BootstrapProperties extends Properties {
 
   private static final String[] BOOTSTRAP_SYSPROP_OVERRIDE =
   {
-          "interlok.config.url", "interlok.logging.url", "interlok.jmxserviceurl", "interlok.mgmt.components"
+      "interlok.config.url", "interlok.logging.url", "interlok.jmxserviceurl", "interlok.mgmt.components"
   };
 
   private static final Map<String, String> BOOTSTRAP_OVERRIDES;
@@ -82,6 +85,33 @@ public class BootstrapProperties extends Properties {
     BOOTSTRAP_OVERRIDES = Collections.unmodifiableMap(overrides);
   }
 
+  private enum BootstrapFeature {
+    // Matches the Constants#CFG_XSTREAM_BEAUTIFIED_OUTPUT
+    BEAUTIFYXSTREAMOUTPUT(false),
+    // Matches Constants#CFG_KEY_PROXY_AUTHENTICATOR
+    HTTPENABLEPROXYAUTH(true),
+    // Constants#CFG_KEY_USE_MANAGEMENT_FACTORY_FOR_JMX
+    USEJAVALANGMANAGEMENTFACTORY(true),
+    // Constants#CFG_KEY_VALIDATE_CONFIG
+    VALIDATECONFIG(false),
+    // CFG_KEY_LOGGING_RECONFIGURE
+    LOGGINGRECONFIGURE(true),
+    // Constants#CFG_KEY_START_QUIETLY
+    STARTADAPTERQUIETLY(true),
+    // Constants#CFG_KEY_JNDI_SERVER
+    ENABLELOCALJNDISERVER(false);
+
+    private boolean defaultState;
+
+    private BootstrapFeature(boolean defaultState) {
+      this.defaultState = defaultState;
+    }
+
+    public boolean enabledByDefault() {
+      return defaultState;
+    }
+
+  }
 
   public BootstrapProperties() {
     super();
@@ -125,8 +155,32 @@ public class BootstrapProperties extends Properties {
     }
     return p;
   }
+
+  /**
+   * Add overloaded method to get numerical values from bootstrap.properties.
+   * 
+   * @param key
+   *      The property key to get.
+   * @param defaultValue
+   *      The default numerical value if the key isn't found (or cannot be parsed as numercial).
+   * 
+   * @return The numerical value for the given property key, or default if necessary.
+   */
+  public Long getProperty(String key, Long defaultValue) {
+    Long value = null;
+    String v = getProperty(key);
+    try {
+      value = Long.parseLong(v); // rely on parseLong throwing an exception if  v == null, v.isEmpty() or not a number
+    } catch (NumberFormatException e) {
+      log.info("Could not parse numerical value [{}] for key [{}] - using default value [{}]", v, key, defaultValue);
+      value = defaultValue;
+    }
+    return value;
+  }
+
   /**
    * Convenience method to create an adapter based on the existing bootstrap properties
+   * 
    * @return the adapter object.
    * @throws Exception if an exception occured.
    * @deprecated use {@link #getConfigManager()} to create an AdapterManagerMBean instead.
@@ -141,6 +195,7 @@ public class BootstrapProperties extends Properties {
 
   }
 
+  @SuppressWarnings("deprecation")
   public String[] getConfigurationUrls() {
     List<String> list = new ArrayList<String>();
     Properties p = getPropertySubset(this, CFG_KEY_CONFIG_URL, true);
@@ -199,8 +254,6 @@ public class BootstrapProperties extends Properties {
     return primaryUrl;
   }
 
-
-
   /**
    * Check that the specified location exists.
    *
@@ -239,16 +292,15 @@ public class BootstrapProperties extends Properties {
       rc = false;
     }
     if (DBG) {
-      log.trace("[" + u.toString() + (rc ? "] found" : "] not found"));
+      log.trace("[{}] {}", u.toString(), (rc ? "found" : "not found"));
     }
     return rc;
   }
 
   public synchronized AdapterConfigManager getConfigManager() throws Exception {
     if (configManager == null) {
-      configManager = (AdapterConfigManager) Class.forName(
-          PropertyHelper.getPropertyIgnoringCase(this, CFG_KEY_CONFIG_MANAGER, DEFAULT_CONFIG_MANAGER))
-          .newInstance();
+      configManager = (AdapterConfigManager) Class
+          .forName(PropertyHelper.getPropertyIgnoringCase(this, CFG_KEY_CONFIG_MANAGER, DEFAULT_CONFIG_MANAGER)).newInstance();
       configManager.configure(this);
     }
     return configManager;
@@ -256,19 +308,35 @@ public class BootstrapProperties extends Properties {
 
   @SuppressWarnings("deprecation")
   public void reconfigureLogging() {
-    try {
+    if (isEnabled(CFG_KEY_LOGGING_RECONFIGURE)) {
       // Default to log4j12Url for backwards compat.
-      String loggingUrl = getProperty(Constants.CFG_KEY_LOGGING_URL, getProperty(Constants.CFG_KEY_LOG4J12_URL, ""));
+      String legacy = getPropertyIgnoringCase(this, CFG_KEY_LOG4J12_URL, "");
+      String loggingUrl = getPropertyIgnoringCase(this, CFG_KEY_LOGGING_URL, legacy);
       if (!StringUtils.isEmpty(loggingUrl)) {
         log.trace("Attempting Logging reconfiguration using {}", loggingUrl);
-        if (LoggingConfigurator.newConfigurator().initialiseFrom(new URLString(loggingUrl).getURL())) {
+        if (LoggingConfigurator.newConfigurator().initialiseFrom(loggingUrl)) {
           log.trace("Successfully reconfigured logging using {}", loggingUrl);
         }
       }
     }
-    catch (IOException ignoredIntentionally) {
-      ;
+  }
+
+  public boolean isEnabled(String key) {
+    return isEnabled(this, key);
+  }
+
+  private static boolean enabledByDefault(String key) {
+    try {
+      return BootstrapFeature.valueOf(key.toUpperCase()).enabledByDefault();
     }
+    catch (IllegalArgumentException e) {
+      return false;
+    }
+  }
+
+  public static boolean isEnabled(Properties p, String key) {
+    String val = PropertyHelper.getPropertyIgnoringCase(p, key);
+    return BooleanUtils.toBooleanDefaultIfNull(BooleanUtils.toBooleanObject(val), enabledByDefault(key));
   }
 
   /**

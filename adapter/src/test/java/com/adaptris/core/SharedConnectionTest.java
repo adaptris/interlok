@@ -193,6 +193,20 @@ public class SharedConnectionTest {
     }
   }
 
+  public void testCloneForTesting() throws Exception {
+    Adapter a = createAndStart();
+    NullConnection nc = (NullConnection) a.getSharedComponents().getConnections().get(0);
+    SharedConnection c = new SharedConnection(nc.getUniqueId());
+    try {
+      LifecycleHelper.initAndStart(c);
+      assertEquals(NullConnection.class, c.cloneForTesting().getClass());
+    }
+    finally {
+      LifecycleHelper.stopAndClose(a);
+      LifecycleHelper.stopAndClose(c);
+    }
+  }
+
   private Adapter createAndStart() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(guid.safeUUID());

@@ -21,8 +21,11 @@ import static com.adaptris.core.management.Constants.CFG_KEY_START_QUIETLY;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import com.adaptris.core.Adapter;
+import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.management.logging.LoggingConfigurator;
 import com.adaptris.core.runtime.AdapterManagerMBean;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
 
 /**
@@ -78,7 +81,7 @@ abstract class CmdLineBootstrap {
   public abstract void boot() throws Exception;
 
   protected void startAdapter(BootstrapProperties bootProperties) throws Exception {
-    boolean startQuietly = Boolean.valueOf(bootProperties.getProperty(CFG_KEY_START_QUIETLY, "true")).booleanValue();
+    boolean startQuietly = bootProperties.isEnabled(CFG_KEY_START_QUIETLY);
     final UnifiedBootstrap bootstrap = new UnifiedBootstrap(bootProperties);
     AdapterManagerMBean adapter = bootstrap.createAdapter();
     if (!configCheckOnly()) {
@@ -87,6 +90,10 @@ abstract class CmdLineBootstrap {
       launchAdapter(bootstrap, startQuietly);
     }
     else {
+      // This seems a bit cheaty, but we're going to exit anyway, so
+      // calling prepare probably makes no difference.
+      Adapter clonedAdapter = (Adapter) DefaultMarshaller.getDefaultMarshaller().unmarshal(adapter.getConfiguration());
+      LifecycleHelper.prepare(clonedAdapter);
       // INTERLOK-1455 Shutdown the logging subsystem if we're only just doing a config check.
       LoggingConfigurator.newConfigurator().requestShutdown();
       // No starting an adapter, so just terminate.

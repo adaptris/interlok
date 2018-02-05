@@ -20,6 +20,7 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.net.URI;
@@ -28,26 +29,24 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.adaptris.fs.FsException;
 import com.adaptris.fs.FsFilenameExistsException;
 import com.adaptris.fs.FsWorker;
 
 /**
- * <p>
- * Helper class for <code>FsMessageConsumer</code> and <code>FsMessageProducer</code>.
- * </p>
  */
-public final class FsHelper {
+public abstract class FsHelper {
 
-  private FsHelper() {
-    // no instances
-  }
+  private static transient Logger log = LoggerFactory.getLogger(FsHelper.class);
 
   /**
    * Go straight to a {@link File} from a url style string.
    * 
    */
-  public static File toFile(String s) throws Exception {
+  public static File toFile(String s) throws IOException, URISyntaxException {
     return createFileReference(createUrlFromString(s, true));
   }
 
@@ -98,7 +97,7 @@ public final class FsHelper {
    * @deprecated use {@link #createUrlFromString(String, boolean)} since 3.0.3
    */
   @Deprecated
-  public static URL createUrlFromString(String s) throws Exception {
+  public static URL createUrlFromString(String s) throws IOException, URISyntaxException {
     return createUrlFromString(s, false);
   }
 
@@ -114,7 +113,7 @@ public final class FsHelper {
    * @param backslashConvert whether or not to convert backslashes into forward slashes.
    * 
    */
-  public static URL createUrlFromString(String s, boolean backslashConvert) throws Exception {
+  public static URL createUrlFromString(String s, boolean backslashConvert) throws IOException, URISyntaxException {
     String destToConvert = backslashConvert ? backslashToSlash(s) : s;
     URI configuredUri = null;
     try {
@@ -166,7 +165,20 @@ public final class FsHelper {
       Constructor cnst = c.getDeclaredConstructor(paramTypes);
       result = (FileFilter) cnst.newInstance(args);
     }
-    return result;
+    return logWarningIfRequired(result);
+  }
+
+  public static FileFilter logWarningIfRequired(FileFilter f) {
+    try {
+      Class clz = Class.forName("org.apache.oro.io.RegexFilenameFilter");
+      if (clz.isAssignableFrom(f.getClass())) {
+        log.warn("{} is deprecated, use a java.util.regex.Pattern based filter instead", f.getClass().getCanonicalName());
+      }
+    }
+    catch (Exception e) {
+
+    }
+    return f;
   }
 
   public static File renameFile(File file, String suffix, FsWorker worker) throws FsException {
@@ -189,7 +201,7 @@ public final class FsHelper {
    *         <code>System.getProperty("user.dir")</code>) plus the passed relative <code>uri</code>
    * @throws Exception wrapping any underlying <code>Exception</code>
    */
-  private static URL relativeConfig(URI uri) throws Exception {
+  private static URL relativeConfig(URI uri) throws IOException {
     String pwd = System.getProperty("user.dir");
 
     String path = pwd + "/" + uri; // ok even if uri starts with a /
@@ -204,12 +216,12 @@ public final class FsHelper {
     }
     return url;
   }
-  
+
   private static class NoOpFileFilter implements FileFilter {
     @Override
     public boolean accept(File pathname) {
       return true;
     }
-    
+
   }
 }

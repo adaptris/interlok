@@ -104,9 +104,9 @@ public class TimeoutAction {
    * there is no chance of it succeeding after the timeout has been exceeded.
    * </p>
    * 
-   * @param s the status, default is {@link HttpStatusProvider.HttpStatus#ACCEPTED_202}
+   * @param s the status, default is {@code HttpStatus#ACCEPTED_202}
    */
-  public void setStatus(HttpStatusProvider.HttpStatus s) {
+  public void setStatus(HttpStatus s) {
     this.status = s;
   }
 

@@ -104,21 +104,10 @@ public final class Constants {
   public static final String CFG_KEY_USE_MANAGEMENT_FACTORY_FOR_JMX = "useJavaLangManagementFactory";
 
   /**
-   * The default value for {@link #CFG_KEY_USE_MANAGEMENT_FACTORY_FOR_JMX} which is {@value} .
-   */
-  public static final String DEFAULT_MANAGEMENT_FACTORY_FOR_JMX = "true";
-
-  /**
    * the file protocol.
    *
    */
   public static final String PROTOCOL_FILE = "file";
-
-  /**
-   * The default behaviour for {@link #CFG_KEY_PROXY_AUTHENTICATOR}.
-   *
-   */
-  public static final String DEFAULT_PROXY_AUTHENTICATOR = "true";
 
   /**
    * The prefix that will be used to define system properties within the standard bootstrap resource.
@@ -181,9 +170,13 @@ public final class Constants {
    */
   public static final String CFG_KEY_VALIDATE_CONFIG = "validateConfig";
 
+
   /**
-   * Default value for {@link #CFG_KEY_VALIDATE_CONFIG}.
+   * Bootstrap Property specifying whether or not reconfigure logging
    * 
+   * @since 3.7.0 defaults to true.
    */
-  public static final String DEFAULT_VALIDATE_CONFIG = "false";
+  public static final String CFG_KEY_LOGGING_RECONFIGURE = "loggingReconfigure";
+
+
 }

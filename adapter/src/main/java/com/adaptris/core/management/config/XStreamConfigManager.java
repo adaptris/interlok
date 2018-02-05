@@ -48,8 +48,7 @@ public class XStreamConfigManager extends ReadWriteConfigManager {
         ? getPropertyIgnoringCase(bootstrapProperties, Constants.CFG_KEY_MARSHALLER_OUTPUT_TYPE) : null);
 
     // Get the xstream enable beautified output flag
-    final boolean enableBeautifiedOutputFlag = Boolean.valueOf((bootstrapProperties != null
-        ? getPropertyIgnoringCase(bootstrapProperties, Constants.CFG_XSTREAM_BEAUTIFIED_OUTPUT) : null));
+    final boolean enableBeautifiedOutputFlag = bootstrapProperties.isEnabled(Constants.CFG_XSTREAM_BEAUTIFIED_OUTPUT);
     
     // Now initialize the marshaller
     marshallerFactory = AdapterXStreamMarshallerFactory.getInstance();

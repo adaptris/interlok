@@ -209,7 +209,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
         JdbcConnection jdbcConnection = new JdbcConnection(PROPERTIES.getProperty(JDBC_URL), PROPERTIES.getProperty(JDBC_DRIVER));
         jdbcConnection.setUsername(PROPERTIES.getProperty(JDBC_USER));
         jdbcConnection.setPassword(PROPERTIES.getProperty(JDBC_PASSWORD));
-        serviceList.setDatabaseConnection(jdbcConnection);
+        serviceList.setConnection(jdbcConnection);
         JdbcStoredProcedureProducer myStoredProc = new JdbcStoredProcedureProducer();
         if (PROPERTIES.getProperty(JDBC_VENDOR).equals("mysql")) myStoredProc.setStatementCreator(new MysqlStatementCreator());
         else if (PROPERTIES.getProperty(JDBC_VENDOR).equals("sqlserver"))

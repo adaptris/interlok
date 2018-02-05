@@ -29,6 +29,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -42,6 +43,7 @@ import com.adaptris.mail.JavamailReceiverFactory;
 import com.adaptris.mail.MailException;
 import com.adaptris.mail.MailReceiver;
 import com.adaptris.mail.MailReceiverFactory;
+import com.adaptris.mail.MatchProxyFactory;
 
 /**
  * Email implementation of the AdaptrisMessageConsumer interface.
@@ -53,8 +55,7 @@ import com.adaptris.mail.MailReceiverFactory;
  * Possible filter expressions could be :-
  * <ul>
  * <li>&lt;filter-expression&gt;*&lt;filter-expression&gt;</li>
- * <li>
- * &lt;filter-expression&gt;FROM=somevalue,RECIPIENT=somevalue,SUBJECT=somevalue &lt;filter-expression&gt;</li>
+ * <li>&lt;filter-expression&gt;FROM=somevalue,RECIPIENT=somevalue,SUBJECT=somevalue &lt;filter-expression&gt;</li>
  * <li>&lt;filter-expression&gt;FROM=somevalue,SUBJECT=somevalue &lt;filter-expression&gt;</li>
  * <li>&lt;filter-expression&gt;FROM=somevalue&lt;filter-expression&gt;</li>
  * <li>&lt;filter-expression&gt;SUBJECT=somevalue&lt;filter-expression&gt;</li>
@@ -64,7 +65,7 @@ import com.adaptris.mail.MailReceiverFactory;
  * to match the filter expression against all the recipients for the email.
  * </p>
  * <p>
- * The default filter-expression syntax is based on Unix shell glob expressions. It can be changed by using the
+ * The default filter-expression syntax is based on {@code java.util.Pattern}. It can be changed by using the
  * {@link #setRegularExpressionStyle(String)} method.
  * <p>
  * It is possible to control the underlying behaviour of this consumer through the use of various properties that will be passed to
@@ -103,18 +104,9 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
 
   protected transient MailReceiver mbox;
 
-  /**
-   * <p>
-   * Creates a new instance.
-   * </p>
-   * <ul>
-   * <li>regularExpressionStyle is defaulted to "GLOB"</li>
-   * <li>deleteOnReceive is defaulted to false</li>
-   * </ul>
-   */
   public MailConsumerImp() {
-    // null protection...
-    regularExpressionStyle = "GLOB";
+    setRegularExpressionStyle(MatchProxyFactory.DEFAULT_REGEXP_STYLE);
+    regularExpressionStyle = MatchProxyFactory.DEFAULT_REGEXP_STYLE;
     mailReceiverFactory = new JavamailReceiverFactory();
     setHeaderHandler(new IgnoreMailHeaders());
   }
@@ -173,7 +165,7 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
       mbox = getMailReceiverFactory().createClient(
           MailHelper.createURLName(getDestination().getDestination(), getUsername(), getPassword()));
       //mbox = new MailComNetClient("localhost", 3110, getUsername(), Password.decode(getPassword()));
-      mbox.setRegularExpressionCompiler(getRegularExpressionStyle());
+      mbox.setRegularExpressionCompiler(regularExpressionStyle());
       Map<String, String> filters = initFilters(getDestination().getFilterExpression());
 
       log.trace("From filter set to [{}]", filters.get(FROM));
@@ -241,10 +233,11 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
   boolean deleteOnReceive() {
     return getDeleteOnReceive() != null ? getDeleteOnReceive().booleanValue() : false;
   }
+  
   /**
    * returns the regularExpressionSyntax.
    *
-   * @return returns the regularExpressionSyntax.
+   * @return returns the regular expression style
    * @see #setRegularExpressionStyle(String)
    */
   public String getRegularExpressionStyle() {
@@ -254,11 +247,14 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
   /**
    * Set the regular expression syntax.
    *
-   * @param s The regularExpressionSyntax to set, it should be one of "PERL5",
-   *          "GLOB", or "AWK"
+   * @param s The regular expression style to set, defaults to "Regex" ({@code java.util.regex.Pattern}) if not specified.
    */
   public void setRegularExpressionStyle(String s) {
     regularExpressionStyle = s;
+  }
+
+  String regularExpressionStyle() {
+    return StringUtils.defaultIfBlank(getRegularExpressionStyle(), MatchProxyFactory.DEFAULT_REGEXP_STYLE);
   }
 
   public String getPassword() {

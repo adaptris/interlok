@@ -26,6 +26,7 @@ import javax.validation.Valid;
 
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.ConnectedService;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.util.JdbcUtil;
@@ -37,7 +38,7 @@ import com.adaptris.util.TimeInterval;
  * Provides database connection for JDBC-based {@link com.adaptris.core.Service} implementations.
  * </p>
  */
-public abstract class JdbcService extends ServiceImp {
+public abstract class JdbcService extends ServiceImp implements ConnectedService {
 
   // marshalled...
   // And might be null as of redmineID #3968
@@ -118,24 +119,12 @@ public abstract class JdbcService extends ServiceImp {
    */
   protected abstract void stopService();
 
-  /**
-   * <p>
-   * Sets the <code>AdaptrisConnection</code> to use.
-   * </p>
-   *
-   * @param conn the <code>AdaptrisConnection</code> to use
-   */
+  @Override
   public void setConnection(AdaptrisConnection conn) {
     connection = conn;
   }
 
-  /**
-   * <p>
-   * Returns the <code>AdaptrisConnection</code> to use.
-   * </p>
-   *
-   * @return the <code>AdaptrisConnection</code> to use
-   */
+  @Override
   public AdaptrisConnection getConnection() {
     return connection;
   }

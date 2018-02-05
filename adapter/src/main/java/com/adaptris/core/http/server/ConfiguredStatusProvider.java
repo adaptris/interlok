@@ -81,13 +81,13 @@ public class ConfiguredStatusProvider implements HttpStatusProvider {
   /**
    * Set the optional response text that will be sent with the response code.
    * 
-   * <p>Note that for {@link com.adaptris.core.http.jetty.ResponseProducer} any values configured here will be ignored as
-   * that will use {@link javax.servlet.http.HttpServletResponse#setStatus(int)} method only. This field is included only for
+   * <p>
+   * Note that for {@link com.adaptris.core.http.jetty.StandardResponseProducer} any values configured here will be ignored as that
+   * will use {@link javax.servlet.http.HttpServletResponse#setStatus(int)} method only. This field is included only for
    * completeness, a sensible default will be made available based on the {@link HttpStatusProvider.HttpStatus} selected.
    * </p>
    * 
-   * @param txt the text to be sent (e.g. {@code OK}, if the status code is {@link
-   * com.adaptris.core.http.server.HttpStatusProvider.HttpStatus#OK_200}).
+   * @param txt the text to be sent (e.g. {@code OK}, if the status code is {@link HttpStatusProvider.HttpStatus#OK_200}).
    */
   public void setText(String txt) {
     this.text = txt;

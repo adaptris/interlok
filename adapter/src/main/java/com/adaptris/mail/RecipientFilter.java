@@ -16,12 +16,10 @@
 
 package com.adaptris.mail;
 
-import javax.mail.Address;
+import java.util.List;
+
 import javax.mail.Message;
 import javax.mail.MessagingException;
-
-import org.apache.oro.text.regex.Pattern;
-import org.apache.oro.text.regex.PatternMatcher;
 
 
 
@@ -33,30 +31,12 @@ import org.apache.oro.text.regex.PatternMatcher;
  */
 class RecipientFilter extends MessageFilterImp {
 
-  RecipientFilter(PatternMatcher m, Pattern p) {
-    super(m, p);
+  RecipientFilter(MatchProxy m) {
+    super(m);
   }
 
-  /**
-   * 
-   * @see com.adaptris.mail.MessageFilter#accept(javax.mail.Message)
-   */
-  public boolean accept(Message m) throws MessagingException {
-    Address[] recipients = m.getAllRecipients();
-    boolean rc = false;
-    if (pattern != null) {
-      if (recipients != null) {
-        for (int j = 0; j < recipients.length; j++) {
-          if (matcher.contains(recipients[j].toString(), pattern)) {
-            rc = true;
-            break;
-          }
-        }
-      }
-    }
-    else {
-      rc = true;
-    }
-    return rc;
+  @Override
+  List<String> getHeaders(Message m) throws MessagingException {
+    return toList(m.getAllRecipients());
   }
 }

@@ -16,18 +16,17 @@
 
 package com.adaptris.taglet;
 
-import java.util.Map;
-
-import com.sun.javadoc.Tag;
 import com.sun.tools.doclets.Taglet;
 
+import java.util.Map;
+
 /**
- * Simple taglet that allows us to quickly specify the license requirements.
+ * Simple taglet that allows us to quickly specify the config requirements.
  * 
  * @author lchan
  * 
  */
-public class ConfigTaglet implements Taglet {
+public class ConfigTaglet extends AbstractTaglet {
   private static final String NAME = "config";
   private static final String START = " <p>In the adapter configuration file this class is aliased as <b>";
   private static final String END = "</b> which is the preferred alternative to the fully qualified classname "
@@ -35,36 +34,19 @@ public class ConfigTaglet implements Taglet {
   /**
    * Return the name of this custom tag.
    */
+  @Override
   public String getName() {
       return NAME;
   }
 
-  public boolean inField() {
-    return false;
+  @Override
+  public String getStart() {
+    return START;
   }
 
-  public boolean inConstructor() {
-    return true;
-  }
-
-  public boolean inMethod() {
-    return true;
-  }
-
-  public boolean inOverview() {
-    return true;
-  }
-
-  public boolean inPackage() {
-      return true;
-  }
-
-  public boolean inType() {
-      return true;
-  }
-
-  public boolean isInlineTag() {
-    return false;
+  @Override
+  public String getEnd() {
+    return END;
   }
 
   @SuppressWarnings("unchecked")
@@ -77,22 +59,4 @@ public class ConfigTaglet implements Taglet {
      tagletMap.put(tag.getName(), tag);
   }
 
-  public String toString(Tag tag) {
-    return START + tag.text() + END;
-  }
-
-  public String toString(Tag[] tags) {
-    if (tags.length == 0) {
-      return null;
-    }
-    String result = START;
-    for (int i = 0; i < tags.length; i++) {
-      if (i > 0) {
-        result += ", ";
-      }
-      result += tags[i].text();
-    }
-    result += END;
-    return result;
-  }
 }

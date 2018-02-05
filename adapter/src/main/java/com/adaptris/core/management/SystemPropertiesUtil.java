@@ -15,7 +15,6 @@
 */
 
 package com.adaptris.core.management;
-import static com.adaptris.core.util.PropertyHelper.getPropertyIgnoringCase;
 import static com.adaptris.core.util.PropertyHelper.getPropertySubset;
 
 import java.util.Properties;
@@ -87,9 +86,7 @@ public class SystemPropertiesUtil {
   }
   
   public static void addJndiProperties(Properties bootstrapProperties) {
-    boolean enableJndi = Boolean.valueOf(
-getPropertyIgnoringCase(bootstrapProperties, Constants.CFG_KEY_JNDI_SERVER, "false"))
-        .booleanValue();
+    boolean enableJndi = BootstrapProperties.isEnabled(bootstrapProperties, Constants.CFG_KEY_JNDI_SERVER);
     if (enableJndi) {
       Properties sysProps = System.getProperties();
       String property = sysProps.getProperty(Context.URL_PKG_PREFIXES);

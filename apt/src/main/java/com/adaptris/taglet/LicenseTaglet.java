@@ -16,10 +16,9 @@
 
 package com.adaptris.taglet;
 
-import java.util.Map;
-
-import com.sun.javadoc.Tag;
 import com.sun.tools.doclets.Taglet;
+
+import java.util.Map;
 
 /**
  * Simple taglet that allows us to quickly specify the license requirements.
@@ -27,7 +26,7 @@ import com.sun.tools.doclets.Taglet;
  * @author lchan
  * 
  */
-public class LicenseTaglet implements Taglet {
+public class LicenseTaglet extends AbstractTaglet {
   private static final String START = "<p>License Required: <strong>";
   private static final String END = "</strong></p>";
   private static final String NAME = "license";
@@ -39,32 +38,14 @@ public class LicenseTaglet implements Taglet {
       return NAME;
   }
 
-  public boolean inField() {
-    return false;
+  @Override
+  public String getStart() {
+    return START;
   }
 
-  public boolean inConstructor() {
-    return true;
-  }
-
-  public boolean inMethod() {
-    return true;
-  }
-
-  public boolean inOverview() {
-    return true;
-  }
-
-  public boolean inPackage() {
-      return true;
-  }
-
-  public boolean inType() {
-      return true;
-  }
-
-  public boolean isInlineTag() {
-    return false;
+  @Override
+  public String getEnd() {
+    return END;
   }
 
   @SuppressWarnings("unchecked")
@@ -77,22 +58,4 @@ public class LicenseTaglet implements Taglet {
      tagletMap.put(tag.getName(), tag);
   }
 
-  public String toString(Tag tag) {
-    return START + tag.text() + END;
-  }
-
-  public String toString(Tag[] tags) {
-    if (tags.length == 0) {
-      return null;
-    }
-    String result = START;
-    for (int i = 0; i < tags.length; i++) {
-      if (i > 0) {
-        result += ", ";
-      }
-      result += tags[i].text();
-    }
-    result += END;
-    return result;
-  }
 }

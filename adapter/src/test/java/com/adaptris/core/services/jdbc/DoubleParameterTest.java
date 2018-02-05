@@ -16,9 +16,6 @@
 
 package com.adaptris.core.services.jdbc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,34 +40,23 @@ public class DoubleParameterTest extends BaseCase {
   @Test
   public void testConvert() throws Exception {
     DoubleStatementParameter sp = new DoubleStatementParameter();
-    assertEquals(Double.valueOf(55.0), sp.toDouble("55.0"));
+    assertEquals(Double.valueOf(55.0), sp.convert("55.0"));
   }
 
   @Test
   public void testConvertNull() throws Exception {
     DoubleStatementParameter sp = new DoubleStatementParameter();
     sp.setConvertNull(false);
-    try {
-      sp.toDouble(null);
-      fail("Expected Exception");
-    }
-    catch (RuntimeException expected) {
-      // expected
-    }
-    try {
-      sp.toDouble("");
-      fail("Expected Exception");
-    }
-    catch (RuntimeException expected) {
-      // expected
-    }
+    assertNull(sp.convert(null));
+    // This won't be of type Double...
+    assertNotNull(sp.convert(""));
   }
 
   @Test
   public void testConvertWithConvertNull() throws Exception {
     DoubleStatementParameter sp = new DoubleStatementParameter();
     sp.setConvertNull(true);
-    assertEquals(Double.valueOf(0), sp.toDouble(""));
+    assertEquals(Double.valueOf(0), sp.convert(""));
   }
 
   @Test

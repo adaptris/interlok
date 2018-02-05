@@ -16,12 +16,7 @@
 
 package com.adaptris.core.services.jdbc;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ServiceException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -34,7 +29,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("jdbc-string-statement-parameter")
 @DisplayOrder(order ={"name", "queryString", "queryType"})
-public class StringStatementParameter extends TypedStatementParameter {
+public class StringStatementParameter extends TypedStatementParameter<String> {
 
   public StringStatementParameter() {
     super();
@@ -45,30 +40,17 @@ public class StringStatementParameter extends TypedStatementParameter {
   }
 
   @Override
-  public void apply(int parameterIndex, PreparedStatement statement, AdaptrisMessage msg) throws SQLException, ServiceException {
-    String val = toString(getQueryValue(msg));
-    log.trace("Setting argument {} to [{}]", parameterIndex, val);
-    statement.setString(parameterIndex, val);
-  }
-
-  String toString(Object value) throws ServiceException {
-    String result;
-    if (value == null) {
-      if (convertNull()) {
-        result = "";
-      }
-      else {
-        result = null;
-      }
-    }
-    else {
-      result = value.toString();
-    }
-    return result;
+  public StringStatementParameter makeCopy() {
+    return new StringStatementParameter(getQueryString(), getQueryType(), getConvertNull(), getName());
   }
 
   @Override
-  public StringStatementParameter makeCopy() {
-    return new StringStatementParameter(getQueryString(), getQueryType(), getConvertNull(), getName());
+  protected String defaultValue() {
+    return "";
+  }
+
+  @Override
+  protected String convertToType(Object value) {
+    return value.toString();
   }
 }

@@ -56,6 +56,7 @@ public class UnifiedBootstrap {
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
   private transient List<Object> mgmtComponents = new ArrayList<>();
 
+  private static final String OPERATION_TIMEOUT_PROPERTY = "operationTimeout";
   private static final TimeInterval DEFAULT_OPERATION_TIMEOUT = new TimeInterval(2L, TimeUnit.MINUTES);
 
   private enum MgmtComponentTransition {
@@ -132,7 +133,12 @@ public class UnifiedBootstrap {
           mgr.requestStart();
         }
         else {
-          mgr.requestStart(DEFAULT_OPERATION_TIMEOUT.toMilliseconds());
+          long timeout = bootstrapProperties.getProperty(OPERATION_TIMEOUT_PROPERTY, DEFAULT_OPERATION_TIMEOUT.toMilliseconds());
+          if (timeout < 0) {
+            mgr.requestStart();
+          } else {
+            mgr.requestStart(timeout);
+          }
         }
       }
       catch (CoreException | TimeoutException e) {

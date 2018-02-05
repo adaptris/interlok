@@ -18,6 +18,7 @@ package com.adaptris.core.stubs;
 
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.ConnectedService;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
@@ -29,7 +30,7 @@ import com.adaptris.core.util.LifecycleHelper;
  * @author lchan
  * 
  */
-public class MockServiceWithConnection extends ServiceImp {
+public class MockServiceWithConnection extends ServiceImp implements ConnectedService {
 
   private AdaptrisConnection connection;
 

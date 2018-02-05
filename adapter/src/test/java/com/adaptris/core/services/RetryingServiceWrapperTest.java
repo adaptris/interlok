@@ -94,6 +94,9 @@ public class RetryingServiceWrapperTest extends GeneralServiceExample {
     retryingServiceWrapper.setService(wrappedService);
     
     LifecycleHelper.init(retryingServiceWrapper);
+    assertNotNull(retryingServiceWrapper.wrappedServices());
+    assertEquals(1, retryingServiceWrapper.wrappedServices().length);
+
     LifecycleHelper.start(retryingServiceWrapper);
     LifecycleHelper.stop(retryingServiceWrapper);
     LifecycleHelper.close(retryingServiceWrapper);

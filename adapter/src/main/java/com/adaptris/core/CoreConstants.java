@@ -137,9 +137,9 @@ public abstract class CoreConstants {
   public static final String HTTP_SESSION_KEY = "httpsession";
   
   /**
-   * Metadata key that contains the http method (get, post, put etc).
+   * Metadata key that contains the http method (GET, POST, PUT etc) when receiving a message via
+   * {@link com.adaptris.core.http.jetty.JettyMessageConsumer} or similar.
    *
-   * @see com.adaptris.core.http.JdkHttpProducer
    */
   public static final String HTTP_METHOD = "httpmethod";
   
@@ -262,8 +262,8 @@ public abstract class CoreConstants {
   public static final String OBJ_METADATA_EXCEPTION_CAUSE = Exception.class.getName() + "_Cause";
 
   /**
-   * Metadata key that contains the last response code from an HTTP Server when using JdkHttpProducer.
-   * {@linkplain com.adaptris.core.http.JdkHttpProducer}
+   * Metadata key that contains the last response code from an HTTP Server when using
+   * {@link com.adaptris.core.http.client.net.HttpProducer} or similar.
    *
    */
   public static final String HTTP_PRODUCER_RESPONSE_CODE = "adphttpresponse";
@@ -279,12 +279,12 @@ public abstract class CoreConstants {
 
 
   /**
-   * Metadata key for the <code>HttpServletResponse</code> object metadata made available from Jetty.
+   * Metadata key for the {@code HttpServletResponse} object metadata made available from Jetty.
    */
   public static final String JETTY_RESPONSE_KEY = "jettyresponse";
 
   /**
-   * Metadata key for the <code>HttpServletRequest</code> object metadata made available from Jetty.
+   * Metadata key for the {@code HttpServletRequest} object metadata made available from Jetty.
    */
   public static final String JETTY_REQUEST_KEY = "jettyrequest";
 
