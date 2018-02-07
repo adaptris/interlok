@@ -45,6 +45,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(summary = "Interceptor that reports on whether there are in flight messages on this workflow",
     tag = "interceptor")
 public class InFlightWorkflowInterceptor extends WorkflowInterceptorImpl {
+  
+  public static final String UID_SUFFIX = "-InFlight";
 
   static {
     RuntimeInfoComponentFactory.registerComponentFactory(new JmxFactory());

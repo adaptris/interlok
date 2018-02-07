@@ -362,12 +362,14 @@ public class WorkflowManager extends ComponentManagerImpl<Workflow>implements Wo
     if (managedWorkflow.disableMessageCount()) return;
     if (!hasInterceptorOfType(managedWorkflow.getInterceptors(), MessageMetricsInterceptor.class)) {
       log.trace("Message count interceptor added for [{}], tracks metrics for ~1hr", createObjectName());
+      String uid = managedWorkflow.getUniqueId() + MessageMetricsInterceptor.UID_SUFFIX;
       managedWorkflow.getInterceptors().add(
-          new MessageMetricsInterceptor(managedWorkflow.getUniqueId(), new TimeInterval(5L, TimeUnit.MINUTES), 12));
+          new MessageMetricsInterceptor(uid, new TimeInterval(5L, TimeUnit.MINUTES), 12));
     }
     if (!hasInterceptorOfType(managedWorkflow.getInterceptors(), InFlightWorkflowInterceptor.class)) {
       log.trace("InFlight interceptor added for [{}]", createObjectName());
-      managedWorkflow.getInterceptors().add(new InFlightWorkflowInterceptor(managedWorkflow.getUniqueId()));
+      String uid = managedWorkflow.getUniqueId() + InFlightWorkflowInterceptor.UID_SUFFIX;
+      managedWorkflow.getInterceptors().add(new InFlightWorkflowInterceptor(uid));
     }
   }
 

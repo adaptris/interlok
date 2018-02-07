@@ -48,6 +48,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(summary = "Interceptor that captures the total number of messages passing through the workflow",
     tag = "interceptor")
 public class MessageMetricsInterceptor extends MessageMetricsInterceptorImpl {
+  
+  public static final String UID_SUFFIX = "-MessageMetrics";
 
   static {
     RuntimeInfoComponentFactory.registerComponentFactory(new JmxFactory());
