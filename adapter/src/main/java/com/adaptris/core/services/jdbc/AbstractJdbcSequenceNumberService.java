@@ -92,7 +92,6 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
   private Boolean createDatabase;
 
   private OverflowBehaviour overflowBehaviour;
-  private transient DatabaseActor actor;
 
   private enum StatementType {
     Select {
@@ -154,7 +153,6 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
 
   public AbstractJdbcSequenceNumberService() {
     super();
-    actor = new DatabaseActor();
   }
 
   @Override

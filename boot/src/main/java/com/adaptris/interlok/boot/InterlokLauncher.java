@@ -147,25 +147,25 @@ public class InterlokLauncher extends Launcher {
     return lib;
   }
 
-  private String cleanupPath(String path) {
-    path = path.trim();
+  private String cleanupPath(final String path) {
+    String cleaned = path.trim();
     // No need for current dir path
-    if (path.startsWith("./")) {
-      path = path.substring(2);
+    if (cleaned.startsWith("./")) {
+      cleaned = cleaned.substring(2);
     }
-    if (JAR_FILTER.accept(new File(path))) {
-      return path;
+    if (JAR_FILTER.accept(new File(cleaned))) {
+      return cleaned;
     }
-    if (path.endsWith("/*")) {
-      path = path.substring(0, path.length() - 1);
+    if (cleaned.endsWith("/*")) {
+      cleaned = cleaned.substring(0, cleaned.length() - 1);
     }
     else {
       // It's a directory
-      if (!path.endsWith("/") && !path.equals(".")) {
-        path = path + "/";
+      if (!cleaned.endsWith("/") && !cleaned.equals(".")) {
+        cleaned = cleaned + "/";
       }
     }
-    return path;
+    return cleaned;
   }
 
   private static void debug(String message, Object... objects) {

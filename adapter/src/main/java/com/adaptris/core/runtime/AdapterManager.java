@@ -395,7 +395,6 @@ public class AdapterManager extends ComponentManagerImpl<Adapter> implements Ada
   }
 
   private ChannelRuntimeManager findChannelManager(String id) {
-    boolean removed = false;
     ChannelRuntimeManager found = null;
     MBeanServer server = JmxHelper.findMBeanServer();
     for (ChannelRuntimeManager mgr : channelManagers) {
