@@ -1,27 +1,29 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core;
 
+import static com.adaptris.core.CoreConstants.UNIQUE_ID_JMX_PATTERN;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 import java.util.Date;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.hibernate.validator.constraints.NotBlank;
@@ -41,7 +43,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Links two {@link com.adaptris.core.AdaptrisConnection} implementations and has a {@link WorkflowList}
  * </p>
  * <p>
- * 
+ *
  * @config channel
  */
 // Should probably implement EventAware...
@@ -66,6 +68,7 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
   private ProcessingExceptionHandler messageErrorHandler;
   @NotNull
   @NotBlank
+  @Pattern(regexp = UNIQUE_ID_JMX_PATTERN)
   private String uniqueId;
   @InputFieldDefault(value = "true")
   private Boolean autoStart;
@@ -122,10 +125,12 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
     return ehToUse;
   }
 
+  @Override
   public void registerEventHandler(EventHandler eh) {
     eventHandler = eh;
   }
 
+  @Override
   public void changeState(ComponentState s) {
     state = s;
   }
@@ -188,7 +193,7 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
    * <p>
    * Sets the <code>AdaptrisConnection</code> to use for consuming.
    * </p>
-   * 
+   *
    * @param connection the <code>AdaptrisConnection</code> to use for consuming, may not be null
    */
   public void setConsumeConnection(AdaptrisConnection connection) {
@@ -199,7 +204,7 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
    * <p>
    * Returns the <code>AdaptrisConnection</code> used for consuming.
    * </p>
-   * 
+   *
    * @return the <code>AdaptrisConnection</code> used for consuming
    */
   public AdaptrisConnection getConsumeConnection() {
@@ -210,7 +215,7 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
    * <p>
    * Sets the <code>AdaptrisConnection</code> to use for producing.
    * </p>
-   * 
+   *
    * @param connection the <code>AdaptrisConnection</code> to use for producing, may not be null
    */
   public void setProduceConnection(AdaptrisConnection connection) {
@@ -221,7 +226,7 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
    * <p>
    * Returns the <code>AdaptrisConnection</code> used for producing.
    * </p>
-   * 
+   *
    * @return the <code>AdaptrisConnection</code> used for producing
    */
   public AdaptrisConnection getProduceConnection() {
@@ -232,7 +237,7 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
    * <p>
    * Sets the <code>WorkflowList</code> to use.
    * </p>
-   * 
+   *
    * @param workflows the <code>WorkflowList</code> to use, may not be null
    */
   public void setWorkflowList(WorkflowList workflows) {
@@ -243,7 +248,7 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
    * <p>
    * Returns the <code>WorkflowList</code> to use.
    * </p>
-   * 
+   *
    * @return the <code>WorkflowList</code> to use
    */
   public WorkflowList getWorkflowList() {
@@ -254,7 +259,7 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
    * <p>
    * Sets the <code>MessageErrorHandler</code> to use.
    * </p>
-   * 
+   *
    * @param errorHandler the <code>MessageErrorHandler</code> to use, may not be null
    */
   public void setMessageErrorHandler(ProcessingExceptionHandler errorHandler) {
@@ -265,7 +270,7 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
    * <p>
    * Returns the <code>MessageErrorHandler</code> to use.
    * </p>
-   * 
+   *
    * @return the <code>MessageErrorHandler</code> to use
    */
   public ProcessingExceptionHandler getMessageErrorHandler() {
@@ -277,7 +282,7 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
    * Returns <code>true</code> if this <code>Channel</code> is available. A <code>Channel</code> is available if i) it is not in the
    * process of being rebooted or ii) it has not failed to reboot.
    * </p>
-   * 
+   *
    * @return <code>true</code> if this <code>Channel</code> is available
    */
   public boolean isAvailable() {
@@ -288,7 +293,7 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
    * <p>
    * Set whether this <code>Channel</code> is available.
    * </p>
-   * 
+   *
    * @param b whether this <code>Channel</code> is available
    */
   public void toggleAvailability(boolean b) {
@@ -298,7 +303,7 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
 
   /**
    * Register the active <code>MessageErrorHandler</code> for this Channel.
-   * 
+   *
    * @param m the active <code>MessageErrorHandler</code>
    */
   public void registerActiveMsgErrorHandler(ProcessingExceptionHandler m) {
@@ -307,7 +312,7 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
 
   /**
    * Return the active <code>MessageErrorHandler</code> for this Channel.
-   * 
+   *
    * @return the active <code>MessageErrorHandler</code>
    */
   public ProcessingExceptionHandler retrieveActiveMsgErrorHandler() {
@@ -318,7 +323,7 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
    * <p>
    * Get the unique id of this channel.
    * </p>
-   * 
+   *
    * @return the unique id
    */
   @Override
@@ -331,7 +336,7 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
    * Set the unique id of this channel. The channel's unique id allows it to be individually controlled, either by an event or by
    * the Adapter container.
    * </p>
-   * 
+   *
    * @param string the unique id
    */
   public void setUniqueId(String string) {
@@ -342,7 +347,7 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
    * <p>
    * Check if this channel has a unique Id.
    * </p>
-   * 
+   *
    * @return true if the unique id is non-null and non- empty
    */
   public boolean hasUniqueId() {
@@ -377,7 +382,7 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
    * <p>
    * This method is not <code>synchronized</code> and returns the 'last recorded' state of this object.
    * </p>
-   * 
+   *
    * @see com.adaptris.core.StateManagedComponent#retrieveComponentState()
    */
   @Override
@@ -420,7 +425,7 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
   /**
    * <p>
    * Checks that ConnectionErrorHandlers are not sematically equal.
-   * 
+   *
    * However, if we have a shared connection where both are actually the same object,
    * then we should obviously not throw an exception.
    * </p>
@@ -449,7 +454,7 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
    * If auto-start is set to false, then this channel is not started. This behaviour only occurs if the channel has a non-null/empty
    * unique-id as otherwise you will not be able to start the channel through the standard JMX controls
    * </p>
-   * 
+   *
    * @param autoStart default is true.
    */
   public void setAutoStart(Boolean autoStart) {
@@ -469,7 +474,7 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
 
   /**
    * Get the last time this channel was started
-   * 
+   *
    * @return channel start time
    */
   public Date lastStartTime() {
@@ -479,7 +484,7 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
   /**
    * Get the last time this channel was stopped. This is set when the channel is initialised so it may have been subsequently
    * started.
-   * 
+   *
    * @return channel stop time
    */
   public Date lastStopTime() {

@@ -1,18 +1,18 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core;
 
@@ -135,14 +135,14 @@ public abstract class CoreConstants {
    * Metadata key for <code>HttpSession</code> object metadata.
    */
   public static final String HTTP_SESSION_KEY = "httpsession";
-  
+
   /**
    * Metadata key that contains the http method (GET, POST, PUT etc) when receiving a message via
    * {@link com.adaptris.core.http.jetty.JettyMessageConsumer} or similar.
    *
    */
   public static final String HTTP_METHOD = "httpmethod";
-  
+
   /**
    * <p>
    * Metadta key for number of previous retries.
@@ -329,5 +329,14 @@ public abstract class CoreConstants {
    * </p>
    */
   public static final String FS_PRODUCE_DIRECTORY = "fsProduceDir";
+
+  /**
+   * <p>
+   * Regex pattern for the unique id of {@link com.adaptris.core.AdaptrisComponent} which are
+   * managed by JMX. This prevent to use reserved characters in the unique id. '@' has been added to
+   * prevent issues when a workflow and channel uid are added together like workflowUid@ChannelUid.
+   * </p>
+   */
+  public static final String UNIQUE_ID_JMX_PATTERN = "[^,\\*\\?\\=\\:\\\"\\\\@]+";
 
 }

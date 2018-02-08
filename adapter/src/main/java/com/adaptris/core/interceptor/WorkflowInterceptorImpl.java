@@ -16,6 +16,10 @@
 
 package com.adaptris.core.interceptor;
 
+import static com.adaptris.core.CoreConstants.UNIQUE_ID_JMX_PATTERN;
+
+import javax.validation.constraints.Pattern;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.Channel;
 import com.adaptris.core.ClosedState;
@@ -34,6 +38,7 @@ import com.adaptris.util.GuidGenerator;
  */
 public abstract class WorkflowInterceptorImpl implements WorkflowInterceptor, StateManagedComponent {
 
+  @Pattern(regexp = UNIQUE_ID_JMX_PATTERN)
   private String uniqueId;
   private transient ComponentState state;
   private transient Channel parentChannel;
