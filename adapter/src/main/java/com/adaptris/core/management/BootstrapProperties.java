@@ -16,11 +16,15 @@
 
 package com.adaptris.core.management;
 
+import static com.adaptris.core.management.Constants.BOOTSTRAP_PROPERTIES_RESOURCE_KEY;
 import static com.adaptris.core.management.Constants.CFG_KEY_CONFIG_MANAGER;
+import static com.adaptris.core.management.Constants.CFG_KEY_CONFIG_RESOURCE;
 import static com.adaptris.core.management.Constants.CFG_KEY_CONFIG_URL;
+import static com.adaptris.core.management.Constants.CFG_KEY_JMX_SERVICE_URL_KEY;
 import static com.adaptris.core.management.Constants.CFG_KEY_LOG4J12_URL;
 import static com.adaptris.core.management.Constants.CFG_KEY_LOGGING_RECONFIGURE;
 import static com.adaptris.core.management.Constants.CFG_KEY_LOGGING_URL;
+import static com.adaptris.core.management.Constants.CFG_KEY_MANAGEMENT_COMPONENT;
 import static com.adaptris.core.management.Constants.DBG;
 import static com.adaptris.core.management.Constants.DEFAULT_CONFIG_MANAGER;
 import static com.adaptris.core.management.Constants.DEFAULT_PROPS_RESOURCE;
@@ -62,8 +66,7 @@ public class BootstrapProperties extends Properties {
   private static final long serialVersionUID = 2010101401L;
   private static final String[] BOOTSTRAP_PROP_OVERRIDE =
   {
-      Constants.CFG_KEY_CONFIG_URL, Constants.CFG_KEY_LOGGING_URL, Constants.CFG_KEY_JMX_SERVICE_URL_KEY,
-      Constants.CFG_KEY_MANAGEMENT_COMPONENT
+      CFG_KEY_CONFIG_URL, CFG_KEY_LOGGING_URL, CFG_KEY_JMX_SERVICE_URL_KEY, CFG_KEY_MANAGEMENT_COMPONENT
   };
 
   private static final String[] BOOTSTRAP_SYSPROP_OVERRIDE =
@@ -120,7 +123,7 @@ public class BootstrapProperties extends Properties {
   public BootstrapProperties(String resourceName) throws Exception {
     this();
     putAll(overrideWithSystemProperties(createProperties(resourceName)));
-    setProperty(Constants.BOOTSTRAP_PROPERTIES_RESOURCE_KEY, resourceName);
+    setProperty(BOOTSTRAP_PROPERTIES_RESOURCE_KEY, resourceName);
   }
 
   public BootstrapProperties(Properties p) {
@@ -240,8 +243,8 @@ public class BootstrapProperties extends Properties {
       }
     }
     if (adapterXml == null) {
-      log.trace("Sourcing configuration from [{}] property", Constants.CFG_KEY_CONFIG_RESOURCE);
-      adapterXml = getProperty(Constants.CFG_KEY_CONFIG_RESOURCE);
+      log.trace("Sourcing configuration from [{}] property", CFG_KEY_CONFIG_RESOURCE);
+      adapterXml = getProperty(CFG_KEY_CONFIG_RESOURCE);
     }
     return adapterXml;
   }

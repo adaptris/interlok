@@ -68,7 +68,6 @@ public abstract class BaseJndiImplementation extends VendorImplementationImp {
     Object result = null;
     try {
       if (context == null) {
-        String defaultPasswordKey = encodedPasswordKeys == null ? Context.SECURITY_CREDENTIALS : encodedPasswordKeys;
         synchronized (this) {
           Properties p = KeyValuePairSet.asProperties(getJndiParams());
 

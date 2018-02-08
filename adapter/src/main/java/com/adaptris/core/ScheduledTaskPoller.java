@@ -30,7 +30,6 @@ import com.adaptris.util.TimeInterval;
  */
 public abstract class ScheduledTaskPoller extends PollerImp {
 
-  private static final TimeInterval DEFAULT_POLL_INTERVAL = new TimeInterval(20L, TimeUnit.SECONDS);
   private static final TimeInterval DEFAULT_SHUTDOWN_WAIT = new TimeInterval(1L, TimeUnit.MINUTES);
 
   @AdvancedConfig

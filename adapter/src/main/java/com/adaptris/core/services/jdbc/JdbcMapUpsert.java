@@ -155,7 +155,6 @@ public abstract class JdbcMapUpsert extends JdbcMapInsert {
 
     @Override
     public PreparedStatement addParams(PreparedStatement statement, Map<String, String> obj) throws SQLException {
-      int paramIndex = 1;
       statement.clearParameters();
       statement.setObject(1, toObject(idField(), obj.get(idField())));
       return statement;
