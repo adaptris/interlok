@@ -125,10 +125,7 @@ public class WorkflowRetryAndContinue extends DefaultWorkflowLifecycleStrategy {
     if (maxRetries() == INFINITE_RETRIES) {
       return false;
     }
-    if (attempts > maxRetries()) {
-      return true;
-    }
-    return false;
+    return attempts > maxRetries();
   }
 
   public Integer getMaxRetries() {
