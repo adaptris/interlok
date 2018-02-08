@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,11 +47,6 @@ public abstract class ConnectionErrorHandlerImp implements ConnectionErrorHandle
     adpConnection = Args.notNull(connection, "connection");
   }
 
-  // @Override
-  // public AdaptrisConnection retrieveConnection() {
-  // return adpConnection;
-  // }
-
   @Override
   public <T> T retrieveConnection(Class<T> type) {
     return (T) adpConnection;
@@ -61,21 +57,42 @@ public abstract class ConnectionErrorHandlerImp implements ConnectionErrorHandle
     return true;
   }
 
+
   /**
    * Standard functionality to restart the owner of the connection.
    * 
    */
   protected void restartAffectedComponents() {
     AdaptrisConnection connection = retrieveConnection(AdaptrisConnection.class);
+    Set<StateManagedComponent> toRestart = filter(connection.retrieveExceptionListeners());
+    try {
+      tryRestart(toRestart);
+    } catch (RuntimeException e) {
+      waitQuietly(TimeUnit.SECONDS.toMillis(10L));
+      tryRestart(toRestart);
+    }
+  }
+
+  private void waitQuietly(long ms) {
+    try {
+      Thread.sleep(ms);
+    } catch (InterruptedException e) {
+    }
+  }
+
+  private void tryRestart(Set<StateManagedComponent> toRestart) {
+    AdaptrisConnection connection = retrieveConnection(AdaptrisConnection.class);
     Set<StateManagedComponent> listeners = connection.retrieveExceptionListeners();
     // Close all component first.
     // By stopping all components first, we ensure that the connection isn't continually restarted.
     // As connections might be shared across multiple components.
-    Set<StateManagedComponent> toRestart = stopAndClose(listeners);
+    stopAndClose(listeners);
     // If the connection is a normal connection and part of a channel, it should already be stopped
     // So StateManagedComp will ignore it.
     // If it's part of a SharedConnnection list, then it won't be stopped, so let's stop it.
-    stop(connection);
+    log.trace("Stopping Connection : [{}]", friendlyName(connection));
+    LifecycleHelper.stopAndClose(connection);
+
     // The init here should start the connections, because the channel is in fact a listener still
     // make a new LinkedHashSet out of it, because AU have reported a conncurrent modification exception
     // error during the start phase.
@@ -87,22 +104,15 @@ public abstract class ConnectionErrorHandlerImp implements ConnectionErrorHandle
     for (StateManagedComponent c : list) {
       String loggingId = friendlyName(c);
       try {
-        log.trace("Initialising affected component : [" + loggingId + "]");
+        log.trace("Initialising affected component : [{}]", loggingId);
         LifecycleHelper.init(c);
       }
       catch (CoreException e) {
         log.error("Exception initialising component", e);
-        log.error("component [" + loggingId + "] cannot be restarted.");
+        log.error("component [{}] cannot be restarted", loggingId);
 
       }
     }
-  }
-
-  private void stop(AdaptrisConnection connection) {
-    String loggingId = friendlyName(connection);
-    log.trace("Stopping Connection : [{}]", loggingId);
-    LifecycleHelper.stop(connection);
-    LifecycleHelper.close(connection);
   }
 
   private void start(Set<StateManagedComponent> list) {
@@ -124,34 +134,32 @@ public abstract class ConnectionErrorHandlerImp implements ConnectionErrorHandle
     }
   }
 
-  private Set<StateManagedComponent> stopAndClose(Set<StateManagedComponent> list) {
+  private Set<StateManagedComponent> filter(Set<StateManagedComponent> list) {
+    Set<StateManagedComponent> result = new LinkedHashSet<>();
+    for (StateManagedComponent c : list) {
+      String loggingId = friendlyName(c);
+      if (c.retrieveComponentState() == StartedState.getInstance()) {
+        log.trace("Component : [{}] will be restarted after recovery", loggingId);
+        result.add(c);
+      }
+    }
+    return result;
+  }
+
+  private void stopAndClose(Set<StateManagedComponent> list) {
     Set<StateManagedComponent> result = new LinkedHashSet<>();
     for (StateManagedComponent c : list) {
       String loggingId = friendlyName(c);
       // ID 167 - Let's check if the component is not in a closed state
       // If it's not then let's stop/close it, and we can restart after.
       if (c.retrieveComponentState() != ClosedState.getInstance()) {
-        ComponentState previousState = c.retrieveComponentState();
         log.trace("Stop/Close affected component : [{}]", loggingId);
-        LifecycleHelper.stop(c);
-        LifecycleHelper.close(c);
+        LifecycleHelper.stopAndClose(c);
         if (c instanceof Channel) {
           ((Channel) c).toggleAvailability(false);
         }
-        // If the previous state was "started", then the component should be restarted.
-        if (previousState == StartedState.getInstance()) {
-          log.trace("Component : [{}] will be restarted", loggingId);
-          result.add(c);
-        }
-        else {
-          log.info("Component : [{}] was not started when recovery attempted, it will not be restarted", loggingId);
-        }
-      }
-      else {
-        log.trace("Component : [{}] currently closed, ignoring", loggingId);
       }
     }
-    return result;
   }
 
   protected List<Channel> getRegisteredChannels() {

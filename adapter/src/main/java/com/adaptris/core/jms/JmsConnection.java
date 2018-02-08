@@ -37,6 +37,7 @@ import com.adaptris.core.ConnectionErrorHandler;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.security.password.Password;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -100,9 +101,7 @@ public class JmsConnection extends AllowsRetriesConnection implements JmsConnect
       connect();
     }
     catch (Exception e) {
-      throw new CoreException(e);
-    }
-    finally {
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
@@ -124,10 +123,8 @@ public class JmsConnection extends AllowsRetriesConnection implements JmsConnect
     try {
       connection.start();
     }
-    catch (JMSException e) {
-      throw new CoreException(e);
-    }
-    finally {
+    catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
