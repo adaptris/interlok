@@ -19,6 +19,7 @@ package com.adaptris.core.lifecycle;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.Workflow;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -61,7 +62,7 @@ public class WorkflowRetryAndFail extends WorkflowRetryAndContinue {
       catch (CoreException e) {
         giveup(e, attempts);
         logFailure(String.format(FAILURE_LOG_MSG, action.name(), LoggingHelper.friendlyName(wf), e.getMessage()), attempts);
-        waitQuietly();
+        LifecycleHelper.waitQuietly(waitInterval());
       }
     }
   }

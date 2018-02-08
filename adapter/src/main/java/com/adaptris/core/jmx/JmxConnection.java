@@ -39,6 +39,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.JmxHelper;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.adaptris.security.password.Password;
 import com.adaptris.util.KeyValuePairBag;
@@ -140,19 +141,13 @@ public class JmxConnection extends AllowsRetriesConnection {
         } else {
           log.warn("Attempt [{}] failed for [{}], retrying", attemptCount, jmxServiceUrlForLogging());
           log.info(createLoggingStatement(attemptCount));
-          waitQuietly();
+          LifecycleHelper.waitQuietly(connectionRetryInterval());
           continue;
         }
       }
     }
   }
 
-  private void waitQuietly() {
-    try {
-      Thread.sleep(connectionRetryInterval());
-    } catch (InterruptedException e) {
-    }
-  }
 
   private MBeanServerConnection createConnection() throws IOException, AdaptrisSecurityException {
     MBeanServerConnection result = null;

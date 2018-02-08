@@ -194,23 +194,15 @@ public class ActiveMqPasPollingConsumerTest extends BaseCase {
     }
   }
 
-
-  static void waitQuietly(long ms) {
-    try {
-      Thread.sleep(ms);
-    } catch (InterruptedException e) {
-    }
-  }
-
   static void shutdownQuietly(final StandaloneProducer sender, final StandaloneConsumer receiver,
       final EmbeddedActiveMq activeMqBroker) {
     MY_THREAD_FACTORY.newThread(new Runnable() {
       public void run() {
-        waitQuietly(1000);
+        LifecycleHelper.waitQuietly(1000);
         stop(sender);
-        waitQuietly(1000);
+        LifecycleHelper.waitQuietly(1000);
         stop(receiver);
-        waitQuietly(1000);
+        LifecycleHelper.waitQuietly(1000);
         activeMqBroker.destroy();
       }
     }).start();

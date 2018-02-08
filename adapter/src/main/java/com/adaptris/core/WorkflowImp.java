@@ -338,12 +338,7 @@ public abstract class WorkflowImp implements Workflow {
   protected void handleChannelUnavailable(AdaptrisMessage msg) {
     log.debug("channel unavailable, waiting to resubmit...");
 
-    try {
-      Thread.sleep(channelUnavailableWait());
-    }
-    catch (InterruptedException e) {
-      ;
-    }
+    LifecycleHelper.waitQuietly(channelUnavailableWait());
 
     if (obtainChannel().isAvailable()) {
       log.debug("Channel now available, resubmitting...");

@@ -68,15 +68,8 @@ public abstract class ConnectionErrorHandlerImp implements ConnectionErrorHandle
     try {
       tryRestart(toRestart);
     } catch (RuntimeException e) {
-      waitQuietly(TimeUnit.SECONDS.toMillis(10L));
+      LifecycleHelper.waitQuietly(TimeUnit.SECONDS.toMillis(10L));
       tryRestart(toRestart);
-    }
-  }
-
-  private void waitQuietly(long ms) {
-    try {
-      Thread.sleep(ms);
-    } catch (InterruptedException e) {
     }
   }
 
