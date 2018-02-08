@@ -59,8 +59,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(summary = "Construct a new payload based on metadata and a template", tag = "service,metadata")
 @DisplayOrder(order = {"template", "metadataTokens", "escapeBackslash"})
 public class PayloadFromMetadataService extends ServiceImp {
-
-  private static final String DEFAULT_ENCODING = "UTF-8";
   
   @NotNull
   @AutoPopulated

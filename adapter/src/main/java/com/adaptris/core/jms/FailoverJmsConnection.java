@@ -92,7 +92,7 @@ public class FailoverJmsConnection extends JmsConnection {
   protected void initConnection() throws CoreException {
     boolean connected = false;
     int attempts = 0;
-    while (connected == false) {
+    while (!connected) {
       attempts++;
       for (JmsConnection con : connections) {
         current = nullifyRetry(con);

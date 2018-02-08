@@ -41,7 +41,6 @@ public abstract class EncryptionService extends CoreSecurityService {
     try {
       Output output = doEncryption(addLength(m), retrieveRemotePartner(m));
       m.setPayload(output.getBytes());
-      addCompatibilityMetadata(m);
       if (branchingEnabled) {
         m.setNextServiceId(getSuccessId());
       }      
@@ -66,10 +65,6 @@ public abstract class EncryptionService extends CoreSecurityService {
    */
   private byte[] addLength(AdaptrisMessage msg) throws IOException {
       return msg.getPayload();
-  }
-
-  private void addCompatibilityMetadata(AdaptrisMessage msg) {
-      return;
   }
 
   protected abstract Output doEncryption(byte[] payload,

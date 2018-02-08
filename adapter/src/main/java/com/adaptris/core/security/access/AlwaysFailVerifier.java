@@ -15,8 +15,6 @@
 */
 package com.adaptris.core.security.access;
 
-import java.util.Map;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 

@@ -104,7 +104,7 @@ public class JmxNotificationConsumer extends AdaptrisMessageConsumerImp implemen
     try {
       connection.removeNotificationListener(actualObjectName, this);
     } catch (Exception ignoredIntentionally) {
-      ;
+
     }
   }
 

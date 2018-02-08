@@ -67,17 +67,6 @@ public class MetadataStatistics extends ChildRuntimeInfoComponentImpl implements
     return Long.valueOf(TimeUnit.MILLISECONDS.toSeconds(wrappedComponent.timesliceDurationMs())).intValue();
   }
 
-  private MetadataStatistic get(int index) {
-    MetadataStatistic result = null;
-    try {
-      result = wrappedComponent.getStats().get(index);
-    }
-    catch (IndexOutOfBoundsException e) {
-      result = new MetadataStatistic();
-    }
-    return result;
-  }
-
   @Override
   public List<MetadataStatistic> getStatistics() throws CoreException {
     return getStatistics(0, wrappedComponent.getStats().size());

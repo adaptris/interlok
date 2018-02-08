@@ -16,7 +16,6 @@
 
 package com.adaptris.core.management;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -54,7 +53,6 @@ public class UnifiedBootstrap {
   private transient BootstrapProperties bootstrapProperties;
   private transient AdapterRegistryMBean adapterRegistry;
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
-  private transient List<Object> mgmtComponents = new ArrayList<>();
 
   private static final String OPERATION_TIMEOUT_PROPERTY = "operationTimeout";
   private static final TimeInterval DEFAULT_OPERATION_TIMEOUT = new TimeInterval(2L, TimeUnit.MINUTES);
@@ -116,7 +114,7 @@ public class UnifiedBootstrap {
     bootstrapProperties.getConfigManager().syncAdapterConfiguration(adapter);
     adapterRegistry = bootstrapProperties.getConfigManager().getAdapterRegistry();
     bootstrapProperties.setProperty(Constants.CFG_JMX_LOCAL_ADAPTER_UID, adapter.getUniqueId());
-    mgmtComponents = ManagementComponentFactory.create(bootstrapProperties);
+    ManagementComponentFactory.create(bootstrapProperties);
     ManagementComponentFactory.initCreated(bootstrapProperties);
   }
 

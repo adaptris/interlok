@@ -18,8 +18,6 @@ package com.adaptris.core.transform;
 
 import javax.validation.Valid;
 
-import org.w3c.dom.Document;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -54,7 +52,7 @@ public class XmlBasicValidator extends MessageValidatorImpl {
   @Override
   public void validate(AdaptrisMessage msg) throws CoreException {
     try {
-      Document d = XmlHelper.createDocument(msg, documentFactoryBuilder());
+      XmlHelper.createDocument(msg, documentFactoryBuilder());
     }
     catch (Exception e) {
       ExceptionHelper.rethrowCoreException(e);

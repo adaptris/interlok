@@ -97,7 +97,7 @@ public class PayloadHashingService extends ServiceImp {
     try {
       Args.notBlank(getHashAlgorithm(), "hashAlgorithm");
       Args.notBlank(getMetadataKey(), "metadataKey");
-      MessageDigest d = MessageDigest.getInstance(getHashAlgorithm());
+      MessageDigest.getInstance(getHashAlgorithm());
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }

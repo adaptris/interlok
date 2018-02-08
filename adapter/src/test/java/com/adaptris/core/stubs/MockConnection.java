@@ -19,6 +19,7 @@ package com.adaptris.core.stubs;
 import com.adaptris.core.AdaptrisConnectionImp;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.StateManagedComponent;
+import com.adaptris.core.util.LifecycleHelper;
 
 /**
  * <p>
@@ -49,25 +50,25 @@ public class MockConnection extends AdaptrisConnectionImp implements StateManage
 
   @Override
   protected void initConnection() throws CoreException {
-    waitQuietly();
+    LifecycleHelper.waitQuietly(sleepTime);
     initCount++;
   }
 
   @Override
   protected void startConnection() throws CoreException {
-    waitQuietly();
+    LifecycleHelper.waitQuietly(sleepTime);
     startCount++;
   }
 
   @Override
   protected void stopConnection() {
-    waitQuietly();
+    LifecycleHelper.waitQuietly(sleepTime);
     stopCount++;
   }
 
   @Override
   protected void closeConnection() {
-    waitQuietly();
+    LifecycleHelper.waitQuietly(sleepTime);
     closeCount++;
   }
 
@@ -92,15 +93,4 @@ public class MockConnection extends AdaptrisConnectionImp implements StateManage
   protected void prepareConnection() throws CoreException {
   }
 
-
-  private void waitQuietly() {
-    if (sleepTime > 0) {
-      try {
-        Thread.sleep(sleepTime);
-      }
-      catch (InterruptedException e) {
-
-      }
-    }
-  }
 }

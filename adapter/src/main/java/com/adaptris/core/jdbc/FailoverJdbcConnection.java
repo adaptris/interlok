@@ -171,7 +171,6 @@ public class FailoverJdbcConnection extends DatabaseConnection {
 
   @Override
   public boolean equals(Object o) {
-    boolean rc = false;
     if (o == null) 
       return false;
     

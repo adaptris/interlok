@@ -16,11 +16,7 @@
 
 package com.adaptris.core.metadata;
 
-import java.util.Set;
-
-import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.MetadataCollection;
-import com.adaptris.core.MetadataElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**

@@ -29,6 +29,7 @@ import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.Workflow;
 import com.adaptris.core.runtime.BaseComponentMBean;
 import com.adaptris.core.runtime.SimpleNotificationListener;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 
 public class MessageCountNotificationTest extends MessageNotificationCase {
@@ -88,7 +89,7 @@ public class MessageCountNotificationTest extends MessageNotificationCase {
       mBeanServer.addNotificationListener(notifObjName, listener, null, null);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("Hello World");
       submitWithDelay(msg, workflow, 6, 5);
-      waitQuietly(1000);
+      LifecycleHelper.waitQuietly(1000);
       submitWithDelay(msg, workflow, 1, 5);
       listener.waitForMessages(1);
       assertEquals(1, listener.getNotifications().size());
@@ -117,9 +118,9 @@ public class MessageCountNotificationTest extends MessageNotificationCase {
       mBeanServer.addNotificationListener(notifObjName, listener, null, null);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("Hello World");
       submitWithDelay(msg, workflow, 10, 5);
-      waitQuietly(1000);
+      LifecycleHelper.waitQuietly(1000);
       submitWithDelay(msg, workflow, 6, 5);
-      waitQuietly(1000);
+      LifecycleHelper.waitQuietly(1000);
       submitWithDelay(msg, workflow, 1, 0);
       listener.waitForMessages(1);
       assertEquals(1, listener.getNotifications().size());
@@ -147,11 +148,11 @@ public class MessageCountNotificationTest extends MessageNotificationCase {
       mBeanServer.addNotificationListener(notifObjName, listener, null, null);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("Hello World");
       submitWithDelay(msg, workflow, 1, 5);
-      waitQuietly(1000);
+      LifecycleHelper.waitQuietly(1000);
       submitWithDelay(msg, workflow, 1, 5);
-      waitQuietly(1000);
+      LifecycleHelper.waitQuietly(1000);
       submitWithDelay(msg, workflow, 1, 5);
-      waitQuietly(1000);
+      LifecycleHelper.waitQuietly(1000);
       submitWithDelay(msg, workflow, 1, 5);
     } finally {
       stop(adapter);
@@ -176,11 +177,11 @@ public class MessageCountNotificationTest extends MessageNotificationCase {
       mBeanServer.addNotificationListener(notifObjName, listener, null, null);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("Hello World");
       submitWithDelay(msg, workflow, 6, 5);
-      waitQuietly(1000);
+      LifecycleHelper.waitQuietly(1000);
       submitWithDelay(msg, workflow, 1, 0);
-      waitQuietly(1000);
+      LifecycleHelper.waitQuietly(1000);
       submitWithDelay(msg, workflow, 1, 0);
-      waitQuietly(1000);
+      LifecycleHelper.waitQuietly(1000);
       submitWithDelay(msg, workflow, 1, 0);
       listener.waitForMessages(3);
       assertEquals(3, listener.getNotifications().size());
@@ -211,11 +212,11 @@ public class MessageCountNotificationTest extends MessageNotificationCase {
       mBeanServer.addNotificationListener(notifObjName, listener, null, null);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("Hello World");
       submitWithDelay(msg, workflow, 6, 5);
-      waitQuietly(1000);
+      LifecycleHelper.waitQuietly(1000);
       submitWithDelay(msg, workflow, 1, 0);
-      waitQuietly(1000);
+      LifecycleHelper.waitQuietly(1000);
       submitWithDelay(msg, workflow, 1, 0);
-      waitQuietly(1000);
+      LifecycleHelper.waitQuietly(1000);
       submitWithDelay(msg, workflow, 1, 0);
       listener.waitForMessages(2);
       assertEquals(2, listener.getNotifications().size());
@@ -233,17 +234,7 @@ public class MessageCountNotificationTest extends MessageNotificationCase {
   private void submitWithDelay(AdaptrisMessage msg, Workflow w, int count, long delay) {
     for (int i = 0; i < count; i++) {
       w.onAdaptrisMessage(msg);
-      waitQuietly(delay);
-    }
-  }
-
-  private void waitQuietly(long sleepTime) {
-    if (sleepTime > 0) {
-      try {
-        Thread.sleep(sleepTime);
-      } catch (InterruptedException e) {
-
-      }
+      LifecycleHelper.waitQuietly(delay);
     }
   }
 }

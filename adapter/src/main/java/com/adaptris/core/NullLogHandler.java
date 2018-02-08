@@ -34,9 +34,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("null-log-handler")
 public class NullLogHandler extends LogHandlerImp {
 
-  private static final String DEFAULT_STRING =
-    "No implementation of the Logging Handler configured";
-
   /**
    * @see com.adaptris.core.LogHandler#clean()
    */

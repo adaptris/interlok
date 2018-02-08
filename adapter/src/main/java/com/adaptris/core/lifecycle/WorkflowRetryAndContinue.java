@@ -116,16 +116,8 @@ public class WorkflowRetryAndContinue extends DefaultWorkflowLifecycleStrategy {
         if (!exceedsMaxRetries(attempts)) {
           logFailure(String.format(FAILURE_LOG_MSG, action.name(), LoggingHelper.friendlyName(wf), e.getMessage()), attempts);
         }
-        waitQuietly();
+        LifecycleHelper.waitQuietly(waitInterval());
       }
-    }
-  }
-
-  void waitQuietly() {
-    try {
-      Thread.sleep(waitInterval());
-    }
-    catch (InterruptedException e) {
     }
   }
 
@@ -133,10 +125,7 @@ public class WorkflowRetryAndContinue extends DefaultWorkflowLifecycleStrategy {
     if (maxRetries() == INFINITE_RETRIES) {
       return false;
     }
-    if (attempts > maxRetries()) {
-      return true;
-    }
-    return false;
+    return attempts > maxRetries();
   }
 
   public Integer getMaxRetries() {

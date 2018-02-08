@@ -27,6 +27,7 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
@@ -55,9 +56,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class MetadataHashingService extends ReformatMetadata {
   private static final String DEFAULT_HASH_ALG = "SHA1";
   @NotBlank
+  @AutoPopulated
   private String hashAlgorithm;
   @NotNull
   @Valid
+  @AutoPopulated
   private ByteTranslator byteTranslator;
 
   public MetadataHashingService() {
@@ -82,7 +85,7 @@ public class MetadataHashingService extends ReformatMetadata {
   @Override
   protected void initService() throws CoreException {
     try {
-      MessageDigest d = MessageDigest.getInstance(getHashAlgorithm());
+      MessageDigest.getInstance(getHashAlgorithm());
       super.initService();
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
