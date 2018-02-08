@@ -108,9 +108,6 @@ public class XpathMessageSplitter extends MessageSplitterImp {
     catch (Exception e) {
       throw new CoreException(e);
     }
-    finally {
-
-    }
   }
 
   // Consider making this namespace aware; we could follow what XpathMetadataQuery does.

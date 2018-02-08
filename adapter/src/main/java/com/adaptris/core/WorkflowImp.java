@@ -16,6 +16,7 @@
 
 package com.adaptris.core;
 
+import static com.adaptris.core.CoreConstants.KEY_WORKFLOW_SKIP_PRODUCER;
 import static com.adaptris.core.CoreConstants.OBJ_METADATA_EXCEPTION;
 import static com.adaptris.core.CoreConstants.OBJ_METADATA_EXCEPTION_CAUSE;
 import static com.adaptris.core.CoreConstants.UNIQUE_ID_JMX_PATTERN;
@@ -375,12 +376,12 @@ public abstract class WorkflowImp implements Workflow {
    */
   @Override
   public void doProduce(AdaptrisMessage msg) throws ServiceException, ProduceException {
-    if (!Boolean.valueOf(msg.getMetadataValue(CoreConstants.KEY_WORKFLOW_SKIP_PRODUCER)).booleanValue()) {
+    if (!Boolean.valueOf(msg.getMetadataValue(KEY_WORKFLOW_SKIP_PRODUCER)).booleanValue()) {
       producer.produce(msg);
       msg.addEvent(producer, true);
     }
     else {
-      log.debug("Skipping message producer, " + CoreConstants.KEY_WORKFLOW_SKIP_PRODUCER + " set to true");
+      log.debug("Skipping message producer, {} set to true", KEY_WORKFLOW_SKIP_PRODUCER);
     }
   }
 
@@ -782,7 +783,7 @@ public abstract class WorkflowImp implements Workflow {
     else {
       log.error(logMsg, e);
     }
-    msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, e);
+    msg.addObjectHeader(OBJ_METADATA_EXCEPTION, e);
     handleBadMessage(msg);
   }
 

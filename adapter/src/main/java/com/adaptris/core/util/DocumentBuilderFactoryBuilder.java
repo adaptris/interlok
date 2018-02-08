@@ -10,8 +10,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.lang.BooleanUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.xml.sax.EntityResolver;
 
 import com.adaptris.annotation.AdvancedConfig;
@@ -56,8 +54,6 @@ public class DocumentBuilderFactoryBuilder {
   @AdvancedConfig
   @Valid
   private EntityResolver entityResolver;
-
-  private static final Logger log = LoggerFactory.getLogger(DocumentBuilderFactoryBuilder.class);
 
   private static enum FactoryConfiguration {
     Validating() {

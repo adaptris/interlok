@@ -94,13 +94,13 @@ public class StatementParameter extends StatementParameterImpl {
    * @return an Object suitable for use in the service.
    * @throws ServiceException on error.
    */
-  protected Object convertToQueryClass(Object value) throws ServiceException {
+  protected Object convertToQueryClass(final Object value) throws ServiceException {
     if (value == null && convertNull()) {
       return "";
     }
     else {
       if(value instanceof String) {
-        value = (String) value;
+        String v = (String) value;
         try {
           Class<?> clazz = Class.forName(queryClass);
           Object obj = null;
@@ -111,13 +111,13 @@ public class StatementParameter extends StatementParameterImpl {
           });
           obj = construct.newInstance(new Object[]
           {
-            value
+              v
           });
   
           return obj;
         }
         catch (Exception e) {
-          throw new ServiceException("Failed to convert input String [" + value
+          throw new ServiceException("Failed to convert input String [" + v
               + "] to type [" + queryClass + "]", e);
         }
       } else
