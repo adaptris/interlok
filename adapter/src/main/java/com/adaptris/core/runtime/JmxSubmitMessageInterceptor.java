@@ -16,13 +16,18 @@
 
 package com.adaptris.core.runtime;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.Channel;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.Workflow;
 import com.adaptris.core.WorkflowInterceptor;
+import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -46,6 +51,9 @@ public class JmxSubmitMessageInterceptor implements WorkflowInterceptor {
   
   private String uniqueId;
 
+  @Valid
+  @NotNull
+  @AutoPopulated
   private MessageCache messageCache;
   
   public JmxSubmitMessageInterceptor() {
@@ -57,11 +65,8 @@ public class JmxSubmitMessageInterceptor implements WorkflowInterceptor {
   }
 
   @Override
-  public void workflowEnd(AdaptrisMessage inputMsg, AdaptrisMessage outputMsg) {
-    CacheableAdaptrisMessageWrapper wrapper = new CacheableAdaptrisMessageWrapper();
-    wrapper.setMessageId(outputMsg.getUniqueId());
-    wrapper.setMessage(outputMsg);
-    this.getMessageCache().put(wrapper);
+  public synchronized void workflowEnd(AdaptrisMessage inputMsg, AdaptrisMessage outputMsg) {
+    this.getMessageCache().put(new CacheableAdaptrisMessageWrapper(outputMsg.getUniqueId(), outputMsg));
   }
   
   @Override
@@ -70,22 +75,22 @@ public class JmxSubmitMessageInterceptor implements WorkflowInterceptor {
 
   @Override
   public void init() throws CoreException {
-    this.getMessageCache().init();
+    LifecycleHelper.init(getMessageCache());
   }
 
   @Override
   public void start() throws CoreException {
-    this.getMessageCache().start();
+    LifecycleHelper.start(getMessageCache());
   }
 
   @Override
   public void stop() {
-    this.getMessageCache().stop();
+    LifecycleHelper.stop(getMessageCache());
   }
 
   @Override
   public void close() {
-    this.getMessageCache().close();
+    LifecycleHelper.close(getMessageCache());
   }
 
   @Override

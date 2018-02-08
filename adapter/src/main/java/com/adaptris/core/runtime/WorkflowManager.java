@@ -53,6 +53,7 @@ import com.adaptris.core.http.jetty.JettyPoolingWorkflowInterceptor;
 import com.adaptris.core.interceptor.InFlightWorkflowInterceptor;
 import com.adaptris.core.interceptor.MessageMetricsInterceptor;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.interlok.InterlokException;
 import com.adaptris.interlok.types.SerializableMessage;
 import com.adaptris.util.TimeInterval;
@@ -191,10 +192,8 @@ public class WorkflowManager extends ComponentManagerImpl<Workflow>implements Wo
       }
     }
     if (this.injectInterceptor == null) {
-      injectInterceptor = new JmxSubmitMessageInterceptor();
+      injectInterceptor = LifecycleHelper.initAndStart(new JmxSubmitMessageInterceptor());
       managedWorkflow.getInterceptors().add(injectInterceptor);
-      injectInterceptor.init();
-      injectInterceptor.start();
     }
   }
 

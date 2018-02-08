@@ -16,20 +16,15 @@
 
 package com.adaptris.core.runtime;
 
-public interface MessageCache {
+import com.adaptris.core.ComponentLifecycle;
+
+public interface MessageCache extends ComponentLifecycle {
 
   public void put(CacheableAdaptrisMessageWrapper message);
   
   public CacheableAdaptrisMessageWrapper remove(String messageId);
   
   public boolean contains(String messageId);
-  
-  public void init();
-  
-  public void start();
-  
-  public void stop();
-  
-  public void close();
+
   
 }

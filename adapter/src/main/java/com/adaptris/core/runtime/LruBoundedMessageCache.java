@@ -47,7 +47,7 @@ public class LruBoundedMessageCache implements MessageCache {
   
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
-  private static final long DEFAULT_QUEUE_POLL = 100;
+  private static final long DEFAULT_QUEUE_POLL = 50;
   private static final int DEFAULT_MAX_MESSAGES = 100;
 
   private int maxMessages;
@@ -62,7 +62,6 @@ public class LruBoundedMessageCache implements MessageCache {
 
   @Override
   public void put(CacheableAdaptrisMessageWrapper message) {
-    log.trace("Caching message: ", message.getMessageId());
     try {
       lock.lock();
       while (!this.getBoundedCache().offer(message)) {
@@ -73,6 +72,7 @@ public class LruBoundedMessageCache implements MessageCache {
           break;
         }
       }
+      log.trace("Cached message: {}", message.getMessageId());
     } finally {
       lock.unlock();
     }
@@ -111,7 +111,7 @@ public class LruBoundedMessageCache implements MessageCache {
 
   @Override
   public void init() {
-    boundedCache = new ArrayBlockingQueue<>(this.getMaxMessages(), false);
+    boundedCache = new ArrayBlockingQueue<>(this.getMaxMessages(), true);
   }
 
   @Override
