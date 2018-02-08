@@ -125,16 +125,14 @@ public class StandardWorker implements FsWorker {
     if (newFile.exists()) {
       throw new FsFilenameExistsException("name [" + newFile + "] already exists");
     }
-    boolean result = checkAcl(oldFile).renameTo(newFile);
-    if (result == false) {
+    if (!checkAcl(oldFile).renameTo(newFile)) {
       throw new FsException("problem renaming file [" + oldFile + "] to [" + newFile + "]");
     }
   }
 
   public void delete(File file) throws FsException {
     try {
-      boolean result = checkAcl(file).delete();
-      if (result == false) {
+      if (!checkAcl(file).delete()) {
         throw new FsException("problem deleting file [" + file + "]");
       }
     }
