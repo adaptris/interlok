@@ -109,7 +109,7 @@ public abstract class ConnectionErrorHandlerImp implements ConnectionErrorHandle
       }
       catch (CoreException e) {
         log.error("Exception initialising component", e);
-        log.error("component [{}] cannot be restarted", loggingId);
+        log.error("component [{}] may not recover", loggingId);
 
       }
     }
@@ -128,7 +128,7 @@ public abstract class ConnectionErrorHandlerImp implements ConnectionErrorHandle
       }
       catch (CoreException e) {
         log.error("Exception starting component", e);
-        log.error("component [{}] cannot be restarted", loggingId);
+        log.error("component [{}] may not recover", loggingId);
 
       }
     }
@@ -147,7 +147,6 @@ public abstract class ConnectionErrorHandlerImp implements ConnectionErrorHandle
   }
 
   private void stopAndClose(Set<StateManagedComponent> list) {
-    Set<StateManagedComponent> result = new LinkedHashSet<>();
     for (StateManagedComponent c : list) {
       String loggingId = friendlyName(c);
       // ID 167 - Let's check if the component is not in a closed state
