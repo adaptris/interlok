@@ -64,4 +64,13 @@ public class NoOpFileArchive implements Archive {
     return Collections.EMPTY_LIST;
   }
 
+  @Override
+  public String toString() {
+    try {
+      return root.getCanonicalPath();
+    } catch (Exception e) {
+      return root.getAbsolutePath();
+    }
+  }
+
 }

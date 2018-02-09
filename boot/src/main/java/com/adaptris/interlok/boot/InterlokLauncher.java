@@ -112,7 +112,7 @@ public class InterlokLauncher extends Launcher {
       defaultClasspath = false;
     }
     List<String> result = new ArrayList<>();
-    for (String path : pathsToParse.split("[,|" + File.pathSeparator + "]")) {
+    for (String path : pathsToParse.split("[,|:;]")) {
       result.add(cleanupPath(path));
     }
     debug("Nested archive paths: ", result);
@@ -184,7 +184,7 @@ public class InterlokLauncher extends Launcher {
     if (file.isDirectory()) {
       debug("Added ", file);
       lib.add(new NoOpFileArchive(file));
-      if (defaultClasspath && !file.getName().equals(DEFAULT_CONFIG_DIR)) {
+      if (!(defaultClasspath && file.getName().equals(DEFAULT_CONFIG_DIR))) {
         lib.addAll(createArchives(file, recursive));
       }
     }
