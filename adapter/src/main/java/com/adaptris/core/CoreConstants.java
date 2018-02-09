@@ -337,6 +337,6 @@ public abstract class CoreConstants {
    * prevent issues when a workflow and channel uid are added together like workflowUid@ChannelUid.
    * </p>
    */
-  public static final String UNIQUE_ID_JMX_PATTERN = "[^,\\*\\?\\=\\:\\\"\\\\@]+";
+  public static final String UNIQUE_ID_JMX_PATTERN = "[^,\\*\\?=:\"\\\\@]+";
 
 }
