@@ -94,7 +94,7 @@
 
   <target name="macrodef.init" depends="ivy.macrodef"/>
 
-  <target name="prepare-for-publish" depends="prepare-ivy, jar, macrodef.init">
+  <target name="prepare-for-publish" depends="prepare-ivy, macrodef.init, jar, run-tests">
     <mkdir dir="${project.dist.dir}/${project.name}/pom"/>
     <mkdir dir="${project.dist.dir}/${project.name}/jar"/>
     <copy todir="${project.dist.dir}/${project.name}/jar" file="${project.dist.dir}/${project.jar.name}"/>
