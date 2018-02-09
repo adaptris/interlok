@@ -28,9 +28,11 @@ import org.apache.commons.io.IOUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -119,15 +121,20 @@ public class PayloadToMetadataService extends ServiceImp {
 
 
   @NotBlank
+  @AffectsMetadata
   private String key;
   @NotNull
+  @AutoPopulated
+  @InputFieldDefault(value = "Standard")
   private MetadataTarget metadataTarget;
   @NotNull
   @AutoPopulated
+  @InputFieldDefault(value = "None")
   private Encoding encoding;
 
   public PayloadToMetadataService() {
     setEncoding(Encoding.None);
+    setMetadataTarget(MetadataTarget.Standard);
   }
 
   public PayloadToMetadataService(String metadataKey, MetadataTarget target) {
