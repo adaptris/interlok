@@ -44,7 +44,7 @@ public class FailoverConnectionTest extends BaseCase {
 
   @Override
   protected void setUp() throws Exception {
-    initialiseDatabase(PROPERTIES.getProperty("jdbc.driver"), PROPERTIES.getProperty("jdbc.url"));
+    initialiseDatabase();
   }
 
   @Override
@@ -103,49 +103,92 @@ public class FailoverConnectionTest extends BaseCase {
     assertEquals(fc1.toString(), fc1.hashCode(), fc2.hashCode());
   }
 
+  public void testNoDriver() throws Exception {
+    FailoverConfig cfg = createFailoverConfig();
+    cfg.setDatabaseDriver("hello.there");
+    try {
+      FailoverConnection c = new FailoverConnection(cfg);
+      fail();
+    } catch (SQLException expected) {
+
+    }
+  }
+
   public void testConnection() throws Exception {
     try {
       FailoverConnection c = new FailoverConnection(new FailoverConfig());
       fail("suceeded w/o any urls");
-      } catch (Exception e) {
-        ;
-      }
-    FailoverConnection c = new FailoverConnection(createFailoverConfig());
+    } catch (Exception e) {
+      ;
+    }
+    FailoverConfig cfg = createFailoverConfig();
+    FailoverConnection c = new FailoverConnection(cfg);
+    assertEquals(cfg, c.getConfig());
     Connection con = c.getConnection();
     try {
       assertFalse(con.isClosed());
       createTables(con);
-    }
-    finally {
+    } finally {
       JdbcUtil.closeQuietly(con);
+      c.close();
     }
   }
 
-  public void testDataSource() throws Exception {
-    FailoverDataSource fds = new FailoverDataSource(createProperties());
-    fds.setLoginTimeout(fds.getLoginTimeout());
-    fds.setLogWriter(fds.getLogWriter());
-    Connection con = fds.getConnection();
+  public void testConnection_BadPassword() throws Exception {
+    FailoverConfig cfg = createFailoverConfig();
+    cfg.setPassword("ALTPW:abcdef");
+    FailoverConnection c = new FailoverConnection(cfg);
     try {
-      assertFalse(con.isClosed());
-      createTables(con);
-    }
-    finally {
-      JdbcUtil.closeQuietly(con);
+      Connection con = c.getConnection();
+      fail("Shouldn't be able to decrypt password");
+    } catch (SQLException expected) {
     }
   }
 
-  public void testDataSourceWithPassword() throws Exception {
-    FailoverDataSource fds = new FailoverDataSource(createProperties());
-    Connection con = fds.getConnection("MyUser", "MyPassword");
+  public void testConnection_NoDebug() throws Exception {
+    try {
+      FailoverConnection c = new FailoverConnection(new FailoverConfig());
+      fail("suceeded w/o any urls");
+    } catch (Exception e) {
+      ;
+    }
+    FailoverConfig cfg = createFailoverConfig();
+    cfg.setAlwaysValidateConnection(true);
+    cfg.setDebugMode(false);
+    FailoverConnection c = new FailoverConnection(cfg);
+    assertEquals(cfg, c.getConfig());
+    Connection con = c.getConnection();
     try {
       assertFalse(con.isClosed());
       createTables(con);
-    }
-    finally {
+    } finally {
       JdbcUtil.closeQuietly(con);
+      c.close();
     }
   }
+
+  public void testConnection_NoValidate() throws Exception {
+    try {
+      FailoverConnection c = new FailoverConnection(new FailoverConfig());
+      fail("suceeded w/o any urls");
+    } catch (Exception e) {
+      ;
+    }
+    FailoverConfig cfg = createFailoverConfig();
+    cfg.setAlwaysValidateConnection(false);
+    cfg.setDebugMode(false);
+    FailoverConnection c = new FailoverConnection(cfg);
+    assertEquals(cfg, c.getConfig());
+    Connection con = c.getConnection();
+    try {
+      assertFalse(con.isClosed());
+      createTables(con);
+    } finally {
+      JdbcUtil.closeQuietly(con);
+      c.close();
+    }
+  }
+
 
   private FailoverConfig createFailoverConfig() {
     FailoverConfig fc = new FailoverConfig();
@@ -159,7 +202,7 @@ public class FailoverConnectionTest extends BaseCase {
     return fc;
   }
 
-  private Properties createProperties() {
+  protected static Properties createProperties() {
     Properties p = new Properties();
     p.setProperty(JDBC_DRIVER, PROPERTIES.getProperty("jdbc.driver"));
     p.setProperty(JDBC_AUTO_COMMIT, "true");
@@ -171,11 +214,9 @@ public class FailoverConnectionTest extends BaseCase {
     return p;
   }
 
-  private void initialiseDatabase(String driver, String url) throws Exception {
-    Class.forName(driver);
-    Connection dbCon = null;
+  private void initialiseDatabase() throws Exception {
+    Connection dbCon = connect();
     try {
-      dbCon = DriverManager.getConnection(url);
       createTables(dbCon);
     }
     finally {
@@ -183,7 +224,12 @@ public class FailoverConnectionTest extends BaseCase {
     }
   }
 
-  private void createTables(Connection dbCon) throws SQLException {
+  protected static Connection connect() throws Exception {
+    Class.forName(PROPERTIES.getProperty("jdbc.driver"));
+    return DriverManager.getConnection(PROPERTIES.getProperty("jdbc.url"));
+  }
+
+  protected static void createTables(Connection dbCon) throws SQLException {
     Statement stmt = null;
     try {
       dbCon.setAutoCommit(true);

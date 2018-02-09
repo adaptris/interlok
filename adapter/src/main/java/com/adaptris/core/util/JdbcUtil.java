@@ -16,12 +16,22 @@
 
 package com.adaptris.core.util;
 
+import static org.apache.commons.lang.StringUtils.isEmpty;
+
 import java.io.Closeable;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
+import java.util.Properties;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.adaptris.security.exc.PasswordException;
+import com.adaptris.security.password.Password;
 
 /**
  * Helper methods used internally to support JDBC operations within the framework.
@@ -30,6 +40,8 @@ import java.sql.Statement;
  * @author $Author: lchan $
  */
 public abstract class JdbcUtil {
+
+  private static Logger log = LoggerFactory.getLogger(JdbcUtil.class);
 
   public static void closeQuietly(Statement p) {
     try {
@@ -159,4 +171,44 @@ public abstract class JdbcUtil {
     return null;
   }
 
+  public static Connection testConnection(Connection sqlConnection, String testStatement, boolean debugMode) throws SQLException {
+    Statement stmt = sqlConnection.createStatement();
+    ResultSet rs = null;
+    try {
+      if (isEmpty(testStatement)) {
+        return sqlConnection;
+      }
+      if (debugMode) {
+        rs = stmt.executeQuery(testStatement);
+        if (rs.next()) {
+          StringBuffer sb = new StringBuffer("TestStatement Results - ");
+          ResultSetMetaData rsm = rs.getMetaData();
+          for (int i = 1; i <= rsm.getColumnCount(); i++) {
+            sb.append("[");
+            sb.append(rsm.getColumnName(i));
+            sb.append("=");
+            sb.append(rs.getObject(i));
+            sb.append("] ");
+          }
+          log.trace(sb.toString());
+        }
+      } else {
+        stmt.execute(testStatement);
+      }
+    } finally {
+      JdbcUtil.closeQuietly(rs);
+      JdbcUtil.closeQuietly(stmt);
+    }
+    return sqlConnection;
+  }
+
+  public static Properties mergeConnectionProperties(Properties p, String username, String password) throws PasswordException {
+    if (!isEmpty(username)) {
+      p.setProperty("user", username);
+    }
+    if (!isEmpty(password)) {
+      p.setProperty("password", Password.decode(password));
+    }
+    return p;
+  }
 }

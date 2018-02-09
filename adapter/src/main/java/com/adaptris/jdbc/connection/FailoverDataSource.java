@@ -85,12 +85,12 @@ public class FailoverDataSource implements DataSource {
    */
   public static final String POOL_TIME_TO_WAIT = "failover.pool.timetowait";
 
-  private FailoverConfig databaseConfig;
+  protected transient Logger logR = LoggerFactory.getLogger(this.getClass());
 
+  private FailoverConfig databaseConfig;
+  private GenericObjectPool pool = null;
   private int poolMaximum;
   private long poolTimeToWait;
-  private transient Logger logR = LoggerFactory.getLogger(this.getClass());
-  private GenericObjectPool pool = null;
 
   private FailoverDataSource() {
   }
@@ -100,38 +100,43 @@ public class FailoverDataSource implements DataSource {
     init(p);
   }
 
-  private String getStatus() {
-
-    StringBuffer buffer = new StringBuffer();
-
-    buffer.append("\n Driver               "
-        + databaseConfig.getDatabaseDriver());
-    buffer.append("\n Urls                 "
-        + databaseConfig.getConnectionUrls());
-    buffer.append("\n pool.getMaxActive()  " + pool.getMaxActive());
-    buffer.append("\n pool.getMaxWait()    " + pool.getMaxWait());
-    buffer.append("\n pool.getNumActive()  " + pool.getNumActive());
-    buffer.append("\n pool.getNumIdle()    " + pool.getNumIdle());
-
-    return buffer.toString();
-  }
-
   private void init(Properties p) {
     if (p == null) {
       throw new RuntimeException("No Configuration available ");
     }
     for (int i = 0; i < REQUIRED_PROPERTIES.length; i++) {
       if (!p.containsKey(REQUIRED_PROPERTIES[i])) {
-        throw new RuntimeException("Missing Configuration "
-            + REQUIRED_PROPERTIES[i]);
+        throw new RuntimeException("Missing Configuration " + REQUIRED_PROPERTIES[i]);
       }
     }
     databaseConfig = new FailoverConfig(p);
     poolMaximum = Integer.parseInt(p.getProperty(POOL_MAX_SIZE, "10"));
-    poolTimeToWait = Integer
-        .parseInt(p.getProperty(POOL_TIME_TO_WAIT, "20000"));
-    pool = new GenericObjectPool(new PoolAttendant(databaseConfig),
-        poolMaximum, GenericObjectPool.WHEN_EXHAUSTED_BLOCK, poolTimeToWait);
+    poolTimeToWait = Integer.parseInt(p.getProperty(POOL_TIME_TO_WAIT, "20000"));
+    pool = new GenericObjectPool(new PoolAttendant(databaseConfig), poolMaximum, GenericObjectPool.WHEN_EXHAUSTED_BLOCK,
+        poolTimeToWait);
+    pool.setTestOnBorrow(true);
+    pool.setTestWhileIdle(true);
+  }
+
+  protected FailoverConfig config() {
+    return databaseConfig;
+  }
+
+  protected int maxPoolSize() {
+    return poolMaximum;
+  }
+
+  protected long timeToWait() {
+    return poolTimeToWait;
+  }
+
+  protected void overrideObjectPool(GenericObjectPool p) throws Exception {
+    destroy();
+    pool = p;
+  }
+
+  protected void destroy() throws Exception {
+    pool.close();
   }
 
   /**
@@ -146,12 +151,11 @@ public class FailoverDataSource implements DataSource {
       c = (Connection) pool.borrowObject();
     }
     catch (Exception e) {
-      SQLException sql = new SQLException(e.getMessage());
-      sql.initCause(e);
-      throw sql;
+      throw wrapSQLException(e);
     }
     return c;
   }
+
 
   /**
    * Get the configured connection.
@@ -205,14 +209,12 @@ public class FailoverDataSource implements DataSource {
     return DriverManager.getLogWriter();
   }
 
-  private void replaceConnection(ProxiedFailover p) throws SQLException {
+  void returnConnection(ConnectionProxy p) throws SQLException {
     try {
       pool.returnObject(p);
     }
     catch (Exception e) {
-      SQLException sql = new SQLException(e.getMessage());
-      sql.initCause(e);
-      throw sql;
+      throw wrapSQLException(e);
     }
   }
 
@@ -235,15 +237,30 @@ public class FailoverDataSource implements DataSource {
   @Override
   public java.util.logging.Logger getParentLogger()
       throws SQLFeatureNotSupportedException {
-    // TODO Auto-generated method stub
     return null;
+  }
+
+  protected static SQLClientInfoException wrapSQLClientInfoException(Exception e) {
+    if (e instanceof SQLClientInfoException) {
+      return (SQLClientInfoException) e;
+    }
+    SQLClientInfoException e2 = new SQLClientInfoException();
+    e2.initCause(e);
+    return e2;
+  }
+
+  protected static SQLException wrapSQLException(Exception e) {
+    if (e instanceof SQLException) {
+      return (SQLException) e;
+    }
+    return new SQLException(e.getMessage(), e);
   }
 
   /**
    * This class is reponsible for creating swimmers who swim in the Datasource
    * Pool.
    */
-  private class PoolAttendant implements PoolableObjectFactory {
+  protected class PoolAttendant implements PoolableObjectFactory {
 
     private FailoverConfig config;
 
@@ -256,7 +273,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public Object makeObject() throws Exception {
-      ProxiedFailover conn = new ProxiedFailover(config);
+      ConnectionProxy conn = new ConnectionProxy(config);
       return conn;
     }
 
@@ -275,8 +292,8 @@ public class FailoverDataSource implements DataSource {
         return false;
       }
       try {
-        ProxiedFailover conn = (ProxiedFailover) obj;
-        conn.getFailoverConnection().getConnection();
+        ConnectionProxy conn = (ConnectionProxy) obj;
+        conn.getWrappedConnection();
       }
       catch (Exception e) {
         return false;
@@ -289,9 +306,9 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public void destroyObject(Object arg0) throws Exception {
-      if (arg0.getClass().equals(ProxiedFailover.class)) {
-        ProxiedFailover c = (ProxiedFailover) arg0;
-        c.getFailoverConnection().close();
+      if (arg0.getClass().equals(ConnectionProxy.class)) {
+        ConnectionProxy c = (ConnectionProxy) arg0;
+        c.getWrappedConnection().close();
       }
     }
 
@@ -325,15 +342,15 @@ public class FailoverDataSource implements DataSource {
    * resources that are held by this object.
    * </p>
    */
-  private class ProxiedFailover implements Connection {
+  protected class ConnectionProxy implements Connection {
     private FailoverConnection conn;
 
-    ProxiedFailover(FailoverConfig conf) throws SQLException {
+    public ConnectionProxy(FailoverConfig conf) throws SQLException {
       conn = new FailoverConnection(conf);
     }
 
-    FailoverConnection getFailoverConnection() {
-      return conn;
+    Connection getWrappedConnection() throws SQLException {
+      return conn.getConnection();
     }
 
     /**
@@ -341,7 +358,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public Statement createStatement() throws SQLException {
-      return conn.getConnection().createStatement();
+      return getWrappedConnection().createStatement();
     }
 
     /**
@@ -349,7 +366,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public PreparedStatement prepareStatement(String sql) throws SQLException {
-      return conn.getConnection().prepareStatement(sql);
+      return getWrappedConnection().prepareStatement(sql);
     }
 
     /**
@@ -357,7 +374,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public CallableStatement prepareCall(String sql) throws SQLException {
-      return conn.getConnection().prepareCall(sql);
+      return getWrappedConnection().prepareCall(sql);
     }
 
     /**
@@ -365,7 +382,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public String nativeSQL(String sql) throws SQLException {
-      return conn.getConnection().nativeSQL(sql);
+      return getWrappedConnection().nativeSQL(sql);
     }
 
     /**
@@ -373,7 +390,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public void setAutoCommit(boolean autoCommit) throws SQLException {
-      conn.getConnection().setAutoCommit(autoCommit);
+      getWrappedConnection().setAutoCommit(autoCommit);
     }
 
     /**
@@ -381,7 +398,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public boolean getAutoCommit() throws SQLException {
-      return conn.getConnection().getAutoCommit();
+      return getWrappedConnection().getAutoCommit();
     }
 
     /**
@@ -389,7 +406,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public void commit() throws SQLException {
-      conn.getConnection().commit();
+      getWrappedConnection().commit();
     }
 
     /**
@@ -397,7 +414,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public void rollback() throws SQLException {
-      conn.getConnection().rollback();
+      getWrappedConnection().rollback();
     }
 
     /**
@@ -405,7 +422,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public void close() throws SQLException {
-      replaceConnection(this);
+      returnConnection(this);
     }
 
     /**
@@ -413,7 +430,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public boolean isClosed() throws SQLException {
-      return conn.getConnection().isClosed();
+      return getWrappedConnection().isClosed();
     }
 
     /**
@@ -421,7 +438,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public DatabaseMetaData getMetaData() throws SQLException {
-      return conn.getConnection().getMetaData();
+      return getWrappedConnection().getMetaData();
     }
 
     /**
@@ -429,7 +446,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public void setReadOnly(boolean readOnly) throws SQLException {
-      conn.getConnection().setReadOnly(readOnly);
+      getWrappedConnection().setReadOnly(readOnly);
     }
 
     /**
@@ -437,7 +454,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public boolean isReadOnly() throws SQLException {
-      return conn.getConnection().isReadOnly();
+      return getWrappedConnection().isReadOnly();
     }
 
     /**
@@ -445,7 +462,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public void setCatalog(String catalog) throws SQLException {
-      conn.getConnection().setCatalog(catalog);
+      getWrappedConnection().setCatalog(catalog);
     }
 
     /**
@@ -453,7 +470,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public String getCatalog() throws SQLException {
-      return conn.getConnection().getCatalog();
+      return getWrappedConnection().getCatalog();
     }
 
     /**
@@ -461,7 +478,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public void setTransactionIsolation(int level) throws SQLException {
-      conn.getConnection().setTransactionIsolation(level);
+      getWrappedConnection().setTransactionIsolation(level);
     }
 
     /**
@@ -469,7 +486,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public int getTransactionIsolation() throws SQLException {
-      return conn.getConnection().getTransactionIsolation();
+      return getWrappedConnection().getTransactionIsolation();
     }
 
     /**
@@ -477,7 +494,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public SQLWarning getWarnings() throws SQLException {
-      return conn.getConnection().getWarnings();
+      return getWrappedConnection().getWarnings();
     }
 
     /**
@@ -485,7 +502,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public void clearWarnings() throws SQLException {
-      conn.getConnection().clearWarnings();
+      getWrappedConnection().clearWarnings();
     }
 
     /**
@@ -493,7 +510,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public Statement createStatement(int i, int j) throws SQLException {
-      return conn.getConnection().createStatement(i, j);
+      return getWrappedConnection().createStatement(i, j);
     }
 
     /**
@@ -502,7 +519,7 @@ public class FailoverDataSource implements DataSource {
     @Override
     public PreparedStatement prepareStatement(String sql, int i, int j)
         throws SQLException {
-      return conn.getConnection().prepareStatement(sql, i, j);
+      return getWrappedConnection().prepareStatement(sql, i, j);
     }
 
     /**
@@ -511,7 +528,7 @@ public class FailoverDataSource implements DataSource {
     @Override
     public CallableStatement prepareCall(String sql, int i, int j)
         throws SQLException {
-      return conn.getConnection().prepareCall(sql, i, j);
+      return getWrappedConnection().prepareCall(sql, i, j);
     }
 
     /**
@@ -519,7 +536,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public Map getTypeMap() throws SQLException {
-      return conn.getConnection().getTypeMap();
+      return getWrappedConnection().getTypeMap();
     }
 
     /**
@@ -527,7 +544,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public void setHoldability(int holdability) throws SQLException {
-      conn.getConnection().setHoldability(holdability);
+      getWrappedConnection().setHoldability(holdability);
     }
 
     /**
@@ -535,7 +552,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public int getHoldability() throws SQLException {
-      return conn.getConnection().getHoldability();
+      return getWrappedConnection().getHoldability();
     }
 
     /**
@@ -543,7 +560,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public Savepoint setSavepoint() throws SQLException {
-      return conn.getConnection().setSavepoint();
+      return getWrappedConnection().setSavepoint();
     }
 
     /**
@@ -551,7 +568,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public Savepoint setSavepoint(String name) throws SQLException {
-      return conn.getConnection().setSavepoint(name);
+      return getWrappedConnection().setSavepoint(name);
     }
 
     /**
@@ -559,7 +576,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public void rollback(Savepoint savepoint) throws SQLException {
-      conn.getConnection().rollback(savepoint);
+      getWrappedConnection().rollback(savepoint);
     }
 
     /**
@@ -567,7 +584,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public void releaseSavepoint(Savepoint savepoint) throws SQLException {
-      conn.getConnection().releaseSavepoint(savepoint);
+      getWrappedConnection().releaseSavepoint(savepoint);
     }
 
     /**
@@ -575,7 +592,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public Statement createStatement(int i, int j, int k) throws SQLException {
-      return conn.getConnection().createStatement(i, j, k);
+      return getWrappedConnection().createStatement(i, j, k);
     }
 
     /**
@@ -584,7 +601,7 @@ public class FailoverDataSource implements DataSource {
     @Override
     public PreparedStatement prepareStatement(String sql, int i, int j, int k)
         throws SQLException {
-      return conn.getConnection().prepareStatement(sql, i, j, k);
+      return getWrappedConnection().prepareStatement(sql, i, j, k);
     }
 
     /**
@@ -593,7 +610,7 @@ public class FailoverDataSource implements DataSource {
     @Override
     public CallableStatement prepareCall(String sql, int i, int j, int k)
         throws SQLException {
-      return conn.getConnection().prepareCall(sql, i, j, k);
+      return getWrappedConnection().prepareCall(sql, i, j, k);
     }
 
     /**
@@ -602,7 +619,7 @@ public class FailoverDataSource implements DataSource {
     @Override
     public PreparedStatement prepareStatement(String sql, int i)
         throws SQLException {
-      return conn.getConnection().prepareStatement(sql, i);
+      return getWrappedConnection().prepareStatement(sql, i);
     }
 
     /**
@@ -611,7 +628,7 @@ public class FailoverDataSource implements DataSource {
     @Override
     public PreparedStatement prepareStatement(String sql, int[] columnIndexes)
         throws SQLException {
-      return conn.getConnection().prepareStatement(sql, columnIndexes);
+      return getWrappedConnection().prepareStatement(sql, columnIndexes);
     }
 
     /**
@@ -620,7 +637,7 @@ public class FailoverDataSource implements DataSource {
     @Override
     public PreparedStatement prepareStatement(String sql, String[] columnNames)
         throws SQLException {
-      return conn.getConnection().prepareStatement(sql, columnNames);
+      return getWrappedConnection().prepareStatement(sql, columnNames);
     }
 
     /**
@@ -630,7 +647,7 @@ public class FailoverDataSource implements DataSource {
     @Override
     public Array createArrayOf(String typeName, Object[] elements)
         throws SQLException {
-      return conn.getConnection().createArrayOf(typeName, elements);
+      return getWrappedConnection().createArrayOf(typeName, elements);
     }
 
     /**
@@ -638,7 +655,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public Blob createBlob() throws SQLException {
-      return conn.getConnection().createBlob();
+      return getWrappedConnection().createBlob();
     }
 
     /**
@@ -646,7 +663,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public Clob createClob() throws SQLException {
-      return conn.getConnection().createClob();
+      return getWrappedConnection().createClob();
     }
 
     /**
@@ -654,7 +671,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public NClob createNClob() throws SQLException {
-      return conn.getConnection().createNClob();
+      return getWrappedConnection().createNClob();
     }
 
     /**
@@ -662,7 +679,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public SQLXML createSQLXML() throws SQLException {
-      return conn.getConnection().createSQLXML();
+      return getWrappedConnection().createSQLXML();
     }
 
     /**
@@ -672,7 +689,7 @@ public class FailoverDataSource implements DataSource {
     @Override
     public Struct createStruct(String typeName, Object[] attributes)
         throws SQLException {
-      return conn.getConnection().createStruct(typeName, attributes);
+      return getWrappedConnection().createStruct(typeName, attributes);
     }
 
     /**
@@ -680,7 +697,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public Properties getClientInfo() throws SQLException {
-      return conn.getConnection().getClientInfo();
+      return getWrappedConnection().getClientInfo();
     }
 
     /**
@@ -688,7 +705,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public String getClientInfo(String name) throws SQLException {
-      return conn.getConnection().getClientInfo(name);
+      return getWrappedConnection().getClientInfo(name);
     }
 
     /**
@@ -696,7 +713,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public boolean isValid(int timeout) throws SQLException {
-      return conn.getConnection().isValid(timeout);
+      return getWrappedConnection().isValid(timeout);
     }
 
     /**
@@ -705,16 +722,13 @@ public class FailoverDataSource implements DataSource {
     @Override
     public void setClientInfo(Properties properties)
         throws SQLClientInfoException {
-      Connection c = null;
       try {
-        c = conn.getConnection();
+        getWrappedConnection().setClientInfo(properties);
       }
       catch (SQLException e) {
-        SQLClientInfoException e2 = new SQLClientInfoException();
-        e2.initCause(e);
-        throw e2;
+        throw wrapSQLClientInfoException(e);
+
       }
-      c.setClientInfo(properties);
     }
 
     /**
@@ -724,16 +738,12 @@ public class FailoverDataSource implements DataSource {
     @Override
     public void setClientInfo(String name, String value)
         throws SQLClientInfoException {
-      Connection c = null;
       try {
-        c = conn.getConnection();
+        getWrappedConnection().setClientInfo(name, value);
       }
       catch (SQLException e) {
-        SQLClientInfoException e2 = new SQLClientInfoException();
-        e2.initCause(e);
-        throw e2;
+        throw wrapSQLClientInfoException(e);
       }
-      c.setClientInfo(name, value);
     }
 
     /**
@@ -741,7 +751,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public void setTypeMap(Map<String, Class<?>> map) throws SQLException {
-      conn.getConnection().setTypeMap(map);
+      getWrappedConnection().setTypeMap(map);
     }
 
     /**
@@ -749,7 +759,7 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
-      return conn.getConnection().isWrapperFor(iface);
+      return getWrappedConnection().isWrapperFor(iface);
     }
 
     /**
@@ -757,27 +767,27 @@ public class FailoverDataSource implements DataSource {
      */
     @Override
     public <T> T unwrap(Class<T> iface) throws SQLException {
-      return conn.getConnection().unwrap(iface);
+      return getWrappedConnection().unwrap(iface);
     }
     
     public void setSchema(String schema) throws SQLException {
-      conn.getConnection().setSchema(schema);
+      getWrappedConnection().setSchema(schema);
     }
 
     public String getSchema() throws SQLException {
-      return conn.getConnection().getSchema();
+      return getWrappedConnection().getSchema();
     }
 
     public void abort(Executor executor) throws SQLException {
-      conn.getConnection().abort(executor);
+      getWrappedConnection().abort(executor);
     }
 
     public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
-      conn.getConnection().setNetworkTimeout(executor, milliseconds);
+      getWrappedConnection().setNetworkTimeout(executor, milliseconds);
     }
 
     public int getNetworkTimeout() throws SQLException {
-      return conn.getConnection().getNetworkTimeout();
+      return getWrappedConnection().getNetworkTimeout();
     }
   }
 

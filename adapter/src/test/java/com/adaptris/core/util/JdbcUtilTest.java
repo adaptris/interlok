@@ -15,6 +15,7 @@
 */
 package com.adaptris.core.util;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
@@ -30,8 +31,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
+import java.util.Properties;
 
 import org.junit.Test;
+
+import com.adaptris.security.exc.PasswordException;
 
 // This is all just a bit of fakery to get 100% (ha ha).
 public class JdbcUtilTest extends JdbcUtil {
@@ -137,5 +141,17 @@ public class JdbcUtilTest extends JdbcUtil {
     } catch (SQLException expected) {
 
     }
+  }
+
+  @Test(expected = PasswordException.class)
+  public void testMergeProperties() throws Exception {
+    Properties p = new Properties();
+    mergeConnectionProperties(p, "user", "password");
+    assertEquals("user", p.getProperty("user"));
+    assertEquals("password", p.getProperty("password"));
+    p = new Properties();
+    mergeConnectionProperties(p, "", "");
+    assertEquals(0, p.size());
+    mergeConnectionProperties(p, "", "ALTPW:ABCDEFGGHJ");
   }
 }
