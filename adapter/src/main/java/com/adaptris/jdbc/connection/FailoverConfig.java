@@ -23,6 +23,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
@@ -103,6 +105,9 @@ public final class FailoverConfig implements Cloneable {
     setTestStatement(MYSQL_TEST_STMT);
     setAutoCommit(true);
     setAlwaysValidateConnection(true);
+    setConnectionProperties(new Properties());
+    setUsername(null);
+    setPassword(null);
   }
 
   /**
@@ -219,14 +224,21 @@ public final class FailoverConfig implements Cloneable {
    */
   @Override
   public boolean equals(Object o) {
-    if (!this.getClass().equals(o.getClass())) {
+    if (o == null) {
       return false;
     }
-    FailoverConfig config = (FailoverConfig) o;
-    return testStatement.equals(config.getTestStatement()) && databaseDriver.equals(config.getDatabaseDriver())
-        && autoCommit == config.getAutoCommit() && verbose == config.getDebugMode()
-        && alwaysValidateConnection == config.getAlwaysValidateConnection()
-        && config.getConnectionUrls().equals(getConnectionUrls());
+    if (o == this) {
+      return true;
+    }
+    if (o instanceof FailoverConfig) {
+      FailoverConfig rhs = (FailoverConfig) o;
+      return new EqualsBuilder().append(getTestStatement(), rhs.getTestStatement())
+          .append(getDebugMode(), rhs.getDebugMode())
+          .append(getDatabaseDriver(), rhs.getDatabaseDriver()).append(getAutoCommit(), rhs.getAutoCommit())
+          .append(getAlwaysValidateConnection(), rhs.getAlwaysValidateConnection())
+          .append(getConnectionUrls(), rhs.getConnectionUrls()).isEquals();
+    }
+    return false;
   }
 
   /**
@@ -234,17 +246,10 @@ public final class FailoverConfig implements Cloneable {
    */
   @Override
   public int hashCode() {
-    int hashcode = 0;
-    Iterator i = connectionUrls.iterator();
-    while (i.hasNext()) {
-      hashcode += i.next().toString().hashCode();
-    }
-    hashcode += getTestStatement().hashCode();
-    hashcode += databaseDriver.hashCode();
-    hashcode += Boolean.valueOf(autoCommit).hashCode();
-    hashcode += Boolean.valueOf(verbose).hashCode();
-    hashcode += Boolean.valueOf(alwaysValidateConnection).hashCode();
-    return hashcode;
+    return new HashCodeBuilder(31, 17).append(getTestStatement()).append(getDatabaseDriver())
+        .append(getAutoCommit()).append(getAlwaysValidateConnection()).append(getConnectionUrls())
+        .append(getDebugMode())
+        .toHashCode();
   }
 
   @Override

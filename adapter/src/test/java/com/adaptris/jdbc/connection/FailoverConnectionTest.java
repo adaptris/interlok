@@ -20,8 +20,10 @@ import static com.adaptris.jdbc.connection.FailoverConfig.JDBC_ALWAYS_VERIFY;
 import static com.adaptris.jdbc.connection.FailoverConfig.JDBC_AUTO_COMMIT;
 import static com.adaptris.jdbc.connection.FailoverConfig.JDBC_DEBUG;
 import static com.adaptris.jdbc.connection.FailoverConfig.JDBC_DRIVER;
+import static com.adaptris.jdbc.connection.FailoverConfig.JDBC_PASSWORD;
 import static com.adaptris.jdbc.connection.FailoverConfig.JDBC_TEST_STATEMENT;
 import static com.adaptris.jdbc.connection.FailoverConfig.JDBC_URL_ROOT;
+import static com.adaptris.jdbc.connection.FailoverConfig.JDBC_USERNAME;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -83,18 +85,33 @@ public class FailoverConnectionTest extends BaseCase {
     }
   }
 
+  public void testInit() throws Exception {
+    Properties p = createProperties();
+    p.setProperty(JDBC_USERNAME, "myUser");
+    p.setProperty(JDBC_PASSWORD, "myPassword");
+    FailoverConfig fc = new FailoverConfig(p);
+    assertEquals("myUser", fc.getUsername());
+    assertEquals("myPassword", fc.getPassword());
+
+    fc = new FailoverConfig(createProperties());
+    assertNull(fc.getUsername());
+    assertNull(fc.getPassword());
+  }
+
   public void testFailoverConfigEquality() throws Exception {
     FailoverConfig fc1 = createFailoverConfig();
-    assertNotSame(fc1.toString(), fc1, new Exception());
-    assertNotSame(fc1.toString(), fc1, new FailoverConfig());
+    fc1.toString();
+    assertFalse(fc1.equals(null));
+    assertFalse(fc1.equals(new Object()));
+    assertFalse(fc1.equals(new FailoverConfig()));
+    assertTrue(fc1.equals(fc1));
 
     FailoverConfig fc2 = createFailoverConfig();
-    assertEquals(fc1.toString(), fc1, fc2);
-    assertEquals(fc1.toString(), fc1.hashCode(), fc2.hashCode());
+    assertEquals(fc1, fc2);
     fc2 = new FailoverConfig(createProperties());
-    assertEquals(fc1.toString(), fc1, fc2);
-    assertEquals(fc1.toString(), fc1.hashCode(), fc2.hashCode());
+    assertEquals(fc1, fc2);
   }
+
 
   public void testFailoverConfigClone() throws Exception {
     FailoverConfig fc1 = createFailoverConfig();
