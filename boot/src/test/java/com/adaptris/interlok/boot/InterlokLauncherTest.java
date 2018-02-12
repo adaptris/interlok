@@ -57,6 +57,20 @@ public class InterlokLauncherTest {
   }
 
   @Test
+  public void testMainClassContainer() throws Exception {
+    InterlokLauncher launcher = new InterlokLauncher(new String[]
+    {
+        "-container", "input.properties"
+    });
+    assertEquals("com.adaptris.management.aar.SimpleBootstrap", launcher.getMainClass());
+    launcher = new InterlokLauncher(new String[]
+    {
+        "--container", "input.properties"
+    });
+    assertEquals("com.adaptris.management.aar.SimpleBootstrap", launcher.getMainClass());
+  }
+
+  @Test
   public void testMainClassServiceTest() throws Exception {
     InterlokLauncher launcher = new InterlokLauncher(new String[]{
         "-serviceTest", "input.xml"
@@ -155,6 +169,27 @@ public class InterlokLauncherTest {
         {
             "--failover"
         });
+    String[] rebuild = launcher.rebuildArgs();
+    assertEquals(0, rebuild.length);
+  }
+
+  @Test
+  public void testRebuild_Container() throws Exception {
+    InterlokLauncher launcher = new InterlokLauncher(new String[]
+    {
+        "--container", "my.properties"
+    });
+    String[] rebuild = launcher.rebuildArgs();
+    assertEquals(1, rebuild.length);
+    assertEquals("my.properties", rebuild[0]);
+  }
+
+  @Test
+  public void testRebuild_ContainerWithNoProperties() throws Exception {
+    InterlokLauncher launcher = new InterlokLauncher(new String[]
+    {
+        "--container"
+    });
     String[] rebuild = launcher.rebuildArgs();
     assertEquals(0, rebuild.length);
   }

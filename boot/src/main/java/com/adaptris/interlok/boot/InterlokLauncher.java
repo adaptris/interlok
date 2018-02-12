@@ -60,6 +60,8 @@ public class InterlokLauncher extends Launcher {
 
   private static final String INTERLOK_MAIN_CLASS = "com.adaptris.core.management.SimpleBootstrap";
   private static final String INTERLOK_FAILOVER_MAIN_CLASS = "com.adaptris.failover.FailoverBootstrap";
+  private static final String INTERLOK_CONTAINER_MAIN_CLASS = "com.adaptris.management.aar.SimpleBootstrap";
+
   private static final String SERVICE_TEST_MAIN_CLASS = "com.adaptris.tester.runners.TestExecutor";
   private static final String[] ARG_ADAPTER_CLASSPATH = new String[]
   {
@@ -77,22 +79,74 @@ public class InterlokLauncher extends Launcher {
   {
       "-serviceTest", "--serviceTest"
   };
+  private static final String[] ARG_CONTAINER = new String[]
+  {
+      "-container", "--container"
+  };
 
   private final String DEFAULT_CLASSPATH = "./config,./lib";
+
+  private enum MainClassSelector {
+
+    SERVICE_TESTER(SERVICE_TEST_MAIN_CLASS) {
+      @Override
+      boolean matches(CommandLineArgs cmdLine) {
+        return cmdLine.hasArgument(ARG_SERVICE_TEST);
+      }
+    },
+    CONTAINER(INTERLOK_CONTAINER_MAIN_CLASS) {
+
+      @Override
+      boolean matches(CommandLineArgs cmdLine) {
+        return cmdLine.hasArgument(ARG_CONTAINER);
+      }
+
+    },
+    FAILOVER(INTERLOK_FAILOVER_MAIN_CLASS) {
+
+      @Override
+      boolean matches(CommandLineArgs cmdLine) {
+        return cmdLine.hasArgument(ARG_FAILOVER);
+      }
+
+    },
+    // Last so it's the default.
+    INTERLOK(INTERLOK_MAIN_CLASS) {
+      @Override
+      boolean matches(CommandLineArgs cmdLine) {
+        return true;
+      }
+    };
+    private String mainClass;
+
+    MainClassSelector(String clazz) {
+      mainClass = clazz;
+    }
+
+    String mainClass() {
+      return mainClass;
+    }
+
+    abstract boolean matches(CommandLineArgs cmdLine);
+
+  }
 
   private List<String> paths = new ArrayList<>();
   private CommandLineArgs commandLine;
   private boolean recursive;
-  private boolean failover;
-  private boolean serviceTest;
   private boolean defaultClasspath = true;
+  private MainClassSelector mainClassSelector = MainClassSelector.INTERLOK;
 
   public InterlokLauncher(String[] argv) {
     try {
       commandLine = CommandLineArgs.parse(argv);
       recursive = !commandLine.hasArgument(ARG_IGNORE_SUBDIRS);
-      serviceTest = commandLine.hasArgument(ARG_SERVICE_TEST);
-      failover = commandLine.hasArgument(ARG_FAILOVER);
+      for (MainClassSelector s : MainClassSelector.values()) {
+        if (s.matches(commandLine)) {
+          mainClassSelector = s;
+          break;
+        }
+      }
       paths = initializePaths();
     }
     catch (Exception ex) {
@@ -121,13 +175,7 @@ public class InterlokLauncher extends Launcher {
 
   @Override
   protected String getMainClass() throws Exception {
-    if (serviceTest) {
-      return SERVICE_TEST_MAIN_CLASS;
-    } else if (failover){
-      return INTERLOK_FAILOVER_MAIN_CLASS;
-    } else {
-      return INTERLOK_MAIN_CLASS;
-    }
+    return mainClassSelector.mainClass();
   }
 
   protected String[] rebuildArgs() throws Exception {
@@ -135,6 +183,7 @@ public class InterlokLauncher extends Launcher {
         .remove(ARG_ADAPTER_CLASSPATH)
         .remove(ARG_IGNORE_SUBDIRS)
         .convertToNormal(ARG_FAILOVER)
+        .convertToNormal(ARG_CONTAINER)
         .render();
   }
 
