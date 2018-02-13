@@ -41,7 +41,7 @@ public class InterlokLauncherTest {
   @Test
   public void testMainClass() throws Exception {
     InterlokLauncher launcher = new InterlokLauncher(null);
-    assertEquals("com.adaptris.core.management.SimpleBootstrap", launcher.getMainClass());
+    assertEquals(InterlokLauncher.INTERLOK_MAIN_CLASS, launcher.getMainClass());
   }
 
   @Test
@@ -49,11 +49,11 @@ public class InterlokLauncherTest {
     InterlokLauncher launcher = new InterlokLauncher(new String[]{
         "-failover", "input.xml"
     });
-    assertEquals("com.adaptris.failover.FailoverBootstrap", launcher.getMainClass());
+    assertEquals(InterlokLauncher.INTERLOK_FAILOVER_MAIN_CLASS, launcher.getMainClass());
     launcher = new InterlokLauncher(new String[]{
         "--failover", "input.xml"
     });
-    assertEquals("com.adaptris.failover.FailoverBootstrap", launcher.getMainClass());
+    assertEquals(InterlokLauncher.INTERLOK_FAILOVER_MAIN_CLASS, launcher.getMainClass());
   }
 
   @Test
@@ -62,12 +62,12 @@ public class InterlokLauncherTest {
     {
         "-container", "input.properties"
     });
-    assertEquals("com.adaptris.management.aar.SimpleBootstrap", launcher.getMainClass());
+    assertEquals(InterlokLauncher.INTERLOK_CONTAINER_MAIN_CLASS, launcher.getMainClass());
     launcher = new InterlokLauncher(new String[]
     {
         "--container", "input.properties"
     });
-    assertEquals("com.adaptris.management.aar.SimpleBootstrap", launcher.getMainClass());
+    assertEquals(InterlokLauncher.INTERLOK_CONTAINER_MAIN_CLASS, launcher.getMainClass());
   }
 
   @Test
@@ -75,11 +75,11 @@ public class InterlokLauncherTest {
     InterlokLauncher launcher = new InterlokLauncher(new String[]{
         "-serviceTest", "input.xml"
     });
-    assertEquals("com.adaptris.tester.runners.TestExecutor", launcher.getMainClass());
+    assertEquals(InterlokLauncher.SERVICE_TEST_MAIN_CLASS, launcher.getMainClass());
     launcher = new InterlokLauncher(new String[]{
         "--serviceTest", "input.xml"
     });
-    assertEquals("com.adaptris.tester.runners.TestExecutor", launcher.getMainClass());
+    assertEquals(InterlokLauncher.SERVICE_TEST_MAIN_CLASS, launcher.getMainClass());
   }
 
   @Test

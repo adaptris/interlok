@@ -58,11 +58,11 @@ public class InterlokLauncher extends Launcher {
 
   private static final boolean DEBUG = Boolean.getBoolean("adp.bootstrap.debug") || Boolean.getBoolean("interlok.bootstrap.debug");
 
-  private static final String INTERLOK_MAIN_CLASS = "com.adaptris.core.management.SimpleBootstrap";
-  private static final String INTERLOK_FAILOVER_MAIN_CLASS = "com.adaptris.failover.FailoverBootstrap";
-  private static final String INTERLOK_CONTAINER_MAIN_CLASS = "com.adaptris.management.aar.SimpleBootstrap";
+  static final String INTERLOK_MAIN_CLASS = "com.adaptris.core.management.SimpleBootstrap";
+  static final String INTERLOK_FAILOVER_MAIN_CLASS = "com.adaptris.failover.SimpleBootstrap";
+  static final String INTERLOK_CONTAINER_MAIN_CLASS = "com.adaptris.management.aar.SimpleBootstrap";
+  static final String SERVICE_TEST_MAIN_CLASS = "com.adaptris.tester.runners.TestExecutor";
 
-  private static final String SERVICE_TEST_MAIN_CLASS = "com.adaptris.tester.runners.TestExecutor";
   private static final String[] ARG_ADAPTER_CLASSPATH = new String[]
   {
       "-adapterClasspath", "--adapterClasspath"
