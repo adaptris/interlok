@@ -32,6 +32,7 @@ import java.util.StringTokenizer;
  * @author lchan
  * 
  */
+@Deprecated
 public class ClasspathInitialiser {
 
   private static final String CLASSPATH_KEY = "java.class.path";
