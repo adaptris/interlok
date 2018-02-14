@@ -24,7 +24,6 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.PushbackInputStream;
 import java.io.Reader;
-import java.io.StringReader;
 import java.text.SimpleDateFormat;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -36,7 +35,6 @@ import org.xml.sax.SAXException;
 
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
-import com.adaptris.transform.ProcessorHandle;
 import com.adaptris.transform.Source;
 import com.adaptris.transform.Target;
 import com.adaptris.transform.TransformFramework;
@@ -56,8 +54,8 @@ public class FfTransform extends TransformFramework {
     new SimpleDateFormat("':'yyMMdd':'hh.mm.ss':'");
 
 
-  public FfTransform(ProcessorHandle processorHandle) throws Exception {
-    super(processorHandle);
+  public FfTransform() throws Exception {
+    super();
     db = _getDocumentBuilder();
     // db is used to parse rule into its optimised form
   }
@@ -209,9 +207,7 @@ public class FfTransform extends TransformFramework {
     InputStream bs = in.getByteStream();
     Reader cs = in.getCharStream();
 
-    if (bs == null && cs == null) {
-      message = new StringReader(in.getString());
-    } else if (bs != null) {
+    if (bs != null) {
       PushbackInputStream pis = new PushbackInputStream(bs, 3);
       //Check for UTF-8 Byte Order Mark sequence
       byte[] bom = new byte[3];

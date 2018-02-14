@@ -19,7 +19,6 @@ package com.adaptris.core.transform;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.transform.ProcessorHandle;
 import com.adaptris.transform.TransformFramework;
 import com.adaptris.transform.ff.FfTransform;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -47,6 +46,6 @@ public class FfTransformService extends TransformService {
    */
   @Override
   protected TransformFramework createFramework() throws Exception {
-    return new FfTransform(new ProcessorHandle());
+    return new FfTransform();
   }
 }
