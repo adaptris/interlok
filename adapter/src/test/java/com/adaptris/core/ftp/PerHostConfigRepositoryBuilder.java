@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.adaptris.sftp.ConfigBuilder;
 import com.adaptris.sftp.HostConfig;
@@ -22,9 +23,12 @@ public class PerHostConfigRepositoryBuilder extends InlineConfigRepositoryBuilde
     try (InputStream in = new FileInputStream(known_hosts)) {
       List<String> lines = IOUtils.readLines(in);
       for (String line : lines) {
+        if (StringUtils.isEmpty(line)) {
+          continue;
+        }
         String[] parts=line.split("\\s");
         knownHosts.add(parts[0]);
-        System.err.println("[" + parts[0] + "]");
+        System.err.println("Added known host [" + parts[0] + "]");
       }
     }
   }
