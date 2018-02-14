@@ -209,11 +209,6 @@ junit.SftpConsumerTest.homedir=/home/${default.ftp.user}
 # Bear in mind that the FTP user is in a chroot jail, it would be the
 # same as the ftp settings otherwise...
 junit.SftpConsumerTest.remotedir=${junit.SftpConsumerTest.homedir}/junit
-junit.SftpConsumerTest.privateKeyFile=${test.resources.dir}/ftp/sshTestKey
-junit.SftpConsumerTest.privateKeyPassword=adaptr1s
-junit.SftpConsumerTest.knownHostsFile=${test.resources.dir}/ftp/sshKnownHosts
-junit.SftpConsumerTest.unknownHostsFile=${test.resources.dir}/ftp/sshUnknownHosts
-junit.SftpConsumerTest.tempHostsFile=${build.dir}/test/tempKnownHosts
 
 junit.iso8853.basedir=${test.resources.dir}/transform/iso8583
 junit.iso8853.file.iso220=${junit.iso8853.basedir}/iso220
