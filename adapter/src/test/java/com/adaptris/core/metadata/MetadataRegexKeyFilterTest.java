@@ -16,11 +16,11 @@
 
 package com.adaptris.core.metadata;
 
-import junit.framework.TestCase;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.MetadataCollection;
+
+import junit.framework.TestCase;
 
 public class MetadataRegexKeyFilterTest extends TestCase {
 
@@ -103,8 +103,7 @@ public class MetadataRegexKeyFilterTest extends TestCase {
   }
 
   public void testMultipleIncludes() {
-    filterer.addIncludePattern("key");
-    filterer.addIncludePattern("Jill");
+    filterer.withIncludePatterns("key", "Jill");
 
     MetadataCollection resultingCollection = filterer.filter(message);
 
@@ -113,8 +112,7 @@ public class MetadataRegexKeyFilterTest extends TestCase {
   }
 
   public void testMultipleExcludes() {
-    filterer.addExcludePattern("key");
-    filterer.addExcludePattern("Jill");
+    filterer.withExcludePatterns("key", "Jill");
 
     MetadataCollection resultingCollection = filterer.filter(message);
 
