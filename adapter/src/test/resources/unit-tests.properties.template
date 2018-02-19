@@ -206,6 +206,8 @@ junit.SftpConsumerTest.host=${default.ftp.host}
 junit.SftpConsumerTest.password=${default.ftp.password}
 junit.SftpConsumerTest.username=${default.ftp.user}
 junit.SftpConsumerTest.homedir=/home/${default.ftp.user}
+junit.SftpConsumerTest.tempHostsFile=${build.dir}/test/tempKnownHosts
+
 # Bear in mind that the FTP user is in a chroot jail, it would be the
 # same as the ftp settings otherwise...
 junit.SftpConsumerTest.remotedir=${junit.SftpConsumerTest.homedir}/junit
