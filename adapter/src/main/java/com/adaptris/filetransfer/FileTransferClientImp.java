@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +66,7 @@ public abstract class FileTransferClientImp implements FileTransferClient {
       put(in, remoteFile, append);
     }
     finally {
-      if (in != null) in.close();
+      IOUtils.closeQuietly(in);
     }
   }
 
@@ -123,18 +124,7 @@ public abstract class FileTransferClientImp implements FileTransferClient {
    */
   public String[] dir(String directory, FilenameFilter filter)
       throws FileTransferException, IOException {
-    String[] filelist = this.dir(directory);
-    if (filelist == null) return null;
-    if (filter == null) return (filelist);
-    HashSet data = new HashSet();
-    for (int i = 0; i < filelist.length; i++) {
-      File file = new File(filelist[i]);
-      if (filter.accept(file.getParentFile(), file.getName())) {
-        data.add(filelist[i]);
-      }
-    }
-    String[] s = new String[0];
-    return ((String[]) data.toArray(s));
+    return filter(this.dir(directory), new FilenameFilterProxy(filter));
   }
 
   /**
@@ -148,7 +138,7 @@ public abstract class FileTransferClientImp implements FileTransferClient {
       get(out, remoteFile);
     }
     finally {
-      out.close();
+      IOUtils.closeQuietly(out);
     }
   }
 
@@ -172,7 +162,6 @@ public abstract class FileTransferClientImp implements FileTransferClient {
 
 
   private String[] filter(String[] filelist, FileFilter filter) {
-    if (filelist == null) return null;
     if (filter == null) return filelist;
     HashSet<String> result = new HashSet<String>();
     for (int i = 0; i < filelist.length; i++) {
@@ -181,5 +170,24 @@ public abstract class FileTransferClientImp implements FileTransferClient {
       }
     }
     return result.toArray(new String[0]);
+  }
+
+  private class FilenameFilterProxy implements FileFilter {
+    private FilenameFilter proxy;
+
+    private FilenameFilterProxy(FilenameFilter f) {
+      proxy = f != null ? f : new FilenameFilter() {
+        @Override
+        public boolean accept(File dir, String name) {
+          return true;
+        }
+        
+      };
+    }
+
+    @Override
+    public boolean accept(File pathname) {
+      return proxy.accept(pathname.getParentFile(), pathname.getName());
+    }
   }
 }
