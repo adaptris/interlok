@@ -119,6 +119,7 @@
   <target name="run-tests" depends="compile.tests">
     <mkdir dir="${tests.output.dir}"/>
     <mkdir dir="${test.resources.dir}"/>
+    <mkdir dir="${project.dist.dir}"/>
     <interlok:execute-tests printsummary="${junit.printsummary}" fork="yes" showoutput="no" forkmode="${junit.forkmode}"/>
   </target>
 
