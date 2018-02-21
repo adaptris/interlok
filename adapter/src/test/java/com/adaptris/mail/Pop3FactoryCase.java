@@ -30,6 +30,7 @@ import com.adaptris.core.BaseCase;
 import com.icegreen.greenmail.pop3.Pop3Server;
 import com.icegreen.greenmail.util.GreenMail;
 
+@SuppressWarnings("deprecation")
 public abstract class Pop3FactoryCase extends BaseCase {
 
   public Pop3FactoryCase(String name) {

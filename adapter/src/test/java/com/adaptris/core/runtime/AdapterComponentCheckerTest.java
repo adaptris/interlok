@@ -50,6 +50,7 @@ import com.adaptris.core.stubs.MockAllowsRetriesConnection;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.interlok.types.SerializableMessage;
 
+@SuppressWarnings("deprecation")
 public class AdapterComponentCheckerTest extends ComponentManagerCase {
 
   public AdapterComponentCheckerTest(String name) {
@@ -115,7 +116,6 @@ public class AdapterComponentCheckerTest extends ComponentManagerCase {
     manager.checkInitialise(DefaultMarshaller.getDefaultMarshaller().marshal(new MockAllowsRetriesConnection(1)));
   }
 
-  @SuppressWarnings("deprecation")
   public void testApplyService() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);

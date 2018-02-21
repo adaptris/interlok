@@ -198,7 +198,6 @@ public class BootstrapProperties extends Properties {
 
   }
 
-  @SuppressWarnings("deprecation")
   public String[] getConfigurationUrls() {
     List<String> list = new ArrayList<String>();
     Properties p = getPropertySubset(this, CFG_KEY_CONFIG_URL, true);

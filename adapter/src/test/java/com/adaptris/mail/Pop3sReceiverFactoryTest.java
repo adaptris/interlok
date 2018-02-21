@@ -29,6 +29,7 @@ import javax.mail.URLName;
 import com.icegreen.greenmail.pop3.Pop3Server;
 import com.icegreen.greenmail.util.GreenMail;
 
+@SuppressWarnings("deprecation")
 public class Pop3sReceiverFactoryTest extends Pop3FactoryCase {
 
   public Pop3sReceiverFactoryTest(String name) {

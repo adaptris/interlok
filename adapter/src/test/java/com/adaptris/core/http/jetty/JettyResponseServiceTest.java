@@ -36,6 +36,7 @@ import com.adaptris.core.StandaloneRequestor;
 import com.adaptris.core.http.HttpServiceExample;
 import com.adaptris.core.stubs.MockMessageProducer;
 
+@SuppressWarnings("deprecation")
 public class JettyResponseServiceTest extends HttpServiceExample {
 
   public JettyResponseServiceTest(String name) {

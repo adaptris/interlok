@@ -35,6 +35,7 @@ import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.TimeInterval;
 
+@SuppressWarnings("deprecation")
 public abstract class FtpCase extends FtpConsumerExample {
 
   public static final String DEFAULT_WORK_DIR = "/work";

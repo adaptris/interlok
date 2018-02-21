@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.adaptris.core.AdaptrisMessage;
 
+@SuppressWarnings("deprecation")
 public class MimePartSplitterTest extends SplitterCase {
 
   private static Log logR = LogFactory.getLog(MimePartSplitterTest.class);

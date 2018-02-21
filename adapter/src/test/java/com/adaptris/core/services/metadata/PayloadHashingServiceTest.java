@@ -26,6 +26,7 @@ import com.adaptris.core.stubs.DefectiveMessageFactory;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.text.Base64ByteTranslator;
 
+@SuppressWarnings("deprecation")
 public class PayloadHashingServiceTest extends MetadataServiceExample {
 
   private static final String METADATA_KEY = "metadata-key";

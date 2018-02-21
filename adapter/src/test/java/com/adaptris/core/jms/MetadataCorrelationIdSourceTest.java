@@ -28,6 +28,7 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 
+@SuppressWarnings("deprecation")
 public class MetadataCorrelationIdSourceTest extends BaseCase {
 
   private static final String CORRELATIONID_KEY = "correlationid_key";

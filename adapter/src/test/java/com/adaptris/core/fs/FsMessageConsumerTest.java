@@ -39,6 +39,7 @@ import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.TimeInterval;
 
+@SuppressWarnings("deprecation")
 public class FsMessageConsumerTest extends FsConsumerCase {
 
   /**

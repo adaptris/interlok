@@ -25,6 +25,7 @@ import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.stubs.StubEventHandler;
 import com.adaptris.util.GuidGenerator;
 
+@SuppressWarnings("deprecation")
 public abstract class FailedMessageRetrierCase extends ExampleFailedMessageRetrierCase {
 
   private static final GuidGenerator guid = new GuidGenerator();

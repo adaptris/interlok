@@ -28,6 +28,7 @@ import com.adaptris.core.GeneralServiceExample;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.LifecycleHelper;
 
+@SuppressWarnings("deprecation")
 public class ScriptingServiceTest extends GeneralServiceExample {
 
   private static final String KEY_SCRIPTING_BASEDIR = "scripting.basedir";

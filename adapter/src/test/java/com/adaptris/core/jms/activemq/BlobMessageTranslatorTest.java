@@ -45,7 +45,6 @@ import com.adaptris.core.jms.JmsProducerImpl;
 import com.adaptris.core.jms.MessageTypeTranslatorImp;
 
 
-@SuppressWarnings("deprecation")
 public class BlobMessageTranslatorTest extends JmsProducerExample {
 
   private transient Log log = LogFactory.getLog(this.getClass());

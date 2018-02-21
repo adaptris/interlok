@@ -69,7 +69,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @author lchan
  */
-@SuppressWarnings("deprecation")
 @XStreamAlias("auto-convert-message-translator")
 @DisplayOrder(order = {"metadataFilter", "moveMetadata", "moveJmsHeaders", "reportAllErrors"})
 public class AutoConvertMessageTranslator extends MessageTypeTranslatorImp {

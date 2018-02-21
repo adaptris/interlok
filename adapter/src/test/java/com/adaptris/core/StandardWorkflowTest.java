@@ -41,6 +41,7 @@ import com.adaptris.core.stubs.MockSkipProducerService;
 import com.adaptris.core.stubs.MockWorkflowInterceptor;
 import com.adaptris.util.TimeInterval;
 
+@SuppressWarnings("deprecation")
 public class StandardWorkflowTest extends ExampleWorkflowCase {
 
   private static final Logger log = LoggerFactory.getLogger(StandardWorkflowTest.class);

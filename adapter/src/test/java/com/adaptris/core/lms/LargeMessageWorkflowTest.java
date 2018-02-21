@@ -41,6 +41,7 @@ import com.adaptris.core.services.metadata.PayloadFromMetadataService;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageProducer;
 
+@SuppressWarnings("deprecation")
 public class LargeMessageWorkflowTest extends StandardWorkflowTest {
 
   public LargeMessageWorkflowTest(java.lang.String testName) {

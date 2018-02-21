@@ -29,6 +29,7 @@ import com.adaptris.core.stubs.MockConfirmService;
 import com.adaptris.core.stubs.MockSetUpConfirmationService;
 import com.adaptris.core.util.LifecycleHelper;
 
+@SuppressWarnings("deprecation")
 public class ExampleConfirmationServicesTest extends BaseCase {
 
   private MockSetUpConfirmationService setUpConfirmationService;

@@ -33,6 +33,7 @@ import org.mockftpserver.fake.filesystem.UnixFakeFileSystem;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 
+@SuppressWarnings("deprecation")
 public class EmbeddedFtpServer {
 
   public static final String SLASH = "/";

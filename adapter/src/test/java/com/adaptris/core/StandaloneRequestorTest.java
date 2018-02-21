@@ -22,6 +22,7 @@ import com.adaptris.core.stubs.MockNonStandardRequestReplyProducer;
 import com.adaptris.core.stubs.MockRequestReplyProducer;
 import com.adaptris.util.TimeInterval;
 
+@SuppressWarnings("deprecation")
 public class StandaloneRequestorTest extends GeneralServiceExample {
 
   public StandaloneRequestorTest(String name) {

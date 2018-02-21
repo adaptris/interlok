@@ -16,17 +16,13 @@
 
 package com.adaptris.core.services.metadata;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.FormattedMetadataDestination;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.metadata.ElementFormatter;
 import com.adaptris.core.metadata.ElementKeyAndValueFormatter;
 
+@SuppressWarnings("deprecation")
 public class AddFormattedMetadataServiceTest extends MetadataServiceExample {
 
   private AddFormattedMetadataService service;

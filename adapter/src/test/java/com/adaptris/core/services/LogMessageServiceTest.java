@@ -20,6 +20,7 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.GeneralServiceExample;
 import com.adaptris.core.services.LogMessageService.LoggingLevel;
 
+@SuppressWarnings("deprecation")
 public class LogMessageServiceTest extends GeneralServiceExample {
 
   public LogMessageServiceTest(String name) {

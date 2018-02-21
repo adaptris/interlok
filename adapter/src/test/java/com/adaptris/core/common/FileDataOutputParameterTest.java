@@ -38,6 +38,7 @@ import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.stubs.TempFileUtils;
 import com.adaptris.interlok.types.InterlokMessage;
 
+@SuppressWarnings("deprecation")
 public class FileDataOutputParameterTest {
 
   private static final String TEXT = "Hello World";

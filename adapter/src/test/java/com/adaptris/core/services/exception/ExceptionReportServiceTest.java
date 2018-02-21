@@ -91,7 +91,6 @@ public class ExceptionReportServiceTest extends ExceptionServiceExample {
     }
   }
 
-  @SuppressWarnings("deprecation")
   public void testDeprecated() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
     msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("This is the exception"));

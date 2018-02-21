@@ -31,6 +31,7 @@ import com.adaptris.interlok.InterlokException;
 import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
 
+@SuppressWarnings("deprecation")
 public class RegexpServiceTest extends ServiceCase {
   private static final String TARGET_METADATA_KEY = "targetMetadataKey";
   private static final String SOURCE_METADATA_KEY = "sourceKey";

@@ -20,6 +20,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.util.LifecycleHelper;
 
+@SuppressWarnings("deprecation")
 public class ConvertObjectMetadataTest extends MetadataServiceExample {
 
   public ConvertObjectMetadataTest(String name) {

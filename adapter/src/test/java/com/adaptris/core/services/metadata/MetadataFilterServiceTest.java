@@ -18,9 +18,10 @@ package com.adaptris.core.services.metadata;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.metadata.NoOpMetadataFilter;
+import com.adaptris.core.metadata.RegexMetadataFilter;
 
+@SuppressWarnings("deprecation")
 public class MetadataFilterServiceTest extends MetadataServiceExample {
 
   private static final String MATCH_ANY = ".*";

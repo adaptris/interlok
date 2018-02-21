@@ -37,6 +37,7 @@ import com.adaptris.core.stubs.StubMessageFactory;
  * @author lchan
  * @author $Author: lchan $
  */
+@SuppressWarnings("deprecation")
 public abstract class SplitterCase extends SplitterServiceExample {
 
   public static final String XML_MESSAGE = "<?xml version=\"1.0\" "

@@ -39,7 +39,6 @@ import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.stubs.MockMessageListener;
 
-@SuppressWarnings("deprecation")
 public abstract class JmsProducerCase extends JmsProducerExample {
 
   public JmsProducerCase(String name) {

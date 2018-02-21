@@ -20,6 +20,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ServiceException;
 
+@SuppressWarnings("deprecation")
 public class HexToStringServiceTest extends MetadataServiceExample {
 
   public static final String PLAIN_TEXT = "hello world";

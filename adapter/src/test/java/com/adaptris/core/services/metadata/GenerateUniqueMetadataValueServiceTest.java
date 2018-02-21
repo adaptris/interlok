@@ -22,6 +22,7 @@ import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.PlainIdGenerator;
 
 
+@SuppressWarnings("deprecation")
 public class GenerateUniqueMetadataValueServiceTest extends MetadataServiceExample {
 
   public GenerateUniqueMetadataValueServiceTest(String name) {

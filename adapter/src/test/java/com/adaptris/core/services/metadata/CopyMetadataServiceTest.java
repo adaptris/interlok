@@ -24,6 +24,7 @@ import com.adaptris.core.MetadataElement;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairCollection;
 
+@SuppressWarnings("deprecation")
 public class CopyMetadataServiceTest extends MetadataServiceExample {
 
   private static final String NEW_KEY_1 = "Metadata_Key_To_Copy_To_1";

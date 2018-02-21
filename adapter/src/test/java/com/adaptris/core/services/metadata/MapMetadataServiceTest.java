@@ -21,6 +21,7 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairList;
 
+@SuppressWarnings("deprecation")
 public class MapMetadataServiceTest extends MetadataServiceExample {
 
   private static final String METADATA_KEY = "theMetadataKey";

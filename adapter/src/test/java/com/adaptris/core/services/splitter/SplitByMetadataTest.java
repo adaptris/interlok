@@ -25,6 +25,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.stubs.MockMessageProducer;
 
+@SuppressWarnings("deprecation")
 public class SplitByMetadataTest extends SplitterCase {
 
   private static final String A_B_C_D = "a,b,c,d";

@@ -51,6 +51,7 @@ import com.adaptris.util.text.Conversion;
  * @author lchan
  * 
  */
+@Deprecated
 public abstract class HttpProducer extends RequestReplyProducerImp {
 
   protected static final int ONE_MEG = 1024 * 1024;

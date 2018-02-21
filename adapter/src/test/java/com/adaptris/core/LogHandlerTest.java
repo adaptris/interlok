@@ -34,7 +34,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-@SuppressWarnings("deprecation")
 public class LogHandlerTest {
 
   public static final String LOG_ENTRY = "TRACE [main] [PingEvent.handleRequest()] ping event handled\n"

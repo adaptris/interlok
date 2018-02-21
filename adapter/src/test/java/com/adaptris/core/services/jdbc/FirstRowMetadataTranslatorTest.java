@@ -41,6 +41,7 @@ import com.adaptris.core.services.jdbc.types.StringColumnTranslator;
 import com.adaptris.core.services.jdbc.types.TimeColumnTranslator;
 import com.adaptris.core.services.jdbc.types.TimestampColumnTranslator;
 
+@SuppressWarnings("deprecation")
 public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
 
   private static final String METADATA_KEY_DATE = "date";
