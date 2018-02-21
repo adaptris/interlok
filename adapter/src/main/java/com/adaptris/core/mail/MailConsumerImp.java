@@ -39,6 +39,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisPollingConsumer;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
+import com.adaptris.interlok.resolver.ExternalResolver;
 import com.adaptris.mail.JavamailReceiverFactory;
 import com.adaptris.mail.MailException;
 import com.adaptris.mail.MailReceiver;
@@ -90,7 +91,7 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
   private Boolean attemptConnectOnInit;
   @AdvancedConfig
   private String regularExpressionStyle;
-  @InputFieldHint(style = "PASSWORD")
+  @InputFieldHint(style = "PASSWORD", external = true)
   private String password;
   private String username;
   @NotNull
@@ -163,7 +164,7 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
 
     try {
       mbox = getMailReceiverFactory().createClient(
-          MailHelper.createURLName(getDestination().getDestination(), getUsername(), getPassword()));
+          MailHelper.createURLName(getDestination().getDestination(), getUsername(), ExternalResolver.resolve(getPassword())));
       //mbox = new MailComNetClient("localhost", 3110, getUsername(), Password.decode(getPassword()));
       mbox.setRegularExpressionCompiler(regularExpressionStyle());
       Map<String, String> filters = initFilters(getDestination().getFilterExpression());

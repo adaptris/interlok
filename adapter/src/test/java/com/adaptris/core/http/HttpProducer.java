@@ -39,6 +39,7 @@ import com.adaptris.core.RequestReplyProducerImp;
 import com.adaptris.core.metadata.MetadataFilter;
 import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.metadata.RemoveAllMetadataFilter;
+import com.adaptris.interlok.resolver.ExternalResolver;
 import com.adaptris.security.password.Password;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
@@ -60,7 +61,7 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
   @AutoPopulated
   private KeyValuePairSet additionalHeaders;
   private String userName = null;
-  @InputFieldHint(style = "PASSWORD")
+  @InputFieldHint(style = "PASSWORD", external = true)
   private String password = null;
   @AdvancedConfig
   private String contentTypeKey = null;
@@ -108,9 +109,9 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
   @Override
   public void init() throws CoreException {
     try {
-      if (userName != null && password != null) {
-        authString = buildBasicRfc2617(userName, Password.decode(password));
-        passwordAuth = new PasswordAuthentication(userName, Password.decode(password).toCharArray());
+      if (getUserName() != null && getPassword() != null) {
+        authString = buildBasicRfc2617(getUserName(), Password.decode(ExternalResolver.resolve(getPassword())));
+        passwordAuth = new PasswordAuthentication(userName, Password.decode(ExternalResolver.resolve(getPassword())).toCharArray());
       }
       if (sendMetadataAsHeaders()) {
         if (getSendMetadataRegexp() == null && getMetadataFilter() instanceof RemoveAllMetadataFilter) {

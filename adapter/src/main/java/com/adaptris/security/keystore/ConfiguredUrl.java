@@ -18,6 +18,7 @@ package com.adaptris.security.keystore;
 
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.interlok.resolver.ExternalResolver;
 import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.adaptris.security.password.Password;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -36,7 +37,7 @@ public class ConfiguredUrl extends ConfiguredKeystore {
 
   private String url;
   private transient KeystoreLocation keystoreLocation;
-  @InputFieldHint(style = "PASSWORD")
+  @InputFieldHint(style = "PASSWORD", external = true)
   private String keystorePassword;
 
   public ConfiguredUrl() {
@@ -63,7 +64,7 @@ public class ConfiguredUrl extends ConfiguredKeystore {
     KeystoreFactory ksf = getKeystoreFactory(this);
     if (keystoreLocation == null) {
       if (getKeystorePassword() != null) {
-        keystoreLocation = ksf.create(url, Password.decode(getKeystorePassword()).toCharArray());
+        keystoreLocation = ksf.create(url, Password.decode(ExternalResolver.resolve(getKeystorePassword())).toCharArray());
       }
       else {
         keystoreLocation = ksf.create(url);

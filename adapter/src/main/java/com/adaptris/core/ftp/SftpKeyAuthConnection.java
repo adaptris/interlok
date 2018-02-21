@@ -81,7 +81,7 @@ public class SftpKeyAuthConnection extends FileTransferConnection {
   private static final int DEFAULT_TIMEOUT = 60000;
 
   private String privateKeyFilename;
-  @InputFieldHint(style = "PASSWORD")
+  @InputFieldHint(style = "PASSWORD", external = true)
   private String privateKeyPassword;
   @AdvancedConfig
   private Integer socketTimeout;

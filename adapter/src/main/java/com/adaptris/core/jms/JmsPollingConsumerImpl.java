@@ -43,6 +43,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.resolver.ExternalResolver;
 import com.adaptris.security.password.Password;
 import com.adaptris.util.TimeInterval;
 
@@ -67,7 +68,7 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
   private static final TimeInterval DEFAULT_RECEIVE_WAIT = new TimeInterval(2L, TimeUnit.SECONDS);
 
   private String userName;
-  @InputFieldHint(style = "PASSWORD")
+  @InputFieldHint(style = "PASSWORD", external = true)
   private String password;
   private String clientId;
 
@@ -149,7 +150,7 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
   private void initialiseConnection() throws Exception {
     long start = System.currentTimeMillis();
     factory = createConnectionFactory();
-    connection = createConnection(factory, userName, Password.decode(configuredPassword()));
+    connection = createConnection(factory, userName, Password.decode(ExternalResolver.resolve(configuredPassword())));
 
     if (clientId != null) {
       connection.setClientID(clientId);

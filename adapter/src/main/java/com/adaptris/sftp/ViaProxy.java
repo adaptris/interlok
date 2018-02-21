@@ -21,6 +21,7 @@ import java.lang.reflect.Method;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.interlok.resolver.ExternalResolver;
 import com.adaptris.security.password.Password;
 import com.jcraft.jsch.Proxy;
 
@@ -36,7 +37,7 @@ public abstract class ViaProxy implements ProxyBuilder {
   @AdvancedConfig
   private String username;
   @AdvancedConfig
-  @InputFieldHint(style = "PASSWORD")
+  @InputFieldHint(style = "PASSWORD", external = true)
   private String password;
 
   public final Proxy buildProxy() throws SftpException {
@@ -60,7 +61,7 @@ public abstract class ViaProxy implements ProxyBuilder {
   private void addCredentials(Proxy proxy) throws SftpException {
     try {
       Method method = proxy.getClass().getMethod("setUserPasswd", String.class, String.class);
-      method.invoke(proxy, getUsername(), Password.decode(getPassword()));
+      method.invoke(proxy, getUsername(), Password.decode(ExternalResolver.resolve(getPassword())));
     } catch (Exception e) {
       throw new SftpException(e);
     }

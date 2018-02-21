@@ -26,6 +26,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
+import com.adaptris.interlok.resolver.ExternalResolver;
 import com.adaptris.security.password.Password;
 import com.adaptris.util.KeyValuePairSet;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
@@ -60,7 +61,7 @@ public class AdvancedJdbcPooledConnection extends JdbcPooledConnectionImpl {
       pool.setDriverClass(this.getDriverImp());
       pool.setJdbcUrl(this.getConnectUrl());
       pool.setUser(this.getUsername());
-      pool.setPassword(Password.decode(this.getPassword()));
+      pool.setPassword(Password.decode(ExternalResolver.resolve(this.getPassword())));
 
       pool.setAcquireRetryDelay(Long.valueOf(connectionRetryInterval()).intValue());
       pool.setAcquireRetryAttempts(connectionAttempts());

@@ -32,6 +32,7 @@ import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AllowsRetriesConnection;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.JdbcUtil;
+import com.adaptris.interlok.resolver.ExternalResolver;
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.util.KeyValuePairBag;
 import com.adaptris.util.KeyValuePairSet;
@@ -63,7 +64,7 @@ public abstract class DatabaseConnection extends AllowsRetriesConnection {
   @InputFieldDefault(value = "false")
   private Boolean alwaysValidateConnection;
   private String username;
-  @InputFieldHint(style = "PASSWORD")
+  @InputFieldHint(style = "PASSWORD", external = true)
   private String password;
   @Valid
   @AdvancedConfig
@@ -503,7 +504,7 @@ public abstract class DatabaseConnection extends AllowsRetriesConnection {
   protected Properties connectionProperties() throws PasswordException {
     return JdbcUtil.mergeConnectionProperties(
         getConnectionProperties() != null ? KeyValuePairBag.asProperties(getConnectionProperties()) : new Properties(),
-        getUsername(), getPassword());
+        getUsername(), ExternalResolver.resolve(getPassword()));
   }
 
 }

@@ -38,6 +38,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.interlok.resolver.ExternalResolver;
 import com.adaptris.security.password.Password;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -62,7 +63,7 @@ public class JmsConnection extends AllowsRetriesConnection implements JmsConnect
 
   @InputFieldDefault(value = "")
   private String userName;
-  @InputFieldHint(style = "PASSWORD")
+  @InputFieldHint(style = "PASSWORD", external = true)
   private String password;
   private String clientId;
   @AdvancedConfig
@@ -222,7 +223,8 @@ public class JmsConnection extends AllowsRetriesConnection implements JmsConnect
         connection = factory.createConnection();
       }
       else {
-        connection = factory.createConnection(configuredUserName(), Password.decode(configuredPassword()));
+        connection = factory.createConnection(configuredUserName(),
+            Password.decode(ExternalResolver.resolve(configuredPassword())));
       }
     }
     catch (JMSException e) {
