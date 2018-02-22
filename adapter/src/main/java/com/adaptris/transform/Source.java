@@ -19,6 +19,7 @@ package com.adaptris.transform;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -73,7 +74,6 @@ import org.xml.sax.InputSource;
 public class Source {
 
   private Reader charStream;
-  private InputStream byteStream;
   private String url;
 
   // //////////////////////////////////////
@@ -120,25 +120,19 @@ public class Source {
     return this.charStream;
   }
 
-  /**
-   * <p>Returns the byte stream representation for this
-   * <code>Source</code>. If the object has not been initialised
-   * with a byte stream then <code>null</code> is returned.</p>
-   *
-   * @return the bytestream
-   */
-  public InputStream getByteStream() {
-    return this.byteStream;
-  }
 
-  /**
-   * <p>Returns the SAX input source representation for this
-   * <code>Source</code>. This will never return <code>null</code>.</p>
-   *
-   * @return the input source.
-   */
-  public InputSource getInputSource() {
-    return _getInputSource();
+  public InputSource getInputSource() throws IOException {
+    InputSource is = new InputSource();
+
+    if (this.url != null) {
+      is.setSystemId(this.url);
+      is.setCharacterStream(this.charStream);
+      is.setByteStream(this._connectUrl(this.url));
+    } else {
+      is.setSystemId(this.url);
+      is.setCharacterStream(this.charStream);
+    }
+    return is;
   }
 
   public boolean equals(Object obj) {
@@ -150,7 +144,7 @@ public class Source {
     }
     if (obj instanceof Source) {
       Source rhs = (Source) obj;
-      return new EqualsBuilder().append(getByteStream(), rhs.getByteStream()).append(getCharStream(), rhs.getCharStream())
+      return new EqualsBuilder().append(getCharStream(), rhs.getCharStream()).append(url, rhs.url)
           .isEquals();
     }
     return false;
@@ -160,42 +154,13 @@ public class Source {
    *  @see java.lang.Object#hashCode()
    */
   public int hashCode() {
-    return new HashCodeBuilder(11, 17).append(getByteStream()).append(getCharStream()).toHashCode();
-  }
-
-
-
-  // //////////////////////////////////////
-  // private methods
-  // //////////////////////////////////////
-
-  // modified to ensure that we attempt to use the proxy server
-  private InputSource _getInputSource() {
-    InputSource is = new InputSource();
-
-    if (this.url != null) {
-      is.setSystemId(this.url);
-      is.setCharacterStream(this.charStream);
-
-      try {
-        is.setByteStream(this._connectUrl(this.url));
-      } catch (IOException ie) {
-        is.setByteStream(this.byteStream);
-      }
-    } else {
-      is.setSystemId(this.url);
-      is.setCharacterStream(this.charStream);
-      is.setByteStream(this.byteStream);
-    }
-
-    return is;
+    return new HashCodeBuilder(11, 17).append(getCharStream()).append(url).toHashCode();
   }
 
   private InputStream _connectUrl(String url)
-    throws IOException, java.net.MalformedURLException {
-    URL myUrl = new URL(url); // throws MalformedURLException
+      throws IOException, MalformedURLException {
+    URL myUrl = new URL(url);
     URLConnection urlConn = myUrl.openConnection();
-    // applyBasicProxyAuthorisation(urlConn);
     InputStream inputStream = urlConn.getInputStream();
     return inputStream;
   }
