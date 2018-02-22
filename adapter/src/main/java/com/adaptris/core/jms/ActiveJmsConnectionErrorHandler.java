@@ -66,7 +66,7 @@ public class ActiveJmsConnectionErrorHandler extends JmsConnectionErrorHandlerIm
       MyExceptionHandler handler = new MyExceptionHandler();
       CountDownLatch verifierThreadGate = new CountDownLatch(1);
       verifier = new JmsConnectionVerifier(idForLogging, verifierThreadGate);
-      Thread verifierThread = new ManagedThreadFactory().newThread(verifier);
+      Thread verifierThread = new ManagedThreadFactory(getClass().getSimpleName()).newThread(verifier);
       verifierThread.setName("JmsConnectionErrorHandler for " + idForLogging);
       verifierThread.setUncaughtExceptionHandler(handler);
       verifierThread.start();

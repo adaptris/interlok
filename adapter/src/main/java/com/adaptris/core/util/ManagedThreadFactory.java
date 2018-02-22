@@ -49,9 +49,13 @@ public class ManagedThreadFactory implements ThreadFactory {
   private static final ManagedThreadFactory instance = new ManagedThreadFactory();
 
   public ManagedThreadFactory() {
+    this(ManagedThreadFactory.class.getSimpleName());
+  }
+
+  public ManagedThreadFactory(String prefix) {
     SecurityManager s = System.getSecurityManager();
     myThreadGroup = (s != null) ? s.getThreadGroup() : Thread.currentThread().getThreadGroup();
-    prefix = ManagedThreadFactory.class.getSimpleName() + "-" + factoryNumber.getAndIncrement() + "-Thread-";
+    this.prefix = prefix + "-" + factoryNumber.getAndIncrement() + "-";
   }
 
   public static Thread createThread(Runnable r) {

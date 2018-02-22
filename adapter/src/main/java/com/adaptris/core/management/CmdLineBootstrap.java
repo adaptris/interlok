@@ -155,7 +155,7 @@ abstract class CmdLineBootstrap {
   private void launchAdapter(final UnifiedBootstrap bootstrap, boolean quietly) throws Exception {
     final String threadName = this.getClass().getSimpleName();
     if (quietly) {
-      Thread launcher = new ManagedThreadFactory().newThread(new Runnable() {
+      Thread launcher = new ManagedThreadFactory(getClass().getSimpleName()).newThread(new Runnable() {
         @Override
         public void run() {
           Thread.currentThread().setName(threadName);

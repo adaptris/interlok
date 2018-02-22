@@ -59,7 +59,7 @@ public abstract class ComponentManagerImpl<E extends StateManagedComponent> exte
 
   protected transient Logger log = LoggerFactory.getLogger(this.getClass());
   private transient String xmlConfig;
-  private transient ManagedThreadFactory threadFactory = new ManagedThreadFactory();
+  private transient ManagedThreadFactory threadFactory = new ManagedThreadFactory(getClass().getSimpleName());
   private AtomicInteger sequenceNumber = new AtomicInteger();
   private AtomicInteger requestNumber = new AtomicInteger();
   private static final String THREAD_NAME_PREFIX = "JMX-Request-";
@@ -69,7 +69,7 @@ public abstract class ComponentManagerImpl<E extends StateManagedComponent> exte
   };
 
   public ComponentManagerImpl() {
-    super(Executors.newCachedThreadPool(new ManagedThreadFactory()));
+    super(Executors.newCachedThreadPool(new ManagedThreadFactory(NotificationBroadcasterSupport.class.getSimpleName())));
   }
 
   /**

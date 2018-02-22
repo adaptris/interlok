@@ -75,7 +75,7 @@ public class NonBlockingQuartzThreadPool implements ThreadPool {
 
   @Override
   public void initialize() throws SchedulerConfigException {
-    executor = Executors.newFixedThreadPool(threadCount, new ManagedThreadFactory());
+    executor = Executors.newFixedThreadPool(threadCount, new ManagedThreadFactory(getClass().getSimpleName()));
     log.trace("Initialised Quartz ThreadPool: {}", executor);
   }
 

@@ -50,7 +50,7 @@ public class InterceptorNotification extends NotificationBroadcasterSupport impl
 
   protected InterceptorNotification(WorkflowManager owner, NotifyingInterceptor interceptor)
       throws MalformedObjectNameException {
-    super(Executors.newCachedThreadPool(new ManagedThreadFactory()));
+    super(Executors.newCachedThreadPool(new ManagedThreadFactory(InterceptorNotification.class.getSimpleName())));
     parent = owner;
     wrappedComponent = interceptor;
     initMembers();

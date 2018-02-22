@@ -34,7 +34,7 @@ public abstract class ProduceExceptionHandlerImp implements ProduceExceptionHand
 
   protected void restart(final StateManagedComponent s) {
     // spin off exception handler Thread
-    Thread t = new ManagedThreadFactory().newThread(new Runnable() {
+    Thread t = new ManagedThreadFactory(getClass().getSimpleName()).newThread(new Runnable() {
       @Override
       public void run() {
         try {

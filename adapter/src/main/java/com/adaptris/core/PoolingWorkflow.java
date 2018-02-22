@@ -608,6 +608,7 @@ public class PoolingWorkflow extends WorkflowImp {
     private transient ThreadGroup threadGroup;
 
     WorkerThreadFactory() {
+      super(PoolingWorkflow.class.getSimpleName());
       threadGroup = new ThreadGroup(toString());
       threadGroup.setMaxPriority(threadPriority());
     }

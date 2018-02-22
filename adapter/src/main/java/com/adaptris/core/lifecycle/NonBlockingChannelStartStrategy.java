@@ -85,7 +85,7 @@ public class NonBlockingChannelStartStrategy extends DefaultChannelLifecycleStra
   private ExecutorService getExecutor(String name) {
     ExecutorService es = channelStarters.get(name);
     if (es == null || es.isShutdown()) {
-      es = Executors.newSingleThreadExecutor(new ManagedThreadFactory());
+      es = Executors.newSingleThreadExecutor(new ManagedThreadFactory(getClass().getSimpleName()));
       channelStarters.put(name, es);
     }
     return es;

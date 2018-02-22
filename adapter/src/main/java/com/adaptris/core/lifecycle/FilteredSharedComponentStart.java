@@ -175,7 +175,7 @@ public class FilteredSharedComponentStart implements SharedComponentLifecycleStr
   private ExecutorService getExecutor(String name) {
     ExecutorService es = connectionStarters.get(name);
     if (es == null || es.isShutdown()) {
-      es = Executors.newSingleThreadExecutor(new ManagedThreadFactory());
+      es = Executors.newSingleThreadExecutor(new ManagedThreadFactory(getClass().getSimpleName()));
       connectionStarters.put(name, es);
     }
     return es;

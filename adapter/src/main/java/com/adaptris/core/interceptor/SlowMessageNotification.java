@@ -155,7 +155,7 @@ public class SlowMessageNotification extends NotifyingInterceptor {
 
   @Override
   public void start() throws CoreException {
-    executor = Executors.newSingleThreadScheduledExecutor(new ManagedThreadFactory());
+    executor = Executors.newSingleThreadScheduledExecutor(new ManagedThreadFactory(getClass().getSimpleName()));
     scheduleTask();
   }
 
