@@ -229,30 +229,8 @@ public class FfTransform extends TransformFramework {
     return message;
   }
 
-  private String _readByteStream(InputStream byteStream) throws IOException {
-    InputStreamReader i = new InputStreamReader(byteStream);
-    BufferedReader in = new BufferedReader(i);
 
-    String result = _read(in);
-
-    // No need to close the stream.
-    //in.close();
-
-    return result;
-  }
-
-  private String _readCharStream(Reader charStream) throws IOException {
-    BufferedReader in = new BufferedReader(charStream);
-
-    String result = _read(in);
-
-    // No need to close the stream.
-    //in.close();
-
-    return result;
-  }
-
-  private String _read(java.io.BufferedReader in) throws IOException {
+  private String _read(BufferedReader in) throws IOException {
     int c;
     StringBuffer buffer = new StringBuffer(BUFSIZE);
 
