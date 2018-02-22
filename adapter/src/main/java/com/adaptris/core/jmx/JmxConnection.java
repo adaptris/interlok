@@ -108,7 +108,7 @@ public class JmxConnection extends AllowsRetriesConnection {
     boolean result = false;
     try {
       if (connection != null) {
-        int beans = connection.getMBeanCount();
+        connection.getMBeanCount();
         result = true;
       }
     } catch (IOException e) {
