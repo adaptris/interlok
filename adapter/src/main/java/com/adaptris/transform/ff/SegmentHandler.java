@@ -16,10 +16,11 @@
 
 package com.adaptris.transform.ff;
 
+import java.io.PrintWriter;
+import java.util.ArrayList;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import java.util.ArrayList;
-import java.io.PrintWriter;
 
 /**
  *
@@ -64,11 +65,6 @@ public class SegmentHandler extends Handler
   @Override
   public void process(StreamParser sp, PrintWriter output)
   {
-    //TM.reset();
-    //TM.start();
-
-    logP.debug("Begining to process segment " + name);
-
     StringBuffer content = new StringBuffer();
 
     output.print("<segment_" + name + ">");
@@ -84,27 +80,22 @@ public class SegmentHandler extends Handler
 
       for (int ix=0; ix<h.getCount(); ix++)
       {
-        debug("Checking next handler");
+        log.trace("Checking next handler");
         if (h.isThisHandler(sp, false)==true)
         {
-          debug("It's this handler [" + sp.getContent() + "]");
+          log.trace("It's this handler [{}]", sp.getContent());
           h.process(sp, output);
         }
         else
         {
-          debug("It's not this handler [" + sp.getContent() + "]");
+          log.trace("It's not this handler [{}]", sp.getContent());
           break;
         }
       }
     }
 
     output.print("</segment_" + name + ">");
-    debug(content.toString());
-
-    //TM.stop();
-    //logP.debug("Segment " + name + " took " + TM.getDuration() + " milliseconds to process");
-
-    //return message;
+    log.trace("Handled {} ", content.toString());
   }
 
   /** isThisHandler - checks to see if next record to be parsed is contained in this
@@ -130,7 +121,7 @@ public class SegmentHandler extends Handler
       else if (h.isOptional() == false)
       {
         // If a mandatory field is missing then it can't be this Handler
-        logR.debug("Returning " + h.isOptional() + " from isThisHandler()");
+        log.debug("Returning " + h.isOptional() + " from isThisHandler()");
         return false;
       }
 

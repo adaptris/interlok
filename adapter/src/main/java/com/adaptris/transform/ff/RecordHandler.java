@@ -102,22 +102,16 @@ public class RecordHandler extends Handler
   public void process(StreamParser sp, PrintWriter output)
   {
     String record = "";
-//    String passback = "";
-
-    //TM.reset();
-    //TM.start();
-    debug("Beginning to process record " + rec_id);
+    log.trace("Beginning to process record {}", rec_id);
 
     output.print("<record_" + rec_id + ">");
-
-    debug("Processing record " + rec_id);
 
     try
     {
       record = sp.getContent();
       StreamParser fieldParser = new StreamParser(record);
 
-      debug("Extracted record : " + record);
+      log.trace("Extracted record : {}", record);
 
       for ( int i=0; i < Fields.size(); i++ )
       {
@@ -125,19 +119,10 @@ public class RecordHandler extends Handler
       }
 
     } catch (Exception e) {
-      e.printStackTrace();
-      log("WARNING", "Failed to read record " + rec_id + ", separator='" + separator + "', length='" + length +"'");
-      log("EXCEPTION", e.getMessage());
+      log.warn("Failed to read record {}, separator='{}',length='{}'", rec_id, separator, length, e);
     }
 
     output.print("</record_" + rec_id + ">");
-
-    //debug("Read in record " + output);
-
-    //TM.stop();
-    //logP.debug("Record " + rec_id + " took " + TM.getDuration() + " milliseconds to process");
-
-    //return passback;
   }
 
   /** Checks to see if next record is this one
@@ -164,13 +149,7 @@ public class RecordHandler extends Handler
           sp.setParseRule(StreamParser.SEPARATED_STRING, separator.charAt(0));
         }
 
-        try {
-          sp.readElement();
-        } catch (Exception e) {
-          e.printStackTrace();
-          log("ERROR", "Failed to read element");
-          throw new Exception();
-        }
+        sp.readElement();
 
         if (sp.getContent().length() > 0)
         {
@@ -193,20 +172,14 @@ public class RecordHandler extends Handler
         {
           sp.setParseRule(StreamParser.FIXED_LENGTH, (rec_id_start-1 + rec_id_len));
 
-          try {
-            sp.readElement();
-          } catch (Exception e) {
-            e.printStackTrace();
-            log("ERROR", "Failed to read element");
-            throw new Exception();
-          }
+          sp.readElement();
           tmp = sp.getContent();
-          debug("Checking fixed record... id='" + rec_id + "', extract='" + tmp + "'");
+          log.trace("Checking fixed record... id='{}', extract='{}'", rec_id, tmp);
 
           try {
             if ( rec_id.equals(tmp.substring(rec_id_start-1)))
             {
-              debug("This record " + tmp);
+              log.trace("This record {}", tmp);
               sp.rewindElement(tmp);
 
               if (length > 0)
@@ -221,14 +194,9 @@ public class RecordHandler extends Handler
               if (! rewind)
               {
 
-                try {
-                  sp.readElement();
-                } catch (Exception exc) {
-                  logP.error("Error reading record " + rec_id);
-                  throw new Exception();
-                }
+                sp.readElement();
 
-                logP.debug("Read record is " + sp.getContent());
+                log.trace("Read record is {}", sp.getContent());
 
               }
 
@@ -240,7 +208,7 @@ public class RecordHandler extends Handler
               return false;
             }
           }  catch (StringIndexOutOfBoundsException se) {
-            debug("Record not big enough");
+            log.trace("Record not big enough");
             sp.rewindElement(tmp);
             return false;
           }
@@ -253,7 +221,7 @@ public class RecordHandler extends Handler
 
           for ( int i=0; i<rec_id_start; i++ )
           {
-            debug("Looping to ID field");
+            log.trace("Looping to ID field");
 
             try {
               sp.readElement();
@@ -267,7 +235,7 @@ public class RecordHandler extends Handler
             }
           }
 
-          debug("Checking variable record... id='" + rec_id + "', extract='" + sp.getContent() + "'");
+          log.trace("Checking variable record... id='{}', extract='{}'", rec_id, sp.getContent());
 
           if (sp.getContent().equals(rec_id))
           {
@@ -279,12 +247,7 @@ public class RecordHandler extends Handler
             if (! rewind)
             {
               sp.setParseRule(StreamParser.SEPARATED_STRING, separator.charAt(0));
-              try {
-                sp.readElement();
-              } catch (Exception e) {
-                log("ERROR", "Error reading record");
-                e.printStackTrace();
-              }
+              sp.readElement();
             }
             return true;
           }
@@ -297,6 +260,7 @@ public class RecordHandler extends Handler
         }
       }
     } catch (Exception e) {
+      log.error("Error reading record", e);
       return false;
     }
   }

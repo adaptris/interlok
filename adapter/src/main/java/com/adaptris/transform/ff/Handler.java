@@ -28,11 +28,8 @@ import org.w3c.dom.Node;
  * @author sellidge
  */
 public abstract class Handler {
-  protected transient static final Logger logR = LoggerFactory.getLogger(Handler.class);
-  protected transient static final Logger logP = LoggerFactory.getLogger(Handler.class);
+  protected transient static final Logger log = LoggerFactory.getLogger(Handler.class);
 
-  protected boolean DEBUG = false;
-  // protected PrintStream LogOut = System.out;
   protected SimpleDateFormat formatter = new SimpleDateFormat(
       "':'yyMMdd':'hh.mm.ss':'");
 
@@ -61,55 +58,6 @@ public abstract class Handler {
    * @param output the output
    */
   abstract void process(StreamParser sp, PrintWriter output);
-
-  /**
-   * Wrapper for the log method. Only prints if DEBUG is set
-   * 
-   * @param message - the message to be logged
-   */
-  protected void debug(String message) {
-    logR.debug(message);
-  }
-
-  /**
-   * Method which prints out a message to OutputStream LogOut. Message is
-   * formatted as: <type>:yymmdd:hh.mm.ss:<message>
-   * 
-   * @param type - descriptive string, up to 7 chars
-   * @param message - string to be logged
-   */
-
-  protected void log(String type, String message) {
-    if (type == null) {
-      logR.info(message);
-    }
-    else if (type.equals("INFO")) {
-      logR.info(message);
-    }
-    else if (type.equals("WARNING")) {
-      logR.warn(message);
-    }
-    else if (type.equals("ERROR")) {
-      logR.error(message);
-    }
-    else if (type.equals("DEBUG")) {
-      logR.debug(message);
-    }
-    else {
-      logR.info(message);
-    }
-  }
-
-  /**
-   * Method which prints out a message to OutputStream LogOut. Message is
-   * formatted as: INFO :yymmdd:hh.mm.ss:<message>
-   * 
-   * @param message - string to be logged
-   */
-
-  protected void log(String message) {
-    logR.info(message);
-  }
 
   /**
    * Returns a string padded out to a specified length
