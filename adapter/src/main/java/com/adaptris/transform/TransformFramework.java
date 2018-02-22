@@ -122,7 +122,6 @@ public abstract class TransformFramework {
    * Removes all the rules from <code>TransformFramework</code>.
    * </p>
    *
-   * @see #reset()
    */
   public void removeRules() {
     ruleList.removeAll();

@@ -18,7 +18,6 @@ package com.adaptris.transform;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.Writer;
 
 import javax.xml.transform.stream.StreamResult;
@@ -45,53 +44,16 @@ public class Target {
   // constructors
   // //////////////////////////////////////
 
-  /**
-   * <p>Zero-argument default constructor. Before you can use
-   * a <code>Target</code> in a transformation, you must define
-   * the output container by setting its one of its properties.</p>
-   *
-   * @see #setFileName(String)
-   * @see #setCharStream(Writer)
-   * @see #setByteStream(OutputStream)
-   */
   public Target() {
     this.target = new StreamResult();
   }
 
 
-  /**
-   * <p>
-   * Creates a new <code>Target</code> using the character stream. For example...
-   * </p>
-   * 
-   * <pre>
-   * {@code 
-   *  StringWriter stringWriter = new StringWriter();
-   *
-   *  Target t = new Target(stringWriter);
-   *
-   *         (pass Target reference for processing...)
-   *
-   *  System.out.println("The result of the transformation is...");
-   *  System.out.println(stringWriter.toString());
-   *  }
-   * </pre>
-   * 
-   * @param charStream the output character stream to wrap.
-   */
   public Target(Writer charStream) {
     this();
     _setCharStream(charStream);
   }
 
-  /**
-   * <p>Returns a reference to the object's internal state as a
-   * <code>Writer</code>.</p>
-   *
-   * @throws IOException when an error is detected creating the <code>Writer
-   * </code>.
-   * @return the writer.
-   */
   public Writer getWriter() throws IOException {
     return new BufferedWriter(target.getWriter());
   }

@@ -111,7 +111,6 @@ public class FfTransform extends TransformFramework {
    * @see #indexOfRule(Source)
    * @see #removeRule(int)
    * @see #removeRules()
-   * @see #reset()
    */
   @Override
   public void transform(Source in, Source rule, Target out) throws Exception {

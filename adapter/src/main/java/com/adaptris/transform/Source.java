@@ -16,7 +16,6 @@
 
 package com.adaptris.transform;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -81,17 +80,6 @@ public class Source {
   // constructors
   // //////////////////////////////////////
 
-  /**
-   * <p>Zero-argument default constructor.</p>
-   *
-   * @see #setUrl(String)
-   * @see #setFile(File)
-   * @see #setCharStream(Reader)
-   * @see #setCharStream(Reader,String)
-   * @see #setByteStream(InputStream)
-   * @see #setByteStream(InputStream,String)
-   * @see #setInputSource(InputSource)
-   */
   public Source() {
   }
 
@@ -104,9 +92,6 @@ public class Source {
    * system.</p>
    *
    * @param url the fully resolved url.
-   * @see   #setUrl(String)
-   * @see   #getUrl()
-   * @see   #getString()
    */
   public Source(String url) {
     this();
@@ -114,15 +99,9 @@ public class Source {
   }
 
   /**
-   * <p>Creates a new <code>Source</code> using a character stream.
-   * This is the same as invoking {@link #Source(Reader,String)}
-   * and passing <code>null</code> for the second parameter.</p>
+   * Creates a new <code>Source</code> using a character stream.
    *
    * @param charStream the input character stream.
-   * @see   #Source(Reader,String)
-   * @see   #setCharStream(Reader)
-   * @see   #setCharStream(Reader,String)
-   * @see   #getCharStream()
    */
   public Source(Reader charStream) {
     this();
@@ -134,12 +113,6 @@ public class Source {
    * <code>Source</code>. If the object has not been initialised
    * with a character stream then <code>null</code> is returned.</p>
    *
-   * @see #Source(Reader)
-   * @see #Source(Reader,String)
-   * @see #Source(InputSource)
-   * @see #setCharStream(Reader)
-   * @see #setCharStream(Reader,String)
-   * @see #setInputSource(InputSource)
    * 
    * @return a reader.
    */
@@ -152,10 +125,6 @@ public class Source {
    * <code>Source</code>. If the object has not been initialised
    * with a byte stream then <code>null</code> is returned.</p>
    *
-   * @see #Source(InputStream)
-   * @see #Source(InputStream,String)
-   * @see #Source(InputSource)
-   * @see #setInputSource(InputSource)
    * @return the bytestream
    */
   public InputStream getByteStream() {
@@ -166,21 +135,12 @@ public class Source {
    * <p>Returns the SAX input source representation for this
    * <code>Source</code>. This will never return <code>null</code>.</p>
    *
-   * @see #setInputSource(InputSource)
    * @return the input source.
    */
   public InputSource getInputSource() {
     return _getInputSource();
   }
 
-  // //////////////////////////////////////
-  // other methods
-  // //////////////////////////////////////
-
-  /** @see Object#equals(Object)
-   * <p>Returns <code>true</code> if the objects are equal
-   * otherwise it returns <code>false</code>.</p>
-   */
   public boolean equals(Object obj) {
     if (obj == null) {
       return false;
