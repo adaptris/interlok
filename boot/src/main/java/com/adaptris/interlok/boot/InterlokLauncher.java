@@ -62,6 +62,7 @@ public class InterlokLauncher extends Launcher {
   static final String INTERLOK_FAILOVER_MAIN_CLASS = "com.adaptris.failover.SimpleBootstrap";
   static final String INTERLOK_CONTAINER_MAIN_CLASS = "com.adaptris.management.aar.SimpleBootstrap";
   static final String SERVICE_TEST_MAIN_CLASS = "com.adaptris.tester.runners.TestExecutor";
+  static final String PASSWORD_GEN_MAIN_CLASS = "com.adaptris.security.password.Password";
 
   private static final String[] ARG_ADAPTER_CLASSPATH = new String[]
   {
@@ -83,6 +84,11 @@ public class InterlokLauncher extends Launcher {
   {
       "-container", "--container"
   };
+  private static final String[] ARG_PASSWORD = new String[]
+  {
+      "-password", "--password"
+  };
+
 
   private final String DEFAULT_CLASSPATH = "./config,./lib";
 
@@ -107,6 +113,14 @@ public class InterlokLauncher extends Launcher {
       @Override
       boolean matches(CommandLineArgs cmdLine) {
         return cmdLine.hasArgument(ARG_FAILOVER);
+      }
+
+    },
+    PASSWORD(PASSWORD_GEN_MAIN_CLASS) {
+
+      @Override
+      boolean matches(CommandLineArgs cmdLine) {
+        return cmdLine.hasArgument(ARG_PASSWORD);
       }
 
     },
@@ -148,6 +162,7 @@ public class InterlokLauncher extends Launcher {
         }
       }
       paths = initializePaths();
+      debug("Main-Class: ", mainClassSelector.mainClass);
     }
     catch (Exception ex) {
       throw new IllegalStateException(ex);
@@ -179,12 +194,16 @@ public class InterlokLauncher extends Launcher {
   }
 
   protected String[] rebuildArgs() throws Exception {
-    return commandLine
+    String[] rebuiltArgs = commandLine
         .remove(ARG_ADAPTER_CLASSPATH)
         .remove(ARG_IGNORE_SUBDIRS)
         .convertToNormal(ARG_FAILOVER)
         .convertToNormal(ARG_CONTAINER)
+        .convertToNormal(ARG_PASSWORD)
         .render();
+
+    debug("Args for Main-Class : ", Arrays.asList(rebuiltArgs));
+    return rebuiltArgs;
   }
 
   @Override

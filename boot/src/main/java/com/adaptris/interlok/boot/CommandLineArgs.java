@@ -121,7 +121,7 @@ public abstract class CommandLineArgs {
       copy.remove(arg);
     }
     if (value != null && !value.equals(Boolean.TRUE.toString())){
-      normalArgs.add(value);
+      normalArgs.add(0, value);
     }
     return new CommandLineArgs(copy, normalArgs) {
       @Override

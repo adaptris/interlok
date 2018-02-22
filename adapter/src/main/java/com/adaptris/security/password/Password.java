@@ -16,13 +16,11 @@
 
 package com.adaptris.security.password;
 
-import java.util.ArrayList;
 import java.util.ServiceLoader;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.adaptris.core.management.ClasspathInitialiser;
 import com.adaptris.security.exc.PasswordException;
 
 /**
@@ -130,8 +128,8 @@ public abstract class Password {
   }
 
   public static void main(String[] argv) throws Exception {
-    ClasspathInitialiser.init(new ArrayList<String>(), false);
     encrypt(argv);
+    System.exit(0);
   }
 
   private static class PasswordLoader extends Password {

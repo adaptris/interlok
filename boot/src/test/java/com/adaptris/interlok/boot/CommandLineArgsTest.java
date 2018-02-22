@@ -80,4 +80,18 @@ public class CommandLineArgsTest {
     assertEquals(0, args.length);
   }
 
+  @Test
+  public void testConvertToNormal() throws Exception {
+    String[] argv =
+    {
+        "-first", "first.properties",
+        "-second", "second.properties",
+        "last.properties"
+    };
+    String[] args = CommandLineArgs.parse(argv).convertToNormal("-second").convertToNormal("-first").render();
+    assertEquals(3, args.length);
+    assertEquals("first.properties", args[0]);
+    assertEquals("second.properties", args[1]);
+    assertEquals("last.properties", args[2]);
+  }
 }

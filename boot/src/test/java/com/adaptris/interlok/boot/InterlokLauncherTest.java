@@ -194,6 +194,33 @@ public class InterlokLauncherTest {
     assertEquals(0, rebuild.length);
   }
 
+  @Test
+  public void testMainClassPassword() throws Exception {
+    InterlokLauncher launcher = new InterlokLauncher(new String[]
+    {
+        "-password", "PW:", "Hello"
+    });
+    assertEquals(InterlokLauncher.PASSWORD_GEN_MAIN_CLASS, launcher.getMainClass());
+    launcher = new InterlokLauncher(new String[]
+    {
+        "--password", "PW:", "Hello"
+    });
+    assertEquals(InterlokLauncher.PASSWORD_GEN_MAIN_CLASS, launcher.getMainClass());
+  }
+
+
+  @Test
+  public void testRebuild_Password() throws Exception {
+    InterlokLauncher launcher = new InterlokLauncher(new String[]
+    {
+        "-password", "PW:", "Hello"
+    });
+    String[] rebuild = launcher.rebuildArgs();
+    assertEquals(2, rebuild.length);
+    assertEquals("PW:", rebuild[0]);
+    assertEquals("Hello", rebuild[1]);
+  }
+
   private void assertContains(List<Archive> list, NoOpFileArchive archive) {
     boolean result = false;
     for (Archive arch : list) {
