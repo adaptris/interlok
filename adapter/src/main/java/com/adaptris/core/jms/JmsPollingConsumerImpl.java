@@ -99,7 +99,6 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
   private transient Boolean transacted;
   private transient boolean managedTransaction;
   private transient long rollbackTimeout = 30000;
-  private transient ConnectionFactory factory;
   private transient Connection connection;
   private transient Session session;
   private transient MessageConsumer messageConsumer;
@@ -149,7 +148,7 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
 
   private void initialiseConnection() throws Exception {
     long start = System.currentTimeMillis();
-    factory = createConnectionFactory();
+    ConnectionFactory factory = createConnectionFactory();
     connection = createConnection(factory, userName, Password.decode(ExternalResolver.resolve(configuredPassword())));
 
     if (clientId != null) {
