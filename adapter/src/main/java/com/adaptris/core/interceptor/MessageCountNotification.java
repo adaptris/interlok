@@ -207,7 +207,7 @@ public class MessageCountNotification extends NotifyingInterceptorByCount {
 
   @Override
   public synchronized void workflowEnd(AdaptrisMessage inputMsg, AdaptrisMessage outputMsg) {
-    MessageStatistic currentTimeSlice = getAndIncrementStatistic(inputMsg, outputMsg);
+    getAndIncrementStatistic(inputMsg, outputMsg);
   }
 
   @Override

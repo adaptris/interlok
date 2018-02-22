@@ -231,7 +231,6 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
   protected AdaptrisMessage createAdaptrisMessage(File fileToProcess) throws CoreException {
     AdaptrisMessage msg = null;
     try {
-      long lastModified = fileToProcess.lastModified();
       msg = decode(fsWorker.get(fileToProcess));
     }
     catch (FsException e) {

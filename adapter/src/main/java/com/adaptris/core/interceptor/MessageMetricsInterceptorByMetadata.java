@@ -61,7 +61,6 @@ public class MessageMetricsInterceptorByMetadata extends MessageMetricsIntercept
   @Valid
   private KeyValuePair metadataElement;
 
-  private transient Object chubb = new Object();
   static {
     RuntimeInfoComponentFactory.registerComponentFactory(new JmxFactory());
   }

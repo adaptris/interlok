@@ -28,7 +28,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import javax.management.MBeanNotificationInfo;
-import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.Notification;
 import javax.management.ObjectName;
@@ -54,7 +53,6 @@ import com.adaptris.core.Service;
 import com.adaptris.core.StartedState;
 import com.adaptris.core.StoppedState;
 import com.adaptris.core.management.VersionReport;
-import com.adaptris.core.util.JmxHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
 
 /**
@@ -396,7 +394,6 @@ public class AdapterManager extends ComponentManagerImpl<Adapter> implements Ada
 
   private ChannelRuntimeManager findChannelManager(String id) {
     ChannelRuntimeManager found = null;
-    MBeanServer server = JmxHelper.findMBeanServer();
     for (ChannelRuntimeManager mgr : channelManagers) {
       if (id.equals(mgr.getUniqueId())) {
         found = mgr;

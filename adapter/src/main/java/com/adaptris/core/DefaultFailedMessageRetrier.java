@@ -77,7 +77,7 @@ public class DefaultFailedMessageRetrier extends FailedMessageRetrierImp {
   boolean retryMessage(final AdaptrisMessage msg) {
     boolean submitted = false;
     try {
-      Workflow workflow = getWorkflow(msg);
+      getWorkflow(msg);
       failedMessageExecutor.execute(new Thread() {
         @Override
         public void run() {

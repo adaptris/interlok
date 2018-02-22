@@ -17,7 +17,6 @@
 package com.adaptris.core;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CyclicBarrier;
@@ -584,9 +583,6 @@ public class PoolingWorkflow extends WorkflowImp {
     ServiceCollection result = null;
     result = (ServiceCollection) serviceListMarshaller.unmarshal(serviceListMarshaller.marshal(original));
     LifecycleHelper.registerEventHandler(result, eventHandler);
-    for (Iterator i = result.getServices().iterator(); i.hasNext();) {
-      Service s = (Service) i.next();
-    }
     return result;
   }
 

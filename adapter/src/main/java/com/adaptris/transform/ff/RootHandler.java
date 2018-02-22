@@ -108,7 +108,6 @@ public class RootHandler extends Handler
 
   public void process(Reader message, PrintWriter output)
   {
-    long start = System.currentTimeMillis();
     output.println("<?xml version=\"1.0\" encoding=\"" + encoding + "\" ?>");
     output.print("<root>");
 

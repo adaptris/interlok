@@ -44,7 +44,6 @@ import com.adaptris.transform.TransformFramework;
  * @version  0.1 April 2001
  */
 public class FfTransform extends TransformFramework {
-  private static final int BUFSIZE = 1500;
   private DocumentBuilder db;
 
   protected PrintStream logOut = System.out;

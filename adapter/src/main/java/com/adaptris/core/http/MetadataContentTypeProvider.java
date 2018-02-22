@@ -67,7 +67,6 @@ public class MetadataContentTypeProvider extends ContentTypeProviderImpl {
   }
 
   private String extract(AdaptrisMessage msg) throws CoreException {
-    String result = defaultMimeType;
     if (isBlank(getMetadataKey())) {
       throw new CoreException("metadata key is blank");
     }
