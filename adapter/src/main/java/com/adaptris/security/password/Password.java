@@ -110,7 +110,7 @@ public abstract class Password {
     return create(type).encode(plain);
   }
 
-  private static void encrypt(String[] argv) throws Exception {
+  static void generatePassword(String[] argv) throws Exception {
     if (argv == null || argv.length < 2) {
       System.out.println("Usage :");
       System.err.println("  java " + Password.class.getCanonicalName() + " <style> <password>");
@@ -128,7 +128,7 @@ public abstract class Password {
   }
 
   public static void main(String[] argv) throws Exception {
-    encrypt(argv);
+    generatePassword(argv);
     System.exit(0);
   }
 
