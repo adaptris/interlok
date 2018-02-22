@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -177,7 +178,7 @@ public class FfTransform extends TransformFramework {
   }
 
   private Element _optimiseRule(DocumentBuilder db, Source rule)
-    throws SAXException, IOException {
+      throws SAXException, IOException, URISyntaxException {
     Document output = db.parse(rule.getInputSource());
     Element optimisedRule = output.getDocumentElement();
     return optimisedRule;

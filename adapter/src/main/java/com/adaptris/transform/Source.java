@@ -20,12 +20,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
+import java.net.URISyntaxException;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.xml.sax.InputSource;
+
+import com.adaptris.core.fs.FsHelper;
+import com.adaptris.util.URLHelper;
+import com.adaptris.util.URLString;
 
 /**
  * <p>An input to a transformation process may either be the data
@@ -121,7 +124,7 @@ public class Source {
   }
 
 
-  public InputSource getInputSource() throws IOException {
+  public InputSource getInputSource() throws IOException, URISyntaxException {
     InputSource is = new InputSource();
 
     if (this.url != null) {
@@ -158,11 +161,8 @@ public class Source {
   }
 
   private InputStream _connectUrl(String url)
-      throws IOException, MalformedURLException {
-    URL myUrl = new URL(url);
-    URLConnection urlConn = myUrl.openConnection();
-    InputStream inputStream = urlConn.getInputStream();
-    return inputStream;
+      throws IOException, MalformedURLException, URISyntaxException {
+    return URLHelper.connect(new URLString(FsHelper.createUrlFromString(url, true)));
   }
 
 } // class Source

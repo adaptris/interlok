@@ -25,7 +25,7 @@ junit.FfTransformService.stylesheet=file:///${test.resources.dir}/transform/ff.d
 junit.FfTransformService.inputFile=${test.resources.dir}/transform/ff.input.txt
 junit.FfTransformService.inputFile_ISO_8859=${test.resources.dir}/transform/ff.input.iso8859.txt
 junit.FfTransformService.issue2661.input=${test.resources.dir}/transform/issue2661.csv
-junit.FfTransformService.issue2661.definition=${test.resources.dir}/transform/issue2661-ffdef.xml
+junit.FfTransformService.issue2661.definition=file:///${test.resources.dir}/transform/issue2661-ffdef.xml
 
 junit.XpathSyntaxIdentifierTest.inputFile=${test.resources.dir}/transform/inv.xml
 junit.XpathSyntaxIdentifierTest.non_text_node_input=${test.resources.dir}/transform/redmine-issue1020.xml
