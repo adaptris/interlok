@@ -210,9 +210,7 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
   }
 
   private Service cloneService(Service original) throws CoreException {
-    Service result =  (Service) marshaller.unmarshal(marshaller.marshal(original));
-    LifecycleHelper.prepare(result);
-    return result;
+    return (Service) marshaller.unmarshal(marshaller.marshal(original));
   }
 
   private class ServiceExecutor implements Callable<AdaptrisMessage> {
@@ -230,15 +228,12 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
     public AdaptrisMessage call() throws Exception {
       try {
         LifecycleHelper.registerEventHandler(service, eventHandler);
-        LifecycleHelper.prepare(service);
-        LifecycleHelper.init(service);
-        LifecycleHelper.start(service);
+        LifecycleHelper.initAndStart(service);
         service.doService(msg);
       } catch (Exception e) {
         handler.uncaughtException(Thread.currentThread(), e);
       } finally {
-        LifecycleHelper.stop(service);
-        LifecycleHelper.close(service);
+        LifecycleHelper.stopAndClose(service);
       }
       return msg;
     }
