@@ -17,7 +17,6 @@
 package com.adaptris.transform.ff;
 
 import java.io.IOException;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.net.URISyntaxException;
@@ -46,7 +45,6 @@ import com.adaptris.transform.TransformFramework;
 public class FfTransform extends TransformFramework {
   private DocumentBuilder db;
 
-  protected PrintStream logOut = System.out;
   protected SimpleDateFormat formatter =
     new SimpleDateFormat("':'yyMMdd':'hh.mm.ss':'");
 
