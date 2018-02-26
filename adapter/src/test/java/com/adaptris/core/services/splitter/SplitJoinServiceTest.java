@@ -81,6 +81,7 @@ public class SplitJoinServiceTest extends TestCase {
 
   public void testInit() throws Exception {
     SplitJoinService service = new SplitJoinService();
+    service.registerEventHandler(null);
     try {
       service.init();
       fail();
@@ -111,16 +112,14 @@ public class SplitJoinServiceTest extends TestCase {
     service.close();
   }
 
-  // public void testSetMaxThreads() throws Exception {
-  // SplitJoinService service = new SplitJoinService();
-  // assertNull(service.getMaxThreads());
-  // assertEquals(0, service.maxThreads());
-  // service.setMaxThreads(10);
-  // assertEquals(10, service.maxThreads());
-  // service.setMaxThreads(null);
-  // assertNull(service.getMaxThreads());
-  // assertEquals(0, service.maxThreads());
-  // }
+  public void testSetMaxThreads() throws Exception {
+    SplitJoinService service = new SplitJoinService();
+    assertNull(service.getMaxThreads());
+    service.setMaxThreads(10);
+    assertEquals(10, service.getMaxThreads().intValue());
+    service.setMaxThreads(null);
+    assertNull(service.getMaxThreads());
+  }
 
 
   public void testService_WithException() throws Exception {
@@ -164,6 +163,21 @@ public class SplitJoinServiceTest extends TestCase {
     // This is a 100 line message, so we expect to get 11 parts.
     AdaptrisMessage msg = SplitterCase.createLineCountMessageInput();
     SplitJoinService service = new SplitJoinService();
+    // The service doesn't actually matter right now.
+    service.setService(wrap(new NullService()));
+    service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
+    service.setSplitter(new LineCountSplitter());
+    service.setAggregator(new MimeAggregator());
+    execute(service, msg);
+    MultiPartInput input = MimeHelper.create(msg, false);
+    assertEquals(11, input.size());
+  }
+
+  public void testService_MaxThreadSpecified() throws Exception {
+    // This is a 100 line message, so we expect to get 11 parts.
+    AdaptrisMessage msg = SplitterCase.createLineCountMessageInput();
+    SplitJoinService service = new SplitJoinService();
+    service.setMaxThreads(5);
     // The service doesn't actually matter right now.
     service.setService(wrap(new NullService()));
     service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));

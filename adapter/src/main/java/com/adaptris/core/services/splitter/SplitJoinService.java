@@ -20,19 +20,23 @@ import static com.adaptris.core.util.ServiceUtil.discardNulls;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -56,12 +60,13 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * <p>
  * This service splits a message according to the configured {@link MessageSplitter} implementation, executes the configured
- * {@link com.adaptris.core.Service} and subsequently joins all the messages back using the configured {@link MessageAggregator} implementation
+ * {@link com.adaptris.core.Service} and subsequently joins all the messages back using the configured {@link MessageAggregator}
+ * implementation
  * <p>
  * <p>
- * For simplicity a new (cloned) instance of the underlying {@link com.adaptris.core.Service} is created for every split message, and executed in its
- * own thread; this means that where there is a high cost of initialisation for the service, then you may get better performance
- * aggregating the messages in a different way.
+ * For simplicity a new (cloned) instance of the underlying {@link com.adaptris.core.Service} is created for every split message,
+ * and executed in its own thread; this means that where there is a high cost of initialisation for the service, then you may get
+ * better performance aggregating the messages in a different way.
  * </p>
  * 
  * @config split-join-service
@@ -72,10 +77,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("split-join-service")
 @AdapterComponent
-@ComponentProfile(
-    summary = "Split a message and then execute the associated services on the split items, aggregating the split messages afterwards",
-    tag = "service,splitjoin")
-@DisplayOrder(order = {"splitter", "service", "aggregator", "timeout"})
+@ComponentProfile(summary = "Split a message and then execute the associated services on the split items, aggregating the split messages afterwards", tag = "service,splitjoin")
+@DisplayOrder(order =
+{
+    "splitter", "service", "aggregator", "maxThreads", "timeout"
+})
 public class SplitJoinService extends ServiceImp implements EventHandlerAware, ServiceWrapper {
 
   private static final String GENERIC_EXCEPTION_MSG = "Exception waiting for all services to complete";
@@ -93,6 +99,10 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
   private MessageAggregator aggregator;
   @Valid
   private TimeInterval timeout;
+  @AdvancedConfig
+  @InputFieldDefault(value = "unbounded")
+  private Integer maxThreads;
+
   private transient ExecutorService executors;
   private transient AdaptrisMarshaller marshaller = null;
   private transient EventHandler eventHandler;
@@ -103,83 +113,77 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
 
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    List<AdaptrisMessage> splitMessages = splitMessage(msg);
-    if (splitMessages.isEmpty()) {
-      log.debug("No output from splitter; nothing to do");
-      return;
+    try {
+      List<AdaptrisMessage> splitMessages = toList(getSplitter().splitMessage(msg));
+      if (splitMessages.isEmpty()) {
+        log.debug("No output from splitter; nothing to do");
+        return;
+      }
+      final ServiceExceptionHandler handler = new ServiceExceptionHandler();
+      Collection<ServiceExecutor> jobs = buildTasks(handler, splitMessages);
+      submitAndWait(handler, jobs);
+      msg.addMetadata(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT, Long.toString(jobs.size()));
+      getAggregator().joinMessage(msg, splitMessages);
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapServiceException(e);
     }
-    final CyclicBarrier gate = new CyclicBarrier(splitMessages.size() + 1);
-    final ServiceExceptionHandler handler = new ServiceExceptionHandler();
-    long count = 0;
-    for (AdaptrisMessage splitMsg : splitMessages) {
+  }
+
+  private List<ServiceExecutor> buildTasks(ServiceExceptionHandler handler, List<AdaptrisMessage> msgs) throws Exception {
+    int count = 0;
+    List<ServiceExecutor> result = new ArrayList<>();
+    for (AdaptrisMessage splitMsg : msgs) {
       count++;
       splitMsg.addMetadata(MessageSplitterServiceImp.KEY_CURRENT_SPLIT_MESSAGE_COUNT, Long.toString(count));
-      ServiceExecutor exe = new ServiceExecutor(handler, gate, cloneService(service), splitMsg);
-      executors.execute(exe);
+      ServiceExecutor job = new ServiceExecutor(handler, cloneService(service), splitMsg);
+      result.add(job);
     }
-    msg.addMetadata(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT, Long.toString(count));
-    waitFor(gate, handler);
-    log.trace("Finished waiting for operations ");
+    return result;
+  }
+
+  private List<Future<AdaptrisMessage>> submitAndWait(ServiceExceptionHandler handler, Collection<ServiceExecutor> jobs)
+      throws Exception {
+    List<Future<AdaptrisMessage>> results = executors.invokeAll(jobs, timeoutMs(), TimeUnit.MILLISECONDS);
     checkForExceptions(handler);
-    joinMessage(msg, splitMessages);
+    log.trace("Finished waiting for operations...");
+    return results;
   }
 
   private void checkForExceptions(ServiceExceptionHandler handler) throws ServiceException {
     Throwable e = handler.getFirstThrowableException();
     if (e != null) {
-      log.error("One or more services failed; " + e.getMessage());
+      log.error("One or more services failed: {}", e.getMessage());
       throw ExceptionHelper.wrapServiceException(e);
     }
-  }
-
-  private void joinMessage(AdaptrisMessage joined, List<AdaptrisMessage> split) throws ServiceException {
-    try {
-      getAggregator().joinMessage(joined, split);
-    }
-    catch (CoreException e) {
-      throw ExceptionHelper.wrapServiceException(e);
-    }
-  }
-
-  private List<AdaptrisMessage> splitMessage(AdaptrisMessage m) throws ServiceException {
-    List<AdaptrisMessage> msgs = new ArrayList<AdaptrisMessage>();
-    try {
-      msgs = toList(getSplitter().splitMessage(m));
-    } catch (CoreException e) {
-      throw ExceptionHelper.wrapServiceException(e);
-    }
-    return msgs;
   }
 
   /**
-   * Convert the Iterable into a List. If it's already a list, just return it. If not,
-   * it will be iterated and the resulting list returned.
+   * Convert the Iterable into a List. If it's already a list, just return it. If not, it will be iterated and the resulting list
+   * returned.
    */
-  private List<AdaptrisMessage> toList(Iterable<AdaptrisMessage> iter) {
+  private List<AdaptrisMessage> toList(Iterable<AdaptrisMessage> iter) throws IOException, CoreException {
     if (iter instanceof List) {
       return (List<AdaptrisMessage>) iter;
     }
-
     List<AdaptrisMessage> result = new ArrayList<AdaptrisMessage>();
-
     try (CloseableIterable<AdaptrisMessage> messages = CloseableIterable.FACTORY.ensureCloseable(iter)) {
       for (AdaptrisMessage msg : messages) {
         result.add(msg);
       }
-    } catch (IOException e) {
-      log.warn("Could not close Iterable!", e);
     }
 
     return result;
   }
 
-  private void waitFor(CyclicBarrier gate, ServiceExceptionHandler handler) {
-    try {
-      gate.await(timeoutMs(), TimeUnit.MILLISECONDS);
+  private ExecutorService createExecutor() {
+    ExecutorService result = null;
+    if (getMaxThreads() != null) {
+      result = Executors.newFixedThreadPool(getMaxThreads(), new ManagedThreadFactory(this.getClass().getSimpleName()));
+      
+    } else {
+      result = Executors.newCachedThreadPool(new ManagedThreadFactory(this.getClass().getSimpleName()));
     }
-    catch (Exception gateException) {
-      handler.uncaughtException(Thread.currentThread(), new CoreException(GENERIC_EXCEPTION_MSG, gateException));
-    }
+    return result;
   }
 
   @Override
@@ -188,7 +192,7 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
       Args.notNull(getSplitter(), "splitter");
       Args.notNull(getAggregator(), "aggregator");
       Args.notNull(getService(), "service");
-      executors = Executors.newCachedThreadPool();
+      executors = createExecutor();
       marshaller = DefaultMarshaller.getDefaultMarshaller();
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
@@ -205,48 +209,38 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
     LifecycleHelper.prepare(getService());
   }
 
-  private Service cloneService(Service original) throws ServiceException {
-    Service result = null;
-    try {
-      result = (Service) marshaller.unmarshal(marshaller.marshal(original));
-      LifecycleHelper.prepare(getService());
-    }
-    catch (CoreException e) {
-      throw ExceptionHelper.wrapServiceException(e);
-    }
+  private Service cloneService(Service original) throws CoreException {
+    Service result =  (Service) marshaller.unmarshal(marshaller.marshal(original));
+    LifecycleHelper.prepare(result);
     return result;
   }
 
-  private class ServiceExecutor implements Runnable {
+  private class ServiceExecutor implements Callable<AdaptrisMessage> {
     private ServiceExceptionHandler handler;
-    private CyclicBarrier gate;
     private Service service;
     private AdaptrisMessage msg;
 
-    ServiceExecutor(ServiceExceptionHandler ceh, CyclicBarrier cb, Service s, AdaptrisMessage msg) {
+    ServiceExecutor(ServiceExceptionHandler ceh, Service s, AdaptrisMessage msg) {
       handler = ceh;
-      gate = cb;
       service = s;
       this.msg = msg;
     }
 
     @Override
-    public void run() {
+    public AdaptrisMessage call() throws Exception {
       try {
         LifecycleHelper.registerEventHandler(service, eventHandler);
         LifecycleHelper.prepare(service);
         LifecycleHelper.init(service);
         LifecycleHelper.start(service);
         service.doService(msg);
-      }
-      catch (Exception e) {
+      } catch (Exception e) {
         handler.uncaughtException(Thread.currentThread(), e);
-      }
-      finally {
+      } finally {
         LifecycleHelper.stop(service);
         LifecycleHelper.close(service);
       }
-      waitFor(gate, handler);
+      return msg;
     }
   }
 
@@ -258,7 +252,7 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
      */
     @Override
     public void uncaughtException(Thread t, Throwable e) {
-      log.error("uncaughtException from " + t.getName(), e);
+      log.error("uncaughtException from {}", t.getName(), e);
       exceptionList.add(e);
     }
 
@@ -350,6 +344,19 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
   @Override
   public Service[] wrappedServices() {
     return discardNulls(getService());
+  }
+
+  public Integer getMaxThreads() {
+    return maxThreads;
+  }
+
+  /**
+   * Set the max number of threads to handle the execution of the split messages.
+   * 
+   * @param size the max number of threads, defaults to null which means we use {@link Executors#newCachedThreadPool()}.
+   */
+  public void setMaxThreads(Integer size) {
+    this.maxThreads = size;
   }
 
 }
