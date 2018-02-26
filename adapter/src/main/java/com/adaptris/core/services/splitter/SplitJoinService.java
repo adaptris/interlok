@@ -21,7 +21,6 @@ import static com.adaptris.core.util.ServiceUtil.discardNulls;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -37,7 +36,6 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMarshaller;
@@ -104,7 +102,6 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
   private Integer maxThreads;
 
   private transient ExecutorService executors;
-  private transient AdaptrisMarshaller marshaller = null;
   private transient EventHandler eventHandler;
 
   public SplitJoinService() {
@@ -119,7 +116,7 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
         log.debug("No output from splitter; nothing to do");
         return;
       }
-      final ServiceExceptionHandler handler = new ServiceExceptionHandler();
+      ServiceExceptionHandler handler = new ServiceExceptionHandler();
       Collection<ServiceExecutor> jobs = buildTasks(handler, splitMessages);
       submitAndWait(handler, jobs);
       msg.addMetadata(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT, Long.toString(jobs.size()));
@@ -144,17 +141,9 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
   private List<Future<AdaptrisMessage>> submitAndWait(ServiceExceptionHandler handler, Collection<ServiceExecutor> jobs)
       throws Exception {
     List<Future<AdaptrisMessage>> results = executors.invokeAll(jobs, timeoutMs(), TimeUnit.MILLISECONDS);
-    checkForExceptions(handler);
+    handler.throwFirstException();
     log.trace("Finished waiting for operations...");
     return results;
-  }
-
-  private void checkForExceptions(ServiceExceptionHandler handler) throws ServiceException {
-    Throwable e = handler.getFirstThrowableException();
-    if (e != null) {
-      log.error("One or more services failed: {}", e.getMessage());
-      throw ExceptionHelper.wrapServiceException(e);
-    }
   }
 
   /**
@@ -193,7 +182,6 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
       Args.notNull(getAggregator(), "aggregator");
       Args.notNull(getService(), "service");
       executors = createExecutor();
-      marshaller = DefaultMarshaller.getDefaultMarshaller();
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
@@ -210,7 +198,9 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
   }
 
   private Service cloneService(Service original) throws CoreException {
-    return (Service) marshaller.unmarshal(marshaller.marshal(original));
+    Service result = DefaultMarshaller.roundTrip(original);
+    LifecycleHelper.registerEventHandler(result, eventHandler);
+    return result;
   }
 
   private class ServiceExecutor implements Callable<AdaptrisMessage> {
@@ -236,27 +226,6 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
         LifecycleHelper.stopAndClose(service);
       }
       return msg;
-    }
-  }
-
-  private class ServiceExceptionHandler implements Thread.UncaughtExceptionHandler {
-    private List<Throwable> exceptionList = Collections.synchronizedList(new ArrayList<Throwable>());
-
-    /**
-     * @see java.lang.Thread.UncaughtExceptionHandler#uncaughtException(java.lang.Thread, java.lang.Throwable)
-     */
-    @Override
-    public void uncaughtException(Thread t, Throwable e) {
-      log.error("uncaughtException from {}", t.getName(), e);
-      exceptionList.add(e);
-    }
-
-    public Throwable getFirstThrowableException() {
-      Throwable result = null;
-      if (exceptionList.size() > 0) {
-        result = exceptionList.get(0);
-      }
-      return result;
     }
   }
 

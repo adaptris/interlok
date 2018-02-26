@@ -16,6 +16,8 @@
 
 package com.adaptris.core.services.splitter;
 
+import java.util.concurrent.Future;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -82,12 +84,13 @@ public class BasicMessageSplitterService extends MessageSplitterServiceImp imple
    * @see MessageSplitterServiceImp#handleSplitMessage(AdaptrisMessage)
    */
   @Override
-  protected void handleSplitMessage(AdaptrisMessage msg) throws ServiceException {
+  protected Future<?> handleSplitMessage(AdaptrisMessage msg) throws ServiceException {
     try {
       producer.produce(msg);
     } catch (ProduceException e) {
       throw new ServiceException(e);
     }
+    return new AlreadyComplete();
   }
 
   @Override

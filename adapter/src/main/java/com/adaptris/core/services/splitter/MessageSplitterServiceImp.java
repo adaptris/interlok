@@ -16,7 +16,11 @@
 
 package com.adaptris.core.services.splitter;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -30,6 +34,7 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.core.util.LifecycleHelper;
 
 /**
  * <p>
@@ -57,35 +62,46 @@ public abstract class MessageSplitterServiceImp extends ServiceImp {
    */
   @Override
   public final void doService(AdaptrisMessage msg) throws ServiceException {
-    try (CloseableIterable<AdaptrisMessage> messages = 
-         CloseableIterable.FACTORY.ensureCloseable(splitter.splitMessage(msg))) {
+    List<Future> tasks = new ArrayList<Future>();
+    try (CloseableIterable<AdaptrisMessage> messages = CloseableIterable.FACTORY.ensureCloseable(splitter.splitMessage(msg))) {
       long count = 0;
-      for(AdaptrisMessage splitMessage: messages) {
+      for (AdaptrisMessage splitMessage : messages) {
         count++;
-          try {
-            splitMessage.addMetadata(KEY_CURRENT_SPLIT_MESSAGE_COUNT, Long.toString(count));
-            handleSplitMessage(splitMessage);
+        try {
+          splitMessage.addMetadata(KEY_CURRENT_SPLIT_MESSAGE_COUNT, Long.toString(count));
+          tasks.add(handleSplitMessage(splitMessage));
+        } catch (ServiceException e) {
+          log.debug("Split msg {} failed", splitMessage.getUniqueId());
+          if (ignoreSplitMessageFailures()) {
+            log.debug("IgnoreSplitMessageFailures=true, ignoring failure of {}", splitMessage.getUniqueId());
+          } else {
+            throw e;
           }
-          catch (ServiceException e) {
-            log.debug("Split msg " + splitMessage.getUniqueId() + " failed");
-            if (ignoreSplitMessageFailures()) {
-              log.debug("IgnoreSplitMessageFailures=true, ignoring failure of " + splitMessage.getUniqueId());
-            }
-            else {
-              throw e;
-            }
-          }
-    	}
+        }
+      }
+      waitForCompletion(tasks);
       msg.addMetadata(KEY_SPLIT_MESSAGE_COUNT, Long.toString(count));
-	} catch (IOException e) {
-	  log.warn("Could not close Iterable!", e);
-	} catch (CoreException e) {
-		throw new ServiceException(e);
-	}
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapServiceException(e);
+    }
   }
 
-  protected abstract void handleSplitMessage(AdaptrisMessage msg)
+  protected abstract Future<?> handleSplitMessage(AdaptrisMessage msg)
       throws ServiceException;
+
+  protected void waitForCompletion(List<Future> tasks) throws ServiceException {
+    do {
+      for (Iterator<Future> i = tasks.iterator(); i.hasNext();) {
+        Future f = i.next();
+        if (f.isDone()) {
+          i.remove();
+        }
+      }
+      if (tasks.size() > 0) {
+        LifecycleHelper.waitQuietly(100);
+      }
+    } while (tasks.size() > 0);
+  }
 
   @Override
   protected void initService() throws CoreException {
@@ -142,5 +158,35 @@ public abstract class MessageSplitterServiceImp extends ServiceImp {
    */
   public void setIgnoreSplitMessageFailures(Boolean b) {
     ignoreSplitMessageFailures = b;
+  }
+
+  // In the current thread, by the time the future returns everything is complete.
+  protected class AlreadyComplete implements Future<Boolean> {
+
+    @Override
+    public boolean cancel(boolean mayInterruptIfRunning) {
+      return false;
+    }
+
+    @Override
+    public boolean isCancelled() {
+      return false;
+    }
+
+    @Override
+    public boolean isDone() {
+      return true;
+    }
+
+    @Override
+    public Boolean get() {
+      return Boolean.TRUE;
+    }
+
+    @Override
+    public Boolean get(long timeout, TimeUnit unit) {
+      return Boolean.TRUE;
+    }
+
   }
 }

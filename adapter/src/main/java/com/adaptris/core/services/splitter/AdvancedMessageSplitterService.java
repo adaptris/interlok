@@ -18,6 +18,8 @@ package com.adaptris.core.services.splitter;
 
 import static com.adaptris.core.util.ServiceUtil.discardNulls;
 
+import java.util.concurrent.Future;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -35,6 +37,7 @@ import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceWrapper;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -43,8 +46,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Splits incoming {@link com.adaptris.core.AdaptrisMessage}s into several using an implementation of {@link MessageSplitter}.
  * </p>
  * <p>
- * Rather than directly producing the message to a producer, this allows the use of a {@link com.adaptris.core.ServiceCollection} as the target for
- * the resulting split messages.
+ * Rather than directly producing the message to a producer, this allows the use of a {@link com.adaptris.core.ServiceCollection} as
+ * the target for the resulting split messages.
  * </p>
  * 
  * @config advanced-message-splitter-service
@@ -53,23 +56,24 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("advanced-message-splitter-service")
 @AdapterComponent
-@ComponentProfile(summary = "Split a message and execute an arbitary number of services on the split message",
-    tag = "service,splitter")
-@DisplayOrder(order = {"splitter", "service", "ignoreSplitMessageFailures", "sendEvents"})
+@ComponentProfile(summary = "Split a message and execute an arbitary number of services on the split message", tag = "service,splitter")
+@DisplayOrder(order =
+{
+    "splitter", "service", "ignoreSplitMessageFailures", "sendEvents"
+})
 public class AdvancedMessageSplitterService extends MessageSplitterServiceImp implements EventHandlerAware, ServiceWrapper {
 
   @NotNull
   @AutoPopulated
   @Valid
   private Service service;
-  private transient EventHandler eventHandler;
+  protected transient EventHandler eventHandler;
   @InputFieldDefault(value = "false")
   private Boolean sendEvents;
 
   /**
    * <p>
-   * Creates a new instance. Defaults to copying all metadata from the original
-   * message to the new, split messages.
+   * Creates a new instance. Defaults to copying all metadata from the original message to the new, split messages.
    * </p>
    */
   public AdvancedMessageSplitterService() {
@@ -82,18 +86,21 @@ public class AdvancedMessageSplitterService extends MessageSplitterServiceImp im
    * @see com.adaptris.core.services.splitter.MessageSplitterServiceImp#handleSplitMessage(com.adaptris.core.AdaptrisMessage)
    */
   @Override
-  public void handleSplitMessage(AdaptrisMessage msg) throws ServiceException {
+  public Future<?> handleSplitMessage(AdaptrisMessage msg) throws ServiceException {
     try {
-      service.doService(msg);
+      executeService(getService(), msg);
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapServiceException(e);
     }
-    finally {
+    return new AlreadyComplete();
+  }
+
+  protected void executeService(Service s, AdaptrisMessage msg) throws Exception {
+    try {
+      s.doService(msg);
+    } finally {
       if (eventHandler != null && sendEvents()) {
-        try {
           eventHandler.send(msg.getMessageLifecycleEvent());
-        }
-        catch (CoreException e) {
-          throw new ServiceException(e);
-        }
       }
     }
   }
@@ -154,11 +161,9 @@ public class AdvancedMessageSplitterService extends MessageSplitterServiceImp im
   /**
    * Whether or not to send events for the message that has been split.
    * <p>
-   * Note that even if this is set to true, because each child message has its
-   * own unique id, you will have to externally correlate the message lifecycle
-   * events together. Child messages will always have the metadata
-   * {@link com.adaptris.core.CoreConstants#PARENT_UNIQUE_ID_KEY} set with the originating message
-   * id.
+   * Note that even if this is set to true, because each child message has its own unique id, you will have to externally correlate
+   * the message lifecycle events together. Child messages will always have the metadata
+   * {@link com.adaptris.core.CoreConstants#PARENT_UNIQUE_ID_KEY} set with the originating message id.
    * </p>
    *
    * @param b true to send messages (default false)
