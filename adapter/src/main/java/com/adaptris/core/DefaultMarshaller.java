@@ -42,4 +42,14 @@ public class DefaultMarshaller {
 		marshaller = _marshaller;
 	}
 
+  /**
+   * Convenience method to roundtrip an object to text and back.
+   * 
+   * @param o the object
+   * @return
+   * @throws CoreException
+   */
+  public static <T> T roundTrip(T o) throws CoreException {
+    return (T) getDefaultMarshaller().unmarshal(getDefaultMarshaller().marshal(o));
+  }
 }
