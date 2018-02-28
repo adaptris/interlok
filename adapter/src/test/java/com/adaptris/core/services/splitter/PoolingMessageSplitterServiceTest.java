@@ -50,6 +50,7 @@ public class PoolingMessageSplitterServiceTest {
     MockMessageProducer producer = createMockProducer();
     PoolingMessageSplitterService service = SplitterCase.createPooling(new XpathMessageSplitter("/envelope/document", "UTF-8"),
         new StandaloneProducer(producer));
+    service.setMaxThreads(1);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_MESSAGE);
     XpathMessageSplitter splitter = new XpathMessageSplitter("/envelope/document", "UTF-8");
     execute(service, msg);

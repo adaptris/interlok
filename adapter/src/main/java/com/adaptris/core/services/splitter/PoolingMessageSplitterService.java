@@ -18,8 +18,10 @@ package com.adaptris.core.services.splitter;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.pool.impl.GenericObjectPool;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
@@ -27,33 +29,23 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.DefaultMarshaller;
-import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.core.services.splitter.ServiceWorkerPool.Worker;
 import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Extension to {@link AdvancedMessageSplitterService} that uses a underlying thread pool to execute the service list on each split
- * messages.
+ * Extension to {@link AdvancedMessageSplitterService} that uses a underlying thread and object pool to execute the service on each
+ * split message.
  * <p>
  * Note that using this splitter may mean that messages become un-ordered; if the order of the split messages is critical, then you
  * probably shouldn't use this service. Additionally, individual split-message failures will only be reported on after all the split
- * messages have been processed, so {@link #setIgnoreSplitMessageFailures(Boolean)} will not stop the processing of the subsequent
- * split messages
- * </p>
- * <p>
- * Like {@link SplitJoinService} new instance of the underlying {@link com.adaptris.core.Service} is created for every split
- * message, and executed by the thread pool; this means that where there is a high cost of initialisation for the service, then you
- * may get better performance aggregating the messages in a different way.
+ * messages have been processed, so unlike {@link AdvancedMessageSplitterService}; {@link #setIgnoreSplitMessageFailures(Boolean)}
+ * will not halt the processing of the subsequent split messages
  * </p>
  * 
  * @config pooling-message-splitter-service
- * 
- * 
  */
 @XStreamAlias("pooling-message-splitter-service")
 @AdapterComponent
@@ -64,30 +56,33 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 })
 public class PoolingMessageSplitterService extends AdvancedMessageSplitterService {
 
+  private static final long EVICT_RUN = new TimeInterval(60L, TimeUnit.SECONDS).toMilliseconds();
+
   @InputFieldDefault(value = "10")
   private Integer maxThreads;
 
   private transient ExecutorService executor;
   private transient ServiceExceptionHandler exceptionHandler;
+  private transient ServiceWorkerPool workerFactory;
+  private transient GenericObjectPool<ServiceWorkerPool.Worker> objectPool;
 
   @Override
   public Future<?> handleSplitMessage(AdaptrisMessage msg) throws ServiceException {
-    try {
-      exceptionHandler.clearExceptions();
-      return executor.submit(new ServiceExecutor(exceptionHandler, cloneService(getService()), msg));
-    } catch (Exception e) {
-      throw ExceptionHelper.wrapServiceException(e);
-    }
+    exceptionHandler.clearExceptions();
+    return executor.submit(new ServiceExecutor(exceptionHandler, msg));
   }
 
   protected void initService() throws CoreException {
-    executor = Executors.newFixedThreadPool(maxThreads(), new ManagedThreadFactory(this.getClass().getSimpleName()));
+    workerFactory = new ServiceWorkerPool(getService(), eventHandler, maxThreads());
+    objectPool = workerFactory.createObjectPool();
+    executor = workerFactory.createExecutor(this.getClass().getSimpleName());
     exceptionHandler = new ServiceExceptionHandler();
     super.initService();
   }
 
   protected void closeService() {
     ManagedThreadFactory.shutdownQuietly(executor, new TimeInterval());
+    ServiceWorkerPool.closeQuietly(objectPool);
     super.closeService();
   }
 
@@ -108,34 +103,28 @@ public class PoolingMessageSplitterService extends AdvancedMessageSplitterServic
     return getMaxThreads() != null ? getMaxThreads().intValue() : 10;
   }
 
-  private Service cloneService(Service original) throws Exception {
-    Service result = DefaultMarshaller.roundTrip(original);
-    LifecycleHelper.registerEventHandler(result, eventHandler);
-    return result;
-  }
-
   private class ServiceExecutor implements Callable<AdaptrisMessage> {
     private ServiceExceptionHandler handler;
-    private Service service;
     private AdaptrisMessage msg;
 
-    ServiceExecutor(ServiceExceptionHandler ceh, Service s, AdaptrisMessage msg) {
+    ServiceExecutor(ServiceExceptionHandler ceh, AdaptrisMessage msg) {
       handler = ceh;
-      service = s;
       this.msg = msg;
     }
 
     @Override
     public AdaptrisMessage call() throws Exception {
+      Worker w = objectPool.borrowObject();
       try {
-        LifecycleHelper.initAndStart(service);
-        executeService(service, msg);
+        w.doService(msg);
       } catch (Exception e) {
         handler.uncaughtException(Thread.currentThread(), e);
       } finally {
-        LifecycleHelper.stopAndClose(service);
+        sendEvents(msg);
+        objectPool.returnObject(w);
       }
       return msg;
     }
   }
+
 }
