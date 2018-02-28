@@ -161,7 +161,7 @@ public abstract class MessageSplitterServiceImp extends ServiceImp {
   }
 
   // In the current thread, by the time the future returns everything is complete.
-  protected class AlreadyComplete implements Future<Boolean> {
+  protected static class AlreadyComplete implements Future<Boolean> {
 
     @Override
     public boolean cancel(boolean mayInterruptIfRunning) {
