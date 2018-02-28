@@ -117,8 +117,8 @@ public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExce
 
   @Override
   public void start() throws CoreException {
-    executor = Executors.newScheduledThreadPool(0, new ManagedThreadFactory());
-    sweeper = executor.scheduleAtFixedRate(new CleanupTask(), 100L, retryIntervalMs(), TimeUnit.MILLISECONDS);
+    executor = Executors.newScheduledThreadPool(1, new ManagedThreadFactory());
+    sweeper = executor.scheduleWithFixedDelay(new CleanupTask(), 100L, retryIntervalMs(), TimeUnit.MILLISECONDS);
     super.start();
   }
 
