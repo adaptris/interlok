@@ -16,16 +16,19 @@
 
 package com.adaptris.core.services.aggregator;
 
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
-import com.adaptris.core.util.ExceptionHelper;
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-import org.apache.commons.io.IOUtils;
-
 import java.io.IOException;
 import java.util.Collection;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import org.apache.commons.io.IOUtils;
+
+import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.util.ExceptionHelper;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * {@link MessageAggregator} implementation that creates single zip using each message as a file in the zip.
@@ -43,10 +46,12 @@ import java.util.zip.ZipOutputStream;
  *
  */
 @XStreamAlias("zip-aggregator")
+@DisplayOrder(order = {"filenameMetadata", "overwriteMetadata" })
 public class ZipAggregator extends MessageAggregatorImpl {
 
   public static final String DEFAULT_FILENAME_METADATA = "filename";
 
+  @InputFieldDefault(value = "filename")
   private String filenameMetadata;
 
   public ZipAggregator(){
