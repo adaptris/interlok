@@ -29,7 +29,6 @@ import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.DefaultMessageFactory;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -41,34 +40,34 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config line-count-splitter
  */
 @XStreamAlias("line-count-splitter")
-@DisplayOrder(order = {"splitOnLine", "ignoreBlankLines", "copyMetadata", "copyObjectMetadata", "keepHeaderLines", "bufferSize"})
+@DisplayOrder(order = {"splitOnLine",  "keepHeaderLines", "ignoreBlankLines", "copyMetadata", "copyObjectMetadata","bufferSize"})
 public class LineCountSplitter extends MessageSplitterImp {
 
-  private transient static final int DEFAULT_BUFFER_SIZE = 8192;
+  private static final int DEFAULT_BUFFER_SIZE = 8192;
+  private static final int DEFAULT_SPLIT = 10;
+  private static final int DEFAULT_KEEPHEADER_LINES = 0;
 
-  private int keepHeaderLines;
-  private int splitOnLine;
+  @InputFieldDefault(value = "0")
+  private Integer keepHeaderLines;
+  @InputFieldDefault(value = "10")
+  private Integer splitOnLine;
   @InputFieldDefault(value = "false")
   private Boolean ignoreBlankLines;
   @AdvancedConfig
+  @InputFieldDefault(value = "8192")
   private Integer bufferSize;
 
-  /**
-   * <p>
-   * Creates a new instance.
-   * </p>
-   * <ul>
-   * <li>splitOnLine is 10.</li>
-   * <li>ignoreBlankLines is false.</li>
-   * </ul>
-   */
   public LineCountSplitter() {
-    setMessageFactory(new DefaultMessageFactory());
-    splitOnLine = 10;
+
+  }
+
+  public LineCountSplitter(Integer splitOnLine) {
+    this();
+    setSplitOnLine(splitOnLine);
   }
 
   public CloseableIterable<AdaptrisMessage> splitMessage(final AdaptrisMessage msg) throws CoreException {
-    logR.trace("LineCountSplitter splits every " + getSplitOnLine() + " lines");
+    logR.trace("LineCountSplitter splits every {} lines", splitOnLine());
 
     try {
       BufferedReader buf = new BufferedReader(msg.getReader(), bufferSize());
@@ -81,7 +80,7 @@ public class LineCountSplitter extends MessageSplitterImp {
   private String readHeader(BufferedReader buf) throws IOException {
     StringWriter sw = new StringWriter();
     PrintWriter writer = new PrintWriter(sw);
-    for (int i = 0; i < getKeepHeaderLines(); i++) {
+    for (int i = 0; i < keepHeaderLines(); i++) {
       writer.println(buf.readLine());
     }
     return sw.toString();
@@ -92,7 +91,7 @@ public class LineCountSplitter extends MessageSplitterImp {
    *
    * @param i the number of lines to split on
    */
-  public void setSplitOnLine(int i) {
+  public void setSplitOnLine(Integer i) {
     splitOnLine = i;
   }
 
@@ -101,8 +100,12 @@ public class LineCountSplitter extends MessageSplitterImp {
    *
    * @return the number of lines.
    */
-  public int getSplitOnLine() {
+  public Integer getSplitOnLine() {
     return splitOnLine;
+  }
+
+  int splitOnLine() {
+    return getSplitOnLine() != null ? getSplitOnLine().intValue() : DEFAULT_SPLIT;
   }
 
   /**
@@ -139,8 +142,8 @@ public class LineCountSplitter extends MessageSplitterImp {
   /**
    * Set the internal buffer size.
    * <p>
-   * This is used when; the default buffer size matches the default buffer size in {@link BufferedReader} and {@link BufferedWriter}
-   * , changes to the buffersize will impact performance and memory usage depending on the underlying operating system/disk.
+   * The default buffer size matches the default buffer size in {@link BufferedReader} and {@link BufferedWriter}, changes to the
+   * buffersize will impact performance and memory usage depending on the underlying operating system/disk.
    * </p>
    * 
    * @param b the buffer size (default is 8192).
@@ -153,12 +156,16 @@ public class LineCountSplitter extends MessageSplitterImp {
     return getBufferSize() != null ? getBufferSize().intValue() : DEFAULT_BUFFER_SIZE;
   }
 
-  public int getKeepHeaderLines() {
+  public Integer getKeepHeaderLines() {
     return keepHeaderLines;
   }
 
-  public void setKeepHeaderLines(int keepHeaderLines) {
+  public void setKeepHeaderLines(Integer keepHeaderLines) {
     this.keepHeaderLines = keepHeaderLines;
+  }
+
+  int keepHeaderLines() {
+    return getKeepHeaderLines() != null ? getKeepHeaderLines().intValue() : DEFAULT_KEEPHEADER_LINES;
   }
 
   /**
@@ -215,9 +222,9 @@ public class LineCountSplitter extends MessageSplitterImp {
       int i = 0;
 
       try (PrintWriter print = new PrintWriter(new BufferedWriter(tmpMessage.getWriter(), bufferSize()), false)) {
-        logR.trace("Working on split " + numberOfMessages);
+        logR.trace("Working on split {}", numberOfMessages);
         print.print(header);
-        while (i < getSplitOnLine()) {
+        while (i < splitOnLine()) {
           String line = buf.readLine();
           if (line == null) {
             break;
@@ -240,7 +247,7 @@ public class LineCountSplitter extends MessageSplitterImp {
 
     @Override
     public void close() throws IOException {
-      logR.trace("Split gave " + numberOfMessages + " messages");
+      logR.trace("Split gave {} messages", numberOfMessages);
       buf.close();
     }
 

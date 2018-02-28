@@ -60,8 +60,7 @@ public class LineCountSplitterTest extends SplitterCase {
   @Override
   public void testSetMessageFactory() throws Exception {
     MessageSplitterImp splitter = createSplitterForTests();
-    assertNotNull(splitter.getMessageFactory());
-    assertEquals(DefaultMessageFactory.class, splitter.getMessageFactory().getClass());
+    assertNull(splitter.getMessageFactory());
     assertEquals(DefaultMessageFactory.class, splitter.selectFactory(new DefaultMessageFactory().newMessage()).getClass());
 
     splitter.setMessageFactory(new StubMessageFactory());
@@ -219,7 +218,7 @@ public class LineCountSplitterTest extends SplitterCase {
 
   @Override
   protected List retrieveObjectsForSampleConfig() {
-    return createExamples(new LineCountSplitter());
+    return createExamples(new LineCountSplitter(100));
   }
 
 
