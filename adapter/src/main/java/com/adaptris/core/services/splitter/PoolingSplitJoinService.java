@@ -123,6 +123,11 @@ public class PoolingSplitJoinService extends SplitJoinService {
     this.maxThreads = size;
   }
 
+  public PoolingSplitJoinService withMaxThreads(Integer max) {
+    setMaxThreads(max);
+    return this;
+  }
+
   int maxThreads() {
     return getMaxThreads() != null ? getMaxThreads().intValue() : DEFAULT_THREADS;
   }

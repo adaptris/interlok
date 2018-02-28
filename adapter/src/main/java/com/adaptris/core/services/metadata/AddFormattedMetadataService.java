@@ -112,6 +112,11 @@ public class AddFormattedMetadataService extends ServiceImp {
     this.formatString = Args.notBlank(formatString, "format-string");
   }
 
+  public AddFormattedMetadataService withFormatString(String s) {
+    setFormatString(s);
+    return this;
+  }
+
   /**
    * @return the argumentMetadataKeys
    */
@@ -126,6 +131,11 @@ public class AddFormattedMetadataService extends ServiceImp {
     this.argumentMetadataKeys = Args.notNull(l, "metadata-keys");
   }
 
+  public AddFormattedMetadataService withArgumentMetadataKeys(List<String> s) {
+    setArgumentMetadataKeys(s);
+    return this;
+  }
+
   /**
    * @return the metadatakey
    */
@@ -138,6 +148,11 @@ public class AddFormattedMetadataService extends ServiceImp {
    */
   public void setMetadataKey(String metadatakey) {
     this.metadataKey = Args.notNull(metadatakey, "metadata-key");
+  }
+
+  public AddFormattedMetadataService withMetadataKey(String s) {
+    setMetadataKey(s);
+    return this;
   }
 
   /**

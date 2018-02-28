@@ -16,7 +16,16 @@
 
 package com.adaptris.core.services.aggregator;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.adaptris.core.NullService;
+import com.adaptris.core.Service;
 import com.adaptris.core.ServiceCase;
+import com.adaptris.core.services.LogMessageService;
+import com.adaptris.core.services.splitter.MessageSplitter;
+import com.adaptris.core.services.splitter.PoolingSplitJoinService;
+import com.adaptris.core.services.splitter.SplitJoinService;
 
 public abstract class AggregatingServiceExample extends ServiceCase {
 
@@ -33,5 +42,22 @@ public abstract class AggregatingServiceExample extends ServiceCase {
     }
   }
 
+  protected static List<Service> createExamples(MessageSplitter splitter, MessageAggregator aggregator) {
+    return createExamples(splitter, aggregator, new LogMessageService(), new NullService());
+  }
 
+  protected static List<Service> createExamples(MessageSplitter splitter, MessageAggregator aggregator, Service... services) {
+    List<Service> result = new ArrayList<Service>();
+    result.add(configure(new SplitJoinService(), splitter, aggregator, services));
+    result.add(configure(new PoolingSplitJoinService().withMaxThreads(5), splitter, aggregator, services));
+    return result;
+  }
+
+  protected static SplitJoinService configure(SplitJoinService service, MessageSplitter splitter, MessageAggregator agg,
+                                    Service... services) {
+    service.setAggregator(agg);
+    service.setSplitter(splitter);
+    service.setService(asCollection(services));
+    return service;
+  }
 }

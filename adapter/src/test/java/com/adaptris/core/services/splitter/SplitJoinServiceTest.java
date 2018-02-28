@@ -17,6 +17,7 @@
 package com.adaptris.core.services.splitter;
 
 import static com.adaptris.core.ServiceCase.execute;
+import static com.adaptris.core.ServiceCase.asCollection;
 import static com.adaptris.core.services.splitter.XpathSplitterTest.ENCODING_UTF8;
 import static com.adaptris.core.services.splitter.XpathSplitterTest.ENVELOPE_DOCUMENT;
 import static org.junit.Assert.assertEquals;
@@ -39,10 +40,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.NullService;
-import com.adaptris.core.Service;
-import com.adaptris.core.ServiceCollection;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.ServiceList;
 import com.adaptris.core.services.WaitService;
 import com.adaptris.core.services.aggregator.MessageAggregator;
 import com.adaptris.core.services.aggregator.MimeAggregator;
@@ -125,7 +123,7 @@ public class SplitJoinServiceTest {
     AdaptrisMessage msg = SplitterCase.createLineCountMessageInput();
     SplitJoinService service = createServiceForTests();
     // The service doesn't actually matter right now.
-    service.setService(wrap(new ThrowExceptionService(new ConfiguredException(testName.getMethodName()))));
+    service.setService(asCollection(new ThrowExceptionService(new ConfiguredException(testName.getMethodName()))));
     service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
     service.setSplitter(new LineCountSplitter());
     service.setAggregator(new MimeAggregator());
@@ -144,7 +142,7 @@ public class SplitJoinServiceTest {
     AdaptrisMessage msg = SplitterCase.createLineCountMessageInput();
     SplitJoinService service = createServiceForTests();
     // The service doesn't actually matter right now.
-    service.setService(wrap(new NullService()));
+    service.setService(asCollection(new NullService()));
     service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
     service.setSplitter(new LineCountSplitter());
     service.setAggregator(new MimeAggregator());
@@ -160,7 +158,7 @@ public class SplitJoinServiceTest {
     String originalInput = msg.getContent();
     SplitJoinService service = createServiceForTests();
     // The service doesn't actually matter right now.
-    service.setService(wrap(new NullService()));
+    service.setService(asCollection(new NullService()));
     service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
     service.setSplitter(new MessageSplitter() {
 
@@ -181,7 +179,7 @@ public class SplitJoinServiceTest {
     AdaptrisMessage msg = SplitterCase.createLineCountMessageInput();
     SplitJoinService service = createServiceForTests();
     // The service doesn't actually matter right now.
-    service.setService(wrap(new NullService()));
+    service.setService(asCollection(new NullService()));
     service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
     service.setSplitter(new MessageSplitter() {
 
@@ -207,7 +205,7 @@ public class SplitJoinServiceTest {
     AdaptrisMessage msg = SplitterCase.createLineCountMessageInput();
     SplitJoinService service = createServiceForTests();
     // The service doesn't actually matter right now.
-    service.setService(wrap(new NullService()));
+    service.setService(asCollection(new NullService()));
     service.setSplitter(new LineCountSplitter());
     service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
     service.setAggregator(new MessageAggregator() {
@@ -232,7 +230,7 @@ public class SplitJoinServiceTest {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(SplitterCase.XML_MESSAGE);
     SplitJoinService service = createServiceForTests();
     // The service doesn't actually matter right now.
-    service.setService(wrap(new NullService()));
+    service.setService(asCollection(new NullService()));
     service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
     service.setSplitter(new XpathMessageSplitter(ENVELOPE_DOCUMENT, ENCODING_UTF8));
     service.setAggregator(new XmlDocumentAggregator(new InsertNode(XPATH_ENVELOPE)));
@@ -251,7 +249,7 @@ public class SplitJoinServiceTest {
     try {
       AdaptrisMessage msg = SplitterCase.createLineCountMessageInput();
       SplitJoinService service = createServiceForTests();
-      service.setService(wrap(new WaitService(new TimeInterval(10L, TimeUnit.SECONDS))));
+      service.setService(asCollection(new WaitService(new TimeInterval(10L, TimeUnit.SECONDS))));
       service.setTimeout(new TimeInterval(3L, TimeUnit.SECONDS));
       service.setSplitter(new LineCountSplitter());
       service.setAggregator(new MimeAggregator());
@@ -262,10 +260,6 @@ public class SplitJoinServiceTest {
     } finally {
       Thread.currentThread().setName(oldname);
     }
-  }
-
-  public static ServiceCollection wrap(Service... services) {
-    return new ServiceList(services);
   }
 
   protected SplitJoinService createServiceForTests() {

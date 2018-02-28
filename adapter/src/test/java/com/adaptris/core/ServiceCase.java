@@ -296,4 +296,8 @@ public abstract class ServiceCase extends ExampleConfigCase {
       assertEquals(handler, ((ServiceCollectionImp) s).getOutOfStateHandler());
     }
   }
+
+  public static ServiceCollection asCollection(Service... services) {
+    return new ServiceList(services);
+  }
 }

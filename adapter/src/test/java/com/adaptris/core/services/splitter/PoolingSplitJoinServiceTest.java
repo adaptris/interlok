@@ -17,6 +17,7 @@
 package com.adaptris.core.services.splitter;
 
 import static com.adaptris.core.ServiceCase.execute;
+import static com.adaptris.core.ServiceCase.asCollection;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -50,7 +51,7 @@ public class PoolingSplitJoinServiceTest extends SplitJoinServiceTest {
     PoolingSplitJoinService service = createServiceForTests();
     service.setMaxThreads(8);
     // The service doesn't actually matter right now.
-    service.setService(wrap(new NullService()));
+    service.setService(asCollection(new NullService()));
     service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
     service.setSplitter(new LineCountSplitter());
     service.setAggregator(new MimeAggregator());

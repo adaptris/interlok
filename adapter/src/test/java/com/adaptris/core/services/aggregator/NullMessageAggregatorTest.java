@@ -17,13 +17,11 @@
 package com.adaptris.core.services.aggregator;
 
 import java.util.Arrays;
+import java.util.List;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.NullService;
-import com.adaptris.core.services.LogMessageService;
-import com.adaptris.core.services.splitter.SplitJoinService;
-import com.adaptris.core.services.splitter.SplitJoinServiceTest;
+import com.adaptris.core.Service;
 import com.adaptris.core.services.splitter.XpathDocumentCopier;
 
 public class NullMessageAggregatorTest extends AggregatingServiceExample {
@@ -49,11 +47,12 @@ public class NullMessageAggregatorTest extends AggregatingServiceExample {
 
   @Override
   protected Object retrieveObjectForSampleConfig() {
-    SplitJoinService service = new SplitJoinService();
-    service.setService(SplitJoinServiceTest.wrap(new LogMessageService(), new NullService()));
-    service.setSplitter(new XpathDocumentCopier("count(//invoice-lines)"));
-    service.setAggregator(new NullMessageAggregator());
-    return service;
+    return null;
+  }
+
+  @Override
+  protected List<Service> retrieveObjectsForSampleConfig() {
+    return createExamples(new XpathDocumentCopier("count(//invoice-lines)"), new NullMessageAggregator());
   }
 
   protected NullMessageAggregator createAggregatorForTests() {
