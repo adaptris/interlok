@@ -99,9 +99,13 @@ public class AdvancedMessageSplitterService extends MessageSplitterServiceImp im
     try {
       s.doService(msg);
     } finally {
-      if (eventHandler != null && sendEvents()) {
-          eventHandler.send(msg.getMessageLifecycleEvent());
-      }
+      sendEvents(msg);
+    }
+  }
+
+  protected void sendEvents(AdaptrisMessage msg) throws CoreException {
+    if (eventHandler != null && sendEvents()) {
+      eventHandler.send(msg.getMessageLifecycleEvent());
     }
   }
 
