@@ -32,10 +32,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdapterComponent;
-import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMarshaller;
@@ -62,16 +60,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * implementation
  * <p>
  * <p>
- * For simplicity a new (cloned) instance of the underlying {@link com.adaptris.core.Service} is created for every split message,
- * and executed in its own thread; this means that where there is a high cost of initialisation for the service, then you may get
- * better performance aggregating the messages in a different way.
+ * A new (cloned) instance of the underlying {@link com.adaptris.core.Service} is created for every split message, and executed in
+ * its own thread; this means that where there is a high cost of initialisation for the service, then you may get better performance
+ * aggregating the messages in a different way.
  * </p>
  * 
  * @config split-join-service
- * 
- * 
- * @author lchan
- * 
  */
 @XStreamAlias("split-join-service")
 @AdapterComponent
@@ -97,9 +91,6 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
   private MessageAggregator aggregator;
   @Valid
   private TimeInterval timeout;
-  @AdvancedConfig
-  @InputFieldDefault(value = "unbounded")
-  private Integer maxThreads;
 
   private transient ExecutorService executors;
   private transient EventHandler eventHandler;
@@ -117,7 +108,7 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
         return;
       }
       ServiceExceptionHandler handler = new ServiceExceptionHandler();
-      Collection<ServiceExecutor> jobs = buildTasks(handler, splitMessages);
+      Collection<Callable<AdaptrisMessage>> jobs = buildTasks(handler, splitMessages);
       submitAndWait(handler, jobs);
       msg.addMetadata(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT, Long.toString(jobs.size()));
       getAggregator().joinMessage(msg, splitMessages);
@@ -126,30 +117,33 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
     }
   }
 
-  private List<ServiceExecutor> buildTasks(ServiceExceptionHandler handler, List<AdaptrisMessage> msgs) throws Exception {
+  protected List<Callable<AdaptrisMessage>> buildTasks(ServiceExceptionHandler handler, List<AdaptrisMessage> msgs)
+      throws Exception {
     int count = 0;
-    List<ServiceExecutor> result = new ArrayList<>();
+    List<Callable<AdaptrisMessage>> result = new ArrayList<>();
     for (AdaptrisMessage splitMsg : msgs) {
       count++;
       splitMsg.addMetadata(MessageSplitterServiceImp.KEY_CURRENT_SPLIT_MESSAGE_COUNT, Long.toString(count));
-      ServiceExecutor job = new ServiceExecutor(handler, cloneService(service), splitMsg);
+      Callable<AdaptrisMessage> job = new MyServiceExecutor(handler, cloneService(service), splitMsg);
       result.add(job);
     }
     return result;
   }
 
-  private List<Future<AdaptrisMessage>> submitAndWait(ServiceExceptionHandler handler, Collection<ServiceExecutor> jobs)
+  private List<Future<AdaptrisMessage>> submitAndWait(ServiceExceptionHandler handler, Collection<Callable<AdaptrisMessage>> jobs)
       throws Exception {
     List<Future<AdaptrisMessage>> results = executors.invokeAll(jobs, timeoutMs(), TimeUnit.MILLISECONDS);
     handler.throwFirstException();
+    // Now check the futures to see if any were cancelled.
+    for (Future<AdaptrisMessage> f : results) {
+      if (f.isCancelled()) {
+        throw new CoreException("Timeout exceeded waiting for job completion.");
+      }
+    }
     log.trace("Finished waiting for operations...");
     return results;
   }
 
-  /**
-   * Convert the Iterable into a List. If it's already a list, just return it. If not, it will be iterated and the resulting list
-   * returned.
-   */
   private List<AdaptrisMessage> toList(Iterable<AdaptrisMessage> iter) throws IOException, CoreException {
     if (iter instanceof List) {
       return (List<AdaptrisMessage>) iter;
@@ -160,19 +154,11 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
         result.add(msg);
       }
     }
-
     return result;
   }
 
-  private ExecutorService createExecutor() {
-    ExecutorService result = null;
-    if (getMaxThreads() != null) {
-      result = Executors.newFixedThreadPool(getMaxThreads(), new ManagedThreadFactory(this.getClass().getSimpleName()));
-      
-    } else {
-      result = Executors.newCachedThreadPool(new ManagedThreadFactory(this.getClass().getSimpleName()));
-    }
-    return result;
+  protected ExecutorService createExecutor() {
+    return Executors.newCachedThreadPool(new ManagedThreadFactory(this.getClass().getSimpleName()));
   }
 
   @Override
@@ -203,12 +189,12 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
     return result;
   }
 
-  private class ServiceExecutor implements Callable<AdaptrisMessage> {
+  private class MyServiceExecutor implements Callable<AdaptrisMessage> {
     private ServiceExceptionHandler handler;
     private Service service;
     private AdaptrisMessage msg;
 
-    ServiceExecutor(ServiceExceptionHandler ceh, Service s, AdaptrisMessage msg) {
+    MyServiceExecutor(ServiceExceptionHandler ceh, Service s, AdaptrisMessage msg) {
       handler = ceh;
       service = s;
       this.msg = msg;
@@ -308,19 +294,6 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
   @Override
   public Service[] wrappedServices() {
     return discardNulls(getService());
-  }
-
-  public Integer getMaxThreads() {
-    return maxThreads;
-  }
-
-  /**
-   * Set the max number of threads to handle the execution of the split messages.
-   * 
-   * @param size the max number of threads, defaults to null which means we use {@link Executors#newCachedThreadPool()}.
-   */
-  public void setMaxThreads(Integer size) {
-    this.maxThreads = size;
   }
 
 }
