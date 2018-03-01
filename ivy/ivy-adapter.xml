@@ -58,9 +58,9 @@
     <dependency org="commons-pool" name="commons-pool" rev="1.6" conf="compile->default" />
     <dependency org="org.apache.commons" name="commons-exec" rev="1.2" conf="compile->default" />
 
-    <dependency org="org.bouncycastle" name="bcprov-jdk15on" rev="1.56" conf="compile->default" />
-    <dependency org="org.bouncycastle" name="bcpkix-jdk15on" rev="1.56" conf="compile->default" />
-    <dependency org="org.bouncycastle" name="bcmail-jdk15on" rev="1.56" conf="compile->default" />
+    <dependency org="org.bouncycastle" name="bcprov-jdk15on" rev="1.59" conf="compile->default" />
+    <dependency org="org.bouncycastle" name="bcpkix-jdk15on" rev="1.59" conf="compile->default" />
+    <dependency org="org.bouncycastle" name="bcmail-jdk15on" rev="1.59" conf="compile->default" />
 
     <dependency org="oro" name="oro" rev="2.0.8" conf="compile->default" />
 
