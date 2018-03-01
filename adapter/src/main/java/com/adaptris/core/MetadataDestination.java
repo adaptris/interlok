@@ -99,15 +99,10 @@ public class MetadataDestination implements MessageDrivenDestination {
 
     String destinationName = "";
     for (String key : keys) {
-      if (msg.containsKey(key)) {
-        destinationName += StringUtils.defaultIfEmpty(msg.getMetadataValue(key), "");
-      }
+      destinationName += StringUtils.defaultIfEmpty(msg.getMetadataValue(key), "");
     }
-    if (StringUtils.isBlank(destinationName)) {
-      destinationName = null;
-    }
-    log.debug("dynamic destination [" + destinationName + "]");
-
+    destinationName = StringUtils.defaultIfEmpty(destinationName, null);
+    log.debug("dynamic destination [{}]", destinationName);
     return destinationName;
   }
 }
