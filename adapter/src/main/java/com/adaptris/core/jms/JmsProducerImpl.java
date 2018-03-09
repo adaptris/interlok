@@ -180,6 +180,8 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
   public void stop() {
     LifecycleHelper.stop(getMessageTranslator());
     LifecycleHelper.stop(getSessionFactory());
+    CURRENT_MESSAGE_ID = "";
+    producerSession = null;
   }
 
   @Override
