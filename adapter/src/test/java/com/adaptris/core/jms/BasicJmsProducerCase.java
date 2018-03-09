@@ -66,6 +66,25 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
 
   private static final Logger logger = LoggerFactory.getLogger(BasicJmsProducerCase.class);
 
+  // INTERLOK-2121
+  public void testProducerSession_Invalided() throws Exception {
+    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
+    DefinedJmsProducer producer = createProducer(new ConfiguredProduceDestination(getName()));
+    StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
+    try {
+      start(standaloneProducer);
+      activeMqBroker.start();
+      AdaptrisMessage msg = createMessage();
+      standaloneProducer.doService(msg);
+      assertNotNull(producer.producerSession);
+      stop(standaloneProducer);
+      assertNull(producer.producerSession);
+    } finally {
+      stop(standaloneProducer);
+      activeMqBroker.destroy();
+    }
+  }
+
   public void testProduce_CaptureOutgoingMessageDetails() throws Exception {
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     DefinedJmsProducer producer = createProducer(new ConfiguredProduceDestination(getName()));
