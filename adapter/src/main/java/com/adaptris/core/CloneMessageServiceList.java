@@ -19,6 +19,7 @@ package com.adaptris.core;
 import static com.adaptris.core.util.LoggingHelper.friendlyName;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 import javax.validation.Valid;
@@ -75,6 +76,10 @@ public class CloneMessageServiceList extends ServiceListBase {
   public CloneMessageServiceList(Collection<Service> list) {
     this();
     setServices(new ArrayList<>(list));
+  }
+
+  public CloneMessageServiceList(Service... list) {
+    this(Arrays.asList(list));
   }
 
   @Override

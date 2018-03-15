@@ -168,8 +168,7 @@ public class ReplaceMetadataValueTest extends MetadataServiceExample {
     AdaptrisMessage m = createMessage();
     ReplaceMetadataValue nested = new ReplaceMetadataValue(MATCHING_METADATA_KEY, SEARCH_VALUE_REGEXP_MATCH_GROUP, false,
         JAVA_REGEX_REPLACEMENT_MATCH_GROUP);
-    CloneMessageServiceList service = new CloneMessageServiceList();
-    service.add(nested);
+    CloneMessageServiceList service = new CloneMessageServiceList(nested);
     execute(service, m);
     // At this point we expected the matching keys to still be "value".
     assertEquals(VALUE, m.getMetadataValue(MATCHING_METADATA_KEY1));
