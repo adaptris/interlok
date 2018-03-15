@@ -18,6 +18,7 @@ package com.adaptris.core.services.metadata;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.CloneMessageServiceList;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 
@@ -160,6 +161,19 @@ public class ReplaceMetadataValueTest extends MetadataServiceExample {
     assertEquals(VALUE, m.getMetadataValue(MATCHING_METADATA_KEY1));
     assertEquals(VALUE, m.getMetadataValue(MATCHING_METADATA_KEY2));
     assertEquals(VALUE, m.getMetadataValue(NON_MATCHING_KEY));
+  }
+
+  // This is Interlok-2129
+  public void testReplaceValue_InsideClonedService() throws Exception {
+    AdaptrisMessage m = createMessage();
+    ReplaceMetadataValue nested = new ReplaceMetadataValue(MATCHING_METADATA_KEY, SEARCH_VALUE_REGEXP_MATCH_GROUP, false,
+        JAVA_REGEX_REPLACEMENT_MATCH_GROUP);
+    CloneMessageServiceList service = new CloneMessageServiceList();
+    service.add(nested);
+    execute(service, m);
+    // At this point we expected the matching keys to still be "value".
+    assertEquals(VALUE, m.getMetadataValue(MATCHING_METADATA_KEY1));
+    assertEquals(VALUE, m.getMetadataValue(MATCHING_METADATA_KEY2));
   }
 
   @Override
