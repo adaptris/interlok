@@ -163,10 +163,10 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   /** @see AdaptrisMessage#addMetadata(MetadataElement) */
   @Override
   public synchronized void addMetadata(MetadataElement e) {
+    e.setKey(resolveKey(this, e.getKey()));
     if (metadata.contains(e)) {
       removeMetadata(e);
     }
-    e.setKey(resolveKey(this, e.getKey()));
     metadata.add(e);
   }
 
