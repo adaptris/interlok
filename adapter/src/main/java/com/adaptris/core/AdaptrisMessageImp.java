@@ -471,9 +471,8 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   public Object clone() throws CloneNotSupportedException {
     AdaptrisMessage result = (AdaptrisMessage) super.clone();
 
-    Set metadataCopy = this.getMetadata(); // returns a clone
-    result.clearMetadata(); // creates new empty HashSet
-    result.setMetadata(metadataCopy); // copies into HashSet
+    result.clearMetadata();
+    result.setMetadata(cloneMetadata());
 
     MessageLifecycleEvent mle = getMessageLifecycleEvent();
     MessageLifecycleEvent copy = (MessageLifecycleEvent) mle.clone();
@@ -483,6 +482,15 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     objMdCopy.putAll(getObjectHeaders());
     ((AdaptrisMessageImp) result).objectMetadata = objMdCopy;
 
+    return result;
+  }
+
+  private Set<MetadataElement> cloneMetadata() throws CloneNotSupportedException {
+    Set<MetadataElement> metadata = getMetadata();
+    Set<MetadataElement> result = new HashSet<MetadataElement>();
+    for (MetadataElement m : metadata) {
+      result.add((MetadataElement) m.clone());
+    }
     return result;
   }
 
@@ -510,7 +518,6 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
   protected static boolean areEqual(String s1, String s2) {
     boolean result = false;
-
     if (s1 == null) {
       if (s2 == null) {
         result = true;
