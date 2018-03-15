@@ -37,6 +37,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -474,8 +475,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     result.clearMetadata();
     result.setMetadata(cloneMetadata());
 
-    MessageLifecycleEvent mle = getMessageLifecycleEvent();
-    MessageLifecycleEvent copy = (MessageLifecycleEvent) mle.clone();
+    MessageLifecycleEvent copy = (MessageLifecycleEvent) getMessageLifecycleEvent().clone();
     ((AdaptrisMessageImp) result).messageLifeCycle = copy;
 
     Map objMdCopy = new HashMap();
@@ -516,20 +516,9 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     }
   }
 
+  @Deprecated
   protected static boolean areEqual(String s1, String s2) {
-    boolean result = false;
-    if (s1 == null) {
-      if (s2 == null) {
-        result = true;
-      }
-    }
-    else {
-      if (s1.equals(s2)) {
-        result = true;
-      }
-    }
-
-    return result;
+    return StringUtils.equals(s1, s2);
   }
 
   private String getValue(String key) {

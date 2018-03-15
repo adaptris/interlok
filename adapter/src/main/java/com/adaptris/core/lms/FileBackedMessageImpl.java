@@ -32,6 +32,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -202,8 +203,8 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
   public boolean equivalentForTracking(AdaptrisMessage other) {
     boolean result = false;
 
-    if (areEqual(getUniqueId(), other.getUniqueId())) {
-      if (areEqual(getContentEncoding(), other.getContentEncoding())) {
+    if (StringUtils.equals(getUniqueId(), other.getUniqueId())) {
+      if (StringUtils.equals(getContentEncoding(), other.getContentEncoding())) {
         if (this.getMetadata().equals(other.getMetadata())) {
           result = true;
         }
