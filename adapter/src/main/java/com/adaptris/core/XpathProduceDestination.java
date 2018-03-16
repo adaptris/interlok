@@ -67,7 +67,6 @@ public class XpathProduceDestination implements MessageDrivenDestination {
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 
   private transient Logger logR = LoggerFactory.getLogger(this.getClass().getName());
-  private transient NamespaceContext namespaceCtx;
 
   /**
    * Default Constructor.

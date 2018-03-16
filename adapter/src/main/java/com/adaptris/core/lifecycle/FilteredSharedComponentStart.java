@@ -152,7 +152,6 @@ public class FilteredSharedComponentStart implements SharedComponentLifecycleStr
 
   private void execute(final ConnectionAction action, final AdaptrisConnection comp) throws CoreException {
     if (threadedStart()) {
-      final String name = comp.getUniqueId();
       ExecutorService myExecutor = getExecutor(comp.getUniqueId());
       final String threadName = this.getClass().getSimpleName();
       myExecutor.execute(new Runnable() {
@@ -176,7 +175,7 @@ public class FilteredSharedComponentStart implements SharedComponentLifecycleStr
   private ExecutorService getExecutor(String name) {
     ExecutorService es = connectionStarters.get(name);
     if (es == null || es.isShutdown()) {
-      es = Executors.newSingleThreadExecutor(new ManagedThreadFactory());
+      es = Executors.newSingleThreadExecutor(new ManagedThreadFactory(getClass().getSimpleName()));
       connectionStarters.put(name, es);
     }
     return es;

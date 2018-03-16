@@ -20,6 +20,7 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.interlok.resolver.ExternalResolver;
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.security.password.Password;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -42,7 +43,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"encodedPassword"})
 public class ConfiguredPrivateKeyPasswordProvider implements PrivateKeyPasswordProvider {
   private transient char[] pkPassword;
-  @InputFieldHint(style = "PASSWORD")
+  @InputFieldHint(style = "PASSWORD", external = true)
   private String encodedPassword = null;
 
   public ConfiguredPrivateKeyPasswordProvider() {
@@ -62,7 +63,7 @@ public class ConfiguredPrivateKeyPasswordProvider implements PrivateKeyPasswordP
   @Override
   public char[] retrievePrivateKeyPassword() throws PasswordException {
     if (pkPassword == null && !isEmpty(encodedPassword)) {
-      pkPassword = Password.decode(encodedPassword).toCharArray();
+      pkPassword = Password.decode(ExternalResolver.resolve(encodedPassword)).toCharArray();
     }
     return pkPassword;
   }

@@ -31,9 +31,9 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.jdbc.connection.FailoverConfig;
 import com.adaptris.jdbc.connection.FailoverConnection;
-import com.adaptris.security.exc.PasswordException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -133,12 +133,8 @@ public class FailoverJdbcConnection extends DatabaseConnection {
       failover = new FailoverConnection(config);
       connect();
     }
-    catch (PasswordException e) {
-      log.error("Failed to decode password for database");
-      throw new CoreException(e);
-    }
     catch (Exception e) {
-      throw new CoreException(e);
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
@@ -171,7 +167,6 @@ public class FailoverJdbcConnection extends DatabaseConnection {
 
   @Override
   public boolean equals(Object o) {
-    boolean rc = false;
     if (o == null) 
       return false;
     

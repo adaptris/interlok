@@ -37,6 +37,7 @@ import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.TimeInterval;
 
+@SuppressWarnings("deprecation")
 public class NonDeletingFsConsumerTest extends FsConsumerCase {
   /**
    * Key in unit-test.properties that defines where example goes unless overriden {@link #setBaseDir(String)}.

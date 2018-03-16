@@ -26,6 +26,7 @@ import com.adaptris.core.util.LifecycleHelper;
  * Extension to <code>BaseCase</code> for <code>Service</code>s which provides a method for marshaling sample XML config.
  * </p>
  */
+@SuppressWarnings("deprecation")
 public abstract class ServiceCase extends ExampleConfigCase {
 
   /**
@@ -294,5 +295,9 @@ public abstract class ServiceCase extends ExampleConfigCase {
       ((ServiceCollectionImp) s).setOutOfStateHandler(handler);
       assertEquals(handler, ((ServiceCollectionImp) s).getOutOfStateHandler());
     }
+  }
+
+  public static ServiceCollection asCollection(Service... services) {
+    return new ServiceList(services);
   }
 }

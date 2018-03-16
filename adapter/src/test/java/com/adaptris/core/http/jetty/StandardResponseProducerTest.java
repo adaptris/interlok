@@ -56,6 +56,7 @@ import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.text.mime.MultiPartOutput;
 
+@SuppressWarnings("deprecation")
 public class StandardResponseProducerTest extends HttpProducerExample {
 
   protected static final String CUSTOM_VALUE2 = "CustomValue2";

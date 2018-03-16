@@ -36,6 +36,7 @@ import com.adaptris.core.metadata.MetadataFilter;
 import com.adaptris.core.metadata.RemoveAllMetadataFilter;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.interlok.resolver.ExternalResolver;
 import com.adaptris.mail.MailException;
 import com.adaptris.mail.SmtpClient;
 import com.adaptris.security.exc.PasswordException;
@@ -91,7 +92,7 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
   @Valid
   @AdvancedConfig
   private MetadataFilter metadataFilter;
-  @InputFieldHint(style = "PASSWORD")
+  @InputFieldHint(style = "PASSWORD", external = true)
   private String password;
   private String username;
 
@@ -205,7 +206,8 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
   }
 
   protected SmtpClient getClient(AdaptrisMessage msg) throws MailException, PasswordException {
-    SmtpClient smtp = new SmtpClient(MailHelper.createURLName(getSmtpUrl(), getUsername(), getPassword()));
+    SmtpClient smtp = new SmtpClient(
+        MailHelper.createURLName(getSmtpUrl(), getUsername(), ExternalResolver.resolve(getPassword())));
     Iterator i = sessionProperties.getKeyValuePairs().iterator();
     while (i.hasNext()) {
       KeyValuePair kp = (KeyValuePair) i.next();

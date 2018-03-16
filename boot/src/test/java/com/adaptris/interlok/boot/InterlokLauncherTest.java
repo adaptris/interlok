@@ -18,12 +18,18 @@ package com.adaptris.interlok.boot;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.boot.loader.archive.Archive;
 
 public class InterlokLauncherTest {
+
   @Before
   public void setUp() throws Exception {
   }
@@ -35,7 +41,7 @@ public class InterlokLauncherTest {
   @Test
   public void testMainClass() throws Exception {
     InterlokLauncher launcher = new InterlokLauncher(null);
-    assertEquals("com.adaptris.core.management.SimpleBootstrap", launcher.getMainClass());
+    assertEquals(InterlokLauncher.INTERLOK_MAIN_CLASS, launcher.getMainClass());
   }
 
   @Test
@@ -43,11 +49,25 @@ public class InterlokLauncherTest {
     InterlokLauncher launcher = new InterlokLauncher(new String[]{
         "-failover", "input.xml"
     });
-    assertEquals("com.adaptris.failover.FailoverBootstrap", launcher.getMainClass());
+    assertEquals(InterlokLauncher.INTERLOK_FAILOVER_MAIN_CLASS, launcher.getMainClass());
     launcher = new InterlokLauncher(new String[]{
         "--failover", "input.xml"
     });
-    assertEquals("com.adaptris.failover.FailoverBootstrap", launcher.getMainClass());
+    assertEquals(InterlokLauncher.INTERLOK_FAILOVER_MAIN_CLASS, launcher.getMainClass());
+  }
+
+  @Test
+  public void testMainClassContainer() throws Exception {
+    InterlokLauncher launcher = new InterlokLauncher(new String[]
+    {
+        "-container", "input.properties"
+    });
+    assertEquals(InterlokLauncher.INTERLOK_CONTAINER_MAIN_CLASS, launcher.getMainClass());
+    launcher = new InterlokLauncher(new String[]
+    {
+        "--container", "input.properties"
+    });
+    assertEquals(InterlokLauncher.INTERLOK_CONTAINER_MAIN_CLASS, launcher.getMainClass());
   }
 
   @Test
@@ -55,11 +75,11 @@ public class InterlokLauncherTest {
     InterlokLauncher launcher = new InterlokLauncher(new String[]{
         "-serviceTest", "input.xml"
     });
-    assertEquals("com.adaptris.tester.runners.TestExecutor", launcher.getMainClass());
+    assertEquals(InterlokLauncher.SERVICE_TEST_MAIN_CLASS, launcher.getMainClass());
     launcher = new InterlokLauncher(new String[]{
         "--serviceTest", "input.xml"
     });
-    assertEquals("com.adaptris.tester.runners.TestExecutor", launcher.getMainClass());
+    assertEquals(InterlokLauncher.SERVICE_TEST_MAIN_CLASS, launcher.getMainClass());
   }
 
   @Test
@@ -86,6 +106,14 @@ public class InterlokLauncherTest {
   }
 
   @Test
+  public void testClasspathArchives_Default() throws Exception {
+    InterlokLauncher launcher = new InterlokLauncher(new String[0]);
+    assertNotNull(launcher.getClassPathArchives());
+    // No ./config;./lib
+    assertEquals(0, launcher.getClassPathArchives().size());
+  }
+
+  @Test
   public void testClasspathArchives_NonExistent() throws Exception {
     InterlokLauncher launcher = new InterlokLauncher(new String[]
     {
@@ -100,14 +128,13 @@ public class InterlokLauncherTest {
   @Test
   public void testClasspathArchives_NoRecurse() throws Exception {
     String javaHome = System.getProperty("java.home");
-    // must be jars in javahome right?
     InterlokLauncher launcher = new InterlokLauncher(new String[]
     {
         "-ignoreSubDirs", "--adapterClasspath", javaHome
     });
     assertNotNull(launcher.getClassPathArchives());
     assertNotSame(0, launcher.getClassPathArchives().size());
-
+    assertContains(launcher.getClassPathArchives(), new NoOpFileArchive(new File(javaHome)));
   }
 
   @Test
@@ -120,6 +147,9 @@ public class InterlokLauncherTest {
     });
     assertNotNull(launcher.getClassPathArchives());
     assertNotSame(0, launcher.getClassPathArchives().size());
+    // the java_home directory will be available.
+    assertContains(launcher.getClassPathArchives(), new NoOpFileArchive(new File(javaHome)));
+    assertTrue(launcher.getClassPathArchives().size() > 1);
   }
 
   @Test
@@ -143,4 +173,62 @@ public class InterlokLauncherTest {
     assertEquals(0, rebuild.length);
   }
 
+  @Test
+  public void testRebuild_Container() throws Exception {
+    InterlokLauncher launcher = new InterlokLauncher(new String[]
+    {
+        "--container", "my.properties"
+    });
+    String[] rebuild = launcher.rebuildArgs();
+    assertEquals(1, rebuild.length);
+    assertEquals("my.properties", rebuild[0]);
+  }
+
+  @Test
+  public void testRebuild_ContainerWithNoProperties() throws Exception {
+    InterlokLauncher launcher = new InterlokLauncher(new String[]
+    {
+        "--container"
+    });
+    String[] rebuild = launcher.rebuildArgs();
+    assertEquals(0, rebuild.length);
+  }
+
+  @Test
+  public void testMainClassPassword() throws Exception {
+    InterlokLauncher launcher = new InterlokLauncher(new String[]
+    {
+        "-password", "PW:", "Hello"
+    });
+    assertEquals(InterlokLauncher.PASSWORD_GEN_MAIN_CLASS, launcher.getMainClass());
+    launcher = new InterlokLauncher(new String[]
+    {
+        "--password", "PW:", "Hello"
+    });
+    assertEquals(InterlokLauncher.PASSWORD_GEN_MAIN_CLASS, launcher.getMainClass());
+  }
+
+
+  @Test
+  public void testRebuild_Password() throws Exception {
+    InterlokLauncher launcher = new InterlokLauncher(new String[]
+    {
+        "-password", "PW:", "Hello"
+    });
+    String[] rebuild = launcher.rebuildArgs();
+    assertEquals(2, rebuild.length);
+    assertEquals("PW:", rebuild[0]);
+    assertEquals("Hello", rebuild[1]);
+  }
+
+  private void assertContains(List<Archive> list, NoOpFileArchive archive) {
+    boolean result = false;
+    for (Archive arch : list) {
+      if (arch instanceof NoOpFileArchive && ((NoOpFileArchive) arch).toString().equals(archive.toString())) {
+        result = true;
+        break;
+      }
+    }
+    assertTrue(result);
+  }
 }

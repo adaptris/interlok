@@ -37,6 +37,7 @@ import com.adaptris.core.stubs.StubMessageFactory;
  * @author lchan
  * @author $Author: lchan $
  */
+@SuppressWarnings("deprecation")
 public abstract class SplitterCase extends SplitterServiceExample {
 
   public static final String XML_MESSAGE = "<?xml version=\"1.0\" "
@@ -71,7 +72,7 @@ public abstract class SplitterCase extends SplitterServiceExample {
   }
 
   static AdvancedMessageSplitterService createAdvanced(MessageSplitter ms,
-                                                       Service[] services) {
+                                                       Service... services) {
     AdvancedMessageSplitterService service = new AdvancedMessageSplitterService();
     ServiceList sl = new ServiceList(services);
     service.setSplitter(ms);
@@ -79,20 +80,20 @@ public abstract class SplitterCase extends SplitterServiceExample {
     return service;
   }
 
+  static PoolingMessageSplitterService createPooling(MessageSplitter ms, Service... services) {
+    PoolingMessageSplitterService service = new PoolingMessageSplitterService();
+    ServiceList sl = new ServiceList(services);
+    service.setSplitter(ms);
+    service.setService(sl);
+    service.setMaxThreads(5);
+    return service;
+  }
 
   static List<Service> createExamples(MessageSplitter ms) {
     List<Service> services = new ArrayList<Service>();
     services.add(createBasic(ms));
-
-    AdvancedMessageSplitterService ams = new AdvancedMessageSplitterService();
-    ServiceList sl = new ServiceList();
-    sl.addService(new WaitService());
-    sl.addService(new StandaloneProducer());
-    ams.setSplitter(ms);
-    ams.setService(sl);
-
-    services.add(ams);
-
+    services.add(createAdvanced(ms, new WaitService(), new StandaloneProducer()));
+    services.add(createPooling(ms, new WaitService(), new StandaloneProducer()));
     return services;
   }
 

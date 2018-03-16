@@ -117,11 +117,11 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
   protected abstract void additionalSettings(T client) throws IOException;
 
   public int getTimeout() throws IOException {
-    return ftpClient().getConnectTimeout();
+    return timeout;
   }
 
-  public void setTimeout(int millis) throws IOException {
-    ftpClient().setConnectTimeout(millis);
+  public void setTimeout(int millis) {
+    timeout = millis;
   }
 
   private void acquireLock() {

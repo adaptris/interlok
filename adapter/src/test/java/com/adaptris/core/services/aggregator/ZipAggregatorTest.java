@@ -1,22 +1,22 @@
 package com.adaptris.core.services.aggregator;
 
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.services.metadata.AddFormattedMetadataService;
-import com.adaptris.core.services.splitter.SplitByMetadata;
-import com.adaptris.core.services.splitter.SplitJoinService;
-import com.adaptris.core.services.splitter.SplitJoinServiceTest;
-import com.adaptris.core.stubs.DefectiveMessageFactory;
+import static com.adaptris.core.services.aggregator.ZipAggregator.DEFAULT_FILENAME_METADATA;
 
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import static com.adaptris.core.services.aggregator.ZipAggregator.DEFAULT_FILENAME_METADATA;
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.Service;
+import com.adaptris.core.services.metadata.AddFormattedMetadataService;
+import com.adaptris.core.services.splitter.SplitByMetadata;
+import com.adaptris.core.stubs.DefectiveMessageFactory;
 
 public class ZipAggregatorTest extends AggregatingServiceExample {
 
@@ -60,16 +60,22 @@ public class ZipAggregatorTest extends AggregatingServiceExample {
   }
 
   @Override
+  protected String getExampleCommentHeader(Object o) {
+    return super.getExampleCommentHeader(o) + "\n<!--"
+        + "\nThis aggregator takes all the files specified by 'filename'; creates a zipfile, and sets that as the payload."
+        + "\n-->\n";
+  }
+
+  @Override
   protected Object retrieveObjectForSampleConfig() {
-    SplitJoinService service = new SplitJoinService();
-    AddFormattedMetadataService addFormattedMetadataService = new AddFormattedMetadataService();
-    addFormattedMetadataService.setFormatString("%1$s.xml");
-    addFormattedMetadataService.setMetadataKey("filename");
-    addFormattedMetadataService.setArgumentMetadataKeys(Collections.singletonList("value"));
-    service.setService(SplitJoinServiceTest.wrap(addFormattedMetadataService));
-    service.setSplitter(new SplitByMetadata("comma-separated-list", "value"));
-    service.setAggregator(new ZipAggregator());
-    return service;
+    return null;
+  }
+
+  @Override
+  protected List<Service> retrieveObjectsForSampleConfig() {
+    return createExamples(new SplitByMetadata("comma-separated-list", "value"), new ZipAggregator(),
+        new AddFormattedMetadataService().withFormatString("%1$s.xml").withMetadataKey("filename")
+            .withArgumentMetadataKeys(Collections.singletonList("value")));
   }
 
   @Override

@@ -378,6 +378,24 @@ public abstract class AdaptrisMessageCase {
   }
 
   @Test
+  // This is Interlok-2129
+  public void testCloneMessage_CheckMetadata() throws Exception {
+    AdaptrisMessage msg1 = createMessage();
+
+    msg1.addEvent(new StandaloneProducer(), true);
+    AdaptrisMessage msg2 = (AdaptrisMessage) msg1.clone();
+    Set<MetadataElement> msg2Metadata = msg2.getMetadata();
+    Set<MetadataElement> msg1Metadata = msg1.getMetadata();
+
+    for (MetadataElement e : msg2Metadata) {
+      e.setValue("hello");
+    }
+    for (MetadataElement e : msg1Metadata) {
+      assertNotSame("hello", e.getValue());
+    }
+  }
+
+  @Test
   public void testEquivalentForTracking() throws Exception {
     AdaptrisMessage msg1 = createMessage();
 

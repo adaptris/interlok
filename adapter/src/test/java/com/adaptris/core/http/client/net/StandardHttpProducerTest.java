@@ -74,6 +74,7 @@ import com.adaptris.security.password.Password;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.TimeInterval;
 
+@SuppressWarnings("deprecation")
 public class StandardHttpProducerTest extends HttpProducerExample {
   private static final String TEXT = "ABCDEFG";
   private static final String ALT_TEXT = "HIJKLMNOP";

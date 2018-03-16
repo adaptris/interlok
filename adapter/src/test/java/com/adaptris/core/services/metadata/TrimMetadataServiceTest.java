@@ -19,6 +19,7 @@ package com.adaptris.core.services.metadata;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 
+@SuppressWarnings("deprecation")
 public class TrimMetadataServiceTest extends MetadataServiceExample {
 
   private static final String SOURCE_METADATA_KEY = "sourceMetadataKey";

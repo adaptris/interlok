@@ -28,6 +28,7 @@ import com.adaptris.core.stubs.MockMessageConsumer;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
 
+@SuppressWarnings("deprecation")
 public class StandardProcessingExceptionHandlerTest extends ExampleErrorHandlerCase {
 
   public StandardProcessingExceptionHandlerTest(java.lang.String testName) {

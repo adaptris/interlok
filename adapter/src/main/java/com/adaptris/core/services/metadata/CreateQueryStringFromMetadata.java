@@ -16,12 +16,12 @@
 
 package com.adaptris.core.services.metadata;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.validation.Valid;
 
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -34,9 +34,14 @@ import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.MetadataCollection;
+import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.metadata.MetadataFilter;
+import com.adaptris.core.metadata.MetadataFilterImpl;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -50,11 +55,15 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @XStreamAlias("create-query-string-from-metadata")
 @AdapterComponent
 @ComponentProfile(summary = "Create the query portion of a URL from metadata", tag = "service,metadata,http,https")
-@DisplayOrder(order = {"metadataKeys", "resultKey", "querySeparator"})
+@DisplayOrder(order = {"metadata-filter", "metadataKeys", "resultKey", "querySeparator"})
 public class CreateQueryStringFromMetadata extends ServiceImp {
 
   private static final String AMPERSAND = "&";
+
+  private static boolean warningLogged = false;
+
   @XStreamImplicit(itemFieldName = "metadata-key")
+  @Deprecated
   private List<String> metadataKeys;
   @NotBlank
   @AffectsMetadata
@@ -65,6 +74,8 @@ public class CreateQueryStringFromMetadata extends ServiceImp {
   @AdvancedConfig
   @InputFieldDefault(value = "true")
   private Boolean includeQueryPrefix;
+  @Valid
+  private MetadataFilter metadataFilter;
 
   public CreateQueryStringFromMetadata() {
     metadataKeys = new ArrayList<String>();
@@ -74,23 +85,19 @@ public class CreateQueryStringFromMetadata extends ServiceImp {
   public void doService(AdaptrisMessage msg) throws ServiceException {
     StringBuilder queryString = new StringBuilder(includeQueryPrefix() ? "?" : "");
 
-    for (String metadataKey : getMetadataKeys()) {
-      if (msg.containsKey(metadataKey)) {
-        String value = msg.getMetadataValue(metadataKey);
-        if (queryString.length() > 1) {
-          // This is not the first parameter so add a separator
-          queryString.append(querySeparator());
-        }
-        try {
-          queryString.append(metadataKey).append("=").append(URLEncoder.encode(value, "UTF-8"));
-        }
-        catch (UnsupportedEncodingException e) {
-          // This will not occur, but we will deal with it nonetheless.
-          throw new ServiceException(e.getMessage(), e);
-        }
+    MetadataCollection filtered = metadataFilter().filter(msg);
+    for (MetadataElement e : filtered) {
+      if (queryString.length() > 1) {
+        // This is not the first parameter so add a separator
+        queryString.append(querySeparator());
+      }
+      try {
+        queryString.append(e.getKey()).append("=").append(URLEncoder.encode(e.getValue(), "UTF-8"));
+      } catch (UnsupportedEncodingException ex) {
+        // This will not occur, but we will deal with it nonetheless.
+        throw ExceptionHelper.wrapServiceException(ex);
       }
     }
-
     if (queryString.length() > 1) {
       // We have added some parameters
       msg.addMetadata(getResultKey(), queryString.toString());
@@ -104,7 +111,12 @@ public class CreateQueryStringFromMetadata extends ServiceImp {
 
   @Override
   protected void initService() throws CoreException {
-
+    if (getMetadataKeys().size() > 0 && getMetadataFilter() == null) {
+      if (!warningLogged) {
+        log.warn("metadata-keys are deprecated; use a metadata-filter instead");
+        warningLogged = true;
+      }
+    }
   }
 
   @Override
@@ -112,17 +124,44 @@ public class CreateQueryStringFromMetadata extends ServiceImp {
 
   }
 
-  public void addMetadataKey(String key) {
-    if (isEmpty(key)) {
-      throw new IllegalArgumentException("Metadata Key may not be null / blank");
-    }
-    metadataKeys.add(key);
+  public MetadataFilter getMetadataFilter() {
+    return metadataFilter;
   }
 
+  public void setMetadataFilter(MetadataFilter metadataFilter) {
+    this.metadataFilter = metadataFilter;
+  }
+
+  private MetadataFilter metadataFilter() {
+    if (getMetadataFilter() != null) {
+      return getMetadataFilter();
+    }
+    return new LegacyFilter();
+  }
+
+  /**
+   * 
+   * @deprecated since 3.7.1 use a metadata-filter instead
+   */
+  @Deprecated
+  public void addMetadataKey(String key) {
+    metadataKeys.add(Args.notBlank(key, "key"));
+  }
+
+  /**
+   * 
+   * @deprecated since 3.7.1 use a metadata-filter instead
+   */
+  @Deprecated
   public List<String> getMetadataKeys() {
     return metadataKeys;
   }
 
+  /**
+   * 
+   * @deprecated since 3.7.1 use a metadata-filter instead
+   */
+  @Deprecated
   public void setMetadataKeys(List<String> metadataKeys) {
     this.metadataKeys = Args.notNull(metadataKeys, "metadataKeys");
   }
@@ -186,5 +225,20 @@ public class CreateQueryStringFromMetadata extends ServiceImp {
 
   boolean includeQueryPrefix() {
     return getIncludeQueryPrefix() != null ? getIncludeQueryPrefix().booleanValue() : true;
+  }
+
+  private class LegacyFilter extends MetadataFilterImpl {
+
+    @Override
+    public MetadataCollection filter(MetadataCollection original) {
+      MetadataCollection result = new MetadataCollection();
+      for (MetadataElement e : original) {
+        if (getMetadataKeys().contains(e.getKey())) {
+          result.add(e);
+        }
+      }
+      return result;
+    }
+
   }
 }

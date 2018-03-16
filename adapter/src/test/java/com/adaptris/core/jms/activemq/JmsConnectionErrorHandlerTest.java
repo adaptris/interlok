@@ -16,6 +16,9 @@
 
 package com.adaptris.core.jms.activemq;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import com.adaptris.core.Adapter;
@@ -25,6 +28,8 @@ import com.adaptris.core.ClosedState;
 import com.adaptris.core.ComponentState;
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.ConfiguredProduceDestination;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.InitialisedState;
 import com.adaptris.core.ServiceCase;
 import com.adaptris.core.SharedConnection;
 import com.adaptris.core.StandaloneProducer;
@@ -72,6 +77,80 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
 
     }
     finally {
+      channel.requestClose();
+      activeMqBroker.destroy();
+    }
+  }
+
+  // Tests INTERLOK-2063
+  public void testConnectionErrorHandler_WithRuntimeException() throws Exception {
+    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
+    MockChannel channel = createChannel(activeMqBroker,
+        new JmsConnectionCloseWithRuntimeException(activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), true)),
+        getName(), new JmsConnectionErrorHandler());
+    try {
+      activeMqBroker.start();
+      channel.requestStart();
+      assertEquals(StartedState.getInstance(), channel.retrieveComponentState());
+      activeMqBroker.stop();
+      Thread.sleep(1000);
+      activeMqBroker.start();
+      waitForChannelToMatchState(StartedState.getInstance(), channel);
+
+      assertEquals(StartedState.getInstance(), channel.retrieveComponentState());
+      assertEquals(2, channel.getStartCount());
+
+    } finally {
+      channel.requestClose();
+      activeMqBroker.destroy();
+    }
+  }
+
+  public void testConnectionErrorHandler_WithInitialiseException() throws Exception {
+    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
+    MockChannel channel = new MockChannelFail(createChannel(activeMqBroker,
+        activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), true),
+        getName(), new JmsConnectionErrorHandler()), MockChannelFail.WhenToFail.INIT_AFTER_CLOSE);
+    try {
+      activeMqBroker.start();
+      channel.requestStart();
+      assertEquals(StartedState.getInstance(), channel.retrieveComponentState());
+      activeMqBroker.stop();
+      Thread.sleep(1000);
+      activeMqBroker.start();
+      // This is a bit artificial, but we shouldn't ever transition from ClosedState.
+      Thread.sleep(1000);
+      waitForChannelToMatchState(ClosedState.getInstance(), channel);
+
+      assertEquals(ClosedState.getInstance(), channel.retrieveComponentState());
+      assertEquals(1, channel.getStartCount());
+      assertEquals(1, channel.getInitCount());
+
+    } finally {
+      channel.requestClose();
+      activeMqBroker.destroy();
+    }
+  }
+
+  public void testConnectionErrorHandler_WithStartException() throws Exception {
+    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
+    MockChannel channel = new MockChannelFail(createChannel(activeMqBroker,
+        activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), true),
+        getName(), new JmsConnectionErrorHandler()), MockChannelFail.WhenToFail.START_AFTER_CLOSE);
+    try {
+      activeMqBroker.start();
+      channel.requestStart();
+      assertEquals(StartedState.getInstance(), channel.retrieveComponentState());
+      activeMqBroker.stop();
+      Thread.sleep(1000);
+      activeMqBroker.start();
+      waitForChannelToMatchState(InitialisedState.getInstance(), channel);
+
+      assertEquals(InitialisedState.getInstance(), channel.retrieveComponentState());
+      assertEquals(1, channel.getStartCount());
+      assertEquals(2, channel.getInitCount());
+
+    } finally {
       channel.requestClose();
       activeMqBroker.destroy();
     }
@@ -328,5 +407,100 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
     conn.setConnectionErrorHandler(new JmsConnectionErrorHandler());
     PasProducer producer = new PasProducer(new ConfiguredProduceDestination(dest));
     return new StandaloneProducer(conn, producer);
+  }
+
+  
+  private static String[] asSetters(String[] getters) {
+    List<String> result = new ArrayList<>();
+    for (String s : getters) {
+      result.add(s.replaceFirst("get", "set"));
+    }
+    return result.toArray(new String[0]);
+  }
+
+  private static void invokeSetter(Object target, Class clazz, String methodName, String getterMethod, Object param)
+      throws Exception {
+    Method getter = clazz.getMethod(getterMethod, (Class[]) null);
+    Method setter = clazz.getMethod(methodName, new Class[]
+    {
+        getter.getReturnType()
+    });
+    setter.invoke(target, param);
+  }
+
+  private static class MockChannelFail extends MockChannel {
+
+    private enum WhenToFail {
+      NEVER, INIT_AFTER_CLOSE, START_AFTER_CLOSE
+    };
+
+    private transient boolean closeCalled = false;
+    private transient WhenToFail whenToFail = WhenToFail.NEVER;
+
+    public MockChannelFail(MockChannel other, WhenToFail b) throws Exception {
+      super();
+      configureSelf(other);
+      whenToFail = b;
+    }
+
+    private void configureSelf(MockChannel other) throws Exception {
+      String[] getterMethods = filterGetterWithNoSetter(MockChannel.class, getGetters(MockChannel.class));
+      String[] setterMethods = asSetters(getterMethods);
+      for (int i = 0; i < getterMethods.length; i++) {
+        invokeSetter(this, MockChannel.class, setterMethods[i], getterMethods[i], invokeGetter(other, getterMethods[i]));
+      }
+    }
+
+    @Override
+    public void init() throws CoreException {
+      if (closeCalled && whenToFail == WhenToFail.INIT_AFTER_CLOSE) {
+        throw new CoreException("Well, now's a good time to fail.");
+      }
+      super.init();
+    }
+
+    @Override
+    public void start() throws CoreException {
+      if (closeCalled && whenToFail == WhenToFail.START_AFTER_CLOSE) {
+        throw new CoreException("Well, now's a good time to fail.");
+      }
+      super.start();
+    }
+
+    @Override
+    public void close() {
+      if (!closeCalled) {
+        closeCalled = true;
+      }
+      super.close();
+    }
+  }
+  
+  
+  private class JmsConnectionCloseWithRuntimeException extends JmsConnection {
+
+    private transient boolean failOnClose = true;
+
+    public JmsConnectionCloseWithRuntimeException(JmsConnection other) throws Exception {
+      configureSelf(other);
+    }
+
+    @Override
+    protected void closeConnection() {
+      if (failOnClose) {
+        failOnClose = false;
+        throw new RuntimeException();
+      }
+      super.closeConnection();
+    }
+
+    private void configureSelf(JmsConnection other) throws Exception {
+      String[] getterMethods = filterGetterWithNoSetter(JmsConnection.class, getGetters(JmsConnection.class));
+      String[] setterMethods = asSetters(getterMethods);
+      for (int i = 0; i < getterMethods.length; i++) {
+        invokeSetter(this, JmsConnection.class, setterMethods[i], getterMethods[i], invokeGetter(other, getterMethods[i]));
+      }
+    }
+
   }
 }

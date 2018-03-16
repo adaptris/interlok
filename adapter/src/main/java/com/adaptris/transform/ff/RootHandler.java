@@ -16,10 +16,12 @@
 
 package com.adaptris.transform.ff;
 
+import java.io.PrintWriter;
+import java.io.Reader;
+import java.util.ArrayList;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import java.util.ArrayList;
-import java.io.*;
 
 /**
  *
@@ -37,17 +39,12 @@ public class RootHandler extends Handler
 
   public RootHandler(Node root)
   {
-    long start = System.currentTimeMillis();
-
-    logP.debug("Compiling flat file parser...");
-
     String enc = getAttribute(root, "encoding");
     if(enc != null && enc.trim().length() > 0)
     {
       encoding = enc;
     }
 
-    //DEBUG=true;
     NodeList segs = root.getChildNodes();
 
     for ( int i=0; i<segs.getLength(); i++ )
@@ -57,8 +54,6 @@ public class RootHandler extends Handler
         segments.add(new SegmentHandler(segs.item(i)));
       }
     }
-
-    logP.debug("Compilation took " + (System.currentTimeMillis() - start) + " milliseconds");
   }
 
   /** process - reads in a text message and parses it
@@ -69,9 +64,6 @@ public class RootHandler extends Handler
 
   public String process(String message, PrintWriter output)
   {
-    long start = System.currentTimeMillis();
-    logP.info("Beginning to parse document...");
-
     output.println("<?xml version=\"1.0\" encoding=\"" + encoding + "\" ?>");
     output.print("<root>");
 
@@ -83,7 +75,7 @@ public class RootHandler extends Handler
 
       if (seg.isThisHandler(sp, false))
       {
-        debug("Processing next segment..." + seg.name);
+        log.trace("Processing next segment... {}", seg.name);
 
         if ( seg.getCount() == 0 )
         {
@@ -92,15 +84,13 @@ public class RootHandler extends Handler
 
         for (int ix=0; ix<seg.getCount(); ix++)
         {
-          debug("Before checking handler");
           if (seg.isThisHandler(sp, false)==true)
           {
             seg.process(sp, output);
-            //debug("Remainder: " + sp);
           }
           else
           {
-            debug("Not this segment " + seg.name);
+            log.trace("Not this segment {}", seg.name);
             break;
           }
         }
@@ -108,9 +98,6 @@ public class RootHandler extends Handler
     }
 
     output.print("</root>");
-
-    logP.info("Parsing took " +(System.currentTimeMillis() - start) + " milliseconds");
-
     return message;
   }
 
@@ -121,9 +108,6 @@ public class RootHandler extends Handler
 
   public void process(Reader message, PrintWriter output)
   {
-    long start = System.currentTimeMillis();
-    logP.info("Beginning to parse document...");
-
     output.println("<?xml version=\"1.0\" encoding=\"" + encoding + "\" ?>");
     output.print("<root>");
 
@@ -135,7 +119,7 @@ public class RootHandler extends Handler
 
       if (seg.isThisHandler(sp, false))
       {
-        debug("Processing next segment..." + seg.name);
+        log.trace("Processing next segment...{}", seg.name);
 
         if ( seg.getCount() == 0 )
         {
@@ -144,15 +128,13 @@ public class RootHandler extends Handler
 
         for (int ix=0; ix<seg.getCount(); ix++)
         {
-          debug("Before checking handler");
           if (seg.isThisHandler(sp, false)==true)
           {
             seg.process(sp, output);
-            //debug("Remainder: " + sp);
           }
           else
           {
-            debug("Not this segment " + seg.name);
+            log.trace("Not this segment {}", seg.name);
             break;
           }
         }
@@ -162,8 +144,6 @@ public class RootHandler extends Handler
     output.print("</root>");
     output.flush();
     output.close();
-    logP.info("Parsing took " + (System.currentTimeMillis() - start) + " milliseconds");
-
     return;
 }
 

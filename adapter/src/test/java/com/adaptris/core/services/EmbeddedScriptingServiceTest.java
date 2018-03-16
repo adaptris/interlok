@@ -30,6 +30,7 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.metadata.AddMetadataService;
 import com.adaptris.core.util.LifecycleHelper;
 
+@SuppressWarnings("deprecation")
 public class EmbeddedScriptingServiceTest extends GeneralServiceExample {
 
   private static final String MY_METADATA_KEY2 = "MyMetadataKey2";
@@ -161,7 +162,6 @@ public class EmbeddedScriptingServiceTest extends GeneralServiceExample {
     return result;
   }
 
-  @SuppressWarnings("deprecation")
   private EmbeddedScriptingService createServiceForBranch_Deprecated(String uid, String nextServiceId) {
     EmbeddedScriptingService result = uid == null ? new EmbeddedScriptingService(SERVICE_UID) : new EmbeddedScriptingService(uid);
     result.setLanguage("nashorn");

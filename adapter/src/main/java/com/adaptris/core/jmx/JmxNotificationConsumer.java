@@ -79,7 +79,7 @@ public class JmxNotificationConsumer extends AdaptrisMessageConsumerImp implemen
   @Override
   public void init() throws CoreException {
     try {
-      scheduler = Executors.newSingleThreadScheduledExecutor(new ManagedThreadFactory());
+      scheduler = Executors.newSingleThreadScheduledExecutor(new ManagedThreadFactory(getClass().getSimpleName()));
       connection = retrieveConnection(JmxConnection.class).mbeanServerConnection();
       actualObjectName = ObjectName.getInstance(getDestination().getDestination());
     } catch (Exception e) {
@@ -104,7 +104,7 @@ public class JmxNotificationConsumer extends AdaptrisMessageConsumerImp implemen
     try {
       connection.removeNotificationListener(actualObjectName, this);
     } catch (Exception ignoredIntentionally) {
-      ;
+
     }
   }
 

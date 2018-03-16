@@ -19,26 +19,23 @@ package com.adaptris.security.certificate;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.NoSuchProviderException;
 import java.security.PublicKey;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateExpiredException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 import java.util.Calendar;
 
-import org.bouncycastle.jce.provider.X509CertParser;
-import org.bouncycastle.jce.provider.X509CertificateObject;
-import org.bouncycastle.x509.util.StreamParsingException;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.adaptris.security.util.Constants;
 import com.adaptris.security.util.SecurityUtil;
-
-// import org.apache.commons.httpclient.methods.GetMethod;
-// import org.apache.commons.httpclient.HttpClient;
 
 /**
  * X509CertificateHandler.
@@ -88,7 +85,6 @@ final class X509Handler implements CertificateHandler {
   X509Handler(InputStream input) throws CertificateException, IOException {
     this();
     x509 = parseCertificate(input);
-    logCertificate();
   }
 
   /**
@@ -103,28 +99,23 @@ final class X509Handler implements CertificateHandler {
    */
   X509Handler(byte[] bytes) throws CertificateException, IOException {
     this();
-    InputStream is = new ByteArrayInputStream(bytes);
-    x509 = parseCertificate(is);
-    is.close();
-    logCertificate();
-  }
-
-  private X509CertificateObject parseCertificate(InputStream input) throws IOException
-  {
-    try
-    {
-       X509CertParser x509parser = new X509CertParser();
-       x509parser.engineInit(input);
-       return (X509CertificateObject)x509parser.engineRead();
-    }
-    catch (StreamParsingException e)
-    {
-       throw new IOException("Could not parse certificate!", e);
+    try (InputStream is = new ByteArrayInputStream(bytes)) {
+      x509 = parseCertificate(is);
     }
   }
 
-  private void logCertificate() {
-    logR.trace("Handling [" + x509.getSubjectDN().toString() + "] SerialNumber:" + x509.getSerialNumber());
+  private X509Certificate parseCertificate(InputStream input) throws CertificateException, IOException {
+    try {
+      CertificateFactory certFactory = CertificateFactory.getInstance("X.509", BouncyCastleProvider.PROVIDER_NAME);
+      X509Certificate cert = (X509Certificate) certFactory.generateCertificate(input);
+      logR.trace("Handling [{}] SerialNumber: {}", cert.getSubjectDN().toString(), cert.getSerialNumber());
+      return cert;
+      // X509CertParser x509parser = new X509CertParser();
+      // x509parser.engineInit(input);
+      // return (X509CertificateObject)x509parser.engineRead();
+    } catch (NoSuchProviderException e) {
+      throw new IOException("Could not parse certificate!", e);
+    }
   }
 
   /**
@@ -163,17 +154,17 @@ final class X509Handler implements CertificateHandler {
     boolean rc = true;
 
     if (Constants.DEBUG) {
-      logR.trace("Checking expiry date on Certificate SerialNumber :" + x509.getSerialNumber());
+      logR.trace("Checking expiry date on Certificate SerialNumber :{}", x509.getSerialNumber());
     }
     try {
       x509.checkValidity();
       rc = false;
     }
     catch (CertificateExpiredException e) {
-      logR.error("SerialNumber : " + x509.getSerialNumber() + "; Certificate has Expired");
+      logR.error("SerialNumber : {}; Certificate has Expired", x509.getSerialNumber());
     }
     catch (CertificateNotYetValidException e) {
-      logR.error("SerialNumber : " + x509.getSerialNumber() + "; Certificate is not yet valid");
+      logR.error("SerialNumber : {}; Certificate is not yet valid", x509.getSerialNumber());
     }
     return rc;
   }
@@ -186,7 +177,7 @@ final class X509Handler implements CertificateHandler {
     boolean rc = false;
     if (checkRevocation) {
       if (Constants.DEBUG) {
-        logR.trace("Checking revocation status on Certificate SerialNumber : " + x509.getSerialNumber());
+        logR.trace("Checking revocation status on Certificate SerialNumber : {}", x509.getSerialNumber());
       }
       rc = revocationService.isRevoked(x509);
     }

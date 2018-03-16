@@ -35,6 +35,7 @@ import com.adaptris.core.stubs.MockChannel;
  * @author lchan
  *
  */
+@SuppressWarnings("deprecation")
 public class JettyHelper {
 
   public static Channel createChannel(AdaptrisConnection connection, JettyMessageConsumer consumer,
@@ -86,7 +87,6 @@ public class JettyHelper {
     return consumer;
   }
 
-  @SuppressWarnings("deprecation")
   public static MessageConsumer createDeprecatedConsumer(String dest) {
     MessageConsumer consumer = new MessageConsumer();
     consumer.setAdditionalDebug(true);

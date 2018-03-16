@@ -47,4 +47,13 @@ public @interface InputFieldHint {
    * @since 3.6.2
    */
   boolean expression() default false;
+
+  /**
+   * Whether or not this field supports external resolution.
+   * 
+   * @return true if enabled.
+   * @since 3.7.1
+   */
+  boolean external() default false;
+
 }

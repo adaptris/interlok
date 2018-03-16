@@ -20,13 +20,14 @@ import static com.adaptris.core.services.splitter.XpathSplitterTest.ENCODING_UTF
 import static com.adaptris.core.services.splitter.XpathSplitterTest.ENVELOPE_DOCUMENT;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.NullService;
-import com.adaptris.core.services.LogMessageService;
+import com.adaptris.core.Service;
 import com.adaptris.core.services.splitter.SplitJoinService;
 import com.adaptris.core.services.splitter.SplitJoinServiceTest;
 import com.adaptris.core.services.splitter.SplitterCase;
@@ -58,7 +59,7 @@ public class IgnoreOriginalXmlAggregatorTest extends XmlAggregatorCase {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(SplitterCase.XML_MESSAGE);
     SplitJoinService service = new SplitJoinService();
     // The service doesn't actually matter right now.
-    service.setService(SplitJoinServiceTest.wrap(new NullService()));
+    service.setService(asCollection(new NullService()));
     service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
     service.setSplitter(new XpathMessageSplitter(ENVELOPE_DOCUMENT, ENCODING_UTF8));
     IgnoreOriginalXmlDocumentAggregator aggr = new IgnoreOriginalXmlDocumentAggregator("<new/>", new InsertNode("/new"));
@@ -78,7 +79,7 @@ public class IgnoreOriginalXmlAggregatorTest extends XmlAggregatorCase {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(SplitterCase.XML_MESSAGE, "ISO-8859-1");
     SplitJoinService service = new SplitJoinService();
     // The service doesn't actually matter right now.
-    service.setService(SplitJoinServiceTest.wrap(new NullService()));
+    service.setService(asCollection(new NullService()));
     service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
     service.setSplitter(new XpathMessageSplitter(ENVELOPE_DOCUMENT, ENCODING_UTF8));
     service.setAggregator(new IgnoreOriginalXmlDocumentAggregator("<new/>", new InsertNode("/new")));
@@ -116,12 +117,9 @@ public class IgnoreOriginalXmlAggregatorTest extends XmlAggregatorCase {
   }
 
   @Override
-  protected Object retrieveObjectForSampleConfig() {
-    SplitJoinService service = new SplitJoinService();
-    service.setService(SplitJoinServiceTest.wrap(new LogMessageService(), new NullService()));
-    service.setSplitter(new XpathMessageSplitter(ENVELOPE_DOCUMENT, ENCODING_UTF8));
-    service.setAggregator(new IgnoreOriginalXmlDocumentAggregator("<new/>", new InsertNode("/new")));
-    return service;
+  protected List<Service> retrieveObjectsForSampleConfig() {
+    return createExamples(new XpathMessageSplitter(ENVELOPE_DOCUMENT, ENCODING_UTF8),
+        new IgnoreOriginalXmlDocumentAggregator("<new/>", new InsertNode("/new")));
   }
 
   @Override

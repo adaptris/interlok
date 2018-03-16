@@ -25,8 +25,6 @@ import javax.mail.internet.MimeUtility;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -51,8 +49,6 @@ public class XmlBodyHandler implements BodyHandler {
   private String contentType;
   private String encodingXpath;
   private KeyValuePairSet namespaceContext;
-
-  private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   public XmlBodyHandler() {
 

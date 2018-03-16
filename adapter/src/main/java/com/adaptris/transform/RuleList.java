@@ -98,7 +98,7 @@ public class RuleList {
    * @see   #indexOfKey(Source)
    */
   public Source getKey(int index) {
-    return (Source) ruleKeys.get(index);
+    return ruleKeys.get(index);
   }
 
   /**

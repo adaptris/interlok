@@ -41,6 +41,7 @@ import com.adaptris.fs.OverwriteIfExistsWorker;
 import com.adaptris.fs.StandardWorker;
 import com.adaptris.util.GuidGenerator;
 
+@SuppressWarnings("deprecation")
 public class FsMessageProducerTest extends FsProducerExample {
 
   public FsMessageProducerTest(java.lang.String testName) {

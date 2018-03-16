@@ -35,6 +35,7 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.text.mime.PartSelector;
 
+@SuppressWarnings("deprecation")
 public class MimePartChooserTest extends MimeServiceExample {
 
   private static final String PREFIX_PART_HDR = "partHdr_";

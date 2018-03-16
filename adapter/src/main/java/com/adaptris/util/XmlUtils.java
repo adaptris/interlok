@@ -525,12 +525,12 @@ public class XmlUtils {
       throws Exception {
     Document parentDoc = parent.getOwnerDocument();
     Document newDoc = newNode.getOwnerDocument();
-
+    Node nodeToAdd = newNode;
     if (!parentDoc.equals(newDoc)) {
-      newNode = parentDoc.importNode(newNode, true);
+      nodeToAdd = parentDoc.importNode(newNode, true);
     }
 
-    parent.insertBefore(newNode, existingNode);
+    parent.insertBefore(nodeToAdd, existingNode);
   }
 
   /**

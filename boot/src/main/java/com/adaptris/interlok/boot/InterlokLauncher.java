@@ -58,9 +58,12 @@ public class InterlokLauncher extends Launcher {
 
   private static final boolean DEBUG = Boolean.getBoolean("adp.bootstrap.debug") || Boolean.getBoolean("interlok.bootstrap.debug");
 
-  private static final String INTERLOK_MAIN_CLASS = "com.adaptris.core.management.SimpleBootstrap";
-  private static final String INTERLOK_FAILOVER_MAIN_CLASS = "com.adaptris.failover.FailoverBootstrap";
-  private static final String SERVICE_TEST_MAIN_CLASS = "com.adaptris.tester.runners.TestExecutor";
+  static final String INTERLOK_MAIN_CLASS = "com.adaptris.core.management.SimpleBootstrap";
+  static final String INTERLOK_FAILOVER_MAIN_CLASS = "com.adaptris.failover.SimpleBootstrap";
+  static final String INTERLOK_CONTAINER_MAIN_CLASS = "com.adaptris.management.aar.SimpleBootstrap";
+  static final String SERVICE_TEST_MAIN_CLASS = "com.adaptris.tester.runners.TestExecutor";
+  static final String PASSWORD_GEN_MAIN_CLASS = "com.adaptris.security.password.Password";
+
   private static final String[] ARG_ADAPTER_CLASSPATH = new String[]
   {
       "-adapterClasspath", "--adapterClasspath"
@@ -77,23 +80,89 @@ public class InterlokLauncher extends Launcher {
   {
       "-serviceTest", "--serviceTest"
   };
+  private static final String[] ARG_CONTAINER = new String[]
+  {
+      "-container", "--container"
+  };
+  private static final String[] ARG_PASSWORD = new String[]
+  {
+      "-password", "--password"
+  };
+
 
   private final String DEFAULT_CLASSPATH = "./config,./lib";
+
+  private enum MainClassSelector {
+
+    SERVICE_TESTER(SERVICE_TEST_MAIN_CLASS) {
+      @Override
+      boolean matches(CommandLineArgs cmdLine) {
+        return cmdLine.hasArgument(ARG_SERVICE_TEST);
+      }
+    },
+    CONTAINER(INTERLOK_CONTAINER_MAIN_CLASS) {
+
+      @Override
+      boolean matches(CommandLineArgs cmdLine) {
+        return cmdLine.hasArgument(ARG_CONTAINER);
+      }
+
+    },
+    FAILOVER(INTERLOK_FAILOVER_MAIN_CLASS) {
+
+      @Override
+      boolean matches(CommandLineArgs cmdLine) {
+        return cmdLine.hasArgument(ARG_FAILOVER);
+      }
+
+    },
+    PASSWORD(PASSWORD_GEN_MAIN_CLASS) {
+
+      @Override
+      boolean matches(CommandLineArgs cmdLine) {
+        return cmdLine.hasArgument(ARG_PASSWORD);
+      }
+
+    },
+    // Last so it's the default.
+    INTERLOK(INTERLOK_MAIN_CLASS) {
+      @Override
+      boolean matches(CommandLineArgs cmdLine) {
+        return true;
+      }
+    };
+    private String mainClass;
+
+    MainClassSelector(String clazz) {
+      mainClass = clazz;
+    }
+
+    String mainClass() {
+      return mainClass;
+    }
+
+    abstract boolean matches(CommandLineArgs cmdLine);
+
+  }
 
   private List<String> paths = new ArrayList<>();
   private CommandLineArgs commandLine;
   private boolean recursive;
-  private boolean failover;
-  private boolean serviceTest;
   private boolean defaultClasspath = true;
+  private MainClassSelector mainClassSelector = MainClassSelector.INTERLOK;
 
   public InterlokLauncher(String[] argv) {
     try {
       commandLine = CommandLineArgs.parse(argv);
       recursive = !commandLine.hasArgument(ARG_IGNORE_SUBDIRS);
-      serviceTest = commandLine.hasArgument(ARG_SERVICE_TEST);
-      failover = commandLine.hasArgument(ARG_FAILOVER);
+      for (MainClassSelector s : MainClassSelector.values()) {
+        if (s.matches(commandLine)) {
+          mainClassSelector = s;
+          break;
+        }
+      }
       paths = initializePaths();
+      debug("Main-Class: ", mainClassSelector.mainClass);
     }
     catch (Exception ex) {
       throw new IllegalStateException(ex);
@@ -112,7 +181,7 @@ public class InterlokLauncher extends Launcher {
       defaultClasspath = false;
     }
     List<String> result = new ArrayList<>();
-    for (String path : pathsToParse.split("[,|" + File.pathSeparator + "]")) {
+    for (String path : pathsToParse.split("[,|:;]")) {
       result.add(cleanupPath(path));
     }
     debug("Nested archive paths: ", result);
@@ -121,21 +190,20 @@ public class InterlokLauncher extends Launcher {
 
   @Override
   protected String getMainClass() throws Exception {
-    if (serviceTest) {
-      return SERVICE_TEST_MAIN_CLASS;
-    } else if (failover){
-      return INTERLOK_FAILOVER_MAIN_CLASS;
-    } else {
-      return INTERLOK_MAIN_CLASS;
-    }
+    return mainClassSelector.mainClass();
   }
 
   protected String[] rebuildArgs() throws Exception {
-    return commandLine
+    String[] rebuiltArgs = commandLine
         .remove(ARG_ADAPTER_CLASSPATH)
         .remove(ARG_IGNORE_SUBDIRS)
         .convertToNormal(ARG_FAILOVER)
+        .convertToNormal(ARG_CONTAINER)
+        .convertToNormal(ARG_PASSWORD)
         .render();
+
+    debug("Args for Main-Class : ", Arrays.asList(rebuiltArgs));
+    return rebuiltArgs;
   }
 
   @Override
@@ -147,25 +215,25 @@ public class InterlokLauncher extends Launcher {
     return lib;
   }
 
-  private String cleanupPath(String path) {
-    path = path.trim();
+  private String cleanupPath(final String path) {
+    String cleaned = path.trim();
     // No need for current dir path
-    if (path.startsWith("./")) {
-      path = path.substring(2);
+    if (cleaned.startsWith("./")) {
+      cleaned = cleaned.substring(2);
     }
-    if (JAR_FILTER.accept(new File(path))) {
-      return path;
+    if (JAR_FILTER.accept(new File(cleaned))) {
+      return cleaned;
     }
-    if (path.endsWith("/*")) {
-      path = path.substring(0, path.length() - 1);
+    if (cleaned.endsWith("/*")) {
+      cleaned = cleaned.substring(0, cleaned.length() - 1);
     }
     else {
       // It's a directory
-      if (!path.endsWith("/") && !path.equals(".")) {
-        path = path + "/";
+      if (!cleaned.endsWith("/") && !cleaned.equals(".")) {
+        cleaned = cleaned + "/";
       }
     }
-    return path;
+    return cleaned;
   }
 
   private static void debug(String message, Object... objects) {
@@ -184,7 +252,7 @@ public class InterlokLauncher extends Launcher {
     if (file.isDirectory()) {
       debug("Added ", file);
       lib.add(new NoOpFileArchive(file));
-      if (defaultClasspath && !file.getName().equals(DEFAULT_CONFIG_DIR)) {
+      if (!(defaultClasspath && file.getName().equals(DEFAULT_CONFIG_DIR))) {
         lib.addAll(createArchives(file, recursive));
       }
     }

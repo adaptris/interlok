@@ -248,7 +248,6 @@ public class BranchingServiceCollectionTest extends ServiceCollectionCase {
   }
   
 
-  @SuppressWarnings("deprecation")
   public void testDoService_Legacy() throws Exception {
     BranchingServiceCollection services = createServiceCollection();
     branchService.changeState(StartedState.getInstance());

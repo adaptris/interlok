@@ -184,6 +184,20 @@ public class TestCommonsNetFtp extends FtpCase {
     }
   }
 
+  public void testSetTimeout() throws Exception {
+    if (areTestsEnabled()) {
+      String oldName = Thread.currentThread().getName();
+      try {
+        Thread.currentThread().setName("testSetTimeout");
+        CommonsNetFtpClient client = new CommonsNetFtpClient(config.getProperty(FTP_HOST));
+        client.setTimeout(client.getTimeout());
+        client.setKeepAliveTimeout(client.getKeepAliveTimeout());
+      } finally {
+        Thread.currentThread().setName(oldName);
+      }
+    }
+  }
+
   @Override
   protected String getRemoteGetDirectory() throws IOException {
     return config.getProperty(FTP_GET_REMOTEDIR);

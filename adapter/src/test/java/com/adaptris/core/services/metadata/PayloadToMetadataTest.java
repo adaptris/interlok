@@ -21,6 +21,7 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.services.metadata.PayloadToMetadataService.Encoding;
 import com.adaptris.core.services.metadata.PayloadToMetadataService.MetadataTarget;
 
+@SuppressWarnings("deprecation")
 public class PayloadToMetadataTest extends MetadataServiceExample {
 
   private static final String DEFAULT_PAYLOAD = "zzzzzzzz";

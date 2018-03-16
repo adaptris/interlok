@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.ftp.FileTransferConnection.UserInfo;
 import com.adaptris.filetransfer.FileTransferException;
+import com.adaptris.interlok.resolver.ExternalResolver;
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.security.password.Password;
 import com.adaptris.sftp.SftpClient;
@@ -37,7 +38,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("sftp-password-authentication")
 public class SftpPasswordAuthentication implements SftpAuthenticationProvider {
-  @InputFieldHint(style = "PASSWORD")
+  @InputFieldHint(style = "PASSWORD", external = true)
   private String defaultPassword;
 
   public SftpPasswordAuthentication() {
@@ -52,7 +53,8 @@ public class SftpPasswordAuthentication implements SftpAuthenticationProvider {
   @Override
   public SftpClient connect(SftpClient sftp, UserInfo ui) throws FileTransferException, IOException, PasswordException {
     boolean noPasswd = StringUtils.isEmpty(ui.getPassword());
-    sftp.connect(ui.getUser(), noPasswd ? Password.decode(getDefaultPassword()) : Password.decode(ui.getPassword()));
+    String defaultPw = ExternalResolver.resolve(getDefaultPassword());
+    sftp.connect(ui.getUser(), noPasswd ? Password.decode(defaultPw) : Password.decode(ui.getPassword()));
     return sftp;
   }
 

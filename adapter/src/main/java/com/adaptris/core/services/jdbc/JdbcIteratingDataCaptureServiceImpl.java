@@ -83,7 +83,6 @@ public abstract class JdbcIteratingDataCaptureServiceImpl extends JdbcDataCaptur
       log.debug("Iterating {} times for statement [{}]", nodes.getLength(), getStatement());
       PreparedStatement insert = actor.getInsertStatement(msg);
       insert.clearParameters();
-      int count = 0;
       for (int i = 0; i < nodes.getLength(); i++) {
         log.trace("---Start Iteration {}", i);
         Node n = nodes.item(i);
@@ -160,7 +159,6 @@ public abstract class JdbcIteratingDataCaptureServiceImpl extends JdbcDataCaptur
     StatementParameterList original = getStatementParameters();
     for (int args = 1; args <= original.size(); args++) {
       JdbcStatementParameter param = original.get(args - 1);
-      String queryResult = null;
       // Due to iteratesXpath, we don't use getqueryValue from
       // statementParameter.
       if (isXpathParam(param)) {

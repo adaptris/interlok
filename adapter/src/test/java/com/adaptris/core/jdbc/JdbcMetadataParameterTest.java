@@ -20,6 +20,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.MetadataElement;
 
+@SuppressWarnings("deprecation")
 public class JdbcMetadataParameterTest extends NullableParameterCase {
   
   private static final String METADATA_VALUE = "PARAM_METADATA_VALUE";

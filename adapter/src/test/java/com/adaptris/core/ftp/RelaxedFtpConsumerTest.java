@@ -47,6 +47,7 @@ import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
 import com.adaptris.util.TimeInterval;
 
+@SuppressWarnings("deprecation")
 public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
   
   private static final String DIR_ROOT = "/";

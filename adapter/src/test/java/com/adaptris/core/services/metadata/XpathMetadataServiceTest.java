@@ -33,6 +33,7 @@ import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 
+@SuppressWarnings("deprecation")
 public class XpathMetadataServiceTest extends MetadataServiceExample {
 
   public static final String XML = "<?xml version=\"1.0\"?><message><message-type>order"

@@ -270,12 +270,18 @@ public class StandardSftpConnectionTest extends FtpConnectionCase {
 
   @Override
   protected StandardSftpConnection createConnection() throws Exception {
-    File tempHostsFile = copyHostsFile(new File(PROPERTIES.getProperty(CFG_KNOWN_HOSTS_FILE)));
     StandardSftpConnection c = new StandardSftpConnection();
-    c.setDefaultUserName(PROPERTIES.getProperty(CFG_USER));
-    c.setKnownHostsFile(tempHostsFile.getCanonicalPath());
-    c.setAuthentication(
-        new SftpKeyAuthentication(PROPERTIES.getProperty(CFG_PRIVATE_KEY_FILE), PROPERTIES.getProperty(CFG_PRIVATE_KEY_PW)));
+    if (PROPERTIES.containsKey(CFG_KNOWN_HOSTS_FILE)) {
+      File tempHostsFile = copyHostsFile(new File(PROPERTIES.getProperty(CFG_KNOWN_HOSTS_FILE)));
+      c.setKnownHostsFile(tempHostsFile.getCanonicalPath());
+    }
+    if (PROPERTIES.containsKey(CFG_USER)) {
+      c.setDefaultUserName(PROPERTIES.getProperty(CFG_USER));
+    }
+    if (PROPERTIES.containsKey(CFG_PRIVATE_KEY_FILE) && PROPERTIES.containsKey(CFG_PRIVATE_KEY_PW)) {
+      c.setAuthentication(
+          new SftpKeyAuthentication(PROPERTIES.getProperty(CFG_PRIVATE_KEY_FILE), PROPERTIES.getProperty(CFG_PRIVATE_KEY_PW)));
+    }
     c.setAdditionalDebug(true);
     return c;
   }

@@ -25,7 +25,6 @@ import com.adaptris.core.mail.MailProducerExample;
 import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.util.text.mime.SelectByPosition;
 
-@SuppressWarnings("deprecation")
 public class MultiAttachmentProducerMimeTest extends MailProducerExample {
 
   private MultiAttachmentSmtpProducer producer;

@@ -47,8 +47,9 @@ public class PasswordTest {
     {
         Password.PORTABLE_PASSWORD, TEXT
     };
-    Password.main(args);
-    Password.main(new String[0]);
+    Password.generatePassword(args);
+    Password.generatePassword(null);
+    Password.generatePassword(new String[0]);
   }
 
   @Test

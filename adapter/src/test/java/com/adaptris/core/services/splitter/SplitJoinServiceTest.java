@@ -17,28 +17,37 @@
 package com.adaptris.core.services.splitter;
 
 import static com.adaptris.core.ServiceCase.execute;
+import static com.adaptris.core.ServiceCase.asCollection;
 import static com.adaptris.core.services.splitter.XpathSplitterTest.ENCODING_UTF8;
 import static com.adaptris.core.services.splitter.XpathSplitterTest.ENVELOPE_DOCUMENT;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TestName;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.NullService;
-import com.adaptris.core.Service;
-import com.adaptris.core.ServiceCollection;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.ServiceList;
 import com.adaptris.core.services.WaitService;
 import com.adaptris.core.services.aggregator.MessageAggregator;
 import com.adaptris.core.services.aggregator.MimeAggregator;
 import com.adaptris.core.services.aggregator.XmlDocumentAggregator;
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.MimeHelper;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.TimeInterval;
@@ -46,25 +55,24 @@ import com.adaptris.util.text.mime.MultiPartInput;
 import com.adaptris.util.text.xml.InsertNode;
 import com.adaptris.util.text.xml.XPath;
 
-import junit.framework.TestCase;
-
 @SuppressWarnings("deprecation")
-public class SplitJoinServiceTest extends TestCase {
+public class SplitJoinServiceTest {
 
   public static final String XPATH_ENVELOPE = "/envelope";
 
-  public SplitJoinServiceTest(String name) {
-    super(name);
+
+  @Rule
+  public TestName testName = new TestName();
+
+  @Before
+  public void setUp() throws Exception {
   }
 
-  @Override
-  protected void setUp() throws Exception {
+  @After
+  public void tearDown() throws Exception {
   }
 
-  @Override
-  protected void tearDown() throws Exception {
-  }
-
+  @Test
   public void testSetTimeout() throws Exception {
     TimeInterval ten = new TimeInterval(10L, TimeUnit.MINUTES);
     TimeInterval one = new TimeInterval(1L, TimeUnit.MINUTES);
@@ -79,56 +87,43 @@ public class SplitJoinServiceTest extends TestCase {
     assertEquals(ten.toMilliseconds(), service.timeoutMs());
   }
 
-  public void testInit() throws Exception {
-    SplitJoinService service = new SplitJoinService();
+  @Test
+  public void testLifecycle() throws Exception {
+    SplitJoinService service = createServiceForTests();
+    service.registerEventHandler(null);
     try {
-      service.init();
+      LifecycleHelper.initAndStart(service);
       fail();
     }
     catch (CoreException expected) {
 
     }
-    service.setSplitter(new LineCountSplitter());
     try {
-      service.init();
+      service.setSplitter(new LineCountSplitter());
+      LifecycleHelper.initAndStart(service);
       fail();
-    }
-    catch (CoreException expected) {
+    } catch (CoreException expected) {
 
     }
-    service.setAggregator(new MimeAggregator());
     try {
-      service.init();
-      fail();
+      service.setSplitter(new LineCountSplitter());
+      service.setAggregator(new MimeAggregator());
+      service.setService(new NullService());
+      LifecycleHelper.initAndStart(service);
+      assertNotNull(service.wrappedServices());
+      assertEquals(1, service.wrappedServices().length);
+    } finally {
+      LifecycleHelper.stopAndClose(service);
     }
-    catch (CoreException expected) {
-
-    }
-    service.setService(new NullService());
-    service.init();
-    assertNotNull(service.wrappedServices());
-    assertEquals(1, service.wrappedServices().length);
-    service.close();
   }
 
-  // public void testSetMaxThreads() throws Exception {
-  // SplitJoinService service = new SplitJoinService();
-  // assertNull(service.getMaxThreads());
-  // assertEquals(0, service.maxThreads());
-  // service.setMaxThreads(10);
-  // assertEquals(10, service.maxThreads());
-  // service.setMaxThreads(null);
-  // assertNull(service.getMaxThreads());
-  // assertEquals(0, service.maxThreads());
-  // }
-
-
+  @Test
   public void testService_WithException() throws Exception {
     // This is a 100 line message, so we expect to get 11 parts.
     AdaptrisMessage msg = SplitterCase.createLineCountMessageInput();
-    SplitJoinService service = new SplitJoinService();
+    SplitJoinService service = createServiceForTests();
     // The service doesn't actually matter right now.
-    service.setService(wrap(new ThrowExceptionService(new ConfiguredException(getName()))));
+    service.setService(asCollection(new ThrowExceptionService(new ConfiguredException(testName.getMethodName()))));
     service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
     service.setSplitter(new LineCountSplitter());
     service.setAggregator(new MimeAggregator());
@@ -141,31 +136,13 @@ public class SplitJoinServiceTest extends TestCase {
     }
   }
 
-  public void testService_WithUnmarshalException() throws Exception {
-    // This is a 100 line message, so we expect to get 11 parts.
-    AdaptrisMessage msg = SplitterCase.createLineCountMessageInput();
-    SplitJoinService service = new SplitJoinService();
-    // The service doesn't actually matter right now.
-    // ThrowExceptionService doesn't have a castor-mapping entry so it will fail to unmarshal.
-    service.setService(new ThrowExceptionService(new ConfiguredException(getName())));
-    service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
-    service.setSplitter(new LineCountSplitter());
-    service.setAggregator(new MimeAggregator());
-    try {
-      execute(service, msg);
-      fail();
-    }
-    catch (ServiceException expected) {
-
-    }
-  }
-
+  @Test
   public void testService_WithMimeJoiner() throws Exception {
     // This is a 100 line message, so we expect to get 11 parts.
     AdaptrisMessage msg = SplitterCase.createLineCountMessageInput();
-    SplitJoinService service = new SplitJoinService();
+    SplitJoinService service = createServiceForTests();
     // The service doesn't actually matter right now.
-    service.setService(wrap(new NullService()));
+    service.setService(asCollection(new NullService()));
     service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
     service.setSplitter(new LineCountSplitter());
     service.setAggregator(new MimeAggregator());
@@ -174,13 +151,14 @@ public class SplitJoinServiceTest extends TestCase {
     assertEquals(11, input.size());
   }
 
+  @Test
   public void testService_WithNoSplitMessages() throws Exception {
     // This is a 100 line message, so we expect to get 11 parts.
     AdaptrisMessage msg = SplitterCase.createLineCountMessageInput();
     String originalInput = msg.getContent();
-    SplitJoinService service = new SplitJoinService();
+    SplitJoinService service = createServiceForTests();
     // The service doesn't actually matter right now.
-    service.setService(wrap(new NullService()));
+    service.setService(asCollection(new NullService()));
     service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
     service.setSplitter(new MessageSplitter() {
 
@@ -195,18 +173,19 @@ public class SplitJoinServiceTest extends TestCase {
     assertEquals(originalInput, msg.getContent());
   }
 
+  @Test
   public void testService_WithSplitFailure() throws Exception {
     // This is a 100 line message, so we expect to get 11 parts.
     AdaptrisMessage msg = SplitterCase.createLineCountMessageInput();
-    SplitJoinService service = new SplitJoinService();
+    SplitJoinService service = createServiceForTests();
     // The service doesn't actually matter right now.
-    service.setService(wrap(new NullService()));
+    service.setService(asCollection(new NullService()));
     service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
     service.setSplitter(new MessageSplitter() {
 
       @Override
       public List<AdaptrisMessage> splitMessage(AdaptrisMessage msg) throws CoreException {
-        throw new CoreException(getName());
+        throw new CoreException(testName.getMethodName());
       }
 
     });
@@ -220,19 +199,20 @@ public class SplitJoinServiceTest extends TestCase {
     }
   }
 
+  @Test
   public void testService_WithAggregatorFailure() throws Exception {
     // This is a 100 line message, so we expect to get 11 parts.
     AdaptrisMessage msg = SplitterCase.createLineCountMessageInput();
-    SplitJoinService service = new SplitJoinService();
+    SplitJoinService service = createServiceForTests();
     // The service doesn't actually matter right now.
-    service.setService(wrap(new NullService()));
+    service.setService(asCollection(new NullService()));
     service.setSplitter(new LineCountSplitter());
     service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
     service.setAggregator(new MessageAggregator() {
       
       @Override
       public void joinMessage(AdaptrisMessage msg, Collection<AdaptrisMessage> msgs) throws CoreException {
-        throw new CoreException(getName());
+        throw new CoreException(testName.getMethodName());
       }
     });
     try {
@@ -244,12 +224,13 @@ public class SplitJoinServiceTest extends TestCase {
     }
   }
 
+  @Test
   public void testService_WithXmlJoiner() throws Exception {
     // This is a XML doc with 3 iterable elements...
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(SplitterCase.XML_MESSAGE);
-    SplitJoinService service = new SplitJoinService();
+    SplitJoinService service = createServiceForTests();
     // The service doesn't actually matter right now.
-    service.setService(wrap(new NullService()));
+    service.setService(asCollection(new NullService()));
     service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
     service.setSplitter(new XpathMessageSplitter(ENVELOPE_DOCUMENT, ENCODING_UTF8));
     service.setAggregator(new XmlDocumentAggregator(new InsertNode(XPATH_ENVELOPE)));
@@ -260,46 +241,28 @@ public class SplitJoinServiceTest extends TestCase {
     assertEquals(6, xpath.selectNodeList(XmlHelper.createDocument(msg), ENVELOPE_DOCUMENT).getLength());
   }
 
-  // public void testService_MaxThreads() throws Exception {
-  // String oldname = Thread.currentThread().getName();
-  // Thread.currentThread().setName(getName());
-  // try {
-  // // This is a 100 line message, so we expect to get 11 parts.
-  // AdaptrisMessage msg = SplitterCase.createLineCountMessageInput();
-  // SplitJoinService service = new SplitJoinService();
-  // service.setMaxThreads(3);
-  // // The service doesn't actually matter right now.
-  // service.setService(wrap(new NullService()));
-  // service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
-  // service.setSplitter(new LineCountSplitter());
-  // service.setAggregator(new MimeAggregator());
-  // execute(service, msg);
-  // MultiPartInput input = MimeHelper.create(msg, false);
-  // assertEquals(11, input.size());
-  // } finally {
-  // Thread.currentThread().setName(oldname);
-  // }
-  // }
 
+  @Test
   public void testService_Timeout() throws Exception {
     String oldname = Thread.currentThread().getName();
-    Thread.currentThread().setName(getName());
+    Thread.currentThread().setName(testName.getMethodName());
     try {
       AdaptrisMessage msg = SplitterCase.createLineCountMessageInput();
-      SplitJoinService service = new SplitJoinService();
-      service.setService(wrap(new WaitService(new TimeInterval(11L, TimeUnit.SECONDS))));
-      service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
+      SplitJoinService service = createServiceForTests();
+      service.setService(asCollection(new WaitService(new TimeInterval(10L, TimeUnit.SECONDS))));
+      service.setTimeout(new TimeInterval(3L, TimeUnit.SECONDS));
       service.setSplitter(new LineCountSplitter());
       service.setAggregator(new MimeAggregator());
       execute(service, msg);
+      fail();
     } catch (ServiceException expected) {
-      assertEquals("Exception waiting for all services to complete", expected.getMessage());
+      assertEquals("Timeout exceeded waiting for job completion.", expected.getMessage());
     } finally {
       Thread.currentThread().setName(oldname);
     }
   }
 
-  public static ServiceCollection wrap(Service... services) {
-    return new ServiceList(services);
+  protected SplitJoinService createServiceForTests() {
+    return new SplitJoinService();
   }
 }

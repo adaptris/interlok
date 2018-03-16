@@ -73,7 +73,7 @@
     </javac>
   </target>
 
-  <target name="init.tests" depends="compile.tests">
+  <target name="init.tests" depends="compile.tests, jar">
     <mkdir dir="${test.resources.dir}"/>
     <mkdir dir="${tests.output.dir}"/>
   </target>
@@ -89,6 +89,10 @@
       <zipfileset dir="${basedir}/.." prefix="META-INF">
         <include name="LICENSE"/>
       </zipfileset>
+      <service type="com.adaptris.interlok.resolver.Resolver">
+        <provider classname="com.adaptris.interlok.resolver.FromEnvironment"/>
+        <provider classname="com.adaptris.interlok.resolver.FromSystemProperties"/>
+      </service>
     </jar>
   </target>
 

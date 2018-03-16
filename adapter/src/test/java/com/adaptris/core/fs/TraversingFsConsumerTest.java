@@ -34,6 +34,7 @@ import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.TimeInterval;
 
+@SuppressWarnings("deprecation")
 public class TraversingFsConsumerTest extends FsConsumerCase {
 
   /**

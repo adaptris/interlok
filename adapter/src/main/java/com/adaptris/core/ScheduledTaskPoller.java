@@ -30,7 +30,6 @@ import com.adaptris.util.TimeInterval;
  */
 public abstract class ScheduledTaskPoller extends PollerImp {
 
-  private static final TimeInterval DEFAULT_POLL_INTERVAL = new TimeInterval(20L, TimeUnit.SECONDS);
   private static final TimeInterval DEFAULT_SHUTDOWN_WAIT = new TimeInterval(1L, TimeUnit.MINUTES);
 
   @AdvancedConfig
@@ -46,7 +45,7 @@ public abstract class ScheduledTaskPoller extends PollerImp {
   }
 
   public void start() throws CoreException {
-    executor = Executors.newSingleThreadScheduledExecutor(new ManagedThreadFactory());
+    executor = Executors.newSingleThreadScheduledExecutor(new ManagedThreadFactory(getClass().getSimpleName()));
     scheduleTask();
   }
 

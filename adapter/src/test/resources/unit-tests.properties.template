@@ -25,7 +25,7 @@ junit.FfTransformService.stylesheet=file:///${test.resources.dir}/transform/ff.d
 junit.FfTransformService.inputFile=${test.resources.dir}/transform/ff.input.txt
 junit.FfTransformService.inputFile_ISO_8859=${test.resources.dir}/transform/ff.input.iso8859.txt
 junit.FfTransformService.issue2661.input=${test.resources.dir}/transform/issue2661.csv
-junit.FfTransformService.issue2661.definition=${test.resources.dir}/transform/issue2661-ffdef.xml
+junit.FfTransformService.issue2661.definition=file:///${test.resources.dir}/transform/issue2661-ffdef.xml
 
 junit.XpathSyntaxIdentifierTest.inputFile=${test.resources.dir}/transform/inv.xml
 junit.XpathSyntaxIdentifierTest.non_text_node_input=${test.resources.dir}/transform/redmine-issue1020.xml
@@ -206,14 +206,11 @@ junit.SftpConsumerTest.host=${default.ftp.host}
 junit.SftpConsumerTest.password=${default.ftp.password}
 junit.SftpConsumerTest.username=${default.ftp.user}
 junit.SftpConsumerTest.homedir=/home/${default.ftp.user}
+junit.SftpConsumerTest.tempHostsFile=${build.dir}/test/tempKnownHosts
+
 # Bear in mind that the FTP user is in a chroot jail, it would be the
 # same as the ftp settings otherwise...
 junit.SftpConsumerTest.remotedir=${junit.SftpConsumerTest.homedir}/junit
-junit.SftpConsumerTest.privateKeyFile=${test.resources.dir}/ftp/sshTestKey
-junit.SftpConsumerTest.privateKeyPassword=adaptr1s
-junit.SftpConsumerTest.knownHostsFile=${test.resources.dir}/ftp/sshKnownHosts
-junit.SftpConsumerTest.unknownHostsFile=${test.resources.dir}/ftp/sshUnknownHosts
-junit.SftpConsumerTest.tempHostsFile=${build.dir}/test/tempKnownHosts
 
 junit.iso8853.basedir=${test.resources.dir}/transform/iso8583
 junit.iso8853.file.iso220=${junit.iso8853.basedir}/iso220

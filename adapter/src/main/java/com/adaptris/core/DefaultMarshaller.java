@@ -21,8 +21,6 @@ package com.adaptris.core;
  * 
  * Convenience for getting the default marshalling system currently available in the adapter.
  * 
- * Added a web-service marshaller because the auto-generated web service services currently
- * fail when using the PrettyStaxDriver
  * 
  * @author gcsiki
  */
@@ -42,4 +40,14 @@ public class DefaultMarshaller {
 		marshaller = _marshaller;
 	}
 
+  /**
+   * Convenience method to roundtrip an object to text and back.
+   * 
+   * @param o the object
+   * @return a copy of the object having been marshalled to text and back.
+   * @throws CoreException on exception.
+   */
+  public static <T> T roundTrip(T o) throws CoreException {
+    return (T) getDefaultMarshaller().unmarshal(getDefaultMarshaller().marshal(o));
+  }
 }

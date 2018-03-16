@@ -19,6 +19,7 @@ package com.adaptris.core.ftp;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.CoreException;
 import com.adaptris.filetransfer.FileTransferException;
+import com.adaptris.interlok.resolver.ExternalResolver;
 import com.adaptris.security.password.Password;
 
 /**
@@ -29,7 +30,7 @@ import com.adaptris.security.password.Password;
  */
 public abstract class FileTransferConnectionUsingPassword extends FileTransferConnection {
 
-  @InputFieldHint(style = "PASSWORD")
+  @InputFieldHint(style = "PASSWORD", external = true)
   private String defaultPassword;
 
   /**
@@ -62,13 +63,17 @@ public abstract class FileTransferConnectionUsingPassword extends FileTransferCo
   protected void initConnection() throws CoreException {
     super.initConnection();
 
-    if (defaultPassword == null) {
+    if (getDefaultPassword() == null) {
       log.warn("No default password, expected to be provided by destination");
     }
   }
 
   @Override
   protected UserInfo createUserInfo() throws FileTransferException {
-    return new UserInfo(getDefaultUserName(), defaultPassword);
+    return new UserInfo(getDefaultUserName(), defaultPassword());
+  }
+
+  protected String defaultPassword() {
+    return ExternalResolver.resolve(getDefaultPassword());
   }
 }

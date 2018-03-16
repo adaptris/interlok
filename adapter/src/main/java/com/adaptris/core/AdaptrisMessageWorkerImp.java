@@ -66,7 +66,7 @@ public abstract class AdaptrisMessageWorkerImp implements AdaptrisMessageWorker 
   public void handleConnectionException() throws CoreException {
     if (hasActiveErrorHandler()) {
       // spin off exception handler Thread
-      Thread thread = new ManagedThreadFactory().newThread(new Runnable() {
+      Thread thread = new ManagedThreadFactory(getClass().getSimpleName()).newThread(new Runnable() {
         @Override
         public void run() {
           retrieveConnection(AdaptrisConnection.class).connectionErrorHandler().handleConnectionException();

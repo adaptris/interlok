@@ -20,7 +20,6 @@ import org.apache.oro.text.regex.PatternMatcher;
 
 // Uses jakarta-oro to match headers.
 @Deprecated
-@SuppressWarnings("deprecation")
 class OroMatchProxy implements MatchProxy {
 
   private PatternMatcher matcher;

@@ -27,6 +27,7 @@ import com.adaptris.core.services.confirmation.SetUpConfirmationServiceImp;
  * the current time as the confirmation ID.
  * </p>
  */
+@Deprecated
 public class MockSetUpConfirmationService extends
     SetUpConfirmationServiceImp {
 

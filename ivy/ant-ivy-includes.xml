@@ -162,6 +162,9 @@
             </batchtest>
             <classpath>
               <path refid="main.classpath"/>
+              <fileset dir="${project.dist.dir}">
+                <include name="${project.jar.name}"/>
+              </fileset>
               <pathelement path="${classes.build.dir}"/>
               <pathelement path="${testclasses.build.dir}"/>
               <dirset dir="${test.resources.dir}"/>
@@ -198,6 +201,9 @@
           <classpath>
             <prependclasspath/>
             <path refid="main.classpath"/>
+            <fileset dir="${project.dist.dir}">
+              <include name="${project.jar.name}"/>
+            </fileset>
             <pathelement path="${classes.build.dir}"/>
             <pathelement path="${testclasses.build.dir}"/>
             <dirset dir="${test.resources.dir}"/>
@@ -261,7 +267,7 @@
             <unzip src="@{destdir}/interlok-common.jar" dest="@{destdir}/interlok-common">
               <patternset>
                 <include name="**/package-list"/>
-              </patternset>            
+              </patternset>
             </unzip>
             <property name="offline.javadocs.available" value="true"/>
           </then>
@@ -271,7 +277,7 @@
         </if>
       </sequential>
     </macrodef>
-    
+
     <macrodef name="create-javadocs" uri="uri:interlok">
       <attribute name="destdir" default="${api.doc.dir}"/>
       <attribute name="sourcepath" default="${src.dir}"/>
@@ -279,7 +285,7 @@
       <element name="grouping" optional="true"/>
       <element name="packageset-filter" optional="true"/>
       <sequential>
-        <interlok:get-offline-javadocs/>      
+        <interlok:get-offline-javadocs/>
         <javadoc author="false" destdir="@{destdir}"
           windowtitle="@{title}" bottom="Copyright Adaptris"
           access="protected" breakiterator="yes" verbose="no"

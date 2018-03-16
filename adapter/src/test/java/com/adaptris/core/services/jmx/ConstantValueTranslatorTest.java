@@ -24,6 +24,7 @@ import com.adaptris.core.DefaultMessageFactory;
 
 import junit.framework.TestCase;
 
+@SuppressWarnings("deprecation")
 public class ConstantValueTranslatorTest extends TestCase {
   
   private ConstantValueTranslator constantValueTranslator;

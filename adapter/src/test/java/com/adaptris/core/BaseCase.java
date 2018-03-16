@@ -244,7 +244,7 @@ public abstract class BaseCase extends TestCase {
     }
   }
 
-  private static List<Method> getObjectGetters(Class c) {
+  protected static List<Method> getObjectGetters(Class c) {
     List list = new ArrayList();
     List matches = getGetters(c);
     for (Iterator i = matches.iterator(); i.hasNext();) {
@@ -257,7 +257,7 @@ public abstract class BaseCase extends TestCase {
     return list;
   }
 
-  private static List<Method> getPrimitiveGetters(Class c) {
+  protected static List<Method> getPrimitiveGetters(Class c) {
     List<Method> list = new ArrayList<Method>();
     List<Method> matches = getGetters(c);
     for (Iterator i = matches.iterator(); i.hasNext();) {
@@ -270,7 +270,7 @@ public abstract class BaseCase extends TestCase {
     return list;
   }
 
-  private static List<Method> getGetters(Class c) {
+  protected static List<Method> getGetters(Class c) {
     List<Method> list = new ArrayList<Method>();
     Method[] methods = c.getMethods();
     for (int i = 0; i < methods.length; i++) {
@@ -285,7 +285,7 @@ public abstract class BaseCase extends TestCase {
   }
 
   // Ensure that the list of getter has a corresponding setter.
-  private static String[] filterGetterWithNoSetter(Class c, List<Method> getters) throws Exception {
+  protected static String[] filterGetterWithNoSetter(Class c, List<Method> getters) throws Exception {
     List result = new ArrayList();
     for (Method m : getters) {
       String methodName = m.getName();
@@ -306,7 +306,7 @@ public abstract class BaseCase extends TestCase {
     return (String[]) result.toArray(new String[0]);
   }
 
-  private static Object invokeGetter(Object obj, String methodName) throws Exception {
+  protected static Object invokeGetter(Object obj, String methodName) throws Exception {
     Method m = obj.getClass().getMethod(methodName, (Class[]) null);
     if (m != null) {
       if (m.getExceptionTypes().length != 0) {

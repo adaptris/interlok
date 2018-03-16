@@ -21,7 +21,10 @@ import java.util.Arrays;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.metadata.RegexMetadataFilter;
+import com.adaptris.core.metadata.RemoveAllMetadataFilter;
 
+@SuppressWarnings("deprecation")
 public class CreateQueryStringFromMetadataTest extends MetadataServiceExample {
 
   public CreateQueryStringFromMetadataTest(String name) {
@@ -31,9 +34,7 @@ public class CreateQueryStringFromMetadataTest extends MetadataServiceExample {
   public CreateQueryStringFromMetadata createService() {
     CreateQueryStringFromMetadata svc = new CreateQueryStringFromMetadata();
     svc.setResultKey("resultKey");
-    svc.setMetadataKeys(new ArrayList(Arrays.asList(new String[] {
-        "param1", "param2", "param3"
-    })));
+    svc.setMetadataFilter(new RegexMetadataFilter().withIncludePatterns("param1", "param2", "param3"));
     return svc;
   }
 
@@ -76,13 +77,53 @@ public class CreateQueryStringFromMetadataTest extends MetadataServiceExample {
     service.setQuerySeparator(",");
   }
 
+  public void testService_Legacy_SimpleQueryString() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    CreateQueryStringFromMetadata service = new CreateQueryStringFromMetadata();
+    service.setMetadataKeys(new ArrayList(Arrays.asList(new String[]
+    {
+        "param1", "param2", "param3"
+    })));
+    service.setResultKey("resultKey");
+    msg.addMetadata("param1", "one");
+    msg.addMetadata("param2", "two");
+    msg.addMetadata("param3", "three");
+    execute(service, msg);
+    execute(service, msg);
+    assertTrue(msg.getMetadataValue("resultKey").startsWith("?"));
+    assertTrue(msg.getMetadataValue("resultKey").contains("param2=two"));
+    assertTrue(msg.getMetadataValue("resultKey").contains("param1=one"));
+    assertTrue(msg.getMetadataValue("resultKey").contains("param3=three"));
+  }
+
+  public void testService_Legacy_MetadataKeysAndFilter() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    CreateQueryStringFromMetadata service = new CreateQueryStringFromMetadata();
+    service.setResultKey("resultKey");
+    service.setMetadataKeys(new ArrayList(Arrays.asList(new String[]
+    {
+        "param1", "param2", "param3"
+    })));
+    service.setMetadataFilter(new RemoveAllMetadataFilter());
+    msg.addMetadata("param1", "one");
+    msg.addMetadata("param2", "two");
+    msg.addMetadata("param3", "three");
+    msg.addMetadata("param4", "four");
+    execute(service, msg);
+    execute(service, msg);
+    assertEquals("", msg.getMetadataValue("resultKey"));
+  }
+
   public void testService_SimpleQueryString() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata("param1", "one");
     msg.addMetadata("param2", "two");
     msg.addMetadata("param3", "three");
     execute(createService(), msg);
-    assertEquals("?param1=one&param2=two&param3=three", msg.getMetadataValue("resultKey"));
+    assertTrue(msg.getMetadataValue("resultKey").startsWith("?"));
+    assertTrue(msg.getMetadataValue("resultKey").contains("param2=two"));
+    assertTrue(msg.getMetadataValue("resultKey").contains("param1=one"));
+    assertTrue(msg.getMetadataValue("resultKey").contains("param3=three"));
   }
 
 
@@ -94,7 +135,10 @@ public class CreateQueryStringFromMetadataTest extends MetadataServiceExample {
     msg.addMetadata("param2", "two");
     msg.addMetadata("param3", "three");
     execute(service, msg);
-    assertEquals("param1=one&param2=two&param3=three", msg.getMetadataValue("resultKey"));
+    assertTrue(msg.getMetadataValue("resultKey").contains("param2=two"));
+    assertTrue(msg.getMetadataValue("resultKey").contains("param1=one"));
+    assertTrue(msg.getMetadataValue("resultKey").contains("param3=three"));
+    assertFalse(msg.getMetadataValue("resultKey").startsWith("?"));
   }
 
 
@@ -109,7 +153,9 @@ public class CreateQueryStringFromMetadataTest extends MetadataServiceExample {
     msg.addMetadata("param1", "this is a field");
     msg.addMetadata("param3", "was it clear (already)?");
     execute(createService(), msg);
-    assertEquals("?param1=this+is+a+field&param3=was+it+clear+%28already%29%3F", msg.getMetadataValue("resultKey"));
+    assertTrue(msg.getMetadataValue("resultKey").startsWith("?"));
+    assertTrue(msg.getMetadataValue("resultKey").contains("param1=this+is+a+field"));
+    assertTrue(msg.getMetadataValue("resultKey").contains("param3=was+it+clear+%28already%29%3F"));
   }
 
   @Override

@@ -37,6 +37,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -162,10 +163,10 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   /** @see AdaptrisMessage#addMetadata(MetadataElement) */
   @Override
   public synchronized void addMetadata(MetadataElement e) {
+    e.setKey(resolveKey(this, e.getKey()));
     if (metadata.contains(e)) {
       removeMetadata(e);
     }
-    e.setKey(resolveKey(this, e.getKey()));
     metadata.add(e);
   }
 
@@ -471,18 +472,25 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   public Object clone() throws CloneNotSupportedException {
     AdaptrisMessage result = (AdaptrisMessage) super.clone();
 
-    Set metadataCopy = this.getMetadata(); // returns a clone
-    result.clearMetadata(); // creates new empty HashSet
-    result.setMetadata(metadataCopy); // copies into HashSet
+    result.clearMetadata();
+    result.setMetadata(cloneMetadata());
 
-    MessageLifecycleEvent mle = getMessageLifecycleEvent();
-    MessageLifecycleEvent copy = (MessageLifecycleEvent) mle.clone();
+    MessageLifecycleEvent copy = (MessageLifecycleEvent) getMessageLifecycleEvent().clone();
     ((AdaptrisMessageImp) result).messageLifeCycle = copy;
 
     Map objMdCopy = new HashMap();
     objMdCopy.putAll(getObjectHeaders());
     ((AdaptrisMessageImp) result).objectMetadata = objMdCopy;
 
+    return result;
+  }
+
+  private Set<MetadataElement> cloneMetadata() throws CloneNotSupportedException {
+    Set<MetadataElement> metadata = getMetadata();
+    Set<MetadataElement> result = new HashSet<MetadataElement>();
+    for (MetadataElement m : metadata) {
+      result.add((MetadataElement) m.clone());
+    }
     return result;
   }
 
@@ -508,21 +516,9 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     }
   }
 
+  @Deprecated
   protected static boolean areEqual(String s1, String s2) {
-    boolean result = false;
-
-    if (s1 == null) {
-      if (s2 == null) {
-        result = true;
-      }
-    }
-    else {
-      if (s1.equals(s2)) {
-        result = true;
-      }
-    }
-
-    return result;
+    return StringUtils.equals(s1, s2);
   }
 
   private String getValue(String key) {

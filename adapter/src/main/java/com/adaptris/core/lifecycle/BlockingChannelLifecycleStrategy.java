@@ -143,7 +143,7 @@ public class BlockingChannelLifecycleStrategy extends DefaultChannelLifecycleStr
   }
 
   private void handleOperation(List<Channel> channels, ChannelAction op, CyclicBarrier gate) throws CoreException {
-    ManagedThreadFactory factory = new ManagedThreadFactory();
+    ManagedThreadFactory factory = new ManagedThreadFactory(getClass().getSimpleName());
     Set<Thread> myThreads = Collections.newSetFromMap(new WeakHashMap<Thread, Boolean>());
     final CoreExceptionHandler exceptions = new CoreExceptionHandler();
     for (int i = 0; i < channels.size(); i++) {

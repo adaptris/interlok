@@ -27,6 +27,7 @@ import com.adaptris.core.services.confirmation.ConfirmServiceImp;
  * payload of the msg containg the confirmation ID.
  * </p>
  */
+@Deprecated
 public class MockConfirmService extends ConfirmServiceImp {
 
   /** @see com.adaptris.core.Service

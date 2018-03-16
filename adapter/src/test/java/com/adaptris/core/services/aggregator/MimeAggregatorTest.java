@@ -16,17 +16,16 @@
 
 package com.adaptris.core.services.aggregator;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.NullService;
-import com.adaptris.core.services.LogMessageService;
-import com.adaptris.core.services.aggregator.MimeAggregator;
+import com.adaptris.core.Service;
 import com.adaptris.core.services.mime.MimeJunitHelper;
 import com.adaptris.core.services.splitter.LineCountSplitter;
 import com.adaptris.core.services.splitter.MimePartSplitter;
 import com.adaptris.core.services.splitter.SplitJoinService;
-import com.adaptris.core.services.splitter.SplitJoinServiceTest;
 import com.adaptris.core.services.splitter.SplitterCase;
 import com.adaptris.core.util.MimeHelper;
 import com.adaptris.util.TimeInterval;
@@ -95,12 +94,8 @@ public class MimeAggregatorTest extends MimeAggregatorCase {
   }
 
   @Override
-  protected Object retrieveObjectForSampleConfig() {
-    SplitJoinService service = new SplitJoinService();
-    service.setService(SplitJoinServiceTest.wrap(new LogMessageService(), new NullService()));
-    service.setSplitter(new MimePartSplitter());
-    service.setAggregator(new MimeAggregator());
-    return service;
+  protected List<Service> retrieveObjectsForSampleConfig() {
+    return createExamples(new MimePartSplitter(), new MimeAggregator());
   }
 
   @Override

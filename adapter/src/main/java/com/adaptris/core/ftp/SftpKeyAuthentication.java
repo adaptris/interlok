@@ -26,6 +26,7 @@ import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.ftp.FileTransferConnection.UserInfo;
 import com.adaptris.core.util.Args;
 import com.adaptris.filetransfer.FileTransferException;
+import com.adaptris.interlok.resolver.ExternalResolver;
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.security.password.Password;
 import com.adaptris.sftp.ConfigBuilder;
@@ -55,7 +56,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class SftpKeyAuthentication implements SftpAuthenticationProvider {
   @NotBlank
   private String privateKeyFilename;
-  @InputFieldHint(style = "PASSWORD")
+  @InputFieldHint(style = "PASSWORD", external = true)
   private String privateKeyPassword;
 
   public SftpKeyAuthentication() {
@@ -70,8 +71,8 @@ public class SftpKeyAuthentication implements SftpAuthenticationProvider {
   @Override
   public SftpClient connect(SftpClient sftp, UserInfo ui) throws FileTransferException, IOException, PasswordException {
     byte[] privateKey = FileUtils.readFileToByteArray(new File(getPrivateKeyFilename()));
-    sftp.connect(ui.getUser(), privateKey,
-        getPrivateKeyPassword() != null ? Password.decode(getPrivateKeyPassword()).getBytes() : null);
+    String pw = ExternalResolver.resolve(getPrivateKeyPassword());
+    sftp.connect(ui.getUser(), privateKey, pw != null ? Password.decode(pw).getBytes() : null);
     return sftp;
   }
 

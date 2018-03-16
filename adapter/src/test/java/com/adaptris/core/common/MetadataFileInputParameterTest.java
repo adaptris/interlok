@@ -33,6 +33,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.stubs.TempFileUtils;
 
+@SuppressWarnings("deprecation")
 public class MetadataFileInputParameterTest {
   public static final String TEXT = "Hello World";
 

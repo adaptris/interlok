@@ -36,6 +36,7 @@ import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 
+@SuppressWarnings("deprecation")
 public abstract class SequenceNumberCase extends JdbcServiceCase {
 
   protected static final String DEFAULT_NUMBER_FORMAT = "000000000";

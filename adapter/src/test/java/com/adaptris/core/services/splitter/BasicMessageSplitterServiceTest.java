@@ -17,13 +17,13 @@
 package com.adaptris.core.services.splitter;
 
 import static com.adaptris.core.ServiceCase.execute;
+import static com.adaptris.core.services.splitter.MessageSplitterServiceImp.KEY_CURRENT_SPLIT_MESSAGE_COUNT;
 import static com.adaptris.core.services.splitter.SplitterCase.XML_MESSAGE;
 import static com.adaptris.core.services.splitter.SplitterCase.createLineCountMessageInput;
-import static com.adaptris.core.services.splitter.MessageSplitterServiceImp.KEY_CURRENT_SPLIT_MESSAGE_COUNT;
 
 import java.util.List;
-
-import junit.framework.TestCase;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -33,6 +33,8 @@ import com.adaptris.core.NullMessageProducer;
 import com.adaptris.core.ServiceCase;
 import com.adaptris.core.stubs.MockConnection;
 import com.adaptris.core.stubs.MockMessageProducer;
+
+import junit.framework.TestCase;
 
 public class BasicMessageSplitterServiceTest extends TestCase {
 
@@ -236,6 +238,15 @@ public class BasicMessageSplitterServiceTest extends TestCase {
   // assertEquals(1, testObject2.getConnection().retrieveExceptionListeners().size());
   // assertTrue(testObject2 == testObject2.getConnection().retrieveExceptionListeners().toArray()[0]);
   // }
+
+  public void testAlreadyComplete() throws Exception {
+    Future<Boolean> future = new MessageSplitterServiceImp.AlreadyComplete();
+    assertFalse(future.cancel(true));
+    assertTrue(future.isDone());
+    assertFalse(future.isCancelled());
+    assertTrue(future.get());
+    assertTrue(future.get(1, TimeUnit.SECONDS));
+  }
 
   protected MessageSplitterServiceImp createServiceImpl(MessageSplitter splitter, MockMessageProducer producer) {
     BasicMessageSplitterService service = new BasicMessageSplitterService();

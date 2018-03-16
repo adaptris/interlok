@@ -109,9 +109,8 @@ class AdapterBuilder implements AdapterBuilderMBean {
   }
 
   @Override
-  public ObjectName createAdapter(String xml) throws IOException, MalformedObjectNameException, CoreException {
-    xml = loadPreProcessors().process(xml);
-    return parent.register(this, validate((Adapter) DefaultMarshaller.getDefaultMarshaller().unmarshal(xml)), null);
+  public ObjectName createAdapter(final String xml) throws IOException, MalformedObjectNameException, CoreException {
+    return parent.register(this, validate((Adapter) DefaultMarshaller.getDefaultMarshaller().unmarshal(loadPreProcessors().process(xml))), null);
   }
 
   @Override

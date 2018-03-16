@@ -31,6 +31,7 @@ import com.adaptris.core.jdbc.PooledConnectionHelper;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.TimeInterval;
 
+@SuppressWarnings("deprecation")
 public class StaticIdentitySequenceNumberServiceTest extends SequenceNumberCase {
 
   private static final String JDBC_SEQUENCENUMBER_DRIVER = "jdbc.sequencenumber.driver";

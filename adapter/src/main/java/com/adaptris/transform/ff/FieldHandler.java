@@ -80,26 +80,22 @@ public class FieldHandler extends Handler
   @Override
   public void process(StreamParser inputRecord, PrintWriter output)
   {
-    String record = new String();
-
-    //TM.reset();
-    //TM.start();
-    //logP.debug("Beginning to process field " + name);
+    String record = "";
 
     try
     {
-      debug("Reading field " + getName() + "...");
+      log.trace("Reading field {}...", getName());
 
       if (length > 0)
       {
-        debug("Record is fixed length..." + length);
+        log.trace("Record is fixed length... {}", length);
         inputRecord.setParseRule(StreamParser.FIXED_LENGTH, length);
         inputRecord.readElement();
         record  = inputRecord.getContent();
       }
       else
       {
-        debug("Field is "+ separator +" separated...");
+        log.trace("Field is {} separated", separator);
 
         //Added a check to see if this field should be a simple separated string
         if(useQuotedString == true) {
@@ -116,7 +112,7 @@ public class FieldHandler extends Handler
     }
     catch (Exception e)
     {
-      log("WARNING", "Failed to read field " + getName() + ", separator='" + separator + "', length='" + length +"'");
+      log.warn("Failed to read field {}, separator='{}',length='{}'", getName(), separator, length);
     }
 
     int ix = -1;
@@ -146,12 +142,9 @@ public class FieldHandler extends Handler
       content = content.substring(0,ix) + "&quot;" + content.substring(ix+1);
     }
 
-    debug("Read in field " + getName() + ", contents : " + getContent());
+    log.trace("Read in field {}, contents: {}", getName(), getContent());
 
     output.print("<" + getName() + ">" + getContent() + "</" + getName() + ">");
-
-    //TM.stop();
-    //logP.debug("Field " + name + " took " + TM.getDuration() + " milliseconds to process");
   }
 
   /** Dummy function */

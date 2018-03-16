@@ -15,13 +15,8 @@
 */
 package com.adaptris.core.jdbc;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import javax.sql.DataSource;
 
@@ -98,45 +93,10 @@ public abstract class JdbcPooledConnectionImpl extends DatabaseConnection {
    * @throws SQLException if the statement could not be performed.
    */
   private Connection testConnection(Connection sqlConnection) throws SQLException {
-    if (isEmpty(getTestStatement())) {
-      return sqlConnection;
-    }
     if (!alwaysValidateConnection()) {
       return sqlConnection;
     }
-
-    Statement stmt = sqlConnection.createStatement();
-    ResultSet rs = null;
-    try {
-      if (debugMode()) {
-        rs = stmt.executeQuery(getTestStatement());
-        if (rs.next()) {
-          StringBuilder sb = new StringBuilder("TestStatement Results - ");
-          ResultSetMetaData rsm = rs.getMetaData();
-          for (int i = 1; i <= rsm.getColumnCount(); i++) {
-            sb.append("[");
-            sb.append(rsm.getColumnName(i));
-            sb.append("=");
-            try {
-              sb.append(rs.getString(i));
-            }
-            catch (Exception e) {
-              sb.append("'unknown'");
-            }
-            sb.append("] ");
-          }
-          log.trace(sb.toString());
-        }
-      }
-      else {
-        stmt.execute(getTestStatement());
-      }
-    }
-    finally {
-      JdbcUtil.closeQuietly(rs);
-      JdbcUtil.closeQuietly(stmt);
-    }
-    return sqlConnection;
+    return JdbcUtil.testConnection(sqlConnection, getTestStatement(), debugMode());
   }
 
   public String getConnectUrl() {

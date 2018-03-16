@@ -16,28 +16,28 @@
 
 package com.adaptris.security.certificate;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
-import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Random;
 
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
-import org.bouncycastle.jce.provider.X509CertificateObject;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 
@@ -49,24 +49,15 @@ import com.adaptris.security.util.SecurityUtil;
  * Concrete implementation of CertificateMaker.
  *
  * @see CertificateBuilder
- * @author $Author: lchan $
  */
 final class X509Builder implements CertificateBuilder {
 
-  /** The underlying certificate parameters */
-  private CertificateParameter certificateParm = null;
-  /** The public key */
-  private PublicKey publicKey = null;
-  /** The private key */
-  private PrivateKey privateKey = null;
-  /** The certificate */
-  private X509Certificate certificate = null;
-  /** The random number generator for serial */
-  private Random rand = null;
+  private transient CertificateParameter certificateParm = null;
+  private transient PublicKey publicKey = null;
+  private transient PrivateKey privateKey = null;
+  private transient X509Certificate certificate = null;
 
-  /** Default Constructor */
   X509Builder() {
-    rand = new Random();
   }
 
   /**
@@ -106,7 +97,7 @@ final class X509Builder implements CertificateBuilder {
       throws AdaptrisSecurityException {
     try {
       if (certificate == null) {
-        createCertificate();
+        certificate = build();
       }
     }
     catch (Exception e) {
@@ -121,12 +112,9 @@ final class X509Builder implements CertificateBuilder {
   public void createSelfSignedCertificate(OutputStream output)
       throws AdaptrisSecurityException {
     try {
-      if (certificate == null) {
-        createCertificate();
-      }
-      output.write(certificate.getEncoded());
+      output.write(createSelfSignedCertificate().getEncoded());
     }
-    catch (Exception e) {
+    catch (IOException | CertificateEncodingException e) {
       throw new CertException(e);
     }
   }
@@ -145,17 +133,10 @@ final class X509Builder implements CertificateBuilder {
     privateKey = kp.getPrivate();
   }
 
-  /**
-   * Create a certificate.
-   *
-   * @throws NoSuchAlgorithmException if the specified algorithm can't be used
-   * @throws InvalidKeyException if an invalid key was used
-   * @throws IllegalArgumentException if an illegal argument was used to create
-   *           the certificate
-   * @throws CertificateException if the certificate couldn't be created
-   */
-  private void createCertificate()
+
+  private X509Certificate build()
       throws NoSuchAlgorithmException, CertificateException, OperatorCreationException {
+    X509Certificate result = null;
     if (privateKey == null) {
       this.createKeyPair();
     }
@@ -166,7 +147,7 @@ final class X509Builder implements CertificateBuilder {
 
     // The certificate is self-signed, do we exactly care what
     // the serial number that uniquely identifies is
-    BigInteger serial = BigInteger.valueOf(new Integer(rand.nextInt(10000)).longValue());
+    BigInteger serial = BigInteger.valueOf(new Integer(SecurityUtil.getSecureRandom().nextInt(10000)).longValue());
 
     GregorianCalendar valid = new GregorianCalendar();
     Date notBefore = valid.getTime();
@@ -182,8 +163,9 @@ final class X509Builder implements CertificateBuilder {
     // build and sign the certificate
     X509CertificateHolder certHolder = certGen.build(builder.build(privateKey));
 
-    certificate = new X509CertificateObject(certHolder.toASN1Structure());
+    result = new JcaX509CertificateConverter().getCertificate(certHolder);
+    // result = new X509CertificateObject(certHolder.toASN1Structure());
 
-    return;
+    return result;
   }
 }

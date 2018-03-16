@@ -19,6 +19,7 @@ package com.adaptris.core;
 import com.adaptris.core.stubs.MockMessageProducer;
 
 
+@SuppressWarnings("deprecation")
 public class AdaptrisMessageWorkerImpTest extends BaseCase {
 
   public AdaptrisMessageWorkerImpTest(String name) {

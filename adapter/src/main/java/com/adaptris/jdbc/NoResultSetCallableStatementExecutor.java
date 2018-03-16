@@ -33,7 +33,7 @@ public class NoResultSetCallableStatementExecutor implements CallableStatementEx
 
   @Override
   public JdbcResult executeCallableStatement(CallableStatement statement) throws SQLException {
-    boolean hasResultSet = statement.execute();
+    statement.execute();
     JdbcResult result = new JdbcResultBuilder().build();
     return result;
   }

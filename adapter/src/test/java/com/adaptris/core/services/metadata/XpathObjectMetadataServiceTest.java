@@ -34,6 +34,7 @@ import com.adaptris.core.services.metadata.xpath.XpathQuery;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 
+@SuppressWarnings("deprecation")
 public class XpathObjectMetadataServiceTest extends MetadataServiceExample {
 
   public static final String XML = "<?xml version=\"1.0\"?><message><message-type>order"

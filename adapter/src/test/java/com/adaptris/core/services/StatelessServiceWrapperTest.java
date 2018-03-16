@@ -31,6 +31,7 @@ import com.adaptris.core.stubs.ExampleBranchingService;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
 
+@SuppressWarnings("deprecation")
 public class StatelessServiceWrapperTest extends GeneralServiceExample {
 
   public StatelessServiceWrapperTest(java.lang.String testName) {

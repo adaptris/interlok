@@ -16,8 +16,6 @@
 
 package com.adaptris.core.jdbc;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -33,8 +31,9 @@ import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AllowsRetriesConnection;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.util.JdbcUtil;
+import com.adaptris.interlok.resolver.ExternalResolver;
 import com.adaptris.security.exc.PasswordException;
-import com.adaptris.security.password.Password;
 import com.adaptris.util.KeyValuePairBag;
 import com.adaptris.util.KeyValuePairSet;
 
@@ -65,7 +64,7 @@ public abstract class DatabaseConnection extends AllowsRetriesConnection {
   @InputFieldDefault(value = "false")
   private Boolean alwaysValidateConnection;
   private String username;
-  @InputFieldHint(style = "PASSWORD")
+  @InputFieldHint(style = "PASSWORD", external = true)
   private String password;
   @Valid
   @AdvancedConfig
@@ -503,18 +502,9 @@ public abstract class DatabaseConnection extends AllowsRetriesConnection {
   }
 
   protected Properties connectionProperties() throws PasswordException {
-    return mergeConnectionProperties(getConnectionProperties() != null
-        ? KeyValuePairBag.asProperties(getConnectionProperties())
-        : new Properties(), getUsername(), getPassword());
+    return JdbcUtil.mergeConnectionProperties(
+        getConnectionProperties() != null ? KeyValuePairBag.asProperties(getConnectionProperties()) : new Properties(),
+        getUsername(), ExternalResolver.resolve(getPassword()));
   }
 
-  private static Properties mergeConnectionProperties(Properties p, String username, String password) throws PasswordException {
-    if (!isEmpty(username)) {
-      p.setProperty("user", username);
-    }
-    if (!isEmpty(password)) {
-      p.setProperty("password", Password.decode(password));
-    }
-    return p;
-  }
 }

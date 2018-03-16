@@ -42,7 +42,6 @@ import com.adaptris.core.jms.JmsProducer;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
 import com.adaptris.core.lifecycle.FilteredSharedComponentStart;
 import com.adaptris.core.services.LogMessageService;
-import com.adaptris.core.stubs.MockConfirmService;
 import com.adaptris.core.stubs.MockConnection;
 import com.adaptris.core.stubs.MockService;
 import com.adaptris.core.transaction.DummyTransactionManager;

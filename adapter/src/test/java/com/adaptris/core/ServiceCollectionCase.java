@@ -27,6 +27,7 @@ import com.adaptris.core.services.WaitService;
 import com.adaptris.core.stubs.EventHandlerAwareService;
 import com.adaptris.core.util.LifecycleHelper;
 
+@SuppressWarnings("deprecation")
 public abstract class ServiceCollectionCase extends ServiceCollectionExample {
 
   public ServiceCollectionCase(String name) {

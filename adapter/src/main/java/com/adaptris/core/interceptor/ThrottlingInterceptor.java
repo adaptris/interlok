@@ -122,7 +122,7 @@ public class ThrottlingInterceptor extends WorkflowInterceptorImpl {
 
     ((TimeSliceAbstractCacheProvider) cacheProvider).setTimeSliceDurationMilliseconds(getMillisecondDuration());
     getCacheProvider().init();
-    executor = Executors.newSingleThreadExecutor(new ManagedThreadFactory());
+    executor = Executors.newSingleThreadExecutor(new ManagedThreadFactory(getClass().getSimpleName()));
   }
 
   @Override

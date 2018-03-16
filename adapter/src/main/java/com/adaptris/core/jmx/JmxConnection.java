@@ -39,6 +39,8 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.JmxHelper;
+import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.resolver.ExternalResolver;
 import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.adaptris.security.password.Password;
 import com.adaptris.util.KeyValuePairBag;
@@ -60,7 +62,7 @@ public class JmxConnection extends AllowsRetriesConnection {
   @Valid
   private KeyValuePairSet jmxProperties;
   private String username;
-  @InputFieldHint(style = "PASSWORD")
+  @InputFieldHint(style = "PASSWORD", external = true)
   private String password;
   @AdvancedConfig
   @InputFieldDefault(value = "false")
@@ -106,7 +108,7 @@ public class JmxConnection extends AllowsRetriesConnection {
     boolean result = false;
     try {
       if (connection != null) {
-        int beans = connection.getMBeanCount();
+        connection.getMBeanCount();
         result = true;
       }
     } catch (IOException e) {
@@ -140,19 +142,13 @@ public class JmxConnection extends AllowsRetriesConnection {
         } else {
           log.warn("Attempt [{}] failed for [{}], retrying", attemptCount, jmxServiceUrlForLogging());
           log.info(createLoggingStatement(attemptCount));
-          waitQuietly();
+          LifecycleHelper.waitQuietly(connectionRetryInterval());
           continue;
         }
       }
     }
   }
 
-  private void waitQuietly() {
-    try {
-      Thread.sleep(connectionRetryInterval());
-    } catch (InterruptedException e) {
-    }
-  }
 
   private MBeanServerConnection createConnection() throws IOException, AdaptrisSecurityException {
     MBeanServerConnection result = null;
@@ -162,7 +158,10 @@ public class JmxConnection extends AllowsRetriesConnection {
         if (!env.containsKey(JMX_REMOTE_PROFILES)) {
           env.put(JMX_REMOTE_PROFILES, SASL_PLAIN);
         }
-        env.put(JMXConnector.CREDENTIALS, new String[] {getUsername(), Password.decode(getPassword())});
+        env.put(JMXConnector.CREDENTIALS, new String[]
+        {
+            getUsername(), Password.decode(ExternalResolver.resolve(getPassword()))
+        });
       }
       connector = JMXConnectorFactory.connect(new JMXServiceURL(getJmxServiceUrl()), env.size() == 0 ? null : env);
       result = connector.getMBeanServerConnection();

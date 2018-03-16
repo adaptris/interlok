@@ -48,7 +48,7 @@ public class ShutdownHandler extends Thread {
   private transient Logger log = LoggerFactory.getLogger(Thread.class.getName());
 
   private transient Thread mainThread;
-  private transient ManagedThreadFactory threadFactory = new ManagedThreadFactory();
+  private transient ManagedThreadFactory threadFactory = new ManagedThreadFactory(ShutdownHandler.class.getSimpleName());
   private transient BootstrapProperties bootProperties;
 
   /**

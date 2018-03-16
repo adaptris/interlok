@@ -27,6 +27,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 // For testing the @GenerateBeanInfo annotation is doing it's job for XStreamMarshaller
 @XStreamAlias("xstream-bean-info-wrapper")
 @GenerateBeanInfo
+@SuppressWarnings("deprecation")
 public class XStreamBeanInfoWrapper extends ServiceImp {
 
   private String marshalledIdentity;

@@ -16,6 +16,7 @@
 
 package com.adaptris.filetransfer;
 
+import java.io.File;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -23,13 +24,15 @@ import java.util.Date;
 import java.util.Properties;
 import java.util.Random;
 
-import junit.framework.TestCase;
-
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.adaptris.core.BaseCase;
+import com.adaptris.core.stubs.TempFileUtils;
 import com.adaptris.util.GuidGenerator;
+
+import junit.framework.TestCase;
 
 /**
  * @author lchan
@@ -67,11 +70,10 @@ public abstract class FtpCase extends TestCase {
 
       String oldName = Thread.currentThread().getName();
       try {
-        Thread.currentThread().setName("testLogin");
+        Thread.currentThread().setName(getName());
         FileTransferClient client = connectClientImpl();
         client.disconnect();
-      }
-      finally {
+      } finally {
         Thread.currentThread().setName(oldName);
       }
     }
@@ -82,7 +84,7 @@ public abstract class FtpCase extends TestCase {
 
       String oldName = Thread.currentThread().getName();
       try {
-        Thread.currentThread().setName("testLs");
+        Thread.currentThread().setName(getName());
         FileTransferClient client = connectClientImpl();
         String[] files = client.dir(getRemoteGetDirectory());
         for (int i = 0; i < files.length; i++) {
@@ -90,8 +92,7 @@ public abstract class FtpCase extends TestCase {
         }
         assertTrue(files.length > 0);
         client.disconnect();
-      }
-      finally {
+      } finally {
         Thread.currentThread().setName(oldName);
       }
     }
@@ -101,7 +102,7 @@ public abstract class FtpCase extends TestCase {
     if (areTestsEnabled()) {
       String oldName = Thread.currentThread().getName();
       try {
-        Thread.currentThread().setName("testLsFull");
+        Thread.currentThread().setName(getName());
         FileTransferClient client = connectClientImpl();
         String[] files = client.dir(getRemoteGetDirectory(), true);
         for (int i = 0; i < files.length; i++) {
@@ -110,8 +111,7 @@ public abstract class FtpCase extends TestCase {
         }
         assertTrue(files.length > 0);
         client.disconnect();
-      }
-      finally {
+      } finally {
         Thread.currentThread().setName(oldName);
       }
     }
@@ -121,37 +121,59 @@ public abstract class FtpCase extends TestCase {
     if (areTestsEnabled()) {
       String oldName = Thread.currentThread().getName();
       try {
-        Thread.currentThread().setName("testLsWithFileFilter");
+        Thread.currentThread().setName(getName());
         FileTransferClient client = connectClientImpl();
-        String[] files = client.dir(getRemoteGetDirectory(),
-            getRemoteGetFileFilter());
-        assertEquals("Should only be one file matching "
-            + getRemoteGetFilterString(), 1, files.length);
+        String[] files = client.dir(getRemoteGetDirectory(), getRemoteGetFileFilter());
+        assertEquals("Should only be one file matching " + getRemoteGetFilterString(), 1, files.length);
         client.disconnect();
-      }
-      finally {
+      } finally {
         Thread.currentThread().setName(oldName);
       }
     }
   }
 
-  @SuppressWarnings(
-  {
-    "deprecation"
-  })
+  public void testLsWithNullFileFilter() throws Exception {
+    if (areTestsEnabled()) {
+      String oldName = Thread.currentThread().getName();
+      try {
+        Thread.currentThread().setName(getName());
+        FileTransferClient client = connectClientImpl();
+        String[] files = client.dir(getRemoteGetDirectory(), (FileFilter) null);
+        assertTrue(files.length > 1);
+        client.disconnect();
+      } finally {
+        Thread.currentThread().setName(oldName);
+      }
+    }
+  }
+
+  @SuppressWarnings("deprecation")
   public void testLsWithFilenameFilter() throws Exception {
     if (areTestsEnabled()) {
       String oldName = Thread.currentThread().getName();
       try {
-        Thread.currentThread().setName("testLsWithFilenameFilter");
+        Thread.currentThread().setName(getName());
         FileTransferClient client = connectClientImpl();
-        String[] files = client.dir(getRemoteGetDirectory(),
-            getRemoteGetFilenameFilter());
-        assertEquals("Should only be one file matching "
-            + getRemoteGetFilterString(), 1, files.length);
+        String[] files = client.dir(getRemoteGetDirectory(), getRemoteGetFilenameFilter());
+        assertEquals("Should only be one file matching " + getRemoteGetFilterString(), 1, files.length);
         client.disconnect();
+      } finally {
+        Thread.currentThread().setName(oldName);
       }
-      finally {
+    }
+  }
+
+  @SuppressWarnings("deprecation")
+  public void testLsWithNullFilenameFilter() throws Exception {
+    if (areTestsEnabled()) {
+      String oldName = Thread.currentThread().getName();
+      try {
+        Thread.currentThread().setName(getName());
+        FileTransferClient client = connectClientImpl();
+        String[] files = client.dir(getRemoteGetDirectory(), (FilenameFilter) null);
+        assertTrue(files.length > 1);
+        client.disconnect();
+      } finally {
         Thread.currentThread().setName(oldName);
       }
     }
@@ -161,12 +183,32 @@ public abstract class FtpCase extends TestCase {
     if (areTestsEnabled()) {
       String oldName = Thread.currentThread().getName();
       try {
-        Thread.currentThread().setName("testCdThenLs");
+        Thread.currentThread().setName(getName());
 
         FileTransferClient client = connectClientImpl();
         client.chdir(getRemoteGetDirectory());
         String[] files = client.dir();
         assertTrue(files.length > 0);
+        client.disconnect();
+      }
+      finally {
+        Thread.currentThread().setName(oldName);
+      }
+    }
+  }
+
+  public void testGet_ToLocalFile() throws Exception {
+    if (areTestsEnabled()) {
+      String oldName = Thread.currentThread().getName();
+      try {
+        Thread.currentThread().setName(getName());
+        String filename = getRemoteGetFilename();
+        FileTransferClient client = connectClientImpl();
+        File localFile = TempFileUtils.createTrackedFile(client);
+        client.chdir(getRemoteGetDirectory());
+        client.get(localFile.getCanonicalPath(), filename);
+        String s = FileUtils.readFileToString(localFile).trim();
+        assertEquals("File contents", s, FILE_TEXT);
         client.disconnect();
       }
       finally {
@@ -187,8 +229,7 @@ public abstract class FtpCase extends TestCase {
         String s = new String(b).trim();
         assertEquals("File contents", s, FILE_TEXT);
         client.disconnect();
-      }
-      finally {
+      } finally {
         Thread.currentThread().setName(oldName);
       }
     }
@@ -198,7 +239,7 @@ public abstract class FtpCase extends TestCase {
     if (areTestsEnabled()) {
       String oldName = Thread.currentThread().getName();
       try {
-        Thread.currentThread().setName("testCdThenLs");
+        Thread.currentThread().setName(getName());
         String filename = getRemotePutFilename();
         FileTransferClient client = connectClientImpl();
         client.chdir(getRemotePutDirectory());
@@ -211,11 +252,63 @@ public abstract class FtpCase extends TestCase {
     }
   }
 
+  public void testPut_append() throws Exception {
+    if (areTestsEnabled()) {
+      String oldName = Thread.currentThread().getName();
+      try {
+        Thread.currentThread().setName(getName());
+        String filename = getRemotePutFilename();
+        FileTransferClient client = connectClientImpl();
+        client.chdir(getRemotePutDirectory());
+        client.put(FILE_TEXT.getBytes(), filename, true);
+        client.disconnect();
+      } finally {
+        Thread.currentThread().setName(oldName);
+      }
+    }
+  }
+
+  public void testPut_FromFile() throws Exception {
+    if (areTestsEnabled()) {
+      String oldName = Thread.currentThread().getName();
+      try {
+        Thread.currentThread().setName(getName());
+        String filename = getRemotePutFilename();
+        FileTransferClient client = connectClientImpl();
+        File localFile = TempFileUtils.createTrackedFile(client);
+        client.chdir(getRemotePutDirectory());
+        FileUtils.write(localFile, FILE_TEXT);
+        client.put(localFile.getCanonicalPath(), filename);
+        client.disconnect();
+      } finally {
+        Thread.currentThread().setName(oldName);
+      }
+    }
+  }
+
+  public void testRename() throws Exception {
+    if (areTestsEnabled()) {
+      String oldName = Thread.currentThread().getName();
+      try {
+        Thread.currentThread().setName(getName());
+        String filename = getRemotePutFilename();
+        FileTransferClient client = connectClientImpl();
+        client.chdir(getRemotePutDirectory());
+        client.put(FILE_TEXT.getBytes(), filename);
+        String newFilename = new GuidGenerator().safeUUID();
+        client.rename(filename, newFilename);
+        client.delete(newFilename);
+        client.disconnect();
+      } finally {
+        Thread.currentThread().setName(oldName);
+      }
+    }
+  }
   public void testGetLastModifiedWithRelativePath() throws Exception {
     if (areTestsEnabled()) {
       String oldName = Thread.currentThread().getName();
       try {
-        Thread.currentThread().setName("testGetLastModifiedWithRelativePath");
+        Thread.currentThread().setName(getName());
 
         FileTransferClient client = connectClientImpl();
         client.chdir(getRemoteGetDirectory());
@@ -234,8 +327,7 @@ public abstract class FtpCase extends TestCase {
     if (areTestsEnabled()) {
       String oldName = Thread.currentThread().getName();
       try {
-        Thread.currentThread().setName(
-            "testGetLastModifiedDateWithRelativePath");
+        Thread.currentThread().setName(getName());
 
         FileTransferClient client = connectClientImpl();
         client.chdir(getRemoteGetDirectory());
@@ -254,7 +346,7 @@ public abstract class FtpCase extends TestCase {
     if (areTestsEnabled()) {
       String oldName = Thread.currentThread().getName();
       try {
-        Thread.currentThread().setName("testGetLastModifiedWithAbsolutePath");
+        Thread.currentThread().setName(getName());
         FileTransferClient client = connectClientImpl();
         long mtime = client.lastModified(getRemoteGetDirectory() + "/"
             + getRemoteGetFilename());

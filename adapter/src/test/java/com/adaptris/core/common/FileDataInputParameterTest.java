@@ -44,6 +44,7 @@ import com.adaptris.core.stubs.TempFileUtils;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.interlok.types.InterlokMessage;
 
+@SuppressWarnings("deprecation")
 public class FileDataInputParameterTest {
 
   public static final String TEXT = "Hello World";

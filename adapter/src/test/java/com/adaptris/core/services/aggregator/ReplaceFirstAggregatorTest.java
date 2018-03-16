@@ -17,14 +17,12 @@
 package com.adaptris.core.services.aggregator;
 
 import java.util.Arrays;
+import java.util.List;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.NullService;
-import com.adaptris.core.services.LogMessageService;
+import com.adaptris.core.Service;
 import com.adaptris.core.services.splitter.SplitByMetadata;
-import com.adaptris.core.services.splitter.SplitJoinService;
-import com.adaptris.core.services.splitter.SplitJoinServiceTest;
 
 public class ReplaceFirstAggregatorTest extends AggregatorCase {
 
@@ -50,12 +48,9 @@ public class ReplaceFirstAggregatorTest extends AggregatorCase {
   }
 
   @Override
-  protected Object retrieveObjectForSampleConfig() {
-    SplitJoinService service = new SplitJoinService();
-    service.setService(SplitJoinServiceTest.wrap(new LogMessageService(), new NullService()));
-    service.setSplitter(new SplitByMetadata("metadataKeyToSplitOn", "metadataKeyContainingEachSplitValue"));
-    service.setAggregator(new ReplaceWithFirstMessage());
-    return service;
+  protected List<Service> retrieveObjectsForSampleConfig() {
+    return createExamples(new SplitByMetadata("metadataKeyToSplitOn", "metadataKeyContainingEachSplitValue"),
+        new ReplaceWithFirstMessage());
   }
 
   @Override

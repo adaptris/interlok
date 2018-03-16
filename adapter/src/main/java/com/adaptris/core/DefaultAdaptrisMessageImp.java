@@ -27,6 +27,8 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.adaptris.util.IdGenerator;
 
 /**
@@ -51,9 +53,9 @@ public class DefaultAdaptrisMessageImp extends AdaptrisMessageImp {
   public boolean equivalentForTracking(AdaptrisMessage other) {
     boolean result = false;
 
-    if (areEqual(getUniqueId(), other.getUniqueId())) {
+    if (StringUtils.equals(getUniqueId(), other.getUniqueId())) {
       if (Arrays.equals(getPayload(), other.getPayload())) {
-        if (areEqual(getContentEncoding(), other.getContentEncoding())) {
+        if (StringUtils.equals(getContentEncoding(), other.getContentEncoding())) {
           if (this.getMetadata().equals(other.getMetadata())) {
             result = true;
           }

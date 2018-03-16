@@ -46,10 +46,6 @@ import com.adaptris.core.util.Args;
  */
 public abstract class TransformFramework {
 
-  // ////////////////////////////////////////////
-  // internal state
-  // ////////////////////////////////////////////
-
   /**
    * <p>
    * Internal store of transformation rules.
@@ -64,25 +60,8 @@ public abstract class TransformFramework {
    */
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
-  /**
-   * <p>
-   * This is the reference to the <code>ProcessorHandle</code> object that is
-   * passed via a constructor.
-   * </p>
-   */
-  protected ProcessorHandle processorHandle;
-
-  // ////////////////////////////////////////////
-  // constructors
-  // ////////////////////////////////////////////
-
-  public TransformFramework(ProcessorHandle processorHandle) {
-    this.processorHandle = Args.notNull(processorHandle, "processHandle");
+  public TransformFramework() {
   }
-
-  // ////////////////////////////////////////////
-  // public methods
-  // ////////////////////////////////////////////
 
   /**
    * <p>
@@ -121,10 +100,7 @@ public abstract class TransformFramework {
    */
   public void removeRule(Source rule) {
     ruleList.remove(Args.notNull(rule, "rule"));
-
-    if (log != null) {
-      log.debug("TransformFramework removeRule() invoked: rule <" + rule + ">");
-    }
+    log.trace("TransformFramework removeRule() invoked: rule [{}]", rule);
   }
 
   /**
@@ -138,11 +114,7 @@ public abstract class TransformFramework {
    */
   public void removeRule(int index) {
     ruleList.remove(index);
-
-    if (log != null) {
-      log.debug("TransformFramework removeRule() invoked: index <" + index
-          + ">");
-    }
+    log.trace("TransformFramework removeRule() invoked: index {}", index);
   }
 
   /**
@@ -150,59 +122,10 @@ public abstract class TransformFramework {
    * Removes all the rules from <code>TransformFramework</code>.
    * </p>
    *
-   * @see #reset()
    */
   public void removeRules() {
     ruleList.removeAll();
-
-    if (log != null) {
-      log.debug("TransformFramework removeRules() invoked");
-    }
-  }
-
-  /**
-   * <p>
-   * Resets the object's internal state. Should a sub-class override this
-   * method, then it must be called from the sub-class method.
-   * </p>
-   *
-   * @see #removeRules()
-   */
-  public void reset() {
-    ruleList = new RuleList();
-
-    if (log != null) {
-      log.debug("TransformFramework reset() called");
-    }
-  }
-
-  /**
-   * <p>
-   * Checks that the internal state of the object has been correctly set.
-   * </p>
-   *
-   * <p align="center">
-   * <b>This method is for future use and currently does not implement any
-   * functionality.</b>
-   * </p>
-   *
-   * @throws IllegalStateException when an illegal state is detected.
-   */
-  public void checkInternalState() {
-    /*
-     * **************************
-     * TV 17/04/2001: This is meant to be commented out.
-     *
-     * boolean invalidState = false; StringBuffer invalidStateMsg = new
-     * StringBuffer();
-     *
-     * if (processorHandle == null) { invalidState = true;
-     * invalidStateMsg.append("ProcessorHandle, "); }
-     *
-     * if (invalidState) { invalidStateMsg.append("has not been set"); throw new
-     * IllegalStateException( invalidStateMsg.toString() ); }
-     * **************************
-     */
+    log.trace("TransformFramework removeRules() invoked");
   }
 
   /**

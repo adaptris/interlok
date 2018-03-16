@@ -47,6 +47,7 @@ import com.adaptris.core.Workflow;
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
 
+@SuppressWarnings("deprecation")
 public class StandardMessageErrorDigestTest extends ComponentManagerCase {
 
   protected transient Log logR = LogFactory.getLog(this.getClass());

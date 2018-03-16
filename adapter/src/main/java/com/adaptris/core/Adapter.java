@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,6 +16,7 @@
 
 package com.adaptris.core;
 
+import static com.adaptris.core.CoreConstants.UNIQUE_ID_JMX_PATTERN;
 import static com.adaptris.core.util.LoggingHelper.friendlyName;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
@@ -30,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
@@ -49,7 +51,6 @@ import com.adaptris.core.runtime.StandardMessageErrorDigester;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -59,7 +60,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * and event handling capabilities. Client classes, e.g. <code>com.adaptris.core.management.Bootstrap</code> create and manage
  * instances of this class.
  * </p>
- * 
+ *
  * @config adapter
  */
 @XStreamAlias("adapter")
@@ -73,6 +74,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
 
   @NotNull
   @NotBlank
+  @Pattern(regexp = UNIQUE_ID_JMX_PATTERN)
   private String uniqueId;
   @NotNull
   @AutoPopulated
@@ -129,7 +131,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
    * <code>DefaultFailedMessageRetrier</code>, <code>NullLogHandler</code> all of which do nothing. Uses
    * <code>DefaultAdapterStartUpEvent</code>, <code>HeartbeatEvent</code>, default heartbeat interval is 15 minutes.
    * </p>
-   * 
+   *
    * @throws CoreException wrapping any underlying Exceptions
    */
   public Adapter() throws CoreException {
@@ -156,7 +158,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
    * <p>
    * Ensures that the adapter is ready for initialisation.
    * </p>
-   * 
+   *
    * @throws CoreException wrapping any underlying Exceptions
    */
   @Override
@@ -186,7 +188,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
    * Initialise the adapter including the <code>EventHandler</code>. Implements method defined in <code>AdaptrisMBean</code>, hence
    * public.
    * </p>
-   * 
+   *
    * @see com.adaptris.core.AdaptrisComponent
    */
   @Override
@@ -198,7 +200,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
       log.error("Caught un-handled RuntimeException", e);
       throw new CoreException(e);
     }
-    log.info("{} Initialised", LoggingHelper.friendlyName(this));
+    log.info("{} Initialised", friendlyName(this));
   }
 
   /**
@@ -305,7 +307,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
       startHeartbeat();
       handleLifecycleEvent(AdapterStartEvent.class, true);
       lastStartTime = new Date();
-      log.info("{} Started", LoggingHelper.friendlyName(this));
+      log.info("{} Started", friendlyName(this));
     } catch (CoreException | RuntimeException e) {
       log.error("Failed to start Adapter; stopping components");
       for (ComponentLifecycle c : reverse(toStart)) {
@@ -362,7 +364,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
       log.trace("Failed to stop component cleanly, logging exception for informational purposes only", e);
     }
     LifecycleHelper.stop(getSharedComponents());
-    log.info("{} Stopped", LoggingHelper.friendlyName(this));
+    log.info("{} Stopped", friendlyName(this));
   }
 
   /**
@@ -381,7 +383,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
     }
     LifecycleHelper.close(getSharedComponents());
     eventHandler.requestClose();
-    log.info("{} Closed", LoggingHelper.friendlyName(this));
+    log.info("{} Closed", friendlyName(this));
   }
 
   // Castor gets & sets...
@@ -390,7 +392,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
    * <p>
    * Sets the <code>ChannelList</code>.
    * </p>
-   * 
+   *
    * @param param the <code>ChannelList</code> to use.
    */
   public void setChannelList(ChannelList param) {
@@ -401,7 +403,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
    * <p>
    * Returns the <code>ChannelList</code>.
    * </p>
-   * 
+   *
    * @return the <code>ChannelList</code>
    */
   public ChannelList getChannelList() {
@@ -412,7 +414,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
    * <p>
    * Sets this instance's unique id. Unique ids are implementation-specific.
    * </p>
-   * 
+   *
    * @param s the unique id to set
    */
   public void setUniqueId(String s) {
@@ -423,7 +425,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
    * <p>
    * Returns this instances unique id.
    * </p>
-   * 
+   *
    * @return this instances unique id
    */
   @Override
@@ -435,7 +437,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
    * <p>
    * Sets the <code>EventHandler</code>.
    * </p>
-   * 
+   *
    * @param param the <code>EventHandler</code> to use.
    */
   public void setEventHandler(EventHandler param) {
@@ -447,7 +449,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
    * <p>
    * Returns the <code>EventHandler</code>.
    * </p>
-   * 
+   *
    * @return the <code>EventHandler</code>
    */
   public EventHandler getEventHandler() {
@@ -460,7 +462,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
    * be configured at
    * this level.
    * </p>
-   * 
+   *
    * @param param the <code>MessageErrorHandler</code> to use
    */
   public void setMessageErrorHandler(ProcessingExceptionHandler param) {
@@ -471,7 +473,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
    * <p>
    * Returns the configured <code>MessageErrorHandler</code>.
    * </p>
-   * 
+   *
    * @return the configured <code>MessageErrorHandler</code>
    */
   public ProcessingExceptionHandler getMessageErrorHandler() {
@@ -482,7 +484,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
    * <p>
    * Sets the name of the start up event class to use. May not be null.
    * </p>
-   * 
+   *
    * @param name the name of the start up event class to use
    */
   public void setStartUpEventImp(String name) {
@@ -493,7 +495,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
    * <p>
    * Returns the name of the start up event class to use.
    * </p>
-   * 
+   *
    * @return the name of the start up event class to use
    */
   public String getStartUpEventImp() {
@@ -504,7 +506,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
    * <p>
    * Sets the class name of the heartbeat event imp to use.
    * </p>
-   * 
+   *
    * @param name the class name of the heartbeat event imp to use
    */
   public void setHeartbeatEventImp(String name) {
@@ -515,7 +517,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
    * <p>
    * Returns the class name of the heartbeat event imp to use.
    * </p>
-   * 
+   *
    * @return the class name of the heartbeat event imp to use
    */
   public String getHeartbeatEventImp() {
@@ -531,7 +533,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
    * <p>
    * Sets the <code>FailedMessageRetrier</code> to use. May not be null.
    * </p>
-   * 
+   *
    * @param retrier the <code>FailedMessageRetrier</code> to use
    */
   public void setFailedMessageRetrier(FailedMessageRetrier retrier) {
@@ -542,7 +544,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
    * <p>
    * Returns the <code>FailedMessageRetrier</code> to use.
    * </p>
-   * 
+   *
    * @return the <code>FailedMessageRetrier</code> to use
    */
   public FailedMessageRetrier getFailedMessageRetrier() {
@@ -551,7 +553,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
 
   /**
    * Set the LogHandler implementation.
-   * 
+   *
    * @param lh the log handler implementation.
    */
   public void setLogHandler(LogHandler lh) {
@@ -560,7 +562,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
 
   /**
    * Return the configured LogHandler.
-   * 
+   *
    * @return the log handler.
    */
   public LogHandler getLogHandler() {
@@ -577,7 +579,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
 
   /**
    * Set the event between which heartbeat events are emitted.
-   * 
+   *
    * @param interval
    */
   public void setHeartbeatEventInterval(TimeInterval interval) {
@@ -609,6 +611,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
     return state;
   }
 
+  @Override
   public void changeState(ComponentState newState) {
     state = newState;
   }
@@ -639,7 +642,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
 
   /**
    * Get the shared components that are available for injection into other managed components.
-   * 
+   *
    * @param scl the shared components.
    */
   public void setSharedComponents(SharedComponentList scl) {
@@ -656,7 +659,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
 
   /**
    * The last time the adapter was started
-   * 
+   *
    * @return the last time the adapter was started
    */
   public Date lastStartTime() {
@@ -665,7 +668,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
 
   /**
    * The last time the adapter was stopped
-   * 
+   *
    * @return the last time the adapter was stopped
    */
   public Date lastStopTime() {
@@ -684,18 +687,22 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
       this.original = original;
     }
 
+    @Override
     public Iterator<T> iterator() {
       final ListIterator<T> i = original.listIterator(original.size());
 
       return new Iterator<T>() {
+        @Override
         public boolean hasNext() {
           return i.hasPrevious();
         }
 
+        @Override
         public T next() {
           return i.previous();
         }
 
+        @Override
         public void remove() {
           i.remove();
         }

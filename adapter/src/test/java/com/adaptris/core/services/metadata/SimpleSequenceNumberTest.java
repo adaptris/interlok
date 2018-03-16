@@ -35,6 +35,7 @@ import com.adaptris.core.services.metadata.SimpleSequenceNumberService.OverflowB
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.GuidGenerator;
 
+@SuppressWarnings("deprecation")
 public class SimpleSequenceNumberTest extends SequenceNumberServiceExample {
 
   private static final String SERVICE_PROPERTY_KEY = "SimpleSequenceNumberService.next";

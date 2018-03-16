@@ -42,6 +42,7 @@ import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.TimeInterval;
 
+@SuppressWarnings("deprecation")
 public class JdbcServiceListTest extends ServiceCollectionCase {
 
   private static final String CFG_JDBC_URL = "jdbc.jdbcservicelist.url";
@@ -55,7 +56,6 @@ public class JdbcServiceListTest extends ServiceCollectionCase {
   public void setUp() throws Exception {
   }
 
-  @SuppressWarnings("deprecation")
   public void testSetDatabaseConnection() {
     JdbcConnection connection = new JdbcConnection();
     JdbcServiceList list = new JdbcServiceList();

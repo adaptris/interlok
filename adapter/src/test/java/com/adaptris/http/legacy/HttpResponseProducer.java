@@ -79,6 +79,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("http-response-producer")
 @DisplayOrder(order = {"httpResponseCode", "httpResponseText", "contentTypeKey"})
+@SuppressWarnings("deprecation")
 public class HttpResponseProducer extends ProduceOnlyProducerImp {
 
   private int httpResponseCode;

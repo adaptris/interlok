@@ -40,6 +40,7 @@ import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.text.xml.XPath;
 
+@SuppressWarnings("deprecation")
 public class XpathSplitterTest extends SplitterCase {
 
   public static final String ENCODING_ISO_8859_1 = "iso-8859-1";

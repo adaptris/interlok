@@ -21,7 +21,6 @@ import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.mail.MailProducerExample;
 import com.adaptris.core.metadata.RegexMetadataFilter;
 
-@SuppressWarnings("deprecation")
 public class MultiAttachmentProducerXmlTest extends MailProducerExample {
 
   private static final String EXAMPLE_XML_FOR_CFG = "<document>"

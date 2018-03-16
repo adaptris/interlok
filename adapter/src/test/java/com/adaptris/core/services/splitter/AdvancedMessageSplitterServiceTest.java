@@ -49,7 +49,7 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
 
   @Override
   public void testServiceSetters() {
-    AdvancedMessageSplitterService service = new AdvancedMessageSplitterService();
+    AdvancedMessageSplitterService service = createForTests();
     try {
       service.setService(null);
       fail("Expected IllegalArgumentException");
@@ -68,7 +68,7 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
 
   @Override
   public void testInit() throws Exception {
-    AdvancedMessageSplitterService service = new AdvancedMessageSplitterService();
+    AdvancedMessageSplitterService service = createForTests();
     try {
       service.init();
       fail();
@@ -88,7 +88,7 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
   }
 
   public void testEventHandlerPassedToServiceCollection() throws Exception {
-    AdvancedMessageSplitterService service = new AdvancedMessageSplitterService();
+    AdvancedMessageSplitterService service = createForTests();
     EventHandlerAwareService ehService = new EventHandlerAwareService();
     service.setService(ehService);
     service.setSplitter(new SimpleRegexpMessageSplitter("\\|"));
@@ -100,7 +100,7 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
   }
 
   public void testSetSendEvents() throws Exception {
-    AdvancedMessageSplitterService service = new AdvancedMessageSplitterService();
+    AdvancedMessageSplitterService service = createForTests();
     assertNull(service.getSendEvents());
     assertFalse(service.sendEvents());
     service.setSendEvents(Boolean.TRUE);
@@ -111,6 +111,117 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
     assertNull(service.getSendEvents());
     assertFalse(service.sendEvents());
 
+  }
+
+  public void testDoServiceWithFailures_NullEventHandler() throws Exception {
+    MockMessageProducer producer = new MockMessageProducer();
+    AdaptrisMessage msg = createMessage(REGEXP_DATA);
+    AdvancedMessageSplitterService service = createAdvanced(new SimpleRegexpMessageSplitter("\\|"), new Service[]
+    {
+        new ThrowExceptionService(new ConfiguredException("Fail")), new StandaloneProducer(producer)
+    });
+    service.registerEventHandler(null);
+    try {
+      ServiceCase.execute(service, msg);
+      fail("Expecting failure from AlwaysFailService");
+    } catch (ServiceException expected) {
+      ;
+    }
+  }
+
+  public void testDoServiceWithFailures_NullEventHandler_SendEvents() throws Exception {
+    MockMessageProducer producer = new MockMessageProducer();
+    AdaptrisMessage msg = createMessage(REGEXP_DATA);
+    AdvancedMessageSplitterService service = createAdvanced(new SimpleRegexpMessageSplitter("\\|"), new Service[]
+    {
+        new ThrowExceptionService(new ConfiguredException("Fail")), new StandaloneProducer(producer)
+    });
+    service.registerEventHandler(null);
+    service.setSendEvents(true);
+    try {
+      ServiceCase.execute(service, msg);
+      fail("Expecting failure from AlwaysFailService");
+    } catch (ServiceException expected) {
+      ;
+    }
+  }
+
+  public void testDoServiceWithFailures_SendEventsTrue() throws Exception {
+    MockMessageProducer producer = new MockMessageProducer();
+    AdaptrisMessage msg = createMessage(REGEXP_DATA);
+    AdvancedMessageSplitterService service = createAdvanced(new SimpleRegexpMessageSplitter("\\|"), new Service[]
+    {
+        new ThrowExceptionService(new ConfiguredException("Fail")), new StandaloneProducer(producer)
+    });
+    DefaultEventHandler eh = new DefaultEventHandler();
+    MockMessageProducer ehp = new MockMessageProducer();
+    eh.setProducer(ehp);
+    LifecycleHelper.initAndStart(eh);
+    service.registerEventHandler(eh);
+    service.setSendEvents(true);
+    try {
+      ServiceCase.execute(service, msg);
+      fail("Expecting failure from AlwaysFailService");
+    } catch (ServiceException expected) {
+      ;
+    }
+    LifecycleHelper.stopAndClose(eh);
+    assertEvents(ehp, 1, MessageLifecycleEvent.class);
+  }
+
+  public void testDoServiceWithFailures_SendEventsFalse() throws Exception {
+    MockMessageProducer producer = new MockMessageProducer();
+    AdaptrisMessage msg = createMessage(REGEXP_DATA);
+    AdvancedMessageSplitterService service = createAdvanced(new SimpleRegexpMessageSplitter("\\|"), new Service[]
+    {
+        new ThrowExceptionService(new ConfiguredException("Fail")), new StandaloneProducer(producer)
+    });
+    DefaultEventHandler eh = new DefaultEventHandler();
+    MockMessageProducer ehp = new MockMessageProducer();
+    eh.setProducer(ehp);
+    LifecycleHelper.initAndStart(eh);
+    service.registerEventHandler(eh);
+    service.setSendEvents(false);
+    try {
+      ServiceCase.execute(service, msg);
+      fail("Expecting failure from AlwaysFailService");
+    } catch (ServiceException expected) {
+      ;
+    }
+    LifecycleHelper.stopAndClose(eh);
+    assertEvents(ehp, 0, MessageLifecycleEvent.class);
+  }
+
+  public void testDoServiceWithEventHandler_Null() throws Exception {
+    MockMessageProducer producer = new MockMessageProducer();
+    AdvancedMessageSplitterService service = createServiceImpl(new SimpleRegexpMessageSplitter("\\|"), producer);
+    AdaptrisMessage msg = createMessage(REGEXP_DATA);
+    service.registerEventHandler(null);
+    ServiceCase.execute(service, msg);
+    assertEquals("Number of messages", 4, producer.getMessages().size());
+    assertEquals("splitCount metadata", 4, Integer.parseInt(msg.getMetadataValue(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT)));
+    int count = 0;
+    for (AdaptrisMessage m : producer.getMessages()) {
+      count ++;
+      assertEquals(count, Integer.parseInt(m.getMetadataValue(KEY_CURRENT_SPLIT_MESSAGE_COUNT)));
+    }
+  }
+
+  public void testDoServiceWithNullEventHandler_SendEventsTrue() throws Exception {
+    MockMessageProducer producer = new MockMessageProducer();
+    AdvancedMessageSplitterService service = createServiceImpl(new SimpleRegexpMessageSplitter("\\|"), producer);
+    AdaptrisMessage msg = createMessage(REGEXP_DATA);
+    service.registerEventHandler(null);
+    service.setSendEvents(true);
+    ServiceCase.execute(service, msg);
+    assertEquals("Number of messages", 4, producer.getMessages().size());
+    assertEquals("splitCount metadata", 4,
+        Integer.parseInt(msg.getMetadataValue(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT)));
+    int count = 0;
+    for (AdaptrisMessage m : producer.getMessages()) {
+      count++;
+      assertEquals(count, Integer.parseInt(m.getMetadataValue(KEY_CURRENT_SPLIT_MESSAGE_COUNT)));
+    }
   }
 
   public void testDoServiceWithEventHandler_SendEventsDefault() throws Exception {
@@ -125,12 +236,13 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
     ServiceCase.execute(service, msg);
     eh.requestClose();
     assertEquals("Number of messages", 4, producer.getMessages().size());
-    assertEquals("splitCount metadata", 4, Integer.parseInt(msg.getMetadataValue(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT)));
+    assertEquals("splitCount metadata", 4,
+        Integer.parseInt(msg.getMetadataValue(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT)));
     assertEvents(ehp, 0, MessageLifecycleEvent.class);
-    
+
     int count = 0;
     for (AdaptrisMessage m : producer.getMessages()) {
-      count ++;
+      count++;
       assertEquals(count, Integer.parseInt(m.getMetadataValue(KEY_CURRENT_SPLIT_MESSAGE_COUNT)));
     }
   }
@@ -224,6 +336,10 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
       new StandaloneProducer(producer)
     }));
     return service;
+  }
+
+  protected AdvancedMessageSplitterService createForTests() {
+    return new AdvancedMessageSplitterService();
   }
 
   private void assertEvents(MockMessageProducer eh, int msgCount, Class expectedEventClass) throws Exception {

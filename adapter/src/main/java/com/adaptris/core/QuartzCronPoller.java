@@ -209,7 +209,6 @@ public class QuartzCronPoller extends PollerImp {
   private transient SchedulerFactory factory;
   private transient Scheduler scheduler;
   private transient JobDetail jobDetail;
-  private transient Trigger trigger;
   private transient String registeredQuartzId; // used for Job, Trigger and Listener
   private transient String registeredSchedulerGroup;
 

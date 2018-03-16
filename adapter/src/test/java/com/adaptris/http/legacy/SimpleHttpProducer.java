@@ -192,24 +192,6 @@ public class SimpleHttpProducer extends HttpProducer {
   public void prepare() throws CoreException {
   }
 
-
-  /**
-   *
-   * @see java.lang.Object#toString()
-   */
-  @Override
-  public String toString() {
-    StringBuffer sb = new StringBuffer("[");
-    sb.append(SimpleHttpProducer.class.getName());
-    sb.append(",additionalHeaders=").append(getAdditionalHeaders());
-    sb.append(",handleRedirect=").append(handleRedirection());
-    sb.append(",user=").append(getUserName());
-    sb.append(",password=").append(getPassword());
-    sb.append(",socketTimeout=").append(getSocketTimeout());
-    sb.append("]");
-    return sb.toString();
-  }
-
   private void readResponse(HttpSession httpReply, AdaptrisMessage reply)
       throws IOException, CoreException {
     int responseCode = httpReply.getResponseLine().getResponseCode();

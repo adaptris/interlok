@@ -47,7 +47,7 @@ public class LruBoundedMessageCache implements MessageCache {
   
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
-  private static final long DEFAULT_QUEUE_POLL = 100;
+  private static final long DEFAULT_QUEUE_POLL = 50;
   private static final int DEFAULT_MAX_MESSAGES = 100;
 
   private int maxMessages;
@@ -62,19 +62,17 @@ public class LruBoundedMessageCache implements MessageCache {
 
   @Override
   public void put(CacheableAdaptrisMessageWrapper message) {
-    log.debug("Caching message: " + message);
     try {
       lock.lock();
-      log.debug("Offering message: " + message);
       while (!this.getBoundedCache().offer(message)) {
         try {
-          log.debug("Removing message, making space");
           this.getBoundedCache().poll(DEFAULT_QUEUE_POLL, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
           log.warn("Interrupted while adding message '{}' to the message cache.", message.getMessageId());
           break;
         }
       }
+      log.trace("Cached message: {}", message.getMessageId());
     } finally {
       lock.unlock();
     }
@@ -87,7 +85,7 @@ public class LruBoundedMessageCache implements MessageCache {
       CacheableAdaptrisMessageWrapper wrapper = new CacheableAdaptrisMessageWrapper();
       wrapper.setMessageId(messageId);
       
-      log.debug("Removing message: " + wrapper);
+      log.trace("Removing message: {}", wrapper.getMessageId());
       Spliterator<CacheableAdaptrisMessageWrapper> spliterator = this.getBoundedCache().spliterator();
       CacheMessageConsumer cacheMessageConsumer = new CacheMessageConsumer();
       cacheMessageConsumer.setLookupWrapper(wrapper);
@@ -113,7 +111,7 @@ public class LruBoundedMessageCache implements MessageCache {
 
   @Override
   public void init() {
-    boundedCache = new ArrayBlockingQueue<>(this.getMaxMessages(), false);
+    boundedCache = new ArrayBlockingQueue<>(this.getMaxMessages(), true);
   }
 
   @Override
@@ -153,7 +151,6 @@ public class LruBoundedMessageCache implements MessageCache {
     
     @Override
     public void accept(CacheableAdaptrisMessageWrapper cachedMessage) {
-      log.debug("Scanning over message: " + cachedMessage);
       if(cachedMessage.getMessageId().equals(getLookupWrapper().getMessageId())) {
         setReturnValue(cachedMessage);
       }

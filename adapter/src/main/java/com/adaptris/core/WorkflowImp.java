@@ -1,23 +1,25 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core;
 
+import static com.adaptris.core.CoreConstants.KEY_WORKFLOW_SKIP_PRODUCER;
 import static com.adaptris.core.CoreConstants.OBJ_METADATA_EXCEPTION;
 import static com.adaptris.core.CoreConstants.OBJ_METADATA_EXCEPTION_CAUSE;
+import static com.adaptris.core.CoreConstants.UNIQUE_ID_JMX_PATTERN;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 import java.util.ArrayList;
@@ -28,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.hibernate.validator.constraints.NotBlank;
@@ -45,7 +48,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
  * Partial implementation of <code>Workflow</code>.
- * 
+ *
  * @see StandardWorkflow
  * @see PoolingWorkflow
  */
@@ -91,6 +94,7 @@ public abstract class WorkflowImp implements Workflow {
   private ProduceExceptionHandler produceExceptionHandler;
   @NotNull
   @NotBlank
+  @Pattern(regexp = UNIQUE_ID_JMX_PATTERN)
   private String uniqueId;
   @Valid
   @XStreamImplicit
@@ -137,7 +141,7 @@ public abstract class WorkflowImp implements Workflow {
    * Sets the <code>MessageErrorHandler</code> to use for handling error messages. This may be configured at the Workflow, Channel
    * or Adapter level. May not be null.
    * </p>
-   * 
+   *
    * @param meh the <code>MessageErrorHandler</code> to use
    */
   @Override
@@ -169,13 +173,13 @@ public abstract class WorkflowImp implements Workflow {
   }
 
   protected abstract void prepareWorkflow() throws CoreException;
-  
+
   /**
    * <p>
    * Because the order in which concrete workflows may need to init their components, this method simply ensures that the
    * <code>MessageErrorHandler
    * </code> is inited, and then delegates all other init requirements to the concrete implementation.
-   * 
+   *
    * @see com.adaptris.core.AdaptrisComponent#init()
    * @see #initialiseWorkflow()
    * @throws CoreException encapsulating any underlying Exception
@@ -197,7 +201,7 @@ public abstract class WorkflowImp implements Workflow {
 
   /**
    * Initialise the workflow.
-   * 
+   *
    * @throws CoreException encapsulating any underlying Exception
    */
   protected abstract void initialiseWorkflow() throws CoreException;
@@ -208,7 +212,7 @@ public abstract class WorkflowImp implements Workflow {
    * Because the order in which concrete workflows may need to start their components, this method simply ensures that the
    * <code>MessageErrorHandler
    * </code> is started, and then delegates to the concrete imp.
-   * 
+   *
    * @see com.adaptris.core.AdaptrisComponent#start()
    * @see #startWorkflow()
    * @throws CoreException encapsulating any underlying Exception
@@ -228,7 +232,7 @@ public abstract class WorkflowImp implements Workflow {
 
   /**
    * Start the workflow.
-   * 
+   *
    * @see com.adaptris.core.AdaptrisComponent#start()
    * @throws CoreException encapsulating any underlying Exception
    */
@@ -239,7 +243,7 @@ public abstract class WorkflowImp implements Workflow {
    * <p>
    * Because the order in which concrete workflows may need to stop their components, this method simply uses
    * <code>stopWorkflow</code> to stop the concrete workflow, and then ensures that the MessageErrorHandler is closed.
-   * 
+   *
    * @see com.adaptris.core.AdaptrisComponent#stop()
    * @see #stopWorkflow()
    */
@@ -267,7 +271,7 @@ public abstract class WorkflowImp implements Workflow {
    * Because the order in which concrete workflows may need to close their components, this method delegates all other close
    * requirements to the concrete implementation, after the concrete workflow has performed its close it ensures that the
    * <code>MessageErrorHandler</code> is closed.
-   * 
+   *
    * @see com.adaptris.core.AdaptrisComponent#close()
    * @see #closeWorkflow()
    */
@@ -288,6 +292,7 @@ public abstract class WorkflowImp implements Workflow {
    */
   protected abstract void closeWorkflow();
 
+  @Override
   public void changeState(ComponentState s) {
     state = s;
   }
@@ -319,7 +324,7 @@ public abstract class WorkflowImp implements Workflow {
 
   /**
    * Accessor to allow sub-classes access to the <code>MessageErrorHandler</code> that is in use.
-   * 
+   *
    * @return the message error handler in use.
    */
   protected ProcessingExceptionHandler retrieveActiveMsgErrorHandler() {
@@ -328,18 +333,13 @@ public abstract class WorkflowImp implements Workflow {
 
   /**
    * Allows common functionality when the channel is unavailable.
-   * 
+   *
    * @param msg the current message.
    */
   protected void handleChannelUnavailable(AdaptrisMessage msg) {
     log.debug("channel unavailable, waiting to resubmit...");
 
-    try {
-      Thread.sleep(channelUnavailableWait());
-    }
-    catch (InterruptedException e) {
-      ;
-    }
+    LifecycleHelper.waitQuietly(channelUnavailableWait());
 
     if (obtainChannel().isAvailable()) {
       log.debug("Channel now available, resubmitting...");
@@ -353,7 +353,7 @@ public abstract class WorkflowImp implements Workflow {
 
   /**
    * Resubmit a message upon the channel becoming available again.
-   * 
+   *
    * @param msg the AdaptrisMessage.
    */
   protected abstract void resubmitMessage(AdaptrisMessage msg);
@@ -369,19 +369,19 @@ public abstract class WorkflowImp implements Workflow {
    * This method contains the behaviour that varies between standard and request -reply workflows. It is overridden in
    * <code>RequestReplyWorkflow</code>.
    * </p>
-   * 
+   *
    * @param msg the message to process
    * @throws ProduceException if any occur
    * @throws ServiceException not thrown by this implementation
    */
   @Override
   public void doProduce(AdaptrisMessage msg) throws ServiceException, ProduceException {
-    if (!Boolean.valueOf(msg.getMetadataValue(CoreConstants.KEY_WORKFLOW_SKIP_PRODUCER)).booleanValue()) {
+    if (!Boolean.valueOf(msg.getMetadataValue(KEY_WORKFLOW_SKIP_PRODUCER)).booleanValue()) {
       producer.produce(msg);
       msg.addEvent(producer, true);
     }
     else {
-      log.debug("Skipping message producer, " + CoreConstants.KEY_WORKFLOW_SKIP_PRODUCER + " set to true");
+      log.debug("Skipping message producer, {} set to true", KEY_WORKFLOW_SKIP_PRODUCER);
     }
   }
 
@@ -456,6 +456,7 @@ public abstract class WorkflowImp implements Workflow {
     return uniqueId;
   }
 
+  @Override
   public String friendlyName() {
     return obtainWorkflowId();
   }
@@ -464,7 +465,7 @@ public abstract class WorkflowImp implements Workflow {
    * <p>
    * Sets the <code>ServiceCollection</code> to use. May not be null.
    * </p>
-   * 
+   *
    * @param services the <code>ServiceCollection</code> to use
    */
   public void setServiceCollection(ServiceCollection services) {
@@ -475,7 +476,7 @@ public abstract class WorkflowImp implements Workflow {
    * <p>
    * Returns the <code>ServiceCollection</code> to use.
    * </p>
-   * 
+   *
    * @return the <code>ServiceCollection</code> to use
    */
   public ServiceCollection getServiceCollection() {
@@ -488,7 +489,7 @@ public abstract class WorkflowImp implements Workflow {
    * consumer's destination's unique ID. If there is no destination (e.g. from a <code>NullMessageConsumer</code>) , ID is set to
    * "default".
    * </p>
-   * 
+   *
    * @param param the <code>AdaptrisMessageConsumer</code> to use
    */
   public void setConsumer(AdaptrisMessageConsumer param) {
@@ -499,7 +500,7 @@ public abstract class WorkflowImp implements Workflow {
    * <p>
    * Returns the <code>AdaptrisMessageConsumer</code> to use.
    * </p>
-   * 
+   *
    * @return the <code>AdaptrisMessageConsumer</code> to use
    */
   @Override
@@ -511,7 +512,7 @@ public abstract class WorkflowImp implements Workflow {
    * <p>
    * Sets the <code>AdaptrisMessageProducer</code> to use. May not be null.
    * </p>
-   * 
+   *
    * @param param the <code>AdaptrisMessagePRoducer</code> to use
    */
   public void setProducer(AdaptrisMessageProducer param) {
@@ -522,7 +523,7 @@ public abstract class WorkflowImp implements Workflow {
    * <p>
    * Returns the <code>AdaptrisMessageProducer</code> to use.
    * </p>
-   * 
+   *
    * @return the <code>AdaptrisMessageProducer</code> to use
    */
   @Override
@@ -535,7 +536,7 @@ public abstract class WorkflowImp implements Workflow {
    * Sets a configured <code>MessageErrorHandler</code>. Will over-ride any MEH configured at the Channel or Workflow level. May be
    * null.
    * </p>
-   * 
+   *
    * @param errorHandler the configured <code>MessageErrorHandler</code>
    */
   public void setMessageErrorHandler(ProcessingExceptionHandler errorHandler) {
@@ -546,7 +547,7 @@ public abstract class WorkflowImp implements Workflow {
    * <p>
    * Returns the <code>MessageErrorHandler</code> to use.
    * </p>
-   * 
+   *
    * @return the <code>MessageErrorHandler</code> to use
    */
   @Override
@@ -558,7 +559,7 @@ public abstract class WorkflowImp implements Workflow {
    * <p>
    * Sets whether events should be sent.
    * </p>
-   * 
+   *
    * @param events whether events should be sent; default is null (true).
    */
   public void setSendEvents(Boolean events) {
@@ -569,7 +570,7 @@ public abstract class WorkflowImp implements Workflow {
    * <p>
    * Return whether events should be sent.
    * </p>
-   * 
+   *
    * @return whether events should be sent
    */
   public Boolean getSendEvents() {
@@ -584,7 +585,7 @@ public abstract class WorkflowImp implements Workflow {
    * <p>
    * Returns true if payload should be logged.
    * </p>
-   * 
+   *
    * @return true if payload should be logged
    */
   public Boolean getLogPayload() {
@@ -595,7 +596,7 @@ public abstract class WorkflowImp implements Workflow {
    * <p>
    * Sets whether payload should be logged.
    * </p>
-   * 
+   *
    * @param b true if payload should be logged
    */
   public void setLogPayload(Boolean b) {
@@ -629,7 +630,7 @@ public abstract class WorkflowImp implements Workflow {
    * Get the time the {@link Workflow} implementation will wait if its parent {@link com.adaptris.core.Channel} is unavailable before resubmitting the
    * message.
    * </p>
-   * 
+   *
    * return the time it will wait.
    */
   public TimeInterval getChannelUnavailableWaitInterval() {
@@ -641,7 +642,7 @@ public abstract class WorkflowImp implements Workflow {
    * Sets the time the {@link Workflow} implementation will wait if its parent {@link com.adaptris.core.Channel} is unavailable before resubmitting
    * the message.
    * </p>
-   * 
+   *
    * @param channelUnavailableWaitInterval the time
    */
   public void setChannelUnavailableWaitInterval(TimeInterval channelUnavailableWaitInterval) {
@@ -651,14 +652,14 @@ public abstract class WorkflowImp implements Workflow {
   public long channelUnavailableWait() {
     return getChannelUnavailableWaitInterval() != null
         ? getChannelUnavailableWaitInterval().toMilliseconds()
-        : DEFAULT_CHANNEL_UNAVAILBLE_WAIT.toMilliseconds();
+            : DEFAULT_CHANNEL_UNAVAILBLE_WAIT.toMilliseconds();
   }
 
   /**
    * <p>
    * Returns produceExceptionHandler.
    * </p>
-   * 
+   *
    * @return produceExceptionHandler
    */
   public ProduceExceptionHandler getProduceExceptionHandler() {
@@ -669,7 +670,7 @@ public abstract class WorkflowImp implements Workflow {
    * <p>
    * Sets produceExceptionHandler.
    * </p>
-   * 
+   *
    * @param p the produceExceptionHandler to set
    */
   public void setProduceExceptionHandler(ProduceExceptionHandler p) {
@@ -686,6 +687,7 @@ public abstract class WorkflowImp implements Workflow {
     uniqueId = id;
   }
 
+  @Override
   public List<WorkflowInterceptor> getInterceptors() {
     return interceptors;
   }
@@ -700,7 +702,7 @@ public abstract class WorkflowImp implements Workflow {
 
   /**
    * Mark the workflow having started processing on a message.
-   * 
+   *
    * @param msg the input message
    * @see WorkflowInterceptor
    */
@@ -712,7 +714,7 @@ public abstract class WorkflowImp implements Workflow {
 
   /**
    * Mark the workflow as finished on this message.
-   * 
+   *
    * @param input the input message
    * @param output the message that was produced.
    * @see WorkflowInterceptor
@@ -725,7 +727,7 @@ public abstract class WorkflowImp implements Workflow {
 
   /**
    * Handle the message in a standard way
-   * 
+   *
    * @param msg the message.
    * @param clone whether or not to attempt a msg.clone() preserving the original for error handling purposes.
    * @see com.adaptris.core.lms.LargeMessageWorkflow
@@ -781,7 +783,7 @@ public abstract class WorkflowImp implements Workflow {
     else {
       log.error(logMsg, e);
     }
-    msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, e);
+    msg.addObjectHeader(OBJ_METADATA_EXCEPTION, e);
     handleBadMessage(msg);
   }
 
@@ -791,7 +793,7 @@ public abstract class WorkflowImp implements Workflow {
 
   /**
    * Get the last time this workflow was started
-   * 
+   *
    * @return workflow start time
    */
   @Override
@@ -802,7 +804,7 @@ public abstract class WorkflowImp implements Workflow {
   /**
    * Get the last time this channel was stopped. This is set when the channel is initialised so it may have been subsequently
    * started.
-   * 
+   *
    * @return channel stop time
    */
   @Override
@@ -823,7 +825,7 @@ public abstract class WorkflowImp implements Workflow {
    * {@link com.adaptris.core.interceptor.MessageMetricsInterceptor#setTimesliceDuration(com.adaptris.util.TimeInterval)} of 1
    * minute
    * </p>
-   * 
+   *
    * @param b true to disable, default null (false);
    * @since 3.0.3
    */

@@ -16,14 +16,9 @@
 
 package com.adaptris.core.jdbc;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Properties;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -190,57 +185,12 @@ public class JdbcConnection extends DatabaseConnection {
     }
     try {
       if (alwaysValidateConnection()) {
-        testConnection();
+        JdbcUtil.testConnection(sqlConnection, getTestStatement(), debugMode());
       }
     }
     catch (SQLException e) {
       sqlConnection = null;
       throw e;
-    }
-  }
-
-  /**
-   * <p>
-   * Run the test statement against the database.
-   * </p>
-   * 
-   * @throws SQLException if the statement could not be performed.
-   */
-  private void testConnection() throws SQLException {
-    if (isEmpty(getTestStatement())) {
-      log.trace("No Test Statement, nothing to do");
-      return;
-    }
-    Statement stmt = sqlConnection.createStatement();
-    ResultSet rs = null;
-    try {
-      if (debugMode()) {
-        rs = stmt.executeQuery(getTestStatement());
-        if (rs.next()) {
-          StringBuffer sb = new StringBuffer("TestStatement Results - ");
-          ResultSetMetaData rsm = rs.getMetaData();
-          for (int i = 1; i <= rsm.getColumnCount(); i++) {
-            sb.append("[");
-            sb.append(rsm.getColumnName(i));
-            sb.append("=");
-            try {
-              sb.append(rs.getString(i));
-            }
-            catch (Exception e) {
-              sb.append("'unknown'");
-            }
-            sb.append("] ");
-          }
-          log.trace(sb.toString());
-        }
-      }
-      else {
-        stmt.execute(getTestStatement());
-      }
-    }
-    finally {
-      JdbcUtil.closeQuietly(rs);
-      JdbcUtil.closeQuietly(stmt);
     }
   }
 

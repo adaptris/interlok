@@ -30,6 +30,7 @@ import com.adaptris.core.management.logging.LoggingConfigurator;
  *
  * @author gcsiki
  */
+@Deprecated
 public class StandardBootstrap extends CmdLineBootstrap {
 
   private static final String[] ARG_ADAPTER_CLASSPATH = new String[]
