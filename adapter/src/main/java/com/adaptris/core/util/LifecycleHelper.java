@@ -16,6 +16,10 @@
 
 package com.adaptris.core.util;
 
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.ComponentLifecycle;
 import com.adaptris.core.ComponentLifecycleExtension;
@@ -30,7 +34,17 @@ import com.adaptris.core.StateManagedComponent;
  * @author lchan
  * 
  */
-public class LifecycleHelper {
+public abstract class LifecycleHelper {
+
+  private static Logger log = LoggerFactory.getLogger(LifecycleHelper.class);
+
+  private static enum Logging {
+    Prepare, Start, Stop, Init, Close;
+    
+    void doLogging(ComponentLifecycle c) {
+      log.trace("Executing {}(): {}", toString(), LoggingHelper.friendlyName(c));
+    }
+  }
 
   /**
    * Initialise the component.
@@ -42,6 +56,7 @@ public class LifecycleHelper {
    */
   public static final void init(ComponentLifecycle s) throws CoreException {
     if (s != null) {
+      Logging.Init.doLogging(s);
       if (s instanceof StateManagedComponent) {
         ((StateManagedComponent) s).requestInit();
       }
@@ -61,6 +76,7 @@ public class LifecycleHelper {
    */
   public static final void start(ComponentLifecycle s) throws CoreException {
     if (s != null) {
+      Logging.Start.doLogging(s);
       if (s instanceof StateManagedComponent) {
         ((StateManagedComponent) s).requestStart();
       }
@@ -79,6 +95,7 @@ public class LifecycleHelper {
    */
   public static final void stop(ComponentLifecycle s) {
     if (s != null) {
+      Logging.Stop.doLogging(s);
       if (s instanceof StateManagedComponent) {
         ((StateManagedComponent) s).requestStop();
       }
@@ -97,6 +114,7 @@ public class LifecycleHelper {
    */
   public static final void close(ComponentLifecycle s) {
     if (s != null) {
+      Logging.Close.doLogging(s);
       if (s instanceof StateManagedComponent) {
         ((StateManagedComponent) s).requestClose();
       }
@@ -126,6 +144,7 @@ public class LifecycleHelper {
    */
   public static void prepare(ComponentLifecycle c) throws CoreException {
     if (c != null && c instanceof ComponentLifecycleExtension) {
+      Logging.Prepare.doLogging(c);
       ((ComponentLifecycleExtension) c).prepare();
     }
   }
