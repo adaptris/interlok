@@ -16,23 +16,19 @@
 
 package com.adaptris.util.text.mime;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import javax.activation.DataSource;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetHeaders;
 
 
-/** A datasource on an arbitary input stream.
- *  @see javax.activation.DataSource
- */
-public class InputStreamDataSource implements DataSource, MimeConstants {
+class InputStreamDataSource implements DataSource, MimeConstants {
 
   private InputStream in = null;
   private InternetHeaders header = null;
-  private ByteArrayOutputStream out = new ByteArrayOutputStream();
   private String contentType = null;
   private String messageId = null;
 
@@ -57,25 +53,20 @@ public class InputStreamDataSource implements DataSource, MimeConstants {
     header = new InternetHeaders(in);
   }
 
-  /** @see javax.activation.DataSource#getContentType() */
   @Override
   public String getContentType() {
     if (contentType == null) {
-
       String[] s = header.getHeader(HEADER_CONTENT_TYPE);
       contentType = s[0];
     }
     return contentType;
   }
 
-  /** @see javax.activation.DataSource#getInputStream() */
   @Override
-  public java.io.InputStream getInputStream()
-  throws java.io.IOException {
+  public InputStream getInputStream() throws IOException {
     return in;
   }
 
-  /** @see javax.activation.DataSource#getName() */
   @Override
   public String getName() {
     if (messageId == null) {
@@ -86,24 +77,9 @@ public class InputStreamDataSource implements DataSource, MimeConstants {
     return messageId;
   }
 
-  /** @see javax.activation.DataSource#getOutputStream() */
   @Override
-  public java.io.OutputStream getOutputStream()
-  throws java.io.IOException {
-    return out;
+  public OutputStream getOutputStream() throws IOException {
+    throw new UnsupportedOperationException();
   }
 
-  /** Return the bytes stored by the outputstream
-   *  @return the byte array.
-   */
-  public byte[] getBytes() {
-    return out.toByteArray();
-  }
-
-  /** Return the InternetHeader object for further querying.
-   *  @return the InternetHeaders object.
-   */
-  public InternetHeaders getHeaders() {
-    return header;
-  }
 }
