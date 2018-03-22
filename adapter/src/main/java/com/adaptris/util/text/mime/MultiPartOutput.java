@@ -20,7 +20,12 @@ import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FilterOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -34,6 +39,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -237,6 +243,43 @@ public class MultiPartOutput implements MimeConstants {
    * @throws IOException if there was an IOException
    */
   public void writeTo(OutputStream out) throws MessagingException, IOException {
+    writeTo(out, null);
+  }
+
+  /**
+   * Write the multipart to the given outputstream.
+   * 
+   * @param out the output stream.
+   * @param tempFile if not null, then use the specified file to stream the parts to first.
+   */
+  public void writeTo(OutputStream out, File tempFile) throws MessagingException, IOException {
+    if (tempFile == null) {
+      inMemoryWrite(out);
+    } else {
+      writeViaTempfile(out, tempFile);
+    }
+  }
+
+  private void writeViaTempfile(OutputStream out, File tempFile) throws MessagingException, IOException {
+    try (CountingOutputStream counter = new CountingOutputStream(new FileOutputStream(tempFile))) {
+      MimeMultipart multipart = new MimeMultipart();
+      mimeHeader.setHeader(HEADER_CONTENT_TYPE, multipart.getContentType());
+      // Write the part out to the stream first.
+      for (KeyedBodyPart kbp : parts) {
+        multipart.addBodyPart(kbp.getData());
+      }
+      multipart.writeTo(counter);
+      counter.flush();
+      mimeHeader.setHeader(HEADER_CONTENT_LENGTH, String.valueOf(counter.count()));
+    }
+    try (InputStream in = new FileInputStream(tempFile)) {
+      writeHeaders(mimeHeader, out);
+      IOUtils.copy(in, out);
+    }
+  }
+
+
+  private void inMemoryWrite(OutputStream out) throws MessagingException, IOException {
     MimeMultipart multipart = new MimeMultipart();
     ByteArrayOutputStream partOut = new ByteArrayOutputStream();
     mimeHeader.setHeader(HEADER_CONTENT_TYPE, multipart.getContentType());
@@ -355,5 +398,35 @@ public class MultiPartOutput implements MimeConstants {
       return id;
     }
 
+  }
+
+
+  // We override every method becuase of INTERLOK-1926
+  private class CountingOutputStream extends FilterOutputStream {
+    private long count = 0;
+
+    public CountingOutputStream(OutputStream out) {
+      super(out);
+    }
+
+    public void write(int b) throws IOException {
+      out.write(b);
+      count += 1;
+    }
+
+    public void write(byte b[]) throws IOException {
+      out.write(b, 0, b.length);
+      count += b.length;
+    }
+
+    public void write(byte b[], int off, int len) throws IOException {
+      if ((off | len | (b.length - (len + off)) | (off + len)) < 0) throw new IndexOutOfBoundsException();
+      out.write(b, off, len);
+      count += len;
+    }
+
+    long count() {
+      return count;
+    }
   }
 }
