@@ -18,6 +18,7 @@ package com.adaptris.jdbc;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.sql.CallableStatement;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +41,8 @@ public class JdbcResult implements Closeable {
   private List<StoredProcedureParameter> parameters;
   
   private List<JdbcResultSet> resultSets;
+  
+  private CallableStatement callableStatement;
   
   public JdbcResult() {
     this.setParameters(new ArrayList<StoredProcedureParameter>());
@@ -98,6 +101,14 @@ public class JdbcResult implements Closeable {
     this.numRowsUpdated = numRowsUpdated;
   }
   
+  public CallableStatement getCallableStatement() {
+    return callableStatement;
+  }
+
+  public void setCallableStatement(CallableStatement callableStatement) {
+    this.callableStatement = callableStatement;
+  }
+
   @Override
   public void close() throws IOException {
     for(JdbcResultSet rs: getResultSets()) {

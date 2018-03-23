@@ -69,29 +69,12 @@ public class StoredProcedure {
       applyInParameters(statement);
 
       JdbcResult results = statementExecutor.executeCallableStatement(statement);
-
-      applyOutParameters(statement);
-      results.setParameters(getParameters());
+      results.setCallableStatement(statement);
 
       return results;
 
     } catch (SQLException e) {
       throw new CoreException(e);
-    }
-  }
-
-  private void applyOutParameters(CallableStatement statement) throws SQLException {
-    for(StoredProcedureParameter param : getParameters()) {
-      if(param.getParameterType().equals(ParameterType.OUT) || param.getParameterType().equals(ParameterType.INOUT)) {
-        if(!isEmpty(param.getName())) {
-          param.setOutValue(statement.getObject(param.getName()));
-          log.debug("Receiving 'OUT' parameter with name '" + param.getName() + "' and value '" + param.getOutValue() + "'");
-        }
-        else {
-          param.setOutValue(statement.getObject(param.getOrder()));
-          log.debug("Receiving 'OUT' parameter with order '" + param.getOrder() + "' and value '" + param.getOutValue() + "'");
-        }
-      }
     }
   }
 
