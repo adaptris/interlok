@@ -28,7 +28,10 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.ServiceException;
+import com.adaptris.core.services.jdbc.ResultSetTranslator;
 
 public class StoredProcedure {
 
@@ -43,6 +46,10 @@ public class StoredProcedure {
   private CallableStatementCreator statementCreator;
 
   private CallableStatementExecutor statementExecutor;
+  
+  private AdaptrisMessage adaptrisMessage;
+  
+  private ResultSetTranslator resultSetTranslator;
   
   private long timeout;
 
@@ -69,12 +76,37 @@ public class StoredProcedure {
       applyInParameters(statement);
 
       JdbcResult results = statementExecutor.executeCallableStatement(statement);
-      results.setCallableStatement(statement);
+      
+      translateResultSet(getAdaptrisMessage(), results);
+
+      applyOutParameters(statement);
+      results.setParameters(getParameters());
 
       return results;
 
     } catch (SQLException e) {
       throw new CoreException(e);
+    }
+  }
+  
+  private void translateResultSet(AdaptrisMessage msg, JdbcResult jdbcResult) throws ServiceException, SQLException {
+    if(getResultSetTranslator() != null) {
+      getResultSetTranslator().translate(jdbcResult, msg);
+    }
+  }
+
+  private void applyOutParameters(CallableStatement statement) throws SQLException {
+    for(StoredProcedureParameter param : getParameters()) {
+      if(param.getParameterType().equals(ParameterType.OUT) || param.getParameterType().equals(ParameterType.INOUT)) {
+        if(!isEmpty(param.getName())) {
+          param.setOutValue(statement.getObject(param.getName()));
+          log.debug("Receiving 'OUT' parameter with name '" + param.getName() + "' and value '" + param.getOutValue() + "'");
+        }
+        else {
+          param.setOutValue(statement.getObject(param.getOrder()));
+          log.debug("Receiving 'OUT' parameter with order '" + param.getOrder() + "' and value '" + param.getOutValue() + "'");
+        }
+      }
     }
   }
 
@@ -159,5 +191,21 @@ public class StoredProcedure {
    */
   public void setTimeout(long timeout) {
     this.timeout = timeout;
+  }
+
+  public AdaptrisMessage getAdaptrisMessage() {
+    return adaptrisMessage;
+  }
+
+  public void setAdaptrisMessage(AdaptrisMessage adaptrisMessage) {
+    this.adaptrisMessage = adaptrisMessage;
+  }
+
+  public ResultSetTranslator getResultSetTranslator() {
+    return resultSetTranslator;
+  }
+
+  public void setResultSetTranslator(ResultSetTranslator resultSetTranslator) {
+    this.resultSetTranslator = resultSetTranslator;
   }
 }

@@ -18,7 +18,6 @@ package com.adaptris.core.jdbc;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
-import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -37,7 +36,6 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.RequestReplyProducerImp;
-import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.jdbc.ResultSetTranslator;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.jdbc.CallableStatementCreator;
@@ -149,24 +147,20 @@ public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
     try {
       connection = getConnection(msg);
 
-      List<StoredProcedureParameter> allParameters = parseAllParameters(msg);
-      
       StoredProcedure storedProcedure = new StoredProcedure();
       storedProcedure.setConnection(connection);
       storedProcedure.setName(destination.getDestination(msg));
       storedProcedure.setStatementCreator(getStatementCreator());
-      storedProcedure.setParameters(allParameters);
+      storedProcedure.setParameters(parseInParameters(msg));
       storedProcedure.setStatementExecutor(getStatementExecutor());
       storedProcedure.setTimeout(this.defaultTimeout());
+      storedProcedure.setAdaptrisMessage(msg);
+      storedProcedure.setResultSetTranslator(getResultSetTranslator());
 
       results = storedProcedure.execute();
 
-      translateResultSet(msg, results);
-      
-      applyOutParameters(results, allParameters);
-      results.setParameters(allParameters);
-      parseOutParameters(msg, allParameters);
-      
+      parseOutParameters(msg, results.getParameters());
+
       commit(connection, msg);
     }
     catch (Exception e) {
@@ -233,27 +227,6 @@ public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
     JdbcUtil.commit(sqlConnection);
   }
 
-  private void translateResultSet(AdaptrisMessage msg, JdbcResult jdbcResult) throws ServiceException, SQLException {
-    if(getResultSetTranslator() != null) {
-      getResultSetTranslator().translate(jdbcResult, msg);
-    }
-  }
-
-  protected void applyOutParameters(JdbcResult jdbcResult, List<StoredProcedureParameter> allParameters) throws SQLException {
-    for(StoredProcedureParameter param : allParameters) {
-      if(param.getParameterType().equals(ParameterType.OUT) || param.getParameterType().equals(ParameterType.INOUT)) {
-        if(!isEmpty(param.getName())) {
-          param.setOutValue(jdbcResult.getCallableStatement().getObject(param.getName()));
-          log.debug("Receiving 'OUT' parameter with name '" + param.getName() + "' and value '" + param.getOutValue() + "'");
-        }
-        else {
-          param.setOutValue(jdbcResult.getCallableStatement().getObject(param.getOrder()));
-          log.debug("Receiving 'OUT' parameter with order '" + param.getOrder() + "' and value '" + param.getOutValue() + "'");
-        }
-      }
-    }
-  }
-  
   private void parseOutParameters(AdaptrisMessage msg, List<StoredProcedureParameter> parameters) throws JdbcParameterException {
     for(StoredProcedureParameter param : parameters) {
       if(param.getParameterType() == ParameterType.OUT) {
@@ -277,7 +250,7 @@ public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
 
   }
 
-  private List<StoredProcedureParameter> parseAllParameters(AdaptrisMessage msg) throws JdbcParameterException {
+  private List<StoredProcedureParameter> parseInParameters(AdaptrisMessage msg) throws JdbcParameterException {
     ArrayList<StoredProcedureParameter> params = new ArrayList<StoredProcedureParameter>();
 
     for (InParameter p : getInParameters().getParameters()) {

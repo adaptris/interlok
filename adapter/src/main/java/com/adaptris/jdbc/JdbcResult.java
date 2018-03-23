@@ -41,9 +41,7 @@ public class JdbcResult implements Closeable {
   private List<StoredProcedureParameter> parameters;
   
   private List<JdbcResultSet> resultSets;
-  
-  private CallableStatement callableStatement;
-  
+    
   public JdbcResult() {
     this.setParameters(new ArrayList<StoredProcedureParameter>());
     this.setResultSets(new ArrayList<JdbcResultSet>());
@@ -99,14 +97,6 @@ public class JdbcResult implements Closeable {
 
   public void setNumRowsUpdated(int numRowsUpdated) {
     this.numRowsUpdated = numRowsUpdated;
-  }
-  
-  public CallableStatement getCallableStatement() {
-    return callableStatement;
-  }
-
-  public void setCallableStatement(CallableStatement callableStatement) {
-    this.callableStatement = callableStatement;
   }
 
   @Override
