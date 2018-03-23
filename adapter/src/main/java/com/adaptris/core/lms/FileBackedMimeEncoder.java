@@ -53,6 +53,7 @@ public class FileBackedMimeEncoder extends MimeEncoderImpl {
 
   public FileBackedMimeEncoder() {
     super();
+    registerMessageFactory(new FileBackedMessageFactory());
   }
 
   @Override
