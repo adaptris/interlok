@@ -25,7 +25,6 @@ import javax.activation.DataSource;
 
 /** A Datasource wrapping an arbitary array of bytes.
  * 
- * @author lchan
  *
  */
 public class ByteArrayDataSource implements DataSource {

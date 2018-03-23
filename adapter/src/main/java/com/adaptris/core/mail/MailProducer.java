@@ -137,6 +137,7 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
 
   @Override
   public void prepare() throws CoreException {
+    registerEncoderMessageFactory();
   }
 
 

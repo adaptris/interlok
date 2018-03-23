@@ -283,5 +283,7 @@ public class FsProducer extends ProduceOnlyProducerImp {
   }
 
   @Override
-  public void prepare() throws CoreException {}
+  public void prepare() throws CoreException {
+    registerEncoderMessageFactory();
+  }
 }

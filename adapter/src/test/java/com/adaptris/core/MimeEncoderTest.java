@@ -18,15 +18,14 @@ package com.adaptris.core;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.StringWriter;
 import java.security.MessageDigest;
 import java.util.Properties;
 
-import junit.framework.TestCase;
-
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.text.mime.MultiPartOutput;
+
+import junit.framework.TestCase;
 
 public class MimeEncoderTest extends TestCase {
 
@@ -213,8 +212,6 @@ public class MimeEncoderTest extends TestCase {
       fail();
     }
     catch (CoreException e) {
-      assertTrue(e.getCause() instanceof IOException);
-      assertEquals("No Payload found", e.getCause().getMessage());
     }
   }
 
@@ -225,8 +222,6 @@ public class MimeEncoderTest extends TestCase {
       fail();
     }
     catch (CoreException e) {
-      assertTrue(e.getCause() instanceof IOException);
-      assertEquals("No Metadata Found", e.getCause().getMessage());
     }
   }
 

@@ -16,6 +16,8 @@
 
 package com.adaptris.core.lms;
 
+import static com.adaptris.core.fs.FsHelper.createFileReference;
+import static com.adaptris.core.fs.FsHelper.createUrlFromString;
 import static com.adaptris.core.fs.FsMessageProducerTest.BASE_KEY;
 import static com.adaptris.core.fs.FsMessageProducerTest.BASE_TEMP_DIR;
 
@@ -23,8 +25,10 @@ import java.io.File;
 
 import org.apache.commons.io.FileUtils;
 
+import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.DefaultMessageFactory;
+import com.adaptris.core.MimeEncoder;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.fs.FsHelper;
@@ -34,19 +38,25 @@ public class LargeFsMessageProducerTest extends FsProducerExample {
 
   private static final String DEFAULT_DEST = "/tgt";
 
+  private File baseDir, tempDir, destDir;
+
   public LargeFsMessageProducerTest(java.lang.String testName) {
     super(testName);
   }
 
+  @Override
+  protected void setUp() throws Exception {
+    baseDir = createFileReference(createUrlFromString(PROPERTIES.getProperty(BASE_KEY), true));
+    destDir = createFileReference(createUrlFromString(PROPERTIES.getProperty(BASE_KEY) + DEFAULT_DEST, true));
+    tempDir = createFileReference(createUrlFromString(PROPERTIES.getProperty(BASE_TEMP_DIR), true));
+  }
 
   @Override
   protected void tearDown() throws Exception {
     // delete contents of destination...
-    FileUtils.deleteQuietly(FsHelper.createFileReference(FsHelper.createUrlFromString(PROPERTIES.getProperty(BASE_KEY)
-        + DEFAULT_DEST, true)));
-    FileUtils.deleteQuietly(FsHelper.createFileReference(FsHelper.createUrlFromString(PROPERTIES.getProperty(BASE_KEY), true)));
-    FileUtils
-        .deleteQuietly(FsHelper.createFileReference(FsHelper.createUrlFromString(PROPERTIES.getProperty(BASE_TEMP_DIR), true)));
+    FileUtils.deleteQuietly(baseDir);
+    FileUtils.deleteQuietly(tempDir);
+    FileUtils.deleteQuietly(destDir);
   }
 
   public void testProduceWithDefaultMessageFactory() throws Exception {
@@ -69,6 +79,43 @@ public class LargeFsMessageProducerTest extends FsProducerExample {
     start(producer);
     producer.produce(new FileBackedMessageFactory().newMessage("dummy"));
     stop(producer);
+  }
+
+  public void testProduce_WithEncoder() throws Exception {
+    LargeFsProducer producer = create();
+    producer.setEncoder(new FileBackedMimeEncoder());
+    try {
+      start(producer);
+      AdaptrisMessage msg = new FileBackedMessageFactory().newMessage("dummy");
+      producer.produce(msg);
+      FileBackedMimeEncoder encoder = new FileBackedMimeEncoder();
+      encoder.setRetainUniqueId(true);
+      File writtenFile = new File(destDir, msg.getUniqueId());
+      AdaptrisMessage result = encoder.readMessage(writtenFile);
+      assertEquals(msg.getUniqueId(), result.getUniqueId());
+    } finally {
+      stop(producer);
+    }
+  }
+
+  public void testProduce_WithUnsupportedEncoder() throws Exception {
+    LargeFsProducer producer = create();
+    producer.setEncoder(new MimeEncoder());
+    try {
+      start(producer);
+      AdaptrisMessage msg = new FileBackedMessageFactory().newMessage("dummy");
+      producer.produce(msg);
+      FileBackedMimeEncoder encoder = new FileBackedMimeEncoder();
+      encoder.setRetainUniqueId(true);
+      File writtenFile = new File(destDir, msg.getUniqueId());
+      // Won't work.
+      AdaptrisMessage result = encoder.readMessage(writtenFile);
+      fail();
+    } catch (Exception expected) {
+
+    } finally {
+      stop(producer);
+    }
   }
 
   public void testProduceWithOverride() throws Exception {

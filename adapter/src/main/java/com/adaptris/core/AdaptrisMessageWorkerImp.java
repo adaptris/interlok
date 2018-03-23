@@ -24,6 +24,7 @@ import java.io.ByteArrayOutputStream;
 
 import javax.validation.Valid;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -154,10 +155,7 @@ public abstract class AdaptrisMessageWorkerImp implements AdaptrisMessageWorker 
 
   @Override
   public boolean isTrackingEndpoint() {
-    if (isTrackingEndpoint != null) {
-      return isTrackingEndpoint.booleanValue();
-    }
-    return false;
+    return BooleanUtils.toBooleanDefaultIfNull(getIsTrackingEndpoint(), false);
   }
 
   public void setIsTrackingEndpoint(Boolean b) {
@@ -174,10 +172,7 @@ public abstract class AdaptrisMessageWorkerImp implements AdaptrisMessageWorker 
 
   @Override
   public boolean isConfirmation() {
-    if (isConfirmation != null) {
-      return isConfirmation.booleanValue();
-    }
-    return false;
+    return BooleanUtils.toBooleanDefaultIfNull(getIsConfirmation(), false);
   }
 
   @Override
@@ -191,9 +186,9 @@ public abstract class AdaptrisMessageWorkerImp implements AdaptrisMessageWorker 
     registerEncoderMessageFactory();
   }
 
-  private void registerEncoderMessageFactory() {
-    if (encoder != null) {
-      encoder.registerMessageFactory(defaultIfNull(getMessageFactory()));
+  protected void registerEncoderMessageFactory() {
+    if (getEncoder() != null) {
+      getEncoder().registerMessageFactory(defaultIfNull(getMessageFactory()));
     }
   }
 }
