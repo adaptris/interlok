@@ -37,6 +37,7 @@ import com.adaptris.util.text.mime.MultiPartInput;
  * Utility for handling MIME messages.
  *
  */
+@SuppressWarnings("deprecation")
 public abstract class MimeHelper {
   private static final String MIME_BOUNDARY_PREFIX = "--";
   private static final String MULTIPART_MIXED_TYPE = "multipart/mixed"

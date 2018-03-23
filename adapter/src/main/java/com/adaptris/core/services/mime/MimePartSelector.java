@@ -44,7 +44,7 @@ import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.MimeHelper;
 import com.adaptris.util.stream.StreamUtil;
-import com.adaptris.util.text.mime.MultiPartInput;
+import com.adaptris.util.text.mime.BodyPartIterator;
 import com.adaptris.util.text.mime.PartSelector;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -92,7 +92,7 @@ public class MimePartSelector extends ServiceImp {
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     try {
-      MultiPartInput mp = MimeHelper.create(msg, false);
+      BodyPartIterator mp = MimeHelper.createBodyPartIterator(msg);
       MimeBodyPart part = selector.select(mp);
       if (part != null) {
         if (preserveHeadersAsMetadata()) {

@@ -18,21 +18,17 @@ package com.adaptris.util;
 
 import java.io.ByteArrayOutputStream;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.adaptris.util.text.mime.ByteArrayIterator;
+import com.adaptris.util.text.mime.MimeConstants;
+import com.adaptris.util.text.mime.MultiPartOutput;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.adaptris.util.text.mime.MimeConstants;
-import com.adaptris.util.text.mime.MultiPartInput;
-import com.adaptris.util.text.mime.MultiPartOutput;
-
-/**
- *
- * @author lchan
- */
 public class TestMultipartOutput extends TestCase implements MimeConstants {
   private static final String NUMBER_OF_PARTS = "Number of parts";
 
@@ -71,7 +67,7 @@ public class TestMultipartOutput extends TestCase implements MimeConstants {
 
       MultiPartOutput output = new MultiPartOutput(guid.getUUID());
       output.addPart(PAYLOAD_1, guid.getUUID());
-      MultiPartInput input = new MultiPartInput(output.getBytes());
+      ByteArrayIterator input = new ByteArrayIterator(output.getBytes());
       assertEquals(NUMBER_OF_PARTS, 1, input.size());
     }
     catch (Exception e) {
@@ -84,7 +80,7 @@ public class TestMultipartOutput extends TestCase implements MimeConstants {
 
       MultiPartOutput output = new MultiPartOutput(guid.getUUID());
       output.addPart(PAYLOAD_1, ENCODING_BASE64, guid.getUUID());
-      MultiPartInput input = new MultiPartInput(output.getBytes());
+      ByteArrayIterator input = new ByteArrayIterator(output.getBytes());
       assertEquals(NUMBER_OF_PARTS, 1, input.size());
     }
     catch (Exception e) {
@@ -97,7 +93,7 @@ public class TestMultipartOutput extends TestCase implements MimeConstants {
 
       MultiPartOutput output = new MultiPartOutput(guid.getUUID());
       output.addPart(PAYLOAD_1, ENCODING_7BIT, guid.getUUID());
-      MultiPartInput input = new MultiPartInput(output.getBytes());
+      ByteArrayIterator input = new ByteArrayIterator(output.getBytes());
       assertEquals(NUMBER_OF_PARTS, 1, input.size());
     }
     catch (Exception e) {
@@ -110,7 +106,7 @@ public class TestMultipartOutput extends TestCase implements MimeConstants {
 
       MultiPartOutput output = new MultiPartOutput(guid.getUUID());
       output.addPart(PAYLOAD_1, ENCODING_8BIT, guid.getUUID());
-      MultiPartInput input = new MultiPartInput(output.getBytes());
+      ByteArrayIterator input = new ByteArrayIterator(output.getBytes());
       assertEquals(NUMBER_OF_PARTS, 1, input.size());
     }
     catch (Exception e) {
@@ -123,7 +119,7 @@ public class TestMultipartOutput extends TestCase implements MimeConstants {
 
       MultiPartOutput output = new MultiPartOutput(guid.getUUID());
       output.addPart(PAYLOAD_1, ENCODING_QUOTED, guid.getUUID());
-      MultiPartInput input = new MultiPartInput(output.getBytes());
+      ByteArrayIterator input = new ByteArrayIterator(output.getBytes());
       assertEquals(NUMBER_OF_PARTS, 1, input.size());
     }
     catch (Exception e) {
@@ -141,7 +137,7 @@ public class TestMultipartOutput extends TestCase implements MimeConstants {
       System.getProperties().store(out, PROPERTY_FILE_HEADER);
       output.addPart(out.toByteArray(), guid.getUUID());
 
-      MultiPartInput input = new MultiPartInput(output.getBytes());
+      ByteArrayIterator input = new ByteArrayIterator(output.getBytes());
       assertEquals(NUMBER_OF_PARTS, 3, input.size());
     }
     catch (Exception e) {
@@ -156,7 +152,7 @@ public class TestMultipartOutput extends TestCase implements MimeConstants {
       byte[] nullOutput = null;
       output.addPart(nullOutput, guid.getUUID());
       byte[] mimePayload = output.getBytes();
-      MultiPartInput input = new MultiPartInput(mimePayload);
+      ByteArrayIterator input = new ByteArrayIterator(output.getBytes());
       assertEquals(NUMBER_OF_PARTS, 1, input.size());
     }
     catch (Exception e) {
@@ -177,7 +173,7 @@ public class TestMultipartOutput extends TestCase implements MimeConstants {
       output.removePart(matchingContentId);
 
       byte[] mimePayload = output.getBytes();
-      MultiPartInput input = new MultiPartInput(mimePayload);
+      ByteArrayIterator input = new ByteArrayIterator(output.getBytes());
       assertEquals(NUMBER_OF_PARTS, 2, input.size());
     }
     catch (Exception e) {

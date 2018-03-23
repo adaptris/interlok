@@ -16,8 +16,8 @@
 
 package com.adaptris.core.services.splitter;
 
-import static com.adaptris.core.ServiceCase.execute;
 import static com.adaptris.core.ServiceCase.asCollection;
+import static com.adaptris.core.ServiceCase.execute;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -30,7 +30,7 @@ import com.adaptris.core.NullService;
 import com.adaptris.core.services.aggregator.MimeAggregator;
 import com.adaptris.core.util.MimeHelper;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.text.mime.MultiPartInput;
+import com.adaptris.util.text.mime.BodyPartIterator;
 
 public class PoolingSplitJoinServiceTest extends SplitJoinServiceTest {
 
@@ -56,7 +56,7 @@ public class PoolingSplitJoinServiceTest extends SplitJoinServiceTest {
     service.setSplitter(new LineCountSplitter());
     service.setAggregator(new MimeAggregator());
     execute(service, msg);
-    MultiPartInput input = MimeHelper.create(msg, false);
+    BodyPartIterator input = MimeHelper.createBodyPartIterator(msg);
     assertEquals(11, input.size());
   }
 

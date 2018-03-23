@@ -29,7 +29,7 @@ import com.adaptris.core.services.splitter.SplitJoinService;
 import com.adaptris.core.services.splitter.SplitterCase;
 import com.adaptris.core.util.MimeHelper;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.text.mime.MultiPartInput;
+import com.adaptris.util.text.mime.BodyPartIterator;
 
 public class MimeAggregatorTest extends MimeAggregatorCase {
 
@@ -57,7 +57,7 @@ public class MimeAggregatorTest extends MimeAggregatorCase {
     aggr.setEncoding("base64");
     service.setAggregator(aggr);
     execute(service, msg);
-    MultiPartInput input = MimeHelper.create(msg, false);
+    BodyPartIterator input = MimeHelper.createBodyPartIterator(msg);
     assertEquals(11, input.size());
   }
 
@@ -73,7 +73,7 @@ public class MimeAggregatorTest extends MimeAggregatorCase {
     aggr.setPartContentIdMetadataKey(getName());
     service.setAggregator(aggr);
     execute(service, msg);
-    MultiPartInput input = MimeHelper.create(msg, false);
+    BodyPartIterator input = MimeHelper.createBodyPartIterator(msg);
     assertEquals(11, input.size());
   }
 
@@ -89,7 +89,7 @@ public class MimeAggregatorTest extends MimeAggregatorCase {
     aggr.setEncoding("base64");
     service.setAggregator(aggr);
     execute(service, msg);
-    MultiPartInput input = MimeHelper.create(msg, false);
+    BodyPartIterator input = MimeHelper.createBodyPartIterator(msg);
     assertEquals(4, input.size());
   }
 

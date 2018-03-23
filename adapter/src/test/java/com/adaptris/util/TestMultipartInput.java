@@ -23,10 +23,6 @@ import java.util.Properties;
 
 import javax.mail.internet.MimeBodyPart;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -35,10 +31,11 @@ import com.adaptris.util.text.mime.MimeConstants;
 import com.adaptris.util.text.mime.MultiPartInput;
 import com.adaptris.util.text.mime.MultiPartOutput;
 
-/**
- *
- * @author lchan
- */
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+
+@SuppressWarnings("deprecation")
 public class TestMultipartInput extends TestCase implements MimeConstants {
 
   private static final String NUMBER_OF_PARTS = "Number of parts";
