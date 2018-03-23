@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.StringWriter;
 
 import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.io.IOUtils;
 
@@ -36,8 +37,12 @@ public abstract class PartIteratorCase implements MimeConstants {
   private static GuidGenerator guid = new GuidGenerator();
 
   protected File generateFileInput() throws Exception {
-    File file = TempFileUtils.createTrackedFile(this);
-    File tempFile = TempFileUtils.createTrackedFile(this);
+    return generateFileInput(false, this);
+  }
+
+  protected static File generateFileInput(boolean noContentId, Object marker) throws Exception {
+    File file = TempFileUtils.createTrackedFile(marker);
+    File tempFile = TempFileUtils.createTrackedFile(marker);
     MultiPartOutput output = new MultiPartOutput(guid.getUUID());
     output.addPart(PAYLOAD_1, "payload1");
     output.addPart(PAYLOAD_2, "payload2");
@@ -48,7 +53,7 @@ public abstract class PartIteratorCase implements MimeConstants {
     return file;
   }
 
-  protected String toString(MimeBodyPart p) throws Exception {
+  protected static String toString(MimeBodyPart p) throws Exception {
     StringWriter out = new StringWriter();
     try (InputStream in = p.getInputStream()) {
       IOUtils.copy(in, out);
@@ -56,7 +61,7 @@ public abstract class PartIteratorCase implements MimeConstants {
     return out.toString();
   }
 
-  protected byte[] generateByteArrayInput(boolean noContentId) throws Exception {
+  protected static byte[] generateByteArrayInput(boolean noContentId) throws Exception {
     MultiPartOutput output = new MultiPartOutput(guid.getUUID());
     output.addPart(PAYLOAD_1, ENCODING_BASE64, "payload1");
     output.addPart(PAYLOAD_2, "payload2");
@@ -67,11 +72,21 @@ public abstract class PartIteratorCase implements MimeConstants {
     return output.getBytes();
   }
 
-  protected String toString(byte[] b) throws Exception {
+  protected static String toString(byte[] b) throws Exception {
     StringWriter out = new StringWriter();
     try (InputStream in = new ByteArrayInputStream(b)) {
       IOUtils.copy(in, out);
     }
     return out.toString();
+  }
+
+  protected static MimeMultipart createMultipart() throws Exception {
+    MimeMultipart mime = new MimeMultipart();
+    try (BodyPartIterator bodies = new BodyPartIterator(generateByteArrayInput(false))) {
+      while(bodies.hasNext()) {
+        mime.addBodyPart(bodies.next());
+      }
+    };
+    return mime;
   }
 }
