@@ -303,6 +303,7 @@ public class FtpProducer extends RequestReplyProducerImp {
 
   @Override
   public void prepare() throws CoreException {
+    registerEncoderMessageFactory();
   }
 
 

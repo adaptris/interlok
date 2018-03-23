@@ -112,11 +112,6 @@ public class LargeFsConsumer extends FsConsumer {
   }
 
   @Override
-  public void prepareConsumer() throws CoreException {
-  }
-
-
-  @Override
   protected int processFile(File originalFile) throws CoreException {
     int rc = 0;
     try {
@@ -146,8 +141,6 @@ public class LargeFsConsumer extends FsConsumer {
   private AdaptrisMessage decode(File wip) throws FsException, IOException, CoreException {
     AdaptrisMessage msg = null;
     if (getEncoder() != null && getEncoder() instanceof FileBackedMimeEncoder) {
-      // This would be worked around if we had proper stupid fxking lifecycle.
-      registerEncoderMessageFactory();
       msg = ((FileBackedMimeEncoder) getEncoder()).readMessage(wip);
     } else {
       msg = defaultIfNull(getMessageFactory()).newMessage();

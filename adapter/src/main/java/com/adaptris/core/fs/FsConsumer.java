@@ -256,5 +256,6 @@ public class FsConsumer extends FsConsumerImpl {
   }
 
   @Override
-  protected void prepareConsumer() throws CoreException {}
+  protected void prepareConsumer() throws CoreException {
+  }
 }

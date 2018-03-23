@@ -150,6 +150,7 @@ public class RelaxedFtpProducer extends ProduceOnlyProducerImp {
 
   @Override
   public void prepare() throws CoreException {
+    registerEncoderMessageFactory();
   }
 
 

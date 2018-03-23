@@ -27,7 +27,6 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.NullConnection;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.fs.FsProducer;
@@ -135,8 +134,6 @@ public class LargeFsProducer extends FsProducer {
   protected void write(AdaptrisMessage msg, File destFile) throws Exception {
     // You have an encoder, you can't use rename.
     if (getEncoder() != null && getEncoder() instanceof FileBackedMimeEncoder) {
-      // This would be worked around if we had proper stupid fxking lifecycle.
-      registerEncoderMessageFactory();
       ((FileBackedMimeEncoder) getEncoder()).writeMessage(msg, destFile);
     } else {
       if (msg instanceof FileBackedMessage) {
@@ -166,10 +163,6 @@ public class LargeFsProducer extends FsProducer {
 
   boolean useRenameTo() {
     return getUseRenameTo() != null ? getUseRenameTo().booleanValue() : false;
-  }
-
-  @Override
-  public void prepare() throws CoreException {
   }
 
 }
