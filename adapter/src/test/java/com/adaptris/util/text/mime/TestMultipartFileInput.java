@@ -20,38 +20,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.util.Properties;
 
 import javax.mail.internet.MimeBodyPart;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.adaptris.core.stubs.TempFileUtils;
-import com.adaptris.util.GuidGenerator;
-
-public class TestMultipartFileInput implements MimeConstants {
-
-  private static final String PAYLOAD_1 = "The quick brown fox jumps over the lazy dog";
-  private static final String PAYLOAD_2 = "Sixty zippers were quickly picked from the woven jute bag";
-  private static final String PAYLOAD_3 = "Quick zephyrs blow, vexing daft Jim";
-
-  private GuidGenerator guid;
-  static final Log logR = LogFactory.getLog(TestMultipartFileInput.class);
-
-  private Properties txtProps;
-
+public class TestMultipartFileInput extends PartIteratorCase {
 
   @Before
   public void setUp() throws Exception {
-    guid = new GuidGenerator();
   }
 
   @After
@@ -60,7 +39,7 @@ public class TestMultipartFileInput implements MimeConstants {
 
   @Test
   public void testIterator() throws Exception {
-    File input = generateInput();
+    File input = generateFileInput();
     try (MultiPartFileInput mimeInput = new MultiPartFileInput(input)) {
       assertEquals(3, mimeInput.size());
       int count = 0;
@@ -89,7 +68,7 @@ public class TestMultipartFileInput implements MimeConstants {
 
   @Test
   public void testGetById() throws Exception {
-    File input = generateInput();
+    File input = generateFileInput();
     try (MultiPartFileInput mimeInput = new MultiPartFileInput(input)) {
       MimeBodyPart part = mimeInput.getBodyPart("payload2");
       assertEquals(PAYLOAD_2, toString(part));
@@ -100,7 +79,7 @@ public class TestMultipartFileInput implements MimeConstants {
 
   @Test
   public void testGetByPosition() throws Exception {
-    File input = generateInput();
+    File input = generateFileInput();
     try (MultiPartFileInput mimeInput = new MultiPartFileInput(input)) {
       MimeBodyPart part = mimeInput.getBodyPart(1);
       assertEquals(PAYLOAD_2, toString(part));
@@ -110,30 +89,10 @@ public class TestMultipartFileInput implements MimeConstants {
 
   @Test(expected = UnsupportedOperationException.class)
   public void testRemove() throws Exception {
-    File input = generateInput();
+    File input = generateFileInput();
     try (MultiPartFileInput mimeInput = new MultiPartFileInput(input)) {
       mimeInput.next();
       mimeInput.remove();
     }
-  }
-
-  private File generateInput() throws Exception {
-    File file = TempFileUtils.createTrackedFile(this);
-    MultiPartOutput output = new MultiPartOutput(guid.getUUID());
-    output.addPart(PAYLOAD_1, "payload1");
-    output.addPart(PAYLOAD_2, "payload2");
-    output.addPart(PAYLOAD_3, "payload3");
-    try (FileOutputStream out = new FileOutputStream(file)) {
-      output.writeTo(out);
-    }
-    return file;
-  }
-
-  private String toString(MimeBodyPart p) throws Exception {
-    StringWriter out = new StringWriter();
-    try (InputStream in = p.getInputStream()) {
-      IOUtils.copy(in, out);
-    }
-    return out.toString();
   }
 }
