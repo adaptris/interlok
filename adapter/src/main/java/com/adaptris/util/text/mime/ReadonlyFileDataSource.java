@@ -34,6 +34,8 @@ import javax.mail.internet.SharedInputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
+import com.adaptris.core.util.Args;
+
 class ReadonlyFileDataSource implements DataSource, Closeable, MimeConstants {
 
   private transient File wrappedFile;
@@ -81,8 +83,14 @@ class ReadonlyFileDataSource implements DataSource, Closeable, MimeConstants {
   }
 
   private String get(String headerName) {
-    String[] s = headers.getHeader(headerName);
-    return StringUtils.defaultIfEmpty(s[0], "");
+    String result = null;
+    try {
+      String[] s = Args.notNull(headers.getHeader(headerName), headerName);
+      result = s[0];
+    } catch (IllegalArgumentException e) {
+
+    }
+    return StringUtils.defaultIfEmpty(result, "");
   }
 
   @Override

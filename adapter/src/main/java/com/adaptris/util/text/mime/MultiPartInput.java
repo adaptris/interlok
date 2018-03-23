@@ -75,7 +75,10 @@ import com.adaptris.util.IdGenerator;
  * finished, when the final mime boundary occurs. If Content-Length needs to be taken into account then a specific DataSource should
  * be used as the parameter to the constructor.
  * </p>
+ * 
+ * @deprecated since 3.7.2 use one of {@link MultipartIterator} concrete sub-classes instead.
  */
+@Deprecated
 public class MultiPartInput implements Enumeration, Iterator {
 
   private List<PartHolder> bodyParts;
