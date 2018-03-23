@@ -16,11 +16,19 @@
 
 package com.adaptris.core.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
+import org.junit.Test;
+
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.BaseCase;
+import com.adaptris.util.text.mime.BodyPartIterator;
+import com.adaptris.util.text.mime.ByteArrayIterator;
 import com.adaptris.util.text.mime.MultiPartInput;
 
-public class MimeHelperTest extends BaseCase {
+@SuppressWarnings("deprecation")
+public class MimeHelperTest extends MimeHelper {
 
   public static final String TEXT = "The quick brown fox";
   public static final String TEXT2 = "jumps over the lazy dog";
@@ -32,33 +40,78 @@ public class MimeHelperTest extends BaseCase {
   private static final String MIME_HEADER = "Message-ID: 07959cb0-ffff-ffc0-019a-32e0f97a329a\r\n" + "Mime-Version: 1.0\r\n"
       + "Content-Type: multipart/mixed;\r\n" + "  boundary=\"----=_Part_1_27366488.1056689200344\"";
 
-  public MimeHelperTest(String s) {
-    super(s);
-  }
-
-
-  public void testCreateFromFake() throws Exception {
+  @Test
+  public void testMultipartInput_CreateFromFake() throws Exception {
     MultiPartInput m = MimeHelper.create(AdaptrisMessageFactory.getDefaultInstance().newMessage(MIME_PAYLOAD));
     assertNotNull(m);
     assertEquals(2, m.size());
   }
 
-  public void testCreateFromReal() throws Exception {
-    MultiPartInput m = MimeHelper.create(AdaptrisMessageFactory.getDefaultInstance().newMessage(
-        MIME_HEADER + "\r\n\r\n" + MIME_PAYLOAD));
+  @Test
+  public void testMultipartInput_CreateFromReal() throws Exception {
+    MultiPartInput m = MimeHelper
+        .create(AdaptrisMessageFactory.getDefaultInstance().newMessage(MIME_HEADER + "\r\n\r\n" + MIME_PAYLOAD));
     assertNotNull(m);
     assertEquals(2, m.size());
   }
 
-  public void testCreateFromInvalid() throws Exception {
+  @Test
+  public void testMultipartInput_CreateFromInvalid() throws Exception {
     try {
       MultiPartInput m = MimeHelper.create(AdaptrisMessageFactory.getDefaultInstance().newMessage("AAAAAAAA"));
       fail("Failed");
-    }
-    catch (Exception expected) {
+    } catch (Exception expected) {
 
     }
   }
 
+  @Test
+  public void testByteArrayIterator_CreateFromFake() throws Exception {
+    ByteArrayIterator m = MimeHelper.createByteArrayIterator(AdaptrisMessageFactory.getDefaultInstance().newMessage(MIME_PAYLOAD));
+    assertNotNull(m);
+    assertEquals(2, m.size());
+  }
 
+  @Test
+  public void testByteArrayIterator_CreateFromReal() throws Exception {
+    ByteArrayIterator m = MimeHelper
+        .createByteArrayIterator(AdaptrisMessageFactory.getDefaultInstance().newMessage(MIME_HEADER + "\r\n\r\n" + MIME_PAYLOAD));
+    assertNotNull(m);
+    assertEquals(2, m.size());
+  }
+
+  @Test
+  public void testByteArrayIterator_CreateFromInvalid() throws Exception {
+    try {
+      ByteArrayIterator m = MimeHelper.createByteArrayIterator(AdaptrisMessageFactory.getDefaultInstance().newMessage("AAAAAAAA"));
+      fail("Failed");
+    } catch (Exception expected) {
+
+    }
+  }
+
+  @Test
+  public void testBodyPartIterator_CreateFromFake() throws Exception {
+    BodyPartIterator m = MimeHelper.createBodyPartIterator(AdaptrisMessageFactory.getDefaultInstance().newMessage(MIME_PAYLOAD));
+    assertNotNull(m);
+    assertEquals(2, m.size());
+  }
+
+  @Test
+  public void testBodyPartIterator_CreateFromReal() throws Exception {
+    BodyPartIterator m = MimeHelper
+        .createBodyPartIterator(AdaptrisMessageFactory.getDefaultInstance().newMessage(MIME_HEADER + "\r\n\r\n" + MIME_PAYLOAD));
+    assertNotNull(m);
+    assertEquals(2, m.size());
+  }
+
+  @Test
+  public void testBodyPartIterator_CreateFromInvalid() throws Exception {
+    try {
+      BodyPartIterator m = MimeHelper.createBodyPartIterator(AdaptrisMessageFactory.getDefaultInstance().newMessage("AAAAAAAA"));
+      fail("Failed");
+    } catch (Exception expected) {
+
+    }
+  }
 }
