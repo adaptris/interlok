@@ -54,11 +54,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Additionally the behaviour of this consumer is subtly different from the standard {@link FsProducer} :
  * </p>
  * <ul>
- * <li>This does not honour any use of the Encoder interface as the Encoder interface was designed for small, lightweight files that
- * could be read into memory.</li>
+ * <li>Encoding is only supported if you use a {@link FileBackedMimeEncoder}.</li>
  * <li>The default AdaptrisMessageFactory implementation is {@link FileBackedMessageFactory}</li>
- * <li>If, at runtime, the AdaptrisMessage implementation is not FileBackedMessage, then behaviour changes to be identical to to the
- * existing {@link FsProducer} using the configured FsWorker</li>
+ * <li>If, at runtime, the AdaptrisMessage implementation is not {@link FileBackedMessage}, then behaviour is delegated back to the
+ * parent {@link FsProducer}</li>
  * </ul>
  * 
  * @config large-fs-producer
@@ -73,7 +72,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 {
     "producedname", "fsProduceDir"
 })
-@DisplayOrder(order = {"createDirs", "filenameCreator", "tempDirectory", "fsWorker"})
+@DisplayOrder(order = {"createDirs", "filenameCreator", "tempDirectory", "useRenameTo", "fsWorker"})
 public class LargeFsProducer extends FsProducer {
 
   @AdvancedConfig
@@ -91,8 +90,7 @@ public class LargeFsProducer extends FsProducer {
   }
 
   private void tryRename(FileBackedMessage msg, File t) throws Exception {
-    log.trace("Copying " + msg.currentSource().getCanonicalPath() + " to "
-        + t.getCanonicalPath());
+    log.trace("Rename/Copy {} to {}", msg.currentSource().getCanonicalPath(), t.getCanonicalPath());
     if (useRenameTo()) {
       if (!msg.currentSource().renameTo(t)) {
         copy(msg, t);
@@ -108,9 +106,7 @@ public class LargeFsProducer extends FsProducer {
     File fileToWriteTo = t;
     if (getTempDirectory() != null) {
       File tmpFile = createTempFile(msg);
-      // Of course, this tmp file exists, so let's delete it...
-      tmpFile.delete();
-      log.trace("Writing to temporary file " + tmpFile.getCanonicalPath());
+      log.trace("Writing to temporary file {}", tmpFile.getCanonicalPath());
       fileToWriteTo = tmpFile;
     }
     try {
@@ -135,14 +131,17 @@ public class LargeFsProducer extends FsProducer {
     }
   }
 
-
   @Override
   protected void write(AdaptrisMessage msg, File destFile) throws Exception {
-    if (msg instanceof FileBackedMessage) {
-      tryRename((FileBackedMessage) msg, destFile);
-    }
-    else {
-      super.write(msg, destFile);
+    // You have an encoder, you can't use rename.
+    if (getEncoder() != null && getEncoder() instanceof FileBackedMimeEncoder) {
+      ((FileBackedMimeEncoder) getEncoder()).writeMessage(msg, destFile);
+    } else {
+      if (msg instanceof FileBackedMessage) {
+        tryRename((FileBackedMessage) msg, destFile);
+      } else {
+        super.write(msg, destFile);
+      }
     }
   }
 

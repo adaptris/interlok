@@ -55,8 +55,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Additionally the behaviour of this consumer is subtly different from the standard {@link FsConsumer} :
  * </p>
  * <ul>
- * <li>This does not honour any use of the Encoder interface as the Encoder interface was designed for small, lightweight files that
- * could be read into memory.</li>
+ * <li>Encoding is supported if you use a {@link FileBackedMimeEncoder}.</li>
  * <li>The default AdaptrisMessageFactory implementation is {@link FileBackedMessageFactory}</li>
  * <li>If, at runtime, the MessageFactory implementation is not FileBackedMessageFactory, then behaviour changes to be identical to
  * to the existing {@link FsConsumer} and uses the configured FsWorker</li>
@@ -122,35 +121,40 @@ public class LargeFsConsumer extends FsConsumer {
     int rc = 0;
     try {
       if (originalFile.getName().endsWith(getWipSuffix())) {
-        log.debug("ignoring part-processed file [" + originalFile.getName() + "]");
+        log.debug("ignoring part-processed file [{}]", originalFile.getName());
       }
       else {
         if (checkModified(originalFile) && isFileAccessible(originalFile)) {
-          AdaptrisMessage msg = defaultIfNull(getMessageFactory()).newMessage();
           File wipFile = renameFile(originalFile);
+          AdaptrisMessage msg = decode(wipFile);
           addStandardMetadata(msg, originalFile, wipFile);
-          if (getMessageFactory() instanceof FileBackedMessageFactory) {
-            ((FileBackedMessage) msg).initialiseFrom(wipFile);
-          }
-          else {
-            msg.setPayload(fsWorker.get(wipFile));
-          }
           retrieveAdaptrisMessageListener().onAdaptrisMessage(msg);
           rc++;
           tracker.track(wipFile, msg, FileDeleteStrategy.FORCE);
         }
         else {
-          log.trace(originalFile.getName() + " not deemed safe to process");
+          log.trace("{} not deemed safe to process", originalFile.getName());
         }
       }
     }
-    catch (FsException e) {
-      throw new CoreException(e);
-    }
-    catch (IOException e) {
+    catch (FsException | IOException e) {
       throw new CoreException(e);
     }
     return rc;
   }
 
+  private AdaptrisMessage decode(File wip) throws FsException, IOException, CoreException {
+    AdaptrisMessage msg = null;
+    if (getEncoder() != null && getEncoder() instanceof FileBackedMimeEncoder) {
+      msg = ((FileBackedMimeEncoder) getEncoder()).readMessage(wip);
+    } else {
+      msg = defaultIfNull(getMessageFactory()).newMessage();
+      if (getMessageFactory() instanceof FileBackedMessageFactory) {
+        ((FileBackedMessage) msg).initialiseFrom(wip);
+      } else {
+        msg.setPayload(fsWorker.get(wip));
+      }
+    }
+    return msg;
+  }
 }
