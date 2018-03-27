@@ -58,6 +58,18 @@ public class PoolingMessageSplitterServiceTest {
   }
 
   @Test
+  public void testServiceWithXmlSplitter_WarmStart() throws Exception {
+    MockMessageProducer producer = createMockProducer();
+    PoolingMessageSplitterService service = SplitterCase.createPooling(new XpathMessageSplitter("/envelope/document", "UTF-8"),
+        new StandaloneProducer(producer)).withWarmStart(true);
+    service.setMaxThreads(1);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_MESSAGE);
+    XpathMessageSplitter splitter = new XpathMessageSplitter("/envelope/document", "UTF-8");
+    execute(service, msg);
+    assertEquals("Number of messages", 3, producer.getMessages().size());
+  }
+
+  @Test
   public void testServiceWithFailures() throws Exception {
 
     PoolingMessageSplitterService service = SplitterCase.createPooling(new XpathMessageSplitter("/envelope/document", "UTF-8"),

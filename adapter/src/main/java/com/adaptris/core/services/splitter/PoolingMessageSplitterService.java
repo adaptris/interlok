@@ -21,9 +21,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.pool.impl.GenericObjectPool;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
@@ -52,14 +54,18 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(summary = "Split a message and execute an arbitary number of services on the split message", tag = "service,splitter", since = "3.7.1")
 @DisplayOrder(order =
 {
-    "splitter", "service", "maxThreads", "ignoreSplitMessageFailures", "sendEvents"
+    "splitter", "service", "maxThreads", "warmStart", "ignoreSplitMessageFailures", "sendEvents"
 })
 public class PoolingMessageSplitterService extends AdvancedMessageSplitterService {
 
   private static final long EVICT_RUN = new TimeInterval(60L, TimeUnit.SECONDS).toMilliseconds();
 
   @InputFieldDefault(value = "10")
+  @AdvancedConfig
   private Integer maxThreads;
+  @AdvancedConfig
+  @InputFieldDefault(value = "false")
+  private Boolean warmStart;
 
   private transient ExecutorService executor;
   private transient ServiceExceptionHandler exceptionHandler;
@@ -78,6 +84,14 @@ public class PoolingMessageSplitterService extends AdvancedMessageSplitterServic
     executor = workerFactory.createExecutor(this.getClass().getSimpleName());
     exceptionHandler = new ServiceExceptionHandler();
     super.initService();
+  }
+
+  @Override
+  public void start() throws CoreException {
+    if (warmStart()) {
+      workerFactory.warmup(objectPool);
+    }
+    super.start();
   }
 
   protected void closeService() {
@@ -103,6 +117,27 @@ public class PoolingMessageSplitterService extends AdvancedMessageSplitterServic
     return getMaxThreads() != null ? getMaxThreads().intValue() : 10;
   }
 
+  boolean warmStart() {
+    return BooleanUtils.toBooleanDefaultIfNull(getWarmStart(), false);
+  }
+
+  public Boolean getWarmStart() {
+    return warmStart;
+  }
+
+  /**
+   * Specify if the underlying object pool should be warmed up on {@link #start()}.
+   * 
+   * @param b true or false (default false if not specified).
+   */
+  public void setWarmStart(Boolean b) {
+    this.warmStart = b;
+  }
+
+  public PoolingMessageSplitterService withWarmStart(Boolean b) {
+    setWarmStart(b);
+    return this;
+  }
   private class ServiceExecutor implements Callable<AdaptrisMessage> {
     private ServiceExceptionHandler handler;
     private AdaptrisMessage msg;
