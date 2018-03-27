@@ -60,6 +60,21 @@ public class PoolingSplitJoinServiceTest extends SplitJoinServiceTest {
     assertEquals(11, input.size());
   }
 
+  @Test
+  public void testService_WithWarmStart() throws Exception {
+    // This is a 100 line message, so we expect to get 11 parts.
+    AdaptrisMessage msg = SplitterCase.createLineCountMessageInput();
+    PoolingSplitJoinService service = createServiceForTests().withWarmStart(true);
+    service.setMaxThreads(8);
+    // The service doesn't actually matter right now.
+    service.setService(asCollection(new NullService()));
+    service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
+    service.setSplitter(new LineCountSplitter());
+    service.setAggregator(new MimeAggregator());
+    execute(service, msg);
+    MultiPartInput input = MimeHelper.create(msg, false);
+    assertEquals(11, input.size());
+  }
   protected PoolingSplitJoinService createServiceForTests() {
     return new PoolingSplitJoinService();
   }

@@ -15,14 +15,21 @@
 */
 package com.adaptris.core.services.splitter;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericObjectPool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -41,6 +48,7 @@ class ServiceWorkerPool {
   private transient Service wrappedService;
   private transient EventHandler eventHandler;
   private transient int maxThreads;
+  private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   ServiceWorkerPool(Service s, EventHandler eh, int maxThreads) throws CoreException {
     try {
@@ -58,7 +66,7 @@ class ServiceWorkerPool {
     return result;
   }
 
-  GenericObjectPool<Worker> createObjectPool() {
+  GenericObjectPool<Worker> createObjectPool() throws CoreException {
     GenericObjectPool<Worker> pool = new GenericObjectPool(new WorkerFactory());
     // Make the pool the same size as the thread pool
     pool.setMaxActive(maxThreads);
@@ -75,12 +83,61 @@ class ServiceWorkerPool {
     return Executors.newFixedThreadPool(maxThreads, new ManagedThreadFactory(prefix));
   }
 
+
   static void closeQuietly(ObjectPool pool) {
     try {
       if (pool != null) pool.close();
     } catch (Exception ignored) {
 
     }
+  }
+
+  void warmup(final GenericObjectPool<Worker> objectPool) throws CoreException {
+    ExecutorService populator = Executors.newCachedThreadPool(new ManagedThreadFactory(this.getClass().getSimpleName()));
+    try {
+      log.trace("Warming up {} service-workers", maxThreads);
+      final List<Future<Worker>> futures = new ArrayList<>(maxThreads);
+
+      for (int i = 0; i < maxThreads; i++) {
+        futures.add(populator.submit(new Callable<Worker>() {
+
+          @Override
+          public Worker call() throws Exception {
+            return objectPool.borrowObject();
+          }
+
+        }));
+      }
+      for (Worker w : waitFor(futures)) {
+        objectPool.returnObject(w);
+      }
+      log.trace("Object contains {} (active) of {} objects", objectPool.getNumActive(), objectPool.getNumIdle());
+
+    }
+    catch (Exception e) {
+      throw new CoreException(e);
+    }
+    finally {
+      populator.shutdownNow();
+    }
+  }
+
+  private List<Worker> waitFor(List<Future<Worker>> tasks) throws Exception {
+    List<Worker> result = new ArrayList<>();
+    do {
+      for (Iterator<Future<Worker>> i = tasks.iterator(); i.hasNext();) {
+        Future<Worker> f = i.next();
+        if (f.isDone()) {
+          result.add(f.get());
+          i.remove();
+        }
+      }
+      if (tasks.size() > 0) {
+        LifecycleHelper.waitQuietly(100);
+      }
+    }
+    while (tasks.size() > 0);
+    return result;
   }
 
   class Worker {

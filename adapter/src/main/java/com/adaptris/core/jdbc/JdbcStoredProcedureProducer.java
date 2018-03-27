@@ -36,7 +36,6 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.RequestReplyProducerImp;
-import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.jdbc.ResultSetTranslator;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.jdbc.CallableStatementCreator;
@@ -155,11 +154,12 @@ public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
       storedProcedure.setParameters(parseInParameters(msg));
       storedProcedure.setStatementExecutor(getStatementExecutor());
       storedProcedure.setTimeout(this.defaultTimeout());
+      storedProcedure.setAdaptrisMessage(msg);
+      storedProcedure.setResultSetTranslator(getResultSetTranslator());
 
       results = storedProcedure.execute();
 
       parseOutParameters(msg, results.getParameters());
-      translateResultSet(msg, results);
 
       commit(connection, msg);
     }
@@ -225,12 +225,6 @@ public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
       return;
     }
     JdbcUtil.commit(sqlConnection);
-  }
-
-  private void translateResultSet(AdaptrisMessage msg, JdbcResult jdbcResult) throws ServiceException, SQLException {
-    if(getResultSetTranslator() != null) {
-      getResultSetTranslator().translate(jdbcResult, msg);
-    }
   }
 
   private void parseOutParameters(AdaptrisMessage msg, List<StoredProcedureParameter> parameters) throws JdbcParameterException {

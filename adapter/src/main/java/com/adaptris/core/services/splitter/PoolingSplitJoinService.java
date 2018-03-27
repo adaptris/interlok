@@ -20,7 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.pool.impl.GenericObjectPool;
 
 import com.adaptris.annotation.AdapterComponent;
@@ -32,6 +34,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.services.aggregator.MessageAggregator;
 import com.adaptris.core.services.splitter.ServiceWorkerPool.Worker;
+import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -56,15 +59,20 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(summary = "Split a message and then execute the associated services on the split items, aggregating the split messages afterwards", tag = "service,splitjoin", since = "3.7.1")
 @DisplayOrder(order =
 {
-    "splitter", "service", "aggregator", "maxThreads", "timeout"
+    "splitter", "service", "aggregator", "maxThreads", "timeout", "warmStart"
 })
 public class PoolingSplitJoinService extends SplitJoinService {
 
   private static final int DEFAULT_THREADS = 10;
+  private static final TimeInterval DEFAULT_INIT_WAIT = new TimeInterval(1L, TimeUnit.MINUTES.name());
 
   @AdvancedConfig
   @InputFieldDefault(value = "10")
   private Integer maxThreads;
+  @AdvancedConfig
+  @InputFieldDefault(value = "false")
+  private Boolean warmStart;
+
 
   private transient ServiceWorkerPool workerFactory;
   private transient GenericObjectPool<ServiceWorkerPool.Worker> objectPool;
@@ -83,6 +91,14 @@ public class PoolingSplitJoinService extends SplitJoinService {
   public void initService() throws CoreException {
     objectPool = workerFactory.createObjectPool();
     super.initService();
+  }
+
+  @Override
+  public void start() throws CoreException {
+    if (warmStart()) {
+      workerFactory.warmup(objectPool);
+    }
+    super.start();
   }
 
   @Override
@@ -130,6 +146,28 @@ public class PoolingSplitJoinService extends SplitJoinService {
 
   int maxThreads() {
     return getMaxThreads() != null ? getMaxThreads().intValue() : DEFAULT_THREADS;
+  }
+
+  boolean warmStart() {
+    return BooleanUtils.toBooleanDefaultIfNull(getWarmStart(), false);
+  }
+
+  public Boolean getWarmStart() {
+    return warmStart;
+  }
+
+  /**
+   * Specify if the underlying object pool should be warmed up on {@link #start()}.
+   * 
+   * @param b true or false (default false if not specified).
+   */
+  public void setWarmStart(Boolean b) {
+    this.warmStart = b;
+  }
+
+  public PoolingSplitJoinService withWarmStart(Boolean b) {
+    setWarmStart(b);
+    return this;
   }
 
   private class MyServiceExecutor implements Callable<AdaptrisMessage> {
