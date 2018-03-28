@@ -72,7 +72,7 @@ public class PoolingSplitJoinServiceTest extends SplitJoinServiceTest {
     service.setSplitter(new LineCountSplitter());
     service.setAggregator(new MimeAggregator());
     execute(service, msg);
-    MultiPartInput input = MimeHelper.create(msg, false);
+    BodyPartIterator input = MimeHelper.createBodyPartIterator(msg);
     assertEquals(11, input.size());
   }
   protected PoolingSplitJoinService createServiceForTests() {
