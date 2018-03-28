@@ -40,7 +40,7 @@ import com.adaptris.core.stubs.DefectiveMessageFactory;
 import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.MimeHelper;
-import com.adaptris.util.text.mime.MultiPartInput;
+import com.adaptris.util.text.mime.BodyPartIterator;
 
 public class AggregatingFtpConsumeServiceTest extends AggregatingServiceExample {
 
@@ -190,7 +190,7 @@ public class AggregatingFtpConsumeServiceTest extends AggregatingServiceExample 
       AggregatingFtpConsumeService service = new AggregatingFtpConsumeService(conn, consumer);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
       execute(service, msg);
-      MultiPartInput input = MimeHelper.create(msg, false);
+      BodyPartIterator input = MimeHelper.createBodyPartIterator(msg);
       assertEquals(count, input.size());
 
     }
@@ -217,7 +217,7 @@ public class AggregatingFtpConsumeServiceTest extends AggregatingServiceExample 
       AggregatingFtpConsumeService service = new AggregatingFtpConsumeService(conn, consumer);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
       execute(service, msg);
-      MultiPartInput input = MimeHelper.create(msg, false);
+      BodyPartIterator input = MimeHelper.createBodyPartIterator(msg);
       assertEquals(count, input.size());
       // didn't get dleted so should still exist.
       assertEquals(count, filesystem.listFiles(DEFAULT_WORK_DIR_CANONICAL).size());

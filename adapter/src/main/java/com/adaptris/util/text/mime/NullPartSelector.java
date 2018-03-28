@@ -48,6 +48,7 @@ public class NullPartSelector implements PartSelector {
    * 
    */
 	@Override
+  @SuppressWarnings("deprecation")
 	public MimeBodyPart select(MultiPartInput m) throws MessagingException {
     return m.getBodyPart(0);
 	}
@@ -63,4 +64,13 @@ public class NullPartSelector implements PartSelector {
 		}
 		return list;
 	}
+
+  /**
+   * Returns the first part of the {@link MultiPartInput}
+   * 
+   */
+  @Override
+  public MimeBodyPart select(BodyPartIterator in) throws MessagingException {
+    return in.getBodyPart(0);
+  }
 }

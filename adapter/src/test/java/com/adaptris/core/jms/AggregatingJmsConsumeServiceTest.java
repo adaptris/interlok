@@ -31,7 +31,7 @@ import com.adaptris.core.services.aggregator.IgnoreOriginalMimeAggregator;
 import com.adaptris.core.services.aggregator.ReplaceWithFirstMessage;
 import com.adaptris.core.util.MimeHelper;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.text.mime.MultiPartInput;
+import com.adaptris.util.text.mime.BodyPartIterator;
 
 public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample {
 
@@ -132,7 +132,7 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
       AdaptrisMessage msg = new DefaultMessageFactory().newMessage(PAYLOAD);
       msg.addMetadata(DEFAULT_FILTER_KEY, "JMSCorrelationID = '0001'");
       service.doService(msg);
-      MultiPartInput input = MimeHelper.create(msg, false);
+      BodyPartIterator input = MimeHelper.createBodyPartIterator(msg);
       assertEquals(2, input.size());
     }
     finally {

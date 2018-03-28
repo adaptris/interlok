@@ -16,8 +16,8 @@
 
 package com.adaptris.core.services.splitter;
 
-import static com.adaptris.core.ServiceCase.execute;
 import static com.adaptris.core.ServiceCase.asCollection;
+import static com.adaptris.core.ServiceCase.execute;
 import static com.adaptris.core.services.splitter.XpathSplitterTest.ENCODING_UTF8;
 import static com.adaptris.core.services.splitter.XpathSplitterTest.ENVELOPE_DOCUMENT;
 import static org.junit.Assert.assertEquals;
@@ -51,7 +51,7 @@ import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.MimeHelper;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.util.text.mime.MultiPartInput;
+import com.adaptris.util.text.mime.BodyPartIterator;
 import com.adaptris.util.text.xml.InsertNode;
 import com.adaptris.util.text.xml.XPath;
 
@@ -147,7 +147,7 @@ public class SplitJoinServiceTest {
     service.setSplitter(new LineCountSplitter());
     service.setAggregator(new MimeAggregator());
     execute(service, msg);
-    MultiPartInput input = MimeHelper.create(msg, false);
+    BodyPartIterator input = MimeHelper.createBodyPartIterator(msg);
     assertEquals(11, input.size());
   }
 

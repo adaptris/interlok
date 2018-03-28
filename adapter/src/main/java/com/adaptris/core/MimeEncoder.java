@@ -29,7 +29,7 @@ import org.apache.commons.io.IOUtils;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.util.text.mime.MultiPartInput;
+import com.adaptris.util.text.mime.BodyPartIterator;
 import com.adaptris.util.text.mime.MultiPartOutput;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -97,7 +97,7 @@ public class MimeEncoder extends MimeEncoderImpl {
         throw new IllegalArgumentException("MimeEncoder can only decode from an OutputStream");
       }
       InputStream encodedInput = (InputStream) source;
-      MultiPartInput input = new MultiPartInput(encodedInput, false);
+      BodyPartIterator input = new BodyPartIterator(encodedInput);
       MimeBodyPart payloadPart = Args.notNull(input.getBodyPart(PAYLOAD_CONTENT_ID), "payload");
       MimeBodyPart metadataPart = Args.notNull(input.getBodyPart(METADATA_CONTENT_ID), "metadata");
       try (InputStream payloadIn = payloadPart.getInputStream();
@@ -107,7 +107,7 @@ public class MimeEncoder extends MimeEncoderImpl {
         msg.setMetadata(getMetadataSet(metadata));
       }
       if (retainUniqueId()) {
-        msg.setUniqueId(input.getName());
+        msg.setUniqueId(input.getMessageID());
       }
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);

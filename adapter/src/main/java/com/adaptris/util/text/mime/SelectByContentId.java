@@ -57,14 +57,23 @@ public class SelectByContentId implements PartSelector {
    * @see PartSelector#select(MultiPartInput)
    */
   @Override
+  @SuppressWarnings("deprecation")
   public MimeBodyPart select(MultiPartInput m) throws MessagingException {
     return m.getBodyPart(getContentId());
   }
 
   @Override
+  public MimeBodyPart select(BodyPartIterator in) throws MessagingException {
+    return in.getBodyPart(getContentId());
+  }
+
+  @Override
   public List<MimeBodyPart> select(MimeMultipart in) throws MessagingException {
     ArrayList<MimeBodyPart> list = new ArrayList<MimeBodyPart>();
-    list.add((MimeBodyPart)in.getBodyPart(getContentId()));
+    MimeBodyPart part = (MimeBodyPart) in.getBodyPart(getContentId());
+    if (part != null) {
+      list.add(part);
+    }
     return list;
   }
 
@@ -83,5 +92,6 @@ public class SelectByContentId implements PartSelector {
   public void setContentId(String i) {
     contentId = i;
   }
+
 
 }

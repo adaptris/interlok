@@ -19,15 +19,14 @@ package com.adaptris.util.text.mime;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import java.io.File;
-
 import javax.mail.internet.MimeBodyPart;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TestMultipartFileInput extends PartIteratorCase {
+public class BodyPartIteratorTest extends PartIteratorCase {
+
 
   @Before
   public void setUp() throws Exception {
@@ -39,8 +38,7 @@ public class TestMultipartFileInput extends PartIteratorCase {
 
   @Test
   public void testIterator() throws Exception {
-    File input = generateFileInput();
-    try (MultiPartFileInput mimeInput = new MultiPartFileInput(input)) {
+    try (BodyPartIterator mimeInput = new BodyPartIterator(generateByteArrayInput(false))) {
       assertEquals(3, mimeInput.size());
       int count = 0;
       while (mimeInput.hasNext()) {
@@ -68,8 +66,7 @@ public class TestMultipartFileInput extends PartIteratorCase {
 
   @Test
   public void testGetById() throws Exception {
-    File input = generateFileInput();
-    try (MultiPartFileInput mimeInput = new MultiPartFileInput(input)) {
+    try (BodyPartIterator mimeInput = new BodyPartIterator(generateByteArrayInput(true))) {
       MimeBodyPart part = mimeInput.getBodyPart("payload2");
       assertEquals(PAYLOAD_2, toString(part));
       assertNull(mimeInput.getBodyPart("hello"));
@@ -79,8 +76,7 @@ public class TestMultipartFileInput extends PartIteratorCase {
 
   @Test
   public void testGetByPosition() throws Exception {
-    File input = generateFileInput();
-    try (MultiPartFileInput mimeInput = new MultiPartFileInput(input)) {
+    try (BodyPartIterator mimeInput = new BodyPartIterator(generateByteArrayInput(false))) {
       MimeBodyPart part = mimeInput.getBodyPart(1);
       assertEquals(PAYLOAD_2, toString(part));
       assertNull(mimeInput.getBodyPart(6));
@@ -89,8 +85,7 @@ public class TestMultipartFileInput extends PartIteratorCase {
 
   @Test(expected = UnsupportedOperationException.class)
   public void testRemove() throws Exception {
-    File input = generateFileInput();
-    try (MultiPartFileInput mimeInput = new MultiPartFileInput(input)) {
+    try (BodyPartIterator mimeInput = new BodyPartIterator(generateByteArrayInput(false))) {
       mimeInput.next();
       mimeInput.remove();
     }

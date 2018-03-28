@@ -16,6 +16,7 @@
 
 package com.adaptris.util.text.mime;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -23,14 +24,20 @@ import java.io.OutputStream;
 import javax.activation.DataSource;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetHeaders;
+import javax.mail.util.SharedByteArrayInputStream;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+
+import com.adaptris.core.util.Args;
 
 
-class InputStreamDataSource implements DataSource, MimeConstants {
+public class InputStreamDataSource implements DataSource, MimeConstants {
 
-  private InputStream in = null;
-  private InternetHeaders header = null;
+  private InternetHeaders headers = null;
   private String contentType = null;
   private String messageId = null;
+  private byte[] wrappedBytes;
 
   private InputStreamDataSource() {
   }
@@ -41,38 +48,33 @@ class InputStreamDataSource implements DataSource, MimeConstants {
    *  @throws MessagingException if there was an error initialising the
    *  datasource.
    */
-  public InputStreamDataSource(InputStream input)
-  throws IOException, MessagingException {
+  public InputStreamDataSource(InputStream input) throws IOException, MessagingException {
     this();
     initialise(input);
   }
 
-  private void initialise(InputStream input)
-  throws IOException, MessagingException {
-    in = input;
-    header = new InternetHeaders(in);
+  private void initialise(InputStream input) throws IOException, MessagingException {
+    headers = new InternetHeaders(input);
+    initContent(input);
   }
 
   @Override
   public String getContentType() {
     if (contentType == null) {
-      String[] s = header.getHeader(HEADER_CONTENT_TYPE);
-      contentType = s[0];
+      contentType = get(HEADER_CONTENT_TYPE);
     }
     return contentType;
   }
 
   @Override
   public InputStream getInputStream() throws IOException {
-    return in;
+    return new SharedByteArrayInputStream(wrappedBytes);
   }
 
   @Override
   public String getName() {
     if (messageId == null) {
-
-      String[] s = header.getHeader(HEADER_MESSAGE_ID);
-      messageId = s[0];
+      messageId = get(HEADER_MESSAGE_ID);
     }
     return messageId;
   }
@@ -82,4 +84,25 @@ class InputStreamDataSource implements DataSource, MimeConstants {
     throw new UnsupportedOperationException();
   }
 
+  private void initContent(InputStream in) throws IOException {
+    try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+      IOUtils.copy(in, out);
+      wrappedBytes = out.toByteArray();
+    }
+  }
+
+  public InternetHeaders getHeaders() {
+    return headers;
+  }
+
+  private String get(String headerName) {
+    String result = null;
+    try {
+      String[] s = Args.notNull(headers.getHeader(headerName), headerName);
+      result = s[0];
+    } catch (IllegalArgumentException e) {
+
+    }
+    return StringUtils.defaultIfEmpty(result, "");
+  }
 }

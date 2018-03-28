@@ -17,17 +17,16 @@
 package com.adaptris.util.text.mime;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import java.io.File;
-
-import javax.mail.internet.MimeBodyPart;
+import java.io.ByteArrayInputStream;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TestMultipartFileInput extends PartIteratorCase {
+public class TestByteArrayPartIterator extends PartIteratorCase {
 
   @Before
   public void setUp() throws Exception {
@@ -37,14 +36,18 @@ public class TestMultipartFileInput extends PartIteratorCase {
   public void tearDown() {
   }
 
+
   @Test
   public void testIterator() throws Exception {
-    File input = generateFileInput();
-    try (MultiPartFileInput mimeInput = new MultiPartFileInput(input)) {
+    try (ByteArrayIterator mimeInput = new ByteArrayIterator(generateByteArrayInput(false))) {
+      assertNotNull(mimeInput.getContentType());
+      assertNotNull(mimeInput.getContentType());
+      assertNotNull(mimeInput.getMessageID());
+      assertNotNull(mimeInput.getMessageID());
       assertEquals(3, mimeInput.size());
       int count = 0;
       while (mimeInput.hasNext()) {
-        MimeBodyPart part = mimeInput.next();
+        byte[] part = mimeInput.next();
         count++;
         switch (count) {
         case 1: {
@@ -59,40 +62,40 @@ public class TestMultipartFileInput extends PartIteratorCase {
           assertEquals(PAYLOAD_3, toString(part));
           break;
         }
-        default : {}  
+        default: {
+        }
         }
       }
       assertEquals(3, count);
     }
   }
 
+
   @Test
   public void testGetById() throws Exception {
-    File input = generateFileInput();
-    try (MultiPartFileInput mimeInput = new MultiPartFileInput(input)) {
-      MimeBodyPart part = mimeInput.getBodyPart("payload2");
+    try (ByteArrayIterator mimeInput = new ByteArrayIterator(new ByteArrayInputStream(generateByteArrayInput(true)))) {
+      byte[] part = mimeInput.getPart("payload2");
       assertEquals(PAYLOAD_2, toString(part));
-      assertNull(mimeInput.getBodyPart("hello"));
+      assertNull(mimeInput.getPart("hello"));
     }
 
   }
 
   @Test
   public void testGetByPosition() throws Exception {
-    File input = generateFileInput();
-    try (MultiPartFileInput mimeInput = new MultiPartFileInput(input)) {
-      MimeBodyPart part = mimeInput.getBodyPart(1);
+    try (ByteArrayIterator mimeInput = new ByteArrayIterator(generateByteArrayInput(true))) {
+      byte[] part = mimeInput.getPart(1);
       assertEquals(PAYLOAD_2, toString(part));
-      assertNull(mimeInput.getBodyPart(6));
+      assertNull(mimeInput.getPart(6));
     }
   }
 
   @Test(expected = UnsupportedOperationException.class)
   public void testRemove() throws Exception {
-    File input = generateFileInput();
-    try (MultiPartFileInput mimeInput = new MultiPartFileInput(input)) {
+    try (ByteArrayIterator mimeInput = new ByteArrayIterator(generateByteArrayInput(false))) {
       mimeInput.next();
       mimeInput.remove();
     }
   }
+
 }

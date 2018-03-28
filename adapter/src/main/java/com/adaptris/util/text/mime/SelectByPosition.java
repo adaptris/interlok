@@ -52,17 +52,23 @@ public class SelectByPosition implements PartSelector {
     setPosition(i);
   }
 
-  /**
-   *
-   * @see PartSelector#select(MultiPartInput)
-   */
+
   @Override
+  @SuppressWarnings("deprecation")
   public MimeBodyPart select(MultiPartInput m) throws MessagingException {
     return m.getBodyPart(getPosition());
   }
 
   @Override
+  public MimeBodyPart select(BodyPartIterator m) throws MessagingException {
+    return m.getBodyPart(getPosition());
+  }
+
+  @Override
   public List<MimeBodyPart> select(MimeMultipart in) throws MessagingException {
+    if (getPosition() >= in.getCount()) {
+      return new ArrayList<MimeBodyPart>();
+    }
     ArrayList<MimeBodyPart> list = new ArrayList<MimeBodyPart>();
     list.add((MimeBodyPart)in.getBodyPart(getPosition()));
     return list;

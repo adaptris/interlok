@@ -36,8 +36,8 @@ import com.adaptris.mail.MailException;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.IdGenerator;
 import com.adaptris.util.stream.StreamUtil;
+import com.adaptris.util.text.mime.BodyPartIterator;
 import com.adaptris.util.text.mime.MimeConstants;
-import com.adaptris.util.text.mime.MultiPartInput;
 import com.adaptris.util.text.mime.PartSelector;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -77,7 +77,7 @@ public class MimeMailCreator implements MailContentCreator {
     }
     List<MailAttachment> attachments = new ArrayList<MailAttachment>();
     try {
-      MultiPartInput mp = MimeHelper.create(msg, false);
+      BodyPartIterator mp = MimeHelper.createBodyPartIterator(msg);
       MimeBodyPart body = bodySelector.select(mp);
       for (int i = 0; i < mp.size(); i++) {
         MimeBodyPart attachment = mp.getBodyPart(i);
@@ -107,7 +107,7 @@ public class MimeMailCreator implements MailContentCreator {
     }
     MailContent result = null;
     try {
-      MultiPartInput mp = MimeHelper.create(msg, false);
+      BodyPartIterator mp = MimeHelper.createBodyPartIterator(msg);
       MimeBodyPart part = bodySelector.select(mp);
       if (part == null) {
         throw new CoreException("No part selected as the body");

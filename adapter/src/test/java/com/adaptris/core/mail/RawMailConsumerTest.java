@@ -30,9 +30,10 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.core.util.MimeHelper;
 import com.adaptris.mail.JunitMailHelper;
 import com.adaptris.mail.Pop3ReceiverFactory;
-import com.adaptris.util.text.mime.MultiPartInput;
+import com.adaptris.util.text.mime.BodyPartIterator;
 import com.icegreen.greenmail.util.GreenMail;
 
 public class RawMailConsumerTest extends MailConsumerCase {
@@ -116,7 +117,7 @@ public class RawMailConsumerTest extends MailConsumerCase {
 
   private void compare(AdaptrisMessage msg, String expected) throws Exception {
     try (InputStream msgIn = msg.getInputStream(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-      MultiPartInput mime = new MultiPartInput(msgIn, false);
+      BodyPartIterator mime = MimeHelper.createBodyPartIterator(msg);
       MimeBodyPart part = (MimeBodyPart) mime.next();
       try (InputStream partIn = part.getInputStream(); OutputStream bout = out) {
         IOUtils.copy(partIn, bout);
