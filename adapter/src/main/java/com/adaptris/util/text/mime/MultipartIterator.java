@@ -22,6 +22,7 @@ import java.io.InputStream;
 
 import javax.activation.DataSource;
 import javax.mail.MessagingException;
+import javax.mail.internet.InternetHeaders;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -98,6 +99,13 @@ public abstract class MultipartIterator implements Closeable {
    */
   public String getMessageID() {
     return dataSource.getName();
+  }
+
+  public InternetHeaders getHeaders() {
+    if (dataSource instanceof MimeHeaders) {
+      return ((MimeHeaders) dataSource).getHeaders();
+    }
+    return new InternetHeaders();
   }
 
   protected abstract void initIterator() throws MessagingException, IOException;

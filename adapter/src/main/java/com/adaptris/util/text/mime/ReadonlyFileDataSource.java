@@ -36,7 +36,7 @@ import org.apache.commons.lang.StringUtils;
 
 import com.adaptris.core.util.Args;
 
-class ReadonlyFileDataSource implements DataSource, Closeable, MimeConstants {
+class ReadonlyFileDataSource implements DataSource, Closeable, MimeConstants, MimeHeaders {
 
   private transient File wrappedFile;
   private transient List<SharedFileInputStream> children;
@@ -98,10 +98,16 @@ class ReadonlyFileDataSource implements DataSource, Closeable, MimeConstants {
     throw new UnsupportedOperationException();
   }
 
+  @Override
   public void close() throws IOException {
     for (SharedFileInputStream child : children) {
       IOUtils.closeQuietly(child);
     }
+  }
+
+  @Override
+  public InternetHeaders getHeaders() {
+    return headers;
   }
 
   private class SharedFileInputStream extends FilterInputStream implements SharedInputStream {
@@ -199,4 +205,5 @@ class ReadonlyFileDataSource implements DataSource, Closeable, MimeConstants {
       in.reset();
     }
   }
+
 }

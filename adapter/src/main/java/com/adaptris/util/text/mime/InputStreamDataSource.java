@@ -32,7 +32,7 @@ import org.apache.commons.lang.StringUtils;
 import com.adaptris.core.util.Args;
 
 
-public class InputStreamDataSource implements DataSource, MimeConstants {
+public class InputStreamDataSource implements DataSource, MimeConstants, MimeHeaders {
 
   private InternetHeaders headers = null;
   private String contentType = null;
@@ -91,6 +91,7 @@ public class InputStreamDataSource implements DataSource, MimeConstants {
     }
   }
 
+  @Override
   public InternetHeaders getHeaders() {
     return headers;
   }

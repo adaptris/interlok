@@ -15,7 +15,6 @@
 */
 package com.adaptris.util.text.mime;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
@@ -45,7 +44,6 @@ public class BodyPartIterator extends MultipartIterator implements Iterator<Mime
    *           MimeMultiPart
    * @throws IOException if there was an IOException
    * @throws MessagingException if an underlying javax.mail exception occurred
-   * @see MultiPartInput#MultiPartInput(InputStream, boolean)
    */
   public BodyPartIterator(InputStream in) throws IOException, MessagingException {
     super(in);
@@ -60,10 +58,9 @@ public class BodyPartIterator extends MultipartIterator implements Iterator<Mime
    * @throws IOException if there was an IOException
    * @throws MessagingException if the bytes did not contain a valid
    *           MimeMultiPart
-   * @see MultiPartInput#MultiPartInput(byte[], boolean)
    */
   public BodyPartIterator(byte[] bytes) throws IOException, MessagingException {
-    super(new ByteArrayInputStream(bytes));
+    super(bytes);
   }
 
   protected BodyPartIterator(DataSource ds) throws IOException, MessagingException {

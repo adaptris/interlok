@@ -61,8 +61,8 @@ public abstract class PartIteratorCase implements MimeConstants {
     return out.toString();
   }
 
-  protected static byte[] generateByteArrayInput(boolean noContentId) throws Exception {
-    MultiPartOutput output = new MultiPartOutput(guid.getUUID());
+  protected static byte[] generateByteArrayInput(String uid, boolean noContentId) throws Exception {
+    MultiPartOutput output = new MultiPartOutput(uid);
     output.addPart(PAYLOAD_1, ENCODING_BASE64, "payload1");
     output.addPart(PAYLOAD_2, "payload2");
     output.addPart(PAYLOAD_3, ENCODING_BASE64, "payload3");
@@ -70,6 +70,10 @@ public abstract class PartIteratorCase implements MimeConstants {
       output.addPart(PAYLOAD_1, ENCODING_BASE64, "");
     }
     return output.getBytes();
+  }
+
+  protected static byte[] generateByteArrayInput(boolean noContentId) throws Exception {
+    return generateByteArrayInput(guid.getUUID(), noContentId);
   }
 
   protected static String toString(byte[] b) throws Exception {

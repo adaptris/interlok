@@ -19,6 +19,8 @@ package com.adaptris.util.text.mime;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.io.ByteArrayInputStream;
+
 import javax.mail.internet.MimeBodyPart;
 
 import org.junit.After;
@@ -65,6 +67,21 @@ public class BodyPartIteratorTest extends PartIteratorCase {
   }
 
   @Test
+  public void testGetHeaders() throws Exception {
+    try (BodyPartIterator mimeInput = new BodyPartIterator(generateByteArrayInput("testGetHeaders", false))) {
+      // Should have MIME-Version and a Message-ID header
+      assertEquals("1.0", mimeInput.getHeaders().getHeader(MimeConstants.HEADER_MIME_VERSION, null));
+      assertEquals("testGetHeaders", mimeInput.getHeaders().getHeader(MimeConstants.HEADER_MESSAGE_ID, null));
+    }
+    ByteArrayDataSource bytes = new ByteArrayDataSource(generateByteArrayInput("testGetHeaders", false));
+    // ByteArrayDataSource doesn't implement HeaderProvider, so no headers for us.
+    try (BodyPartIterator mimeInput = new BodyPartIterator(bytes)) {
+      assertNull(mimeInput.getHeaders().getHeader(MimeConstants.HEADER_MIME_VERSION, null));
+      assertNull(mimeInput.getHeaders().getHeader(MimeConstants.HEADER_MESSAGE_ID, null));
+    }
+  }
+
+  @Test
   public void testGetById() throws Exception {
     try (BodyPartIterator mimeInput = new BodyPartIterator(generateByteArrayInput(true))) {
       MimeBodyPart part = mimeInput.getBodyPart("payload2");
@@ -76,7 +93,7 @@ public class BodyPartIteratorTest extends PartIteratorCase {
 
   @Test
   public void testGetByPosition() throws Exception {
-    try (BodyPartIterator mimeInput = new BodyPartIterator(generateByteArrayInput(false))) {
+    try (BodyPartIterator mimeInput = new BodyPartIterator(new ByteArrayInputStream(generateByteArrayInput(false)))) {
       MimeBodyPart part = mimeInput.getBodyPart(1);
       assertEquals(PAYLOAD_2, toString(part));
       assertNull(mimeInput.getBodyPart(6));
