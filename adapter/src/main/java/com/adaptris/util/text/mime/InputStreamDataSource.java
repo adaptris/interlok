@@ -32,7 +32,7 @@ import org.apache.commons.lang.StringUtils;
 import com.adaptris.core.util.Args;
 
 
-class InputStreamDataSource implements DataSource, MimeConstants {
+public class InputStreamDataSource implements DataSource, MimeConstants {
 
   private InternetHeaders headers = null;
   private String contentType = null;
@@ -89,6 +89,10 @@ class InputStreamDataSource implements DataSource, MimeConstants {
       IOUtils.copy(in, out);
       wrappedBytes = out.toByteArray();
     }
+  }
+
+  public InternetHeaders getHeaders() {
+    return headers;
   }
 
   private String get(String headerName) {
