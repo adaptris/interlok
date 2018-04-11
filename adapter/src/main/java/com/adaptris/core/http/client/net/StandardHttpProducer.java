@@ -58,6 +58,7 @@ import com.adaptris.core.ProduceException;
 import com.adaptris.core.common.InputStreamWithEncoding;
 import com.adaptris.core.common.PayloadStreamInputParameter;
 import com.adaptris.core.common.PayloadStreamOutputParameter;
+import com.adaptris.core.http.HttpConstants;
 import com.adaptris.core.http.auth.AdapterResourceAuthenticator;
 import com.adaptris.core.http.auth.HttpAuthenticator;
 import com.adaptris.core.http.auth.NoAuthentication;
@@ -68,6 +69,7 @@ import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.interlok.InterlokException;
 import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.interlok.config.DataOutputParameter;
+import com.adaptris.util.TimeInterval;
 import com.adaptris.util.stream.Slf4jLoggingOutputStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -142,6 +144,13 @@ public class StandardHttpProducer extends HttpProducer {
   @InputFieldDefault(value = "false")
   private Boolean alwaysSendPayload;
 
+  @Valid
+  @AdvancedConfig
+  private TimeInterval connectTimeout;
+  @Valid
+  @AdvancedConfig
+  private TimeInterval readTimeout;
+
   public StandardHttpProducer() {
     super();
     Authenticator.setDefault(AdapterResourceAuthenticator.getInstance());
@@ -167,7 +176,7 @@ public class StandardHttpProducer extends HttpProducer {
     try {
       URL url = new URL(destination.getDestination(msg));
       authenticator.setup(url.toString(), msg, null);
-      HttpURLConnection http = configure((HttpURLConnection) url.openConnection(), msg);
+      HttpURLConnection http = configure(configureTimeouts((HttpURLConnection) url.openConnection(), timeout), msg);
       if (authenticator instanceof HttpURLConnectionAuthenticator) {
         ((HttpURLConnectionAuthenticator) authenticator).configureConnection(http);
       }
@@ -191,6 +200,19 @@ public class StandardHttpProducer extends HttpProducer {
     String contentType = getContentTypeProvider().getContentType(msg);
     if (!isEmpty(contentType)) {
       http.setRequestProperty(CONTENT_TYPE, contentType);
+    }
+    return http;
+  }
+
+  private HttpURLConnection configureTimeouts(HttpURLConnection http, long timeout) {
+    if (getConnectTimeout() != null) {
+      http.setConnectTimeout(Long.valueOf(getConnectTimeout().toMilliseconds()).intValue());
+    }
+    if (getReadTimeout() != null) {
+      http.setReadTimeout(Long.valueOf(getReadTimeout().toMilliseconds()).intValue());
+    }
+    if (timeout != DEFAULT_TIMEOUT) {
+      http.setReadTimeout(Long.valueOf(timeout).intValue());
     }
     return http;
   }
@@ -355,5 +377,35 @@ public class StandardHttpProducer extends HttpProducer {
 
   boolean alwaysSendPayload() {
     return getAlwaysSendPayload() != null ? getAlwaysSendPayload().booleanValue() : false;
+  }
+
+  public TimeInterval getConnectTimeout() {
+    return connectTimeout;
+  }
+
+  /**
+   * Set the connect timeout.
+   * 
+   * @param t the timeout (will be used for {@link HttpURLConnection#setConnectTimeout(int)})
+   */
+  public void setConnectTimeout(TimeInterval t) {
+    this.connectTimeout = t;
+  }
+
+  public TimeInterval getReadTimeout() {
+    return readTimeout;
+  }
+
+  /**
+   * Set the read timeout.
+   * <p>
+   * Note that any read timeout will be overridden by the timeout value passed in via the {{@link #request(AdaptrisMessage, long)}
+   * method; if it is not the same as {@value HttpConstants#DEFAULT_SOCKET_TIMEOUT}
+   * </p>
+   * 
+   * @param t the timeout (will be used for {@link HttpURLConnection#setReadTimeout(int)})
+   */
+  public void setReadTimeout(TimeInterval t) {
+    this.readTimeout = t;
   }
 }
