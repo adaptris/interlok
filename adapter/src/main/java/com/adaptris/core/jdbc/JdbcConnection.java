@@ -172,7 +172,13 @@ public class JdbcConnection extends DatabaseConnection {
    * @throws SQLException if we could not validate the connection.
    */
   private void validateConnection() throws SQLException {
-    if ((sqlConnection == null) || (!sqlConnection.isValid(NUM_SECONDS_TIMEOUT_CONN_VALIDATE))) {
+    boolean connectionNeedsRefresh = false;
+    try {
+      connectionNeedsRefresh = ((sqlConnection == null) || (!sqlConnection.isValid(NUM_SECONDS_TIMEOUT_CONN_VALIDATE)));
+    } catch (AbstractMethodError ex) {
+      // ignore, some JDBC drivers throw an exception here for no apparent reason.
+    }
+    if (connectionNeedsRefresh) {
       try {
         Properties p = connectionProperties();
         sqlConnection = new ProxyNonClosingSqlConnection(DriverManager.getConnection(getConnectUrl(), p));

@@ -86,6 +86,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * the {@link ResultSetTranslator} configured.
  * </p>
  * <p>
+ * If you plan on using this producer for Microsoft SQL Server, we recommend using a driver that is fully JDBC 3.0 compliant.  The standard
+ * Microsoft JDBC driver does not support multiple open result sets, therefore if your stored procedure returns multiple result sets, we recommend using
+ * a fully compliant JDBC 3.0 driver such as the JTDS driver.
+ * </p>
+ * <p>
  * Finally, the default timeout set for the database operation is 0 (i.e. no timeout). You can override this by configuring the
  * "timeout" field with a {@link TimeInterval}
  * </p>
