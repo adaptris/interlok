@@ -17,6 +17,7 @@ package com.adaptris.util;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -86,7 +87,7 @@ public abstract class URLHelper {
       }
     }
     if (in == null) {
-      throw new IOException("Couldn't find [" + localFile + "] on filesystem or classpath");
+      throw new FileNotFoundException("Couldn't find [" + localFile + "] on filesystem or classpath");
     }
     return in;
   }

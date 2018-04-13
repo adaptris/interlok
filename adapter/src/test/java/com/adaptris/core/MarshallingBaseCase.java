@@ -415,7 +415,7 @@ public abstract class MarshallingBaseCase extends BaseCase {
     }
     catch (CoreException e) {
       assertNotNull(e.getCause());
-      assertEquals(IOException.class, e.getCause().getClass());
+      assertTrue(IOException.class.isAssignableFrom(e.getCause().getClass()));
     }
   }
 
