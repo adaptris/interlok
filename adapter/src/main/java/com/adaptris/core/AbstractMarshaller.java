@@ -32,6 +32,7 @@ import java.net.URL;
 import org.apache.commons.io.IOUtils;
 
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.URLHelper;
 import com.adaptris.util.URLString;
 
@@ -151,17 +152,10 @@ public abstract class AbstractMarshaller implements AdaptrisMarshaller {
     Object result = null;
     InputStream in = null;
     try {
-      in = connectToUrl(loc);
-      if (in != null) {
-        result = this.unmarshal(in);
-        in.close();
-      }
-      else {
-        throw new IOException("could not unmarshal component from [" + loc + "]");
-      }
+      result = unmarshal(connectToUrl(loc));
     }
     catch (IOException e) {
-      throw new CoreException(e);
+      throw ExceptionHelper.wrapCoreException(e);
     }
     finally {
       IOUtils.closeQuietly(in);

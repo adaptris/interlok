@@ -17,18 +17,14 @@
 package com.adaptris.transform;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Reader;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.xml.sax.InputSource;
 
-import com.adaptris.core.fs.FsHelper;
 import com.adaptris.util.URLHelper;
-import com.adaptris.util.URLString;
 
 /**
  * <p>An input to a transformation process may either be the data
@@ -130,7 +126,7 @@ public class Source {
     if (this.url != null) {
       is.setSystemId(this.url);
       is.setCharacterStream(this.charStream);
-      is.setByteStream(this._connectUrl(this.url));
+      is.setByteStream(URLHelper.connect(url));
     } else {
       is.setSystemId(this.url);
       is.setCharacterStream(this.charStream);
@@ -158,11 +154,6 @@ public class Source {
    */
   public int hashCode() {
     return new HashCodeBuilder(11, 17).append(getCharStream()).append(url).toHashCode();
-  }
-
-  private InputStream _connectUrl(String url)
-      throws IOException, MalformedURLException, URISyntaxException {
-    return URLHelper.connect(new URLString(FsHelper.createUrlFromString(url, true)));
   }
 
 } // class Source
