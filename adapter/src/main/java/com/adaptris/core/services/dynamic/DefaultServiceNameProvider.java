@@ -16,8 +16,11 @@
 
 package com.adaptris.core.services.dynamic;
 
+import javax.validation.constraints.NotNull;
+
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.TradingRelationship;
@@ -38,6 +41,8 @@ public class DefaultServiceNameProvider extends ServiceNameProviderImp {
 
   @AutoPopulated
   @InputFieldHint(style = "BLANKABLE")
+  @NotNull
+  @InputFieldDefault(value = "-")
   private String separator;
 
   /**
