@@ -18,7 +18,7 @@ package com.adaptris.core.services;
 
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.GeneralServiceExample;
-import com.adaptris.core.services.LogMessageService.LoggingLevel;
+import com.adaptris.core.services.LoggingServiceImpl.LoggingLevel;
 
 @SuppressWarnings("deprecation")
 public class LogMessageServiceTest extends GeneralServiceExample {

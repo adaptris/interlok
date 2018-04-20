@@ -18,17 +18,12 @@ package com.adaptris.core.services;
 
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 
-import org.slf4j.Logger;
-import org.slf4j.MarkerFactory;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.ServiceImp;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -43,56 +38,14 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Log the message to the log file; useful for debugging", tag = "service,logging,debug")
 @DisplayOrder(order = {"logLevel", "logPrefix", "includeEvents", "includePayload"})
-public class LogMessageService extends ServiceImp {
+public class LogMessageService extends LoggingServiceImpl {
 
-  public static enum LoggingLevel {
-    /** Deprecated since 3.6.2 with no replacement */
-    @Deprecated
-    FATAL {
-      @Override
-      void log(Logger logger, String s) {
-        logger.error(MarkerFactory.getMarker("FATAL"), s);
-      }
-    },
-    ERROR {
-      @Override
-      void log(Logger logger, String s) {
-        logger.error(s);
-      }
-    },
-    WARN {
-      @Override
-      void log(Logger logger, String s) {
-        logger.warn(s);
-      }
-    },
-    INFO {
-      @Override
-      void log(Logger logger, String s) {
-        logger.info(s);
-      }
-    },
-    DEBUG {
-      @Override
-      void log(Logger logger, String s) {
-        logger.debug(s);
-      }
-    },
-    TRACE {
-      @Override
-      void log(Logger logger, String s) {
-        logger.trace(s);
-      }
-    };
-    abstract void log(Logger logger, String s);
-  }
 
   private String logPrefix;
   @InputFieldDefault(value = "true")
   private Boolean includePayload;
   @InputFieldDefault(value = "false")
   private Boolean includeEvents;
-  private LoggingLevel logLevel;
 
   public LogMessageService() {
     super();
@@ -115,25 +68,16 @@ public class LogMessageService extends ServiceImp {
     setUniqueId(uniqueId);
   }
 
-  private static LoggingLevel getLogger(LoggingLevel level) {
-    return level != null ? level : LoggingLevel.DEBUG;
-  }
-
   /**
    * @see com.adaptris.core.Service #doService(com.adaptris.core.AdaptrisMessage)
    */
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    getLogger(getLogLevel()).log(log, defaultIfEmpty(getLogPrefix(), "") + msg.toString(includePayload(), includeEvents()));
+    LoggingLevel myLogger = getLogger(getLogLevel());
+    if (myLogger.isEnabled(log)) {
+      myLogger.log(log, defaultIfEmpty(getLogPrefix(), "") + msg.toString(includePayload(), includeEvents()));
+    }
   }
 
-
-  @Override
-  protected void initService() throws CoreException {
-  }
-
-  @Override
-  protected void closeService() {
-  }
 
   public String getLogPrefix() {
     return logPrefix;
@@ -181,23 +125,4 @@ public class LogMessageService extends ServiceImp {
   boolean includeEvents() {
     return getIncludeEvents() != null ? getIncludeEvents().booleanValue() : false;
   }
-
-  public LoggingLevel getLogLevel() {
-    return logLevel;
-  }
-
-  /**
-   * Set the log level for logging.
-   * 
-   * @param level the log level, default is DEBUG but can be any one of ERROR, WARN, INFO, DEBUG, TRACE
-   * @see LoggingLevel
-   */
-  public void setLogLevel(LoggingLevel level) {
-    logLevel = level;
-  }
-
-  @Override
-  public void prepare() throws CoreException {
-  }
-
 }
