@@ -34,7 +34,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("jdbc-timestamp-statement-parameter")
 @DisplayOrder(order = {"name", "queryString", "queryType", "dateFormat", "convertNull"})
-public class TimestampStatementParameter extends DatetimeStatementParameter<java.sql.Timestamp> {
+public class TimestampStatementParameter extends DatetimeStatementParameter<Timestamp> {
 
   public TimestampStatementParameter() {
     super();
@@ -54,13 +54,13 @@ public class TimestampStatementParameter extends DatetimeStatementParameter<java
 
   @Override
   protected Timestamp defaultValue() {
-    return new java.sql.Timestamp(System.currentTimeMillis());
+    return new Timestamp(System.currentTimeMillis());
   }
 
   @Override
   protected Timestamp convertToType(Object value) {
     try {
-      return new java.sql.Timestamp(getFormatter().parse((String) value).getTime());
+      return new Timestamp(getFormatter().parse((String) value).getTime());
     }
     catch (Exception e) {
       throw new IllegalArgumentException("Failed to convert input String [" + value + "] to [java.sql.Timestamp]", e);

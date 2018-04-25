@@ -36,7 +36,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("jdbc-time-statement-parameter")
 @DisplayOrder(order = {"name", "queryString", "queryType", "dateFormat", "convertNull"})
-public class TimeStatementParameter extends DatetimeStatementParameter<java.sql.Time> {
+public class TimeStatementParameter extends DatetimeStatementParameter<Time> {
 
   public TimeStatementParameter() {
     super();
@@ -57,13 +57,13 @@ public class TimeStatementParameter extends DatetimeStatementParameter<java.sql.
 
   @Override
   protected Time defaultValue() {
-    return new java.sql.Time(System.currentTimeMillis());
+    return new Time(System.currentTimeMillis());
   }
 
   @Override
   protected Time convertToType(Object value) {
     try {
-      return new java.sql.Time(getFormatter().parse((String) value).getTime());
+      return new Time(getFormatter().parse((String) value).getTime());
     }
     catch (Exception e) {
       throw new IllegalArgumentException("Failed to convert input String [" + value + "] to type [java.sql.Time]", e);
