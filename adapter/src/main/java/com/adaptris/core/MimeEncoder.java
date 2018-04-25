@@ -73,7 +73,6 @@ public class MimeEncoder extends MimeEncoderImpl {
       OutputStream encodedOutput = (OutputStream) target;
       // Use the message unique id as the message id.
       MultiPartOutput output = new MultiPartOutput(msg.getUniqueId());
-      AdaptrisMessageFactory factory = currentMessageFactory();
       output.addPart(payloadAsMimePart(msg), PAYLOAD_CONTENT_ID);
       output.addPart(getMetadata(msg), getMetadataEncoding(), METADATA_CONTENT_ID);
       if (msg.getObjectHeaders().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION)) {
