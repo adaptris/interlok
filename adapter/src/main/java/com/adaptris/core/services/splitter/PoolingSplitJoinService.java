@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.pool.impl.GenericObjectPool;
@@ -34,7 +33,6 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.services.aggregator.MessageAggregator;
 import com.adaptris.core.services.splitter.ServiceWorkerPool.Worker;
-import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -64,7 +62,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class PoolingSplitJoinService extends SplitJoinService {
 
   private static final int DEFAULT_THREADS = 10;
-  private static final TimeInterval DEFAULT_INIT_WAIT = new TimeInterval(1L, TimeUnit.MINUTES.name());
 
   @AdvancedConfig
   @InputFieldDefault(value = "10")

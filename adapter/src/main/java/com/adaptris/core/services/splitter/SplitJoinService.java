@@ -76,8 +76,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 })
 public class SplitJoinService extends ServiceImp implements EventHandlerAware, ServiceWrapper {
 
-  private static final String GENERIC_EXCEPTION_MSG = "Exception waiting for all services to complete";
-
   private static TimeInterval DEFAULT_TTL = new TimeInterval(600L, TimeUnit.SECONDS);
 
   @NotNull

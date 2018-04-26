@@ -37,7 +37,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("jdbc-date-statement-parameter")
 @DisplayOrder(order = {"name", "queryString", "queryType", "dateFormat", "convertNull"})
-public class DateStatementParameter extends DatetimeStatementParameter<java.sql.Date> {
+public class DateStatementParameter extends DatetimeStatementParameter<Date> {
 
   public DateStatementParameter() {
     super();
@@ -58,13 +58,13 @@ public class DateStatementParameter extends DatetimeStatementParameter<java.sql.
 
   @Override
   protected Date defaultValue() {
-    return new java.sql.Date(System.currentTimeMillis());
+    return new Date(System.currentTimeMillis());
   }
 
   @Override
   protected Date convertToType(Object value) {
     try {
-      return new java.sql.Date(getFormatter().parse((String) value).getTime());
+      return new Date(getFormatter().parse((String) value).getTime());
     }
     catch (Exception e) {
       throw new IllegalArgumentException("Failed to convert input String [" + value + "] to type [java.sql.Date]", e);

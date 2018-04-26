@@ -34,7 +34,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("jdbc-escaped-time-statement-parameter")
 @DisplayOrder(order = {"name", "queryString", "queryType", "convertNull"})
-public class JdbcEscapedTimeParameter extends TypedStatementParameter<java.sql.Time> {
+public class JdbcEscapedTimeParameter extends TypedStatementParameter<Time> {
 
   public JdbcEscapedTimeParameter() {
     super();
