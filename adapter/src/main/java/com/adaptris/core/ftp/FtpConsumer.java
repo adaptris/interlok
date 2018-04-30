@@ -53,7 +53,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * <p>
  * The configuration of this consumer closely mirrors that of the FsConsumer though it does not, at the moment, share any common
- * hierarchy.
+ * hierarchy with a key difference; although multiple file-filters can be configured only filters that work with the filepath will
+ * work. Other filter implementations (such as those based on size /last modified) may not work.
  * </p>
  * 
  * @config ftp-consumer
