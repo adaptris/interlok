@@ -33,7 +33,7 @@ import com.adaptris.core.services.aggregator.ReplaceWithFirstMessage;
 import com.adaptris.core.stubs.TempFileUtils;
 import com.adaptris.core.util.MimeHelper;
 import com.adaptris.util.GuidGenerator;
-import com.adaptris.util.text.mime.MultiPartInput;
+import com.adaptris.util.text.mime.BodyPartIterator;
 
 public class AggregatingFsConsumeServiceTest extends AggregatingServiceExample {
 
@@ -113,7 +113,7 @@ public class AggregatingFsConsumeServiceTest extends AggregatingServiceExample {
       start(service);
       AdaptrisMessage msg = new DefaultMessageFactory().newMessage(INITIAL_PAYLOAD);
       service.doService(msg);
-      MultiPartInput input = MimeHelper.create(msg, false);
+      BodyPartIterator input = MimeHelper.createBodyPartIterator(msg);
       assertEquals(2, input.size());
     }
     finally {

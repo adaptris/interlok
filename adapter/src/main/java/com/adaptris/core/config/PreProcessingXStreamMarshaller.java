@@ -103,7 +103,7 @@ public class PreProcessingXStreamMarshaller extends com.adaptris.core.XStreamMar
       result = this.unmarshal(url.openStream());
     }
     catch (Exception e) {
-      ExceptionHelper.rethrowCoreException(e);
+      throw ExceptionHelper.wrapCoreException(e);
     }
     return result;
   }
@@ -113,15 +113,10 @@ public class PreProcessingXStreamMarshaller extends com.adaptris.core.XStreamMar
     Args.notNull(url, "url");
     Object result = null;
     try (InputStream in = connectToUrl(url)) {
-      if (in != null) {
-        result = this.unmarshal(in);
-      }
-      else {
-        throw new IOException("could not unmarshal component from [" + url + "]");
-      }
+      result = this.unmarshal(in);
     }
     catch (Exception e) {
-      ExceptionHelper.rethrowCoreException(e);
+      throw ExceptionHelper.wrapCoreException(e);
     }
     return result;
   }
@@ -135,7 +130,7 @@ public class PreProcessingXStreamMarshaller extends com.adaptris.core.XStreamMar
       result = unmarshal(xml);
     }
     catch (IOException e) {
-      ExceptionHelper.rethrowCoreException(e);
+      throw ExceptionHelper.wrapCoreException(e);
     }
     finally {
       IOUtils.closeQuietly(in);

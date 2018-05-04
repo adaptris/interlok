@@ -20,6 +20,9 @@ if object_id('many_in') is not null
 	
 if object_id('one_out') is not null
 	drop procedure one_out#
+	
+if object_id('one_resultset_one_out') is not null
+	drop procedure one_resultset_one_out#
 
 if object_id('many_out') is not null
 	drop procedure many_out#
@@ -287,7 +290,17 @@ CREATE PROCEDURE one_resultset
    select top 5 player, amount, date
    from liverpool_transfers
    order by amount desc;#
+   
 
+   
+
+CREATE PROCEDURE one_resultset_one_out @completed INT OUTPUT
+ AS
+   select top 5 player, amount, date
+   from liverpool_transfers
+   order by amount desc;
+
+   SET @completed = 1;#	
 
 
 

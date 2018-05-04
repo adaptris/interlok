@@ -70,12 +70,10 @@ public class StatelessServiceWrapperTest extends GeneralServiceExample {
     ws.setIsTrackingEndpoint(true);
     StatelessServiceWrapper s = new StatelessServiceWrapper(ws);
     s.setUniqueId(StatelessServiceWrapper.class.getSimpleName());
-    assertNotNull(ws.getContinueOnFail());
     assertNotNull(ws.getIsConfirmation());
     assertNotNull(ws.getIsTrackingEndpoint());
     assertEquals(ws.isConfirmation(), s.isConfirmation());
     assertEquals(ws.isTrackingEndpoint(), s.isTrackingEndpoint());
-    assertEquals(ws.continueOnFailure(), s.continueOnFailure());
     assertEquals(ws.isBranching(), s.isBranching());
     assertEquals(ws.createName(), s.createName());
     assertEquals(ws.createQualifier(), s.createQualifier());
@@ -110,7 +108,6 @@ public class StatelessServiceWrapperTest extends GeneralServiceExample {
     assertNotNull(ws.getIsTrackingEndpoint());
     assertEquals(ws.isConfirmation(), s.isConfirmation());
     assertEquals(ws.isTrackingEndpoint(), s.isTrackingEndpoint());
-    assertEquals(ws.continueOnFailure(), s.continueOnFailure());
     assertEquals(ws.isBranching(), s.isBranching());
     assertEquals(ws.createName(), s.createName());
     assertEquals(ws.createQualifier(), s.createQualifier());

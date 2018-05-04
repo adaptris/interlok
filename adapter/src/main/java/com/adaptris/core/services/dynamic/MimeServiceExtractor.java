@@ -64,7 +64,7 @@ public class MimeServiceExtractor implements ServiceExtractor {
     InputStream in = null;
     try {
       Args.notNull(getSelector(), "selector");
-      MimeBodyPart part = selector.select(MimeHelper.create(m, false));
+      MimeBodyPart part = selector.select(MimeHelper.createBodyPartIterator(m));
       if (part != null) {
         out = new ByteArrayOutputStream();
         in = part.getInputStream();

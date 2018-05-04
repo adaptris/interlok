@@ -31,7 +31,7 @@
 
     <!-- For Various ANT Tasks -->
     <dependency org="ant-contrib" name="ant-contrib" rev="1.0b3" conf="ant->default" transitive="false"/>
-    <dependency org="org.jacoco" name="org.jacoco.ant" rev="0.7.9" conf="ant->default"/>
+    <dependency org="org.jacoco" name="org.jacoco.ant" rev="0.8.0" conf="ant->default"/>
 
     <exclude org="commons-logging"/>
     <exclude org="org.apache.geronimo"/>

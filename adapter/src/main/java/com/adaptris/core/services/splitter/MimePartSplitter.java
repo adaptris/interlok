@@ -39,7 +39,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.MimeHelper;
-import com.adaptris.util.text.mime.MultiPartInput;
+import com.adaptris.util.text.mime.BodyPartIterator;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -74,7 +74,7 @@ public class MimePartSplitter extends MessageSplitterImp {
     List<AdaptrisMessage> result = new ArrayList<AdaptrisMessage>();
     AdaptrisMessageFactory fac = selectFactory(msg);
     try {
-      MultiPartInput mp = MimeHelper.create(msg, false);
+      BodyPartIterator mp = MimeHelper.createBodyPartIterator(msg);
       while (mp.hasNext()) {
         AdaptrisMessage splitMsg = fac.newMessage();
         MimeBodyPart part = (MimeBodyPart) mp.next();

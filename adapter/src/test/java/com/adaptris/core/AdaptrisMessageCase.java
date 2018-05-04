@@ -575,12 +575,14 @@ public abstract class AdaptrisMessageCase {
   public void testResolve() throws Exception {
     AdaptrisMessage msg = createMessage();
     msg.addMessageHeader("key*3", "val3");
+    msg.addMessageHeader("nestedKey", "%message{key1}");
     assertNull(msg.resolve(null));
     assertEquals("", msg.resolve(""));
     assertEquals("Hello World", msg.resolve("Hello World"));
     assertEquals(VAL1, msg.resolve("%message{key1}"));
     assertEquals(VAL2, msg.resolve("%message{key2}"));
     assertEquals("val3", msg.resolve("%message{key*3}"));
+    assertEquals(VAL1, msg.resolve("%message{nestedKey}"));
     assertEquals(String.format("%s_%s_%s", VAL1, VAL2, "val3"), msg.resolve("%message{key1}_%message{key2}_%message{key*3}"));
     assertEquals(String.format("%s_%s_%s", VAL1, VAL1, "val3"), msg.resolve("%message{key1}_%message{key1}_%message{key*3}"));
     assertEquals(String.format("SELECT * FROM TABLE where key1=%s and key2=%s", VAL1, VAL2),

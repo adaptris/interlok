@@ -16,8 +16,6 @@
 
 package com.adaptris.core.http.client.net;
 
-import static com.adaptris.core.http.HttpConstants.DEFAULT_SOCKET_TIMEOUT;
-
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
@@ -52,6 +50,7 @@ import com.adaptris.core.util.Args;
  */
 public abstract class HttpProducer extends RequestReplyProducerImp {
 
+  protected static final long DEFAULT_TIMEOUT = -1;
   @NotNull
   @AutoPopulated
   @Valid
@@ -109,7 +108,7 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
    */
   @Override
   protected long defaultTimeout() {
-    return DEFAULT_SOCKET_TIMEOUT;
+    return DEFAULT_TIMEOUT;
   }
 
 

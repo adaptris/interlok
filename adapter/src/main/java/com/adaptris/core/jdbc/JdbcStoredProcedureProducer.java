@@ -36,7 +36,6 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.RequestReplyProducerImp;
-import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.jdbc.ResultSetTranslator;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.jdbc.CallableStatementCreator;
@@ -85,6 +84,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Note; if your Stored Procedure returns multiple result sets, each will be applied back into your {@link
  * com.adaptris.core.AdaptrisMessage} using
  * the {@link ResultSetTranslator} configured.
+ * </p>
+ * <p>
+ * If you plan on using this producer for Microsoft SQL Server, we recommend using a driver that is fully JDBC 3.0 compliant.  The standard
+ * Microsoft JDBC driver does not support multiple open result sets, therefore if your stored procedure returns multiple result sets, we recommend using
+ * a fully compliant JDBC 3.0 driver such as the JTDS driver.
  * </p>
  * <p>
  * Finally, the default timeout set for the database operation is 0 (i.e. no timeout). You can override this by configuring the
@@ -155,11 +159,12 @@ public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
       storedProcedure.setParameters(parseInParameters(msg));
       storedProcedure.setStatementExecutor(getStatementExecutor());
       storedProcedure.setTimeout(this.defaultTimeout());
+      storedProcedure.setAdaptrisMessage(msg);
+      storedProcedure.setResultSetTranslator(getResultSetTranslator());
 
       results = storedProcedure.execute();
 
       parseOutParameters(msg, results.getParameters());
-      translateResultSet(msg, results);
 
       commit(connection, msg);
     }
@@ -225,12 +230,6 @@ public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
       return;
     }
     JdbcUtil.commit(sqlConnection);
-  }
-
-  private void translateResultSet(AdaptrisMessage msg, JdbcResult jdbcResult) throws ServiceException, SQLException {
-    if(getResultSetTranslator() != null) {
-      getResultSetTranslator().translate(jdbcResult, msg);
-    }
   }
 
   private void parseOutParameters(AdaptrisMessage msg, List<StoredProcedureParameter> parameters) throws JdbcParameterException {

@@ -17,12 +17,17 @@ package com.adaptris.util;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 
-public class URLHelper {
+import com.adaptris.core.fs.FsHelper;
+
+public abstract class URLHelper {
 
   /**
    * <p>
@@ -40,6 +45,23 @@ public class URLHelper {
     URL url = new URL(loc.toString());
     URLConnection conn = url.openConnection();
     return conn.getInputStream();
+  }
+
+  /**
+   * Connect to the specified URL.
+   * 
+   * @param loc the URL
+   * @return an InputStream containing the contents of the URL specified.
+   */
+  public static InputStream connect(String loc) throws IOException, URISyntaxException {
+    try {
+      URI uri = new URI(loc);
+      return connect(new URLString(loc));
+    } catch (URISyntaxException e) {
+      // URISyntax exception (possibly because of file:///c:/xxx); so let's just assume that
+      return connect(new URLString(FsHelper.createUrlFromString(loc, true)));
+    }
+
   }
 
   /**
@@ -63,6 +85,9 @@ public class URLHelper {
       if (u != null) {
         in = u.openStream();
       }
+    }
+    if (in == null) {
+      throw new FileNotFoundException("Couldn't find [" + localFile + "] on filesystem or classpath");
     }
     return in;
   }

@@ -18,17 +18,16 @@ package com.adaptris.core.services.mime;
 
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Enumeration;
 
 import javax.mail.Header;
-import javax.mail.MessagingException;
-import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeBodyPart;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
+import org.apache.commons.io.IOUtils;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
@@ -43,8 +42,7 @@ import com.adaptris.core.ServiceImp;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.MimeHelper;
-import com.adaptris.util.stream.StreamUtil;
-import com.adaptris.util.text.mime.MultiPartInput;
+import com.adaptris.util.text.mime.BodyPartIterator;
 import com.adaptris.util.text.mime.PartSelector;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -92,19 +90,18 @@ public class MimePartSelector extends ServiceImp {
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     try {
-      MultiPartInput mp = MimeHelper.create(msg, false);
+      BodyPartIterator mp = MimeHelper.createBodyPartIterator(msg);
       MimeBodyPart part = selector.select(mp);
       if (part != null) {
         if (preserveHeadersAsMetadata()) {
-          addHeadersAsMetadata(msg);
+          addHeadersAsMetadata(mp.getHeaders().getAllHeaders(), headerPrefix(), msg);
         }
         if (preservePartHeadersAsMetadata()) {
           addHeadersAsMetadata(part.getAllHeaders(), partHeaderPrefix(), msg);
         }
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        StreamUtil.copyStream(part.getInputStream(), out);
-        out.close();
-        msg.setPayload(out.toByteArray());
+        try (InputStream in = part.getInputStream(); OutputStream out = msg.getOutputStream()) {
+          IOUtils.copy(in, out);
+        }
         if (markAsNonMime()) {
           if (msg.containsKey(CoreConstants.MSG_MIME_ENCODED)) {
             msg.removeMetadata(msg.getMetadata(CoreConstants.MSG_MIME_ENCODED));
@@ -126,20 +123,6 @@ public class MimePartSelector extends ServiceImp {
       Header hdr = (Header) e.nextElement();
       msg.addMetadata(prefix + hdr.getName(), hdr.getValue());
     }
-  }
-
-  private void addHeadersAsMetadata(AdaptrisMessage msg) throws Exception {
-    InternetHeaders hdrs = parseHeaders(msg);
-    addHeadersAsMetadata(hdrs.getAllHeaders(), headerPrefix(), msg);
-  }
-
-  private InternetHeaders parseHeaders(AdaptrisMessage msg)
-      throws MessagingException, IOException {
-    InputStream in = msg.getInputStream();
-    InternetHeaders hdrs = new InternetHeaders();
-    hdrs.load(in);
-    in.close();
-    return hdrs;
   }
 
   @Override

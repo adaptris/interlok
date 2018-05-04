@@ -262,6 +262,7 @@ public abstract class AdaptrisPollingConsumer extends AdaptrisMessageConsumerImp
   @Override
   public final void prepare() throws CoreException {
     getPoller().prepare();
+    registerEncoderMessageFactory();
     prepareConsumer();
   }
 

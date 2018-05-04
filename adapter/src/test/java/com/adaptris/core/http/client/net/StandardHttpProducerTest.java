@@ -301,7 +301,10 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     workflow.getServiceCollection().add(new StandaloneProducer(responder));
     StandardHttpProducer stdHttp = new StandardHttpProducer(HttpHelper.createProduceDestination(c));
     stdHttp.setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethodProvider.RequestMethod.POST));
+    stdHttp.setConnectTimeout(new TimeInterval(60L, TimeUnit.SECONDS));
+    stdHttp.setReadTimeout(new TimeInterval(60L, TimeUnit.SECONDS));
     StandaloneRequestor producer = new StandaloneRequestor(stdHttp);
+    producer.setReplyTimeout(new TimeInterval(60L, TimeUnit.SECONDS));
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
     try {
       start(c);

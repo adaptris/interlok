@@ -21,9 +21,7 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
@@ -34,7 +32,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.apache.commons.lang3.StringUtils;
@@ -43,6 +40,7 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.core.util.Args;
 import com.adaptris.util.IdGenerator;
+import com.adaptris.util.stream.StreamUtil;
 
 /**
  * <p>
@@ -502,18 +500,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
    * @throws IOException on exception
    */
   public static void copyPayload(AdaptrisMessage src, AdaptrisMessage dest) throws IOException {
-    InputStream in = null;
-    OutputStream out = null;
-    try {
-      in = src.getInputStream();
-      out = dest.getOutputStream();
-      IOUtils.copy(in, out);
-      out.flush();
-    }
-    finally {
-      IOUtils.closeQuietly(in);
-      IOUtils.closeQuietly(out);
-    }
+    StreamUtil.copyAndClose(src.getInputStream(), dest.getOutputStream());
   }
 
   @Deprecated

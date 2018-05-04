@@ -26,8 +26,6 @@ import javax.mail.internet.MimeMultipart;
 /**
  * Select a specific MimeBodyPart from a Mime Multipart.
  * 
- * @author lchan
- * @author $Author: lchan $
  */
 public interface PartSelector {
 
@@ -35,10 +33,18 @@ public interface PartSelector {
    * Select the body part that should form the AdaptrisMessage payload.
    * 
    * @param in a MultiPartInput whose iterator returns a MimeBodyPart.
-   * @return the MimeBodyPart that should be the body, or null if no match
-   *         found.
+   * @return the MimeBodyPart that should be the body, or null if no match found.
+   * @deprecated since 3.7.2.
    */
+  @Deprecated
   MimeBodyPart select(MultiPartInput in) throws MessagingException;
+
+  /**
+   * Select the body part that should form the AdaptrisMessage payload.
+   * 
+   * @return the MimeBodyPart that should be the body, or null if no match found.
+   */
+  MimeBodyPart select(BodyPartIterator in) throws MessagingException;
 
   /**
    * Select the body part that should form the AdaptrisMessage payload.

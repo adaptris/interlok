@@ -17,11 +17,6 @@
 package com.adaptris.core;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Iterator;
-
-import org.apache.commons.io.IOUtils;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
@@ -90,28 +85,18 @@ public abstract class RequestReplyProducerImp extends AdaptrisMessageProducerImp
     try {
       if (reply instanceof FileBackedMessage && msg instanceof FileBackedMessage) {
         ((FileBackedMessage) msg).initialiseFrom(((FileBackedMessage) reply).currentSource());
+        // INTERLOK-2189 stop the reply from going out of scope.
+        ((FileBackedMessage) msg).addObjectHeader(reply.getUniqueId(), reply);
       }
       else {
-        InputStream in = null;
-        OutputStream out = null;
-        try {
-          in = reply.getInputStream();
-          out = msg.getOutputStream();
-          StreamUtil.copyStream(in, out);
-        }
-        finally {
-          IOUtils.closeQuietly(in);
-          IOUtils.closeQuietly(out);
-        }
-
+        StreamUtil.copyAndClose(reply.getInputStream(), msg.getOutputStream());
       }
     }
     catch (IOException e) {
       throw new ProduceException(e);
     }
     if (!shouldIgnoreReplyMetadata()) {
-      for (Iterator i = reply.getMetadata().iterator(); i.hasNext();) {
-        MetadataElement e = (MetadataElement) i.next();
+      for (MetadataElement e : reply.getMetadata()) {
         msg.addMetadata(e);
       }
       msg.getObjectHeaders().putAll(reply.getObjectHeaders());

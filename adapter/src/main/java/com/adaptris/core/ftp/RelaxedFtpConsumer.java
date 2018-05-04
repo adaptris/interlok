@@ -42,6 +42,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Address or DNS name of the remote ftp server may cause files to be consumed without specifying a subdirectory (which if you are
  * not in an ftp chroot jail might be a very bad thing).
  * </p>
+ * <p>
+ * Although multiple file-filters can be configured only filters that work with the filepath will work. Other filter implementations
+ * (such as those based on size /last modified) may not work.
+ * </p>
  * 
  * @config relaxed-ftp-consumer
  * 

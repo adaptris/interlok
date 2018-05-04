@@ -29,6 +29,6 @@
   	<dependency org="commons-collections" name="commons-collections" rev="3.2.2" conf="compile->default" />
     <!-- For Various ANT Tasks -->
     <dependency org="ant-contrib" name="ant-contrib" rev="1.0b3" conf="ant->default" transitive="false"/>
-    <dependency org="org.jacoco" name="org.jacoco.ant" rev="0.7.9" conf="ant->default"/>
+    <dependency org="org.jacoco" name="org.jacoco.ant" rev="0.8.0" conf="ant->default"/>
   </dependencies>
 </ivy-module>

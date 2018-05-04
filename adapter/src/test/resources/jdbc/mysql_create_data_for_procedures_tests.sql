@@ -28,6 +28,7 @@ DROP PROCEDURE IF EXISTS many_inout_many_in_many_out#
 DROP PROCEDURE IF EXISTS one_resultset#
 DROP PROCEDURE IF EXISTS many_resultsets#
 DROP PROCEDURE IF EXISTS out_in_in_in#
+DROP PROCEDURE IF EXISTS one_resultset_one_out#
 
 CREATE TABLE liverpool_transfers (
   id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -296,7 +297,16 @@ CREATE PROCEDURE one_resultset ()
  END;
  #
 
+CREATE PROCEDURE one_resultset_one_out (out completed INT)
+ BEGIN
+   select player, amount, date
+   from liverpool_transfers
+   order by amount
+   desc limit 5;
 
+   SET completed = 1;
+ END;
+ # 
 
 
 CREATE PROCEDURE many_resultsets ()

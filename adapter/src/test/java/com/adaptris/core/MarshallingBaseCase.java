@@ -415,8 +415,7 @@ public abstract class MarshallingBaseCase extends BaseCase {
     }
     catch (CoreException e) {
       assertNotNull(e.getCause());
-      assertEquals(IOException.class, e.getCause().getClass());
-      assertEquals("could not unmarshal component from [" + unknownLoc + "]", e.getCause().getMessage());
+      assertTrue(IOException.class.isAssignableFrom(e.getCause().getClass()));
     }
   }
 

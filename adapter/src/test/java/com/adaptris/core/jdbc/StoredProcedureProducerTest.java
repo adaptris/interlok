@@ -400,6 +400,37 @@ public class StoredProcedureProducerTest extends ProducerCase {
       }
     }
   }
+  
+  public void testOneMetadataParamOutAndOneResultSet() throws Exception {
+    if (testsEnabled) {
+      JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
+      spp.setDestination(new ConfiguredProduceDestination("one_resultset_one_out"));
+      spp.setResultSetTranslator(new FirstRowMetadataTranslator());
+
+      JdbcMetadataParameter outParameter = new JdbcMetadataParameter();
+      outParameter.setMetadataKey("completed");
+      outParameter.setName("completed");
+      outParameter.setType(ParameterValueType.INTEGER);
+
+      OutParameters outParameters = new OutParameters();
+      outParameters.add(outParameter);
+
+      spp.setOutParameters(outParameters);
+      AdaptrisMessage message = createMessage();
+
+      assertEquals(0, message.getMetadata().size());
+      StandaloneProducer producer = configureForTests(spp, true);
+      try {
+        start(producer);
+        producer.doService(message);
+        assertEquals(4, message.getMetadata().size());
+        assertEquals("1", message.getMetadataValue("completed"));
+      }
+      finally {
+        stop(producer);
+      }
+    }
+  }
 
   public void testOneXPathParamInOut() throws Exception {
     if (testsEnabled) {

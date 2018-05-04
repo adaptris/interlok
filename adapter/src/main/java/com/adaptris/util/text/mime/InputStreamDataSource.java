@@ -19,22 +19,25 @@ package com.adaptris.util.text.mime;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import javax.activation.DataSource;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetHeaders;
+import javax.mail.util.SharedByteArrayInputStream;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+
+import com.adaptris.core.util.Args;
 
 
-/** A datasource on an arbitary input stream.
- *  @see javax.activation.DataSource
- */
-public class InputStreamDataSource implements DataSource, MimeConstants {
+public class InputStreamDataSource implements DataSource, MimeConstants, MimeHeaders {
 
-  private InputStream in = null;
-  private InternetHeaders header = null;
-  private ByteArrayOutputStream out = new ByteArrayOutputStream();
+  private InternetHeaders headers = null;
   private String contentType = null;
   private String messageId = null;
+  private byte[] wrappedBytes;
 
   private InputStreamDataSource() {
   }
@@ -45,65 +48,62 @@ public class InputStreamDataSource implements DataSource, MimeConstants {
    *  @throws MessagingException if there was an error initialising the
    *  datasource.
    */
-  public InputStreamDataSource(InputStream input)
-  throws IOException, MessagingException {
+  public InputStreamDataSource(InputStream input) throws IOException, MessagingException {
     this();
     initialise(input);
   }
 
-  private void initialise(InputStream input)
-  throws IOException, MessagingException {
-    in = input;
-    header = new InternetHeaders(in);
+  private void initialise(InputStream input) throws IOException, MessagingException {
+    headers = new InternetHeaders(input);
+    initContent(input);
   }
 
-  /** @see javax.activation.DataSource#getContentType() */
   @Override
   public String getContentType() {
     if (contentType == null) {
-
-      String[] s = header.getHeader(HEADER_CONTENT_TYPE);
-      contentType = s[0];
+      contentType = get(HEADER_CONTENT_TYPE);
     }
     return contentType;
   }
 
-  /** @see javax.activation.DataSource#getInputStream() */
   @Override
-  public java.io.InputStream getInputStream()
-  throws java.io.IOException {
-    return in;
+  public InputStream getInputStream() throws IOException {
+    return new SharedByteArrayInputStream(wrappedBytes);
   }
 
-  /** @see javax.activation.DataSource#getName() */
   @Override
   public String getName() {
     if (messageId == null) {
-
-      String[] s = header.getHeader(HEADER_MESSAGE_ID);
-      messageId = s[0];
+      messageId = get(HEADER_MESSAGE_ID);
     }
     return messageId;
   }
 
-  /** @see javax.activation.DataSource#getOutputStream() */
   @Override
-  public java.io.OutputStream getOutputStream()
-  throws java.io.IOException {
-    return out;
+  public OutputStream getOutputStream() throws IOException {
+    throw new UnsupportedOperationException();
   }
 
-  /** Return the bytes stored by the outputstream
-   *  @return the byte array.
-   */
-  public byte[] getBytes() {
-    return out.toByteArray();
+  private void initContent(InputStream in) throws IOException {
+    try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+      IOUtils.copy(in, out);
+      wrappedBytes = out.toByteArray();
+    }
   }
 
-  /** Return the InternetHeader object for further querying.
-   *  @return the InternetHeaders object.
-   */
+  @Override
   public InternetHeaders getHeaders() {
-    return header;
+    return headers;
+  }
+
+  private String get(String headerName) {
+    String result = null;
+    try {
+      String[] s = Args.notNull(headers.getHeader(headerName), headerName);
+      result = s[0];
+    } catch (IllegalArgumentException e) {
+
+    }
+    return StringUtils.defaultIfEmpty(result, "");
   }
 }

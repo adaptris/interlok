@@ -30,7 +30,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.services.metadata.AddMetadataService;
 import com.adaptris.core.stubs.DefectiveMessageFactory;
-import com.adaptris.util.text.mime.MultiPartInput;
+import com.adaptris.util.text.mime.BodyPartIterator;
 
 public abstract class MimeAggregatorCase extends AggregatorCase {
 
@@ -102,7 +102,7 @@ public abstract class MimeAggregatorCase extends AggregatorCase {
     AdaptrisMessage s2 =
         AdaptrisMessageFactory.getDefaultInstance().newMessage("<document>world</document>", null, new HashSet<>(metadata));
     aggr.joinMessage(original, Arrays.asList(new AdaptrisMessage[] {s1, s2}));
-    MultiPartInput m = new MultiPartInput(original.getInputStream(), false);
+    BodyPartIterator m = new BodyPartIterator(original.getInputStream());
     for (int i = 0; i < m.size(); i++) {
       MimeBodyPart part = m.getBodyPart(i);
       assertEquals("application/xml", part.getContentType());
@@ -133,7 +133,7 @@ public abstract class MimeAggregatorCase extends AggregatorCase {
         new ArrayList<>(Arrays.asList(new String[] {getName() + "_original", getName() + "_split1", getName() + "_split2"
     }));
     aggr.joinMessage(original, Arrays.asList(new AdaptrisMessage[] {s1, s2}));
-    MultiPartInput m = new MultiPartInput(original.getInputStream(), false);
+    BodyPartIterator m = new BodyPartIterator(original.getInputStream());
     for (int i = 0; i < m.size(); i++) {
       MimeBodyPart part = m.getBodyPart(i);
       assertTrue(expectedContentIDs.contains(part.getContentID()));

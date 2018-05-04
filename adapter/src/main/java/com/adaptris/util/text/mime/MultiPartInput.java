@@ -17,7 +17,6 @@
 package com.adaptris.util.text.mime;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
@@ -30,12 +29,13 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.IdGenerator;
-import com.adaptris.util.stream.StreamUtil;
 
 /**
  * Reading a mime multipart input stream.
@@ -75,7 +75,10 @@ import com.adaptris.util.stream.StreamUtil;
  * finished, when the final mime boundary occurs. If Content-Length needs to be taken into account then a specific DataSource should
  * be used as the parameter to the constructor.
  * </p>
+ * 
+ * @deprecated since 3.7.2 use one of {@link MultipartIterator} concrete sub-classes instead.
  */
+@Deprecated
 public class MultiPartInput implements Enumeration, Iterator {
 
   private List<PartHolder> bodyParts;
@@ -210,7 +213,7 @@ public class MultiPartInput implements Enumeration, Iterator {
    */
   public MimeBodyPart getBodyPart(String id) {
     MimeBodyPart result = null;
-    PartHolder tmp = new PartHolder(id);
+    PartHolder tmp = wrap(id);
 
     if (bodyParts.contains(tmp)) {
       result = ((PartHolder) bodyParts.get(bodyParts.indexOf(tmp))).getPart();
@@ -245,9 +248,9 @@ public class MultiPartInput implements Enumeration, Iterator {
    */
   public byte[] getPart(String id) {
     byte[] result = null;
-    PartHolder tmp = new PartHolder(id);
+    PartHolder tmp = wrap(id);
     if (bodyParts.contains(tmp)) {
-      result = ((PartHolder) bodyParts.get(bodyParts.indexOf(tmp))).getBytes();
+      result = ((BytePartHolder) bodyParts.get(bodyParts.indexOf(tmp))).getBytes();
     }
     return result;
   }
@@ -262,7 +265,7 @@ public class MultiPartInput implements Enumeration, Iterator {
     if (bodyParts.size() < partNumber + 1) {
       return null;
     }
-    return ((PartHolder) bodyParts.get(partNumber)).getBytes();
+    return ((BytePartHolder) bodyParts.get(partNumber)).getBytes();
   }
 
   /** @see Enumeration#hasMoreElements */
@@ -296,7 +299,7 @@ public class MultiPartInput implements Enumeration, Iterator {
   public Object next() {
     Object result = null;
     if (simpleIterator) {
-      result = ((PartHolder) bodyPartIterator.next()).getBytes();
+      result = ((BytePartHolder) bodyPartIterator.next()).getBytes();
     }
     else {
       result = ((PartHolder) bodyPartIterator.next()).getPart();
@@ -356,7 +359,7 @@ public class MultiPartInput implements Enumeration, Iterator {
     multipart = new MimeMultipart(dataSource);
     for (int i = 0; i < multipart.getCount(); i++) {
       MimeBodyPart part = (MimeBodyPart) multipart.getBodyPart(i);
-      PartHolder ph = new PartHolder(part);
+      PartHolder ph = wrap(part);
       if (bodyParts.contains(ph)) {
         logR.warn(ph.contentId + " already exists as a part");
       }
@@ -365,43 +368,42 @@ public class MultiPartInput implements Enumeration, Iterator {
     bodyPartIterator = bodyParts.iterator();
   }
 
-  private class PartHolder {
+  private PartHolder wrap(MimeBodyPart part) throws MessagingException, IOException {
+    if (simpleIterator) {
+      return new BytePartHolder(part);
+    }
+    return new MimePartHolder(part);
+  }
+
+  private PartHolder wrap(String id) {
+    if (simpleIterator) {
+      return new BytePartHolder(id);
+    }
+    return new MimePartHolder(id);
+  }
+
+  abstract class PartHolder {
     private MimeBodyPart bodyPart;
     private String contentId;
-    private byte[] bodyBytes;
 
     PartHolder(String id) {
       contentId = id;
       bodyPart = null;
-      bodyBytes = null;
     }
 
     PartHolder(MimeBodyPart p) throws IOException, MessagingException {
       bodyPart = p;
       contentId = bodyPart.getContentID();
       if (contentId == null) {
-        logR.warn("No Content Id Found as part of body part, "
-              + "assigning a unique id " + "for referential integrity");
+        logR.warn("No Content Id Found as part of body part, assigning a unique id for referential integrity");
         contentId = idGenerator.create(p);
       }
-      ByteArrayOutputStream out = new ByteArrayOutputStream();
-      StreamUtil.copyStream(bodyPart.getInputStream(), out);
-      bodyBytes = out.toByteArray();
     }
 
     MimeBodyPart getPart() {
       return bodyPart;
     }
 
-    byte[] getBytes() {
-      return bodyBytes;
-    }
-
-    /**
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     *
-     */
     @Override
     public boolean equals(Object o) {
       boolean rc = false;
@@ -411,15 +413,40 @@ public class MultiPartInput implements Enumeration, Iterator {
       return rc;
     }
 
-    /**
-     *
-     * @see java.lang.Object#hashCode()
-     *
-     */
     @Override
     public int hashCode() {
       return contentId.hashCode();
     }
+  }
 
+  private class BytePartHolder extends PartHolder {
+    private byte[] bytes;
+
+    BytePartHolder(String id) {
+      super(id);
+    }
+
+    BytePartHolder(MimeBodyPart p) throws IOException, MessagingException {
+      super(p);
+      try (ByteArrayOutputStream out = new ByteArrayOutputStream(); InputStream in = p.getInputStream()) {
+        IOUtils.copy(in, out);
+        bytes = out.toByteArray();
+      }
+    }
+
+    byte[] getBytes() {
+      return bytes;
+    }
+  }
+
+  private class MimePartHolder extends PartHolder {
+
+    MimePartHolder(String id) {
+      super(id);
+    }
+
+    MimePartHolder(MimeBodyPart p) throws IOException, MessagingException {
+      super(p);
+    }
   }
 }

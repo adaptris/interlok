@@ -74,8 +74,8 @@ public class MetadataValueBranchingService extends MetadataBranchingServiceImp {
       super.initService();
       Args.notNull(getValueMatcher(), "valueMatcher");
       Args.notNull(getMetadataToServiceIdMappings(), "metadataToServiceMappings");
-      if (valueMatcher instanceof UseKeyAsServiceIdValueMatcher && !isEmpty(getDefaultServiceId())) {
-        log.warn("default-service-id set with {}, default-service-id will not be used",
+      if (valueMatcher instanceof UseKeyAsServiceIdValueMatcher && getMetadataToServiceIdMappings().size() > 0) {
+        log.warn("{} configured with metadata-to-service-id-mappings; mappings will be ignored",
             UseKeyAsServiceIdValueMatcher.class.getSimpleName());
       }
     } catch (Exception e) {

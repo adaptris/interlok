@@ -250,4 +250,8 @@ junit.resolver.mapped.url=file://localhost/${test.resources.dir}/jetty-configure
 junit.urlstring.dir=${build.dir}/junit/urlstring
 junit.urlstring.serialized=${test.resources.dir}/urlstring.serialized
 
+junit.urlhelper.local=file://localhost/${test.resources.dir}/xstream-standard.xml
+junit.urlhelper.remote=https://development.adaptris.net/index.html
+junit.urlhelper.classpath=xstream-standard.xml
+
 

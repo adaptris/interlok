@@ -140,6 +140,8 @@ public class JdkHttpProducer extends HttpProducer {
       http.setRequestMethod(methodToUse(msg).name());
       http.setInstanceFollowRedirects(handleRedirection());
       http.setDoInput(true);
+      http.setConnectTimeout(Long.valueOf(timeout).intValue());
+      http.setReadTimeout(Long.valueOf(timeout).intValue());
       // ProxyUtil.applyBasicProxyAuthorisation(http);
       addHeaders(msg, http);
       if (getContentTypeKey() != null && msg.containsKey(getContentTypeKey())) {

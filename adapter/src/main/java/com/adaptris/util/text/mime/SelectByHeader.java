@@ -23,9 +23,9 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 
@@ -63,6 +63,7 @@ public class SelectByHeader implements PartSelector {
    * @see PartSelector#select(MultiPartInput)
    */
   @Override
+  @SuppressWarnings("deprecation")
   public MimeBodyPart select(MultiPartInput m) throws MessagingException {
     MimeBodyPart result = null;
     assertConfig();
@@ -81,13 +82,31 @@ public class SelectByHeader implements PartSelector {
     return result;
   }
 
-  private void assertConfig() throws MessagingException {
-    if (StringUtils.isEmpty(getHeaderName())) {
-      throw new MessagingException("No configured Header name");
+  @Override
+  public MimeBodyPart select(BodyPartIterator m) throws MessagingException {
+    MimeBodyPart result = null;
+    assertConfig();
+    outer: while (m.hasNext()) {
+      MimeBodyPart p = (MimeBodyPart) m.next();
+      String[] values = p.getHeader(getHeaderName());
+      if (values != null) {
+        for (String value : values) {
+          if (value.matches(getHeaderValueRegExp())) {
+            result = p;
+            break outer;
+          }
+        }
+      }
     }
-    if (StringUtils.isEmpty(getHeaderValueRegExp())) {
-      throw new MessagingException(
-          "No configured Header value regular expression");
+    return result;
+  }
+
+  private void assertConfig() throws MessagingException {
+    try {
+      Args.notBlank(getHeaderName(), "headerName");
+      Args.notBlank(getHeaderValueRegExp(), "headerRegex");
+    } catch (IllegalArgumentException e) {
+      throw new MessagingException("No configured header / regexp");
     }
   }
 

@@ -45,7 +45,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * <p>
  * Consider using this wrapper on a service where you will periodically want to stop and re-start a service. Check
- * {@link RestartStrategy} for the available restarting strategies.
+ * {@link RestartStrategy} for the available restarting strategies. Note that some nested configuration will be ignored,
+ * particularly {@link #setContinueOnFail(Boolean)} in the nested service. If you want that behaviour, then you should explicitly
+ * configure it in this service.
+ * 
  * </p>
  * 
  * @author lchan
@@ -156,15 +159,6 @@ public class StatelessServiceWrapper extends ServiceImp implements EventHandlerA
     }
     return isEmpty(qualifier) ? super.createQualifier() : qualifier;
   }
-
-  @Override
-  public boolean continueOnFailure() {
-    if (getService() != null) {
-      return getService().continueOnFailure();
-    }
-    return super.continueOnFailure();
-  }
-
 
   @Override
   public boolean isTrackingEndpoint() {
