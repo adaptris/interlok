@@ -16,10 +16,7 @@
 
 package com.adaptris.core.services;
 
-import java.io.InputStream;
 import java.util.zip.GZIPOutputStream;
-
-import org.apache.commons.io.IOUtils;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
@@ -27,6 +24,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.util.stream.StreamUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -49,18 +47,11 @@ public class GzipService extends ServiceImp {
    */
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    InputStream in = null;
-    GZIPOutputStream out = null;
     try {
-      in = msg.getInputStream();
-      out = new GZIPOutputStream(msg.getOutputStream());
-      IOUtils.copy(in, out);
+      StreamUtil.copyAndClose(msg.getInputStream(), new GZIPOutputStream(msg.getOutputStream()));
     }
     catch (Exception e) {
       throw new ServiceException(e);
-    } finally {
-      IOUtils.closeQuietly(in);
-      IOUtils.closeQuietly(out);
     }
   }
 

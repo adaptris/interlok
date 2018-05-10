@@ -16,12 +16,9 @@
 
 package com.adaptris.core.services.splitter;
 
-import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -30,8 +27,6 @@ import javax.mail.Header;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 
-import org.apache.commons.io.IOUtils;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
@@ -39,6 +34,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.MimeHelper;
+import com.adaptris.util.stream.StreamUtil;
 import com.adaptris.util.text.mime.BodyPartIterator;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -91,19 +87,10 @@ public class MimePartSplitter extends MessageSplitterImp {
   }
 
   private void copy(MimeBodyPart src, AdaptrisMessage dest) throws IOException, MessagingException {
-    OutputStream out = null;
-    InputStream in = null;
-    try {
-      in = src.getInputStream();
-      out = dest.getOutputStream();
-      IOUtils.copy(in, out);
-      copyHeaders(src, dest);
-    }
-    finally {
-      closeQuietly(out);
-      closeQuietly(in);
-    }
+    StreamUtil.copyAndClose(src.getInputStream(), dest.getOutputStream());
+    copyHeaders(src, dest);
   }
+
   private void copyHeaders(MimeBodyPart src, AdaptrisMessage dest) throws MessagingException {
     if (preserveHeaders()) {
       Enumeration e = src.getAllHeaders();

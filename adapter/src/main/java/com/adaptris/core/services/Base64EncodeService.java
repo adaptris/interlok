@@ -16,12 +16,7 @@
 
 package com.adaptris.core.services;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import javax.mail.internet.MimeUtility;
-
-import org.apache.commons.io.IOUtils;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
@@ -29,6 +24,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.util.stream.StreamUtil;
 import com.adaptris.util.text.mime.MimeConstants;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -47,20 +43,11 @@ public class Base64EncodeService extends ServiceImp {
    * @see com.adaptris.core.Service#doService(com.adaptris.core.AdaptrisMessage)
    */
   public void doService(AdaptrisMessage msg) throws ServiceException {
-
-    OutputStream out = null;
-    InputStream in = null;
     try {
-      in = msg.getInputStream();
-      out = MimeUtility.encode(msg.getOutputStream(), MimeConstants.ENCODING_BASE64);
-      IOUtils.copy(in, out);
+      StreamUtil.copyAndClose(msg.getInputStream(), MimeUtility.encode(msg.getOutputStream(), MimeConstants.ENCODING_BASE64));
     }
     catch (Exception e) {
       throw new ServiceException(e);
-    }
-    finally {
-      IOUtils.closeQuietly(in);
-      IOUtils.closeQuietly(out);
     }
   }
 

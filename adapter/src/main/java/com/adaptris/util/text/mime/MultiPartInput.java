@@ -29,13 +29,13 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.IdGenerator;
+import com.adaptris.util.stream.StreamUtil;
 
 /**
  * Reading a mime multipart input stream.
@@ -428,10 +428,9 @@ public class MultiPartInput implements Enumeration, Iterator {
 
     BytePartHolder(MimeBodyPart p) throws IOException, MessagingException {
       super(p);
-      try (ByteArrayOutputStream out = new ByteArrayOutputStream(); InputStream in = p.getInputStream()) {
-        IOUtils.copy(in, out);
-        bytes = out.toByteArray();
-      }
+      ByteArrayOutputStream out = new ByteArrayOutputStream();
+      StreamUtil.copyAndClose(p.getInputStream(), out);
+      bytes = out.toByteArray();
     }
 
     byte[] getBytes() {

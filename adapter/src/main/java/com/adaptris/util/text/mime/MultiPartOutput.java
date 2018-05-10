@@ -25,7 +25,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilterOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -39,9 +38,10 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.adaptris.util.stream.StreamUtil;
 
 /**
  * Handle creation of multipart mime output.
@@ -272,10 +272,8 @@ public class MultiPartOutput implements MimeConstants {
       counter.flush();
       mimeHeader.setHeader(HEADER_CONTENT_LENGTH, String.valueOf(counter.count()));
     }
-    try (InputStream in = new FileInputStream(tempFile)) {
-      writeHeaders(mimeHeader, out);
-      IOUtils.copy(in, out);
-    }
+    writeHeaders(mimeHeader, out);
+    StreamUtil.copyAndClose(new FileInputStream(tempFile), out);
   }
 
 

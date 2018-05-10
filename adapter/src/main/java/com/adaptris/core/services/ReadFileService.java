@@ -4,13 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
-import org.apache.commons.io.IOUtils;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
@@ -21,6 +17,7 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.util.stream.StreamUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -55,10 +52,7 @@ public class ReadFileService extends ServiceImp
 			if (file.exists() && file.isFile())
 			{
 				log.info("Reading file : {}", file.getAbsolutePath());
-				try (InputStream in = new FileInputStream(file); OutputStream out = message.getOutputStream())
-				{
-					IOUtils.copy(in, out);
-				}
+        StreamUtil.copyAndClose(new FileInputStream(file), message.getOutputStream());
 			}
 			else
 			{
