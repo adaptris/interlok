@@ -48,7 +48,7 @@
     <dependency org="javax.validation" name="validation-api" rev="1.0.0.GA" conf="compile->default"/>
     <dependency org="javax.el" name="javax.el-api" rev="2.2.4" conf="compile->default"/>
     <dependency org="org.hibernate.javax.persistence" name="hibernate-jpa-2.1-api" rev="1.0.0.Final" conf="compile->default"/>
-    <dependency org="org.hibernate" name="hibernate-validator" rev="4.3.1.Final" conf="compile->default"/>
+    <dependency org="org.hibernate" name="hibernate-validator" rev="4.3.2.Final" conf="compile->default"/>
 
     <dependency org="commons-collections" name="commons-collections"  rev="3.2.2" conf="compile->default" />
     <dependency org="commons-io" name="commons-io" rev="2.4" conf="compile->default"  />
@@ -104,11 +104,11 @@
     <dependency org="org.apache.derby" name="derby" rev="10.10.1.1" conf="runtime->default"/>
     <dependency org="org.mockito" name="mockito-all" rev="1.9.5" conf="test->default"/>
     <dependency org="mysql" name="mysql-connector-java" rev="5.1.40" conf="test->default"/>
-    
+
     <!--dependency org="com.microsoft.sqlserver" name="mssql-jdbc" rev="6.4.0.jre8" conf="test->default"/-->
-	<!-- Preferred SQL Server driver --> 
+	<!-- Preferred SQL Server driver -->
 	<!--dependency org="net.sourceforge.jtds" name="jtds" rev="1.3.1"/-->
-    
+
 
     <dependency org="org.jruby" name="jruby-complete" rev="9.1.13.0" conf="test->default" transitive="false"/>
     <dependency org="org.mockftpserver" name="MockFtpServer" rev="2.4-MDTM" conf="test->default"/>
