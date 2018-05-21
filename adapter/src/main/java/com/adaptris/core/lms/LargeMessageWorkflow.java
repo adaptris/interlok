@@ -20,7 +20,6 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.StandardWorkflow;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -56,37 +55,17 @@ public class LargeMessageWorkflow extends StandardWorkflow {
   }
 
   @Override
-  protected void startWorkflow() throws CoreException {
-    super.startWorkflow();
-  }
-
-  @Override
-  protected void stopWorkflow() {
-    super.stopWorkflow();
-  }
-
-
-  @Override
-  public synchronized void onAdaptrisMessage(AdaptrisMessage msg) {
+  public void onAdaptrisMessage(AdaptrisMessage msg) {
     if (!obtainChannel().isAvailable()) {
       handleChannelUnavailable(msg); // make pluggable?
     }
     else {
-      handleMessage(msg, false);
+      handleMessage(msg, false, lock);
     }
   }
 
   @Override
   protected void resubmitMessage(AdaptrisMessage msg) {
-    handleMessage(msg, false);
+    handleMessage(msg, false, lock);
   }
-
-  @Override
-  protected void handleBadMessage(String logMsg, Exception e, AdaptrisMessage msg) {
-    super.handleBadMessage(logMsg, e, msg);
-  }
-
-  @Override
-  protected void prepareWorkflow() throws CoreException {}
-
 }

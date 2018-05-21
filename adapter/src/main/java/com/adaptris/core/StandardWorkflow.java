@@ -19,7 +19,6 @@ package com.adaptris.core;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -38,7 +37,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Basic Single Threaded Workflow", tag = "workflow,base")
 @DisplayOrder(order = {"disableDefaultMessageCount", "sendEvents", "logPayload"})
-public class StandardWorkflow extends WorkflowImp {
+public class StandardWorkflow extends StandardWorkflowImpl {
+
+  protected transient Object lock = new Object();
 
   public StandardWorkflow() {
     super();
@@ -55,68 +56,13 @@ public class StandardWorkflow extends WorkflowImp {
     setProducer(producer);
   }
 
-  /**
-   * @see com.adaptris.core.WorkflowImp#initialiseWorkflow()
-   */
   @Override
-  protected void initialiseWorkflow() throws CoreException {
-    LifecycleHelper.init(getProducer());
-    LifecycleHelper.init(getServiceCollection());
-    getConsumer().registerAdaptrisMessageListener(this); // before init
-    LifecycleHelper.init(getConsumer());
-  }
-
-  /**
-   * @see com.adaptris.core.WorkflowImp#startWorkflow()
-   */
-  @Override
-  protected void startWorkflow() throws CoreException {
-    LifecycleHelper.start(getProducer());
-    LifecycleHelper.start(getServiceCollection());
-    LifecycleHelper.start(getConsumer());
-  }
-
-  /**
-   * @see com.adaptris.core.WorkflowImp#stopWorkflow()
-   */
-  @Override
-  protected void stopWorkflow() {
-    LifecycleHelper.stop(getConsumer());
-    LifecycleHelper.stop(getServiceCollection());
-    LifecycleHelper.stop(getProducer());
-  }
-
-  /**
-   * @see com.adaptris.core.WorkflowImp#closeWorkflow()
-   */
-  @Override
-  protected void closeWorkflow() {
-    LifecycleHelper.close(getConsumer());
-    LifecycleHelper.close(getServiceCollection());
-    LifecycleHelper.close(getProducer());
-  }
-
-  /**
-   * <p>
-   * This method is <code>synchronized</code> in case client code is
-   * multi-threaded.
-   * </p>
-   *
-   * @see AdaptrisMessageListener#onAdaptrisMessage(AdaptrisMessage)
-   */
-  @Override
-  public synchronized void onAdaptrisMessage(AdaptrisMessage msg) {
+  public void onAdaptrisMessage(AdaptrisMessage msg) {
     if (!obtainChannel().isAvailable()) {
-
-      //
-      // ...causes deadlock...
-      // if (this.getChannel().getComponentState() !=
-      // StartedState.getInstance()) {
-      //
       handleChannelUnavailable(msg); // make pluggable?
     }
     else {
-      handleMessage(msg, true);
+      handleMessage(msg, true, lock);
     }
   }
 
@@ -125,10 +71,39 @@ public class StandardWorkflow extends WorkflowImp {
    */
   @Override
   protected void resubmitMessage(AdaptrisMessage msg) {
-    handleMessage(msg, true);
+    handleMessage(msg, true, lock);
   }
 
-  @Override
-  protected void prepareWorkflow() throws CoreException {}
+  protected AdaptrisMessage handleMessage(final AdaptrisMessage msg, boolean clone, Object lock) {
+    AdaptrisMessage wip = msg;
+    workflowStart(msg);
+    synchronized (lock) {
+      try {
+        long start = System.currentTimeMillis();
+        log.debug("start processing msg [{}]", msg.toString(logPayload()));
+        if (clone) {
+          wip = (AdaptrisMessage) msg.clone(); // retain orig. for error handling
+        }
+        wip.getMessageLifecycleEvent().setChannelId(obtainChannel().getUniqueId());
+        wip.getMessageLifecycleEvent().setWorkflowId(obtainWorkflowId());
+        wip.addEvent(getConsumer(), true); // initial receive event
+        getServiceCollection().doService(wip);
+        doProduce(wip);
+        logSuccess(wip, start);
+      } catch (ServiceException e) {
+        handleBadMessage("Exception from ServiceCollection", e, copyExceptionHeaders(wip, msg));
+      } catch (ProduceException e) {
+        wip.addEvent(getProducer(), false); // generate event
+        handleBadMessage("Exception producing msg", e, copyExceptionHeaders(wip, msg));
+        handleProduceException();
+      } catch (Exception e) { // all other Exc. inc. runtime
+        handleBadMessage("Exception processing message", e, copyExceptionHeaders(wip, msg));
+      } finally {
+        sendMessageLifecycleEvent(wip);
+      }
+    }
+    workflowEnd(msg, wip);
+    return wip;
+  }
 
 }
