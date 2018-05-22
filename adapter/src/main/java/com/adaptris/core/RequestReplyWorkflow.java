@@ -259,5 +259,6 @@ public class RequestReplyWorkflow extends StandardWorkflow {
   protected void prepareWorkflow() throws CoreException {
     getReplyProducer().prepare();
     getReplyServiceCollection().prepare();
+    super.prepareWorkflow();
   }
 }

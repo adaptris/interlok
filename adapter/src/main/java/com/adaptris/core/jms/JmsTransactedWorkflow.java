@@ -99,24 +99,9 @@ public final class JmsTransactedWorkflow extends StandardWorkflow {
 
 
   @Override
-  public synchronized void onAdaptrisMessage(AdaptrisMessage msg) {
-    if (!obtainChannel().isAvailable()) {
-      handleChannelUnavailable(msg); // make pluggable?
-    }
-    else {
-      handleMessage(msg, true);
-    }
-  }
-
-  @Override
   public void doProduce(AdaptrisMessage msg) throws ServiceException, ProduceException {
     super.doProduce(msg);
     LAST_MSG_FAILED.set(Boolean.FALSE);
-  }
-
-  @Override
-  protected void resubmitMessage(AdaptrisMessage msg) {
-    handleMessage(msg, true);
   }
 
   @Override
@@ -183,10 +168,5 @@ public final class JmsTransactedWorkflow extends StandardWorkflow {
   public void setWaitPeriodAfterRollback(TimeInterval interval) {
     waitPeriodAfterRollback = interval;
   }
-
-  @Override
-  protected void prepareWorkflow() throws CoreException {}
-
-
 
 }

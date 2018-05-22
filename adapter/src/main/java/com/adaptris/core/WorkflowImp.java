@@ -725,46 +725,6 @@ public abstract class WorkflowImp implements Workflow {
     }
   }
 
-  /**
-   * Handle the message in a standard way
-   *
-   * @param msg the message.
-   * @param clone whether or not to attempt a msg.clone() preserving the original for error handling purposes.
-   * @see com.adaptris.core.lms.LargeMessageWorkflow
-   */
-  protected void handleMessage(final AdaptrisMessage msg, boolean clone) {
-    AdaptrisMessage wip = msg;
-    workflowStart(msg);
-    try {
-      long start = System.currentTimeMillis();
-      log.debug("start processing msg [" + msg.toString(logPayload()) + "]");
-      if (clone) {
-        wip = (AdaptrisMessage) msg.clone(); // retain orig. for error handling
-      }
-      wip.getMessageLifecycleEvent().setChannelId(obtainChannel().getUniqueId());
-      wip.getMessageLifecycleEvent().setWorkflowId(obtainWorkflowId());
-      wip.addEvent(getConsumer(), true); // initial receive event
-      getServiceCollection().doService(wip);
-      doProduce(wip);
-      logSuccess(msg, start);
-    }
-    catch (ServiceException e) {
-      handleBadMessage("Exception from ServiceCollection", e, copyExceptionHeaders(wip, msg));
-    }
-    catch (ProduceException e) {
-      wip.addEvent(getProducer(), false); // generate event
-      handleBadMessage("Exception producing msg", e, copyExceptionHeaders(wip, msg));
-      handleProduceException();
-    }
-    catch (Exception e) { // all other Exc. inc. runtime
-      handleBadMessage("Exception processing message", e, copyExceptionHeaders(wip, msg));
-    }
-    finally {
-      sendMessageLifecycleEvent(wip);
-    }
-    workflowEnd(msg, wip);
-  }
-
   protected AdaptrisMessage copyExceptionHeaders(AdaptrisMessage workingCopy, AdaptrisMessage orig) {
     if (workingCopy != orig) {
       Map<Object, Object> working = workingCopy.getObjectHeaders();

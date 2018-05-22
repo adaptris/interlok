@@ -248,13 +248,14 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
-  public void testMaxIdle_Changes_Poolsize() throws Exception {
+  public void testMaxIdle_CannotExceed_Poolsize() throws Exception {
     MockChannel channel = createChannel();
     PoolingWorkflow wf = (PoolingWorkflow) channel.getWorkflowList().get(0);
     wf.setMaxIdle(100);
     wf.setThreadKeepAlive(new TimeInterval(100L, TimeUnit.MILLISECONDS));
     LifecycleHelper.init(channel);
-    assertEquals(100, wf.poolSize());
+    assertEquals(10, wf.poolSize());
+    assertEquals(10, wf.maxIdle());
     assertEquals(DEFAULT_MIN_IDLE, wf.minIdle());
     LifecycleHelper.close(channel);
   }
@@ -271,14 +272,15 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
     LifecycleHelper.close(channel);
   }
 
-  public void testMinIdle_Changes_Poolsize() throws Exception {
+  public void testMinIdle_Cannot_Poolsize() throws Exception {
     MockChannel channel = createChannel();
     PoolingWorkflow wf = (PoolingWorkflow) channel.getWorkflowList().get(0);
     wf.setMinIdle(100);
     wf.setThreadKeepAlive(new TimeInterval(100L, TimeUnit.MILLISECONDS));
     LifecycleHelper.init(channel);
-    assertEquals(100, wf.poolSize());
-    assertEquals(100, wf.maxIdle());
+    assertEquals(10, wf.poolSize());
+    assertEquals(10, wf.maxIdle());
+    assertEquals(10, wf.minIdle());
     LifecycleHelper.close(channel);
   }
 

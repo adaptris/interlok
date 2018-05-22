@@ -36,6 +36,7 @@ public class MessageInFlight extends ChildRuntimeInfoComponentImpl implements Me
     wrappedComponent = interceptor;
   }
 
+  
   @Override
   protected String getType() {
     return JMX_INFLIGHT_TYPE;
@@ -50,6 +51,11 @@ public class MessageInFlight extends ChildRuntimeInfoComponentImpl implements Me
   @Override
   public boolean messagesInFlight() {
     return wrappedComponent.messagesInFlightCount() > 0;
+  }
+
+  @Override
+  public int messagesPendingCount() {
+    return wrappedComponent.messagesPendingCount();
   }
 
   @Override
