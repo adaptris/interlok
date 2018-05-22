@@ -44,9 +44,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * parent workflow.
  * 
  * <p>
- * Note that this interceptor only works with {@link PoolingWorkflow}; results are undefined (generally no effect) when used with
- * other workflows. What actually happens is that if the current message (during workflowStart()) increases the count of messages in
- * flight over the maximum pool size then a {@code 503 Server Busy} is immediately returned. The message is also marked with
+ * Note that this interceptor only works with {@link PoolingWorkflow}; results are undefined when used with other workflows. What
+ * actually happens is that if the current message (during workflowStart()) increases the count of messages in flight over the
+ * maximum pool size then a {@code 503 Server Busy} is immediately returned. The message is also marked with
  * {@link CoreConstants#STOP_PROCESSING_KEY} and {@link CoreConstants#KEY_WORKFLOW_SKIP_PRODUCER} which will cause the underlying
  * workflow to skip processing the message (effectively the message will be discarded); you will see logging to that effect at
  * TRACE/DEBUG level.
@@ -62,7 +62,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class JettyNoBacklogInterceptor extends WorkflowInterceptorImpl {
   private transient AtomicInteger messagesInFlight = new AtomicInteger(0);
   private transient Set<String> messageIdsInFlight = new HashSet<>();
-  private transient int maxInFlight = 1;
+  private transient int maxWorkers = 1;
 
   public JettyNoBacklogInterceptor() {
     super();
@@ -72,9 +72,9 @@ public class JettyNoBacklogInterceptor extends WorkflowInterceptorImpl {
   public void init() throws CoreException {
     Workflow w = parentWorkflow();
     if (PoolingWorkflow.class.isAssignableFrom(w.getClass())) {
-      maxInFlight = ((PoolingWorkflow) w).poolSize();
+      maxWorkers = ((PoolingWorkflow) w).poolSize();
     }
-    log.trace("503 Server Error will be sent when there are {} messages in flight", maxInFlight);
+    log.trace("503 Server Error will be sent when there are {} messages in flight", maxWorkers);
 
   }
 
@@ -94,8 +94,8 @@ public class JettyNoBacklogInterceptor extends WorkflowInterceptorImpl {
 
   @Override
   public void workflowStart(AdaptrisMessage inputMsg) {
-    if (messagesInFlight.get() >= maxInFlight) {
-      log.trace("Already {} msgs in flight; this exceeds {}, sending 503", messagesInFlight.get(), maxInFlight);
+    if (messagesInFlight.get() >= maxWorkers) {
+      log.trace("Already {} msgs in flight; this exceeds {}, sending 503", messagesInFlight.get(), maxWorkers);
       sendErrorResponse(inputMsg);
       addStopProcessingMarker(inputMsg);
       markComplete(inputMsg);
