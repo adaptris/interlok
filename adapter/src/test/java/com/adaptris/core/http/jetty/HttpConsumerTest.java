@@ -297,11 +297,12 @@ public class HttpConsumerTest extends HttpConsumerExample {
     mockProducer.getMessages().clear();
     JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
     consumer.setAdditionalDebug(false);
-    consumer.setTimeoutAction(new TimeoutAction(new TimeInterval(10L, TimeUnit.MILLISECONDS)));
+    consumer.setTimeoutAction(new TimeoutAction(new TimeInterval(100L, TimeUnit.MILLISECONDS)));
     PoolingWorkflow workflow = new PoolingWorkflow();
+    workflow.setShutdownWaitTime(new TimeInterval(1L, TimeUnit.SECONDS));
     ResponseProducer responder = new ResponseProducer(HttpStatus.OK_200);
     workflow.setConsumer(consumer);
-    workflow.getServiceCollection().add(new WaitService(new TimeInterval(1L, TimeUnit.SECONDS)));
+    workflow.getServiceCollection().add(new WaitService(new TimeInterval(5L, TimeUnit.SECONDS)));
     workflow.getServiceCollection().add(new StandaloneProducer(mockProducer));
     workflow.getServiceCollection().add(new StandaloneProducer(responder));
     workflow.addInterceptor(new JettyPoolingWorkflowInterceptor());
