@@ -83,7 +83,7 @@ public class InFlightWorkflowInterceptor extends WorkflowInterceptorImpl {
   int messagesPendingCount() {
     // Pending is the message in flight - the number of workers.
     int inFlight = messagesInFlight.get();
-    return inFlight - messagesInFlightCount();
+    return Math.max(inFlight - messagesInFlightCount(), 0);
   }
 
   @Override
