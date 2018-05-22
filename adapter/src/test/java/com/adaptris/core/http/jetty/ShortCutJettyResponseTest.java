@@ -18,20 +18,19 @@ package com.adaptris.core.http.jetty;
 import static com.adaptris.core.http.jetty.HttpConsumerTest.JETTY_HTTP_PORT;
 import static com.adaptris.core.http.jetty.HttpConsumerTest.URL_TO_POST_TO;
 import static com.adaptris.core.http.jetty.HttpConsumerTest.XML_PAYLOAD;
+import static com.adaptris.core.http.jetty.JettyHelper.createConnection;
+import static com.adaptris.core.http.jetty.JettyHelper.createProduceDestination;
+import static com.adaptris.core.http.jetty.JettyHelper.createProducer;
 
 import java.util.concurrent.TimeUnit;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
-import com.adaptris.core.ConfiguredProduceDestination;
-import com.adaptris.core.NullConnection;
 import com.adaptris.core.PoolingWorkflow;
-import com.adaptris.core.PortManager;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.http.HttpProducer;
 import com.adaptris.core.http.HttpServiceExample;
-import com.adaptris.core.http.JdkHttpProducer;
 import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.services.WaitService;
 import com.adaptris.core.stubs.MockMessageProducer;
@@ -51,7 +50,7 @@ public class ShortCutJettyResponseTest extends HttpServiceExample {
   }
 
   public void testService() throws Exception {
-    HttpConnection connection = createConnection();
+    HttpConnection connection = createConnection(Integer.parseInt(PROPERTIES.getProperty(JETTY_HTTP_PORT)));
     MockMessageProducer mockProducer = new StaticMockMessageProducer();
     mockProducer.getMessages().clear();
     JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
@@ -85,23 +84,4 @@ public class ShortCutJettyResponseTest extends HttpServiceExample {
     }
   }
 
-  protected HttpConnection createConnection() {
-    HttpConnection c = new HttpConnection();
-    int port = PortManager.nextUnusedPort(Integer.parseInt(PROPERTIES.getProperty(JETTY_HTTP_PORT)));
-    c.setPort(port);
-    return c;
-  }
-
-  protected HttpProducer createProducer() {
-    JdkHttpProducer p = new JdkHttpProducer();
-    p.setContentTypeKey("content.type");
-    p.setIgnoreServerResponseCode(true);
-    p.registerConnection(new NullConnection());
-    return p;
-  }
-
-  protected ConfiguredProduceDestination createProduceDestination(int port) {
-    ConfiguredProduceDestination d = new ConfiguredProduceDestination("http://localhost:" + port + URL_TO_POST_TO);
-    return d;
-  }
 }
