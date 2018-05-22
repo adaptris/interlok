@@ -60,12 +60,12 @@ public class LargeMessageWorkflow extends StandardWorkflow {
       handleChannelUnavailable(msg); // make pluggable?
     }
     else {
-      handleMessage(msg, false, lock);
+      handleMessage(msg, false);
     }
   }
 
   @Override
   protected void resubmitMessage(AdaptrisMessage msg) {
-    handleMessage(msg, false, lock);
+    handleMessage(msg, false);
   }
 }

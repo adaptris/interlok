@@ -78,7 +78,7 @@ public class MultiProducerWorkflow extends StandardWorkflow {
    * @see AdaptrisMessageListener#onAdaptrisMessage(AdaptrisMessage)
    */
   @Override
-  public void onAdaptrisMessage(AdaptrisMessage msg) {
+  public synchronized void onAdaptrisMessage(AdaptrisMessage msg) {
     if (!obtainChannel().isAvailable()) {
       handleChannelUnavailable(msg); // make pluggable?
     }
@@ -95,29 +95,31 @@ public class MultiProducerWorkflow extends StandardWorkflow {
   private void onMessage(final AdaptrisMessage msg) {
     AdaptrisMessage wip = null;
     workflowStart(msg);
-    synchronized (lock) {
-      try {
-        long start = System.currentTimeMillis();
-        log.debug("start processing msg [{}]", msg.toString(logPayload()));
-        wip = (AdaptrisMessage) msg.clone();
-        wip.getMessageLifecycleEvent().setChannelId(obtainChannel().getUniqueId());
-        wip.getMessageLifecycleEvent().setWorkflowId(obtainWorkflowId());
-        wip.addEvent(getConsumer(), true); // initial receive event
-        getServiceCollection().doService(wip);
-        doProduce(wip);
-        sendProcessedMessage(wip, msg); // only if produce succeeds
-        logSuccess(msg, start);
-      } catch (ServiceException e) {
-        handleBadMessage("Exception from ServiceCollection", e, copyExceptionHeaders(wip, msg));
-      } catch (ProduceException e) {
-        wip.addEvent(getProducer(), false); // generate event
-        handleBadMessage("Exception producing msg", e, copyExceptionHeaders(wip, msg));
-        handleProduceException();
-      } catch (Exception e) { // all other Exc. inc. runtime
-        handleBadMessage("Exception processing message", e, copyExceptionHeaders(wip, msg));
-      } finally {
-        sendMessageLifecycleEvent(wip);
-      }
+    try {
+      long start = System.currentTimeMillis();
+      log.debug("start processing msg [{}]", msg.toString(logPayload()));
+      wip = (AdaptrisMessage) msg.clone();
+      wip.getMessageLifecycleEvent().setChannelId(obtainChannel().getUniqueId());
+      wip.getMessageLifecycleEvent().setWorkflowId(obtainWorkflowId());
+      wip.addEvent(getConsumer(), true); // initial receive event
+      getServiceCollection().doService(wip);
+      doProduce(wip);
+      sendProcessedMessage(wip, msg); // only if produce succeeds
+      logSuccess(msg, start);
+    }
+    catch (ServiceException e) {
+      handleBadMessage("Exception from ServiceCollection", e, copyExceptionHeaders(wip, msg));
+    }
+    catch (ProduceException e) {
+      wip.addEvent(getProducer(), false); // generate event
+      handleBadMessage("Exception producing msg", e, copyExceptionHeaders(wip, msg));
+      handleProduceException();
+    }
+    catch (Exception e) { // all other Exc. inc. runtime
+      handleBadMessage("Exception processing message", e, copyExceptionHeaders(wip, msg));
+    }
+    finally {
+      sendMessageLifecycleEvent(wip);
     }
     workflowEnd(msg, wip);
   }

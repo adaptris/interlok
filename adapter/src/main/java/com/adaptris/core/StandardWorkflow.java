@@ -36,10 +36,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("standard-workflow")
 @AdapterComponent
 @ComponentProfile(summary = "Basic Single Threaded Workflow", tag = "workflow,base")
-@DisplayOrder(order = {"disableDefaultMessageCount", "sendEvents", "logPayload"})
+@DisplayOrder(order =
+{
+    "disableDefaultMessageCount", "sendEvents", "logPayload"
+})
 public class StandardWorkflow extends StandardWorkflowImpl {
-
-  protected transient Object lock = new Object();
 
   public StandardWorkflow() {
     super();
@@ -57,12 +58,12 @@ public class StandardWorkflow extends StandardWorkflowImpl {
   }
 
   @Override
-  public void onAdaptrisMessage(AdaptrisMessage msg) {
+  public synchronized void onAdaptrisMessage(AdaptrisMessage msg) {
     if (!obtainChannel().isAvailable()) {
       handleChannelUnavailable(msg); // make pluggable?
     }
     else {
-      handleMessage(msg, true, lock);
+      handleMessage(msg, true);
     }
   }
 
@@ -71,36 +72,38 @@ public class StandardWorkflow extends StandardWorkflowImpl {
    */
   @Override
   protected void resubmitMessage(AdaptrisMessage msg) {
-    handleMessage(msg, true, lock);
+    handleMessage(msg, true);
   }
 
-  protected AdaptrisMessage handleMessage(final AdaptrisMessage msg, boolean clone, Object lock) {
+  protected AdaptrisMessage handleMessage(final AdaptrisMessage msg, boolean clone) {
     AdaptrisMessage wip = msg;
     workflowStart(msg);
-    synchronized (lock) {
-      try {
-        long start = System.currentTimeMillis();
-        log.debug("start processing msg [{}]", msg.toString(logPayload()));
-        if (clone) {
-          wip = (AdaptrisMessage) msg.clone(); // retain orig. for error handling
-        }
-        wip.getMessageLifecycleEvent().setChannelId(obtainChannel().getUniqueId());
-        wip.getMessageLifecycleEvent().setWorkflowId(obtainWorkflowId());
-        wip.addEvent(getConsumer(), true); // initial receive event
-        getServiceCollection().doService(wip);
-        doProduce(wip);
-        logSuccess(wip, start);
-      } catch (ServiceException e) {
-        handleBadMessage("Exception from ServiceCollection", e, copyExceptionHeaders(wip, msg));
-      } catch (ProduceException e) {
-        wip.addEvent(getProducer(), false); // generate event
-        handleBadMessage("Exception producing msg", e, copyExceptionHeaders(wip, msg));
-        handleProduceException();
-      } catch (Exception e) { // all other Exc. inc. runtime
-        handleBadMessage("Exception processing message", e, copyExceptionHeaders(wip, msg));
-      } finally {
-        sendMessageLifecycleEvent(wip);
+    try {
+      long start = System.currentTimeMillis();
+      log.debug("start processing msg [{}]", msg.toString(logPayload()));
+      if (clone) {
+        wip = (AdaptrisMessage) msg.clone(); // retain orig. for error handling
       }
+      wip.getMessageLifecycleEvent().setChannelId(obtainChannel().getUniqueId());
+      wip.getMessageLifecycleEvent().setWorkflowId(obtainWorkflowId());
+      wip.addEvent(getConsumer(), true); // initial receive event
+      getServiceCollection().doService(wip);
+      doProduce(wip);
+      logSuccess(wip, start);
+    }
+    catch (ServiceException e) {
+      handleBadMessage("Exception from ServiceCollection", e, copyExceptionHeaders(wip, msg));
+    }
+    catch (ProduceException e) {
+      wip.addEvent(getProducer(), false); // generate event
+      handleBadMessage("Exception producing msg", e, copyExceptionHeaders(wip, msg));
+      handleProduceException();
+    }
+    catch (Exception e) { // all other Exc. inc. runtime
+      handleBadMessage("Exception processing message", e, copyExceptionHeaders(wip, msg));
+    }
+    finally {
+      sendMessageLifecycleEvent(wip);
     }
     workflowEnd(msg, wip);
     return wip;
