@@ -21,6 +21,8 @@ import java.io.OutputStream;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 
+import javax.validation.Valid;
+
 import org.apache.commons.io.IOUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -28,6 +30,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -37,10 +40,11 @@ import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.security.util.SecurityUtil;
 import com.adaptris.util.stream.DevNullOutputStream;
 import com.adaptris.util.text.Base64ByteTranslator;
+import com.adaptris.util.text.ByteTranslator;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Create a base64 hash of the payload based on the configurable algorithm and stores it as metadata.
+ * Create a hash of the payload based on the configurable algorithm and stores it as metadata.
  * 
  * @config payload-hashing-service
  * 
@@ -49,16 +53,20 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("payload-hashing-service")
 @AdapterComponent
-@ComponentProfile(summary = "Hash the payload and store the base64 form of the hash against a metadata key",
+@ComponentProfile(summary = "Hash the payload and store the hash against a metadata key",
     tag = "service,metadata")
 @DisplayOrder(order = {"hashAlgorithm", "metadataKey"})
 public class PayloadHashingService extends ServiceImp {
 
+  private static final ByteTranslator DEFAULT_TRANSLATOR = new Base64ByteTranslator();
   @NotBlank
   private String hashAlgorithm;
   @NotBlank
   @AffectsMetadata
   private String metadataKey;
+  @Valid
+  @InputFieldDefault(value = "base64")
+  private ByteTranslator byteTranslator;
 
   public PayloadHashingService() {
     super();
@@ -81,7 +89,7 @@ public class PayloadHashingService extends ServiceImp {
       IOUtils.copy(in, out);
       out.flush();
       byte[] hash = digest.digest();
-      msg.addMetadata(getMetadataKey(), new Base64ByteTranslator().translate(hash));
+      msg.addMetadata(getMetadataKey(), byteTranslator().translate(hash));
     }
     catch (Exception e) {
       throw new ServiceException(e);
@@ -139,5 +147,15 @@ public class PayloadHashingService extends ServiceImp {
   public void prepare() throws CoreException {
   }
 
+  public ByteTranslator getByteTranslator() {
+    return byteTranslator;
+  }
 
+  public void setByteTranslator(ByteTranslator t) {
+    this.byteTranslator = t;
+  }
+
+  ByteTranslator byteTranslator() {
+    return getByteTranslator() != null ? getByteTranslator() : DEFAULT_TRANSLATOR;
+  }
 }
