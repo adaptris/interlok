@@ -75,7 +75,7 @@ public class StandardWorkflow extends StandardWorkflowImpl {
     handleMessage(msg, true);
   }
 
-  protected AdaptrisMessage handleMessage(final AdaptrisMessage msg, boolean clone) {
+  protected void handleMessage(final AdaptrisMessage msg, boolean clone) {
     AdaptrisMessage wip = msg;
     workflowStart(msg);
     try {
@@ -106,7 +106,6 @@ public class StandardWorkflow extends StandardWorkflowImpl {
       sendMessageLifecycleEvent(wip);
     }
     workflowEnd(msg, wip);
-    return wip;
   }
 
 }
