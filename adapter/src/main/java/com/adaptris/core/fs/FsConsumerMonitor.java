@@ -18,20 +18,14 @@ package com.adaptris.core.fs;
 import static com.adaptris.core.runtime.AdapterComponentMBean.JMX_FS_MONITOR_TYPE;
 
 import com.adaptris.core.runtime.ChildRuntimeInfoComponentImpl;
+import com.adaptris.core.runtime.ConsumerMonitorImpl;
 import com.adaptris.core.runtime.ParentRuntimeInfoComponent;
 import com.adaptris.core.runtime.WorkflowManager;
 
-public class FsConsumerMonitor extends ChildRuntimeInfoComponentImpl implements FsConsumerMonitorMBean {
-  private transient WorkflowManager parent;
-  private transient FsConsumerImpl wrappedComponent;
+public class FsConsumerMonitor extends ConsumerMonitorImpl<FsConsumerImpl> implements FsConsumerMonitorMBean {
 
-  private FsConsumerMonitor() {
-    super();
-  }
-
-  FsConsumerMonitor(WorkflowManager owner, FsConsumerImpl fs) {
-    parent = owner;
-    wrappedComponent = fs;
+  public FsConsumerMonitor(WorkflowManager owner, FsConsumerImpl consumer) {
+    super(owner, consumer);
   }
 
   @Override
@@ -40,16 +34,10 @@ public class FsConsumerMonitor extends ChildRuntimeInfoComponentImpl implements 
   }
 
   @Override
-  protected String uniqueId() {
-    return wrappedComponent.getUniqueId();
-  }
-
-
-  @Override
-  public int filesRemaining() {
+  public int messagesRemaining() {
     int remaining = -1;
     try {
-      remaining = wrappedComponent.filesRemaining();
+      remaining = getWrappedComponent().filesRemaining();
     }
     catch (Exception e) {
     }
@@ -57,8 +45,8 @@ public class FsConsumerMonitor extends ChildRuntimeInfoComponentImpl implements 
   }
 
   @Override
-  public ParentRuntimeInfoComponent getParentRuntimeInfoComponent() {
-    return parent;
+  @Deprecated
+  public int filesRemaining() {
+    return messagesRemaining();
   }
-
 }
