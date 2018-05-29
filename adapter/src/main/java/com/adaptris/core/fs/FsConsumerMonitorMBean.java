@@ -15,9 +15,10 @@
 */
 package com.adaptris.core.fs;
 
-import com.adaptris.core.runtime.ChildRuntimeInfoComponentMBean;
+import com.adaptris.core.runtime.ConsumerMonitorMBean;
 
-public interface FsConsumerMonitorMBean extends ChildRuntimeInfoComponentMBean {
+@Deprecated
+public interface FsConsumerMonitorMBean extends ConsumerMonitorMBean {
 
   /**
    * Return the count of entries in the filesystem left to be processed.
