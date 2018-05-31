@@ -17,7 +17,6 @@ package com.adaptris.core.fs;
 
 import com.adaptris.core.runtime.ConsumerMonitorMBean;
 
-@Deprecated
 public interface FsConsumerMonitorMBean extends ConsumerMonitorMBean {
 
   /**
@@ -25,6 +24,7 @@ public interface FsConsumerMonitorMBean extends ConsumerMonitorMBean {
    * 
    * @return the number of entries remaining.
    */
+  @Deprecated
   int filesRemaining();
 
 }
