@@ -73,6 +73,17 @@ public class UnicodeDetectingInputStreamTest {
   }
 
   @Test
+  public void testRead_Methods() throws Exception {
+    try (UnicodeDetectingInputStream stream = new UnicodeDetectingInputStream(roundTrip("hello", UTF_8), ISO_8859_1)) {
+      assertEquals(ISO_8859_1, stream.getDefaultEncoding());
+      stream.read();
+      stream.read(new byte[1]);
+      stream.read(new byte[10], 0, 10);
+      assertNull(stream.getEncoding());
+    }
+  }
+
+  @Test
   public void testUTF8() throws Exception {
     try (UnicodeDetectingInputStream stream = new UnicodeDetectingInputStream(roundTrip("hello", UTF_8), ISO_8859_1)) {
       assertEquals(ISO_8859_1, stream.getDefaultEncoding());

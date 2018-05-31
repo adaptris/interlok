@@ -54,8 +54,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(summary = "Remove a UTF-8 BOM", tag = "service")
 public class Utf8BomRemover extends ServiceImp {
 
-  private static final String DEFAULT_CHAR_ENCODING = "ISO-8859-1";
-
   public Utf8BomRemover() {
 
   }
@@ -66,7 +64,7 @@ public class Utf8BomRemover extends ServiceImp {
     UnicodeDetectingInputStream utf8 = null;
     try {
       msgIn = msg.getInputStream();
-      utf8 = new UnicodeDetectingInputStream(msgIn, DEFAULT_CHAR_ENCODING);
+      utf8 = new UnicodeDetectingInputStream(msgIn, null);
       if (UTF_8.equals(utf8.getEncoding())) {
         out = msg.getOutputStream();
         IOUtils.copy(utf8, out);

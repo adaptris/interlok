@@ -151,15 +151,24 @@ public class UnicodeDetectingInputStream extends InputStream {
 
   @Override
   public void close() throws IOException {
-    // init();
     isInited = true;
     internalIn.close();
   }
 
   @Override
   public int read() throws IOException {
-    // init();
     isInited = true;
     return internalIn.read();
   }
+  
+  public int read(byte b[]) throws IOException {
+    return read(b, 0, b.length);
+  }
+  
+  public int read(byte b[], int off, int len) throws IOException {
+    isInited = true;    
+    return internalIn.read(b, off, len);
+  }
+  
+
 }
