@@ -42,7 +42,7 @@ import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.TimeInterval;
 
-class ServiceWorkerPool {
+public class ServiceWorkerPool {
   private static final long EVICT_RUN = new TimeInterval(60L, TimeUnit.SECONDS).toMilliseconds();
 
   private transient Service wrappedService;
@@ -50,7 +50,7 @@ class ServiceWorkerPool {
   private transient int maxThreads;
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
-  ServiceWorkerPool(Service s, EventHandler eh, int maxThreads) throws CoreException {
+  public ServiceWorkerPool(Service s, EventHandler eh, int maxThreads) throws CoreException {
     try {
       this.wrappedService = Args.notNull(s, "service");
       this.eventHandler = eh;
@@ -66,7 +66,7 @@ class ServiceWorkerPool {
     return result;
   }
 
-  GenericObjectPool<Worker> createObjectPool() throws CoreException {
+  public GenericObjectPool<Worker> createObjectPool() throws CoreException {
     GenericObjectPool<Worker> pool = new GenericObjectPool(new WorkerFactory());
     // Make the pool the same size as the thread pool
     pool.setMaxActive(maxThreads);
@@ -84,7 +84,7 @@ class ServiceWorkerPool {
   }
 
 
-  static void closeQuietly(ObjectPool pool) {
+  public static void closeQuietly(ObjectPool pool) {
     try {
       if (pool != null) pool.close();
     } catch (Exception ignored) {
@@ -92,7 +92,7 @@ class ServiceWorkerPool {
     }
   }
 
-  void warmup(final GenericObjectPool<Worker> objectPool) throws CoreException {
+  public void warmup(final GenericObjectPool<Worker> objectPool) throws CoreException {
     ExecutorService populator = Executors.newCachedThreadPool(new ManagedThreadFactory(this.getClass().getSimpleName()));
     try {
       log.trace("Warming up {} service-workers", maxThreads);
@@ -140,7 +140,7 @@ class ServiceWorkerPool {
     return result;
   }
 
-  class Worker {
+  public class Worker {
     private Service workerService;
 
     Worker() throws Exception {
