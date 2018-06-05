@@ -140,6 +140,10 @@ public class JettyResponseService extends ServiceImp {
     return httpStatus;
   }
 
+  /**
+   * 
+   * @param s the status, supports metadata resolution via {@link AdaptrisMessage#resolve(String)}.
+   */
   public void setHttpStatus(String s) {
     this.httpStatus = Args.notBlank(s, "httpStatus");
   }
@@ -148,6 +152,10 @@ public class JettyResponseService extends ServiceImp {
     return contentType;
   }
 
+  /**
+   * 
+   * @param ct the content-type, supports metadata resolution via {@link AdaptrisMessage#resolve(String)}.
+   */
   public void setContentType(String ct) {
     this.contentType = Args.notBlank(ct, "contentType");
   }

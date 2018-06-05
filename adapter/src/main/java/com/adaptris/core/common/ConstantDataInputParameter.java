@@ -17,6 +17,7 @@
 package com.adaptris.core.common;
 
 import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.interlok.InterlokException;
 import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
@@ -60,6 +61,10 @@ public class ConstantDataInputParameter implements DataInputParameter<String> {
     return value;
   }
 
+  /**
+   * 
+   * @param v the value, supports metadata resolution via {@link AdaptrisMessage#resolve(String)}.
+   */
   public void setValue(String v) {
     this.value = v;
   }

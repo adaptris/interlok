@@ -64,6 +64,10 @@ public class ConfiguredUsernamePassword extends UserPassAuthentication {
     return username;
   }
 
+  /**
+   * 
+   * @param username the username, supports metadata resolution via {@link AdaptrisMessage#resolve(String)}.
+   */
   public void setUsername(String username) {
     this.username = username;
   }
@@ -72,6 +76,10 @@ public class ConfiguredUsernamePassword extends UserPassAuthentication {
     return password;
   }
 
+  /**
+   * 
+   * @param password the password, supports metadata resolution via {@link AdaptrisMessage#resolve(String)}.
+   */
   public void setPassword(String password) {
     this.password = password;
   }
