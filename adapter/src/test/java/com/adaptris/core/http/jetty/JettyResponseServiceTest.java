@@ -69,7 +69,8 @@ public class JettyResponseServiceTest extends HttpServiceExample {
   }
 
   public void testResponseWithError() throws Exception {
-    JettyResponseService responder = new JettyResponseService(500, "text/plain");
+    JettyResponseService responder = new JettyResponseService().withHttpStatus("500").withContentType("text/plain")
+        .withResponseHeaderProvider(new NoOpResponseHeaderProvider());
     HttpConnection httpConnection = createConnection();
     ServiceList list = new ServiceList(responder);
     Channel c = createChannel(httpConnection, createWorkflow(createConsumer(URL_TO_POST_TO), new MockMessageProducer(), list));

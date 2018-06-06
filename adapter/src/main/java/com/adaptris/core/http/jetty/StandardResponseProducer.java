@@ -24,9 +24,13 @@ import java.io.InputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.BooleanUtils;
+
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -52,6 +56,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(summary = "Write and commit the HTTP Response", tag = "producer,http,https", recommended = {NullConnection.class})
 @DisplayOrder(order = {"sendPayload", "flushBuffer", "forwardConnectionException"})
 public class StandardResponseProducer extends ResponseProducerImpl {
+
+  private static final String KEY_RESPONSE_ALREADY_ATTEMPTED = StandardResponseProducer.class.getCanonicalName() + "_attempted";
+
+  @AdvancedConfig
+  @InputFieldDefault(value = "false")
+  private Boolean alwaysAttemptResponse;
 
   public StandardResponseProducer() {
     super();
@@ -87,14 +97,22 @@ public class StandardResponseProducer extends ResponseProducerImpl {
         log.debug("No HttpServletResponse in object metadata, nothing to do");
         return;
       }
-      getResponseHeaderProvider().addHeaders(msg, response);
-      String contentType = getContentTypeProvider().getContentType(msg);
-      response.setContentType(contentType);
-      response.setStatus(getStatus(msg).getCode());
-      commitResponse(msg, response);
+      if (!responseAlreadyAttempted(msg, response)) {
+        msg.getObjectHeaders().put(KEY_RESPONSE_ALREADY_ATTEMPTED, Boolean.TRUE);
+        getResponseHeaderProvider().addHeaders(msg, response);
+        String contentType = getContentTypeProvider().getContentType(msg);
+        response.setContentType(contentType);
+        response.setStatus(getStatus(msg).getCode());
+        commitResponse(msg, response);
+      }
     } catch (Exception e) {
       throw ExceptionHelper.wrapProduceException(e);
     }
+  }
+
+  private boolean responseAlreadyAttempted(AdaptrisMessage msg, HttpServletResponse response) {
+    if (alwaysAttemptResponse()) return false;
+    return response.isCommitted() || msg.getObjectHeaders().containsKey(KEY_RESPONSE_ALREADY_ATTEMPTED);
   }
 
   private void commitResponse(AdaptrisMessage msg, HttpServletResponse response) throws ProduceException {
@@ -127,6 +145,23 @@ public class StandardResponseProducer extends ResponseProducerImpl {
         }
       }
     }
+  }
+
+  public StandardResponseProducer withAlwaysAttemptResponse(Boolean b) {
+    setAlwaysAttemptResponse(b);
+    return this;
+  }
+
+  public Boolean getAlwaysAttemptResponse() {
+    return alwaysAttemptResponse;
+  }
+
+  public void setAlwaysAttemptResponse(Boolean alwaysAttemptResponse) {
+    this.alwaysAttemptResponse = alwaysAttemptResponse;
+  }
+
+  private boolean alwaysAttemptResponse() {
+    return BooleanUtils.toBooleanDefaultIfNull(getAlwaysAttemptResponse(), false);
   }
 
 }

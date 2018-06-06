@@ -40,6 +40,7 @@ import com.adaptris.core.http.server.ResponseHeaderProvider;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.validation.constraints.NumberExpression;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -71,6 +72,7 @@ public class JettyResponseService extends ServiceImp {
   @InputFieldDefault(value = "500")
   @InputFieldHint(expression = true)
   @AutoPopulated
+  @NumberExpression
   private String httpStatus;
   @NotBlank
   @InputFieldDefault(value = "text/plain")
@@ -124,14 +126,11 @@ public class JettyResponseService extends ServiceImp {
   }
 
   protected StandardResponseProducer buildProducer(AdaptrisMessage msg) {
-    StandardResponseProducer p = new StandardResponseProducer();
-    p.setMessageFactory(msg.getFactory());
-    p.setContentTypeProvider(new RawContentTypeProvider(msg.resolve(getContentType())));
-    p.setResponseHeaderProvider(getResponseHeaderProvider());
-    p.setSendPayload(true);
-    p.setForwardConnectionException(false);
-    p.setFlushBuffer(false);
-    p.setStatusProvider(new RawStatusProvider(Integer.valueOf(msg.resolve(getHttpStatus()))));
+    StandardResponseProducer p = new StandardResponseProducer().withAlwaysAttemptResponse(false)
+        .withContentTypeProvider(new RawContentTypeProvider(msg.resolve(getContentType())))
+        .withResponseHeaderProvider(getResponseHeaderProvider()).withSendPayload(true).withForwardConnectionException(false)
+        .withFlushBuffer(true).withStatusProvider(new RawStatusProvider(Integer.valueOf(msg.resolve(getHttpStatus()))))
+        .withMessageFactory(msg.getFactory());
     p.registerConnection(new NullConnection());
     return p;
   }
@@ -148,6 +147,11 @@ public class JettyResponseService extends ServiceImp {
     this.httpStatus = Args.notBlank(s, "httpStatus");
   }
 
+  public JettyResponseService withHttpStatus(String status) {
+    setHttpStatus(status);
+    return this;
+  }
+
   public String getContentType() {
     return contentType;
   }
@@ -160,6 +164,11 @@ public class JettyResponseService extends ServiceImp {
     this.contentType = Args.notBlank(ct, "contentType");
   }
 
+  public JettyResponseService withContentType(String type) {
+    setContentType(type);
+    return this;
+  }
+
   public ResponseHeaderProvider<HttpServletResponse> getResponseHeaderProvider() {
     return responseHeaderProvider;
   }
@@ -168,4 +177,8 @@ public class JettyResponseService extends ServiceImp {
     this.responseHeaderProvider = Args.notNull(provider, "responseHeaderProvider");
   }
 
+  public JettyResponseService withResponseHeaderProvider(ResponseHeaderProvider<HttpServletResponse> provider) {
+    setResponseHeaderProvider(provider);
+    return this;
+  }
 }
