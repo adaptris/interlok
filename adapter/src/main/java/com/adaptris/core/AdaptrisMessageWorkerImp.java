@@ -186,6 +186,11 @@ public abstract class AdaptrisMessageWorkerImp implements AdaptrisMessageWorker 
     registerEncoderMessageFactory();
   }
 
+  public <T extends AdaptrisMessageWorkerImp> T withMessageFactory(AdaptrisMessageFactory f) {
+    setMessageFactory(f);
+    return (T) this;
+  }
+
   protected void registerEncoderMessageFactory() {
     if (getEncoder() != null) {
       getEncoder().registerMessageFactory(defaultIfNull(getMessageFactory()));
