@@ -20,6 +20,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang.BooleanUtils;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
@@ -76,12 +78,22 @@ public abstract class ResponseProducerImpl extends ProduceOnlyProducerImp {
     this.statusProvider = p;
   }
 
+  public <T extends ResponseProducerImpl> T withStatusProvider(HttpStatusProvider p) {
+    setStatusProvider(p);
+    return (T) this;
+  }
+
   public ResponseHeaderProvider<HttpServletResponse> getResponseHeaderProvider() {
     return responseHeaderProvider;
   }
 
   public void setResponseHeaderProvider(ResponseHeaderProvider<HttpServletResponse> p) {
     this.responseHeaderProvider = p;
+  }
+
+  public <T extends ResponseProducerImpl> T withResponseHeaderProvider(ResponseHeaderProvider<HttpServletResponse> p) {
+    setResponseHeaderProvider(p);
+    return (T) this;
   }
 
   public Boolean getForwardConnectionException() {
@@ -104,8 +116,13 @@ public abstract class ResponseProducerImpl extends ProduceOnlyProducerImp {
     this.forwardConnectionException = b;
   }
 
+  public <T extends ResponseProducerImpl> T withForwardConnectionException(Boolean b) {
+    setForwardConnectionException(b);
+    return (T) this;
+  }
+
   protected boolean forwardConnectionException() {
-    return getForwardConnectionException() != null ? getForwardConnectionException().booleanValue() : false;    
+    return BooleanUtils.toBooleanDefaultIfNull(getForwardConnectionException(), false);
   }
 
   public Boolean getFlushBuffer() {
@@ -117,9 +134,13 @@ public abstract class ResponseProducerImpl extends ProduceOnlyProducerImp {
   }
 
   protected boolean flushBuffers() {
-    return getFlushBuffer() != null ? getFlushBuffer().booleanValue() : true;
+    return BooleanUtils.toBooleanDefaultIfNull(getFlushBuffer(), true);
   }
 
+  public <T extends ResponseProducerImpl> T withFlushBuffer(Boolean b) {
+    setFlushBuffer(b);
+    return (T) this;
+  }
 
   protected Status getStatus(AdaptrisMessage msg) {
     return getStatusProvider().getStatus(msg);
@@ -138,6 +159,11 @@ public abstract class ResponseProducerImpl extends ProduceOnlyProducerImp {
     this.contentTypeProvider = ctp;
   }
 
+  public <T extends ResponseProducerImpl> T withContentTypeProvider(ContentTypeProvider b) {
+    setContentTypeProvider(b);
+    return (T) this;
+  }
+
   /**
    * @return the sendPayload
    */
@@ -154,8 +180,13 @@ public abstract class ResponseProducerImpl extends ProduceOnlyProducerImp {
     sendPayload = b;
   }
 
+  public <T extends ResponseProducerImpl> T withSendPayload(Boolean b) {
+    setSendPayload(b);
+    return (T) this;
+  }
+
   protected boolean sendPayload() {
-    return getSendPayload() != null ? getSendPayload().booleanValue() : true;
+    return BooleanUtils.toBooleanDefaultIfNull(getSendPayload(), true);
   }
 
 
