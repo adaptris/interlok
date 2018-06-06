@@ -16,11 +16,19 @@
 
 package com.adaptris.core;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.fail;
+
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.adaptris.core.event.AdapterCloseEvent;
 import com.adaptris.core.event.AdapterInitEvent;
@@ -31,7 +39,7 @@ import com.adaptris.core.event.ChannelRestartEvent;
 import com.adaptris.core.event.StandardAdapterStartUpEvent;
 
 @SuppressWarnings("deprecation")
-public class EventFactoryTest extends BaseCase {
+public class EventFactoryTest extends EventFactory {
 
   private static final String[] ALL_EVENT_CLASSES =
   {
@@ -40,11 +48,10 @@ public class EventFactoryTest extends BaseCase {
  DefaultAdapterStartUpEvent.class.getName(),
       AdapterStopEvent.class.getName(), ChannelRestartEvent.class.getName()
   };
+  private transient Logger log = LoggerFactory.getLogger(BaseCase.class);
 
-  public EventFactoryTest(java.lang.String testName) {
-    super(testName);
-  }
 
+  @Test
   public void testCreateInvalidEvents() {
     String invalid = "com.adaptris.core.PingEventx";
     String nonEvent = "java.lang.String";
@@ -79,13 +86,16 @@ public class EventFactoryTest extends BaseCase {
     }
   }
 
+  @Test(expected = CoreException.class)
   public void testCreateEvent() throws Exception {
     for (int i = 0; i < ALL_EVENT_CLASSES.length; i++) {
       Event e = (Event) EventFactory.create(Class.forName(ALL_EVENT_CLASSES[i]));
       assertNotSame(ALL_EVENT_CLASSES[i], e.getNameSpace(), EventNameSpaceConstants.EVENT);
     }
+    EventFactory.create(FailingEvent.class);
   }
 
+  @Test
   public void testCreateEventFromString() throws Exception {
     for (int i = 0; i < ALL_EVENT_CLASSES.length; i++) {
       Event e = EventFactory.create(ALL_EVENT_CLASSES[i]);
@@ -93,6 +103,7 @@ public class EventFactoryTest extends BaseCase {
     }
   }
 
+  @Test
   public void testXmlRoundTrip() throws Exception {
     AdaptrisMarshaller m = DefaultMarshaller.getDefaultMarshaller();
     for (int i = 0; i < ALL_EVENT_CLASSES.length; i++) {
@@ -101,10 +112,11 @@ public class EventFactoryTest extends BaseCase {
       String xml = m.marshal(input);
       log.trace(xml);
       Event output = (Event) m.unmarshal(xml);
-      assertRoundtripEquality(input, output);
+      BaseCase.assertRoundtripEquality(input, output);
     }
   }
 
+  @Test
   public void testCreateNamespace() throws Exception {
     for (int i = 0; i < ALL_EVENT_CLASSES.length; i++) {
       Event e = (Event) EventFactory.create(Class.forName(ALL_EVENT_CLASSES[i]));
@@ -112,6 +124,7 @@ public class EventFactoryTest extends BaseCase {
     }
   }
 
+  @Test
   public void testEventConstructor() {
     try {
       new EventStub(null);
@@ -132,6 +145,7 @@ public class EventFactoryTest extends BaseCase {
 
   }
 
+  @Test
   public void testUniqueId() throws Exception {
     for (int i = 0; i < ALL_EVENT_CLASSES.length; i++) {
       Event e = (Event) EventFactory.create(Class.forName(ALL_EVENT_CLASSES[i]));
@@ -188,6 +202,14 @@ public class EventFactoryTest extends BaseCase {
 
     public EventStub(String s) {
       super(s);
+    }
+  }
+
+  private class FailingEvent extends Event {
+
+    public FailingEvent(String s) throws Exception {
+      super(s);
+      throw new Exception();
     }
   }
 }

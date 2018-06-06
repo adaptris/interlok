@@ -84,7 +84,7 @@ public abstract class BaseCase extends TestCase {
   protected ValidatorFactory vFactory = Validation.buildDefaultValidatorFactory();
 
   protected transient Log log = LogFactory.getLog(this.getClass().getName());
-  protected transient Logger slf4jLogger = LoggerFactory.getLogger(this.getClass());
+  protected static transient Logger slf4jLogger = LoggerFactory.getLogger(BaseCase.class);
 
   public BaseCase() {
     super();
@@ -177,17 +177,17 @@ public abstract class BaseCase extends TestCase {
     }
   }
 
-  protected void assertRoundtripEquality(Object input, Object output, List<Class> classesToIgnore) throws Exception {
+  protected static void assertRoundtripEquality(Object input, Object output, List<Class> classesToIgnore) throws Exception {
     if (input == null && output == null) {
       return;
     }
-    log.trace("Input = " + input);
-    log.trace("Output = " + output);
+    slf4jLogger.trace("Input = " + input);
+    slf4jLogger.trace("Output = " + output);
     assertEquals(input.getClass(), output.getClass());
     try {
       String[] toCall = filterGetterWithNoSetter(input.getClass(), getPrimitiveGetters(input.getClass()));
       for (int i = 0; i < toCall.length; i++) {
-        log.trace("Verifying " + input.getClass().getName() + "." + toCall[i] + "()");
+        slf4jLogger.trace("Verifying " + input.getClass().getName() + "." + toCall[i] + "()");
         Object a = invokeGetter(input, toCall[i]);
         Object b = invokeGetter(output, toCall[i]);
 
@@ -199,13 +199,13 @@ public abstract class BaseCase extends TestCase {
       // probably the culprit
       toCall = filterGetterWithNoSetter(input.getClass(), getObjectGetters(input.getClass()));
       for (int i = 0; i < toCall.length; i++) {
-        log.trace("Recursive Call after " + input.getClass() + "." + toCall[i] + "()");
+        slf4jLogger.trace("Recursive Call after " + input.getClass() + "." + toCall[i] + "()");
         Object a = invokeGetter(input, toCall[i]);
         Object b = invokeGetter(output, toCall[i]);
         // If this class is in our ignore list, then just carry on.
         //
         if (a != null && classesToIgnore.contains(a.getClass())) {
-          log.trace("Explicitly ignoring recursion on " + a.getClass());
+          slf4jLogger.trace("Explicitly ignoring recursion on " + a.getClass());
           continue;
         }
         // This is a bit of a hack, but we don't always have object equality
@@ -220,12 +220,12 @@ public abstract class BaseCase extends TestCase {
       }
     }
     catch (Exception e) {
-      log.error(e.getMessage(), e);
+      slf4jLogger.error(e.getMessage(), e);
       throw e;
     }
   }
 
-  protected void assertRoundtripEquality(Object input, Object output) throws Exception {
+  protected static void assertRoundtripEquality(Object input, Object output) throws Exception {
     assertRoundtripEquality(input, output, new ArrayList<Class>());
   }
 
