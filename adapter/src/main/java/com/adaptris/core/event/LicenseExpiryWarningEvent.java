@@ -94,10 +94,6 @@ public class LicenseExpiryWarningEvent extends AdapterLifecycleEvent {
     return expiryDate;
   }
 
-  private boolean matching(String licExpiry, Date expDate) {
-    return sdf.format(expDate).equals(licExpiry);
-  }
-
   private Date toDate(String s) {
     Date result = new Date();
     try {
