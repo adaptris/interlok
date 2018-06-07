@@ -16,13 +16,10 @@
 
 package com.adaptris.core.http.jetty;
 
-import java.util.Date;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.interceptor.WorkflowInterceptorImpl;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -35,9 +32,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Interceptor that allows a jetty consumer to be part of a PoolingWorkflow",
     tag = "interceptor,http,https")
-public class JettyPoolingWorkflowInterceptor extends WorkflowInterceptorImpl {
-  public static final String MESSAGE_MONITOR = JettyPoolingWorkflowInterceptor.class
-      .getCanonicalName() + ".monitor";
+public class JettyPoolingWorkflowInterceptor extends JettyWorkflowInterceptorImpl {
 
   public JettyPoolingWorkflowInterceptor() {
     super();
@@ -65,22 +60,7 @@ public class JettyPoolingWorkflowInterceptor extends WorkflowInterceptorImpl {
 
   @Override
   public void workflowEnd(AdaptrisMessage inputMsg, AdaptrisMessage outputMsg) {
-    if (inputMsg.getObjectHeaders().containsKey(MESSAGE_MONITOR)) {
-      JettyConsumerMonitor o = (JettyConsumerMonitor) inputMsg.getObjectHeaders().get(MESSAGE_MONITOR);
-      o.setMessageComplete(true);
-      o.setEndTime(new Date().getTime());
-      synchronized (o) {
-        o.notifyAll();
-      }
-    }
-    if (outputMsg.getObjectHeaders().containsKey(MESSAGE_MONITOR)) {
-      JettyConsumerMonitor o = (JettyConsumerMonitor) outputMsg.getObjectHeaders().get(MESSAGE_MONITOR);
-      o.setMessageComplete(true);
-      o.setEndTime(new Date().getTime());
-      synchronized (o) {
-        o.notifyAll();
-      }
-    }
+    endWorkflow(inputMsg, outputMsg);
   }
 
 }

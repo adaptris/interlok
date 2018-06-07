@@ -136,7 +136,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
     if (retrieveAdaptrisMessageListener() instanceof WorkflowImp) {
       List<WorkflowInterceptor> interceptors = ((WorkflowImp) retrieveAdaptrisMessageListener()).getInterceptors();
       for (WorkflowInterceptor i : interceptors) {
-        if (i.getClass().equals(JettyPoolingWorkflowInterceptor.class)) {
+        if (JettyWorkflowInterceptorImpl.class.isAssignableFrom(i.getClass())) {
           waitForCompletion = true;
           break;
         }

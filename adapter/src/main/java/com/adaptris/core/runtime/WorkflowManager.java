@@ -50,6 +50,7 @@ import com.adaptris.core.Workflow;
 import com.adaptris.core.WorkflowInterceptor;
 import com.adaptris.core.http.jetty.BasicJettyConsumer;
 import com.adaptris.core.http.jetty.JettyPoolingWorkflowInterceptor;
+import com.adaptris.core.http.jetty.JettyWorkflowInterceptorImpl;
 import com.adaptris.core.interceptor.InFlightWorkflowInterceptor;
 import com.adaptris.core.interceptor.MessageMetricsInterceptor;
 import com.adaptris.core.util.ExceptionHelper;
@@ -378,7 +379,7 @@ public class WorkflowManager extends ComponentManagerImpl<Workflow>implements Wo
     // that object monitors are in place for re-entrant servlet action.
     if (PoolingWorkflow.class.isAssignableFrom(managedWorkflow.getClass())
         && BasicJettyConsumer.class.isAssignableFrom(managedWorkflow.getConsumer().getClass())) {
-      if (!hasInterceptorOfType(managedWorkflow.getInterceptors(), JettyPoolingWorkflowInterceptor.class)) {
+      if (!hasInterceptorOfType(managedWorkflow.getInterceptors(), JettyWorkflowInterceptorImpl.class)) {
         log.trace("JettyPoolingWorkflowInterceptor added for [{}]", createObjectName());
         managedWorkflow.getInterceptors().add(new JettyPoolingWorkflowInterceptor());
       }
