@@ -738,11 +738,11 @@ public class PoolingWorkflow extends WorkflowImp {
     }
 
     public void start() throws CoreException {
-      LifecycleHelper.initAndStart(sc);
+      LifecycleHelper.initAndStart(sc, false);
     }
 
     public void stop() throws CoreException {
-      LifecycleHelper.stopAndClose(sc);
+      LifecycleHelper.stopAndClose(sc, false);
     }
 
     public boolean isValid() {

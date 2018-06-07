@@ -148,12 +148,12 @@ public class ServiceWorkerPool {
     }
 
     public Worker start() throws CoreException {
-      LifecycleHelper.initAndStart(workerService);
+      LifecycleHelper.initAndStart(workerService, false);
       return this;
     }
 
     public Worker stop() {
-      LifecycleHelper.stopAndClose(workerService);
+      LifecycleHelper.stopAndClose(workerService, false);
       return this;
     }
 

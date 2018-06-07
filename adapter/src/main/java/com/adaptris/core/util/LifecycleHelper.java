@@ -55,12 +55,15 @@ public abstract class LifecycleHelper {
    * @see StateManagedComponent#requestInit()
    */
   public static final void init(ComponentLifecycle s) throws CoreException {
+    init(s, true);
+  }
+
+  private static void init(ComponentLifecycle s, boolean logging) throws CoreException {
     if (s != null) {
-      Logging.Init.doLogging(s);
+      if (logging) Logging.Init.doLogging(s);
       if (s instanceof StateManagedComponent) {
         ((StateManagedComponent) s).requestInit();
-      }
-      else {
+      } else {
         s.init();
       }
     }
@@ -75,12 +78,15 @@ public abstract class LifecycleHelper {
    * @see StateManagedComponent#requestStart()
    */
   public static final void start(ComponentLifecycle s) throws CoreException {
+    start(s, true);
+  }
+
+  private static void start(ComponentLifecycle s, boolean logging) throws CoreException {
     if (s != null) {
-      Logging.Start.doLogging(s);
+      if (logging) Logging.Start.doLogging(s);
       if (s instanceof StateManagedComponent) {
         ((StateManagedComponent) s).requestStart();
-      }
-      else {
+      } else {
         s.start();
       }
     }
@@ -94,12 +100,15 @@ public abstract class LifecycleHelper {
    * @see StateManagedComponent#requestStop()
    */
   public static final void stop(ComponentLifecycle s) {
+    stop(s, true);
+  }
+
+  private static void stop(ComponentLifecycle s, boolean logging) {
     if (s != null) {
-      Logging.Stop.doLogging(s);
+      if (logging) Logging.Stop.doLogging(s);
       if (s instanceof StateManagedComponent) {
         ((StateManagedComponent) s).requestStop();
-      }
-      else {
+      } else {
         s.stop();
       }
     }
@@ -113,12 +122,15 @@ public abstract class LifecycleHelper {
    * @see StateManagedComponent#requestClose()
    */
   public static final void close(ComponentLifecycle s) {
+    close(s, true);
+  }
+
+  private static void close(ComponentLifecycle s, boolean logging) {
     if (s != null) {
-      Logging.Close.doLogging(s);
+      if (logging) Logging.Close.doLogging(s);
       if (s instanceof StateManagedComponent) {
         ((StateManagedComponent) s).requestClose();
-      }
-      else {
+      } else {
         s.close();
       }
     }
@@ -143,8 +155,12 @@ public abstract class LifecycleHelper {
    * @throws CoreException
    */
   public static void prepare(ComponentLifecycle c) throws CoreException {
+    prepare(c, true);
+  }
+
+  private static void prepare(ComponentLifecycle c, boolean logging) throws CoreException {
     if (c != null && c instanceof ComponentLifecycleExtension) {
-      Logging.Prepare.doLogging(c);
+      if (logging) Logging.Prepare.doLogging(c);
       ((ComponentLifecycleExtension) c).prepare();
     }
   }
@@ -154,12 +170,16 @@ public abstract class LifecycleHelper {
    * 
    */
   public static <T extends ComponentLifecycle> T initAndStart(T c) throws CoreException {
-    LifecycleHelper.prepare(c);
-    LifecycleHelper.init(c);
+    return initAndStart(c, true);
+  }
+
+  public static <T extends ComponentLifecycle> T initAndStart(T c, boolean logging) throws CoreException {
+    LifecycleHelper.prepare(c, logging);
+    LifecycleHelper.init(c, logging);
     try {
-      LifecycleHelper.start(c);
+      LifecycleHelper.start(c, logging);
     } catch (CoreException e) {
-      LifecycleHelper.close(c);
+      LifecycleHelper.close(c, logging);
       throw e;
     }
     return c;
@@ -170,8 +190,12 @@ public abstract class LifecycleHelper {
    * 
    */
   public static <T extends ComponentLifecycle> T stopAndClose(T c) {
-    LifecycleHelper.stop(c);
-    LifecycleHelper.close(c);
+    return stopAndClose(c, true);
+  }
+
+  public static <T extends ComponentLifecycle> T stopAndClose(T c, boolean logging) {
+    LifecycleHelper.stop(c, logging);
+    LifecycleHelper.close(c, logging);
     return c;
   }
 

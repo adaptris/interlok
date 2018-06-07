@@ -52,7 +52,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <ul>
  * <li>It will also always send the current payload (i.e. {@link StandardResponseProducer#setSendPayload(Boolean)} is true)</li>
  * <li>{@link StandardResponseProducer#setForwardConnectionException(Boolean)} is always false.</li>
- * <li>{@link StandardResponseProducer#setFlushBuffer(Boolean)} is always false.</li>
+ * <li>{@link StandardResponseProducer#setFlushBuffer(Boolean)} is always true.</li>
+ * <li>{@link StandardResponseProducer#setAlwaysAttemptResponse(Boolean)} is always false.</li>
  * </ul>
  * </p>
  * <p>
@@ -101,14 +102,14 @@ public class JettyResponseService extends ServiceImp {
   public void doService(AdaptrisMessage msg) throws ServiceException {
     StandardResponseProducer p = buildProducer(msg);
     try {
-      LifecycleHelper.initAndStart(p);
+      LifecycleHelper.initAndStart(p, false);
       p.produce(msg);
     }
     catch (CoreException e) {
       throw ExceptionHelper.wrapServiceException(e);
     }
     finally {
-      LifecycleHelper.stopAndClose(p);
+      LifecycleHelper.stopAndClose(p, false);
     }
   }
 

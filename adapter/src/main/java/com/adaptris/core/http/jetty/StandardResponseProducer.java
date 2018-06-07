@@ -22,6 +22,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.BooleanUtils;
@@ -156,6 +157,17 @@ public class StandardResponseProducer extends ResponseProducerImpl {
     return alwaysAttemptResponse;
   }
 
+  /**
+   * Whether or not to always attempt a response.
+   * <p>
+   * Generally speaking this should be left as false. By setting it to true, each instance of {@code StandardResponseProducer} in a
+   * service chain will always attempt to write data to the underlying {@link ServletResponse}. This could have undesirable
+   * consequences if connections from the client are left open (e.g. you might end up with stale data from one HTTP request being
+   * sent in response a different HTTP request)
+   * </p>
+   * 
+   * @param alwaysAttemptResponse default is false if not specified.
+   */
   public void setAlwaysAttemptResponse(Boolean alwaysAttemptResponse) {
     this.alwaysAttemptResponse = alwaysAttemptResponse;
   }
