@@ -59,6 +59,7 @@ dependencies {
   compile ("com.thoughtworks.xstream:xstream:1.4.10")
   compile ("org.codehaus.jettison:jettyison:1.2")
   compile ("io.github.lukehutch:fast-classpath-scanner:2.9.4")
+  compile ("net.jodah:expiringmap:0.5.8")
   compile ("javax.activation:activation:1.1.1")
   compile ("org.apache.activemq:activemq-client:5.15.2")
   compile ("javax.validation:validation-api:1.0.0.GA")
