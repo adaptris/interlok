@@ -17,8 +17,7 @@ package com.adaptris.core.http.jetty;
 
 import static com.adaptris.core.CoreConstants.JETTY_RESPONSE_KEY;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
@@ -33,6 +32,8 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+import net.jodah.expiringmap.ExpiringMap;
 
 /**
  * Allows you to handle a single HTTP request across 2 workflows within the same Interlok instance.
@@ -56,7 +57,7 @@ public class JettyAsyncWorkflowInterceptor extends JettyWorkflowInterceptorImpl 
 
   // Should probably use JSR107 for some caching action?? make it pluggable.
   // But for now, same JVM, so a map will do in a pinch
-  private final static Map<String, CacheEntryWrapper> cache = new HashMap<>();
+  private static final ExpiringMap<String, CacheEntryWrapper> EXPIRING_CACHE = ExpiringMap.builder().expiration(1L, TimeUnit.HOURS).build();
 
   public enum Mode {
     REQUEST {
@@ -66,7 +67,7 @@ public class JettyAsyncWorkflowInterceptor extends JettyWorkflowInterceptorImpl 
         wrapper.monitor = (JettyConsumerMonitor) msg.getObjectHeaders().get(MESSAGE_MONITOR);
         wrapper.response = (HttpServletResponse) msg.getObjectHeaders().get(JETTY_RESPONSE_KEY);
         log.trace("Storing {} in cache against {}", wrapper, msg.getUniqueId());
-        cache.put(msg.getUniqueId(), wrapper);
+        EXPIRING_CACHE.put(msg.getUniqueId(), wrapper);
       }
 
       @Override
@@ -77,10 +78,10 @@ public class JettyAsyncWorkflowInterceptor extends JettyWorkflowInterceptorImpl 
     RESPONSE {
       @Override
       void workflowStart(AdaptrisMessage msg) {
-        CacheEntryWrapper wrapper = cache.get(msg.getUniqueId());
+        CacheEntryWrapper wrapper = EXPIRING_CACHE.get(msg.getUniqueId());
         log.trace("Found {} in cache against {}", wrapper, msg.getUniqueId());
         if (wrapper != null) {
-          cache.remove(msg.getUniqueId());
+          EXPIRING_CACHE.remove(msg.getUniqueId());
           msg.addObjectHeader(MESSAGE_MONITOR, wrapper.monitor);
           msg.addObjectHeader(JETTY_RESPONSE_KEY, wrapper.response);
         }
@@ -132,8 +133,17 @@ public class JettyAsyncWorkflowInterceptor extends JettyWorkflowInterceptorImpl 
     this.mode = Args.notNull(m, "mode");
   }
 
-  public boolean cacheContains(String msgId) {
-    return cache.containsKey(msgId);
+  public JettyAsyncWorkflowInterceptor withMode(JettyAsyncWorkflowInterceptor.Mode m) {
+    setMode(m);
+    return this;
+  }
+
+  public static boolean cacheContains(String msgId) {
+    return EXPIRING_CACHE.containsKey(msgId);
+  }
+
+  public static boolean removeEntry(String msgId) {
+    return EXPIRING_CACHE.remove(msgId) != null;
   }
 
   private static class CacheEntryWrapper {

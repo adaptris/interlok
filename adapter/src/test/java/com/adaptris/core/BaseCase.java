@@ -121,14 +121,11 @@ public abstract class BaseCase extends TestCase {
   }
 
   public static void start(ComponentLifecycle c) throws CoreException {
-    LifecycleHelper.prepare(c);
-    LifecycleHelper.init(c);
-    LifecycleHelper.start(c);
+    LifecycleHelper.initAndStart(c, false);
   }
 
   public static void stop(ComponentLifecycle c) {
-    LifecycleHelper.stop(c);
-    LifecycleHelper.close(c);
+    LifecycleHelper.stopAndClose(c, false);
   }
 
   public static void start(ComponentLifecycle... comps) throws CoreException {

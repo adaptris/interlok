@@ -29,6 +29,7 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.annotation.MarshallingCDATA;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -66,6 +67,7 @@ public class PayloadFromMetadataService extends ServiceImp {
   private KeyValuePairSet metadataTokens;
   @MarshallingCDATA
   @InputFieldDefault(value = "")
+  @InputFieldHint(expression = true)
   private String template = null;
   @InputFieldDefault(value = "true")
   private Boolean escapeBackslash;
@@ -86,7 +88,7 @@ public class PayloadFromMetadataService extends ServiceImp {
    * @see com.adaptris.core.Service#doService(com.adaptris.core.AdaptrisMessage)
    */
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    String payload = StringUtils.defaultIfEmpty(template, "");
+    String payload = msg.resolve(StringUtils.defaultIfEmpty(template, ""));
     for (KeyValuePair kvp : getMetadataTokens().getKeyValuePairs()) {
       if (msg.getMetadataValue(kvp.getKey()) != null) {
         if (!quiet()) {
@@ -151,10 +153,9 @@ public class PayloadFromMetadataService extends ServiceImp {
   }
 
   /**
-   * Set the template document that will be used as the template for generating
-   * a new document.
+   * Set the template document that will be used as the template for generating a new document.
    *
-   * @param s the template to set
+   * @param s the template to set (supports metadata expansion via {@code %message{key}}).
    */
   public void setTemplate(String s) {
     template = s;
