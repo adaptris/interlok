@@ -94,18 +94,19 @@ dependencies {
   compile ("org.slf4j:jul-to-slf4j:1.7.25")
   compile ("org.slf4j:slf4j-log4j12:1.7.25")
 
-  testCompile ('junit:junit:4.12')
-  testCompile ("com.adaptris:adp-stubs:$adpCoreVersion") { changing= true}
-  testCompile ("org.apache.logging.log4j:log4j-core:2.9.1")
-  testCompile ("org.apache.logging.log4j:log4j-1.2-api:2.9.1")
-  testCompile ("org.apache.logging.log4j:log4j-slf4j-impl:2.9.1")
-  testCompile ("org.apache.logging.log4j:log4j-api:2.9.1")
-  testCompile ("org.jruby:jruby-complete:9.1.13.0")
-  testCompile ("org.mockftpserver:MockFtpServer:2.4-MDTM")
-  testCompile ("com.icegreen:greenmail:1.4.0")
-  testCompile ("org.mockito:mockito-all:1.9.5")
-  testCompile ("mysql:mysql-connector-java:5.1.40")
-  testCompile ("org.apache.derby:derby:10.10.1.1")
+  // Should really be testCompile
+  compile ('junit:junit:4.12')
+  compile ("com.adaptris:adp-stubs:$adpCoreVersion") { changing= true}
+  compile ("org.apache.logging.log4j:log4j-core:2.9.1")
+  compile ("org.apache.logging.log4j:log4j-1.2-api:2.9.1")
+  compile ("org.apache.logging.log4j:log4j-slf4j-impl:2.9.1")
+  compile ("org.apache.logging.log4j:log4j-api:2.9.1")
+  compile ("org.jruby:jruby-complete:9.1.13.0")
+  compile ("org.mockftpserver:MockFtpServer:2.4-MDTM")
+  compile ("com.icegreen:greenmail:1.4.0")
+  compile ("org.mockito:mockito-all:1.9.5")
+  compile ("mysql:mysql-connector-java:5.1.40")
+  compile ("org.apache.derby:derby:10.10.1.1")
 
   javadoc("com.adaptris:adp-core-apt:$adpCoreVersion") { changing= true}
 
