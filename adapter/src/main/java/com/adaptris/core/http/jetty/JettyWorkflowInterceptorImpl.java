@@ -54,7 +54,7 @@ public abstract class JettyWorkflowInterceptorImpl extends WorkflowInterceptorIm
     }
   }
 
-  private static void messageComplete(AdaptrisMessage msg) {
+  protected static void messageComplete(AdaptrisMessage msg) {
     if (msg.getObjectHeaders().containsKey(MESSAGE_MONITOR)) {
       JettyConsumerMonitor o = (JettyConsumerMonitor) msg.getObjectHeaders().get(MESSAGE_MONITOR);
       o.setMessageComplete(true);

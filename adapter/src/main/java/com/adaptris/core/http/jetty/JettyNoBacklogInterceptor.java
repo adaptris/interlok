@@ -20,9 +20,8 @@ import static com.adaptris.core.CoreConstants.JETTY_RESPONSE_KEY;
 import static com.adaptris.core.CoreConstants.KEY_WORKFLOW_SKIP_PRODUCER;
 import static com.adaptris.core.CoreConstants.STOP_PROCESSING_KEY;
 import static com.adaptris.core.CoreConstants.STOP_PROCESSING_VALUE;
-import static com.adaptris.core.http.jetty.JettyWorkflowInterceptorImpl.MESSAGE_MONITOR;
+import static com.adaptris.core.http.jetty.JettyWorkflowInterceptorImpl.messageComplete;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -98,7 +97,7 @@ public class JettyNoBacklogInterceptor extends WorkflowInterceptorImpl {
       log.trace("Already {} msgs in flight; this exceeds {}, sending 503", messagesInFlight.get(), maxWorkers);
       sendErrorResponse(inputMsg);
       addStopProcessingMarker(inputMsg);
-      markComplete(inputMsg);
+      messageComplete(inputMsg);
     }
     else {
       // keep a track of the inputMsg that we're going to be
@@ -135,17 +134,6 @@ public class JettyNoBacklogInterceptor extends WorkflowInterceptorImpl {
   private void addStopProcessingMarker(AdaptrisMessage msg) {
     msg.addMetadata(STOP_PROCESSING_KEY, STOP_PROCESSING_VALUE);
     msg.addMetadata(KEY_WORKFLOW_SKIP_PRODUCER, STOP_PROCESSING_VALUE);
-  }
-
-  private void markComplete(AdaptrisMessage msg) {
-    if (msg.getObjectHeaders().containsKey(MESSAGE_MONITOR)) {
-      JettyConsumerMonitor o = (JettyConsumerMonitor) msg.getObjectHeaders().get(MESSAGE_MONITOR);
-      o.setMessageComplete(true);
-      o.setEndTime(new Date().getTime());
-      synchronized (o) {
-        o.notifyAll();
-      }
-    }
   }
 
 }

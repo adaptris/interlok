@@ -85,13 +85,18 @@ public class JettyAsyncWorkflowInterceptorTest extends ExampleWorkflowCase {
         .withMode(JettyAsyncWorkflowInterceptor.Mode.RESPONSE);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
     try {
-      start(responder);
+      assertFalse(JettyAsyncWorkflowInterceptor.cacheContains("hello"));
+      assertFalse(JettyAsyncWorkflowInterceptor.removeEntry("hello"));
+      start(responder, requestor);
       requestor.workflowStart(msg);
       assertTrue(JettyAsyncWorkflowInterceptor.cacheContains(msg.getUniqueId()));
       responder.workflowStart(msg);
+      responder.workflowStart(AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD));
+      responder.workflowEnd(AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD),
+          AdaptrisMessageFactory.getDefaultInstance().newMessage());
       assertFalse(JettyAsyncWorkflowInterceptor.cacheContains(msg.getUniqueId()));
     } finally {
-      stop(responder);
+      stop(responder, requestor);
     }
   }
 
