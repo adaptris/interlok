@@ -20,7 +20,7 @@ import static com.adaptris.core.CoreConstants.JETTY_RESPONSE_KEY;
 import static com.adaptris.core.CoreConstants.KEY_WORKFLOW_SKIP_PRODUCER;
 import static com.adaptris.core.CoreConstants.STOP_PROCESSING_KEY;
 import static com.adaptris.core.CoreConstants.STOP_PROCESSING_VALUE;
-import static com.adaptris.core.http.jetty.JettyPoolingWorkflowInterceptor.MESSAGE_MONITOR;
+import static com.adaptris.core.http.jetty.JettyWorkflowInterceptorImpl.MESSAGE_MONITOR;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -53,12 +53,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config jetty-no-backlog-interceptor
- * 
+ * @since 3.7.3
  */
 @XStreamAlias("jetty-no-backlog-interceptor")
 @AdapterComponent
 @ComponentProfile(summary = "Interceptor that automatically returns a 503 if its parent workflow is busy.",
-    tag = "interceptor,http,https")
+    tag = "interceptor,http,https", since = "3.7.3")
 public class JettyNoBacklogInterceptor extends WorkflowInterceptorImpl {
   private transient AtomicInteger messagesInFlight = new AtomicInteger(0);
   private transient Set<String> messageIdsInFlight = new HashSet<>();

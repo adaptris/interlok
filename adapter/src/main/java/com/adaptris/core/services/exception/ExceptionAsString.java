@@ -38,6 +38,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config exception-as-string
+ * @since 3.7.3
  */
 @XStreamAlias("exception-as-string")
 public class ExceptionAsString implements ExceptionSerializer {
