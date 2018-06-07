@@ -1,8 +1,7 @@
 package com.adaptris.core.http.jetty;
 
-import static com.adaptris.core.http.jetty.JettyPoolingWorkflowInterceptor.MESSAGE_MONITOR;
-
-import java.util.Date;
+import static com.adaptris.core.http.jetty.JettyAsyncWorkflowInterceptor.removeEntry;
+import static com.adaptris.core.http.jetty.JettyWorkflowInterceptorImpl.endWorkflow;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
@@ -42,26 +41,23 @@ public class ShortCutJettyResponse extends ServiceImp {
 
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    if (msg.getObjectHeaders().containsKey(MESSAGE_MONITOR)) {
-      JettyConsumerMonitor o = (JettyConsumerMonitor) msg.getObjectHeaders().get(MESSAGE_MONITOR);
-      o.setMessageComplete(true);
-      o.setEndTime(new Date().getTime());
-      synchronized (o) {
-        o.notifyAll();
-      }
-    }
+    endWorkflow(msg, msg);
+    removeEntry(msg.getUniqueId());
   }
 
   @Override
   public void prepare() throws CoreException {
+    // nothing to do.
   }
 
   @Override
   protected void initService() throws CoreException {
+    // nothing to do.
   }
 
   @Override
   protected void closeService() {
+    // nothing to do.
   }
 
 }

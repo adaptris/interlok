@@ -48,16 +48,15 @@ public abstract class JettyWorkflowInterceptorImpl extends WorkflowInterceptorIm
   }
 
   protected static void endWorkflow(AdaptrisMessage inputMsg, AdaptrisMessage outputMsg) {
-    if (inputMsg.getObjectHeaders().containsKey(MESSAGE_MONITOR)) {
-      JettyConsumerMonitor o = (JettyConsumerMonitor) inputMsg.getObjectHeaders().get(MESSAGE_MONITOR);
-      o.setMessageComplete(true);
-      o.setEndTime(new Date().getTime());
-      synchronized (o) {
-        o.notifyAll();
-      }
+    messageComplete(inputMsg);
+    if (inputMsg != outputMsg) {
+      messageComplete(outputMsg);
     }
-    if (outputMsg.getObjectHeaders().containsKey(MESSAGE_MONITOR)) {
-      JettyConsumerMonitor o = (JettyConsumerMonitor) outputMsg.getObjectHeaders().get(MESSAGE_MONITOR);
+  }
+
+  private static void messageComplete(AdaptrisMessage msg) {
+    if (msg.getObjectHeaders().containsKey(MESSAGE_MONITOR)) {
+      JettyConsumerMonitor o = (JettyConsumerMonitor) msg.getObjectHeaders().get(MESSAGE_MONITOR);
       o.setMessageComplete(true);
       o.setEndTime(new Date().getTime());
       synchronized (o) {

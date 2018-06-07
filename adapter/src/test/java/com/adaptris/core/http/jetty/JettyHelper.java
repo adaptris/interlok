@@ -51,13 +51,15 @@ public class JettyHelper {
     return createChannel(connection, createWorkflow(consumer, producer));
   }
 
-  public static Channel createChannel(AdaptrisConnection connection, Workflow w) throws Exception {
+  public static Channel createChannel(AdaptrisConnection connection, Workflow... workflows) throws Exception {
     Channel result = new MockChannel();
     result.setUniqueId("channel");
     result.registerEventHandler(createEventHandler());
     result.setMessageErrorHandler(new NullProcessingExceptionHandler());
     result.setConsumeConnection(connection);
-    result.getWorkflowList().add(w);
+    for (Workflow w : workflows) {
+      result.getWorkflowList().add(w);
+    }
     return result;
   }
 
