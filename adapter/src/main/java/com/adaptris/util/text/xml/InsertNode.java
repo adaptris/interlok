@@ -25,12 +25,19 @@ import org.w3c.dom.Node;
 
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.util.XmlUtils;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Merge implementation that appends the result to a parent node derived from an Xpath.
+ * <p>
+ * If the {@code DocumentBuilderFactoryBuilder} has been explicitly set to be not namespace aware and the document does in fact
+ * contain namespaces, then Saxon can cause merry havoc in the sense that {@code //NonNamespaceXpath} doesn't work if the document
+ * has namespaces in it. We have included a shim so that behaviour can be toggled based on what you have configured.
+ * </p>
  * 
+ * @see XPath#newXPathInstance(DocumentBuilderFactoryBuilder, NamespaceContext)
  * @config xml-insert-node
  * 
  * @author lchan

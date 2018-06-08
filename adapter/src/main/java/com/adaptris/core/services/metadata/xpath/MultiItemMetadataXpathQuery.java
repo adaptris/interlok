@@ -17,7 +17,6 @@
 package com.adaptris.core.services.metadata.xpath;
 
 import javax.validation.constraints.NotNull;
-import javax.xml.namespace.NamespaceContext;
 
 import org.w3c.dom.Document;
 
@@ -28,6 +27,7 @@ import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.util.Args;
+import com.adaptris.util.text.xml.XPath;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -62,8 +62,9 @@ public class MultiItemMetadataXpathQuery extends MetadataXpathQueryImpl implemen
   }
 
   @Override
-  public MetadataElement resolveXpath(Document doc, NamespaceContext ctx, String expr) throws CoreException {
-    return new MetadataElement(getMetadataKey(), XpathQueryHelper.resolveMultipleTextItems(doc, ctx, expr, allowEmptyResults(),
+  public MetadataElement resolveXpath(Document doc, XPath xpath, String expr) throws CoreException {
+    return new MetadataElement(getMetadataKey(),
+        XpathQueryHelper.resolveMultipleTextItems(doc, xpath, expr, allowEmptyResults(),
         getSeparator()));
   }
 

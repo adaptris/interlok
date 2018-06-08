@@ -17,6 +17,7 @@
 package com.adaptris.core;
 
 import static com.adaptris.core.util.XmlHelper.createDocument;
+import static com.adaptris.util.text.xml.XPath.newXPathInstance;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import javax.validation.Valid;
@@ -41,7 +42,14 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Implementation of <code>TradingRelationshipCreator</code> which populates the <code>TradingRelationship</code> with values
  * returned from configurable xpaths.
  * </p>
+ *
+ * <p>
+ * If the {@code DocumentBuilderFactoryBuilder} has been explicitly set to be not namespace aware and the document does in fact
+ * contain namespaces, then Saxon can cause merry havoc in the sense that {@code //NonNamespaceXpath} doesn't work if the document
+ * has namespaces in it. We have included a shim so that behaviour can be toggled based on what you have configured.
+ * </p>
  * 
+ * @see XPath#newXPathInstance(DocumentBuilderFactoryBuilder, NamespaceContext)
  * @config xpath-trading-relationship-creator
  */
 @XStreamAlias("xpath-trading-relationship-creator")
@@ -88,8 +96,9 @@ public class XpathTradingRelationshipCreator implements
     TradingRelationship result = null;
     try {
       NamespaceContext namespaceCtx = SimpleNamespaceContext.create(getNamespaceContext(), msg);
-      XPath xpath = new XPath(namespaceCtx);
-      Document doc = createDocument(msg, documentFactoryBuilder(namespaceCtx));
+      DocumentBuilderFactoryBuilder builder = documentFactoryBuilder(namespaceCtx);     
+      XPath xpath = newXPathInstance(builder, namespaceCtx);
+      Document doc = createDocument(msg, builder);
       String source = resolveXpath(sourceXpath, xpath, doc);
       String destination = resolveXpath(destinationXpath, xpath, doc);
       String type = resolveXpath(typeXpath, xpath, doc);
@@ -215,8 +224,7 @@ public class XpathTradingRelationshipCreator implements
     this.xmlDocumentFactoryConfig = xml;
   }
 
-  DocumentBuilderFactoryBuilder documentFactoryBuilder(NamespaceContext nc) {
-    return (getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig() : DocumentBuilderFactoryBuilder.newInstance())
-        .withNamespaceAware(nc);
+  private DocumentBuilderFactoryBuilder documentFactoryBuilder(NamespaceContext nc) {
+    return DocumentBuilderFactoryBuilder.newInstance(getXmlDocumentFactoryConfig(), nc);
   }
 }

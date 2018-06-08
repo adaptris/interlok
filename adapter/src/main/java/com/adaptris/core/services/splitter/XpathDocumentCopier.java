@@ -65,7 +65,15 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </pre>
  * </p>
  * You could use the xpath <code>count(/envelope/document)</code> to split into 3 documents; each of which contains the whole XML
- * document. </p>
+ * document.
+ * </p>
+ * <p>
+ * If the {@code DocumentBuilderFactoryBuilder} has been explicitly set to be not namespace aware and the document does in fact
+ * contain namespaces, then Saxon can cause merry havoc in the sense that {@code //NonNamespaceXpath} doesn't work if the document
+ * has namespaces in it. We have included a shim so that behaviour can be toggled based on what you have configured.
+ * </p>
+ * 
+ * @see XPath#newXPathInstance(DocumentBuilderFactoryBuilder, NamespaceContext)
  * 
  * @config xpath-document-copier
  */
@@ -120,7 +128,7 @@ public class XpathDocumentCopier extends MessageSplitterImp {
       builder.setNamespaceAware(true);
     }
     Document d = createDocument(msg, builder);
-    XPath xp = new XPath(ctx);
+    XPath xp = XPath.newXPathInstance(builder, ctx);
     return xp.selectSingleTextItem(d, getXpath());
   }
 

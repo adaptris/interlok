@@ -58,7 +58,7 @@ public abstract class XpathMergeImpl extends MergeImpl {
   }
 
   protected XPath createXPath() {
-    return new XPath(SimpleNamespaceContext.create(getNamespaceContext()));
+    return XPath.newXPathInstance(documentFactoryBuilder(), SimpleNamespaceContext.create(getNamespaceContext()));
   }
 
   protected XmlUtils create(Document doc) throws Exception {
@@ -77,7 +77,7 @@ public abstract class XpathMergeImpl extends MergeImpl {
     this.xmlDocumentFactoryConfig = xml;
   }
 
-  DocumentBuilderFactoryBuilder documentFactoryBuilder() {
+  private DocumentBuilderFactoryBuilder documentFactoryBuilder() {
     return DocumentBuilderFactoryBuilder.newInstance(getXmlDocumentFactoryConfig());
   }
 }

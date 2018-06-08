@@ -153,6 +153,17 @@ public class DocumentBuilderFactoryBuilder {
   }
 
   /**
+   * Convenient method for null protection.
+   * 
+   */
+  public static final DocumentBuilderFactoryBuilder newInstance(DocumentBuilderFactoryBuilder b, NamespaceContext ctx) {
+    if (b != null) {
+      return b;
+    }
+    return ctx == null ? newInstance() : newInstance().withNamespaceAware(true);
+  }
+
+  /**
    * Configure a document builder factory
    * 
    * @param f

@@ -23,6 +23,7 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.util.XmlHelper;
+import com.adaptris.util.text.xml.XPath;
 
 @SuppressWarnings("deprecation")
 public class MultiItemMetadataXpathQueryTest extends MetadataXpathQueryCase {
@@ -66,7 +67,7 @@ public class MultiItemMetadataXpathQueryTest extends MetadataXpathQueryCase {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
     msg.addMetadata("xpathMetadataKey", "//@MissingAttribute");
     try {
-      MetadataElement result = query.resolveXpath(doc, null, query.createXpathQuery(msg));
+      MetadataElement result = query.resolveXpath(doc, new XPath(), query.createXpathQuery(msg));
       fail();
     }
     catch (CoreException expected) {
@@ -82,7 +83,7 @@ public class MultiItemMetadataXpathQueryTest extends MetadataXpathQueryCase {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
     msg.addMetadata("xpathMetadataKey", "//@MissingAttribute");
 
-    MetadataElement result = query.resolveXpath(doc, null, query.createXpathQuery(msg));
+    MetadataElement result = query.resolveXpath(doc, new XPath(), query.createXpathQuery(msg));
     assertEquals("", result.getValue());
   }
 
@@ -91,7 +92,7 @@ public class MultiItemMetadataXpathQueryTest extends MetadataXpathQueryCase {
     Document doc = XmlHelper.createDocument(XML);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
     msg.addMetadata("xpathMetadataKey", "//extra[@att='multi']");
-    MetadataElement result = query.resolveXpath(doc, null, query.createXpathQuery(msg));
+    MetadataElement result = query.resolveXpath(doc, new XPath(), query.createXpathQuery(msg));
     assertEquals("two|three", result.getValue());
   }
 

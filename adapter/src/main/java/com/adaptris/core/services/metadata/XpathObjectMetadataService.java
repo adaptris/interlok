@@ -41,11 +41,20 @@ import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.text.xml.SimpleNamespaceContext;
+import com.adaptris.util.text.xml.XPath;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
- * Service which sets values extracted from message payload using {@link XpathQuery} as object metadata.
+ * Store values extracted from message payload using {@link XpathQuery} as object metadata.
+ * <p>
+ * If the {@code DocumentBuilderFactoryBuilder} has been explicitly set to be not namespace aware and the document does in fact
+ * contain namespaces, then Saxon can cause merry havoc in the sense that {@code //NonNamespaceXpath} doesn't work if the document
+ * has namespaces in it. We have included a shim so that behaviour can be toggled based on what you have configured.
+ * </p>
+ * 
+ * @see XPath#newXPathInstance(DocumentBuilderFactoryBuilder, NamespaceContext)
+ * 
  * 
  * @config xpath-object-metadata-service
  * 
@@ -100,9 +109,10 @@ public class XpathObjectMetadataService extends ServiceImp {
       if (namespaceCtx != null) {
         builder.setNamespaceAware(true);
       }
+      XPath xpathToUse = XPath.newXPathInstance(builder, namespaceCtx);
       Document doc = XmlHelper.createDocument(msg, builder);
       for (XpathObjectQuery query : queriesToExecute) {
-        msg.getObjectHeaders().put(query.getMetadataKey(), query.resolveXpath(doc, namespaceCtx, query.createXpathQuery(msg)));
+        msg.getObjectHeaders().put(query.getMetadataKey(), query.resolveXpath(doc, xpathToUse, query.createXpathQuery(msg)));
         log.trace("Added object against [{}]", query.getMetadataKey());
       }
     }

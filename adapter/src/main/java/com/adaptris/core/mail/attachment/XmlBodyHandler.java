@@ -15,6 +15,7 @@
 */
 
 package com.adaptris.core.mail.attachment;
+import static com.adaptris.util.text.xml.XPath.newXPathInstance;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -22,12 +23,16 @@ import java.io.InputStream;
 
 import javax.mail.internet.ContentType;
 import javax.mail.internet.MimeUtility;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.xml.namespace.NamespaceContext;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.stream.StreamUtil;
 import com.adaptris.util.text.xml.SimpleNamespaceContext;
@@ -36,10 +41,16 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Handle the body for {@link MultiAttachmentSmtpProducer} where the XPath should be treated as an XML document.
+ * <p>
+ * If the {@code DocumentBuilderFactoryBuilder} has been explicitly set to be not namespace aware and the document does in fact
+ * contain namespaces, then Saxon can cause merry havoc in the sense that {@code //NonNamespaceXpath} doesn't work if the document
+ * has namespaces in it. We have included a shim so that behaviour can be toggled based on what you have configured.
+ * </p>
+ * 
+ * @see XPath#newXPathInstance(DocumentBuilderFactoryBuilder, NamespaceContext)
  * 
  * @config mail-xml-body-handler
- * @author lchan
- * @author $Author: lchan $
+ * 
  */
 @XStreamAlias("mail-xml-body-handler")
 public class XmlBodyHandler implements BodyHandler {
@@ -49,6 +60,9 @@ public class XmlBodyHandler implements BodyHandler {
   private String contentType;
   private String encodingXpath;
   private KeyValuePairSet namespaceContext;
+  @AdvancedConfig
+  @Valid
+  private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 
   public XmlBodyHandler() {
 
@@ -87,7 +101,8 @@ public class XmlBodyHandler implements BodyHandler {
    */
   @Override
   public MailContent resolve(Document doc) throws Exception {
-    XPath x = new XPath(SimpleNamespaceContext.create(getNamespaceContext()));
+    DocumentBuilderFactoryBuilder builder = documentFactoryBuilder();
+    XPath x = newXPathInstance(builder, SimpleNamespaceContext.create(getNamespaceContext()));
     Node n = x.selectSingleNode(doc, getXpath());
     MailContent result = new MailContent(getData(n), new ContentType(getContentType()));
     return result;
@@ -163,5 +178,17 @@ public class XmlBodyHandler implements BodyHandler {
    */
   public void setNamespaceContext(KeyValuePairSet kvps) {
     this.namespaceContext = kvps;
+  }
+
+  public DocumentBuilderFactoryBuilder getXmlDocumentFactoryConfig() {
+    return xmlDocumentFactoryConfig;
+  }
+
+  public void setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder xml) {
+    this.xmlDocumentFactoryConfig = xml;
+  }
+
+  DocumentBuilderFactoryBuilder documentFactoryBuilder() {
+    return DocumentBuilderFactoryBuilder.newInstance(getXmlDocumentFactoryConfig());
   }
 }

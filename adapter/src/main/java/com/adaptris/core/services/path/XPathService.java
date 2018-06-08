@@ -56,21 +56,20 @@ import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.text.xml.SimpleNamespaceContext;
+import com.adaptris.util.text.xml.XPath;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
  * <p>
- * This service allows you to configure an xpath expression which will be executed on source xml, the result of which can be saved 
+ * This service allows you to configure an xpath expression which will be executed on source xml, the result of which can be saved
  * to multiple locations.
  * </p>
  * <p>
- * To specify where the source xml, source xpath expression and the result of the xpath execution should be saved, you shoud
- * use {@link DataInputParameter} or {@link com.adaptris.interlok.config.DataOutputParameter}.
- * <br />
- * For example you can specify the source xml can be found in the {@link com.adaptris.core.AdaptrisMessage} payload, by using 
- * {@link StringPayloadDataInputParameter} like this :
- * <pre>
+ * To specify where the source xml, source xpath expression and the result of the xpath execution should be saved, you shoud use
+ * {@link DataInputParameter} or {@link com.adaptris.interlok.config.DataOutputParameter}. <br />
+ * For example you can specify the source xml can be found in the {@link com.adaptris.core.AdaptrisMessage} payload, by using
+ * {@link StringPayloadDataInputParameter} like this : <pre>
  * {@code
  * <xpath-service>
  *   <xml-source class="string-payload-data-input-parameter"/>
@@ -78,7 +77,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * }
  * </pre>
  * 
- * And perhaps the source xpath expression will be configured directly in Interlok config, using 
+ * And perhaps the source xpath expression will be configured directly in Interlok config, using
  * {@link com.adaptris.core.common.ConstantDataInputParameter};
  * 
  * <pre>
@@ -92,7 +91,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * }
  * </pre>
  * 
- * And then maybe the result of the xpath execution is to be saved in {@link com.adaptris.core.AdaptrisMessage} metadata, using 
+ * And then maybe the result of the xpath execution is to be saved in {@link com.adaptris.core.AdaptrisMessage} metadata, using
  * {@link com.adaptris.core.common.MetadataDataOutputParameter};
  * 
  * <pre>
@@ -107,11 +106,10 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * </pre>
  * </p>
  * <p>
- * While you may only specify a single source xml destination, you may if you wish apply multiple XPath expressions, 
- * each of which saves the result to a different location. To do this, simply configure multiple executions.  Take the following 
- * example, where we specify the payload containing the source xml and 3 XPath expressions will be executed each of which will 
- * store the result in 3 different metadata items;
- * <pre>
+ * While you may only specify a single source xml destination, you may if you wish apply multiple XPath expressions, each of which
+ * saves the result to a different location. To do this, simply configure multiple executions. Take the following example, where we
+ * specify the payload containing the source xml and 3 XPath expressions will be executed each of which will store the result in 3
+ * different metadata items; <pre>
  * {@code
  * <xpath-service>
  *   <xml-source class="string-payload-data-input-parameter"/>
@@ -151,8 +149,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * </pre>
  * </p>
  * <p>
- * Should your source xml contain namespaces, you will need to configure the mappings in this service like this;
- * <pre>
+ * Should your source xml contain namespaces, you will need to configure the mappings in this service like this; <pre>
  * {@code
  * <xpath-service>
  * ...
@@ -179,6 +176,13 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * }
  * </pre>
  * </p>
+ * <p>
+ * If the {@code DocumentBuilderFactoryBuilder} has been explicitly set to be not namespace aware and the document does in fact
+ * contain namespaces, then Saxon can cause merry havoc in the sense that {@code //NonNamespaceXpath} doesn't work if the document
+ * has namespaces in it. We have included a shim so that behaviour can be toggled based on what you have configured.
+ * </p>
+ * 
+ * @see XPath#newXPathInstance(DocumentBuilderFactoryBuilder, NamespaceContext)
  * 
  * @since 3.0.6
  * @author amcgrath
@@ -218,8 +222,9 @@ public class XPathService extends ServiceImp {
   public void doService(AdaptrisMessage msg) throws ServiceException {
     NamespaceContext namespaceContext = SimpleNamespaceContext.create(getNamespaceContext(), msg);
     try {
-      Document document = buildDocument(this.getXmlSource().extract(msg));
-      com.adaptris.util.text.xml.XPath xPathHandler = new com.adaptris.util.text.xml.XPath(namespaceContext);
+      DocumentBuilderFactoryBuilder builder = documentFactoryBuilder(namespaceContext);
+      Document document = buildDocument(builder, this.getXmlSource().extract(msg));
+      XPath xPathHandler = XPath.newXPathInstance(builder, namespaceContext);
       for (Execution execution : this.getExecutions()) {
         String result = this.serializeNode(xPathHandler.selectNodeList(document, execution.getSource().extract(msg)));
         execution.getTarget().insert(result, msg);
@@ -229,9 +234,9 @@ public class XPathService extends ServiceImp {
     }
   }
 
-  private Document buildDocument(String xmlData) throws ParserConfigurationException, SAXException, IOException {
-    return documentFactoryBuilder().newDocumentBuilder(DocumentBuilderFactory.newInstance())
-        .parse(new InputSource(new StringReader(xmlData)));
+  private Document buildDocument(DocumentBuilderFactoryBuilder builder, String xmlData)
+      throws ParserConfigurationException, SAXException, IOException {
+    return builder.newDocumentBuilder(DocumentBuilderFactory.newInstance()).parse(new InputSource(new StringReader(xmlData)));
   }
 
   private String serializeNode(NodeList nodeList) throws TransformerException {
@@ -296,8 +301,8 @@ public class XPathService extends ServiceImp {
     this.xmlDocumentFactoryConfig = xml;
   }
 
-  DocumentBuilderFactoryBuilder documentFactoryBuilder() {
-    return DocumentBuilderFactoryBuilder.newInstance(getXmlDocumentFactoryConfig());
+  DocumentBuilderFactoryBuilder documentFactoryBuilder(NamespaceContext namespaceCtx) {
+    return DocumentBuilderFactoryBuilder.newInstance(getXmlDocumentFactoryConfig(), namespaceCtx);
   }
 
 }
