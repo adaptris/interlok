@@ -38,6 +38,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.slf4j.Logger;
 
 import com.adaptris.annotation.AdvancedConfig;
@@ -473,7 +474,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
   }
 
   protected boolean perMessageProperties() {
-    return getPerMessageProperties() != null ? getPerMessageProperties().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getPerMessageProperties(), false);
   }
 
   // BUG#915
