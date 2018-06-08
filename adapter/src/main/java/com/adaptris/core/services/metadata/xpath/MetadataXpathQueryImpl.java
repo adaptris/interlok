@@ -22,6 +22,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.util.Args;
 
 /**
  * Abstract base class for {@linkplain XpathQuery} implementations that derive their xpath query from metadata.
@@ -47,10 +48,7 @@ public abstract class MetadataXpathQueryImpl extends XpathQueryImpl {
    * @param expr
    */
   public void setXpathMetadataKey(String expr) {
-    if (isEmpty(expr)) {
-      throw new IllegalArgumentException("Configured Xpath Metadata may not be null.");
-    }
-    xpathMetadataKey = expr;
+    xpathMetadataKey = Args.notBlank(expr, "xpath-metadata-key");
   }
 
   @Override

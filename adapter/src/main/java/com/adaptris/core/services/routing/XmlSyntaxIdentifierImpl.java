@@ -52,7 +52,8 @@ public abstract class XmlSyntaxIdentifierImpl extends SyntaxIdentifierImpl {
   }
 
   protected XPath createXPath() {
-    return new XPath(SimpleNamespaceContext.create(namespaceContext));
+    NamespaceContext ctx = SimpleNamespaceContext.create(namespaceContext);
+    return XPath.newXPathInstance(documentFactoryBuilder(ctx), ctx);
   }
 
   public KeyValuePairSet getNamespaceContext() {
@@ -72,8 +73,7 @@ public abstract class XmlSyntaxIdentifierImpl extends SyntaxIdentifierImpl {
     this.xmlDocumentFactoryConfig = xml;
   }
 
-  DocumentBuilderFactoryBuilder documentFactoryBuilder(NamespaceContext nc) {
-    return (getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig() : DocumentBuilderFactoryBuilder.newInstance())
-        .withNamespaceAware(nc);
+  private DocumentBuilderFactoryBuilder documentFactoryBuilder(NamespaceContext nc) {
+    return DocumentBuilderFactoryBuilder.newInstance(getXmlDocumentFactoryConfig(), nc);
   }
 }

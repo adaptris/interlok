@@ -16,11 +16,9 @@
 
 package com.adaptris.core.services.metadata.xpath;
 
-import javax.xml.namespace.NamespaceContext;
-
 import org.w3c.dom.Document;
 
-import com.adaptris.core.MetadataElement;
+import com.adaptris.util.text.xml.XPath;
 
 /**
  * Interface for creating metadata from an Xpath.
@@ -36,8 +34,9 @@ public interface XpathObjectQuery extends XpathMetadataQuery {
    * </p>
    * 
    * @param doc The XML document
-   * @param ctx any Namespace context
-   * @return a {@link MetadataElement} with the configured key and the extracted text value
+   * @param xpath the Xpath
+   * @param expression the expression.
+   * @return the appropriate value.
    */
-  Object resolveXpath(Document doc, NamespaceContext ctx, String expression) throws Exception;
+  Object resolveXpath(Document doc, XPath xpath, String expression) throws Exception;
 }

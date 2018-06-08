@@ -64,10 +64,17 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  *   <document>three</document>
  * </envelope>
  * }
- * </pre>
- * then the following XPath: <code>/envelope/document</code> will create 3 documents each of which will only contain the
+ * </pre> then the following XPath: <code>/envelope/document</code> will create 3 documents each of which will only contain the
  * <code><document></code> element.
  * </p>
+ * <p>
+ * If the {@code DocumentBuilderFactoryBuilder} has been explicitly set to be not namespace aware and the document does in fact
+ * contain namespaces, then Saxon can cause merry havoc in the sense that {@code //NonNamespaceXpath} doesn't work if the document
+ * has namespaces in it. We have included a shim so that behaviour can be toggled based on what you have configured.
+ * </p>
+ * 
+ * @see XPath#newXPathInstance(DocumentBuilderFactoryBuilder, NamespaceContext)
+ * 
  * 
  * @config xpath-message-splitter
  * 
@@ -116,7 +123,7 @@ public class XpathMessageSplitter extends MessageSplitterImp {
       IOException, SAXException,
       XPathExpressionException {
     Document d = createDocument(msg, builder);
-    XPath xp = new XPath(namespaceCtx);
+    XPath xp = XPath.newXPathInstance(builder, namespaceCtx);
     return xp.selectNodeList(d, getXpath());
   }
 

@@ -23,6 +23,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.XmlHelper;
+import com.adaptris.util.text.xml.XPath;
 
 @SuppressWarnings("deprecation")
 public class ConfiguredXpathNodeListTest extends ConfiguredXpathQueryCase {
@@ -71,7 +72,7 @@ public class ConfiguredXpathNodeListTest extends ConfiguredXpathQueryCase {
     ConfiguredXpathNodeListQuery query = init(create(), "//extra[@att='multi']");
     Document doc = XmlHelper.createDocument(XML);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
-    NodeList result = query.resolveXpath(doc, null, query.createXpathQuery(msg));
+    NodeList result = query.resolveXpath(doc, new XPath(), query.createXpathQuery(msg));
     assertNotNull(result);
   }
 
