@@ -20,7 +20,7 @@ import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 import static com.adaptris.core.jms.JmsConstants.JMS_DELIVERY_MODE;
 import static com.adaptris.core.jms.JmsConstants.JMS_EXPIRATION;
 import static com.adaptris.core.jms.JmsConstants.JMS_PRIORITY;
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static com.adaptris.core.jms.NullCorrelationIdSource.defaultIfNull;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -38,6 +38,8 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 
 import com.adaptris.annotation.AdvancedConfig;
@@ -73,8 +75,6 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
   @AutoPopulated
   @Valid
   private MessageTypeTranslator messageTranslator;
-  @NotNull
-  @AutoPopulated
   @Valid
   @AdvancedConfig
   private CorrelationIdSource correlationIdSource;
@@ -154,7 +154,6 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
     setAcknowledgeMode(AcknowledgeMode.Mode.CLIENT_ACKNOWLEDGE.name());
     setDeliveryMode(DeliveryMode.Mode.PERSISTENT.name());
     setMessageTranslator(new TextMessageTranslator());
-    setCorrelationIdSource(new NullCorrelationIdSource());
     setSessionFactory(new DefaultProducerSessionFactory());
   }
 
@@ -165,8 +164,8 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
 
   @Override
   public void prepare() throws CoreException {
-    getMessageTranslator().prepare();
-    getSessionFactory().prepare();
+    LifecycleHelper.prepare(getMessageTranslator());
+    LifecycleHelper.prepare(getSessionFactory());
   }
 
   @Override
@@ -215,11 +214,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
     if (!(e instanceof JMSException))
       return;
     JMSException je = (JMSException) e;
-    if (!isEmpty(prefix)) {
-      log.warn("JMSException caught during " + prefix + "[" + e.getMessage() + "]");
-    } else {
-      log.warn("JMSException caught [" + e.getMessage() + "]");
-    }
+    log.warn("JMSException caught [{}], [{}]", StringUtils.defaultIfEmpty(prefix, ""), e.getMessage());
     if (je.getLinkedException() != null) {
       log.trace("Linked Exception available...");
       log.trace(je.getLinkedException().getMessage(), je.getLinkedException());
@@ -279,7 +274,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
 
   protected Message translate(AdaptrisMessage msg, Destination replyTo) throws JMSException {
     Message result = getMessageTranslator().translate(msg);
-    getCorrelationIdSource().processCorrelationId(msg, result);
+    configuredCorrelationIdSource().processCorrelationId(msg, result);
     if (replyTo != null) { // OpenJMS is fussy about null here
       result.setJMSReplyTo(replyTo);
     }
@@ -445,7 +440,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
    * @param c the correlationIdSource to set
    */
   public void setCorrelationIdSource(CorrelationIdSource c) {
-    correlationIdSource = Args.notNull(c, "correlationIdSource");
+    correlationIdSource = c;
   }
 
   /**
@@ -473,7 +468,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
   }
 
   protected boolean perMessageProperties() {
-    return getPerMessageProperties() != null ? getPerMessageProperties().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getPerMessageProperties(), false);
   }
 
   // BUG#915
@@ -514,7 +509,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
 
   @Override
   public CorrelationIdSource configuredCorrelationIdSource() {
-    return getCorrelationIdSource();
+    return defaultIfNull(getCorrelationIdSource());
   }
 
   @Override
@@ -587,8 +582,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
   }
   
   protected boolean captureOutgoingMessageDetails() {
-    return getCaptureOutgoingMessageDetails() != null ? getCaptureOutgoingMessageDetails()
-        .booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getCaptureOutgoingMessageDetails(), false);
   }
 
   public Boolean getCaptureOutgoingMessageDetails() {

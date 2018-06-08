@@ -45,12 +45,7 @@ public abstract class JmsUtils {
   }
 
   public static void rethrowJMSException(String msg, Throwable e) throws JMSException {
-    if (e instanceof JMSException) {
-      throw (JMSException) e;
-    }
-    JMSException exc = new JMSException(msg);
-    exc.initCause(e);
-    throw exc;
+    throw wrapJMSException(msg, e);
   }
 
   /**

@@ -17,6 +17,7 @@
 package com.adaptris.core.jms;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
+import static com.adaptris.core.jms.NullCorrelationIdSource.defaultIfNull;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -27,6 +28,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.slf4j.Logger;
 
 import com.adaptris.annotation.AdvancedConfig;
@@ -55,8 +57,6 @@ public abstract class JmsConsumerImpl extends AdaptrisMessageConsumerImp impleme
   @AutoPopulated
   @Valid
   private MessageTypeTranslator messageTranslator;
-  @NotNull
-  @AutoPopulated
   @Valid
   @AdvancedConfig
   private CorrelationIdSource correlationIdSource;
@@ -77,7 +77,6 @@ public abstract class JmsConsumerImpl extends AdaptrisMessageConsumerImp impleme
     // defaults
     acknowledgeMode = AcknowledgeMode.Mode.CLIENT_ACKNOWLEDGE.name();
     messageTranslator = new AutoConvertMessageTranslator();
-    setCorrelationIdSource(new NullCorrelationIdSource());
     changeState(ClosedState.getInstance());
   }
 
@@ -106,6 +105,11 @@ public abstract class JmsConsumerImpl extends AdaptrisMessageConsumerImp impleme
     Thread.currentThread().setName(oldName);
   }
 
+  @Override
+  public void prepare() throws CoreException {
+    LifecycleHelper.prepare(getMessageTranslator());
+  }
+
   /** @see com.adaptris.core.AdaptrisComponent#init() */
   @Override
   public void init() throws CoreException {
@@ -125,22 +129,12 @@ public abstract class JmsConsumerImpl extends AdaptrisMessageConsumerImp impleme
 
   protected abstract MessageConsumer createConsumer() throws JMSException, CoreException;
 
-  /** @see com.adaptris.core.AdaptrisComponent#stop() */
   @Override
   public void stop() {
-    try {
-      if (consumer != null) {
-        consumer.close();
-      }
-      consumer = null;
-    }
-    catch (JMSException e) {
-      log.trace("Failed to close consumer, logging exception for informational purposes only", e);
-    }
+    consumer = nullify(consumer);
     LifecycleHelper.stop(messageTranslator);
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#start() */
   @Override
   public void start() throws CoreException {
     try {
@@ -153,18 +147,15 @@ public abstract class JmsConsumerImpl extends AdaptrisMessageConsumerImp impleme
     LifecycleHelper.start(messageTranslator);
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
   @Override
   public void close() {
     LifecycleHelper.close(messageTranslator);
-    JmsUtils.closeQuietly(session);
-    JmsUtils.closeQuietly(consumer);
-    session = null;
-    consumer = null;
+    session = nullify(session);
+    consumer = nullify(consumer);
   }
 
   boolean isTransacted() {
-    return isManagedTransaction() || (transacted != null ? transacted.booleanValue() : false);
+    return isManagedTransaction() || BooleanUtils.toBooleanDefaultIfNull(getTransacted(), false);
   }
 
   void setTransacted(Boolean b) {
@@ -193,7 +184,7 @@ public abstract class JmsConsumerImpl extends AdaptrisMessageConsumerImp impleme
 
   @Override
   public long rollbackTimeout() {
-    return rollbackTimeout;
+    return getRollbackTimeout();
   }
 
   /**
@@ -244,11 +235,6 @@ public abstract class JmsConsumerImpl extends AdaptrisMessageConsumerImp impleme
     return acknowledgeMode;
   }
 
-  @Override
-  public void prepare() throws CoreException {
-    getMessageTranslator().prepare();
-  }
-
 
   /**
    * <p>
@@ -269,12 +255,12 @@ public abstract class JmsConsumerImpl extends AdaptrisMessageConsumerImp impleme
    * @param c the correlationIdSource to set
    */
   public void setCorrelationIdSource(CorrelationIdSource c) {
-    correlationIdSource = Args.notNull(c, "correlationIdSource");
+    correlationIdSource = c;
   }
 
   @Override
   public CorrelationIdSource configuredCorrelationIdSource() {
-    return getCorrelationIdSource();
+    return defaultIfNull(getCorrelationIdSource());
   }
 
   @Override
@@ -309,6 +295,16 @@ public abstract class JmsConsumerImpl extends AdaptrisMessageConsumerImp impleme
   @Override
   public boolean isManagedTransaction() {
     return managedTransaction;
+  }
+
+  private static MessageConsumer nullify(MessageConsumer c) {
+    JmsUtils.closeQuietly(c);
+    return null;
+  }
+
+  private static Session nullify(Session s) {
+    JmsUtils.closeQuietly(s);
+    return null;
   }
 
 }

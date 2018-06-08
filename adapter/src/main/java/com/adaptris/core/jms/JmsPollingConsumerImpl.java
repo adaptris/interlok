@@ -17,6 +17,7 @@
 package com.adaptris.core.jms;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
+import static com.adaptris.core.jms.NullCorrelationIdSource.defaultIfNull;
 
 import java.util.concurrent.TimeUnit;
 
@@ -85,8 +86,6 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
   @AutoPopulated
   @Valid
   private MessageTypeTranslator messageTranslator;
-  @NotNull
-  @AutoPopulated
   @Valid
   @AdvancedConfig
   private CorrelationIdSource correlationIdSource;
@@ -110,7 +109,6 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
     setAcknowledgeMode(AcknowledgeMode.Mode.CLIENT_ACKNOWLEDGE.name());
     setVendorImplementation(new StandardJndiImplementation());
     setMessageTranslator(new AutoConvertMessageTranslator());
-    setCorrelationIdSource(new NullCorrelationIdSource());
     setAdditionalDebug(false);
   }
 
@@ -382,12 +380,12 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
    * @param c the correlationIdSource to set
    */
   public void setCorrelationIdSource(CorrelationIdSource c) {
-    correlationIdSource = Args.notNull(c, "correlationIdSource");
+    correlationIdSource = c;
   }
 
   @Override
   public CorrelationIdSource configuredCorrelationIdSource() {
-    return getCorrelationIdSource();
+    return defaultIfNull(getCorrelationIdSource());
   }
 
   @Override
