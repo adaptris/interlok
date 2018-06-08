@@ -22,11 +22,16 @@ import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
@@ -51,6 +56,7 @@ import net.jodah.expiringmap.ExpiringMap;
 @XStreamAlias("jetty-async-workflow-interceptor")
 @AdapterComponent
 @ComponentProfile(summary = "Interceptor that allows a HTTP request to be handled multiple workflows", tag = "interceptor,http,https", since = "3.7.3")
+@DisplayOrder(order = {"cacheKey"})
 public class JettyAsyncWorkflowInterceptor extends JettyWorkflowInterceptorImpl {
 
   private static transient Logger log = LoggerFactory.getLogger(JettyAsyncWorkflowInterceptor.class);
@@ -60,14 +66,18 @@ public class JettyAsyncWorkflowInterceptor extends JettyWorkflowInterceptorImpl 
   private static final ExpiringMap<String, CacheEntryWrapper> EXPIRING_CACHE = ExpiringMap.builder().expiration(1L, TimeUnit.HOURS).build();
 
   public enum Mode {
+    /**
+     * Indicates that the interceptor is in the workflow that initially received the HTTP Request
+     * 
+     */
     REQUEST {
       @Override
-      void workflowStart(AdaptrisMessage msg) {
+      void workflowStart(String key, AdaptrisMessage msg) {
         CacheEntryWrapper wrapper = new CacheEntryWrapper();
         wrapper.monitor = (JettyConsumerMonitor) msg.getObjectHeaders().get(MESSAGE_MONITOR);
         wrapper.response = (HttpServletResponse) msg.getObjectHeaders().get(JETTY_RESPONSE_KEY);
-        log.trace("Storing {} in cache against {}", wrapper, msg.getUniqueId());
-        EXPIRING_CACHE.put(msg.getUniqueId(), wrapper);
+        log.trace("Storing {} in cache against {}", wrapper, key);
+        EXPIRING_CACHE.put(key, wrapper);
       }
 
       @Override
@@ -75,13 +85,17 @@ public class JettyAsyncWorkflowInterceptor extends JettyWorkflowInterceptorImpl 
         // Nothing to do.
       }
     },
+    /**
+     * Indicates that the interceptor is in the workflow that will make the reply to the HTTP Request
+     * 
+     */
     RESPONSE {
       @Override
-      void workflowStart(AdaptrisMessage msg) {
-        CacheEntryWrapper wrapper = EXPIRING_CACHE.get(msg.getUniqueId());
-        log.trace("Found {} in cache against {}", wrapper, msg.getUniqueId());
+      void workflowStart(String key, AdaptrisMessage msg) {
+        CacheEntryWrapper wrapper = EXPIRING_CACHE.get(key);
+        log.trace("Found {} in cache against {}", wrapper, key);
         if (wrapper != null) {
-          EXPIRING_CACHE.remove(msg.getUniqueId());
+          EXPIRING_CACHE.remove(key);
           msg.addObjectHeader(MESSAGE_MONITOR, wrapper.monitor);
           msg.addObjectHeader(JETTY_RESPONSE_KEY, wrapper.response);
         }
@@ -92,27 +106,36 @@ public class JettyAsyncWorkflowInterceptor extends JettyWorkflowInterceptorImpl 
         endWorkflow(inputMsg, outputMsg);
       }
     };
-    abstract void workflowStart(AdaptrisMessage msg);
+    abstract void workflowStart(String key, AdaptrisMessage msg);
 
     abstract void workflowEnd(AdaptrisMessage input, AdaptrisMessage output);
   }
+
+  @NotNull
+  private Mode mode;
+
+  @InputFieldHint(style = "BLANKABLE")
+  @InputFieldDefault(value = "")
+  @AdvancedConfig
+  private String cacheKey;
 
   @Override
   public void init() throws CoreException {
     try {
       Args.notNull(getMode(), "mode");
+      if (getMode() == Mode.REQUEST && !StringUtils.isBlank(getCacheKey())) {
+        log.warn("Using cache-key in REQUEST mode is dangerous; results may be undefined.");
+      }
       super.init();
     } catch (IllegalArgumentException e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
-  @NotNull
-  private Mode mode;
 
   @Override
   public void workflowStart(AdaptrisMessage inputMsg) {
-    getMode().workflowStart(inputMsg);
+    getMode().workflowStart(generateKey(inputMsg), inputMsg);
   }
 
   @Override
@@ -144,6 +167,53 @@ public class JettyAsyncWorkflowInterceptor extends JettyWorkflowInterceptorImpl 
 
   public static boolean removeEntry(String msgId) {
     return EXPIRING_CACHE.remove(msgId) != null;
+  }
+
+
+  private String generateKey(AdaptrisMessage msg) {
+    if (StringUtils.isBlank(getCacheKey())) {
+      return msg.getUniqueId();
+    }
+    // non-existent metadata key returns null
+    // %message{XXX} will just return %message{XXX} but there's nothing we can do about that.
+    return Args.notBlank(msg.resolve(getCacheKey()), "cacheKey");
+  }
+
+  public String getCacheKey() {
+    return cacheKey;
+  }
+
+
+  /**
+   * Set the key for the cache.
+   * <p>
+   * Set the key in the cache that will be used to track the underlying response. If left blank, then it will use
+   * {@link AdaptrisMessage#getUniqueId()} as the key. If specified, then that key (after metadata solution via
+   * {@link AdaptrisMessage#resolve(String)}) will be used.
+   * </p>
+   * <p>
+   * Generally speaking JMS providers will assign a message-id for you when you create a {@code javax.jms.Message}; this becomes the
+   * {@link AdaptrisMessage#getUniqueId()} in most cases. If Interlok is in use at all stages, then this can be left blank, as we
+   * will try as much to preserve our message unique-id across JMS providers; if there is an external application integrated with a
+   * JMS, then you might need to specify a value here so that the {@code JMSCorrelationID} (via
+   * {@link com.adaptris.core.jms.MetadataCorrelationIdSource}) is used to key the cache when responding back to the HTTP client.
+   * </p>
+   * <p>
+   * Note that because this is an interceptor; the only metadata you have is that which is present <strong>upon entry into the
+   * workflow</strong> (i.e. that set by the consumer); in REQUEST mode, you only get the metadata that is set by
+   * {@link JettyMessageConsumer} which is not much.
+   * </p>
+   * 
+   * @param s the cache key e.g. %message{JMSCorrelationID} when the mode is {@link Mode#REQUEST}; dangerous to use when the mode is
+   *          {@link Mode#REQUEST}.
+   */
+  public void setCacheKey(String s) {
+    this.cacheKey = s;
+  }
+
+  public JettyAsyncWorkflowInterceptor withCacheKey(String s) {
+    setCacheKey(s);
+    return this;
   }
 
   private static class CacheEntryWrapper {

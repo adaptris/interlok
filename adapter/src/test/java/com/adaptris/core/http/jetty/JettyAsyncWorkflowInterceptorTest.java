@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
+import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ExampleWorkflowCase;
 import com.adaptris.core.PoolingWorkflow;
@@ -161,6 +162,45 @@ public class JettyAsyncWorkflowInterceptorTest extends ExampleWorkflowCase {
       assertFalse(JettyAsyncWorkflowInterceptor.cacheContains(producer.getMessages().get(0).getUniqueId()));
     }
     finally {
+      stop(channel);
+    }
+  }
+
+  public void testAcrossMultipleWorkflows_WithCacheKey() throws Exception {
+    HttpConnection connection = createConnection(Integer.parseInt(PROPERTIES.getProperty(JETTY_HTTP_PORT)));
+    JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO, getName());
+    PoolingWorkflow receivingWF = new PoolingWorkflow();
+    // It's a bit lame, but we have to use something that is populated *before entry into the workflow*
+    String cacheKey = "%message{" + CoreConstants.JETTY_URI + "}";
+    receivingWF.addInterceptor(
+        new JettyAsyncWorkflowInterceptor().withMode(JettyAsyncWorkflowInterceptor.Mode.REQUEST).withCacheKey(cacheKey));
+    receivingWF.setShutdownWaitTime(new TimeInterval(1L, TimeUnit.SECONDS));
+    receivingWF.setConsumer(consumer);
+
+    StandardWorkflow respondingWF = new StandardWorkflow();
+    // Mainly to keep track of the msgID. we use a standard workflow so new objects aren't created.
+    MockMessageProducer producer = new MockMessageProducer();
+    respondingWF.addInterceptor(
+        new JettyAsyncWorkflowInterceptor().withMode(JettyAsyncWorkflowInterceptor.Mode.RESPONSE).withCacheKey(cacheKey));
+    respondingWF.getServiceCollection().add(new PayloadFromMetadataService("hello world"));
+    respondingWF.getServiceCollection().add(new JettyResponseService(200, "text/plain"));
+    respondingWF.getServiceCollection().add(new StandaloneProducer(producer));
+
+    receivingWF.setProducer(new WorkflowProducer(respondingWF));
+
+    Channel channel = JettyHelper.createChannel(connection, receivingWF, respondingWF);
+    HttpRequestService httpService = createRequestor(connection.getPort());
+    try {
+      start(channel);
+      LifecycleHelper.initAndStart(httpService);
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
+      ServiceCase.execute(httpService, msg);
+      assertEquals("hello world", msg.getContent());
+      waitForMessages(producer, 1);
+      // Grab the message that the standardWorkflow handled; and check the msgId.
+      // Should be removed from the static cache.
+      assertFalse(JettyAsyncWorkflowInterceptor.cacheContains(producer.getMessages().get(0).getUniqueId()));
+    } finally {
       stop(channel);
     }
   }
