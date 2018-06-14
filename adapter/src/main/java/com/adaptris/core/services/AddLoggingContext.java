@@ -27,6 +27,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.services.splitter.PoolingMessageSplitterService;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -34,8 +35,13 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * Add a mapped diagnostic context via {@link MDC#put(String, String)}.
  * <p>
- * If you have a large number of workflows then it may be useful to use a mapped diagnostic context to provide additional
- * information into your logfile.
+ * It can be useful to use a mapped diagnostic context to provide additional information into your logfile if the underlying logging
+ * system supports it (e.g. logback or log4j2)
+ * </p>
+ * <p>
+ * As the diagnostic logging context is thread based; bear in mind that you will lose the context if part of the service execution
+ * chain contains a something like {@link PoolingMessageSplitterService} or similar (i.e. something with an underlying thread pool
+ * that acts on the message).
  * </p>
  * 
  * @config add-logging-context-service
@@ -46,6 +52,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(summary = "Add a mapped diagnostic context for logging; useful for filtering", tag = "service,logging,debug")
 @DisplayOrder(order = { "key", "value"})
 public class AddLoggingContext extends ServiceImp {
+  private static final String UNIQUE_ID_MNENOMIC = "$UNIQUE_ID$";
 
   @NotBlank
   @InputFieldHint(expression = true)
@@ -66,11 +73,19 @@ public class AddLoggingContext extends ServiceImp {
 
   public void doService(AdaptrisMessage msg) throws ServiceException {
     try {
-      MDC.put(msg.resolve(getKey()), msg.resolve(getValue()));
+      MDC.put(msg.resolve(getKey()), resolveValue(msg));
     }
     catch (IllegalArgumentException | IllegalStateException e) {
       throw ExceptionHelper.wrapServiceException(e);
     }
+  }
+
+  private String resolveValue(AdaptrisMessage msg) {
+    String value = msg.resolve(getValue());
+    if (UNIQUE_ID_MNENOMIC.equals(value)) {
+      return msg.getUniqueId();
+    }
+    return value;
   }
 
   @Override
@@ -104,6 +119,10 @@ public class AddLoggingContext extends ServiceImp {
 
   /**
    * Set the value for the mapped diagnostic context.
+   * <p>
+   * Supports metadata resolution via {@link AdaptrisMessage#resolve(String)}; and also the magic value {@code $UNIQUE_ID$} which
+   * places the unique-id as the value.
+   * </p>
    * 
    * @param value the value to set
    */

@@ -41,6 +41,13 @@ public class AddLoggingContextTest extends GeneralServiceExample {
     assertEquals("contextValue", MDC.get("contextKey"));
   }
 
+  public void testLoggingContext_Unique_ID() throws Exception {
+    AddLoggingContext srv = new AddLoggingContext("contextKey", "$UNIQUE_ID$");
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    execute(srv, msg);
+    assertEquals(msg.getUniqueId(), MDC.get("contextKey"));
+  }
+
   public void testLoggingContextFromMetadata() throws Exception {
     AddLoggingContext srv = new AddLoggingContext("%message{myContextKey}", "%message{myContextValue}");
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();

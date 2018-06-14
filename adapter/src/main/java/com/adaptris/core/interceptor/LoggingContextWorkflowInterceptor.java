@@ -24,14 +24,24 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.StandardWorkflow;
+import com.adaptris.core.services.AddLoggingContext;
+import com.adaptris.core.services.RemoveLoggingContext;
 import com.adaptris.util.GuidGenerator;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * WorkflowInterceptor implementation that exposes acts as the source for {@link MessageInFlightMBean}.
- * 
+ * WorkflowInterceptor implementation that adds a mapped diagnotic context via {@link MDC#put(String, String)}.
+ * <p>
+ * Because the diagnostic logging context is thread based; this will only be useful when used as part of a single threaded workflow
+ * such as {@link StandardWorkflow}; in {@link PoolingWorkfow} the context will be lost as the message enters the threadpool for
+ * processing. A better alternative might be {@link AddLoggingContext} and {@link RemoveLoggingContext} as part of the service
+ * execution chain.
+ * </p>
  * 
  * @config logging-context-workflow-interceptor
+ * @see AddLoggingContext
+ * @see RemoveLoggingContext
  * 
  */
 @XStreamAlias("logging-context-workflow-interceptor")
