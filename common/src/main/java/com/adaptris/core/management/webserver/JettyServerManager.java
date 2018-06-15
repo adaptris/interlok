@@ -130,7 +130,7 @@ public class JettyServerManager implements ServerManager {
     // to add a new servlet; but it's probaby good practice to.
     rootWar.stop();
     String pathSpec = (String) additionalProperties.get(CONTEXT_PATH);
-    log.trace("Adding servlet to existing ROOT.war against {}", pathSpec);
+    log.trace("Adding servlet to existing ROOT WebAppContext against {}", pathSpec);
     rootWar.addServlet(servlet, pathSpec);
     SecurityHandlerWrapper w = (SecurityHandlerWrapper) additionalProperties.get(SECURITY_CONSTRAINTS);
     if (w != null) {
@@ -142,6 +142,7 @@ public class JettyServerManager implements ServerManager {
   private WebAppContext findRootContext(Server server, boolean create) throws Exception {
     WebAppContext root = rootContextFromHandler(server.getHandler());
     if (root == null && create) {
+      log.trace("No ROOT WebAppContext, creating one");
       root = new WebAppContext();
       root.setContextPath("/");
       URL defaultsURL = findDefaultDescriptorXML();
