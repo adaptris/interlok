@@ -44,7 +44,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("metadata-document-copier")
 @DisplayOrder(order = {"metadataKey", "copyMetadata", "copyObjectMetadata", "indexMetadataKey"})
-public class MetadataDocumentCopier extends MessageSplitterImp {
+public class MetadataDocumentCopier extends MessageCopier {
 
   @NotNull
   @NotBlank
@@ -149,15 +149,17 @@ public class MetadataDocumentCopier extends MessageSplitterImp {
     private AdaptrisMessage createNext() {
       if (currentCount >= maxCount)
         return null;
-
-      AdaptrisMessage splitMsg = factory.newMessage(msg.getPayload());
-      splitMsg.setContentEncoding(msg.getContentEncoding());
-      copyMetadata(msg, splitMsg);
-      if (!isEmpty(getIndexMetadataKey())) {
-        splitMsg.addMetadata(getIndexMetadataKey(), String.valueOf(currentCount));
+      try {
+        AdaptrisMessage splitMsg = duplicateWithPayload(factory, msg);
+        copyMetadata(msg, splitMsg);
+        if (!isEmpty(getIndexMetadataKey())) {
+          splitMsg.addMetadata(getIndexMetadataKey(), String.valueOf(currentCount));
+        }
+        currentCount++;
+        return splitMsg;
+      } catch (IOException e) {
+        throw new RuntimeException(e);
       }
-      currentCount++;
-      return splitMsg;
     }
 
     @Override

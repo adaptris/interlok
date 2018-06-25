@@ -38,6 +38,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.text.xml.SimpleNamespaceContext;
 import com.adaptris.util.text.xml.XPath;
@@ -79,7 +80,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("xpath-document-copier")
 @DisplayOrder(order = {"xpath", "copyMetadata", "copyObjectMetadata", "namespaceContext", "xmlDocumentFactoryConfig"})
-public class XpathDocumentCopier extends MessageSplitterImp {
+public class XpathDocumentCopier extends MessageCopier {
 
   @NotNull
   @NotBlank
@@ -104,17 +105,14 @@ public class XpathDocumentCopier extends MessageSplitterImp {
       int size = toInteger(xpathResult);
       AdaptrisMessageFactory fac = selectFactory(msg);
       for (int i = 0; i < size; i++) {
-        AdaptrisMessage splitMsg = fac.newMessage(msg.getPayload());
-        splitMsg.setContentEncoding(msg.getContentEncoding());
+        AdaptrisMessage splitMsg = duplicateWithPayload(fac, msg);
         copyMetadata(msg, splitMsg);
         result.add(splitMsg);
       }
+      logR.trace("Split on {} gave {} messages", xpathResult, result.size());
     }
     catch (Exception e) {
-      throw new CoreException(e);
-    }
-    finally {
-
+      throw ExceptionHelper.wrapCoreException(e);
     }
     return result;
   }

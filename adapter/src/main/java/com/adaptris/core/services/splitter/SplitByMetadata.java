@@ -29,6 +29,7 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -43,7 +44,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("split-by-metadata")
 @DisplayOrder(order = {"metadataKey", "splitMetadataKey", "copyMetadata", "copyObjectMetadata", "separator"})
-public class SplitByMetadata extends MessageSplitterImp {
+public class SplitByMetadata extends MessageCopier {
   @NotNull
   @AutoPopulated
   @NotBlank
@@ -81,17 +82,17 @@ public class SplitByMetadata extends MessageSplitterImp {
         StringTokenizer st = new StringTokenizer(value, getSeparator());
         AdaptrisMessageFactory fac = selectFactory(msg);
         while (st.hasMoreTokens()) {
-          AdaptrisMessage m = fac.newMessage(msg.getPayload());
+          AdaptrisMessage m = duplicateWithPayload(fac, msg);
           copyMetadata(msg, m);
           m.addMetadata(getSplitMetadataKey(), st.nextToken());
           result.add(m);
         }
       }
       catch (Exception e) {
-        throw new CoreException(e);
+        throw ExceptionHelper.wrapCoreException(e);
       }
     }
-    logR.trace("Split on " + value + " gave " + result.size() + " messages");
+    logR.trace("Split on {} gave {} messages", value, result.size());
     return result;
   }
 
