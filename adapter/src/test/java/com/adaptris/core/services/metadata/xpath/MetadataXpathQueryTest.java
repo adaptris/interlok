@@ -23,6 +23,7 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.util.XmlHelper;
+import com.adaptris.util.text.xml.XPath;
 
 @SuppressWarnings("deprecation")
 public class MetadataXpathQueryTest extends MetadataXpathQueryCase {
@@ -49,7 +50,7 @@ public class MetadataXpathQueryTest extends MetadataXpathQueryCase {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
     msg.addMetadata("xpathMetadataKey", "//@MissingAttribute");
     try {
-      MetadataElement result = query.resolveXpath(doc, null, query.createXpathQuery(msg));
+      MetadataElement result = query.resolveXpath(doc, new XPath(), query.createXpathQuery(msg));
       fail();
     }
     catch (CoreException expected) {
@@ -64,7 +65,7 @@ public class MetadataXpathQueryTest extends MetadataXpathQueryCase {
     Document doc = XmlHelper.createDocument(XML);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
     msg.addMetadata("xpathMetadataKey", "//@MissingAttribute");
-    MetadataElement result = query.resolveXpath(doc, null, query.createXpathQuery(msg));
+    MetadataElement result = query.resolveXpath(doc, new XPath(), query.createXpathQuery(msg));
     assertEquals("", result.getValue());
   }
 
@@ -74,7 +75,7 @@ public class MetadataXpathQueryTest extends MetadataXpathQueryCase {
     Document doc = XmlHelper.createDocument(XML);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
     msg.addMetadata("xpathMetadataKey", "//@att");
-    MetadataElement result = query.resolveXpath(doc, null, query.createXpathQuery(msg));
+    MetadataElement result = query.resolveXpath(doc, new XPath(), query.createXpathQuery(msg));
   }
 
   public void testResolveXpath_function() throws Exception {
@@ -83,7 +84,7 @@ public class MetadataXpathQueryTest extends MetadataXpathQueryCase {
     Document doc = XmlHelper.createDocument(XML);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
     msg.addMetadata("xpathMetadataKey", "count(/message)");
-    MetadataElement result = query.resolveXpath(doc, null, query.createXpathQuery(msg));
+    MetadataElement result = query.resolveXpath(doc, new XPath(), query.createXpathQuery(msg));
     assertEquals("1", result.getValue());
   }
 
@@ -106,7 +107,7 @@ public class MetadataXpathQueryTest extends MetadataXpathQueryCase {
 
     StaticNamespaceContext ctx = new StaticNamespaceContext();
     Document doc = XmlHelper.createDocument(XML_WITH_NAMESPACE, ctx);
-    MetadataElement result = query.resolveXpath(doc, ctx, query.createXpathQuery(msg));
+    MetadataElement result = query.resolveXpath(doc, new XPath(ctx), query.createXpathQuery(msg));
     assertEquals("2", result.getValue());
   }
 

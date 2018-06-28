@@ -16,12 +16,11 @@
 
 package com.adaptris.core.services.metadata.xpath;
 
-import javax.xml.namespace.NamespaceContext;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.util.text.xml.XPath;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -51,8 +50,8 @@ public class ConfiguredXpathNodeListQuery extends ConfiguredXpathQueryImpl imple
   }
 
   @Override
-  public NodeList resolveXpath(Document doc, NamespaceContext ctx, String expression) throws Exception {
-    return XpathQueryHelper.resolveNodeList(doc, ctx, expression, allowEmptyResults());
+  public NodeList resolveXpath(Document doc, XPath xpath, String expression) throws Exception {
+    return XpathQueryHelper.resolveNodeList(doc, xpath, expression, allowEmptyResults());
   }
 
 }

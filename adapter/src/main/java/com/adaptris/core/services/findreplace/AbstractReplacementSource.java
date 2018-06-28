@@ -16,8 +16,14 @@
 
 package com.adaptris.core.services.findreplace;
 
+import javax.validation.constraints.NotNull;
+
+import com.adaptris.annotation.InputFieldHint;
+
 public abstract class AbstractReplacementSource implements ReplacementSource {
 
+  @InputFieldHint(style = "BLANKABLE")
+  @NotNull
   private String value;
 
   public String getValue() {

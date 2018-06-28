@@ -18,16 +18,12 @@ package com.adaptris.core.services.mime;
 
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Enumeration;
 
 import javax.mail.Header;
 import javax.mail.internet.MimeBodyPart;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
-import org.apache.commons.io.IOUtils;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
@@ -42,6 +38,7 @@ import com.adaptris.core.ServiceImp;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.MimeHelper;
+import com.adaptris.util.stream.StreamUtil;
 import com.adaptris.util.text.mime.BodyPartIterator;
 import com.adaptris.util.text.mime.PartSelector;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -99,9 +96,7 @@ public class MimePartSelector extends ServiceImp {
         if (preservePartHeadersAsMetadata()) {
           addHeadersAsMetadata(part.getAllHeaders(), partHeaderPrefix(), msg);
         }
-        try (InputStream in = part.getInputStream(); OutputStream out = msg.getOutputStream()) {
-          IOUtils.copy(in, out);
-        }
+        StreamUtil.copyAndClose(part.getInputStream(), msg.getOutputStream());
         if (markAsNonMime()) {
           if (msg.containsKey(CoreConstants.MSG_MIME_ENCODED)) {
             msg.removeMetadata(msg.getMetadata(CoreConstants.MSG_MIME_ENCODED));

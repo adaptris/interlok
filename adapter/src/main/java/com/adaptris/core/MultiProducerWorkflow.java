@@ -97,16 +97,15 @@ public class MultiProducerWorkflow extends StandardWorkflow {
     workflowStart(msg);
     try {
       long start = System.currentTimeMillis();
-      log.debug("start processing msg [" + msg.toString(logPayload()) + "]");
-      wip = (AdaptrisMessage) msg.clone(); // retain orig. for error handling
-      // Set the channel id and workflow id on the message lifecycle.
+      log.debug("start processing msg [{}]", msg.toString(logPayload()));
+      wip = (AdaptrisMessage) msg.clone();
       wip.getMessageLifecycleEvent().setChannelId(obtainChannel().getUniqueId());
       wip.getMessageLifecycleEvent().setWorkflowId(obtainWorkflowId());
       wip.addEvent(getConsumer(), true); // initial receive event
       getServiceCollection().doService(wip);
       doProduce(wip);
-      logSuccess(msg, start);
       sendProcessedMessage(wip, msg); // only if produce succeeds
+      logSuccess(msg, start);
     }
     catch (ServiceException e) {
       handleBadMessage("Exception from ServiceCollection", e, copyExceptionHeaders(wip, msg));

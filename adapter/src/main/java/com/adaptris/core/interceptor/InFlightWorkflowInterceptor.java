@@ -27,6 +27,8 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.PoolingWorkflow;
+import com.adaptris.core.Workflow;
 import com.adaptris.core.runtime.ParentRuntimeInfoComponent;
 import com.adaptris.core.runtime.RuntimeInfoComponent;
 import com.adaptris.core.runtime.RuntimeInfoComponentFactory;
@@ -53,6 +55,7 @@ public class InFlightWorkflowInterceptor extends WorkflowInterceptorImpl {
   }
 
   private transient AtomicInteger messagesInFlight = new AtomicInteger(0);
+  private transient int maxWorkers = 1;
 
   public InFlightWorkflowInterceptor() {
     super();
@@ -74,11 +77,21 @@ public class InFlightWorkflowInterceptor extends WorkflowInterceptorImpl {
   }
 
   int messagesInFlightCount() {
-    return messagesInFlight.get();
+    return Math.min(maxWorkers, messagesInFlight.get());
+  }
+
+  int messagesPendingCount() {
+    // Pending is the message in flight - the number of workers.
+    int inFlight = messagesInFlight.get();
+    return Math.max(inFlight - messagesInFlightCount(), 0);
   }
 
   @Override
   public void init() throws CoreException {
+    Workflow w = parentWorkflow();
+    if (PoolingWorkflow.class.isAssignableFrom(w.getClass())) {
+      maxWorkers = ((PoolingWorkflow) w).poolSize();
+    }
   }
 
   @Override

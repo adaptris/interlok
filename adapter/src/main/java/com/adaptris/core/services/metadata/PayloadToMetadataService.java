@@ -17,14 +17,12 @@
 package com.adaptris.core.services.metadata;
 
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.io.OutputStream;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeUtility;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.io.IOUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
@@ -39,6 +37,7 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.util.stream.StreamUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -147,8 +146,8 @@ public class PayloadToMetadataService extends ServiceImp {
   public void doService(AdaptrisMessage msg) throws ServiceException {
     ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
     // MimeUtility should return the original output stream if getContentEncoding is null.
-    try (InputStream in = msg.getInputStream(); OutputStream out = getEncoding().wrap(bytesOut)) {
-      IOUtils.copy(in, out);
+    try  {
+      StreamUtil.copyAndClose(msg.getInputStream(), getEncoding().wrap(bytesOut));
     } catch (Exception e) {
       ExceptionHelper.rethrowServiceException(e);
     }

@@ -107,16 +107,6 @@ public final class JmsReplyToWorkflow extends StandardWorkflow {
   }
 
   @Override
-  public synchronized void onAdaptrisMessage(AdaptrisMessage msg) {
-    if (!obtainChannel().isAvailable()) {
-      handleChannelUnavailable(msg); // make pluggable?
-    }
-    else {
-      handleMessage(msg, true);
-    }
-  }
-
-  @Override
   public void doProduce(AdaptrisMessage msg) throws ServiceException,
       ProduceException {
 
@@ -153,10 +143,5 @@ public final class JmsReplyToWorkflow extends StandardWorkflow {
 
     return result;
   }
-
-  @Override
-  protected void prepareWorkflow() throws CoreException {}
-
-
 
 }

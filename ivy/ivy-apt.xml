@@ -27,8 +27,12 @@
     <!-- Velocity won't actually work w/o commons-lang + commons-collection -->
   	<dependency org="commons-lang" name="commons-lang" rev="2.6" conf="compile->default" />
   	<dependency org="commons-collections" name="commons-collections" rev="3.2.2" conf="compile->default" />
+	<dependency org="javax.validation" name="validation-api" rev="1.0.0.GA" conf="compile->default"/>
     <!-- For Various ANT Tasks -->
     <dependency org="ant-contrib" name="ant-contrib" rev="1.0b3" conf="ant->default" transitive="false"/>
     <dependency org="org.jacoco" name="org.jacoco.ant" rev="0.8.0" conf="ant->default"/>
+	
+	<dependency org="junit" name="junit" rev="4.11" conf="test->default"/>
+	<dependency org="org.hibernate" name="hibernate-validator" rev="4.3.2.Final" conf="test->default"/>
   </dependencies>
 </ivy-module>

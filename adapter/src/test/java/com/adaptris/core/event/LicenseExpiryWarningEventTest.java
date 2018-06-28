@@ -58,13 +58,15 @@ public class LicenseExpiryWarningEventTest {
     assertEquals(d, expiryDate);
     assertTrue(DateUtils.isSameDay(new Date(), d));
     assertTrue(DateUtils.isSameDay(new Date(), expiryDate));
+    evt = new LicenseExpiryWarningEvent();
+    evt.setLicenseExpiry("2001-01-01");
+    assertEquals(evt.when(), evt.getExpiryDate());
   }
 
+  @Test
   public void testLegacyUnmarshal() throws Exception {
     AdaptrisMarshaller m = DefaultMarshaller.getDefaultMarshaller();
     LicenseExpiryWarningEvent evt = (LicenseExpiryWarningEvent) m.unmarshal(LEGACY_LICENSE_EVENT);
-    assertEquals("2015-05-10", evt.getLicenseExpiry());
-    // Legacy unmarshal won't have touched the expiryDate.
     assertTrue(DateUtils.isSameDay(new Date(), evt.getExpiryDate()));
     // Legacy Unmarshal will of course, change then "when()".
     assertFalse(DateUtils.isSameDay(new Date(), evt.when()));

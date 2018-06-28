@@ -22,6 +22,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.util.Args;
 
 /**
  * Abstract base class for {@linkplain XpathQuery} implementations that are statically configured.
@@ -47,10 +48,7 @@ public abstract class ConfiguredXpathQueryImpl extends XpathQueryImpl {
    * @param expr
    */
   public void setXpathQuery(String expr) {
-    if (isEmpty(expr)) {
-      throw new IllegalArgumentException("Configured Xpath Query may not be null.");
-    }
-    xpathQuery = expr;
+    xpathQuery = Args.notBlank(expr, "xpath-query");
   }
 
   @Override

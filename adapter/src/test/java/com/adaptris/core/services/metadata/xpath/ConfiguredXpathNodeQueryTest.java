@@ -23,6 +23,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.XmlHelper;
+import com.adaptris.util.text.xml.XPath;
 
 @SuppressWarnings("deprecation")
 public class ConfiguredXpathNodeQueryTest extends ConfiguredXpathQueryCase {
@@ -48,7 +49,7 @@ public class ConfiguredXpathNodeQueryTest extends ConfiguredXpathQueryCase {
     Document doc = XmlHelper.createDocument(XML);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
     try {
-      Node result = query.resolveXpath(doc, null, query.createXpathQuery(msg));
+      Node result = query.resolveXpath(doc, new XPath(), query.createXpathQuery(msg));
       fail();
     }
     catch (CoreException expected) {
@@ -61,7 +62,7 @@ public class ConfiguredXpathNodeQueryTest extends ConfiguredXpathQueryCase {
     query.setAllowEmptyResults(Boolean.TRUE);
     Document doc = XmlHelper.createDocument(XML);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
-    Node result = query.resolveXpath(doc, null, query.createXpathQuery(msg));
+    Node result = query.resolveXpath(doc, new XPath(), query.createXpathQuery(msg));
     assertNull(result);
   }
 
@@ -69,7 +70,7 @@ public class ConfiguredXpathNodeQueryTest extends ConfiguredXpathQueryCase {
     ConfiguredXpathNodeQuery query = init(create(), "//@att");
     Document doc = XmlHelper.createDocument(XML);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
-    Node result = query.resolveXpath(doc, null, query.createXpathQuery(msg));
+    Node result = query.resolveXpath(doc, new XPath(), query.createXpathQuery(msg));
     assertNotNull(result);
   }
 
@@ -80,7 +81,7 @@ public class ConfiguredXpathNodeQueryTest extends ConfiguredXpathQueryCase {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_WITH_NAMESPACE);
     StaticNamespaceContext ctx = new StaticNamespaceContext();
     Document doc = XmlHelper.createDocument(XML_WITH_NAMESPACE, ctx);
-    Node result = query.resolveXpath(doc, ctx, query.createXpathQuery(msg));
+    Node result = query.resolveXpath(doc, new XPath(ctx), query.createXpathQuery(msg));
     assertNotNull(result);
   }
 

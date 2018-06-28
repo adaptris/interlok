@@ -106,7 +106,7 @@ public class BranchingHttpRequestService extends HttpRequestServiceImpl {
     StandardHttpProducer p = buildProducer(msg);
     p.setIgnoreServerResponseCode(true);
     try {
-      LifecycleHelper.initAndStart(p).request(msg);
+      LifecycleHelper.initAndStart(p, false).request(msg);
       int responseCode = ((Integer) msg.getObjectHeaders().get(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE)).intValue();
       msg.setNextServiceId(getDefaultServiceId());
       for (StatusEvaluator rp : getStatusMatches()) {
@@ -120,7 +120,7 @@ public class BranchingHttpRequestService extends HttpRequestServiceImpl {
       throw ExceptionHelper.wrapServiceException(e);
     }
     finally {
-      LifecycleHelper.stopAndClose(p);
+      LifecycleHelper.stopAndClose(p, false);
     }
   }
 

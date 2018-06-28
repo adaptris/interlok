@@ -134,6 +134,12 @@ public interface AdapterComponentMBean extends BaseComponentMBean {
   String JMX_FS_MONITOR_TYPE = JMX_DOMAIN_NAME + ":type=FsMonitor";
 
   /**
+   * The standard JMX Prefix for a given consumer monitor exposed via JMX which resolves to {@value}
+   *
+   */
+  String JMX_CONSUMER_MONITOR_TYPE = JMX_DOMAIN_NAME + ":type=ConsumerMonitor";
+
+  /**
    * The standard JMX Prefix for a given RetryMessageErrorHandler monitor exposed via JMX which resolves to {@value}
    *
    */

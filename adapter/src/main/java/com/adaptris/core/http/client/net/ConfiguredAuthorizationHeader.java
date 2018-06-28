@@ -51,7 +51,8 @@ public class ConfiguredAuthorizationHeader implements HttpURLConnectionAuthentic
 
   /**
    * The value for the authorization header
-   * @param headerValue
+   * 
+   * @param headerValue the header value, supports metadata resolution via {@link AdaptrisMessage#resolve(String)}.
    */
   public void setHeaderValue(String headerValue) {
     this.headerValue = headerValue;

@@ -66,14 +66,14 @@ public class HttpRequestService extends HttpRequestServiceImpl implements Dynami
   public void doService(AdaptrisMessage msg) throws ServiceException {
     StandardHttpProducer p = buildProducer(msg);
     try {
-      LifecycleHelper.initAndStart(p);
+      LifecycleHelper.initAndStart(p, false);
       p.request(msg);
     }
     catch (CoreException e) {
       throw ExceptionHelper.wrapServiceException(e);
     }
     finally {
-      LifecycleHelper.stopAndClose(p);
+      LifecycleHelper.stopAndClose(p, false);
     }
   }
 

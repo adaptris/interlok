@@ -18,20 +18,31 @@ package com.adaptris.core.interceptor;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
-import org.apache.log4j.MDC;
+import org.slf4j.MDC;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.PoolingWorkflow;
+import com.adaptris.core.StandardWorkflow;
+import com.adaptris.core.services.AddLoggingContext;
+import com.adaptris.core.services.RemoveLoggingContext;
 import com.adaptris.util.GuidGenerator;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * WorkflowInterceptor implementation that exposes acts as the source for {@link MessageInFlightMBean}.
- * 
+ * WorkflowInterceptor implementation that adds a mapped diagnotic context via {@code org.slf4j.MDC#put(String, String)}.
+ * <p>
+ * Because the diagnostic logging context is thread based; this will only be useful when used as part of a single threaded workflow
+ * such as {@link StandardWorkflow}; in {@link PoolingWorkflow} the context will be lost as the message enters the threadpool for
+ * processing. A better alternative might be {@link AddLoggingContext} and {@link RemoveLoggingContext} as part of the service
+ * execution chain.
+ * </p>
  * 
  * @config logging-context-workflow-interceptor
+ * @see AddLoggingContext
+ * @see RemoveLoggingContext
  * 
  */
 @XStreamAlias("logging-context-workflow-interceptor")

@@ -77,8 +77,8 @@ public class XPathTest {
   public void testConstructors() {
     assertNotNull(new XPath());
     assertNotNull(new XPath(SimpleNamespaceContext.create(createNamespaceEntries())));
+    assertNotNull(new XPath(SimpleNamespaceContext.create(createNamespaceEntries()), XPathFactory.newInstance()));
   }
-
 
   @Test
   public void testSelectSingleTextItem() throws Exception {

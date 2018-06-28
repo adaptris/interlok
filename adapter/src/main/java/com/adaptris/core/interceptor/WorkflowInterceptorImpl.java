@@ -20,6 +20,9 @@ import static com.adaptris.core.CoreConstants.UNIQUE_ID_JMX_PATTERN;
 
 import javax.validation.constraints.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.Channel;
 import com.adaptris.core.ClosedState;
@@ -43,6 +46,8 @@ public abstract class WorkflowInterceptorImpl implements WorkflowInterceptor, St
   private transient ComponentState state;
   private transient Channel parentChannel;
   private transient Workflow parentWorkflow;
+
+  protected transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   protected WorkflowInterceptorImpl() {
     state = ClosedState.getInstance();

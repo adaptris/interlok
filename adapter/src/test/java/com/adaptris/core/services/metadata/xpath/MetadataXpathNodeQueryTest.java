@@ -23,6 +23,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.XmlHelper;
+import com.adaptris.util.text.xml.XPath;
 
 @SuppressWarnings("deprecation")
 public class MetadataXpathNodeQueryTest extends MetadataXpathQueryCase {
@@ -49,7 +50,7 @@ public class MetadataXpathNodeQueryTest extends MetadataXpathQueryCase {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
     msg.addMetadata("xpathMetadataKey", "//@MissingAttribute");
     try {
-      Node result = query.resolveXpath(doc, null, query.createXpathQuery(msg));
+      Node result = query.resolveXpath(doc, new XPath(), query.createXpathQuery(msg));
       fail();
     }
     catch (CoreException expected) {
@@ -64,7 +65,7 @@ public class MetadataXpathNodeQueryTest extends MetadataXpathQueryCase {
     Document doc = XmlHelper.createDocument(XML);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
     msg.addMetadata("xpathMetadataKey", "//@MissingAttribute");
-    Node result = query.resolveXpath(doc, null, query.createXpathQuery(msg));
+    Node result = query.resolveXpath(doc, new XPath(), query.createXpathQuery(msg));
     assertNull(result);
   }
 
@@ -74,7 +75,7 @@ public class MetadataXpathNodeQueryTest extends MetadataXpathQueryCase {
     Document doc = XmlHelper.createDocument(XML);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
     msg.addMetadata("xpathMetadataKey", "//@att");
-    Node result = query.resolveXpath(doc, null, query.createXpathQuery(msg));
+    Node result = query.resolveXpath(doc, new XPath(), query.createXpathQuery(msg));
   }
 
   public void testResolveXpath_NamespaceWithNamespaceContext() throws Exception {
@@ -85,7 +86,7 @@ public class MetadataXpathNodeQueryTest extends MetadataXpathQueryCase {
 
     StaticNamespaceContext ctx = new StaticNamespaceContext();
     Document doc = XmlHelper.createDocument(XML_WITH_NAMESPACE, ctx);
-    Node result = query.resolveXpath(doc, ctx, query.createXpathQuery(msg));
+    Node result = query.resolveXpath(doc, new XPath(ctx), query.createXpathQuery(msg));
     assertNotNull(result);
   }
 

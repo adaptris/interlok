@@ -40,6 +40,7 @@ import com.adaptris.core.http.server.ResponseHeaderProvider;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.validation.constraints.NumberExpression;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -51,7 +52,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <ul>
  * <li>It will also always send the current payload (i.e. {@link StandardResponseProducer#setSendPayload(Boolean)} is true)</li>
  * <li>{@link StandardResponseProducer#setForwardConnectionException(Boolean)} is always false.</li>
- * <li>{@link StandardResponseProducer#setFlushBuffer(Boolean)} is always false.</li>
+ * <li>{@link StandardResponseProducer#setFlushBuffer(Boolean)} is always true.</li>
+ * <li>{@link StandardResponseProducer#setAlwaysAttemptResponse(Boolean)} is always false.</li>
  * </ul>
  * </p>
  * <p>
@@ -71,6 +73,7 @@ public class JettyResponseService extends ServiceImp {
   @InputFieldDefault(value = "500")
   @InputFieldHint(expression = true)
   @AutoPopulated
+  @NumberExpression
   private String httpStatus;
   @NotBlank
   @InputFieldDefault(value = "text/plain")
@@ -99,14 +102,14 @@ public class JettyResponseService extends ServiceImp {
   public void doService(AdaptrisMessage msg) throws ServiceException {
     StandardResponseProducer p = buildProducer(msg);
     try {
-      LifecycleHelper.initAndStart(p);
+      LifecycleHelper.initAndStart(p, false);
       p.produce(msg);
     }
     catch (CoreException e) {
       throw ExceptionHelper.wrapServiceException(e);
     }
     finally {
-      LifecycleHelper.stopAndClose(p);
+      LifecycleHelper.stopAndClose(p, false);
     }
   }
 
@@ -124,14 +127,11 @@ public class JettyResponseService extends ServiceImp {
   }
 
   protected StandardResponseProducer buildProducer(AdaptrisMessage msg) {
-    StandardResponseProducer p = new StandardResponseProducer();
-    p.setMessageFactory(msg.getFactory());
-    p.setContentTypeProvider(new RawContentTypeProvider(msg.resolve(getContentType())));
-    p.setResponseHeaderProvider(getResponseHeaderProvider());
-    p.setSendPayload(true);
-    p.setForwardConnectionException(false);
-    p.setFlushBuffer(false);
-    p.setStatusProvider(new RawStatusProvider(Integer.valueOf(msg.resolve(getHttpStatus()))));
+    StandardResponseProducer p = new StandardResponseProducer().withAlwaysAttemptResponse(false)
+        .withContentTypeProvider(new RawContentTypeProvider(msg.resolve(getContentType())))
+        .withResponseHeaderProvider(getResponseHeaderProvider()).withSendPayload(true).withForwardConnectionException(false)
+        .withFlushBuffer(true).withStatusProvider(new RawStatusProvider(Integer.valueOf(msg.resolve(getHttpStatus()))))
+        .withMessageFactory(msg.getFactory());
     p.registerConnection(new NullConnection());
     return p;
   }
@@ -140,16 +140,34 @@ public class JettyResponseService extends ServiceImp {
     return httpStatus;
   }
 
+  /**
+   * 
+   * @param s the status, supports metadata resolution via {@link AdaptrisMessage#resolve(String)}.
+   */
   public void setHttpStatus(String s) {
     this.httpStatus = Args.notBlank(s, "httpStatus");
+  }
+
+  public JettyResponseService withHttpStatus(String status) {
+    setHttpStatus(status);
+    return this;
   }
 
   public String getContentType() {
     return contentType;
   }
 
+  /**
+   * 
+   * @param ct the content-type, supports metadata resolution via {@link AdaptrisMessage#resolve(String)}.
+   */
   public void setContentType(String ct) {
     this.contentType = Args.notBlank(ct, "contentType");
+  }
+
+  public JettyResponseService withContentType(String type) {
+    setContentType(type);
+    return this;
   }
 
   public ResponseHeaderProvider<HttpServletResponse> getResponseHeaderProvider() {
@@ -160,4 +178,8 @@ public class JettyResponseService extends ServiceImp {
     this.responseHeaderProvider = Args.notNull(provider, "responseHeaderProvider");
   }
 
+  public JettyResponseService withResponseHeaderProvider(ResponseHeaderProvider<HttpServletResponse> provider) {
+    setResponseHeaderProvider(provider);
+    return this;
+  }
 }

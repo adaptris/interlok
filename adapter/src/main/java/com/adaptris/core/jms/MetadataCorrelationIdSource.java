@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -68,34 +69,28 @@ public class MetadataCorrelationIdSource implements CorrelationIdSource {
    *      (com.adaptris.core.AdaptrisMessage, javax.jms.Message)
    */
   public void processCorrelationId(AdaptrisMessage src, Message dest) throws JMSException {
-    if (isEmpty(getMetadataKey())) {
-      log.warn("metadata key for correlation ID not configured");
+    String correlationId = src.getMetadataValue(getMetadataKey());
+    if (isEmpty(correlationId)) {
+      log.warn("no value for metadata key [{}]", getMetadataKey());
     }
     else {
-      String correlationId = src.getMetadataValue(getMetadataKey());
-      if (isEmpty(correlationId)) {
-        log.warn("no value for metadata key [" + getMetadataKey() + "]");
-      }
-      else {
-        dest.setJMSCorrelationID(correlationId);
-        log.debug("set correlation ID to [" + correlationId + "]");
-      }
+      dest.setJMSCorrelationID(correlationId);
+      log.debug("set correlation ID to [{}]", correlationId);
     }
   }
 
   public void processCorrelationId(Message src, AdaptrisMessage dest) throws JMSException {
-    if (isEmpty(getMetadataKey())) {
-      log.warn("Metadata key for correlation ID not configured");
-    }
-    else {
+    try {
+      Args.notBlank(getMetadataKey(), "metadata-key");
       String id = src.getJMSCorrelationID();
       if (isEmpty(id)) {
         log.warn("No Correlation Id available");
-      }
-      else {
+      } else {
         dest.addMetadata(getMetadataKey(), id);
-        log.debug("Set metadata key [" + getMetadataKey() + "] to [" + id + "]");
+        log.debug("Set metadata key [{}] to [{}]", getMetadataKey(), id);
       }
+    } catch (IllegalArgumentException e) {
+      // do nothing as it's probably because getMtadataKey() was null.
     }
   }
 
@@ -121,10 +116,7 @@ public class MetadataCorrelationIdSource implements CorrelationIdSource {
    *          JMSCorrelationId
    */
   public void setMetadataKey(String s) {
-    if (isEmpty(s)) {
-      throw new IllegalArgumentException("null/empty metadata key param");
-    }
-    metadataKey = s;
+    metadataKey = Args.notBlank(s, "metadata-key");
   }
 
 }

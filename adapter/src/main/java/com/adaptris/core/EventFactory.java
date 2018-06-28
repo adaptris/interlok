@@ -30,7 +30,7 @@ import com.adaptris.util.IdGenerator;
  * necessary in order that unmarshalled events retain their original unique id.
  * </p>
  */
-public final class EventFactory {
+public abstract class EventFactory {
 
   private static IdGenerator uidGenerator;
 
@@ -75,7 +75,4 @@ public final class EventFactory {
     return result;
   }
 
-  private EventFactory() {
-    // no instances
-  }
 }

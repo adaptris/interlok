@@ -273,13 +273,69 @@ public class StandardResponseProducerTest extends HttpProducerExample {
     }
   }
 
+  public void testResponse_MultipleAttempts() throws Exception {
+    StandardResponseProducer r1 = new StandardResponseProducer(HttpStatus.OK_200).withAlwaysAttemptResponse(false);
+    // 2nd responder will not fire...
+    StandardResponseProducer r2 = new StandardResponseProducer(HttpStatus.INTERNAL_ERROR_500).withAlwaysAttemptResponse(false);
+    PayloadFromMetadataService pms = new PayloadFromMetadataService();
+    pms.setTemplate("");
+    HttpConnection httpConnection = createConnection();
+    Channel c = createChannel(httpConnection, createWorkflow(createConsumer(URL_TO_POST_TO), new MockMessageProducer(),
+        new ServiceList(new Service[]
+        {
+            pms, new StandaloneProducer(r1), new StandaloneProducer(r2)
+        })));
+    StandaloneRequestor requestor = createRequestor(httpConnection.getPort());
+    AdaptrisMessage msg = createMessage();
+    try {
+      c.requestStart();
+      start(requestor);
+      requestor.doService(msg);
+      assertNotSame(TEXT, msg.getContent());
+
+    } finally {
+      c.requestClose();
+      stop(requestor);
+      PortManager.release(httpConnection.getPort());
+    }
+  }
+
+  public void testResponse_AlwaysAttempt() throws Exception {
+    StandardResponseProducer r1 = new StandardResponseProducer(HttpStatus.OK_200).withAlwaysAttemptResponse(true);
+    // 2nd responder will fire, but log an exception (probably an IOException).
+    StandardResponseProducer r2 = new StandardResponseProducer(HttpStatus.INTERNAL_ERROR_500).withAlwaysAttemptResponse(true);
+    PayloadFromMetadataService pms = new PayloadFromMetadataService();
+    pms.setTemplate("");
+    HttpConnection httpConnection = createConnection();
+    Channel c = createChannel(httpConnection,
+        createWorkflow(createConsumer(URL_TO_POST_TO), new MockMessageProducer(), new ServiceList(new Service[]
+        {
+            pms, new StandaloneProducer(r1), new StandaloneProducer(r2)
+        })));
+    StandaloneRequestor requestor = createRequestor(httpConnection.getPort());
+    AdaptrisMessage msg = createMessage();
+    try {
+      c.requestStart();
+      start(requestor);
+      requestor.doService(msg);
+      assertNotSame(TEXT, msg.getContent());
+    } finally {
+      c.requestClose();
+      stop(requestor);
+      PortManager.release(httpConnection.getPort());
+    }
+  }
+
   public void testResponseWithZeroLengthPayload() throws Exception {
     StandardResponseProducer responder = new StandardResponseProducer(HttpStatus.OK_200);
     PayloadFromMetadataService pms = new PayloadFromMetadataService();
     pms.setTemplate("");
     HttpConnection httpConnection = createConnection();
-    Channel c = createChannel(httpConnection, createWorkflow(createConsumer(URL_TO_POST_TO), new MockMessageProducer(),
-        new ServiceList(new Service[] {pms, new StandaloneProducer(responder)})));
+    Channel c = createChannel(httpConnection,
+        createWorkflow(createConsumer(URL_TO_POST_TO), new MockMessageProducer(), new ServiceList(new Service[]
+        {
+            pms, new StandaloneProducer(responder)
+        })));
     StandaloneRequestor requestor = createRequestor(httpConnection.getPort());
     AdaptrisMessage msg = createMessage();
     try {

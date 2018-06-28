@@ -38,6 +38,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.text.xml.SimpleNamespaceContext;
 import com.adaptris.util.text.xml.XPath;
@@ -65,13 +66,21 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </pre>
  * </p>
  * You could use the xpath <code>count(/envelope/document)</code> to split into 3 documents; each of which contains the whole XML
- * document. </p>
+ * document.
+ * </p>
+ * <p>
+ * If the {@code DocumentBuilderFactoryBuilder} has been explicitly set to be not namespace aware and the document does in fact
+ * contain namespaces, then Saxon can cause merry havoc in the sense that {@code //NonNamespaceXpath} doesn't work if the document
+ * has namespaces in it. We have included a shim so that behaviour can be toggled based on what you have configured.
+ * </p>
+ * 
+ * @see XPath#newXPathInstance(DocumentBuilderFactoryBuilder, NamespaceContext)
  * 
  * @config xpath-document-copier
  */
 @XStreamAlias("xpath-document-copier")
 @DisplayOrder(order = {"xpath", "copyMetadata", "copyObjectMetadata", "namespaceContext", "xmlDocumentFactoryConfig"})
-public class XpathDocumentCopier extends MessageSplitterImp {
+public class XpathDocumentCopier extends MessageCopier {
 
   @NotNull
   @NotBlank
@@ -96,17 +105,14 @@ public class XpathDocumentCopier extends MessageSplitterImp {
       int size = toInteger(xpathResult);
       AdaptrisMessageFactory fac = selectFactory(msg);
       for (int i = 0; i < size; i++) {
-        AdaptrisMessage splitMsg = fac.newMessage(msg.getPayload());
-        splitMsg.setContentEncoding(msg.getContentEncoding());
+        AdaptrisMessage splitMsg = duplicateWithPayload(fac, msg);
         copyMetadata(msg, splitMsg);
         result.add(splitMsg);
       }
+      logR.trace("Split on {} gave {} messages", xpathResult, result.size());
     }
     catch (Exception e) {
-      throw new CoreException(e);
-    }
-    finally {
-
+      throw ExceptionHelper.wrapCoreException(e);
     }
     return result;
   }
@@ -120,7 +126,7 @@ public class XpathDocumentCopier extends MessageSplitterImp {
       builder.setNamespaceAware(true);
     }
     Document d = createDocument(msg, builder);
-    XPath xp = new XPath(ctx);
+    XPath xp = XPath.newXPathInstance(builder, ctx);
     return xp.selectSingleTextItem(d, getXpath());
   }
 

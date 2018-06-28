@@ -37,7 +37,6 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.servlet.ServletMapping;
-import org.eclipse.jetty.webapp.AbstractConfiguration;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.eclipse.jetty.webapp.WebXmlConfiguration;
@@ -57,6 +56,8 @@ import org.slf4j.LoggerFactory;
 public class JettyServerManager implements ServerManager {
 
   private static final String DEFAULT_DESCRIPTOR_XML = "com/adaptris/core/management/webserver/jetty-webdefault-failsafe.xml";
+  private static final String OVERRIDE_DESCRIPTOR_XML = "jetty-webdefault.xml";
+
   public static final String CONTEXT_PATH = "contextPath";
   public static final String ROLES = "roles";
   public static final String SECURITY_CONSTRAINTS = "securityConstraints";
@@ -129,7 +130,7 @@ public class JettyServerManager implements ServerManager {
     // to add a new servlet; but it's probaby good practice to.
     rootWar.stop();
     String pathSpec = (String) additionalProperties.get(CONTEXT_PATH);
-    log.trace("Adding servlet to existing ROOT.war against {}", pathSpec);
+    log.trace("Adding servlet to existing ROOT WebAppContext against {}", pathSpec);
     rootWar.addServlet(servlet, pathSpec);
     SecurityHandlerWrapper w = (SecurityHandlerWrapper) additionalProperties.get(SECURITY_CONSTRAINTS);
     if (w != null) {
@@ -141,15 +142,16 @@ public class JettyServerManager implements ServerManager {
   private WebAppContext findRootContext(Server server, boolean create) throws Exception {
     WebAppContext root = rootContextFromHandler(server.getHandler());
     if (root == null && create) {
+      log.trace("No ROOT WebAppContext, creating one");
       root = new WebAppContext();
       root.setContextPath("/");
-      URL defaultsURL = getClass().getClassLoader().getResource(DEFAULT_DESCRIPTOR_XML);
-      if (defaultsURL != null) {
-        root.setDefaultsDescriptor(defaultsURL.toString());
-        root.setConfigurations(new Configuration[] {new WebXmlConfiguration() {}});
-      } else {
-        root.setConfigurations(new Configuration[] {new AbstractConfiguration() {}});
-      }
+      URL defaultsURL = findDefaultDescriptorXML();
+      root.setDefaultsDescriptor(defaultsURL.toString());
+      root.setConfigurations(new Configuration[]
+      {
+          new WebXmlConfiguration() {
+          }
+      });
       ContextHandlerCollection c = firstContextHandler(server.getHandler());
       if (c != null) {
         c.addHandler(root);
@@ -161,6 +163,15 @@ public class JettyServerManager implements ServerManager {
       }
     }
     return root;
+  }
+
+  private URL findDefaultDescriptorXML() {
+    URL defaultsURL = getClass().getClassLoader().getResource(OVERRIDE_DESCRIPTOR_XML);
+    // if null, then jetty-webdefault-failsafe.xml is used, which always exists in the jar file.
+    if (defaultsURL == null) {
+      defaultsURL = getClass().getClassLoader().getResource(DEFAULT_DESCRIPTOR_XML);
+    }
+    return defaultsURL;
   }
 
   private WebAppContext rootContextFromHandler(Handler parent) {

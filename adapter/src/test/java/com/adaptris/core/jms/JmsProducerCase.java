@@ -125,6 +125,16 @@ public abstract class JmsProducerCase extends JmsProducerExample {
     assertEquals(0, p.calculateTimeToLive(msg, p.getTtl()));
   }
 
+  public void testLogLinkedException() throws Exception {
+    DefinedJmsProducer p = createDummyProducer();
+    p.logLinkedException("", new Exception());
+    JMSException e1 = new JMSException("exception reason", "exception code");
+    p.logLinkedException("hello", e1);
+    p.logLinkedException("", e1);
+    e1.setLinkedException(new Exception("linked-exception"));
+    p.logLinkedException("", e1);
+  }
+
   public void testSetCaptureOutgoingMessageDetails() throws Exception {
     DefinedJmsProducer p = createDummyProducer();
     assertNull(p.getCaptureOutgoingMessageDetails());

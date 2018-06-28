@@ -16,6 +16,7 @@
 package com.adaptris.core.services.jdbc;
 
 import javax.validation.constraints.NotNull;
+import javax.xml.namespace.NamespaceContext;
 
 import org.w3c.dom.Node;
 
@@ -23,6 +24,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.text.xml.XPath;
 
@@ -47,7 +49,6 @@ public abstract class StatementParameterImpl extends NamedStatementParameter {
     },
     xpath {
       @Override
-      @SuppressWarnings("deprecation")
       String getValue(AdaptrisMessage msg, String queryString) {
         // This query-type is *never* called via the jdbc-iterating-data-captures
         // those services will resolve the xpath directly and turn
@@ -56,12 +57,7 @@ public abstract class StatementParameterImpl extends NamedStatementParameter {
         // This then, can only be called via JdbcRawCapture, so creating a new
         // document is fine, but *slow* if you have multiples of them
         // configured.
-        try {
-          Node node = new XPath().selectSingleNode(XmlHelper.createDocument(msg), queryString);
-          return node != null ? node.getTextContent() : null;
-        } catch (Exception e) {
-          throw new IllegalArgumentException(queryString + " didn't work as an xpath");
-        }
+        return resolveXPath(msg, queryString);
       }
     },
     constant {
@@ -172,5 +168,19 @@ public abstract class StatementParameterImpl extends NamedStatementParameter {
 
   protected QueryType getHandler(QueryType queryType) {
     return Args.notNull(queryType, "queryType");
+  }
+
+  private static String resolveXPath(AdaptrisMessage msg, String queryString) {
+    // Might be null, if we're part of a RawJdbcDataCaptureService, but that
+    // should be fine for XPath.newXPathInstance()
+    DocumentBuilderFactoryBuilder builder = (DocumentBuilderFactoryBuilder) msg.getObjectHeaders()
+        .get(JdbcDataQueryService.KEY_DOCBUILDER_FAC);
+    NamespaceContext ctx = (NamespaceContext) msg.getObjectHeaders().get(JdbcDataQueryService.KEY_NAMESPACE_CTX);
+    try {
+      Node node = XPath.newXPathInstance(builder, ctx).selectSingleNode(XmlHelper.createDocument(msg, builder), queryString);
+      return node != null ? node.getTextContent() : null;
+    } catch (Exception e) {
+      throw new IllegalArgumentException(queryString + " didn't work as an xpath");
+    }
   }
 }

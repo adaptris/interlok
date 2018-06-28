@@ -369,8 +369,7 @@
       <junit printsummary="${junit.printsummary}" fork="yes" forkmode="${junit.forkmode}" failureproperty="junit.failed">
         <jvmarg value="-Xmx${execution.maxmem}"/>
         <jvmarg value="-XX:+CMSClassUnloadingEnabled"/>
-        <jvmarg value="-XX:+UseConcMarkSweepGC"/>
-        <jvmarg value="-XX:+UseParNewGC"/>
+        <jvmarg value="-XX:+UseG1GC"/>
         <formatter type="xml" />
         <batchtest todir="${tests.output.dir}">
           <fileset dir="${testsrc.dir}">
@@ -395,8 +394,7 @@
     <junit printsummary="${junit.printsummary}" fork="yes"  forkmode="${junit.forkmode}" failureproperty="junit.failed">
       <jvmarg value="-Xmx${execution.maxmem}"/>
       <jvmarg value="-XX:+CMSClassUnloadingEnabled"/>
-      <jvmarg value="-XX:+UseConcMarkSweepGC"/>
-      <jvmarg value="-XX:+UseParNewGC"/>
+      <jvmarg value="-XX:+UseG1GC"/>
       <formatter type="xml" />
       <batchtest todir="${tests.output.dir}">
         <fileset dir="${testsrc.dir}">

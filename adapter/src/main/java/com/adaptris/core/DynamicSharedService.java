@@ -81,7 +81,7 @@ public class DynamicSharedService extends SharedServiceImpl {
 
   private Service startService(Service s) throws CoreException {
     LifecycleHelper.registerEventHandler(s, eventHandler);
-    return LifecycleHelper.initAndStart(s);
+    return LifecycleHelper.initAndStart(s, false);
   }
 
   @Override

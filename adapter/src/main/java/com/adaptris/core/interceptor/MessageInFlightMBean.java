@@ -17,6 +17,7 @@
 package com.adaptris.core.interceptor;
 
 import com.adaptris.core.PoolingWorkflow;
+import com.adaptris.core.http.jetty.JettyNoBacklogInterceptor;
 import com.adaptris.core.runtime.ChildRuntimeInfoComponentMBean;
 
 /**
@@ -43,5 +44,18 @@ public interface MessageInFlightMBean extends ChildRuntimeInfoComponentMBean {
    * @return the number of messages in flight.
    */
   int messagesInFlightCount();
+
+  /**
+   * Return the count of messages that are currently queued.
+   * <p>
+   * This only makes sense for {@link PoolingWorkflow} as other workflows are single threaded; so will most likely return 0. In the
+   * context of PoolingWorkflow, this is the number of messages that have been submitted to the workflow, but have not yet been
+   * processed.
+   * </p>
+   * 
+   * @see JettyNoBacklogInterceptor
+   * @return the number of messages that have been submitted for processing, but have not entered the workflow proper.
+   */
+  int messagesPendingCount();
 
 }

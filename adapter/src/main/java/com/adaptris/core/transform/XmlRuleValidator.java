@@ -48,6 +48,13 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
  * Used with {@link XmlValidationService} to validate an XML message against various rules.
+ * <p>
+ * If the {@code DocumentBuilderFactoryBuilder} has been explicitly set to be not namespace aware and the document does in fact
+ * contain namespaces, then Saxon can cause merry havoc in the sense that {@code //NonNamespaceXpath} doesn't work if the document
+ * has namespaces in it. We have included a shim so that behaviour can be toggled based on what you have configured.
+ * </p>
+ * 
+ * @see XPath#newXPathInstance(DocumentBuilderFactoryBuilder, NamespaceContext)
  * 
  * @config xml-rule-validator
  * 
@@ -91,8 +98,9 @@ public class XmlRuleValidator extends MessageValidatorImpl {
   public void validate(AdaptrisMessage msg) throws CoreException {
     try {
       NamespaceContext namespaceCtx = SimpleNamespaceContext.create(getNamespaceContext(), msg);
-      Document doc = createDocument(msg, documentFactoryBuilder(namespaceCtx));
-      XPath xp = new XPath(namespaceCtx);
+      DocumentBuilderFactoryBuilder builder = documentFactoryBuilder(namespaceCtx);
+      Document doc = createDocument(msg, builder);
+      XPath xp = XPath.newXPathInstance(builder, namespaceCtx);
       for (int stageIndex = 0; stageIndex < validationStages.size(); stageIndex++) {
         ValidationStage v = (ValidationStage) validationStages.get(stageIndex);
         NodeList n = xp.selectNodeList(doc, v.getIterationXpath());
@@ -162,8 +170,7 @@ public class XmlRuleValidator extends MessageValidatorImpl {
     this.xmlDocumentFactoryConfig = xml;
   }
 
-  DocumentBuilderFactoryBuilder documentFactoryBuilder(NamespaceContext nc) {
-    return (getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig() : DocumentBuilderFactoryBuilder.newInstance())
-        .withNamespaceAware(nc);
+  private DocumentBuilderFactoryBuilder documentFactoryBuilder(NamespaceContext nc) {
+    return DocumentBuilderFactoryBuilder.newInstance(getXmlDocumentFactoryConfig(), nc);
   }
 }

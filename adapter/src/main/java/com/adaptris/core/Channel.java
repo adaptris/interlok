@@ -101,6 +101,11 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
     changeState(ClosedState.getInstance());
   }
 
+  public Channel(String uid) {
+    this();
+    setUniqueId(uid);
+  }
+
   @Override
   public void prepare() throws CoreException {
     produceConnection.addExceptionListener(this); // set back ref.

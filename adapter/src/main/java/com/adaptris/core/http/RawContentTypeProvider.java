@@ -65,7 +65,8 @@ public class RawContentTypeProvider implements ContentTypeProvider {
   /**
    * Set the base content type.
    * 
-   * @param type the base content type; defaults to text/plain
+   * @param type the base content type; defaults to text/plain, supports metadata resolution via
+   *          {@link AdaptrisMessage#resolve(String)}.
    */
   public void setContentType(String type) {
     this.contentType = Args.notBlank(type, "Content Type");

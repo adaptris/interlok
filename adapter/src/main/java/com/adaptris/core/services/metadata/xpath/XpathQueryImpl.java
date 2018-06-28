@@ -16,8 +16,7 @@
 
 package com.adaptris.core.services.metadata.xpath;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
+import org.apache.commons.lang3.BooleanUtils;
 import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.core.util.Args;
 
 /**
  * Abstract base class for Metadata Xpath Queries.
@@ -57,10 +57,7 @@ public abstract class XpathQueryImpl implements XpathMetadataQuery {
    * @param key the key.
    */
   public void setMetadataKey(String key) {
-    if (isEmpty(key)) {
-      throw new IllegalArgumentException("Configured Metadata Key may not be null.");
-    }
-    metadataKey = key;
+    metadataKey = Args.notBlank(key, "metadataKey");
   }
 
   public Boolean getAllowEmptyResults() {
@@ -78,6 +75,6 @@ public abstract class XpathQueryImpl implements XpathMetadataQuery {
   }
 
   protected boolean allowEmptyResults() {
-    return getAllowEmptyResults() != null ? getAllowEmptyResults().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getAllowEmptyResults(), false);
   }
 }

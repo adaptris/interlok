@@ -1,0 +1,114 @@
+// This is not used at all to do builds, but is here
+// so that our dependencies can be tracked by snyk
+ext {
+  adpCoreVersion = project.hasProperty('adpCoreVersion') ? project.getProperty('adpCoreVersion') : '3.7-SNAPSHOT'
+  repoUsername = project.hasProperty('repoUsername') ? project.getProperty('repoUsername') : 'unknown'
+  repoPassword = project.hasProperty('repoPassword') ? project.getProperty('repoPassword') : 'unknown'
+  defaultNexusRepo = project.hasProperty('defaultNexusRepo') ? project.getProperty('defaultNexusRepo') : 'https://repo1.maven.org/maven2/'
+}
+
+if (JavaVersion.current().isJava8Compatible()) {
+  allprojects {
+    tasks.withType(Javadoc) {
+      options.addStringOption('Xdoclint:none', '-quiet')
+    }
+  }
+}
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+// In this section you declare where to find the dependencies of your project
+repositories {
+  maven { url "$defaultNexusRepo" }
+  maven { url "https://development.adaptris.net/nexus/content/groups/public" }
+  maven {
+    credentials {
+      username repoUsername
+      password repoPassword
+    }
+    url "https://development.adaptris.net/nexus/content/groups/private"
+  }
+  maven { url "https://development.adaptris.net/nexus/content/repositories/snapshots" }
+  maven { url "https://development.adaptris.net/nexus/content/repositories/releases" }
+}
+
+
+configurations {
+  javadoc {}
+  all*.exclude group: 'c3p0'
+  all*.exclude group: 'commons-logging'
+  all*.exclude group: 'javamail'
+  all*.exclude group: 'javax.mail', module: 'mail'
+  all*.exclude group: 'org.glassfish.hk2.external'
+  all*.exclude group: 'xalan', module: 'xalan'
+  all*.exclude group: 'net.sf.saxon', module: 'saxon'
+  all*.exclude group: 'org.codehaus.woodstox'
+  all*.exclude group: 'com.fasterxml.woodstox'
+  all*.exclude group: 'org.eclipse.jetty.orbit', module: 'javax.mail.glassfish'
+}
+
+configurations.all {
+  resolutionStrategy.cacheChangingModulesFor 0, "seconds"
+}
+
+dependencies {
+  compile ("com.adaptris:adp-core-apt:$adpCoreVersion") { changing= true}
+  compile ("com.adaptris:interlok-common:$adpCoreVersion") { changing= true}
+  compile ("com.thoughtworks.xstream:xstream:1.4.10")
+  compile ("org.codehaus.jettison:jettyison:1.2")
+  compile ("io.github.lukehutch:fast-classpath-scanner:2.9.4")
+  compile ("net.jodah:expiringmap:0.5.8")
+  compile ("javax.activation:activation:1.1.1")
+  compile ("org.apache.activemq:activemq-client:5.15.2")
+  compile ("javax.validation:validation-api:1.0.0.GA")
+  compile ("java.el:javax.el-api:2.2.4")
+  compile ("org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final")
+  compile ("org.hibernate:hibernate-validator:4.3.2.Final")
+  compile ("commons-collections:commons-collections:3.2.2")
+  compile ("commons-io:commons-io:2.4")
+  compile ("commons-lang:commons-lang:2.6")
+  compile ("org.apache.commons:commons-lang3:3.5")
+  compile ("commons-net:commons-net:3.3")
+  compile ("commons-pool:commons-pool:1.6")
+  compile ("org.apache.commons:commons-exec:1.2")
+  compile ("org.bouncycastle:bcprov-jdk15on:1.59")
+  compile ("org.bouncycastle:bcpkix-jdk15on:1.59")
+  compile ("org.bouncycastle:bcmail-jdk15on:1.59")
+  compile ("oro:oro:2.0.8")
+  compile ("com.sun.mail:javax.mail:1.5.6")
+  compile ("org.glassfish.external:opendmk_jmxremote_optional.jar:1.0-b01-ea")
+  compile ("org.glassfish.external:opendmk_jmdkrt_jar:1.0-b01-ea")
+  compile ("java.xml.bind:jaxb-api:2.3.0")
+  compile ("com.jcraft:jsch:0.1.54")
+  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.8.v20171121")
+  compile ("javax.servlet:javax.servlet-api:3.1.0")
+  compile ("net.sf.joost:joost:0.9.1")
+  compile ("org.quartz-scheduler:quartz:2.2.3")
+  compile ("net.sf.saxon:Saxon-HE:9.7.0-20")
+  compile ("xerces:xercesImpl:2.11.0")
+  compile ("com.mchange:c3p0:0.9.5.2")
+  compile ("org.springframework.boot:spring-boot-loader:1.5.7.RELEASE")
+  compile ("org.slf4j:slf4j-api:1.7.25")
+  compile ("org.slf4j:jcl-over-slf4j-api:1.7.25")
+  compile ("org.slf4j:jul-to-slf4j:1.7.25")
+  compile ("org.slf4j:slf4j-log4j12:1.7.25")
+
+  testCompile ('junit:junit:4.12')
+  testCompile ("com.adaptris:adp-stubs:$adpCoreVersion") { changing= true}
+  testCompile ("org.apache.logging.log4j:log4j-core:2.9.1")
+  testCompile ("org.apache.logging.log4j:log4j-1.2-api:2.9.1")
+  testCompile ("org.apache.logging.log4j:log4j-slf4j-impl:2.9.1")
+  testCompile ("org.apache.logging.log4j:log4j-api:2.9.1")
+  testCompile ("org.jruby:jruby-complete:9.1.13.0")
+  testCompile ("org.mockftpserver:MockFtpServer:2.4-MDTM")
+  testCompile ("com.icegreen:greenmail:1.4.0")
+  testCompile ("org.mockito:mockito-all:1.9.5")
+  testCompile ("mysql:mysql-connector-java:5.1.40")
+  testCompile ("org.apache.derby:derby:10.10.1.1")
+
+  javadoc("com.adaptris:adp-core-apt:$adpCoreVersion") { changing= true}
+
+}
+

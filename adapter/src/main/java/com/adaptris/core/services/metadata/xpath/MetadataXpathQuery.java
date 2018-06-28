@@ -16,13 +16,11 @@
 
 package com.adaptris.core.services.metadata.xpath;
 
-import javax.xml.namespace.NamespaceContext;
-
 import org.w3c.dom.Document;
 
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
+import com.adaptris.util.text.xml.XPath;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -45,9 +43,8 @@ public class MetadataXpathQuery extends MetadataXpathQueryImpl implements XpathQ
   }
 
   @Override
-  public MetadataElement resolveXpath(Document doc, NamespaceContext ctx, String expr) throws CoreException {
-    return new MetadataElement(getMetadataKey(), XpathQueryHelper.resolveSingleTextItem(doc, ctx, expr,
-        allowEmptyResults()));
+  public MetadataElement resolveXpath(Document doc, XPath xpath, String expr) throws Exception {
+    return new MetadataElement(getMetadataKey(), XpathQueryHelper.resolveSingleTextItem(doc, xpath, expr, allowEmptyResults()));
   }
 
 }

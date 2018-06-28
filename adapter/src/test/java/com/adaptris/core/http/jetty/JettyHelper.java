@@ -16,18 +16,25 @@
 
 package com.adaptris.core.http.jetty;
 
+import static com.adaptris.core.http.jetty.HttpConsumerTest.URL_TO_POST_TO;
+
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessageProducer;
 import com.adaptris.core.Channel;
 import com.adaptris.core.ConfiguredConsumeDestination;
+import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.DefaultEventHandler;
 import com.adaptris.core.EventHandler;
+import com.adaptris.core.NullConnection;
 import com.adaptris.core.NullProcessingExceptionHandler;
+import com.adaptris.core.PortManager;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceList;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.Workflow;
+import com.adaptris.core.http.HttpProducer;
+import com.adaptris.core.http.JdkHttpProducer;
 import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.stubs.MockChannel;
 
@@ -44,13 +51,15 @@ public class JettyHelper {
     return createChannel(connection, createWorkflow(consumer, producer));
   }
 
-  public static Channel createChannel(AdaptrisConnection connection, Workflow w) throws Exception {
+  public static Channel createChannel(AdaptrisConnection connection, Workflow... workflows) throws Exception {
     Channel result = new MockChannel();
     result.setUniqueId("channel");
     result.registerEventHandler(createEventHandler());
     result.setMessageErrorHandler(new NullProcessingExceptionHandler());
     result.setConsumeConnection(connection);
-    result.getWorkflowList().add(w);
+    for (Workflow w : workflows) {
+      result.getWorkflowList().add(w);
+    }
     return result;
   }
 
@@ -81,9 +90,13 @@ public class JettyHelper {
   }
 
   public static JettyMessageConsumer createConsumer(String dest) {
+    return createConsumer(dest, "");
+  }
+
+  public static JettyMessageConsumer createConsumer(String dest, String threadName) {
     JettyMessageConsumer consumer = new JettyMessageConsumer();
     consumer.setAdditionalDebug(true);
-    consumer.setDestination(new ConfiguredConsumeDestination(dest));
+    consumer.setDestination(new ConfiguredConsumeDestination(dest, null, threadName));
     return consumer;
   }
 
@@ -98,5 +111,25 @@ public class JettyHelper {
     DefaultEventHandler sch = new DefaultEventHandler();
     sch.requestStart();
     return sch;
+  }
+
+  protected static HttpConnection createConnection(int basePort) {
+    HttpConnection c = new HttpConnection();
+    int port = PortManager.nextUnusedPort(basePort);
+    c.setPort(port);
+    return c;
+  }
+
+  protected static HttpProducer createProducer() {
+    JdkHttpProducer p = new JdkHttpProducer();
+    p.setContentTypeKey("content.type");
+    p.setIgnoreServerResponseCode(true);
+    p.registerConnection(new NullConnection());
+    return p;
+  }
+
+  protected static ConfiguredProduceDestination createProduceDestination(int port) {
+    ConfiguredProduceDestination d = new ConfiguredProduceDestination("http://localhost:" + port + URL_TO_POST_TO);
+    return d;
   }
 }

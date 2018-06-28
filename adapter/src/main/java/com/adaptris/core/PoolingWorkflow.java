@@ -19,12 +19,12 @@ package com.adaptris.core;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
@@ -149,7 +149,6 @@ public class PoolingWorkflow extends WorkflowImp {
   private transient String currentThreadName;
   private transient ServiceCollection marshalledServiceCollection;
   private transient String friendlyWorkflowName;
-  private transient ReentrantLock lock = new ReentrantLock(true);
 
   public PoolingWorkflow() throws CoreException {
     super();
@@ -236,16 +235,21 @@ public class PoolingWorkflow extends WorkflowImp {
    */
   @Override
   protected void initialiseWorkflow() throws CoreException {
+
+    if (maxIdle() > poolSize()) {
+      log.warn("Maximum number of idle workers > pool-size, re-sizing max-idle");
+      setMaxIdle(poolSize());
+    }
+    if (minIdle() > poolSize()) {
+      log.warn("Minimum number of idle workers > pool-size, re-sizing min-idle");
+      setMinIdle(poolSize());
+    }
     if (minIdle() > maxIdle()) {
       log.warn("Minimum number of idle workers > max-idle, max-idle modified");
       setMaxIdle(minIdle());
     }
-    if (maxIdle() > poolSize()) {
-      log.warn("Maximum number of idle workers > pool-size, re-sizing pool");
-      setPoolSize(maxIdle());
-    }
     marshalledServiceCollection = cloneServiceCollection(getServiceCollection());
-    marshalledServiceCollection.prepare();
+    LifecycleHelper.prepare(marshalledServiceCollection);
     LifecycleHelper.init(getProducer());
     getConsumer().registerAdaptrisMessageListener(this);
     LifecycleHelper.init(getConsumer());
@@ -259,7 +263,8 @@ public class PoolingWorkflow extends WorkflowImp {
   @Override
   protected void startWorkflow() throws CoreException {
     LifecycleHelper.start(getProducer());
-    createObjectPool();
+    objectPool = createObjectPool();
+    threadPool = createExecutor();
     populatePool();
     friendlyWorkflowName = friendlyName();
     LifecycleHelper.start(getConsumer());
@@ -319,11 +324,12 @@ public class PoolingWorkflow extends WorkflowImp {
   }
 
   private void onMessage(AdaptrisMessage msg) {
-    lock.lock();
     try {
       currentThreadName = Thread.currentThread().getName();
       if (poolLock.permitAvailable()) {
-        threadPool.execute(new WorkerThread(friendlyWorkflowName, msg));
+        workflowStart(msg);
+        // workflowCompletion.add(msg, threadPool.submit(new CallableWorker(msg)));
+        threadPool.submit(new CallableWorker(msg));
       }
       else {
         log.warn("Attempt to process message during shutdown; failing it");
@@ -334,7 +340,6 @@ public class PoolingWorkflow extends WorkflowImp {
       msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, e);
       handleBadMessage(msg);
     } finally {
-      lock.unlock();
     }
   }
 
@@ -386,21 +391,24 @@ public class PoolingWorkflow extends WorkflowImp {
     super.sendMessageLifecycleEvent(msg);
   }
 
-  private void createObjectPool() {
+  private GenericObjectPool<Worker> createObjectPool() {
+    GenericObjectPool<Worker> pool = new GenericObjectPool(new WorkerFactory());
+    pool.setMaxActive(poolSize());
+    pool.setMinIdle(minIdle());
+    pool.setMaxIdle(maxIdle());
+    pool.setMaxWait(-1L);
+    pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_BLOCK);
+    pool.setMinEvictableIdleTimeMillis(threadLifetimeMs());
+    pool.setTimeBetweenEvictionRunsMillis(threadLifetimeMs() + new Random(threadLifetimeMs()).nextLong());
+    return pool;
+  }
 
-    objectPool = new GenericObjectPool(new WorkerFactory());
-    objectPool.setMaxActive(poolSize());
-    objectPool.setMinIdle(minIdle());
-    objectPool.setMaxIdle(maxIdle());
-    objectPool.setMaxWait(-1L);
-    objectPool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_BLOCK);
-    objectPool.setMinEvictableIdleTimeMillis(threadLifetimeMs());
-    objectPool.setTimeBetweenEvictionRunsMillis(threadLifetimeMs() + new Random(threadLifetimeMs()).nextLong());
-
-    threadPool = Executors.newCachedThreadPool(new WorkerThreadFactory());
-    if (threadPool instanceof ThreadPoolExecutor) {
-      ((ThreadPoolExecutor) threadPool).setKeepAliveTime(threadLifetimeMs(), TimeUnit.MILLISECONDS);
+  private ExecutorService createExecutor() {
+    ExecutorService es = Executors.newCachedThreadPool(new WorkerThreadFactory());
+    if (es instanceof ThreadPoolExecutor) {
+      ((ThreadPoolExecutor) es).setKeepAliveTime(threadLifetimeMs(), TimeUnit.MILLISECONDS);
     }
+    return es;
   }
 
   private void populatePool() throws CoreException {
@@ -442,7 +450,7 @@ public class PoolingWorkflow extends WorkflowImp {
       poolLock.acquire();
       List<Runnable> list = ManagedThreadFactory.shutdownQuietly(threadPool, shutdownWaitTimeMs());
       for (Runnable l : list) {
-        WorkerThread sd = (WorkerThread) l;
+        CallableWorker sd = (CallableWorker) l;
         handleBadMessage(sd.getMessage());
       }
       log.trace("All children terminated; existence pointless");
@@ -675,47 +683,46 @@ public class PoolingWorkflow extends WorkflowImp {
 
   }
 
-  private class WorkerThread implements Runnable {
-    private String logicalId;
+  private class CallableWorker implements Callable<AdaptrisMessage> {
     private AdaptrisMessage message;
-    private Worker slave;
+    private Worker worker;
 
-    WorkerThread(String name, AdaptrisMessage msg) throws Exception {
-      logicalId = name;
+    CallableWorker(AdaptrisMessage msg) throws Exception {
       message = msg;
-      slave = objectPool.borrowObject();
+      worker = objectPool.borrowObject();
     }
 
     private AdaptrisMessage getMessage() {
       return message;
     }
 
+    private String getThreadName() {
+      return currentThreadName + "(" + Integer.toHexString(Thread.currentThread().hashCode()) + ")";
+    }
+
     @Override
-    public void run() {
+    public AdaptrisMessage call() throws Exception {
       String oldName = Thread.currentThread().getName();
       Thread.currentThread().setName(getThreadName());
-
+      AdaptrisMessage result = null;
       try {
-        slave.handleMessage(logicalId, message);
-        objectPool.returnObject(slave);
-      }
-      catch (Exception e) {
+        result = worker.handleMessage(message);
+        workflowEnd(message, result);
+        objectPool.returnObject(worker);
+      } catch (Exception e) {
         log.trace("[{}] failed pool re-entry, attempting to invalidate", toString());
         try {
-          objectPool.invalidateObject(slave);
+          objectPool.invalidateObject(worker);
           log.trace("[{}] invalidated", toString());
-        }
-        catch (Exception ignoredIntentionally) {
+        } catch (Exception ignoredIntentionally) {
           log.trace("[{}] not invalidated", toString());
         }
       }
       Thread.currentThread().setName(oldName);
-    }
-
-    private String getThreadName() {
-      return currentThreadName + "(" + Integer.toHexString(Thread.currentThread().hashCode()) + ")";
+      return result;
     }
   }
+
 
   class Worker {
 
@@ -731,25 +738,19 @@ public class PoolingWorkflow extends WorkflowImp {
     }
 
     public void start() throws CoreException {
-      LifecycleHelper.init(sc);
-      LifecycleHelper.start(sc);
+      LifecycleHelper.initAndStart(sc, false);
     }
 
     public void stop() throws CoreException {
-      LifecycleHelper.stop(sc);
-      LifecycleHelper.close(sc);
+      LifecycleHelper.stopAndClose(sc, false);
     }
 
     public boolean isValid() {
       return true;
     }
 
-    // This is just really a frig so that we can get profiling
-    // information out from PoolingWorkflow as $this by this time
-    // isn't all that useful...
-    public void handleMessage(String id, AdaptrisMessage msg) {
+    public AdaptrisMessage handleMessage(AdaptrisMessage msg) {
       AdaptrisMessage wip = null;
-      workflowStart(msg);
       try {
         long start = System.currentTimeMillis();
         log.debug("start processing message [{}]", msg.toString(logPayload()));
@@ -773,18 +774,8 @@ public class PoolingWorkflow extends WorkflowImp {
       finally {
         sendMessageLifecycleEvent(wip);
       }
-      workflowEnd(msg, wip);
-    }
-
-    @Override
-    public String toString() {
-      String className = this.getClass().getSimpleName();
-      className += "@T-";
-      className += Integer.toHexString(Thread.currentThread().hashCode());
-      return className;
+      return wip;
     }
   }
-
-
 
 }

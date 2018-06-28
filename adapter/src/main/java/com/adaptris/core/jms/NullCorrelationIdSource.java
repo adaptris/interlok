@@ -32,12 +32,13 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("null-correlation-id-source")
 public class NullCorrelationIdSource implements CorrelationIdSource {
 
+  private static final NullCorrelationIdSource NO_CORRELATION = new NullCorrelationIdSource();
+
   /**
    * @see CorrelationIdSource#processCorrelationId (AdaptrisMessage, Message)
    */
   public void processCorrelationId(AdaptrisMessage src, Message dest)
       throws JMSException {
-
     // do nothing...
   }
 
@@ -47,5 +48,14 @@ public class NullCorrelationIdSource implements CorrelationIdSource {
    */
   public void processCorrelationId(Message src, AdaptrisMessage dest)
       throws JMSException {
+    // nothing to do.
+  }
+
+  /**
+   * Helper method for null protection.
+   * 
+   */
+  public static CorrelationIdSource defaultIfNull(CorrelationIdSource c) {
+    return c != null ? c : NO_CORRELATION;
   }
 }

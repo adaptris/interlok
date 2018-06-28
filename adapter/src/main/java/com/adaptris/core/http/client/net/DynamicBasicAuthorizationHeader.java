@@ -95,6 +95,8 @@ public class DynamicBasicAuthorizationHeader implements HttpURLConnectionAuthent
 
   /**
    * Set the username
+   * 
+   * @param s the username, supports metadata resolution via {@link AdaptrisMessage#resolve(String)}.
    */
   public void setUsername(String s) {
     this.username = Args.notBlank(s, "username");
@@ -108,7 +110,7 @@ public class DynamicBasicAuthorizationHeader implements HttpURLConnectionAuthent
   }
 
   /**
-   * @param pw the password to set
+   * @param pw the password to set, supports metadata resolution via {@link AdaptrisMessage#resolve(String)}.
    */
   public void setPassword(String pw) {
     this.password = Args.notBlank(pw, "password");

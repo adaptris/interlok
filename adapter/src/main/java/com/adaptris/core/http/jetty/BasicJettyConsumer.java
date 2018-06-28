@@ -90,7 +90,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   private TimeInterval maxWaitTime;
 
   @AdvancedConfig
-  @InputFieldDefault(value = "return 202")
+  @InputFieldDefault(value = "return 202 after 10 minutes")
   private TimeoutAction timeoutAction;
 
   @AdvancedConfig
@@ -136,7 +136,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
     if (retrieveAdaptrisMessageListener() instanceof WorkflowImp) {
       List<WorkflowInterceptor> interceptors = ((WorkflowImp) retrieveAdaptrisMessageListener()).getInterceptors();
       for (WorkflowInterceptor i : interceptors) {
-        if (i.getClass().equals(JettyPoolingWorkflowInterceptor.class)) {
+        if (JettyWorkflowInterceptorImpl.class.isAssignableFrom(i.getClass())) {
           waitForCompletion = true;
           break;
         }
@@ -276,7 +276,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
    * the event that the wait time is exceeded, then the behaviour specified here is done.
    * </p>
    * 
-   * @param action
+   * @param action the action; default is a 202 after 10 minutes.
    */
   public void setTimeoutAction(TimeoutAction action) {
     this.timeoutAction = action;

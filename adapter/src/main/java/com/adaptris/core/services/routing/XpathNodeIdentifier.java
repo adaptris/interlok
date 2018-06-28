@@ -26,6 +26,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.util.text.xml.XPath;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -36,7 +37,13 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * value, it simply uses the XPath to try and resolve to a Node (or NodeList). This is more useful if you have an XML document that
  * <b>doesn't contain any values for elements</b>
  * </p>
+ * <p>
+ * If the {@code DocumentBuilderFactoryBuilder} has been explicitly set to be not namespace aware and the document does in fact
+ * contain namespaces, then Saxon can cause merry havoc in the sense that {@code //NonNamespaceXpath} doesn't work if the document
+ * has namespaces in it. We have included a shim so that behaviour can be toggled based on what you have configured.
+ * </p>
  * 
+ * @see XPath#newXPathInstance(DocumentBuilderFactoryBuilder, NamespaceContext)
  * @config routing-xpath-node-syntax-identifier
  * 
  * @author $Author: lchan $

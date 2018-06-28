@@ -74,7 +74,6 @@ public class PoolingMessageSplitterService extends AdvancedMessageSplitterServic
 
   @Override
   public Future<?> handleSplitMessage(AdaptrisMessage msg) throws ServiceException {
-    exceptionHandler.clearExceptions();
     return executor.submit(new ServiceExecutor(exceptionHandler, msg));
   }
 
@@ -103,6 +102,7 @@ public class PoolingMessageSplitterService extends AdvancedMessageSplitterServic
   protected void waitForCompletion(List<Future> tasks) throws ServiceException {
     super.waitForCompletion(tasks);
     exceptionHandler.throwFirstException();
+    exceptionHandler.clearExceptions();
   }
 
   public Integer getMaxThreads() {

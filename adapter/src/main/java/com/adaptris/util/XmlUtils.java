@@ -116,7 +116,7 @@ public class XmlUtils {
   public XmlUtils(EntityResolver er, NamespaceContext ctx, DocumentBuilderFactory dbf) {
     entityResolver = er;
     namespaceCtx = ctx;
-    xpath = new XPath(namespaceCtx);
+    xpath = XPath.newXPathInstance(dbf, ctx);
     if (dbf == null) {
       docBuilderFactory = DocumentBuilderFactory.newInstance();
       if (ctx != null) {
@@ -361,7 +361,7 @@ public class XmlUtils {
    */
   public void reset() throws Exception {
     currentDoc = null;
-    xpath = new XPath(namespaceCtx);
+    xpath = XPath.newXPathInstance(docBuilderFactory, namespaceCtx);
     validator = null;
     validate = false;
   }

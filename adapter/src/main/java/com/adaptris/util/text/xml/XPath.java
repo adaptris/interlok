@@ -20,15 +20,21 @@ import static org.apache.commons.lang.BooleanUtils.toBooleanDefaultIfNull;
 import static org.apache.commons.lang.BooleanUtils.toBooleanObject;
 
 import javax.xml.namespace.NamespaceContext;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 
 /**
+ * Wrapper around {@link javax.xml.xpath.XPath}/
+ * 
  * @author Stuart Ellidge
  * 
  */
@@ -64,7 +70,8 @@ public class XPath {
       "net.sf.saxon.xpath.XPathFactoryImpl"
   };
 
-  private XPathFactory xpathFactory;
+  private transient XPathFactory xpathFactory;
+  private transient javax.xml.xpath.XPath xpathToUse;
   
   public XPath() {
     xpathFactory = newXPathFactory();
@@ -75,12 +82,20 @@ public class XPath {
     context = ctx;
   }
 
+  public XPath(NamespaceContext ctx, XPathFactory factory) {
+    this();
+    context = ctx;
+    xpathFactory = Args.notNull(factory, "xpathFactory");
+  }
+
   private javax.xml.xpath.XPath createXpath() {
-    javax.xml.xpath.XPath result = xpathFactory.newXPath();
-    if (context != null) {
-      result.setNamespaceContext(context);
+    if (xpathToUse == null) {
+      xpathToUse = xpathFactory.newXPath();
+      if (context != null) {
+        xpathToUse.setNamespaceContext(context);
+      }
     }
-    return result;
+    return xpathToUse;
   }
 
   /**
@@ -164,6 +179,108 @@ public class XPath {
    */
   public static XPathFactory newXPathFactory() {
     return build(useSaxonXpath);
+  }
+
+  /**
+   * Create a new {@link XPath} instance.
+   * <p>
+   * If the {@code DocumentBuilderFactoryBuilder} has been explicitly set to be not namespace aware and the document does in fact
+   * contain namespaces, then Saxon can cause merry havoc in the sense that {@code //NonNamespaceXpath} doesn't work if the document
+   * has namespaces in it. This then is a helper to mitigate against that; but of course in this situation you end up not being able
+   * to use XPath 2.0 functions, when namespace-awareness is off as saxon 9.7+ no longer registers itself as a XPathFactory.
+   * </p>
+   * <p>
+   * This leads us to a behavioural matrix that looks like this. Using Saxon means you get XPath 2.0 and its associated benefits,
+   * Using {@code XPathFactory.newInstance()} generally means you don't, unless you have registered an alternative XPathFactory.
+   * </p>
+   * <table cellspacing="8">
+   * <tr>
+   * <th align="left">DocumentBuilderFactoryBuilder#withNamespaceAware()</th>
+   * <th align="left">&nbsp;</th>
+   * <th align="left">Namespace Context available</th>
+   * <th align="left">&nbsp;</th>
+   * <th align="left">Uses Saxon</th>
+   * <th align="left">&nbsp;</th>
+   * <th align="left">Uses XPathFactory#newInstance()</th>
+   * </tr>
+   * <tr>
+   * <td align="left">true</td>
+   * <td align="left">&nbsp;</td>
+   * <td align="left">no</td>
+   * <td align="left">&nbsp;</td>
+   * <td align="left">true</td>
+   * <td align="left">&nbsp;</td>
+   * <td align="left">false</td>
+   * </tr>
+   * <tr>
+   * <td align="left">true</td>
+   * <td align="left">&nbsp;</td>
+   * <td align="left">true</td>
+   * <td align="left">&nbsp;</td>
+   * <td align="left">true</td>
+   * <td align="left">&nbsp;</td>
+   * <td align="left">false</td>
+   * </tr>
+   * <tr>
+   * <td align="left">false</td>
+   * <td align="left">&nbsp;</td>
+   * <td align="left">no</td>
+   * <td align="left">&nbsp;</td>
+   * <td align="left">false</td>
+   * <td align="left">&nbsp;</td>
+   * <td align="left">true</td>
+   * </tr>
+   * <tr>
+   * <td align="left">false</td>
+   * <td align="left">&nbsp;</td>
+   * <td align="left">yes</td>
+   * <td align="left">&nbsp;</td>
+   * <td align="left">false</td>
+   * <td align="left">&nbsp;</td>
+   * <td align="left">true</td>
+   * </tr>
+   * <tr>
+   * <td align="left">not specified</td>
+   * <td align="left">&nbsp;</td>
+   * <td align="left">yes</td>
+   * <td align="left">&nbsp;</td>
+   * <td align="left">true</td>
+   * <td align="left">&nbsp;</td>
+   * <td align="left">false</td>
+   * </tr>
+   * <tr>
+   * <td align="left">not specified</td>
+   * <td align="left">&nbsp;</td>
+   * <td align="left">no</td>
+   * <td align="left">&nbsp;</td>
+   * <td align="left">true</td>
+   * <td align="left">&nbsp;</td>
+   * <td align="left">false</td>
+   * </tr>
+   * </table>
+   * 
+   * @param builder the document builder factory
+   * @param namespaceCtx the namespace context (might be null, but we pass it into the XPath constructor)
+   */
+  public static XPath newXPathInstance(DocumentBuilderFactoryBuilder builder, NamespaceContext namespaceCtx) {
+    // INTERLOK-2255
+    XPath xpathToUse = new XPath(namespaceCtx);
+    if (builder != null && BooleanUtils.isFalse(builder.getNamespaceAware())) {
+      xpathToUse = new XPath(namespaceCtx, XPathFactory.newInstance());
+    }
+    return xpathToUse;
+  }
+
+  /**
+   * @see XPath#newXPathInstance(DocumentBuilderFactoryBuilder, NamespaceContext)
+   */
+  public static XPath newXPathInstance(DocumentBuilderFactory builder, NamespaceContext namespaceCtx) {
+    // INTERLOK-2255
+    XPath xpathToUse = new XPath(namespaceCtx);
+    if (builder != null && !builder.isNamespaceAware()) {
+      xpathToUse = new XPath(namespaceCtx, XPathFactory.newInstance());
+    }
+    return xpathToUse;
   }
 
   static XPathFactory build(boolean useSaxon) {

@@ -166,6 +166,23 @@ public class XpathMetadataServiceTest extends MetadataServiceExample {
 
   }
 
+  public void testDoService_UsingXpathQuery_WithNamespaceContext_NotNamespaceAware() throws CoreException {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_WITH_NAMESPACE);
+    XpathMetadataService service = new XpathMetadataService();
+    service.setXpathQueries(new ArrayList<XpathQuery>(Arrays.asList(
+        new ConfiguredXpathQuery("failureCount", "count(/schematron-output/failed-assert)"))));
+    execute(service, msg);
+
+    // count(/schematron-output/failed-assert) will return 0; becaue Saxon failed
+    // like the mostly amusing thing that it is.
+    assertEquals("0", msg.getMetadataValue("failureCount"));
+
+    service.setXmlDocumentFactoryConfig(new DocumentBuilderFactoryBuilder().withNamespaceAware(false));
+    execute(service, msg);
+    assertTrue(msg.containsKey("failureCount"));
+    assertEquals("2", msg.getMetadataValue("failureCount"));
+  }
+
   @Override
   protected Object retrieveObjectForSampleConfig() {
     XpathMetadataService service = new XpathMetadataService();

@@ -29,6 +29,7 @@ import org.apache.commons.io.IOUtils;
 
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.util.stream.StreamUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -59,8 +60,8 @@ public class BytesMessageTranslator extends MessageTypeTranslatorImp {
   public Message translate(AdaptrisMessage msg) throws JMSException {
     BytesMessage jmsMsg = session.createBytesMessage();
     if (msg.getSize() > streamThreshold()) {
-      try (InputStream in = msg.getInputStream(); OutputStream out = new BytesMessageOutputStream(jmsMsg)) {
-        IOUtils.copy(in, out);
+      try {
+        StreamUtil.copyAndClose(msg.getInputStream(), new BytesMessageOutputStream(jmsMsg));
       }
       catch (IOException e) {
         throw JmsUtils.wrapJMSException(e);

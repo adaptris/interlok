@@ -76,7 +76,8 @@ public abstract class JdbcIteratingDataCaptureServiceImpl extends JdbcDataCaptur
     Connection conn = null;
     NamespaceContext namespaceCtx = SimpleNamespaceContext.create(getNamespaceContext(), msg);
     try {
-      XPath xpath = new XPath(namespaceCtx);
+      DocumentBuilderFactoryBuilder builder = documentFactoryBuilder();
+      XPath xpath = XPath.newXPathInstance(builder, namespaceCtx);
       conn = configureActor(msg).getSqlConnection();
       Document doc = createDocument(namespaceCtx, msg);
       NodeList nodes = nodesToProcess(doc, xpath);

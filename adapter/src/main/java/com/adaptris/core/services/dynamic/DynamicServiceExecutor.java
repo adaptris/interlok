@@ -92,9 +92,9 @@ public class DynamicServiceExecutor extends ServiceImp implements EventHandlerAw
       Service service = createService(msg);
       log.trace("Created service [{}]", friendlyName(service));
       LifecycleHelper.registerEventHandler(service, eventHandler);
-      LifecycleHelper.initAndStart(service);
+      LifecycleHelper.initAndStart(service, false);
       service.doService(msg);
-      LifecycleHelper.stopAndClose(service);
+      LifecycleHelper.stopAndClose(service, false);
     }
     catch (IOException | CoreException e) {
       throw ExceptionHelper.wrapServiceException(e);

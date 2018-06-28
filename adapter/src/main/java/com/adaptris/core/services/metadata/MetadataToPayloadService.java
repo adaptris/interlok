@@ -18,14 +18,12 @@ package com.adaptris.core.services.metadata;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.StringReader;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeUtility;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.ReaderInputStream;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -43,6 +41,7 @@ import com.adaptris.core.UnresolvedMetadataException;
 import com.adaptris.core.metadata.MetadataResolver;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.util.stream.StreamUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -164,9 +163,8 @@ public class MetadataToPayloadService extends ServiceImp {
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     // MimeUtility should return the original InputStream stream if getContentEncoding is null.
-    try (OutputStream out = msg.getOutputStream();
-        InputStream in = getEncoding().unwrap((getMetadataSource().getInputStream(msg, getKey())))) {
-      IOUtils.copy(in, out);
+    try {
+      StreamUtil.copyAndClose(getEncoding().unwrap((getMetadataSource().getInputStream(msg, getKey()))),  msg.getOutputStream());
     } catch (Exception e) {
       ExceptionHelper.rethrowServiceException(e);
     }

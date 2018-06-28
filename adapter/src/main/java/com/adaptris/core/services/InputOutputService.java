@@ -15,11 +15,6 @@
 */
 package com.adaptris.core.services;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import org.apache.commons.io.IOUtils;
-
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -27,6 +22,7 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.lms.ZipFileBackedMessageFactory;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.util.stream.StreamUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -45,8 +41,8 @@ public class InputOutputService extends ServiceImp {
 
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    try (InputStream in = msg.getInputStream(); OutputStream out = msg.getOutputStream()){
-      IOUtils.copy(in, out);
+    try {
+      StreamUtil.copyAndClose(msg.getInputStream(), msg.getOutputStream());
     }
     catch (Exception e) {
       throw ExceptionHelper.wrapServiceException(e);

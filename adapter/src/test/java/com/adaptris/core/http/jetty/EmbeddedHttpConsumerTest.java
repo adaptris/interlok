@@ -359,7 +359,8 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
     }
   }
 
-  protected void doAssertions(MockMessageProducer mockProducer) {
+  protected void doAssertions(MockMessageProducer mockProducer) throws Exception {
+    waitForMessages(mockProducer, 1);
     assertEquals("Only 1 message consumed", 1, mockProducer.getMessages().size());
     assertEquals("Consumed Payload", XML_PAYLOAD, mockProducer.getMessages().get(0).getContent());
     Map objMetadata = mockProducer.getMessages().get(0).getObjectHeaders();

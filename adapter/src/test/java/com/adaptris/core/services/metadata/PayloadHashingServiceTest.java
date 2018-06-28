@@ -25,6 +25,8 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.stubs.DefectiveMessageFactory;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.text.Base64ByteTranslator;
+import com.adaptris.util.text.ByteTranslator;
+import com.adaptris.util.text.HexStringByteTranslator;
 
 @SuppressWarnings("deprecation")
 public class PayloadHashingServiceTest extends MetadataServiceExample {
@@ -61,7 +63,7 @@ public class PayloadHashingServiceTest extends MetadataServiceExample {
     assertTrue(msg.containsKey(METADATA_KEY));
     assertEquals(PAYLOAD, msg.getContent());
     assertNotNull(msg.getMetadataValue(METADATA_KEY));
-    assertEquals(createHash(), msg.getMetadataValue(METADATA_KEY));
+    assertEquals(createHash(new Base64ByteTranslator()), msg.getMetadataValue(METADATA_KEY));
   }
 
   public void testServiceException() throws Exception {
@@ -76,13 +78,24 @@ public class PayloadHashingServiceTest extends MetadataServiceExample {
     }
   }
 
-  private String createHash() throws Exception {
+  public void testService_WithByteTranslator() throws Exception {
+    PayloadHashingService service = new PayloadHashingService(SHA256, METADATA_KEY);
+    service.setByteTranslator(new HexStringByteTranslator());
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD);
+    execute(service, msg);
+    assertTrue(msg.containsKey(METADATA_KEY));
+    assertEquals(PAYLOAD, msg.getContent());
+    assertNotNull(msg.getMetadataValue(METADATA_KEY));
+    assertEquals(createHash(new HexStringByteTranslator()), msg.getMetadataValue(METADATA_KEY));
+  }
+
+  private String createHash(ByteTranslator b) throws Exception {
     MessageDigest digest = MessageDigest.getInstance(SHA256);
-    return new Base64ByteTranslator().translate(digest.digest(PAYLOAD.getBytes()));
+    return b.translate(digest.digest(PAYLOAD.getBytes()));
   }
 
   @Override
-  protected Object retrieveObjectForSampleConfig() {
+  protected PayloadHashingService retrieveObjectForSampleConfig() {
     return new PayloadHashingService(SHA256, METADATA_KEY);
   }
 

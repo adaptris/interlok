@@ -15,6 +15,7 @@
 */
 
 package com.adaptris.core.mail.attachment;
+import static com.adaptris.util.text.xml.XPath.newXPathInstance;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -23,7 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.mail.internet.MimeUtility;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.xml.namespace.NamespaceContext;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
@@ -35,6 +38,7 @@ import org.w3c.dom.NodeList;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.IdGenerator;
 import com.adaptris.util.KeyValuePairSet;
@@ -45,10 +49,14 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Handle attachments for {@link MultiAttachmentSmtpProducer}.
+ * <p>
+ * If the {@code DocumentBuilderFactoryBuilder} has been explicitly set to be not namespace aware and the document does in fact
+ * contain namespaces, then Saxon can cause merry havoc in the sense that {@code //NonNamespaceXpath} doesn't work if the document
+ * has namespaces in it. We have included a shim so that behaviour can be toggled based on what you have configured.
+ * </p>
  * 
+ * @see XPath#newXPathInstance(DocumentBuilderFactoryBuilder, NamespaceContext)
  * @config mail-xml-attachment-handler
- * @author lchan
- * @author $Author: lchan $
  */
 @XStreamAlias("mail-xml-attachment-handler")
 @DisplayOrder(order = {"xpath", "filenameXpath", "encodingXpath", "namespaceContext"})
@@ -66,6 +74,9 @@ public class XmlAttachmentHandler implements AttachmentHandler {
   private transient IdGenerator idGenerator = null;
   @AdvancedConfig
   private KeyValuePairSet namespaceContext;
+  @AdvancedConfig
+  @Valid
+  private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 
   private transient Logger logR = LoggerFactory.getLogger(this.getClass().getName());
 
@@ -118,7 +129,8 @@ public class XmlAttachmentHandler implements AttachmentHandler {
 
   @Override
   public List<MailAttachment> resolve(Document doc) throws Exception {
-    XPath x = new XPath(SimpleNamespaceContext.create(getNamespaceContext()));
+    DocumentBuilderFactoryBuilder builder = documentFactoryBuilder();
+    XPath x = newXPathInstance(builder, SimpleNamespaceContext.create(getNamespaceContext()));
     List<MailAttachment> result = new ArrayList<MailAttachment>();
     logR.trace("Resolving {}", getXpath());
     NodeList nl = x.selectNodeList(doc, getXpath());
@@ -216,5 +228,17 @@ public class XmlAttachmentHandler implements AttachmentHandler {
   public XmlAttachmentHandler withAttachmentEncoding(String s) {
     setAttachmentEncoding(s);
     return this;
+  }
+
+  public DocumentBuilderFactoryBuilder getXmlDocumentFactoryConfig() {
+    return xmlDocumentFactoryConfig;
+  }
+
+  public void setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder xml) {
+    this.xmlDocumentFactoryConfig = xml;
+  }
+
+  DocumentBuilderFactoryBuilder documentFactoryBuilder() {
+    return DocumentBuilderFactoryBuilder.newInstance(getXmlDocumentFactoryConfig());
   }
 }

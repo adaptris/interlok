@@ -29,7 +29,6 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.EntityResolver;
@@ -40,6 +39,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.util.URLHelper;
 import com.adaptris.util.URLString;
+import com.adaptris.util.stream.StreamUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -70,11 +70,10 @@ public class Resolver implements EntityResolver, URIResolver {
     String key = url.toString();
     InputStream result = null;
     if (!hm.containsKey(key)) {
-      try (InputStream input = URLHelper.connect(url); ByteArrayOutputStream output = new ByteArrayOutputStream()) {
-        IOUtils.copy(input, output);
-        hm.put(key, output);
-        result = new ByteArrayInputStream(output.toByteArray());
-      }
+      ByteArrayOutputStream output = new ByteArrayOutputStream();
+      StreamUtil.copyAndClose(URLHelper.connect(url), output);
+      hm.put(key, output);
+      result = new ByteArrayInputStream(output.toByteArray());
     }
     else {
       debugLog("Resolve from cache {}", key);
