@@ -12,7 +12,7 @@
     <property name="project.name" value="interlok-boot"/>
     <property name="project.jar.name" value="${project.name}.jar"/>
     <property name="ivy.publish.bundle.type" value="jar"/>
-    <property name="ivy.publish.revision" value="3.7-SNAPSHOT"/>
+    <property name="ivy.publish.revision" value="3.8-SNAPSHOT"/>
     <property name="ivy.dir" value="${basedir}/../ivy"/>
     <property name="ivy.xml.file" value="${ivy.dir}/ivy-boot.xml"/>
     <property name="ivy.artifact.publish.status" value="integration"/>

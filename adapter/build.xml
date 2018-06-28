@@ -40,7 +40,7 @@
     </patternset>
 
     <!-- Apache Ivy -->
-    <property name="ivy.publish.revision"   value="3.7-SNAPSHOT"/>
+    <property name="ivy.publish.revision"   value="3.8-SNAPSHOT"/>
     <property name="ivy.artifact.publish.status" value="integration"/>
     <property name="ivy.dir" value="${basedir}/../ivy"/>
     <property name="ivy.xml.file" value="${ivy.dir}/ivy-adapter.xml"/>
@@ -502,7 +502,7 @@
     </zip>
     <jar jarfile="${project.dist.dir}/${project.name}/examples/${project.name}.jar">
       <fileset dir="${example-xml.build.dir}"/>
-    </jar>    
+    </jar>
     <mkdir dir="${project.dist.dir}/adp-core/source"/>
     <jar jarfile="${project.dist.dir}/${project.name}/source/${project.name}.jar">
       <fileset dir="${src.dir}"/>
