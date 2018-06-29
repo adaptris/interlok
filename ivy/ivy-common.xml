@@ -23,7 +23,7 @@
      <artifact type="source" ext="jar" conf="sources" m:classifier="sources"/>
   </publications>
   <dependencies>
-    <dependency org="com.adaptris" name="adp-core-apt" rev="${ivy.publish.revision}" conf="compile->default;ant->default" changing="true"/>
+    <dependency org="com.adaptris" name="interlok-core-apt" rev="${ivy.publish.revision}" conf="compile->default;ant->default" changing="true"/>
     <dependency org="com.thoughtworks.xstream" name="xstream" conf="compile->default" rev="1.4.10" transitive="false"/>
 
     <dependency org="commons-collections" name="commons-collections"  rev="3.2.2" conf="compile->default" />

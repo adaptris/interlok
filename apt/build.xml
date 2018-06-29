@@ -8,7 +8,7 @@
   <import file="${basedir}/../ivy/ant-ivy-includes.xml"/>
 
   <target name="init">
-    <property name="project.name" value="adp-core-apt"/>
+    <property name="project.name" value="interlok-core-apt"/>
     <property name="project.jar.name" value="${project.name}.jar"/>
     <property name="ivy.publish.bundle.type" value="jar"/>
     <property name="ivy.publish.revision" value="3.8-SNAPSHOT"/>

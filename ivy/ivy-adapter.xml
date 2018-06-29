@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="com.adaptris" module="adp-core" revision="${ivy.publish.revision}" status="release" publication="20130530121354"/>
+  <info organisation="com.adaptris" module="interlok-core" revision="${ivy.publish.revision}" status="release" publication="20130530121354"/>
   <configurations>
     <conf name="default" visibility="public" description="runtime dependencies and master artifact can be used with this conf" extends="runtime,master"/>
     <conf name="master" visibility="public" description="contains only the artifact published by this module itself, with no transitive dependencies"/>
@@ -16,8 +16,8 @@
     <conf name="ant" visibility="private" description="Scope for downloading various jars required to support the build.xml"/>
   </configurations>
   <publications>
-     <artifact name="adp-core" type="jar" ext="jar" conf="*"/>
-     <artifact name="adp-core" type="pom" ext="pom" conf="*"/>
+     <artifact name="interlok-core" type="jar" ext="jar" conf="*"/>
+     <artifact name="interlok-core" type="pom" ext="pom" conf="*"/>
 
 
      <artifact type="javadoc" ext="jar" conf="javadoc" m:classifier="javadoc"/>
@@ -28,7 +28,7 @@
     <dependency org="com.thoughtworks.xstream" name="xstream" rev="1.4.10"  conf="compile->default"  transitive="false"/>
     <dependency org="org.codehaus.jettison" name="jettison" rev="1.2"  conf="compile->default"  transitive="false"/>
     <dependency org="org.apache.velocity" name="velocity" rev="1.7" conf="compile->default" transitive="false"/>
-    <dependency org="com.adaptris" name="adp-core-apt" rev="${ivy.publish.revision}" conf="compile->default;ant->default" changing="true"/>
+    <dependency org="com.adaptris" name="interlok-core-apt" rev="${ivy.publish.revision}" conf="compile->default;ant->default" changing="true"/>
     <dependency org="com.adaptris" name="interlok-common" rev="${ivy.publish.revision}" conf="compile->default;javadoc->javadoc" changing="true"/>
 
     <!-- switch to fast-classpath-scanner

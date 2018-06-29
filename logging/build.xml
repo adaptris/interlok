@@ -91,7 +91,7 @@
       <fileset dir="${api.doc.dir}"/>
     </jar>
     <ivy:makepom ivyfile="${ivy.xml.file}" pomfile="${project.dist.dir}/${project.name}/pom/${project.name}.pom" description="${project.pom.description}"  conf="default,master,compile,provided,runtime,test,system,sources,javadoc,optional"/>
-    <mkdir dir="${project.dist.dir}/adp-core/source"/>
+    <mkdir dir="${project.dist.dir}/interlok-logging/source"/>
     <jar jarfile="${project.dist.dir}/${project.name}/source/${project.name}.jar">
       <fileset dir="${src.dir}"/>
       <zipfileset dir="${basedir}/.." prefix="META-INF">
