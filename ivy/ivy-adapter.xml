@@ -102,7 +102,7 @@
 
     <!-- Jars required for testing only -->
     <dependency org="com.icegreen" name="greenmail" rev="1.4.0" conf="test->default"/>
-    <dependency org="org.apache.derby" name="derby" rev="10.10.1.1" conf="runtime->default"/>
+    <dependency org="org.apache.derby" name="derby" rev="10.14.2.0" conf="runtime->default"/>
     <dependency org="org.mockito" name="mockito-all" rev="1.9.5" conf="test->default"/>
     <dependency org="mysql" name="mysql-connector-java" rev="5.1.40" conf="test->default"/>
 
