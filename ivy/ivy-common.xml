@@ -39,7 +39,7 @@
 
     <dependency org="log4j" name="log4j" rev="1.2.17" force="true" conf="test->default;ant->default"/>
 
-    <dependency org="org.eclipse.jetty.aggregate" name="jetty-all" rev="9.4.8.v20171121" conf="compile->default"/>
+    <dependency org="org.eclipse.jetty.aggregate" name="jetty-all" rev="9.4.11.v20180605" conf="compile->default"/>
     <dependency org="javax.servlet" name="javax.servlet-api" rev="3.1.0" conf="compile->default"/>
 
     <dependency org="junit" name="junit" rev="4.11" conf="test->default"/>
