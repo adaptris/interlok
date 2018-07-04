@@ -106,7 +106,7 @@ dependencies {
   testCompile ("com.icegreen:greenmail:1.4.0")
   testCompile ("org.mockito:mockito-all:1.9.5")
   testCompile ("mysql:mysql-connector-java:5.1.40")
-  testCompile ("org.apache.derby:derby:10.10.1.1")
+  testCompile ("org.apache.derby:derby:10.14.2.0")
 
   javadoc("com.adaptris:adp-core-apt:$adpCoreVersion") { changing= true}
 
