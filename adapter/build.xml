@@ -180,6 +180,8 @@
     <propertyfile file="${classes.build.dir}/META-INF/adaptris-version">
       <entry key="component.name" value="Base Interlok"/>
       <entry key="build.version" value="${ivy.publish.revision}"/>
+      <entry key="groupId" value="com.adaptris"/>
+      <entry key="artifactId" value="interlok-core"/>
       <entry key="build.date" value="${today}"/>
     </propertyfile>
   </target>

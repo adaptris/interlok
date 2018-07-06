@@ -1603,6 +1603,27 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  public void testMBean_getArtifactIdentifiers() throws Exception {
+    String adapterName = this.getClass().getSimpleName() + "." + getName();
+    Adapter adapter = createAdapter(adapterName);
+    Channel newChannel1 = createChannel(getName() + "_1");
+    adapter.getChannelList().add(newChannel1);
+    AdapterManager adapterManager = new AdapterManager(adapter);
+    ObjectName adapterObj = adapterManager.createObjectName();
+    List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
+    mBeans.add(adapterManager);
+    mBeans.addAll(adapterManager.getAllDescendants());
+    try {
+      register(mBeans);
+      AdapterManagerMBean adapterManagerProxy = JMX.newMBeanProxy(mBeanServer, adapterObj, AdapterManagerMBean.class);
+      assertNotNull(adapterManagerProxy.getArtifactIdentifiers());
+      // Should be 3 in the versions
+      // The version for adp-core-apt.jar and adp-core.jar and interlok-common.
+      assertEquals(3, adapterManagerProxy.getArtifactIdentifiers().size());
+    } finally {
+    }
+  }
+
   public void testMBean_NotificationOnInit() throws Exception {
 
     String adapterName = this.getClass().getSimpleName() + "." + getName();

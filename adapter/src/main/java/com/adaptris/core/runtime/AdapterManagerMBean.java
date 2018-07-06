@@ -215,6 +215,13 @@ public interface AdapterManagerMBean extends AdapterComponentMBean, ParentRuntim
   public List<String> getModuleVersions();
 
   /**
+   * Get a list of all the modules currently installed for this adapter.
+   * 
+   * @return list of {@code groupId:artifactId:version}.
+   */
+  public List<String> getArtifactIdentifiers();
+
+  /**
    * Send an {@link AdapterLifecycleEvent} to any configured event handlers.
    * 
    * @param event the {@link AdapterLifecycleEvent} to send.

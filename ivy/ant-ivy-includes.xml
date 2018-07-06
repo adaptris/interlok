@@ -81,13 +81,17 @@
     <macrodef name="create-version" uri="uri:interlok">
       <attribute name="dir" default="${build.classes.dir}/META-INF"/>
       <attribute name="name"/>
+      <attribute name="groupId" default="com.adaptris"/>
+      <attribute name="artifactId"/>
       <attribute name="version" default="${ivy.publish.revision}"/>
       <attribute name="date" default="${today}"/>
       <sequential>
         <mkdir dir="@{dir}"/>
         <propertyfile file="@{dir}/adaptris-version">
-          <entry key="component.name" value="${manifest.title}"/>
+          <entry key="component.name" value="@{name}"/>
           <entry key="build.version" value="@{version}"/>
+          <entry key="groupId" value="@{groupId}"/>
+          <entry key="artifactId" value="@{artifactId}"/>
           <entry key="build.date" value="@{date}"/>
         </propertyfile>
       </sequential>

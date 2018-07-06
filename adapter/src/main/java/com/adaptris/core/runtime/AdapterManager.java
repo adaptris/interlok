@@ -67,6 +67,7 @@ public class AdapterManager extends ComponentManagerImpl<Adapter> implements Ada
   private transient ObjectName myObjectName = null;
   private String adapterBuildVersion;
   private List<String> adapterModules = new ArrayList<String>();
+  private List<String> adapterArtifacts = new ArrayList<String>();
 
   private AdapterManager() {
     super();
@@ -100,9 +101,8 @@ public class AdapterManager extends ComponentManagerImpl<Adapter> implements Ada
   private void initVersionInfo() {
     VersionReport v = VersionReport.getInstance();
     adapterBuildVersion = v.getAdapterBuildVersion();
-    for (String s : v.getReport()) {
-      adapterModules.add(s);
-    }
+    adapterModules.addAll(v.getReport());
+    adapterArtifacts.addAll(v.getArtifactIdentifiers());
   }
 
   private void registerChildRuntime(AdaptrisComponent c) throws CoreException {
@@ -474,6 +474,11 @@ public class AdapterManager extends ComponentManagerImpl<Adapter> implements Ada
   @Override
   public List<String> getModuleVersions() {
     return new ArrayList<String>(adapterModules);
+  }
+
+  @Override
+  public List<String> getArtifactIdentifiers() {
+    return new ArrayList<String>(adapterArtifacts);
   }
 
   @Override

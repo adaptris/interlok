@@ -79,7 +79,7 @@
   </target>
 
   <target name="jar" depends="compile">
-    <interlok:create-version dir="${build.classes.dir}/META-INF" name="${manifest.title}"/>
+    <interlok:create-version dir="${build.classes.dir}/META-INF" name="${manifest.title}"  artifactId="interlok-common"/>
     <interlok:create-manifest file="${build.dir}/Manifest.mf" title="${manifest.title}"/>
     <copy todir="${build.classes.dir}" overwrite="true">
       <fileset dir="${resources.dir}/jar"/>
