@@ -68,7 +68,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
   // If we have %message{key1}%message{key2} group(1) is key2
   // Which is then replaced so it all works out int the end.
-  private static final String RESOLVE_REGEXP = "^.*%message\\{([\\w!\\$\"#&'\\*\\+,\\-\\.:=]+)\\}.*$";
+  private static final String RESOLVE_REGEXP = "^.*%message\\{([\\w!\\$\"#&%'\\*\\+,\\-\\.:=]+)\\}.*$";
 
   private transient Logger log = LoggerFactory.getLogger(AdaptrisMessage.class);
   private transient Pattern resolverPattern = Pattern.compile(RESOLVE_REGEXP);
@@ -84,6 +84,37 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   private Map<Object, Object> objectMetadata;
   private String nextServiceId;
   private AdaptrisMessageFactory factory;
+
+  private enum Resolvers {
+    UniqueId {
+
+      @Override
+      String resolve(String key, AdaptrisMessage msg) {
+        if ("%uniqueId".equalsIgnoreCase(key)) {
+          return msg.getUniqueId();
+        }
+        return null;
+      }
+    },
+    Size {
+      @Override
+      String resolve(String key, AdaptrisMessage msg) {
+        if ("%size".equalsIgnoreCase(key)) {
+          return String.valueOf(msg.getSize());
+        }
+        return null;
+      }
+    },
+    Metadata {
+      @Override
+      String resolve(String key, AdaptrisMessage msg) {
+        return msg.getMetadataValue(key);
+      }
+      
+    };
+    
+    abstract String resolve(String key, AdaptrisMessage msg);
+  }
 
   private AdaptrisMessageImp() {
 
@@ -399,19 +430,29 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     Matcher m = resolverPattern.matcher(s);
     while (m.matches()) {
       String key = m.group(1);
-      // Optional<String> metadataValue = (Optional<String>) Optional.ofNullable(getMetadataValue(key));
-      // metadataValue.orElseThrow(() -> new UnableToResolveMetadataException("Could not resolve " + key));
-      // String toReplace = "%message{" + key + "}";
-      // result = result.replace(toReplace, metadataValue.get());
-      String metadataValue = getMetadataValue(key);
+      String metadataValue = internalResolve(key);
+      // Optional<String> metadataValue = (Optional<String>) Optional.ofNullable(internalResolve(key));
       if (metadataValue == null) {
-        throw new UnresolvedMetadataException("Could not resolve [" + key + "] from metadata");
+        throw new UnresolvedMetadataException("Could not resolve [" + key + "] as metadata/uniqueId/size");
       }
       String toReplace = "%message{" + key + "}";
       result = result.replace(toReplace, metadataValue);
+      // result = result.replace(toReplace, metadataValue
+      // .orElseThrow(() -> new UnresolvedMetadataException("Could not resolve [" + key + "] as metadata/uniqueId/size")));
       m = resolverPattern.matcher(result);
     }
     return result;
+  }
+
+  private String internalResolve(String key) {
+    String value = null;
+    for (Resolvers r : Resolvers.values()) {
+      value = r.resolve(key, this);
+      if (value != null) {
+        break;
+      }
+    }
+    return value;
   }
 
   private MleMarker getNextMleMarker(MessageEventGenerator meg, boolean successful, String confId) {
