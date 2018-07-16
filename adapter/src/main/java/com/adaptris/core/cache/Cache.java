@@ -37,14 +37,21 @@ public interface Cache extends ComponentLifecycle {
   void put(String key, Serializable value) throws CoreException;
 
   /**
-   * Puts any object into the cache. Not guaranteed to be supported by all cache implementations as some persistent caches require
-   * serialization.
+   * Puts any object into the cache.
+   * <p>
+   * Not guaranteed to be supported by all cache implementations as some persistent caches require serialization.
+   * </p>
    * 
    * @param key key to store the value against
    * @param value value to be stored
+   * @implSpec The default implementation throws an instance of {@link UnsupportedOperationException} and performs no other action.
+   * @throws UnsupportedOperationException if the {@code put(String,Object)} operation is not supported by this cache instance
    * @throws CoreException if there was an exception accessing the cache.
    */
-  void put(String key, Object value) throws CoreException;
+  default void put(String key, Object value) throws CoreException {
+    throw new UnsupportedOperationException("put(String,Object)");
+
+  }
 
   /**
    * Retrieves an object from the cache
@@ -64,24 +71,35 @@ public interface Cache extends ComponentLifecycle {
   void remove(String key) throws CoreException;
 
   /**
-   * Retrieves a java.util.List of all the keys in the cache
+   * Retrieves a List of all the keys in the cache
    * 
-   * @return a java.util.List of all the keys in the cache
+   * @implSpec The default implementation throws an instance of {@link UnsupportedOperationException} and performs no other action.
+   * @throws UnsupportedOperationException if the {@code getKeys} operation is not supported by this cache instance
+   * @return a List<String> of all the keys in the cache
    * @throws CoreException if there was an exception accessing the cache.
    */
-  List<String> getKeys() throws CoreException;
+  default List<String> getKeys() throws CoreException {
+    throw new UnsupportedOperationException("getKeys");
+  }
 
   /**
    * Clears all entries from the cache
    * 
+   * @implSpec The default implementation throws an instance of {@link UnsupportedOperationException} and performs no other action.
+   * @throws UnsupportedOperationException if the {@code clear} operation is not supported by this cache instance
    * @throws CoreException if there was an exception accessing the cache.
    */
-  void clear() throws CoreException;
-
+  default void clear() throws CoreException {
+    throw new UnsupportedOperationException("clear");
+  }
   /**
    * @return the number of items in the cache
+   * @implSpec The default implementation throws an instance of {@link UnsupportedOperationException} and performs no other action.
+   * @throws UnsupportedOperationException if the {@code size} operation is not supported by this cache instance
    * @throws CoreException if there was an exception accessing the cache.
    */
-  int size() throws CoreException;
+  default int size() throws CoreException {
+    throw new UnsupportedOperationException("size");
+  }
 
 }
