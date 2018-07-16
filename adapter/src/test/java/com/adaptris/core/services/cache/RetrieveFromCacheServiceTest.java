@@ -18,10 +18,6 @@ public class RetrieveFromCacheServiceTest extends CacheServiceBaseCase {
   static final String LOOKUP_VALUE = "lookupValue";
   static final String LOOKED_UP_VALUE = "lookedUpValue";
 
-  public RetrieveFromCacheServiceTest(String name) {
-    super(name);
-  }
-
   public void testSetExceptionIfNotFound() {
     RetrieveFromCacheService service = createServiceForTests();
     assertNull(service.getExceptionIfNotFound());

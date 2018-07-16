@@ -1,14 +1,14 @@
 package com.adaptris.core.services.cache;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
+import com.adaptris.core.Service;
 import com.adaptris.core.cache.Cache;
 import com.adaptris.core.cache.ExpiringMapCache;
 import com.adaptris.core.cache.NullCacheImplementation;
@@ -19,9 +19,8 @@ import com.adaptris.util.TimeInterval;
 import net.jodah.expiringmap.ExpirationPolicy;
 
 public abstract class CacheServiceBaseCase extends CacheServiceExample {
-  protected static final String HYPHEN = "-";
 
-  protected enum CacheImps {
+  protected enum CacheImps implements CacheExampleImplementation {
 
     ExpiringMapCache() {
       @Override
@@ -60,15 +59,7 @@ public abstract class CacheServiceBaseCase extends CacheServiceExample {
 
     };
 
-    public abstract Cache createCacheImplementation();
-
-    public abstract String getXmlHeader();
-
     public abstract boolean matches(Cache impl);
-  }
-
-  public CacheServiceBaseCase(String s) {
-    super(s);
   }
 
   protected AdaptrisMessage createMessage(String payload, Collection<MetadataElement> metadata) {
@@ -79,7 +70,6 @@ public abstract class CacheServiceBaseCase extends CacheServiceExample {
     return msg;
   }
 
-  protected abstract CacheServiceBase createServiceForExamples();
 
   protected abstract CacheServiceBase createService();
 
@@ -144,7 +134,8 @@ public abstract class CacheServiceBaseCase extends CacheServiceExample {
     return new ExpiringMapCache().withMaxEntries(10).withExpiration(new TimeInterval(10L, TimeUnit.SECONDS));
   }
 
-  protected CacheImps getCacheImp(CacheServiceBase service) {
+  @Override
+  protected CacheExampleImplementation getImplementation(CacheServiceBase service) {
     CacheImps result = null;
     for (CacheImps sort : CacheImps.values()) {
       if (sort.matches(((CacheConnection) service.getConnection()).getCacheInstance())) {
@@ -155,32 +146,21 @@ public abstract class CacheServiceBaseCase extends CacheServiceExample {
     return result;
   }
 
+  protected abstract Service createServiceForExamples();
+
   @Override
-  protected Object retrieveObjectForSampleConfig() {
-    return null;
+  protected Iterable<CacheExampleImplementation> getExampleCacheImplementations() {
+    return Arrays.asList(CacheImps.values());
   }
 
   @Override
-  protected List<CacheServiceBase> retrieveObjectsForSampleConfig() {
-    List<CacheServiceBase> result = new ArrayList<CacheServiceBase>();
-    for (CacheImps c : CacheImps.values()) {
-      CacheServiceBase service = createServiceForExamples();
-      service.setConnection(new CacheConnection(c.createCacheImplementation()));
-      result.add(service);
-    }
-    return result;
-  }
+  protected Iterable<CacheExampleServiceGenerator> getExampleGenerators() {
+    return Arrays.asList(new CacheExampleServiceGenerator() {
 
-  @Override
-  protected String getExampleCommentHeader(Object object) {
-    return super.getExampleCommentHeader(object) + getCacheImp((CacheServiceBase) object).getXmlHeader();
+      @Override
+      public Service createExampleService() {
+        return createServiceForExamples();
+      };
+    });
   }
-
-  @Override
-  protected String createBaseFileName(Object object) {
-    CacheServiceBase p = (CacheServiceBase) object;
-    return super.createBaseFileName(object) + HYPHEN
-        + ((CacheConnection) p.getConnection()).getCacheInstance().getClass().getSimpleName();
-  }
-
 }

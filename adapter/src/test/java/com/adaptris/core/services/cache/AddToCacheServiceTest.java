@@ -25,10 +25,6 @@ public class AddToCacheServiceTest extends CacheServiceBaseCase {
   private static final String SRC_KEY = "srcKey";
   private static final String SRC_VALUE = "srcValue";
 
-  public AddToCacheServiceTest(String name) {
-    super(name);
-  }
-
   public void testEnforceSerializable() throws Exception {
     AddToCacheService service = createService();
     assertNull(service.getEnforceSerializable());

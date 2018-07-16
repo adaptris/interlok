@@ -7,10 +7,6 @@ import com.adaptris.core.MetadataElement;
 import com.adaptris.core.cache.Cache;
 
 public class RemoveFromCacheServiceTest extends RetrieveFromCacheServiceTest {
-  public RemoveFromCacheServiceTest(String name) {
-    super(name);
-  }
-
 
   @Override
   public void testDoService() throws Exception {

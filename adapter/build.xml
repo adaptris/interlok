@@ -223,6 +223,7 @@
         <include name="**/core/jms/**/JndiImplementationCase*"/>
         <include name="**/core/jms/ActiveJmsConnectionErrorHandlerCase*"/>
         <include name="**/core/transform/TransformServiceExample*"/>
+	<include name="**/core/services/cache/*Example*"/>
         <include name="**/core/jdbc/JdbcServiceCase*"/>
         <include name="**/core/runtime/ComponentManagerCase*"/>
         <include name="**/stubs/**"/>
