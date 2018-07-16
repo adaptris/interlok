@@ -65,7 +65,7 @@
 
     <dependency org="oro" name="oro" rev="2.0.8" conf="compile->default" />
 
-    <dependency org="com.sun.mail" name="javax.mail" rev="1.5.6" conf="compile->default"/>
+    <dependency org="com.sun.mail" name="javax.mail" rev="1.6.1" conf="compile->default"/>
 
     <dependency org="org.glassfish.external" name="opendmk_jmxremote_optional_jar" rev="1.0-b01-ea" conf="compile->default"/>
     <dependency org="org.glassfish.external" name="opendmk_jdmkrt_jar" rev="1.0-b01-ea" conf="compile->default"/>
