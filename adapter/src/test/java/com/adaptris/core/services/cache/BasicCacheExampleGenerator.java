@@ -21,6 +21,7 @@ import java.util.Arrays;
 import com.adaptris.core.BranchingServiceCollection;
 import com.adaptris.core.jms.JmsConstants;
 import com.adaptris.core.services.LogMessageService;
+import com.adaptris.core.services.cache.CacheServiceExample.CacheExampleServiceGenerator;
 import com.adaptris.core.services.cache.translators.JmsReplyToCacheValueTranslator;
 import com.adaptris.core.services.cache.translators.MetadataCacheValueTranslator;
 import com.adaptris.core.services.cache.translators.ObjectMetadataCacheValueTranslator;
@@ -28,6 +29,16 @@ import com.adaptris.core.services.cache.translators.StringPayloadCacheTranslator
 import com.adaptris.core.services.cache.translators.XpathCacheValueTranslator;
 
 public abstract class BasicCacheExampleGenerator {
+
+  public static Iterable<CacheExampleServiceGenerator> generators() {
+    return Arrays.asList(
+        () -> { return createAddToCacheService(); },
+        () -> { return createRetrieveFromCache(); },
+        () -> { return createRemoveFromCache(); },
+        () -> { return createCheckCache(); },
+        () -> { return createCheckAndRetrieveCache(); }
+    );
+  }
 
   public static AddToCacheService createAddToCacheService() {
     AddToCacheService service = new AddToCacheService();

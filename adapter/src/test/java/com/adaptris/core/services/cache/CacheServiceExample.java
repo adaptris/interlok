@@ -80,6 +80,7 @@ public abstract class CacheServiceExample extends ServiceCase {
 
   }
 
+  @FunctionalInterface
   public interface CacheExampleServiceGenerator {
     Service createExampleService();
   }
