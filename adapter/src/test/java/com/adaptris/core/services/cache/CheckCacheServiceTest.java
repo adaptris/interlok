@@ -1,13 +1,11 @@
 package com.adaptris.core.services.cache;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.BranchingServiceCollection;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.cache.ExpiringMapCache;
-import com.adaptris.core.services.LogMessageService;
 import com.adaptris.core.services.cache.translators.MetadataCacheValueTranslator;
 
 public class CheckCacheServiceTest extends CacheServiceBaseCase {
@@ -83,26 +81,6 @@ public class CheckCacheServiceTest extends CacheServiceBaseCase {
 
   @Override
   protected BranchingServiceCollection createServiceForExamples() {
-    BranchingServiceCollection result = new BranchingServiceCollection();
-    CheckCacheService cacheService = new CheckCacheService();
-    CacheEntryEvaluator eval1 = new CacheEntryEvaluator();
-    CacheEntryEvaluator eval2 = new CacheEntryEvaluator();
-
-    eval1.setKeyTranslator(new MetadataCacheValueTranslator("A_MetadataKey_Whose_Value_Makes_The_Cache_Key"));
-
-    eval2.setKeyTranslator(new MetadataCacheValueTranslator("Another_MetadataKey_Whose_Value_Makes_The_Cache_Key"));
-
-    cacheService.setCacheEntryEvaluators(new ArrayList(Arrays.asList(new CacheEntryEvaluator[]
-    {
-        eval1, eval2
-    })));
-    cacheService.setKeysFoundServiceId("AllKeysFoundInCache");
-    cacheService.setKeysNotFoundServiceId("Not_All_Keys_In_Cache");
-    cacheService.setUniqueId("checkCache");
-    result.setFirstServiceId("checkCache");
-    result.addService(cacheService);
-    result.addService(new LogMessageService("AllKeysFoundInCache"));
-    result.addService(new LogMessageService("Not_All_Keys_In_Cache"));
-    return result;
+    return BasicCacheExampleGenerator.createCheckCache();
   }
 }

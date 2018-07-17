@@ -609,4 +609,10 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
     this.lookupName = lookupName;
   }
 
+  public <T extends ServiceCollection> T withServices(Service... services) {
+    for (Service s : services) {
+      add(s);
+    }
+    return (T) this;
+  }
 }

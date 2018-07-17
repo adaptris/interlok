@@ -40,4 +40,9 @@ public class RemoveFromCacheServiceTest extends RetrieveFromCacheServiceTest {
   protected RemoveFromCacheService createService() {
     return new RemoveFromCacheService();
   }
+
+  @Override
+  protected RemoveFromCacheService createServiceForExamples() {
+    return BasicCacheExampleGenerator.createRemoveFromCache();
+  }
 }
