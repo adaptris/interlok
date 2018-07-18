@@ -17,8 +17,6 @@ script: ant -Divy.logging=default test
 addons:
   apt:
     packages:
-      - oracle-java8-installer
-      - oracle-java8-unlimited-jce-policy
       - haveged
       - ant-optional
 
@@ -29,7 +27,7 @@ after_success:
   - bash <(curl -s https://codecov.io/bash)
 
 jdk:
-  - oraclejdk8
+  - openjdk8
 
 services:
   - mysql
