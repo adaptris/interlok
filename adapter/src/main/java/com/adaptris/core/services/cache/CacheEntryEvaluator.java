@@ -206,7 +206,6 @@ public class CacheEntryEvaluator {
 
     @Override
     public void addValueToMessage(AdaptrisMessage msg, Object value) throws CoreException {
-      return;
     }
   }
 }

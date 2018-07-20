@@ -109,7 +109,6 @@ public abstract class StreamUtil {
       }
       output.flush();
     }
-    return;
   }
 
   /**

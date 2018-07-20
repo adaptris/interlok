@@ -55,7 +55,6 @@ public abstract class JettyConnection extends AdaptrisConnectionImp implements J
    */
   @Override
   protected void closeConnection() {
-    return;
   }
 
   /**

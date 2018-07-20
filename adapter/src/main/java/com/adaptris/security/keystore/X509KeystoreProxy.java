@@ -86,7 +86,6 @@ class X509KeystoreProxy extends SingleEntryKeystoreProxy {
         ;
       }
     }
-    return;
   }
 
   /**

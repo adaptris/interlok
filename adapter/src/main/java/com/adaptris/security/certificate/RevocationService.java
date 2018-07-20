@@ -188,7 +188,6 @@ public abstract class RevocationService {
       }
 
       entry.setRevoked(revocation);
-      return;
     }
 
     /**
@@ -345,7 +344,6 @@ public abstract class RevocationService {
       else {
         expectedCheck.add(Calendar.DAY_OF_YEAR, 1);
       }
-      return;
     }
 
     /**

@@ -79,7 +79,6 @@ public final class Alias {
     } else {
       alias = a;
     }
-    return;
   }
 
   /**
@@ -91,7 +90,6 @@ public final class Alias {
   public void setKeyStoreAlias(String a, char[] pw) {
     alias = a;
     aliasPassword = pw;
-    return;
   }
 
   /**

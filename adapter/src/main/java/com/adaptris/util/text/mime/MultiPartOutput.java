@@ -375,7 +375,6 @@ public class MultiPartOutput implements MimeConstants {
     }
     p.println("");
     p.flush();
-    return;
   }
 
   private class KeyedBodyPart {

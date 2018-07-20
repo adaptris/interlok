@@ -499,7 +499,6 @@ public class SharedComponentList implements ComponentLifecycle, ComponentLifecyc
       JndiHelper.unbindQuietly(ctx, component, isDebug());
     }
     catch (CoreException e) {
-      return;
     }
   }
 

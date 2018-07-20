@@ -74,7 +74,6 @@ abstract class ReadWriteConfigManager extends ConfigManagerImpl {
         syncAdapterConfiguration(adapter, bootstrapProperties.getPrimaryUrl(), slave);
       }
     }
-    return;
   }
 
   private void syncAdapterConfiguration(AdapterManagerMBean adapter, URLString master, URLString slave)

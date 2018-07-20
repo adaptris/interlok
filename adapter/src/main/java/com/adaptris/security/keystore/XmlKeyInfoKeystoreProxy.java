@@ -110,7 +110,6 @@ class XmlKeyInfoKeystoreProxy extends SingleEntryKeystoreProxy {
         ;
       }
     }
-    return;
   }
 
   /**

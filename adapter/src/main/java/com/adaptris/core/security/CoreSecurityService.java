@@ -270,7 +270,6 @@ public abstract class CoreSecurityService extends ServiceImp {
 
   @Override
   protected void closeService() {
-    return;
   }
 
   @Override

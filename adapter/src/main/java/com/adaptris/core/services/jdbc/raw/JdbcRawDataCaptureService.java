@@ -81,6 +81,5 @@ public class JdbcRawDataCaptureService extends JdbcDataCaptureServiceImpl {
     } finally {
       JdbcUtil.closeQuietly(conn);
     }
-    return;
   }
 }

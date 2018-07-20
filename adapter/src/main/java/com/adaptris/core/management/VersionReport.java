@@ -155,7 +155,6 @@ public final class VersionReport {
     catch (IOException e) {
       throw new RuntimeException(e);
     }
-    return;
   }
 
   private static class ComponentVersion {

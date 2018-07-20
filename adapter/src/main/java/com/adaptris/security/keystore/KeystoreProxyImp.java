@@ -31,6 +31,7 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
 
+import org.apache.commons.io.IOUtils;
 import org.bouncycastle.util.io.pem.PemReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,7 +99,6 @@ class KeystoreProxyImp implements KeystoreProxy {
     catch (Exception e) {
       throw new KeystoreException(e.getMessage(), e);
     }
-    return;
   }
 
   /**
@@ -130,7 +130,6 @@ class KeystoreProxyImp implements KeystoreProxy {
         ;
       }
     }
-    return;
   }
 
   /**
@@ -164,7 +163,6 @@ class KeystoreProxyImp implements KeystoreProxy {
         ;
       }
     }
-    return;
   }
 
   /**
@@ -307,17 +305,8 @@ class KeystoreProxyImp implements KeystoreProxy {
       throw new KeystoreException(e.getMessage(), e);
     }
     finally {
-      try {
-        if (in != null) {
-          in.close();
-        }
-      }
-      catch (Exception e) {
-        // Ignore the error
-        ;
-      }
+      IOUtils.closeQuietly(in);
     }
-    return;
   }
 
   /**
@@ -334,7 +323,6 @@ class KeystoreProxyImp implements KeystoreProxy {
   public void setCertificate(String alias, String filename)
       throws AdaptrisSecurityException {
     this.setCertificate(alias, new File(filename));
-    return;
   }
 
   /**
@@ -398,7 +386,6 @@ class KeystoreProxyImp implements KeystoreProxy {
     catch (Exception e) {
       throw new CertException(e.getMessage(), e);
     }
-    return;
   }
 
   /**
@@ -434,17 +421,8 @@ class KeystoreProxyImp implements KeystoreProxy {
       throw e;
     }
     finally {
-      try {
-        if (in != null) {
-          in.close();
-        }
-      }
-      catch (Exception e) {
-        // Ignore the error
-        ;
-      }
+      IOUtils.closeQuietly(in);
     }
-    return;
   }
 
   /**
@@ -534,7 +512,6 @@ class KeystoreProxyImp implements KeystoreProxy {
         ;
       }
     }
-    return;
   }
 
   /**
@@ -578,7 +555,6 @@ class KeystoreProxyImp implements KeystoreProxy {
     catch (Exception e) {
       throw new CertException(e.getMessage(), e);
     }
-    return;
   }
 
   /**

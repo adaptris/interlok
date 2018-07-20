@@ -145,7 +145,6 @@ abstract class CmdLineBootstrap {
     for (String modules : r.getReport()) {
       System.err.println("  " + modules);
     }
-    return;
   }
 
   // Jira 154 : If the adapter is configured with a shared connection that has a fixed-number of retries

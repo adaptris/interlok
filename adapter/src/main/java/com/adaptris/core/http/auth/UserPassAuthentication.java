@@ -30,7 +30,6 @@ public abstract class UserPassAuthentication implements HttpAuthenticator {
     threadLocalCreds = ThreadLocalCredentials.getInstance(target, matcher);
     threadLocalCreds.setThreadCredentials(getPasswordAuthentication(msg));
     AdapterResourceAuthenticator.getInstance().addAuthenticator(threadLocalCreds);
-    return;
   }
   
   protected abstract PasswordAuthentication getPasswordAuthentication(AdaptrisMessage msg)

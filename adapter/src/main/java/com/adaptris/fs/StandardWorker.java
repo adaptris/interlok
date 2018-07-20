@@ -137,7 +137,6 @@ public class StandardWorker implements FsWorker {
       }
     }
     catch (FsFileNotFoundException e) {
-      return; // file doesn't exist; return quietly
     }
   }
 

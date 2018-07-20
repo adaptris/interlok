@@ -126,7 +126,6 @@ public final class CertRequestHandler {
     catch (Exception e) {
       throw new CertException(e);
     }
-    return;
   }
 
   /**

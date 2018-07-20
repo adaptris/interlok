@@ -104,7 +104,6 @@ public abstract class JdbcIteratingDataCaptureServiceImpl extends JdbcDataCaptur
     finally {
       JdbcUtil.closeQuietly(conn);
     }
-    return;
   }
 
   protected abstract void executeUpdate(PreparedStatement insert) throws SQLException;

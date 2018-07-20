@@ -93,7 +93,6 @@ public class SimplePayloadResultSetTranslator extends ResultSetTranslatorBase {
     catch (IOException e) {
       throw ExceptionHelper.wrapServiceException(e);
     }
-    return;
   }
 
   public String getColumnName() {
