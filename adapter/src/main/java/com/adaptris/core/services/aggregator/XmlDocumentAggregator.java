@@ -89,8 +89,6 @@ public class XmlDocumentAggregator extends MessageAggregatorImpl {
     catch (Exception e) {
       ExceptionHelper.rethrowCoreException(e);
     }
-    finally {
-    }
   }
 
   private String evaluateEncoding(AdaptrisMessage msg) {

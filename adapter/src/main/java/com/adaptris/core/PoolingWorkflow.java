@@ -148,7 +148,6 @@ public class PoolingWorkflow extends WorkflowImp {
   private transient AdaptrisMarshaller serviceListMarshaller;
   private transient String currentThreadName;
   private transient ServiceCollection marshalledServiceCollection;
-  private transient String friendlyWorkflowName;
 
   public PoolingWorkflow() throws CoreException {
     super();
@@ -266,7 +265,6 @@ public class PoolingWorkflow extends WorkflowImp {
     objectPool = createObjectPool();
     threadPool = createExecutor();
     populatePool();
-    friendlyWorkflowName = friendlyName();
     LifecycleHelper.start(getConsumer());
   }
 
@@ -339,7 +337,6 @@ public class PoolingWorkflow extends WorkflowImp {
     catch (Exception e) {
       msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, e);
       handleBadMessage(msg);
-    } finally {
     }
   }
 
