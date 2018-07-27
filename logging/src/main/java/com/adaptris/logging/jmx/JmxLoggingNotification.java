@@ -1,18 +1,18 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.logging.jmx;
 
@@ -32,7 +32,7 @@ class JmxLoggingNotification extends NotificationBroadcasterSupport implements J
 
   JmxLoggingNotification(int lines, int errors) {
     this.errors = errors;
-    this.linesOfContext = lines;
+    linesOfContext = lines;
     errorLogs = Collections.synchronizedList(new FixedSizeList<List<String>>(errors));
     currentLog = new FixedSizeList<>(linesOfContext);
   }
@@ -42,7 +42,7 @@ class JmxLoggingNotification extends NotificationBroadcasterSupport implements J
   }
 
   public void handle(JmxLoggingEvent event) {
-    sendNotification(event);   
+    sendNotification(event);
     currentLog.add(event.getMessage());
     LoggingLevel level = LoggingLevel.getLevel(event.getLevel());
     if (level.compareTo(LoggingLevel.ERROR) >=0) {
@@ -53,22 +53,25 @@ class JmxLoggingNotification extends NotificationBroadcasterSupport implements J
     }
   }
 
+  @Override
   public List<String> getErrorLog(int index) {
-    if (index > errorLogs.size() || errorLogs.isEmpty()) {
+    if (index >= errorLogs.size() || errorLogs.isEmpty()) {
       return Collections.emptyList();
     }
-    return new ArrayList<String>(errorLogs.get(index));
+    return new ArrayList<>(errorLogs.get(index));
   }
 
+  @Override
   public int errorCount() {
     return errorLogs.size();
   }
 
+  @Override
   public List<String> remove(int index) {
-    if (index > errorLogs.size() || errorLogs.isEmpty()) {
+    if (index >= errorLogs.size() || errorLogs.isEmpty()) {
       return Collections.emptyList();
     }
-    return new ArrayList<String>(errorLogs.remove(index));
+    return new ArrayList<>(errorLogs.remove(index));
   }
 
   private class FixedSizeList<K> extends LinkedList<K> {
@@ -78,11 +81,13 @@ class JmxLoggingNotification extends NotificationBroadcasterSupport implements J
       this.maxSize = size;
     }
 
+    @Override
     public boolean add(K k) {
+      boolean added = super.add(k);
       while (size() > maxSize) {
         super.remove();
       }
-      return super.add(k);
+      return added;
     }
   }
 }
