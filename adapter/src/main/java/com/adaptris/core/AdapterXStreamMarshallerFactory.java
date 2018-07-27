@@ -57,7 +57,9 @@ public class AdapterXStreamMarshallerFactory extends AdapterMarshallerFactory {
 
   private transient static Logger log = LoggerFactory.getLogger(AdapterXStreamMarshallerFactory.class);
 
-  public static final transient boolean XSTREAM_DBG = Boolean.getBoolean("adp.xstream.debug");
+  public static final transient boolean XSTREAM_DBG = Boolean.getBoolean("adp.xstream.debug")
+      || Boolean.getBoolean("interlok.xstream.debug");
+
   public static enum OutputMode {
     STANDARD, ALIASED_SUBCLASSES
   };
@@ -145,8 +147,19 @@ public class AdapterXStreamMarshallerFactory extends AdapterMarshallerFactory {
     cdataFields = new PropertyStringListProcessor().process(CDATA_PROPERTIES_FILE, new HashSet<String>());
     // Process classes with special hierarchy
     beanInfoAnnotatedClasses = new PropertyClassListProcessor().process(BEAN_INFO_PROPERTIES_FILE, new ArrayList<Class<?>>());
+    logBeanInfoWarnings();
     // Process classes with implicit collection
     xstreamImplicits = new PropertyStringListProcessor().process(XSTREAM_IMPLICIT_PROPERTIES_FILE, new HashSet<String>());
+  }
+
+  private static void logBeanInfoWarnings() {
+    if (beanInfoAnnotatedClasses.size() > 0) {
+      StringBuffer sb = new StringBuffer();
+      beanInfoAnnotatedClasses.forEach(c -> {
+        sb.append(c.getName());
+      });
+      log.warn("Found use of deprecated @GenerateBeanInfo : [{}]", sb.toString());
+    }
   }
 
   /**
@@ -201,7 +214,6 @@ public class AdapterXStreamMarshallerFactory extends AdapterMarshallerFactory {
     {
         "com.adaptris.**"
     });
-
     // Configure Annotations
     xstream.processAnnotations(annotationClassesArray);
 
