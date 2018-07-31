@@ -24,6 +24,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,9 +53,6 @@ public abstract class ScriptingServiceImp extends ServiceImp implements DynamicP
   private String language;
   private transient ScriptEngineManager fatController;
   private transient ScriptEngine engine;
-  @InputFieldDefault(value = "false")
-  @Deprecated
-  private Boolean branching;
 
   @InputFieldDefault(value = "false")
   private Boolean branchingEnabled;
@@ -90,9 +88,6 @@ public abstract class ScriptingServiceImp extends ServiceImp implements DynamicP
       String error = String.format("getEngineByName('%s')", getLanguage());
       fatController = new ScriptEngineManager(this.getClass().getClassLoader());
       engine = Args.notNull(fatController.getEngineByName(getLanguage()), error);
-      if (getBranching() != null) {
-        log.warn("[branching] is deprecated, use [branching-enabled] instead");
-      }
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
@@ -133,34 +128,7 @@ public abstract class ScriptingServiceImp extends ServiceImp implements DynamicP
 
   @Override
   public boolean isBranching() {
-    boolean be = false;
-    if (getBranching() != null) {
-      be = getBranching().booleanValue();
-    } else {
-      be = getBranchingEnabled() != null ? getBranchingEnabled().booleanValue() : false;
-    }
-    return be;
-  }
-
-  /**
-   * @deprecated since 3.4.0
-   */
-  @Deprecated
-  public Boolean getBranching() {
-    return branching;
-  }
-
-  /**
-   * Specify whether or not this service is branching.
-   * 
-   * @param branching true to cause {@link #isBranching()} to return true; default is false.
-   * @see com.adaptris.core.Service#isBranching()
-   * @since 3.0.3
-   * @deprecated since 3.4.0 as it causes problems with the UI.
-   */
-  @Deprecated
-  public void setBranching(Boolean branching) {
-    this.branching = branching;
+    return BooleanUtils.toBooleanDefaultIfNull(getBranchingEnabled(), false);
   }
 
 

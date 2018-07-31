@@ -162,19 +162,6 @@ public class EmbeddedScriptingServiceTest extends GeneralServiceExample {
     return result;
   }
 
-  private EmbeddedScriptingService createServiceForBranch_Deprecated(String uid, String nextServiceId) {
-    EmbeddedScriptingService result = uid == null ? new EmbeddedScriptingService(SERVICE_UID) : new EmbeddedScriptingService(uid);
-    result.setLanguage("nashorn");
-    result.setBranching(true);
-    if (!isEmpty(nextServiceId)) {
-      result.setScript("message.setNextServiceId('" + nextServiceId + "');");
-    }
-    else {
-      result.setScript("message.addMetadata('" + MY_METADATA_KEY3 + "', '" + MY_METADATA_VALUE + "');");
-    }
-    return result;
-  }
-
   private EmbeddedScriptingService createServiceForBranch(String uid, String nextServiceId) {
     EmbeddedScriptingService result = uid == null ? new EmbeddedScriptingService(SERVICE_UID) : new EmbeddedScriptingService(uid);
     result.setLanguage("nashorn");
