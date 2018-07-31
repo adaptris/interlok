@@ -23,6 +23,7 @@ public interface FsConsumerMonitorMBean extends ConsumerMonitorMBean {
    * Return the count of entries in the filesystem left to be processed.
    * 
    * @return the number of entries remaining.
+   * @deprecated since 3.7.3 in favour of {@link #messagesRemaining()}; might be removed w/o notice.
    */
   @Deprecated
   int filesRemaining();
