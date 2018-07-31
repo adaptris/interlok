@@ -95,7 +95,7 @@ public class TestCommonsNetFtp extends FtpCase {
         Thread.currentThread().setName("testBug1924");
         // Use an arbitarily small timeout.
         CommonsNetFtpClient client = new CommonsNetFtpClient(FTP_HOST, 1);
-        client.debugResponses(true);
+        client.setAdditionalDebug(true);
         client.connect(config.getProperty(FTP_USERNAME), config.getProperty(FTP_PASSWORD));
         client.disconnect();
         fail("Successfully connected, with a timeout of 1ms (surely not possible!)");
