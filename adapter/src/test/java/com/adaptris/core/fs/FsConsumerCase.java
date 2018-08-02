@@ -644,12 +644,12 @@ public abstract class FsConsumerCase extends ConsumerCase {
     try {
       am.registerMBean();
       am.requestInit();
-      String objectNameString = String.format("com.adaptris:type=FsMonitor,adapter=%s,channel=%s,workflow=%s,id=%s", getName(),
+      String objectNameString = String.format("com.adaptris:type=ConsumerMonitor,adapter=%s,channel=%s,workflow=%s,id=%s", getName(),
           getName(), getName(), getName());
       MBeanServer mBeanServer = JmxHelper.findMBeanServer();
       FsConsumerMonitorMBean mbean = JMX.newMBeanProxy(mBeanServer, ObjectName.getInstance(objectNameString),
           FsConsumerMonitorMBean.class);
-      assertEquals(0, mbean.filesRemaining());
+      assertEquals(0, mbean.messagesRemaining());
     }
     finally {
       am.requestClose();
