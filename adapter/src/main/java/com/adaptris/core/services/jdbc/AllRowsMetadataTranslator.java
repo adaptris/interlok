@@ -16,15 +16,12 @@
 
 package com.adaptris.core.services.jdbc;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
 import com.adaptris.jdbc.JdbcResult;
@@ -76,12 +73,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
     "rowTotalMetadataKey"})
 public class AllRowsMetadataTranslator extends MetadataResultSetTranslatorImpl {
 
-  /**
-   * @deprecated since 3.4.1 Use result-count-metadata-item to specify the key to which the result count will be set.
-   */
-  @Deprecated
-  private String rowTotalMetadataKey;
-
   public AllRowsMetadataTranslator() {
     super();
   }
@@ -108,9 +99,9 @@ public class AllRowsMetadataTranslator extends MetadataResultSetTranslatorImpl {
       // In the event that we have multiple selects (unlikely from a JdbcDataQuery) then
       // row-total will have the total for each result set
       // resultSetCount will have the total for all resultSets.
-      if (!isEmpty(getRowTotalMetadataKey())) {
-        target.addMetadata(resultSetPrefix + getRowTotalMetadataKey(), String.valueOf(counter));
-      }      
+      // if (!isEmpty(getRowTotalMetadataKey())) {
+      // target.addMetadata(resultSetPrefix + getRowTotalMetadataKey(), String.valueOf(counter));
+      // }
       resultSetCount += counter;
     }
 
@@ -118,28 +109,5 @@ public class AllRowsMetadataTranslator extends MetadataResultSetTranslatorImpl {
       log.debug("Added metadata : " + added);
     }
     return resultSetCount;
-  }
-
-  @Override
-  public void init() throws CoreException {
-    super.init();
-    if (!isEmpty(getRowTotalMetadataKey())) {
-      log.warn("[row-total-metadata-key] is deprecated; use [result-count-metadata-item] instead.");
-    }
-  }
-
-  public String getRowTotalMetadataKey() {
-    return rowTotalMetadataKey;
-  }
-
-  /**
-   * Specify the metadata key which will contain the total number of rows converted.
-   * 
-   * @param key the metadata key.
-   * @deprecated since 3.4.1 Use {@link #setResultCountMetadataItem(String)} to specify the key to which the result count will be
-   *             set.
-   */
-  public void setRowTotalMetadataKey(String key) {
-    this.rowTotalMetadataKey = key;
   }
 }
