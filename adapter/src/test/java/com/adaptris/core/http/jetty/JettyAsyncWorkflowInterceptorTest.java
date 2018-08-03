@@ -25,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
-import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ExampleWorkflowCase;
 import com.adaptris.core.PoolingWorkflow;
@@ -171,7 +170,7 @@ public class JettyAsyncWorkflowInterceptorTest extends ExampleWorkflowCase {
     JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO, getName());
     PoolingWorkflow receivingWF = new PoolingWorkflow();
     // It's a bit lame, but we have to use something that is populated *before entry into the workflow*
-    String cacheKey = "%message{" + CoreConstants.JETTY_URI + "}";
+    String cacheKey = "%message{" + JettyConstants.JETTY_URI + "}";
     receivingWF.addInterceptor(
         new JettyAsyncWorkflowInterceptor().withMode(JettyAsyncWorkflowInterceptor.Mode.REQUEST).withCacheKey(cacheKey));
     receivingWF.setShutdownWaitTime(new TimeInterval(1L, TimeUnit.SECONDS));

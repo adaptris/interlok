@@ -43,7 +43,7 @@ public class JettyRoutingServiceTest extends BranchingServiceExample {
   public void testMatchedRoute() throws Exception {
     JettyRoutingService service = new JettyRoutingService("NotHandled", createRoutes());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    msg.addMetadata(CoreConstants.JETTY_URI, "/record/1234/json");
+    msg.addMetadata(JettyConstants.JETTY_URI, "/record/1234/json");
     msg.addMetadata(CoreConstants.HTTP_METHOD, "GET");
     execute(service, msg);
     assertEquals("handleGet", msg.getNextServiceId());
@@ -52,7 +52,7 @@ public class JettyRoutingServiceTest extends BranchingServiceExample {
 
     // do it twice for _urlPattern compile
     msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    msg.addMetadata(CoreConstants.JETTY_URI, "/record/1234/json");
+    msg.addMetadata(JettyConstants.JETTY_URI, "/record/1234/json");
     msg.addMetadata(CoreConstants.HTTP_METHOD, "GET");
     execute(service, msg);
     assertEquals("handleGet", msg.getNextServiceId());
@@ -67,14 +67,14 @@ public class JettyRoutingServiceTest extends BranchingServiceExample {
       JettyRouteSpec noMethodMatch = new JettyRouteSpec("^/records$", null, new ArrayList<String>(), "listAll");
       service.getRoutes().add(noMethodMatch);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-      msg.addMetadata(CoreConstants.JETTY_URI, "/records");
+      msg.addMetadata(JettyConstants.JETTY_URI, "/records");
       msg.addMetadata(CoreConstants.HTTP_METHOD, "GET");
       LifecycleHelper.initAndStart(service);
       service.doService(msg);
       assertEquals("listAll", msg.getNextServiceId());
 
       msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-      msg.addMetadata(CoreConstants.JETTY_URI, "/records");
+      msg.addMetadata(JettyConstants.JETTY_URI, "/records");
       msg.addMetadata(CoreConstants.HTTP_METHOD, "GET");
       noMethodMatch.setUrlPattern("^/record.*$");
 
@@ -89,7 +89,7 @@ public class JettyRoutingServiceTest extends BranchingServiceExample {
   public void testUnMatchedRoute() throws Exception {
     JettyRoutingService service = new JettyRoutingService("NotHandled", createRoutes());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    msg.addMetadata(CoreConstants.JETTY_URI, "/record/1234");
+    msg.addMetadata(JettyConstants.JETTY_URI, "/record/1234");
     msg.addMetadata(CoreConstants.HTTP_METHOD, "TRACE");
     execute(service, msg);
     assertEquals("NotHandled", msg.getNextServiceId());

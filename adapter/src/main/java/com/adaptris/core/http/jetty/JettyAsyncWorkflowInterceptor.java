@@ -15,11 +15,10 @@
 */
 package com.adaptris.core.http.jetty;
 
-import static com.adaptris.core.CoreConstants.JETTY_RESPONSE_KEY;
+import static com.adaptris.core.http.jetty.JettyConstants.JETTY_WRAPPER;
 
 import java.util.concurrent.TimeUnit;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
@@ -63,7 +62,8 @@ public class JettyAsyncWorkflowInterceptor extends JettyWorkflowInterceptorImpl 
 
   // Should probably use JSR107 for some caching action?? make it pluggable.
   // But for now, same JVM, so a map will do in a pinch
-  private static final ExpiringMap<String, CacheEntryWrapper> EXPIRING_CACHE = ExpiringMap.builder().expiration(1L, TimeUnit.HOURS).build();
+  private static final ExpiringMap<String, JettyWrapper> EXPIRING_CACHE = ExpiringMap.builder()
+      .expiration(1L, TimeUnit.HOURS).build();
 
   public enum Mode {
     /**
@@ -73,9 +73,7 @@ public class JettyAsyncWorkflowInterceptor extends JettyWorkflowInterceptorImpl 
     REQUEST {
       @Override
       void workflowStart(String key, AdaptrisMessage msg) {
-        CacheEntryWrapper wrapper = new CacheEntryWrapper();
-        wrapper.monitor = (JettyConsumerMonitor) msg.getObjectHeaders().get(MESSAGE_MONITOR);
-        wrapper.response = (HttpServletResponse) msg.getObjectHeaders().get(JETTY_RESPONSE_KEY);
+        JettyWrapper wrapper = JettyWrapper.unwrap(msg);
         log.trace("Storing {} in cache against {}", wrapper, key);
         EXPIRING_CACHE.put(key, wrapper);
       }
@@ -92,12 +90,11 @@ public class JettyAsyncWorkflowInterceptor extends JettyWorkflowInterceptorImpl 
     RESPONSE {
       @Override
       void workflowStart(String key, AdaptrisMessage msg) {
-        CacheEntryWrapper wrapper = EXPIRING_CACHE.get(key);
+        JettyWrapper wrapper = EXPIRING_CACHE.get(key);
         log.trace("Found {} in cache against {}", wrapper, key);
         if (wrapper != null) {
           EXPIRING_CACHE.remove(key);
-          msg.addObjectHeader(MESSAGE_MONITOR, wrapper.monitor);
-          msg.addObjectHeader(JETTY_RESPONSE_KEY, wrapper.response);
+          msg.addObjectHeader(JETTY_WRAPPER, wrapper);
         }
       }
 
@@ -215,10 +212,4 @@ public class JettyAsyncWorkflowInterceptor extends JettyWorkflowInterceptorImpl 
     setCacheKey(s);
     return this;
   }
-
-  private static class CacheEntryWrapper {
-    private JettyConsumerMonitor monitor;
-    private HttpServletResponse response;
-  }
-
 }

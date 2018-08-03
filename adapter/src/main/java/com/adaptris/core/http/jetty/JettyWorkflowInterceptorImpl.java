@@ -24,8 +24,6 @@ import com.adaptris.core.interceptor.WorkflowInterceptorImpl;
 
 
 public abstract class JettyWorkflowInterceptorImpl extends WorkflowInterceptorImpl {
-  public static final String MESSAGE_MONITOR = JettyWorkflowInterceptorImpl.class.getCanonicalName() + ".monitor";
-
 
   @Override
   public void init() throws CoreException {
@@ -55,13 +53,18 @@ public abstract class JettyWorkflowInterceptorImpl extends WorkflowInterceptorIm
   }
 
   protected static void messageComplete(AdaptrisMessage msg) {
-    if (msg.getObjectHeaders().containsKey(MESSAGE_MONITOR)) {
-      JettyConsumerMonitor o = (JettyConsumerMonitor) msg.getObjectHeaders().get(MESSAGE_MONITOR);
+    JettyWrapper wrapper = JettyWrapper.unwrap(msg);
+    try {
+      wrapper.lock();
+      JettyConsumerMonitor o = wrapper.getMonitor();
       o.setMessageComplete(true);
       o.setEndTime(new Date().getTime());
       synchronized (o) {
         o.notifyAll();
       }
+    } catch (InterruptedException e) {
+    } finally {
+      wrapper.unlock();
     }
   }
 

@@ -17,9 +17,9 @@
 package com.adaptris.core.http.jetty;
 
 import static com.adaptris.core.CoreConstants.HTTP_METHOD;
-import static com.adaptris.core.CoreConstants.JETTY_QUERY_STRING;
-import static com.adaptris.core.CoreConstants.JETTY_URI;
-import static com.adaptris.core.CoreConstants.JETTY_URL;
+import static com.adaptris.core.http.jetty.JettyConstants.JETTY_QUERY_STRING;
+import static com.adaptris.core.http.jetty.JettyConstants.JETTY_URI;
+import static com.adaptris.core.http.jetty.JettyConstants.JETTY_URL;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.apache.commons.lang.StringUtils.join;
 
@@ -54,7 +54,6 @@ import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageConsumerImp;
 import com.adaptris.core.ClosedState;
-import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.WorkflowImp;
 import com.adaptris.core.WorkflowInterceptor;
@@ -432,12 +431,9 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
       if (!isEmpty(request.getQueryString())) {
         msg.addMetadata(JETTY_QUERY_STRING, request.getQueryString());
       }
-      msg.addObjectHeader(CoreConstants.JETTY_RESPONSE_KEY, response);
-      msg.addObjectHeader(CoreConstants.JETTY_REQUEST_KEY, request);
-      JettyConsumerMonitor monitor = new JettyConsumerMonitor();
-      monitor.setStartTime(System.currentTimeMillis());
-      msg.addObjectHeader(JettyPoolingWorkflowInterceptor.MESSAGE_MONITOR, monitor);
-      waitFor(submitToWorkflow(msg), monitor, response, msg.getUniqueId());
+      JettyWrapper wrapper = new JettyWrapper().withMonitor(new JettyConsumerMonitor()).withRequest(request).withResponse(response);
+      msg.addObjectHeader(JettyConstants.JETTY_WRAPPER, wrapper);
+      waitFor(submitToWorkflow(msg), wrapper.getMonitor(), response, msg.getUniqueId());
       cancel(task);
     }
 

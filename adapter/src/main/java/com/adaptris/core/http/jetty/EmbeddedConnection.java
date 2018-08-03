@@ -76,29 +76,16 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
   @AdvancedConfig
   private SecurityHandlerWrapper securityHandler;
 
-  /**
-   * @see AdaptrisConnectionImp#AdaptrisConnectionImp()
-   *
-   *
-   */
+
   public EmbeddedConnection() {
     super();
   }
 
-  /**
-   * Unregisters the configured consumers from the embedded server(s).
-   *
-   * @see com.adaptris.core.AdaptrisConnectionImp#closeConnection()
-   */
+
   @Override
   protected void closeConnection() {
   }
 
-  /**
-   * Registers the configured consumers to the embedded server(s).
-   *
-   * @see com.adaptris.core.AdaptrisConnectionImp#initConnection()
-   */
   @Override
   protected void initConnection() throws CoreException {
     waitForJettyStart(WebServerManagementUtil.getServerManager(), maxStartupWaitTimeMs());
@@ -239,4 +226,5 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
   public void setSecurityHandler(SecurityHandlerWrapper s) {
     securityHandler = s;
   }
+
 }
