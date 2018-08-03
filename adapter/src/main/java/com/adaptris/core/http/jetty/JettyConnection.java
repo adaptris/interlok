@@ -45,6 +45,7 @@ public abstract class JettyConnection extends AdaptrisConnectionImp implements J
   protected transient Server server;
   protected transient ServletContextHandler context;
 
+  
   public JettyConnection() {
     super();
   }
@@ -76,7 +77,6 @@ public abstract class JettyConnection extends AdaptrisConnectionImp implements J
     // context.addFilter(fh, "/*", .DispatcherType.REQUEST);
     // Would that even work in the context of the logging...
     // Would be better to rate limit based on iptables (!).
-
     try {
       server = configure(new Server());
       context = new ServletContextHandler(ServletContextHandler.SESSIONS);
@@ -149,7 +149,6 @@ public abstract class JettyConnection extends AdaptrisConnectionImp implements J
       log.warn("Exception encountered during stop " + e.getMessage());
     }
   }
-
 
   protected static String[] asArray(String s) {
     if (s == null) {

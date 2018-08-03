@@ -24,6 +24,10 @@ public class JettyConsumerMonitor {
   
   private long endTime;
 
+  public JettyConsumerMonitor() {
+    setStartTime(System.currentTimeMillis());
+  }
+
   public long getStartTime() {
     return startTime;
   }

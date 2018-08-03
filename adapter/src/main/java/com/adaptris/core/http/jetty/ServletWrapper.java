@@ -30,7 +30,7 @@ public class ServletWrapper {
   private ServletHolder servletHolder;
   private String url;
 
-  private ServletWrapper() {
+  protected ServletWrapper() {
 
   }
 

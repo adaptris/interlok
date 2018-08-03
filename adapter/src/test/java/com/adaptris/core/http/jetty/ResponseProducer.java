@@ -33,7 +33,6 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataCollection;
 import com.adaptris.core.MetadataElement;
@@ -133,11 +132,12 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
   @Override
   public void produce(AdaptrisMessage msg, ProduceDestination destination)
       throws ProduceException {
-    HttpServletResponse response = (HttpServletResponse) msg
-        .getObjectHeaders().get(CoreConstants.JETTY_RESPONSE_KEY);
+    JettyWrapper wrapper = JettyWrapper.unwrap(msg);
+    HttpServletResponse response = wrapper.getResponse();
     InputStream in = null;
 
     try {
+      wrapper.lock();
       if (response == null) {
         log.debug("No HttpServletResponse in object metadata, nothing to do");
         return;
@@ -180,12 +180,14 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
       if (flushBuffers()) {
         response.flushBuffer();
       }
+      wrapper.setResponse(null);
     }
     catch (Exception e) {
       throw new ProduceException(e);
     }
     finally {
       IOUtils.closeQuietly(in);
+      wrapper.unlock();
     }
   }
   

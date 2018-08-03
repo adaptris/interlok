@@ -16,7 +16,6 @@
 
 package com.adaptris.core.http.jetty;
 
-import static com.adaptris.core.CoreConstants.JETTY_RESPONSE_KEY;
 import static com.adaptris.core.CoreConstants.KEY_WORKFLOW_SKIP_PRODUCER;
 import static com.adaptris.core.CoreConstants.STOP_PROCESSING_KEY;
 import static com.adaptris.core.CoreConstants.STOP_PROCESSING_VALUE;
@@ -117,17 +116,22 @@ public class JettyNoBacklogInterceptor extends WorkflowInterceptorImpl {
   }
 
   private void sendErrorResponse(AdaptrisMessage msg) {
-    HttpServletResponse response = (HttpServletResponse) msg.getObjectHeaders().get(JETTY_RESPONSE_KEY);
+    JettyWrapper wrapper = JettyWrapper.unwrap(msg);
     try {
+      wrapper.lock();
+      HttpServletResponse response = wrapper.getResponse();
       if (response == null) {
         return;
       }
       response.sendError(503, "Server Busy");
       response.flushBuffer();
+      wrapper.setResponse(null);
     }
     catch (Exception e) {
       log.warn("Caught exception : {}", e.getMessage());
       log.trace("Caught exception :", e);
+    } finally {
+      wrapper.unlock();
     }
   }
 
