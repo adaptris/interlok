@@ -33,20 +33,20 @@ public class PasswordDecodeMetadataFilterTest {
 
   @Test
   public void testFilter() throws Exception {
-    PasswordDecodeMetadataFilter filter = new PasswordDecodeMetadataFilter().withPatterns("^.*password.*$");
+    PasswordDecodeMetadataFilter filter = new PasswordDecodeMetadataFilter().withPatterns("^.*password.*$", "^.*secret.*$");
     AdaptrisMessage msg = createMessage();
     MetadataCollection filtered = filter.filter(msg);
     assertEquals(3, filtered.size());
     // Changes not reflected in the underlying message.
     assertNotSame("password1", msg.getMetadataValue("passwordKey1"));
     assertNotSame("password2", msg.getMetadataValue("passwordKey2"));
-    assertEquals("value1", msg.getMetadataValue("key1"));
+    assertEquals("PW:WillNotDecode", msg.getMetadataValue("key1"));
     assertPasswords(filtered);
   }
 
   @Test
   public void testFilterWithException() throws Exception {
-    PasswordDecodeMetadataFilter filter = new PasswordDecodeMetadataFilter().withPatterns("^.*password.*$");
+    PasswordDecodeMetadataFilter filter = new PasswordDecodeMetadataFilter().withPatterns("^.*password.*$", "^.*secret.*$");
     AdaptrisMessage msg = createMessage();
     msg.addMetadata("passwordKey3", "PW:Does_Not_Compute");
     try {
@@ -72,7 +72,7 @@ public class PasswordDecodeMetadataFilterTest {
     AdaptrisMessage message = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     message.addMetadata("passwordKey1", Password.encode("password1", Password.PORTABLE_PASSWORD));
     message.addMetadata("passwordKey2", Password.encode("password2", Password.PORTABLE_PASSWORD));
-    message.addMetadata("key1", "value1");
+    message.addMetadata("key1", "PW:WillNotDecode");
     return message;
   }
 }
