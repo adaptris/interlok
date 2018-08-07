@@ -17,6 +17,7 @@
 package com.adaptris.core.metadata;
 
 import com.adaptris.core.MetadataElement;
+import com.adaptris.interlok.resolver.ExternalResolver;
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.security.password.Password;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -36,6 +37,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class PasswordDecodeMetadataFilter extends PasswordMetadataFilter {
 
   protected MetadataElement handlePassword(MetadataElement element) throws PasswordException {
-    return new MetadataElement(element.getKey(), Password.decode(element.getValue()));
+    return new MetadataElement(element.getKey(), Password.decode(ExternalResolver.resolve(element.getValue())));
   }
 }
