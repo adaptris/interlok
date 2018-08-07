@@ -18,7 +18,10 @@ package com.adaptris.core.metadata;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
@@ -64,14 +67,14 @@ public class RegexMetadataFilter extends MetadataFilterImpl {
   @AutoPopulated
   private List<String> excludePatterns;
 
-  private transient List<Pattern> incPatterns;
-  private transient List<Pattern> excPatterns;
+  private transient List<Pattern> patternIncludes;
+  private transient List<Pattern> patternExcludes;
 
   public RegexMetadataFilter() {
     setIncludePatterns(new ArrayList<String>());
     setExcludePatterns(new ArrayList<String>());
-    incPatterns = new ArrayList<Pattern>();
-    excPatterns = new ArrayList<Pattern>();
+    patternIncludes = new ArrayList<Pattern>();
+    patternExcludes = new ArrayList<Pattern>();
   }
 
   @Override
@@ -80,21 +83,9 @@ public class RegexMetadataFilter extends MetadataFilterImpl {
     return exclude(included);
   }
 
-  // Lewin - This is a pretty naive way to initialise, but the filter doesn't have a lifecycle so we can't
-  // really do much else; as B B king would say, we're paying the cost to be the boss.
   private void initialisePatterns() {
-    if (includePatterns.size() != incPatterns.size()) {
-      incPatterns.clear();
-      for (String regex : getIncludePatterns()) {
-        incPatterns.add(Pattern.compile(regex));
-      }
-    }
-    if (excludePatterns.size() != excPatterns.size()) {
-      excPatterns.clear();
-      for (String regex : getExcludePatterns()) {
-        excPatterns.add(Pattern.compile(regex));
-      }
-    }
+    patternIncludes = validatePatterns(getIncludePatterns(), patternIncludes);
+    patternExcludes = validatePatterns(getExcludePatterns(), patternExcludes);
   }
 
   /**
@@ -110,14 +101,7 @@ public class RegexMetadataFilter extends MetadataFilterImpl {
     }
     initialisePatterns();
     MetadataCollection toBeRemoved = new MetadataCollection();
-    for (MetadataElement element : metadataCollection) {
-      for (Pattern pattern : excPatterns) {
-        if (pattern.matcher(element.getKey()).find()) {
-          toBeRemoved.add(element);
-          break;
-        }
-      }
-    }
+    toBeRemoved.addAll(metadataCollection.parallelStream().filter(e -> matches(e, patternExcludes)).collect(Collectors.toList()));
     metadataCollection.removeAll(toBeRemoved);
     return metadataCollection;
   }
@@ -135,14 +119,7 @@ public class RegexMetadataFilter extends MetadataFilterImpl {
     }
     initialisePatterns();
     MetadataCollection result = new MetadataCollection();
-    for (MetadataElement element : metadataCollection) {
-      for (Pattern pattern : incPatterns) {
-        if (pattern.matcher(element.getKey()).find()) {
-          result.add(element);
-          break;
-        }
-      }
-    }
+    result.addAll(metadataCollection.parallelStream().filter(e -> matches(e, patternIncludes)).collect(Collectors.toList()));
     return result;
   }
 
@@ -183,4 +160,23 @@ public class RegexMetadataFilter extends MetadataFilterImpl {
     }
     return this;
   }
+
+  public static List<Pattern> validatePatterns(List<String> patternSpec, List<Pattern> existingPatterns) {
+    if (existingPatterns.size() != patternSpec.size()) {
+      existingPatterns.clear();
+      patternSpec.forEach(e -> {
+        existingPatterns.add(Pattern.compile(e));
+      });
+    }
+    return existingPatterns;
+  }
+
+  public static boolean matches(MetadataElement element, List<Pattern> patterns) {
+    boolean result = false;
+    Optional<Matcher> found = patterns.stream().map(pattern -> {
+      return pattern.matcher(element.getKey());
+    }).filter(Matcher::find).findAny();
+    return found.isPresent();
+  }
+
 }

@@ -15,11 +15,12 @@
 */
 package com.adaptris.core.metadata;
 
+import static com.adaptris.core.metadata.RegexMetadataFilter.matches;
+import static com.adaptris.core.metadata.RegexMetadataFilter.validatePatterns;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -40,20 +41,24 @@ public abstract class PasswordMetadataFilter extends MetadataFilterImpl {
   @AutoPopulated
   @XStreamImplicit(itemFieldName = "password-pattern")
   private List<String> passwordPatterns;
-  private transient List<Pattern> passwordPatternMatchers;
+  private transient List<Pattern> patternPasswords;
 
   protected transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   public PasswordMetadataFilter() {
     setPasswordPatterns(new ArrayList<>());
-    passwordPatternMatchers = new ArrayList<>();
+    patternPasswords = new ArrayList<>();
   }
 
   @Override
   public MetadataCollection filter(MetadataCollection original) {
+    if (getPasswordPatterns().size() == 0) {
+      return original;
+    }
+    patternPasswords = validatePatterns(getPasswordPatterns(), patternPasswords);
     MetadataCollection result = new MetadataCollection();
-    result.addAll(original.stream().map(e -> {
-      return matches(e) ? modify(e) : e;
+    result.addAll(original.parallelStream().map(e -> {
+      return matches(e, patternPasswords) ? modify(e) : e;
     }).collect(Collectors.toList()));
     return result;
   }
@@ -68,24 +73,6 @@ public abstract class PasswordMetadataFilter extends MetadataFilterImpl {
   }
 
   protected abstract MetadataElement handlePassword(MetadataElement e) throws PasswordException;
-
-  private boolean matches(MetadataElement element) {
-    boolean result = false;
-    initialisePatterns();
-    Optional<Matcher> found = passwordPatternMatchers.stream().map(pattern -> {
-      return pattern.matcher(element.getKey());
-    }).filter(Matcher::matches).findAny();
-    return found.isPresent();
-  }
-
-  private void initialisePatterns() {
-    if (passwordPatterns.size() != passwordPatternMatchers.size()) {
-      passwordPatternMatchers.clear();
-      for (String regex : getPasswordPatterns()) {
-        passwordPatternMatchers.add(Pattern.compile(regex));
-      }
-    }
-  }
 
   protected static RuntimeException wrapException(PasswordException e) {
     return new PasswordRuntimeException(e);
