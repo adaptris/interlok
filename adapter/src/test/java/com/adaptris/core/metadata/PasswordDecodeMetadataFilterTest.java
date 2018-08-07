@@ -18,6 +18,7 @@ package com.adaptris.core.metadata;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
@@ -42,6 +43,26 @@ public class PasswordDecodeMetadataFilterTest {
     assertNotSame("password2", msg.getMetadataValue("passwordKey2"));
     assertEquals("PW:WillNotDecode", msg.getMetadataValue("key1"));
     assertPasswords(filtered);
+  }
+
+  @Test
+  public void testFilter_NoMatches() throws Exception {
+    PasswordDecodeMetadataFilter filter = new PasswordDecodeMetadataFilter();
+    AdaptrisMessage msg = createMessage();
+    MetadataCollection filtered = filter.filter(msg);
+    assertEquals(3, filtered.size());
+    // Changes not reflected in the underlying message.
+    assertNotSame("password1", msg.getMetadataValue("passwordKey1"));
+    assertNotSame("password2", msg.getMetadataValue("passwordKey2"));
+    assertEquals("PW:WillNotDecode", msg.getMetadataValue("key1"));
+    for (MetadataElement e : filtered) {
+      if ("passwordKey1".equalsIgnoreCase(e.getKey())) {
+        assertTrue(e.getValue().startsWith("PW:"));
+      }
+      if ("passwordKey2".equalsIgnoreCase(e.getKey())) {
+        assertTrue(e.getValue().startsWith("PW:"));
+      }
+    }
   }
 
   @Test
