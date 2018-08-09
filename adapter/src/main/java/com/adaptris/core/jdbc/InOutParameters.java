@@ -31,13 +31,12 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  */
 @XStreamAlias("jdbc-in-out-parameters")
 public class InOutParameters extends JdbcParameterList<InOutParameter> {
+  @XStreamImplicit
+  private List<InOutParameter> parameters;
 
   public InOutParameters() {
     parameters = new ArrayList<InOutParameter>();
   }
-  
-  @XStreamImplicit
-  private List<InOutParameter> parameters;
   
   @Override
   public List<InOutParameter> getParameters() {
