@@ -16,6 +16,8 @@
 
 package com.adaptris.core.services.splitter;
 
+import java.util.Iterator;
+
 import org.apache.commons.lang.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -149,5 +151,52 @@ public abstract class MessageSplitterImp implements MessageSplitter {
    */
   public void setCopyObjectMetadata(Boolean b) {
     copyObjectMetadata = b;
+  }
+
+  protected abstract class SplitMessageIterator implements CloseableIterable<AdaptrisMessage>, Iterator<AdaptrisMessage> {
+    protected final AdaptrisMessage msg;
+    protected final AdaptrisMessageFactory factory;
+    private AdaptrisMessage nextMessage;
+
+    public SplitMessageIterator(AdaptrisMessage msg, AdaptrisMessageFactory factory) {
+      this.msg = msg;
+      this.factory = factory;
+    }
+
+    @Override
+    public Iterator<AdaptrisMessage> iterator() {
+      // This Iterable can only be Iterated once so multiple iterators are unsupported. That's why
+      // it's safe to just return this in this method without constructing a new Iterator.
+      return this;
+    }
+
+    @Override
+    public boolean hasNext() {
+      if (nextMessage == null) {
+        try {
+          nextMessage = constructAdaptrisMessage();
+        } catch (Exception e) {
+          logR.warn("Could not construct next AdaptrisMessage", e);
+          throw new RuntimeException("Could not construct next AdaptrisMessage", e);
+        }
+      }
+
+      return nextMessage != null;
+    }
+
+    @Override
+    public AdaptrisMessage next() {
+      AdaptrisMessage ret = nextMessage;
+      nextMessage = null;
+      return ret;
+    }
+
+    protected abstract AdaptrisMessage constructAdaptrisMessage() throws Exception;
+
+    @Override
+    public void remove() {
+      throw new UnsupportedOperationException();
+    }
+
   }
 }
