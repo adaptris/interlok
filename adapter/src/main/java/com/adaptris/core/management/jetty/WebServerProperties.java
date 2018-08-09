@@ -29,18 +29,17 @@ public class WebServerProperties {
   private static final String WEB_SERVER_WEBAPP_URL_CFG_KEY = "webServerWebappUrl";
   private static final String WEB_SERVER_WEBAPP_URL_DEFAULT = "webapps";
   
-  private static final String WEB_SERVER_VENDOR_CFG_KEY = "webServerVendor";
   private static final String WEB_SERVER_VENDOR_DEFAULT = WebServerVendor.JETTY.getValue();
   
   public static enum WebServerVendor {
     JETTY("jetty");
     
+    private String value;
+
     WebServerVendor(String value) {
       this.setValue(value);
     }
     
-    private String value;
-
     public String getValue() {
       return value;
     }
