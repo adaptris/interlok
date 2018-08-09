@@ -43,11 +43,8 @@ public class NonBlockingQuartzThreadPool implements ThreadPool {
   private static final TimeInterval DEFAULT_SHUTDOWN_WAIT = new TimeInterval(1L, TimeUnit.MINUTES);
   private static final long DEFAULT_KEEP_ALIVE = 60;
 
-  private transient String instanceId;
-  private transient String instanceName;
   private transient int threadCount = 10;
   private transient long keepAliveTime = DEFAULT_KEEP_ALIVE;
-  private transient int threadPriority = Thread.NORM_PRIORITY;
 
   private transient ExecutorService executor;
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
@@ -70,7 +67,7 @@ public class NonBlockingQuartzThreadPool implements ThreadPool {
    * 
    */
   public void setThreadPriority(int prio) {
-    this.threadPriority = prio;
+    // ignored.
   }
 
   @Override
@@ -110,12 +107,12 @@ public class NonBlockingQuartzThreadPool implements ThreadPool {
 
   @Override
   public void setInstanceId(String schedInstId) {
-    this.instanceId = schedInstId;
+    // ignored.
   }
 
   @Override
   public void setInstanceName(String schedName) {
-    this.instanceName = schedName;
+    // ignored.
   }
 
 
@@ -124,6 +121,7 @@ public class NonBlockingQuartzThreadPool implements ThreadPool {
    * 
    */
   public void setThreadNamePrefix(String prfx) {
+    // ignored.
   }
 
   /**
@@ -131,6 +129,7 @@ public class NonBlockingQuartzThreadPool implements ThreadPool {
    * 
    */
   public void setThreadsInheritGroupOfInitializingThread(boolean inheritGroup) {
+    // ignored.
   }
 
   /**
@@ -139,6 +138,7 @@ public class NonBlockingQuartzThreadPool implements ThreadPool {
    * 
    */
   public void setThreadsInheritContextClassLoaderOfInitializingThread(boolean inheritLoader) {
+    // ignored.
   }
 
   /**
@@ -146,6 +146,7 @@ public class NonBlockingQuartzThreadPool implements ThreadPool {
    * 
    */
   public void setMakeThreadsDaemons(boolean b) {
+    // ignored.
 
   }
 }

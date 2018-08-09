@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -526,7 +527,7 @@ public class QuartzCronPoller extends PollerImp {
     this.useCustomThreadPool = b;
   }
 
-  boolean useCustomThreadPool() {
-    return getUseCustomThreadPool() != null ? getUseCustomThreadPool().booleanValue() : true;
+  protected boolean useCustomThreadPool() {
+    return BooleanUtils.toBooleanDefaultIfNull(getUseCustomThreadPool(), true);
   }
 }
