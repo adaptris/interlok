@@ -41,10 +41,8 @@ import com.adaptris.util.TimeInterval;
  */
 public class NonBlockingQuartzThreadPool implements ThreadPool {
   private static final TimeInterval DEFAULT_SHUTDOWN_WAIT = new TimeInterval(1L, TimeUnit.MINUTES);
-  private static final long DEFAULT_KEEP_ALIVE = 60;
 
   private transient int threadCount = 10;
-  private transient long keepAliveTime = DEFAULT_KEEP_ALIVE;
 
   private transient ExecutorService executor;
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
