@@ -173,7 +173,6 @@ public abstract class CommandLineArgs {
         }
 
       }
-      return;
     }
   }
 }
