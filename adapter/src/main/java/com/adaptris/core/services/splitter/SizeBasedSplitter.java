@@ -51,7 +51,7 @@ public class SizeBasedSplitter extends MessageSplitterImp {
 
   public SizeBasedSplitter() {}
 
-  public CloseableIterable<AdaptrisMessage> splitMessage(final AdaptrisMessage msg) throws CoreException {
+  public com.adaptris.core.util.CloseableIterable<AdaptrisMessage> splitMessage(final AdaptrisMessage msg) throws CoreException {
     logR.debug("SizeBasedSplitter splits every {} bytes", splitSizeBytes());
     logExpected(msg);
     try {

@@ -147,7 +147,8 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
       return (List<AdaptrisMessage>) iter;
     }
     List<AdaptrisMessage> result = new ArrayList<AdaptrisMessage>();
-    try (CloseableIterable<AdaptrisMessage> messages = CloseableIterable.FACTORY.ensureCloseable(iter)) {
+    try (com.adaptris.core.util.CloseableIterable<AdaptrisMessage> messages = com.adaptris.core.util.CloseableIterable
+        .ensureCloseable(iter)) {
       for (AdaptrisMessage msg : messages) {
         result.add(msg);
       }

@@ -63,7 +63,8 @@ public abstract class MessageSplitterServiceImp extends ServiceImp {
   @Override
   public final void doService(AdaptrisMessage msg) throws ServiceException {
     List<Future> tasks = new ArrayList<Future>();
-    try (CloseableIterable<AdaptrisMessage> messages = CloseableIterable.FACTORY.ensureCloseable(splitter.splitMessage(msg))) {
+    try (com.adaptris.core.util.CloseableIterable<AdaptrisMessage> messages = com.adaptris.core.util.CloseableIterable
+        .ensureCloseable(splitter.splitMessage(msg))) {
       long count = 0;
       for (AdaptrisMessage splitMessage : messages) {
         count++;

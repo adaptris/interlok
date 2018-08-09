@@ -65,7 +65,7 @@ public class MetadataDocumentCopier extends MessageCopier {
   }
 
   @Override
-  public CloseableIterable<AdaptrisMessage> splitMessage(AdaptrisMessage msg) throws CoreException {
+  public com.adaptris.core.util.CloseableIterable<AdaptrisMessage> splitMessage(AdaptrisMessage msg) throws CoreException {
     int size = toInteger(msg.getMetadataValue(getMetadataKey()));     
     return new Copier(msg, size);
   }

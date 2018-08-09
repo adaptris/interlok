@@ -65,7 +65,7 @@ public class LineCountSplitter extends MessageSplitterImp {
     setSplitOnLine(splitOnLine);
   }
 
-  public CloseableIterable<AdaptrisMessage> splitMessage(final AdaptrisMessage msg) throws CoreException {
+  public com.adaptris.core.util.CloseableIterable<AdaptrisMessage> splitMessage(final AdaptrisMessage msg) throws CoreException {
     logR.trace("LineCountSplitter splits every {} lines", splitOnLine());
 
     try {

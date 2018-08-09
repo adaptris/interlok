@@ -107,7 +107,7 @@ public class XpathMessageSplitter extends MessageSplitterImp {
   }
 
   @Override
-  public CloseableIterable<AdaptrisMessage> splitMessage(AdaptrisMessage msg) throws CoreException {
+  public com.adaptris.core.util.CloseableIterable<AdaptrisMessage> splitMessage(AdaptrisMessage msg) throws CoreException {
     try {
       return new XmlSplitGenerator(msg);
     }

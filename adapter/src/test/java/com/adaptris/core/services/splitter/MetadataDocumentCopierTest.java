@@ -115,7 +115,7 @@ public class MetadataDocumentCopierTest extends SplitterCase {
     msg.addObjectHeader(obj, obj);
     msg.addMetadata(METADATA_KEY, String.valueOf(expectedSplitCount));
     MetadataDocumentCopier splitter = new MetadataDocumentCopier(METADATA_KEY, METADATA_KEY_INDEX);
-    CloseableIterable<AdaptrisMessage> result = splitter.splitMessage(msg);
+    com.adaptris.core.util.CloseableIterable<AdaptrisMessage> result = splitter.splitMessage(msg);
     int count = 0;
     for (AdaptrisMessage m : result) {
       assertFalse("No Object Metadata", m.getObjectHeaders().containsKey(obj));
@@ -132,7 +132,7 @@ public class MetadataDocumentCopierTest extends SplitterCase {
     msg.addObjectHeader(obj, obj);
     msg.addMetadata(METADATA_KEY, String.valueOf(expectedSplitCount));
     MetadataDocumentCopier splitter = new MetadataDocumentCopier(METADATA_KEY);
-    CloseableIterable<AdaptrisMessage> result = splitter.splitMessage(msg);
+    com.adaptris.core.util.CloseableIterable<AdaptrisMessage> result = splitter.splitMessage(msg);
     int count = 0;
     for (AdaptrisMessage m : result) {
       assertFalse("No Object Metadata", m.getObjectHeaders().containsKey(obj));
@@ -147,7 +147,7 @@ public class MetadataDocumentCopierTest extends SplitterCase {
     String obj = "ABCDEFG";
     msg.addObjectHeader(obj, obj);
     MetadataDocumentCopier splitter = new MetadataDocumentCopier(METADATA_KEY, METADATA_KEY_INDEX);
-    CloseableIterable<AdaptrisMessage> result = splitter.splitMessage(msg);
+    com.adaptris.core.util.CloseableIterable<AdaptrisMessage> result = splitter.splitMessage(msg);
     int count = 0;
     for (AdaptrisMessage m : result) {
       assertFalse("No Object Metadata", m.getObjectHeaders().containsKey(obj));
@@ -164,7 +164,7 @@ public class MetadataDocumentCopierTest extends SplitterCase {
     msg.addMetadata(METADATA_KEY, String.valueOf(expectedSplitCount));
     MetadataDocumentCopier splitter = new MetadataDocumentCopier(METADATA_KEY, METADATA_KEY_INDEX);
     splitter.setCopyObjectMetadata(true);
-    CloseableIterable<AdaptrisMessage> result = splitter.splitMessage(msg);
+    com.adaptris.core.util.CloseableIterable<AdaptrisMessage> result = splitter.splitMessage(msg);
     int count = 0;
     for (AdaptrisMessage m : result) {
       assertTrue("Object Metadata", m.getObjectHeaders().containsKey(obj));

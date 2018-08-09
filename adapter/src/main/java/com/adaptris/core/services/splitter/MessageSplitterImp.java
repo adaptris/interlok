@@ -153,7 +153,8 @@ public abstract class MessageSplitterImp implements MessageSplitter {
     copyObjectMetadata = b;
   }
 
-  protected abstract class SplitMessageIterator implements CloseableIterable<AdaptrisMessage>, Iterator<AdaptrisMessage> {
+  protected abstract class SplitMessageIterator
+      implements com.adaptris.core.util.CloseableIterable<AdaptrisMessage>, Iterator<AdaptrisMessage> {
     protected final AdaptrisMessage msg;
     protected final AdaptrisMessageFactory factory;
     private AdaptrisMessage nextMessage;
