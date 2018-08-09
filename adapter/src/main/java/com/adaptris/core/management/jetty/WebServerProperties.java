@@ -58,13 +58,13 @@ public class WebServerProperties {
 
     WEBAPP_URL(WEB_SERVER_WEBAPP_URL_DEFAULT, WEB_SERVER_WEBAPP_URL_CFG_KEY);
 
+    private String defaultValue;
+    private String overridingBootstrapPropertyKey;
+
     WebServerPropertiesEnum(String defaultValue, String overridingBootstrapPropertyKey) {
       this.defaultValue = defaultValue;
       this.overridingBootstrapPropertyKey = overridingBootstrapPropertyKey;
     }
-    
-    private String defaultValue;
-    private String overridingBootstrapPropertyKey;
     
     public String getValue(Properties bootstrapProperties) {
       String propertyValue = bootstrapProperties.getProperty(this.getOverridingBootstrapPropertyKey());
