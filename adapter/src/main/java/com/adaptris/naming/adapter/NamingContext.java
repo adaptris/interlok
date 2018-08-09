@@ -104,8 +104,8 @@ public class NamingContext implements Context, Serializable {
     this.bind(name, object, false);
   }
 
-  public void bind(Name name, Object object, boolean rebind) throws NamingException {
-    name = this.stripScheme(this.stripEmptyPrefix(name));
+  public void bind(Name bindName, Object object, boolean rebind) throws NamingException {
+    Name name = this.stripScheme(this.stripEmptyPrefix(bindName));
     if (name.isEmpty())
       throw new NamingException("Invalid name: " + name.toString());
 
@@ -159,8 +159,8 @@ public class NamingContext implements Context, Serializable {
 
   @Override
   public Name composeName(Name name, Name prefix) throws NamingException {
-    prefix = (Name) prefix.clone();
-    return prefix.addAll(name);
+    Name composed = (Name) prefix.clone();
+    return composed.addAll(name);
   }
 
   @Override
@@ -178,8 +178,8 @@ public class NamingContext implements Context, Serializable {
   }
 
   @Override
-  public void destroySubcontext(Name name) throws NamingException {
-    name = stripEmptyPrefix(name);
+  public void destroySubcontext(Name contextToDestroy) throws NamingException {
+    Name name = stripEmptyPrefix(contextToDestroy);
     if (name.isEmpty())
       throw new NamingException("Invalid name: " + name.toString());
 
@@ -252,10 +252,10 @@ public class NamingContext implements Context, Serializable {
   }
 
   @Override
-  public Object lookup(Name name) throws NamingException {
-    log.debug("NamingContext lookup (" + name.toString() + ")");
+  public Object lookup(Name lookupName) throws NamingException {
+    log.debug("NamingContext lookup (" + lookupName.toString() + ")");
     
-    name = this.stripEmptyPrefix(name);
+    Name name = this.stripEmptyPrefix(lookupName);
 
     if (name.size() == 0) {
       return this;
@@ -306,9 +306,8 @@ public class NamingContext implements Context, Serializable {
         throw (NamingException) new NamingException("could not look up : " + name).initCause(e);
       }
     }
-    if (result instanceof NamingContext) {
-      if(name.size() > 1)
-        return ((NamingContext) result).lookup(name.getSuffix(1));
+    if (result instanceof NamingContext && name.size() > 1) {
+      return ((NamingContext) result).lookup(name.getSuffix(1));
     }
     return result;
   }
@@ -331,8 +330,8 @@ public class NamingContext implements Context, Serializable {
   }
 
   @Override
-  public void unbind(Name name) throws NamingException {
-    name = this.stripEmptyPrefix(name);
+  public void unbind(Name toUnbind) throws NamingException {
+    Name name = this.stripEmptyPrefix(toUnbind);
     if (name.isEmpty())
       throw new NamingException("Invalid name: " + name.toString());
 
@@ -411,11 +410,11 @@ public class NamingContext implements Context, Serializable {
     this.rename(new CompositeName(oldName), new CompositeName(newName));
   }
 
-  private Name stripEmptyPrefix(Name original) {
-    while ((!original.isEmpty()) && (original.get(0).length() == 0))
-      original = original.getSuffix(1);
-
-    return original;
+  private Name stripEmptyPrefix(Name toStrip) {
+    Name stripped = toStrip;
+    while ((!stripped.isEmpty()) && (stripped.get(0).length() == 0))
+      stripped = stripped.getSuffix(1);
+    return stripped;
   }
 
   @SuppressWarnings("rawtypes")

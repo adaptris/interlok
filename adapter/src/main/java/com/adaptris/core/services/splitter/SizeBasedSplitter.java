@@ -19,7 +19,6 @@ package com.adaptris.core.services.splitter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Iterator;
 
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
@@ -70,50 +69,17 @@ public class SizeBasedSplitter extends MessageSplitterImp {
   }
 
 
-  private class SplitGenerator implements CloseableIterable<AdaptrisMessage>, Iterator<AdaptrisMessage> {
-    private final AdaptrisMessage msg;
+  private class SplitGenerator extends SplitMessageIterator {
     private final InputStream input;
-    private final AdaptrisMessageFactory factory;
-
-    private AdaptrisMessage nextMessage;
     private int numberOfMessages;
 
     public SplitGenerator(InputStream buf, AdaptrisMessage msg, AdaptrisMessageFactory factory) {
+      super(msg, factory);
       this.input = buf;
-      this.msg = msg;
-      this.factory = factory;
       logR.trace("Using message factory: {}", factory.getClass());
     }
 
-    @Override
-    public Iterator<AdaptrisMessage> iterator() {
-      // This Iterable can only be Iterated once so multiple iterators are unsupported. That's why
-      // it's safe to just return this in this method without constructing a new Iterator.
-      return this;
-    }
-
-    @Override
-    public boolean hasNext() {
-      if (nextMessage == null) {
-        try {
-          nextMessage = constructAdaptrisMessage();
-        } catch (IOException e) {
-          logR.warn("Could not construct next AdaptrisMessage", e);
-          throw new RuntimeException("Could not construct next AdaptrisMessage", e);
-        }
-      }
-
-      return nextMessage != null;
-    }
-
-    @Override
-    public AdaptrisMessage next() {
-      AdaptrisMessage ret = nextMessage;
-      nextMessage = null;
-      return ret;
-    }
-
-    private AdaptrisMessage constructAdaptrisMessage() throws IOException {
+    protected AdaptrisMessage constructAdaptrisMessage() throws IOException {
       AdaptrisMessage newMsg = factory.newMessage();
       final int bufSiz = Math.min(splitSizeBytes(), MAX_BUF_SIZ);
       byte[] buffer = new byte[bufSiz];
@@ -144,11 +110,6 @@ public class SizeBasedSplitter extends MessageSplitterImp {
     public void close() throws IOException {
       logR.trace("Split gave {} messages", numberOfMessages);
       input.close();
-    }
-
-    @Override
-    public void remove() {
-      throw new UnsupportedOperationException();
     }
 
   }

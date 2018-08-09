@@ -18,12 +18,7 @@ package com.adaptris.core.lms;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.io.OutputStream;
-
-import javax.mail.internet.MimeBodyPart;
-
-import org.apache.commons.io.IOUtils;
 
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
@@ -31,7 +26,6 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MimeEncoderImpl;
-import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.text.mime.MultiPartFileInput;
 import com.adaptris.util.text.mime.MultiPartOutput;
@@ -90,17 +84,7 @@ public class FileBackedMimeEncoder extends MimeEncoderImpl {
       msg = currentMessageFactory().newMessage();
       File baseFile = asFile(source);
       MultiPartFileInput input = new MultiPartFileInput(baseFile);
-      MimeBodyPart payloadPart = Args.notNull(input.getBodyPart(PAYLOAD_CONTENT_ID), "payload");
-      MimeBodyPart metadataPart = Args.notNull(input.getBodyPart(METADATA_CONTENT_ID), "metadata");
-      try (InputStream payloadIn = payloadPart.getInputStream();
-          InputStream metadata = metadataPart.getInputStream();
-          OutputStream out = msg.getOutputStream()) {
-        IOUtils.copy(payloadIn, out);
-        msg.setMetadata(getMetadataSet(metadata));
-      }
-      if (retainUniqueId()) {
-        msg.setUniqueId(input.getMessageID());
-      }
+      addPartsToMessage(input, msg);
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }

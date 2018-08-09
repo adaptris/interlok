@@ -16,12 +16,7 @@
 
 package com.adaptris.core.http;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Properties;
-import java.util.StringTokenizer;
 
 import javax.mail.internet.ContentType;
 
@@ -35,6 +30,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.util.URLHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -118,38 +114,18 @@ public class RequestParameterConverterService extends ServiceImp {
       if (contentType.getParameter(CONTENT_TYPE_CHARSET) != null) {
         charset = contentType.getParameter(CONTENT_TYPE_CHARSET);
       }
-      Properties p = formDataToProperties(msg.getContent(), charset);
-      for (Iterator i = p.entrySet().iterator(); i.hasNext();) {
-        Map.Entry e = (Map.Entry) i.next();
-        if (getParameterForPayload() != null
-            && getParameterForPayload().equalsIgnoreCase((String) e.getKey())) {
-          msg.setContent((String) e.getValue(), charset);
-        }
-        else {
-          msg.addMetadata((String) e.getKey(), (String) e.getValue());
+      Map<String, String> params = URLHelper.queryStringToMap(msg.getContent(), charset);
+      for (Map.Entry<String, String> e : params.entrySet()) {
+        if (getParameterForPayload() != null && getParameterForPayload().equalsIgnoreCase(e.getKey())) {
+          msg.setContent(e.getValue(), charset);
+        } else {
+          msg.addMetadata(e.getKey(), e.getValue());
         }
       }
     }
     catch (Exception e) {
       throw new ServiceException(e);
     }
-  }
-
-  private Properties formDataToProperties(String payload, String charset)
-      throws UnsupportedEncodingException {
-    Properties result = new Properties();
-    StringTokenizer st = new StringTokenizer(payload, "&");
-    while (st.hasMoreTokens()) {
-      String s = st.nextToken();
-      StringTokenizer kp = new StringTokenizer(s, "=");
-      String key = kp.nextToken();
-      String value = "true";
-      if (kp.hasMoreTokens()) {
-        value = URLDecoder.decode(kp.nextToken(), charset);
-      }
-      result.put(key, value);
-    }
-    return result;
   }
 
   @Override
