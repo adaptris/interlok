@@ -34,31 +34,6 @@ public class ThreadLocalCredentials implements ResourceAuthenticator {
   private static Map<String, ThreadLocalCredentials> instances = Collections.synchronizedMap(new HashMap<String, ThreadLocalCredentials>());
 
   /**
-   * Get an instance for the specified target.
-   */
-  public static ThreadLocalCredentials getInstance(String target) {
-    return getInstance(target, new DefaultResourceTargetMatcher(target));
-  }
-
-  /**
-   * Get an instance for the specified target using the specified {@link ResourceTargetMatcher}.
-   * 
-   */
-  public static ThreadLocalCredentials getInstance(String target, ResourceTargetMatcher matcher) {
-    ThreadLocalCredentials instance = instances.get(target);
-    if (instance == null) {
-      if (matcher != null) {
-        instance = new ThreadLocalCredentials(target, matcher);
-        instances.put(target, instance);
-      }
-      else {
-        instance = getInstance(target);
-      }
-    }
-    return instance;
-  }
-
-  /**
    * Keeps the current credentials. No initial value provider is set on purpose since this ThreadLocal must always have its value
    * set explicitly.
    */
@@ -110,6 +85,30 @@ public class ThreadLocalCredentials implements ResourceAuthenticator {
       return auth;
     }
     return null;
+  }
+
+  /**
+   * Get an instance for the specified target.
+   */
+  public static ThreadLocalCredentials getInstance(String target) {
+    return getInstance(target, new DefaultResourceTargetMatcher(target));
+  }
+
+  /**
+   * Get an instance for the specified target using the specified {@link ResourceTargetMatcher}.
+   * 
+   */
+  public static ThreadLocalCredentials getInstance(String target, ResourceTargetMatcher matcher) {
+    ThreadLocalCredentials instance = instances.get(target);
+    if (instance == null) {
+      if (matcher != null) {
+        instance = new ThreadLocalCredentials(target, matcher);
+        instances.put(target, instance);
+      } else {
+        instance = getInstance(target);
+      }
+    }
+    return instance;
   }
 
   /*
