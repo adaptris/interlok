@@ -17,20 +17,13 @@ package com.adaptris.core.fs;
 
 import static com.adaptris.core.runtime.AdapterComponentMBean.JMX_FS_MONITOR_TYPE;
 
-import com.adaptris.core.runtime.ChildRuntimeInfoComponentImpl;
 import com.adaptris.core.runtime.ConsumerMonitorImpl;
-import com.adaptris.core.runtime.ParentRuntimeInfoComponent;
 import com.adaptris.core.runtime.WorkflowManager;
 
 public class FsConsumerMonitor extends ConsumerMonitorImpl<FsConsumerImpl> implements FsConsumerMonitorMBean {
 
   public FsConsumerMonitor(WorkflowManager owner, FsConsumerImpl consumer) {
     super(owner, consumer);
-  }
-
-  @Override
-  protected String getType() {
-    return JMX_FS_MONITOR_TYPE;
   }
 
   @Override
@@ -44,9 +37,4 @@ public class FsConsumerMonitor extends ConsumerMonitorImpl<FsConsumerImpl> imple
     return remaining;
   }
 
-  @Override
-  @Deprecated
-  public int filesRemaining() {
-    return messagesRemaining();
-  }
 }

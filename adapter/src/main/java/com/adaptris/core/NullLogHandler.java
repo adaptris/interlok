@@ -38,10 +38,11 @@ public class NullLogHandler extends LogHandlerImp {
    * @see com.adaptris.core.LogHandler#clean()
    */
   public void clean() throws IOException {
-    return;
+    // nothing to do.
   }
 
   @Override
   public void prepare() throws CoreException {
+    // nothing to do.
   }
 }

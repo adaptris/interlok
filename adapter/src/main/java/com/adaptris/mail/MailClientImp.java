@@ -57,7 +57,6 @@ public abstract class MailClientImp implements MailReceiver {
     // List<MimeMessage> msgs = collectMessages();
     // messages = filterMessages(msgs);
     connected = true;
-    return;
   }
 
   /**

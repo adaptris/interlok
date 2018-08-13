@@ -144,7 +144,6 @@ public class RootHandler extends Handler
     output.print("</root>");
     output.flush();
     output.close();
-    return;
 }
 
   /** Dummy methods */
@@ -152,7 +151,6 @@ public class RootHandler extends Handler
   @Override
   public void process(StreamParser sp, PrintWriter sb)
   {
-    return;
   }
 
   @Override

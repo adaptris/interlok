@@ -148,7 +148,7 @@ public class XpathSplitterTest extends SplitterCase {
     msg.addObjectHeader(obj, obj);
     XpathMessageSplitter splitter = new XpathMessageSplitter(ENVELOPE_DOCUMENT);
     int count = 0;
-    try (CloseableIterable<AdaptrisMessage> closeable = splitter.splitMessage(msg)) {
+    try (com.adaptris.core.util.CloseableIterable<AdaptrisMessage> closeable = splitter.splitMessage(msg)) {
       for (AdaptrisMessage m : closeable) {
         assertFalse("No Object Metadata", m.getObjectHeaders().containsKey(obj));
         count++;
@@ -164,7 +164,7 @@ public class XpathSplitterTest extends SplitterCase {
     msg.addObjectHeader(obj, obj);
     XpathMessageSplitter splitter = new XpathMessageSplitter(ENVELOPE_DOCUMENT);
     int count = 0;
-    try (CloseableIterable<AdaptrisMessage> closeable = splitter.splitMessage(msg)) {
+    try (com.adaptris.core.util.CloseableIterable<AdaptrisMessage> closeable = splitter.splitMessage(msg)) {
       for (AdaptrisMessage m : closeable) {
         assertEquals(StubMessageFactory.class, m.getFactory().getClass());
         count++;
@@ -180,7 +180,7 @@ public class XpathSplitterTest extends SplitterCase {
     XpathMessageSplitter splitter = new XpathMessageSplitter(ENVELOPE_DOCUMENT, ENCODING_UTF8);
     splitter.setCopyObjectMetadata(true);
     int count = 0;
-    try (CloseableIterable<AdaptrisMessage> closeable = splitter.splitMessage(msg)) {
+    try (com.adaptris.core.util.CloseableIterable<AdaptrisMessage> closeable = splitter.splitMessage(msg)) {
       for (AdaptrisMessage m : closeable) {
         assertTrue("Object Metadata", m.getObjectHeaders().containsKey(obj));
         assertEquals(obj, m.getObjectHeaders().get(obj));
@@ -195,7 +195,7 @@ public class XpathSplitterTest extends SplitterCase {
     msg.setContent(XML_MESSAGE, msg.getContentEncoding());
     XpathMessageSplitter splitter = new XpathMessageSplitter(ENVELOPE_DOCUMENT, ENCODING_UTF8);
     splitter.setMessageFactory(new DefectiveMessageFactory());
-    try (CloseableIterable<AdaptrisMessage> closeable = splitter.splitMessage(msg)) {
+    try (com.adaptris.core.util.CloseableIterable<AdaptrisMessage> closeable = splitter.splitMessage(msg)) {
       int count = 0;
       for (AdaptrisMessage m : closeable) {
         count++;
@@ -215,7 +215,7 @@ public class XpathSplitterTest extends SplitterCase {
     XpathMessageSplitter splitter = new XpathMessageSplitter(ISSUE_2658_XPATH, "UTF-8");
 
     int count = 0;
-    try (CloseableIterable<AdaptrisMessage> closeable = splitter.splitMessage(msg)) {
+    try (com.adaptris.core.util.CloseableIterable<AdaptrisMessage> closeable = splitter.splitMessage(msg)) {
       for (AdaptrisMessage m : closeable) {
         Document destXml = createDocument(m.getPayload());
         XPath destXpath = new XPath();
@@ -240,7 +240,7 @@ public class XpathSplitterTest extends SplitterCase {
     splitter.setNamespaceContext(XpathMetadataServiceTest.createContextEntries());
     // Should be 2 splits
     int count = 0;
-    try (CloseableIterable<AdaptrisMessage> closeable = splitter.splitMessage(msg)) {
+    try (com.adaptris.core.util.CloseableIterable<AdaptrisMessage> closeable = splitter.splitMessage(msg)) {
       for (AdaptrisMessage m : closeable) {
         count++;
       }

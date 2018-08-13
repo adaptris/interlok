@@ -87,7 +87,6 @@ public class SyntaxRoutingService extends ServiceImp {
     }
 
     msg.addMetadata(routingKey, destination);
-    return;
   }
 
   /**

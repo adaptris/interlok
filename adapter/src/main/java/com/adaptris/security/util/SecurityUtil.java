@@ -83,7 +83,6 @@ public abstract class SecurityUtil {
     
     initSecureRandom();
     initialised = true;
-    return;
   }
 
   private static void initSecureRandom() {

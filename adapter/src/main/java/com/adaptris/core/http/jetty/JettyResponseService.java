@@ -127,7 +127,7 @@ public class JettyResponseService extends ServiceImp {
   }
 
   protected StandardResponseProducer buildProducer(AdaptrisMessage msg) {
-    StandardResponseProducer p = new StandardResponseProducer().withAlwaysAttemptResponse(false)
+    StandardResponseProducer p = new StandardResponseProducer()
         .withContentTypeProvider(new RawContentTypeProvider(msg.resolve(getContentType())))
         .withResponseHeaderProvider(getResponseHeaderProvider()).withSendPayload(true).withForwardConnectionException(false)
         .withFlushBuffer(true).withStatusProvider(new RawStatusProvider(Integer.valueOf(msg.resolve(getHttpStatus()))))

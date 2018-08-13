@@ -139,5 +139,12 @@ public abstract class WorkflowInterceptorImpl implements WorkflowInterceptor, St
     return result;
   }
 
+  protected static class WorkflowInterceptorException extends RuntimeException {
+    private static final long serialVersionUID = 2018080301L;
 
+    public WorkflowInterceptorException(Throwable cause) {
+      super(cause);
+    }
+
+  }
 }

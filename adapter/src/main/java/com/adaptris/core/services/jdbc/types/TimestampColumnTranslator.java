@@ -16,12 +16,6 @@
 
 package com.adaptris.core.services.jdbc.types;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.GregorianCalendar;
-
-import com.adaptris.jdbc.JdbcResultRow;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -42,26 +36,6 @@ public class TimestampColumnTranslator extends DateColumnTranslator {
    */
   public TimestampColumnTranslator() {
     setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-  }
-
-  @Override
-  public String translate(JdbcResultRow rs, int column) throws SQLException, IOException {
-    Object fieldValue = rs.getFieldValue(column);
-    
-    if(fieldValue instanceof GregorianCalendar)
-      fieldValue = ((GregorianCalendar) fieldValue).getTime();
-    
-    return toString((Date) fieldValue);
-  }
-
-  @Override
-  public String translate(JdbcResultRow rs, String columnName) throws SQLException, IOException {
-    Object fieldValue = rs.getFieldValue(columnName);
-    
-    if(fieldValue instanceof GregorianCalendar)
-      fieldValue = ((GregorianCalendar) fieldValue).getTime();
-    
-    return toString((Date) fieldValue);
   }
 
 

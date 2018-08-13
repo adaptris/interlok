@@ -62,7 +62,6 @@ final class StdSecurityService implements SecurityService {
 
   StdSecurityService() {
     keystores = new Hashtable<>();
-    return;
   }
 
   /**
@@ -71,7 +70,6 @@ final class StdSecurityService implements SecurityService {
   public void setEncryptionAlgorithm(EncryptionAlgorithm a)
       throws AdaptrisSecurityException {
     alg = a;
-    return;
   }
 
   /**
@@ -87,7 +85,6 @@ final class StdSecurityService implements SecurityService {
     catch (Exception e) {
       throw new KeystoreException(e);
     }
-    return;
   }
 
   /**
@@ -101,7 +98,6 @@ final class StdSecurityService implements SecurityService {
     catch (Exception e) {
       throw new KeystoreException(e);
     }
-    return;
   }
 
   /**

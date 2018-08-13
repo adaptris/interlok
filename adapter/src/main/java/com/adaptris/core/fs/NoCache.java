@@ -49,13 +49,11 @@ public class NoCache implements ProcessedItemCache {
 
   @Override
   public void update(ProcessedItem i) {
-    return;
   }
 
 
   @Override
   public void clear() {
-    return;
   }
 
   @Override

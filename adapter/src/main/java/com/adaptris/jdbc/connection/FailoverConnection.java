@@ -114,7 +114,6 @@ public final class FailoverConnection {
     catch (ClassNotFoundException e) {
       throw new SQLException(config.getDatabaseDriver() + " not found");
     }
-    return;
   }
 
   private void createConnection() throws SQLException {
@@ -154,6 +153,5 @@ public final class FailoverConnection {
       sqlConnection = null;
       throw e;
     }
-    return;
   }
 }

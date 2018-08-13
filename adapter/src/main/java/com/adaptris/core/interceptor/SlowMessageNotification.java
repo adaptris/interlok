@@ -146,7 +146,6 @@ public class SlowMessageNotification extends NotifyingInterceptor {
         sendNotification(c);
       }
     }
-    return;
   }
 
   @Override

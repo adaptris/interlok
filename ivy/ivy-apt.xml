@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="com.adaptris" module="adp-core-apt" revision="${ivy.publish.revision}"/>
+  <info organisation="com.adaptris" module="interlok-core-apt" revision="${ivy.publish.revision}"/>
 
   <configurations>
 	  <conf name="default" visibility="public" description="runtime dependencies and master artifact can be used with this conf" extends="runtime,master"/>
@@ -16,8 +16,8 @@
   	<conf name="ant" visibility="private" description="Support the ANT build"/>
   </configurations>
   <publications>
-     <artifact name="adp-core-apt" type="jar" ext="jar"/>
-     <artifact name="adp-core-apt" type="pom" ext="pom"/>
+     <artifact name="interlok-core-apt" type="jar" ext="jar"/>
+     <artifact name="interlok-core-apt" type="pom" ext="pom"/>
      <artifact type="source" ext="jar" conf="sources" m:classifier="sources"/>
   </publications>
   <dependencies>
@@ -31,7 +31,7 @@
     <!-- For Various ANT Tasks -->
     <dependency org="ant-contrib" name="ant-contrib" rev="1.0b3" conf="ant->default" transitive="false"/>
     <dependency org="org.jacoco" name="org.jacoco.ant" rev="0.8.0" conf="ant->default"/>
-	
+
 	<dependency org="junit" name="junit" rev="4.11" conf="test->default"/>
 	<dependency org="org.hibernate" name="hibernate-validator" rev="4.3.2.Final" conf="test->default"/>
   </dependencies>

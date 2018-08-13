@@ -54,7 +54,6 @@ public class ReplaceWithFirstMessage extends MessageAggregatorImpl {
     AdaptrisMessage first = new ArrayList<AdaptrisMessage>(msgs).get(0);
     overwrite(first, msg);
     overwriteMetadata(first, msg);
-    return;
   }
 
   private void overwrite(AdaptrisMessage src, AdaptrisMessage target) throws CoreException {

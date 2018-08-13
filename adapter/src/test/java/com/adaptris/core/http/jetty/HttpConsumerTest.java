@@ -689,8 +689,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     assertEquals(URL_TO_POST_TO, msg.getMetadataValue(CoreConstants.JETTY_URI));
     assertTrue(msg.containsKey(CoreConstants.JETTY_URL));
     Map objMetadata = msg.getObjectHeaders();
-    assertNotNull(objMetadata.get(CoreConstants.JETTY_REQUEST_KEY));
-    assertNotNull(objMetadata.get(CoreConstants.JETTY_RESPONSE_KEY));
+    assertNotNull(objMetadata.get(JettyConstants.JETTY_WRAPPER));
     return msg;
   }
 

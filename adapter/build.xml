@@ -23,14 +23,14 @@
     <property name="example-xml.build.dir"  value="${build.dir}/example-xml"/>
     <property name="doc.dir"                value="${basedir}/docs"/>
     <property name="api.doc.dir"            value="${build.dir}/api"/>
-    <property name="example-xml.zip"        value="${project.dist.dir}/adp-core-examples.zip"/>
+    <property name="example-xml.zip"        value="${project.dist.dir}/interlok-core-examples.zip"/>
     <property name="tests.output.dir"       value="${build.dir}/testoutput"/>
     <property name="html.tests.output.dir"  value="${tests.output.dir}/html"/>
     <property name="junit.forkmode"         value="once"/>
     <property name="junit.printsummary"     value="on"/>
     <property name="junit.report.style.dir" value="${test.resources.dir}/junitreport/"/>
 
-    <property name="javac.target.version"   value="1.7"/>
+    <property name="javac.target.version"   value="1.8"/>
 
     <property name="execution.maxmem" value="1024m"/>
 
@@ -40,7 +40,7 @@
     </patternset>
 
     <!-- Apache Ivy -->
-    <property name="ivy.publish.revision"   value="3.7-SNAPSHOT"/>
+    <property name="ivy.publish.revision"   value="3.8-SNAPSHOT"/>
     <property name="ivy.artifact.publish.status" value="integration"/>
     <property name="ivy.dir" value="${basedir}/../ivy"/>
     <property name="ivy.xml.file" value="${ivy.dir}/ivy-adapter.xml"/>
@@ -51,10 +51,10 @@
     <property name="manifest.vendor" value="Adaptris Ltd"/>
 
     <property name="jar.version"            value="${ivy.publish.revision}"/>
-    <property name="project.name"           value="adp-${ant.project.name}"/>
+    <property name="project.name"           value="interlok-${ant.project.name}"/>
     <property name="jar.name"               value="${project.name}.jar"/>
     <property name="jar.sources.name"       value="${project.name}-sources.jar"/>
-    <property name="jar.stubs"              value="adp-stubs.jar"/>
+    <property name="jar.stubs"              value="interlok-stubs.jar"/>
 
     <property name="database.user" value="user" />
     <property name="database.password" value="password" />
@@ -180,6 +180,8 @@
     <propertyfile file="${classes.build.dir}/META-INF/adaptris-version">
       <entry key="component.name" value="Base Interlok"/>
       <entry key="build.version" value="${ivy.publish.revision}"/>
+      <entry key="groupId" value="com.adaptris"/>
+      <entry key="artifactId" value="interlok-core"/>
       <entry key="build.date" value="${today}"/>
     </propertyfile>
   </target>
@@ -221,6 +223,7 @@
         <include name="**/core/jms/**/JndiImplementationCase*"/>
         <include name="**/core/jms/ActiveJmsConnectionErrorHandlerCase*"/>
         <include name="**/core/transform/TransformServiceExample*"/>
+	<include name="**/core/services/cache/*Example*"/>
         <include name="**/core/jdbc/JdbcServiceCase*"/>
         <include name="**/core/runtime/ComponentManagerCase*"/>
         <include name="**/stubs/**"/>
@@ -483,14 +486,14 @@
   </target>
 
   <target name="prepare-for-publish" depends="test-check-for-failure, test-never-fail, javadoc">
-    <mkdir dir="${project.dist.dir}/adp-core/javadoc"/>
-    <mkdir dir="${project.dist.dir}/adp-core/examples"/>
-    <mkdir dir="${project.dist.dir}/adp-core/pom"/>
-    <mkdir dir="${project.dist.dir}/adp-core/jar"/>
-    <mkdir dir="${project.dist.dir}/adp-stubs/jar"/>
-    <mkdir dir="${project.dist.dir}/adp-stubs/pom"/>
-    <copy todir="${project.dist.dir}/adp-core/jar" file="${project.dist.dir}/${jar.name}"/>
-    <copy todir="${project.dist.dir}/adp-stubs/jar" file="${project.dist.dir}/${jar.stubs}"/>
+    <mkdir dir="${project.dist.dir}/interlok-core/javadoc"/>
+    <mkdir dir="${project.dist.dir}/interlok-core/examples"/>
+    <mkdir dir="${project.dist.dir}/interlok-core/pom"/>
+    <mkdir dir="${project.dist.dir}/interlok-core/jar"/>
+    <mkdir dir="${project.dist.dir}/interlok-stubs/jar"/>
+    <mkdir dir="${project.dist.dir}/interlok-stubs/pom"/>
+    <copy todir="${project.dist.dir}/interlok-core/jar" file="${project.dist.dir}/${jar.name}"/>
+    <copy todir="${project.dist.dir}/interlok-stubs/jar" file="${project.dist.dir}/${jar.stubs}"/>
     <zip destfile="${project.dist.dir}/${project.name}/javadoc/${project.name}-javadoc.zip" compress="true" level="9">
       <zipfileset dir="${api.doc.dir}" prefix="docs/Interlok-API"/>
     </zip>
@@ -502,8 +505,8 @@
     </zip>
     <jar jarfile="${project.dist.dir}/${project.name}/examples/${project.name}.jar">
       <fileset dir="${example-xml.build.dir}"/>
-    </jar>    
-    <mkdir dir="${project.dist.dir}/adp-core/source"/>
+    </jar>
+    <mkdir dir="${project.dist.dir}/interlok-core/source"/>
     <jar jarfile="${project.dist.dir}/${project.name}/source/${project.name}.jar">
       <fileset dir="${src.dir}"/>
       <zipfileset dir="${basedir}/.." prefix="META-INF">
@@ -511,7 +514,7 @@
       </zipfileset>
     </jar>
     <ivy:makepom ivyfile="${ivy.adapter.xml}" description="Interlok Adapter Base" conf="default,master,compile,provided,runtime,test,system,sources,javadoc,optional" pomfile="${project.dist.dir}/${project.name}/pom/${project.name}.pom"/>
-    <ivy:makepom ivyfile="${ivy.stubs.xml}" description="Test Scaffolding for custom Interlok components"  conf="default,master,compile,provided,runtime,test,system,sources,javadoc,optional" pomfile="${project.dist.dir}/adp-stubs/pom/adp-stubs.pom"/>
+    <ivy:makepom ivyfile="${ivy.stubs.xml}" description="Test Scaffolding for custom Interlok components"  conf="default,master,compile,provided,runtime,test,system,sources,javadoc,optional" pomfile="${project.dist.dir}/interlok-stubs/pom/interlok-stubs.pom"/>
   </target>
 
   <target name="publish" depends="prepare-ivy, prepare-for-publish" description="publish a snapshot">

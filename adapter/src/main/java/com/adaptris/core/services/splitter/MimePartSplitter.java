@@ -99,7 +99,6 @@ public class MimePartSplitter extends MessageSplitterImp {
         dest.addMetadata(defaultIfEmpty(getHeaderPrefix(), "") + h.getName(), h.getValue());
       }
     }
-    return;
   }
 
   /**

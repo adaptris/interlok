@@ -11,7 +11,7 @@
     <property name="project.name" value="interlok-logging"/>
     <property name="project.jar.name" value="${project.name}.jar"/>
     <property name="ivy.publish.bundle.type" value="jar"/>
-    <property name="ivy.publish.revision" value="3.7-SNAPSHOT"/>
+    <property name="ivy.publish.revision" value="3.8-SNAPSHOT"/>
     <property name="ivy.dir" value="${basedir}/../ivy"/>
     <property name="ivy.xml.file" value="${ivy.dir}/ivy-logging.xml"/>
     <property name="ivy.artifact.publish.status" value="integration"/>
@@ -64,7 +64,7 @@
   </target>
 
   <target name="jar" depends="compile">
-    <interlok:create-version dir="${build.classes.dir}/META-INF" name="${manifest.title}"/>
+    <interlok:create-version dir="${build.classes.dir}/META-INF" name="${manifest.title}" artifactId="interlok-logging"/>
     <interlok:create-manifest file="${build.dir}/Manifest.mf" title="${manifest.title}"/>
     <jar jarfile="${project.dist.dir}/${project.jar.name}" manifest="${build.dir}/Manifest.mf">
       <fileset dir="${build.classes.dir}"/>
@@ -91,7 +91,7 @@
       <fileset dir="${api.doc.dir}"/>
     </jar>
     <ivy:makepom ivyfile="${ivy.xml.file}" pomfile="${project.dist.dir}/${project.name}/pom/${project.name}.pom" description="${project.pom.description}"  conf="default,master,compile,provided,runtime,test,system,sources,javadoc,optional"/>
-    <mkdir dir="${project.dist.dir}/adp-core/source"/>
+    <mkdir dir="${project.dist.dir}/interlok-logging/source"/>
     <jar jarfile="${project.dist.dir}/${project.name}/source/${project.name}.jar">
       <fileset dir="${src.dir}"/>
       <zipfileset dir="${basedir}/.." prefix="META-INF">

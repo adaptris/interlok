@@ -89,6 +89,7 @@ junit.AggregatingServiceExamples.baseDir=${junit.ServiceCase.baseDir}/aggregator
 junit.XmlServiceExamples.baseDir=${junit.ServiceCase.baseDir}/xml
 junit.RegexpServiceExamples.baseDir=${junit.ServiceCase.baseDir}/regexp
 junit.TranscodingServiceExamples.baseDir=${junit.ServiceCase.baseDir}/transcoding
+junit.CacheServiceExamples.baseDir=${junit.ServiceCase.baseDir}/cache
 
 
 
@@ -253,5 +254,3 @@ junit.urlstring.serialized=${test.resources.dir}/urlstring.serialized
 junit.urlhelper.local=file://localhost/${test.resources.dir}/xstream-standard.xml
 junit.urlhelper.remote=https://development.adaptris.net/index.html
 junit.urlhelper.classpath=xstream-standard.xml
-
-

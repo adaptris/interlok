@@ -384,7 +384,6 @@ public class WorkflowManager extends ComponentManagerImpl<Workflow>implements Wo
         managedWorkflow.getInterceptors().add(new JettyPoolingWorkflowInterceptor());
       }
     }
-    return;
   }
 
   private static boolean hasInterceptorOfType(List<WorkflowInterceptor> interceptors, Class<?> clz) {

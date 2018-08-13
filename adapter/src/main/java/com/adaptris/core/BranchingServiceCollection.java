@@ -176,4 +176,8 @@ public class BranchingServiceCollection extends ServiceCollectionImp {
     firstServiceId = Args.notBlank(s, "firstServiceId");
   }
 
+  public BranchingServiceCollection withFirstServiceId(String s) {
+    setFirstServiceId(s);
+    return this;
+  }
 }

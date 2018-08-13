@@ -279,35 +279,22 @@ public abstract class CoreConstants {
 
 
   /**
-   * Metadata key for the {@code HttpServletResponse} object metadata made available from Jetty.
+   * @deprecated since 3.8.0 use {@link com.adaptris.core.http.jetty.JettyConstants#JETTY_URL} instead
    */
-  public static final String JETTY_RESPONSE_KEY = "jettyresponse";
+  @Deprecated
+  public static final String JETTY_URL = com.adaptris.core.http.jetty.JettyConstants.JETTY_URL;
 
   /**
-   * Metadata key for the {@code HttpServletRequest} object metadata made available from Jetty.
+   * @deprecated since 3.8.0 use {@link com.adaptris.core.http.jetty.JettyConstants#JETTY_URI} instead
    */
-  public static final String JETTY_REQUEST_KEY = "jettyrequest";
+  @Deprecated
+  public static final String JETTY_URI = com.adaptris.core.http.jetty.JettyConstants.JETTY_URI;
 
   /**
-   * Metadata key that contains the URL that was used to post data to a Jetty instance.
-   *
-   * @see javax.servlet.http.HttpServletRequest#getRequestURL()
+   * @deprecated since 3.8.0 use {@link com.adaptris.core.http.jetty.JettyConstants#JETTY_QUERY_STRING} instead
    */
-  public static final String JETTY_URL = "jettyURL";
-
-  /**
-   * Metadata key that contains the URI that was used to post data to a Jetty instance.
-   *
-   * @see javax.servlet.http.HttpServletRequest#getRequestURI()
-   */
-  public static final String JETTY_URI = "jettyURI";
-
-  /**
-   * Metadata key that contains the query string that was used to post data to a Jetty instance.
-   *
-   * @see javax.servlet.http.HttpServletRequest#getQueryString()
-   */
-  public static final String JETTY_QUERY_STRING = "jettyQueryString";
+  @Deprecated
+  public static final String JETTY_QUERY_STRING = com.adaptris.core.http.jetty.JettyConstants.JETTY_QUERY_STRING;
 
   /**
    * <p>

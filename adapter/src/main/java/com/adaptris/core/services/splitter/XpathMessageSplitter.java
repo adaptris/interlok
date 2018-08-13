@@ -21,7 +21,6 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Iterator;
 
 import javax.validation.constraints.NotNull;
 import javax.xml.namespace.NamespaceContext;
@@ -108,7 +107,7 @@ public class XpathMessageSplitter extends MessageSplitterImp {
   }
 
   @Override
-  public CloseableIterable<AdaptrisMessage> splitMessage(AdaptrisMessage msg) throws CoreException {
+  public com.adaptris.core.util.CloseableIterable<AdaptrisMessage> splitMessage(AdaptrisMessage msg) throws CoreException {
     try {
       return new XmlSplitGenerator(msg);
     }
@@ -209,8 +208,7 @@ public class XpathMessageSplitter extends MessageSplitterImp {
     return DocumentBuilderFactoryBuilder.newInstance(getXmlDocumentFactoryConfig());
   }
 
-  private class XmlSplitGenerator implements CloseableIterable<AdaptrisMessage>, Iterator<AdaptrisMessage> {
-    private final AdaptrisMessage originalMessage;
+  private class XmlSplitGenerator extends SplitMessageIterator {
     private DocumentBuilder docBuilder;
     private NodeList nodeList;
     private String encoding;
@@ -221,12 +219,12 @@ public class XpathMessageSplitter extends MessageSplitterImp {
     private int numberOfMessages;
 
     public XmlSplitGenerator(AdaptrisMessage msg) throws Exception {
-      this.originalMessage = msg;
+      super(msg, selectFactory(msg));
       initialiseSplitGenerator();
     }
 
     private void initialiseSplitGenerator() throws Exception {
-      NamespaceContext namespaceCtx = SimpleNamespaceContext.create(getNamespaceContext(), originalMessage);
+      NamespaceContext namespaceCtx = SimpleNamespaceContext.create(getNamespaceContext(), msg);
       DocumentBuilderFactoryBuilder factoryBuilder = documentFactoryBuilder();
       if (namespaceCtx != null) {
         factoryBuilder = documentFactoryBuilder().withNamespaceAware(true);
@@ -234,50 +232,22 @@ public class XpathMessageSplitter extends MessageSplitterImp {
       DocumentBuilderFactory docBuilderFactory = factoryBuilder.configure(DocumentBuilderFactory.newInstance());
       xml = new XmlUtils(namespaceCtx, docBuilderFactory);
       docBuilder = factoryBuilder.configure(docBuilderFactory.newDocumentBuilder());
-      nodeList = resolveXpath(originalMessage, namespaceCtx, factoryBuilder);
-      encoding = evaluateEncoding(originalMessage);
+      nodeList = resolveXpath(msg, namespaceCtx, factoryBuilder);
+      encoding = evaluateEncoding(msg);
       nodeListIndex = 0;
     }
 
-    @Override
-    public Iterator<AdaptrisMessage> iterator() {
-      return this;
-    }
-
-    @Override
-    public boolean hasNext() {
-      if (nextMessage == null) {
-        try {
-          nextMessage = constructAdaptrisMessage();
-        }
-        catch (Exception e) {
-          logR.warn("Could not construct next AdaptrisMessage", e);
-          throw new RuntimeException("Could not construct next AdaptrisMessage", e);
-        }
-      }
-
-      return nextMessage != null;
-    }
-
-    @Override
-    public AdaptrisMessage next() {
-      AdaptrisMessage ret = nextMessage;
-      nextMessage = null;
-      return ret;
-    }
-
-    private AdaptrisMessage constructAdaptrisMessage() throws Exception {
+    protected AdaptrisMessage constructAdaptrisMessage() throws Exception {
       if (nodeListIndex < nodeList.getLength()) {
         Node e = nodeList.item(nodeListIndex);
         Document splitXmlDoc = docBuilder.newDocument();
         Node dup = splitXmlDoc.importNode(e, true);
         splitXmlDoc.appendChild(dup);
-        
-        AdaptrisMessage splitMsg = selectFactory(originalMessage).newMessage("", encoding);
+        AdaptrisMessage splitMsg = factory.newMessage("", encoding);
         try (Writer writer = splitMsg.getWriter()) {
           xml.writeDocument(splitXmlDoc, writer, encoding);
         }
-        copyMetadata(originalMessage, splitMsg);
+        copyMetadata(msg, splitMsg);
         numberOfMessages++;
         nodeListIndex++;
         return splitMsg;
@@ -289,12 +259,6 @@ public class XpathMessageSplitter extends MessageSplitterImp {
     public void close() throws IOException {
       logR.trace("Split gave {} messages", numberOfMessages);
     }
-
-    @Override
-    public void remove() {
-      throw new UnsupportedOperationException();
-    }
-
   };
 
 }

@@ -20,10 +20,15 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 import com.adaptris.core.fs.FsHelper;
 
@@ -92,4 +97,25 @@ public abstract class URLHelper {
     return in;
   }
 
+  /**
+   * Convert a query string into a map.
+   * 
+   * @param queryString the query string (e.g. a=b&c=d&e=f)
+   * @param charset the character set for {@link URLDecoder#decode(String, String))} purposes
+   * @return a map representation of the query.
+   */
+  public static Map<String, String> queryStringToMap(String queryString, String charset) throws UnsupportedEncodingException {
+    Map<String, String> result = new HashMap<>();
+    String[] pairs = queryString.split("\\&");
+    for (String pair : pairs) {
+      StringTokenizer kp = new StringTokenizer(pair, "=");
+      String key = kp.nextToken();
+      String value = "true";
+      if (kp.hasMoreTokens()) {
+        value = URLDecoder.decode(kp.nextToken(), charset);
+      }
+      result.put(key, value);
+    }
+    return result;
+  }
 }

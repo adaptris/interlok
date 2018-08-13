@@ -252,7 +252,6 @@ public class SimpleDataStore extends DataStore {
       throw new Exception("Couldn't get Lock");
     }
     haveLock = true;
-    return;
   }
 
   /**
@@ -271,7 +270,6 @@ public class SimpleDataStore extends DataStore {
 
     haveLock = false;
 
-    return;
   }
 
   private void checkConfiguration() throws Exception {

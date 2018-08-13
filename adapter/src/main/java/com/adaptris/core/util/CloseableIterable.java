@@ -17,13 +17,32 @@
 package com.adaptris.core.util;
 
 import java.io.Closeable;
+import java.io.IOException;
+import java.util.Iterator;
 
 /**
  * This Iterable exists for the purpose of being able to iterate over a list of indeterminate size
  * (possibly too large for memory), while still guaranteeing that whatever resource is being held (like 
  * a Stream) will be closed when iteration finishes (or it goes out of scope).
  * 
- * @param <E>
  */
 public interface CloseableIterable<E> extends Closeable, Iterable<E> {
+
+  static <E> CloseableIterable<E> ensureCloseable(final Iterable<E> iter) {
+    if (iter instanceof CloseableIterable) {
+      return (CloseableIterable<E>) iter;
+    }
+
+    return new CloseableIterable<E>() {
+      @Override
+      public void close() throws IOException {
+        // No-op
+      }
+
+      @Override
+      public Iterator<E> iterator() {
+        return iter.iterator();
+      }
+    };
+  }
 }

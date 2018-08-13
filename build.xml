@@ -14,6 +14,7 @@
         </ant>
       </sequential>
     </macrodef>
+    <property name="snapshot.version" value="3.8-SNAPSHOT" />
   </target>
 
   <target name="clean" depends="init" description="Clean build artifacts">
@@ -41,7 +42,7 @@
   <target name="tagged.publish" depends="init, clean" if="tag.version">
     <interlok:project-build target="publish" project="apt">
       <ant-properties>
-        <property name="adp-core-version" value="${tag.version}"/>
+        <property name="interlok-core-version" value="${tag.version}"/>
         <property name="ivy.publish.revision" value="${tag.version}"/>
         <property name="ivy.user" value="${ivy.user}"/>
         <property name="ivy.password" value="${ivy.password}"/>
@@ -50,7 +51,7 @@
     </interlok:project-build>
     <interlok:project-build target="publish" project="boot">
       <ant-properties>
-        <property name="adp-core-version" value="${tag.version}"/>
+        <property name="interlok-core-version" value="${tag.version}"/>
         <property name="ivy.publish.revision" value="${tag.version}"/>
         <property name="ivy.user" value="${ivy.user}"/>
         <property name="ivy.password" value="${ivy.password}"/>
@@ -59,7 +60,7 @@
     </interlok:project-build>
     <interlok:project-build target="publish" project="common">
       <ant-properties>
-        <property name="adp-core-version" value="${tag.version}"/>
+        <property name="interlok-core-version" value="${tag.version}"/>
         <property name="ivy.publish.revision" value="${tag.version}"/>
         <property name="ivy.user" value="${ivy.user}"/>
         <property name="ivy.password" value="${ivy.password}"/>
@@ -68,7 +69,7 @@
     </interlok:project-build>
     <interlok:project-build target="publish" project="logging">
       <ant-properties>
-        <property name="adp-core-version" value="${tag.version}"/>
+        <property name="interlok-core-version" value="${tag.version}"/>
         <property name="ivy.publish.revision" value="${tag.version}"/>
         <property name="ivy.user" value="${ivy.user}"/>
         <property name="ivy.password" value="${ivy.password}"/>
@@ -77,7 +78,7 @@
     </interlok:project-build>
     <interlok:project-build target="publish" project="adapter">
       <ant-properties>
-        <property name="adp-core-version" value="${tag.version}"/>
+        <property name="interlok-core-version" value="${tag.version}"/>
         <property name="ivy.publish.revision" value="${tag.version}"/>
         <property name="ivy.repo" value="${ivy.repo}"/>
         <property name="ivy.user" value="${ivy.user}"/>
@@ -99,40 +100,40 @@
       <ant-properties>
         <property name="ivy.user" value="${ivy.user}"/>
         <property name="ivy.password" value="${ivy.password}"/>
-        <property name="adp-core-version" value="3.7-SNAPSHOT"/>
-        <property name="ivy.publish.revision" value="3.7-SNAPSHOT"/>
+        <property name="interlok-core-version" value="${snapshot.version}"/>
+        <property name="ivy.publish.revision" value="${snapshot.version}"/>
       </ant-properties>
     </interlok:project-build>
     <interlok:project-build target="publish" project="boot">
       <ant-properties>
         <property name="ivy.user" value="${ivy.user}"/>
         <property name="ivy.password" value="${ivy.password}"/>
-        <property name="adp-core-version" value="3.7-SNAPSHOT"/>
-        <property name="ivy.publish.revision" value="3.7-SNAPSHOT"/>
+        <property name="interlok-core-version" value="${snapshot.version}"/>
+        <property name="ivy.publish.revision" value="${snapshot.version}"/>
       </ant-properties>
     </interlok:project-build>
     <interlok:project-build target="publish" project="common">
       <ant-properties>
         <property name="ivy.user" value="${ivy.user}"/>
         <property name="ivy.password" value="${ivy.password}"/>
-        <property name="adp-core-version" value="3.7-SNAPSHOT"/>
-        <property name="ivy.publish.revision" value="3.7-SNAPSHOT"/>
+        <property name="interlok-core-version" value="${snapshot.version}"/>
+        <property name="ivy.publish.revision" value="${snapshot.version}"/>
       </ant-properties>
     </interlok:project-build>
     <interlok:project-build target="publish" project="logging">
       <ant-properties>
         <property name="ivy.user" value="${ivy.user}"/>
         <property name="ivy.password" value="${ivy.password}"/>
-        <property name="adp-core-version" value="3.7-SNAPSHOT"/>
-        <property name="ivy.publish.revision" value="3.7-SNAPSHOT"/>
+        <property name="interlok-core-version" value="${snapshot.version}"/>
+        <property name="ivy.publish.revision" value="${snapshot.version}"/>
       </ant-properties>
     </interlok:project-build>
     <interlok:project-build target="publish" project="adapter">
       <ant-properties>
         <property name="ivy.user" value="${ivy.user}"/>
         <property name="ivy.password" value="${ivy.password}"/>
-        <property name="adp-core-version" value="3.7-SNAPSHOT"/>
-        <property name="ivy.publish.revision" value="3.7-SNAPSHOT"/>
+        <property name="interlok-core-version" value="${snapshot.version}"/>
+        <property name="ivy.publish.revision" value="${snapshot.version}"/>
         <property name="junit.test.classes" value="**/*Test*.java"/>
         <property name="junit.with.coverage" value="false"/>
         <property name="junit.forkmode" value="once"/>

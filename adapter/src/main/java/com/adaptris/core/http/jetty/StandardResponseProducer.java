@@ -22,18 +22,12 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.BooleanUtils;
-
 import com.adaptris.annotation.AdapterComponent;
-import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.NullConnection;
 import com.adaptris.core.ProduceDestination;
@@ -57,12 +51,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(summary = "Write and commit the HTTP Response", tag = "producer,http,https", recommended = {NullConnection.class})
 @DisplayOrder(order = {"sendPayload", "flushBuffer", "forwardConnectionException"})
 public class StandardResponseProducer extends ResponseProducerImpl {
-
-  private static final String KEY_RESPONSE_ALREADY_ATTEMPTED = StandardResponseProducer.class.getCanonicalName() + "_attempted";
-
-  @AdvancedConfig
-  @InputFieldDefault(value = "false")
-  private Boolean alwaysAttemptResponse;
 
   public StandardResponseProducer() {
     super();
@@ -91,29 +79,29 @@ public class StandardResponseProducer extends ResponseProducerImpl {
 
   @Override
   public void produce(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException {
-    HttpServletResponse response = (HttpServletResponse) msg.getObjectHeaders().get(CoreConstants.JETTY_RESPONSE_KEY);
-
+    JettyWrapper wrapper = JettyWrapper.unwrap(msg);
     try {
-      if (response == null) {
+      wrapper.lock();
+      if (responseAlreadyAttempted(wrapper)) {
         log.debug("No HttpServletResponse in object metadata, nothing to do");
         return;
       }
-      if (!responseAlreadyAttempted(msg, response)) {
-        msg.getObjectHeaders().put(KEY_RESPONSE_ALREADY_ATTEMPTED, Boolean.TRUE);
-        getResponseHeaderProvider().addHeaders(msg, response);
-        String contentType = getContentTypeProvider().getContentType(msg);
-        response.setContentType(contentType);
-        response.setStatus(getStatus(msg).getCode());
-        commitResponse(msg, response);
-      }
+      HttpServletResponse response = wrapper.getResponse();
+      getResponseHeaderProvider().addHeaders(msg, response);
+      String contentType = getContentTypeProvider().getContentType(msg);
+      response.setContentType(contentType);
+      response.setStatus(getStatus(msg).getCode());
+      commitResponse(msg, response);
+      wrapper.setResponse(null);
     } catch (Exception e) {
       throw ExceptionHelper.wrapProduceException(e);
+    } finally {
+      wrapper.unlock();
     }
   }
 
-  private boolean responseAlreadyAttempted(AdaptrisMessage msg, HttpServletResponse response) {
-    if (alwaysAttemptResponse()) return false;
-    return response.isCommitted() || msg.getObjectHeaders().containsKey(KEY_RESPONSE_ALREADY_ATTEMPTED);
+  private boolean responseAlreadyAttempted(JettyWrapper wrapper) {
+    return wrapper.getResponse() == null;
   }
 
   private void commitResponse(AdaptrisMessage msg, HttpServletResponse response) throws ProduceException {
@@ -146,34 +134,6 @@ public class StandardResponseProducer extends ResponseProducerImpl {
         }
       }
     }
-  }
-
-  public StandardResponseProducer withAlwaysAttemptResponse(Boolean b) {
-    setAlwaysAttemptResponse(b);
-    return this;
-  }
-
-  public Boolean getAlwaysAttemptResponse() {
-    return alwaysAttemptResponse;
-  }
-
-  /**
-   * Whether or not to always attempt a response.
-   * <p>
-   * Generally speaking this should be left as false. By setting it to true, each instance of {@code StandardResponseProducer} in a
-   * service chain will always attempt to write data to the underlying {@link ServletResponse}. This could have undesirable
-   * consequences if connections from the client are left open (e.g. you might end up with stale data from one HTTP request being
-   * sent in response a different HTTP request)
-   * </p>
-   * 
-   * @param alwaysAttemptResponse default is false if not specified.
-   */
-  public void setAlwaysAttemptResponse(Boolean alwaysAttemptResponse) {
-    this.alwaysAttemptResponse = alwaysAttemptResponse;
-  }
-
-  private boolean alwaysAttemptResponse() {
-    return BooleanUtils.toBooleanDefaultIfNull(getAlwaysAttemptResponse(), false);
   }
 
 }

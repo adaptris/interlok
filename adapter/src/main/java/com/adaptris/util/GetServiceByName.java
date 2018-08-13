@@ -77,7 +77,6 @@ public final class GetServiceByName {
       throw new FileNotFoundException("Couldn't find services file ");
     }
 
-    return;
   }
 
   /** setFile.
@@ -96,7 +95,6 @@ public final class GetServiceByName {
     input = new ByteArrayInputStream(b);
     input.mark(0);
 
-    return;
   }
 
   /** Parse an individual line in the services file.

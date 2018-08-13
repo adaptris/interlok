@@ -446,17 +446,6 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
     tzHandler = new TimezoneDateHandler(tz);
   }
 
-  /**
-   * Switch debug of responses on or off
-   * 
-   * @param on true if you wish to have responses to stdout, false otherwise
-   * @deprecated since 3.0.4 use {@link #setAdditionalDebug(boolean)} instead.
-   */
-  @Deprecated
-  public void debugResponses(boolean on) {
-    setAdditionalDebug(on);
-  }
-
   private void logReply(String[] replyText) {
     if (replyText == null || replyText.length == 0) {
       return;

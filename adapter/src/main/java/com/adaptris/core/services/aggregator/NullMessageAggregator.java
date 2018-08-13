@@ -42,6 +42,6 @@ public class NullMessageAggregator implements MessageAggregator {
 
   @Override
   public void joinMessage(AdaptrisMessage msg, Collection<AdaptrisMessage> msgs) throws CoreException {
-    return;
+    // Nothing to do.
   }
 }

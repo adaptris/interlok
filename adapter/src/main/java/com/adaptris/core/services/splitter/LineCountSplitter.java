@@ -21,7 +21,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Iterator;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
@@ -66,7 +65,7 @@ public class LineCountSplitter extends MessageSplitterImp {
     setSplitOnLine(splitOnLine);
   }
 
-  public CloseableIterable<AdaptrisMessage> splitMessage(final AdaptrisMessage msg) throws CoreException {
+  public com.adaptris.core.util.CloseableIterable<AdaptrisMessage> splitMessage(final AdaptrisMessage msg) throws CoreException {
     logR.trace("LineCountSplitter splits every {} lines", splitOnLine());
 
     try {
@@ -172,52 +171,19 @@ public class LineCountSplitter extends MessageSplitterImp {
    * Read the BufferedReader line by line and return each line as an
    * AdaptrisMessage. This implementation is NOT thread safe or reentrant!
    */
-  private class LineCountSplitGenerator implements CloseableIterable<AdaptrisMessage>, Iterator<AdaptrisMessage> {
-    private final AdaptrisMessage msg;
+  private class LineCountSplitGenerator extends SplitMessageIterator {
     private final BufferedReader buf;
-    private final AdaptrisMessageFactory factory;
     private final String header;
-
-    private AdaptrisMessage nextMessage;
     private int numberOfMessages;
 
     public LineCountSplitGenerator(BufferedReader buf, AdaptrisMessage msg, AdaptrisMessageFactory factory, String header) {
+      super(msg, factory);
       this.buf = buf;
-      this.msg = msg;
-      this.factory = factory;
       this.header = header;
       logR.trace("Using message factory: {}", factory.getClass());
     }
 
-    @Override
-    public Iterator<AdaptrisMessage> iterator() {
-      // This Iterable can only be Iterated once so multiple iterators are unsupported. That's why
-      // it's safe to just return this in this method without constructing a new Iterator.
-      return this;
-    }
-
-    @Override
-    public boolean hasNext() {
-      if (nextMessage == null) {
-        try {
-          nextMessage = constructAdaptrisMessage();
-        } catch (IOException e) {
-          logR.warn("Could not construct next AdaptrisMessage", e);
-          throw new RuntimeException("Could not construct next AdaptrisMessage", e);
-        }
-      }
-
-      return nextMessage != null;
-    }
-
-    @Override
-    public AdaptrisMessage next() {
-      AdaptrisMessage ret = nextMessage;
-      nextMessage = null;
-      return ret;
-    }
-
-    private AdaptrisMessage constructAdaptrisMessage() throws IOException {
+    protected AdaptrisMessage constructAdaptrisMessage() throws IOException {
       AdaptrisMessage tmpMessage = factory.newMessage();
       int i = 0;
 
@@ -249,11 +215,6 @@ public class LineCountSplitter extends MessageSplitterImp {
     public void close() throws IOException {
       logR.trace("Split gave {} messages", numberOfMessages);
       buf.close();
-    }
-
-    @Override
-    public void remove() {
-      throw new UnsupportedOperationException();
     }
 
   };

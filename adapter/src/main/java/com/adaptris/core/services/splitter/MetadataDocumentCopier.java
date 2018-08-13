@@ -19,7 +19,6 @@ package com.adaptris.core.services.splitter;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.io.IOException;
-import java.util.Iterator;
 
 import javax.validation.constraints.NotNull;
 
@@ -28,7 +27,6 @@ import org.hibernate.validator.constraints.NotBlank;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -67,7 +65,7 @@ public class MetadataDocumentCopier extends MessageCopier {
   }
 
   @Override
-  public CloseableIterable<AdaptrisMessage> splitMessage(AdaptrisMessage msg) throws CoreException {
+  public com.adaptris.core.util.CloseableIterable<AdaptrisMessage> splitMessage(AdaptrisMessage msg) throws CoreException {
     int size = toInteger(msg.getMetadataValue(getMetadataKey()));     
     return new Copier(msg, size);
   }
@@ -110,45 +108,18 @@ public class MetadataDocumentCopier extends MessageCopier {
   /**
    * Not ThreadSafe, Not Reentrant; but means we can have arbitrarily large amounts of metadata-splits.
    */
-  private class Copier implements CloseableIterable<AdaptrisMessage>, Iterator<AdaptrisMessage> {
-    private final AdaptrisMessage msg;
-    private final AdaptrisMessageFactory factory;
+  private class Copier extends SplitMessageIterator {
     private final int maxCount;
-
-    private AdaptrisMessage nextMessage;
     private int currentCount = 0;
 
     public Copier(AdaptrisMessage msg, int maxItems) {
-      this.msg = msg;
+      super(msg, selectFactory(msg));
       maxCount = maxItems;
-      factory = selectFactory(msg);
     }
 
     @Override
-    public Iterator<AdaptrisMessage> iterator() {
-      // This Iterable can only be Iterated once so multiple iterators are unsupported. That's why
-      // it's safe to just return this in this method without constructing a new Iterator.
-      return this;
-    }
-
-    @Override
-    public boolean hasNext() {
-      if (nextMessage == null) {
-        nextMessage = createNext();
-      }
-      return nextMessage != null;
-    }
-
-    @Override
-    public AdaptrisMessage next() {
-      AdaptrisMessage ret = nextMessage;
-      nextMessage = null;
-      return ret;
-    }
-
-    private AdaptrisMessage createNext() {
-      if (currentCount >= maxCount)
-        return null;
+    protected AdaptrisMessage constructAdaptrisMessage() throws IOException {
+      if (currentCount >= maxCount) return null;
       try {
         AdaptrisMessage splitMsg = duplicateWithPayload(factory, msg);
         copyMetadata(msg, splitMsg);
@@ -164,11 +135,6 @@ public class MetadataDocumentCopier extends MessageCopier {
 
     @Override
     public void close() throws IOException {
-    }
-
-    @Override
-    public void remove() {
-      throw new UnsupportedOperationException();
     }
 
   };

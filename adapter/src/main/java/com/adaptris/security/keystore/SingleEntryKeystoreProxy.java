@@ -61,7 +61,6 @@ abstract class SingleEntryKeystoreProxy implements KeystoreProxy {
           "No alias name associated with this certificate");
     }
     aliasName = s.toLowerCase();
-    return;
   }
 
   /**
@@ -106,7 +105,6 @@ abstract class SingleEntryKeystoreProxy implements KeystoreProxy {
   public void setCertificate(String alias, String filename)
       throws AdaptrisSecurityException {
     this.setCertificate(alias, new File(filename));
-    return;
   }
 
   /**

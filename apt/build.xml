@@ -8,17 +8,17 @@
   <import file="${basedir}/../ivy/ant-ivy-includes.xml"/>
 
   <target name="init">
-    <property name="project.name" value="adp-core-apt"/>
+    <property name="project.name" value="interlok-core-apt"/>
     <property name="project.jar.name" value="${project.name}.jar"/>
     <property name="ivy.publish.bundle.type" value="jar"/>
-    <property name="ivy.publish.revision" value="3.7-SNAPSHOT"/>
+    <property name="ivy.publish.revision" value="3.8-SNAPSHOT"/>
     <property name="ivy.dir" value="${basedir}/../ivy"/>
     <property name="ivy.xml.file" value="${ivy.dir}/ivy-apt.xml"/>
     <property name="ivy.artifact.publish.status" value="integration"/>
 
     <property name="manifest.title" value="Interlok Annotation Support"/>
     <property name="project.pom.description" value="${manifest.title}"/>
-    
+
     <property name="src.dir" value="${basedir}/src/main/java" />
     <property name="build.dir" value="${basedir}/target" />
     <property name="build.classes.dir" value="${build.dir}/classes" />
@@ -53,7 +53,7 @@
     <copy file="${resources.dir}/velocity.properties" tofile="${build.classes.dir}/velocity.properties"/>
     <copy file="${resources.dir}/beanInfo.vm" tofile="${build.classes.dir}/beanInfo.vm"/>
     <copy file="${resources.dir}/ValidationMessages.properties" tofile="${build.classes.dir}/ValidationMessages.properties"/>
-    <interlok:create-version dir="${build.classes.dir}/META-INF" name="${manifest.title}"/>
+    <interlok:create-version dir="${build.classes.dir}/META-INF" name="${manifest.title}" artifactId="interlok-core-apt"/>
     <interlok:create-manifest file="${build.dir}/Manifest.mf" title="${manifest.title}"/>
 
     <jar jarfile="${project.dist.dir}/${project.jar.name}" manifest="${build.dir}/Manifest.mf">

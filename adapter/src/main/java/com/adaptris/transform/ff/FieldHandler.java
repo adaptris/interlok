@@ -153,7 +153,6 @@ public class FieldHandler extends Handler
   public void setCount(int i)
   {
     COUNT = i;
-    return;
   }
 
   /** Dummy function */

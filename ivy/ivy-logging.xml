@@ -22,7 +22,7 @@
      <artifact type="source" ext="jar" conf="sources" m:classifier="sources"/>
   </publications>
   <dependencies>
-    <dependency org="com.adaptris" name="adp-core-apt" rev="${ivy.publish.revision}" conf="compile->default;ant->default" changing="true"/>
+    <dependency org="com.adaptris" name="interlok-core-apt" rev="${ivy.publish.revision}" conf="compile->default;ant->default" changing="true"/>
 
     <dependency org="org.apache.logging.log4j" name="log4j-core" rev="2.9.1" conf="optional->default" />
     <dependency org="org.apache.logging.log4j" name="log4j-api" rev="2.9.1"  conf="optional->default"/>

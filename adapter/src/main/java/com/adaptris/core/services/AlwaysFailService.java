@@ -32,7 +32,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * 
  * @author lchan
- * @deprecated consider using {@link ThrowExceptionService} instead (since 2.6.2) which wil give you a better exception message.
+ * @deprecated since 3.0.0 consider using {@link ThrowExceptionService} instead which wils give you a better exception message.
  */
 @Deprecated
 @XStreamAlias("always-fail-service")
