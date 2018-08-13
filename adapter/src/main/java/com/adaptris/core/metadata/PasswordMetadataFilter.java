@@ -58,12 +58,12 @@ public abstract class PasswordMetadataFilter extends MetadataFilterImpl {
     patternPasswords = validatePatterns(getPasswordPatterns(), patternPasswords);
     MetadataCollection result = new MetadataCollection();
     result.addAll(original.parallelStream().map(e -> {
-      return matches(e, patternPasswords) ? modify(e) : e;
+      return matches(e, patternPasswords) ? rebuild(e) : e;
     }).collect(Collectors.toList()));
     return result;
   }
 
-  private MetadataElement modify(MetadataElement e) {
+  private MetadataElement rebuild(MetadataElement e) {
     try {
       return handlePassword(e);
     } catch (PasswordException exc) {

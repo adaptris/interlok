@@ -17,7 +17,6 @@
 package com.adaptris.core.metadata;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.MetadataElement;
@@ -39,7 +38,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("password-encoder-metadata-filter")
 public class PasswordEncodeMetadataFilter extends PasswordMetadataFilter {
 
-  @NotBlank
   @InputFieldDefault(value = Password.PORTABLE_PASSWORD)
   private String style;
 
