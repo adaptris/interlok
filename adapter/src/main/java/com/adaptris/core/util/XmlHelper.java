@@ -30,7 +30,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.xerces.util.XMLChar;
 import org.w3c.dom.Document;
 import org.xml.sax.ErrorHandler;
@@ -107,11 +106,10 @@ public class XmlHelper {
       throws CoreException {
     XmlUtils result = null;
     DivertConsoleOutput dc = new DivertConsoleOutput();
-    InputStream input = null;
-    try {
+
+    try (InputStream input = msg.getInputStream()) {
       DocumentBuilderFactory dbf = DocumentBuilderFactoryBuilder.newInstance(builder).withNamespaceAware(ctx).build();
       result = new XmlUtils(ctx, dbf);
-      input = msg.getInputStream();
       InputSource in = new InputSource(input);
       // Well what we're going to do here is annoyingly bad, but I want to eat
       // those stupid System.err messages that contain shit like
@@ -122,7 +120,6 @@ public class XmlHelper {
       result = null;
     } finally {
       dc.resume();
-      IOUtils.closeQuietly(input);
     }
     if (dc.consoleOutput().contains("[Fatal Error]") || result == null) {
       throw new CoreException(
@@ -162,15 +159,7 @@ public class XmlHelper {
    */
   public static Document createDocument(AdaptrisMessage msg, DocumentBuilderFactoryBuilder builder)
       throws ParserConfigurationException, IOException, SAXException {
-    Document result = null;
-    InputStream in = null;
-    try {
-      in = msg.getInputStream();
-      result = newDocumentBuilder(builder).parse(new InputSource(in));
-    } finally {
-      IOUtils.closeQuietly(in);
-    }
-    return result;
+    return createDocument(msg.getInputStream(), builder);
   }
 
 
@@ -242,14 +231,29 @@ public class XmlHelper {
   public static Document createDocument(String s, DocumentBuilderFactoryBuilder builder)
       throws ParserConfigurationException, IOException, SAXException {
     Document result = null;
-    StringReader in = new StringReader(s);
-    try {
+
+    try (StringReader in = new StringReader(s)) {
       result = newDocumentBuilder(builder).parse(new InputSource(in));
-    } finally {
-      IOUtils.closeQuietly(in);
     }
     return result;
   }
+
+  /**
+   * Create a document from an {@code InputStream}.
+   * 
+   * @param in the inputstream
+   * @param builder configuration for the underlying {@link DocumentBuilderFactory} instance..
+   * @return the Document element
+   */
+  public static Document createDocument(InputStream in, DocumentBuilderFactoryBuilder builder)
+      throws ParserConfigurationException, IOException, SAXException {
+    Document result = null;
+    try (InputStream docIn = in) {
+      result = newDocumentBuilder(builder).parse(new InputSource(docIn));
+    }
+    return result;
+  }
+
   /**
    * Make a safe element name by stripping out illegal XML characters and illegal element characters.
    * 
