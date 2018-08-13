@@ -92,6 +92,11 @@ public class MetadataFilterService extends ServiceImp {
     filter = Args.notNull(mf, "filter");
   }
 
+  public MetadataFilterService withFilter(MetadataFilter mf) {
+    setFilter(mf);
+    return this;
+  }
+
   @Override
   public void prepare() throws CoreException {
   }
