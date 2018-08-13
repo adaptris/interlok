@@ -35,7 +35,6 @@ import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
-import com.adaptris.core.metadata.MetadataFilter;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -162,8 +161,8 @@ public final class MapMessageTranslator extends MessageTypeTranslatorImp {
   /**
    * When translating from AdaptrisMessage to MapMessage treat AdaptrisMessage metadata as part of the MapMessage.
    * <p>
-   * Setting this to true does not means that {@link #setMetadataFilter(MetadataFilter)} is ignored; things may still be added as
-   * JMS Properties
+   * Setting this to true does not mean that {@link #setMetadataFilter(com.adaptris.core.metadata.MetadataFilter)} is ignored;
+   * things may still be added as JMS Properties
    * </p>
    *
    * @param b true to force AdaptrisMessage metadata to be treated as part of the MapMessage rather as standard JMS properties.

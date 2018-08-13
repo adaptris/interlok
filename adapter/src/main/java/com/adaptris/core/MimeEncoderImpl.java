@@ -30,11 +30,16 @@ import java.util.Set;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
+import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 import javax.validation.constraints.Pattern;
 
+import org.apache.commons.io.IOUtils;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.core.util.Args;
+import com.adaptris.util.text.mime.BodyPartIterator;
 import com.adaptris.util.text.mime.ByteArrayDataSource;
 import com.adaptris.util.text.mime.MimeConstants;
 
@@ -74,6 +79,20 @@ public abstract class MimeEncoderImpl extends AdaptrisMessageEncoderImp {
       p.setDataHandler(new DataHandler(new ByteArrayDataSource(out.toByteArray())));
     }
     return p;
+  }
+
+  protected void addPartsToMessage(BodyPartIterator input, AdaptrisMessage msg) throws IOException, MessagingException {
+    MimeBodyPart payloadPart = Args.notNull(input.getBodyPart(PAYLOAD_CONTENT_ID), "payload");
+    MimeBodyPart metadataPart = Args.notNull(input.getBodyPart(METADATA_CONTENT_ID), "metadata");
+    try (InputStream payloadIn = payloadPart.getInputStream();
+        InputStream metadata = metadataPart.getInputStream();
+        OutputStream out = msg.getOutputStream()) {
+      IOUtils.copy(payloadIn, out);
+      msg.setMetadata(getMetadataSet(metadata));
+    }
+    if (retainUniqueId()) {
+      msg.setUniqueId(input.getMessageID());
+    }
   }
 
   /**

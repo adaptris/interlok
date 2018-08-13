@@ -18,11 +18,9 @@ package com.adaptris.core.jms;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
-import java.util.Properties;
-import java.util.StringTokenizer;
+import java.util.Map;
 
 import javax.jms.Connection;
 import javax.jms.Destination;
@@ -38,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.jms.JmsDestination.DestinationType;
+import com.adaptris.util.URLHelper;
 
 /**
  * <p>
@@ -166,16 +165,15 @@ public abstract class VendorImplementationImp implements VendorImplementation {
       jmsDest.setDestination(jmsDest.destType.create(this, c, name));
 
       if (parts.length > 1) {
-        Properties p = paramsToProperties(parts[1], URI_CHARSET);
-        jmsDest.setDeliveryMode(p.getProperty(RFC6167_DELIVERY_MODE));
-        jmsDest.setPriority(p.getProperty(RFC6167_PRIORITY));
-        jmsDest.setTimeToLive(p.getProperty(RFC6167_TIME_TO_LIVE));
-        jmsDest.setSubscriptionId(p.getProperty(RFC6167_SUBSCRIPTION_ID));
-        jmsDest.setNoLocal(p.getProperty(RFC6167_NO_LOCAL));
-        String replyToName = p.getProperty(RFC6167_REPLY_TO_NAME);
+        Map<String, String> params = URLHelper.queryStringToMap(parts[1], URI_CHARSET);
+        jmsDest.setDeliveryMode(params.get(RFC6167_DELIVERY_MODE));
+        jmsDest.setPriority(params.get(RFC6167_PRIORITY));
+        jmsDest.setTimeToLive(params.get(RFC6167_TIME_TO_LIVE));
+        jmsDest.setSubscriptionId(params.get(RFC6167_SUBSCRIPTION_ID));
+        jmsDest.setNoLocal(params.get(RFC6167_NO_LOCAL));
+        String replyToName = params.get(RFC6167_REPLY_TO_NAME);
         if (!isEmpty(replyToName)) {
           jmsDest.setReplyTo(jmsDest.destType.create(this, c, replyToName));
-
         }
       }
     } catch (NullPointerException e) {
@@ -185,25 +183,6 @@ public abstract class VendorImplementationImp implements VendorImplementation {
     }
     return jmsDest;
   }
-
-
-  private static Properties paramsToProperties(String payload, String charset)
-      throws UnsupportedEncodingException {
-    Properties result = new Properties();
-    StringTokenizer st = new StringTokenizer(payload, "&");
-    while (st.hasMoreTokens()) {
-      String s = st.nextToken();
-      StringTokenizer kp = new StringTokenizer(s, "=");
-      String key = kp.nextToken();
-      String value = "true";
-      if (kp.hasMoreTokens()) {
-        value = URLDecoder.decode(kp.nextToken(), charset);
-      }
-      result.put(key, value);
-    }
-    return result;
-  }
-
 
   private class JmsDestinationImpl implements JmsDestination {
 

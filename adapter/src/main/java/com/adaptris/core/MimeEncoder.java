@@ -22,12 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.mail.internet.MimeBodyPart;
-
-import org.apache.commons.io.IOUtils;
-
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.text.mime.BodyPartIterator;
 import com.adaptris.util.text.mime.MultiPartOutput;
@@ -97,17 +92,7 @@ public class MimeEncoder extends MimeEncoderImpl {
       }
       InputStream encodedInput = (InputStream) source;
       BodyPartIterator input = new BodyPartIterator(encodedInput);
-      MimeBodyPart payloadPart = Args.notNull(input.getBodyPart(PAYLOAD_CONTENT_ID), "payload");
-      MimeBodyPart metadataPart = Args.notNull(input.getBodyPart(METADATA_CONTENT_ID), "metadata");
-      try (InputStream payloadIn = payloadPart.getInputStream();
-          InputStream metadata = metadataPart.getInputStream();
-          OutputStream out = msg.getOutputStream()) {
-        IOUtils.copy(payloadIn, out);
-        msg.setMetadata(getMetadataSet(metadata));
-      }
-      if (retainUniqueId()) {
-        msg.setUniqueId(input.getMessageID());
-      }
+      addPartsToMessage(input, msg);
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }

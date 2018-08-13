@@ -46,7 +46,6 @@ public class DefaultPreProcessorLoader implements ConfigPreProcessorLoader {
   private transient Logger log = LoggerFactory.getLogger(DefaultPreProcessorLoader.class);
 
   private static final String PRE_PROCESSOR_SEPARATOR = ":";
-  private static final String NAME_PROPERTY_KEY = "name";
   private static final String CLASS_PROPERTY_KEY = "class";
   private static final transient String PRE_PROCESSOR_RESOURCE = "META-INF/com/adaptris/core/preprocessor/";
 
