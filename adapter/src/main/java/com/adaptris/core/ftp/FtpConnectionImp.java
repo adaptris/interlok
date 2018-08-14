@@ -166,7 +166,7 @@ public abstract class FtpConnectionImp extends FileTransferConnectionUsingPasswo
   @Override
   protected FileTransferClient create(String remoteHost, int port, UserInfo ui)
       throws IOException, FileTransferException, PasswordException {
-    log.debug("Connecting to " + remoteHost + ":" + port + " as user " + ui.getUser());
+    log.debug("Connecting to {}:{} as user {}", remoteHost, port, ui.getUser());
 
     ApacheFtpClientImpl ftp = createFtpClient(remoteHost, port, socketTimeout())
         .withAdditionalSettings(KeyValuePairBag.asMap(getAdditionalSettings()));
@@ -184,10 +184,8 @@ public abstract class FtpConnectionImp extends FileTransferConnectionUsingPasswo
     }
     ftp.setType(transferType());
     if (additionalDebug()) {
-      log.trace("Server OS [" + ftp.system() + "], Current Directory [" + ftp.pwd() + "], Transfer Type [" + transferType().name()
-          + "]");
+      log.trace("Server OS [{}], Current Directory [{}], Transfer Type [{}]",ftp.system(),ftp.pwd(),transferType().name());
     }
-
     return ftp;
   }
 
