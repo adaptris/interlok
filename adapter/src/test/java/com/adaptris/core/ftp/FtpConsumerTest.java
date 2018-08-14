@@ -42,7 +42,10 @@ import com.adaptris.core.MimeEncoder;
 import com.adaptris.core.QuartzCronPoller;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.stubs.MockMessageListener;
+import com.adaptris.ftp.ClientSettings;
 import com.adaptris.ftp.FtpDataMode;
+import com.adaptris.util.KeyValuePair;
+import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.TimeInterval;
 
 public class FtpConsumerTest extends FtpConsumerCase {
@@ -498,6 +501,9 @@ public class FtpConsumerTest extends FtpConsumerCase {
     consumeConnection.setDefaultUserName(DEFAULT_USERNAME);
     consumeConnection.setCacheConnection(true);
     consumeConnection.setAdditionalDebug(true);
+    KeyValuePairSet settings = new KeyValuePairSet();
+    settings.add(new KeyValuePair(ClientSettings.FTP.RemoteVerificationEnabled.name(), "false"));
+    consumeConnection.setAdditionalSettings(settings);
     return consumeConnection;
   }
 

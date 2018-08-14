@@ -26,22 +26,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Abstract implementation of FileTransferClient.
  * 
- * @author lchan
- * @author $Author: lchan $
  */
 public abstract class FileTransferClientImp implements FileTransferClient {
 
-  protected transient Logger logR;
+  protected transient Logger logR = LoggerFactory.getLogger(this.getClass().getName());
   private transient boolean additionalDebug = false;
+
   public FileTransferClientImp() {
-    logR = LoggerFactory.getLogger(this.getClass().getName());
   }
 
 
@@ -60,13 +57,8 @@ public abstract class FileTransferClientImp implements FileTransferClient {
    */
   public void put(String localPath, String remoteFile, boolean append)
       throws IOException, FileTransferException {
-    FileInputStream in = null;
-    try {
-      in = new FileInputStream(localPath);
+    try (FileInputStream in = new FileInputStream(localPath)) {
       put(in, remoteFile, append);
-    }
-    finally {
-      IOUtils.closeQuietly(in);
     }
   }
 
@@ -132,13 +124,8 @@ public abstract class FileTransferClientImp implements FileTransferClient {
    */
   public void get(String localPath, String remoteFile) throws IOException,
       FileTransferException {
-
-    FileOutputStream out = new FileOutputStream(localPath);
-    try {
+    try (FileOutputStream out = new FileOutputStream(localPath)) {
       get(out, remoteFile);
-    }
-    finally {
-      IOUtils.closeQuietly(out);
     }
   }
 

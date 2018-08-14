@@ -16,7 +16,6 @@
 
 package com.adaptris.ftp;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,14 +24,18 @@ import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPCmd;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 
+import com.adaptris.core.util.Args;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferClientImp;
 import com.adaptris.filetransfer.FileTransferException;
@@ -42,12 +45,8 @@ import com.adaptris.util.FifoMutexLock;
  * Base implementation of {@link FileTransferClient} that uses the apache
  * commons net FTP implementation.
  * 
- * @author D.Sefton
- * 
  */
 public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTransferClientImp implements FtpFileTransferClient {
-
-  private static final int CHUNK_SIZE = 4096;
 
   private transient T ftp;
   private transient TimezoneDateHandler tzHandler;
@@ -55,14 +54,18 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
   private transient String remoteHost;
   private transient int timeout;
   private transient int port;
+  protected transient Map<String, String> additionalSettings;
+
 
   // This is to handle possible thread safety from Usage from
   // FileTransferConnection
   private transient FifoMutexLock lock;
 
+
   private ApacheFtpClientImpl() {
     super();
     lock = new FifoMutexLock();
+    additionalSettings = new HashMap<String, String>();
   }
 
   /**
@@ -76,17 +79,21 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
     this();
     this.remoteHost = remoteHost;
     this.port = port;
-    this.timeout = timeout;
-
+    setTimeout(timeout);
     tzHandler = new TimezoneDateHandler(TimeZone.getDefault());
+  }
+
+  public <S extends ApacheFtpClientImpl> S withAdditionalSettings(Map<String, String> settings) {
+    additionalSettings = Args.notNull(settings, "additionalSettings");
+    return (S) this;
   }
 
   private T ftpClient() throws IOException {
     if (ftp == null) {
       ftp = createFTPClient();
-      ftp.setConnectTimeout(timeout);
-      ftp.setDataTimeout(timeout);
-
+      preConnectSettings(ftp);
+      ftp.setConnectTimeout(getTimeout());
+      ftp.setDataTimeout(getTimeout());
       try {
         ftp.connect(remoteHost, port);
         logReply(ftp.getReplyStrings());
@@ -94,8 +101,8 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
         if (!FTPReply.isPositiveCompletion(replyCode)) {
           throw new IOException("FTP Server refused connection");
         }
-        additionalSettings(ftp);
-      } catch (IOException e) {
+        postConnectSettings(ftp);
+      } catch (IOException | RuntimeException e) {
         if (ftp.isConnected()) {
           ftp.disconnect();
           ftp = null;
@@ -106,7 +113,6 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
     return ftp;
   }
 
-
   /**
    * Create the base commons net client.
    * 
@@ -114,7 +120,9 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
    */
   protected abstract T createFTPClient();
 
-  protected abstract void additionalSettings(T client) throws IOException;
+  protected abstract void preConnectSettings(T client) throws IOException;
+
+  protected abstract void postConnectSettings(T client) throws IOException;
 
   public int getTimeout() throws IOException {
     return timeout;
@@ -215,28 +223,12 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
     try {
       acquireLock();
       log("{} {}", FTPCmd.RETR, remoteFile);
-      // Get input stream from FTP server
-      BufferedInputStream in = new BufferedInputStream(ftpClient().retrieveFileStream(remoteFile));
-      long size = 0;
-      byte[] chunk = new byte[CHUNK_SIZE];
-      int count;
-
-      // Read from input and write to output in chunks
-      try {
-        while ((count = in.read(chunk, 0, CHUNK_SIZE)) >= 0) {
-          out.write(chunk, 0, count);
-          size += count;
-        }
-
-        ftpClient().completePendingCommand();
+      try (InputStream i = ftpClient().retrieveFileStream(remoteFile); OutputStream o = out) {
+        IOUtils.copy(i, o);
       }
-      finally {
-        out.flush();
-
-        in.close();
-      }
+      ftpClient().completePendingCommand();
       logReply(ftpClient().getReplyStrings());
-      log("Transferred " + size + " bytes from remote host");
+      log("Transferred {} bytes from remote host", out.size());
     }
     finally {
       releaseLock();
@@ -420,7 +412,6 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
     Date lastModified = null;
     try {
       acquireLock();
-      releaseLock();
       log("MDTM {}", path);
       ftpClient().sendCommand("MDTM", path);
       Reply reply = validateReply(ftpClient().getReplyString(), "213");
@@ -594,7 +585,7 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
     }
   }
 
-  void handleReturnValue(boolean value) throws IOException {
+  protected void handleReturnValue(boolean value) throws IOException {
     if (!value) {
       throw new IOException(ftpClient().getReplyString());
     }

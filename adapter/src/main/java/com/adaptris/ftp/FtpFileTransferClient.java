@@ -39,4 +39,5 @@ public interface FtpFileTransferClient extends FileTransferClient {
    * @throws IOException if a comms error occurs
    */
   void connect(String user, String password, String account) throws IOException, FileTransferException;
+
 }
