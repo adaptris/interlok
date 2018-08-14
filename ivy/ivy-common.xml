@@ -30,7 +30,7 @@
     <dependency org="commons-io" name="commons-io" rev="2.4" conf="compile->default"  />
     <dependency org="commons-lang" name="commons-lang" rev="2.6" conf="compile->default"  />
     <dependency org="commons-net" name="commons-net" rev="3.3" conf="compile->default" />
-    <dependency org="commons-pool" name="commons-pool" rev="1.6" conf="compile->default" />
+    <dependency org="org.apache.commons" name="commons-pool2" rev="2.6.0" conf="compile->default" />
 
     <dependency org="org.slf4j" name="jcl-over-slf4j" rev="1.7.25" conf="optional->default" />
     <dependency org="org.slf4j" name="slf4j-api" rev="1.7.25" conf="compile->default" />
