@@ -48,11 +48,24 @@ public class ServiceExceptionHandler implements Thread.UncaughtExceptionHandler 
     exceptionList.clear();
   }
 
+  /**
+   * Note that this also clears any exceptions.
+   * 
+   * @throws ServiceException if there was an exception.
+   * @see #getFirstThrowableException()
+   */
   public void throwFirstException() throws ServiceException {
     Throwable e = getFirstThrowableException();
     if (e != null) {
       log.error("One or more services failed: {}", e.getMessage());
-      throw ExceptionHelper.wrapServiceException(e);
+      ServiceException wrappedException = ExceptionHelper.wrapServiceException(e);
+      for (Throwable t : exceptionList) {
+        if (t != e) {
+          wrappedException.addSuppressed(t);
+        }
+      }
+      clearExceptions();
+      throw wrappedException;
     }
   }
 }
