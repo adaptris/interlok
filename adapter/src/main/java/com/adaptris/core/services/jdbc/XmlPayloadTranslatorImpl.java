@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -272,21 +273,8 @@ public abstract class XmlPayloadTranslatorImpl extends ResultSetTranslatorImp {
     this.stripIllegalXmlChars = s;
   }
 
-  boolean stripIllegalXmlChars() {
-    return getStripIllegalXmlChars() != null ? getStripIllegalXmlChars().booleanValue() : false;
-  }
-
-  /**
-   * Helper method to write the XML document to the AdaptrisMessage taking into account any encoding requirements.
-   * 
-   * @param doc the XML document
-   * @param msg the AdaptrisMessage
-   * @throws Exception
-   * @deprecated use {@link XmlHelper#writeXmlDocument(Document, AdaptrisMessage, String)} instead.
-   */
-  @Deprecated
-  protected void writeXmlDocument(Document doc, AdaptrisMessage msg) throws Exception {
-    XmlHelper.writeXmlDocument(doc, msg, getOutputMessageEncoding());
+  protected boolean stripIllegalXmlChars() {
+    return BooleanUtils.toBooleanDefaultIfNull(getStripIllegalXmlChars(), false);
   }
 
   protected class DocumentWrapper {

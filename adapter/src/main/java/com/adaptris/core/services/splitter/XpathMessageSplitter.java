@@ -17,7 +17,6 @@
 package com.adaptris.core.services.splitter;
 
 import static com.adaptris.core.util.XmlHelper.createDocument;
-import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -40,6 +39,7 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
+import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.XmlUtils;
 import com.adaptris.util.text.xml.SimpleNamespaceContext;
@@ -184,17 +184,6 @@ public class XpathMessageSplitter extends MessageSplitterImp {
     this.namespaceContext = kvps;
   }
 
-  private String evaluateEncoding(AdaptrisMessage msg) {
-    String encoding = "UTF-8";
-    if (!isEmpty(getEncoding())) {
-      encoding = getEncoding();
-    }
-    else if (!isEmpty(msg.getContentEncoding())) {
-      encoding = msg.getContentEncoding();
-    }
-    return encoding;
-  }
-
   public DocumentBuilderFactoryBuilder getXmlDocumentFactoryConfig() {
     return xmlDocumentFactoryConfig;
   }
@@ -233,7 +222,7 @@ public class XpathMessageSplitter extends MessageSplitterImp {
       xml = new XmlUtils(namespaceCtx, docBuilderFactory);
       docBuilder = factoryBuilder.configure(docBuilderFactory.newDocumentBuilder());
       nodeList = resolveXpath(msg, namespaceCtx, factoryBuilder);
-      encoding = evaluateEncoding(msg);
+      encoding = XmlHelper.getXmlEncoding(msg, getEncoding());
       nodeListIndex = 0;
     }
 
@@ -244,6 +233,9 @@ public class XpathMessageSplitter extends MessageSplitterImp {
         Node dup = splitXmlDoc.importNode(e, true);
         splitXmlDoc.appendChild(dup);
         AdaptrisMessage splitMsg = factory.newMessage("", encoding);
+        // Could we switch to using XmlHelper here, because the document
+        // already has the namespace stuffs, so rendering it is probably fine.
+        // probably best not to change behaviour right now.
         try (Writer writer = splitMsg.getWriter()) {
           xml.writeDocument(splitXmlDoc, writer, encoding);
         }

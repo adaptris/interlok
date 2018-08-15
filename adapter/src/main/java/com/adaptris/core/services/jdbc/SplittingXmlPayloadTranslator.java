@@ -45,6 +45,7 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.core.util.XmlHelper;
 import com.adaptris.jdbc.JdbcResult;
 import com.adaptris.jdbc.JdbcResultRow;
 import com.adaptris.jdbc.JdbcResultSet;
@@ -179,8 +180,7 @@ public class SplittingXmlPayloadTranslator extends XmlPayloadTranslatorImpl {
           
           // Fill the message with the requisite number of rows if this ResultSet has enough of them
           DocumentWrapper doc = toDocument(outputMessage, new LimitedResultSet(rows, getMaxRowsPerMessage()));
-          writeXmlDocument(doc.document, outputMessage);
-          
+          XmlHelper.writeXmlDocument(doc.document, outputMessage, getOutputMessageEncoding());
           // Use the configured producer to send the message on its way
           getProducer().produce(outputMessage);
           resultSetCount += doc.resultSetCount;

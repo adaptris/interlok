@@ -31,6 +31,7 @@ import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
+import com.adaptris.core.util.XmlHelper;
 import com.adaptris.jdbc.JdbcResult;
 import com.adaptris.jdbc.JdbcResultSet;
 import com.adaptris.util.XmlUtils;
@@ -104,7 +105,7 @@ public class XmlPayloadTranslator extends XmlPayloadTranslatorImpl {
     long resultSetCount = 0;
     try {
       DocumentWrapper d = toDocument(source, target);
-      writeXmlDocument(d.document, target);
+      XmlHelper.writeXmlDocument(d.document, target, getOutputMessageEncoding());
       resultSetCount = d.resultSetCount;
     }
     catch (SQLException e) {

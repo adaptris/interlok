@@ -302,7 +302,7 @@ public class XmlHelper {
    * @throws Exception
    */
   public static void writeXmlDocument(Document doc, AdaptrisMessage msg, String encoding) throws Exception {
-    String encodingToUse = evaluateEncoding(msg, encoding);
+    String encodingToUse = getXmlEncoding(msg, encoding);
     try (OutputStream out = msg.getOutputStream()) {
       new XmlUtils().writeDocument(doc, out, encodingToUse);
     }
@@ -317,7 +317,7 @@ public class XmlHelper {
    * @return either the value of {@code encoding}, {@code AdaptrisMessage#getContentEncoding()} or 'UTF-8' in that order or
    *         preference.
    */
-  public static String evaluateEncoding(AdaptrisMessage msg, String enc) {
+  public static String getXmlEncoding(AdaptrisMessage msg, String enc) {
     String encoding = "UTF-8";
     if (!isBlank(enc)) {
       encoding = enc;

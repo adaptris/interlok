@@ -79,20 +79,11 @@ public class XmlDocumentAggregator extends MessageAggregatorImpl {
         overwriteMetadata(m, original);
         resultDoc = getMergeImplementation().merge(resultDoc, mergeDoc);
       }
-      writeXmlDocument(resultDoc, original);
+      XmlHelper.writeXmlDocument(resultDoc, original, getDocumentEncoding());
     }
     catch (Exception e) {
       ExceptionHelper.rethrowCoreException(e);
     }
-  }
-
-  /**
-   * @deprecated use {@link XmlHelper#writeXmlDocument(Document, AdaptrisMessage, String)} instead.
-   * 
-   */
-  @Deprecated
-  protected void writeXmlDocument(Document doc, AdaptrisMessage msg) throws Exception {
-    XmlHelper.writeXmlDocument(doc, msg, getDocumentEncoding());
   }
 
   /**
