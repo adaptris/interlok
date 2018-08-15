@@ -21,7 +21,6 @@ import java.io.OutputStream;
 
 import javax.validation.Valid;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -88,21 +87,17 @@ public class ExceptionAsXml implements ExceptionSerializer {
 
   @Override
   public void serialize(Exception exception, AdaptrisMessage msg) throws CoreException {
-    OutputStream out = null;
     try {
       Document newDoc = exceptionGenerator().create(exception);
       Document result = documentMerge().merge(XmlHelper.createDocument(msg, documentFactoryBuilder()), newDoc);
-      out = msg.getOutputStream();
       String encoding = getXmlEncoding(msg);
-      new XmlUtils().writeDocument(result, out, encoding);
+      try (OutputStream out = msg.getOutputStream()) {
+        new XmlUtils().writeDocument(result, out, encoding);
+      }
       msg.setContentEncoding(encoding);
-
     }
     catch (Exception e) {
       throw ExceptionHelper.wrapServiceException(e);
-    }
-    finally {
-      IOUtils.closeQuietly(out);
     }
   }
 

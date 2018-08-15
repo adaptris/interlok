@@ -21,6 +21,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Calendar;
 
 import org.apache.commons.io.FileUtils;
@@ -64,7 +65,7 @@ public class OlderThanTest {
   }
 
   private File writeFile(File f) throws IOException {
-    FileUtils.write(f, "Hello World");
+    FileUtils.write(f, "Hello World", Charset.defaultCharset());
     return f;
   }
 

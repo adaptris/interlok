@@ -24,8 +24,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.DefaultMarshaller;
@@ -293,19 +291,14 @@ public class DynamicServiceExecutorTest extends DynamicServiceExample {
   }
 
   public static AdaptrisMessage createMimeMessage(Service s, String encoding) throws Exception {
-    OutputStream out = null;
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    try {
-      String xml = DefaultMarshaller.getDefaultMarshaller().marshal(s);
-      MultiPartOutput output = new MultiPartOutput(new GuidGenerator().getUUID());
-      output.getMimeHeader().addHeader("Subject", "This is the Subject");
-      output.addPart(xml, encoding, "Service");
-      output.addPart("pack my jug with a dozen liquor jugs", encoding, "part2");
-      out = msg.getOutputStream();
+    String xml = DefaultMarshaller.getDefaultMarshaller().marshal(s);
+    MultiPartOutput output = new MultiPartOutput(new GuidGenerator().getUUID());
+    output.getMimeHeader().addHeader("Subject", "This is the Subject");
+    output.addPart(xml, encoding, "Service");
+    output.addPart("pack my jug with a dozen liquor jugs", encoding, "part2");
+    try (OutputStream out = msg.getOutputStream()) {
       output.writeTo(out);
-    }
-    finally {
-      IOUtils.closeQuietly(out);
     }
     return msg;
   }

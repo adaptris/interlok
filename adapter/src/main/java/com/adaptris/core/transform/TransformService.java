@@ -22,8 +22,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
@@ -32,6 +30,7 @@ import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.transform.Source;
 import com.adaptris.transform.Target;
 import com.adaptris.transform.TransformFramework;
@@ -113,12 +112,8 @@ public abstract class TransformService extends ServiceImp {
    */
   @Override
   public final void doService(AdaptrisMessage msg) throws ServiceException {
-    Reader in = null;
-    Writer output = null;
 
-    try {
-      in = msg.getReader();
-      output = msg.getWriter(getOutputMessageEncoding());
+    try (Reader in = msg.getReader(); Writer output = msg.getWriter(getOutputMessageEncoding())) {
       Source src = new Source(in);
       Target dst = new Target(output);
 
@@ -126,7 +121,7 @@ public abstract class TransformService extends ServiceImp {
 
       if (allowOverride() && msg.headersContainsKey(getMetadataKey())) {
         String url = msg.getMetadataValue(getMetadataKey());
-        log.debug("Metadata transform override : " + url);
+        log.debug("Metadata transform override : {}", url);
         currentRule = new Source(url);
         tf.addRule(currentRule);
         if (cacheTransforms()) {
@@ -141,15 +136,11 @@ public abstract class TransformService extends ServiceImp {
         }
       }
       else {
-        throw new Exception("no transform could be applied");
+        throw new ServiceException("no transform could be applied");
       }
     }
     catch (Exception e) {
-      throw new ServiceException(e);
-    }
-    finally {
-      IOUtils.closeQuietly(in);
-      IOUtils.closeQuietly(output);
+      throw ExceptionHelper.wrapServiceException(e);
     }
   }
 

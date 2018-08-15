@@ -25,8 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.apache.commons.io.IOUtils;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreException;
@@ -250,18 +248,13 @@ public class WriteMetadataToFilesystemTest extends MetadataServiceExample {
 
   private Properties readProperties(File filename, boolean xml) throws IOException {
     Properties p = new Properties();
-    InputStream in = null;
-    try {
-      in = new FileInputStream(filename);
+    try (InputStream in = new FileInputStream(filename)) {
       if (xml) {
         p.loadFromXML(in);
       }
       else {
         p.load(in);
       }
-    }
-    finally {
-      IOUtils.closeQuietly(in);
     }
     return p;
   }

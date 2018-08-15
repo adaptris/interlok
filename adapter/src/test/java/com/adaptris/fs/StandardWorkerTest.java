@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.mockito.Mockito;
 
 import com.adaptris.core.fs.FsHelper;
@@ -72,14 +71,9 @@ public class StandardWorkerTest extends FsCase {
     List<String> list = new ArrayList<String>();
     for (int i = 0; i < FILE_CREATION_COUNT; i++) {
       String fname = guid.safeUUID();
-      PrintWriter pw = null;
-      try {
-        File file = new File(baseDir, fname);
-        pw = new PrintWriter(new FileWriter(file));
+      File file = new File(baseDir, fname);
+      try (PrintWriter pw = new PrintWriter(new FileWriter(file))) {
         pw.print(DATA);
-      }
-      finally {
-        IOUtils.closeQuietly(pw);
       }
       list.add(fname);
     }

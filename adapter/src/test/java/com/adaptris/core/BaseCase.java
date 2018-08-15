@@ -66,18 +66,11 @@ public abstract class BaseCase extends TestCase {
   private static final String PROPERTIES_RESOURCE = "unit-tests.properties";
   static {
     PROPERTIES = new Properties();
-
-    InputStream in = BaseCase.class.getClassLoader().getResourceAsStream(PROPERTIES_RESOURCE);
-
-    if (in == null) {
-      throw new RuntimeException("cannot locate resource [" + PROPERTIES_RESOURCE + "] on classpath");
-    }
-
-    try {
+    try (InputStream in = BaseCase.class.getClassLoader().getResourceAsStream(PROPERTIES_RESOURCE)) {
       PROPERTIES.load(in);
     }
     catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new RuntimeException("cannot locate resource [" + PROPERTIES_RESOURCE + "] on classpath", e);
     }
   }
 

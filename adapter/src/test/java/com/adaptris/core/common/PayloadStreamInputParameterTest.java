@@ -18,6 +18,7 @@ package com.adaptris.core.common;
 import static org.junit.Assert.assertEquals;
 
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -40,7 +41,7 @@ public class PayloadStreamInputParameterTest {
     PayloadStreamInputParameter p = new PayloadStreamInputParameter();
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT.getBytes());
     try (InputStream in = p.extract(msg)) {
-      List<String> strings = IOUtils.readLines(in);
+      List<String> strings = IOUtils.readLines(in, Charset.defaultCharset());
       assertEquals(1, strings.size());
       assertEquals(TEXT, strings.get(0));
     }

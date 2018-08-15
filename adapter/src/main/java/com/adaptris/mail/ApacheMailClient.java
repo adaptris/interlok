@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -94,7 +95,7 @@ abstract class ApacheMailClient<T extends POP3Client> extends MailClientImp {
     try (BufferedReader bufferedReader = new BufferedReader(src)) {
       IOUtils.copy(bufferedReader, writer);
     }
-    try (InputStream mimeMessageInput = IOUtils.toInputStream(writer.toString())) {
+    try (InputStream mimeMessageInput = IOUtils.toInputStream(writer.toString(), Charset.defaultCharset())) {
       result = new MimeMessage(session, mimeMessageInput);
     }
     return result;

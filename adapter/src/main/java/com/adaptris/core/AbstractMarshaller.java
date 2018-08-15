@@ -29,8 +29,6 @@ import java.io.StringReader;
 import java.io.Writer;
 import java.net.URL;
 
-import org.apache.commons.io.IOUtils;
-
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.URLHelper;
@@ -57,16 +55,11 @@ public abstract class AbstractMarshaller implements AdaptrisMarshaller {
    */
   @Override
   public void marshal(Object obj, File fileName) throws CoreException {
-    Writer writer = null;
-    try {
-      writer = new FileWriter(fileName);
+    try (Writer writer = new FileWriter(fileName)) {
       marshal(obj, writer);
     }
     catch (Exception e) {
-      throw new CoreException(e);
-    }
-    finally {
-      IOUtils.closeQuietly(writer);
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
@@ -96,16 +89,11 @@ public abstract class AbstractMarshaller implements AdaptrisMarshaller {
    */
   @Override
   public Object unmarshal(String xml) throws CoreException {
-    Reader reader = null;
-    try {
-      reader = new StringReader(xml);
+    try (Reader reader = new StringReader(xml)) {
       return unmarshal(reader);
     }
     catch (Exception e) {
-      throw new CoreException(e);
-    }
-    finally {
-      IOUtils.closeQuietly(reader);
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
@@ -114,16 +102,11 @@ public abstract class AbstractMarshaller implements AdaptrisMarshaller {
    */
   @Override
   public Object unmarshal(File file) throws CoreException {
-    Reader reader = null;
-    try {
-      reader = new FileReader(file);
+    try (FileReader reader = new FileReader(file)) {
       return unmarshal(reader);
     }
     catch (Exception e) {
-      throw new CoreException(e);
-    }
-    finally {
-      IOUtils.closeQuietly(reader);
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
@@ -131,37 +114,23 @@ public abstract class AbstractMarshaller implements AdaptrisMarshaller {
    * @see AdaptrisMarshaller#unmarshal(java.net.URL)
    */
   @Override
-  public Object unmarshal(URL fileUrl) throws CoreException {
-    Args.notNull(fileUrl, "fileUrl");
-    Reader in = null;
-    try {
-      in = new InputStreamReader(fileUrl.openStream());
+  public Object unmarshal(URL url) throws CoreException {
+    Args.notNull(url, "fileUrl");
+    try (InputStream in = url.openStream()) {
       return this.unmarshal(in);
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
-    catch (IOException e) {
-      throw new CoreException(e);
-    }
-    finally {
-      IOUtils.closeQuietly(in);
-    }
-
   }
 
   @Override
   public Object unmarshal(URLString loc) throws CoreException {
-    Object result = null;
-    InputStream in = null;
-    try {
-      result = unmarshal(connectToUrl(loc));
+    try (InputStream in = connectToUrl(loc)) {
+      return unmarshal(in);
     }
     catch (IOException e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
-    finally {
-      IOUtils.closeQuietly(in);
-    }
-
-    return result;
   }
 
   @Override

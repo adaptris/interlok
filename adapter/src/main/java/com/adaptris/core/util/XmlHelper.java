@@ -22,6 +22,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.StringReader;
 
@@ -290,6 +291,40 @@ public class XmlHelper {
    */
   public static String stripIllegalXmlCharacters(String input) {
     return input.replaceAll(ILLEGAL_XML, "");
+  }
+
+  /**
+   * Write an XML document to the message with specified encoding.
+   * 
+   * @param doc the document
+   * @param msg the message
+   * @param encoding, will default to "UTF-8" if not specified, and the msg does not have a declared content encoding.
+   * @throws Exception
+   */
+  public static void writeXmlDocument(Document doc, AdaptrisMessage msg, String encoding) throws Exception {
+    String encodingToUse = evaluateEncoding(msg, encoding);
+    try (OutputStream out = msg.getOutputStream()) {
+      new XmlUtils().writeDocument(doc, out, encodingToUse);
+    }
+    msg.setContentEncoding(encodingToUse);
+  }
+
+  /**
+   * Figure out what encoding to use when writing a document.
+   * 
+   * @param msg the message
+   * @param enc the configured encoding, if any.
+   * @return either the value of {@code encoding}, {@code AdaptrisMessage#getContentEncoding()} or 'UTF-8' in that order or
+   *         preference.
+   */
+  public static String evaluateEncoding(AdaptrisMessage msg, String enc) {
+    String encoding = "UTF-8";
+    if (!isBlank(enc)) {
+      encoding = enc;
+    } else if (!isBlank(msg.getContentEncoding())) {
+      encoding = msg.getContentEncoding();
+    }
+    return encoding;
   }
 
   private static class DefaultErrorHandler implements ErrorHandler {

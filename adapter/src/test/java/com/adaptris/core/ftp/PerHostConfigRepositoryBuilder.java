@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class PerHostConfigRepositoryBuilder extends InlineConfigRepositoryBuilde
   public PerHostConfigRepositoryBuilder(File known_hosts, boolean strict) throws IOException {
     super(strict);
     try (InputStream in = new FileInputStream(known_hosts)) {
-      List<String> lines = IOUtils.readLines(in);
+      List<String> lines = IOUtils.readLines(in, Charset.defaultCharset());
       for (String line : lines) {
         if (StringUtils.isEmpty(line)) {
           continue;

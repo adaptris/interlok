@@ -19,6 +19,7 @@ package com.adaptris.core.http.jetty;
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import javax.servlet.ServletException;
@@ -107,7 +108,6 @@ public class JettyMessageConsumer extends BasicJettyConsumer {
                                        HttpServletResponse response)
       throws IOException, ServletException {
     AdaptrisMessage msg = null;
-    OutputStream out = null;
     try {
       logHeaders(request);
       if (getEncoder() != null) {
@@ -115,27 +115,20 @@ public class JettyMessageConsumer extends BasicJettyConsumer {
       }
       else {
         msg = defaultIfNull(getMessageFactory()).newMessage();
-        out = msg.getOutputStream();
-        if (request.getContentLength() == -1) {
-          IOUtils.copy(request.getInputStream(), out);
+        try (InputStream in = request.getInputStream(); OutputStream out = msg.getOutputStream()) {
+          if (request.getContentLength() == -1) {
+            IOUtils.copy(request.getInputStream(), out);
+          } else {
+            StreamUtil.copyStream(request.getInputStream(), out, request.getContentLength());
+          }
         }
-        else {
-          StreamUtil.copyStream(request.getInputStream(), out, request
-              .getContentLength());
-        }
-        out.flush();
       }
       msg.setContentEncoding(request.getCharacterEncoding());
       addParamMetadata(msg, request);
       addHeaderMetadata(msg, request);
     }
     catch (CoreException e) {
-      IOException ioe = new IOException(e.getMessage());
-      ioe.initCause(e);
-      throw ioe;
-    }
-    finally {
-      IOUtils.closeQuietly(out);
+      throw new IOException(e.getMessage(), e);
     }
     return msg;
   }

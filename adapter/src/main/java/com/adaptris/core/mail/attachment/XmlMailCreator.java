@@ -23,7 +23,6 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -63,17 +62,12 @@ public class XmlMailCreator implements MailContentCreator {
       throw new MailException("No way of selecting the Attachments");
     }
     List<MailAttachment> result = new ArrayList<MailAttachment>();
-    InputStream in = null;
-    try {
-      in = msg.getInputStream();
+    try (InputStream in = msg.getInputStream()) {
       Document d = documentBuilder().parse(in);
       result = attachmentHandler.resolve(d);
     }
     catch (Exception e) {
       throw new MailException(e);
-    }
-    finally {
-      IOUtils.closeQuietly(in);
     }
     return result;
   }
@@ -87,17 +81,12 @@ public class XmlMailCreator implements MailContentCreator {
       throw new MailException("No way of selecting the Body");
     }
     MailContent result = null;
-    InputStream in = null;
-    try {
-      in = msg.getInputStream();
+    try (InputStream in = msg.getInputStream()) {
       Document d = documentBuilder().parse(in);
       result = bodyHandler.resolve(d);
     }
     catch (Exception e) {
       throw new MailException(e);
-    }
-    finally {
-      IOUtils.closeQuietly(in);
     }
     return result;
   }
