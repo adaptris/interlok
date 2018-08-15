@@ -19,9 +19,6 @@ package com.adaptris.core.services;
 import static com.adaptris.util.stream.UnicodeDetectingInputStream.UTF_8;
 
 import java.io.InputStream;
-import java.io.OutputStream;
-
-import org.apache.commons.io.IOUtils;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
@@ -29,6 +26,8 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.util.stream.StreamUtil;
 import com.adaptris.util.stream.UnicodeDetectingInputStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -59,24 +58,14 @@ public class Utf8BomRemover extends ServiceImp {
   }
 
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    InputStream msgIn = null;
-    OutputStream out = null;
-    UnicodeDetectingInputStream utf8 = null;
-    try {
-      msgIn = msg.getInputStream();
-      utf8 = new UnicodeDetectingInputStream(msgIn, null);
+    try (InputStream msgIn = msg.getInputStream();
+        UnicodeDetectingInputStream utf8 = new UnicodeDetectingInputStream(msgIn, null)) {
       if (UTF_8.equals(utf8.getEncoding())) {
-        out = msg.getOutputStream();
-        IOUtils.copy(utf8, out);
+        StreamUtil.copyAndClose(utf8, msg.getOutputStream());
       }
     }
     catch (Exception e) {
-      throw new ServiceException(e);
-    }
-    finally {
-      IOUtils.closeQuietly(out);
-      IOUtils.closeQuietly(utf8);
-      IOUtils.closeQuietly(msgIn);
+      throw ExceptionHelper.wrapServiceException(e);
     }
   }
 

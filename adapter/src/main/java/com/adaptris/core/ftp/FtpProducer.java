@@ -23,8 +23,6 @@ import java.io.OutputStream;
 
 import javax.validation.Valid;
 
-import org.apache.commons.io.IOUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -255,7 +253,6 @@ public class FtpProducer extends RequestReplyProducerImp {
 
   private AdaptrisMessage handleReply(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException {
     AdaptrisMessage reply = defaultIfNull(getMessageFactory()).newMessage();
-    OutputStream out = null;
     FileTransferConnection conn = retrieveConnection(FileTransferConnection.class);
     FileTransferClient ftp = null;
     try {
@@ -279,8 +276,9 @@ public class FtpProducer extends RequestReplyProducerImp {
         reply = decode(ftp.get(replyFilePath));
       }
       else {
-        out = reply.getOutputStream();
-        ftp.get(out, replyFilePath);
+        try (OutputStream out = reply.getOutputStream()) {
+          ftp.get(out, replyFilePath);
+        }
       }
       if (replyProcDirectory != null) {
         // Remember that replyProcDirectory will have automatically had a "/" added to it.
@@ -292,10 +290,9 @@ public class FtpProducer extends RequestReplyProducerImp {
       }
     }
     catch (Exception e) {
-      throw new ProduceException(e);
+      throw ExceptionHelper.wrapProduceException(e);
     }
     finally {
-      IOUtils.closeQuietly(out);
       conn.disconnect(ftp);
     }
     return reply;

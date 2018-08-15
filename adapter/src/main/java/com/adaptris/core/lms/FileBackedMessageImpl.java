@@ -262,6 +262,7 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
   }
 
   @Override
+  @SuppressWarnings("deprecation")
   protected void finalize() throws Throwable {
     super.finalize();
     for (Closeable c : openStreams) {

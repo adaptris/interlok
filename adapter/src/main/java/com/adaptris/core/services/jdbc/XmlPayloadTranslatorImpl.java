@@ -16,9 +16,6 @@
 
 package com.adaptris.core.services.jdbc;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
-import java.io.OutputStream;
 import java.io.StringReader;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -28,7 +25,6 @@ import java.util.regex.Pattern;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 
-import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -280,35 +276,17 @@ public abstract class XmlPayloadTranslatorImpl extends ResultSetTranslatorImp {
     return getStripIllegalXmlChars() != null ? getStripIllegalXmlChars().booleanValue() : false;
   }
 
-  private String evaluateEncoding(AdaptrisMessage msg) {
-    String encoding = "UTF-8";
-    if (!isEmpty(getOutputMessageEncoding())) {
-      encoding = getOutputMessageEncoding();
-    }
-    else if (!isEmpty(msg.getContentEncoding())) {
-      encoding = msg.getContentEncoding();
-    }
-    return encoding;
-  }
-
   /**
    * Helper method to write the XML document to the AdaptrisMessage taking into account any encoding requirements.
    * 
    * @param doc the XML document
    * @param msg the AdaptrisMessage
    * @throws Exception
+   * @deprecated use {@link XmlHelper#writeXmlDocument(Document, AdaptrisMessage, String)} instead.
    */
+  @Deprecated
   protected void writeXmlDocument(Document doc, AdaptrisMessage msg) throws Exception {
-    OutputStream out = null;
-    try {
-      String encoding = evaluateEncoding(msg);
-      out = msg.getOutputStream();
-      new XmlUtils().writeDocument(doc, out, encoding);
-      msg.setContentEncoding(encoding);
-    }
-    finally {
-      IOUtils.closeQuietly(out);
-    }
+    XmlHelper.writeXmlDocument(doc, msg, getOutputMessageEncoding());
   }
 
   protected class DocumentWrapper {

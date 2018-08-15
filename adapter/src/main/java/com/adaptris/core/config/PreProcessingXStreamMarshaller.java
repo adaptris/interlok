@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.net.URL;
+import java.nio.charset.Charset;
 
 import javax.validation.constraints.NotNull;
 
@@ -20,6 +21,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.KeyValuePairSet;
+import com.adaptris.util.URLHelper;
 import com.adaptris.util.URLString;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -53,20 +55,15 @@ public class PreProcessingXStreamMarshaller extends com.adaptris.core.XStreamMar
   }
 
   @Override
-  public Object unmarshal(Reader in) throws CoreException {
-    Args.notNull(in, "reader");
-    Object result = null;
-    try {
+  public Object unmarshal(Reader input) throws CoreException {
+    Args.notNull(input, "reader");
+    try (Reader in = input) {
       String xml = IOUtils.toString(in);
-      result = unmarshal(xml);
+      return unmarshal(xml);
     }
     catch (Exception e) {
-      ExceptionHelper.rethrowCoreException(e);
+      throw ExceptionHelper.wrapCoreException(e);
     }
-    finally {
-      IOUtils.closeQuietly(in);
-    }
-    return result;
   }
 
   @Override
@@ -77,7 +74,7 @@ public class PreProcessingXStreamMarshaller extends com.adaptris.core.XStreamMar
       result = getInstance().fromXML(preProcess(input));
     }
     catch (Exception e) {
-      ExceptionHelper.rethrowCoreException(e);
+      throw ExceptionHelper.wrapCoreException(e);
     }
     return result;
   }
@@ -85,57 +82,46 @@ public class PreProcessingXStreamMarshaller extends com.adaptris.core.XStreamMar
   @Override
   public Object unmarshal(File file) throws CoreException {
     Args.notNull(file, "file");
-    Object result = null;
-    try  {
-      result = unmarshal(new FileInputStream(file));
+    try (FileInputStream in = new FileInputStream(file)) {
+      return unmarshal(in);
     }
     catch (Exception e) {
-      ExceptionHelper.rethrowCoreException(e);
+      throw ExceptionHelper.wrapCoreException(e);
     }
-    return result;
   }
 
   @Override
   public Object unmarshal(URL url) throws CoreException {
     Args.notNull(url, "url");
-    Object result = null;
-    try {
-      result = this.unmarshal(url.openStream());
+    try (InputStream in = url.openStream()) {
+      return this.unmarshal(in);
     }
     catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
-    return result;
   }
 
   @Override
   public Object unmarshal(URLString url) throws CoreException {
     Args.notNull(url, "url");
-    Object result = null;
-    try (InputStream in = connectToUrl(url)) {
-      result = this.unmarshal(in);
+    try (InputStream in = URLHelper.connect(url)) {
+      return this.unmarshal(in);
     }
     catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
-    return result;
   }
 
   @Override
-  public Object unmarshal(InputStream in) throws CoreException {
-    Args.notNull(in, "inputstream");
-    Object result = null;
-    try {
-      String xml = IOUtils.toString(in);
-      result = unmarshal(xml);
+  public Object unmarshal(InputStream input) throws CoreException {
+    Args.notNull(input, "inputstream");
+    try (InputStream in = input) {
+      String xml = IOUtils.toString(in, Charset.defaultCharset());
+      return unmarshal(xml);
     }
     catch (IOException e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
-    finally {
-      IOUtils.closeQuietly(in);
-    }
-    return result;
   }
 
   public ConfigPreProcessorLoader getPreProcessorLoader() {

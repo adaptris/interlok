@@ -20,6 +20,7 @@ import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.split;
 
+import java.io.Closeable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,6 @@ import javax.mail.internet.MimeMessage;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.adaptris.annotation.AdvancedConfig;
@@ -122,7 +122,7 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
   protected int processMessages() {
     int count = 0;
 
-    try {
+    try (Closeable c = mbox) {
       mbox.connect();
       // log.trace("there are {} messages to process", mbox.getMessages().size());
       for (MimeMessage msg : mbox) {
@@ -144,9 +144,6 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
     }
     catch (Exception e) {
       log.warn("Error reading mailbox; will retry on next poll", e);
-    }
-    finally {
-      IOUtils.closeQuietly(mbox);
     }
     return count;
   }
@@ -178,8 +175,9 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
       mbox.setRecipientFilter(filters.get(RECIPIENT));
       // Make an attempt to connect just to be sure that we can
       if (attemptConnectOnInit()) {
-        mbox.connect();
-        mbox.disconnect();
+        try (Closeable c = mbox) {
+          mbox.connect();
+        }
       }
       mbox.purge(deleteOnReceive());
     }

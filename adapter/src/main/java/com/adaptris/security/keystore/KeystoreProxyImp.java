@@ -31,7 +31,6 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
 
-import org.apache.commons.io.IOUtils;
 import org.bouncycastle.util.io.pem.PemReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,7 +96,7 @@ class KeystoreProxyImp implements KeystoreProxy {
       }
     }
     catch (Exception e) {
-      throw new KeystoreException(e.getMessage(), e);
+      throw KeystoreProxy.wrapException(e);
     }
   }
 
@@ -113,22 +112,11 @@ class KeystoreProxyImp implements KeystoreProxy {
    */
   public void load() throws AdaptrisSecurityException, IOException {
 
-    InputStream in = keystoreLocation.openInput();
-    try {
+    try (InputStream in = keystoreLocation.openInput()) {
       keyStore.load(in, keystoreLocation.getKeystorePassword());
     }
     catch (GeneralSecurityException e) {
-      throw new KeystoreException(e.getMessage(), e);
-    }
-    finally {
-      try {
-        if (in != null) {
-          in.close();
-        }
-      }
-      catch (Exception ignored) {
-        ;
-      }
+      throw KeystoreProxy.wrapException(e);
     }
   }
 
@@ -145,23 +133,11 @@ class KeystoreProxyImp implements KeystoreProxy {
     if (!keystoreLocation.isWriteable()) {
       throw new KeystoreException(keystoreLocation + " is not writeable");
     }
-
-    OutputStream out = keystoreLocation.openOutput();
-    try {
+    try (OutputStream out = keystoreLocation.openOutput()) {
       keyStore.store(out, keystoreLocation.getKeystorePassword());
     }
     catch (Exception e) {
-      throw new KeystoreException(e.getMessage(), e);
-    }
-    finally {
-      try {
-        if (out != null) {
-          out.close();
-        }
-      }
-      catch (Exception ignored) {
-        ;
-      }
+      throw KeystoreProxy.wrapException(e);
     }
   }
 
@@ -181,14 +157,13 @@ class KeystoreProxyImp implements KeystoreProxy {
     PrivateKey p = null;
     try {
       if (keyPassword == null) {
-        logR.trace("No private key password passed as parameter, "
-            + "using keystore password as key password");
+        logR.trace("No private key password passed as parameter, using keystore password as key password");
       }
       char[] pw = keyPassword == null ? keystoreLocation.getKeystorePassword() : keyPassword;
       p = (PrivateKey) keyStore.getKey(alias, pw);
     }
     catch (Exception e) {
-      throw new KeystoreException(e.getMessage(), e);
+      throw KeystoreProxy.wrapException(e);
     }
     return p;
   }
@@ -204,14 +179,12 @@ class KeystoreProxyImp implements KeystoreProxy {
   public Certificate getCertificate(String alias)
       throws AdaptrisSecurityException {
 
-    Certificate cert;
     try {
-      cert = keyStore.getCertificate(alias);
+      return keyStore.getCertificate(alias);
     }
     catch (Exception e) {
-      throw new KeystoreException(e.getMessage(), e);
+      throw KeystoreProxy.wrapException(e);
     }
-    return cert;
   }
 
   /**
@@ -225,14 +198,12 @@ class KeystoreProxyImp implements KeystoreProxy {
   public Certificate[] getCertificateChain(String alias)
       throws AdaptrisSecurityException {
 
-    Certificate[] certChain;
     try {
-      certChain = keyStore.getCertificateChain(alias);
+      return keyStore.getCertificateChain(alias);
     }
     catch (Exception e) {
-      throw new KeystoreException(e.getMessage(), e);
+      throw KeystoreProxy.wrapException(e);
     }
-    return certChain;
   }
 
   /**
@@ -248,7 +219,7 @@ class KeystoreProxyImp implements KeystoreProxy {
       keyStore.setCertificateEntry(alias, cert);
     }
     catch (Exception e) {
-      throw new KeystoreException(e.getMessage(), e);
+      throw KeystoreProxy.wrapException(e);
     }
   }
 
@@ -266,16 +237,12 @@ class KeystoreProxyImp implements KeystoreProxy {
   public void setCertificate(String alias, InputStream in)
       throws AdaptrisSecurityException {
     try {
-
       CertificateFactory factory = CertificateFactory.getInstance("X.509");
       Certificate x509 = (X509Certificate)factory.generateCertificate(in);
       this.setCertificate(alias, x509);
     }
-    catch (AdaptrisSecurityException e) {
-      throw e;
-    }
     catch (Exception e) {
-      throw new KeystoreException(e.getMessage(), e);
+      throw KeystoreProxy.wrapException(e);
     }
   }
 
@@ -292,20 +259,11 @@ class KeystoreProxyImp implements KeystoreProxy {
    */
   public void setCertificate(String alias, File file)
       throws AdaptrisSecurityException {
-
-    InputStream in = null;
-    try {
-      in = new FileInputStream(file);
+    try (InputStream in = new FileInputStream(file)) {
       this.setCertificate(alias, in);
     }
-    catch (AdaptrisSecurityException e) {
-      throw e;
-    }
     catch (Exception e) {
-      throw new KeystoreException(e.getMessage(), e);
-    }
-    finally {
-      IOUtils.closeQuietly(in);
+      throw KeystoreProxy.wrapException(e);
     }
   }
 
@@ -346,7 +304,7 @@ class KeystoreProxyImp implements KeystoreProxy {
       keyStore.setKeyEntry(alias, privKey, keyPassword, certChain);
     }
     catch (Exception e) {
-      throw new KeystoreException(e.getMessage(), e);
+      throw KeystoreProxy.wrapException(e);
     }
   }
 
@@ -409,19 +367,11 @@ class KeystoreProxyImp implements KeystoreProxy {
                                char[] filePassword)
       throws AdaptrisSecurityException {
 
-    InputStream in = null;
-    try {
-      in = new FileInputStream(file);
+    try (InputStream in = new FileInputStream(file)) {
       this.importPrivateKey(alias, keyPassword, in, filePassword);
     }
     catch (IOException e) {
       throw new CertException(e.getMessage(), e);
-    }
-    catch (AdaptrisSecurityException e) {
-      throw e;
-    }
-    finally {
-      IOUtils.closeQuietly(in);
     }
   }
 
@@ -491,26 +441,11 @@ class KeystoreProxyImp implements KeystoreProxy {
   public void importCertificateChain(String alias, char[] keyPassword, File f)
       throws AdaptrisSecurityException {
 
-    InputStream in = null;
-    try {
-      in = new FileInputStream(f);
+    try (InputStream in = new FileInputStream(f)) {
       this.importCertificateChain(alias, keyPassword, in);
     }
     catch (IOException e) {
       throw new CertException(e.getMessage(), e);
-    }
-    catch (AdaptrisSecurityException e) {
-      throw e;
-    }
-    finally {
-      try {
-        if (in != null) {
-          in.close();
-        }
-      }
-      catch (Exception ignored) {
-        ;
-      }
     }
   }
 
@@ -565,15 +500,12 @@ class KeystoreProxyImp implements KeystoreProxy {
    * @throws AdaptrisSecurityException for any error
    */
   public boolean containsAlias(String alias) throws AdaptrisSecurityException {
-
-    boolean rc;
     try {
-      rc = keyStore.containsAlias(alias);
+      return keyStore.containsAlias(alias);
     }
     catch (Exception e) {
-      throw new KeystoreException(e.getMessage(), e);
+      throw KeystoreProxy.wrapException(e);
     }
-    return rc;
   }
 
   /**

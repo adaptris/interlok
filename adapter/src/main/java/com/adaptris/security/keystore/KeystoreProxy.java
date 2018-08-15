@@ -24,6 +24,7 @@ import java.security.PrivateKey;
 import java.security.cert.Certificate;
 
 import com.adaptris.security.exc.AdaptrisSecurityException;
+import com.adaptris.security.exc.KeystoreException;
 
 /**
  * Used to read and write from a keystore.
@@ -350,4 +351,11 @@ public interface KeystoreProxy {
    * @see KeyStore
    */
   KeyStore getKeystore();
+
+  static KeystoreException wrapException(Throwable orig) {
+    if (orig instanceof KeystoreException) {
+      return (KeystoreException) orig;
+    }
+    return new KeystoreException(orig.getMessage(), orig);
+  }
 }

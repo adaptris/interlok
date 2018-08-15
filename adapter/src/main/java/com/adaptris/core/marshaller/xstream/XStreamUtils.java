@@ -16,13 +16,12 @@
 
 package com.adaptris.core.marshaller.xstream;
 
-import static org.apache.commons.io.IOUtils.closeQuietly;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -196,14 +195,12 @@ public abstract class XStreamUtils {
    */
   public static List<String> readResource(InputStream in) throws IOException {
     List<String> result = new ArrayList<String>();
-    try {
-      result = IOUtils.readLines(in);
+    try (InputStream closeable = in) {
+      result = IOUtils.readLines(closeable, Charset.defaultCharset());
       // Well, is this more or less readable the other it's not even as
       // though the predicate style actually returns a new list.
       // result.removeIf(StringUtils::isBlank);
       result.removeAll(Arrays.asList("", null));
-    } finally {
-      closeQuietly(in);
     }
     return result;
   }

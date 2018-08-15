@@ -26,7 +26,6 @@ import java.util.List;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.adaptris.annotation.AdapterComponent;
@@ -72,13 +71,13 @@ public class RawMailConsumer extends MailConsumerImp {
       throws MailException, CoreException {
 
     List<AdaptrisMessage> result = new ArrayList<AdaptrisMessage>();
-    OutputStream out = null;
     try {
       log.trace("Start Processing [{}]", mime.getMessageID());
       AdaptrisMessage msg = defaultIfNull(getMessageFactory()).newMessage();
       String uuid = msg.getUniqueId();
-      out = msg.getOutputStream();
-      mime.writeTo(out);
+      try (OutputStream out = msg.getOutputStream()) {
+        mime.writeTo(out);
+      }
       if (useEmailMessageIdAsUniqueId()) {
         msg.setUniqueId(StringUtils.defaultIfBlank(mime.getMessageID(), uuid));
       }
@@ -87,9 +86,6 @@ public class RawMailConsumer extends MailConsumerImp {
     }
     catch (MessagingException | IOException e) {
       throw new MailException(e.getMessage(), e);
-    }
-    finally {
-      IOUtils.closeQuietly(out);
     }
     return result;
   }

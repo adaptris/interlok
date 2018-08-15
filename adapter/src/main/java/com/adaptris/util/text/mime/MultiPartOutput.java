@@ -16,7 +16,6 @@
 
 package com.adaptris.util.text.mime;
 
-import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 
 import java.io.ByteArrayOutputStream;
@@ -327,17 +326,8 @@ public class MultiPartOutput implements MimeConstants {
 
     byte[] toEncode = (data == null) ? new byte[0] : data;
     ByteArrayOutputStream out = new ByteArrayOutputStream();
-    OutputStream encodedOut = out;
-    try {
-      if (encoding != null) {
-        encodedOut = MimeUtility.encode(out, encoding);
-        header.setHeader(HEADER_CONTENT_ENCODING, encoding);
-      }
+    try (OutputStream encodedOut = wrap(out, encoding, header)) {
       encodedOut.write(toEncode);
-    }
-    finally {
-      closeQuietly(encodedOut);
-      closeQuietly(out);
     }
     return out.toByteArray();
   }
@@ -345,22 +335,19 @@ public class MultiPartOutput implements MimeConstants {
   private static byte[] encodeData(String data, String encoding, InternetHeaders header) throws MessagingException, IOException {
     String toEncode = defaultIfEmpty(data, "");
     ByteArrayOutputStream out = new ByteArrayOutputStream();
-    OutputStream encodedOut = out;
-    PrintStream print = null;
-    try {
-      if (encoding != null) {
-        encodedOut = MimeUtility.encode(out, encoding);
-        header.setHeader(HEADER_CONTENT_ENCODING, encoding);
-      }
-      print = new PrintStream(encodedOut, true);
+    try (PrintStream print = new PrintStream(wrap(out, encoding, header))) {
       print.print(toEncode);
     }
-    finally {
-      closeQuietly(print);
-      closeQuietly(encodedOut);
-      closeQuietly(out);
-    }
     return out.toByteArray();
+  }
+
+  private static OutputStream wrap(OutputStream original, String encoding, InternetHeaders hdrs) throws MessagingException {
+    OutputStream encodedOut = original;
+    if (encoding != null) {
+      encodedOut = MimeUtility.encode(original, encoding);
+      hdrs.setHeader(HEADER_CONTENT_ENCODING, encoding);
+    }
+    return encodedOut;
   }
 
   /**

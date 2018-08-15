@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -455,33 +454,12 @@ public class QuartzCronPoller extends PollerImp {
   }
 
   private Properties createQuartzProperties() throws CoreException {
-    String requestedFile = System.getProperty(StdSchedulerFactory.PROPERTIES_FILE);
-    String propFileName = requestedFile != null ? requestedFile : "quartz.properties";
-    File propFile = new File(propFileName);
     Properties result = new Properties();
-    InputStream in = null;
-    try {
-      if (propFile.exists()) {
-        in = new FileInputStream(propFile);
-        result.load(in);
-      }
-      else if (requestedFile != null) {
-        in = Thread.currentThread().getContextClassLoader().getResourceAsStream(requestedFile);
-        if (in == null) {
-          throw new CoreException("Couldn't find " + requestedFile);
-        }
-        result.load(in);
-      }
-      else {
-        in = find("quartz.properties", "/quartz.properties", "org/quartz/quartz.properties");
-        result.load(in);
-      }
+    try (InputStream in = openQuartzProperties()) {
+      result.load(in);
     }
     catch (Exception e) {
-      ExceptionHelper.rethrowCoreException(e);
-    }
-    finally {
-      IOUtils.closeQuietly(in);
+      throw ExceptionHelper.wrapCoreException(e);
     }
     result.put(StdSchedulerFactory.PROP_SCHED_MAKE_SCHEDULER_THREAD_DAEMON, Boolean.TRUE.toString());
     result.putAll(System.getProperties());    
@@ -495,19 +473,36 @@ public class QuartzCronPoller extends PollerImp {
     return result;
   }
 
-  private InputStream find(String... resources) throws IOException, CoreException {
+  private InputStream find(String... resources) throws IOException {
     ClassLoader cl = getClass().getClassLoader();
     InputStream in = null;
     for (String res : resources) {
       in = cl.getResourceAsStream(res);
       if (in != null) {
+        log.trace("Using quartz properties from classpath : {}", res);
         break;
       }
     }
-    if (in == null) {
-      throw new CoreException("Default quartz.properties not found in class path");
-    }
+    // It may just return null; ultimately it's user error, do we care, an NPE would be OK here.
+    // but possibly not informative
     return in;
+  }
+
+  private InputStream openQuartzProperties() throws IOException {
+    String requestedFile = System.getProperty(StdSchedulerFactory.PROPERTIES_FILE);
+    String propFileName = requestedFile != null ? requestedFile : "quartz.properties";
+    File propFile = new File(propFileName);
+    if (propFile.exists()) {
+      log.trace("Using quartz properties from file : {}", propFile.getCanonicalPath());
+      return new FileInputStream(propFile);
+    } else if (requestedFile != null) {
+      // It may just return null; ultimately it's user error, do we care, an NPE would be OK here.
+      // but possibly not informative
+      log.trace("Using quartz properties from classpath : {}", requestedFile);
+      return Thread.currentThread().getContextClassLoader().getResourceAsStream(requestedFile);
+    } else {
+      return find("quartz.properties", "/quartz.properties", "org/quartz/quartz.properties");
+    }
   }
 
   public Boolean getUseCustomThreadPool() {

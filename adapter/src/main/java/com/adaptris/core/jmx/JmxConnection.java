@@ -117,6 +117,7 @@ public class JmxConnection extends AllowsRetriesConnection {
     return result;
   }
 
+  @SuppressWarnings("deprecation")
   private void closeQuietly() {
     IOUtils.closeQuietly(connector);
     connector = null;

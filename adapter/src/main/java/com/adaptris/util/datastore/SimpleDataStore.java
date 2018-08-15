@@ -25,7 +25,6 @@ import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Properties;
 
-import org.apache.commons.io.IOUtils;
 import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -280,47 +279,27 @@ public class SimpleDataStore extends DataStore {
 
   private void initFromProperties(Properties p) throws DataStoreException {
     setMaxAttempts(Integer.parseInt(p.getProperty(MAXLOCK_PROPERTY, "15")));
-    setDataFileName(p.getProperty(FILE_PROPERTY));
-    setLockFileName(p.getProperty(LOCK_PROPERTY));
+    setDataFile(p.getProperty(FILE_PROPERTY));
+    setLockFile(p.getProperty(LOCK_PROPERTY));
   }
 
   // Read the data from the file.
   private HashMap readData() throws IOException, ClassNotFoundException {
 
     HashMap data = new HashMap();
-    File file = new File(getDataFileName());
-    FileInputStream is = null;
-    ObjectInputStream oi = null;
-    try {
-      if (file.exists()) {
-
-        // read the object in...
-        is = new FileInputStream(file);
-        oi = new ObjectInputStream(is);
+    File file = new File(getDataFile());
+    if (file.exists()) {
+      try (ObjectInputStream oi = new ObjectInputStream(new FileInputStream(file))) {
         data = (HashMap) oi.readObject();
       }
-      else {
-        // logR.info("No existing data file found. New file: " + dataFileName);
-        // file.createNewFile();
-        ;
-      }
     }
-    finally {
-      IOUtils.closeQuietly(oi);
-      IOUtils.closeQuietly(is);
-    }
-
     return data;
   }
 
   private void writeData(HashMap data) throws IOException {
-
-    // write the object out...
-    FileOutputStream out = new FileOutputStream(getDataFileName());
-    ObjectOutputStream objOut = new ObjectOutputStream(out);
-    objOut.writeObject(data);
-    objOut.close();
-    out.close();
+    try (ObjectOutputStream objOut = new ObjectOutputStream(new FileOutputStream(getDataFile()))) {
+      objOut.writeObject(data);      
+    }
   }
 
 

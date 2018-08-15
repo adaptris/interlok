@@ -21,8 +21,6 @@ import java.util.Collection;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.commons.io.IOUtils;
-
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
@@ -63,9 +61,7 @@ public class ZipAggregator extends MessageAggregatorImpl {
 
   @Override
   public void joinMessage(AdaptrisMessage msg, Collection<AdaptrisMessage> msgs) throws CoreException {
-    ZipOutputStream zipOutputStream = null;
-    try {
-      zipOutputStream = new ZipOutputStream(msg.getOutputStream());
+    try (ZipOutputStream zipOutputStream = new ZipOutputStream(msg.getOutputStream())) {
       for (AdaptrisMessage message : msgs){
         if(message.getMessageHeaders().containsKey(filenameMetadata())) {
           zipOutputStream.putNextEntry(new ZipEntry(message.getMetadataValue(filenameMetadata())));
@@ -74,9 +70,7 @@ public class ZipAggregator extends MessageAggregatorImpl {
         }
       }
     } catch (IOException e) {
-      ExceptionHelper.rethrowCoreException(e);
-    } finally {
-      IOUtils.closeQuietly(zipOutputStream);
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 

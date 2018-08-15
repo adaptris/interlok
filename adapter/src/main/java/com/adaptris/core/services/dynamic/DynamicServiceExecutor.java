@@ -24,8 +24,6 @@ import java.io.InputStream;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.io.IOUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -102,15 +100,9 @@ public class DynamicServiceExecutor extends ServiceImp implements EventHandlerAw
   }
 
   private Service createService(AdaptrisMessage msg) throws CoreException, IOException {
-    InputStream in = serviceExtractor.getInputStream(msg);
-    Service result = null;
-    try {
-      result = (Service) currentMarshaller().unmarshal(in);
+    try (InputStream in = serviceExtractor.getInputStream(msg)) {
+      return (Service) currentMarshaller().unmarshal(in);
     }
-    finally {
-      IOUtils.closeQuietly(in);
-    }
-    return result;
   }
 
   @Override

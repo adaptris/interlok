@@ -23,7 +23,6 @@ import javax.script.Bindings;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
@@ -63,19 +62,16 @@ public abstract class ScriptingServiceImp extends ServiceImp implements DynamicP
 
   @Override
   public final void doService(AdaptrisMessage msg) throws ServiceException {
-    Reader input = null;
     try {
       Bindings vars = engine.createBindings();
       vars.put("message", msg);
       vars.put("log", log);
-      input = createReader();
-      engine.eval(input, vars);
+      try (Reader input = createReader()) {
+        engine.eval(input, vars);
+      }
     }
     catch (Exception e) {
-      throw new ServiceException(e);
-    }
-    finally {
-      IOUtils.closeQuietly(input);
+      throw ExceptionHelper.wrapServiceException(e);
     }
   }
 
