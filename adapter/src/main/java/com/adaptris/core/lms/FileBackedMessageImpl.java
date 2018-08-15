@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.channels.FileLock;
+import java.nio.charset.Charset;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -169,7 +170,7 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
   public InputStream getInputStream() throws IOException {
     // If we have an inputFile, return a stream for it. If we don't, return an empty stream
     if(inputFile == null) {
-      return IOUtils.toInputStream("");
+      return IOUtils.toInputStream("", Charset.defaultCharset());
     }
     return new FileFilterInputStream(inputFile);
   }

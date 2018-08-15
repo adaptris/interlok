@@ -19,6 +19,7 @@ package com.adaptris.core.config;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.Charset;
 
 import org.apache.commons.io.IOUtils;
 
@@ -46,7 +47,7 @@ public class DummyConfigurationPreProcessor2 extends ConfigPreProcessorImpl {
   public String process(URL urlToXml) throws CoreException {
     String xml = null;
     try (InputStream in = urlToXml.openStream()) {
-      xml = IOUtils.toString(in);
+      xml = IOUtils.toString(in, Charset.defaultCharset());
     }
     catch (IOException e) {
       ExceptionHelper.rethrowCoreException(e);
