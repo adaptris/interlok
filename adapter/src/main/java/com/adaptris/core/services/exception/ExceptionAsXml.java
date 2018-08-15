@@ -15,10 +15,6 @@
 */
 package com.adaptris.core.services.exception;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
-import java.io.OutputStream;
-
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -33,7 +29,6 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.XmlHelper;
-import com.adaptris.util.XmlUtils;
 import com.adaptris.util.text.xml.DocumentMerge;
 import com.adaptris.util.text.xml.ReplaceOriginal;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -90,11 +85,8 @@ public class ExceptionAsXml implements ExceptionSerializer {
     try {
       Document newDoc = exceptionGenerator().create(exception);
       Document result = documentMerge().merge(XmlHelper.createDocument(msg, documentFactoryBuilder()), newDoc);
-      String encoding = getXmlEncoding(msg);
-      try (OutputStream out = msg.getOutputStream()) {
-        new XmlUtils().writeDocument(result, out, encoding);
-      }
-      msg.setContentEncoding(encoding);
+      String encoding = XmlHelper.getXmlEncoding(msg, getXmlEncoding());
+      XmlHelper.writeXmlDocument(result, msg, encoding);
     }
     catch (Exception e) {
       throw ExceptionHelper.wrapServiceException(e);
@@ -146,17 +138,6 @@ public class ExceptionAsXml implements ExceptionSerializer {
    */
   public void setXmlEncoding(String encoding) {
     xmlEncoding = encoding;
-  }
-
-  private String getXmlEncoding(AdaptrisMessage msg) {
-    String encoding = "UTF-8";
-    if (!isEmpty(getXmlEncoding())) {
-      encoding = getXmlEncoding();
-    }
-    else if (!isEmpty(msg.getContentEncoding())) {
-      encoding = msg.getContentEncoding();
-    }
-    return encoding;
   }
 
   public DocumentBuilderFactoryBuilder getXmlDocumentFactoryConfig() {
