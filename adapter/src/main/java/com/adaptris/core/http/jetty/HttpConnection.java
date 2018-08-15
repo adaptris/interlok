@@ -36,6 +36,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.management.webserver.SecurityHandlerWrapper;
 import com.adaptris.util.KeyValuePair;
@@ -55,16 +56,17 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * <pre>
  * {@code 
- *   <http-properties>
+ *   <server-connector-properties>
  *     <key-value-pair>
  *        <key>ReuseAddress</key>
  *        <value>true</value>
  *     </key-value-pair>
- *   </http-properties>
+ *   </server-connector-properties>
  * }
- * </pre> will invoke {@link ServerConnector#setReuseAddress(boolean)}, setting the ReuseAddress property to true. Note that no
+ * </pre> will invoke {@code ServerConnector#setReuseAddress(boolean)}, setting the ReuseAddress property to true. Note that no
  * validation of the various properties is performed and will be passed as-is to the {@link AbstractConnector} with an attempt to
- * transform into the correct type. Invalid combinations may result in undefined behaviour.
+ * transform into the correct type. Invalid combinations may result in undefined behaviour. Similarly additional
+ * {@code HttpConfiguration} properties can be configured via the {@code http-connection} element.
  * </p>
  * 
  * @config jetty-http-connection
@@ -82,7 +84,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class HttpConnection extends JettyConnection {
 
   /**
-   * A standard {@link ServerConnector} property.
+   * Standard {@link ServerConnector} properties for use with {@link HttpConnection#setServerConnectorProperties(KeyValuePairSet)}.
    * 
    */
   public enum ServerConnectorProperty {
@@ -149,6 +151,10 @@ public class HttpConnection extends JettyConnection {
     abstract void applyProperty(ServerConnector connector, String value) throws Exception;
   }
 
+  /**
+   * Standard {@link HttpConfiguration} properties for use with {@link HttpConnection#setHttpConfiguration(KeyValuePairSet)}.
+   * 
+   */
   public enum HttpConfigurationProperty {
     /**
      * @see HttpConfiguration#setSecureScheme(String).
@@ -323,12 +329,14 @@ public class HttpConnection extends JettyConnection {
   @Valid
   @AutoPopulated
   @AdvancedConfig
+  @InputFieldHint(style = "com.adaptris.core.http.jetty.HttpConnection.ServerConnectorProperty")
   private KeyValuePairSet serverConnectorProperties;
 
   @NotNull
   @Valid
   @AutoPopulated
   @AdvancedConfig
+  @InputFieldHint(style = "com.adaptris.core.http.jetty.HttpConnection.HttpConfigurationProperty")
   private KeyValuePairSet httpConfiguration;
 
 
