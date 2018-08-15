@@ -123,8 +123,8 @@ public class ShutdownHandler extends Thread {
     }
     log.trace("Stopping Management Components.");
     try {
-      ManagementComponentFactory.stopCreated(bootProperties);
-      ManagementComponentFactory.closeCreated(bootProperties);
+      ManagementComponentFactory.stopCreated(bootProperties, true);
+      ManagementComponentFactory.closeCreated(bootProperties, true);
     } catch (Exception ex) {
       log.warn("Could not stop management components, logging for informational purposes only.", ex);
     }
