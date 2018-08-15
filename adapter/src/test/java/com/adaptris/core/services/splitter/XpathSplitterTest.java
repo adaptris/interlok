@@ -19,6 +19,7 @@ package com.adaptris.core.services.splitter;
 import java.io.ByteArrayInputStream;
 import java.util.List;
 
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -36,8 +37,10 @@ import com.adaptris.core.stubs.MessageHelper;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.stubs.StubMessageFactory;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
+import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
+import com.adaptris.util.text.xml.SimpleNamespaceContext;
 import com.adaptris.util.text.xml.XPath;
 
 @SuppressWarnings("deprecation")
@@ -238,11 +241,15 @@ public class XpathSplitterTest extends SplitterCase {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XpathMetadataServiceTest.XML_WITH_NAMESPACE);
     XpathMessageSplitter splitter = new XpathMessageSplitter("/svrl:schematron-output/svrl:failed-assert", "UTF-8");
     splitter.setNamespaceContext(XpathMetadataServiceTest.createContextEntries());
+    NamespaceContext  namespaceCtx = SimpleNamespaceContext.create(XpathMetadataServiceTest.createContextEntries());
+    DocumentBuilderFactoryBuilder builder = DocumentBuilderFactoryBuilder.newInstance().withNamespaceAware(namespaceCtx);
     // Should be 2 splits
     int count = 0;
+    XPath xpath = XPath.newXPathInstance(builder, namespaceCtx);
     try (com.adaptris.core.util.CloseableIterable<AdaptrisMessage> closeable = splitter.splitMessage(msg)) {
       for (AdaptrisMessage m : closeable) {
         count++;
+        assertNotNull(xpath.selectSingleNode(XmlHelper.createDocument(m, builder), "/svrl:failed-assert"));
       }
     }
     assertEquals("Number of messages", 2, count);

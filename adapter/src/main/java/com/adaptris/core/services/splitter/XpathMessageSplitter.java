@@ -19,7 +19,6 @@ package com.adaptris.core.services.splitter;
 import static com.adaptris.core.util.XmlHelper.createDocument;
 
 import java.io.IOException;
-import java.io.Writer;
 
 import javax.validation.constraints.NotNull;
 import javax.xml.namespace.NamespaceContext;
@@ -41,7 +40,6 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.KeyValuePairSet;
-import com.adaptris.util.XmlUtils;
 import com.adaptris.util.text.xml.SimpleNamespaceContext;
 import com.adaptris.util.text.xml.XPath;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -202,7 +200,6 @@ public class XpathMessageSplitter extends MessageSplitterImp {
     private NodeList nodeList;
     private String encoding;
     private int nodeListIndex;
-    private XmlUtils xml;
 
     private AdaptrisMessage nextMessage;
     private int numberOfMessages;
@@ -219,7 +216,6 @@ public class XpathMessageSplitter extends MessageSplitterImp {
         factoryBuilder = documentFactoryBuilder().withNamespaceAware(true);
       }
       DocumentBuilderFactory docBuilderFactory = factoryBuilder.configure(DocumentBuilderFactory.newInstance());
-      xml = new XmlUtils(namespaceCtx, docBuilderFactory);
       docBuilder = factoryBuilder.configure(docBuilderFactory.newDocumentBuilder());
       nodeList = resolveXpath(msg, namespaceCtx, factoryBuilder);
       encoding = XmlHelper.getXmlEncoding(msg, getEncoding());
@@ -233,12 +229,7 @@ public class XpathMessageSplitter extends MessageSplitterImp {
         Node dup = splitXmlDoc.importNode(e, true);
         splitXmlDoc.appendChild(dup);
         AdaptrisMessage splitMsg = factory.newMessage("", encoding);
-        // Could we switch to using XmlHelper here, because the document
-        // already has the namespace stuffs, so rendering it is probably fine.
-        // probably best not to change behaviour right now.
-        try (Writer writer = splitMsg.getWriter()) {
-          xml.writeDocument(splitXmlDoc, writer, encoding);
-        }
+        XmlHelper.writeXmlDocument(splitXmlDoc, splitMsg, encoding);
         copyMetadata(msg, splitMsg);
         numberOfMessages++;
         nodeListIndex++;
