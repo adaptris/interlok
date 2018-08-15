@@ -37,7 +37,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("ftp-connection")
 @AdapterComponent
 @ComponentProfile(summary = "Connect to a FTP server using a username and password", tag = "connections,ftp")
-@DisplayOrder(order = {"defaultUserName", "defaultPassword", "transferType", "ftpDataMode", "defaultControlPort"})
+@DisplayOrder(order = {"defaultUserName", "defaultPassword", "transferType", "ftpDataMode", "defaultControlPort", "additionalSettings"})
 public class FtpConnection extends FtpConnectionImp {
 
   private static final String SCHEME_FTP = "ftp";

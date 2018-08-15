@@ -21,16 +21,22 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 import java.io.IOException;
 import java.util.TimeZone;
 
+import javax.validation.constraints.NotNull;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.util.Args;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
 import com.adaptris.ftp.ApacheFtpClientImpl;
+import com.adaptris.ftp.ClientSettings;
 import com.adaptris.ftp.FtpDataMode;
 import com.adaptris.ftp.TransferType;
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.security.password.Password;
+import com.adaptris.util.KeyValuePairBag;
+import com.adaptris.util.KeyValuePairSet;
 
 /**
  * Abstract implementation of FTPConnection both vanilla and SSL.
@@ -56,9 +62,16 @@ public abstract class FtpConnectionImp extends FileTransferConnectionUsingPasswo
   private FtpDataMode ftpDataMode;
   @AdvancedConfig
   private String defaultAccount;
+  @AdvancedConfig
+  @NotNull
+  @AutoPopulated
+  private KeyValuePairSet additionalSettings;
+
   // For sending keep alives every 60 seconds on the control port when downloading stuff.
   // Could make it configurable
   private transient int controlKeepAlive = 60;
+
+
 
   /**
    * Default Constructor with the following default values.
@@ -71,6 +84,7 @@ public abstract class FtpConnectionImp extends FileTransferConnectionUsingPasswo
    */
   public FtpConnectionImp() {
     super();
+    setAdditionalSettings(new KeyValuePairSet());
   }
 
   TransferType transferType() {
@@ -152,9 +166,10 @@ public abstract class FtpConnectionImp extends FileTransferConnectionUsingPasswo
   @Override
   protected FileTransferClient create(String remoteHost, int port, UserInfo ui)
       throws IOException, FileTransferException, PasswordException {
-    log.debug("Connecting to " + remoteHost + ":" + port + " as user " + ui.getUser());
+    log.debug("Connecting to {}:{} as user {}", remoteHost, port, ui.getUser());
 
-    ApacheFtpClientImpl ftp = createFtpClient(remoteHost, port, socketTimeout());
+    ApacheFtpClientImpl ftp = createFtpClient(remoteHost, port, socketTimeout())
+        .withAdditionalSettings(KeyValuePairBag.asMap(getAdditionalSettings()));
     ftp.setDataMode(ftpDataMode());
     ftp.setKeepAliveTimeout(controlKeepAlive);
     if (getServerTimezone() != null) {
@@ -169,10 +184,8 @@ public abstract class FtpConnectionImp extends FileTransferConnectionUsingPasswo
     }
     ftp.setType(transferType());
     if (additionalDebug()) {
-      log.trace("Server OS [" + ftp.system() + "], Current Directory [" + ftp.pwd() + "], Transfer Type [" + transferType().name()
-          + "]");
+      log.trace("Server OS [{}], Current Directory [{}], Transfer Type [{}]",ftp.system(),ftp.pwd(),transferType().name());
     }
-
     return ftp;
   }
 
@@ -256,5 +269,20 @@ public abstract class FtpConnectionImp extends FileTransferConnectionUsingPasswo
   @Override
   public int defaultControlPort() {
     return getDefaultControlPort() != null ? getDefaultControlPort().intValue() : DEFAULT_FTP_CONTROL_PORT;
+  }
+
+  public KeyValuePairSet getAdditionalSettings() {
+    return additionalSettings;
+  }
+
+  /**
+   * Set any additional settings that might need to be applied.
+   * 
+   * @param s any additional settings.
+   * @see ClientSettings.FTP
+   * @see ClientSettings.FTPS
+   */
+  public void setAdditionalSettings(KeyValuePairSet s) {
+    this.additionalSettings = Args.notNull(s, "additionalSettings");
   }
 }
