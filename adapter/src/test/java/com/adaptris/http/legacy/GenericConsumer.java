@@ -51,6 +51,7 @@ public abstract class GenericConsumer extends HttpConsumerImp {
    * @see HttpConsumerImp#handleRequest(HttpSession)
    */
   @Override
+  @SuppressWarnings("deprecation")
   protected AdaptrisMessage handleRequest(HttpSession httpSession)
       throws IOException, IllegalStateException, HttpException {
 

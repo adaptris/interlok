@@ -22,15 +22,12 @@ import static com.adaptris.core.runtime.AdapterComponentMBean.JMX_FAILED_MESSAGE
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.TimeUnit;
 
 import javax.management.JMX;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
-
-import org.apache.commons.io.IOUtils;
 
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessage;
@@ -47,6 +44,7 @@ import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.interlok.types.SerializableMessage;
 import com.adaptris.util.TimeInterval;
+import com.adaptris.util.stream.StreamUtil;
 
 public class DefaultFailedMessageRetrierJmxTest extends ComponentManagerCase {
 
@@ -379,21 +377,13 @@ public class DefaultFailedMessageRetrierJmxTest extends ComponentManagerCase {
 
   private File writeFile(AdaptrisMessage msg, MimeEncoder encoder) throws IOException, CoreException {
     File result = deleteLater(msg);
-    OutputStream out = null;
-    InputStream in = null;
-    try {
-      out = new FileOutputStream(result);
+    try (OutputStream out = new FileOutputStream(result)) {
       if (encoder != null) {
         encoder.writeMessage(msg, out);
       }
       else {
-        in = msg.getInputStream();
-        IOUtils.copy(in, out);
+        StreamUtil.copyAndClose(msg.getInputStream(), out);
       }
-    }
-    finally {
-      IOUtils.closeQuietly(out);
-      IOUtils.closeQuietly(in);
     }
     return result;
   }

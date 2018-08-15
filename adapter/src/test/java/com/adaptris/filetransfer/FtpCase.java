@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.Properties;
 import java.util.Random;
@@ -207,7 +208,7 @@ public abstract class FtpCase extends TestCase {
         File localFile = TempFileUtils.createTrackedFile(client);
         client.chdir(getRemoteGetDirectory());
         client.get(localFile.getCanonicalPath(), filename);
-        String s = FileUtils.readFileToString(localFile).trim();
+        String s = FileUtils.readFileToString(localFile, Charset.defaultCharset()).trim();
         assertEquals("File contents", s, FILE_TEXT);
         client.disconnect();
       }
@@ -277,7 +278,7 @@ public abstract class FtpCase extends TestCase {
         FileTransferClient client = connectClientImpl();
         File localFile = TempFileUtils.createTrackedFile(client);
         client.chdir(getRemotePutDirectory());
-        FileUtils.write(localFile, FILE_TEXT);
+        FileUtils.write(localFile, FILE_TEXT, Charset.defaultCharset());
         client.put(localFile.getCanonicalPath(), filename);
         client.disconnect();
       } finally {

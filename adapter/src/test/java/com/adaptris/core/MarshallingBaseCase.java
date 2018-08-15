@@ -35,7 +35,6 @@ import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 
 import com.adaptris.core.AdapterXStreamMarshallerFactory.OutputMode;
 import com.adaptris.util.GuidGenerator;
@@ -110,7 +109,7 @@ public abstract class MarshallingBaseCase extends BaseCase {
     AdaptrisMarshaller marshaller = createMarshaller();
     Adapter adapter = createMarshallingObject();
     String s = marshaller.marshal(adapter);
-    InputStream in = new FilterInputStream(new ByteArrayInputStream(s.getBytes())) {
+    InputStream fail = new FilterInputStream(new ByteArrayInputStream(s.getBytes())) {
       @Override
       public int read() throws IOException {
         throw new IOException("testUnmarshalFromInputStream_WithException");
@@ -121,16 +120,13 @@ public abstract class MarshallingBaseCase extends BaseCase {
         throw new IOException("testUnmarshalFromInputStream_WithException");
       }
     };
-    try {
+    try (InputStream in = fail) {
       Adapter adapter2 = (Adapter) marshaller.unmarshal(in);
       fail();
     }
     catch (CoreException e) {
       assertNotNull(e.getCause());
       assertRootCause("testUnmarshalFromInputStream_WithException", e);
-    }
-    finally {
-      IOUtils.closeQuietly(in);
     }
   }
 
@@ -147,7 +143,7 @@ public abstract class MarshallingBaseCase extends BaseCase {
     AdaptrisMarshaller marshaller = createMarshaller();
     Adapter adapter = createMarshallingObject();
     String s = marshaller.marshal(adapter);
-    Reader in = new FilterReader(new StringReader(s)) {
+    Reader fail = new FilterReader(new StringReader(s)) {
       @Override
       public int read() throws IOException {
         throw new IOException("testUnmarshalFromReader_WithException");
@@ -157,7 +153,7 @@ public abstract class MarshallingBaseCase extends BaseCase {
         throw new IOException("testUnmarshalFromReader_WithException");
       }
     };
-    try {
+    try (Reader in = fail) {
       Adapter adapter2 = (Adapter) marshaller.unmarshal(in);
       fail();
     }
@@ -165,9 +161,6 @@ public abstract class MarshallingBaseCase extends BaseCase {
       assertNotNull(e.getCause());
       // assertEquals(IOException.class, e.getCause().getClass());
       assertRootCause("testUnmarshalFromReader_WithException", e);
-    }
-    finally {
-      IOUtils.closeQuietly(in);
     }
   }
 
@@ -209,7 +202,7 @@ public abstract class MarshallingBaseCase extends BaseCase {
   public void testMarshalToOutputStream_WithException() throws Exception {
     AdaptrisMarshaller marshaller = createMarshaller();
     Adapter adapter = createMarshallingObject();
-    OutputStream out = new FilterOutputStream(new ByteArrayOutputStream()) {
+    OutputStream fail = new FilterOutputStream(new ByteArrayOutputStream()) {
 
       @Override
       public void write(byte[] cbuf, int off, int len) throws IOException {
@@ -226,7 +219,7 @@ public abstract class MarshallingBaseCase extends BaseCase {
         throw new IOException("testMarshalToOutputStream_WithException");
       }
     };
-    try {
+    try (OutputStream out = fail) {
       marshaller.marshal(adapter, out);
       fail();
     }
@@ -234,9 +227,6 @@ public abstract class MarshallingBaseCase extends BaseCase {
       assertNotNull(e.getCause());
       // assertEquals(IOException.class, e.getCause().getClass());
       assertRootCause("testMarshalToOutputStream_WithException", e);
-    }
-    finally {
-      IOUtils.closeQuietly(out);
     }
   }
 
@@ -295,7 +285,7 @@ public abstract class MarshallingBaseCase extends BaseCase {
   public void testMarshalToWriter_WithException() throws Exception {
     AdaptrisMarshaller marshaller = createMarshaller();
     Adapter adapter = createMarshallingObject();
-    Writer out = new FilterWriter(new StringWriter()) {
+    Writer fail = new FilterWriter(new StringWriter()) {
 
       @Override
       public void write(char[] cbuf, int off, int len) throws IOException {
@@ -317,7 +307,7 @@ public abstract class MarshallingBaseCase extends BaseCase {
         throw new IOException("testMarshalToWriter_WithException");
       }
     };
-    try {
+    try (Writer out = fail) {
       marshaller.marshal(adapter, out);
       fail();
     }
@@ -325,9 +315,6 @@ public abstract class MarshallingBaseCase extends BaseCase {
       assertNotNull(e.getCause());
       // assertEquals(IOException.class, e.getCause().getClass());
       assertRootCause("testMarshalToWriter_WithException", e);
-    }
-    finally {
-      IOUtils.closeQuietly(out);
     }
   }
 

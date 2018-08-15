@@ -19,8 +19,6 @@ package com.adaptris.core.services;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
-import org.apache.commons.io.IOUtils;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.GeneralServiceExample;
@@ -56,22 +54,15 @@ public class Utf8BomRemoverTest extends GeneralServiceExample {
 
   private AdaptrisMessage create(boolean includeBom) throws Exception {
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage();
-    OutputStream out = msg.getOutputStream();
-    OutputStreamWriter writer = null;
-    try {
+    try (OutputStream out = msg.getOutputStream()) {
       if (includeBom) {
         out.write(UTF_8_BOM);
         out.flush();
       }
-      writer = new OutputStreamWriter(out);
-      writer.write(PAYLOAD);
-      writer.flush();
+      try (OutputStreamWriter writer = new OutputStreamWriter(out)) {
+        writer.write(PAYLOAD);
+      }
     }
-    finally {
-      IOUtils.closeQuietly(writer);
-      IOUtils.closeQuietly(out);
-    }
-
     return msg;
   }
 

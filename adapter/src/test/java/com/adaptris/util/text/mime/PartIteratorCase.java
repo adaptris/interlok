@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
 
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
@@ -28,6 +29,7 @@ import org.apache.commons.io.IOUtils;
 
 import com.adaptris.core.stubs.TempFileUtils;
 import com.adaptris.util.GuidGenerator;
+import com.adaptris.util.stream.StreamUtil;
 
 public abstract class PartIteratorCase implements MimeConstants {
   protected static final String PAYLOAD_1 = "The quick brown fox jumps over the lazy dog";
@@ -55,9 +57,7 @@ public abstract class PartIteratorCase implements MimeConstants {
 
   protected static String toString(MimeBodyPart p) throws Exception {
     StringWriter out = new StringWriter();
-    try (InputStream in = p.getInputStream()) {
-      IOUtils.copy(in, out);
-    }
+    StreamUtil.copyAndClose(p.getInputStream(), out);
     return out.toString();
   }
 
@@ -79,7 +79,7 @@ public abstract class PartIteratorCase implements MimeConstants {
   protected static String toString(byte[] b) throws Exception {
     StringWriter out = new StringWriter();
     try (InputStream in = new ByteArrayInputStream(b)) {
-      IOUtils.copy(in, out);
+      IOUtils.copy(in, out, Charset.defaultCharset());
     }
     return out.toString();
   }

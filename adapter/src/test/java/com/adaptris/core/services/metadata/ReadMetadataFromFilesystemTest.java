@@ -21,8 +21,6 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.Properties;
 
-import org.apache.commons.io.IOUtils;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConfiguredDestination;
 import com.adaptris.core.ConfiguredProduceDestination;
@@ -202,24 +200,17 @@ public class ReadMetadataFromFilesystemTest extends MetadataServiceExample {
   }
 
   private void writeProperties(Properties p, File filename, boolean xml) throws Exception {
-    OutputStream out = null;
-    try {
-      File parent = filename.getParentFile();
-      if (parent != null) {
-        parent.mkdirs();
-      }
-      out = new FileOutputStream(filename);
+    File parent = filename.getParentFile();
+    if (parent != null) {
+      parent.mkdirs();
+    }
+    try (OutputStream out = new FileOutputStream(filename)) {
       if (xml) {
         p.storeToXML(out, "");
-      }
-      else {
+      } else {
         p.store(out, "");
       }
     }
-    finally {
-      IOUtils.closeQuietly(out);
-    }
-
   }
 
   private ReadMetadataFromFilesystem createService(String subDir) {

@@ -29,7 +29,6 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -170,13 +169,8 @@ public class LogHandlerTest {
 
   public static File createLogFile(File directory, String name) throws Exception {
     File logFile = new File(directory, name);
-    PrintStream out = new PrintStream(new FileOutputStream(logFile));
-    try {
+    try (PrintStream out = new PrintStream(new FileOutputStream(logFile))) {
       out.print(LOG_ENTRY);
-      out.flush();
-    }
-    finally {
-      IOUtils.closeQuietly(out);
     }
     return logFile;
   }

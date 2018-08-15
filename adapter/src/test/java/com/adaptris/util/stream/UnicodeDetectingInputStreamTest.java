@@ -36,7 +36,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 public class UnicodeDetectingInputStreamTest {
@@ -148,9 +147,6 @@ public class UnicodeDetectingInputStreamTest {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     try (OutputStreamWriter writer = wrap(out, encoding)) {
       writer.write(text);
-    }
-    finally {
-      IOUtils.closeQuietly(out);
     }
     return new ByteArrayInputStream(out.toByteArray());
   }
