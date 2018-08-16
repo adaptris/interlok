@@ -19,7 +19,6 @@ package com.adaptris.core;
 import java.io.Reader;
 import java.io.Writer;
 
-import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.XStream;
 
 /**
@@ -71,7 +70,7 @@ public abstract class XStreamMarshallerImpl extends AbstractMarshaller{
       return getInstance().fromXML(reader);
     }
     catch (Exception e) {
-      throw ExceptionHelper.wrapCoreException(e);
+      throw new CoreException(e);
     }
   }
 }
