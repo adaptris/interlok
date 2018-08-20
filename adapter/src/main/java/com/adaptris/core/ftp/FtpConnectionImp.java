@@ -30,7 +30,6 @@ import com.adaptris.core.util.Args;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
 import com.adaptris.ftp.ApacheFtpClientImpl;
-import com.adaptris.ftp.ClientSettings;
 import com.adaptris.ftp.FtpDataMode;
 import com.adaptris.ftp.TransferType;
 import com.adaptris.security.exc.PasswordException;
@@ -279,8 +278,8 @@ public abstract class FtpConnectionImp extends FileTransferConnectionUsingPasswo
    * Set any additional settings that might need to be applied.
    * 
    * @param s any additional settings.
-   * @see ClientSettings.FTP
-   * @see ClientSettings.FTPS
+   * @see com.adaptris.ftp.ClientSettings.FTP
+   * @see com.adaptris.ftp.ClientSettings.FTPS
    */
   public void setAdditionalSettings(KeyValuePairSet s) {
     this.additionalSettings = Args.notNull(s, "additionalSettings");
