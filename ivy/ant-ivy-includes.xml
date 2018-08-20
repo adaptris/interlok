@@ -312,6 +312,9 @@
           <taglet name="com.adaptris.taglet.LicenseTaglet">
             <path refid="classpath.ant-tools"/>
           </taglet>
+          <tag name="apiNote" scope="all" description="API Note:"/>
+          <tag name="implSpec" scope="all" description="Implementation Requirements:"/>
+          <tag name="implNote" scope="all" description="Implementation Note:"/>
         </javadoc>
       </sequential>
     </macrodef>
