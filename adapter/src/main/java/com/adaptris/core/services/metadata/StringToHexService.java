@@ -48,7 +48,7 @@ public class StringToHexService extends HexToStringService {
   }
 
   @Override
-  protected String reformat(String s, String msgCharset) throws Exception {
+  public String reformat(String s, String msgCharset) throws Exception {
     ByteTranslator bytesToHex = new HexStringByteTranslator();
     ByteTranslator stringToBytes = new CharsetByteTranslator(getCharacterEncoding());
     return bytesToHex.translate(stringToBytes.translate(s));

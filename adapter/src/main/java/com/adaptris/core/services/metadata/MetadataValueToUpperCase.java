@@ -42,7 +42,7 @@ public class MetadataValueToUpperCase extends ReformatMetadata {
   }
 
   @Override
-  protected String reformat(String toChange, String msgCharset) {
+  public String reformat(String toChange, String msgCharset) {
     return toChange.toUpperCase();
   }
 }

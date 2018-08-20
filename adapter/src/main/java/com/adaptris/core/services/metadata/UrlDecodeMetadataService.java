@@ -46,7 +46,7 @@ public class UrlDecodeMetadataService extends ReformatMetadata {
   }
 
   @Override
-  protected String reformat(String s, String msgCharset) throws Exception {
+  public String reformat(String s, String msgCharset) throws Exception {
     return URLDecoder.decode(s, defaultIfEmpty(msgCharset, "UTF-8"));
   }
 

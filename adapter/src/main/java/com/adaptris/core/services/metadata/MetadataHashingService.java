@@ -99,7 +99,7 @@ public class MetadataHashingService extends ReformatMetadata {
 
 
   @Override
-  protected String reformat(String s, String charEncoding) throws Exception {
+  public String reformat(String s, String charEncoding) throws Exception {
     return getByteTranslator().translate(MessageDigest.getInstance(getHashAlgorithm()).digest(toBytes(s, charEncoding)));
   }
 

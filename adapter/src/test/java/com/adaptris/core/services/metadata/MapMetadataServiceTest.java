@@ -85,6 +85,18 @@ public class MapMetadataServiceTest extends MetadataServiceExample {
     assertTrue(msg.getMetadataValue(METADATA_KEY).equals(BASIC_NEW_VALUE));
   }
 
+  public void testReplacement_Resolved() throws Exception {
+    MapMetadataService service = createService();
+    KeyValuePairList kvps = new KeyValuePairList();
+    kvps.addKeyValuePair(new KeyValuePair(BASIC_MATCH_VALUE, "%message{ResolvedKey}"));
+    service.setMetadataKeyMap(kvps);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("zzzzzzzz");
+    msg.addMetadata(METADATA_KEY, BASIC_MATCH_VALUE);
+    msg.addMetadata("ResolvedKey", BASIC_NEW_VALUE);
+    execute(service, msg);
+    assertTrue(msg.getMetadataValue(METADATA_KEY).equals(BASIC_NEW_VALUE));
+  }
+
   public void testRegexGroupReplacement() throws Exception {
     MapMetadataService service = createService();
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance()

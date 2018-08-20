@@ -80,7 +80,7 @@ public class HexToStringService extends ReformatMetadata {
   }
 
   @Override
-  protected String reformat(String s, String msgCharset) throws Exception {
+  public String reformat(String s, String msgCharset) throws Exception {
     ByteTranslator hexToBytes = new HexStringByteTranslator();
     ByteTranslator bytesToString = new CharsetByteTranslator(getCharacterEncoding());
     return bytesToString.translate(hexToBytes.translate(s));

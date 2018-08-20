@@ -17,7 +17,6 @@
 package com.adaptris.core.services.metadata;
 
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
-import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,7 +27,11 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -57,6 +60,7 @@ public class ReplaceMetadataValue extends ReformatMetadata {
 
   @NotBlank
   private String searchValue;
+  @InputFieldHint(expression = true)
   private String replacementValue;
   @InputFieldDefault(value = "false")
   private Boolean replaceAll;
@@ -78,23 +82,20 @@ public class ReplaceMetadataValue extends ReformatMetadata {
 
   @Override
   protected void initService() throws CoreException {
-    if (isEmpty(getSearchValue())) {
-      throw new CoreException("Search Value is 'null'");
+    try {
+      Args.notBlank(getSearchValue(), "searchValue");
+      matchGroupPattern = Pattern.compile(MATCH_GROUP_REGEX);
+      searchPattern = Pattern.compile(getSearchValue());
+      super.initService();
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
-    matchGroupPattern = Pattern.compile(MATCH_GROUP_REGEX);
-    searchPattern = Pattern.compile(getSearchValue());
-    super.initService();
   }
 
   @Override
-  protected void closeService() {
-    super.closeService();
-  }
-
-  @Override
-  protected String reformat(String src, String msgCharset) {
+  public String reformat(String src, AdaptrisMessage msg) throws Exception {
     Matcher searchMatcher = searchPattern.matcher(src);
-    String replacement = buildReplacementValue(searchMatcher, replacementValue());
+    String replacement = buildReplacementValue(searchMatcher, msg.resolve(replacementValue()));
     return replaceAll() ? searchMatcher.replaceAll(replacement) : searchMatcher.replaceFirst(replacement);
   }
 
@@ -140,7 +141,7 @@ public class ReplaceMetadataValue extends ReformatMetadata {
     this.replacementValue = s;
   }
 
-  String replacementValue() {
+  protected String replacementValue() {
     return defaultIfEmpty(getReplacementValue(), "");
   }
 
