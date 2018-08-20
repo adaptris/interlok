@@ -27,7 +27,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * Metadata Filter implementation that encodes all values that match the specified key.
  * <p>
- * Note that keys that do not match will still be returned; just that keys that do match {@link #getRegexp()} will have
+ * Note that keys that do not match will still be returned; just that keys that do match {@link #getPasswordPatterns()} will have
  * {@link Password#encode(String,String)} applied to the values.Please note that a new {@code MetadataElement} is created as a
  * result of the encode/deocde process, so any changes may not be reflected in the original message.
  * </p>

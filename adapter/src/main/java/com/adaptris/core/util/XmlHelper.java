@@ -298,7 +298,7 @@ public class XmlHelper {
    * 
    * @param doc the document
    * @param msg the message
-   * @param encoding, will default to "UTF-8" if not specified, and the msg does not have a declared content encoding.
+   * @param encoding will default to "UTF-8" if not specified, and the msg does not have a declared content encoding.
    * @throws Exception
    */
   public static void writeXmlDocument(Document doc, AdaptrisMessage msg, String encoding) throws Exception {
