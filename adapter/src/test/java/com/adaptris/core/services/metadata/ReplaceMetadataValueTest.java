@@ -112,6 +112,16 @@ public class ReplaceMetadataValueTest extends MetadataServiceExample {
     assertEquals(VALUE, m.getMetadataValue(NON_MATCHING_KEY));
   }
 
+  public void testReplaceAllRaw_Resolved() throws Exception {
+    AdaptrisMessage m = createMessage();
+    m.addMetadata("ResolvedKey", REPLACEMENT_VALUE_RAW);
+    ReplaceMetadataValue service = new ReplaceMetadataValue(MATCHING_METADATA_KEY, SEARCH_VALUE_RAW, true, "%message{ResolvedKey}");
+    execute(service, m);
+    assertEquals(EXPECTED_RAW_RESULT_ALL, m.getMetadataValue(MATCHING_METADATA_KEY1));
+    assertEquals(EXPECTED_RAW_RESULT_ALL, m.getMetadataValue(MATCHING_METADATA_KEY2));
+    assertEquals(VALUE, m.getMetadataValue(NON_MATCHING_KEY));
+  }
+
   public void testReplaceRegexp() throws Exception {
     AdaptrisMessage m = createMessage();
     ReplaceMetadataValue service = new ReplaceMetadataValue(MATCHING_METADATA_KEY, SEARCH_VALUE_REGEXP, true,

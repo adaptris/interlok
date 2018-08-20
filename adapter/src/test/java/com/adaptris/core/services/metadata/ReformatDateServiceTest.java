@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.text.DateFormatUtil;
 
 @SuppressWarnings("deprecation")
@@ -204,20 +203,6 @@ public class ReformatDateServiceTest extends MetadataServiceExample {
     }
     catch (ServiceException expected) {
 
-    }
-  }
-
-  public void testIllegalStateException() throws Exception {
-    ReformatDateService service = new ReformatDateService();
-    try {
-      LifecycleHelper.initAndStart(service);
-      service.reformat("", null);
-      fail();
-    }
-    catch (IllegalStateException expected) {
-
-    } finally {
-      LifecycleHelper.stopAndClose(service);
     }
   }
 

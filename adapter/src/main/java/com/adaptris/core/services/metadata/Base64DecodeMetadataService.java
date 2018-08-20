@@ -59,7 +59,7 @@ public class Base64DecodeMetadataService extends ReformatMetadata {
   }
 
   @Override
-  protected String reformat(String s, String charEncoding) throws Exception {
+  public String reformat(String s, String charEncoding) throws Exception {
     byte[] debased = byteTranslator.translate(s);
     return toString(debased, charEncoding);
   }

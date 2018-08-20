@@ -49,7 +49,7 @@ public class TrimMetadataService extends ReformatMetadata {
   }
 
   @Override
-  protected String reformat(String s, String msgCharset) throws Exception {
+  public String reformat(String s, String msgCharset) throws Exception {
     return trimToEmpty(s);
   }
 
