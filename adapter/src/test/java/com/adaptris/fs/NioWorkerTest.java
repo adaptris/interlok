@@ -20,14 +20,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 /**
  */
@@ -97,17 +95,5 @@ public class NioWorkerTest extends StandardWorkerTest {
     finally {
       FileUtils.deleteQuietly(f);
     }
-  }
-
-  @Test
-  public void testReleaseLock() throws Exception {
-    NioWorker worker = createWorker();
-    worker.releaseQuietly(null);
-    FileLock exceptionLock = Mockito.mock(FileLock.class);
-    Mockito.doThrow(new IOException()).when(exceptionLock).release();
-    worker.releaseQuietly(exceptionLock);
-    FileLock lock = Mockito.mock(FileLock.class);
-    Mockito.doNothing().when(lock).release();
-    worker.releaseQuietly(lock);
   }
 }

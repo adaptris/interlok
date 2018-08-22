@@ -42,10 +42,9 @@ public class NioWorker extends StandardWorker {
 
   protected void write(byte[] data, File file) throws FsException {
     ByteBuffer buffer = ByteBuffer.wrap(data);
-    FileLock lock = null;
-
-    try (RandomAccessFile raf = new RandomAccessFile(file, "rw"); FileChannel channel = raf.getChannel()) {
-      lock = channel.lock();
+    try (RandomAccessFile raf = new RandomAccessFile(file, "rw");
+        FileChannel channel = raf.getChannel();
+        FileLock lock = channel.lock()) {
       while (buffer.hasRemaining()) {
         channel.write(buffer);
       }
@@ -53,18 +52,15 @@ public class NioWorker extends StandardWorker {
     catch (Exception e) {
       throw wrapException(e);
     }
-    finally {
-      releaseQuietly(lock);
-    }
   }
 
   @Override
   public byte[] get(File file) throws FsException {
-    FileLock lock = null;
     ByteBuffer buffer = null;
 
-    try (RandomAccessFile raf = new RandomAccessFile(checkAcl(file), "rw"); FileChannel channel = raf.getChannel()) {
-      lock = channel.lock();
+    try (RandomAccessFile raf = new RandomAccessFile(checkAcl(file), "rw");
+        FileChannel channel = raf.getChannel();
+        FileLock lock = channel.lock()) {
       buffer = ByteBuffer.allocate((int) raf.length());
       while (buffer.hasRemaining()) {
         channel.read(buffer);
@@ -73,21 +69,7 @@ public class NioWorker extends StandardWorker {
     catch (Exception e) {
       throw wrapException(e);
     }
-    finally {
-      releaseQuietly(lock);
-    }
     return buffer.array();
   }
 
-  protected void releaseQuietly(FileLock lock) {
-    try {
-      if (lock != null) {
-        lock.release();
-      }
-    }
-    catch (Exception e) {
-
-    }
-
-  }
 }
