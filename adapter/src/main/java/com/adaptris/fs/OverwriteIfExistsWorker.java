@@ -17,8 +17,6 @@
 package com.adaptris.fs;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.RandomAccessFile;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -35,16 +33,6 @@ public class OverwriteIfExistsWorker extends NioWorker {
     if (file.exists() && !file.delete()) {
       throw new FsException("Could not delete [" + file + "]");
     }
-    RandomAccessFile raf = null;
-    try {
-      raf = new RandomAccessFile(file, "rw");
-      raf.write(data);
-    }
-    catch (IOException e) {
-      throw new FsException(e);
-    }
-    finally {
-      closeQuietly(raf);
-    }
+    super.put(data, file);
   }
 }

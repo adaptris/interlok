@@ -16,7 +16,14 @@
 
 package com.adaptris.fs;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -28,16 +35,15 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.adaptris.core.fs.FsHelper;
 import com.adaptris.util.GuidGenerator;
 
 public class StandardWorkerTest extends FsCase {
-
-  public StandardWorkerTest(java.lang.String testName) {
-    super(testName);
-  }
 
   // tests...
   public static final String BASE_KEY = "StandardWorkerTest._baseUrl";
@@ -48,16 +54,16 @@ public class StandardWorkerTest extends FsCase {
   protected URL baseUrl;
   protected File baseDir;
 
-  @Override
-  protected void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     String subDir = new GuidGenerator().safeUUID();
     baseUrl = new URL(PROPERTIES.getProperty(BASE_KEY) + "/" + subDir);
     baseDir = FsHelper.createFileReference(baseUrl);
     baseDir.mkdirs();
   }
 
-  @Override
-  protected void tearDown() {
+  @After
+  public void tearDown() {
     try {
       FileUtils.deleteDirectory(baseDir);
     }
@@ -88,57 +94,52 @@ public class StandardWorkerTest extends FsCase {
     return result;
   }
 
-  protected FsWorker createWorker() {
+  protected StandardWorker createWorker() {
     return new StandardWorker();
   }
 
+  @Test
   public void testListFiles() throws Exception {
-    String[] testFiles = createTestFiles();
-    Set<File> expected = asFileArray(testFiles);
-    FsWorker worker = createWorker();
+    File[] files = new File[] {
+        new File("a"),
+        new File("b"),
+        new File("c")
+    };
+    File dir = Mockito.mock(File.class);
+    Mockito.when(dir.canWrite()).thenReturn(true);
+    Mockito.when(dir.exists()).thenReturn(true);
+    Mockito.when(dir.canRead()).thenReturn(true);    
+    Mockito.when(dir.isDirectory()).thenReturn(true);
+    Mockito.when(dir.listFiles((FileFilter) Mockito.any())).thenReturn(files);
+    StandardWorker worker = createWorker();
+    File[] listFiles = worker.listFiles(dir);
+    assertEquals(3, listFiles.length);
     try {
       worker.listFiles(null);
-    }
-    catch (FsException e) {
-
-    }
-    assertEquals("listFiles without filter", expected, new HashSet(Arrays.asList(worker.listFiles(baseDir))));
-    assertEquals("listFiles NullFilter ", expected, new HashSet(Arrays.asList(worker.listFiles(baseDir, null))));
-  }
-
-  public void testListFilesWithFilter() throws Exception {
-    String[] testFiles = createTestFiles();
-    File filteredFilename = File.createTempFile(this.getClass().getSimpleName(), DEFAULT_FILTER_SUFFIX, baseDir);
-    Set<File> expected = new HashSet<File>(Arrays.asList(new File[]
-    {
-      filteredFilename
-    }));
-    FsWorker worker = createWorker();
-    assertEquals("listFiles with Filter ", expected, new HashSet(Arrays.asList(worker.listFiles(baseDir, new TmpFilter()))));
-  }
-
-  public void testListFilesNonExistentDirectory() throws Exception {
-    String[] testFiles = createTestFiles();
-    FsWorker worker = createWorker();
-    try {
-      worker.listFiles(new File(baseDir, "fred"));
       fail();
-    }
-    catch (FsException expected) {
+    } catch (FsException expected) {
+      
     }
   }
 
-  public void testListFilesNotDirectory() throws Exception {
-    FsWorker worker = createWorker();
-    String[] testFiles = createTestFiles();
+  @Test
+  public void testListFilesWith_NullResponse() throws Exception {
+    File dir = Mockito.mock(File.class);
+    Mockito.when(dir.canWrite()).thenReturn(true);
+    Mockito.when(dir.exists()).thenReturn(true);
+    Mockito.when(dir.canRead()).thenReturn(true);
+    Mockito.when(dir.isDirectory()).thenReturn(true);
+    Mockito.when(dir.listFiles((FileFilter) Mockito.any())).thenReturn(null);
+    StandardWorker worker = createWorker();
     try {
-      worker.listFiles(new File(baseDir, testFiles[0]));
+      worker.listFiles(dir);
       fail();
-    }
-    catch (FsException expected) {
+    } catch (FsException expected) {
+
     }
   }
 
+  @Test
   public void testGetFile() throws Exception {
     FsWorker worker = createWorker();
     String[] testFiles = createTestFiles();
@@ -163,6 +164,7 @@ public class StandardWorkerTest extends FsCase {
     }
   }
 
+  @Test
   public void testPutFile() throws Exception {
     FsWorker worker = createWorker();
     String[] testFiles = createTestFiles();
@@ -170,8 +172,18 @@ public class StandardWorkerTest extends FsCase {
     worker.put(DATA.getBytes(), new File(baseDir, newFilename));
     byte[] result = worker.get(new File(baseDir, newFilename));
     assertEquals(DATA, new String(result));
+
+    File failingFile = Mockito.mock(File.class);
+    Mockito.when(failingFile.canWrite()).thenReturn(true);
+    Mockito.when(failingFile.getPath()).thenThrow(new RuntimeException());
+    try {
+      worker.put(DATA.getBytes(), failingFile);
+      fail();
+    } catch (FsException e) {
+    }
   }
 
+  @Test
   public void testPutFileExists() throws Exception {
     FsWorker worker = createWorker();
     String[] testFiles = createTestFiles();
@@ -185,6 +197,7 @@ public class StandardWorkerTest extends FsCase {
     }
   }
 
+  @Test
   public void testRenameFile() throws Exception {
     FsWorker worker = createWorker();
     String[] testFiles = createTestFiles();
@@ -208,6 +221,7 @@ public class StandardWorkerTest extends FsCase {
     }
   }
 
+  @Test
   public void testDeleteFile() throws Exception {
     FsWorker worker = createWorker();
     String[] testFiles = createTestFiles();
@@ -229,6 +243,7 @@ public class StandardWorkerTest extends FsCase {
     worker.delete(newDir);
   }
 
+  @Test
   public void testIsWriteableDirectoryFile() throws Exception {
     FsWorker worker = createWorker();
     File newDir = new File(baseDir, "abc123");
@@ -242,36 +257,62 @@ public class StandardWorkerTest extends FsCase {
     assertTrue(!worker.isWriteableDir(file));
   }
 
+  @Test
   public void testToString() {
     FsWorker worker = createWorker();
     assertNotNull(worker.toString());
   }
 
-  public void testGetFileNoWriteAccess() throws Exception {
-    File file = Mockito.mock(File.class);
-    Mockito.when(file.canWrite()).thenReturn(false);
-    FsWorker worker = createWorker();
-    try {
-      worker.get(file);
-      fail();
-    }
-    catch (FsException expected) {
-
-    }
-
+  @Test
+  public void testWrapException() {
+    StandardWorker worker = createWorker();
+    FsException exc= new FsException();
+    assertEquals(exc, worker.wrapException(exc));
+    FsFileNotFoundException e3 = new FsFileNotFoundException();
+    assertEquals(e3, worker.wrapException(e3));
+    assertEquals(FsException.class, worker.wrapException(new Exception()).getClass());
   }
 
-  public void testGetFileNoReadAccess() throws Exception {
-    File file = Mockito.mock(File.class);
-    Mockito.when(file.canRead()).thenReturn(false);
-    FsWorker worker = createWorker();
+  @Test
+  public void testCheckAcl() throws Exception {
+    File nonExistent = Mockito.mock(File.class);
+    Mockito.when(nonExistent.exists()).thenReturn(false);
+    StandardWorker worker = createWorker();
     try {
-      worker.get(file);
+      worker.checkAcl(nonExistent);
       fail();
     }
     catch (FsException expected) {
 
     }
+    File unreadable = Mockito.mock(File.class);
+    Mockito.when(unreadable.canRead()).thenReturn(false);
+    Mockito.when(unreadable.exists()).thenReturn(true);
+    Mockito.when(unreadable.canWrite()).thenReturn(true);
+    try {
+      worker.checkAcl(unreadable);
+      fail();
+    } catch (FsException expected) {
+
+    }
+
+    File unWriteable = Mockito.mock(File.class);
+    Mockito.when(unWriteable.canWrite()).thenReturn(false);
+    Mockito.when(unWriteable.exists()).thenReturn(true);
+    Mockito.when(unWriteable.canRead()).thenReturn(true);
+    try {
+      worker.checkAcl(unWriteable);
+      fail();
+    } catch (FsException expected) {
+
+    }
+    try {
+      worker.checkAcl(null);
+      fail();
+    } catch (FsException expected) {
+
+    }
+
   }
 
   private class TmpFilter implements java.io.FileFilter {

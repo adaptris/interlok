@@ -20,18 +20,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class FsCase extends TestCase {
+public class FsCase {
 
   protected transient Log logR = LogFactory.getLog(this.getClass());
-
-  public FsCase(java.lang.String testName) {
-    super(testName);
-  }
 
   protected static Properties PROPERTIES;
   private static final String PROPERTIES_RESOURCE = "unit-tests.properties";
@@ -48,15 +42,6 @@ public class FsCase extends TestCase {
     catch (IOException e) {
       throw new RuntimeException(e);
     }
-
-  }
-
-  @Override
-  protected void setUp() throws Exception {
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
 
   }
 
