@@ -26,7 +26,7 @@ import com.adaptris.core.management.logging.LoggingConfigurator;
  *
  * @author gcsiki
  */
-public class SimpleBootstrap extends StandardBootstrap {
+public class SimpleBootstrap extends CmdLineBootstrap {
 
   public SimpleBootstrap(String[] argv) throws Exception {
     super(argv);
