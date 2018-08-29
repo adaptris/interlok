@@ -19,6 +19,7 @@ import static com.adaptris.util.text.mime.PartIteratorCase.createMultipart;
 import static com.adaptris.util.text.mime.PartIteratorCase.generateByteArrayInput;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.List;
 
@@ -45,7 +46,7 @@ public class NullPartSelectorTest {
     MultiPartInput input = new MultiPartInput(generateByteArrayInput(false), false);
     NullPartSelector selector = new NullPartSelector();
     MimeBodyPart part = selector.select(input);
-    assertNotNull(part);
+    assertNull(part);
   }
 
   @Test

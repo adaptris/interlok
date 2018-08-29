@@ -52,15 +52,6 @@ public class SelectByContentId implements PartSelector {
     setContentId(s);
   }
 
-  /**
-   *
-   * @see PartSelector#select(MultiPartInput)
-   */
-  @Override
-  @SuppressWarnings("deprecation")
-  public MimeBodyPart select(MultiPartInput m) throws MessagingException {
-    return m.getBodyPart(getContentId());
-  }
 
   @Override
   public MimeBodyPart select(BodyPartIterator in) throws MessagingException {

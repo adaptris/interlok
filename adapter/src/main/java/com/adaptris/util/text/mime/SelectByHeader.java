@@ -57,31 +57,6 @@ public class SelectByHeader implements PartSelector {
     setHeaderValueRegExp(regexp);
   }
 
-  /**
-   * Selects the first matching MimeBodyPart from the MultiPartInput.
-   *
-   * @see PartSelector#select(MultiPartInput)
-   */
-  @Override
-  @SuppressWarnings("deprecation")
-  public MimeBodyPart select(MultiPartInput m) throws MessagingException {
-    MimeBodyPart result = null;
-    assertConfig();
-    outer: while (m.hasNext()) {
-      MimeBodyPart p = (MimeBodyPart) m.next();
-      String[] values = p.getHeader(getHeaderName());
-      if (values != null) {
-        for (String value : values) {
-          if (value.matches(getHeaderValueRegExp())) {
-            result = p;
-            break outer;
-          }
-        }
-      }
-    }
-    return result;
-  }
-
   @Override
   public MimeBodyPart select(BodyPartIterator m) throws MessagingException {
     MimeBodyPart result = null;
