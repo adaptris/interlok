@@ -2,12 +2,16 @@ package com.adaptris.core;
 
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.hibernate.validator.constraints.NotBlank;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.GuidGenerator;
 
 public abstract class SharedServiceImpl extends SharedComponent implements Service, EventHandlerAware {
@@ -25,6 +29,8 @@ public abstract class SharedServiceImpl extends SharedComponent implements Servi
   private Boolean isTrackingEndpoint;
 
   protected transient EventHandler eventHandler;
+  protected transient Logger log = LoggerFactory.getLogger(this.getClass());
+
   private transient ComponentState serviceState;
 
   public SharedServiceImpl() {
@@ -32,6 +38,16 @@ public abstract class SharedServiceImpl extends SharedComponent implements Servi
     changeState(ClosedState.getInstance());
   }
   
+  protected void applyService(Service s, AdaptrisMessage msg) throws ServiceException {
+    try {
+      s.doService(msg);
+      msg.addEvent(s, true);
+    } catch (Exception e) {
+      msg.addEvent(s, false);
+      throw ExceptionHelper.wrapServiceException(e);
+    }
+  }
+
   protected Service deepClone(Service lookedUpService) throws CoreException {
     AdaptrisMarshaller marshaller = DefaultMarshaller.getDefaultMarshaller();
     return (Service) marshaller.unmarshal(marshaller.marshal(lookedUpService));
@@ -89,7 +105,7 @@ public abstract class SharedServiceImpl extends SharedComponent implements Servi
 
   @Override
   public boolean isTrackingEndpoint() {
-    return getIsTrackingEndpoint() != null ? getIsTrackingEndpoint().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getIsTrackingEndpoint(), false);
   }
 
   @Override
@@ -99,7 +115,7 @@ public abstract class SharedServiceImpl extends SharedComponent implements Servi
 
   @Override
   public boolean continueOnFailure() {
-    return getContinueOnFail() != null ? getContinueOnFail().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getContinueOnFail(), false);
   }
 
   public Boolean getContinueOnFail() {
