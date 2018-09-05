@@ -52,9 +52,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @XStreamAlias("channel-list")
 @AdapterComponent
 @ComponentProfile(summary = "A Collection of Channels", tag = "base")
-public class ChannelList extends AbstractCollection<Channel>
-    implements ComponentLifecycle, List<Channel>,
-    ComponentLifecycleExtension {
+public class ChannelList extends AbstractCollection<Channel> implements ComponentLifecycle, List<Channel>, ComponentLifecycleExtension, AdaptrisComponent {
   private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
   @Valid
@@ -66,6 +64,10 @@ public class ChannelList extends AbstractCollection<Channel>
   @Valid
   @AdvancedConfig
   private ChannelLifecycleStrategy lifecycleStrategy;
+  
+  private transient AdaptrisComponent parentComponent;
+  
+  private transient List<AdaptrisComponent> childComponents;
 
   @Deprecated
   private String uniqueId;
@@ -78,6 +80,7 @@ public class ChannelList extends AbstractCollection<Channel>
   public ChannelList() {
     channels = new ArrayList<Channel>();
     addressableChannels = new HashMap<String, Channel>();
+    childComponents = new ArrayList<>();
   }
 
   public ChannelList(Collection<Channel> coll) {
@@ -132,6 +135,11 @@ public class ChannelList extends AbstractCollection<Channel>
   public void init() throws CoreException {
     log.trace("Channels that can be manipulated are: " + addressableChannels.keySet());
     lifecycleStrategy().init(channels);
+    
+    for(Channel channel : channels) {
+      this.getChildComponents().add(channel);
+      channel.setParentComponent(this);
+    }
 
   }
 
@@ -398,4 +406,20 @@ public class ChannelList extends AbstractCollection<Channel>
   public void setUniqueId(String uniqueId) {
     this.uniqueId = uniqueId;
   }
+  
+  public AdaptrisComponent getParentComponent() {
+    return parentComponent;
+  }
+
+   public List<AdaptrisComponent> getChildComponents() {
+     return childComponents;
+  }
+   
+   public void setParentComponent(AdaptrisComponent parentComponent) {
+     this.parentComponent = parentComponent;
+  }
+   
+   public void setChildComponents(List<AdaptrisComponent> childComponents) {
+     this.childComponents = childComponents;
+   }
 }

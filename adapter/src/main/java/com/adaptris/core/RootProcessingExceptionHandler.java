@@ -30,7 +30,7 @@ import com.adaptris.core.runtime.MessageErrorDigester;
  * @author amcgrath
  * @author lchan
  */
-public abstract class RootProcessingExceptionHandler implements ProcessingExceptionHandler, StateManagedComponent {
+public abstract class RootProcessingExceptionHandler extends AdaptrisComponentImp implements ProcessingExceptionHandler, StateManagedComponent {
 
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 

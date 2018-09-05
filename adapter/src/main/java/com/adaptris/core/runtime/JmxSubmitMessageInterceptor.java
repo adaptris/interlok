@@ -22,6 +22,7 @@ import javax.validation.constraints.NotNull;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.core.AdaptrisComponentImp;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.Channel;
 import com.adaptris.core.CoreException;
@@ -47,7 +48,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("jmx-submit-message-interceptor")
 @AdapterComponent
 @ComponentProfile(summary = "Interceptor for ensuring JMX submissions are handled correctly", tag = "interceptor,jmx")
-public class JmxSubmitMessageInterceptor implements WorkflowInterceptor {
+public class JmxSubmitMessageInterceptor extends AdaptrisComponentImp implements WorkflowInterceptor {
   
   private String uniqueId;
 

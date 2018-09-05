@@ -23,7 +23,7 @@ package com.adaptris.core;
  * @author lchan
  *
  */
-public abstract class LogHandlerImp implements LogHandler {
+public abstract class LogHandlerImp extends AdaptrisComponentImp implements LogHandler {
   
   private String uniqueId;
 

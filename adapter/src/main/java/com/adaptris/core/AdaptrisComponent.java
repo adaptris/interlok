@@ -16,11 +16,10 @@
 
 package com.adaptris.core;
 
-
 /**
  * Base interface for components in the framework.
  */
-public interface AdaptrisComponent extends ComponentLifecycle, ComponentLifecycleExtension {
+public interface AdaptrisComponent extends AdaptrisHierarchicalComponent, ComponentLifecycle, ComponentLifecycleExtension {
 
   
   /**
@@ -29,4 +28,5 @@ public interface AdaptrisComponent extends ComponentLifecycle, ComponentLifecycl
    * @return the unique-id
    */
   public String getUniqueId();
+  
 }

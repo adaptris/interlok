@@ -16,6 +16,7 @@
 
 package com.adaptris.core.stubs;
 
+import com.adaptris.core.AdaptrisComponentImp;
 import com.adaptris.core.ClosedState;
 import com.adaptris.core.ComponentState;
 import com.adaptris.core.CoreException;
@@ -31,7 +32,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  *
  */
 @XStreamAlias("dummy-event-handler")
-public class StubEventHandler implements EventHandler {
+public class StubEventHandler extends AdaptrisComponentImp implements EventHandler {
 
   private transient ComponentState state;
 

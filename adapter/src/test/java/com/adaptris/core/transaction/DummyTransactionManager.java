@@ -3,9 +3,10 @@ package com.adaptris.core.transaction;
 import javax.jms.XAConnectionFactory;
 import javax.transaction.xa.XAResource;
 
+import com.adaptris.core.AdaptrisComponentImp;
 import com.adaptris.core.CoreException;
 
-public class DummyTransactionManager implements TransactionManager {
+public class DummyTransactionManager extends AdaptrisComponentImp implements TransactionManager {
   
   private String uniqueId;
   private String lookupName;

@@ -16,6 +16,7 @@
 
 package com.adaptris.core.stubs;
 
+import com.adaptris.core.AdaptrisComponentImp;
 import com.adaptris.core.ClosedState;
 import com.adaptris.core.ComponentState;
 import com.adaptris.core.CoreException;
@@ -29,7 +30,7 @@ import com.adaptris.core.StoppedState;
  * Mock implementation for testing.
  * </p>
  */
-public class MockStateManagedComponent implements StateManagedComponent {
+public class MockStateManagedComponent extends AdaptrisComponentImp implements StateManagedComponent {
   private ComponentState state = ClosedState.getInstance();
 
   public MockStateManagedComponent() {

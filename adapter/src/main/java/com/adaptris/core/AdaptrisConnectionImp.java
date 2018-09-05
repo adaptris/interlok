@@ -34,7 +34,7 @@ import com.adaptris.core.util.LifecycleHelper;
  * Contains behaviour common to implementations of <code>AdaptrisConnection</code>.
  * </p>
  */
-public abstract class AdaptrisConnectionImp implements AdaptrisConnection, StateManagedComponent {
+public abstract class AdaptrisConnectionImp extends AdaptrisComponentImp implements AdaptrisConnection, StateManagedComponent {
   // protected transient Log log = LogFactory.getLog(this.getClass().getName());
 
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());

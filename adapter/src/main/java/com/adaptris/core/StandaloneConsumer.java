@@ -40,7 +40,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("standalone-consumer")
 @AdapterComponent
 @ComponentProfile(summary = "Standalone wrapper for a consumer and connection", tag = "consumer,base")
-public class StandaloneConsumer implements AdaptrisMessageConsumer, StateManagedComponent, ComponentLifecycleExtension {
+public class StandaloneConsumer extends AdaptrisComponentImp implements AdaptrisMessageConsumer, StateManagedComponent, ComponentLifecycleExtension {
   private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
   private AdaptrisConnection connection;

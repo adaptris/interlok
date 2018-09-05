@@ -23,6 +23,7 @@ import javax.validation.constraints.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.core.AdaptrisComponentImp;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.Channel;
 import com.adaptris.core.ClosedState;
@@ -39,7 +40,7 @@ import com.adaptris.util.GuidGenerator;
  * 
  * @author amcgrath
  */
-public abstract class WorkflowInterceptorImpl implements WorkflowInterceptor, StateManagedComponent {
+public abstract class WorkflowInterceptorImpl extends AdaptrisComponentImp implements WorkflowInterceptor, StateManagedComponent {
 
   @Pattern(regexp = UNIQUE_ID_JMX_PATTERN)
   private String uniqueId;

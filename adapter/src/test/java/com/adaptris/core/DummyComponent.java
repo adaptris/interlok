@@ -16,7 +16,7 @@
 
 package com.adaptris.core;
 
-public class DummyComponent implements StateManagedComponent {
+public class DummyComponent extends AdaptrisComponentImp implements StateManagedComponent {
 
   private ComponentState state;
   

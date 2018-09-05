@@ -10,7 +10,7 @@ import javax.naming.NamingException;
 
 import com.adaptris.core.util.ExceptionHelper;
 
-public class SharedComponent {
+public abstract class SharedComponent extends AdaptrisComponentImp {
   
   protected AdaptrisComponent triggerJndiLookup(String jndiName) throws CoreException {
     AdaptrisComponent result = null;

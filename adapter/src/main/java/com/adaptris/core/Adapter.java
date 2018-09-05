@@ -66,7 +66,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("adapter")
 @AdapterComponent
 @ComponentProfile(summary = "The base container for integration activity", tag = "base")
-public final class Adapter implements StateManagedComponentContainer, ComponentLifecycleExtension {
+public final class Adapter extends AdaptrisComponentImp implements StateManagedComponentContainer, ComponentLifecycleExtension {
   private static final TimeInterval DEFAULT_HB_EVENT_INTERVAL = new TimeInterval(15L, TimeUnit.MINUTES.name());
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
@@ -212,7 +212,12 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
     try {
       for (ComponentLifecycle c : toInit) {
         LifecycleHelper.init(c);
+        if(c instanceof ChannelList) {
+          ((ChannelList) c).setParentComponent(this);
+          this.getChildComponents().add((ChannelList) c);
+        }
       }
+      
       handleLifecycleEvent(AdapterInitEvent.class, true);
       sendStartUpEvent();
     } catch (CoreException e) {

@@ -39,7 +39,7 @@ import com.adaptris.core.util.LoggingHelper;
  * <code>Workflow</code> which processed them originally.
  * </p>
  */
-public abstract class FailedMessageRetrierImp implements FailedMessageRetrier {
+public abstract class FailedMessageRetrierImp extends AdaptrisComponentImp implements FailedMessageRetrier {
 
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 

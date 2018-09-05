@@ -47,7 +47,7 @@ import com.adaptris.util.GuidGenerator;
  * Behaviour common to <code>ServiceCollection</code>s.
  * </p>
  */
-public abstract class ServiceCollectionImp extends AbstractCollection<Service> implements Service, ServiceCollection {
+public abstract class ServiceCollectionImp extends AbstractCollection<Service> implements Service, ServiceCollection, AdaptrisHierarchicalComponent {
 
   private static final OutOfStateHandler DEFAULT_STATE_HANDLER = new RaiseExceptionOutOfStateHandler();
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
@@ -81,11 +81,16 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   private transient boolean isBranching; // defaults to false
   
   private transient ComponentState serviceListState;
+  
+  private transient AdaptrisComponent parentComponent;
+  
+  private transient List<AdaptrisComponent> childComponents;
 
   public ServiceCollectionImp() {
     setServices(new ArrayList<Service>());
     setUniqueId(new GuidGenerator().getUUID());
     changeState(ClosedState.getInstance());
+    setChildComponents(new ArrayList<>());
   }
 
   public ServiceCollectionImp(Collection<Service> list) {
@@ -272,6 +277,8 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
       for (Service s : this) {
         LifecycleHelper.registerEventHandler(s, eventHandler);
         LifecycleHelper.init(s);
+        this.getChildComponents().add(s);
+        s.setParentComponent(this);
       }
       doInit();
     }
@@ -614,5 +621,21 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
       add(s);
     }
     return (T) this;
+  }
+  
+  public AdaptrisComponent getParentComponent() {
+    return parentComponent;
+  }
+
+   public List<AdaptrisComponent> getChildComponents() {
+     return childComponents;
+  }
+   
+   public void setParentComponent(AdaptrisComponent parentComponent) {
+     this.parentComponent = parentComponent;
+  }
+   
+   public void setChildComponents(List<AdaptrisComponent> childComponents) {
+     this.childComponents = childComponents;
   }
 }

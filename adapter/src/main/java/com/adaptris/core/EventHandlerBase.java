@@ -37,7 +37,7 @@ import com.adaptris.util.TimeInterval;
  * Contains behaviour common to implementations of <code>EventHandler</code>.
  * </p>
  */
-public abstract class EventHandlerBase implements EventHandler {
+public abstract class EventHandlerBase extends AdaptrisComponentImp implements EventHandler {
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
   private static final int DEFAULT_SHUTDOWN_WAIT = 60;
 

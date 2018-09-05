@@ -35,7 +35,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("no-retries")
 @AdapterComponent
 @ComponentProfile(summary = "The default NO-OP failed message retrier implementation", tag = "error-handling,base")
-public class NoRetries implements FailedMessageRetrier {
+public class NoRetries extends AdaptrisComponentImp implements FailedMessageRetrier {
   
   private String uniqueId;
 

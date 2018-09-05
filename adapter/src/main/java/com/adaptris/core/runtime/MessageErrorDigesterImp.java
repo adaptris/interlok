@@ -16,13 +16,14 @@
 
 package com.adaptris.core.runtime;
 
+import com.adaptris.core.AdaptrisComponentImp;
 import com.adaptris.core.CoreException;
 
 /**
  * @author lchan
  *
  */
-public abstract class MessageErrorDigesterImp implements MessageErrorDigester {
+public abstract class MessageErrorDigesterImp extends AdaptrisComponentImp implements MessageErrorDigester {
 
   private String uniqueId;
   

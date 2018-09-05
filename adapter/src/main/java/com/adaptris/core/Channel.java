@@ -50,7 +50,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("channel")
 @AdapterComponent
 @ComponentProfile(summary = "The base container for workflows", tag = "base")
-public class Channel implements ComponentLifecycleExtension, StateManagedComponentContainer, EventHandlerAware {
+public class Channel extends AdaptrisComponentImp implements ComponentLifecycleExtension, StateManagedComponentContainer, EventHandlerAware {
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
   @NotNull

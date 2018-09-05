@@ -52,7 +52,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * @see StandardWorkflow
  * @see PoolingWorkflow
  */
-public abstract class WorkflowImp implements Workflow {
+public abstract class WorkflowImp extends AdaptrisComponentImp implements Workflow {
   private static final TimeInterval DEFAULT_CHANNEL_UNAVAILBLE_WAIT = new TimeInterval(30L, TimeUnit.SECONDS);
   private static final String ID_SEPARATOR = "@";
 
@@ -196,6 +196,15 @@ public abstract class WorkflowImp implements Workflow {
     for (WorkflowInterceptor wi : getInterceptors()) {
       LifecycleHelper.init(wi);
     }
+    
+    this.getChildComponents().add(this.getConsumer());
+    this.getChildComponents().add(this.getServiceCollection());
+    this.getChildComponents().add(this.getProducer());
+    
+    this.getConsumer().setParentComponent(this);
+    this.getServiceCollection().setParentComponent(this);
+    this.getProducer().setParentComponent(this);
+    
     initialiseWorkflow();
   }
 
