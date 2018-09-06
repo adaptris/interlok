@@ -85,6 +85,9 @@ public class BranchingServiceEnabler extends BranchingServiceImp implements Even
       Args.notNull(getFailureId(), "failureId");
       LifecycleHelper.registerEventHandler(getService(), eventHandler);
       LifecycleHelper.init(getService());
+      getService().setParentComponent(this);
+      this.getChildComponents().add(getService());
+      
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }

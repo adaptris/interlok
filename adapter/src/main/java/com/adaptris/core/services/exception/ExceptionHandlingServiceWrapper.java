@@ -121,6 +121,12 @@ public class ExceptionHandlingServiceWrapper extends ServiceImp implements Event
     LifecycleHelper.registerEventHandler(service, eventHandler);
     LifecycleHelper.init(exceptionHandlingService);
     LifecycleHelper.init(service);
+    
+    this.getChildComponents().add(exceptionHandlingService);
+    this.getChildComponents().add(service);
+    
+    exceptionHandlingService.setParentComponent(this);
+    service.setParentComponent(this);
   }
 
   @Override

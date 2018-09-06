@@ -260,13 +260,13 @@ public class XStreamUtilsTest extends XStreamUtils {
     resultClassSet.clear();
     resultClassSet = XStreamUtils.getGenericHierarchicalTypesForClass(ServiceList.class, genericTypeClassesSet);
     assertNotNull(resultClassSet);
-    assertEquals(1, resultClassSet.size());
+    assertEquals(2, resultClassSet.size());
     assertTrue(resultClassSet.contains(Service.class));
     
     resultClassSet.clear();
     resultClassSet = XStreamUtils.getGenericHierarchicalTypesForClass(ServiceImp.class, genericTypeClassesSet);
     assertNotNull(resultClassSet);
-    assertEquals(1, resultClassSet.size());
+    assertEquals(2, resultClassSet.size());
     assertTrue(resultClassSet.contains(Service.class));
   }
 

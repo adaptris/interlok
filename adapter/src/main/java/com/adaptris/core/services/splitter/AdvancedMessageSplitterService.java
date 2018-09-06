@@ -114,6 +114,8 @@ public class AdvancedMessageSplitterService extends MessageSplitterServiceImp im
     LifecycleHelper.registerEventHandler(service, eventHandler);
     super.initService();
     LifecycleHelper.init(service);
+    service.setParentComponent(this);
+    this.getChildComponents().add(service);
   }
 
   @Override

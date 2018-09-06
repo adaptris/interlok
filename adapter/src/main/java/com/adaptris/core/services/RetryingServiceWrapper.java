@@ -160,6 +160,9 @@ public class RetryingServiceWrapper extends ServiceImp implements EventHandlerAw
   protected void initService() throws CoreException {
     LifecycleHelper.registerEventHandler(this.getService(), eventHandler);
     LifecycleHelper.init(this.getService());
+    
+    this.getChildComponents().add(this.getService());
+    this.getService().setParentComponent(this);
   }
 
   @Override

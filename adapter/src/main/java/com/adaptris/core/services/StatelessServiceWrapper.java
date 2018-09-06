@@ -189,6 +189,9 @@ public class StatelessServiceWrapper extends ServiceImp implements EventHandlerA
     if (getService() == null) {
       throw new CoreException("No wrapped service");
     }
+    
+    this.getService().setParentComponent(this);
+    this.getChildComponents().add(this.getService());
   }
 
   @Override

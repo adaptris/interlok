@@ -167,6 +167,10 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
       Args.notNull(getAggregator(), "aggregator");
       Args.notNull(getService(), "service");
       executors = createExecutor();
+      
+      this.getChildComponents().add(this.getService());
+      this.getService().setParentComponent(this);
+      
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
