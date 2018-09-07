@@ -63,28 +63,35 @@ public class MovingNonDeletingFsConsumer extends NonDeletingFsConsumer
 	 * {@inheritDoc}.
 	 */
 	@Override
-	protected int processFile(final File f) throws CoreException
+	protected int processFile(final File file) throws CoreException
 	{
-		final int x = super.processFile(f);
+		log.info("Processing file : " + file.getAbsolutePath());
+		final int x = super.processFile(file);
 
 		final File dir = new File(processedPath);
 		if (dir.exists() && !dir.isDirectory())
 		{
-			throw new CoreException("Target directory expected; incorrect target found!");
+			final CoreException e = new CoreException("Target directory expected; incorrect target found!");
+			log.error(e.getMessage());
+			throw e;
 		}
 		if (!dir.exists())
 		{
+			log.info("Creating processed directory : " + dir.getAbsolutePath());
 			dir.mkdirs();
 		}
 		try
 		{
-			Files.copy(f.toPath(), dir.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
+			final File copy = new File(dir, file.getName());
+			Files.copy(file.toPath(), copy.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
+			log.info("Copied file [" + file.getName() + "] to : " + dir.getAbsolutePath());
 		}
 		catch (final IOException e)
 		{
+			log.error(e.getMessage());
 			throw new CoreException(e);
 		}
-		f.delete();
+		//f.delete(); // maybe we want to delete the files after copying them, maybe we don't
 
 		return x;
 	}
