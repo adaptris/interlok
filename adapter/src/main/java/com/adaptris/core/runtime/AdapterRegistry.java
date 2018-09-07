@@ -514,9 +514,9 @@ public class AdapterRegistry implements AdapterRegistryMBean {
       }
 
       ScanResult result = new ClassGraph()
-          .enableAllInfo();
-      .blacklistPackages(FCS_BLACKLIST);
-      .scan();
+        .enableAllInfo()
+        .blacklistPackages(FCS_BLACKLIST)
+        .scan();
 
       List<String> subclassNames = result.getSubclasses(className).getNames();
 
