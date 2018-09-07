@@ -94,16 +94,20 @@ public class MovingDeletingFsConsumerTest extends FsConsumerCase
 			stop(sc);
 			if (files != null)
 			{
-				System.out.println("Source");
 				for (final File f : files)
 				{
-					System.out.println(f.getName());
-				}
-				System.out.println("Copies");
-				for (final File f : procDir.listFiles())
-				{
-					System.out.println(f.getName());
-					//assertTrue(files.contains(f));
+					boolean found = false;
+					for (final String n : procDir.list())
+					{
+						if (f.getName().equals(n))
+						{
+							found = true;
+						}
+					}
+					if (!found)
+					{
+						fail("Couldn't find file " + f.getName() + " in processed directory");
+					}
 				}
 			}
 			FileUtils.deleteQuietly(baseDir);
@@ -112,7 +116,7 @@ public class MovingDeletingFsConsumerTest extends FsConsumerCase
 	}
 
 	/*
-	 * Hopefully mocu of the same setup for NonDeletingFsConsumer will apply
+	 * Hopefully much of the same setup for NonDeletingFsConsumer will apply
 	 * (as MovingNonDeletingFsConsumer extends that class anyway).
 	 */
 
