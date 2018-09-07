@@ -34,7 +34,7 @@
     <!-- switch to fast-classpath-scanner
     <dependency org="org.reflections" name="reflections" rev="0.9.11" conf="compile->default"/>
     -->
-    <dependency org="io.github.lukehutch" name="fast-classpath-scanner" rev="2.9.4" conf="compile->default"/>
+    <dependency org="io.github.classgraph" name="classgraph" rev="4.1.5" conf="compile->default"/>
     <dependency org="net.jodah" name="expiringmap" rev="0.5.8" conf="compile->default"/>
 
     <dependency org="javax.activation" name="activation" rev="1.1.1"  conf="compile->default" />
