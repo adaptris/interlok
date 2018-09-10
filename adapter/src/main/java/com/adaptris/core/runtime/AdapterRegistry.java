@@ -62,8 +62,8 @@ import com.adaptris.core.util.JmxHelper;
 import com.adaptris.util.URLString;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
-import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
-import io.github.lukehutch.fastclasspathscanner.matchprocessor.SubclassMatchProcessor;
+import io.github.classgraph.ClassGraph;
+import io.github.classgraph.ScanResult;
 
 @SuppressWarnings("deprecation")
 public class AdapterRegistry implements AdapterRegistryMBean {
@@ -73,7 +73,7 @@ public class AdapterRegistry implements AdapterRegistryMBean {
   private static final String[] FCS_BLACKLIST = {
       "-javax", "-java", "-org.apache", "-org.codehaus", "-org.hibernate", "-org.springframework", "-com.mchange", "-com.sun",
       "-org.bouncycastle", "-org.eclipse", "-org.jboss", "-org.slf4j", "-net.sf.saxon", "-com.google.guava", "-com.fasterxml",
-      "-io.github.lukehutch", "-com.jcraft", "-com.thoughtworks", "-org.quartz"
+      "-io.github.classgraph", "-com.jcraft", "-com.thoughtworks", "-org.quartz"
   };
   private static final String EXCEPTION_MSG_XML_NULL = "XML String is null";
   private static final String EXCEPTION_MSG_URL_NULL = "URL is null";
@@ -512,14 +512,18 @@ public class AdapterRegistry implements AdapterRegistryMBean {
           classDescriptor.getClassDescriptorProperties().add(fieldProperty);
         }
       }
-      new FastClasspathScanner(FCS_BLACKLIST).matchSubclassesOf(clazz, new SubclassMatchProcessor() {
 
-        @Override
-        public void processMatch(Class subclass) {
-          classDescriptor.getSubTypes().add(subclass.getName());
-        }
+      ScanResult result = new ClassGraph()
+        .enableAllInfo()
+        .blacklistPackages(FCS_BLACKLIST)
+        .scan();
 
-      }).scan();
+      List<String> subclassNames = result.getSubclasses(className).getNames();
+
+      for (String subclassName : subclassNames) {
+          classDescriptor.getSubTypes().add(subclassName);
+      }
+
     } catch (ClassNotFoundException e) {
       throw new CoreException(e);
     }
