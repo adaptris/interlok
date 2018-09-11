@@ -23,6 +23,7 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileCleaningTracker;
 import org.apache.commons.io.FileDeleteStrategy;
+import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +72,11 @@ public class FileBackedMessageFactory extends DefaultMessageFactory {
   @AdvancedConfig
   @InputFieldDefault(value = "false")
   private Boolean createTempDir;
-
+  
+  @AdvancedConfig
+  @InputFieldDefault(value = "false")
+  private Boolean extendedLogging;
+  
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   /**
@@ -203,6 +208,19 @@ public class FileBackedMessageFactory extends DefaultMessageFactory {
   }
 
   boolean createTempDir() {
-    return getCreateTempDir() != null ? getCreateTempDir().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getCreateTempDir(), false);
+  }
+  
+
+  public Boolean getExtendedLogging() {
+    return createTempDir;
+  }
+
+  public void setExtendedLogging(Boolean b) {
+    this.createTempDir = b;
+  }
+
+  protected boolean extendedLogging() {
+    return BooleanUtils.toBooleanDefaultIfNull(getExtendedLogging(), false);
   }
 }

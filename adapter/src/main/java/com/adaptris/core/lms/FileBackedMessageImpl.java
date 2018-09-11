@@ -275,9 +275,14 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
   // So we extend FileOutputStream directly
   private class FileFilterOutputStream extends FileOutputStream {
     private boolean alreadyClosed;
-
+    private File myFile;
+    
     FileFilterOutputStream(File out) throws IOException {
       super(out);
+      myFile = out;
+      if (((FileBackedMessageFactory) getFactory()).extendedLogging()) {
+        log.trace("open() on FileOutputStream [{}] ", myFile.getCanonicalFile());
+      }
       openStreams.add(this);
       alreadyClosed = false;
     }
@@ -287,6 +292,9 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
     public void close() throws IOException {
       super.close();
       openStreams.remove(this);
+      if (((FileBackedMessageFactory) getFactory()).extendedLogging()) {
+        log.trace("close() on FileOutputStream [{}] ", myFile.getCanonicalFile());
+      }
       if (!alreadyClosed) {
         // Now that the file has been closed, we need to switch the reference.
         inputFile = outputFile;
@@ -297,13 +305,21 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
   }
 
   private class FileFilterInputStream extends FileInputStream {
+    private File myFile = null;
     FileFilterInputStream(File in) throws IOException {
       super(in);
+      myFile = in;
+      if (((FileBackedMessageFactory) getFactory()).extendedLogging()) {
+        log.trace("open() on FileInputStream [{}] ", myFile.getCanonicalFile());
+      }
       openStreams.add(this);
     }
 
     @Override
     public void close() throws IOException {
+      if (((FileBackedMessageFactory) getFactory()).extendedLogging()) {
+        log.trace("close() on FileInputStream [{}] ", myFile.getCanonicalFile());
+      }
       super.close();
       openStreams.remove(this);
     }
