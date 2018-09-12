@@ -213,11 +213,11 @@ public class FileBackedMessageFactory extends DefaultMessageFactory {
   
 
   public Boolean getExtendedLogging() {
-    return createTempDir;
+    return extendedLogging;
   }
 
   public void setExtendedLogging(Boolean b) {
-    this.createTempDir = b;
+    this.extendedLogging = b;
   }
 
   protected boolean extendedLogging() {
