@@ -41,8 +41,6 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageImp;
 import com.adaptris.util.IdGenerator;
 
-import sun.misc.SharedSecrets;
-
 class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMessage {
   protected File outputFile;
   protected File inputFile;
@@ -283,9 +281,7 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
       super(out);
       myFile = out;
       if (((FileBackedMessageFactory) getFactory()).extendedLogging()) {
-        log.trace("open() on FileFilterOutputStream [{}]; FileDescriptorAccess [{}][{}]", myFile.getCanonicalFile(),
-            SharedSecrets.getJavaIOFileDescriptorAccess().get(getFD()),
-            SharedSecrets.getJavaIOFileDescriptorAccess().getHandle(getFD()));
+        log.trace("open() on FileOutputStream [{}] ", myFile.getCanonicalFile());
       }
       openStreams.add(this);
       alreadyClosed = false;
@@ -297,9 +293,7 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
       super.close();
       openStreams.remove(this);
       if (((FileBackedMessageFactory) getFactory()).extendedLogging()) {
-        log.trace("close() on FileFilterOutputStream [{}]; FileDescriptorAccess [{}][{}]", myFile.getCanonicalFile(),
-            SharedSecrets.getJavaIOFileDescriptorAccess().get(getFD()),
-            SharedSecrets.getJavaIOFileDescriptorAccess().getHandle(getFD()));
+        log.trace("close() on FileOutputStream [{}] ", myFile.getCanonicalFile());
       }
       if (!alreadyClosed) {
         // Now that the file has been closed, we need to switch the reference.
@@ -316,49 +310,15 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
       super(in);
       myFile = in;
       if (((FileBackedMessageFactory) getFactory()).extendedLogging()) {
-        log.trace("close() on FileFilterInputStream [{}]; FileDescriptorAccess [{}][{}]", myFile.getCanonicalFile(),
-            SharedSecrets.getJavaIOFileDescriptorAccess().get(getFD()),
-            SharedSecrets.getJavaIOFileDescriptorAccess().getHandle(getFD()));
+        log.trace("open() on FileInputStream [{}] ", myFile.getCanonicalFile());
       }
       openStreams.add(this);
     }
 
     @Override
-    public int read() throws IOException {
-      if (((FileBackedMessageFactory) getFactory()).extendedLogging()) {
-        log.trace("read() on FileFilterInputStream [{}]; FileDescriptorAccess [{}][{}]", myFile.getCanonicalFile(),
-            SharedSecrets.getJavaIOFileDescriptorAccess().get(getFD()),
-            SharedSecrets.getJavaIOFileDescriptorAccess().getHandle(getFD()));
-      }
-      return super.read();
-    }
-
-    @Override
-    public int read(byte b[], int off, int len) throws IOException {
-      if (((FileBackedMessageFactory) getFactory()).extendedLogging()) {
-        log.trace("read(byte[],int,int) on FileFilterInputStream [{}]; FileDescriptorAccess [{}][{}]", myFile.getCanonicalFile(),
-            SharedSecrets.getJavaIOFileDescriptorAccess().get(getFD()),
-            SharedSecrets.getJavaIOFileDescriptorAccess().getHandle(getFD()));
-      }
-      return super.read(b, off, len);
-    }
-
-    @Override
-    public int read(byte b[]) throws IOException {
-      if (((FileBackedMessageFactory) getFactory()).extendedLogging()) {
-        log.trace("read(byte[]) on FileFilterInputStream [{}]; FileDescriptorAccess [{}][{}]", myFile.getCanonicalFile(),
-            SharedSecrets.getJavaIOFileDescriptorAccess().get(getFD()),
-            SharedSecrets.getJavaIOFileDescriptorAccess().getHandle(getFD()));
-      }
-      return super.read(b);
-    }
-
-    @Override
     public void close() throws IOException {
       if (((FileBackedMessageFactory) getFactory()).extendedLogging()) {
-        log.trace("close() on FileFilterInputStream [{}]; FileDescriptorAccess [{}][{}]", myFile.getCanonicalFile(),
-            SharedSecrets.getJavaIOFileDescriptorAccess().get(getFD()),
-            SharedSecrets.getJavaIOFileDescriptorAccess().getHandle(getFD()));
+        log.trace("close() on FileInputStream [{}] ", myFile.getCanonicalFile());
       }
       super.close();
       openStreams.remove(this);
