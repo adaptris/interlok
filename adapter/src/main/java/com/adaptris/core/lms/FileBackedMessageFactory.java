@@ -19,6 +19,7 @@ package com.adaptris.core.lms;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 
 import org.apache.commons.io.FileCleaningTracker;
@@ -76,8 +77,12 @@ public class FileBackedMessageFactory extends DefaultMessageFactory {
   @AdvancedConfig
   @InputFieldDefault(value = "false")
   private Boolean extendedLogging;
+  @AdvancedConfig
+  @InputFieldDefault(value = "false")
+  private Boolean useNio;
   
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
+  private transient StreamWrapper streamWrapper = null;
 
   /**
    * Default constructor.
@@ -222,5 +227,26 @@ public class FileBackedMessageFactory extends DefaultMessageFactory {
 
   protected boolean extendedLogging() {
     return BooleanUtils.toBooleanDefaultIfNull(getExtendedLogging(), false);
+  }
+
+  public Boolean getUseNio() {
+    return useNio;
+  }
+
+  /**
+   * Whether or not to use the new {@link Files#newInputStream()} methods.
+   * 
+   * @param useNio true to enable, false to use {@link FileInputStream} as always, default if not specified is false.
+   */
+  public void setUseNio(Boolean useNio) {
+    this.useNio = useNio;
+  }
+
+  protected boolean useNio() {
+    return BooleanUtils.toBooleanDefaultIfNull(getUseNio(), false);
+  }
+
+  protected StreamWrapper newStreamWrapper() {
+    return useNio() ? new NioStreamWrapper(this) : new StandardStreamWrapper(this);
   }
 }

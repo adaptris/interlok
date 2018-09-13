@@ -19,7 +19,6 @@ package com.adaptris.core.lms;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.io.ByteArrayOutputStream;
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -29,8 +28,6 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.channels.FileLock;
 import java.nio.charset.Charset;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -46,10 +43,8 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
   protected File inputFile;
   private int bufferSize;
   private long maxSizeBeforeException;
-
+  private transient StreamWrapper streamWrapper;
   protected transient Logger log = LoggerFactory.getLogger(FileBackedMessage.class);
-
-  private transient Set<Closeable> openStreams;
   
   private final int MEGABYTE = 1 << 10;
 
@@ -60,7 +55,7 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
       inputFile = null;
       bufferSize = fac.defaultBufferSize();
       maxSizeBeforeException = fac.maxMemorySizeBytes();
-      openStreams = new HashSet<Closeable>();
+      streamWrapper = fac.newStreamWrapper();
     }
     catch (Exception e) {
       throw new RuntimeException(e);
@@ -172,7 +167,9 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
     if(inputFile == null) {
       return IOUtils.toInputStream("", Charset.defaultCharset());
     }
-    return new FileFilterInputStream(inputFile);
+    return streamWrapper.asInputStream(inputFile, () -> {
+    });
+
   }
 
   /**
@@ -183,8 +180,10 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
     if(outputFile == null) {
       outputFile = createTempFile();
     }
-    // FileOutputStream fileOut = new FileOutputStream(outputFile);
-    return new FileFilterOutputStream(outputFile);
+    return streamWrapper.asOutputStream(outputFile, () -> {
+      inputFile = outputFile;
+      outputFile = null;
+    });
   }
 
   @Override
@@ -222,8 +221,10 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
       // If we have an input file, copy our contents to the other message. If we don't,
       // the other message will create it's own file when written to and then closed.
       if(inputFile != null) {
+        // Should we make this use StreamWrapper? -> but what about the FileLock?
+        // probalby not a big deal because it only happens on CloneMessageServiceList...
         result.inputFile = createTempFile();
-        try(InputStream in = new FileInputStream(inputFile); 
+        try (InputStream in = new FileInputStream(inputFile);
             FileOutputStream out = new FileOutputStream(result.inputFile);
             FileLock lock = out.getChannel().lock()) {
           byte[] buffer = new byte[10 * MEGABYTE]; // 10MB buffer
@@ -261,68 +262,4 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
   private File createTempFile() throws IOException {
     return ((FileBackedMessageFactory) getFactory()).createTempFile(this);
   }
-
-  @Override
-  @SuppressWarnings("deprecation")
-  protected void finalize() throws Throwable {
-    super.finalize();
-    for (Closeable c : openStreams) {
-      IOUtils.closeQuietly(c);
-    }
-  }
-
-  // INTERLOK-1926 FilterOutputStream ultimately calls write(int) which is just crazy IO.
-  // So we extend FileOutputStream directly
-  private class FileFilterOutputStream extends FileOutputStream {
-    private boolean alreadyClosed;
-    private File myFile;
-    
-    FileFilterOutputStream(File out) throws IOException {
-      super(out);
-      myFile = out;
-      if (((FileBackedMessageFactory) getFactory()).extendedLogging()) {
-        log.trace("open() on FileOutputStream [{}] ", myFile.getCanonicalFile());
-      }
-      openStreams.add(this);
-      alreadyClosed = false;
-    }
-
-
-    @Override
-    public void close() throws IOException {
-      super.close();
-      openStreams.remove(this);
-      if (((FileBackedMessageFactory) getFactory()).extendedLogging()) {
-        log.trace("close() on FileOutputStream [{}] ", myFile.getCanonicalFile());
-      }
-      if (!alreadyClosed) {
-        // Now that the file has been closed, we need to switch the reference.
-        inputFile = outputFile;
-        outputFile = null;
-        alreadyClosed = true;
-      }
-    }
-  }
-
-  private class FileFilterInputStream extends FileInputStream {
-    private File myFile = null;
-    FileFilterInputStream(File in) throws IOException {
-      super(in);
-      myFile = in;
-      if (((FileBackedMessageFactory) getFactory()).extendedLogging()) {
-        log.trace("open() on FileInputStream [{}] ", myFile.getCanonicalFile());
-      }
-      openStreams.add(this);
-    }
-
-    @Override
-    public void close() throws IOException {
-      if (((FileBackedMessageFactory) getFactory()).extendedLogging()) {
-        log.trace("close() on FileInputStream [{}] ", myFile.getCanonicalFile());
-      }
-      super.close();
-      openStreams.remove(this);
-    }
-  }
-
 }
