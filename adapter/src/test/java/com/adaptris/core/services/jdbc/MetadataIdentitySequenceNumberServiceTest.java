@@ -177,7 +177,12 @@ public class MetadataIdentitySequenceNumberServiceTest extends SequenceNumberCas
   }
 
   @Override
-  protected Object retrieveObjectForSampleConfig() {
+  protected MetadataIdentitySequenceNumberService retrieveObjectForCastorRoundTrip() {
+    return createServiceForTests();
+  }
+
+  @Override
+  protected MetadataIdentitySequenceNumberService retrieveObjectForSampleConfig() {
     JdbcConnection connection = new JdbcConnection();
     connection.setConnectUrl("jdbc:mysql://localhost:3306/mydatabase");
     connection.setConnectionAttempts(2);
