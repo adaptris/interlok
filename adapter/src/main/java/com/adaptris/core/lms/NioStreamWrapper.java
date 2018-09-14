@@ -23,16 +23,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 class NioStreamWrapper extends StreamWrapper {
 
-  private transient Logger log = LoggerFactory.getLogger(this.getClass());
-  private FileBackedMessageFactory myFactory;
+  private transient boolean extendedLogging;
 
-  NioStreamWrapper(FileBackedMessageFactory factory) {
-    myFactory = factory;
+  NioStreamWrapper(boolean logging) {
+    extendedLogging = logging;
   }
 
   @Override
@@ -53,7 +49,7 @@ class NioStreamWrapper extends StreamWrapper {
     FileFilterOutputStream(File out, Callback c) throws IOException {
       super(Files.newOutputStream(out.toPath()));
       myFile = out;
-      if (myFactory.extendedLogging()) {
+      if (extendedLogging) {
         log.trace("open() on Files#newOutputStream [{}] ", myFile.getCanonicalFile());
       }
       onClose = c;
@@ -79,10 +75,10 @@ class NioStreamWrapper extends StreamWrapper {
     @Override
     public void close() throws IOException {
       super.close();
-      if (myFactory.extendedLogging()) {
-        log.trace("close() on Files#newOutputStream [{}] ", myFile.getCanonicalFile());
-      }
       if (!alreadyClosed) {
+        if (extendedLogging) {
+          log.trace("close() on Files#newOutputStream [{}] ", myFile.getCanonicalFile());
+        }
         onClose.nowClosed();
         alreadyClosed = true;
       }
@@ -92,14 +88,16 @@ class NioStreamWrapper extends StreamWrapper {
   private class FileFilterInputStream extends FilterInputStream {
     private File myFile = null;
     private Callback onClose;
+    private boolean alreadyClosed;
 
     FileFilterInputStream(File in, Callback c) throws IOException {
       super(Files.newInputStream(in.toPath()));
       myFile = in;
-      if (myFactory.extendedLogging()) {
+      if (extendedLogging) {
         log.trace("open() on Files#newInputStream [{}] ", myFile.getCanonicalFile());
       }
       onClose = c;
+      alreadyClosed = false;
     }
 
     @Override
@@ -119,11 +117,14 @@ class NioStreamWrapper extends StreamWrapper {
 
     @Override
     public void close() throws IOException {
-      if (myFactory.extendedLogging()) {
-        log.trace("close() on Files#newInputStream [{}] ", myFile.getCanonicalFile());
-      }
-      onClose.nowClosed();
       super.close();
+      if (!alreadyClosed) {
+        if (extendedLogging) {
+          log.trace("close() on Files#newInputStream [{}] ", myFile.getCanonicalFile());
+        }
+        onClose.nowClosed();
+        alreadyClosed = true;
+      }
     }
   }
 

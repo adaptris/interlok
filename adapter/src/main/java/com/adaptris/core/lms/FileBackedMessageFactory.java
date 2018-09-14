@@ -82,7 +82,6 @@ public class FileBackedMessageFactory extends DefaultMessageFactory {
   private Boolean useNio;
   
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
-  private transient StreamWrapper streamWrapper = null;
 
   /**
    * Default constructor.
@@ -247,6 +246,6 @@ public class FileBackedMessageFactory extends DefaultMessageFactory {
   }
 
   protected StreamWrapper newStreamWrapper() {
-    return useNio() ? new NioStreamWrapper(this) : new StandardStreamWrapper(this);
+    return useNio() ? new NioStreamWrapper(extendedLogging()) : new StandardStreamWrapper(extendedLogging());
   }
 }

@@ -15,24 +15,12 @@
 */
 package com.adaptris.core.lms;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+public class StandardStreamWrapperTest extends StreamWrapperCase {
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-abstract class StreamWrapper {
-
-  protected abstract OutputStream asOutputStream(File f, Callback c) throws IOException;
-
-  protected abstract InputStream asInputStream(File f, Callback c) throws IOException;
-
-  protected transient Logger log = LoggerFactory.getLogger(this.getClass());
-
-  @FunctionalInterface
-  public interface Callback {
-    void nowClosed();
+  @Override
+  protected StreamWrapper createWrapper(boolean logging) {
+    return new StandardStreamWrapper(logging);
   }
+
+
 }

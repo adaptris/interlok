@@ -22,16 +22,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 class StandardStreamWrapper extends StreamWrapper {
 
-  private transient Logger log = LoggerFactory.getLogger(this.getClass());
-  private transient FileBackedMessageFactory myFactory;
+  private transient boolean extendedLogging;
 
-  StandardStreamWrapper(FileBackedMessageFactory factory) {
-    myFactory = factory;
+  StandardStreamWrapper(boolean logging) {
+    extendedLogging = logging;
   }
 
   @Override
@@ -52,7 +48,7 @@ class StandardStreamWrapper extends StreamWrapper {
     FileFilterOutputStream(File out, Callback c) throws IOException {
       super(out);
       myFile = out;
-      if (myFactory.extendedLogging()) {
+      if (extendedLogging) {
         log.trace("open() on FileOutputStream [{}] ", myFile.getCanonicalFile());
       }
       alreadyClosed = false;
@@ -62,10 +58,10 @@ class StandardStreamWrapper extends StreamWrapper {
     @Override
     public void close() throws IOException {
       super.close();
-      if (myFactory.extendedLogging()) {
-        log.trace("close() on FileOutputStream [{}] ", myFile.getCanonicalFile());
-      }
       if (!alreadyClosed) {
+        if (extendedLogging) {
+          log.trace("close() on FileOutputStream [{}] ", myFile.getCanonicalFile());
+        }
         onClose.nowClosed();
         alreadyClosed = true;
       }
@@ -75,23 +71,28 @@ class StandardStreamWrapper extends StreamWrapper {
   private class FileFilterInputStream extends FileInputStream {
     private File myFile = null;
     private Callback onClose;
+    private boolean alreadyClosed;
 
     FileFilterInputStream(File in, Callback c) throws IOException {
       super(in);
       myFile = in;
-      if (myFactory.extendedLogging()) {
+      if (extendedLogging) {
         log.trace("open() on FileInputStream [{}] ", myFile.getCanonicalFile());
       }
       onClose = c;
+      alreadyClosed = false;
     }
 
     @Override
     public void close() throws IOException {
-      if (myFactory.extendedLogging()) {
-        log.trace("close() on FileInputStream [{}] ", myFile.getCanonicalFile());
-      }
       super.close();
-      onClose.nowClosed();
+      if (!alreadyClosed) {
+        if (extendedLogging) {
+          log.trace("close() on FileInputStream [{}] ", myFile.getCanonicalFile());
+        }
+        onClose.nowClosed();
+        alreadyClosed = true;
+      }
     }
   }
 
