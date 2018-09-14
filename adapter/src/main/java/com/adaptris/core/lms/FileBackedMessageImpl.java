@@ -50,16 +50,13 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
 
   FileBackedMessageImpl(IdGenerator guid, FileBackedMessageFactory fac) {
     super(guid, fac);
-    try {
+    wrappedTry(() -> {
       outputFile = null;
       inputFile = null;
       bufferSize = fac.defaultBufferSize();
       maxSizeBeforeException = fac.maxMemorySizeBytes();
       streamWrapper = fac.newStreamWrapper();
-    }
-    catch (Exception e) {
-      throw new RuntimeException(e);
-    }
+    });
   }
 
   @Override
@@ -69,13 +66,12 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
 
   /** @see AdaptrisMessage#setPayload(byte[]) */
   @Override
-  public void setPayload(byte[] bytes) {
-    try (OutputStream out = getOutputStream()) {
-      out.write(bytes != null ? bytes : new byte[0]);
-    }
-    catch (Exception e) {
-      throw new RuntimeException(e);
-    }
+  public void setPayload(final byte[] bytes) {
+    wrappedTry(() -> {
+      try (OutputStream out = getOutputStream()) {
+        out.write(bytes != null ? bytes : new byte[0]);
+      }
+    });
   }
 
   /** @see AdaptrisMessage#getPayload() */
@@ -85,14 +81,13 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
     if (size >= maxSizeBeforeException) {
       throw new RuntimeException("Payload is > " + maxSizeBeforeException + " bytes, use getInputStream()");
     }
-    try (ByteArrayOutputStream out = new ByteArrayOutputStream((int) size);
-        InputStream in = getInputStream()) {
-      IOUtils.copyLarge(in, out, new byte[bufferSize]);
-      return out.toByteArray();
-    }
-    catch (Exception e) {
-      throw new RuntimeException(e);
-    }
+    ByteArrayOutputStream out = new ByteArrayOutputStream((int) size);
+    wrappedTry(() -> {
+      try (OutputStream closeable = out; InputStream in = getInputStream()) {
+        IOUtils.copyLarge(in, closeable, new byte[bufferSize]);
+      }
+    });
+    return out.toByteArray();
   }
 
   /**
@@ -120,14 +115,13 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
   
   @Override
   public void setContent(String content, String charEncoding) {
-    try (PrintStream out = (!isEmpty(charEncoding)) ? new PrintStream(getOutputStream(), true, charEncoding)
-        : new PrintStream(getOutputStream(), true)) {
-      out.print(content != null ? content : "");
-      setContentEncoding(charEncoding);
-    }
-    catch (Exception e) {
-      throw new RuntimeException(e);
-    }
+    wrappedTry(() -> {
+      try (PrintStream out = (!isEmpty(charEncoding)) ? new PrintStream(getOutputStream(), true, charEncoding)
+          : new PrintStream(getOutputStream(), true)) {
+        out.print(content != null ? content : "");
+        setContentEncoding(charEncoding);
+      }
+    });
   }
 
   /** @see AdaptrisMessage#getStringPayload() 
@@ -145,17 +139,14 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
     if (size >= maxSizeBeforeException) {
       throw new RuntimeException("Payload is > " + maxSizeBeforeException + ", use getInputStream()");
     }
-    String result = null;
-    
-    try(ByteArrayOutputStream out = new ByteArrayOutputStream((int) size);
-        InputStream in = getInputStream();) {
-      IOUtils.copyLarge(in, out, new byte[bufferSize]);
-      result = getContentEncoding() != null ? out.toString(getContentEncoding()) : out.toString();
-    }
-    catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-    return result;
+    StringBuilder result = new StringBuilder();
+    wrappedTry(() -> {
+      try(ByteArrayOutputStream closeable =  new ByteArrayOutputStream((int) size);InputStream in = getInputStream();) {
+        IOUtils.copyLarge(in, closeable, new byte[bufferSize]);
+        result.append(getContentEncoding() != null ? closeable.toString(getContentEncoding()) : closeable.toString());
+      }      
+    });
+    return result.toString();
   }
 
   /**
@@ -217,10 +208,10 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
   @Override
   public Object clone() throws CloneNotSupportedException {
     FileBackedMessageImpl result = (FileBackedMessageImpl) super.clone();
-    try {
+    wrappedTry(() -> {
       // If we have an input file, copy our contents to the other message. If we don't,
       // the other message will create it's own file when written to and then closed.
-      if(inputFile != null) {
+      if (inputFile != null) {
         // Should we make this use StreamWrapper? -> but what about the FileLock?
         // probalby not a big deal because it only happens on CloneMessageServiceList...
         result.inputFile = createTempFile();
@@ -231,10 +222,8 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
           IOUtils.copyLarge(in, out, buffer);
         }
       }
-    }
-    catch (Exception e) {
-      throw new RuntimeException(e);
-    }
+
+    });
     return result;
   }
 
@@ -245,13 +234,10 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
   @Override
   public File currentSource() {
     if(inputFile == null) {
-      try {
+      wrappedTry(() -> {
         inputFile = createTempFile();
-      } catch (IOException e) {
-        log.error("Unable to create temporary file!", e);
-      }
+      });
     }
-    
     return inputFile;
   }
 
@@ -262,4 +248,17 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
   private File createTempFile() throws IOException {
     return ((FileBackedMessageFactory) getFactory()).createTempFile(this);
   }
+
+  protected static void wrappedTry(Operation o) {
+    try {
+      o.apply();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  protected interface Operation {
+    void apply() throws Exception;
+  }
+
 }
