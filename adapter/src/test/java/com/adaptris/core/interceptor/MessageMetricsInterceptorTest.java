@@ -73,12 +73,16 @@ public class MessageMetricsInterceptorTest extends TestCase {
 
     AdaptrisMessage message = DefaultMessageFactory.getDefaultInstance().newMessage();
 
+    // A minus time will expire the time slice immediately after the first message
+    metricsInterceptor.setTimesliceDuration(new TimeInterval(-1L, TimeUnit.SECONDS));
+    
     assertEquals(0, metricsInterceptor.getStats().size());
     submitMessage(message);
 
-    waitFor(6);
-
     assertEquals(1, metricsInterceptor.getStats().size());
+    
+    metricsInterceptor.setTimesliceDuration(new TimeInterval(500L, TimeUnit.MILLISECONDS));
+    
     submitMessage(message);
     submitMessage(message);
 
@@ -93,18 +97,22 @@ public class MessageMetricsInterceptorTest extends TestCase {
 
     AdaptrisMessage message = DefaultMessageFactory.getDefaultInstance().newMessage();
 
+    // A minus time will expire the time slice immediately after the first message
+    metricsInterceptor.setTimesliceDuration(new TimeInterval(-1L, TimeUnit.SECONDS));
+    
     assertEquals(0, metricsInterceptor.getStats().size());
     submitMessage(message);
 
-    waitFor(6);
-
     assertEquals(1, metricsInterceptor.getStats().size());
+    
+    metricsInterceptor.setTimesliceDuration(new TimeInterval(500L, TimeUnit.MILLISECONDS));
+    
     submitMessage(message);
     submitMessage(message);
 
     assertEquals(2, metricsInterceptor.getStats().size());
 
-    waitFor(6);
+    waitFor(1);
 
     submitMessage(message);
     submitMessage(message);
@@ -127,7 +135,7 @@ public class MessageMetricsInterceptorTest extends TestCase {
     new MetricsInserterThread(50).run();
     new MetricsInserterThread(20).run();
 
-    Thread.sleep(5000); // Lets allow the threads to finish
+    Thread.sleep(1000); // Lets allow the threads to finish
     assertEquals(130, metricsInterceptor.getStats().get(0).getTotalMessageCount());
   }
 

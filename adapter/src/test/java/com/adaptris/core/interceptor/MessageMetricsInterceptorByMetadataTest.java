@@ -35,7 +35,7 @@ public class MessageMetricsInterceptorByMetadataTest extends TestCase {
   @Override
   public void setUp() throws Exception {
     interceptor = new MessageMetricsInterceptorByMetadata();
-    interceptor.setTimesliceDuration(new TimeInterval(5L, TimeUnit.SECONDS));
+    interceptor.setTimesliceDuration(new TimeInterval(1L, TimeUnit.SECONDS));
     interceptor.setTimesliceHistoryCount(2);
     interceptor.setMetadataElement(new KeyValuePair("messageType", "ORDER"));
   }
@@ -105,11 +105,13 @@ public class MessageMetricsInterceptorByMetadataTest extends TestCase {
 
     AdaptrisMessage message = createMessage(true);
 
+    interceptor.setTimesliceDuration(new TimeInterval(-1L, TimeUnit.SECONDS));
+    
     assertEquals(0, interceptor.getStats().size());
     submitMessage(message);
 
-    waitFor(6);
-
+    interceptor.setTimesliceDuration(new TimeInterval(1L, TimeUnit.SECONDS));
+    
     assertEquals(1, interceptor.getStats().size());
     submitMessage(message);
     submitMessage(message);
@@ -125,32 +127,26 @@ public class MessageMetricsInterceptorByMetadataTest extends TestCase {
 
     AdaptrisMessage message = createMessage(true);
 
+    interceptor.setTimesliceDuration(new TimeInterval(-1L, TimeUnit.SECONDS));
+    
     assertEquals(0, interceptor.getStats().size());
     submitMessage(message);
-
-    waitFor(6);
-
+    
     assertEquals(1, interceptor.getStats().size());
-    submitMessage(message);
     submitMessage(message);
 
     assertEquals(2, interceptor.getStats().size());
-
-    waitFor(6);
-
-    submitMessage(message);
-    submitMessage(message);
     submitMessage(message);
     // Should still only be 2 time slices
     assertEquals(2, interceptor.getStats().size());
-    assertEquals(2, interceptor.getStats().get(0).getTotalMessageCount());
-    assertEquals(3, interceptor.getStats().get(1).getTotalMessageCount());
   }
 
 
   public void testMultiThreadedSingleMetricsInterceptorInstance() throws Exception {
     LifecycleHelper.init(interceptor);
     LifecycleHelper.start(interceptor);
+    
+    interceptor.setTimesliceDuration(new TimeInterval(2L, TimeUnit.SECONDS));
 
     // 130 messages in total
     new MetricsInserterThread(20).run();
@@ -159,12 +155,8 @@ public class MessageMetricsInterceptorByMetadataTest extends TestCase {
     new MetricsInserterThread(50).run();
     new MetricsInserterThread(20).run();
 
-    Thread.sleep(5000); // Lets allow the threads to finish
+    Thread.sleep(300); // Lets allow the threads to finish
     assertEquals(130, interceptor.getStats().get(0).getTotalMessageCount());
-  }
-
-  private void waitFor(int seconds) throws Exception {
-    Thread.sleep(seconds * 1000);
   }
 
   private void submitMessage(AdaptrisMessage msg) {

@@ -17,12 +17,14 @@
 package com.adaptris.core.interceptor;
 
 import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
 
 import junit.framework.TestCase;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.util.TimeInterval;
 
 public class ThrottlingInterceptorTest extends TestCase {
 
@@ -33,6 +35,7 @@ public class ThrottlingInterceptorTest extends TestCase {
   public void setUp() throws Exception {
     throttlingInterceptor = new ThrottlingInterceptor();
     throttlingInterceptor.setCacheName(cacheName);
+    throttlingInterceptor.setTimeSliceInterval(new TimeInterval(500L, TimeUnit.MILLISECONDS));
 
     LifecycleHelper.init(throttlingInterceptor);
     LifecycleHelper.start(throttlingInterceptor);
@@ -72,7 +75,7 @@ public class ThrottlingInterceptorTest extends TestCase {
 
     long endTimeLong = Calendar.getInstance().getTimeInMillis();
     // Make sure we WERE delayed
-    assertFalse(startTimeLong + 5000 > endTimeLong);
+    assertFalse(startTimeLong + 500 > endTimeLong);
   }
   
   public void testMultiThreadedWithSingleInterceptor() throws Exception {
@@ -85,7 +88,7 @@ public class ThrottlingInterceptorTest extends TestCase {
     new MetricsInserterThread(10).run();
     new MetricsInserterThread(10).run();
     
-    Thread.sleep(1000); // allow the interceptors to finish processing
+    Thread.sleep(200); // allow the interceptors to finish processing
     
     int totalMessageCount = throttlingInterceptor.getCacheProvider().get(cacheName).getTotalMessageCount();
     assertEquals(50, totalMessageCount);

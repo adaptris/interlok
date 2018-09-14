@@ -74,7 +74,7 @@ public class MessageCountNotificationTest extends MessageNotificationCase {
 
 
   public void testNotification_AboveThreshold() throws Exception {
-    MessageCountNotification notif = new MessageCountNotification(getName(), new TimeInterval(1L, TimeUnit.SECONDS));
+    MessageCountNotification notif = new MessageCountNotification(getName(), new TimeInterval(200L, TimeUnit.MILLISECONDS));
     notif.setMessageCount(1);
     StandardWorkflow workflow = createWorkflow(getName() + "_Workflow", notif);
     Adapter adapter = createAdapter(getName(), workflow);
@@ -89,7 +89,7 @@ public class MessageCountNotificationTest extends MessageNotificationCase {
       mBeanServer.addNotificationListener(notifObjName, listener, null, null);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("Hello World");
       submitWithDelay(msg, workflow, 6, 5);
-      LifecycleHelper.waitQuietly(1000);
+      LifecycleHelper.waitQuietly(200);
       submitWithDelay(msg, workflow, 1, 5);
       listener.waitForMessages(1);
       assertEquals(1, listener.getNotifications().size());
@@ -101,7 +101,7 @@ public class MessageCountNotificationTest extends MessageNotificationCase {
   }
 
   public void testNotification_AboveThreshold_MaxExceeded() throws Exception {
-    MessageCountNotification notif = new MessageCountNotification(getName(), new TimeInterval(1L, TimeUnit.SECONDS));
+    MessageCountNotification notif = new MessageCountNotification(getName(), new TimeInterval(200L, TimeUnit.MILLISECONDS));
     notif.setMessageCount(1);
     notif.setMaxNotifications(1);
     StandardWorkflow workflow = createWorkflow(getName() + "_Workflow", notif);
@@ -118,9 +118,9 @@ public class MessageCountNotificationTest extends MessageNotificationCase {
       mBeanServer.addNotificationListener(notifObjName, listener, null, null);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("Hello World");
       submitWithDelay(msg, workflow, 10, 5);
-      LifecycleHelper.waitQuietly(1000);
+      LifecycleHelper.waitQuietly(200);
       submitWithDelay(msg, workflow, 6, 5);
-      LifecycleHelper.waitQuietly(1000);
+      LifecycleHelper.waitQuietly(200);
       submitWithDelay(msg, workflow, 1, 0);
       listener.waitForMessages(1);
       assertEquals(1, listener.getNotifications().size());
@@ -148,11 +148,11 @@ public class MessageCountNotificationTest extends MessageNotificationCase {
       mBeanServer.addNotificationListener(notifObjName, listener, null, null);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("Hello World");
       submitWithDelay(msg, workflow, 1, 5);
-      LifecycleHelper.waitQuietly(1000);
+      LifecycleHelper.waitQuietly(200);
       submitWithDelay(msg, workflow, 1, 5);
-      LifecycleHelper.waitQuietly(1000);
+      LifecycleHelper.waitQuietly(200);
       submitWithDelay(msg, workflow, 1, 5);
-      LifecycleHelper.waitQuietly(1000);
+      LifecycleHelper.waitQuietly(200);
       submitWithDelay(msg, workflow, 1, 5);
     } finally {
       stop(adapter);
@@ -162,7 +162,7 @@ public class MessageCountNotificationTest extends MessageNotificationCase {
 
 
   public void testNotification_BelowThreshold() throws Exception {
-    MessageCountNotification notif = new MessageCountNotification(getName(), new TimeInterval(1L, TimeUnit.SECONDS));
+    MessageCountNotification notif = new MessageCountNotification(getName(), new TimeInterval(200L, TimeUnit.MILLISECONDS));
     notif.setMessageCount(2);
     StandardWorkflow workflow = createWorkflow(getName() + "_Workflow", notif);
     Adapter adapter = createAdapter(getName(), workflow);
@@ -177,11 +177,11 @@ public class MessageCountNotificationTest extends MessageNotificationCase {
       mBeanServer.addNotificationListener(notifObjName, listener, null, null);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("Hello World");
       submitWithDelay(msg, workflow, 6, 5);
-      LifecycleHelper.waitQuietly(1000);
+      LifecycleHelper.waitQuietly(200);
       submitWithDelay(msg, workflow, 1, 0);
-      LifecycleHelper.waitQuietly(1000);
+      LifecycleHelper.waitQuietly(200);
       submitWithDelay(msg, workflow, 1, 0);
-      LifecycleHelper.waitQuietly(1000);
+      LifecycleHelper.waitQuietly(200);
       submitWithDelay(msg, workflow, 1, 0);
       listener.waitForMessages(3);
       assertEquals(3, listener.getNotifications().size());
@@ -196,7 +196,7 @@ public class MessageCountNotificationTest extends MessageNotificationCase {
 
 
   public void testNotification_BelowThreshold_MaxExceeded() throws Exception {
-    MessageCountNotification notif = new MessageCountNotification(getName(), new TimeInterval(1L, TimeUnit.SECONDS));
+    MessageCountNotification notif = new MessageCountNotification(getName(), new TimeInterval(200L, TimeUnit.MILLISECONDS));
     notif.setMessageCount(2);
     notif.setMaxNotifications(1);
     StandardWorkflow workflow = createWorkflow(getName() + "_Workflow", notif);
@@ -212,11 +212,11 @@ public class MessageCountNotificationTest extends MessageNotificationCase {
       mBeanServer.addNotificationListener(notifObjName, listener, null, null);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("Hello World");
       submitWithDelay(msg, workflow, 6, 5);
-      LifecycleHelper.waitQuietly(1000);
+      LifecycleHelper.waitQuietly(200);
       submitWithDelay(msg, workflow, 1, 0);
-      LifecycleHelper.waitQuietly(1000);
+      LifecycleHelper.waitQuietly(200);
       submitWithDelay(msg, workflow, 1, 0);
-      LifecycleHelper.waitQuietly(1000);
+      LifecycleHelper.waitQuietly(200);
       submitWithDelay(msg, workflow, 1, 0);
       listener.waitForMessages(2);
       assertEquals(2, listener.getNotifications().size());
