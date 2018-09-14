@@ -25,7 +25,6 @@ import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,11 +48,53 @@ public abstract class StreamWrapperCase {
 
   @Test
   @SuppressWarnings("deprecation")
-  public void testRead() throws Exception {
+  public void testInputStream_Available() throws Exception {
+    StreamWrapper wrapper = createWrapper(false);
+    File file = writeFile(TempFileUtils.createTrackedFile(wrapper));
+    InputStream in = wrapper.openInputStream(file, NO_OP);
+    try (InputStream closeable = in) {
+      assertTrue(closeable.available() > 0);
+    }
+  }
+
+  @Test
+  public void testInputStream_Mark() throws Exception {
+    StreamWrapper wrapper = createWrapper(false);
+    File file = writeFile(TempFileUtils.createTrackedFile(wrapper));
+    InputStream in = wrapper.openInputStream(file, NO_OP);
+    try (InputStream closeable = in) {
+      tryQuietly(() -> {
+        in.markSupported();
+      });
+      tryQuietly(() -> {
+        in.mark(10);
+      });
+      tryQuietly(() -> {
+        in.reset();
+      });
+    }
+  }
+
+  @Test
+  public void testInputStream_Skip() throws Exception {
+    StreamWrapper wrapper = createWrapper(false);
+    File file = writeFile(TempFileUtils.createTrackedFile(wrapper));
+    InputStream in = wrapper.openInputStream(file, NO_OP);
+    try (InputStream closeable = in) {
+      final long toSkip = BYTES_TEXT.length - 1;
+      tryQuietly(() -> {
+        long skipped = in.skip(toSkip);
+        assertEquals(toSkip, skipped);
+      });
+    }
+  }
+
+  @Test
+  public void testInputStream_Read() throws Exception {
     StreamWrapper wrapper = createWrapper(false);
     AtomicBoolean callback = new AtomicBoolean(false);
     File file = writeFile(TempFileUtils.createTrackedFile(wrapper));
-    InputStream in = wrapper.asInputStream(file, () -> {
+    InputStream in = wrapper.openInputStream(file, () -> {
       callback.set(true);
     });
     try (InputStream closeable = in) {
@@ -62,71 +103,76 @@ public abstract class StreamWrapperCase {
         read = closeable.read();
       }
     }
-    IOUtils.closeQuietly(in);
+    tryQuietly(() -> {
+      in.close();
+    });
     assertTrue(callback.get());
   }
 
   @Test
-  public void testRead_Byte() throws Exception {
+  public void testInputStream_Read_Byte() throws Exception {
     StreamWrapper wrapper = createWrapper(true);
     File file = writeFile(TempFileUtils.createTrackedFile(wrapper));
     byte[] bytes = new byte[16];
-    try (InputStream in = wrapper.asInputStream(file, NO_OP)) {
+    try (InputStream in = wrapper.openInputStream(file, NO_OP)) {
       assertEquals(BYTES_TEXT.length, in.read(bytes));
     }
   }
 
   @Test
-  public void testRead_Byte_Len() throws Exception {
+  public void testInputStream_Read_Byte_Len() throws Exception {
     StreamWrapper wrapper = createWrapper(true);
     File file = writeFile(TempFileUtils.createTrackedFile(wrapper));
     byte[] bytes = new byte[16];
-    try (InputStream in = wrapper.asInputStream(file, NO_OP)) {
+    try (InputStream in = wrapper.openInputStream(file, NO_OP)) {
       int read = 0;
       assertEquals(BYTES_TEXT.length, in.read(bytes, 0, bytes.length));
     }
   }
 
   @Test
-  @SuppressWarnings("deprecation")
-  public void testWrite() throws Exception {
+  public void testOutputStream_Write() throws Exception {
     StreamWrapper wrapper = createWrapper(false);
     File file = TempFileUtils.createTrackedFile(wrapper);
     AtomicBoolean callback = new AtomicBoolean(false);
-    OutputStream out = wrapper.asOutputStream(file, () -> {
+    OutputStream out = wrapper.openOutputStream(file, () -> {
       callback.set(true);
     });
     try (OutputStream closeable = out) {
       out.write(BYTES_TEXT[0]);
     }
-    IOUtils.closeQuietly(out);
+    tryQuietly(() -> {
+      out.close();
+    });
     assertTrue(callback.get());
   }
 
   @Test
-  public void testWrite_Bytes() throws Exception {
+  public void testOutputStream_Write_Bytes() throws Exception {
     StreamWrapper wrapper = createWrapper(true);
     File file = TempFileUtils.createTrackedFile(wrapper);
-    AtomicBoolean callback = new AtomicBoolean(false);
-    try (OutputStream out = wrapper.asOutputStream(file, () -> {
-      callback.set(true);
-    })) {
+    try (OutputStream out = wrapper.openOutputStream(file, NO_OP)) {
       out.write(BYTES_TEXT);
     }
-    assertTrue(callback.get());
   }
 
   @Test
-  public void testWrite_Bytes_Len() throws Exception {
+  public void testOutputStream_Write_Bytes_Len() throws Exception {
     StreamWrapper wrapper = createWrapper(true);
     File file = TempFileUtils.createTrackedFile(wrapper);
-    AtomicBoolean callback = new AtomicBoolean(false);
-    try (OutputStream out = wrapper.asOutputStream(file, () -> {
-      callback.set(true);
-    })) {
+    try (OutputStream out = wrapper.openOutputStream(file, NO_OP)) {
       out.write(BYTES_TEXT, 0, BYTES_TEXT.length);
     }
-    assertTrue(callback.get());
+  }
+
+  @Test
+  public void testOutputStream_Flush() throws Exception {
+    StreamWrapper wrapper = createWrapper(true);
+    File file = TempFileUtils.createTrackedFile(wrapper);
+    try (OutputStream out = wrapper.openOutputStream(file, NO_OP)) {
+      out.write(BYTES_TEXT, 0, BYTES_TEXT.length);
+      out.flush();
+    }
   }
 
   private File writeFile(File f) throws IOException {
@@ -136,4 +182,16 @@ public abstract class StreamWrapperCase {
 
   protected abstract StreamWrapper createWrapper(boolean logging);
 
+  protected void tryQuietly(Operation o) {
+    try {
+      o.apply();
+    } catch (Exception ignored) {
+
+    }
+  }
+
+  @FunctionalInterface
+  protected interface Operation {
+    void apply() throws Exception;
+  }
 }

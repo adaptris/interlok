@@ -24,76 +24,17 @@ import java.io.OutputStream;
 
 class StandardStreamWrapper extends StreamWrapper {
 
-  private transient boolean extendedLogging;
-
   StandardStreamWrapper(boolean logging) {
-    extendedLogging = logging;
+    super(logging);
   }
 
   @Override
-  protected InputStream asInputStream(File f, Callback c) throws IOException {
-    return new FileFilterInputStream(f, c);
+  protected InputStream openInputStream(File f) throws IOException {
+    return new FileInputStream(f);
   }
 
   @Override
-  protected OutputStream asOutputStream(File f, Callback c) throws IOException {
-    return new FileFilterOutputStream(f, c);
+  protected OutputStream openOutputStream(File f) throws IOException {
+    return new FileOutputStream(f);
   }
-
-  private class FileFilterOutputStream extends FileOutputStream {
-    private boolean alreadyClosed;
-    private File myFile;
-    private Callback onClose;
-
-    FileFilterOutputStream(File out, Callback c) throws IOException {
-      super(out);
-      myFile = out;
-      if (extendedLogging) {
-        log.trace("open() on FileOutputStream [{}] ", myFile.getCanonicalFile());
-      }
-      alreadyClosed = false;
-      onClose = c;
-    }
-
-    @Override
-    public void close() throws IOException {
-      super.close();
-      if (!alreadyClosed) {
-        if (extendedLogging) {
-          log.trace("close() on FileOutputStream [{}] ", myFile.getCanonicalFile());
-        }
-        onClose.nowClosed();
-        alreadyClosed = true;
-      }
-    }
-  }
-
-  private class FileFilterInputStream extends FileInputStream {
-    private File myFile = null;
-    private Callback onClose;
-    private boolean alreadyClosed;
-
-    FileFilterInputStream(File in, Callback c) throws IOException {
-      super(in);
-      myFile = in;
-      if (extendedLogging) {
-        log.trace("open() on FileInputStream [{}] ", myFile.getCanonicalFile());
-      }
-      onClose = c;
-      alreadyClosed = false;
-    }
-
-    @Override
-    public void close() throws IOException {
-      super.close();
-      if (!alreadyClosed) {
-        if (extendedLogging) {
-          log.trace("close() on FileInputStream [{}] ", myFile.getCanonicalFile());
-        }
-        onClose.nowClosed();
-        alreadyClosed = true;
-      }
-    }
-  }
-
 }
