@@ -109,7 +109,7 @@ public class DuplicateMessageRoutingServiceTest extends SyntaxRoutingServiceExam
     return result;
   }
 
-  private DuplicateMessageRoutingService createService() throws Exception {
+  private DuplicateMessageRoutingService createService() {
     DuplicateMessageRoutingService service = new DuplicateMessageRoutingService();
     service.setConfigLocation(PROPERTIES.getProperty(KEY_DUPLICATE_STORE));
     service.setUniqueDestination(UNIQUE_KEY);
@@ -127,7 +127,12 @@ public class DuplicateMessageRoutingServiceTest extends SyntaxRoutingServiceExam
   }
 
   @Override
-  protected Object retrieveObjectForSampleConfig() {
+  protected DuplicateMessageRoutingService retrieveObjectForCastorRoundTrip() {
+    return createService();
+  }
+
+  @Override
+  protected DuplicateMessageRoutingService retrieveObjectForSampleConfig() {
     DuplicateMessageRoutingService service = new DuplicateMessageRoutingService();
     service.setDestinationKey("destination-key");
     service.setUniqueDestination("destination if unique");
