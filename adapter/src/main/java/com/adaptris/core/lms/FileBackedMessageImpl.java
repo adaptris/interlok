@@ -167,7 +167,7 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
     if(inputFile == null) {
       return IOUtils.toInputStream("", Charset.defaultCharset());
     }
-    return streamWrapper.asInputStream(inputFile, () -> {
+    return streamWrapper.openInputStream(inputFile, () -> {
     });
 
   }
@@ -180,7 +180,7 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
     if(outputFile == null) {
       outputFile = createTempFile();
     }
-    return streamWrapper.asOutputStream(outputFile, () -> {
+    return streamWrapper.openOutputStream(outputFile, () -> {
       inputFile = outputFile;
       outputFile = null;
     });
