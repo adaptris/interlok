@@ -17,6 +17,8 @@
 
 package com.adaptris.core.jms;
 
+import java.util.concurrent.TimeUnit;
+
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
@@ -37,6 +39,11 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
   @Override
   protected void tearDown() throws Exception {
 
+  }
+
+  public void testRetryTimeMs() {
+    MyJmsConnectionErrorHandler jms1 = new MyJmsConnectionErrorHandler();
+    assertEquals(TimeUnit.SECONDS.toMillis(10L), jms1.retryWaitTimeMs());
   }
 
   public void testJmsAllowedInConjunction() throws Exception {
@@ -206,5 +213,11 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
     connectionErrorHandler2.registerConnection(connection2);
     
     assertTrue(connectionErrorHandler1.allowedInConjunctionWith(connectionErrorHandler2));
+  }
+
+  protected class MyJmsConnectionErrorHandler extends JmsConnectionErrorHandler {
+    public long retryWaitTimeMs() {
+      return super.retryWaitTimeMs();
+    }
   }
 }
