@@ -399,6 +399,12 @@ public class JdbcServiceListTest extends ServiceCollectionCase {
   }
 
   @Override
+  // Skip testServiceStates
+  protected boolean doStateTests() {
+    return false;
+  }
+
+  @Override
   protected JdbcServiceList retrieveObjectForSampleConfig() {
     JdbcConnection connection = new JdbcConnection();
     connection.setConnectUrl("jdbc:mysql://localhost:3306/mydatabase");
