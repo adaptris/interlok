@@ -20,13 +20,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-import junit.framework.TestCase;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
+
+import junit.framework.TestCase;
 
 public class MetadataTotalsInterceptorTest extends TestCase {
 
@@ -38,7 +38,7 @@ public class MetadataTotalsInterceptorTest extends TestCase {
 
   @Override
   public void setUp() throws Exception {
-    metricsInterceptor = new MetadataTotalsInterceptor(new ArrayList(Arrays.asList(new String[]
+    metricsInterceptor = new MetadataTotalsInterceptor(new ArrayList<String>(Arrays.asList(new String[]
     {
         COUNTER_1, COUNTER_2, this.getClass().getSimpleName()
     })));
@@ -70,15 +70,21 @@ public class MetadataTotalsInterceptorTest extends TestCase {
   public void testCreatesNewTimeSliceAfterTimeDelay() throws Exception {
     LifecycleHelper.init(metricsInterceptor);
     LifecycleHelper.start(metricsInterceptor);
+    
+    // A negative number will expire the timeslice immediately after the first message
+    metricsInterceptor.setTimesliceDuration(new TimeInterval(-1L, TimeUnit.SECONDS));
 
     AdaptrisMessage message = createMessage();
 
     assertEquals(0, metricsInterceptor.getStats().size());
     submitMessage(message);
-    waitFor(3);
+    
     assertEquals(1, metricsInterceptor.getStats().size());
     assertEquals(10, metricsInterceptor.getStats().get(0).getValue(COUNTER_1));
     assertEquals(10, metricsInterceptor.getStats().get(0).getValue(COUNTER_2));
+    
+    metricsInterceptor.setTimesliceDuration(new TimeInterval(1L, TimeUnit.SECONDS));
+    
     submitMessage(message);
     submitMessage(message);
 
@@ -92,24 +98,19 @@ public class MetadataTotalsInterceptorTest extends TestCase {
   public void testDoesNotCreateMoreHistoryThanSpecified() throws Exception {
     LifecycleHelper.init(metricsInterceptor);
     LifecycleHelper.start(metricsInterceptor);
+    
+    // A negative number will expire the timeslice immediately after the first message
+    metricsInterceptor.setTimesliceDuration(new TimeInterval(-1L, TimeUnit.SECONDS));
 
     AdaptrisMessage message = createMessage();
 
     assertEquals(0, metricsInterceptor.getStats().size());
     submitMessage(message);
 
-    waitFor(3);
-
     assertEquals(1, metricsInterceptor.getStats().size());
-    submitMessage(message);
     submitMessage(message);
 
     assertEquals(2, metricsInterceptor.getStats().size());
-
-    waitFor(3);
-
-    submitMessage(message);
-    submitMessage(message);
     submitMessage(message);
     // Should still only be 2 time slices
     assertEquals(2, metricsInterceptor.getStats().size());
@@ -128,17 +129,9 @@ public class MetadataTotalsInterceptorTest extends TestCase {
     new MetricsInserterThread(20).run();
     new MetricsInserterThread(20).run();
 
-    Thread.sleep(5000); // Lets allow the threads to finish
+    Thread.sleep(200); // Lets allow the threads to finish
     assertEquals(1000, metricsInterceptor.getStats().get(0).getValue(COUNTER_1));
     assertEquals(1000, metricsInterceptor.getStats().get(0).getValue(COUNTER_2));
-  }
-
-  private void waitFor(int seconds) {
-    try {
-    Thread.sleep(seconds * 1000);
-    }
-    catch (InterruptedException e) {
-    }
   }
 
   private AdaptrisMessage createMessage() {
