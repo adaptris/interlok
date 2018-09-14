@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.oro.io.Perl5FilenameFilter;
@@ -441,14 +442,17 @@ public class FsMessageConsumerTest extends FsConsumerCase {
     subDirectory.mkdirs();
     FsConsumer fs = createConsumer(consumeDir);
     fs.setReacquireLockBetweenMessages(true);
-    fs.setPoller(new FixedIntervalPoller(new TimeInterval(300L, TimeUnit.MILLISECONDS)));
+    AtomicBoolean pollFired = new AtomicBoolean(false);
+    fs.setPoller(new FixedIntervalPoller(new TimeInterval(300L, TimeUnit.MILLISECONDS)).withPollerCallback(e -> {
+      pollFired.set(true);
+    }));
     File wipDirectory = new File(subDir + fs.getWipSuffix());
     MockMessageListener stub = new MockMessageListener(0);
     StandaloneConsumer sc = new StandaloneConsumer(fs);
     sc.registerAdaptrisMessageListener(stub);
     try {
       start(sc);
-      Thread.sleep(2000);
+      waitForPollCallback(pollFired);
       assertEquals(true, subDirectory.exists());
       assertEquals(true, subDirectory.isDirectory());
       assertEquals(false, wipDirectory.exists());

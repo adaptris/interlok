@@ -23,6 +23,7 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.oro.io.Perl5FilenameFilter;
@@ -122,7 +123,12 @@ public class NonDeletingFsConsumerTest extends FsConsumerCase {
     String subDir = new GuidGenerator().safeUUID();
     MockMessageListener stub = new MockMessageListener(10);
     NonDeletingFsConsumer fs = createConsumer(subDir, "testConsume");
-    fs.setPoller(new FixedIntervalPoller(new TimeInterval(300L, TimeUnit.MILLISECONDS)));
+    AtomicBoolean pollFired = new AtomicBoolean(false);
+    fs.setPoller(new FixedIntervalPoller(new TimeInterval(500L, TimeUnit.MILLISECONDS)).withPollerCallback(e -> {
+      if (e == 0) {
+        pollFired.set(true);
+      }
+    }));
     StandaloneConsumer sc = new StandaloneConsumer(fs);
     sc.registerAdaptrisMessageListener(stub);
     int count = 10;
@@ -133,7 +139,8 @@ public class NonDeletingFsConsumerTest extends FsConsumerCase {
       createFiles(baseDir, ".xml", count);
       LifecycleHelper.start(sc);
       waitForMessages(stub, count);
-      Thread.sleep(2000); // This should re-trigger the poll, so let's make sure
+      // The next call back should be on the next poll, when messages == 0;
+      waitForPollCallback(pollFired);
       // that we don't reprocess them.
       assertMessages(stub.getMessages(), count, baseDir.listFiles((FilenameFilter) new Perl5FilenameFilter(".*\\.xml")));
     }
@@ -150,7 +157,7 @@ public class NonDeletingFsConsumerTest extends FsConsumerCase {
     String subDir = new GuidGenerator().safeUUID();
     MockMessageListener stub = new MockMessageListener(10);
     NonDeletingFsConsumer fs = createConsumer(subDir, "testConsumeWithQuietPeriod");
-    fs.setQuietInterval(new TimeInterval(1L, TimeUnit.SECONDS));
+    fs.setQuietInterval(new TimeInterval(300L, TimeUnit.MILLISECONDS));
     fs.setPoller(new FixedIntervalPoller(new TimeInterval(300L, TimeUnit.MILLISECONDS)));
     StandaloneConsumer sc = new StandaloneConsumer(fs);
     sc.registerAdaptrisMessageListener(stub);
@@ -235,7 +242,10 @@ public class NonDeletingFsConsumerTest extends FsConsumerCase {
     String subDir = new GuidGenerator().safeUUID();
     MockMessageListener stub = new MockMessageListener(10);
     NonDeletingFsConsumer fs = createConsumer(subDir, "testConsume");
-    fs.setPoller(new FixedIntervalPoller(new TimeInterval(300L, TimeUnit.MILLISECONDS)));
+    AtomicBoolean pollFired = new AtomicBoolean(false);
+    fs.setPoller(new FixedIntervalPoller(new TimeInterval(300L, TimeUnit.MILLISECONDS)).withPollerCallback(e -> {
+      pollFired.set(true);
+    }));
     StandaloneConsumer sc = new StandaloneConsumer(fs);
     sc.registerAdaptrisMessageListener(stub);
     int count = 10;
@@ -245,7 +255,7 @@ public class NonDeletingFsConsumerTest extends FsConsumerCase {
       LifecycleHelper.init(sc);
       List<File> createdFiles = createFiles(baseDir, ".xml", count);
       LifecycleHelper.start(sc);
-      Thread.sleep(2000);
+      waitForPollCallback(pollFired);
       touch(createdFiles);
       waitForMessages(stub, count * 2);
     }
@@ -264,7 +274,10 @@ public class NonDeletingFsConsumerTest extends FsConsumerCase {
     String subDir = new GuidGenerator().safeUUID();
     MockMessageListener stub = new MockMessageListener(10);
     NonDeletingFsConsumer fs = createConsumer(subDir, "testConsume");
-    fs.setPoller(new FixedIntervalPoller(new TimeInterval(300L, TimeUnit.MILLISECONDS)));
+    AtomicBoolean pollFired = new AtomicBoolean(false);
+    fs.setPoller(new FixedIntervalPoller(new TimeInterval(300L, TimeUnit.MILLISECONDS)).withPollerCallback(e -> {
+      pollFired.set(true);
+    }));
     StandaloneConsumer sc = new StandaloneConsumer(fs);
     sc.registerAdaptrisMessageListener(stub);
     int count = 10;
@@ -274,7 +287,7 @@ public class NonDeletingFsConsumerTest extends FsConsumerCase {
       LifecycleHelper.init(sc);
       List<File> createdFiles = createFiles(baseDir, ".xml", count);
       LifecycleHelper.start(sc);
-      Thread.sleep(2000);
+      waitForPollCallback(pollFired);
       resize(createdFiles);
       waitForMessages(stub, count * 2);
     }
@@ -296,13 +309,16 @@ public class NonDeletingFsConsumerTest extends FsConsumerCase {
     subDirectory.mkdirs();
     NonDeletingFsConsumer fs = createConsumer(consumeDir, "testRedmine481_SubDirInConsumeDirectory");
     fs.setReacquireLockBetweenMessages(true);
-    fs.setPoller(new FixedIntervalPoller(new TimeInterval(300L, TimeUnit.MILLISECONDS)));
+    AtomicBoolean pollFired = new AtomicBoolean(false);
+    fs.setPoller(new FixedIntervalPoller(new TimeInterval(300L, TimeUnit.MILLISECONDS)).withPollerCallback(e -> {
+      pollFired.set(true);
+    }));
     MockMessageListener stub = new MockMessageListener(0);
     StandaloneConsumer sc = new StandaloneConsumer(fs);
     sc.registerAdaptrisMessageListener(stub);
     try {
       start(sc);
-      Thread.sleep(2000);
+      waitForPollCallback(pollFired);
       assertEquals(true, subDirectory.exists());
       assertEquals(true, subDirectory.isDirectory());
     }

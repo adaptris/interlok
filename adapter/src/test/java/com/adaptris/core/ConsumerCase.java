@@ -17,6 +17,10 @@
 package com.adaptris.core;
 
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import com.adaptris.core.util.LifecycleHelper;
 
 public abstract class ConsumerCase extends ExampleConfigCase {
 
@@ -69,4 +73,15 @@ public abstract class ConsumerCase extends ExampleConfigCase {
   protected String createBaseFileName(Object object) {
     return ((StandaloneConsumer) object).getConsumer().getClass().getName();
   }
+
+  protected static long waitForPollCallback(AtomicBoolean pollFired) throws Exception {
+    long totalWaitTime = 0;
+    while (!pollFired.get() && totalWaitTime < MAX_WAIT) {
+      long wait = (long) new Random().nextInt(100) + 1;
+      LifecycleHelper.waitQuietly(wait);
+      totalWaitTime += wait;
+    }
+    return totalWaitTime;
+  }
+
 }
