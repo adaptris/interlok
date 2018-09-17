@@ -28,18 +28,24 @@ import static com.adaptris.core.ftp.EmbeddedFtpServer.SERVER_ADDRESS;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.SLASH;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.oro.io.GlobFilenameFilter;
 import org.mockftpserver.fake.FakeFtpServer;
 import org.mockftpserver.fake.filesystem.FileEntry;
 import org.mockftpserver.fake.filesystem.FileSystem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.ConsumeDestination;
+import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.MimeEncoder;
-import com.adaptris.core.QuartzCronPoller;
+import com.adaptris.core.Poller;
+import com.adaptris.core.PollerImp;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.ftp.ClientSettings;
@@ -50,6 +56,8 @@ import com.adaptris.util.TimeInterval;
 
 public class FtpConsumerTest extends FtpConsumerCase {
 
+  private transient Logger log = LoggerFactory.getLogger(this.getClass());
+  
   public FtpConsumerTest(String name) {
     super(name);
   }
@@ -235,16 +243,22 @@ public class FtpConsumerTest extends FtpConsumerCase {
     FakeFtpServer server = helper.createAndStart(filesystem);
     StandaloneConsumer sc = null;
     try {
-      ConfiguredConsumeDestination ccd = new ConfiguredConsumeDestination(SERVER_ADDRESS, "*.xml",
+      ConfiguredConsumeDestination ccd = new ConfiguredConsumeDestination(SERVER_ADDRESS, "^*.xml$",
           "testConsumeWithNonMatchingFilter");
-      FtpConsumer ftpConsumer = createForTests(listener, ccd);
-      ftpConsumer.setFileFilterImp("org.apache.oro.io.GlobFilenameFilter");
+      AtomicBoolean pollFired = new AtomicBoolean(false);
+      FixedIntervalPoller poller = new FixedIntervalPoller(new TimeInterval(300L, TimeUnit.MILLISECONDS)).withPollerCallback(e -> {
+        log.trace("Poll Fired {}", getName());
+        if (e == 0) {
+          pollFired.set(true);
+        }
+      });
+      FtpConsumer ftpConsumer = createForTests(listener, ccd, poller);
+      ftpConsumer.setFileFilterImp(RegexFileFilter.class.getCanonicalName());
       FtpConnection consumeConnection = create(server);
       sc = new StandaloneConsumer(consumeConnection, ftpConsumer);
       start(sc);
-      // Short sleep to make sure we trip the poll
-      Thread.sleep(1500);
-
+      long waitTime = waitForPollCallback(pollFired);
+      log.trace("Waited for {}ms for == 0 poll", waitTime);      
       helper.assertMessages(listener.getMessages(), 0);
       assertEquals(count, filesystem.listFiles(DEFAULT_WORK_DIR_CANONICAL).size());
     }
@@ -343,16 +357,25 @@ public class FtpConsumerTest extends FtpConsumerCase {
     FakeFtpServer server = helper.createAndStart(filesystem);
     StandaloneConsumer sc = null;
     try {
-      FtpConsumer ftpConsumer = createForTests(listener, "testConsumeWithQuietPeriodAndTimezone");
+
+      AtomicBoolean pollFired = new AtomicBoolean(false);
+      PollerImp poller = new FixedIntervalPoller(new TimeInterval(300L, TimeUnit.MILLISECONDS)).withPollerCallback(e -> {
+        log.trace("Poll Fired {}", getName());
+        if (e == 0) {
+          pollFired.set(true);
+        }
+      });
+      FtpConsumer ftpConsumer = createForTests(listener, "testConsumeWithQuietPeriodAndTimezone", poller);
+      
       ftpConsumer.setQuietInterval(new TimeInterval(3L, TimeUnit.SECONDS));
-      FtpConnection consumeConnection = create(server);
+      FtpConnection consumeConnection = create(server);      
       consumeConnection.setAdditionalDebug(true);
       consumeConnection.setServerTimezone("America/Los_Angeles");
 
       sc = new StandaloneConsumer(consumeConnection, ftpConsumer);
       start(sc);
-      // Short sleep to make sure we trip the poll
-      Thread.sleep(1500);
+      long waitTime = waitForPollCallback(pollFired);
+      log.trace("Waited for {}ms for == 0 poll", waitTime);
 
       helper.assertMessages(listener.getMessages(), 0);
       assertEquals(count, filesystem.listFiles(DEFAULT_WORK_DIR_CANONICAL).size());
@@ -511,7 +534,11 @@ public class FtpConsumerTest extends FtpConsumerCase {
     return createForTests(listener, new ConfiguredConsumeDestination(SERVER_ADDRESS, null, threadName));
   }
 
-  private FtpConsumer createForTests(MockMessageListener listener, ConsumeDestination dest) {
+  private FtpConsumer createForTests(MockMessageListener listener, String threadName, Poller p) {
+    return createForTests(listener, new ConfiguredConsumeDestination(SERVER_ADDRESS, null, threadName), p);
+  }
+  
+  private FtpConsumer createForTests(MockMessageListener listener, ConsumeDestination dest, Poller poller) {
     FtpConsumer ftpConsumer = new FtpConsumer();
     if (dest.getDestination().equals(SERVER_ADDRESS)) {
       ftpConsumer.setWorkDirectory(DEFAULT_WORK_DIR_CANONICAL);
@@ -520,9 +547,13 @@ public class FtpConsumerTest extends FtpConsumerCase {
       ftpConsumer.setWorkDirectory(SLASH + DEFAULT_WORK_DIR_NAME);
     }
     ftpConsumer.setDestination(dest);
+    ftpConsumer.setPoller(poller);
     ftpConsumer.registerAdaptrisMessageListener(listener);
-    ftpConsumer.setPoller(new QuartzCronPoller("*/1 * * * * ?", dest.getDeliveryThreadName()));
     return ftpConsumer;
+  }
+  
+  private FtpConsumer createForTests(MockMessageListener listener, ConsumeDestination dest) {
+    return createForTests(listener, dest, new FixedIntervalPoller(new TimeInterval(300L, TimeUnit.MILLISECONDS)));
   }
 
 }
