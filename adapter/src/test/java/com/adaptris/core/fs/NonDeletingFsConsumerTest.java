@@ -17,8 +17,10 @@
 package com.adaptris.core.fs;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,15 +33,19 @@ import org.apache.oro.io.Perl5FilenameFilter;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.CoreConstants;
+import com.adaptris.core.CoreException;
 import com.adaptris.core.FixedIntervalPoller;
+import com.adaptris.core.PollerImp;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.stubs.MockMessageListener;
+import com.adaptris.core.stubs.TempFileUtils;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.TimeInterval;
 
 @SuppressWarnings("deprecation")
 public class NonDeletingFsConsumerTest extends FsConsumerCase {
+  private static final String PANGRAM_1 = "the quick brown fox jumps over the lazy dog";
   /**
    * Key in unit-test.properties that defines where example goes unless overriden {@link #setBaseDir(String)}.
    * 
@@ -237,66 +243,65 @@ public class NonDeletingFsConsumerTest extends FsConsumerCase {
 
     }
   }
-
-  public void testReprocessOnLastModifiedChange() throws Exception {
+  public void testHasChanged_NotInCache() throws Exception {
     String subDir = new GuidGenerator().safeUUID();
-    MockMessageListener stub = new MockMessageListener(10);
     NonDeletingFsConsumer fs = createConsumer(subDir, "testConsume");
-    AtomicBoolean pollFired = new AtomicBoolean(false);
-    fs.setPoller(new FixedIntervalPoller(new TimeInterval(300L, TimeUnit.MILLISECONDS)).withPollerCallback(e -> {
-      pollFired.set(true);
-    }));
-    StandaloneConsumer sc = new StandaloneConsumer(fs);
-    sc.registerAdaptrisMessageListener(stub);
-    int count = 10;
-    File parentDir = FsHelper.createFileReference(FsHelper.createUrlFromString(PROPERTIES.getProperty(BASE_KEY), true));
+    File f = createFile(TempFileUtils.createTrackedFile(getName(), "", fs), PANGRAM_1);
+    ProcessedItem item = new ProcessedItem(f.getAbsolutePath(), 0, f.length());
+    ProcessedItemCache cache = new InlineItemCache();
+    fs.setPoller(new Never());
+    fs.setProcessedItemCache(cache);
+    
+    StandaloneConsumer consumer = new StandaloneConsumer(fs);
     try {
-      File baseDir = new File(parentDir, subDir);
-      LifecycleHelper.init(sc);
-      List<File> createdFiles = createFiles(baseDir, ".xml", count);
-      LifecycleHelper.start(sc);
-      waitForPollCallback(pollFired);
-      touch(createdFiles);
-      waitForMessages(stub, count * 2);
+      start(consumer);
+      assertTrue(fs.hasChanged(item));
+    } finally {
+      stop(consumer);
     }
-    catch (Exception e) {
-      log.warn(e.getMessage(), e);
-    }
-    finally {
-      stop(sc);
-      FileUtils.deleteQuietly(new File(parentDir, subDir));
+  }
+  
+  public void testHasChanged_LastModified() throws Exception {
+    String subDir = new GuidGenerator().safeUUID();
+    NonDeletingFsConsumer fs = createConsumer(subDir, "testConsume");
+    File f = createFile(TempFileUtils.createTrackedFile(getName(), "", fs), PANGRAM_1);
+    ProcessedItem item = new ProcessedItem(f.getAbsolutePath(), 0, f.length());
+    ProcessedItemCache cache = new InlineItemCache();
+    fs.setPoller(new Never());
+    fs.setProcessedItemCache(cache);
+    
+    StandaloneConsumer consumer = new StandaloneConsumer(fs);
+    try {
+      start(consumer);
+      cache.update(item);
+      ProcessedItem changed = new ProcessedItem(f.getAbsolutePath(), f.lastModified(), f.length());
+      assertTrue(fs.hasChanged(changed));
+      cache.update(changed);
+      assertFalse(fs.hasChanged(changed));
+    } finally {
+      stop(consumer);
     }
   }
 
-  // Technicaly somewhat of a misnomer, you can't change the filesize unless you
-  // change lastModifiexd, but hey ho
-  public void testReprocessOnFilesizeChange() throws Exception {
+  public void testHasChanged_Size() throws Exception {
     String subDir = new GuidGenerator().safeUUID();
-    MockMessageListener stub = new MockMessageListener(10);
     NonDeletingFsConsumer fs = createConsumer(subDir, "testConsume");
-    AtomicBoolean pollFired = new AtomicBoolean(false);
-    fs.setPoller(new FixedIntervalPoller(new TimeInterval(300L, TimeUnit.MILLISECONDS)).withPollerCallback(e -> {
-      pollFired.set(true);
-    }));
-    StandaloneConsumer sc = new StandaloneConsumer(fs);
-    sc.registerAdaptrisMessageListener(stub);
-    int count = 10;
-    File parentDir = FsHelper.createFileReference(FsHelper.createUrlFromString(PROPERTIES.getProperty(BASE_KEY), true));
+    File f = createFile(TempFileUtils.createTrackedFile(getName(), "", fs), PANGRAM_1);
+    ProcessedItem item = new ProcessedItem(f.getAbsolutePath(), f.lastModified(), 0);
+    ProcessedItemCache cache = new InlineItemCache();
+    fs.setPoller(new Never());
+    fs.setProcessedItemCache(cache);
+    
+    StandaloneConsumer consumer = new StandaloneConsumer(fs);
     try {
-      File baseDir = new File(parentDir, subDir);
-      LifecycleHelper.init(sc);
-      List<File> createdFiles = createFiles(baseDir, ".xml", count);
-      LifecycleHelper.start(sc);
-      waitForPollCallback(pollFired);
-      resize(createdFiles);
-      waitForMessages(stub, count * 2);
-    }
-    catch (Exception e) {
-      log.warn(e.getMessage(), e);
-    }
-    finally {
-      stop(sc);
-      FileUtils.deleteQuietly(new File(parentDir, subDir));
+      start(consumer);
+      cache.update(item);
+      ProcessedItem changed = new ProcessedItem(f.getAbsolutePath(), f.lastModified(), f.length());
+      assertTrue(fs.hasChanged(changed));
+      cache.update(changed);
+      assertFalse(fs.hasChanged(changed));
+    } finally {
+      stop(consumer);
     }
   }
 
@@ -387,5 +392,36 @@ public class NonDeletingFsConsumerTest extends FsConsumerCase {
       result.add(File.createTempFile("FSC", ext, baseDir));
     }
     return result;
+  }
+  
+  private File createFile(File file, String content) throws IOException {
+    try (PrintStream out = new PrintStream(new FileOutputStream(file), true)) {
+      out.print(PANGRAM_1);
+    }
+    return file;
+  }
+  
+  private class Never extends PollerImp {
+
+    @Override
+    public void init() throws CoreException {
+    }
+
+    @Override
+    public void start() throws CoreException {
+    }
+
+    @Override
+    public void stop() {
+    }
+
+    @Override
+    public void close() {
+    }
+
+    @Override
+    public void prepare() throws CoreException {
+    }
+    
   }
 }
