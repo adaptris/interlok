@@ -314,4 +314,9 @@ public class XmlValidationServiceTest extends TransformServiceExample {
         new XmlSchemaValidator("http://host/schema.xsd", "optional metadata key against which a schema can be stored"),
         new XmlRuleValidator(vs));
   }
+  
+  
+  protected boolean doStateTests() {
+    return false;
+  }
 }
