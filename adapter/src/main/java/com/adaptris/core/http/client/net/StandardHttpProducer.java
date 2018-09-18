@@ -328,6 +328,10 @@ public class StandardHttpProducer extends HttpProducer {
 
   /**
    * Set where the HTTP Response Body will be written to.
+   * <p>
+   * Note that if you have configured an {@link com.adaptris.core.AdaptrisMessageEncoder} via
+   * {@link #setEncoder(com.adaptris.core.AdaptrisMessageEncoder)} (such as for AS2) then this may have no effect.
+   * </p>
    * 
    * @param output the output; default is {@link PayloadStreamOutputParameter}.
    */
