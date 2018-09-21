@@ -56,12 +56,37 @@ public class SplitByMetadataTest extends SplitterCase {
     msg.getObjectHeaders().put(obj, obj);
     SplitByMetadata splitter = new SplitByMetadata(SPLIT_ON_METADATA_KEY, SPLIT_METADATA_KEY);
     msg.addMetadata(SPLIT_ON_METADATA_KEY, A_B_C_D);
-    List<AdaptrisMessage> result = splitter.splitMessage(msg);
+    List<AdaptrisMessage> result = splitToList(splitter, msg);
     assertEquals("Number of messages", 4, result.size());
+    int count = 0;
     for (AdaptrisMessage m : result) {
       assertFalse("No Object Metadata", m.getObjectHeaders().containsKey(obj));
+      // May as well explicitly test the indexes.
+      switch(count) {
+      case 0: {
+        assertEquals("a", m.getMetadataValue(SPLIT_METADATA_KEY));
+        break;
+      }
+      case 1: {
+        assertEquals("b", m.getMetadataValue(SPLIT_METADATA_KEY));
+        break;
+      }
+      case 2: {
+        assertEquals("c", m.getMetadataValue(SPLIT_METADATA_KEY));
+        break;
+      }
+      case 3: {
+        assertEquals("d", m.getMetadataValue(SPLIT_METADATA_KEY));
+        break;
+      }
+      default : {
+        fail();
+      }
+      };
+      count ++;
       doStandardAssertions(m);
     }
+  
   }
 
   public void testSplitWithObjectMetadata() throws Exception {
@@ -71,7 +96,7 @@ public class SplitByMetadataTest extends SplitterCase {
     SplitByMetadata splitter = new SplitByMetadata(SPLIT_ON_METADATA_KEY, SPLIT_METADATA_KEY);
     splitter.setCopyObjectMetadata(true);
     msg.addMetadata(SPLIT_ON_METADATA_KEY, A_B_C_D);
-    List<AdaptrisMessage> result = splitter.splitMessage(msg);
+    List<AdaptrisMessage> result = splitToList(splitter, msg);
     assertEquals("Number of messages", 4, result.size());
     for (AdaptrisMessage m : result) {
       assertTrue("Object Metadata", m.getObjectHeaders().containsKey(obj));

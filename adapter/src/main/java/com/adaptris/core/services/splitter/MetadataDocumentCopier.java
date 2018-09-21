@@ -18,8 +18,6 @@ package com.adaptris.core.services.splitter;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
-import java.io.IOException;
-
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
@@ -67,14 +65,12 @@ public class MetadataDocumentCopier extends MessageCopier {
   @Override
   public com.adaptris.core.util.CloseableIterable<AdaptrisMessage> splitMessage(AdaptrisMessage msg) throws CoreException {
     int size = toInteger(msg.getMetadataValue(getMetadataKey()));     
-    return new Copier(msg, size);
-  }
-
-  private static int toInteger(String s) {
-    if (isEmpty(s)) {
-      return 0;
-    }
-    return Double.valueOf(s).intValue();
+    return new MessageCopierIterator(msg, size, (m, count) -> {
+      if (!isEmpty(getIndexMetadataKey())) {
+        m.addMetadata(getIndexMetadataKey(), String.valueOf(count));
+      }
+      return m;
+    });
   }
 
   /**
@@ -104,38 +100,4 @@ public class MetadataDocumentCopier extends MessageCopier {
   public void setIndexMetadataKey(String s) {
     indexMetadataKey = s;
   }
-
-  /**
-   * Not ThreadSafe, Not Reentrant; but means we can have arbitrarily large amounts of metadata-splits.
-   */
-  private class Copier extends SplitMessageIterator {
-    private final int maxCount;
-    private int currentCount = 0;
-
-    public Copier(AdaptrisMessage msg, int maxItems) {
-      super(msg, selectFactory(msg));
-      maxCount = maxItems;
-    }
-
-    @Override
-    protected AdaptrisMessage constructAdaptrisMessage() throws IOException {
-      if (currentCount >= maxCount) return null;
-      try {
-        AdaptrisMessage splitMsg = duplicateWithPayload(factory, msg);
-        copyMetadata(msg, splitMsg);
-        if (!isEmpty(getIndexMetadataKey())) {
-          splitMsg.addMetadata(getIndexMetadataKey(), String.valueOf(currentCount));
-        }
-        currentCount++;
-        return splitMsg;
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }
-
-    @Override
-    public void close() throws IOException {
-    }
-
-  };
 }
