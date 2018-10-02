@@ -27,6 +27,7 @@
     <property name="tests.output.dir"       value="${build.dir}/testoutput"/>
     <property name="html.tests.output.dir"  value="${tests.output.dir}/html"/>
     <property name="junit.forkmode"         value="once"/>
+    <property name="junit.threads"          value="1"/>
     <property name="junit.printsummary"     value="on"/>
     <property name="junit.report.style.dir" value="${test.resources.dir}/junitreport/"/>
 
@@ -60,7 +61,7 @@
     <property name="database.password" value="password" />
 
     <!-- For Running coverage reports -->
-    <property name="junit.with.coverage" value="true"/>
+    <property name="junit.with.coverage" value="false"/>
     <property name="coverage.report.output.dir" value="${tests.output.dir}/coverage"/>
     <property name="coverage.report.html.output.dir" value="${coverage.report.output.dir}/html"/>
     <property name="coverage.build.dir" value="${build.dir}/coverage"/>
@@ -369,7 +370,7 @@
   <target name="junit-coverage" depends="init.tests" if="${junit.with.coverage}">
     <delete file="${coverage.metadata.file}" />
     <jacoco:coverage  destfile="${coverage.metadata.file}">
-      <junit printsummary="${junit.printsummary}" fork="yes" forkmode="${junit.forkmode}" failureproperty="junit.failed">
+      <junit printsummary="${junit.printsummary}" fork="yes" forkmode="${junit.forkmode}" threads="${junit.threads}" failureproperty="junit.failed">
         <jvmarg value="-Xmx${execution.maxmem}"/>
         <jvmarg value="-XX:+CMSClassUnloadingEnabled"/>
         <jvmarg value="-XX:+UseG1GC"/>
@@ -394,7 +395,7 @@
   </target>
 
   <target name="junit" depends="init.tests" if="${junit.without.coverage}">
-    <junit printsummary="${junit.printsummary}" fork="yes"  forkmode="${junit.forkmode}" failureproperty="junit.failed">
+    <junit printsummary="${junit.printsummary}" fork="yes"  forkmode="${junit.forkmode}" threads="${junit.threads}" failureproperty="junit.failed">
       <jvmarg value="-Xmx${execution.maxmem}"/>
       <jvmarg value="-XX:+CMSClassUnloadingEnabled"/>
       <jvmarg value="-XX:+UseG1GC"/>
