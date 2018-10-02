@@ -18,7 +18,6 @@ package com.adaptris.core.http.client.net;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
-import java.net.HttpURLConnection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -48,7 +47,7 @@ import com.adaptris.core.util.Args;
  * @author lchan
  * 
  */
-public abstract class HttpProducer extends RequestReplyProducerImp {
+public abstract class HttpProducer<A, B> extends RequestReplyProducerImp {
 
   protected static final long DEFAULT_TIMEOUT = -1;
   @NotNull
@@ -65,13 +64,13 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
   @Valid
   @NotNull
   @AutoPopulated
-  private ResponseHeaderHandler<HttpURLConnection> responseHeaderHandler;
+  private ResponseHeaderHandler<B> responseHeaderHandler;
 
   @AdvancedConfig
   @Valid
   @NotNull
   @AutoPopulated
-  private RequestHeaderProvider<HttpURLConnection> requestHeaderProvider;
+  private RequestHeaderProvider<A> requestHeaderProvider;
 
   @AdvancedConfig
   @InputFieldDefault(value = "false")
@@ -83,8 +82,6 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
   public HttpProducer() {
     super();
     setContentTypeProvider(new ConfiguredContentTypeProvider());
-    setResponseHeaderHandler(new DiscardResponseHeaders());
-    setRequestHeaderProvider(new NoRequestHeaders());
     setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethod.POST));
   }
 
@@ -189,7 +186,7 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
   }
 
 
-  public ResponseHeaderHandler<HttpURLConnection> getResponseHeaderHandler() {
+  public ResponseHeaderHandler<B> getResponseHeaderHandler() {
     return responseHeaderHandler;
   }
 
@@ -198,11 +195,11 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
    * 
    * @param handler the handler, default is a {@link DiscardResponseHeaders}.
    */
-  public void setResponseHeaderHandler(ResponseHeaderHandler<HttpURLConnection> handler) {
+  public void setResponseHeaderHandler(ResponseHeaderHandler<B> handler) {
     this.responseHeaderHandler = Args.notNull(handler, "ResponseHeaderHandler");
   }
 
-  public RequestHeaderProvider<HttpURLConnection> getRequestHeaderProvider() {
+  public RequestHeaderProvider<A> getRequestHeaderProvider() {
     return requestHeaderProvider;
   }
 
@@ -211,7 +208,7 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
    * 
    * @param handler the handler, default is a {@link NoRequestHeaders}
    */
-  public void setRequestHeaderProvider(RequestHeaderProvider<HttpURLConnection> handler) {
+  public void setRequestHeaderProvider(RequestHeaderProvider<A> handler) {
     this.requestHeaderProvider = Args.notNull(handler, "Request Header Provider");
   }
 
