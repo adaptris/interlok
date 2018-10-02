@@ -110,7 +110,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 {
     "authenticator", "allowRedirect", "ignoreServerResponseCode", "alwaysSendPayload", "methodProvider",
     "contentTypeProvider", "requestHeaderProvider", "requestBody", "responseHeaderHandler", "responseBody"})
-public class StandardHttpProducer extends HttpProducer {
+public class StandardHttpProducer extends HttpProducer<HttpURLConnection, HttpURLConnection> {
 
   private static final String PARAM_CHARSET = "charset";
 
@@ -152,6 +152,8 @@ public class StandardHttpProducer extends HttpProducer {
 
   public StandardHttpProducer() {
     super();
+    setResponseHeaderHandler(new DiscardResponseHeaders());
+    setRequestHeaderProvider(new NoRequestHeaders());
     Authenticator.setDefault(AdapterResourceAuthenticator.getInstance());
   }
 
