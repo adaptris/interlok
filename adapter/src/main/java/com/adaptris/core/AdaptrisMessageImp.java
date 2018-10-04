@@ -22,8 +22,10 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -295,15 +297,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
   @Override
   public Writer getWriter(String encoding) throws IOException {
-    Writer result;
-    if (!isEmpty(encoding)) {
-      setContentEncoding(encoding);
-      result = new OutputStreamWriter(getOutputStream(), encoding);
-    }
-    else {
-      result = getWriter();
-    }
-    return result;
+    return !isEmpty(encoding) ? new ContentEncodingOnClose(getOutputStream(), encoding) : getWriter();
   }
 
   @Override
@@ -556,5 +550,19 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
       }
     }
     return null;
+  }
+  
+  private class ContentEncodingOnClose extends OutputStreamWriter {
+    private String charset;
+    
+    public ContentEncodingOnClose(OutputStream out, String charsetName) throws UnsupportedEncodingException {
+      super(out, charsetName);
+      this.charset = charsetName;
+    }
+    
+    public void close() throws IOException {
+      super.close();
+      setContentEncoding(charset);
+    }
   }
 }
