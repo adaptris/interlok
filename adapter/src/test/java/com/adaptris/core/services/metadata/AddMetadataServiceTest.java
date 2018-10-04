@@ -77,6 +77,15 @@ public class AddMetadataServiceTest extends MetadataServiceExample {
     assertTrue(msg.getMetadataValue("key3") == null);
   }
 
+  public void testDoService_NotSameObject() throws CoreException {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    MetadataElement element = new MetadataElement("mykey", "myvalue");
+    AddMetadataService myService = new AddMetadataService(element);
+    execute(myService, msg);
+    assertEquals("myvalue", msg.getMetadataValue("mykey"));
+    assertFalse(element == msg.getMetadata("mykey"));
+  }
+
   public void testDoService_NoOverwrite() throws CoreException {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     service.setOverwrite(false);

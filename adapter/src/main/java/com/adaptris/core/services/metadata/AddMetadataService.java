@@ -16,6 +16,7 @@
 
 package com.adaptris.core.services.metadata;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,6 +26,8 @@ import java.util.Set;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
+import org.apache.commons.lang.BooleanUtils;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AffectsMetadata;
@@ -132,6 +135,11 @@ public class AddMetadataService extends ServiceImp {
     setMetadataElements(new HashSet<MetadataElement>(elements));
   }
 
+  public AddMetadataService(MetadataElement... elements) {
+    this();
+    setMetadataElements(new HashSet<MetadataElement>(Arrays.asList(elements)));
+  }
+
   /**
    * <p>
    * Adds the configured metadata to the message.
@@ -142,16 +150,13 @@ public class AddMetadataService extends ServiceImp {
   public void doService(AdaptrisMessage msg) throws ServiceException {
     Set<MetadataElement> addedMetadata = new HashSet<MetadataElement>();
     for (MetadataElement e : metadataElements) {
-      MetadataElement addMe = e;
-      if (HANDLERS.containsKey(e.getValue())) {
-        addMe = new MetadataElement(e.getKey(), HANDLERS.get(e.getValue()).getValue(msg));
-      }
+      MetadataElement addMe = build(e, msg);
       if (overwrite(msg, addMe.getKey())) {
         msg.addMetadata(addMe);
         addedMetadata.add(addMe);
       }
     }
-    log.debug("metadata added " + addedMetadata);
+    log.debug("metadata added {}", addedMetadata);
   }
 
   @Override
@@ -229,12 +234,11 @@ public class AddMetadataService extends ServiceImp {
     this.overwrite = b;
   }
 
-  boolean overwrite() {
-    return getOverwrite() != null ? getOverwrite().booleanValue() : true;
+  private boolean overwrite() {
+    return BooleanUtils.toBooleanDefaultIfNull(getOverwrite(), true);
   }
 
-  boolean overwrite(AdaptrisMessage msg, String key) {
-
+  protected boolean overwrite(AdaptrisMessage msg, String key) {
     boolean result = true;
     if (msg.headersContainsKey(key)) {
       if (!overwrite()) {
@@ -244,4 +248,11 @@ public class AddMetadataService extends ServiceImp {
     return result;
   }
 
+  // Always create a new MetadataElement as downstream services may actually modify the instance
+  protected static MetadataElement build(MetadataElement e, AdaptrisMessage msg) throws ServiceException {
+    if (HANDLERS.containsKey(e.getValue())) {
+      return new MetadataElement(e.getKey(), HANDLERS.get(e.getValue()).getValue(msg));
+    }
+    return new MetadataElement(e.getKey(), e.getValue());
+  }
 }
