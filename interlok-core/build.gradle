@@ -222,6 +222,7 @@ javadoc {
       ]
     taglets = ["com.adaptris.taglet.ConfigTaglet", "com.adaptris.taglet.LicenseTaglet"]
     options.addStringOption "tagletpath", configurations.javadoc.asPath
+    options.tags('apiNote:a:API Note:', 'implSpec:a:Implementation Requirements:','implNote:a:Implementation Note:')
     options.
       group ("Base Adapter Configuration", ["com.adaptris.core.*" , "com.adaptris.core"]).
       group ("Standard Services", ["com.adaptris.core.services.*" , "com.adaptris.core.services"]).
@@ -231,9 +232,10 @@ javadoc {
       group ("Email", ["com.adaptris.core.mail.*" , "com.adaptris.core.mail","com.adaptris.mail", "com.adaptris.mail.*"]).
       group ("FTP / SFTP", ["com.adaptris.core.ftp", "com.adaptris.core.ftp.*", "com.adaptris.filetransfer", "com.adaptris.filetransfer.*", "com.adaptris.ftp", "com.adaptris.ftp.*", "com.adaptris.sftp", "com.adaptris.sftp.*"]).
       group ("HTTP", ["com.adaptris.core.http", "com.adaptris.core.http.*", "com.adaptris.http", "com.adaptris.http.*"]).
+      group ("Caching", ["com.adaptris.core.cache", "com.adaptris.core.cache.*", "com.adaptris.core.services.cache", "com.adaptris.core.services.cache.*"]).
       group ("JDBC", ["com.adaptris.core.jdbc", "com.adaptris.core.jdbc.*", "com.adaptris.core.services.jdbc", "com.adaptris.core.services.jdbc.*", "com.adaptris.jdbc", "com.adaptris.jdbc.*"]).
-      group ("Securiuty", ["com.addaptris.core.security", "com.adaptris.core.security.*", "com.adaptris.security", "com.adadptris.security.*"]).
-      group ("Utility Classes", ["com.adaptris.util", "com.adadptris.util.*", "com.adaptris.core.util", "com.adaptris.core.util.*"]).
+      group ("Security", ["com.adaptris.core.security", "com.adaptris.core.security.*", "com.adaptris.security", "com.adaptris.security.*"]).
+      group ("Utility Classes", ["com.adaptris.util", "com.adaptris.util.*", "com.adaptris.core.util", "com.adaptris.core.util.*"]).
       group ("Adapter Management", ["com.adaptris.core.management", "com.adaptris.core.management.*", "com.adaptris.failover", "com.adaptris.core.runtime", "com.adadptris.core.runtime.*"])
     title= componentName
   }
