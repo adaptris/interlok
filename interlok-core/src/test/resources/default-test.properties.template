@@ -51,4 +51,4 @@ default.jdbc.storedproc.tests.enabled=false
 # If remote tests are enabled, then make sure that the following HTTP location
 # is enabled.
 default.security.remote.tests.enabled=false
-default.security.http.server.file.root=${build.dir}/security/
+default.security.http.server.file.root=@BUILD_DIR@/security/

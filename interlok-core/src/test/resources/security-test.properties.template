@@ -1,6 +1,6 @@
 
 # Properties controlling the default certificate information.
-junitsecurity.test.cfg.root=${build.dir}/test/cfg
+junitsecurity.test.cfg.root=@BUILD_DIR@/tmp/security/tests
 junitsecurity.test.remote.location.enabled=${default.security.remote.tests.enabled}
 
 junitsecurity.certificate.country=GB
@@ -31,18 +31,18 @@ junitsecurity.keystore.security.keystoreUrl=file:///${junitsecurity.test.cfg.roo
 junitsecurity.keystore.new.keystorePassword=ctec1234
 junitsecurity.keystore.single.x509url.alias=x509
 junitsecurity.keystore.single.x509url.uppercaseAlias=X509
-junitsecurity.keystore.single.x509url=file:///${test.resources.dir}/security/good.cer?keystoreType\=X509&keystoreAlias\=${junitsecurity.keystore.single.x509url.alias}
-junitsecurity.keystore.single.x509url.uppercase=file:///${test.resources.dir}/security/good.cer?keystoreType\=X509&keystoreAlias\=${junitsecurity.keystore.single.x509url.uppercaseAlias}
+junitsecurity.keystore.single.x509url=file:///@BASE_DIR@/src/test/resources/security/good.cer?keystoreType\=X509&keystoreAlias\=${junitsecurity.keystore.single.x509url.alias}
+junitsecurity.keystore.single.x509url.uppercase=file:///@BASE_DIR@/src/test/resources/security/good.cer?keystoreType\=X509&keystoreAlias\=${junitsecurity.keystore.single.x509url.uppercaseAlias}
 junitsecurity.keystore.single.pkcs12url.alias=pkcs12
-junitsecurity.keystore.single.pkcs12url=file:///${test.resources.dir}/security/pkey.pfx?keystoreType\=PKCS12&keystoreAlias\=${junitsecurity.keystore.single.pkcs12url.alias}
+junitsecurity.keystore.single.pkcs12url=file:///@BASE_DIR@/src/test/resources/security/pkey.pfx?keystoreType\=PKCS12&keystoreAlias\=${junitsecurity.keystore.single.pkcs12url.alias}
 junitsecurity.keystore.single.xmlkeyinfourl.alias=xmlkeyinfo
 junitsecurity.keystore.single.xmlkeyinfourl.uppercaseAlias=XMLKEYINFO
-junitsecurity.keystore.single.xmlkeyinfourl=file:///${test.resources.dir}/security/xml-key-info.xml?keystoreType\=XmlKeyInfo&keystoreAlias\=${junitsecurity.keystore.single.xmlkeyinfourl.alias}
-junitsecurity.keystore.single.xmlkeyinfourl.uppercase=file:///${test.resources.dir}/security/xml-key-info.xml?keystoreType\=XmlKeyInfo&keystoreAlias\=${junitsecurity.keystore.single.xmlkeyinfourl.uppercaseAlias}
+junitsecurity.keystore.single.xmlkeyinfourl=file:///@BASE_DIR@/src/test/resources/security/xml-key-info.xml?keystoreType\=XmlKeyInfo&keystoreAlias\=${junitsecurity.keystore.single.xmlkeyinfourl.alias}
+junitsecurity.keystore.single.xmlkeyinfourl.uppercase=file:///@BASE_DIR@/src/test/resources/security/xml-key-info.xml?keystoreType\=XmlKeyInfo&keystoreAlias\=${junitsecurity.keystore.single.xmlkeyinfourl.uppercaseAlias}
 
-junitsecurity.keystore.import.pkcs12.file=${test.resources.dir}/security/pkey.pfx
-junitsecurity.keystore.import.certchain.file=${test.resources.dir}/security/pkey.certchain.p7b
-junitsecurity.keystore.import.x509.file=${test.resources.dir}/security/good.cer
+junitsecurity.keystore.import.pkcs12.file=@BASE_DIR@/src/test/resources/security/pkey.pfx
+junitsecurity.keystore.import.certchain.file=@BASE_DIR@/src/test/resources/security/pkey.certchain.p7b
+junitsecurity.keystore.import.x509.file=@BASE_DIR@/src/test/resources/security/good.cer
 
 junitsecurity.keystore.composite.1=${junitsecurity.keystore.keystoreUrl}
 junitsecurity.keystore.composite.2=${junitsecurity.keystore.single.x509url}
@@ -52,5 +52,5 @@ junitsecurity.keystore.composite.3=${junitsecurity.keystore.single.pkcs12url}
 junitsecurity.security.algorithm=DESede/CBC/PKCS5Padding
 junitsecurity.security.algorithm.keysize=168
 
-junitsecurity.certificate.handler.expired=${test.resources.dir}/security/expired.cer
-junitsecurity.certificate.handler.good=${test.resources.dir}/security/good.cer
+junitsecurity.certificate.handler.expired=@BASE_DIR@/src/test/resources/security/expired.cer
+junitsecurity.certificate.handler.good=@BASE_DIR@/src/test/resources/security/good.cer

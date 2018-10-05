@@ -1,0 +1,56 @@
+ext {
+  componentName='Interlok Annotation Support'
+}
+
+dependencies {
+  compile ("com.thoughtworks.xstream:xstream:$xstreamVersion") {  transitive= false }
+  compile ("org.apache.velocity:velocity:1.7") { transitive= false}
+  compile ("commons-lang:commons-lang:2.6")
+  compile ("commons-collections:commons-collections:3.2.2")
+  compile ("javax.validation:validation-api:1.0.0.GA")
+  compile files("${System.getProperty('java.home')}/../lib/tools.jar")
+
+  testCompile("junit:junit:4.11")
+  testCompile("org.hibernate:hibernate-validator:4.3.2.Final")
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives javadocJar
+}
+
+
+javadoc {
+  configure(options) {
+    links = [
+      interlokJavadocs,
+      interlokCommonJavadocs,
+    ]
+  }
+}
+
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      repository(url: mavenPublishUrl) {
+        authentication(userName: repoUsername, password: repoPassword)
+      }
+      configuration = configurations.mavenDeploy
+      pom.withXml {
+        asNode().appendNode("description", "Custom annotations for Interlok")
+        def properties = asNode().appendNode("properties")
+        properties.appendNode("target", "3.8.0+")
+        properties.appendNode("tags", "annotations")
+        properties.appendNode("license", "false")
+      }
+
+    }
+  }
+}
+
+publish.dependsOn uploadArchives
+

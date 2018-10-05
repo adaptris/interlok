@@ -1,0 +1,56 @@
+ext {
+  componentName='Interlok Logging'
+}
+
+// In this section you declare the dependencies for your production and test code
+dependencies {
+  compile "org.apache.logging.log4j:log4j-core:$log4j2Version", optional
+  compile "org.apache.logging.log4j:log4j-api:$log4j2Version", optional
+
+  javadoc project(':interlok-core-apt')
+
+  testCompile ("junit:junit:4.11")
+
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives javadocJar
+}
+
+javadoc {
+  configure(options) {
+      links = [
+        interlokJavadocs,
+        interlokCommonJavadocs,
+      ]
+    taglets = ["com.adaptris.taglet.ConfigTaglet", "com.adaptris.taglet.LicenseTaglet"]
+    options.addStringOption "tagletpath", configurations.javadoc.asPath
+    title= componentName
+  }
+}
+
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      repository(url: mavenPublishUrl) {
+        authentication(userName: repoUsername, password: repoPassword)
+      }
+      configuration = configurations.mavenDeploy
+      pom.withXml {
+        asNode().appendNode("description", "Custom JMX Logger for Interlok")
+        def properties = asNode().appendNode("properties")
+        properties.appendNode("target", "3.8.0+")
+        properties.appendNode("license", "false")
+      }
+
+    }
+  }
+}
+
+publish.dependsOn uploadArchives
+

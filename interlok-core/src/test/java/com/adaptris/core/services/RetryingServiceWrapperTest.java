@@ -41,7 +41,6 @@ import com.adaptris.core.jms.jndi.StandardJndiImplementation;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 
-@RunWith(MockitoJUnitRunner.class)
 public class RetryingServiceWrapperTest extends GeneralServiceExample {
   
   private RetryingServiceWrapper retryingServiceWrapper;
