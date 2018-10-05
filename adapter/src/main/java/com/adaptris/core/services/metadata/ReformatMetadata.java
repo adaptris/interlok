@@ -29,6 +29,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.ExceptionHelper;
 
 /**
  * <p>
@@ -84,15 +85,14 @@ public abstract class ReformatMetadata extends ServiceImp implements MetadataRef
       Set<MetadataElement> modifiedMetadata = new HashSet<MetadataElement>();
       for (MetadataElement e : metadata) {
         if (e.getKey().matches(metadataKeyRegexp)) {
-          e.setValue(reformat(e.getValue(), msg));
-          modifiedMetadata.add(e);
+          modifiedMetadata.add(new MetadataElement(e.getKey(), reformat(e.getValue(), msg)));
         }
       }
       log.trace("Modified metadata : " + modifiedMetadata);
       msg.setMetadata(modifiedMetadata);
     }
     catch (Exception e) {
-      throw new ServiceException(e);
+      throw ExceptionHelper.wrapServiceException(e);
     }
   }
 
