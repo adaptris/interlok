@@ -18,6 +18,7 @@ package com.adaptris.core.services.jdbc;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -33,7 +34,6 @@ import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.jdbc.DatabaseConnection;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.util.text.xml.XPath;
-import com.mysql.jdbc.Statement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
