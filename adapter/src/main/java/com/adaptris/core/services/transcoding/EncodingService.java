@@ -16,15 +16,15 @@
 
 package com.adaptris.core.services.transcoding;
 
+import java.io.OutputStream;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageEncoder;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import org.apache.commons.io.IOUtils;
-
-import java.io.OutputStream;
 
 /**
  * Encodes the in flight message and sets the payload to the encoded output.
@@ -46,16 +46,11 @@ public class EncodingService extends TranscodingService {
 
   @Override
   public void transcodeMessage(AdaptrisMessage msg) throws ServiceException {
-    OutputStream out = null;
-    try {
-      out = msg.getOutputStream();
+    try (OutputStream out = msg.getOutputStream()) {
       getEncoder().writeMessage(msg,out);
     }
     catch (Exception e) {
-      throw new ServiceException(e);
-    }
-    finally {
-      IOUtils.closeQuietly(out);
+      throw ExceptionHelper.wrapServiceException(e);
     }
   }
 }

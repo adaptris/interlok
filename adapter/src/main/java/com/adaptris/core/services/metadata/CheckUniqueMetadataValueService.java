@@ -16,8 +16,6 @@
 
 package com.adaptris.core.services.metadata;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -27,12 +25,12 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.BranchingServiceImp;
 import com.adaptris.core.CoreException;
@@ -96,6 +94,7 @@ public class CheckUniqueMetadataValueService extends BranchingServiceImp {
   private String nextServiceIdIfDuplicate;
   @NotBlank
   private String nextServiceIdIfUnique;
+  @InputFieldDefault(value = "1000")
   private int numberOfPreviousValuesToStore;
 
   // not marshalled
@@ -109,16 +108,13 @@ public class CheckUniqueMetadataValueService extends BranchingServiceImp {
    */
   public CheckUniqueMetadataValueService() {
     this.setNumberOfPreviousValuesToStore(1000);
-
-    // this.setNextServiceIdIfUnique(DEFAULT_SERVICE_ID_UNIQUE);
-    // this.setNextServiceIdIfDuplicate(DEFAULT_SERVICE_ID_DUPLICATE);
   }
 
   @Override
   protected void initService() throws CoreException {
     try {
-      Args.notNull(getMetadataKeyToCheck(), "metadataKeyToCheck");
-      Args.notNull(getStoreFileUrl(), "storeFileUrl");
+      Args.notBlank(getMetadataKeyToCheck(), "metadataKeyToCheck");
+      Args.notBlank(getStoreFileUrl(), "storeFileUrl");
       this.store = new File(new URL(getStoreFileUrl()).getFile());
       this.loadPreviouslyReceivedValues();
 
@@ -182,24 +178,15 @@ public class CheckUniqueMetadataValueService extends BranchingServiceImp {
   }
 
   private void storePreviouslyReceivedValues() throws Exception {
-    ObjectOutputStream o = null;
-    try {
-      o = new ObjectOutputStream(new FileOutputStream(store));
+    try (ObjectOutputStream o = new ObjectOutputStream(new FileOutputStream(store));) {
       o.writeObject(previousValuesStore);
-      o.flush();
-    } finally {
-      IOUtils.closeQuietly(o);
     }
   }
 
   private void loadPreviouslyReceivedValues() throws Exception {
     if (store.exists()) {
-      ObjectInputStream o = null;
-      try {
-        o = new ObjectInputStream(new FileInputStream(store));
+      try (ObjectInputStream o = new ObjectInputStream(new FileInputStream(store))) {
         previousValuesStore = (ArrayList<Object>) o.readObject();
-      } finally {
-        IOUtils.closeQuietly(o);
       }
     }
   }
@@ -229,10 +216,7 @@ public class CheckUniqueMetadataValueService extends BranchingServiceImp {
    * @param s the metadata key whose value should be checked
    */
   public void setMetadataKeyToCheck(String s) {
-    if (isEmpty(s)) {
-      throw new IllegalArgumentException("null or empty param");
-    }
-    this.metadataKeyToCheck = s;
+    this.metadataKeyToCheck = Args.notBlank(s, "metadataKeyToCheck");
   }
 
   /**
@@ -284,10 +268,7 @@ public class CheckUniqueMetadataValueService extends BranchingServiceImp {
    *          a file URL
    */
   public void setStoreFileUrl(String s) {
-    if (isEmpty(s)) {
-      throw new IllegalArgumentException("null or empty param");
-    }
-    this.storeFileUrl = s;
+    this.storeFileUrl = Args.notBlank(s, "storeFileUrl");
   }
 
   /**
@@ -313,10 +294,7 @@ public class CheckUniqueMetadataValueService extends BranchingServiceImp {
    *          exists if the store of previous values
    */
   public void setNextServiceIdIfDuplicate(String s) {
-    if (isEmpty(s)) {
-      throw new IllegalArgumentException("null or empty param");
-    }
-    this.nextServiceIdIfDuplicate = s;
+    this.nextServiceIdIfDuplicate = Args.notBlank(s, "nextServiceIdIfDuplicate");
   }
 
   /**
@@ -342,10 +320,7 @@ public class CheckUniqueMetadataValueService extends BranchingServiceImp {
    *          does not exist if the store of previous values
    */
   public void setNextServiceIdIfUnique(String s) {
-    if (isEmpty(s)) {
-      throw new IllegalArgumentException("null or empty param");
-    }
-    this.nextServiceIdIfUnique = s;
+    this.nextServiceIdIfUnique = Args.notBlank(s, "nextServiceIdIfUnique");
   }
 
   @Override

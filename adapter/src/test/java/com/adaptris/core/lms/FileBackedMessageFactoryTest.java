@@ -92,6 +92,7 @@ public class FileBackedMessageFactoryTest extends AdaptrisMessageFactoryImplCase
     String tmpDir = tempDir();
     factory.setTempDirectory(tmpDir);
     factory.setCreateTempDir(true);
+    factory.setExtendedLogging(true);
     AdaptrisMessage msg = factory.newMessage();
     try (Writer out = new OutputStreamWriter(msg.getOutputStream())) {
       out.write("hello");

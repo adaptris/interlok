@@ -17,7 +17,6 @@
 package com.adaptris.ftp;
 
 import java.io.IOException;
-import java.net.InetAddress;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPSClient;
@@ -33,6 +32,8 @@ public class CommonsNetFtpSslClient extends ApacheFtpClientImpl<FTPSClient> {
   private static final boolean DEFAULT_IMPLICIT_SSL = false;
 
   private boolean implicitSSL = DEFAULT_IMPLICIT_SSL;
+  
+
   /**
    * Constructor.
    * 
@@ -46,7 +47,6 @@ public class CommonsNetFtpSslClient extends ApacheFtpClientImpl<FTPSClient> {
     this.implicitSSL = implicitSSL;
   }
 
-
   public CommonsNetFtpSslClient(String remoteHost) throws IOException {
     this(remoteHost, FTPClient.DEFAULT_PORT);
   }
@@ -55,23 +55,20 @@ public class CommonsNetFtpSslClient extends ApacheFtpClientImpl<FTPSClient> {
     this(remoteHost, port, 0, DEFAULT_IMPLICIT_SSL);
   }
 
-  public CommonsNetFtpSslClient(InetAddress remoteAddr) throws IOException {
-    this(remoteAddr, FTPClient.DEFAULT_PORT);
-  }
-
-  public CommonsNetFtpSslClient(InetAddress remoteAddr, int port) throws IOException {
-    this(remoteAddr.getHostAddress(), port, 0, DEFAULT_IMPLICIT_SSL);
-  }
-
   @Override
   protected FTPSClient createFTPClient() {
-    FTPSClient ftps = new FTPSClient(implicitSSL);
-    ftps.setTrustManager(TrustManagerUtils.getAcceptAllTrustManager());
-    return ftps;
+    return new FTPSClient(implicitSSL);
   }
 
   @Override
-  protected void additionalSettings(FTPSClient client) throws IOException {
+  protected void preConnectSettings(FTPSClient client) throws IOException {
+    client.setTrustManager(TrustManagerUtils.getAcceptAllTrustManager());
+    ClientSettings.preConnectSettings(client, ClientSettings.FTP.values(), additionalSettings);
+    ClientSettings.preConnectSettings(client, ClientSettings.FTPS.values(), additionalSettings);
+  }
+
+  @Override
+  protected void postConnectSettings(FTPSClient client) throws IOException {
     // With ImplicitSSL we still need to set the protection level; as by default
     // the data channel is "Clear"...
 
@@ -80,5 +77,6 @@ public class CommonsNetFtpSslClient extends ApacheFtpClientImpl<FTPSClient> {
     // Set data channel protection to private
     client.execPROT("P");
   }
+
 
 }

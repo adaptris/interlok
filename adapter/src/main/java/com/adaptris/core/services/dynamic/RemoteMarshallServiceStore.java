@@ -25,7 +25,6 @@ import java.io.Reader;
 import java.net.URL;
 import java.net.URLConnection;
 
-import org.apache.commons.io.IOUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.DisplayOrder;
@@ -83,25 +82,22 @@ public class RemoteMarshallServiceStore extends MarshallFileServiceStore {
     Service result = null;
 
     String remoteFile = getBaseUrl() + "/" + defaultIfEmpty(getFileNamePrefix(), "") + s + defaultIfEmpty(getFileNameSuffix(), "");
-    Reader reader = null;
     try {
       URL url = new URL(remoteFile);
-      log.debug("Retrieving [" + remoteFile + "]");
+      log.debug("Retrieving [{}]", remoteFile);
       URLConnection c = url.openConnection();
-      reader = new InputStreamReader(c.getInputStream());
-      result = (Service) currentMarshaller().unmarshal(reader);
+      try (Reader reader = new InputStreamReader(c.getInputStream())) {
+        result = (Service) currentMarshaller().unmarshal(reader);
+      }
     }
     catch (IOException e) {
       if (e instanceof FileNotFoundException) {
-        log.debug("service file name [" + remoteFile + "] not found in store");
+        log.debug("service file name [{}] not found in store", remoteFile);
         result = null;
       }
       else {
         throw new CoreException(e);
       }
-    }
-    finally {
-      IOUtils.closeQuietly(reader);
     }
     return result;
   }

@@ -31,7 +31,6 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -168,9 +167,6 @@ class AdapterBuilder implements AdapterBuilderMBean {
         p.println(logString);
         log.warn(logString);
       }
-    }
-    finally {
-      IOUtils.closeQuietly(writer);
     }
     throw new CoreException(writer.toString());
   }

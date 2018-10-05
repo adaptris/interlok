@@ -1,14 +1,24 @@
 package com.adaptris.core;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+import net.jodah.expiringmap.ExpirationListener;
+import net.jodah.expiringmap.ExpirationPolicy;
+import net.jodah.expiringmap.ExpiringMap;
 
 /**
  * <p>
@@ -26,12 +36,22 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("dynamic-shared-service")
 @AdapterComponent
 @ComponentProfile(summary = "A Service that refers to another Service configured elsewhere", tag = "service,base")
-@DisplayOrder(order = {"uniqueId", "lookupName"})
+@DisplayOrder(order = {"uniqueId", "lookupName", "maxEntries", "expiration"})
 public class DynamicSharedService extends SharedServiceImpl {
 
   private static final int DEFAULT_MAX_CACHE_SIZE = 16;
-  
-  private transient Map<String, Service> cachedServices = new DumbServiceCache();
+  private static final TimeInterval DEFAULT_EXPIRATION = new TimeInterval(1L, TimeUnit.HOURS);
+
+  private transient ExpiringMap<String, Service> cachedServices;
+
+  @AdvancedConfig
+  @InputFieldDefault(value = "16")
+  @Min(1)
+  private Integer maxEntries;
+  @AdvancedConfig
+  @InputFieldDefault(value = "1 Hour")
+  @Valid
+  private TimeInterval expiration;
 
   public DynamicSharedService() {
   }
@@ -43,6 +63,8 @@ public class DynamicSharedService extends SharedServiceImpl {
   
   @Override
   public void init() throws CoreException {
+    cachedServices = ExpiringMap.builder().maxSize(maxEntries()).asyncExpirationListener(new ExpiredServiceListener())
+        .expirationPolicy(ExpirationPolicy.ACCESSED).expiration(expirationMillis(), TimeUnit.MILLISECONDS).build();
   }
 
   @Override
@@ -55,23 +77,24 @@ public class DynamicSharedService extends SharedServiceImpl {
 
   @Override
   public void close() {
-    for (Service s : cachedServices.values()) {
-      LifecycleHelper.stopAndClose(s);
+    for (Service s : getCache().values()) {
+      LifecycleHelper.stopAndClose(s, false);
     }
-    cachedServices.clear();
+    getCache().clear();
   }
 
   private Service resolveAndStart(AdaptrisMessage msg) throws ServiceException {
     Service result = null;
     try {
       String id = msg.resolve(getLookupName());
-      if (cachedServices.containsKey(id)) {
-        result = cachedServices.get(id);
+      if (getCache().containsKey(id)) {
+        result = getCache().get(id);
       }
       else {
         result = startService(deepClone((Service) triggerJndiLookup(id)));
-        cachedServices.put(id, result);
+        getCache().put(id, result);
       }
+      log.trace("Looked up [{}]", id);
     }
     catch (Exception e) {
       throw ExceptionHelper.wrapServiceException(e);
@@ -90,46 +113,59 @@ public class DynamicSharedService extends SharedServiceImpl {
 
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    Service s = resolveAndStart(msg);
-    try {
-      s.doService(msg);
-      msg.addEvent(s, true);
-    }
-    catch (Exception e) {
-      msg.addEvent(s, false);
-      throw ExceptionHelper.wrapServiceException(e);
-    }
-  }
-
-  Map<String, Service> getCache() {
-    return cachedServices;
-  }
-
-  int maxCacheSize() {
-    return DEFAULT_MAX_CACHE_SIZE;
-  }
-
-  private class DumbServiceCache extends LinkedHashMap<String, Service> {
-
-    private static final long serialVersionUID = 2017080201L;
-
-    public DumbServiceCache() {
-      super(DEFAULT_MAX_CACHE_SIZE, 0.75f, true);
-    }
-
-    @Override
-    protected boolean removeEldestEntry(Map.Entry<String, Service> eldest) {
-      if (size() > maxCacheSize()) {
-        LifecycleHelper.stopAndClose(eldest.getValue());
-        return true;
-      }
-      return false;
-    }
+    applyService(resolveAndStart(msg), msg);
   }
 
   @Override
   public boolean isBranching() {
     return false;
+  }
+
+  protected Map<String, Service> getCache() {
+    return cachedServices;
+  }
+
+  public Integer getMaxEntries() {
+    return maxEntries;
+  }
+
+  public void setMaxEntries(Integer maxEntries) {
+    this.maxEntries = maxEntries;
+  }
+
+  protected int maxEntries() {
+    return getMaxEntries() != null ? getMaxEntries().intValue() : DEFAULT_MAX_CACHE_SIZE;
+  }
+
+  public <T extends DynamicSharedService> T withMaxEntries(Integer i) {
+    setMaxEntries(i);
+    return (T) this;
+  }
+
+  public TimeInterval getExpiration() {
+    return expiration;
+  }
+
+  public void setExpiration(TimeInterval expiration) {
+    this.expiration = expiration;
+  }
+
+  public <T extends DynamicSharedService> T withExpiration(TimeInterval i) {
+    setExpiration(i);
+    return (T) this;
+  }
+
+  protected long expirationMillis() {
+    return getExpiration() != null ? getExpiration().toMilliseconds() : DEFAULT_EXPIRATION.toMilliseconds();
+  }
+
+  private class ExpiredServiceListener implements ExpirationListener<String, Service> {
+
+    @Override
+    public void expired(String key, Service value) {
+      LifecycleHelper.stopAndClose(value, false);
+    }
+
   }
 
 }

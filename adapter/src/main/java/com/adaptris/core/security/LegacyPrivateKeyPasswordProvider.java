@@ -20,8 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.apache.commons.io.IOUtils;
-
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.security.password.Password;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -64,19 +62,13 @@ public class LegacyPrivateKeyPasswordProvider implements PrivateKeyPasswordProvi
   @Override
   public char[] retrievePrivateKeyPassword() throws PasswordException {
     if (pkPassword == null) {
-      InputStream is = this.getClass().getClassLoader().getResourceAsStream(PKEY_PW_FILE);
-      try {
-        if (is != null) {
-          Properties p = new Properties();
-          p.load(is);
-          pkPassword = Password.decode(p.getProperty(PKEY_PW_KEY)).toCharArray();
-        }
+      try (InputStream is = this.getClass().getClassLoader().getResourceAsStream(PKEY_PW_FILE)) {
+        Properties p = new Properties();
+        p.load(is);
+        pkPassword = Password.decode(p.getProperty(PKEY_PW_KEY)).toCharArray();
       }
       catch (IOException e) {
         throw new PasswordException(e);
-      }
-      finally {
-        IOUtils.closeQuietly(is);
       }
     }
     return pkPassword;

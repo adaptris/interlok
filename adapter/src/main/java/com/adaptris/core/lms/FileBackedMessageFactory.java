@@ -19,10 +19,12 @@ package com.adaptris.core.lms;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 
 import org.apache.commons.io.FileCleaningTracker;
 import org.apache.commons.io.FileDeleteStrategy;
+import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +73,14 @@ public class FileBackedMessageFactory extends DefaultMessageFactory {
   @AdvancedConfig
   @InputFieldDefault(value = "false")
   private Boolean createTempDir;
-
+  
+  @AdvancedConfig
+  @InputFieldDefault(value = "false")
+  private Boolean extendedLogging;
+  @AdvancedConfig
+  @InputFieldDefault(value = "false")
+  private Boolean useNio;
+  
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   /**
@@ -203,6 +212,40 @@ public class FileBackedMessageFactory extends DefaultMessageFactory {
   }
 
   boolean createTempDir() {
-    return getCreateTempDir() != null ? getCreateTempDir().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getCreateTempDir(), false);
+  }
+  
+
+  public Boolean getExtendedLogging() {
+    return extendedLogging;
+  }
+
+  public void setExtendedLogging(Boolean b) {
+    this.extendedLogging = b;
+  }
+
+  protected boolean extendedLogging() {
+    return BooleanUtils.toBooleanDefaultIfNull(getExtendedLogging(), false);
+  }
+
+  public Boolean getUseNio() {
+    return useNio;
+  }
+
+  /**
+   * Whether or not to use the new {@link Files#newInputStream()} methods.
+   * 
+   * @param useNio true to enable, false to use {@link FileInputStream} as always, default if not specified is false.
+   */
+  public void setUseNio(Boolean useNio) {
+    this.useNio = useNio;
+  }
+
+  protected boolean useNio() {
+    return BooleanUtils.toBooleanDefaultIfNull(getUseNio(), false);
+  }
+
+  protected StreamWrapper newStreamWrapper() {
+    return useNio() ? new NioStreamWrapper(extendedLogging()) : new StandardStreamWrapper(extendedLogging());
   }
 }

@@ -15,16 +15,19 @@
 */
 
 package com.adaptris.fs;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.io.File;
+
+import org.junit.Test;
+import org.mockito.Mockito;
 
 
 /**
  */
 public class OverwriteIfExistsWorkerTest extends StandardWorkerTest {
-  public OverwriteIfExistsWorkerTest(String arg0) {
-    super(arg0);
-  }
+
 
   @Override
   protected OverwriteIfExistsWorker createWorker() {
@@ -32,6 +35,7 @@ public class OverwriteIfExistsWorkerTest extends StandardWorkerTest {
   }
 
   @Override
+  @Test
   public void testPutFileExists() throws Exception {
     FsWorker worker = createWorker();
     String[] testFiles = createTestFiles();
@@ -40,4 +44,33 @@ public class OverwriteIfExistsWorkerTest extends StandardWorkerTest {
     byte[] readBytes = worker.get(new File(baseDir, testFiles[0]));
     assertEquals(DATA, new String(readBytes));
   }
+
+  @Test
+  public void testPutFile_Does_Not_Exist() throws Exception {
+    OverwriteIfExistsWorker worker = createWorker();
+    File failingFile = Mockito.mock(File.class);
+    Mockito.when(failingFile.exists()).thenReturn(false);
+    Mockito.when(failingFile.delete()).thenReturn(true);
+    try {
+      worker.put(DATA.getBytes(), failingFile);
+      fail();
+    } catch (FsException expected) {
+
+    }
+  }
+
+  @Test
+  public void testPutFile_Does_Not_Delete() throws Exception {
+    OverwriteIfExistsWorker worker = createWorker();
+    File failingFile = Mockito.mock(File.class);
+    Mockito.when(failingFile.exists()).thenReturn(true);
+    Mockito.when(failingFile.delete()).thenReturn(false);
+    try {
+      worker.put(DATA.getBytes(), failingFile);
+      fail();
+    } catch (FsException expected) {
+
+    }
+  }
+
 }

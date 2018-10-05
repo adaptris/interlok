@@ -55,6 +55,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config http-response-service
  */
 @XStreamAlias("http-response-service")
+@SuppressWarnings("deprecation")
 public class HttpResponseService extends ServiceImp {
 
   @NotNull

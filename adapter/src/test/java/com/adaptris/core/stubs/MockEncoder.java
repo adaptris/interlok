@@ -52,20 +52,17 @@ public class MockEncoder extends AdaptrisMessageEncoderImp {
    */
   public AdaptrisMessage readMessage(Object source) throws CoreException {
     AdaptrisMessage msg = null;
-    OutputStream out = null;
     try {
       msg = currentMessageFactory().newMessage();
       if (!(source instanceof InputStream)) {
         throw new IllegalArgumentException("MockEncoder can only decode from an InputStream");
       }
-      out = msg.getOutputStream();
-      IOUtils.copy((InputStream) source, out);
+      try (OutputStream out = msg.getOutputStream()) {
+        IOUtils.copy((InputStream) source, out);
+      }
     }
     catch (Exception e) {
       throw new CoreException("Could not parse supplied bytes into an AdaptrisMessage object", e);
-    }
-    finally {
-      IOUtils.closeQuietly(out);
     }
     return msg;
   }

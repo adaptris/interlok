@@ -100,7 +100,7 @@ public class XpathDocumentCopierTest extends SplitterCase {
     String obj = "ABCDEFG";
     msg.addObjectHeader(obj, obj);
     XpathDocumentCopier splitter = new XpathDocumentCopier(XPATH_DOCUMENT_COUNT);
-    List<AdaptrisMessage> result = splitter.splitMessage(msg);
+    List<AdaptrisMessage> result = splitToList(splitter, msg);
     assertEquals(3, result.size());
     for (AdaptrisMessage m : result) {
       assertFalse("No Object Metadata", m.getObjectHeaders().containsKey(obj));
@@ -112,7 +112,7 @@ public class XpathDocumentCopierTest extends SplitterCase {
     String obj = "ABCDEFG";
     msg.addObjectHeader(obj, obj);
     XpathDocumentCopier splitter = new XpathDocumentCopier("XXXX");
-    List<AdaptrisMessage> result = splitter.splitMessage(msg);
+    List<AdaptrisMessage> result = splitToList(splitter, msg);
     assertEquals(0, result.size());
   }
 
@@ -122,7 +122,7 @@ public class XpathDocumentCopierTest extends SplitterCase {
     msg.addObjectHeader(obj, obj);
     XpathDocumentCopier splitter = new XpathDocumentCopier(XPATH_DOCUMENT_COUNT);
     splitter.setCopyObjectMetadata(true);
-    List<AdaptrisMessage> result = splitter.splitMessage(msg);
+    List<AdaptrisMessage> result = splitToList(splitter, msg);
     assertEquals(3, result.size());
     for (AdaptrisMessage m : result) {
       assertTrue("Object Metadata", m.getObjectHeaders().containsKey(obj));
@@ -135,14 +135,13 @@ public class XpathDocumentCopierTest extends SplitterCase {
     msg.setContent(XML_MESSAGE, msg.getContentEncoding());
     XpathDocumentCopier splitter = new XpathDocumentCopier("/document/envelope[");
     try {
-      List<AdaptrisMessage> result = splitter.splitMessage(msg);
+      List<AdaptrisMessage> result = splitToList(splitter, msg);
       fail();
     }
     catch (CoreException expected) {
 
     }
   }
-
 
   public void testSplit_DocTypeNotAllowed() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -152,7 +151,7 @@ public class XpathDocumentCopierTest extends SplitterCase {
     builder.getFeatures().add(new KeyValuePair("http://apache.org/xml/features/disallow-doctype-decl", "true"));
     splitter.setXmlDocumentFactoryConfig(builder);
     try {
-      List<AdaptrisMessage> result = splitter.splitMessage(msg);
+      List<AdaptrisMessage> result = splitToList(splitter, msg);
       fail();
     } catch (CoreException expected) {
       assertTrue(expected.getMessage().contains("DOCTYPE is disallowed"));
@@ -165,4 +164,5 @@ public class XpathDocumentCopierTest extends SplitterCase {
     execute(service, msg);
     assertEquals("Number of messages", 3, producer.getMessages().size());
   }
+
 }

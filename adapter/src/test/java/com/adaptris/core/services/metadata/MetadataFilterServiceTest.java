@@ -16,10 +16,14 @@
 
 package com.adaptris.core.services.metadata;
 
+import org.junit.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.metadata.NoOpMetadataFilter;
+import com.adaptris.core.metadata.PasswordDecodeMetadataFilter;
 import com.adaptris.core.metadata.RegexMetadataFilter;
+import com.adaptris.security.password.Password;
 
 @SuppressWarnings("deprecation")
 public class MetadataFilterServiceTest extends MetadataServiceExample {
@@ -41,6 +45,7 @@ public class MetadataFilterServiceTest extends MetadataServiceExample {
   }
 
 
+  @Test
   public void testSetFilter() {
     MetadataFilterService service = new MetadataFilterService();
     assertEquals(NoOpMetadataFilter.class, service.getFilter().getClass());
@@ -57,6 +62,7 @@ public class MetadataFilterServiceTest extends MetadataServiceExample {
 
   }
 
+  @Test
   public void testServiceNoOp() throws Exception {
     AdaptrisMessage msg = createMessage();
     MetadataFilterService service = new MetadataFilterService();
@@ -67,6 +73,7 @@ public class MetadataFilterServiceTest extends MetadataServiceExample {
     assertEquals(DEF_VALUE, msg.getMetadataValue(JMS_KEY_3));
   }
 
+  @Test
   public void testServiceExclude() throws Exception {
 
     AdaptrisMessage msg = createMessage();
@@ -82,6 +89,7 @@ public class MetadataFilterServiceTest extends MetadataServiceExample {
     assertFalse(msg.containsKey(JMS_KEY_3));
   }
 
+  @Test
   public void testServiceInclude() throws Exception {
     AdaptrisMessage msg = createMessage();
     MetadataFilterService service = new MetadataFilterService();
@@ -97,6 +105,7 @@ public class MetadataFilterServiceTest extends MetadataServiceExample {
   }
 
 
+  @Test
   public void testServiceIncludesAndExcludes() throws Exception {
     AdaptrisMessage msg = createMessage();
     MetadataFilterService service = new MetadataFilterService();
@@ -110,6 +119,19 @@ public class MetadataFilterServiceTest extends MetadataServiceExample {
     assertFalse(msg.containsKey(JMS_KEY_1));
     assertFalse(msg.containsKey(JMS_KEY_2));
     assertFalse(msg.containsKey(JMS_KEY_3));
+  }
+
+  @Test
+  public void testService_PasswordsAreDecoded() throws Exception {
+    AdaptrisMessage msg = createMessage();
+    msg.addMessageHeader("passwordKey", Password.encode("password", Password.PORTABLE_PASSWORD));
+    MetadataFilterService service = new MetadataFilterService()
+        .withFilter(new PasswordDecodeMetadataFilter().withPatterns("^.*password.*$"));
+    execute(service, msg);
+    assertTrue(msg.containsKey(JMS_KEY_1));
+    assertTrue(msg.containsKey(JMS_KEY_2));
+    assertTrue(msg.containsKey(JMS_KEY_3));
+    assertEquals("password", msg.getMetadataValue("passwordKey"));
   }
 
   private AdaptrisMessage createMessage() {

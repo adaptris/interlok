@@ -29,6 +29,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.ExceptionHelper;
 
 /**
  * <p>
@@ -44,7 +45,7 @@ import com.adaptris.core.ServiceImp;
  * @see TrimMetadataService
  * @see ReplaceMetadataValue
  */
-public abstract class ReformatMetadata extends ServiceImp {
+public abstract class ReformatMetadata extends ServiceImp implements MetadataReformatter {
 
   @NotBlank
   @AffectsMetadata
@@ -84,23 +85,17 @@ public abstract class ReformatMetadata extends ServiceImp {
       Set<MetadataElement> modifiedMetadata = new HashSet<MetadataElement>();
       for (MetadataElement e : metadata) {
         if (e.getKey().matches(metadataKeyRegexp)) {
-          e.setValue(reformat(e.getValue(), msg.getContentEncoding(), msg));
-          modifiedMetadata.add(e);
+          modifiedMetadata.add(new MetadataElement(e.getKey(), reformat(e.getValue(), msg)));
         }
       }
       log.trace("Modified metadata : " + modifiedMetadata);
       msg.setMetadata(modifiedMetadata);
     }
     catch (Exception e) {
-      throw new ServiceException(e);
+      throw ExceptionHelper.wrapServiceException(e);
     }
   }
 
-  protected abstract String reformat(String s, String msgCharset) throws Exception;
-
-  protected String reformat(String s, String msgCharset, AdaptrisMessage msg) throws Exception {
-    return reformat(s, msgCharset);
-  }
 
   /**
    * @return the metadataKeyRegexp

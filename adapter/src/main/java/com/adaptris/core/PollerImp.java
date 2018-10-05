@@ -19,6 +19,8 @@ package com.adaptris.core;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.core.util.Args;
+
 /**
  * <p>
  * Partial implementation of <code>Poller</code>.
@@ -32,6 +34,7 @@ public abstract class PollerImp implements Poller {
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
   private transient AdaptrisPollingConsumer consumer;
+  private transient Callback callback = e -> {};
 
   protected boolean attemptLock() {
     return retrieveConsumer().attemptLock();  }
@@ -55,6 +58,10 @@ public abstract class PollerImp implements Poller {
     consumer = c;
   }
 
+  public <T extends Poller> T withPollerCallback(Callback c) {
+    callback = Args.notNull(c, "callback");
+    return (T) this;
+  }
 
   /**
    * <p>
@@ -64,13 +71,12 @@ public abstract class PollerImp implements Poller {
    */
   protected void processMessages() {
     String oldName = retrieveConsumer().renameThread();
-
+    int count = -1;
     if (attemptLock()) { // try to get the lock
       try {
         long start = System.currentTimeMillis();
-        int count = retrieveConsumer().processMessages();
-        log.debug("time to process [" + count + "] messages ["
-              + (System.currentTimeMillis() - start) + "] ms");
+        count = retrieveConsumer().processMessages();
+        log.debug("time to process [{}] messages [{}] ms", count, (System.currentTimeMillis() - start));
       }
       catch (Exception e) { // mop up any runtime
         log.error("exception thrown to run", e);
@@ -89,6 +95,7 @@ public abstract class PollerImp implements Poller {
     else {
       log.trace("couldn't get lock in run (previous poll has not finished?); waiting for next scheduled poll.");
     }
+    callback.pollTriggered(count);
     Thread.currentThread().setName(oldName);
   }
 
@@ -110,5 +117,10 @@ public abstract class PollerImp implements Poller {
   @Deprecated
   public void setUniqueId(String uniqueId) {
     this.uniqueId = uniqueId;
+  }
+
+  @FunctionalInterface
+  public interface Callback {
+    void pollTriggered(int msgsAttempted);
   }
 }

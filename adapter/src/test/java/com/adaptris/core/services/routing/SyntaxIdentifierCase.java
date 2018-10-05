@@ -20,9 +20,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 
-import org.apache.commons.io.IOUtils;
-
 import com.adaptris.core.BaseCase;
+import com.adaptris.util.stream.StreamUtil;
 
 public abstract class SyntaxIdentifierCase extends BaseCase {
 
@@ -76,9 +75,7 @@ public abstract class SyntaxIdentifierCase extends BaseCase {
   protected String readInput(String propertyKey) throws IOException {
     String inputFile = PROPERTIES.getProperty(propertyKey);
     StringWriter out = new StringWriter();
-    FileInputStream in = new FileInputStream(inputFile);
-    IOUtils.copy(in, out);
-    in.close();
+    StreamUtil.copyAndClose(new FileInputStream(inputFile), out);
     return out.toString();
   }
 }

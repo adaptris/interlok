@@ -54,12 +54,6 @@ public class SelectByPosition implements PartSelector {
 
 
   @Override
-  @SuppressWarnings("deprecation")
-  public MimeBodyPart select(MultiPartInput m) throws MessagingException {
-    return m.getBodyPart(getPosition());
-  }
-
-  @Override
   public MimeBodyPart select(BodyPartIterator m) throws MessagingException {
     return m.getBodyPart(getPosition());
   }

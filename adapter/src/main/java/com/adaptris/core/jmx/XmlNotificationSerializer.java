@@ -15,8 +15,6 @@
  */
 package com.adaptris.core.jmx;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -29,6 +27,7 @@ import org.w3c.dom.Element;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.XmlUtils;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -113,7 +112,7 @@ public class XmlNotificationSerializer implements NotificationSerializer {
         xmlBuilder.setNodeValue(e.xpathToNode(), e.getValue(n));
       }
       try (OutputStream out = msg.getOutputStream()) {
-        String encoding = evaluateEncoding(msg);
+        String encoding = XmlHelper.getXmlEncoding(msg, getOutputMessageEncoding());
         xmlBuilder.writeDocument(out, encoding);
         msg.setContentEncoding(encoding);
       }
@@ -124,17 +123,6 @@ public class XmlNotificationSerializer implements NotificationSerializer {
       throw ExceptionHelper.wrapCoreException(e);
     }
     return msg;
-  }
-
-
-  private String evaluateEncoding(AdaptrisMessage msg) {
-    String encoding = XML_ENCODING;
-    if (!isEmpty(getOutputMessageEncoding())) {
-      encoding = getOutputMessageEncoding();
-    } else if (!isEmpty(msg.getContentEncoding())) {
-      encoding = msg.getContentEncoding();
-    }
-    return encoding;
   }
 
   public String getOutputMessageEncoding() {

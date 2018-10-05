@@ -64,15 +64,6 @@ public class StandardBootstrap extends CmdLineBootstrap {
     ClasspathInitialiser.init(adapterClasspath, loadSubDirs);
   }
 
-  protected void standardBoot() throws Exception {
-    LoggingConfigurator.newConfigurator().defaultInitialisation();
-    BootstrapProperties bootProperties = new BootstrapProperties(getBootstrapResource());
-    SystemPropertiesUtil.addSystemProperties(bootProperties);
-    SystemPropertiesUtil.addJndiProperties(bootProperties);
-    ProxyAuthenticator.register(bootProperties);
-    super.startAdapter(bootProperties);
-  }
-
   /**
    * <p>
    * Entry point to program.
@@ -83,7 +74,7 @@ public class StandardBootstrap extends CmdLineBootstrap {
    * @throws Exception upon some unrecoverable error.
    */
   public static void main(String[] argv) throws Exception {
-    System.err.println("StandardBootstrap is deprecated, and will be removed once Java9 is formally supported");
+    System.err.println("StandardBootstrap is deprecated, and will be removed without warning");
     try {
       new StandardBootstrap(argv).boot();
     }

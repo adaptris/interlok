@@ -44,6 +44,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import com.adaptris.core.stubs.MockEncoder;
+import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.stream.StreamUtil;
 
 @SuppressWarnings("deprecation")
@@ -416,6 +417,12 @@ public abstract class AdaptrisMessageCase {
     msg2.setContentEncoding("UTF-8");
     msg1.setContentEncoding("UTF-8");
     assertTrue(msg2.equivalentForTracking(msg1));
+
+    msg2.addMetadata("hello", "world");
+    assertFalse(msg2.equivalentForTracking(msg1));
+
+    msg2.setUniqueId(new GuidGenerator().getUUID());
+    assertFalse(msg2.equivalentForTracking(msg1));
 
   }
 

@@ -149,7 +149,7 @@ public class UnifiedBootstrap {
 
   public void stop() throws Exception {
     AdapterRegistry.stop(adapterRegistry.getAdapters());
-    ManagementComponentFactory.stopCreated(bootstrapProperties);
+    ManagementComponentFactory.stopCreated(bootstrapProperties, true);
   }
 
   public void close() throws Exception {
@@ -159,7 +159,7 @@ public class UnifiedBootstrap {
           AdapterManagerMBean.class);
       manager.unregisterMBean();
     }
-    ManagementComponentFactory.closeCreated(bootstrapProperties);
+    ManagementComponentFactory.closeCreated(bootstrapProperties, true);
   }
 
 }

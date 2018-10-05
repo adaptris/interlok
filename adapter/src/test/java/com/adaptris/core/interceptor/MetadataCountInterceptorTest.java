@@ -29,9 +29,6 @@ import com.adaptris.util.TimeInterval;
 
 public class MetadataCountInterceptorTest extends TestCase {
 
-  private static final long MAX_WAIT = 65000L;
-  private static final long DEFAULT_WAIT_INTERVAL = 500L;
-
   private static final TimeInterval TIME_INTERVAL = new TimeInterval(1500L, TimeUnit.MILLISECONDS);
 
   private static final String COUNTER_1 = "counter1";
@@ -91,6 +88,8 @@ public class MetadataCountInterceptorTest extends TestCase {
   public void testCreatesNewTimeSliceAfterTimeDelay() throws Exception {
     LifecycleHelper.init(metricsInterceptor);
     LifecycleHelper.start(metricsInterceptor);
+    // a negative number will expire the timeslice immediately after the first message
+    metricsInterceptor.setTimesliceDuration(new TimeInterval(-1L, TimeUnit.SECONDS));
 
     AdaptrisMessage message = createMessage(COUNTER_1);
 
@@ -99,7 +98,9 @@ public class MetadataCountInterceptorTest extends TestCase {
     assertEquals(1, metricsInterceptor.getStats().size());
     assertEquals(1, metricsInterceptor.getStats().get(0).getValue(COUNTER_1));
     assertEquals(0, metricsInterceptor.getStats().get(0).getValue(COUNTER_2));
-    waitFor(3);
+    
+    metricsInterceptor.setTimesliceDuration(new TimeInterval(1L, TimeUnit.SECONDS));
+    
     submitMessage(message);
     submitMessage(message);
 
@@ -114,23 +115,18 @@ public class MetadataCountInterceptorTest extends TestCase {
     LifecycleHelper.init(metricsInterceptor);
     LifecycleHelper.start(metricsInterceptor);
 
+    metricsInterceptor.setTimesliceDuration(new TimeInterval(-1L, TimeUnit.SECONDS));
+    
     AdaptrisMessage message = createMessage(COUNTER_1);
 
     assertEquals(0, metricsInterceptor.getStats().size());
     submitMessage(message);
 
-    waitFor(3);
-
     assertEquals(1, metricsInterceptor.getStats().size());
-    submitMessage(message);
     submitMessage(message);
 
     assertEquals(2, metricsInterceptor.getStats().size());
 
-    waitFor(3);
-
-    submitMessage(message);
-    submitMessage(message);
     submitMessage(message);
     // Should still only be 2 time slices
     assertEquals(2, metricsInterceptor.getStats().size());
@@ -147,7 +143,7 @@ public class MetadataCountInterceptorTest extends TestCase {
     new MetricsInserterThread(20, COUNTER_2).run();
     new MetricsInserterThread(20, COUNTER_1).run();
 
-    Thread.sleep(5000); // Lets allow the threads to finish
+    Thread.sleep(200); // Lets allow the threads to finish
     assertEquals(60, metricsInterceptor.getStats().get(0).getValue(COUNTER_1));
     assertEquals(40, metricsInterceptor.getStats().get(0).getValue(COUNTER_2));
   }

@@ -18,9 +18,7 @@ package com.adaptris.util.stream;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -29,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.nio.charset.Charset;
 
 import org.apache.commons.io.IOUtils;
 
@@ -144,13 +143,17 @@ public abstract class StreamUtil {
   }
 
   public static void copyAndClose(InputStream input, Writer out) throws IOException {
-    try (InputStream autoCloseIn = new BufferedInputStream(input); Writer autoCloseOut = new BufferedWriter(out)) {
-      IOUtils.copy(autoCloseIn, autoCloseOut);
+    copyAndClose(input, out, Charset.defaultCharset());
+  }
+
+  public static void copyAndClose(InputStream input, Writer out, Charset charset) throws IOException {
+    try (InputStream autoCloseIn = input; Writer autoCloseOut = out) {
+      IOUtils.copy(autoCloseIn, autoCloseOut, charset);
     }
   }
 
   public static void copyAndClose(InputStream input, OutputStream out) throws IOException {
-    try (InputStream autoCloseIn = new BufferedInputStream(input); OutputStream autoCloseOut = new BufferedOutputStream(out)) {
+    try (InputStream autoCloseIn = input; OutputStream autoCloseOut = out) {
       IOUtils.copy(autoCloseIn, autoCloseOut);
     }
   }

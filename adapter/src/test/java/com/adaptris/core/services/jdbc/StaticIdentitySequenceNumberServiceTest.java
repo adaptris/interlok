@@ -233,7 +233,7 @@ public class StaticIdentitySequenceNumberServiceTest extends SequenceNumberCase 
   }
 
   @Override
-  protected Object retrieveObjectForSampleConfig() {
+  protected StaticIdentitySequenceNumberService retrieveObjectForSampleConfig() {
     JdbcConnection connection = new JdbcConnection();
     connection.setConnectUrl("jdbc:mysql://localhost:3306/mydatabase");
     connection.setConnectionAttempts(2);
@@ -245,6 +245,11 @@ public class StaticIdentitySequenceNumberServiceTest extends SequenceNumberCase 
     service.setConnection(connection);
     service.setOverflowBehaviour(AbstractJdbcSequenceNumberService.OverflowBehaviour.Continue);
     return service;
+  }
+
+  @Override
+  protected StaticIdentitySequenceNumberService retrieveObjectForCastorRoundTrip() {
+    return createServiceForTests(true);
   }
 
   @Override

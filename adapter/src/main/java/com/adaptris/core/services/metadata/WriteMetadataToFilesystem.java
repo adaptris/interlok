@@ -17,7 +17,6 @@
 package com.adaptris.core.services.metadata;
 
 import static com.adaptris.core.util.MetadataHelper.convertToProperties;
-import static org.apache.commons.io.IOUtils.closeQuietly;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -112,7 +111,6 @@ public class WriteMetadataToFilesystem extends ServiceImp {
 
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    OutputStream out = null;
     try {
       String baseUrl = getDestination().getDestination(msg);
       URL url = FsHelper.createUrlFromString(baseUrl, true);
@@ -124,15 +122,13 @@ public class WriteMetadataToFilesystem extends ServiceImp {
       if (fileToWrite.exists()) {
         throw new IOException(fileToWrite.getCanonicalPath() + " already exists");
       }
-      out = new FileOutputStream(fileToWrite);
-      getStyle(getOutputStyle()).write(metadataFilter().filter(msg.getMetadata()), out);
+      try (OutputStream out = new FileOutputStream(fileToWrite)) {
+        getStyle(getOutputStyle()).write(metadataFilter().filter(msg.getMetadata()), out);
+      }
       log.debug("Metadata produced to destination [" + fileToWrite.getCanonicalPath() + "]");
     }
     catch (Exception e) {
       throw new ServiceException(e);
-    }
-    finally {
-      closeQuietly(out);
     }
   }
 

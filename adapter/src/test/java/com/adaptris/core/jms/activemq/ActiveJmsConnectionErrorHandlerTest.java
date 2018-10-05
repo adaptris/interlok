@@ -131,7 +131,6 @@ public class ActiveJmsConnectionErrorHandlerTest extends ActiveJmsConnectionErro
       channel.requestClose();
       activeMqBroker.stop();
       activeMqBroker.start();
-      Thread.sleep(5000);
       assertEquals(ClosedState.getInstance(), channel.retrieveComponentState());
     }
     finally {
@@ -256,7 +255,7 @@ public class ActiveJmsConnectionErrorHandlerTest extends ActiveJmsConnectionErro
   private long waitForChannelToChangeState(ComponentState state, MockChannel channel) throws Exception {
     long totalWaitTime = 0;
     while (channel.retrieveComponentState().equals(state) && totalWaitTime < MAX_WAIT) {
-      long sleep = Integer.valueOf(random.nextInt(500)).longValue();
+      long sleep = Integer.valueOf(random.nextInt(100)).longValue();
       totalWaitTime += sleep;
       Thread.sleep(sleep);
     }
@@ -266,7 +265,7 @@ public class ActiveJmsConnectionErrorHandlerTest extends ActiveJmsConnectionErro
   private long waitForChannelToMatchState(ComponentState state, MockChannel channel) throws Exception {
     long totalWaitTime = 0;
     while (!channel.retrieveComponentState().equals(state) && totalWaitTime < MAX_WAIT) {
-      long sleep = Integer.valueOf(random.nextInt(500)).longValue();
+      long sleep = Integer.valueOf(random.nextInt(100)).longValue();
       totalWaitTime += sleep;
       Thread.sleep(sleep);
     }
@@ -285,7 +284,7 @@ public class ActiveJmsConnectionErrorHandlerTest extends ActiveJmsConnectionErro
   private MockChannel createChannel(EmbeddedActiveMq mq, JmsConnection con, String destName) throws Exception {
     MockChannel result = new MockChannel();
     result.setUniqueId(getName() + "_channel");
-    con.setConnectionRetryInterval(new TimeInterval(1L, TimeUnit.SECONDS.name()));
+    con.setConnectionRetryInterval(new TimeInterval(100L, TimeUnit.MILLISECONDS.name()));
     con.setConnectionAttempts(50);
     con.setConnectionErrorHandler(createErrorHandler());
     result.setConsumeConnection(con);

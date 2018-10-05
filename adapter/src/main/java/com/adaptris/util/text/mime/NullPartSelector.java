@@ -43,15 +43,6 @@ public class NullPartSelector implements PartSelector {
 	public NullPartSelector() {
 	}
 
-  /**
-   * Returns the first part of the {@link MultiPartInput}
-   * 
-   */
-	@Override
-  @SuppressWarnings("deprecation")
-	public MimeBodyPart select(MultiPartInput m) throws MessagingException {
-    return m.getBodyPart(0);
-	}
 
   /**
    * Returns all the parts in the {@link MimeMultipart}.

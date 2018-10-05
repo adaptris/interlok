@@ -78,18 +78,12 @@ public abstract class SecurityUtil {
     if (initialised) {
       return;
     }
-
-    Security.addProvider(new BouncyCastleProvider());
-    
-    initSecureRandom();
+    try {
+      Security.addProvider(new BouncyCastleProvider());   
+      secureRandomInstance = SecureRandom.getInstanceStrong();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
     initialised = true;
-  }
-
-  private static void initSecureRandom() {
-    SP800SecureRandomBuilder rngb = new SP800SecureRandomBuilder();
-    SHA384Digest sha384 = new SHA384Digest();
-    byte[] bytes = new byte[sha384.getDigestSize()];
-    new DigestRandomGenerator(sha384).nextBytes(bytes);
-    secureRandomInstance = rngb.buildHash(sha384, bytes, true);
   }
 }

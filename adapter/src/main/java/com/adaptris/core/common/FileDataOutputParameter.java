@@ -62,15 +62,13 @@ public class FileDataOutputParameter implements DataOutputParameter<String> {
 
   @Override
   public void insert(String data, InterlokMessage message) throws CoreException {
-    OutputStream out = null;
     try {
       URL url = FsHelper.createUrlFromString(this.url(message), true);
-      out = new FileOutputStream(FsHelper.createFileReference(url));
-      IOUtils.write((String) data, out, message.getContentEncoding());
+      try (OutputStream out = new FileOutputStream(FsHelper.createFileReference(url))) {
+        IOUtils.write((String) data, out, message.getContentEncoding());
+      }
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
-    } finally {
-      IOUtils.closeQuietly(out);
     }
   }
 

@@ -21,8 +21,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.io.IOUtils;
-
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -63,10 +61,8 @@ public class MockEventProducer extends MockMessageProducer {
 
   protected boolean keepMessage(AdaptrisMessage m) throws ProduceException {
     if (eventsToKeep.size() == 0) return true;
-    InputStream in = null;
-    try {
-      in = m.getInputStream();
-      Event event = (Event) eventMarshaller.unmarshal(m.getInputStream());
+    try (InputStream in = m.getInputStream()) {
+      Event event = (Event) eventMarshaller.unmarshal(in);
       if (eventsToKeep.contains(event.getClass())) {
         log.trace(event.getClass() + " matches filter, keeping it");
         return true;
@@ -74,9 +70,6 @@ public class MockEventProducer extends MockMessageProducer {
     }
     catch (Exception e) {
       throw new ProduceException(e);
-    }
-    finally {
-      IOUtils.closeQuietly(in);
     }
     return false;
   }

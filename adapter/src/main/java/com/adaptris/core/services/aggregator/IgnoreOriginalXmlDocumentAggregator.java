@@ -78,7 +78,7 @@ public class IgnoreOriginalXmlDocumentAggregator extends XmlDocumentAggregator {
         overwriteMetadata(m, original);
         resultDoc = getMergeImplementation().merge(resultDoc, mergeDoc);
       }
-      writeXmlDocument(resultDoc, original);
+      XmlHelper.writeXmlDocument(resultDoc, original, getDocumentEncoding());
     }
     catch (Exception e) {
       ExceptionHelper.rethrowCoreException(e);

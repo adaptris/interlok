@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -100,7 +101,7 @@ public class XStreamUtilsTest extends XStreamUtils {
       pw.println(ServiceList.class.getName());
       pw.println("hello.world");
     }
-    try (InputStream in = IOUtils.toInputStream(sw.toString())) {
+    try (InputStream in = IOUtils.toInputStream(sw.toString(), Charset.defaultCharset())) {
       List<Class<?>> classes = getClasses(in);
       assertEquals(2, classes.size());
     }

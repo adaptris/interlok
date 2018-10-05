@@ -80,6 +80,15 @@ abstract class CmdLineBootstrap {
 
   public abstract void boot() throws Exception;
 
+  protected void standardBoot() throws Exception {
+    LoggingConfigurator.newConfigurator().defaultInitialisation();
+    BootstrapProperties bootProperties = new BootstrapProperties(getBootstrapResource());
+    SystemPropertiesUtil.addSystemProperties(bootProperties);
+    SystemPropertiesUtil.addJndiProperties(bootProperties);
+    ProxyAuthenticator.register(bootProperties);
+    startAdapter(bootProperties);
+  }
+
   protected void startAdapter(BootstrapProperties bootProperties) throws Exception {
     boolean startQuietly = bootProperties.isEnabled(CFG_KEY_START_QUIETLY);
     final UnifiedBootstrap bootstrap = new UnifiedBootstrap(bootProperties);

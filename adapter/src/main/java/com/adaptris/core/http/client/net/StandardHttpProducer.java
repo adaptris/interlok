@@ -58,7 +58,6 @@ import com.adaptris.core.ProduceException;
 import com.adaptris.core.common.InputStreamWithEncoding;
 import com.adaptris.core.common.PayloadStreamInputParameter;
 import com.adaptris.core.common.PayloadStreamOutputParameter;
-import com.adaptris.core.http.HttpConstants;
 import com.adaptris.core.http.auth.AdapterResourceAuthenticator;
 import com.adaptris.core.http.auth.HttpAuthenticator;
 import com.adaptris.core.http.auth.NoAuthentication;
@@ -329,6 +328,10 @@ public class StandardHttpProducer extends HttpProducer {
 
   /**
    * Set where the HTTP Response Body will be written to.
+   * <p>
+   * Note that if you have configured an {@link com.adaptris.core.AdaptrisMessageEncoder} via
+   * {@link #setEncoder(com.adaptris.core.AdaptrisMessageEncoder)} (such as for AS2) then this may have no effect.
+   * </p>
    * 
    * @param output the output; default is {@link PayloadStreamOutputParameter}.
    */
@@ -400,7 +403,7 @@ public class StandardHttpProducer extends HttpProducer {
    * Set the read timeout.
    * <p>
    * Note that any read timeout will be overridden by the timeout value passed in via the {{@link #request(AdaptrisMessage, long)}
-   * method; if it is not the same as {@value HttpConstants#DEFAULT_SOCKET_TIMEOUT}
+   * method; if it is not the same as {@value com.adaptris.core.http.HttpConstants#DEFAULT_SOCKET_TIMEOUT}
    * </p>
    * 
    * @param t the timeout (will be used for {@link HttpURLConnection#setReadTimeout(int)})

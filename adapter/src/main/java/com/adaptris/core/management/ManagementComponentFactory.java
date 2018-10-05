@@ -25,6 +25,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,12 +72,20 @@ public class ManagementComponentFactory {
     INSTANCE.invoke(INSTANCE.getManagementComponents().get(p), "start", new Class[0], new Object[0]);
   }
 
-  public static void stopCreated(BootstrapProperties p) {
-    INSTANCE.invoke(INSTANCE.getManagementComponents().get(p), "stop", new Class[0], new Object[0]);
+  public static void stopCreated(BootstrapProperties p, boolean reverseOrder) {
+    INSTANCE.invoke(reverseOrder(INSTANCE.getManagementComponents().get(p), reverseOrder), "stop", new Class[0], new Object[0]);
   }
 
-  public static void closeCreated(BootstrapProperties p) {
-    INSTANCE.invoke(INSTANCE.getManagementComponents().get(p), "destroy", new Class[0], new Object[0]);
+  public static void closeCreated(BootstrapProperties p, boolean reverseOrder) {
+    INSTANCE.invoke(reverseOrder(INSTANCE.getManagementComponents().get(p), reverseOrder), "destroy", new Class[0], new Object[0]);
+  }
+
+  private static List<Object> reverseOrder(List<Object> list, boolean reverseOrder) {
+    List<Object> newList = new ArrayList<>(list);
+    if (reverseOrder) {
+      Collections.reverse(newList);
+    }
+    return newList;
   }
 
   private Map<Properties, List<Object>> getManagementComponents() {

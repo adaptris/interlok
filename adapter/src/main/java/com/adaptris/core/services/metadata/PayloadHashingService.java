@@ -16,14 +16,11 @@
 
 package com.adaptris.core.services.metadata;
 
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 
 import javax.validation.Valid;
 
-import org.apache.commons.io.IOUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
@@ -39,6 +36,7 @@ import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.security.util.SecurityUtil;
 import com.adaptris.util.stream.DevNullOutputStream;
+import com.adaptris.util.stream.StreamUtil;
 import com.adaptris.util.text.Base64ByteTranslator;
 import com.adaptris.util.text.ByteTranslator;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -80,23 +78,14 @@ public class PayloadHashingService extends ServiceImp {
   }
 
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    InputStream in = null;
-    OutputStream out = null;
     try {
-      in = msg.getInputStream();
       MessageDigest digest = MessageDigest.getInstance(getHashAlgorithm());
-      out = new DigestOutputStream(new DevNullOutputStream(), digest);
-      IOUtils.copy(in, out);
-      out.flush();
+      StreamUtil.copyAndClose(msg.getInputStream(), new DigestOutputStream(new DevNullOutputStream(), digest));
       byte[] hash = digest.digest();
       msg.addMetadata(getMetadataKey(), byteTranslator().translate(hash));
     }
     catch (Exception e) {
-      throw new ServiceException(e);
-    }
-    finally {
-      IOUtils.closeQuietly(in);
-      IOUtils.closeQuietly(out);
+      throw ExceptionHelper.wrapServiceException(e);
     }
   }
 

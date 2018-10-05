@@ -143,17 +143,10 @@ public class StreamUtilTest extends StreamUtil {
   }
 
   private byte[] read(File f) throws IOException {
-    FileInputStream in = null;
     byte[] results;
-    try {
-      in = new FileInputStream(f);
-      results = new byte[in.available()];
-      in.read(results);
+    try (FileInputStream in = new FileInputStream(f)) {
+      return IOUtils.readFully(in, in.available());
     }
-    finally {
-      IOUtils.closeQuietly(in);
-    }
-    return results;
   }
 
   public static class ErroringInputStream extends InputStream {

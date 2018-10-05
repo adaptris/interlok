@@ -20,8 +20,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
-import org.apache.commons.io.IOUtils;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.services.aggregator.AggregatingServiceExample;
@@ -146,13 +144,8 @@ public class AggregatingFsConsumeServiceTest extends AggregatingServiceExample {
   }
 
   private void writeDataMessage(File file) throws Exception {
-    PrintStream out = null;
-    try {
-      out = new PrintStream(new FileOutputStream(file), true);
+    try (PrintStream out = new PrintStream(new FileOutputStream(file), true)) {
       out.print(DATA_PAYLOAD);
-    }
-    finally {
-      IOUtils.closeQuietly(out);
     }
   }
 

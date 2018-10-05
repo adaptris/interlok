@@ -16,6 +16,7 @@
 
 package com.adaptris.filetransfer;
 
+import java.io.Closeable;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -29,7 +30,7 @@ import java.util.Date;
  * @author lchan
  * @author $Author: lchan $
  */
-public interface FileTransferClient {
+public interface FileTransferClient extends Closeable {
 
   /**
    * Connect and login into an account on the FTP server. This completes the entire login process
@@ -310,6 +311,9 @@ public interface FileTransferClient {
    * @param b set to true if you wish to get some additional debugging in the log file, defaults to
    *        false
    */
-  public void setAdditionalDebug(boolean b);
+  void setAdditionalDebug(boolean b);
 
+  default void close() throws IOException {
+    disconnect();
+  }
 }

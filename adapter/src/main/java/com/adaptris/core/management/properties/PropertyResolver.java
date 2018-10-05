@@ -16,7 +16,6 @@
 
 package com.adaptris.core.management.properties;
 
-import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 
 import java.io.InputStream;
@@ -119,16 +118,11 @@ public abstract class PropertyResolver {
     }
 
     private void init(URL url) throws Exception {
-      log.trace("Parsing PropertyResolver URL [" + url + "]");
-      InputStream in = null;
-      try {
-        in = url.openStream();
+      log.trace("Parsing PropertyResolver URL [{}]", url);
+      try (InputStream in = url.openStream()) {
         Properties p = new Properties();
         p.load(in);
         initSchemes(p);
-      }
-      finally {
-        closeQuietly(in);
       }
     }
 

@@ -16,6 +16,8 @@
 
 package com.adaptris.core.services.splitter;
 
+import static org.apache.commons.lang.StringUtils.isEmpty;
+
 import java.io.IOException;
 
 import com.adaptris.core.AdaptrisMessage;
@@ -28,6 +30,51 @@ public abstract class MessageCopier extends MessageSplitterImp {
     AdaptrisMessage result = factory.newMessage();
     result.setContentEncoding(msg.getContentEncoding());
     StreamUtil.copyAndClose(msg.getInputStream(), result.getOutputStream());
+    copyMetadata(msg, result);
     return result;
+  }
+
+  protected static int toInteger(String s) {
+    if (isEmpty(s)) {
+      return 0;
+    }
+    return Double.valueOf(s).intValue();
+  }
+
+  protected class MessageCopierIterator extends SplitMessageIterator {
+
+    // Should this be a long, Integer.MAX_VALUE is quite large.
+    private transient int maxCount;
+    private transient int currentCount;
+    private transient MessageCallback callback;
+
+    protected MessageCopierIterator(AdaptrisMessage msg, int max, MessageCallback callback) {
+      super(msg, selectFactory(msg));
+      maxCount = max;
+      currentCount = 0;
+      this.callback = callback;
+    }
+
+    @Override
+    public void close() throws IOException {
+    }
+
+    @Override
+    protected AdaptrisMessage constructAdaptrisMessage() throws Exception {
+      if (currentCount >= maxCount) return null;
+      try {
+        AdaptrisMessage splitMsg = duplicateWithPayload(factory, msg);
+        splitMsg = callback.handle(splitMsg, currentCount);
+        currentCount++;
+        return splitMsg;
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+
+  @FunctionalInterface
+  protected interface MessageCallback {
+    AdaptrisMessage handle(AdaptrisMessage input, int counter) throws Exception;
   }
 }

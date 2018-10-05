@@ -89,10 +89,10 @@ public class ManagementComponentFactoryTest extends BaseCase {
     if (sleepAWhile) {
       Thread.sleep(aWhile);
     }
-    ManagementComponentFactory.stopCreated(p);
+    ManagementComponentFactory.stopCreated(p, true);
     if (sleepAWhile) {
       Thread.sleep(aWhile);
     }
-    ManagementComponentFactory.closeCreated(p);
+    ManagementComponentFactory.closeCreated(p, false);
   }
 }

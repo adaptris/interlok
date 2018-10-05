@@ -178,9 +178,7 @@ public abstract class SplitterCase extends SplitterServiceExample {
     if(iter instanceof List) {
       return (List<AdaptrisMessage>)iter;
     }
-    
     List<AdaptrisMessage> result = new ArrayList<AdaptrisMessage>();
-    
     try(CloseableIterable<AdaptrisMessage> messages = CloseableIterable.FACTORY.ensureCloseable(iter)) {
       for(AdaptrisMessage msg: messages) {
         result.add(msg);
@@ -188,8 +186,11 @@ public abstract class SplitterCase extends SplitterServiceExample {
     } catch (IOException e) {
       log.warn("Could not close Iterable!", e);
     }
-    
     return result;
+  }
+
+  protected List splitToList(MessageSplitterImp splitter, AdaptrisMessage msg) throws Exception {
+    return toList(splitter.splitMessage(msg));
   }
 
 }

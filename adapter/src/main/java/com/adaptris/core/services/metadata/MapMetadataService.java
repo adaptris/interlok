@@ -51,11 +51,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config map-metadata-service
- * 
- * 
  * @see Pattern
- * @author lchan
- * @author $Author: lchan $
  */
 @XStreamAlias("map-metadata-service")
 @AdapterComponent
@@ -89,7 +85,7 @@ public class MapMetadataService extends ServiceImp {
     for (Iterator i = getMetadataKeyMap().getKeyValuePairs().iterator(); i.hasNext();) {
       KeyValuePair k = (KeyValuePair) i.next();
       if (metadataValue.matches(k.getKey())) {
-        String newMetadataValue = doSubstitution(metadataValue, k);
+        String newMetadataValue = doSubstitution(metadataValue, k, msg);
         log.debug("Modifying value [" + metadataValue + "] to [" + newMetadataValue + "]");
         msg.addMetadata(metadataKey, newMetadataValue);
         break;
@@ -97,10 +93,10 @@ public class MapMetadataService extends ServiceImp {
     }
   }
 
-  private String doSubstitution(String metadataValue, KeyValuePair kvp) {
-    String result = kvp.getValue();
+  private String doSubstitution(String metadataValue, KeyValuePair kvp, AdaptrisMessage msg) {
+    String result = msg.resolve(kvp.getValue());
     Pattern keyPattern = Pattern.compile(MATCH_GROUP_REGEX);
-    Matcher keyMatcher = keyPattern.matcher(kvp.getValue());
+    Matcher keyMatcher = keyPattern.matcher(result);
     if (keyMatcher.matches()) {
       int group = Integer.valueOf(keyMatcher.group(1)).intValue();
       Pattern p = Pattern.compile(kvp.getKey());
@@ -142,9 +138,8 @@ public class MapMetadataService extends ServiceImp {
 
   /**
    * <p>
-   * Sets a {@link KeyValuePairList} in which the key is the regular expression
-   * to match the metadata value against, and the value is the replacement
-   * value.
+   * Sets a {@link KeyValuePairList} in which the key is the regular expression to match the metadata value against, and the value
+   * is the replacement value (the replacement value may be an expression a-la {@code %message{metadataKey}}.
    * </p>
    *
    * @param m a {@link KeyValuePairList}

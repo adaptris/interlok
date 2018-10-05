@@ -94,7 +94,7 @@ public class TestCommonsNetFtp extends FtpCase {
       try {
         Thread.currentThread().setName("testBug1924");
         // Use an arbitarily small timeout.
-        CommonsNetFtpClient client = new CommonsNetFtpClient(FTP_HOST, 1);
+        CommonsNetFtpClient client = new CommonsNetFtpClient("192.168.17.1", 21, 1);
         client.setAdditionalDebug(true);
         client.connect(config.getProperty(FTP_USERNAME), config.getProperty(FTP_PASSWORD));
         client.disconnect();
@@ -102,6 +102,8 @@ public class TestCommonsNetFtp extends FtpCase {
       }
       catch (SocketTimeoutException e) {
         ; // expected.
+      } catch (NoRouteToHostException e) {
+        ; // also possibly expected
       }
       catch (IOException e) {
         ; // also possibly expected from FtpCommonsNetClient

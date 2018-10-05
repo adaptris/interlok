@@ -26,7 +26,6 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Properties;
 
-import org.apache.commons.io.IOUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
@@ -275,28 +274,18 @@ public class SimpleSequenceNumberService extends ServiceImp {
 
   private static Properties load(File myFile) throws IOException {
     Properties result = new Properties();
-    InputStream in = null;
-    try {
-      if (!myFile.exists()) {
-        myFile.createNewFile();
-      }
-      in = new FileInputStream(myFile);
-      result.load(in);
+    if (!myFile.exists()) {
+      myFile.createNewFile();
     }
-    finally {
-      IOUtils.closeQuietly(in);
+    try (InputStream in = new FileInputStream(myFile)) {
+      result.load(in);
     }
     return result;
   }
 
   private static void store(Properties p, File myFile) throws IOException {
-    OutputStream out = null;
-    try {
-      out = new FileOutputStream(myFile);
+    try (OutputStream out = new FileOutputStream(myFile)) {
       p.store(out, "");
-    }
-    finally {
-      IOUtils.closeQuietly(out);
     }
   }
 

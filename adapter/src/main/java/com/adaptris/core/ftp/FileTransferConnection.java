@@ -26,6 +26,8 @@ import java.net.URLDecoder;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.CoreException;
@@ -161,7 +163,7 @@ public abstract class FileTransferConnection extends NoOpConnection {
   }
 
   public boolean additionalDebug() {
-    return getAdditionalDebug() != null ? getAdditionalDebug().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getAdditionalDebug(), false);
   }
 
   /**
@@ -183,7 +185,7 @@ public abstract class FileTransferConnection extends NoOpConnection {
   }
 
   public boolean windowsWorkaround() {
-    return getWindowsWorkAround() != null ? getWindowsWorkAround().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getWindowsWorkAround(), false);
   }
 
   /**
@@ -215,7 +217,7 @@ public abstract class FileTransferConnection extends NoOpConnection {
   }
 
   public boolean cacheConnection() {
-    return getCacheConnection() != null ? getCacheConnection().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getCacheConnection(), false);
   }
 
   /**
@@ -282,7 +284,7 @@ public abstract class FileTransferConnection extends NoOpConnection {
     if (cacheConnection()) {
       result = cachedConnections.get(hostUrl);
       if (result != null && result.isConnected()) {
-        log.trace("Reusing an existing FileTransferClient for " + hostUrl);
+        log.trace("Reusing an existing FileTransferClient for {}", hostUrl);
       }
       else {
         result = null;
@@ -388,7 +390,7 @@ public abstract class FileTransferConnection extends NoOpConnection {
       }
     }
     catch (Exception e) {
-      log.warn("Can not execute the FTP quit command " + e.getMessage());
+      log.warn("Can not execute the FTP quit command {}", e.getMessage());
     }
   }
 

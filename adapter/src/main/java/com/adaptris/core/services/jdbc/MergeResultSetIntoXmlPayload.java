@@ -93,7 +93,7 @@ public class MergeResultSetIntoXmlPayload extends XmlPayloadTranslatorImpl {
       DocumentWrapper resultSet = createDocument(source, builder);
       Document original = XmlHelper.createDocument(target, builder);
       Document result = mergeImplementation.merge(original, resultSet.document);
-      writeXmlDocument(result, target);
+      XmlHelper.writeXmlDocument(result, target, getOutputMessageEncoding());
       resultSetCount = resultSet.resultSetCount;
     }
     catch (SQLException e) {

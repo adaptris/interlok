@@ -31,8 +31,10 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
 import org.apache.commons.lang.math.IntRange;
-import org.apache.commons.pool.PoolableObjectFactory;
-import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.PooledObjectFactory;
+import org.apache.commons.pool2.impl.DefaultPooledObject;
+import org.apache.commons.pool2.impl.GenericObjectPool;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
@@ -389,12 +391,12 @@ public class PoolingWorkflow extends WorkflowImp {
   }
 
   private GenericObjectPool<Worker> createObjectPool() {
-    GenericObjectPool<Worker> pool = new GenericObjectPool(new WorkerFactory());
-    pool.setMaxActive(poolSize());
+    GenericObjectPool<Worker> pool = new GenericObjectPool<>(new WorkerFactory());
+    pool.setMaxTotal(poolSize());
     pool.setMinIdle(minIdle());
     pool.setMaxIdle(maxIdle());
-    pool.setMaxWait(-1L);
-    pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_BLOCK);
+    pool.setMaxWaitMillis(-1L);
+    pool.setBlockWhenExhausted(true);
     pool.setMinEvictableIdleTimeMillis(threadLifetimeMs());
     pool.setTimeBetweenEvictionRunsMillis(threadLifetimeMs() + new Random(threadLifetimeMs()).nextLong());
     return pool;
@@ -414,7 +416,7 @@ public class PoolingWorkflow extends WorkflowImp {
     try {
       final CyclicBarrier barrier = new CyclicBarrier(size + 1);
       log.trace("Need more ({}) children as soon as possible to handle work. Get to it", size);
-      final List<Worker> workers = new ArrayList<Worker>(size);
+      final List<Worker> workers = new ArrayList<>(size);
       for (int i = 0; i < size; i++) {
         populator.execute(new Runnable() {
           @Override
@@ -601,6 +603,7 @@ public class PoolingWorkflow extends WorkflowImp {
     return ((ThreadPoolExecutor) threadPool).getPoolSize();
   }
 
+  @Override
   protected void prepareWorkflow() throws CoreException {}
 
 
@@ -626,7 +629,7 @@ public class PoolingWorkflow extends WorkflowImp {
   /**
    * The Manager private class. This is responsible for creating objects when requested by the object pool
    */
-  private class WorkerFactory implements PoolableObjectFactory<Worker> {
+  private class WorkerFactory implements PooledObjectFactory<Worker> {
 
     WorkerFactory() {
     }
@@ -635,7 +638,7 @@ public class PoolingWorkflow extends WorkflowImp {
      * @see PoolableObjectFactory#makeObject()
      */
     @Override
-    public Worker makeObject() throws Exception {
+    public PooledObject<Worker> makeObject() throws Exception {
       Worker w = null;
       try {
         w = new Worker();
@@ -645,37 +648,37 @@ public class PoolingWorkflow extends WorkflowImp {
         log.error("Error creating object for pool", e);
         throw e;
       }
-      return w;
+      return new DefaultPooledObject<>(w);
     }
 
     /**
      * @see PoolableObjectFactory#destroyObject(java.lang.Object)
      */
     @Override
-    public void destroyObject(Worker arg0) throws Exception {
-      ((Worker) arg0).stop();
+    public void destroyObject(PooledObject<Worker> arg0) throws Exception {
+      arg0.getObject().stop();
     }
 
     /**
      * @see PoolableObjectFactory#validateObject(java.lang.Object)
      */
     @Override
-    public boolean validateObject(Worker arg0) {
-      return ((Worker) arg0).isValid();
+    public boolean validateObject(PooledObject<Worker> arg0) {
+      return arg0.getObject().isValid();
     }
 
     /**
      * @see PoolableObjectFactory#activateObject(java.lang.Object)
      */
     @Override
-    public void activateObject(Worker arg0) throws Exception {
+    public void activateObject(PooledObject<Worker> arg0) throws Exception {
     }
 
     /**
      * @see PoolableObjectFactory#passivateObject(java.lang.Object)
      */
     @Override
-    public void passivateObject(Worker arg0) throws Exception {
+    public void passivateObject(PooledObject<Worker> arg0) throws Exception {
     }
 
   }

@@ -269,7 +269,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
     PoolingWorkflow workflow = new PoolingWorkflow();
     workflow.addInterceptor(new MockWorkflowInterceptor());
-    workflow.setShutdownWaitTime(new TimeInterval(5L, TimeUnit.SECONDS));
+    workflow.setShutdownWaitTime(new TimeInterval(100L, TimeUnit.MILLISECONDS));
     ResponseProducer responder = new ResponseProducer(HttpStatus.OK_200);
     workflow.setConsumer(consumer);
     workflow.getServiceCollection().add(new WaitService(new TimeInterval(1L, TimeUnit.SECONDS)));
@@ -299,7 +299,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     consumer.setAdditionalDebug(false);
     consumer.setTimeoutAction(new TimeoutAction(new TimeInterval(100L, TimeUnit.MILLISECONDS)));
     PoolingWorkflow workflow = new PoolingWorkflow();
-    workflow.setShutdownWaitTime(new TimeInterval(1L, TimeUnit.SECONDS));
+    workflow.setShutdownWaitTime(new TimeInterval(100L, TimeUnit.MILLISECONDS));
     ResponseProducer responder = new ResponseProducer(HttpStatus.OK_200);
     workflow.setConsumer(consumer);
     workflow.getServiceCollection().add(new WaitService(new TimeInterval(5L, TimeUnit.SECONDS)));
@@ -1080,7 +1080,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO, getName());
     consumer.setSendProcessingInterval(new TimeInterval(1L, TimeUnit.SECONDS));
     StandardWorkflow wf = (StandardWorkflow) JettyHelper.createWorkflow(consumer, mockProducer);
-    wf.getServiceCollection().add(new WaitService(new TimeInterval(5L, TimeUnit.SECONDS)));
+    wf.getServiceCollection().add(new WaitService(new TimeInterval(3L, TimeUnit.SECONDS)));
     Channel channel = JettyHelper.createChannel(connection, wf);
     try {
       channel.requestStart();

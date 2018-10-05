@@ -17,11 +17,8 @@
 package com.adaptris.core.services.splitter;
 
 import static com.adaptris.core.util.XmlHelper.createDocument;
-import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.validation.constraints.NotNull;
 import javax.xml.namespace.NamespaceContext;
@@ -35,7 +32,6 @@ import org.xml.sax.SAXException;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.ExceptionHelper;
@@ -98,26 +94,19 @@ public class XpathDocumentCopier extends MessageCopier {
   }
 
   @Override
-  public List<AdaptrisMessage> splitMessage(AdaptrisMessage msg) throws CoreException {
-    List result = new ArrayList<AdaptrisMessage>();
+  public com.adaptris.core.util.CloseableIterable<AdaptrisMessage> splitMessage(AdaptrisMessage msg) throws CoreException {
     try {
       String xpathResult = resolveXpath(msg);
       int size = toInteger(xpathResult);
-      AdaptrisMessageFactory fac = selectFactory(msg);
-      for (int i = 0; i < size; i++) {
-        AdaptrisMessage splitMsg = duplicateWithPayload(fac, msg);
-        copyMetadata(msg, splitMsg);
-        result.add(splitMsg);
-      }
-      logR.trace("Split on {} gave {} messages", xpathResult, result.size());
+      return new MessageCopierIterator(msg, size, (e, i) -> {
+        return e;
+      });
     }
     catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
-    return result;
   }
 
-  // Consider making this namespace aware; we could follow what XpathMetadataQuery does.
   private String resolveXpath(AdaptrisMessage msg) throws ParserConfigurationException, IOException, SAXException,
       XPathExpressionException {
     NamespaceContext ctx = SimpleNamespaceContext.create(getNamespaceContext(), msg);
@@ -130,12 +119,6 @@ public class XpathDocumentCopier extends MessageCopier {
     return xp.selectSingleTextItem(d, getXpath());
   }
 
-  private static int toInteger(String s) {
-    if (isEmpty(s)) {
-      return 0;
-    }
-    return Double.valueOf(s).intValue();
-  }
 
   /**
    * Set the XPath to use to extract the individual messages

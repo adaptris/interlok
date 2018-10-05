@@ -84,13 +84,7 @@ public class ReformatDateService extends ReformatMetadata {
   }
 
   @Override
-  protected String reformat(String s, String msgCharset) throws Exception {
-    // we override reformat(String,String,AdaptrisMessage);
-    throw new IllegalStateException("reformat(String,String) called; should always be reformat(String,String,AdaptrisMessage)");
-  }
-
-  @Override
-  protected String reformat(String s, String msgCharset, AdaptrisMessage msg) throws Exception {
+  public String reformat(String s, AdaptrisMessage msg) throws Exception {
     return destFormatBuilder().build(msg).toString(sourceFormatBuilder().build(msg).toDate(s));
   }
 

@@ -25,13 +25,12 @@ import javax.mail.internet.MimeBodyPart;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.io.IOUtils;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.MimeHelper;
+import com.adaptris.util.stream.StreamUtil;
 import com.adaptris.util.text.mime.PartSelector;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -61,14 +60,11 @@ public class MimeServiceExtractor implements ServiceExtractor {
   @Override
   public InputStream getInputStream(AdaptrisMessage m) throws ServiceException, IOException {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
-    InputStream in = null;
     try {
       Args.notNull(getSelector(), "selector");
       MimeBodyPart part = selector.select(MimeHelper.createBodyPartIterator(m));
       if (part != null) {
-        out = new ByteArrayOutputStream();
-        in = part.getInputStream();
-        IOUtils.copy(in, out);
+        StreamUtil.copyAndClose(part.getInputStream(), out);
       }
       else {
         throw new ServiceException("Could not select a part");
@@ -76,10 +72,6 @@ public class MimeServiceExtractor implements ServiceExtractor {
     }
     catch (Exception e) {
       throw ExceptionHelper.wrapServiceException(e);
-    }
-    finally {
-      IOUtils.closeQuietly(out);
-      IOUtils.closeQuietly(in);
     }
     return new ByteArrayInputStream(out.toByteArray());
   }

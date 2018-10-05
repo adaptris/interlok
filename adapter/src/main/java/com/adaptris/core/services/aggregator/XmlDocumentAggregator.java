@@ -16,10 +16,6 @@
 
 package com.adaptris.core.services.aggregator;
 
-import static org.apache.commons.io.IOUtils.closeQuietly;
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
-import java.io.OutputStream;
 import java.util.Collection;
 
 import javax.validation.Valid;
@@ -35,7 +31,6 @@ import com.adaptris.core.util.Args;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.XmlHelper;
-import com.adaptris.util.XmlUtils;
 import com.adaptris.util.text.xml.DocumentMerge;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -84,34 +79,10 @@ public class XmlDocumentAggregator extends MessageAggregatorImpl {
         overwriteMetadata(m, original);
         resultDoc = getMergeImplementation().merge(resultDoc, mergeDoc);
       }
-      writeXmlDocument(resultDoc, original);
+      XmlHelper.writeXmlDocument(resultDoc, original, getDocumentEncoding());
     }
     catch (Exception e) {
       ExceptionHelper.rethrowCoreException(e);
-    }
-  }
-
-  private String evaluateEncoding(AdaptrisMessage msg) {
-    String encoding = "UTF-8";
-    if (!isEmpty(getDocumentEncoding())) {
-      encoding = getDocumentEncoding();
-    }
-    else if (!isEmpty(msg.getContentEncoding())) {
-      encoding = msg.getContentEncoding();
-    }
-    return encoding;
-  }
-
-  protected void writeXmlDocument(Document doc, AdaptrisMessage msg) throws Exception {
-    OutputStream out = null;
-    try {
-      String encoding = evaluateEncoding(msg);
-      out = msg.getOutputStream();
-      new XmlUtils().writeDocument(doc, out, encoding);
-      msg.setContentEncoding(encoding);
-    }
-    finally {
-      closeQuietly(out);
     }
   }
 

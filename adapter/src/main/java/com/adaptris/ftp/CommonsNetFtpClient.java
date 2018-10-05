@@ -17,7 +17,6 @@
 package com.adaptris.ftp;
 
 import java.io.IOException;
-import java.net.InetAddress;
 
 import org.apache.commons.net.ftp.FTPClient;
 
@@ -55,26 +54,19 @@ public class CommonsNetFtpClient extends ApacheFtpClientImpl<FTPClient> {
     this(remoteHost, port, 0);
   }
 
-  /**
-   * @see CommonsNetFtpClient#CommonsNetFtpClient(String, int, int)
-   */
-  public CommonsNetFtpClient(InetAddress remoteAddr) throws IOException {
-    this(remoteAddr, FTPClient.DEFAULT_PORT);
-  }
-
-  /**
-   * @see CommonsNetFtpClient#CommonsNetFtpClient(String, int, int)
-   */
-  public CommonsNetFtpClient(InetAddress remoteAddr, int port) throws IOException {
-    this(remoteAddr.getHostAddress(), port, 0);
-  }
-
   @Override
   protected FTPClient createFTPClient() {
     return new FTPClient();
   }
 
+
   @Override
-  protected void additionalSettings(FTPClient client) throws IOException {
+  protected void preConnectSettings(FTPClient client) throws IOException {
+    ClientSettings.preConnectSettings(client, ClientSettings.FTP.values(), additionalSettings);
   }
+
+  @Override
+  protected void postConnectSettings(FTPClient client) throws IOException {
+  }
+
 }

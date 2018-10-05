@@ -27,8 +27,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.management.MalformedObjectNameException;
 
-import org.apache.commons.io.IOUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.runtime.AdapterManager;
@@ -103,14 +101,9 @@ public class DefaultFailedMessageRetrier extends FailedMessageRetrierImp {
   boolean retryMessage(File file) throws IOException, CoreException {
     MimeEncoder encoder = new MimeEncoder();
     encoder.setRetainUniqueId(true);
-    InputStream in = null;
     AdaptrisMessage msg = null;
-    try {
-      in = new FileInputStream(file);
+    try (InputStream in = new FileInputStream(file)) {
       msg = encoder.readMessage(in);
-    }
-    finally {
-      IOUtils.closeQuietly(in);
     }
     return retryMessage(msg);
   }

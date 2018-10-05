@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * <li>SizeGTE is equivalent to using {@link SizeGreaterThanOrEqual}</li>
  * <li>SizeLT is equivalent to using {@link SizeLessThan}</li>
  * <li>SizeLTE is equivalent to using {@link SizeLessThanOrEqual}</li>
- * <li>Regex is equivalent to using {@code org.apache.commons.io.filefilter.RegexFilter} - since 3.7.0</li>
+ * <li>Regex is equivalent to using {@code org.apache.commons.io.filefilter.RegexFileFilter} - since 3.7.0</li>
  * <li>Perl is equivalent to using org.apache.oro.io.Perl5FilenameFilter - <strong>deprecated since 3.7.0</strong></li>
  * <li>Awk is equivalent to using org.apache.oro.io.AwkFilenameFilter - <strong>deprecated since 3.7.0</strong></li>
  * <li>Glob is equivalent to using org.apache.oro.io.GlobFilenameFilter - <strong>deprecated since 3.7.0</strong></li>

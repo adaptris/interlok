@@ -45,6 +45,9 @@ public abstract class MatchProxyFactory {
       }
 
     },
+    /**
+     * @deprecated since 3.7.0
+     */
     @Deprecated
     AwkSimple("AWK") {
       @Override
@@ -53,6 +56,9 @@ public abstract class MatchProxyFactory {
         return new OroMatchProxy(new AwkMatcher(), new AwkCompiler().compile(expression));
       }
     },
+    /**
+     * @deprecated since 3.7.0
+     */
     @Deprecated
     AwkClass("org.apache.oro.text.awk.AwkCompiler") {
       @Override
@@ -61,6 +67,9 @@ public abstract class MatchProxyFactory {
         return new OroMatchProxy(new AwkMatcher(), new AwkCompiler().compile(expression));
       }
     },
+    /**
+     * @deprecated since 3.7.0
+     */
     @Deprecated
     GlobSimple("GLOB") {
       @Override
@@ -69,6 +78,9 @@ public abstract class MatchProxyFactory {
         return new OroMatchProxy(new Perl5Matcher(), new GlobCompiler().compile(expression));
       }
     },
+    /**
+     * @deprecated since 3.7.0
+     */
     @Deprecated
     GlobClass("org.apache.oro.text.GlobCompiler") {
       @Override
@@ -77,6 +89,9 @@ public abstract class MatchProxyFactory {
         return new OroMatchProxy(new Perl5Matcher(), new GlobCompiler().compile(expression));
       }
     },
+    /**
+     * @deprecated since 3.7.0
+     */
     @Deprecated
     PerlSimple("PERL5") {
 
@@ -87,6 +102,9 @@ public abstract class MatchProxyFactory {
       }
 
     },
+    /**
+     * @deprecated since 3.7.0
+     */
     @Deprecated
     Perl5Class("org.apache.oro.text.regex.Perl5Compiler") {
       @Override

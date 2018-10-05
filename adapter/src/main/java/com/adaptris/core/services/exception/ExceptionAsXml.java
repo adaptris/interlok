@@ -15,13 +15,8 @@
 */
 package com.adaptris.core.services.exception;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
-import java.io.OutputStream;
-
 import javax.validation.Valid;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -34,7 +29,6 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.XmlHelper;
-import com.adaptris.util.XmlUtils;
 import com.adaptris.util.text.xml.DocumentMerge;
 import com.adaptris.util.text.xml.ReplaceOriginal;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -88,21 +82,14 @@ public class ExceptionAsXml implements ExceptionSerializer {
 
   @Override
   public void serialize(Exception exception, AdaptrisMessage msg) throws CoreException {
-    OutputStream out = null;
     try {
       Document newDoc = exceptionGenerator().create(exception);
       Document result = documentMerge().merge(XmlHelper.createDocument(msg, documentFactoryBuilder()), newDoc);
-      out = msg.getOutputStream();
-      String encoding = getXmlEncoding(msg);
-      new XmlUtils().writeDocument(result, out, encoding);
-      msg.setContentEncoding(encoding);
-
+      String encoding = XmlHelper.getXmlEncoding(msg, getXmlEncoding());
+      XmlHelper.writeXmlDocument(result, msg, encoding);
     }
     catch (Exception e) {
       throw ExceptionHelper.wrapServiceException(e);
-    }
-    finally {
-      IOUtils.closeQuietly(out);
     }
   }
 
@@ -151,17 +138,6 @@ public class ExceptionAsXml implements ExceptionSerializer {
    */
   public void setXmlEncoding(String encoding) {
     xmlEncoding = encoding;
-  }
-
-  private String getXmlEncoding(AdaptrisMessage msg) {
-    String encoding = "UTF-8";
-    if (!isEmpty(getXmlEncoding())) {
-      encoding = getXmlEncoding();
-    }
-    else if (!isEmpty(msg.getContentEncoding())) {
-      encoding = msg.getContentEncoding();
-    }
-    return encoding;
   }
 
   public DocumentBuilderFactoryBuilder getXmlDocumentFactoryConfig() {

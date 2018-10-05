@@ -57,6 +57,13 @@ public abstract class ConnectionErrorHandlerImp implements ConnectionErrorHandle
     return true;
   }
 
+  /**
+   * Milliseconds to wait for before retrying a restart.
+   * 
+   */
+  protected long retryWaitTimeMs() {
+    return TimeUnit.SECONDS.toMillis(10L);
+  }
 
   /**
    * Standard functionality to restart the owner of the connection.
@@ -68,7 +75,7 @@ public abstract class ConnectionErrorHandlerImp implements ConnectionErrorHandle
     try {
       tryRestart(toRestart);
     } catch (RuntimeException e) {
-      LifecycleHelper.waitQuietly(TimeUnit.SECONDS.toMillis(10L));
+      LifecycleHelper.waitQuietly(retryWaitTimeMs());
       tryRestart(toRestart);
     }
   }

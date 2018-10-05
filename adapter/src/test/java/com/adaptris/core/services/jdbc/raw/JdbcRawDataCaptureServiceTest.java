@@ -63,7 +63,7 @@ public class JdbcRawDataCaptureServiceTest extends JdbcServiceExample {
   }
 
   @Override
-  protected Object retrieveObjectForSampleConfig() {
+  protected JdbcRawDataCaptureService retrieveObjectForSampleConfig() {
     JdbcRawDataCaptureService service = createService();
     JdbcConnection connection = new JdbcConnection();
     connection.setConnectUrl("jdbc:mysql://localhost:3306/mydatabase");
@@ -71,6 +71,11 @@ public class JdbcRawDataCaptureServiceTest extends JdbcServiceExample {
     connection.setConnectionRetryInterval(new TimeInterval(3L, "SECONDS"));
     service.setConnection(connection);
     return service;
+  }
+
+  @Override
+  protected JdbcRawDataCaptureService retrieveObjectForCastorRoundTrip() {
+    return createService(true);
   }
 
   public void testService() throws Exception {

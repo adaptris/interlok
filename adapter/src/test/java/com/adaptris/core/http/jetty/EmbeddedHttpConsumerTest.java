@@ -335,7 +335,7 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
     mockProducer.getMessages().clear();
     JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
     PoolingWorkflow workflow = new PoolingWorkflow();
-    workflow.setShutdownWaitTime(new TimeInterval(5L, TimeUnit.SECONDS));
+    workflow.setShutdownWaitTime(new TimeInterval(100L, TimeUnit.MILLISECONDS));
     StandardResponseProducer responder = new StandardResponseProducer(HttpStatus.OK_200);
     workflow.setConsumer(consumer);
     workflow.getServiceCollection().add(new WaitService(new TimeInterval(1L, TimeUnit.SECONDS)));

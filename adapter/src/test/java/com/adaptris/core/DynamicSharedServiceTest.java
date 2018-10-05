@@ -17,15 +17,18 @@ package com.adaptris.core;
 
 import static com.adaptris.core.SharedServiceTest.createAdapterForSharedService;
 
+import java.util.concurrent.TimeUnit;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.util.TimeInterval;
 
 public class DynamicSharedServiceTest extends ServiceCase {
-
-  public DynamicSharedServiceTest(String name) {
-    super(name);
-  }
 
   @Override
   protected Object retrieveObjectForSampleConfig() {
@@ -41,23 +44,55 @@ public class DynamicSharedServiceTest extends ServiceCase {
     return DynamicSharedService.class.getName();
   }
 
+  @Before
   public void setUp() throws Exception {
   }
 
+  @After
   public void tearDown() throws Exception {
 
   }
 
+  @Test
+  public void testIsBranching() {
+    DynamicSharedService sharedService = new DynamicSharedService(getName());
+    assertFalse(sharedService.isBranching());
+  }
+
+  @Test
   public void testCreateName() {
     DynamicSharedService sharedService = new DynamicSharedService(getName());
     assertEquals(DynamicSharedService.class.getName(), sharedService.createName());
   }
 
+  @Test
   public void testCreateQualifier() {
     DynamicSharedService sharedService = new DynamicSharedService(getName());
     assertNotNull(sharedService.createQualifier());
   }
 
+  @Test
+  public void testMaxEntries() {
+    DynamicSharedService sharedService = new DynamicSharedService(getName());
+    assertEquals(16, sharedService.maxEntries());
+    assertNull(sharedService.getMaxEntries());
+    sharedService.withMaxEntries(10);
+    assertEquals(10, sharedService.maxEntries());
+    assertEquals(10, sharedService.getMaxEntries().intValue());
+  }
+
+  @Test
+  public void testExpiration() {
+    TimeInterval oneHour = new TimeInterval(1L, TimeUnit.HOURS);
+    DynamicSharedService sharedService = new DynamicSharedService(getName());
+    assertEquals(oneHour.toMilliseconds(), sharedService.expirationMillis());
+    assertNull(sharedService.getExpiration());
+    sharedService.withExpiration(new TimeInterval(1L, TimeUnit.MILLISECONDS));
+    assertEquals(1, sharedService.expirationMillis());
+    assertNotNull(sharedService.getExpiration());
+  }
+
+  @Test
   public void testDoService() throws Exception {
     DynamicSharedService sharedService = new DynamicSharedService(getName());
     Adapter adapter = createAdapterForSharedService(sharedService, new NullService(getName()));
@@ -80,6 +115,7 @@ public class DynamicSharedServiceTest extends ServiceCase {
     assertEquals(0, sharedService.getCache().size());
   }
 
+  @Test
   public void testDoService_Selector() throws Exception {
     DynamicSharedService sharedService = new DynamicSharedService("%message{" + getName() + "}");
     Adapter adapter = createAdapterForSharedService(sharedService, new NullService(getName()));
@@ -98,8 +134,9 @@ public class DynamicSharedServiceTest extends ServiceCase {
     assertEquals(0, sharedService.getCache().size());
   }
 
+  @Test
   public void testDoService_Selector_CacheLimit() throws Exception {
-    MyDynamicSharedService sharedService = new MyDynamicSharedService("%message{" + getName() + "}");
+    DynamicSharedService sharedService = new DynamicSharedService("%message{" + getName() + "}").withMaxEntries(1);
     Adapter adapter = createAdapterForSharedService(sharedService, new NullService("_1"),
         new NullService("_2"));
 
@@ -122,6 +159,26 @@ public class DynamicSharedServiceTest extends ServiceCase {
     assertEquals(0, sharedService.getCache().size());
   }
 
+  @Test
+  public void testDoService_Selector_CacheExpiry() throws Exception {
+    DynamicSharedService sharedService = new DynamicSharedService("%message{" + getName() + "}");
+    sharedService.setExpiration(new TimeInterval(500L, TimeUnit.MILLISECONDS));
+    Adapter adapter = createAdapterForSharedService(sharedService, new NullService("_1"), new NullService("_2"));
+
+    try {
+      LifecycleHelper.initAndStart(adapter);
+      AdaptrisMessage msg1 = DefaultMessageFactory.getDefaultInstance().newMessage();
+      msg1.addMetadata(getName(), "_1");
+      sharedService.doService(msg1);
+      LifecycleHelper.waitQuietly(1500);
+      // should have expired.
+      assertEquals(0, sharedService.getCache().size());
+    } finally {
+      LifecycleHelper.stopAndClose(adapter);
+    }
+  }
+
+  @Test
   public void testDoService_WithFailure() throws Exception {
     ThrowExceptionService mockService = new ThrowExceptionService(getName(), new ConfiguredException("Fail"));
     DynamicSharedService sharedService = new DynamicSharedService(getName());
@@ -145,13 +202,20 @@ public class DynamicSharedServiceTest extends ServiceCase {
     }
   }
 
-  private class MyDynamicSharedService extends DynamicSharedService {
-    MyDynamicSharedService(String lookupName) {
-      super(lookupName);
-    }
+  @Test
+  public void testDoService_NoService() throws Exception {
+    DynamicSharedService sharedService = new DynamicSharedService(getName());
+    Adapter adapter = createAdapterForSharedService(sharedService);
 
-    int maxCacheSize() {
-      return 1;
+    try {
+      LifecycleHelper.initAndStart(adapter);
+      AdaptrisMessage msg = DefaultMessageFactory.getDefaultInstance().newMessage();
+      sharedService.doService(msg);
+      fail();
+    } catch (ServiceException expected) {
+
+    } finally {
+      LifecycleHelper.stopAndClose(adapter);
     }
   }
 }

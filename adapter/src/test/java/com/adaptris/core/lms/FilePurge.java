@@ -18,29 +18,23 @@ package com.adaptris.core.lms;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.util.Calendar;
+import java.util.Arrays;
+import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.RegexFileFilter;
 
-import com.adaptris.core.fs.CompositeFileFilter;
+import com.adaptris.core.fs.OlderThan;
 
-/**
- * @author lchan
- * @author $Author: lchan $
- */
 public class FilePurge {
   private FileFilter fileFilter;
-  private Calendar nextRun = null;
-  private transient Log logR = LogFactory.getLog(this.getClass());
 
   private static final FilePurge purger = new FilePurge();
-  private static final String PURGE_FILTER = "Glob=" + FileBackedMessageFactory.TMP_FILE_PREFIX + "*"
-      + FileBackedMessageFactory.TMP_FILE_SUFFIX + "__@@__" + "OlderThan=-PT30S";
+  private static final String PURGE_FILTER_NAME = "^" + FileBackedMessageFactory.TMP_FILE_PREFIX + ".*";
+  private static final String PURGE_FILTER_AGE = "-PT30S";
 
   private FilePurge() {
-    fileFilter = new CompositeFileFilter(PURGE_FILTER, true);
-    nextRun = Calendar.getInstance();
+    fileFilter = new TemporaryFileFilter();
   }
 
   public static FilePurge getInstance() {
@@ -48,27 +42,29 @@ public class FilePurge {
   }
 
   public void purge() {
-    String oldName = Thread.currentThread().getName();
     try {
-      Thread.currentThread().setName("FilePurge");
       File dir = new File(System.getProperty("java.io.tmpdir"));
       File[] files = dir.listFiles(fileFilter);
       for (File file : files) {
-        try {
-          if (file.exists()) {
-            logR.trace("Deleting " + file.getCanonicalPath());
-            file.delete();
-          }
-        }
-        catch (Exception e) {
-          ;
-        }
+        FileUtils.deleteQuietly(file);
       }
     }
     catch (Exception ignoredIntentionally) {
       ;
     }
-    Thread.currentThread().setName(oldName);
   }
 
+  private class TemporaryFileFilter implements FileFilter {
+    private List<FileFilter> filters = Arrays.asList(new RegexFileFilter(PURGE_FILTER_NAME), new OlderThan(PURGE_FILTER_AGE));
+
+    @Override
+    public boolean accept(File pathname) {
+      int result = 0;
+      for (FileFilter f : filters) {
+        result += f.accept(pathname) ? 1 : 0;
+      }
+      return result == filters.size();
+    }
+
+  }
 }

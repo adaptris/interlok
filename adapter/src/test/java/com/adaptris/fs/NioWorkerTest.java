@@ -16,12 +16,16 @@
 
 package com.adaptris.fs;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.Test;
 
 /**
  */
@@ -36,15 +40,12 @@ public class NioWorkerTest extends StandardWorkerTest {
     BYTES = data.getBytes();
   }
 
-  public NioWorkerTest(String arg0) {
-    super(arg0);
-  }
-
   @Override
   protected NioWorker createWorker() {
     return new NioWorker();
   }
 
+  @Test
   public void testLockWhileWriting() throws Exception {
     NioWorker worker = createWorker();
     File f = File.createTempFile(this.getClass().getSimpleName(), "");
@@ -57,7 +58,8 @@ public class NioWorkerTest extends StandardWorkerTest {
         worker.write(BYTES, f);
         fail();
       }
-      catch (OverlappingFileLockException expected) {
+      catch (FsException expected) {
+        assertEquals(OverlappingFileLockException.class, expected.getCause().getClass());
       }
       lock.release();
       raf.close();
@@ -69,6 +71,7 @@ public class NioWorkerTest extends StandardWorkerTest {
     }
   }
 
+  @Test
   public void testLockWhileReading() throws Exception {
     FsWorker worker = createWorker();
     File f = File.createTempFile(this.getClass().getSimpleName(), "");
@@ -82,7 +85,8 @@ public class NioWorkerTest extends StandardWorkerTest {
         worker.get(f);
         fail();
       }
-      catch (OverlappingFileLockException expected) {
+      catch (FsException expected) {
+        assertEquals(OverlappingFileLockException.class, expected.getCause().getClass());
       }
       lock.release();
       raf.close();

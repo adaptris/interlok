@@ -43,9 +43,12 @@ import com.adaptris.core.jms.PasProducer;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageProducer;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 
 public class JmsConnectionErrorHandlerTest extends BaseCase {
+
+  private static final long SLEEP_TIME_MS = 100L;
 
   public JmsConnectionErrorHandlerTest(String name) {
     super(name);
@@ -87,7 +90,11 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     MockChannel channel = createChannel(activeMqBroker,
         new JmsConnectionCloseWithRuntimeException(activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), true)),
-        getName(), new JmsConnectionErrorHandler());
+        getName(), new JmsConnectionErrorHandler() {
+          protected long retryWaitTimeMs() {
+            return 500L;
+          }
+        });
     try {
       activeMqBroker.start();
       channel.requestStart();
@@ -387,8 +394,8 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
   private long waitForChannelToChangeState(ComponentState state, MockChannel channel) throws Exception {
     long totalWaitTime = 0;
     while (channel.retrieveComponentState().equals(state) && totalWaitTime < MAX_WAIT) {
-      totalWaitTime += 1000;
-      Thread.sleep(1000);
+      LifecycleHelper.waitQuietly(SLEEP_TIME_MS);
+      totalWaitTime += SLEEP_TIME_MS;
     }
     return totalWaitTime;
   }
@@ -396,8 +403,8 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
   protected long waitForChannelToMatchState(ComponentState state, MockChannel channel) throws Exception {
     long totalWaitTime = 0;
     while (!channel.retrieveComponentState().equals(state) && totalWaitTime < MAX_WAIT) {
-      totalWaitTime += 1000;
-      Thread.sleep(1000);
+      LifecycleHelper.waitQuietly(SLEEP_TIME_MS);
+      totalWaitTime += SLEEP_TIME_MS;
     }
     return totalWaitTime;
   }
@@ -482,6 +489,7 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
     private transient boolean failOnClose = true;
 
     public JmsConnectionCloseWithRuntimeException(JmsConnection other) throws Exception {
+      super();
       configureSelf(other);
     }
 
@@ -501,6 +509,6 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
         invokeSetter(this, JmsConnection.class, setterMethods[i], getterMethods[i], invokeGetter(other, getterMethods[i]));
       }
     }
-
   }
+
 }

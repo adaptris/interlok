@@ -16,15 +16,17 @@
 
 package com.adaptris.fs;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
+
+import org.junit.Test;
 
 
 /**
  */
 public class AppendingFsWorkerTest extends StandardWorkerTest {
-  public AppendingFsWorkerTest(String arg0) {
-    super(arg0);
-  }
+
 
   @Override
   protected AppendingFsWorker createWorker() {
@@ -32,6 +34,7 @@ public class AppendingFsWorkerTest extends StandardWorkerTest {
   }
 
   @Override
+  @Test
   public void testPutFileExists() throws Exception {
     FsWorker worker = createWorker();
     String[] testFiles = createTestFiles();

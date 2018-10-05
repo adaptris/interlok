@@ -16,11 +16,9 @@
 
 package com.adaptris.core.services.transcoding;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
 
 import com.adaptris.annotation.AdapterComponent;
@@ -30,6 +28,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageEncoder;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
+import com.adaptris.util.stream.StreamUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -43,6 +42,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(summary = "Decodes the message", tag = "service")
 public class DecodingService extends TranscodingService {
 
+  @InputFieldDefault(value = "false")
+  private Boolean overrideMetadata;
+
   public DecodingService(){
   }
 
@@ -50,16 +52,9 @@ public class DecodingService extends TranscodingService {
     super(encoder);
   }
 
-  @InputFieldDefault(value = "false")
-  private Boolean overrideMetadata;
-
   @Override
   public void transcodeMessage(AdaptrisMessage msg) throws ServiceException {
-    InputStream msgIn = null;
-    OutputStream msgOut = null;
-    ByteArrayInputStream decodedPayload = null;
-    try {
-      msgIn = msg.getInputStream();
+    try (InputStream msgIn = msg.getInputStream(); OutputStream msgOut = msg.getOutputStream()) {
       AdaptrisMessage decodedMsg = getEncoder().readMessage(msgIn);
       for (MetadataElement me : decodedMsg.getMetadata()) {
         if (!isOverrideMetadata() && msg.headersContainsKey(me.getKey())){
@@ -67,17 +62,10 @@ public class DecodingService extends TranscodingService {
         }
         msg.addMetadata(me);
       }
-      decodedPayload = new ByteArrayInputStream(decodedMsg.getPayload());
-      msgOut = msg.getOutputStream();
-      IOUtils.copy(decodedPayload, msgOut);
+      StreamUtil.copyAndClose(decodedMsg.getInputStream(), msgOut);
     }
     catch (Exception e) {
       throw new ServiceException(e);
-    }
-    finally {
-      IOUtils.closeQuietly(msgIn);
-      IOUtils.closeQuietly(msgOut);
-      IOUtils.closeQuietly(decodedPayload);
     }
   }
 

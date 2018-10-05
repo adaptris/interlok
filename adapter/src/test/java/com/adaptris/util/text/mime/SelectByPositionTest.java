@@ -46,10 +46,7 @@ public class SelectByPositionTest {
     MultiPartInput input = new MultiPartInput(generateByteArrayInput(false), false);
     SelectByPosition selector = new SelectByPosition();
     MimeBodyPart part = selector.select(input);
-    assertNotNull(part);
-    selector = new SelectByPosition(15);
-    assertNull(selector.select(input));
-
+    assertNull(part);
   }
 
   @Test

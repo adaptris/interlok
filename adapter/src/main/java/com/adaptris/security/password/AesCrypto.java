@@ -30,8 +30,6 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.commons.io.IOUtils;
-
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.security.util.SecurityUtil;
 import com.adaptris.util.text.Base64ByteTranslator;
@@ -114,14 +112,10 @@ public class AesCrypto extends PasswordImpl {
     }
 
     void read() throws IOException {
-      DataInputStream in = new DataInputStream(new ByteArrayInputStream(base64.translate(encrypted)));
-      try {
+      try (DataInputStream in = new DataInputStream(new ByteArrayInputStream(base64.translate(encrypted)))) {
         sessionVector = read(in);
         sessionKey = read(in);
         encryptedData = read(in);
-      }
-      finally {
-        IOUtils.closeQuietly(in);
       }
     }
 
@@ -167,22 +161,14 @@ public class AesCrypto extends PasswordImpl {
     }
 
     String write() throws IOException {
-      DataOutputStream out = null;
-      ByteArrayOutputStream byteStream = null;
-      String result = null;
-      try {
-        byteStream = new ByteArrayOutputStream();
-        out = new DataOutputStream(byteStream);
+      ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+      try (DataOutputStream out = new DataOutputStream(byteStream)) {
         write(out, sessionVector);
         write(out, sessionKey);
         write(out, encryptedData);
         out.flush();
-        result = base64.translate(byteStream.toByteArray());
       }
-      finally {
-        IOUtils.closeQuietly(out);
-      }
-      return result;
+      return base64.translate(byteStream.toByteArray());
     }
 
     private void write(DataOutputStream out, byte[] bytes) throws IOException {

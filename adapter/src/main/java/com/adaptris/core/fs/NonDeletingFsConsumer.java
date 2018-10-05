@@ -119,7 +119,7 @@ public class NonDeletingFsConsumer extends FsConsumerImpl {
             result++;
           }
           else {
-            log.trace("[" + item.getAbsolutePath() + "] hasn't changed since last poll");
+            log.trace("[{}] hasn't changed since last poll", item.getAbsolutePath());
           }
         }
         catch (Exception e) {
@@ -171,22 +171,22 @@ public class NonDeletingFsConsumer extends FsConsumerImpl {
     this.processedItemCache = cache;
   }
 
-  private boolean hasChanged(ProcessedItem entry) throws Exception {
+  protected boolean hasChanged(ProcessedItem entry) throws Exception {
     boolean result = false;
-    log.trace("Checking cache for [" + entry.getAbsolutePath() + "]");
+    log.trace("Checking cache for [{}]", entry.getAbsolutePath());
     ProcessedItem cachedEntry = getProcessedItemCache().get(entry.getAbsolutePath());
     if (cachedEntry == null) {
-      log.trace("[" + entry.getAbsolutePath() + "] not in cache");
+      log.trace("[{}] not in cache", entry.getAbsolutePath());
       result = true;
     }
     else {
-      log.trace("[" + entry.getAbsolutePath() + "] found");
+      // log.trace("[{}] found", entry.getAbsolutePath());
       if (entry.getFilesize() != cachedEntry.getFilesize()) {
-        log.trace("[" + entry.getAbsolutePath() + "] filesize has changed");
+        log.trace("[{}] filesize has changed", entry.getAbsolutePath());;
         result = true;
       }
       else if (entry.getLastModified() != cachedEntry.getLastModified()) {
-        log.trace("[" + entry.getAbsolutePath() + "] lastmodified has changed");
+        log.trace("[{}]", entry.getAbsolutePath());
         result = true;
       }
     }

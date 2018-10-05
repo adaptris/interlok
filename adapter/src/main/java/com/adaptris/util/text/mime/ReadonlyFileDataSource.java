@@ -99,6 +99,7 @@ class ReadonlyFileDataSource implements DataSource, Closeable, MimeConstants, Mi
   }
 
   @Override
+  @SuppressWarnings("deprecation")
   public void close() throws IOException {
     for (SharedFileInputStream child : children) {
       IOUtils.closeQuietly(child);

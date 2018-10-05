@@ -21,8 +21,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 
-import org.apache.commons.io.IOUtils;
-
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
@@ -83,14 +81,8 @@ public class StoreMetadataValueService extends DuplicateMetadataValueService {
 
   private void storePreviouslyReceivedValues() throws FileNotFoundException, IOException {
     if (store != null) {
-      ObjectOutputStream o = null;
-      try {
-        o = new ObjectOutputStream(new FileOutputStream(store));
+      try (ObjectOutputStream o = new ObjectOutputStream(new FileOutputStream(store))) {
         o.writeObject(previousValuesStore);
-        o.flush();
-      }
-      finally {
-        IOUtils.closeQuietly(o);
       }
     }
   }

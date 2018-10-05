@@ -16,9 +16,9 @@
 
 package com.adaptris.core.config;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,6 +29,7 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 
 import com.adaptris.core.CoreException;
+import com.adaptris.core.util.ExceptionHelper;
 
 public class ConfigPreProcessors extends AbstractCollection<ConfigPreProcessor> {
 
@@ -48,15 +49,11 @@ public class ConfigPreProcessors extends AbstractCollection<ConfigPreProcessor> 
   }
 
   public String process(URL urlToXml) throws CoreException {
-    InputStream inputStream = null;
-    try {
-      inputStream = urlToXml.openConnection().getInputStream();
-      String xml = IOUtils.toString(inputStream);
+    try (InputStream inputStream = urlToXml.openConnection().getInputStream()){
+      String xml = IOUtils.toString(inputStream, Charset.defaultCharset());
       return this.process(xml);
-    } catch (IOException ex) {
-      throw new CoreException(ex);
-    } finally {
-      IOUtils.closeQuietly(inputStream);
+    } catch (Exception ex) {
+      throw ExceptionHelper.wrapCoreException(ex);
     }
   }
   

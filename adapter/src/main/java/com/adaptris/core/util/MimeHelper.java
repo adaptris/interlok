@@ -25,6 +25,8 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.util.stream.UnbufferedLineInputStream;
@@ -43,6 +45,8 @@ public abstract class MimeHelper {
   private static final String MULTIPART_MIXED_TYPE = "multipart/mixed"
       + "; boundary=";
   private static final String CRLF = "\r\n";
+
+  private static Logger log = LoggerFactory.getLogger(MimeHelper.class);
 
   /**
    * Convenience method to create a {@link ByteArrayIterator} on a message allowing you to iterate a mime-payload.
@@ -147,18 +151,16 @@ public abstract class MimeHelper {
   }
 
   private static String getBoundary(AdaptrisMessage msg) throws IOException {
-    UnbufferedLineInputStream in = null;
-    String mimeBoundary = null;
-    try {
-      in = new UnbufferedLineInputStream(msg.getInputStream());
-      mimeBoundary = in.readLine();
+    String mimeBoundary = "";
+    try (UnbufferedLineInputStream in = new UnbufferedLineInputStream(msg.getInputStream())) {
+      while ("".equals(mimeBoundary)) {
+        mimeBoundary = in.readLine();
+      }
+      log.trace("Read [{}]; treating as mime-boundary", mimeBoundary);
       if (!mimeBoundary.startsWith(MIME_BOUNDARY_PREFIX)) {
         throw new IOException("Could not parse " + msg.getUniqueId()
             + " into a standard MIME Multipart");
       }
-    }
-    finally {
-      IOUtils.closeQuietly(in);
     }
     return mimeBoundary.substring(2).trim();
   }

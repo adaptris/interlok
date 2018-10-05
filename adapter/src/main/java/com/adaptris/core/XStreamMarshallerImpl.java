@@ -66,16 +66,11 @@ public abstract class XStreamMarshallerImpl extends AbstractMarshaller{
 
   @Override
   public Object unmarshal(Reader reader) throws CoreException {
-    Object result = null;
-    try {
-      result = getInstance().fromXML(reader);
-      reader.close();
-
+    try (Reader in = reader) {
+      return getInstance().fromXML(reader);
     }
     catch (Exception e) {
       throw new CoreException(e);
     }
-
-    return result;
   }
 }
