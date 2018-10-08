@@ -19,7 +19,7 @@ addons:
     packages:
       - haveged
       - ant-optional
-      - bash_builtins
+      - bash-builtins
 
 before_install:
   - sudo service haveged start
