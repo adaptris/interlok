@@ -8,3 +8,6 @@ ignore:
   - "**/core/jdbc/**/*.java"
   - "**/certificate/**/*.java"
   - "**/com/adaptrisjdbc/**/*.java"
+  - "**/com/adaptris/annotation/**/*.java"
+  - "**/com/filetransfer/**/*.java"
+  - "**/com.adaptris/logging/**/*.java"
