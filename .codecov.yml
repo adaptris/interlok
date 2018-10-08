@@ -1,3 +1,10 @@
 ignore:
   - "**/core/management/**/*.java"
-  - "**/core/jdbc/DataSourceWrapper.java"
+  - "**/adaptris/test/**/*.java"
+  - "**/*Test*.java"
+  - "**/test/**/.*.java"
+  - "**/com/adaptris/ftp/**/*.java"
+  - "**/com/adaptris/sftp/**/*.java"
+  - "**/core/jdbc/**/*.java"
+  - "**/certificate/**/*.java"
+  - "**/com/adaptrisjdbc/**/*.java"

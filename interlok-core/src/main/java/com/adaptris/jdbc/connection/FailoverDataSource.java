@@ -296,6 +296,7 @@ public class FailoverDataSource implements DataSource {
         conn.getWrappedConnection();
       }
       catch (Exception e) {
+        e.printStackTrace();
         return false;
       }
       return true;
