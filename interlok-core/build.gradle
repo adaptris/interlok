@@ -101,10 +101,8 @@ dependencies {
   antSql("com.microsoft.sqlserver:mssql-jdbc:6.4.0.jre8")
   antSql("mysql:mysql-connector-java:5.1.40")
 
-  // annotationProcessor project(':interlok-core-apt')
-  annotationProcessor ('com.adaptris:interlok-core-apt:3.8-SNAPSHOT')
-  // testAnnotationProcessor (':interlok-core-apt')
-  testAnnotationProcessor ('com.adaptris:interlok-core-apt:3.8-SNAPSHOT')
+  annotationProcessor project(':interlok-core-apt')
+  testAnnotationProcessor (':interlok-core-apt')
 
   javadoc project(':interlok-core-apt')
 
