@@ -102,7 +102,7 @@ dependencies {
   antSql("mysql:mysql-connector-java:5.1.40")
 
   annotationProcessor project(':interlok-core-apt')
-  testAnnotationProcessor (':interlok-core-apt')
+  testAnnotationProcessor project(':interlok-core-apt')
 
   javadoc project(':interlok-core-apt')
 
