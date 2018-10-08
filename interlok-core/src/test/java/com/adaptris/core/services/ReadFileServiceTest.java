@@ -30,7 +30,7 @@ import com.adaptris.core.GeneralServiceExample;
 
 public class ReadFileServiceTest extends GeneralServiceExample
 {
-	private static final String FILE = "build.xml";
+	private static final String FILE = "build.gradle";
 
 	public ReadFileServiceTest(final String testName)
 	{
