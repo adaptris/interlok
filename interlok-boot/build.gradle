@@ -1,0 +1,81 @@
+ext {
+  componentName='Interlok Bootstrap'
+  springBootLoaderVersion='1.5.7.RELEASE'
+}
+
+configurations {
+  bundled{}
+}
+
+dependencies {
+  bundled "org.springframework.boot:spring-boot-loader:$springBootLoaderVersion"
+  annotationProcessor project(':interlok-core-apt')
+  javadoc project(':interlok-core-apt')
+  testCompile ("junit:junit:4.11")
+}
+
+sourceSets {
+    main {
+        compileClasspath += configurations.bundled
+        runtimeClasspath += configurations.bundled
+    }
+    test {
+        compileClasspath += configurations.bundled
+        runtimeClasspath += configurations.bundled
+    }
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives javadocJar
+}
+
+task unzipSpringBoot(type: Copy) {
+  from zipTree(configurations.bundled.singleFile)
+  into 'build/spring-boot-loader'
+}
+
+jar {
+  from ('build/spring-boot-loader') {
+    exclude 'META-INF/MANIFEST.MF'
+  }
+}
+
+javadoc {
+  configure(options) {
+      links = [
+        interlokJavadocs,
+        interlokCommonJavadocs,
+      ]
+    taglets = ["com.adaptris.taglet.ConfigTaglet", "com.adaptris.taglet.LicenseTaglet"]
+    options.addStringOption "tagletpath", configurations.javadoc.asPath
+    title= componentName
+  }
+  classpath += configurations.bundled
+}
+
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      repository(url: mavenPublishUrl) {
+        authentication(userName: repoUsername, password: repoPassword)
+      }
+      configuration = configurations.mavenDeploy
+      pom.withXml {
+        asNode().appendNode("description", "Wrapper around spring-boot-loader using PropertyLauncher to bootrap Interlok")
+        def properties = asNode().appendNode("properties")
+        properties.appendNode("target", "3.8.0+")
+        properties.appendNode("license", "false")
+      }
+
+    }
+  }
+}
+
+jar.dependsOn unzipSpringBoot
+publish.dependsOn uploadArchives
+
