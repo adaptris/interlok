@@ -10,4 +10,6 @@ ignore:
   - "**/com/adaptrisjdbc/**/*.java"
   - "**/com/adaptris/annotation/**/*.java"
   - "**/com/filetransfer/**/*.java"
-  - "**/com.adaptris/logging/**/*.java"
+  - "**/com/adaptris/logging/**/*.java"
+  - "**/com/adaptris/target/**/*.java"
+  - "**/com/adaptris/validation/**/*.java"
