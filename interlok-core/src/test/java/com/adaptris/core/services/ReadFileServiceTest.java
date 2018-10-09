@@ -64,6 +64,29 @@ public class ReadFileServiceTest extends GeneralServiceExample
 	}
 
 	@Test
+	public void testServiceContentType() throws Exception
+	{
+		final AdaptrisMessage message = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+		final ReadFileService service = new ReadFileService();
+		service.setFilePath(PROPERTIES.getProperty("XmlTransformService.outputTestMessage"));
+		service.setContentTypeMetadataKey("contentType");
+
+		execute(service, message);
+
+		final byte[] actual = message.getPayload();
+
+		final File file = new File(PROPERTIES.getProperty("XmlTransformService.outputTestMessage"));
+		final byte[] expected = new byte[(int)file.length()];
+		try (final FileInputStream fir = new FileInputStream(file))
+		{
+			fir.read(expected);
+		}
+
+		assertArrayEquals(expected, actual);
+		assertTrue(message.getMetadataValue("contentType").endsWith("/xml"));
+	}
+
+	@Test
 	public void testServiceFailedInit() throws Exception
 	{
 		try

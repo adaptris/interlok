@@ -4,13 +4,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import com.adaptris.annotation.AdapterComponent;
-import com.adaptris.annotation.ComponentProfile;
-import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.annotation.*;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -19,6 +18,7 @@ import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.stream.StreamUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import org.hibernate.validator.constraints.NotBlank;
 
 /**
  * Read a file from a specific path into the message payload.
@@ -40,6 +40,10 @@ public class ReadFileService extends ServiceImp
 	@InputFieldHint(expression = true)
 	private String filePath;
 
+	@AffectsMetadata
+	@AdvancedConfig
+	private String contentTypeMetadataKey;
+
 	/**
 	 * {@inheritDoc}.
 	 */
@@ -52,7 +56,10 @@ public class ReadFileService extends ServiceImp
 			if (file.exists() && file.isFile())
 			{
 				log.info("Reading file : {}", file.getAbsolutePath());
-        StreamUtil.copyAndClose(new FileInputStream(file), message.getOutputStream());
+				StreamUtil.copyAndClose(new FileInputStream(file), message.getOutputStream());
+				if(getContentTypeMetadataKey() != null) {
+					message.addMetadata(getContentTypeMetadataKey(), probeContentType(file));
+				}
 			}
 			else
 			{
@@ -65,6 +72,11 @@ public class ReadFileService extends ServiceImp
 			log.error(e.getMessage());
 			throw new ServiceException(e);
 		}
+	}
+
+	private String probeContentType(File file) throws IOException {
+		String result = Files.probeContentType(file.toPath());
+		return result != null ? result : "";
 	}
 
 	/**
@@ -120,5 +132,17 @@ public class ReadFileService extends ServiceImp
 	public void setFilePath(final String filePath)
 	{
 		this.filePath = Args.notBlank(filePath, "filePath");
+	}
+
+	public String getContentTypeMetadataKey() {
+		return contentTypeMetadataKey;
+	}
+
+	/**
+	 * Sets the metadata key set the content type as, if not provided will not be set. (default: null)
+	 * @param contentTypeMetadataKey
+	 */
+	public void setContentTypeMetadataKey(String contentTypeMetadataKey) {
+		this.contentTypeMetadataKey =  Args.notBlank(contentTypeMetadataKey, "contentTypeMetadataKey");
 	}
 }
