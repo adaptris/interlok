@@ -51,6 +51,6 @@ uploadArchives {
     }
   }
 }
-
+sourceCompatibility = 1.7
 publish.dependsOn uploadArchives
 
