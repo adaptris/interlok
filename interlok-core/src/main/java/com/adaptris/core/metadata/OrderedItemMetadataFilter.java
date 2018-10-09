@@ -8,6 +8,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -23,7 +24,7 @@ public class OrderedItemMetadataFilter extends MetadataFilterImpl {
   @NotNull
   @Valid
   @XStreamImplicit(itemFieldName = "metadata-key")
-  private List<String> metadataKeys;
+  private List<String> metadataKeys = new ArrayList<>();
 
   @AdvancedConfig
   private Boolean ignoreCase;
