@@ -11,7 +11,7 @@ dependencies {
   bundled "org.springframework.boot:spring-boot-loader:$springBootLoaderVersion"
   annotationProcessor project(':interlok-core-apt')
   javadoc project(':interlok-core-apt')
-  testCompile ("junit:junit:4.11")
+  testCompile ("junit:junit:4.12")
 }
 
 sourceSets {
