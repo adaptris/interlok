@@ -84,7 +84,7 @@ dependencies {
 
   runtimeOnly ("org.apache.derby:derby:10.14.2.0")
 
-  testCompile ("log4j:log4j:1.2.17")
+  testCompile ("log4j:log4j:1.2.17-atlassian-1")
   testCompile ("junit:junit:4.11")
   testCompile ("org.apache.activemq:activemq-broker:$activeMqVersion")
   testCompile ("org.apache.activemq:activemq-jaas:$activeMqVersion")
