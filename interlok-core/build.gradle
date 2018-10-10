@@ -2,7 +2,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 import org.apache.tools.ant.filters.*
 
 ext {
-  componentName='Interlok Core'
+  componentName='Base Interlok'
   activeMqVersion='5.15.6'
   bouncyCastleVersion='1.60'
   verboseTests= project.hasProperty('verboseTests') ? project.getProperty('verboseTests') : "false"
