@@ -7,6 +7,7 @@ ext {
   bouncyCastleVersion='1.60'
   verboseTests= project.hasProperty('verboseTests') ? project.getProperty('verboseTests') : "false"
   classesToTest = project.hasProperty("junit.test.classes") ? project.getProperty("junit.test.classes") : "**/*Test*"
+  maxThreads = project.hasProperty("junit.threads") ? project.getProperty("junit.threads") : 1
 }
 
 ext.hostname = { ->
@@ -81,6 +82,8 @@ dependencies {
   compile "org.apache.logging.log4j:log4j-api:$log4j2Version", optional
   compile "org.apache.logging.log4j:log4j-1.2-api:$log4j2Version", optional
 
+  runtimeOnly ("org.apache.derby:derby:10.14.2.0")
+
   testCompile ("log4j:log4j:1.2.17")
   testCompile ("junit:junit:4.11")
   testCompile ("org.apache.activemq:activemq-broker:$activeMqVersion")
@@ -91,7 +94,7 @@ dependencies {
   testCompile ("org.mockftpserver:MockFtpServer:2.4-MDTM")
   testCompile ("com.icegreen:greenmail:1.4.0")
   testCompile ("org.mockito:mockito-all:1.9.5")
-  testCompile ("org.apache.derby:derby:10.14.2.0")
+  // testCompile ("org.apache.derby:derby:10.14.2.0")
 
   testCompile("net.sourceforge.jtds:jtds:1.3.1")
   testCompile("com.microsoft.sqlserver:mssql-jdbc:6.4.0.jre8")
@@ -172,7 +175,7 @@ task generateUnitTestProperties {
   }
 }
 
-task copyUnitTestProperties(type: Copy, dependsOn: generateUnitTestProperties) {  
+task copyUnitTestProperties(type: Copy, dependsOn: generateUnitTestProperties) {
   delete file('src/test/resources/unit-tests.properties')
   from file("src/test/resources/unit-tests.properties.resolved")
   into ('src/test/resources/')
@@ -288,6 +291,7 @@ javadoc {
 test {
   include classesToTest
   maxHeapSize = "1G"
+  maxParallelForks = maxThreads
   // listen to events in the test execution lifecycle
   beforeTest { descriptor ->
      if (verboseTestLogging()) {
