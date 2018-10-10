@@ -18,12 +18,20 @@ package com.adaptris.core.ftp;
 
 import static org.junit.Assert.assertTrue;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.ResourceBundle;
 
+import org.mockftpserver.core.command.Command;
+import org.mockftpserver.core.command.ReplyCodes;
+import org.mockftpserver.core.session.Session;
 import org.mockftpserver.fake.FakeFtpServer;
 import org.mockftpserver.fake.UserAccount;
+import org.mockftpserver.fake.command.AbstractFakeCommandHandler;
 import org.mockftpserver.fake.filesystem.DirectoryEntry;
 import org.mockftpserver.fake.filesystem.FileEntry;
 import org.mockftpserver.fake.filesystem.FileSystem;
@@ -35,6 +43,8 @@ import com.adaptris.core.CoreConstants;
 
 @SuppressWarnings("deprecation")
 public class EmbeddedFtpServer {
+
+  private static final String MDTM = "mdtm";
 
   public static final String SLASH = "/";
   public static final String DEFAULT_PASSWORD = "password";
@@ -63,6 +73,7 @@ public class EmbeddedFtpServer {
 
   public FakeFtpServer createAndStart(FileSystem filesystem, UserAccount account) {
     FakeFtpServer server = new FakeFtpServer();
+    server.setCommandHandler("MDTM", new MdtmCommandHandler());
     server.setServerControlPort(0);
     server.addUserAccount(account);
     server.setFileSystem(filesystem);
@@ -115,5 +126,51 @@ public class EmbeddedFtpServer {
       // assertEquals(PAYLOAD, m.getContent().trim());
     }
   }
+
+  public class MdtmCommandHandler extends AbstractFakeCommandHandler {
+
+    public MdtmCommandHandler() {
+    }
+
+    protected void handle(Command command, Session session) {
+      SimpleDateFormat tsFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+      verifyLoggedIn(session);
+      String path = getRealPath(session, command.getRequiredParameter(0));
+      replyCodeForFileSystemException = ReplyCodes.READ_FILE_ERROR;
+      verifyFileSystemCondition(getFileSystem().isFile(path), path, "filesystem.isNotAFile");
+      verifyReadPermission(session, path);
+      FileSystemEntry entry = getFileSystem().getEntry(path);
+      String result = tsFormat.format(entry.getLastModified());
+      ArrayList args = new ArrayList();
+      args.add(result);
+      sendReply(session, 213, MDTM, args);
+    }
+
+    // This is to override with the mdtm resource bundle w/o having to change the resource bundle
+    public ResourceBundle getReplyTextBundle() {
+      return wrap(super.getReplyTextBundle());
+    }
+
+    private ResourceBundle wrap(final ResourceBundle bundle) {
+      return new ResourceBundle() {
+
+        @Override
+        protected Object handleGetObject(String key) {
+          if (MDTM.equalsIgnoreCase(key)) {
+            return "{0}";
+          }
+          return bundle.getObject(key);
+        }
+
+        @Override
+        public Enumeration<String> getKeys() {
+          List<String> list = Collections.list(bundle.getKeys());
+          list.add(MDTM);
+          return Collections.enumeration(list);
+        }
+      };
+    }
+  }
+
 
 }
