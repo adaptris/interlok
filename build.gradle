@@ -72,7 +72,7 @@ subprojects { subproject ->
   }
 
   dependencies {
-    mavenDeploy ("org.apache.maven.wagon:wagon-http:2.2")
+    mavenDeploy ("org.apache.maven.wagon:wagon-http:3.2.0")
   }
 
   configurations.all {
