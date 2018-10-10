@@ -51,7 +51,7 @@ dependencies {
   compile ("commons-collections:commons-collections:3.2.2")
   compile ("commons-io:commons-io:2.6")
   compile ("commons-lang:commons-lang:2.6")
-  compile ("org.apache.commons:commons-lang3:3.7")
+  compile ("org.apache.commons:commons-lang3:3.8.1")
   compile ("commons-net:commons-net:3.6")
   compile ("commons-pool:commons-pool:1.6")
   compile ("org.apache.commons:commons-pool2:2.6.0")
