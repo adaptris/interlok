@@ -61,7 +61,7 @@ dependencies {
   compile ("org.bouncycastle:bcpkix-jdk15on:$bouncyCastleVersion")
   compile ("org.bouncycastle:bcmail-jdk15on:$bouncyCastleVersion")
   compile ("oro:oro:2.0.8")
-  compile ("com.sun.mail:javax.mail:1.6.1")
+  compile ("com.sun.mail:javax.mail:1.6.2")
   compile ("org.glassfish.external:opendmk_jmxremote_optional_jar:1.0-b01-ea")
   compile ("org.glassfish.external:opendmk_jdmkrt_jar:1.0-b01-ea")
   compile ("javax.xml.bind:jaxb-api:2.3.0")
