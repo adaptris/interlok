@@ -9,6 +9,7 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.interlok.config.DataInputParameter;
+import com.adaptris.security.password.Password;
 import com.adaptris.util.stream.StreamUtil;
 import com.adaptris.util.text.Conversion;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -77,7 +78,7 @@ public class SymmetricKeyCryptographyService extends ServiceImp {
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     try {
-      byte[] keyBytes =  Conversion.base64StringToByteArray(getKey().extract(msg));
+      byte[] keyBytes =  Conversion.base64StringToByteArray(Password.decode(getKey().extract(msg)));
       byte[] initialVectorBytes =  Conversion.base64StringToByteArray(getInitialVector().extract(msg));
       Cipher cipher = Cipher.getInstance(getCipherTransformation());
       SecretKeySpec secretKeySpec = new SecretKeySpec(keyBytes, getAlgorithm());
