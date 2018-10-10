@@ -292,7 +292,7 @@ test {
   maxHeapSize = "1G"
   maxParallelForks = maxThreads
   // listen to events in the test execution lifecycle
-  beforeTest { descriptor ->
+  beforeSuite { descriptor ->
      if (verboseTestLogging()) {
       logger.lifecycle("Running: " + descriptor)
      }
