@@ -23,8 +23,5 @@ public abstract class MgmtComponentImpl implements ManagementComponent {
 
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
-  @Override
-  public void setClassLoader(final ClassLoader classLoader) {
-  }
 
 }
