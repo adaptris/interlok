@@ -47,7 +47,6 @@ Property Key | Default Value | Description | Notes
 ------------ | ------------- | ----------- | -----
 junit.test.classes|```**/*Test*.java```|Standard filter so that when you run _gradle test_ it only tests what you want to test ||
 verboseTests|false|If your console mode is "plain" (org.gradle.console=plain), then this prints out each test suite before it's executed|WinGit : it is probably plain|
-junit.forkmode|perTest|This controls how the junit tests are forked internally by ant|_perTest_ is slow, but guarantees isolation, _once_ means we fork the JVM once
 
 So, `gradle -PverboseTests=true test` will print out test suite names; gradle `-Pjunit.test.classes=**/metadata/**/*Test* test` will just test metadata classes.
 
