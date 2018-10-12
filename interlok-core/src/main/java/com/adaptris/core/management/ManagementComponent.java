@@ -25,7 +25,9 @@ import java.util.Properties;
  */
 public interface ManagementComponent {
 
-  public void setClassLoader(ClassLoader classLoader);
+  default void setClassLoader(ClassLoader classLoader) {
+
+  }
 
   /**
    * Initialise the management component.

@@ -47,7 +47,7 @@ dependencies {
   compile ("org.apache.activemq:activemq-client:$activeMqVersion")
   compile ("javax.validation:validation-api:1.0.0.GA")
   compile ("javax.el:javax.el-api:2.2.4")
-  compile ("org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final")
+  compile ("org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.2.Final")
   compile ("org.hibernate:hibernate-validator:4.3.2.Final")
   compile ("commons-collections:commons-collections:3.2.2")
   compile ("commons-io:commons-io:2.6")
@@ -61,10 +61,10 @@ dependencies {
   compile ("org.bouncycastle:bcpkix-jdk15on:$bouncyCastleVersion")
   compile ("org.bouncycastle:bcmail-jdk15on:$bouncyCastleVersion")
   compile ("oro:oro:2.0.8")
-  compile ("com.sun.mail:javax.mail:1.6.1")
+  compile ("com.sun.mail:javax.mail:1.6.2")
   compile ("org.glassfish.external:opendmk_jmxremote_optional_jar:1.0-b01-ea")
   compile ("org.glassfish.external:opendmk_jdmkrt_jar:1.0-b01-ea")
-  compile ("javax.xml.bind:jaxb-api:2.3.0")
+  compile ("javax.xml.bind:jaxb-api:2.3.1")
   compile ("com.jcraft:jsch:0.1.54")
   compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.12.v20180830")
   compile ("javax.servlet:javax.servlet-api:3.1.0")
@@ -85,7 +85,7 @@ dependencies {
   runtimeOnly ("org.apache.derby:derby:10.14.2.0")
 
   testCompile ("log4j:log4j:1.2.17")
-  testCompile ("junit:junit:4.11")
+  testCompile ("junit:junit:4.12")
   testCompile ("org.apache.activemq:activemq-broker:$activeMqVersion")
   testCompile ("org.apache.activemq:activemq-jaas:$activeMqVersion")
   testCompile ("org.apache.activemq:activemq-kahadb-store:$activeMqVersion")
@@ -336,6 +336,7 @@ uploadUnitTestStubs {
   }
 }
 
+check.dependsOn jacocoTestReport
 publish.dependsOn uploadArchives
 publish.dependsOn uploadUnitTestStubs
 processTestResources.dependsOn prepareForTests

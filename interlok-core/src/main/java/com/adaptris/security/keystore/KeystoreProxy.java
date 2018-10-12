@@ -107,7 +107,9 @@ public interface KeystoreProxy {
    * @throws IOException if the file could not be written to
    * @see KeystoreLocation#isWriteable()
    */
-  void commit() throws AdaptrisSecurityException, IOException;
+  default void commit() throws AdaptrisSecurityException, IOException {
+    throw new KeystoreException("Default behaviour is read-only");
+  }
 
   /**
    * Method to extract a Partner's Private Key from their Keystore entry and
@@ -146,12 +148,14 @@ public interface KeystoreProxy {
   /**
    * Assign the given certificate to the given alias.
    * 
+   * @implSpec The default implementation throws an instance of {@link AdaptrisSecurityException} and performs no other action.
    * @param alias the alias of the Certificate
    * @param cert the Certificate
    * @throws AdaptrisSecurityException for any error
    */
-  void setCertificate(String alias, Certificate cert)
-      throws AdaptrisSecurityException;
+  default void setCertificate(String alias, Certificate cert) throws AdaptrisSecurityException {
+    throw new KeystoreException("Default behaviour is read-only");
+  }
 
   /**
    * Assign the given InputStream (contaning a certificate) to the given alias.
@@ -159,13 +163,15 @@ public interface KeystoreProxy {
    * The InputStream is expected to contain a PEM or DER encoded certificate
    * </p>
    * 
+   * @implSpec The default implementation throws an instance of {@link AdaptrisSecurityException} and performs no other action.
    * @param alias the alias of the Certificate
    * @param in the InputStream containing the certificate
    * @throws AdaptrisSecurityException for any error
    * @see #setCertificate(String, Certificate)
    */
-  void setCertificate(String alias, InputStream in)
-      throws AdaptrisSecurityException;
+  default void setCertificate(String alias, InputStream in) throws AdaptrisSecurityException {
+    throw new KeystoreException("Default behaviour is read-only");
+  }
 
   /**
    * Assign the given File (contaning a certificate) to the given alias.
@@ -173,12 +179,15 @@ public interface KeystoreProxy {
    * The File is expected to contain a PEM or DER encoded certificate
    * </p>
    * 
+   * @implSpec The default implementation throws an instance of {@link AdaptrisSecurityException} and performs no other action.
    * @param alias the alias of the Certificate
    * @param file the file containing the certificate
    * @throws AdaptrisSecurityException for any error
    * @see #setCertificate(String, InputStream)
    */
-  void setCertificate(String alias, File file) throws AdaptrisSecurityException;
+  default void setCertificate(String alias, File file) throws AdaptrisSecurityException {
+    throw new KeystoreException("Default behaviour is read-only");
+  }
 
   /**
    * Assign the given file (contaning a certificate) to the given alias.
@@ -186,41 +195,43 @@ public interface KeystoreProxy {
    * The File is expected to contain a PEM or DER encoded certificate
    * </p>
    * 
+   * @implSpec The default implementation throws an instance of {@link AdaptrisSecurityException} and performs no other action.
    * @param alias the alias of the Certificate
    * @param filename the file containing the certificate
    * @see #setCertificate(String, File)
    * @throws AdaptrisSecurityException for any error
    */
-  void setCertificate(String alias, String filename)
-      throws AdaptrisSecurityException;
+  default void setCertificate(String alias, String filename) throws AdaptrisSecurityException {
+    throw new KeystoreException("Default behaviour is read-only");
+  }
 
   /**
-   * Assigns the given key to the given alias, protecting it with the given
-   * password.
+   * Assigns the given key to the given alias, protecting it with the given password.
    * <p>
-   * If the given alias already exists, the keystore information associated with
-   * it is overridden by the given key (and possibly certificate chain).
+   * If the given alias already exists, the keystore information associated with it is overridden by the given key (and possibly
+   * certificate chain).
    * </p>
    * 
+   * @implSpec The default implementation throws an instance of {@link AdaptrisSecurityException} and performs no other action.
    * @param alias the alias of the Certificate
    * @param privKey the PrivateKey
    * @param keyPassword the password to protect the private key
    * @param certChain the certificate chain
    * @throws AdaptrisSecurityException for any error
    */
-  void setPrivateKey(String alias, PrivateKey privKey, char[] keyPassword,
-                     Certificate[] certChain) throws AdaptrisSecurityException;
+  default void setPrivateKey(String alias, PrivateKey privKey, char[] keyPassword, Certificate[] certChain)
+      throws AdaptrisSecurityException {
+    throw new KeystoreException("Default behaviour is read-only");
+  }
 
   /**
    * Import a private key from an inputstream, and assign it to the given alias.
    * <p>
-   * The key is protected by the given key password
-   * </p>
-   * <p>
-   * The inputstream is expected to contain a KEYSTORE_PKCS12 object exported
-   * from Netscape Navigator / Internet Explorer
+   * The key is protected by the given key password; The inputstream is expected to contain a KEYSTORE_PKCS12 object exported from
+   * Netscape Navigator / Internet Explorer
    * </p>
    * 
+   * @implSpec The default implementation throws an instance of {@link AdaptrisSecurityException} and performs no other action.
    * @param alias the alias of the Certificate
    * @param keyPassword the password to protect the private key
    * @param in InputStream containing the KEYSTORE_PKCS12 object
@@ -228,19 +239,19 @@ public interface KeystoreProxy {
    * @throws AdaptrisSecurityException for any error
    * @see #setPrivateKey(String, PrivateKey, char[], Certificate[])
    */
-  void importPrivateKey(String alias, char[] keyPassword, InputStream in,
-                        char[] filePassword) throws AdaptrisSecurityException;
+  default void importPrivateKey(String alias, char[] keyPassword, InputStream in, char[] filePassword)
+      throws AdaptrisSecurityException {
+    throw new KeystoreException("Default behaviour is read-only");
+  }
 
   /**
    * Import a private key from a File, and assign it to the given alias.
    * <p>
-   * The key is protected by the given key password
-   * </p>
-   * <p>
-   * The File is expected to contain a KEYSTORE_PKCS12 object exported from
-   * Netscape Navigator / Internet Explorer
+   * The key is protected by the given key password; The File is expected to contain a KEYSTORE_PKCS12 object exported from Netscape
+   * Navigator / Internet Explorer
    * </p>
    * 
+   * @implSpec The default implementation throws an instance of {@link AdaptrisSecurityException} and performs no other action.
    * @param alias the alias of the Certificate
    * @param keyPassword the password to protect the private key
    * @param file the File containing the KEYSTORE_PKCS12 object
@@ -248,19 +259,18 @@ public interface KeystoreProxy {
    * @see #importPrivateKey(String, char[], InputStream, char[])
    * @throws AdaptrisSecurityException for any error
    */
-  void importPrivateKey(String alias, char[] keyPassword, File file,
-                        char[] filePassword) throws AdaptrisSecurityException;
+  default void importPrivateKey(String alias, char[] keyPassword, File file, char[] filePassword) throws AdaptrisSecurityException {
+    throw new KeystoreException("Default behaviour is read-only");
+  }
 
   /**
    * Import a private key from a File, and assign it to the given alias.
    * <p>
-   * The key is protected by the given key password
-   * </p>
-   * <p>
-   * The File is expected to contain a KEYSTORE_PKCS12 object exported from
-   * Netscape Navigator / Internet Explorer
+   * The key is protected by the given key password; The File is expected to contain a KEYSTORE_PKCS12 object exported from Netscape
+   * Navigator / Internet Explorer
    * </p>
    * 
+   * @implSpec The default implementation throws an instance of {@link AdaptrisSecurityException} and performs no other action.
    * @param alias the alias of the Certificate
    * @param keyPassword the password to protect the private key
    * @param file the File containing the KEYSTORE_PKCS12 object
@@ -268,62 +278,59 @@ public interface KeystoreProxy {
    * @see #importPrivateKey(String, char[], File, char[])
    * @throws AdaptrisSecurityException for any error
    */
-  void importPrivateKey(String alias, char[] keyPassword, String file,
-                        char[] filePassword) throws AdaptrisSecurityException;
+  default void importPrivateKey(String alias, char[] keyPassword, String file, char[] filePassword)
+      throws AdaptrisSecurityException {
+    throw new KeystoreException("Default behaviour is read-only");
+  }
 
   /**
    * Import a certificate chain from a file, giving it the assigned alias.
    * <p>
-   * Certificate Chains are only appropriate for keystore <code>keyEntry</code>
-   * types.
-   * <p>
-   * This assumes that a <code>keyEntry</code> with the alias
-   * <code>alias</code> has already been created, and the secret key
-   * associated with this <code>keyEntry</code> is protected by
-   * <code>keyPassword</code>
+   * Certificate Chains are only appropriate for keystore <code>keyEntry</code> types.
+   * This assumes that a <code>keyEntry</code> with the alias <code>alias</code> has already been created, and the secret key
+   * associated with this <code>keyEntry</code> is protected by <code>keyPassword</code>
+   * </p>
    * 
+   * @implSpec The default implementation throws an instance of {@link AdaptrisSecurityException} and performs no other action.
    * @param keyPassword the password to access the private key
    * @param alias the alias to be assigned
    * @param file the Certificate Chain file to be imported
    * @throws AdaptrisSecurityException for any error
    * @see #importCertificateChain(String, char[], File)
    */
-  void importCertificateChain(String alias, char[] keyPassword, String file)
-      throws AdaptrisSecurityException;
+  default void importCertificateChain(String alias, char[] keyPassword, String file)
+      throws AdaptrisSecurityException {
+    throw new KeystoreException("Default behaviour is read-only");
+  }
 
   /**
    * Import a certificate chain from a file, giving it the assigned alias.
    * <p>
-   * Certificate Chains are only appropriate for keystore <code>keyEntry</code>
-   * types.
-   * <p>
-   * This assumes that a <code>keyEntry</code> with the alias
-   * <code>alias</code> has already been created, and the secret key
-   * associated with this <code>keyEntry</code> is protected by
-   * <code>keyPassword</code>
+   * Certificate Chains are only appropriate for keystore <code>keyEntry</code> types.
+   * This assumes that a <code>keyEntry</code> with the alias <code>alias</code> has already been created, and the secret key
+   * associated with this <code>keyEntry</code> is protected by <code>keyPassword</code>
+   * </p>
    * 
+   * @implSpec The default implementation throws an instance of {@link AdaptrisSecurityException} and performs no other action.
    * @param keyPassword the password to access the private key
    * @param alias the alias to be assigned
    * @param f the Certificate Chain file to be imported
    * @throws AdaptrisSecurityException for any error
    * @see #importCertificateChain(String, char[], InputStream)
    */
-  void importCertificateChain(String alias, char[] keyPassword, File f)
-      throws AdaptrisSecurityException;
+  default void importCertificateChain(String alias, char[] keyPassword, File f) throws AdaptrisSecurityException {
+    throw new KeystoreException("Default behaviour is read-only");
+  }
 
   /**
    * Import a certificate chain from a file, giving it the assigned alias.
    * <p>
-   * This deals with certificate chains as used by Netscape Navigator and
-   * Microsoft Internet Explorer.
-   * <p>
-   * Certificate Chains are only appropriate for keystore <code>keyEntry</code>
-   * types.
-   * <p>
-   * This assumes that a <code>keyEntry</code> with the alias
-   * <code>alias</code> has already been created, and the secret key
-   * associated with this <code>keyEntry</code> is protected by
+   * This deals with certificate chains as used by Netscape Navigator and Microsoft Internet Explorer; Certificate Chains are only
+   * appropriate for keystore <code>keyEntry</code> types. This assumes that a <code>keyEntry</code> with the alias
+   * <code>alias</code> has already been created, and the secret key associated with this <code>keyEntry</code> is protected by
    * <code>keyPassword</code>
+   * </p>
+   * * @implSpec The default implementation throws an instance of {@link AdaptrisSecurityException} and performs no other action.
    * 
    * @param keyPassword the password to access the private key
    * @param alias the alias to be assigned
@@ -331,8 +338,10 @@ public interface KeystoreProxy {
    * @throws AdaptrisSecurityException for any error
    * @see #setPrivateKey(String, PrivateKey, char[], Certificate[])
    */
-  void importCertificateChain(String alias, char[] keyPassword, InputStream in)
-      throws AdaptrisSecurityException;
+  default void importCertificateChain(String alias, char[] keyPassword, InputStream in)
+      throws AdaptrisSecurityException {
+    throw new KeystoreException("Default behaviour is read-only");
+  }
 
   /**
    * Checks if the given alias exists in this keystore.

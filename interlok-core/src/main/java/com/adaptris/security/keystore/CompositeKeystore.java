@@ -16,9 +16,7 @@
 
 package com.adaptris.security.keystore;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.PrivateKey;
@@ -120,14 +118,14 @@ public class CompositeKeystore implements KeystoreProxy {
           for (Enumeration<String> e = kp.getKeystore().aliases(); e.hasMoreElements();) {
             String key = (String) e.nextElement();
             if (!addToAliases(key, kk)) {
-              logR.warn(key + " already exists in keystore group," + " ignoring " + key + " in " + k);
+              logR.warn("{} already exists in keystore group, ignoring {} in {}", key, key, k);
             }
           }
         }
         else {
           String key = k.getAdditionalParams().getProperty(Constants.KEYSTORE_ALIAS);
           if (!addToAliases(key, kk)) {
-            logR.warn(key + " already exists in keystore group," + " ignoring " + key + " in " + k);
+            logR.warn("{} already exists in keystore group, ignoring {} in {}", key, key, k);
           }
         }
       }
@@ -242,14 +240,6 @@ public class CompositeKeystore implements KeystoreProxy {
 
   /**
    *
-   * @see com.adaptris.security.keystore.KeystoreProxy#commit()
-   */
-  public void commit() throws AdaptrisSecurityException, IOException {
-    throw new KeystoreException(this.getClass() + " is implicitly read-only");
-  }
-
-  /**
-   *
    * @see KeystoreProxy#getCertificateChain(java.lang.String)
    */
   public Certificate[] getCertificateChain(String alias) throws AdaptrisSecurityException {
@@ -282,108 +272,12 @@ public class CompositeKeystore implements KeystoreProxy {
 
   /**
    *
-   * @see KeystoreProxy#importCertificateChain(String, char[], String)
-   */
-  public void importCertificateChain(String alias, char[] keyPassword, String file) throws AdaptrisSecurityException {
-    throw new KeystoreException(this.getClass() + " is implicitly read-only");
-  }
-
-  /**
-   *
-   * @see KeystoreProxy#importCertificateChain(String, char[], java.io.File)
-   */
-  public void importCertificateChain(String alias, char[] keyPassword, File f) throws AdaptrisSecurityException {
-    throw new KeystoreException(this.getClass() + " is implicitly read-only");
-  }
-
-  /**
-   *
-   * @see KeystoreProxy#importCertificateChain(java.lang.String, char[],
-   *      java.io.InputStream)
-   */
-  public void importCertificateChain(String alias, char[] keyPassword, InputStream in) throws AdaptrisSecurityException {
-    throw new KeystoreException(this.getClass() + " is implicitly read-only");
-  }
-
-  /**
-   *
-   * @see com.adaptris.security.keystore.KeystoreProxy#importPrivateKey(java.lang.String,
-   *      char[], java.io.InputStream, char[])
-   */
-  public void importPrivateKey(String alias, char[] keyPassword, InputStream in, char[] filePassword)
-      throws AdaptrisSecurityException {
-    throw new KeystoreException(this.getClass() + " is implicitly read-only");
-  }
-
-  /**
-   *
-   * @see com.adaptris.security.keystore.KeystoreProxy#importPrivateKey(java.lang.String,
-   *      char[], java.io.File, char[])
-   */
-  public void importPrivateKey(String alias, char[] keyPassword, File file, char[] filePassword) throws AdaptrisSecurityException {
-    throw new KeystoreException(this.getClass() + " is implicitly read-only");
-  }
-
-  /**
-   *
-   * @see com.adaptris.security.keystore.KeystoreProxy#importPrivateKey(java.lang.String,
-   *      char[], java.lang.String, char[])
-   */
-  public void importPrivateKey(String alias, char[] keyPassword, String file, char[] filePassword) throws AdaptrisSecurityException {
-    throw new KeystoreException(this.getClass() + " is implicitly read-only");
-  }
-
-  /**
-   *
-   * @see com.adaptris.security.keystore.KeystoreProxy#setCertificate(java.lang.String,
-   *      java.security.cert.Certificate)
-   */
-  public void setCertificate(String alias, Certificate cert) throws AdaptrisSecurityException {
-    throw new KeystoreException(this.getClass() + " is implicitly read-only");
-  }
-
-  /**
-   *
-   * @see com.adaptris.security.keystore.KeystoreProxy#setCertificate(java.lang.String,
-   *      java.io.InputStream)
-   */
-  public void setCertificate(String alias, InputStream in) throws AdaptrisSecurityException {
-    throw new KeystoreException(this.getClass() + " is implicitly read-only");
-  }
-
-  /**
-   *
-   * @see KeystoreProxy#setCertificate(java.lang.String, java.io.File)
-   */
-  public void setCertificate(String alias, File file) throws AdaptrisSecurityException {
-    throw new KeystoreException(this.getClass() + " is implicitly read-only");
-  }
-
-  /**
-   *
-   * @see KeystoreProxy#setCertificate(java.lang.String, java.lang.String)
-   */
-  public void setCertificate(String alias, String filename) throws AdaptrisSecurityException {
-    throw new KeystoreException(this.getClass() + " is implicitly read-only");
-  }
-
-  /**
-   *
    * @see KeystoreProxy#setKeystoreLocation(KeystoreLocation)
    */
   public void setKeystoreLocation(KeystoreLocation k) throws AdaptrisSecurityException {
     addKeystore(k);
   }
 
-  /**
-   *
-   * @see com.adaptris.security.keystore.KeystoreProxy#setPrivateKey(java.lang.String,
-   *      java.security.PrivateKey, char[], java.security.cert.Certificate[])
-   */
-  public void setPrivateKey(String alias, PrivateKey privKey, char[] keyPassword, Certificate[] certChain)
-      throws AdaptrisSecurityException {
-    throw new KeystoreException(this.getClass() + " is implicitly read-only");
-  }
 
   private class AliasListEntry {
 

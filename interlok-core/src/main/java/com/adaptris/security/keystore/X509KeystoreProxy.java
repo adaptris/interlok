@@ -69,22 +69,11 @@ class X509KeystoreProxy extends SingleEntryKeystoreProxy {
    */
   public void load() throws AdaptrisSecurityException, IOException {
 
-    InputStream in = getKeystoreLocation().openInput();
-    try {
+    try (InputStream in = getKeystoreLocation().openInput()) {
       certHandler = CertificateHandlerFactory.getInstance().generateHandler(in);
     }
     catch (CertificateException e) {
-      throw new KeystoreException(e);
-    }
-    finally {
-      try {
-        if (in != null) {
-          in.close();
-        }
-      }
-      catch (Exception ignored) {
-        ;
-      }
+      throw KeystoreProxy.wrapException(e);
     }
   }
 
@@ -156,8 +145,8 @@ class X509KeystoreProxy extends SingleEntryKeystoreProxy {
       ks.setCertificateEntry(getAliasName(), certHandler.getCertificate());
     }
     catch (Exception e) {
-      logR.warn("Failed to create a temporary keystore [" + e.getMessage()
-          + "], returning null");
+      logR.warn("Failed to create a temporary keystore [{}], returning null", e.getMessage());
+
       ks = null;
     }
     return ks;

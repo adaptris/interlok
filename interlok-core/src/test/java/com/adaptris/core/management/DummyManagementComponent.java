@@ -21,10 +21,6 @@ import java.util.Properties;
 public class DummyManagementComponent implements ManagementComponent {
 
   @Override
-  public void setClassLoader(final ClassLoader classLoader) {
-  }
-
-  @Override
   public void init(final Properties config) throws Exception {
   }
 
