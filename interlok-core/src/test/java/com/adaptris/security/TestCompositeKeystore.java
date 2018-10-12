@@ -192,7 +192,6 @@ public class TestCompositeKeystore extends TestCase {
     }
     catch (Exception e) {
       assertEquals(KeystoreException.class, e.getClass());
-      assertTrue(e.getMessage().matches(".*is implicitly read-only.*"));
     }
     try {
       ksp.setCertificate("", (Certificate) null);
@@ -200,7 +199,6 @@ public class TestCompositeKeystore extends TestCase {
     }
     catch (Exception e) {
       assertEquals(KeystoreException.class, e.getClass());
-      assertTrue(e.getMessage().matches(".*is implicitly read-only.*"));
     }
     try {
       ksp.setCertificate("", (InputStream) null);
@@ -208,7 +206,6 @@ public class TestCompositeKeystore extends TestCase {
     }
     catch (Exception e) {
       assertEquals(KeystoreException.class, e.getClass());
-      assertTrue(e.getMessage().matches(".*is implicitly read-only.*"));
     }
     try {
       ksp.setCertificate("", (File) null);
@@ -216,7 +213,6 @@ public class TestCompositeKeystore extends TestCase {
     }
     catch (Exception e) {
       assertEquals(KeystoreException.class, e.getClass());
-      assertTrue(e.getMessage().matches(".*is implicitly read-only.*"));
     }
   }
 
@@ -229,7 +225,6 @@ public class TestCompositeKeystore extends TestCase {
     }
     catch (Exception e) {
       assertEquals(KeystoreException.class, e.getClass());
-      assertTrue(e.getMessage().matches(".*is implicitly read-only.*"));
     }
     try {
       ksp.importCertificateChain("", "".toCharArray(), (InputStream) null);
@@ -237,7 +232,6 @@ public class TestCompositeKeystore extends TestCase {
     }
     catch (Exception e) {
       assertEquals(KeystoreException.class, e.getClass());
-      assertTrue(e.getMessage().matches(".*is implicitly read-only.*"));
     }
     try {
       ksp.importCertificateChain("", "".toCharArray(), (File) null);
@@ -245,7 +239,6 @@ public class TestCompositeKeystore extends TestCase {
     }
     catch (Exception e) {
       assertEquals(KeystoreException.class, e.getClass());
-      assertTrue(e.getMessage().matches(".*is implicitly read-only.*"));
     }
   }
 
@@ -258,7 +251,6 @@ public class TestCompositeKeystore extends TestCase {
     }
     catch (Exception e) {
       assertEquals(KeystoreException.class, e.getClass());
-      assertTrue(e.getMessage().matches(".*is implicitly read-only.*"));
     }
     try {
       ksp.importPrivateKey("", "".toCharArray(), (InputStream) null, ""
@@ -267,7 +259,6 @@ public class TestCompositeKeystore extends TestCase {
     }
     catch (Exception e) {
       assertEquals(KeystoreException.class, e.getClass());
-      assertTrue(e.getMessage().matches(".*is implicitly read-only.*"));
     }
     try {
       ksp.importPrivateKey("", "".toCharArray(), (File) null, "".toCharArray());
@@ -275,7 +266,6 @@ public class TestCompositeKeystore extends TestCase {
     }
     catch (Exception e) {
       assertEquals(KeystoreException.class, e.getClass());
-      assertTrue(e.getMessage().matches(".*is implicitly read-only.*"));
     }
 
   }

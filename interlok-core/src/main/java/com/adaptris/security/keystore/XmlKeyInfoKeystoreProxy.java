@@ -85,30 +85,13 @@ class XmlKeyInfoKeystoreProxy extends SingleEntryKeystoreProxy {
    */
   public void load() throws AdaptrisSecurityException, IOException {
 
-    InputStream in = getKeystoreLocation().openInput();
-    try {
+    try (InputStream in = getKeystoreLocation().openInput()) {
       Document doc = DocumentBuilderFactoryBuilder.newInstance().withNamespaceAware(true)
           .newDocumentBuilder(DocumentBuilderFactory.newInstance()).parse(in);
       loadCertificates(doc);
     }
-    // TODO add back this code one Cobertura can handle Java7 multicatch
-    // catch (SAXException|ParserConfigurationException|MarshalException e) {
-    // throw new KeystoreException(e);
-    // }
-    catch (SAXException e) {
-      throw new KeystoreException(e);
-    } catch (ParserConfigurationException e) {
-      throw new KeystoreException(e);
-    } catch (MarshalException e) {
-      throw new KeystoreException(e);
-    } finally {
-      try {
-        if (in != null) {
-          in.close();
-        }
-      } catch (Exception ignored) {
-        ;
-      }
+    catch (SAXException | ParserConfigurationException | MarshalException e) {
+      throw KeystoreProxy.wrapException(e);
     }
   }
 
@@ -231,8 +214,7 @@ class XmlKeyInfoKeystoreProxy extends SingleEntryKeystoreProxy {
       ks.load(null, null);
       ks.setCertificateEntry(getAliasName(), getFirstCertificate());
     } catch (Exception e) {
-      logR.warn("Failed to create a temporary keystore [" + e.getMessage()
-          + "], returning null");
+      logR.warn("Failed to create a temporary keystore [{}], returning null", e.getMessage());
       ks = null;
     }
     return ks;

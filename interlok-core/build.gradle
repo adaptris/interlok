@@ -336,6 +336,7 @@ uploadUnitTestStubs {
   }
 }
 
+check.dependsOn jacocoTestReport
 publish.dependsOn uploadArchives
 publish.dependsOn uploadUnitTestStubs
 processTestResources.dependsOn prepareForTests
