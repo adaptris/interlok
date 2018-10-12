@@ -32,8 +32,8 @@ import com.adaptris.core.util.LifecycleHelper;
 public class ScriptingServiceTest extends GeneralServiceExample {
 
   private static final String KEY_SCRIPTING_BASEDIR = "scripting.basedir";
-  private static final String SCRIPT = "\nvalue = $message.getMetadataValue 'MyMetadataKey';"
-      + "\n$message.addMetadata('MyMetadataKey', value.reverse);";
+  public static final String SCRIPT = "\nvalue = message.getMetadataValue 'MyMetadataKey';"
+      + "\nmessage.addMetadata('MyMetadataKey', value.reverse);";
 
   private static final String MY_METADATA_VALUE = "MyMetadataValue";
   private static final String MY_METADATA_KEY = "MyMetadataKey";
