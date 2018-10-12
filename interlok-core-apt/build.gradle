@@ -11,7 +11,7 @@ dependencies {
   compile files("${System.getProperty('java.home')}/../lib/tools.jar")
 
   testCompile("junit:junit:4.12")
-  testCompile("org.hibernate:hibernate-validator:4.3.2.Final")
+  testCompile("org.hibernate:hibernate-validator:6.0.13.Final")
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
