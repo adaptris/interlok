@@ -1,4 +1,4 @@
-# Interlok [![GitHub tag](https://img.shields.io/github/tag/adaptris/interlok.svg)]() [![Build Status](https://travis-ci.org/adaptris/interlok.svg?branch=develop)](https://travis-ci.org/adaptris/interlok) [![codecov](https://codecov.io/gh/adaptris/interlok/branch/develop/graph/badge.svg)](https://codecov.io/gh/adaptris/interlok) ![Jenkins coverage](https://img.shields.io/jenkins/t/https/development.adaptris.net/jenkins/job/Interlok.svg) ![license](https://img.shields.io/github/license/adaptris/interlok.svg) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/cb4f8668396647adabe4cf82a5cec427)](https://www.codacy.com/app/adaptris/interlok)
+# Interlok [![GitHub tag](https://img.shields.io/github/tag/adaptris/interlok.svg)]() [![Build Status](https://travis-ci.org/adaptris/interlok.svg?branch=develop)](https://travis-ci.org/adaptris/interlok) [![codecov](https://codecov.io/gh/adaptris/interlok/branch/develop/graph/badge.svg)](https://codecov.io/gh/adaptris/interlok) ![Jenkins coverage](https://img.shields.io/jenkins/t/https/development.adaptris.net/jenkins/job/Interlok.svg) ![license](https://img.shields.io/github/license/adaptris/interlok.svg) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/cb4f8668396647adabe4cf82a5cec427)](https://www.codacy.com/app/adaptris/interlok?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=adaptris/interlok&amp;utm_campaign=Badge_Grade)
 
 This is the base repository for Interlok. It contains the base adapter pared of all 3rd party dependencies other than open source ones. There is a single dependency (commented out) on Microsoft SQL Server JDBC provider which is not required unless you explicitly want to test JDBC against SQL Server.
 
@@ -6,8 +6,7 @@ This is the base repository for Interlok. It contains the base adapter pared of 
 
 ### Pre-requisites ###
 
-* ANT (1.9+)
-* JAVA 1.8 (it is compiled with target=1.7, but generating javadocs has some specific 1.8 only flags).
+* JAVA 1.8 (some of it is still compiled with source=1.7);
 
 ### Optional pre-reqs ###
 
@@ -20,27 +19,21 @@ This is the base repository for Interlok. It contains the base adapter pared of 
 ```
 #!shell
 
-cd ./adapter
-ant jar
+./gradlew compileJava
 # You will see if you have setup your environment properly.
-ant test
-# This will take about 10 minutes, and at the end there will be a ./adapter/target/testoutput/html directory that contains the test output.
+./gradlew test
+# This will take about 10 minutes, and at the end there will be a directory that contains the test output according to the usual gradle conventions (build/reports/tests/test)
 ```
 ### Fixing your build ###
 
-Your first build will have errors!
+Your first build may well have errors!
 
-* Have you installed the (JCE) Unlimited Strength Jurisdiction Policy Files files? (some of the unit tests rely on strong crypto...) - http://www.oracle.com/technetwork/java/javase/downloads/index.html
+* Have you installed the (JCE) Unlimited Strength Jurisdiction Policy Files files? (some of the unit tests rely on strong crypto...); If you're using an OpenJDK build, then I think it's automatically installed unless you have explicitly disabled it.
 * Windows User? then you will have to *at least once* encrypt a file so that an EFS certificate is created (for com.adaptris.security.password)
-* Windows User? then you may not have an echo.exe which TestPPP relies on (com.adaptris.transport) - Either install cygwin from http://www.cygwin.com and make sure c:\cygwin\bin is in the path or perhaps create an echo.bat somewhere in the path (batch file option untested).
-
 
 ### JDK work-arounds ###
 
-* Windows User? With a 32bit JVM you might get some stupid __Could not reserve enough space for object heap/OutOfMemory__ errors when starting ant, executing the unit tests, or executing the junit test reports at the end.
-    * If you are using cygwin, then in your ~/.ant/ant.conf file have ```ANT_OPTS="-Xmx1024m"``` which sets the "initial ant memory to have a max of 1GB"; this should resolve any "OutOfMemory" errors that you might get running the post test report transforms.
-    * If you are using the batch file (i.e. you're using the command prompt), then either set an environment variable ANT_OPTS to the same values as above
-    * Modify the build properties _execution.maxmem_ and _execution.maxpermsize_ (as discussed below) to suit your environment.
+* Windows User? With a 32bit JVM you might get some stupid __Could not reserve enough space for object heap/OutOfMemory__; just stop it, and use a 64 bit one.
 
 ## Modifying your build ##
 
@@ -48,30 +41,21 @@ Everything relies on build.properties; in the previous section you didn't make a
 
 ### Standard properties ###
 
+Define your properties either on the gradle commandline `gradle -PpropertyName=value test` etc. or in gradle.properties
+
 Property Key | Default Value | Description | Notes
 ------------ | ------------- | ----------- | -----
-run.coverage| not defined |Setting this to true means that you try add coverage support during _ant test_ giving you a report about code coverage|It does add some time to the tests, and you'll see a new directory appear in testoutput/coverage |
-junit.test.classes|```**/*Test*.java```|Standard ant filter so that when you run _ant test_ it only tests what you want to test ||
+junit.test.classes|```**/*Test*.java```|Standard filter so that when you run _gradle test_ it only tests what you want to test ||
+verboseTests|false|If your console mode is "plain" (org.gradle.console=plain), then this prints out each test suite before it's executed|WinGit : it is probably plain|
 junit.forkmode|perTest|This controls how the junit tests are forked internally by ant|_perTest_ is slow, but guarantees isolation, _once_ means we fork the JVM once
-execution.maxmem|1024m|How much memory you want forked processes to have, translates directly into a jvmarg of -Xmx${execution.maxmem}||
-execution.maxpermsize|128m|How much memory for permanent generation you want forked processes to have, translates directly into a jvmarg of -XX:MaxPermSize=${execution.maxpermsize}|
-default.ftp.tests.enabled|false| Whether or not FTP and SFTP tests are executed | This overrides the setting in default-test.properties.template, you will probably have to define additional properties if you want to test FTP/SFTP
-default.jdbc.storedproc.tests.enabled| false | Whether or not the stored procedure tests are executed|This overrides a setting in default-test.properties.template, you will probably have to define additional properties if you want to test JDBC Stored procedures
 
+So, `gradle -PverboseTests=true test` will print out test suite names; gradle `-Pjunit.test.classes=**/metadata/**/*Test* test` will just test metadata classes.
 
-So for instance if I only wanted to test the metadata services, run jacoco over the tests to find out if the code coverage is truly awesome, and make the tests _run somewhat faster_ then my build.properties would look like
+### Custom Tests
 
+Create a file `src/test/resources/default-test.properties.template.<machinename>`. This will be imported as part of the `processTestResources` step and will allow you control behaviour within individual tests such as whether or not stored procedure tests are run (or actual SFTP against a real server).
 
-```
-#!properties
-
-run.coverage=true
-junit.test.classes=**/services/metadata/*Test*.java
-junit.forkmode=once
-```
-
-You will see some additional files in resources/tests that have a hostname suffix; these are dedicated property files for running tests on those machines (which basically correspond to the machines that run hudson slaves); unless you're changing the property templates you probably don't need to touch these. You can refer to them to see how you can control the environment for your own test environment.
-
+Check default-test.properties.template for specific values.
 
 ## How to publish your changes ##
 
