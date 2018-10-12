@@ -16,9 +16,9 @@
 
 package com.adaptris.core.jms.activemq;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
+import static com.adaptris.core.stubs.ObjectUtils.asSetters;
+import static com.adaptris.core.stubs.ObjectUtils.invokeSetter;
+
 import java.util.concurrent.TimeUnit;
 
 import com.adaptris.core.Adapter;
@@ -43,6 +43,7 @@ import com.adaptris.core.jms.PasProducer;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageProducer;
+import com.adaptris.core.stubs.ObjectUtils;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 
@@ -416,25 +417,6 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
     return new StandaloneProducer(conn, producer);
   }
 
-  
-  private static String[] asSetters(String[] getters) {
-    List<String> result = new ArrayList<>();
-    for (String s : getters) {
-      result.add(s.replaceFirst("get", "set"));
-    }
-    return result.toArray(new String[0]);
-  }
-
-  private static void invokeSetter(Object target, Class clazz, String methodName, String getterMethod, Object param)
-      throws Exception {
-    Method getter = clazz.getMethod(getterMethod, (Class[]) null);
-    Method setter = clazz.getMethod(methodName, new Class[]
-    {
-        getter.getReturnType()
-    });
-    setter.invoke(target, param);
-  }
-
   private static class MockChannelFail extends MockChannel {
 
     private enum WhenToFail {
@@ -451,10 +433,11 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
     }
 
     private void configureSelf(MockChannel other) throws Exception {
-      String[] getterMethods = filterGetterWithNoSetter(MockChannel.class, getGetters(MockChannel.class));
+      String[] getterMethods = ObjectUtils.filterGetterWithNoSetter(MockChannel.class, ObjectUtils.getGetters(MockChannel.class));
       String[] setterMethods = asSetters(getterMethods);
       for (int i = 0; i < getterMethods.length; i++) {
-        invokeSetter(this, MockChannel.class, setterMethods[i], getterMethods[i], invokeGetter(other, getterMethods[i]));
+        invokeSetter(this, MockChannel.class, setterMethods[i], getterMethods[i],
+            ObjectUtils.invokeGetter(other, getterMethods[i]));
       }
     }
 
@@ -503,10 +486,12 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
     }
 
     private void configureSelf(JmsConnection other) throws Exception {
-      String[] getterMethods = filterGetterWithNoSetter(JmsConnection.class, getGetters(JmsConnection.class));
+      String[] getterMethods = ObjectUtils.filterGetterWithNoSetter(JmsConnection.class,
+          ObjectUtils.getGetters(JmsConnection.class));
       String[] setterMethods = asSetters(getterMethods);
       for (int i = 0; i < getterMethods.length; i++) {
-        invokeSetter(this, JmsConnection.class, setterMethods[i], getterMethods[i], invokeGetter(other, getterMethods[i]));
+        invokeSetter(this, JmsConnection.class, setterMethods[i], getterMethods[i],
+            ObjectUtils.invokeGetter(other, getterMethods[i]));
       }
     }
   }
