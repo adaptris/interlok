@@ -50,7 +50,7 @@ subprojects { subproject ->
 
   // In this section you declare where to find the dependencies of your project
   repositories {
-    jcenter()
+    mavenCentral()
     maven { url "$defaultNexusRepo" }
     maven { url "$nexusBaseUrl/content/groups/public" }
     maven { url "$nexusBaseUrl/content/repositories/snapshots" }
