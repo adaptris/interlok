@@ -127,7 +127,7 @@ public class MessageMetricsInterceptorByMetadata extends MessageMetricsIntercept
     boolean rc = false;
     String key = getMetadataElement().getKey();
     String valueRegexp = getMetadataElement().getValue();
-    if (msg.containsKey(getMetadataElement().getKey())) {
+    if (msg.headersContainsKey(getMetadataElement().getKey())) {
       String value = msg.getMetadataValue(key);
       if (value.matches(valueRegexp)) {
         rc = true;
