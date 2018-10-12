@@ -16,8 +16,6 @@
 
 package com.adaptris.core.interceptor;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -98,32 +96,6 @@ public abstract class MetricsInterceptorImpl<T> extends WorkflowInterceptorImpl 
   long timesliceDurationMs() {
     return getTimesliceDuration() != null ? getTimesliceDuration().toMilliseconds() : DEFAULT_TIMESLICE_DURATION.toMilliseconds();
   }
-
-  // We only use the add method internally, so we can safely do a throw for all the others.
-  protected class MaxCapacityList<E> extends ArrayList<E> {
-
-    public boolean add(E item) {
-      while (size() >= timesliceHistoryCount()) {
-        remove(0);
-      }
-      return super.add(item);
-    }
-
-    public void add(int index, E element) {
-      throw new UnsupportedOperationException();
-    }
-
-
-    public boolean addAll(Collection<? extends E> c) {
-      throw new UnsupportedOperationException();
-    }
-
-
-    public boolean addAll(int index, Collection<? extends E> c) {
-      throw new UnsupportedOperationException();
-    }
-  }
-
 
   public interface StatisticsDelta<E extends InterceptorStatistic> {
     public E apply(E currentStat);
