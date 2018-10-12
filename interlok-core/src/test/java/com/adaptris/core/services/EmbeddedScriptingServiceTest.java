@@ -148,8 +148,7 @@ public class EmbeddedScriptingServiceTest extends GeneralServiceExample {
   private EmbeddedScriptingService createService(String uid) {
     EmbeddedScriptingService result = uid == null ? new EmbeddedScriptingService(SERVICE_UID) : new EmbeddedScriptingService(uid);
     result.setLanguage("jruby");
-    result.setScript("value = $message.getMetadataValue '" + MY_METADATA_KEY + "'; $log.info(\"Changing " + MY_METADATA_KEY + " to: \" + value.reverse); " + "$message.addMetadata('" + MY_METADATA_KEY
-        + "', value.reverse);");
+    result.setScript(ScriptingServiceTest.SCRIPT);
     return result;
   }
 
