@@ -60,24 +60,24 @@ public class NonBlockingChannelStartStrategy extends DefaultChannelLifecycleStra
    */
   @Override
   public void start(List<Channel> channels) throws CoreException {
+    handleLifecycle(channels, "Start", e -> { LifecycleHelper.start(e); });
+  }
+
+  private void handleLifecycle(List<Channel> channels, final String friendlyText, final ChannelLifecycle oper) {
     for (int i = 0; i < channels.size(); i++) {
       final Channel c = channels.get(i);
-      final String name = c.hasUniqueId() ? c.getUniqueId() : "Channel(" + i + ")";
+      final String name = channelName(c, i);
       if (!c.shouldStart()) {
         continue;
       }
       ExecutorService es = getExecutor(name);
-      es.execute(new Runnable() {
-        @Override
-        public void run() {
-          Thread.currentThread().setName(name + " Start");
+      es.execute(() -> {
+        Thread.currentThread().setName(String.format("%s %s", name, friendlyText));
           try {
-            LifecycleHelper.start(c);
+            oper.initOrStart(c);
+          } catch (CoreException e) {
+            log.error("Failed to {} channel {}", friendlyText, name, e);
           }
-          catch (CoreException e) {
-            log.error("Failed to initialise channel " + name, e);
-          }
-        }
       });
     }
   }
@@ -97,26 +97,7 @@ public class NonBlockingChannelStartStrategy extends DefaultChannelLifecycleStra
    */
   @Override
   public void init(List<Channel> channels) throws CoreException {
-    for (int i = 0; i < channels.size(); i++) {
-      final Channel c = channels.get(i);
-      final String name = c.hasUniqueId() ? c.getUniqueId() : "Channel(" + i + ")";
-      if (!c.shouldStart()) {
-        continue;
-      }
-      ExecutorService es = getExecutor(name);
-      es.execute(new Runnable() {
-        @Override
-        public void run() {
-          Thread.currentThread().setName(name + " Init");
-          try {
-            LifecycleHelper.init(c);
-          }
-          catch (CoreException e) {
-            log.error("Failed to initialise channel " + name, e);
-          }
-        }
-      });
-    }
+    handleLifecycle(channels, "Init", e -> { LifecycleHelper.init(e); });
   }
 
   @Override
@@ -134,9 +115,18 @@ public class NonBlockingChannelStartStrategy extends DefaultChannelLifecycleStra
   private void stopExecutors(List<Channel> channels) {
     for (int i = 0; i < channels.size(); i++) {
       final Channel c = channels.get(i);
-      final String name = c.hasUniqueId() ? c.getUniqueId() : "Channel(" + i + ")";
+      final String name = channelName(c, i);
       ExecutorService es = getExecutor(name);
       es.shutdownNow();
     }
+  }
+
+  private static String channelName(Channel c, int i) {
+    return c.hasUniqueId() ? c.getUniqueId() : "Channel(" + i + ")";
+  }
+
+  @FunctionalInterface
+  private interface ChannelLifecycle {
+    public void initOrStart(Channel c) throws CoreException;
   }
 }
