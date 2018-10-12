@@ -19,75 +19,107 @@ package com.adaptris.core.interceptor;
 import java.util.Calendar;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.ProduceException;
+import com.adaptris.core.util.LifecycleHelper;
 
 /**
  * Abstract WorkflowInterceptor implementation that exposes metrics via JMX.
  * 
  */
 public abstract class MessageMetricsInterceptorImpl extends MetricsInterceptorImpl<MessageStatistic> {
-
-  protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
   
-  // * Internal cache array, containing timeslices. Will never have more
-  // * time slices than that dictated by time slice history count.
-  private transient List<MessageStatistic> statistics;
   private transient Object chubb = new Object();
+  
+  private StatisticManager statisticManager;
 
   public MessageMetricsInterceptorImpl() {
     super();
-    statistics = new MaxCapacityList<MessageStatistic>();
+  }
+  
+  @Override
+  public void init() throws CoreException {
+    this.statisticManager().setMaxHistoryCount(this.timesliceHistoryCount());
+    LifecycleHelper.init(this.statisticManager());
+  }
+  
+  @Override
+  public void start() throws CoreException {
+    LifecycleHelper.start(this.statisticManager());
+  }
+
+  @Override
+  public void stop() {
+    LifecycleHelper.stop(this.statisticManager());
+  }
+
+  @Override
+  public void close() {
+    LifecycleHelper.close(this.statisticManager());
   }
 
   protected void clearStatistics() {
     synchronized (chubb) {
-      statistics.clear();
+      statisticManager().clear();
     }
   }
 
 
   protected void update(StatisticsDelta<MessageStatistic> d) {
     synchronized (chubb) {
-      MessageStatistic stat = getCurrentTimeSlice();
-      updateCurrentTimeSlice(d.apply(stat));
+      InterceptorStatistic stat = getCurrentTimeSlice();
+      updateCurrentTimeSlice(d.apply((MessageStatistic) stat));
     }
   }
 
   private void updateCurrentTimeSlice(MessageStatistic currentTimeSlice) {
-    statistics.set(statistics.size() - 1, currentTimeSlice);
+    this.statisticManager().updateCurrent(currentTimeSlice);
   }
 
-  private MessageStatistic getCurrentTimeSlice() {
-    MessageStatistic timeSlice = null;
+  private InterceptorStatistic getCurrentTimeSlice() {
+    InterceptorStatistic timeSlice = null;
     long timeInMillis = Calendar.getInstance().getTimeInMillis();
 
-    if (statistics.size() == 0) {
+    if (this.statisticManager().getStats().size() == 0) {
       timeSlice = new MessageStatistic();
       timeSlice.setEndMillis(timeInMillis + timesliceDurationMs());
-      statistics.add(timeSlice);
+      this.statisticManager().getStats().add(timeSlice);
     }
     else {
-      timeSlice = getLatestTimeSlice();
+      timeSlice = this.statisticManager().getLatestStat();
       if (timeSlice.getEndMillis() <= timeInMillis) {
+        try {
+          this.statisticManager().produce(timeSlice);
+        } catch (ProduceException e) {
+          log.error("Failed to produce timeslice.", e);
+        }
+        
         timeSlice = new MessageStatistic(timeInMillis + timesliceDurationMs());
-        statistics.add(timeSlice);
+        this.statisticManager().getStats().add(timeSlice);
       }
     }
     return timeSlice;
   }
-
-  private MessageStatistic getLatestTimeSlice() {
-    if (statistics.size() == 0) {
-      return null;
-    }
+  
+  protected StatisticManager statisticManager() {
+    if(this.getStatisticManager() != null)
+      return this.getStatisticManager();
     else {
-      return statistics.get(statistics.size() - 1);
+      this.setStatisticManager(new StandardStatisticManager(this.timesliceHistoryCount()));
     }
+    return this.getStatisticManager();
+  }
+  
+  public StatisticManager getStatisticManager() {
+    return statisticManager;
   }
 
-  protected List<MessageStatistic> getStats() {
-    return statistics;
+  public void setStatisticManager(StatisticManager statisticManager) {
+    this.statisticManager = statisticManager;
+  }
+
+  protected List<InterceptorStatistic> getStats() {
+    return this.statisticManager().getStats();
   }
 
 }

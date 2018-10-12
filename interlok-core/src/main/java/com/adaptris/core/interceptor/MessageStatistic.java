@@ -23,8 +23,6 @@ import java.io.ObjectOutput;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -37,8 +35,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class MessageStatistic extends InterceptorStatistic implements Externalizable, Cloneable {
 
   private static final long serialVersionUID = 2015052101L;
-
-  private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   private int totalMessageCount;
   private long totalMessageSize;

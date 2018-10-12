@@ -99,7 +99,7 @@ public class MetadataTotalsInterceptor extends MetadataMetricsInterceptorImpl {
   }
 
   private int getValue(String key, AdaptrisMessage msg) {
-    if (!msg.containsKey(key)) {
+    if (!msg.headersContainsKey(key)) {
       return 0;
     }
     return Integer.valueOf(msg.getMetadataValue(key)).intValue();

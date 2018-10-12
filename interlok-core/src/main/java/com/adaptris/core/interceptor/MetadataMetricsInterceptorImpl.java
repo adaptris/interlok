@@ -19,62 +19,101 @@ package com.adaptris.core.interceptor;
 import java.util.Calendar;
 import java.util.List;
 
+import com.adaptris.core.CoreException;
+import com.adaptris.core.ProduceException;
+import com.adaptris.core.util.LifecycleHelper;
+
 public abstract class MetadataMetricsInterceptorImpl extends MetricsInterceptorImpl<MetadataStatistic> {
-  private transient List<MetadataStatistic> statistics;
+  
   private transient Object chubb = new Object();
+  
+  private StatisticManager statisticManager;
 
   protected MetadataMetricsInterceptorImpl() {
-    statistics = new MaxCapacityList<MetadataStatistic>();
+  }
+  
+  @Override
+  public void init() throws CoreException {
+    this.statisticManager().setMaxHistoryCount(this.timesliceHistoryCount());
+    LifecycleHelper.init(this.statisticManager());
+  }
+  
+  @Override
+  public void start() throws CoreException {
+    LifecycleHelper.start(this.statisticManager());
+  }
+
+  @Override
+  public void stop() {
+    LifecycleHelper.stop(this.statisticManager());
+  }
+
+  @Override
+  public void close() {
+    LifecycleHelper.close(this.statisticManager());
   }
 
   protected void clearStatistics() {
     synchronized (chubb) {
-      statistics.clear();
+      statisticManager().clear();
     }
   }
 
   protected void update(StatisticsDelta<MetadataStatistic> d) {
     synchronized (chubb) {
-      MetadataStatistic stat = getCurrentStat();
-      updateCurrent(d.apply(stat));
+      InterceptorStatistic stat = getCurrentStat();
+      updateCurrent(d.apply((MetadataStatistic) stat));
     }
   }
 
   protected void updateCurrent(MetadataStatistic currentTimeSlice) {
-    statistics.set(statistics.size() - 1, currentTimeSlice);
+    this.statisticManager().updateCurrent(currentTimeSlice);
   }
 
-  protected List<MetadataStatistic> getStats() {
-    return statistics;
+  protected List<InterceptorStatistic> getStats() {
+    return this.statisticManager().getStats();
   }
 
-  private MetadataStatistic getCurrentStat() {
-    MetadataStatistic timeSlice = null;
+  private InterceptorStatistic getCurrentStat() {
+    InterceptorStatistic timeSlice = null;
     long timeInMillis = Calendar.getInstance().getTimeInMillis();
 
-    if (statistics.size() == 0) {
+    if (this.statisticManager().getStats().size() == 0) {
       timeSlice = new MetadataStatistic();
       timeSlice.setEndMillis(timeInMillis + timesliceDurationMs());
-      statistics.add(timeSlice);
+      this.statisticManager().getStats().add(timeSlice);
     }
     else {
-      timeSlice = getLatestStat();
+      timeSlice = this.statisticManager().getLatestStat();
       if (timeSlice.getEndMillis() <= timeInMillis) {
+        try {
+          this.statisticManager().produce(timeSlice);
+        } catch (ProduceException e) {
+          log.error("Failed to produce timeslice.", e);
+        }
+        
         timeSlice = new MetadataStatistic(timeInMillis + timesliceDurationMs());
-        statistics.add(timeSlice);
+        this.statisticManager().getStats().add(timeSlice);
       }
     }
     return timeSlice;
   }
 
-
-  private MetadataStatistic getLatestStat() {
-    if (statistics.size() == 0) {
-      return null;
-    }
+  protected StatisticManager statisticManager() {
+    if(this.getStatisticManager() != null)
+      return this.getStatisticManager();
     else {
-      return statistics.get(statistics.size() - 1);
+      this.setStatisticManager(new StandardStatisticManager(this.timesliceHistoryCount()));
     }
+    return this.getStatisticManager();
+  }
+  
+  public StatisticManager getStatisticManager() {
+    return statisticManager;
+  }
+
+  public void setStatisticManager(StatisticManager statisticManager) {
+    this.statisticManager = statisticManager;
   }
 
 }

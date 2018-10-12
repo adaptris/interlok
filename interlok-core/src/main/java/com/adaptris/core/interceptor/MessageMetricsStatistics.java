@@ -74,7 +74,7 @@ public class MessageMetricsStatistics extends ChildRuntimeInfoComponentImpl
     buffer.append(" time slice(s) have been recorded.\n");
 
     if (wrappedComponent.getStats().size() > 0) {
-      MessageStatistic timeSlice = wrappedComponent.getStats().get(wrappedComponent.getStats().size() - 1);
+      MessageStatistic timeSlice = (MessageStatistic) wrappedComponent.getStats().get(wrappedComponent.getStats().size() - 1);
       buffer.append("Current time slice statistics; \n");
       buffer.append("    Time Slice ends in  - " + (timeSlice.getEndMillis() - timeinMillis) / 1000 + " seconds.\n");
       buffer.append("    Message count - " + timeSlice.getTotalMessageCount() + "\n");
@@ -98,9 +98,9 @@ public class MessageMetricsStatistics extends ChildRuntimeInfoComponentImpl
   public List<MessageStatistic> getStatistics(int fromIndex, int toIndex) throws CoreException {
     List<MessageStatistic> result = new ArrayList<MessageStatistic>();
     try {
-      List<MessageStatistic> sublist = wrappedComponent.getStats().subList(fromIndex, toIndex);
-      for (MessageStatistic ms : sublist) {
-        result.add(ms.clone());
+      List<InterceptorStatistic> sublist = wrappedComponent.getStats().subList(fromIndex, toIndex);
+      for (InterceptorStatistic ms : sublist) {
+        result.add(((MessageStatistic) ms).clone());
       }
     } catch (Exception e) {
       ExceptionHelper.rethrowCoreException(e);

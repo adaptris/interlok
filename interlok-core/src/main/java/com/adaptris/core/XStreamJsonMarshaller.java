@@ -36,7 +36,7 @@ import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 @XStreamAlias("xstream-json-marshaller")
 public class XStreamJsonMarshaller extends XStreamMarshallerImpl {
 
-  public XStreamJsonMarshaller() throws CoreException {
+  public XStreamJsonMarshaller() {
   }
 
   @Override

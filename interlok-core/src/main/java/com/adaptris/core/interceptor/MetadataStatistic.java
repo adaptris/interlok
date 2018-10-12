@@ -65,7 +65,7 @@ public class MetadataStatistic extends InterceptorStatistic implements Externali
    * @return the keys.
    */
   public Collection<String> getKeys() {
-    return new ArrayList(getMetadataStatistics().stringPropertyNames());
+    return new ArrayList<String>(getMetadataStatistics().stringPropertyNames());
   }
 
   /**

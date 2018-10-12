@@ -21,9 +21,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * A singleton that will manage all caches and for each cache will maintain the current time slice.
  * 
@@ -31,7 +28,6 @@ import org.slf4j.LoggerFactory;
  */
 public class TimeSlicePersistence {
 
-	private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 	private static TimeSlicePersistence instance;
 	private Map<String, TimeSlice> timeSlices;
 

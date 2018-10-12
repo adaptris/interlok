@@ -76,9 +76,9 @@ public class MetadataStatistics extends ChildRuntimeInfoComponentImpl implements
   public List<MetadataStatistic> getStatistics(int fromIndex, int toIndex) throws CoreException {
     List<MetadataStatistic> result = new ArrayList<MetadataStatistic>();
     try {
-      List<MetadataStatistic> sublist = wrappedComponent.getStats().subList(fromIndex, toIndex);
-      for (MetadataStatistic ms : sublist) {
-        result.add(ms.clone());
+      List<InterceptorStatistic> sublist = wrappedComponent.getStats().subList(fromIndex, toIndex);
+      for (InterceptorStatistic ms : sublist) {
+        result.add(((MetadataStatistic) ms).clone());
       }
     }
     catch (Exception e) {
