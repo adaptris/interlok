@@ -5,17 +5,17 @@ import java.util.List;
 import com.adaptris.core.ComponentLifecycle;
 import com.adaptris.core.ProduceException;
 
-public interface StatisticManager<T extends InterceptorStatistic> extends ComponentLifecycle {
+public interface StatisticManager extends ComponentLifecycle {
 
-  public void produce(T interceptorStatistic) throws ProduceException;
+  public void produce(InterceptorStatistic interceptorStatistic) throws ProduceException;
   
   public void clear();
   
-  public void updateCurrent(T currentTimeSlice);
+  public void updateCurrent(InterceptorStatistic currentTimeSlice);
     
-  public T getLatestStat();
+  public InterceptorStatistic getLatestStat();
   
-  public List<T> getStats();
+  public List<InterceptorStatistic> getStats();
   
   public void setMaxHistoryCount(int maxHistoryCount);
   

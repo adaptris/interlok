@@ -9,23 +9,24 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.core.CoreException;
 
-public abstract class BaseStatisticManager<T extends InterceptorStatistic> implements StatisticManager<T> {
+public abstract class BaseStatisticManager implements StatisticManager {
   
   protected transient Logger log = LoggerFactory.getLogger(this.getClass());
   
-  private transient List<T> stats;
+  private transient List<InterceptorStatistic> stats;
     
   private transient Integer maxHistoryCount;
   
   public BaseStatisticManager() {
+    this.setStats(new ArrayList<>());
   }
   
   public BaseStatisticManager(int maxHistoryCount) {
     this.setMaxHistoryCount(maxHistoryCount);
-    this.setStats(new MaxCapacityList<T>(maxHistoryCount));
+    this.setStats(new MaxCapacityList<InterceptorStatistic>(maxHistoryCount));
   }
 
-  public void setStats(List<T> stats) {
+  public void setStats(List<InterceptorStatistic> stats) {
     this.stats = stats;
   }
 
@@ -35,12 +36,12 @@ public abstract class BaseStatisticManager<T extends InterceptorStatistic> imple
   }
 
   @Override
-  public void updateCurrent(T currentTimeSlice) {
+  public void updateCurrent(InterceptorStatistic currentTimeSlice) {
     this.stats().set(this.stats().size() - 1, currentTimeSlice);
   }
 
   @Override
-  public T getLatestStat() {
+  public InterceptorStatistic getLatestStat() {
     if (this.stats().size() == 0) {
       return null;
     }
@@ -50,15 +51,15 @@ public abstract class BaseStatisticManager<T extends InterceptorStatistic> imple
   }
 
   @Override
-  public List<T> getStats() {
+  public List<InterceptorStatistic> getStats() {
     return this.stats;
   }
   
-  protected List<T> stats() {
+  protected List<InterceptorStatistic> stats() {
     if(this.getStats() != null)
       return this.getStats();
     else
-      this.setStats(new MaxCapacityList<T>(this.getMaxHistoryCount()));
+      this.setStats(new MaxCapacityList<InterceptorStatistic>(this.getMaxHistoryCount()));
     
     return this.getStats();
   }

@@ -8,7 +8,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("standard-statistic-manager")
 @AdapterComponent
 @ComponentProfile(summary = "Base statistic manager that handles timeslices.", tag = "interceptor")
-public class StandardStatisticManager<T extends InterceptorStatistic> extends BaseStatisticManager<T> {
+public class StandardStatisticManager extends BaseStatisticManager {
 
   public StandardStatisticManager() {
   }
@@ -18,7 +18,7 @@ public class StandardStatisticManager<T extends InterceptorStatistic> extends Ba
   }
   
   @Override
-  public void produce(T interceptorStatistic) throws ProduceException {
+  public void produce(InterceptorStatistic interceptorStatistic) throws ProduceException {
     log.debug("Standard statistic manager skipping timeslice producer.");
   }
 

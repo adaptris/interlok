@@ -15,7 +15,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("producing-statistic-manager")
 @AdapterComponent
 @ComponentProfile(summary = "Statistic manager that allows configuration of a standalone producer for each timeslice when they expire.", tag = "interceptor")
-public class ProducingStatisticManager<T extends InterceptorStatistic> extends BaseStatisticManager<T> {
+public class ProducingStatisticManager extends BaseStatisticManager {
 
   private StandaloneProducer producer;
   
@@ -30,7 +30,7 @@ public class ProducingStatisticManager<T extends InterceptorStatistic> extends B
   }
   
   @Override
-  public void produce(T interceptorStatistic) throws ProduceException {
+  public void produce(InterceptorStatistic interceptorStatistic) throws ProduceException {
     try {
       String marshalledTimeslice = this.getMarshaller().marshal(interceptorStatistic);
       AdaptrisMessage newMessage = DefaultMessageFactory.getDefaultInstance().newMessage(marshalledTimeslice);

@@ -31,7 +31,7 @@ public abstract class MessageMetricsInterceptorImpl extends MetricsInterceptorIm
   
   private transient Object chubb = new Object();
   
-  private StatisticManager<MessageStatistic> statisticManager;
+  private StatisticManager statisticManager;
 
   public MessageMetricsInterceptorImpl() {
     super();
@@ -67,8 +67,8 @@ public abstract class MessageMetricsInterceptorImpl extends MetricsInterceptorIm
 
   protected void update(StatisticsDelta<MessageStatistic> d) {
     synchronized (chubb) {
-      MessageStatistic stat = getCurrentTimeSlice();
-      updateCurrentTimeSlice(d.apply(stat));
+      InterceptorStatistic stat = getCurrentTimeSlice();
+      updateCurrentTimeSlice(d.apply((MessageStatistic) stat));
     }
   }
 
@@ -76,8 +76,8 @@ public abstract class MessageMetricsInterceptorImpl extends MetricsInterceptorIm
     this.statisticManager().updateCurrent(currentTimeSlice);
   }
 
-  private MessageStatistic getCurrentTimeSlice() {
-    MessageStatistic timeSlice = null;
+  private InterceptorStatistic getCurrentTimeSlice() {
+    InterceptorStatistic timeSlice = null;
     long timeInMillis = Calendar.getInstance().getTimeInMillis();
 
     if (this.statisticManager().getStats().size() == 0) {
@@ -101,24 +101,24 @@ public abstract class MessageMetricsInterceptorImpl extends MetricsInterceptorIm
     return timeSlice;
   }
   
-  protected StatisticManager<MessageStatistic> statisticManager() {
+  protected StatisticManager statisticManager() {
     if(this.getStatisticManager() != null)
       return this.getStatisticManager();
     else {
-      this.setStatisticManager(new StandardStatisticManager<MessageStatistic>(this.timesliceHistoryCount()));
+      this.setStatisticManager(new StandardStatisticManager(this.timesliceHistoryCount()));
     }
     return this.getStatisticManager();
   }
   
-  public StatisticManager<MessageStatistic> getStatisticManager() {
+  public StatisticManager getStatisticManager() {
     return statisticManager;
   }
 
-  public void setStatisticManager(StatisticManager<MessageStatistic> statisticManager) {
+  public void setStatisticManager(StatisticManager statisticManager) {
     this.statisticManager = statisticManager;
   }
 
-  protected List<MessageStatistic> getStats() {
+  protected List<InterceptorStatistic> getStats() {
     return this.statisticManager().getStats();
   }
 

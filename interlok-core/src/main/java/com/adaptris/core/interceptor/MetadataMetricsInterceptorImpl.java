@@ -27,7 +27,7 @@ public abstract class MetadataMetricsInterceptorImpl extends MetricsInterceptorI
   
   private transient Object chubb = new Object();
   
-  private StatisticManager<MetadataStatistic> statisticManager;
+  private StatisticManager statisticManager;
 
   protected MetadataMetricsInterceptorImpl() {
   }
@@ -61,8 +61,8 @@ public abstract class MetadataMetricsInterceptorImpl extends MetricsInterceptorI
 
   protected void update(StatisticsDelta<MetadataStatistic> d) {
     synchronized (chubb) {
-      MetadataStatistic stat = getCurrentStat();
-      updateCurrent(d.apply(stat));
+      InterceptorStatistic stat = getCurrentStat();
+      updateCurrent(d.apply((MetadataStatistic) stat));
     }
   }
 
@@ -70,12 +70,12 @@ public abstract class MetadataMetricsInterceptorImpl extends MetricsInterceptorI
     this.statisticManager().updateCurrent(currentTimeSlice);
   }
 
-  protected List<MetadataStatistic> getStats() {
+  protected List<InterceptorStatistic> getStats() {
     return this.statisticManager().getStats();
   }
 
-  private MetadataStatistic getCurrentStat() {
-    MetadataStatistic timeSlice = null;
+  private InterceptorStatistic getCurrentStat() {
+    InterceptorStatistic timeSlice = null;
     long timeInMillis = Calendar.getInstance().getTimeInMillis();
 
     if (this.statisticManager().getStats().size() == 0) {
@@ -99,20 +99,20 @@ public abstract class MetadataMetricsInterceptorImpl extends MetricsInterceptorI
     return timeSlice;
   }
 
-  protected StatisticManager<MetadataStatistic> statisticManager() {
+  protected StatisticManager statisticManager() {
     if(this.getStatisticManager() != null)
       return this.getStatisticManager();
     else {
-      this.setStatisticManager(new StandardStatisticManager<MetadataStatistic>(this.timesliceHistoryCount()));
+      this.setStatisticManager(new StandardStatisticManager(this.timesliceHistoryCount()));
     }
     return this.getStatisticManager();
   }
   
-  public StatisticManager<MetadataStatistic> getStatisticManager() {
+  public StatisticManager getStatisticManager() {
     return statisticManager;
   }
 
-  public void setStatisticManager(StatisticManager<MetadataStatistic> statisticManager) {
+  public void setStatisticManager(StatisticManager statisticManager) {
     this.statisticManager = statisticManager;
   }
 
