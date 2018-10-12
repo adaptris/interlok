@@ -61,10 +61,10 @@ public class MetadataTotalsInterceptorTest extends TestCase {
     submitMessage(message);
     // Make sure there is 1 message in the cache
     assertEquals(1, metricsInterceptor.getStats().size());
-    assertEquals(10, metricsInterceptor.getStats().get(0).getValue(COUNTER_1));
-    assertEquals(10, metricsInterceptor.getStats().get(0).getValue(COUNTER_2));
-    assertEquals(0, metricsInterceptor.getStats().get(0).getValue(this.getClass().getSimpleName()));
-    assertEquals(0, metricsInterceptor.getStats().get(0).getValue("blah"));
+    assertEquals(10, ((MetadataStatistic) metricsInterceptor.getStats().get(0)).getValue(COUNTER_1));
+    assertEquals(10, ((MetadataStatistic) metricsInterceptor.getStats().get(0)).getValue(COUNTER_2));
+    assertEquals(0, ((MetadataStatistic) metricsInterceptor.getStats().get(0)).getValue(this.getClass().getSimpleName()));
+    assertEquals(0, ((MetadataStatistic) metricsInterceptor.getStats().get(0)).getValue("blah"));
   }
 
   public void testCreatesNewTimeSliceAfterTimeDelay() throws Exception {
@@ -80,8 +80,8 @@ public class MetadataTotalsInterceptorTest extends TestCase {
     submitMessage(message);
     
     assertEquals(1, metricsInterceptor.getStats().size());
-    assertEquals(10, metricsInterceptor.getStats().get(0).getValue(COUNTER_1));
-    assertEquals(10, metricsInterceptor.getStats().get(0).getValue(COUNTER_2));
+    assertEquals(10, ((MetadataStatistic) metricsInterceptor.getStats().get(0)).getValue(COUNTER_1));
+    assertEquals(10, ((MetadataStatistic) metricsInterceptor.getStats().get(0)).getValue(COUNTER_2));
     
     metricsInterceptor.setTimesliceDuration(new TimeInterval(1L, TimeUnit.SECONDS));
     
@@ -89,10 +89,10 @@ public class MetadataTotalsInterceptorTest extends TestCase {
     submitMessage(message);
 
     assertEquals(2, metricsInterceptor.getStats().size());
-    assertEquals(10, metricsInterceptor.getStats().get(0).getValue(COUNTER_1));
-    assertEquals(10, metricsInterceptor.getStats().get(0).getValue(COUNTER_2));
-    assertEquals(20, metricsInterceptor.getStats().get(1).getValue(COUNTER_1));
-    assertEquals(20, metricsInterceptor.getStats().get(1).getValue(COUNTER_2));
+    assertEquals(10, ((MetadataStatistic) metricsInterceptor.getStats().get(0)).getValue(COUNTER_1));
+    assertEquals(10, ((MetadataStatistic) metricsInterceptor.getStats().get(0)).getValue(COUNTER_2));
+    assertEquals(20, ((MetadataStatistic) metricsInterceptor.getStats().get(1)).getValue(COUNTER_1));
+    assertEquals(20, ((MetadataStatistic) metricsInterceptor.getStats().get(1)).getValue(COUNTER_2));
   }
 
   public void testDoesNotCreateMoreHistoryThanSpecified() throws Exception {
@@ -130,8 +130,8 @@ public class MetadataTotalsInterceptorTest extends TestCase {
     new MetricsInserterThread(20).run();
 
     Thread.sleep(200); // Lets allow the threads to finish
-    assertEquals(1000, metricsInterceptor.getStats().get(0).getValue(COUNTER_1));
-    assertEquals(1000, metricsInterceptor.getStats().get(0).getValue(COUNTER_2));
+    assertEquals(1000, ((MetadataStatistic) metricsInterceptor.getStats().get(0)).getValue(COUNTER_1));
+    assertEquals(1000, ((MetadataStatistic) metricsInterceptor.getStats().get(0)).getValue(COUNTER_2));
   }
 
   private AdaptrisMessage createMessage() {

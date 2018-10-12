@@ -52,7 +52,7 @@ public class MessageMetricsInterceptorTest extends TestCase {
     submitMessage(message);
     // Make sure there is 1 message in the cache
     assertEquals(1, metricsInterceptor.getStats().size());
-    assertEquals(1, metricsInterceptor.getStats().get(0).getTotalMessageCount());
+    assertEquals(1, ((MessageStatistic) metricsInterceptor.getStats().get(0)).getTotalMessageCount());
   }
 
   public void testInterceptor_WithException() throws Exception {
@@ -63,8 +63,8 @@ public class MessageMetricsInterceptorTest extends TestCase {
     assertEquals(0, metricsInterceptor.getStats().size());
     submitMessage(message);
     assertEquals(1, metricsInterceptor.getStats().size());
-    assertEquals(1, metricsInterceptor.getStats().get(0).getTotalMessageCount());
-    assertEquals(1, metricsInterceptor.getStats().get(0).getTotalMessageErrorCount());
+    assertEquals(1, ((MessageStatistic) metricsInterceptor.getStats().get(0)).getTotalMessageCount());
+    assertEquals(1, ((MessageStatistic) metricsInterceptor.getStats().get(0)).getTotalMessageErrorCount());
   }
 
   public void testCreatesNewTimeSliceAfterTimeDelay() throws Exception {
@@ -87,8 +87,8 @@ public class MessageMetricsInterceptorTest extends TestCase {
     submitMessage(message);
 
     assertEquals(2, metricsInterceptor.getStats().size());
-    assertEquals(1, metricsInterceptor.getStats().get(0).getTotalMessageCount());
-    assertEquals(2, metricsInterceptor.getStats().get(1).getTotalMessageCount());
+    assertEquals(1, ((MessageStatistic) metricsInterceptor.getStats().get(0)).getTotalMessageCount());
+    assertEquals(2, ((MessageStatistic) metricsInterceptor.getStats().get(1)).getTotalMessageCount());
   }
 
   public void testDoesNotCreateMoreHistoryThanSpecified() throws Exception {
@@ -119,8 +119,8 @@ public class MessageMetricsInterceptorTest extends TestCase {
     submitMessage(message);
     // Should still only be 2 time slices
     assertEquals(2, metricsInterceptor.getStats().size());
-    assertEquals(2, metricsInterceptor.getStats().get(0).getTotalMessageCount());
-    assertEquals(3, metricsInterceptor.getStats().get(1).getTotalMessageCount());
+    assertEquals(2, ((MessageStatistic) metricsInterceptor.getStats().get(0)).getTotalMessageCount());
+    assertEquals(3, ((MessageStatistic) metricsInterceptor.getStats().get(1)).getTotalMessageCount());
   }
 
 
@@ -136,7 +136,7 @@ public class MessageMetricsInterceptorTest extends TestCase {
     new MetricsInserterThread(20).run();
 
     Thread.sleep(1000); // Lets allow the threads to finish
-    assertEquals(130, metricsInterceptor.getStats().get(0).getTotalMessageCount());
+    assertEquals(130, ((MessageStatistic) metricsInterceptor.getStats().get(0)).getTotalMessageCount());
   }
 
   private void waitFor(int seconds) throws Exception {

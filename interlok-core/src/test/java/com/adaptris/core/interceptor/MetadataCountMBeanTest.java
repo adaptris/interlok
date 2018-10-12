@@ -61,7 +61,7 @@ public class MetadataCountMBeanTest extends MetadataStatisticsMBeanCase {
       assertEquals(1, stats.getStatistics().size());
       assertEquals(interceptor.getStats().size(), stats.getStatistics().size());
 
-      MetadataStatistic interceptorStat = interceptor.getStats().get(0);
+      MetadataStatistic interceptorStat = (MetadataStatistic)  interceptor.getStats().get(0);
       MetadataStatistic mbeanStat = stats.getStatistics().get(0);
 
       assertNotSame(interceptorStat, mbeanStat); // They're not objectively equals (not clones), and no equals method.
