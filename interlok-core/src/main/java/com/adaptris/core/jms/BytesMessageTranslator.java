@@ -61,7 +61,7 @@ public class BytesMessageTranslator extends MessageTypeTranslatorImp {
     BytesMessage jmsMsg = session.createBytesMessage();
     if (msg.getSize() > streamThreshold()) {
       try {
-        StreamUtil.copyAndClose(msg.getInputStream(), new BytesMessageOutputStream(jmsMsg));
+        StreamUtil.copyAndClose(msg.getInputStream(), new BytesMessageOutputStream(jmsMsg)); // lgtm [java/output-resource-leak]
       }
       catch (IOException e) {
         throw JmsUtils.wrapJMSException(e);
