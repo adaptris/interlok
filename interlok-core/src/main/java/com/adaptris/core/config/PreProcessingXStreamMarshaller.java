@@ -71,7 +71,7 @@ public class PreProcessingXStreamMarshaller extends com.adaptris.core.XStreamMar
     Args.notNull(input, "input");
     Object result = null;
     try {
-      result = getInstance().fromXML(preProcess(input));
+      result = getInstance().fromXML(preProcess(input)); // lgtm [java/unsafe-deserialization]
     }
     catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);

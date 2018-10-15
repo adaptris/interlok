@@ -236,7 +236,9 @@ public class XPathService extends ServiceImp {
 
   private Document buildDocument(DocumentBuilderFactoryBuilder builder, String xmlData)
       throws ParserConfigurationException, SAXException, IOException {
-    return builder.newDocumentBuilder(DocumentBuilderFactory.newInstance()).parse(new InputSource(new StringReader(xmlData)));
+    // The user can explicitly configure for XXE mitigation, so we can ignore via lgtm
+    return builder.newDocumentBuilder(DocumentBuilderFactory.newInstance())
+        .parse(new InputSource(new StringReader(xmlData))); // lgtm [java/xxe]
   }
 
   private String serializeNode(NodeList nodeList) throws TransformerException {

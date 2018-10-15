@@ -247,7 +247,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
   /** @see AdaptrisMessage#getMetadata(String) */
   @Override
-  public MetadataElement getMetadata(String key) {
+  public MetadataElement getMetadata(String key) { // lgtm [java/unsynchronized-getter]
     String resolved = resolveKey(this, key);
 
     if (key != null && containsKey(resolved)) {
@@ -266,7 +266,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   }
 
   @Override
-  public Set<MetadataElement> getMetadata() {
+  public Set<MetadataElement> getMetadata() { // lgtm [java/unsynchronized-getter]
     return new HashSet<MetadataElement>(metadata);
   }
 
