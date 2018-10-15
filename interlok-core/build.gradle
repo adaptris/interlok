@@ -102,11 +102,11 @@ dependencies {
 
   testCompile("net.sourceforge.jtds:jtds:1.3.1")
   testCompile("com.microsoft.sqlserver:mssql-jdbc:6.4.0.jre8")
-  testCompile ("mysql:mysql-connector-java:8.0.12")
+  testCompile ("mysql:mysql-connector-java:5.1.47")
 
   antSql("net.sourceforge.jtds:jtds:1.3.1")
   antSql("com.microsoft.sqlserver:mssql-jdbc:6.4.0.jre8")
-  antSql ("mysql:mysql-connector-java:8.0.12")
+  antSql ("mysql:mysql-connector-java:5.1.47")
 
   annotationProcessor project(':interlok-core-apt')
   testAnnotationProcessor project(':interlok-core-apt')
