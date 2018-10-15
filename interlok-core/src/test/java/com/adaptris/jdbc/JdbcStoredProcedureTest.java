@@ -77,6 +77,8 @@ public class JdbcStoredProcedureTest extends BaseCase {
       
       testsEnabled = true;
     }
+    System.err.println("Stored Procedure Tests : [" + testsEnabled + "]; using " + PROPERTIES.getProperty(JDBC_URL));
+
   }
 
   public void tearDown() throws Exception {
