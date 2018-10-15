@@ -25,8 +25,6 @@ import java.security.cert.CollectionCertStoreParameters;
 import java.security.cert.PKIXBuilderParameters;
 import java.security.cert.X509CertSelector;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,10 +74,6 @@ public class CertificatePathVerifier {
       PKIXBuilderParameters params = new PKIXBuilderParameters(trusted,
           targetConstraints);
 
-      List<Certificate> certsList = new ArrayList<Certificate>();
-      for (int i = 0; i < certs.length; i++) {
-        certsList.add(certs[i]);
-      }
       CollectionCertStoreParameters ccsp = new CollectionCertStoreParameters();
       CertStore store = CertStore.getInstance(COLLECTION, ccsp);
       params.addCertStore(store);
