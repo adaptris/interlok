@@ -137,8 +137,9 @@ public abstract class MimeHelper {
   private static AdaptrisMessage mimeFaker(AdaptrisMessage src, String boundary)
       throws IOException, MessagingException {
     AdaptrisMessage parseable = src.getFactory().newMessage();
-    try (InputStream in = src.getInputStream(); OutputStream out = parseable.getOutputStream()) {
-      PrintWriter p = new PrintWriter(out);
+    try (InputStream in = src.getInputStream();
+        OutputStream out = parseable.getOutputStream();
+        PrintWriter p = new PrintWriter(out)) {
       p.print(MimeConstants.HEADER_CONTENT_ID + ": " + src.getUniqueId() + CRLF);
       p.print(MimeConstants.HEADER_CONTENT_TYPE + ": " + MULTIPART_MIXED_TYPE
           + "\"" + boundary + "\"" + CRLF);
