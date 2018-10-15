@@ -256,7 +256,7 @@ public class ClasspathInitialiser {
         }
       }
     }
-    if (DBG && (jars == null || jars.size() < 1)) {
+    if (DBG && jars.size() < 1) {
       System.err.println("(Warning) ClasspathInitialiser.getJars() " + dir + " is empty or does not exist");
     }
     return jars;
