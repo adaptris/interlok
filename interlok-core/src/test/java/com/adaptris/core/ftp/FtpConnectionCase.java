@@ -16,8 +16,11 @@
 
 package com.adaptris.core.ftp;
 
+import java.util.concurrent.TimeUnit;
+
 import com.adaptris.core.BaseCase;
 import com.adaptris.filetransfer.FileTransferClient;
+import com.adaptris.util.TimeInterval;
 
 /**
  * Abstract base class for testing Ftp connections only.
@@ -110,6 +113,20 @@ public abstract class FtpConnectionCase extends BaseCase {
 
     assertNull(connection.getMaxClientCacheSize());
     assertEquals(FileTransferConnection.DEFAULT_MAX_CACHE_SIZE, connection.maxClientCacheSize());
+  }
+
+  public void testSetCacheExpiration() throws Exception {
+    FileTransferConnection connection = createConnection();
+    assertNull(connection.getCacheExpiration());
+    assertEquals(FileTransferConnection.DEFAULT_EXPIRATION.toMilliseconds(), connection.expirationMillis());
+
+    TimeInterval t = new TimeInterval(10L, TimeUnit.SECONDS);
+    connection.setCacheExpiration(t);
+    assertNotNull(connection.getCacheExpiration());
+    assertEquals(t, connection.getCacheExpiration());
+    assertEquals(t.toMilliseconds(), connection.expirationMillis());
+    assertNull(connection.withCacheExpiration(null).getCacheExpiration());
+    assertEquals(FileTransferConnection.DEFAULT_EXPIRATION.toMilliseconds(), connection.expirationMillis());
   }
 
   public void testConnect() throws Exception {
