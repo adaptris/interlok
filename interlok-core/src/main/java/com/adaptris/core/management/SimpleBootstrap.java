@@ -43,8 +43,7 @@ public class SimpleBootstrap extends CmdLineBootstrap {
    * Entry point to program.
    * </p>
    *
-   * @param
-   * 		argv - Command line arguments
+   * @param argv - Command line arguments
    *
    * @throws Exception upon some unrecoverable error.
    */
