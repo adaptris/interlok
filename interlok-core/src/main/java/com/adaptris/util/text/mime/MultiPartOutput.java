@@ -272,7 +272,7 @@ public class MultiPartOutput implements MimeConstants {
       mimeHeader.setHeader(HEADER_CONTENT_LENGTH, String.valueOf(counter.count()));
     }
     writeHeaders(mimeHeader, out);
-    StreamUtil.copyAndClose(new FileInputStream(tempFile), out);
+    StreamUtil.copyAndClose(new FileInputStream(tempFile), out);// lgtm [java/output-resource-leak]
   }
 
 

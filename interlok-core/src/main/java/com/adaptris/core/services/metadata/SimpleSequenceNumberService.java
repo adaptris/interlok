@@ -155,7 +155,7 @@ public class SimpleSequenceNumberService extends ServiceImp {
     try {
       File myFile = new File(getSequenceNumberFile());
       Properties p = load(myFile);
-      Long count = Long.parseLong(nextSequenceNumber(p, getMaximumSequenceNumber()));
+      long count = Long.parseLong(nextSequenceNumber(p, getMaximumSequenceNumber()));
       String countString = formatter.format(count);
       if (countString.length() > getNumberFormat().length()) {
         count = getBehaviour(getOverflowBehaviour()).wrap(count);
@@ -311,7 +311,7 @@ public class SimpleSequenceNumberService extends ServiceImp {
     if(maximum == null){
       return false;
     }
-    Long count = Long.parseLong(value);
+    long count = Long.parseLong(value);
     return count > maximum;
 
   }

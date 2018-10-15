@@ -241,17 +241,16 @@ public class DuplicateMessageRoutingService extends ServiceImp {
   }
 
   private void store() throws IOException {
-    ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file));
-    oos.writeObject(comparators);
-    oos.flush();
-    oos.close();
+    try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
+      oos.writeObject(comparators);
+    }
   }
 
   private void load() throws Exception {
     if (file.exists()) {
-      ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
+      try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
       comparators = (LinkedList) ois.readObject();
-      ois.close();
+      }
     }
   }
 

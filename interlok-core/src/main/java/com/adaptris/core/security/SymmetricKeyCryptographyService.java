@@ -1,5 +1,19 @@
 package com.adaptris.core.security;
 
+import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+
+import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.CipherOutputStream;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotBlank;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -13,18 +27,6 @@ import com.adaptris.security.password.Password;
 import com.adaptris.util.stream.StreamUtil;
 import com.adaptris.util.text.Conversion;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import org.hibernate.validator.constraints.NotBlank;
-
-import javax.crypto.Cipher;
-import javax.crypto.CipherInputStream;
-import javax.crypto.CipherOutputStream;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.io.IOException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
 
 /**
  * @config symmetric-key-cryptography-service
@@ -62,14 +64,16 @@ public class SymmetricKeyCryptographyService extends ServiceImp {
       @Override
       void execute(Cipher cipher, SecretKeySpec secretKeySpec, IvParameterSpec ivParameterSpec, AdaptrisMessage msg) throws InvalidAlgorithmParameterException, InvalidKeyException, IOException {
         cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, ivParameterSpec);
-        StreamUtil.copyAndClose(new CipherInputStream(msg.getInputStream(), cipher), msg.getOutputStream());
+        // the utility method name gives it away ;)
+        StreamUtil.copyAndClose(new CipherInputStream(msg.getInputStream(), cipher), msg.getOutputStream()); // lgtm [java/output-resource-leak] 
       }
     },
     ENCRYPT {
       @Override
       void execute(Cipher cipher, SecretKeySpec secretKeySpec, IvParameterSpec ivParameterSpec, AdaptrisMessage msg) throws InvalidAlgorithmParameterException, InvalidKeyException, IOException {
         cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, ivParameterSpec);
-        StreamUtil.copyAndClose(msg.getInputStream(), new CipherOutputStream(msg.getOutputStream(), cipher));
+        // the utility method name gives it away ;)
+        StreamUtil.copyAndClose(msg.getInputStream(), new CipherOutputStream(msg.getOutputStream(), cipher)); // lgtm [java/output-resource-leak] 
       }
     };
     abstract void execute(Cipher cipher, SecretKeySpec secretKeySpec, IvParameterSpec ivParameterSpec, AdaptrisMessage msg) throws InvalidAlgorithmParameterException, InvalidKeyException, IOException;
