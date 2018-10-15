@@ -467,7 +467,7 @@ public class AliasedElementReflectionConverter extends ReflectionConverter {
             String classAttribute = HierarchicalStreams.readClassAttribute(
                 reader, mapper);
             if (classAttribute != null)
-              log.trace("Reading class attribute: ", classAttribute);
+              log.trace("Reading class attribute: {}", classAttribute);
             if (classAttribute != null) {
               type = mapper.realClass(classAttribute);
             } else {
