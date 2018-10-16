@@ -105,13 +105,11 @@ public abstract class JdbcMapUpsert extends JdbcMapInsert {
   public class UpdateWrapper implements StatementWrapper {
     private List<String> columns;
     private String statement;
-    private String tablename;
 
     public UpdateWrapper(String tablename, Map<String, String> obj) {
       columns = new ArrayList<>(obj.keySet());
       columns.remove(idField());
       String bookend = columnBookend();
-      this.tablename = tablename;
       StringBuilder statementBuilder = new StringBuilder(String.format("UPDATE %s SET", tablename));
       // Add all the updates.
       for (Iterator<String> i = columns.iterator(); i.hasNext();) {
@@ -148,11 +146,9 @@ public abstract class JdbcMapUpsert extends JdbcMapInsert {
 
   public class SelectWrapper implements StatementWrapper {
     private String statement;
-    private String tablename;
 
     public SelectWrapper(String tablename, Map<String, String> obj) {
       String bookend = columnBookend();
-      this.tablename = tablename;
       // SELECT 'id' from table where 'id' = ?
       statement = String.format("SELECT %1$s%2$s%1$s FROM %3$s WHERE %1$s%2$s%1$s = ?", bookend, idField(), tablename);
     }

@@ -293,10 +293,9 @@ public abstract class JdbcMapInsert extends JdbcService {
   public class InsertWrapper implements StatementWrapper {
     private List<String> columns;
     private String statement;
-
     public InsertWrapper(String tablename, Map<String, String> json) {
       columns = new ArrayList<>(json.keySet());
-      statement = String.format("INSERT into %s (%s) VALUES (%s)", getTable(), createString(true), createString(false));
+      statement = String.format("INSERT into %s (%s) VALUES (%s)", tablename, createString(true), createString(false));
     }
 
     private String createString(boolean columnsNotQuestionMarks) {
