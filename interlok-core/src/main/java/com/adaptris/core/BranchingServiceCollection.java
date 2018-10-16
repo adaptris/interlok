@@ -101,8 +101,8 @@ public class BranchingServiceCollection extends ServiceCollectionImp {
         msg.addEvent(service, false);
         handleException(service, msg, e);
       }
-
-      if (service.isBranching()) {
+      // service can't be null at this point, because handleException will throw a ServiceException if so.
+      if (service.isBranching()) { // lgtm [java/dereferenced-value-may-be-null]
         nextServiceId = msg.getNextServiceId();
       }
       else {

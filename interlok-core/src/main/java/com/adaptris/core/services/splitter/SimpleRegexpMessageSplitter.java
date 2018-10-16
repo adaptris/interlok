@@ -85,7 +85,7 @@ public class SimpleRegexpMessageSplitter extends StringPayloadSplitter {
       try {
         // do not check for a match first - we want to throw an exception if
         // no match found.
-        compareMatcher.find();
+        compareMatcher.find(); // lgtm
         currentMatch = compareMatcher.group(1);
       }
       catch (Exception e) {
@@ -104,7 +104,7 @@ public class SimpleRegexpMessageSplitter extends StringPayloadSplitter {
         if (compareMatcher.find()) {
           newMatch = compareMatcher.group(1);
         }
-        if (currentMatch.equals(newMatch)) {
+        if (currentMatch.equals(newMatch)) { // lgtm
           // Still in the same message
           currentSplitMsg.append(thisRecord);
         }
@@ -133,7 +133,7 @@ public class SimpleRegexpMessageSplitter extends StringPayloadSplitter {
       if (compareMatcher.find()) {
         newMatch = compareMatcher.group(1);
       }
-      if (currentMatch.equals(newMatch)) {
+      if (currentMatch.equals(newMatch)) { // lgtm
         // Still in the same message
         currentSplitMsg.append(thisRecord);
         splitMessages.add(currentSplitMsg.toString());

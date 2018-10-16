@@ -161,7 +161,8 @@ public class OnMessageHandler {
     }
 
     try {
-      adaptrisMessage.addObjectHeader(JmsConstants.OBJ_JMS_REPLY_TO_KEY, msg.getJMSReplyTo());
+      // Adaptris message can't be null at this point.
+      adaptrisMessage.addObjectHeader(JmsConstants.OBJ_JMS_REPLY_TO_KEY, msg.getJMSReplyTo()); // lgtm
     }
     catch (JMSException ignored) {
       // this might throw an exception, if it does, we don't care.

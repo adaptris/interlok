@@ -24,6 +24,7 @@ import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.management.AdapterConfigManager;
 import com.adaptris.core.management.BootstrapProperties;
 import com.adaptris.core.management.Constants;
+import com.adaptris.core.util.Args;
 
 /**
  * Implementation of the {@link AdapterConfigManager} interface for XStream.
@@ -41,11 +42,10 @@ public class XStreamConfigManager extends ReadWriteConfigManager {
 
   @Override
   public void configure(BootstrapProperties bootstrapProperties) throws Exception {
-    this.bootstrapProperties = bootstrapProperties;
+    this.bootstrapProperties = Args.notNull(bootstrapProperties, "bootstrapProperties");
     
     // Get the configured output type property (XML/JSON) and create the marshaller based on this
-    final String marshallerOutputProperty = (bootstrapProperties != null
-        ? getPropertyIgnoringCase(bootstrapProperties, Constants.CFG_KEY_MARSHALLER_OUTPUT_TYPE) : null);
+    final String marshallerOutputProperty = getPropertyIgnoringCase(bootstrapProperties, Constants.CFG_KEY_MARSHALLER_OUTPUT_TYPE);
 
     // Get the xstream enable beautified output flag
     final boolean enableBeautifiedOutputFlag = bootstrapProperties.isEnabled(Constants.CFG_XSTREAM_BEAUTIFIED_OUTPUT);
