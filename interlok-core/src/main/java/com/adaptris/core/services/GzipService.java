@@ -18,6 +18,8 @@ package com.adaptris.core.services;
 
 import static com.adaptris.util.stream.StreamUtil.copyAndClose;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.zip.GZIPOutputStream;
 
 import com.adaptris.annotation.AdapterComponent;
@@ -48,8 +50,10 @@ public class GzipService extends ServiceImp {
    */
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    try {
-      copyAndClose(msg.getInputStream(), new GZIPOutputStream(msg.getOutputStream())); // lgtm [java/output-resource-leak]
+    try (InputStream in = msg.getInputStream();
+        OutputStream msgOut = msg.getOutputStream();
+        GZIPOutputStream out = new GZIPOutputStream(msgOut)) {
+      copyAndClose(in, out);
     }
     catch (Exception e) {
       throw new ServiceException(e);

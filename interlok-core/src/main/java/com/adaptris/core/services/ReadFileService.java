@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 
 import javax.validation.Valid;
@@ -59,10 +60,12 @@ public class ReadFileService extends ServiceImp
 			if (file.exists() && file.isFile())
 			{
 				log.info("Reading file : {}", file.getAbsolutePath());
-        StreamUtil.copyAndClose(new FileInputStream(file), message.getOutputStream()); // lgtm [java/output-resource-leak]
-				if(getContentTypeMetadataKey() != null) {
-					message.addMetadata(getContentTypeMetadataKey(), probeContentType(file));
-				}
+        try (FileInputStream in = new FileInputStream(file); OutputStream out = message.getOutputStream()) {
+          StreamUtil.copyAndClose(in, out);
+          if (getContentTypeMetadataKey() != null) {
+            message.addMetadata(getContentTypeMetadataKey(), probeContentType(file));
+          }
+        }
 			}
 			else
 			{

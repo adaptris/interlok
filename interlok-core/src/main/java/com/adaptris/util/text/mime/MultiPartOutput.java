@@ -24,6 +24,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilterOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -37,10 +38,9 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.adaptris.util.stream.StreamUtil;
 
 /**
  * Handle creation of multipart mime output.
@@ -260,7 +260,8 @@ public class MultiPartOutput implements MimeConstants {
   }
 
   private void writeViaTempfile(OutputStream out, File tempFile) throws MessagingException, IOException {
-    try (CountingOutputStream counter = new CountingOutputStream(new FileOutputStream(tempFile))) {
+    try (FileOutputStream fileOut = new FileOutputStream(tempFile);
+        CountingOutputStream counter = new CountingOutputStream(fileOut)) {
       MimeMultipart multipart = new MimeMultipart();
       mimeHeader.setHeader(HEADER_CONTENT_TYPE, multipart.getContentType());
       // Write the part out to the stream first.
@@ -272,7 +273,9 @@ public class MultiPartOutput implements MimeConstants {
       mimeHeader.setHeader(HEADER_CONTENT_LENGTH, String.valueOf(counter.count()));
     }
     writeHeaders(mimeHeader, out);
-    StreamUtil.copyAndClose(new FileInputStream(tempFile), out);// lgtm [java/output-resource-leak]
+    try (InputStream in = new FileInputStream(tempFile)) {
+      IOUtils.copy(in, out);
+    }
   }
 
 

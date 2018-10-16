@@ -1,6 +1,8 @@
 package com.adaptris.core.security;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 
@@ -64,16 +66,22 @@ public class SymmetricKeyCryptographyService extends ServiceImp {
       @Override
       void execute(Cipher cipher, SecretKeySpec secretKeySpec, IvParameterSpec ivParameterSpec, AdaptrisMessage msg) throws InvalidAlgorithmParameterException, InvalidKeyException, IOException {
         cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, ivParameterSpec);
-        // the utility method name gives it away ;)
-        StreamUtil.copyAndClose(new CipherInputStream(msg.getInputStream(), cipher), msg.getOutputStream()); // lgtm [java/output-resource-leak] 
+        try (InputStream msgIn = msg.getInputStream();
+            CipherInputStream in = new CipherInputStream(msgIn, cipher);
+            OutputStream out = msg.getOutputStream()) {
+          StreamUtil.copyAndClose(in, out);
+        }
       }
     },
     ENCRYPT {
       @Override
       void execute(Cipher cipher, SecretKeySpec secretKeySpec, IvParameterSpec ivParameterSpec, AdaptrisMessage msg) throws InvalidAlgorithmParameterException, InvalidKeyException, IOException {
         cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, ivParameterSpec);
-        // the utility method name gives it away ;)
-        StreamUtil.copyAndClose(msg.getInputStream(), new CipherOutputStream(msg.getOutputStream(), cipher)); // lgtm [java/output-resource-leak] 
+        try (InputStream in = msg.getInputStream();
+            OutputStream msgOut = msg.getOutputStream();
+            CipherOutputStream out = new CipherOutputStream(msgOut, cipher)) {
+          StreamUtil.copyAndClose(in, out);
+        }
       }
     };
     abstract void execute(Cipher cipher, SecretKeySpec secretKeySpec, IvParameterSpec ivParameterSpec, AdaptrisMessage msg) throws InvalidAlgorithmParameterException, InvalidKeyException, IOException;

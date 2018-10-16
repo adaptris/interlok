@@ -81,7 +81,7 @@ public class StoreMetadataValueService extends DuplicateMetadataValueService {
 
   private void storePreviouslyReceivedValues() throws FileNotFoundException, IOException {
     if (store != null) {
-      try (ObjectOutputStream o = new ObjectOutputStream(new FileOutputStream(store))) {
+      try (FileOutputStream out = new FileOutputStream(store); ObjectOutputStream o = new ObjectOutputStream(out)) {
         o.writeObject(previousValuesStore);
       }
     }

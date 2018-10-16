@@ -60,8 +60,8 @@ public class BytesMessageTranslator extends MessageTypeTranslatorImp {
   public Message translate(AdaptrisMessage msg) throws JMSException {
     BytesMessage jmsMsg = session.createBytesMessage();
     if (msg.getSize() > streamThreshold()) {
-      try {
-        StreamUtil.copyAndClose(msg.getInputStream(), new BytesMessageOutputStream(jmsMsg)); // lgtm [java/output-resource-leak]
+      try (InputStream in = msg.getInputStream(); BytesMessageOutputStream out = new BytesMessageOutputStream(jmsMsg)) {
+        StreamUtil.copyAndClose(in, out);
       }
       catch (IOException e) {
         throw JmsUtils.wrapJMSException(e);
