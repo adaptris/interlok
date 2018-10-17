@@ -1,0 +1,72 @@
+ext {
+  componentName='Interlok Common Classes'
+}
+
+// In this section you declare the dependencies for your production and test code
+dependencies {
+
+  compile project(':interlok-core-apt')
+  compile ("com.thoughtworks.xstream:xstream:$xstreamVersion")
+  compile ("commons-collections:commons-collections:3.2.2")
+  compile ("commons-io:commons-io:2.6")
+  compile ("commons-lang:commons-lang:2.6")
+  compile ("commons-net:commons-net:3.6")
+  compile ("commons-pool:commons-pool:1.6")
+  compile ("org.apache.commons:commons-pool2:2.6.0")
+  compile ("org.slf4j:slf4j-api:$slf4jVersion")
+  compile "org.slf4j:jcl-over-slf4j:$slf4jVersion", optional
+  compile "org.slf4j:slf4j-log4j12:$slf4jVersion", optional
+  compile "org.slf4j:jul-to-slf4j:$slf4jVersion", optional
+  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.12.v20180830")
+  compile ("javax.servlet:javax.servlet-api:3.1.0")
+
+  annotationProcessor project(':interlok-core-apt')
+  testAnnotationProcessor project(':interlok-core-apt')
+
+  javadoc project(':interlok-core-apt')
+
+  testCompile ("log4j:log4j:1.2.17")
+  testCompile ("junit:junit:4.12")
+
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+  archives javadocJar
+}
+
+javadoc {
+  configure(options) {
+      links = [
+        interlokJavadocs,
+        interlokCommonJavadocs,
+      ]
+    taglets = ["com.adaptris.taglet.ConfigTaglet", "com.adaptris.taglet.LicenseTaglet"]
+    options.addStringOption "tagletpath", configurations.javadoc.asPath
+    title= componentName
+  }
+}
+
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      repository(url: mavenPublishUrl) {
+        authentication(userName: repoUsername, password: repoPassword)
+      }
+      configuration = configurations.mavenDeploy
+      pom.withXml {
+        asNode().appendNode("description", "Common components for Interlok")
+        def properties = asNode().appendNode("properties")
+        properties.appendNode("target", "3.8.0+")
+        properties.appendNode("license", "false")
+      }
+
+    }
+  }
+}
+
+publish.dependsOn uploadArchives

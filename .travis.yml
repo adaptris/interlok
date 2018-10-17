@@ -3,22 +3,24 @@ sudo: required
 dist: trusty
 
 before_script:
-  - echo "default.jdbc.storedproc.tests.enabled=true" >> adapter/build.properties
-  - echo "default.jdbc.storedproc.url=jdbc:mysql://localhost:3306/" >> adapter/build.properties
-  - echo "default.jdbc.storedproc.driver=com.mysql.jdbc.Driver" >> adapter/build.properties
-  - echo "default.jdbc.storedproc.database=ci_travis" >> adapter/build.properties
-  - echo "default.jdbc.storedproc.username=root" >> adapter/build.properties
-  - echo "default.jdbc.storedproc.password=" >> adapter/build.properties
-  - echo "default.jdbc.storedproc.vendor=mysql" >> adapter/build.properties
-  - echo "default.jdbc.storedproc.teststatement=" >> adapter/build.properties
+  - echo "default.jdbc.storedproc.tests.enabled=true" >> interlok-core/build.properties
+  - echo "default.jdbc.storedproc.url=jdbc:mysql://localhost:3306/" >> interlok-core/build.properties
+  - echo "default.jdbc.storedproc.driver=com.mysql.jdbc.Driver" >> interlok-core/build.properties
+  - echo "default.jdbc.storedproc.database=ci_travis" >> interlok-core/build.properties
+  - echo "default.jdbc.storedproc.username=root" >> interlok-core/build.properties
+  - echo "default.jdbc.storedproc.password=" >> interlok-core/build.properties
+  - echo "default.jdbc.storedproc.vendor=mysql" >> interlok-core/build.properties
+  - echo "default.jdbc.storedproc.teststatement=" >> interlok-core/build.properties
 
-script: ant -Divy.logging=default test
+install: ant -version
+script: ./gradlew --no-daemon -PverboseTests=true assemble
 
 addons:
   apt:
     packages:
       - haveged
       - ant-optional
+      - bash-builtins
 
 before_install:
   - sudo service haveged start
@@ -36,6 +38,8 @@ cache:
   apt: true
   directories:
     - $HOME/.ivy2
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
 
 notifications:
   email: false

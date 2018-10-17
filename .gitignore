@@ -28,3 +28,9 @@ log4j.properties
 *.orig
 target
 bin
+gradle.properties
+security-test.properties
+security-test.properties.resolved
+unit-tests.properties
+unit-tests.properties.resolved
+security.properties
