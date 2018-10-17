@@ -19,7 +19,6 @@ import static com.adaptris.core.util.PropertyHelper.getPropertyIgnoringCase;
 
 import com.adaptris.core.AdapterMarshallerFactory;
 import com.adaptris.core.AdapterXStreamMarshallerFactory;
-import com.adaptris.core.AdapterXStreamMarshallerFactory.OutputMode;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.management.AdapterConfigManager;
 import com.adaptris.core.management.BootstrapProperties;
@@ -49,12 +48,11 @@ public class XStreamConfigManager extends ReadWriteConfigManager {
 
     // Get the xstream enable beautified output flag
     final boolean enableBeautifiedOutputFlag = bootstrapProperties.isEnabled(Constants.CFG_XSTREAM_BEAUTIFIED_OUTPUT);
-    
+    if (enableBeautifiedOutputFlag) {
+      log.warn("Beautification is no longer supported due to illegal module access in Java 11");
+    }
     // Now initialize the marshaller
     marshallerFactory = AdapterXStreamMarshallerFactory.getInstance();
-    if (enableBeautifiedOutputFlag) {
-      ((AdapterXStreamMarshallerFactory)marshallerFactory).setMode(OutputMode.ALIASED_SUBCLASSES);
-    }
     marshaller = marshallerFactory.createMarshaller(marshallerOutputProperty);
     DefaultMarshaller.setDefaultMarshaller(marshaller);
   }
@@ -68,5 +66,4 @@ public class XStreamConfigManager extends ReadWriteConfigManager {
   protected String getDefaultAdapterResourceName() {
     return getDefaultAdapterConfig();
   }
-
 }

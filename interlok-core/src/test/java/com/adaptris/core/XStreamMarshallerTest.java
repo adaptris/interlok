@@ -16,7 +16,6 @@
 
 package com.adaptris.core;
 
-import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -26,7 +25,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import com.adaptris.core.AdapterXStreamMarshallerFactory.OutputMode;
 import com.adaptris.core.services.LogMessageService;
 import com.adaptris.core.services.metadata.AddMetadataService;
 import com.adaptris.core.services.metadata.XpathMetadataService;
@@ -37,14 +35,12 @@ import com.adaptris.core.stubs.XStreamCDataWrapper;
 import com.adaptris.core.stubs.XStreamImplicitWrapper;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.text.xml.XPath;
-import com.thoughtworks.xstream.XStream;
 
 
 @SuppressWarnings("deprecation")
 public class XStreamMarshallerTest extends MarshallingBaseCase {
 
   private static final String XSTREAM_STANDARD_XML = "xstream-standard.xml";
-  private static final String XSTREAM_BEAUTIFIED_XML = "xstream-beautified.xml";
 
   public XStreamMarshallerTest(java.lang.String testName) {
     super(testName);
@@ -111,90 +107,7 @@ public class XStreamMarshallerTest extends MarshallingBaseCase {
     assertRoundtripEquality(wrapper, roundTrip);
   }
   
-  public void testBeautifiedBeanInfo() throws Exception {
-    try {
-      AdapterXStreamMarshallerFactory factory = AdapterXStreamMarshallerFactory.getInstance();
-      factory.setMode(OutputMode.ALIASED_SUBCLASSES);
-      XStream xstreamInstance = factory.createXStream();
-      XStreamBeanInfoWrapper wrapper = new XStreamBeanInfoWrapper();
-      String id = wrapper.getMarshalledIdentity();
-      assertFalse(wrapper.getSetterCalled());
-      String xml = xstreamInstance.toXML(new ServiceList(wrapper));
-      XStreamBeanInfoWrapper roundTrip = (XStreamBeanInfoWrapper) ((ServiceList) xstreamInstance.fromXML(xml)).get(0);
-      assertEquals(id, roundTrip.getMarshalledIdentity());
-      assertTrue(roundTrip.getSetterCalled());
-    }
-    finally {
-      AdapterXStreamMarshallerFactory.reset();
-    }
-  }
 
-  // redmineID 2457 Beautifying the XStream output - Test conversion of standard config to beautified config
-  public void testXStreamBeautified() throws Exception {
-    try { // Create factory
-    AdapterXStreamMarshallerFactory factory = AdapterXStreamMarshallerFactory.getInstance();
-    factory.setMode(OutputMode.ALIASED_SUBCLASSES);
-    
-    // Create xstream instance
-    XStream xstreamInstance = factory.createXStream();
-    Adapter standardAdapter = null;
-    try ( InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream(XSTREAM_STANDARD_XML) ) {
-      standardAdapter = (Adapter) xstreamInstance.fromXML(resourceAsStream);
-    }
-
-    // Check the unmarshalled adapter
-    adapterInstanceFieldChecks(standardAdapter);
-    
-    // Now since unmarshalling an adapter autopopulates certain fields then the
-    // best way to compare is to marshal both adapters back to xml and compare
-    // them that way.
-    
-    // Now marshal standard format adapter to xml
-    String standardMarshalledXML = xstreamInstance.toXML(standardAdapter);
-
-    // Read in the expected beautified file.
-    Adapter beautifiedAdapter = null;
-    try ( InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream(XSTREAM_BEAUTIFIED_XML) ) {
-      beautifiedAdapter = (Adapter) xstreamInstance.fromXML(resourceAsStream);
-    }
-    // Now marshal beautified format adapter to xml
-    String beautifiedMarshalledXML = xstreamInstance.toXML(beautifiedAdapter);
-    
-    // Ensure that the conversion from standard xml to beautified xml went as expected 
-    assertEquals(beautifiedMarshalledXML, standardMarshalledXML);
-    }
-    finally {
-      AdapterXStreamMarshallerFactory.reset();
-
-    }
-  }
-  
-  // redmineID 2457 Beautifying the XStream output - roundtrip check
-  public void testXStreamBeautifiedUnmarshal() throws Exception {
-    try { // Create factory
-    assertTrue(XpathQuery.class.isAssignableFrom(ConfiguredXpathQuery.class));
-    AdapterXStreamMarshallerFactory factory = AdapterXStreamMarshallerFactory.getInstance();
-    factory.setMode(OutputMode.ALIASED_SUBCLASSES);
-    
-    // Create xstream instance
-    XStream xstreamInstance = factory.createXStream();
-    Adapter unmarshalledAdapter = null;
-    try ( InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream(XSTREAM_BEAUTIFIED_XML) ) {
-      unmarshalledAdapter = (Adapter) xstreamInstance.fromXML(resourceAsStream);
-    }
-    adapterInstanceFieldChecks(unmarshalledAdapter);
- 
-    String xml = xstreamInstance.toXML(unmarshalledAdapter);
-    Adapter roundTripAdapter = (Adapter)xstreamInstance.fromXML(xml);
-    
-    assertRoundtripEquality(unmarshalledAdapter, roundTripAdapter);
-    }
-    finally {
-      AdapterXStreamMarshallerFactory.reset();
-
-    }
-  }
-  
   // redmineID 2457 - ensures that marshalling/unmarshalling the given files results in no loss of data
   public static void adapterInstanceFieldChecks(Adapter fromXML) {
     assertNotNull(fromXML);
@@ -266,17 +179,4 @@ public class XStreamMarshallerTest extends MarshallingBaseCase {
     assertTrue(((LogMessageService)service3).getIncludePayload());
   }
   
-//	/**
-//	 * Creates a file of the given name on the filesystem that contains the given text
-//	 * @param filename
-//	 * @param text
-//	 */
-//	public static void generateFile(String filename, String text) {
-//		try (FileWriter fw = new FileWriter(filename)) {
-//			fw.write(text);
-//		} catch (IOException e) {
-//			System.err.println("Failed to generate file: "+filename);
-//			e.printStackTrace();
-//		}
-//	}
 }
