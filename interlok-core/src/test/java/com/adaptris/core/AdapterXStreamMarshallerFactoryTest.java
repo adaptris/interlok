@@ -23,7 +23,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.adaptris.core.AdapterMarshallerFactory.MarshallingOutput;
-import com.adaptris.core.AdapterXStreamMarshallerFactory.OutputMode;
 
 public class AdapterXStreamMarshallerFactoryTest {
 
@@ -77,10 +76,6 @@ public class AdapterXStreamMarshallerFactoryTest {
   public void testCreateXStream_Modes() throws Exception {
     try {
       AdapterXStreamMarshallerFactory factory = AdapterXStreamMarshallerFactory.getInstance();
-      factory.setMode(OutputMode.ALIASED_SUBCLASSES);
-      assertNotNull(factory.createXStreamInstance(MarshallingOutput.XML));
-      assertNotNull(factory.createXStreamInstance(MarshallingOutput.JSON));
-      factory.setMode(OutputMode.STANDARD);
       assertNotNull(factory.createXStreamInstance(MarshallingOutput.XML));
       assertNotNull(factory.createXStreamInstance(MarshallingOutput.JSON));
     }

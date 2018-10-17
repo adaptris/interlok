@@ -18,7 +18,6 @@ package com.adaptris.core.marshaller.xstream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -26,12 +25,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.reflect.Field;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -39,19 +35,9 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import com.adaptris.core.Adapter;
-import com.adaptris.core.AdaptrisMessageConsumer;
-import com.adaptris.core.EventHandlerAware;
-import com.adaptris.core.Service;
-import com.adaptris.core.ServiceCollection;
-import com.adaptris.core.ServiceImp;
 import com.adaptris.core.ServiceList;
 import com.adaptris.core.WorkflowImp;
-import com.adaptris.core.WorkflowInterceptor;
-import com.adaptris.core.services.metadata.AddMetadataService;
-import com.adaptris.core.services.metadata.XpathMetadataService;
-import com.adaptris.core.services.metadata.xpath.ConfiguredXpathQuery;
 import com.adaptris.util.stream.StreamUtilTest;
-import com.thoughtworks.xstream.core.util.FastField;
 
 public class XStreamUtilsTest extends XStreamUtils {
 
@@ -138,148 +124,4 @@ public class XStreamUtilsTest extends XStreamUtils {
     assertTrue(XStreamUtils.setContainsAnyOf(testSet, searchCollection));
   }
 
-  @Test
-  public void testGetClassFieldByType() {
-    Set<Field> classFieldByType = XStreamUtils.getClassFieldByType(WorkflowImp.class, ServiceCollection.class);
-    assertEquals(1, classFieldByType.size());
-    for (Iterator<Field> iterator = classFieldByType.iterator(); iterator.hasNext();) {
-      Field field = (Field) iterator.next();
-      assertEquals("serviceCollection", field.getName());
-      break;
-    }
-    
-    classFieldByType = XStreamUtils.getClassFieldByType(WorkflowImp.class, AdaptrisMessageConsumer.class);
-    assertEquals(1, classFieldByType.size());
-    for (Iterator<Field> iterator = classFieldByType.iterator(); iterator.hasNext();) {
-      Field field = (Field) iterator.next();
-      assertEquals("consumer", field.getName());
-      break;
-    }
-    
-    classFieldByType = XStreamUtils.getClassFieldByType(WorkflowImp.class, String.class);
-    assertEquals(1, classFieldByType.size());
-    for (Iterator<Field> iterator = classFieldByType.iterator(); iterator.hasNext();) {
-      Field field = (Field) iterator.next();
-      assertEquals("uniqueId", field.getName());
-      break;
-    }
-    
-    classFieldByType = XStreamUtils.getClassFieldByType(WorkflowImp.class, Boolean.class);
-    assertEquals(3, classFieldByType.size());
-    int counter = 0;
-    for (Iterator<Field> iterator = classFieldByType.iterator(); iterator.hasNext();) {
-      Field field = (Field) iterator.next();
-      if (counter == 0) assertEquals("sendEvents", field.getName());
-      else if (counter == 1) assertEquals("logPayload", field.getName());
-      else if (counter == 2) assertEquals("disableDefaultMessageCount", field.getName());
-      break;
-    }
-  }
-
-  @Test
-  public void testGetMatchedFieldFromClass() {
-    Set<FastField> seenProperties = new HashSet<>();
-    Class<?> parentClass = WorkflowImp.class;
-    // Get the first boolean field
-    Field matchedFieldFromClass = XStreamUtils.getMatchedFieldFromClass(parentClass, Boolean.class, seenProperties);
-    assertEquals("sendEvents", matchedFieldFromClass.getName());
-    
-    // Now register the field as processed so as to ensure that it is not returned again
-    FastField fastField = new FastField(parentClass, "sendEvents");
-    seenProperties.add(fastField);
-    matchedFieldFromClass = XStreamUtils.getMatchedFieldFromClass(parentClass, Boolean.class, seenProperties);
-    assertEquals("logPayload", matchedFieldFromClass.getName());
-  }
-
-//  public void testGetGenericTypesForField() {
-//    List<Field> fields = new ArrayList<>();
-//    fields = XStreamUtils.getFieldsForClassEnsuringUniqueFieldNames(WorkflowImp.class, fields);
-//    String fieldName = null;
-//    int assertionCount = 0;
-//    List<Class<?>> genericsClassTypesForClass = null;
-//    for (Field f : fields) {
-//      fieldName = f.getName();
-//      switch(fieldName) {
-//      case "serviceCollection" :
-//        genericsClassTypesForClass = XStreamUtils.getGenericTypesForField(f);
-//        assertNotNull(genericsClassTypesForClass);
-//        assertEquals(0, genericsClassTypesForClass.size());
-//        assertionCount++;
-//        break;
-//        
-//      case "interceptors" :
-//        genericsClassTypesForClass = XStreamUtils.getGenericTypesForField(f);
-//        assertNotNull(genericsClassTypesForClass);
-//        assertEquals(1, genericsClassTypesForClass.size());
-//        assertTrue(genericsClassTypesForClass.contains(WorkflowInterceptor.class));
-//        assertionCount++;
-//      }
-//    }
-//    assertEquals(2, assertionCount); // This ensures that we processed the interceptors field, just in case someone renamed it
-//  }
-
-  @Test
-  public void testGetGenericHierarchicalTypesForField() {
-    List<Field> fields = new ArrayList<>();
-    fields = XStreamUtils.getFieldsForClassEnsuringUniqueFieldNames(WorkflowImp.class, fields);
-    String fieldName = null;
-    int assertionCount = 0;
-    Set<Class<?>> genericsClassTypesForClass = null;
-    for (Field f : fields) {
-      fieldName = f.getName();
-      switch(fieldName) {
-      case "serviceCollection" :
-        genericsClassTypesForClass = XStreamUtils.getGenericHierarchicalTypesForField(f);
-        assertNotNull(genericsClassTypesForClass);
-        assertEquals(2, genericsClassTypesForClass.size());
-        assertTrue(genericsClassTypesForClass.contains(Service.class));
-        assertTrue(genericsClassTypesForClass.contains(EventHandlerAware.class));
-        assertionCount++;
-        break;
-        
-      case "interceptors" :
-        genericsClassTypesForClass = XStreamUtils.getGenericHierarchicalTypesForField(f);
-        assertNotNull(genericsClassTypesForClass);
-        assertEquals(1, genericsClassTypesForClass.size());
-        assertTrue(genericsClassTypesForClass.contains(WorkflowInterceptor.class));
-        assertionCount++;
-      }
-    }
-    assertEquals(2, assertionCount); // This ensures that we processed the interceptors field, just in case someone renamed it
-  }
-
-  @Test
-  public void testGetGenericHierarchicalTypesForClass() {
-    Set<Class<?>> genericTypeClassesSet = new HashSet<>(); 
-    Set<Class<?>> resultClassSet = XStreamUtils.getGenericHierarchicalTypesForClass(ServiceCollection.class, genericTypeClassesSet);
-    assertNotNull(resultClassSet);
-    assertEquals(2, resultClassSet.size());
-    assertTrue(resultClassSet.contains(Service.class));
-    assertTrue(resultClassSet.contains(com.adaptris.core.EventHandlerAware.class));
-    
-    resultClassSet.clear();
-    resultClassSet = XStreamUtils.getGenericHierarchicalTypesForClass(ServiceList.class, genericTypeClassesSet);
-    assertNotNull(resultClassSet);
-    assertEquals(1, resultClassSet.size());
-    assertTrue(resultClassSet.contains(Service.class));
-    
-    resultClassSet.clear();
-    resultClassSet = XStreamUtils.getGenericHierarchicalTypesForClass(ServiceImp.class, genericTypeClassesSet);
-    assertNotNull(resultClassSet);
-    assertEquals(1, resultClassSet.size());
-    assertTrue(resultClassSet.contains(Service.class));
-  }
-
-  @Test
-  public void testGetImplicitCollectionFieldNameForType() {
-    // Main test scenario
-    String fieldNameForType = XStreamUtils.getImplicitCollectionFieldNameForType(XpathMetadataService.class, ConfiguredXpathQuery.class);
-    assertEquals("xpathQueries", fieldNameForType);
-
-    fieldNameForType = XStreamUtils.getImplicitCollectionFieldNameForType(WorkflowImp.class, AdaptrisMessageConsumer.class);
-    assertNull(fieldNameForType);
-
-    fieldNameForType = XStreamUtils.getImplicitCollectionFieldNameForType(AddMetadataService.class, String.class);
-    assertNull(fieldNameForType);
-  }
 }

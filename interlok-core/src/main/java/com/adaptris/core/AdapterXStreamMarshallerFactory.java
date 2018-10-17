@@ -35,9 +35,6 @@ import java.util.Iterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.adaptris.core.marshaller.xstream.AliasedElementReflectionConverter;
-import com.adaptris.core.marshaller.xstream.AliasedJavaBeanConverter;
-import com.adaptris.core.marshaller.xstream.JsonPrettyStaxDriver;
 import com.adaptris.core.marshaller.xstream.LowerCaseHyphenatedMapper;
 import com.adaptris.core.marshaller.xstream.PrettyStaxDriver;
 import com.thoughtworks.xstream.XStream;
@@ -60,14 +57,10 @@ public class AdapterXStreamMarshallerFactory extends AdapterMarshallerFactory {
   public static final transient boolean XSTREAM_DBG = Boolean.getBoolean("adp.xstream.debug")
       || Boolean.getBoolean("interlok.xstream.debug");
 
-  public static enum OutputMode {
-    STANDARD, ALIASED_SUBCLASSES
-  };
-
   private enum XStreamTypes {
     XML {
       @Override
-      XStream createXStreamInstance(OutputMode mode) {
+      XStream createXStreamInstance() {
         return new MyExtremeMarshaller(new PureJavaReflectionProvider(), new PrettyStaxDriver(cdataFields));
       }
 
@@ -78,9 +71,8 @@ public class AdapterXStreamMarshallerFactory extends AdapterMarshallerFactory {
     },
     JSON {
       @Override
-      XStream createXStreamInstance(OutputMode mode) {
-        return new MyExtremeMarshaller(new PureJavaReflectionProvider(),
-            (mode == OutputMode.STANDARD) ? new JettisonMappedXmlDriver() : new JsonPrettyStaxDriver());
+      XStream createXStreamInstance() {
+        return new MyExtremeMarshaller(new PureJavaReflectionProvider(), new JettisonMappedXmlDriver());
       }
 
       @Override
@@ -89,7 +81,7 @@ public class AdapterXStreamMarshallerFactory extends AdapterMarshallerFactory {
       }
 
     };
-    abstract XStream createXStreamInstance(OutputMode mode);
+    abstract XStream createXStreamInstance();
 
     abstract AdaptrisMarshaller createMarshaller() throws CoreException;
   }
@@ -102,11 +94,9 @@ public class AdapterXStreamMarshallerFactory extends AdapterMarshallerFactory {
   // TODO we should have a AdapterMarshallerFactory singleton located somewhere else instead of here
   // But for the time being just use this class as a singleton until a better solution is found
   protected static AdapterXStreamMarshallerFactory instance;
-  protected OutputMode mode = OutputMode.STANDARD;
 
   private AdapterXStreamMarshallerFactory() {
     super();
-    setMode(OutputMode.STANDARD);
     // Read in and store all the properties associated with xstream
     readXStreamConfigProperties();
   }
@@ -169,7 +159,7 @@ public class AdapterXStreamMarshallerFactory extends AdapterMarshallerFactory {
    * @return - newly created instance
    */
   protected XStream createXStreamInstance(MarshallingOutput outputMode) {
-    return XStreamTypes.valueOf(outputMode.name()).createXStreamInstance(getMode());
+    return XStreamTypes.valueOf(outputMode.name()).createXStreamInstance();
   }
 
   /**
@@ -221,24 +211,8 @@ public class AdapterXStreamMarshallerFactory extends AdapterMarshallerFactory {
     for (Iterator<?> iterator = beanInfoAnnotatedClasses.iterator(); iterator.hasNext();) {
       Class<?> beanClass = (Class<?>) iterator.next();
       JavaBeanConverter converter = null;
-      // remineID #2457 Add in subclass alias beautifier if mode has been set.
-      if (outputMode == MarshallingOutput.XML && getMode() == OutputMode.ALIASED_SUBCLASSES) {
-        converter = new AliasedJavaBeanConverter(xstream.getMapper(), beanClass);
-      }
-      else {
-        converter = new JavaBeanConverter(xstream.getMapper(), beanClass);
-      }
+      converter = new JavaBeanConverter(xstream.getMapper(), beanClass);
       xstream.registerConverter(converter);
-    }
-
-    // Cdata is used by the PrettyStaxDriver
-
-    // XstreamImplicits is used by the LowerCaseHyphenatedMapper
-
-    // remineID #2457 Add in subclass alias beautifier if mode has been set.
-    if (outputMode == MarshallingOutput.XML && getMode() == OutputMode.ALIASED_SUBCLASSES) {
-      xstream.registerConverter(new AliasedElementReflectionConverter(xstream.getMapper(), xstream.getReflectionProvider()),
-          XStream.PRIORITY_VERY_LOW);
     }
 
     // Now set any additional items
@@ -251,14 +225,6 @@ public class AdapterXStreamMarshallerFactory extends AdapterMarshallerFactory {
 
     xstream.addDefaultImplementation(ArrayList.class, Collection.class);
     return xstream;
-  }
-
-  public OutputMode getMode() {
-    return mode;
-  }
-
-  public void setMode(OutputMode mode) {
-    this.mode = mode;
   }
 
   // ------------------------------------------------------------------------
