@@ -196,12 +196,12 @@ class ReadonlyFileDataSource implements DataSource, Closeable, MimeConstants, Mi
       return count;
     }
 
-    public void mark(int readLimit) {
+    public synchronized void mark(int readLimit) {
       markedPos = currentPos;
       in.mark(readLimit);
     }
 
-    public void reset() throws IOException {
+    public synchronized void reset() throws IOException {
       currentPos = markedPos;
       in.reset();
     }

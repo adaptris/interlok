@@ -29,7 +29,7 @@ abstract class AnnotationProcessorImpl extends AbstractProcessor {
   protected transient boolean verbose = false;
 
   @Override
-  public void init(ProcessingEnvironment env) {
+  public synchronized void init(ProcessingEnvironment env) {
     super.init(env);
     configureOutputFile();
     configureVerbosity();

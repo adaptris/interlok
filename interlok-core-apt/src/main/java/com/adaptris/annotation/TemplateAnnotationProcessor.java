@@ -32,7 +32,7 @@ public abstract class TemplateAnnotationProcessor extends AnnotationProcessorImp
   protected transient Template template;
 
   @Override
-  public void init(ProcessingEnvironment env) {
+  public synchronized void init(ProcessingEnvironment env) {
     super.init(env);
     configureVelocityEngine();
   }
