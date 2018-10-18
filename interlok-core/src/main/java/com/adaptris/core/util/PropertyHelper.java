@@ -1,5 +1,10 @@
 package com.adaptris.core.util;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -88,4 +93,87 @@ public class PropertyHelper {
     return getPropertyIgnoringCase(p, key, null);
   }
 
+  /**
+   * Convenience method to load a set of properties from a file.
+   * 
+   * @param file the file.
+   * @return a possibly empty set of properties.
+   */
+  public static Properties loadQuietly(final File file) {
+    return loadQuietly(() -> {
+      return new FileInputStream(file);
+    });
+  }
+
+  /**
+   * Convenience method to load a set of properties from a resource on the classpath.
+   * 
+   * @param resource the resource that will be found via
+   *          {@code Thread.currentThread().getContextClassLoader().getResourceAsStream(String)}.
+   * @return a possibly empty set of properties.
+   */
+  public static Properties loadQuietly(final String resource) {
+    return loadQuietly(() -> {
+      return Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);
+    });
+  }
+
+  /**
+   * Convenience method to load a set of properties from a URL
+   * 
+   * @param resource the resource
+   * @return a possibly empty set of properties.
+   */
+  public static Properties loadQuietly(final URL resource) {
+    return loadQuietly(() -> {
+      return resource.openStream();
+    });
+  }
+
+  /**
+   * Convenience method to load a set of properties from an InputStream
+   * 
+   * @param resource the resource
+   * @return a possibly empty set of properties.
+   */
+  public static Properties loadQuietly(final InputStream in) {
+    return loadQuietly(() -> {
+      return in;
+    });
+  }
+
+  /**
+   * Convenience method to load a set of properties from an InputStream
+   * 
+   * @param e the {@link PropertyInputStream} instance (probably a lambda expression).
+   * @return a possibly empty set of properties.
+   */
+  public static Properties loadQuietly(PropertyInputStream e) {
+    Properties result = new Properties();
+    try {
+      result = load(e);
+    } catch (Exception ignored) {
+    }
+    return result;
+  }
+
+  /**
+   * Convenience method to load a set of properties from an InputStream
+   * 
+   * @param e the {@link PropertyInputStream} instance (probably a lambda expression).
+   * @return the properties loaded from the input stream.
+   * @throws IOException any IO exceptions reading the input stream.
+   */
+  public static Properties load(PropertyInputStream e) throws IOException {
+    Properties result = new Properties();
+    try (InputStream in = e.openStream()) {
+      result.load(in);
+    }
+    return result;
+  }
+
+  @FunctionalInterface
+  public interface PropertyInputStream {
+    InputStream openStream() throws IOException;
+  }
 }

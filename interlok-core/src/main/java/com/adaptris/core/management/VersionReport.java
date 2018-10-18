@@ -17,7 +17,6 @@
 package com.adaptris.core.management;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -28,6 +27,7 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.adaptris.core.util.PropertyHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -126,13 +126,7 @@ public final class VersionReport {
   }
 
   private ComponentVersion createVersionInfo(URL url) throws IOException {
-    Properties p = new Properties();
-    ComponentVersion result = null;
-    try (InputStream in = url.openStream()) {
-      p.load(in);
-      result = new ComponentVersion(p, jarName(url.toString()));
-    }
-    return result;
+    return new ComponentVersion(PropertyHelper.loadQuietly(url), jarName(url.toString()));
   }
 
   // jar:file:/path/to/interlok-common-3.8-SNAPSHOT.jar!/META-INF/adaptris-version

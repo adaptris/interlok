@@ -18,7 +18,6 @@ package com.adaptris.core.management.properties;
 
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 
-import java.io.InputStream;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -30,6 +29,8 @@ import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.adaptris.core.util.PropertyHelper;
 
 /**
  * Resolves any properties that are stored using a scheme and decodes using the specified {@link Decoder} implementation.
@@ -119,11 +120,7 @@ public abstract class PropertyResolver {
 
     private void init(URL url) throws Exception {
       log.trace("Parsing PropertyResolver URL [{}]", url);
-      try (InputStream in = url.openStream()) {
-        Properties p = new Properties();
-        p.load(in);
-        initSchemes(p);
-      }
+      initSchemes(PropertyHelper.loadQuietly(url));
     }
 
     private void initSchemes(Properties p) throws Exception {

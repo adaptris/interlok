@@ -17,10 +17,8 @@
 package com.adaptris.core.services.metadata;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -40,6 +38,7 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.core.util.PropertyHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -277,10 +276,7 @@ public class SimpleSequenceNumberService extends ServiceImp {
     if (!myFile.exists()) {
       myFile.createNewFile();
     }
-    try (InputStream in = new FileInputStream(myFile)) {
-      result.load(in);
-    }
-    return result;
+    return PropertyHelper.loadQuietly(myFile);
   }
 
   private static void store(Properties p, File myFile) throws IOException {

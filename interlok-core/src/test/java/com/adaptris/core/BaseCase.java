@@ -55,7 +55,7 @@ public abstract class BaseCase extends TestCase {
   protected static final int DEFAULT_WAIT_INTERVAL = 100;
 
   public static final Properties PROPERTIES;
-  private static final String PROPERTIES_RESOURCE = "unit-tests.properties";
+  public static final String PROPERTIES_RESOURCE = "unit-tests.properties";
   static {
     PROPERTIES = new Properties();
     try (InputStream in = BaseCase.class.getClassLoader().getResourceAsStream(PROPERTIES_RESOURCE)) {

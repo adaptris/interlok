@@ -19,8 +19,6 @@ import static com.adaptris.core.util.PropertyHelper.getPropertyIgnoringCase;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.util.Properties;
 
@@ -32,6 +30,7 @@ import com.adaptris.core.management.AdapterConfigManager;
 import com.adaptris.core.management.BootstrapProperties;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.core.util.PropertyHelper;
 import com.adaptris.util.KeyValuePairSet;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -67,7 +66,7 @@ public class DefaultPreProcessorLoader implements ConfigPreProcessorLoader {
           preProcessorsList.add(resolve(preProcessor, bootstrapProperties));
         }
         catch (Exception e) {
-          log.warn("Unable to find pre-processor with name: ]{}].  Ignoring.", preProcessor);
+          log.warn("Unable to find pre-processor with name: [{}].  Ignoring.", preProcessor);
         }
       }
     }
@@ -160,16 +159,7 @@ public class DefaultPreProcessorLoader implements ConfigPreProcessorLoader {
   class PropertyLoader {
 
     public Properties loadPropertyFile(String name) {
-      Properties p = new Properties();
-      try (InputStream in = this.getClass().getClassLoader().getResourceAsStream(PRE_PROCESSOR_RESOURCE + name)) {
-        if (in != null) {
-          p.load(in);
-        }
-      }
-      catch (IOException e) {
-        // Just return an empty properties is fine.
-      }
-      return p;
+      return PropertyHelper.loadQuietly(name);
     }
   }
 

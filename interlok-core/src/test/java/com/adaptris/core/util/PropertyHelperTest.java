@@ -19,12 +19,22 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Map;
 import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.adaptris.core.BaseCase;
+import com.adaptris.core.stubs.TempFileUtils;
 
 public class PropertyHelperTest extends PropertyHelper {
 
@@ -70,6 +80,65 @@ public class PropertyHelperTest extends PropertyHelper {
     assertNull(getPropertyIgnoringCase(createTestSample(), "BLAH"));
   }
 
+  @Test
+  public void testLoadQuietly_File() throws Exception {
+    File file = TempFileUtils.createTrackedFile(this);
+    Properties sample = createTestSample();
+    try (FileOutputStream out = new FileOutputStream(file)) {
+      sample.store(out, "");
+    }
+    Properties loaded = loadQuietly(file);
+    assertEquals(sample.size(), loaded.size());
+    Properties doesNotExist = loadQuietly((File) null);
+    assertEquals(0, doesNotExist.size());
+  }
+
+  @Test
+  public void testLoadQuietly_Resource() throws Exception {
+    Properties loaded = loadQuietly(BaseCase.PROPERTIES_RESOURCE);
+    assertEquals(BaseCase.PROPERTIES.size(), loaded.size());
+    Properties doesNotExist = loadQuietly((String) null);
+    assertEquals(0, doesNotExist.size());
+  }
+
+  @Test
+  public void testLoadQuietly_URL() throws Exception {
+    File file = TempFileUtils.createTrackedFile(this);
+    Properties sample = createTestSample();
+    try (FileOutputStream out = new FileOutputStream(file)) {
+      sample.store(out, "");
+    }
+    Properties loaded = loadQuietly(file.toURI().toURL());
+    assertEquals(sample.size(), loaded.size());
+    Properties doesNotExist = loadQuietly((URL) null);
+    assertEquals(0, doesNotExist.size());
+  }
+
+  @Test
+  public void testLoadQuietly_InputStream() throws Exception {
+    Properties sample = createTestSample();
+    byte[] bytes = asByteArray(sample);
+    try (ByteArrayInputStream in = new ByteArrayInputStream(bytes)) {
+      Properties loaded = loadQuietly(in);
+      assertEquals(sample.size(), loaded.size());
+    }
+    Properties doesNotExist = loadQuietly((InputStream) null);
+    assertEquals(0, doesNotExist.size());
+  }
+
+  @Test(expected = IOException.class)
+  public void testLoad_PropertyInputStream() throws Exception {
+    Properties sample = createTestSample();
+    byte[] bytes = asByteArray(sample);
+    Properties loaded = load(() -> {
+      return new ByteArrayInputStream(bytes);
+    });
+    assertEquals(sample.size(), loaded.size());
+    Properties doesNotExist = load(() -> {
+      throw new IOException();
+    });
+  }
+
   private Properties createTestSample() {
     Properties result = new Properties();
     result.setProperty("a.key", "a.value");
@@ -77,5 +146,12 @@ public class PropertyHelperTest extends PropertyHelper {
     result.setProperty("b.key", "b.value");
     result.setProperty("b.anotherKey", "b.anotherKey");
     return result;
+  }
+
+  private byte[] asByteArray(Properties p) throws Exception {
+    try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+      p.store(out, "");
+      return out.toByteArray();
+    }
   }
 }
