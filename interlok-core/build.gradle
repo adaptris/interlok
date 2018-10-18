@@ -75,7 +75,7 @@ dependencies {
   compile ("javax.servlet:javax.servlet-api:3.1.0")
   compile ("net.sf.joost:joost:0.9.1")
   compile ("org.quartz-scheduler:quartz:2.3.0")
-  compile ("net.sf.saxon:Saxon-HE:9.7.0-20")
+  compile ("net.sf.saxon:Saxon-HE:9.9.0-1")
   compile ("xerces:xercesImpl:2.12.0")
   compile ("com.mchange:c3p0:0.9.5.2")
   compile ("org.apache.derby:derby:10.14.2.0")
