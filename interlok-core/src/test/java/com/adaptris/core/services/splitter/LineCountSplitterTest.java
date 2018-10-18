@@ -17,6 +17,7 @@
 package com.adaptris.core.services.splitter;
 
 import java.io.Reader;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -206,6 +207,46 @@ public class LineCountSplitterTest extends SplitterCase {
     }
   }
 
+  public void testIterator_DoubleProtection() throws Exception {
+    MessageSplitterImp splitter = new LineCountSplitter(1);
+    try (com.adaptris.core.util.CloseableIterable<AdaptrisMessage> iterable = com.adaptris.core.util.CloseableIterable.ensureCloseable(splitter.splitMessage(msg))) {
+      Iterator<AdaptrisMessage> first = iterable.iterator();
+      try {
+        Iterator<AdaptrisMessage> second = iterable.iterator();
+        fail();
+      } catch (IllegalStateException expected) {
+        
+      }
+    }
+    
+  }
+
+  public void testIterator_Remove() throws Exception {
+    MessageSplitterImp splitter = new LineCountSplitter(1);
+    try (com.adaptris.core.util.CloseableIterable<AdaptrisMessage> iterable = com.adaptris.core.util.CloseableIterable
+        .ensureCloseable(splitter.splitMessage(msg))) {
+      Iterator<AdaptrisMessage> first = iterable.iterator();
+      try {
+        if (first.hasNext()) first.next();
+        first.remove();
+        fail();
+      }
+      catch (UnsupportedOperationException expected) {
+
+      }
+    }
+  }
+
+  public void testIterator_HasNext() throws Exception {
+    MessageSplitterImp splitter = new LineCountSplitter(1);
+    try (com.adaptris.core.util.CloseableIterable<AdaptrisMessage> iterable = com.adaptris.core.util.CloseableIterable
+        .ensureCloseable(splitter.splitMessage(msg))) {
+      Iterator<AdaptrisMessage> first = iterable.iterator();
+      assertTrue(first.hasNext());
+      assertTrue(first.hasNext());
+    }
+  }
+  
   @Override
   protected String createBaseFileName(Object object) {
     return super.createBaseFileName(object) + "-LineCountSplitter";

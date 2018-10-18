@@ -158,7 +158,8 @@ public abstract class MessageSplitterImp implements MessageSplitter {
     protected final AdaptrisMessage msg;
     protected final AdaptrisMessageFactory factory;
     private AdaptrisMessage nextMessage;
-
+    private boolean iteratorAvailable = true;
+    
     public SplitMessageIterator(AdaptrisMessage msg, AdaptrisMessageFactory factory) {
       this.msg = msg;
       this.factory = factory;
@@ -166,8 +167,10 @@ public abstract class MessageSplitterImp implements MessageSplitter {
 
     @Override
     public Iterator<AdaptrisMessage> iterator() {
-      // This Iterable can only be Iterated once so multiple iterators are unsupported. That's why
-      // it's safe to just return this in this method without constructing a new Iterator.
+      if (!iteratorAvailable) {
+        throw new IllegalStateException("iterator() no longer available");
+      }
+      iteratorAvailable = false;
       return this;
     }
 
