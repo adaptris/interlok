@@ -4,6 +4,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.services.cache.CacheKeyTranslator;
 import com.adaptris.core.services.cache.CacheValueTranslator;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -16,7 +17,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("metadata-cache-value-translator")
-public class MetadataCacheValueTranslator implements CacheValueTranslator<String> {
+public class MetadataCacheValueTranslator implements CacheValueTranslator<String>, CacheKeyTranslator {
 
   @NotBlank
   private String metadataKey;
@@ -56,6 +57,11 @@ public class MetadataCacheValueTranslator implements CacheValueTranslator<String
 
   public String getMetadataKey() {
     return metadataKey;
+  }
+
+  @Override
+  public String getKeyFromMessage(AdaptrisMessage msg) throws CoreException {
+    return getValueFromMessage(msg);
   }
 
 }

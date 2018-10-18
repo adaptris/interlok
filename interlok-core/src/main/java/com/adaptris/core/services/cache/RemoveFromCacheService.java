@@ -47,7 +47,7 @@ public class RemoveFromCacheService extends RetrieveFromCacheService {
     try {
       Cache cache = retrieveCache();
       for (CacheEntryEvaluator ceg : getCacheEntryEvaluators()) {
-        String key = (String) ceg.getKey(msg);
+        String key = ceg.getKey(msg);
         if (isEmpty(key)) {
           log.warn("{} generated null values for the key, nothing to do", ceg.friendlyName());
           continue;

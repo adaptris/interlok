@@ -5,6 +5,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.services.cache.CacheKeyTranslator;
 import com.adaptris.core.services.cache.CacheValueTranslator;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -15,7 +16,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config static-cache-value-translator
  */
 @XStreamAlias("static-cache-value-translator")
-public class StaticCacheValueTranslator implements CacheValueTranslator<String> {
+public class StaticCacheValueTranslator implements CacheValueTranslator<String>, CacheKeyTranslator {
 
   @NotBlank
   @InputFieldHint(expression = true)
@@ -57,6 +58,11 @@ public class StaticCacheValueTranslator implements CacheValueTranslator<String> 
 
   public String getValue() {
     return value;
+  }
+
+  @Override
+  public String getKeyFromMessage(AdaptrisMessage msg) throws CoreException {
+    return getValueFromMessage(msg);
   }
 
 }

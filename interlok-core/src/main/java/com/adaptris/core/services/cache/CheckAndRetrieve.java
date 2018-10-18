@@ -21,7 +21,6 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.Service;
-import com.adaptris.core.cache.Cache;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -41,15 +40,9 @@ public class CheckAndRetrieve extends CheckCacheService {
 
   @Override
   protected boolean eval(AdaptrisMessage msg) throws CoreException {
-    int count = 0;
-    int required = getCacheEntryEvaluators().size();
-    Cache cache = retrieveCache();
-    for (CacheEntryEvaluator ceg : getCacheEntryEvaluators()) {
-      String key = (String) ceg.getKey(msg);
-      count += cache.getKeys().contains(key) ? 1 : 0;
-      addCacheValueToMessage(msg, key, ceg.valueTranslator(), true);
-    }
-    return count == required;
+    return eval(msg, (m, value, translator) -> {
+      translator.addValueToMessage(msg, value);
+    });
   }
 
 }

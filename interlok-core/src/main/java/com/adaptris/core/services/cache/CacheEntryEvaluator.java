@@ -44,7 +44,7 @@ public class CacheEntryEvaluator {
   @InputFieldDefault(value = "true")
   private Boolean errorOnEmptyValue;
   @Valid
-  private CacheValueTranslator keyTranslator;
+  private CacheKeyTranslator keyTranslator;
   @Valid
   private CacheValueTranslator valueTranslator;
   private String friendlyName;
@@ -53,10 +53,11 @@ public class CacheEntryEvaluator {
 
   }
 
-  Object getKey(AdaptrisMessage msg) throws ServiceException {
-    Object value = null;
+  protected String getKey(AdaptrisMessage msg) throws ServiceException {
+
+    String value = null;
     try {
-      value = keyTranslator().getValueFromMessage(msg);
+      value = keyTranslator().getKeyFromMessage(msg);
       if (value == null && errorOnEmptyKey()) {
         throw new ServiceException("Null cache-key returned");
       }
@@ -67,7 +68,7 @@ public class CacheEntryEvaluator {
     return value;
   }
 
-  Object getValue(AdaptrisMessage msg) throws ServiceException {
+  protected Object getValue(AdaptrisMessage msg) throws ServiceException {
     Object value = null;
     try {
       value = valueTranslator().getValueFromMessage(msg);
@@ -130,7 +131,7 @@ public class CacheEntryEvaluator {
    *
    * @param translator default is null.
    */
-  public void setKeyTranslator(CacheValueTranslator translator) {
+  public void setKeyTranslator(CacheKeyTranslator translator) {
     keyTranslator = Args.notNull(translator, "keyTranslator");
   }
 
@@ -140,7 +141,7 @@ public class CacheEntryEvaluator {
    *
    * @return the configured key translator.
    */
-  public CacheValueTranslator getKeyTranslator() {
+  public CacheKeyTranslator getKeyTranslator() {
     return keyTranslator;
   }
 
@@ -149,7 +150,7 @@ public class CacheEntryEvaluator {
    *
    * @return the configured key translator via {@link #setKeyTranslator(CacheValueTranslator)} or a default translator if null.
    */
-  public CacheValueTranslator keyTranslator() {
+  public CacheKeyTranslator keyTranslator() {
     return getKeyTranslator() != null ? getKeyTranslator() : new NullCacheTranslator();
   }
 
@@ -197,7 +198,7 @@ public class CacheEntryEvaluator {
     return getFriendlyName() == null ? this.getClass().getSimpleName() : getFriendlyName();
   }
 
-  private class NullCacheTranslator implements CacheValueTranslator {
+  private class NullCacheTranslator implements CacheValueTranslator, CacheKeyTranslator {
 
     @Override
     public Object getValueFromMessage(AdaptrisMessage msg) throws CoreException {
@@ -206,6 +207,11 @@ public class CacheEntryEvaluator {
 
     @Override
     public void addValueToMessage(AdaptrisMessage msg, Object value) throws CoreException {
+    }
+
+    @Override
+    public String getKeyFromMessage(AdaptrisMessage msg) throws CoreException {
+      return null;
     }
   }
 }

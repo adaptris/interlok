@@ -25,7 +25,7 @@ public class CacheEntryEvaluatorTest extends BaseCase {
     CacheEntryEvaluator eval = new CacheEntryEvaluator();
     assertNull(eval.getKeyTranslator());
     assertNotNull(eval.keyTranslator());
-    CacheValueTranslator translator = new MetadataCacheValueTranslator(DEFAULT_METADATA_KEY);
+    MetadataCacheValueTranslator translator = new MetadataCacheValueTranslator(DEFAULT_METADATA_KEY);
     eval.setKeyTranslator(translator);
     assertEquals(translator, eval.getKeyTranslator());
     assertEquals(translator, eval.keyTranslator());
@@ -45,7 +45,7 @@ public class CacheEntryEvaluatorTest extends BaseCase {
     CacheEntryEvaluator eval = new CacheEntryEvaluator();
     assertNull(eval.getValueTranslator());
     assertNotNull(eval.valueTranslator());
-    CacheValueTranslator translator = new MetadataCacheValueTranslator(DEFAULT_METADATA_KEY);
+    MetadataCacheValueTranslator translator = new MetadataCacheValueTranslator(DEFAULT_METADATA_KEY);
     eval.setValueTranslator(translator);
     assertEquals(translator, eval.getValueTranslator());
     assertEquals(translator, eval.valueTranslator());
@@ -130,7 +130,7 @@ public class CacheEntryEvaluatorTest extends BaseCase {
 
   public void testEvaluateKey_WithError() throws Exception {
     CacheEntryEvaluator eval = new CacheEntryEvaluator();
-    CacheValueTranslator translator = new StaticCacheValueTranslator() {
+    StaticCacheValueTranslator translator = new StaticCacheValueTranslator() {
       @Override
       public String getValueFromMessage(AdaptrisMessage msg) throws CoreException {
         throw new UnsupportedOperationException();
@@ -145,7 +145,7 @@ public class CacheEntryEvaluatorTest extends BaseCase {
 
   public void testEvaluateKey_ErrorOnEmpty_EmptyValue() throws Exception {
     CacheEntryEvaluator eval = new CacheEntryEvaluator();
-    CacheValueTranslator translator = new MetadataCacheValueTranslator(DEFAULT_METADATA_KEY);
+    MetadataCacheValueTranslator translator = new MetadataCacheValueTranslator(DEFAULT_METADATA_KEY);
     eval.setKeyTranslator(translator);
     eval.setErrorOnEmptyKey(true);
     AdaptrisMessage msg = createMessage(new ArrayList<MetadataElement>());
@@ -161,7 +161,7 @@ public class CacheEntryEvaluatorTest extends BaseCase {
 
   public void testEvaluateKey_ErrorOnEmpty_NonEmptyValue() throws Exception {
     CacheEntryEvaluator eval = new CacheEntryEvaluator();
-    CacheValueTranslator translator = new MetadataCacheValueTranslator(DEFAULT_METADATA_KEY);
+    MetadataCacheValueTranslator translator = new MetadataCacheValueTranslator(DEFAULT_METADATA_KEY);
     eval.setKeyTranslator(translator);
     AdaptrisMessage msg = createMessage(Arrays.asList(new MetadataElement[]
     {
@@ -172,7 +172,7 @@ public class CacheEntryEvaluatorTest extends BaseCase {
 
   public void testEvaluateKey_NoErrorOnEmpty_EmptyValue() throws Exception {
     CacheEntryEvaluator eval = new CacheEntryEvaluator();
-    CacheValueTranslator translator = new MetadataCacheValueTranslator(DEFAULT_METADATA_KEY);
+    MetadataCacheValueTranslator translator = new MetadataCacheValueTranslator(DEFAULT_METADATA_KEY);
     eval.setKeyTranslator(translator);
     eval.setErrorOnEmptyKey(false);
     AdaptrisMessage msg = createMessage(new ArrayList<MetadataElement>());

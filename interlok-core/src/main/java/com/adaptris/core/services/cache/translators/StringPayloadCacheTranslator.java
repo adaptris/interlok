@@ -4,6 +4,7 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.services.cache.CacheKeyTranslator;
 import com.adaptris.core.services.cache.CacheValueTranslator;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -16,7 +17,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author stuellidge
  */
 @XStreamAlias("string-payload-cache-translator")
-public class StringPayloadCacheTranslator implements CacheValueTranslator<String> {
+public class StringPayloadCacheTranslator implements CacheValueTranslator<String>, CacheKeyTranslator {
 
   private String charEncoding;
 
@@ -58,5 +59,9 @@ public class StringPayloadCacheTranslator implements CacheValueTranslator<String
     charEncoding = ce;
   }
 
+  @Override
+  public String getKeyFromMessage(AdaptrisMessage msg) throws CoreException {
+    return getValueFromMessage(msg);
+  }
 
 }
