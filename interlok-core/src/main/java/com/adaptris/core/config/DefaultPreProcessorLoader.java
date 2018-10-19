@@ -19,6 +19,8 @@ import static com.adaptris.core.util.PropertyHelper.getPropertyIgnoringCase;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.util.Properties;
 
@@ -159,7 +161,13 @@ public class DefaultPreProcessorLoader implements ConfigPreProcessorLoader {
   class PropertyLoader {
 
     public Properties loadPropertyFile(String name) {
-      return PropertyHelper.loadQuietly(name);
+      Properties p = new Properties();
+      try (InputStream in = this.getClass().getClassLoader().getResourceAsStream(PRE_PROCESSOR_RESOURCE + name)) {
+        p = PropertyHelper.loadQuietly(in);
+      } catch (IOException e) {
+        // Just return an empty properties is fine.
+      }
+      return p;
     }
   }
 
