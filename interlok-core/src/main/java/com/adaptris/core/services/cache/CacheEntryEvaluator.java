@@ -148,7 +148,7 @@ public class CacheEntryEvaluator {
   /**
    * Get the key translator.
    *
-   * @return the configured key translator via {@link #setKeyTranslator(CacheValueTranslator)} or a default translator if null.
+   * @return the configured key translator via {@link #setKeyTranslator(CacheKeyTranslator)} or a default translator if null.
    */
   public CacheKeyTranslator keyTranslator() {
     return getKeyTranslator() != null ? getKeyTranslator() : new NullCacheTranslator();
