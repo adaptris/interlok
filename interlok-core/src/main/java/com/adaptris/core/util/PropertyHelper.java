@@ -133,7 +133,7 @@ public class PropertyHelper {
   /**
    * Convenience method to load a set of properties from an InputStream
    * 
-   * @param resource the resource
+   * @param in the inputstream
    * @return a possibly empty set of properties.
    */
   public static Properties loadQuietly(final InputStream in) {

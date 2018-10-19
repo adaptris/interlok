@@ -21,6 +21,8 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.OpenOption;
+import java.nio.file.Path;
 
 import org.apache.commons.io.FileCleaningTracker;
 import org.apache.commons.io.FileDeleteStrategy;
@@ -233,7 +235,7 @@ public class FileBackedMessageFactory extends DefaultMessageFactory {
   }
 
   /**
-   * Whether or not to use the new {@link Files#newInputStream()} methods.
+   * Whether or not to use the java NIO {@link java.nio.file.Files#newInputStream(Path, OpenOption[])} method.
    * 
    * @param useNio true to enable, false to use {@link FileInputStream} as always, default if not specified is false.
    */
