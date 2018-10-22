@@ -18,7 +18,6 @@ public abstract class BaseStatisticManager implements StatisticManager {
   private transient Integer maxHistoryCount;
   
   public BaseStatisticManager() {
-    this.setStats(new ArrayList<>());
   }
   
   public BaseStatisticManager(int maxHistoryCount) {
@@ -52,16 +51,16 @@ public abstract class BaseStatisticManager implements StatisticManager {
 
   @Override
   public List<InterceptorStatistic> getStats() {
-    return this.stats;
+    return this.stats();
   }
   
   protected List<InterceptorStatistic> stats() {
-    if(this.getStats() != null)
-      return this.getStats();
+    if(this.stats != null)
+      return this.stats;
     else
       this.setStats(new MaxCapacityList<InterceptorStatistic>(this.getMaxHistoryCount()));
     
-    return this.getStats();
+    return this.stats;
   }
 
   public int getMaxHistoryCount() {

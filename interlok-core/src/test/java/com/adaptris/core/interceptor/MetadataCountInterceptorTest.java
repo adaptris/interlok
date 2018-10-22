@@ -101,14 +101,14 @@ public class MetadataCountInterceptorTest extends TestCase {
   }
   
   public void testNoProduceBeforeNewTimeSlice() throws Exception {
-    LifecycleHelper.init(metricsInterceptor);
-    LifecycleHelper.start(metricsInterceptor);
-    
     ProducingStatisticManager producingStatisticManager = new ProducingStatisticManager();
     producingStatisticManager.setMarshaller(mockMarshaller);
     producingStatisticManager.setProducer(mockStandaloneProducer);
     
     metricsInterceptor.setStatisticManager(producingStatisticManager);
+    
+    LifecycleHelper.init(metricsInterceptor);
+    LifecycleHelper.start(metricsInterceptor);
 
     AdaptrisMessage message = DefaultMessageFactory.getDefaultInstance().newMessage();
 
@@ -125,14 +125,14 @@ public class MetadataCountInterceptorTest extends TestCase {
   }
   
   public void testProduceAfterNewTimeSlice() throws Exception {
-    LifecycleHelper.init(metricsInterceptor);
-    LifecycleHelper.start(metricsInterceptor);
-    
     ProducingStatisticManager producingStatisticManager = new ProducingStatisticManager();
     producingStatisticManager.setMarshaller(mockMarshaller);
     producingStatisticManager.setProducer(mockStandaloneProducer);
     
     metricsInterceptor.setStatisticManager(producingStatisticManager);
+    
+    LifecycleHelper.init(metricsInterceptor);
+    LifecycleHelper.start(metricsInterceptor);
 
     AdaptrisMessage message = DefaultMessageFactory.getDefaultInstance().newMessage();
 

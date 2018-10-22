@@ -38,8 +38,20 @@ public class ProducingStatisticManager extends BaseStatisticManager {
       this.getProducer().produce(newMessage);
       
     } catch (CoreException e) {
-      log.error("Failed to produce timeslice.", e);
+      try {
+        this.restartProducer();
+      } catch (CoreException e1) {
+        log.error("Failed to restart producer, will try again on next produce.");
+      }
+      log.error("Failed to produce timeslice.  Restarting producer.", e);
     }
+  }
+  
+  private void restartProducer() throws CoreException {
+    LifecycleHelper.stop(getProducer());
+    LifecycleHelper.close(getProducer());
+    LifecycleHelper.init(getProducer());
+    LifecycleHelper.start(getProducer());
   }
   
   @Override
