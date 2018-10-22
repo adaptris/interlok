@@ -20,7 +20,9 @@ import static org.junit.Assert.assertArrayEquals;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.nio.file.Files;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import com.adaptris.core.AdaptrisMessage;
@@ -43,11 +45,22 @@ public class ReadFileServiceTest extends GeneralServiceExample
 		/* empty method */
 	}
 
+
+  @Test
+  public void testProbeContentType() throws Exception {
+    final ReadFileService service = new ReadFileService();
+    assertNotNull(service.contentTypeProbe());
+    ReadFileService.ContentTypeProbe myProbe = e-> { return Files.probeContentType(e.toPath()); };
+    service.setContentTypeProbe(myProbe);
+    assertEquals(myProbe, service.getContentTypeProbe());
+    assertEquals(myProbe, service.contentTypeProbe());
+  }
+  
 	@Test
 	public void testService() throws Exception
 	{
 		final AdaptrisMessage message = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-		final ReadFileService service = (ReadFileService)retrieveObjectForSampleConfig();
+		final ReadFileService service = retrieveObjectForSampleConfig();
 
 		execute(service, message);
 
@@ -63,6 +76,7 @@ public class ReadFileServiceTest extends GeneralServiceExample
 		assertArrayEquals(expected, actual);
 	}
 
+	 
 	@Test
 	public void testServiceContentType() throws Exception
 	{
@@ -83,9 +97,28 @@ public class ReadFileServiceTest extends GeneralServiceExample
 		}
 
 		assertArrayEquals(expected, actual);
-		assertTrue(message.getMetadataValue("contentType").endsWith("/xml"));
+		assertTrue(message.containsKey("contentType"));
+		// Macs don't seem to be able to probe content type by default.
+		if (StringUtils.isNotBlank(message.getMetadataValue("contentType"))) {
+		  assertTrue(message.getMetadataValue("contentType").endsWith("/xml"));
+		}
 	}
 
+  @Test
+  public void testService_NoContentType() throws Exception {
+    final AdaptrisMessage message = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    final ReadFileService service = new ReadFileService();
+    service.setFilePath(PROPERTIES.getProperty("XmlTransformService.outputTestMessage"));
+    execute(service, message);
+    final byte[] actual = message.getPayload();
+    final File file = new File(PROPERTIES.getProperty("XmlTransformService.outputTestMessage"));
+    final byte[] expected = new byte[(int) file.length()];
+    try (final FileInputStream fir = new FileInputStream(file)) {
+      fir.read(expected);
+    }
+    assertArrayEquals(expected, actual);
+  }
+  
 	@Test
 	public void testServiceFailedInit() throws Exception
 	{
@@ -104,7 +137,7 @@ public class ReadFileServiceTest extends GeneralServiceExample
 	}
 
 	@Override
-	protected Object retrieveObjectForSampleConfig()
+	protected ReadFileService retrieveObjectForSampleConfig()
 	{
 		final ReadFileService service = new ReadFileService();
     service.setFilePath(FILE);

@@ -10,10 +10,13 @@ import java.nio.file.Files;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -46,11 +49,14 @@ public class ReadFileService extends ServiceImp
 
 	@AffectsMetadata
 	@AdvancedConfig
+	@InputFieldDefault(value = "null")
 	private String contentTypeMetadataKey;
 
-	/**
-	 * {@inheritDoc}.
-	 */
+	@AdvancedConfig
+	@Valid
+	@InputFieldDefault(value = "Files.probeContentType(Path)")
+	private ContentTypeProbe contentTypeProbe;
+
 	@Override
 	public void doService(final AdaptrisMessage message) throws ServiceException
 	{
@@ -62,7 +68,7 @@ public class ReadFileService extends ServiceImp
 				log.info("Reading file : {}", file.getAbsolutePath());
         try (FileInputStream in = new FileInputStream(file); OutputStream out = message.getOutputStream()) {
           StreamUtil.copyAndClose(in, out);
-          if (getContentTypeMetadataKey() != null) {
+          if (StringUtils.isNotBlank(getContentTypeMetadataKey())) {
             message.addMetadata(getContentTypeMetadataKey(), probeContentType(file));
           }
         }
@@ -75,14 +81,12 @@ public class ReadFileService extends ServiceImp
 		}
 		catch (final IOException e)
 		{
-			log.error(e.getMessage());
-			throw new ServiceException(e);
+		  throw ExceptionHelper.wrapServiceException(e);
 		}
 	}
 
 	private String probeContentType(File file) throws IOException {
-		String result = Files.probeContentType(file.toPath());
-		return result != null ? result : "";
+	  return StringUtils.defaultIfBlank(contentTypeProbe().probeContentType(file), "");
 	}
 
 	/**
@@ -150,5 +154,23 @@ public class ReadFileService extends ServiceImp
 	 */
 	public void setContentTypeMetadataKey(String contentTypeMetadataKey) {
 		this.contentTypeMetadataKey =  Args.notBlank(contentTypeMetadataKey, "contentTypeMetadataKey");
+	}
+	
+	 
+  public ContentTypeProbe getContentTypeProbe() {
+    return contentTypeProbe;
+  }
+
+  public void setContentTypeProbe(ContentTypeProbe contentTypeProbe) {
+    this.contentTypeProbe = contentTypeProbe;
+  }
+  
+  protected ContentTypeProbe contentTypeProbe() {
+    return getContentTypeProbe() != null ? getContentTypeProbe() : e -> { return Files.probeContentType(e.toPath()); };
+  }
+
+  @FunctionalInterface
+	public interface ContentTypeProbe {
+	  String probeContentType(File f) throws IOException ;
 	}
 }
