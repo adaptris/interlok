@@ -16,14 +16,24 @@
 
 package com.adaptris.core.interceptor;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import java.util.concurrent.TimeUnit;
+
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import junit.framework.TestCase;
 
+import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.MetadataElement;
+import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 
@@ -36,9 +46,14 @@ public class MetadataCountInterceptorTest extends TestCase {
   private static final String METADATA_KEY = "key";
 
   private MetadataCountInterceptor metricsInterceptor;
+  
+  @Mock private StandaloneProducer mockStandaloneProducer;
+  @Mock private AdaptrisMarshaller mockMarshaller;
 
   @Override
   public void setUp() throws Exception {
+    MockitoAnnotations.initMocks(this);
+    
     metricsInterceptor = new MetadataCountInterceptor(METADATA_KEY);
     metricsInterceptor.setTimesliceDuration(TIME_INTERVAL);
     metricsInterceptor.setTimesliceHistoryCount(2);
@@ -83,6 +98,55 @@ public class MetadataCountInterceptorTest extends TestCase {
     assertEquals(1, metricsInterceptor.getStats().size());
     assertEquals(0, ((MetadataStatistic) metricsInterceptor.getStats().get(0)).getValue(COUNTER_1));
     assertEquals(0, ((MetadataStatistic) metricsInterceptor.getStats().get(0)).getValue(COUNTER_2));
+  }
+  
+  public void testNoProduceBeforeNewTimeSlice() throws Exception {
+    LifecycleHelper.init(metricsInterceptor);
+    LifecycleHelper.start(metricsInterceptor);
+    
+    ProducingStatisticManager producingStatisticManager = new ProducingStatisticManager();
+    producingStatisticManager.setMarshaller(mockMarshaller);
+    producingStatisticManager.setProducer(mockStandaloneProducer);
+    
+    metricsInterceptor.setStatisticManager(producingStatisticManager);
+
+    AdaptrisMessage message = DefaultMessageFactory.getDefaultInstance().newMessage();
+
+    // A minus time will expire the time slice immediately after the first message
+    metricsInterceptor.setTimesliceDuration(new TimeInterval(-1L, TimeUnit.SECONDS));
+    
+    assertEquals(0, metricsInterceptor.getStats().size());
+    submitMessage(message);
+
+    assertEquals(1, metricsInterceptor.getStats().size());
+
+    verify(mockMarshaller, times(0)).marshal(any());
+    verify(mockStandaloneProducer, times(0)).produce(any());
+  }
+  
+  public void testProduceAfterNewTimeSlice() throws Exception {
+    LifecycleHelper.init(metricsInterceptor);
+    LifecycleHelper.start(metricsInterceptor);
+    
+    ProducingStatisticManager producingStatisticManager = new ProducingStatisticManager();
+    producingStatisticManager.setMarshaller(mockMarshaller);
+    producingStatisticManager.setProducer(mockStandaloneProducer);
+    
+    metricsInterceptor.setStatisticManager(producingStatisticManager);
+
+    AdaptrisMessage message = DefaultMessageFactory.getDefaultInstance().newMessage();
+
+    // A minus time will expire the time slice immediately after the first message
+    metricsInterceptor.setTimesliceDuration(new TimeInterval(-1L, TimeUnit.SECONDS));
+    
+    assertEquals(0, metricsInterceptor.getStats().size());
+    submitMessage(message);
+
+    assertEquals(1, metricsInterceptor.getStats().size());
+    submitMessage(message);
+
+    verify(mockMarshaller).marshal(any());
+    verify(mockStandaloneProducer).produce(any());
   }
 
   public void testCreatesNewTimeSliceAfterTimeDelay() throws Exception {
