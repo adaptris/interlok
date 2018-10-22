@@ -93,6 +93,8 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
   private transient ExecutorService executors;
   private transient EventHandler eventHandler;
 
+  private PoolingFutureExceptionStrategy exceptionStrategy;
+
   public SplitJoinService() {
     super();
   }
@@ -131,13 +133,7 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
   private List<Future<AdaptrisMessage>> submitAndWait(ServiceExceptionHandler handler, Collection<Callable<AdaptrisMessage>> jobs)
       throws Exception {
     List<Future<AdaptrisMessage>> results = executors.invokeAll(jobs, timeoutMs(), TimeUnit.MILLISECONDS);
-    handler.throwFirstException();
-    // Now check the futures to see if any were cancelled.
-    for (Future<AdaptrisMessage> f : results) {
-      if (f.isCancelled()) {
-        throw new CoreException("Timeout exceeded waiting for job completion.");
-      }
-    }
+    exceptionStrategy.handle(handler, results);
     log.trace("Finished waiting for operations...");
     return results;
   }
@@ -166,6 +162,8 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
       Args.notNull(getSplitter(), "splitter");
       Args.notNull(getAggregator(), "aggregator");
       Args.notNull(getService(), "service");
+      if (exceptionStrategy == null)
+        exceptionStrategy = new DefaultPoolingFutureExceptionStrategy();
       executors = createExecutor();
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
@@ -212,6 +210,7 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
       }
       return msg;
     }
+
   }
 
   /**
@@ -295,4 +294,11 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
     return discardNulls(getService());
   }
 
+  /**
+   * The {@link PoolingFutureExceptionStrategy} implementation to use to handle task exceptions.
+   * @param exceptionStrategy
+   */
+  public void setExceptionStrategy(PoolingFutureExceptionStrategy exceptionStrategy) {
+    this.exceptionStrategy = exceptionStrategy;
+  }
 }
