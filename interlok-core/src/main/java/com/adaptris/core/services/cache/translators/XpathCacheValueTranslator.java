@@ -10,6 +10,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.services.cache.CacheKeyTranslator;
 import com.adaptris.core.services.cache.CacheValueTranslator;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.ExceptionHelper;
@@ -31,7 +32,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author stuellidge
  */
 @XStreamAlias("xpath-cache-value-translator")
-public class XpathCacheValueTranslator implements CacheValueTranslator<String> {
+public class XpathCacheValueTranslator implements CacheValueTranslator<String>, CacheKeyTranslator {
 
   @NotBlank
   @InputFieldHint(expression = true)
@@ -114,5 +115,10 @@ public class XpathCacheValueTranslator implements CacheValueTranslator<String> {
 
   DocumentBuilderFactoryBuilder documentFactoryBuilder() {
     return getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig() : DocumentBuilderFactoryBuilder.newInstance();
+  }
+
+  @Override
+  public String getKeyFromMessage(AdaptrisMessage msg) throws CoreException {
+    return getValueFromMessage(msg);
   }
 }

@@ -32,6 +32,8 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.jdbc.JdbcService;
@@ -148,6 +150,7 @@ public abstract class JdbcMapInsert extends JdbcService {
   }
 
   @NotBlank
+  @InputFieldHint(expression = true)
   private String table;
   @AdvancedConfig
   @Valid
@@ -173,6 +176,10 @@ public abstract class JdbcMapInsert extends JdbcService {
    */
   public void setTable(String s) {
     this.table = Args.notBlank(s, "table");
+  }
+
+  protected String table(AdaptrisMessage msg) {
+    return msg.resolve(getTable());
   }
 
   public JdbcMapInsert withTable(String s) {
@@ -261,10 +268,10 @@ public abstract class JdbcMapInsert extends JdbcService {
   protected void stopService() {
   }
 
-  protected void handleInsert(Connection conn, Map<String, String> obj) throws ServiceException {
+  protected void handleInsert(String tableName, Connection conn, Map<String, String> obj) throws ServiceException {
     PreparedStatement insertStmt = null;
     try {
-      InsertWrapper inserter = new InsertWrapper(obj);
+      InsertWrapper inserter = new InsertWrapper(tableName, obj);
       log.trace("INSERT [{}]", inserter.statement);
       insertStmt = inserter.addParams(prepareStatement(conn, inserter.statement), obj);
       insertStmt.executeUpdate();
@@ -286,10 +293,9 @@ public abstract class JdbcMapInsert extends JdbcService {
   public class InsertWrapper implements StatementWrapper {
     private List<String> columns;
     private String statement;
-
-    public InsertWrapper(Map<String, String> json) {
+    public InsertWrapper(String tablename, Map<String, String> json) {
       columns = new ArrayList<>(json.keySet());
-      statement = String.format("INSERT into %s (%s) VALUES (%s)", getTable(), createString(true), createString(false));
+      statement = String.format("INSERT into %s (%s) VALUES (%s)", tablename, createString(true), createString(false));
     }
 
     private String createString(boolean columnsNotQuestionMarks) {

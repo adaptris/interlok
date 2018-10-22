@@ -32,6 +32,8 @@ order = {"validating", "namespaceAware", "xincludeAware", "expandEntityReference
     "ignoreWhitespace", "features"})
 public class DocumentBuilderFactoryBuilder {
 
+  public static String DISABLE_DOCTYP = "http://apache.org/xml/features/disallow-doctype-decl";
+
   @NotNull
   @AutoPopulated
   @AdvancedConfig
@@ -138,8 +140,25 @@ public class DocumentBuilderFactoryBuilder {
     features = new KeyValuePairSet();
   }
 
+  /**
+   * Create a new instance that is namespace aware.
+   * 
+   * @return a new instance.
+   */
   public static final DocumentBuilderFactoryBuilder newInstance() {
     return new DocumentBuilderFactoryBuilder().withNamespaceAware(true);
+  }
+
+  /**
+   * Create a New instance that disables Entityrefs and also mitigates against XXE via
+   * {@code http://apache.org/xml/features/disallow-doctype-decl = true}. This is added as a convenience so you don't have to keep
+   * configuring it if XXE is a bit of a bother for you.
+   * 
+   * @return a new instance.
+   */
+  public static final DocumentBuilderFactoryBuilder newRestrictedInstance() {
+    return new DocumentBuilderFactoryBuilder().withNamespaceAware(true).withExpandEntityReferences(false)
+        .addFeature(DISABLE_DOCTYP, Boolean.TRUE);
   }
 
   /**
@@ -150,6 +169,17 @@ public class DocumentBuilderFactoryBuilder {
    */
   public static final DocumentBuilderFactoryBuilder newInstance(DocumentBuilderFactoryBuilder b) {
     return b == null ? newInstance() : b;
+  }
+
+  /**
+   * Convenient method for null protection.
+   * 
+   * @param b an existing DocumentBuilderFactoryBuilder instance (or null)
+   * @return a new instance or the passed parameter.
+   * @see #newRestrictedInstance()
+   */
+  public static final DocumentBuilderFactoryBuilder newRestrictedInstance(DocumentBuilderFactoryBuilder b) {
+    return b == null ? newRestrictedInstance() : b;
   }
 
   /**
@@ -233,6 +263,11 @@ public class DocumentBuilderFactoryBuilder {
 
   public DocumentBuilderFactoryBuilder withFeatures(KeyValuePairSet v) {
     setFeatures(v);
+    return this;
+  }
+
+  public DocumentBuilderFactoryBuilder addFeature(String featureName, Boolean value) {
+    getFeatures().add(new KeyValuePair(featureName, value.toString()));
     return this;
   }
 

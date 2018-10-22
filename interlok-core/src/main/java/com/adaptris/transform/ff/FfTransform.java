@@ -126,19 +126,9 @@ public class FfTransform extends TransformFramework {
 
     // Convert the input to the transform method into a form
     // appropriate for passing to process().
-    Reader message = _convertToReader(in);
-
-    // Prepare the output for passing to process().
-    // StringBuffer transformedOutput = new StringBuffer(BUFSIZE);
-
-
-    // ////////////////////////////////////////
-    // TRANSFORMATION OF DATA HERE
-    // ////////////////////////////////////////
-    optimisedRule.process(message, new PrintWriter(out.getWriter()));
-    // ////////////////////////////////////////
-    // TRANSFORMATION OF DATA HERE
-    // ////////////////////////////////////////
+    try (Reader message = _convertToReader(in); PrintWriter p = new PrintWriter(out.getWriter())) {
+      optimisedRule.process(message, p);
+    }
 
   } // method transform
 

@@ -93,15 +93,13 @@ public abstract class DuplicateMetadataValueService extends ServiceImp {
     if (store != null) {
       try {
         if (store.exists()) {
-          ObjectInputStream o = new ObjectInputStream(
-              new FileInputStream(store));
-
-          previousValuesStore = (ArrayList<Object>) o.readObject();
-          o.close();
+          try (FileInputStream in = new FileInputStream(store); ObjectInputStream o = new ObjectInputStream(in)) {
+            previousValuesStore = (ArrayList<Object>) o.readObject();
+          }
         }
       }
       catch (Exception e) {
-        throw new ServiceException(e);
+        throw ExceptionHelper.wrapServiceException(e);
       }
     }
   }

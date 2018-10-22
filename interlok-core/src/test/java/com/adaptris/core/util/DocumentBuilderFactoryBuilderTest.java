@@ -67,6 +67,18 @@ public class DocumentBuilderFactoryBuilderTest {
   }
 
   @Test
+  public void testNewRestrictedInstance() {
+    DocumentBuilderFactoryBuilder b = DocumentBuilderFactoryBuilder.newRestrictedInstance();
+    assertNotNull(b.getFeatures());
+    assertEquals(1, b.getFeatures().size());
+    assertNotNull(b.getFeatures().getKeyValuePair(DocumentBuilderFactoryBuilder.DISABLE_DOCTYP));
+    assertEquals(true, b.getNamespaceAware());
+    assertEquals(false, b.getExpandEntityReferences());
+    assertEquals(b, DocumentBuilderFactoryBuilder.newRestrictedInstance(b));
+    assertNotSame(b, DocumentBuilderFactoryBuilder.newRestrictedInstance(null));
+  }
+
+  @Test
   public void testConfigureDocumentBuilderFactory() throws Exception {
     DocumentBuilderFactory f = DocumentBuilderFactory.newInstance();
     DocumentBuilderFactoryBuilder builder = DocumentBuilderFactoryBuilder.newInstance().withCoalescing(true)

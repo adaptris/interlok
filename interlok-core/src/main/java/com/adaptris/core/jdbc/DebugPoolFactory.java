@@ -34,7 +34,7 @@ public class DebugPoolFactory extends DefaultPoolFactory {
 
       result.setUnreturnedConnectionTimeout(unreturnedConnectionTimeout());
       result.setDebugUnreturnedConnectionStackTraces(debugUnreturnedConnectionStackTraces());
-      result.setLogWriter(new PrintWriter(new Slf4jLoggingOutputStream(logger, "DEBUG"), true));
+      result.setLogWriter(new PrintWriter(new Slf4jLoggingOutputStream(logger, "DEBUG"), true)); // lgtm
     } catch (Exception ex) {
       throw new CoreException(ex);
     }

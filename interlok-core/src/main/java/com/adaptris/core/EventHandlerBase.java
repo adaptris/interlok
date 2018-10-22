@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.TimeInterval;
@@ -94,12 +95,7 @@ public abstract class EventHandlerBase implements EventHandler {
       result = (Event) currentMarshaller().unmarshal(msg.getContent());
     }
     catch (Exception e) {
-      if (e instanceof CoreException) {
-        throw (CoreException) e;
-      }
-      else {
-        throw new CoreException("could not unmarshal msg into a valid event", e);
-      }
+      throw ExceptionHelper.wrapCoreException(e);
     }
     return result;
   }

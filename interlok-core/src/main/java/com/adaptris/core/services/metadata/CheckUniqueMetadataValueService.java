@@ -178,14 +178,16 @@ public class CheckUniqueMetadataValueService extends BranchingServiceImp {
   }
 
   private void storePreviouslyReceivedValues() throws Exception {
-    try (ObjectOutputStream o = new ObjectOutputStream(new FileOutputStream(store));) {
+    try (FileOutputStream out = new FileOutputStream(store);
+        ObjectOutputStream o = new ObjectOutputStream(out)) {
       o.writeObject(previousValuesStore);
     }
   }
 
   private void loadPreviouslyReceivedValues() throws Exception {
     if (store.exists()) {
-      try (ObjectInputStream o = new ObjectInputStream(new FileInputStream(store))) {
+      try (FileInputStream in = new FileInputStream(store);
+          ObjectInputStream o = new ObjectInputStream(in)) {
         previousValuesStore = (ArrayList<Object>) o.readObject();
       }
     }

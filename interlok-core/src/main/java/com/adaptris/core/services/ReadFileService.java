@@ -4,12 +4,17 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import com.adaptris.annotation.*;
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.AffectsMetadata;
+import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -18,7 +23,6 @@ import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.stream.StreamUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import org.hibernate.validator.constraints.NotBlank;
 
 /**
  * Read a file from a specific path into the message payload.
@@ -56,10 +60,12 @@ public class ReadFileService extends ServiceImp
 			if (file.exists() && file.isFile())
 			{
 				log.info("Reading file : {}", file.getAbsolutePath());
-				StreamUtil.copyAndClose(new FileInputStream(file), message.getOutputStream());
-				if(getContentTypeMetadataKey() != null) {
-					message.addMetadata(getContentTypeMetadataKey(), probeContentType(file));
-				}
+        try (FileInputStream in = new FileInputStream(file); OutputStream out = message.getOutputStream()) {
+          StreamUtil.copyAndClose(in, out);
+          if (getContentTypeMetadataKey() != null) {
+            message.addMetadata(getContentTypeMetadataKey(), probeContentType(file));
+          }
+        }
 			}
 			else
 			{

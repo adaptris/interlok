@@ -32,6 +32,7 @@ import static com.adaptris.core.management.Constants.PROTOCOL_FILE;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -52,7 +53,6 @@ import org.slf4j.LoggerFactory;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.management.logging.LoggingConfigurator;
-import com.adaptris.core.util.Args;
 import com.adaptris.core.util.PropertyHelper;
 import com.adaptris.util.URLString;
 
@@ -133,15 +133,14 @@ public class BootstrapProperties extends Properties {
 
   private static Properties createProperties(final String resourceName) throws Exception {
     String propertiesFile = StringUtils.defaultIfBlank(resourceName, DEFAULT_PROPS_RESOURCE);
-    Properties config = new Properties();
     log.trace("Properties resource is [{}]", propertiesFile);
-    try (InputStream r = Args.notNull(openResource(propertiesFile), "resourceName")) {
-      config.load(r);
-    }
+    Properties config = PropertyHelper.loadQuietly(() -> {
+      return openResource(propertiesFile);
+    });
     return config;
   }
 
-  private static InputStream openResource(String r) throws Exception {
+  private static InputStream openResource(String r) throws IOException {
     if (new File(r).exists()) {
       return new FileInputStream(r);
     }

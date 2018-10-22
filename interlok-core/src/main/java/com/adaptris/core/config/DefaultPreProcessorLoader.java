@@ -32,6 +32,7 @@ import com.adaptris.core.management.AdapterConfigManager;
 import com.adaptris.core.management.BootstrapProperties;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.core.util.PropertyHelper;
 import com.adaptris.util.KeyValuePairSet;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -67,7 +68,7 @@ public class DefaultPreProcessorLoader implements ConfigPreProcessorLoader {
           preProcessorsList.add(resolve(preProcessor, bootstrapProperties));
         }
         catch (Exception e) {
-          log.warn("Unable to find pre-processor with name: ]{}].  Ignoring.", preProcessor);
+          log.warn("Unable to find pre-processor with name: [{}].  Ignoring.", preProcessor);
         }
       }
     }
@@ -162,11 +163,8 @@ public class DefaultPreProcessorLoader implements ConfigPreProcessorLoader {
     public Properties loadPropertyFile(String name) {
       Properties p = new Properties();
       try (InputStream in = this.getClass().getClassLoader().getResourceAsStream(PRE_PROCESSOR_RESOURCE + name)) {
-        if (in != null) {
-          p.load(in);
-        }
-      }
-      catch (IOException e) {
+        p = PropertyHelper.loadQuietly(in);
+      } catch (IOException e) {
         // Just return an empty properties is fine.
       }
       return p;

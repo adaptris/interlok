@@ -70,13 +70,13 @@ public abstract class JdbcMapUpsert extends JdbcMapInsert {
     return getIdField() != null ? getIdField() : DEFAULT_ID_FIELD;
   }
 
-  protected void handleUpsert(Connection conn, Map<String, String> object) throws ServiceException {
+  protected void handleUpsert(String tablename, Connection conn, Map<String, String> object) throws ServiceException {
     PreparedStatement selectStmt = null, insertStmt = null, updateStmt = null;
     ResultSet rs = null;
     try {
-      InsertWrapper inserter = new InsertWrapper(object);
-      SelectWrapper selector = new SelectWrapper(object);
-      UpdateWrapper updater = new UpdateWrapper(object);
+      InsertWrapper inserter = new InsertWrapper(tablename, object);
+      SelectWrapper selector = new SelectWrapper(tablename, object);
+      UpdateWrapper updater = new UpdateWrapper(tablename, object);
       log.trace("SELECT [{}]", selector.statement());
       log.trace("INSERT [{}]", inserter.statement());
       log.trace("UPDATE [{}]", updater.statement());
@@ -106,11 +106,11 @@ public abstract class JdbcMapUpsert extends JdbcMapInsert {
     private List<String> columns;
     private String statement;
 
-    public UpdateWrapper(Map<String, String> obj) {
+    public UpdateWrapper(String tablename, Map<String, String> obj) {
       columns = new ArrayList<>(obj.keySet());
       columns.remove(idField());
       String bookend = columnBookend();
-      StringBuilder statementBuilder = new StringBuilder(String.format("UPDATE %s SET", getTable()));
+      StringBuilder statementBuilder = new StringBuilder(String.format("UPDATE %s SET", tablename));
       // Add all the updates.
       for (Iterator<String> i = columns.iterator(); i.hasNext();) {
         String col = i.next();
@@ -147,10 +147,10 @@ public abstract class JdbcMapUpsert extends JdbcMapInsert {
   public class SelectWrapper implements StatementWrapper {
     private String statement;
 
-    public SelectWrapper(Map<String, String> obj) {
+    public SelectWrapper(String tablename, Map<String, String> obj) {
       String bookend = columnBookend();
       // SELECT 'id' from table where 'id' = ?
-      statement = String.format("SELECT %1$s%2$s%1$s FROM %3$s WHERE %1$s%2$s%1$s = ?", bookend, idField(), getTable());
+      statement = String.format("SELECT %1$s%2$s%1$s FROM %3$s WHERE %1$s%2$s%1$s = ?", bookend, idField(), tablename);
     }
 
     @Override

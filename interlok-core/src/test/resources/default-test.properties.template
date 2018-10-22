@@ -18,6 +18,7 @@ default.jdbc.storedproc.tests.enabled=false
 #default.jdbc.storedproc.password=
 #default.jdbc.storedproc.vendor=mysql
 #default.jdbc.storedproc.teststatement=
+#default.jdbc.storedproc.url.params=?useSSL=false
 
 #SQL SERVER Example
 #default.jdbc.storedproc.url=jdbc:sqlserver://localhost:55079;databaseName=
@@ -28,6 +29,7 @@ default.jdbc.storedproc.tests.enabled=false
 #default.jdbc.storedproc.teststatement=
 # Currently supported vendors for testing; "mysql" / "sqlserver".
 #default.jdbc.storedproc.vendor=sqlserver
+#default.jdbc.storedproc.url.params=
 
 #SQL SERVER JTDS Driver Example
 #default.jdbc.storedproc.url=jdbc:jtds:sqlserver://localhost:55079/

@@ -46,6 +46,7 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.NonBlockingQuartzThreadPool;
+import com.adaptris.core.util.PropertyHelper;
 import com.adaptris.util.FifoMutexLock;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -454,23 +455,23 @@ public class QuartzCronPoller extends PollerImp {
   }
 
   private Properties createQuartzProperties() throws CoreException {
-    Properties result = new Properties();
-    try (InputStream in = openQuartzProperties()) {
-      result.load(in);
-    }
-    catch (Exception e) {
+    try {
+      Properties result = PropertyHelper.load(() -> {
+        return openQuartzProperties();
+      });
+      result.put(StdSchedulerFactory.PROP_SCHED_MAKE_SCHEDULER_THREAD_DAEMON, Boolean.TRUE.toString());
+      result.putAll(System.getProperties());
+      if (useCustomThreadPool()) {
+        result.put(StdSchedulerFactory.PROP_THREAD_POOL_CLASS, NonBlockingQuartzThreadPool.class.getCanonicalName());
+      }
+      // result.put(StdSchedulerFactory.PROP_SCHED_INSTANCE_NAME, schedulerName);
+      // result.put("org.quartz.plugin.shutdownhook.class",
+      // org.quartz.plugins.management.ShutdownHookPlugin.class.getCanonicalName());
+      // result.put("org.quartz.plugin.shutdownhook.cleanShutdown", Boolean.FALSE.toString());
+      return result;
+    } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
-    result.put(StdSchedulerFactory.PROP_SCHED_MAKE_SCHEDULER_THREAD_DAEMON, Boolean.TRUE.toString());
-    result.putAll(System.getProperties());    
-    if (useCustomThreadPool()) {
-      result.put(StdSchedulerFactory.PROP_THREAD_POOL_CLASS, NonBlockingQuartzThreadPool.class.getCanonicalName());
-    }
-    // result.put(StdSchedulerFactory.PROP_SCHED_INSTANCE_NAME, schedulerName);
-    // result.put("org.quartz.plugin.shutdownhook.class",
-    // org.quartz.plugins.management.ShutdownHookPlugin.class.getCanonicalName());
-    // result.put("org.quartz.plugin.shutdownhook.cleanShutdown", Boolean.FALSE.toString());
-    return result;
   }
 
   private InputStream find(String... resources) throws IOException {

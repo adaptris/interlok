@@ -21,9 +21,6 @@ import java.security.SecureRandom;
 import java.security.Security;
 import java.util.Arrays;
 
-import org.bouncycastle.crypto.digests.SHA384Digest;
-import org.bouncycastle.crypto.prng.DigestRandomGenerator;
-import org.bouncycastle.crypto.prng.SP800SecureRandomBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 /**

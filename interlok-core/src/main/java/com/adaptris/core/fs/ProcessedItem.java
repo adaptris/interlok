@@ -18,6 +18,8 @@ package com.adaptris.core.fs;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+
 import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -80,11 +82,13 @@ public class ProcessedItem implements Serializable {
 
   @Override
   public boolean equals(Object other) {
-    boolean result = false;
-    if (other instanceof ProcessedItem && null != other) {
-      result = absolutePath.equals(((ProcessedItem) other).getAbsolutePath());
+    if (other == null) return false;
+    if (other == this) return true;
+    if (other instanceof ProcessedItem) {
+      ProcessedItem item = (ProcessedItem) other;
+      return new EqualsBuilder().append(item.getAbsolutePath(), this.getAbsolutePath()).isEquals();
     }
-    return result;
+    return false;
   }
 
   @Override

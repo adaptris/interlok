@@ -1,4 +1,5 @@
-# Interlok [![GitHub tag](https://img.shields.io/github/tag/adaptris/interlok.svg)]() [![Build Status](https://travis-ci.org/adaptris/interlok.svg?branch=develop)](https://travis-ci.org/adaptris/interlok) [![codecov](https://codecov.io/gh/adaptris/interlok/branch/develop/graph/badge.svg)](https://codecov.io/gh/adaptris/interlok) ![Jenkins coverage](https://img.shields.io/jenkins/t/https/development.adaptris.net/jenkins/job/Interlok.svg) ![license](https://img.shields.io/github/license/adaptris/interlok.svg) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/cb4f8668396647adabe4cf82a5cec427)](https://www.codacy.com/app/adaptris/interlok?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=adaptris/interlok&amp;utm_campaign=Badge_Grade)
+# Interlok 
+[![GitHub tag](https://img.shields.io/github/tag/adaptris/interlok.svg)]() [![Build Status](https://travis-ci.org/adaptris/interlok.svg?branch=develop)](https://travis-ci.org/adaptris/interlok) [![codecov](https://codecov.io/gh/adaptris/interlok/branch/develop/graph/badge.svg)](https://codecov.io/gh/adaptris/interlok) ![Jenkins coverage](https://img.shields.io/jenkins/t/https/development.adaptris.net/jenkins/job/Interlok.svg) ![license](https://img.shields.io/github/license/adaptris/interlok.svg) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/cb4f8668396647adabe4cf82a5cec427)](https://www.codacy.com/app/adaptris/interlok?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=adaptris/interlok&amp;utm_campaign=Badge_Grade) [![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/adaptris/interlok.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/adaptris/interlok/context:java) [![Total alerts](https://img.shields.io/lgtm/alerts/g/adaptris/interlok.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/adaptris/interlok/alerts/) 
 
 This is the base repository for Interlok. It contains the base adapter pared of all 3rd party dependencies other than open source ones. There is a single dependency (commented out) on Microsoft SQL Server JDBC provider which is not required unless you explicitly want to test JDBC against SQL Server.
 
@@ -47,7 +48,6 @@ Property Key | Default Value | Description | Notes
 ------------ | ------------- | ----------- | -----
 junit.test.classes|```**/*Test*.java```|Standard filter so that when you run _gradle test_ it only tests what you want to test ||
 verboseTests|false|If your console mode is "plain" (org.gradle.console=plain), then this prints out each test suite before it's executed|WinGit : it is probably plain|
-junit.forkmode|perTest|This controls how the junit tests are forked internally by ant|_perTest_ is slow, but guarantees isolation, _once_ means we fork the JVM once
 
 So, `gradle -PverboseTests=true test` will print out test suite names; gradle `-Pjunit.test.classes=**/metadata/**/*Test* test` will just test metadata classes.
 

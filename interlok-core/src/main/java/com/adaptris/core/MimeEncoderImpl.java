@@ -39,6 +39,7 @@ import org.apache.commons.io.IOUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.PropertyHelper;
 import com.adaptris.util.text.mime.BodyPartIterator;
 import com.adaptris.util.text.mime.ByteArrayDataSource;
 import com.adaptris.util.text.mime.MimeConstants;
@@ -167,18 +168,15 @@ public abstract class MimeEncoderImpl extends AdaptrisMessageEncoderImp {
 
 
   protected static byte[] getMetadata(AdaptrisMessage msg) throws IOException {
-
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    Properties metadata = convertToProperties(msg.getMetadata());
-    metadata.store(out, "");
-    out.close();
-    return out.toByteArray();
+    try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+      Properties metadata = convertToProperties(msg.getMetadata());
+      metadata.store(out, "");
+      return out.toByteArray();
+    }
   }
 
   protected static Set<MetadataElement> getMetadataSet(InputStream in) throws IOException {
-    Properties p = new Properties();
-    p.load(in);
-    return convertFromProperties(p);
+    return convertFromProperties(PropertyHelper.loadQuietly(in));
   }
 
   

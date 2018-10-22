@@ -23,8 +23,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import javax.validation.Valid;
 
 import org.apache.commons.lang3.BooleanUtils;
 
@@ -35,6 +36,11 @@ import com.adaptris.core.NoOpConnection;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
 import com.adaptris.security.exc.PasswordException;
+import com.adaptris.util.TimeInterval;
+
+import net.jodah.expiringmap.ExpirationListener;
+import net.jodah.expiringmap.ExpirationPolicy;
+import net.jodah.expiringmap.ExpiringMap;
 
 /**
  * Class containing common configuration for all FTP Connection types.
@@ -49,6 +55,7 @@ public abstract class FileTransferConnection extends NoOpConnection {
    * @see #setMaxClientCache(Integer)
    */
   protected static final int DEFAULT_MAX_CACHE_SIZE = 16;
+  protected static final TimeInterval DEFAULT_EXPIRATION = new TimeInterval(1L, TimeUnit.HOURS);
   private static final String UTF_8 = "UTF-8";
 
   private String defaultUserName;
@@ -68,9 +75,12 @@ public abstract class FileTransferConnection extends NoOpConnection {
   private Boolean cacheConnection;
   @AdvancedConfig
   private Integer maxClientCacheSize;
+  @AdvancedConfig
+  @InputFieldDefault(value = "1 Hour")
+  @Valid
+  private TimeInterval cacheExpiration;
 
-
-  private transient SimpleCache cachedConnections;
+  private transient ExpiringMap<String, FileTransferClient> cachedConnections;
 
   /**
    *
@@ -229,7 +239,8 @@ public abstract class FileTransferConnection extends NoOpConnection {
     if (defaultUserName == null) {
       log.warn("No default user name, expected to be provided by destination");
     }
-    cachedConnections = new SimpleCache();
+    cachedConnections = ExpiringMap.builder().maxSize(maxClientCacheSize()).asyncExpirationListener(new ExpiredClientListener())
+        .expirationPolicy(ExpirationPolicy.ACCESSED).expiration(expirationMillis(), TimeUnit.MILLISECONDS).build();
   }
 
   /**
@@ -323,6 +334,23 @@ public abstract class FileTransferConnection extends NoOpConnection {
 
   public int maxClientCacheSize() {
     return getMaxClientCacheSize() != null ? getMaxClientCacheSize().intValue() : DEFAULT_MAX_CACHE_SIZE;
+  }
+
+  public TimeInterval getCacheExpiration() {
+    return cacheExpiration;
+  }
+
+  public void setCacheExpiration(TimeInterval expiration) {
+    this.cacheExpiration = expiration;
+  }
+
+  public <T extends FileTransferConnection> T withCacheExpiration(TimeInterval i) {
+    setCacheExpiration(i);
+    return (T) this;
+  }
+
+  protected long expirationMillis() {
+    return getCacheExpiration() != null ? getCacheExpiration().toMilliseconds() : DEFAULT_EXPIRATION.toMilliseconds();
   }
 
   /**
@@ -436,21 +464,11 @@ public abstract class FileTransferConnection extends NoOpConnection {
     }
   }
 
-  private class SimpleCache extends LinkedHashMap<String, FileTransferClient> {
-
-    private static final long serialVersionUID = 2011031601L;
-
-    public SimpleCache() {
-      super(maxClientCacheSize(), 0.75f, true);
-    }
+  private class ExpiredClientListener implements ExpirationListener<String, FileTransferClient> {
 
     @Override
-    protected boolean removeEldestEntry(Map.Entry<String, FileTransferClient> eldest) {
-      boolean result = size() > maxClientCacheSize();
-      if (result) {
-        forceDisconnect(eldest.getValue());
-      }
-      return result;
+    public void expired(String key, FileTransferClient value) {
+      forceDisconnect(value);
     }
   }
 

@@ -51,7 +51,6 @@ public class CheckCacheService extends CacheServiceBase {
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     try {
-      int required = getCacheEntryEvaluators().size();
       if (eval(msg)) {
         msg.setNextServiceId(getKeysFoundServiceId());
       }
@@ -64,17 +63,24 @@ public class CheckCacheService extends CacheServiceBase {
     }
   }
 
-  protected boolean eval(AdaptrisMessage msg) throws CoreException {
+  protected boolean eval(final AdaptrisMessage msg) throws CoreException {
+    return eval(msg, (m, key, ceg) -> {
+    });
+  }
+
+  protected boolean eval(AdaptrisMessage msg, FoundInCache callback) throws CoreException {
     int count = 0;
     int required = getCacheEntryEvaluators().size();
     Cache cache = retrieveCache();
-    for (CacheEntryEvaluator ceg : getCacheEntryEvaluators()) {
-      Object key = ceg.getKey(msg);
-      count += cache.getKeys().contains(key) ? 1 : 0;
+    for (CacheEntryEvaluator lookup : getCacheEntryEvaluators()) {
+      Object o = cache.get(lookup.getKey(msg));
+      if (o != null) {
+        count++;
+        callback.handle(msg, o, lookup.valueTranslator());
+      }
     }
     return count == required;
   }
-
 
   public String getKeysNotFoundServiceId() {
     return keysNotFoundServiceId;
@@ -105,5 +111,10 @@ public class CheckCacheService extends CacheServiceBase {
   @Override
   public boolean isBranching() {
     return true;
+  }
+
+  @FunctionalInterface
+  protected interface FoundInCache {
+    void handle(AdaptrisMessage m, Object o, CacheValueTranslator ceg) throws CoreException;
   }
 }

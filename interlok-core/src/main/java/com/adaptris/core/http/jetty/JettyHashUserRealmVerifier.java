@@ -19,9 +19,7 @@ import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -38,6 +36,7 @@ import com.adaptris.core.security.access.IdentityBuilder;
 import com.adaptris.core.security.access.IdentityVerifier;
 import com.adaptris.core.security.access.IdentityVerifierImpl;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.PropertyHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -123,11 +122,7 @@ public class JettyHashUserRealmVerifier extends IdentityVerifierImpl {
   private Map<String, AccessCredentials> loadUsers() throws IOException {
     File file = new File(filename);
     if (fileLastModified < file.lastModified()) {
-      Properties p = new Properties();
-      try (InputStream in = new FileInputStream(file)) {
-        p.load(in);
-      }
-      users = loadUsers(p);
+      users = loadUsers(PropertyHelper.loadQuietly(file));
       fileLastModified = file.lastModified();
     }
     return users;

@@ -175,7 +175,7 @@ public class JdbcMapUpsertTest extends JdbcMapInsertCase {
       Connection conn = null;
       try {
         conn = getConnection(msg);
-        handleUpsert(conn, mapify(msg));
+        handleUpsert(table(msg), conn, mapify(msg));
         commit(conn, msg);
       }
       catch (Exception e) {

@@ -289,7 +289,8 @@ public class SimpleDataStore extends DataStore {
     HashMap data = new HashMap();
     File file = new File(getDataFile());
     if (file.exists()) {
-      try (ObjectInputStream oi = new ObjectInputStream(new FileInputStream(file))) {
+      try (FileInputStream in = new FileInputStream(file);
+          ObjectInputStream oi = new ObjectInputStream(in)) { // lgtm
         data = (HashMap) oi.readObject();
       }
     }
@@ -297,7 +298,8 @@ public class SimpleDataStore extends DataStore {
   }
 
   private void writeData(HashMap data) throws IOException {
-    try (ObjectOutputStream objOut = new ObjectOutputStream(new FileOutputStream(getDataFile()))) {
+    try (FileOutputStream out = new FileOutputStream(getDataFile());
+        ObjectOutputStream objOut = new ObjectOutputStream(out)) { // lgtm
       objOut.writeObject(data);      
     }
   }

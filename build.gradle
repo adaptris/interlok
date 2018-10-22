@@ -1,6 +1,6 @@
 plugins {
   // Manage optional dependencies in maven pom.
-  id 'nebula.optional-base' version '3.3.0' apply false
+  id 'nebula.optional-base' version '4.0.1' apply false
 }
 
 ext {
@@ -50,7 +50,7 @@ subprojects { subproject ->
 
   // In this section you declare where to find the dependencies of your project
   repositories {
-    jcenter()
+    mavenCentral()
     maven { url "$defaultNexusRepo" }
     maven { url "$nexusBaseUrl/content/groups/public" }
     maven { url "$nexusBaseUrl/content/repositories/snapshots" }

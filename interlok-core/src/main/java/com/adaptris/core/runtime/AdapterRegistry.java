@@ -69,11 +69,10 @@ import io.github.classgraph.ScanResult;
 public class AdapterRegistry implements AdapterRegistryMBean {
 
   // Packages for fast class path we never want to scan
-  // stick a - in front of it.
   private static final String[] FCS_BLACKLIST = {
-      "-javax", "-java", "-org.apache", "-org.codehaus", "-org.hibernate", "-org.springframework", "-com.mchange", "-com.sun",
-      "-org.bouncycastle", "-org.eclipse", "-org.jboss", "-org.slf4j", "-net.sf.saxon", "-com.google.guava", "-com.fasterxml",
-      "-io.github.classgraph", "-com.jcraft", "-com.thoughtworks", "-org.quartz"
+      "javax", "java", "org.apache", "org.codehaus", "org.hibernate", "org.springframework", "com.mchange", "com.sun",
+      "org.bouncycastle", "org.eclipse", "org.jboss", "org.slf4j", "net.sf.saxon", "com.google.guava", "com.fasterxml",
+      "io.github.classgraph", "com.jcraft", "com.thoughtworks", "org.quartz"
   };
   private static final String EXCEPTION_MSG_XML_NULL = "XML String is null";
   private static final String EXCEPTION_MSG_URL_NULL = "URL is null";
@@ -513,15 +512,13 @@ public class AdapterRegistry implements AdapterRegistryMBean {
         }
       }
 
-      ScanResult result = new ClassGraph()
-        .enableAllInfo()
-        .blacklistPackages(FCS_BLACKLIST)
-        .scan();
+      try (ScanResult result = new ClassGraph().enableAllInfo().blacklistPackages(FCS_BLACKLIST).scan()) {
 
-      List<String> subclassNames = result.getSubclasses(className).getNames();
+        List<String> subclassNames = result.getSubclasses(className).getNames();
 
-      for (String subclassName : subclassNames) {
+        for (String subclassName : subclassNames) {
           classDescriptor.getSubTypes().add(subclassName);
+        }
       }
 
     } catch (ClassNotFoundException e) {

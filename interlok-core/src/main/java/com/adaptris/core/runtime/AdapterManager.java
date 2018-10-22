@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -31,7 +30,6 @@ import javax.management.MBeanNotificationInfo;
 import javax.management.MalformedObjectNameException;
 import javax.management.Notification;
 import javax.management.ObjectName;
-import javax.naming.Context;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -47,7 +45,6 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.FailedMessageRetrier;
 import com.adaptris.core.InitialisedState;
-import com.adaptris.core.JndiContextFactory;
 import com.adaptris.core.ProcessingExceptionHandler;
 import com.adaptris.core.Service;
 import com.adaptris.core.StartedState;
@@ -59,7 +56,6 @@ import com.adaptris.core.util.ManagedThreadFactory;
  * Base implementation of {@link AdapterManagerMBean}.
  */
 public class AdapterManager extends ComponentManagerImpl<Adapter> implements AdapterManagerMBean, AdapterRuntimeManager {
-  private transient Properties contextEnv = new Properties();
   private transient Adapter adapter;
   private transient Set<ChannelRuntimeManager> channelManagers;
   private transient Set<ChildRuntimeInfoComponent> childRuntimeInfoComponents;
@@ -73,7 +69,6 @@ public class AdapterManager extends ComponentManagerImpl<Adapter> implements Ada
     super();
     channelManagers = new HashSet<ChannelRuntimeManager>();
     childRuntimeInfoComponents = new HashSet<ChildRuntimeInfoComponent>();
-    contextEnv.put(Context.INITIAL_CONTEXT_FACTORY, JndiContextFactory.class.getName());
   }
 
   public AdapterManager(Adapter owner) throws MalformedObjectNameException, CoreException {

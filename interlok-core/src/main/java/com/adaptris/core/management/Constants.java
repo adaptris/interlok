@@ -60,7 +60,14 @@ public final class Constants {
   public static final String CFG_KEY_MARSHALLER_OUTPUT_TYPE = "marshallerOutputType";
   /**
    * Bootstrap Property that configures XStream to generate Beautified XML output.
+   * <p>
+   * <strong>This was removed in 3.8.2</strong> for compliance with Java 11; beautification uses some {@code com.sun} classes which
+   * is now illegal. It was also causing some implied behaviour based on ordering, which led to undefined behaviour.
+   * </p>
+   * 
+   * @deprecated actually removed in 3.8.2 and has no meaning.
    */
+  @Deprecated
   public static final String CFG_XSTREAM_BEAUTIFIED_OUTPUT = "beautifyXStreamOutput";
   /**
    * Bootstrap property that enables default HTTP Proxy authentication via the user of standard java.net system properties.

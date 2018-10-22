@@ -36,7 +36,6 @@ import java.net.URLStreamHandler;
 
 import org.apache.commons.io.FileUtils;
 
-import com.adaptris.core.AdapterXStreamMarshallerFactory.OutputMode;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.URLString;
 import com.adaptris.util.system.Os;
@@ -59,8 +58,6 @@ public abstract class MarshallingBaseCase extends BaseCase {
 
   @Override
   protected void tearDown() throws Exception {
-    // To avoid the situation where suddenly all the stuff is beautified...
-    AdapterXStreamMarshallerFactory.getInstance().setMode(OutputMode.STANDARD);
   }
 
   protected abstract AdaptrisMarshaller createMarshaller() throws Exception;

@@ -324,7 +324,7 @@ public abstract class MailSenderImp implements MailSender {
    * </p>
    *
    * @return the bytes
-   * @param uncodedPayload the payload in its raw form.
+   * @param unencoded the payload in its raw form.
    * @param header the existing InternetHeaders so that the appropriate content transfer encoding header can be set.
    * @param encoding for this particular part of the message
    * @see MimeBodypart#MimeBodyPart(InternetHeaders, byte[])

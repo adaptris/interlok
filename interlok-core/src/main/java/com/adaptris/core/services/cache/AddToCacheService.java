@@ -61,7 +61,7 @@ public class AddToCacheService extends CacheServiceBase {
     try {
       Cache cache = retrieveCache();
       for (CacheEntryEvaluator ceg : getCacheEntryEvaluators()) {
-        Object key = ceg.getKey(msg);
+        String key = ceg.getKey(msg);
         Object value = ceg.getValue(msg);
         if (key == null || value == null) {
           log.warn("{} generated null values for either the key or value, not storing in cache", ceg.friendlyName());
@@ -70,7 +70,7 @@ public class AddToCacheService extends CacheServiceBase {
         if (enforceSerializable() && !(value instanceof Serializable)) {
           throw new ServiceException("Cache value " + value + " should be Serializable, but is of type " + value.getClass());
         }
-        cache.put(key.toString(), value);
+        cache.put(key, value);
       }
     }
     catch (Exception e) {

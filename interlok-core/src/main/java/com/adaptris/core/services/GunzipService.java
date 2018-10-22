@@ -16,6 +16,8 @@
 
 package com.adaptris.core.services;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.zip.GZIPInputStream;
 
 import com.adaptris.annotation.AdapterComponent;
@@ -50,10 +52,11 @@ public class GunzipService extends ServiceImp {
    */
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    try {
-      StreamUtil.copyAndClose(new GZIPInputStream(msg.getInputStream()), msg.getOutputStream());
-    }
-    catch (Exception e) {
+    try (InputStream msgIn = msg.getInputStream();
+        GZIPInputStream in = new GZIPInputStream(msgIn);
+        OutputStream out = msg.getOutputStream()) {
+      StreamUtil.copyAndClose(in, out);
+    } catch (Exception e) {
       throw ExceptionHelper.wrapServiceException(e);
     }
   }

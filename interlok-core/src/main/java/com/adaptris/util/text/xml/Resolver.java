@@ -188,7 +188,7 @@ public class Resolver implements EntityResolver, URIResolver {
 
     @Override
     protected boolean removeEldestEntry(Map.Entry eldest) {
-      return size() > maxDestinationCacheSize();
+      return super.size() > maxDestinationCacheSize();
     }
   }
 
