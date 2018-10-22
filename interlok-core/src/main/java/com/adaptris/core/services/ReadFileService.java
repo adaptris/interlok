@@ -68,7 +68,7 @@ public class ReadFileService extends ServiceImp
 				log.info("Reading file : {}", file.getAbsolutePath());
         try (FileInputStream in = new FileInputStream(file); OutputStream out = message.getOutputStream()) {
           StreamUtil.copyAndClose(in, out);
-          if (getContentTypeMetadataKey() != null) {
+          if (StringUtils.isNotBlank(getContentTypeMetadataKey())) {
             message.addMetadata(getContentTypeMetadataKey(), probeContentType(file));
           }
         }
