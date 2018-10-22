@@ -16,6 +16,7 @@
 
 package com.adaptris.security;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.PrivateKey;
@@ -29,6 +30,7 @@ import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x509.X509ObjectIdentifiers;
 
+import com.adaptris.core.util.PropertyHelper;
 import com.adaptris.security.certificate.CertificateBuilder;
 import com.adaptris.security.certificate.CertificateBuilderFactory;
 import com.adaptris.security.certificate.CertificateParameter;
@@ -107,21 +109,16 @@ public class Config {
   private Config() {
     try {
       logR = LogFactory.getLog(Config.class);
-      InputStream is = this.getClass().getClassLoader().getResourceAsStream(
-          SECURITY_PROPERTIES);
-
-      if (is != null) {
-        config = new Properties();
-        config.load(is);
-        is.close();
-      }
-      else {
-        throw new Exception(
-            "No Configuration(security-test.properties) available");
+      config = PropertyHelper.loadQuietly(() -> {
+        return this.getClass().getClassLoader().getResourceAsStream(SECURITY_PROPERTIES);
+      });
+      if (config.size() == 0) {
+        throw new Exception("No Configuration(security-test.properties) available");
       }
       SecurityUtil.addProvider();
-      System.setProperty(Constants.IGNORE_REV, config.getProperty(
-          Config.CERTIFICATE_IGNORE_REVOKED, "false"));
+      System.setProperty(Constants.IGNORE_REV, config.getProperty(Config.CERTIFICATE_IGNORE_REVOKED, "false"));
+      File cfgRoot = new File(config.getProperty(CFG_ROOT));
+      cfgRoot.mkdirs();
     }
     catch (Exception e) {
       throw new RuntimeException(e);
@@ -141,20 +138,12 @@ public class Config {
   }
 
   public Properties getPropertySubset(String prefix) {
-    Properties tmp = new Properties();
-    for (Iterator i = config.keySet().iterator(); i.hasNext();) {
-      String key = (String) i.next();
-      if (key.toLowerCase().startsWith(prefix)) {
-        tmp.setProperty(key, config.getProperty(key));
-      }
-    }
-    return tmp;
+    return PropertyHelper.getPropertySubset(config, prefix);
   }
 
   public CertificateBuilder getBuilder(String commonName) throws Exception {
 
-    CertificateBuilder builder = CertificateBuilderFactory.getInstance()
-        .createBuilder();
+    CertificateBuilder builder = CertificateBuilderFactory.getInstance().createBuilder();
     CertificateParameter cp = new CertificateParameter();
     X500NameBuilder subject = new X500NameBuilder();
 
@@ -168,19 +157,16 @@ public class Config {
 
     cp.setSignatureAlgorithm(config.getProperty(CERTIFICATE_SIGALG));
 
-    cp.setKeyAlgorithm(config.getProperty(CERTIFICATE_KEYALG), Integer
-        .parseInt(config.getProperty(CERTIFICATE_KEYSIZE)));
+    cp.setKeyAlgorithm(config.getProperty(CERTIFICATE_KEYALG), Integer.parseInt(config.getProperty(CERTIFICATE_KEYSIZE)));
     cp.setSubjectInfo(subject.build());
 
     builder.setCertificateParameters(cp);
     return builder;
   }
 
-  public void buildKeystore(String ksUrl, String cn, boolean overwrite)
-      throws Exception {
+  public void buildKeystore(String ksUrl, String cn, boolean overwrite) throws Exception {
 
-    String commonName = cn == null ? config
-        .getProperty(KEYSTORE_COMMON_PRIVKEY_ALIAS) : cn;
+    String commonName = cn == null ? config.getProperty(KEYSTORE_COMMON_PRIVKEY_ALIAS) : cn;
     KeystoreLocation ksc = KeystoreFactory.getDefault().create(ksUrl,
         config.getProperty(Config.KEYSTORE_COMMON_KEYSTORE_PW).toCharArray());
     KeystoreProxy ksp = KeystoreFactory.getDefault().create(ksc);
@@ -190,16 +176,14 @@ public class Config {
     CertificateBuilder builder = getBuilder(commonName);
     Certificate selfCert = builder.createSelfSignedCertificate();
     PrivateKey privkey = builder.getPrivateKey();
-    char[] password = config.getProperty(KEYSTORE_COMMON_PRIVKEY_PW)
-        .toCharArray();
+    char[] password = config.getProperty(KEYSTORE_COMMON_PRIVKEY_PW).toCharArray();
     Certificate[] certChain = new Certificate[1];
     certChain[0] = selfCert;
     ksp.setPrivateKey(commonName, privkey, password, certChain);
     ksp.commit();
   }
 
-  public void importPrivateKey(String ksUrl, String filename, boolean overwrite)
-      throws AdaptrisSecurityException, IOException {
+  public void importPrivateKey(String ksUrl, String filename, boolean overwrite) throws AdaptrisSecurityException, IOException {
     String commonName = config.getProperty(KEYSTORE_COMMON_PRIVKEY_ALIAS);
     KeystoreLocation ksc = KeystoreFactory.getDefault().create(ksUrl,
         config.getProperty(Config.KEYSTORE_COMMON_KEYSTORE_PW).toCharArray());
@@ -207,9 +191,8 @@ public class Config {
     if (ksc.exists() && overwrite == false) {
       ksp.load();
     }
-    ksp.importPrivateKey(commonName, config.getProperty(
-        KEYSTORE_COMMON_PRIVKEY_PW).toCharArray(), filename, config
-        .getProperty(KEYSTORE_COMMON_PRIVKEY_PW).toCharArray());
+    ksp.importPrivateKey(commonName, config.getProperty(KEYSTORE_COMMON_PRIVKEY_PW).toCharArray(), filename,
+        config.getProperty(KEYSTORE_COMMON_PRIVKEY_PW).toCharArray());
     ksp.commit();
   }
 }
