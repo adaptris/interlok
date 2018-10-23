@@ -32,6 +32,7 @@ public class ProducingStatisticManager extends BaseStatisticManager {
   @Override
   public void produce(InterceptorStatistic interceptorStatistic) throws ProduceException {
     try {
+      log.trace("Producing serialized timeslice.");
       String marshalledTimeslice = this.getMarshaller().marshal(interceptorStatistic);
       AdaptrisMessage newMessage = DefaultMessageFactory.getDefaultInstance().newMessage(marshalledTimeslice);
       

@@ -19,7 +19,7 @@ public class StandardStatisticManager extends BaseStatisticManager {
   
   @Override
   public void produce(InterceptorStatistic interceptorStatistic) throws ProduceException {
-    log.debug("Standard statistic manager skipping timeslice producer.");
+    log.trace("Standard statistic manager skipping timeslice producer.");
   }
 
 }
