@@ -14,7 +14,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(summary = "A mock exception strategy service", tag = "service")
 public class MockExceptionStrategyService extends ServiceImp {
     public static final String SERVICE_RESULT = "serviceResult";
-    public enum MODE {MIXED, SUCCESS, ERROR}
+    public enum MODE {MIXED, SUCCESS, ERROR, NEUTRAL}
 
     private MODE mode = MODE.MIXED;
 
@@ -47,6 +47,8 @@ public class MockExceptionStrategyService extends ServiceImp {
             case ERROR:
                 throwException(msg);
                 break;
+            default:
+                break;
         }
     }
 
@@ -66,7 +68,7 @@ public class MockExceptionStrategyService extends ServiceImp {
         throw new ServiceException("Generated mock service exception");
     }
 
-    private void success(AdaptrisMessage msg)  throws ServiceException {
+    private void success(AdaptrisMessage msg) throws ServiceException {
         msg.addMetadata(SERVICE_RESULT, "true");
     }
 

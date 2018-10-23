@@ -143,4 +143,27 @@ public class SplitJoinServiceExceptionStrategyTest {
       fail();
     }
   }
+
+  @Test
+  public void testService_WithMetadataExceptionStrategy_handleNoSuccessNoException() throws Exception {
+    MetadataFlagPoolingFutureExceptionStrategy exceptionStrategy = new MetadataFlagPoolingFutureExceptionStrategy();
+    exceptionStrategy.setMetadataFlagKey(MockExceptionStrategyService.SERVICE_RESULT);
+
+    // This is a 100 line message, so we expect to get 11 parts.
+    AdaptrisMessage msg = SplitterCase.createLineCountMessageInput();
+    SplitJoinService service = createServiceForTests();
+    service.setExceptionStrategy(exceptionStrategy);
+
+    // The service doesn't actually matter right now.
+    service.setService(asCollection(new MockExceptionStrategyService(MockExceptionStrategyService.MODE.NEUTRAL)));
+    service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
+    service.setSplitter(new LineCountSplitter());
+    service.setAggregator(new MimeAggregator());
+    try {
+      execute(service, msg);
+    }
+    catch (ServiceException expected) {
+      fail();
+    }
+  }
 }
