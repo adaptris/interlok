@@ -34,3 +34,5 @@ security-test.properties.resolved
 unit-tests.properties
 unit-tests.properties.resolved
 security.properties
+out/
+null/
