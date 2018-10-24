@@ -44,6 +44,7 @@ dependencies {
 
   compile project(':interlok-core-apt')
   compile project(':interlok-common')
+
   compile ("com.thoughtworks.xstream:xstream:$xstreamVersion")
   compile ("org.codehaus.jettison:jettison:1.2")
   compile ("io.github.classgraph:classgraph:4.4.1")
@@ -203,7 +204,10 @@ task copySecurityTestProperties(type: Copy, dependsOn: generateUnitTestPropertie
 }
 
 task prepareForTests(dependsOn: [copySecurityTestProperties, copyUnitTestProperties]) {
+  // Should probably figure out the correct dir to create based on the ant
+  // This directory needs to be create in the tests...
   doLast {
+    mkdir ('build/tmp/security/tests')
     // unit tests are enabled.
     if ("true".equalsIgnoreCase(ant.properties["default.jdbc.storedproc.tests.enabled"])) {
         // Drop and re-create the database
