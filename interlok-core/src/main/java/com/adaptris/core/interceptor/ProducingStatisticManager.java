@@ -8,7 +8,6 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.StandaloneProducer;
-import com.adaptris.core.XStreamJsonMarshaller;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -22,7 +21,7 @@ public class ProducingStatisticManager extends BaseStatisticManager {
   private AdaptrisMarshaller marshaller;
   
   public ProducingStatisticManager() {
-    marshaller = new XStreamJsonMarshaller();
+    marshaller = new StatisticMarshaller();
   }
   
   public ProducingStatisticManager(int maxHistoryCount) {
