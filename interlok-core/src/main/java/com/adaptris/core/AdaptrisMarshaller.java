@@ -152,4 +152,40 @@ public interface AdaptrisMarshaller {
    * @throws CoreException wrapping any underlying <code>Exception</code>s
    */
   Object unmarshal(URLString location) throws CoreException;
+
+  /**
+   * Convenience method to wrap marshalling activities with a RuntimeException .
+   * 
+   * @since 3.8.2
+   */
+  static void uncheckedMarshal(AdaptrisMarshaller m, Object o, MarshalOutputStream out) {
+    try (OutputStream autoClose = out.openStream()) {
+      m.marshal(o, autoClose);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * Convenience method to wrap unmarshalling activities with a RuntimeException .
+   * 
+   * @since 3.8.2
+   */
+  static Object uncheckedUnmarshal(AdaptrisMarshaller m, Object o, MarshalInputStream in) {
+    try (InputStream autoClose = in.openStream()) {
+      return m.unmarshal(autoClose);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @FunctionalInterface
+  interface MarshalOutputStream {
+    OutputStream openStream();
+  }
+
+  @FunctionalInterface
+  interface MarshalInputStream {
+    InputStream openStream();
+  }
 }

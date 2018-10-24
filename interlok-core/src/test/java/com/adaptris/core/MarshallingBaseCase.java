@@ -19,10 +19,7 @@ package com.adaptris.core;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FilterInputStream;
-import java.io.FilterOutputStream;
 import java.io.FilterReader;
-import java.io.FilterWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -97,23 +94,18 @@ public abstract class MarshallingBaseCase extends BaseCase {
     AdaptrisMarshaller marshaller = createMarshaller();
     Adapter adapter = createMarshallingObject();
     String s = marshaller.marshal(adapter);
-    ByteArrayInputStream in = new ByteArrayInputStream(s.getBytes());
-    assertRoundtripEquality(adapter, marshaller.unmarshal(in));
-    in.close();
+    try (ByteArrayInputStream in = new ByteArrayInputStream(s.getBytes())) {
+      assertRoundtripEquality(adapter, marshaller.unmarshal(in));
+    }
   }
 
   public void testUnmarshalFromInputStream_WithException() throws Exception {
     AdaptrisMarshaller marshaller = createMarshaller();
     Adapter adapter = createMarshallingObject();
     String s = marshaller.marshal(adapter);
-    InputStream fail = new FilterInputStream(new ByteArrayInputStream(s.getBytes())) {
+    InputStream fail = new InputStream() {
       @Override
       public int read() throws IOException {
-        throw new IOException("testUnmarshalFromInputStream_WithException");
-      }
-
-      @Override
-      public int read(byte[] cbuf, int off, int len) throws IOException {
         throw new IOException("testUnmarshalFromInputStream_WithException");
       }
     };
@@ -127,13 +119,46 @@ public abstract class MarshallingBaseCase extends BaseCase {
     }
   }
 
+  public void testUncheckedUnmarshalFromInputStream() throws Exception {
+    AdaptrisMarshaller marshaller = createMarshaller();
+    Adapter adapter = createMarshallingObject();
+    String s = marshaller.marshal(adapter);
+    assertRoundtripEquality(adapter, AdaptrisMarshaller.uncheckedUnmarshal(marshaller, adapter, () -> {
+      return new ByteArrayInputStream(s.getBytes());
+    }));
+  }
+
+  public void testUncheckedUnmarshalFromInputStream_WithException() throws Exception {
+    AdaptrisMarshaller marshaller = createMarshaller();
+    Adapter adapter = createMarshallingObject();
+    try {
+      Object o = AdaptrisMarshaller.uncheckedUnmarshal(marshaller, adapter, () -> {
+        return new InputStream() {
+          @Override
+          public int read() throws IOException {
+            throw new IOException("testUncheckedUnmarshalFromInputStream_WithException");
+          }
+
+          @Override
+          public int read(byte[] cbuf, int off, int len) throws IOException {
+            throw new IOException("testUncheckedUnmarshalFromInputStream_WithException");
+          }
+        };
+
+      });
+      fail();
+    } catch (RuntimeException expected) {
+
+    }
+  }
+
   public void testUnmarshalFromReader() throws Exception {
     AdaptrisMarshaller marshaller = createMarshaller();
     Adapter adapter = createMarshallingObject();
     String s = marshaller.marshal(adapter);
-    StringReader in = new StringReader(s);
-    assertRoundtripEquality(adapter, marshaller.unmarshal(in));
-    in.close();
+    try (StringReader in = new StringReader(s)) {
+      assertRoundtripEquality(adapter, marshaller.unmarshal(in));
+    }
   }
 
   public void testUnmarshalFromReader_WithException() throws Exception {
@@ -192,27 +217,17 @@ public abstract class MarshallingBaseCase extends BaseCase {
   public void testMarshalToOutputStream() throws Exception {
     AdaptrisMarshaller marshaller = createMarshaller();
     Adapter adapter = createMarshallingObject();
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    marshaller.marshal(adapter, out);
+    try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+      marshaller.marshal(adapter, out);
+    }
   }
 
   public void testMarshalToOutputStream_WithException() throws Exception {
     AdaptrisMarshaller marshaller = createMarshaller();
     Adapter adapter = createMarshallingObject();
-    OutputStream fail = new FilterOutputStream(new ByteArrayOutputStream()) {
-
-      @Override
-      public void write(byte[] cbuf, int off, int len) throws IOException {
-        throw new IOException("testMarshalToOutputStream_WithException");
-      }
-
+    OutputStream fail = new OutputStream() {
       @Override
       public void write(int c) throws IOException {
-        throw new IOException("testMarshalToOutputStream_WithException");
-      }
-
-      @Override
-      public void flush() throws IOException {
         throw new IOException("testMarshalToOutputStream_WithException");
       }
     };
@@ -224,6 +239,32 @@ public abstract class MarshallingBaseCase extends BaseCase {
       assertNotNull(e.getCause());
       // assertEquals(IOException.class, e.getCause().getClass());
       assertRootCause("testMarshalToOutputStream_WithException", e);
+    }
+  }
+
+  public void testUncheckedMarshal_ToOutputStream() throws Exception {
+    AdaptrisMarshaller marshaller = createMarshaller();
+    Adapter adapter = createMarshallingObject();
+    AdaptrisMarshaller.uncheckedMarshal(marshaller, adapter, () -> {
+      return new ByteArrayOutputStream();
+    });
+  }
+
+  public void testUncheckedMarshal_ToOutputStreamWithException() throws Exception {
+    AdaptrisMarshaller marshaller = createMarshaller();
+    Adapter adapter = createMarshallingObject();
+    try {
+      AdaptrisMarshaller.uncheckedMarshal(marshaller, adapter, () -> {
+        return new OutputStream() {
+          @Override
+          public void write(int c) throws IOException {
+            throw new IOException("testUncheckedMarshal_ToOutputStreamWithException");
+          }
+        };
+      });
+      fail();
+    } catch (RuntimeException expected) {
+
     }
   }
 
@@ -282,7 +323,7 @@ public abstract class MarshallingBaseCase extends BaseCase {
   public void testMarshalToWriter_WithException() throws Exception {
     AdaptrisMarshaller marshaller = createMarshaller();
     Adapter adapter = createMarshallingObject();
-    Writer fail = new FilterWriter(new StringWriter()) {
+    Writer fail = new Writer() {
 
       @Override
       public void write(char[] cbuf, int off, int len) throws IOException {
@@ -290,18 +331,12 @@ public abstract class MarshallingBaseCase extends BaseCase {
       }
 
       @Override
-      public void write(int c) throws IOException {
-        throw new IOException("testMarshalToWriter_WithException");
-      }
-
-      @Override
-      public void write(String str, int off, int len) throws IOException {
-        throw new IOException("testMarshalToWriter_WithException");
-      }
-
-      @Override
       public void flush() throws IOException {
         throw new IOException("testMarshalToWriter_WithException");
+      }
+
+      @Override
+      public void close() throws IOException {
       }
     };
     try (Writer out = fail) {
