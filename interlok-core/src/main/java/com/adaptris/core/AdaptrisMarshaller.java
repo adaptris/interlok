@@ -181,11 +181,11 @@ public interface AdaptrisMarshaller {
 
   @FunctionalInterface
   interface MarshalOutputStream {
-    OutputStream openStream();
+    OutputStream openStream() throws Exception;
   }
 
   @FunctionalInterface
   interface MarshalInputStream {
-    InputStream openStream();
+    InputStream openStream() throws Exception;
   }
 }

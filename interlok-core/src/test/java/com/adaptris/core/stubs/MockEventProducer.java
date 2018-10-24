@@ -37,7 +37,7 @@ public class MockEventProducer extends MockMessageProducer {
   private transient AdaptrisMarshaller eventMarshaller;
   private Set<Class> eventsToKeep = new HashSet<Class>();
 
-  public MockEventProducer() throws CoreException {
+  public MockEventProducer() {
     eventMarshaller = DefaultMarshaller.getDefaultMarshaller();
   }
 

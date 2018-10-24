@@ -62,8 +62,8 @@ public final class MarshalledClassDestination implements MessageDrivenDestinatio
     mappings = new KeyValuePairSet();
   }
 
-  private AdaptrisMarshaller marshallerToUse() throws CoreException {
-    return getMarshaller() != null ? getMarshaller() : DefaultMarshaller.getDefaultMarshaller();
+  private AdaptrisMarshaller marshallerToUse() {
+    return DefaultMarshaller.defaultIfNull(getMarshaller());
   }
 
   /** Get the destination based on the type of object this AdaptrisMessage is.

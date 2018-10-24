@@ -62,7 +62,7 @@ public abstract class MarshallServiceStore implements ServiceStore {
     this.marshaller = marshaller;
   }
 
-  protected AdaptrisMarshaller currentMarshaller() throws CoreException {
-    return getMarshaller() != null ? getMarshaller() : DefaultMarshaller.getDefaultMarshaller();
+  protected AdaptrisMarshaller currentMarshaller() {
+    return DefaultMarshaller.defaultIfNull(getMarshaller());
   }
 }

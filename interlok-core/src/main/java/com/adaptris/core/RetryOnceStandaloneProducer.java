@@ -47,12 +47,7 @@ public class RetryOnceStandaloneProducer extends StandaloneProducer {
 
   public RetryOnceStandaloneProducer() {
     super();
-    try {
-      marshaller = DefaultMarshaller.getDefaultMarshaller();
-    }
-    catch (CoreException e) {
-      throw new RuntimeException(e);
-    }
+    marshaller = DefaultMarshaller.getDefaultMarshaller();
   }
 
   /** @see com.adaptris.core.Service#doService(com.adaptris.core.AdaptrisMessage) */

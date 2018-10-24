@@ -150,8 +150,8 @@ public class DynamicServiceExecutor extends ServiceImp implements EventHandlerAw
     this.marshaller = m;
   }
 
-  AdaptrisMarshaller currentMarshaller() throws CoreException {
-    return getMarshaller() != null ? getMarshaller() : DefaultMarshaller.getDefaultMarshaller();
+  AdaptrisMarshaller currentMarshaller() {
+    return DefaultMarshaller.defaultIfNull(getMarshaller());
   }
 
 }

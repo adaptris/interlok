@@ -28,7 +28,7 @@ public class DefaultMarshaller {
 
 	private static AdaptrisMarshaller marshaller;
 
-	public static AdaptrisMarshaller getDefaultMarshaller() throws CoreException {
+  public static AdaptrisMarshaller getDefaultMarshaller() {
 		if (marshaller == null) {
 			// The default marshaller is xstream marshaller for now
 			marshaller = new XStreamMarshaller();
@@ -39,6 +39,16 @@ public class DefaultMarshaller {
 	public static void setDefaultMarshaller(AdaptrisMarshaller _marshaller) {
 		marshaller = _marshaller;
 	}
+
+  /**
+   * Convenience method for null protection.
+   * 
+   * @param m the marshaller you think you want to use
+   * @return the marshaller you passed in, or the default one.
+   */
+  public static AdaptrisMarshaller defaultIfNull(AdaptrisMarshaller m) {
+    return m != null ? m : getDefaultMarshaller();
+  }
 
   /**
    * Convenience method to roundtrip an object to text and back.

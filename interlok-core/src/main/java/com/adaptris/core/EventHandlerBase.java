@@ -128,8 +128,8 @@ public abstract class EventHandlerBase implements EventHandler {
     return marshaller;
   }
 
-  protected AdaptrisMarshaller currentMarshaller() throws CoreException {
-    return getMarshaller() != null ? getMarshaller() : DefaultMarshaller.getDefaultMarshaller();
+  protected AdaptrisMarshaller currentMarshaller() {    
+    return DefaultMarshaller.defaultIfNull(getMarshaller());
   }
 
   /** @see com.adaptris.core.EventHandler#registerSourceId(java.lang.String) */
