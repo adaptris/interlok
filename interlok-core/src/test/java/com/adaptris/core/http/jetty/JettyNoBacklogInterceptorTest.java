@@ -92,19 +92,14 @@ public class JettyNoBacklogInterceptorTest extends ExampleWorkflowCase {
 
   @Override
   protected Channel retrieveObjectForSampleConfig() {
-    try {
-      Channel c = new Channel();
-      PoolingWorkflow wf = new PoolingWorkflow();
-      wf.addInterceptor(new JettyPoolingWorkflowInterceptor());
-      wf.addInterceptor(new JettyNoBacklogInterceptor());
-      c.setUniqueId(UUID.randomUUID().toString());
-      wf.setUniqueId(UUID.randomUUID().toString());
-      c.getWorkflowList().add(wf);
-      return c;
-    }
-    catch (CoreException e) {
-      throw new RuntimeException(e);
-    }
+    Channel c = new Channel();
+    PoolingWorkflow wf = new PoolingWorkflow();
+    wf.addInterceptor(new JettyPoolingWorkflowInterceptor());
+    wf.addInterceptor(new JettyNoBacklogInterceptor());
+    c.setUniqueId(UUID.randomUUID().toString());
+    wf.setUniqueId(UUID.randomUUID().toString());
+    c.getWorkflowList().add(wf);
+    return c;
   }
 
   @Override

@@ -31,6 +31,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
 import org.apache.commons.lang.math.IntRange;
+import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.PooledObjectFactory;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
@@ -151,7 +152,7 @@ public class PoolingWorkflow extends WorkflowImp {
   private transient String currentThreadName;
   private transient ServiceCollection marshalledServiceCollection;
 
-  public PoolingWorkflow() throws CoreException {
+  public PoolingWorkflow() {
     super();
     poolLock = new FifoMutexLock();
     serviceListMarshaller = DefaultMarshaller.getDefaultMarshaller();
