@@ -165,6 +165,7 @@ task unitTestStubsJar(type: Jar, dependsOn: compileTestJava) {
 
 task generateUnitTestProperties {
   doLast {
+    ant.property(file: project.projectDir.getCanonicalPath() + "/" + "build.properties")
     ant.property(file: testResourcesDir() + "/" + propertyTemplate(testResourcesDir(), "default-test.properties.template"))
     ant.property(file:  testResourcesDir() + "/" + propertyTemplate(testResourcesDir(), "unit-tests.properties.template"))
     ant.echoproperties(destfile:  testResourcesDir() + '/unit-tests.properties.resolved', prefix: "junit.")
