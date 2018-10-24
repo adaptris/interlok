@@ -204,8 +204,6 @@ task copySecurityTestProperties(type: Copy, dependsOn: generateUnitTestPropertie
 }
 
 task prepareForTests(dependsOn: [copySecurityTestProperties, copyUnitTestProperties]) {
-  // Should probably figure out the correct dir to create based on the ant
-  // This directory needs to be create in the tests...
   doLast {
     // unit tests are enabled.
     if ("true".equalsIgnoreCase(ant.properties["default.jdbc.storedproc.tests.enabled"])) {
