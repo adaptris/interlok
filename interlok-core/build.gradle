@@ -207,7 +207,6 @@ task prepareForTests(dependsOn: [copySecurityTestProperties, copyUnitTestPropert
   // Should probably figure out the correct dir to create based on the ant
   // This directory needs to be create in the tests...
   doLast {
-    mkdir ('build/tmp/security/tests')
     // unit tests are enabled.
     if ("true".equalsIgnoreCase(ant.properties["default.jdbc.storedproc.tests.enabled"])) {
         // Drop and re-create the database
