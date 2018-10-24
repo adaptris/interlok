@@ -9,7 +9,7 @@ ignore:
   - "**/certificate/**/*.java"
   - "**/com/adaptris/jdbc/**/*.java"
   - "**/com/adaptris/annotation/**/*.java"
-  - "**/com/filetransfer/**/*.java"
+  - "**/com/adaptris/filetransfer/**/*.java"
   - "**/com/adaptris/logging/**/*.java"
   - "**/com/adaptris/taglet/**/*.java"
   - "**/com/adaptris/validation/**/*.java"
