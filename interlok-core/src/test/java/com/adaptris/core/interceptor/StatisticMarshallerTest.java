@@ -63,9 +63,7 @@ public class StatisticMarshallerTest extends TestCase {
   }
 
   public void testMarshallWrongObjectNoError() throws Exception {
-    SerializableStatistic serializableStat = (SerializableStatistic) statisticMarshaller.unmarshal(statisticMarshaller.marshal(new Object()));
-    
-    assertNull(serializableStat);
+    assertNull(statisticMarshaller.marshal(new Object()));
   }
   
 }

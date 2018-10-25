@@ -23,11 +23,12 @@ public class ProducingStatisticManager extends BaseStatisticManager {
   private AdaptrisMarshaller marshaller;
   
   public ProducingStatisticManager() {
-    marshaller = new StatisticMarshaller();
+    this.setMarshaller(new StatisticMarshaller());
   }
   
-  public ProducingStatisticManager(int maxHistoryCount) {
+  public ProducingStatisticManager(int maxHistoryCount) {    
     super(maxHistoryCount);
+    this.setMarshaller(new StatisticMarshaller());
   }
   
   @Override
