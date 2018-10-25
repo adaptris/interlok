@@ -18,6 +18,17 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.XStreamMarshaller;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+/**
+ * <p>
+ * This marshaller is designed for {@link InterceptorStatistic} and is used exclusively with the {@link ProducingStatisticManager}.
+ * </p>
+ * <p>
+ * We convert the {@link InterceptorStatistic} into a {@link SerializableStatistic} and then use the configured XStream marshaller to serialize the object. <br />
+ * The defauilt XStream marshaller is for XML, but you can configure the JSON version by setting the property "actual-marshaller".
+ * </p>
+ * @author aaron
+ *
+ */
 @XStreamAlias("statistic-marshaller")
 @AdapterComponent
 @ComponentProfile(summary = "Serializer specifically used to create a human readable representation of a metric timeslice.", tag = "marshaller")
