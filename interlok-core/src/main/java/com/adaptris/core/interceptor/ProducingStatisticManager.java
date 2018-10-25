@@ -1,6 +1,7 @@
 package com.adaptris.core.interceptor;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.AdaptrisMessage;
@@ -18,6 +19,7 @@ public class ProducingStatisticManager extends BaseStatisticManager {
 
   private StandaloneProducer producer;
   
+  @AutoPopulated
   private AdaptrisMarshaller marshaller;
   
   public ProducingStatisticManager() {
