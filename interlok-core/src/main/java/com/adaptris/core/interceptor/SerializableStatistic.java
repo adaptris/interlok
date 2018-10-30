@@ -1,6 +1,6 @@
 package com.adaptris.core.interceptor;
 
-import java.util.Properties;
+import java.util.Map;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -12,7 +12,7 @@ class SerializableStatistic {
   private int totalMessageCount;
   private long totalMessageSize;
   private int totalMessageErrorCount;
-  private Properties metadataStatistics;
+  private Map<String, String> metadataStatistics;
   public long getEndMillis() {
     return endMillis;
   }
@@ -43,10 +43,10 @@ class SerializableStatistic {
   public void setTotalMessageErrorCount(int totalMessageErrorCount) {
     this.totalMessageErrorCount = totalMessageErrorCount;
   }
-  public Properties getMetadataStatistics() {
+  public Map<String, String> getMetadataStatistics() {
     return metadataStatistics;
   }
-  public void setMetadataStatistics(Properties metadataStatistics) {
+  public void setMetadataStatistics(Map<String, String> metadataStatistics) {
     this.metadataStatistics = metadataStatistics;
   }
   

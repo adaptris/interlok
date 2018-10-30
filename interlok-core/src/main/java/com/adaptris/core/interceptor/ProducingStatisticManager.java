@@ -1,6 +1,7 @@
 package com.adaptris.core.interceptor;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.AdaptrisMessage;
@@ -11,6 +12,19 @@ import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+/**
+ * <p>
+ * This statistic manager allows you to configure a marshaller and a stand alone producer.
+ * </p>
+ * <p>
+ * When the produce() method is triggered we will serialize the {@link InterceptorStatistic} with the configured marshaller and then execute the producer with the resulting string payload.
+ * </p>
+ * <p>
+ * If the producer should fail, we simply attempt to restart the stand alone producer and continue.
+ * </p>
+ * @author aaron
+ *
+ */
 @XStreamAlias("producing-statistic-manager")
 @AdapterComponent
 @ComponentProfile(summary = "Statistic manager that allows configuration of a standalone producer for each timeslice when they expire.", tag = "interceptor")
@@ -18,14 +32,16 @@ public class ProducingStatisticManager extends BaseStatisticManager {
 
   private StandaloneProducer producer;
   
+  @AutoPopulated
   private AdaptrisMarshaller marshaller;
   
   public ProducingStatisticManager() {
-    marshaller = new StatisticMarshaller();
+    this.setMarshaller(new StatisticMarshaller());
   }
   
-  public ProducingStatisticManager(int maxHistoryCount) {
+  public ProducingStatisticManager(int maxHistoryCount) {    
     super(maxHistoryCount);
+    this.setMarshaller(new StatisticMarshaller());
   }
   
   @Override
