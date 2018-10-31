@@ -47,7 +47,7 @@ dependencies {
 
   compile ("com.thoughtworks.xstream:xstream:$xstreamVersion")
   compile ("org.codehaus.jettison:jettison:1.2")
-  compile ("io.github.classgraph:classgraph:4.4.1")
+  compile ("io.github.classgraph:classgraph:4.4.12")
   compile ("net.jodah:expiringmap:0.5.8")
   compile ("javax.activation:activation:1.1.1")
   compile ("org.apache.activemq:activemq-client:$activeMqVersion")
