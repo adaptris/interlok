@@ -38,7 +38,7 @@ public class ExecuteQueryCallableStatementExecutor implements CallableStatementE
 
   @Override
   public JdbcResult executeCallableStatement(CallableStatement statement) throws SQLException {
-    ResultSet resultSet = statement.executeQuery();
+    ResultSet resultSet = statement.executeQuery(); // lgtm
     
     JdbcResult result = new JdbcResultBuilder()
     .setHasResultSet(true)
