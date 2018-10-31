@@ -1,6 +1,6 @@
 ext {
   componentName='Interlok Bootstrap'
-  springBootLoaderVersion='1.5.7.RELEASE'
+  springBootLoaderVersion='2.1.0.RELEASE'
 }
 
 configurations {
@@ -9,20 +9,12 @@ configurations {
 
 dependencies {
   bundled "org.springframework.boot:spring-boot-loader:$springBootLoaderVersion"
+  compileOnly "org.springframework.boot:spring-boot-loader:$springBootLoaderVersion"
   annotationProcessor project(':interlok-core-apt')
   javadoc project(':interlok-core-apt')
-  testCompile ("junit:junit:4.12")
-}
-
-sourceSets {
-    main {
-        compileClasspath += configurations.bundled
-        runtimeClasspath += configurations.bundled
-    }
-    test {
-        compileClasspath += configurations.bundled
-        runtimeClasspath += configurations.bundled
-    }
+  testCompile "junit:junit:4.12"
+  testRuntimeOnly "org.springframework.boot:spring-boot-loader:$springBootLoaderVersion"
+  testCompileOnly "org.springframework.boot:spring-boot-loader:$springBootLoaderVersion"
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
@@ -36,7 +28,7 @@ artifacts {
 
 task unzipSpringBoot(type: Copy) {
   from zipTree(configurations.bundled.singleFile)
-  into 'build/spring-boot-loader'
+  into "$project.buildDir/spring-boot-loader"
 }
 
 jar {
@@ -49,7 +41,7 @@ jar {
                "Implementation-Vendor": organizationName,
                "Main-Class": "com.adaptris.interlok.boot.InterlokLauncher")
   }
-  from ('build/spring-boot-loader') {
+  from ("$project.buildDir/spring-boot-loader") {
     exclude 'META-INF/MANIFEST.MF'
   }
 }
