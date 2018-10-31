@@ -264,7 +264,7 @@ public class JettyServerManager implements ServerManager {
     log.trace("{}: Unmapping servlet against {}", webAppContext.getWar(), contextPath);
     ServletHandler handler = webAppContext.getServletHandler();
     List<ServletMapping> mappings = new ArrayList<ServletMapping>();
-    debugLogging("{}: Current Mappings: {}", webAppContext.getWar(), handler.getServletMappings());
+    debugLogging("{}: Current Mappings: {}", webAppContext.getWar(), Arrays.asList(handler.getServletMappings()));
     for (ServletMapping mapping : handler.getServletMappings()) {
       List<String> pathSpecs = Arrays.asList(mapping.getPathSpecs());
       if (!pathSpecs.contains(contextPath)) {
