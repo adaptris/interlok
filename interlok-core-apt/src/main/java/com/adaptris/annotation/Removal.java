@@ -16,6 +16,7 @@
 
 package com.adaptris.annotation;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -25,6 +26,7 @@ import java.lang.annotation.RetentionPolicy;
  * @since 3.8.2
  */
 @Retention(RetentionPolicy.RUNTIME)
+@Documented
 public @interface Removal {
   /**
    * The deprecation message
