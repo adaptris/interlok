@@ -16,10 +16,8 @@
 
 package com.adaptris.annotation;
 
-import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 
 /**
  * Annotation that specifies when a deprecated field/type will be removed.
@@ -27,7 +25,6 @@ import java.lang.annotation.Target;
  * @since 3.8.2
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.TYPE, ElementType.METHOD})
 public @interface Removal {
   /**
    * The deprecation message
