@@ -35,6 +35,7 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DynamicPollingTemplate;
@@ -74,6 +75,7 @@ public class JdbcDataQueryService extends JdbcServiceWithParameters implements D
 
   @InputFieldHint(style="SQL")
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use a StatementCreator")
   private String statement;  
   @Valid
   private JdbcStatementCreator statementCreator;
@@ -165,7 +167,8 @@ public class JdbcDataQueryService extends JdbcServiceWithParameters implements D
       
       this.getParameterApplicator().applyStatementParameters(msg, preparedStatement, getStatementParameters(), statement);
       try {
-        ResultSet rs = preparedStatement.executeQuery();
+        // closed by the finally block which closes the JdbcResult
+        ResultSet rs = preparedStatement.executeQuery(); // lgtm [java/database-resource-leak]
         result = new JdbcResultBuilder().setHasResultSet(true).setResultSet(rs).build();
       } catch (SQLException e) {
         if (ignoreExecuteQueryErrors()) {
@@ -234,6 +237,7 @@ public class JdbcDataQueryService extends JdbcServiceWithParameters implements D
    * @deprecated since 3.4.0 use a {@link JdbcStatementCreator} instead.
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use a JdbcStatementCreator")
   public String getStatement() {
     return statement;
   }
@@ -245,6 +249,7 @@ public class JdbcDataQueryService extends JdbcServiceWithParameters implements D
    * @deprecated since 3.4.0 use a {@link JdbcStatementCreator} instead.
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use a JdbcStatementCreator")
   public void setStatement(String statement) {
     this.statement = statement;
   }

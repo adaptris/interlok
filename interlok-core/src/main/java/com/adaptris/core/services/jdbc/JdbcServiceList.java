@@ -26,6 +26,7 @@ import javax.validation.Valid;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConnectedService;
@@ -91,6 +92,7 @@ public class JdbcServiceList extends ServiceList implements ConnectedService {
 
   @Valid
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use connection instead")
   private AdaptrisConnection databaseConnection;
   @Valid
   private AdaptrisConnection connection;
@@ -188,6 +190,7 @@ public class JdbcServiceList extends ServiceList implements ConnectedService {
    * @return the connection.
    * @deprecated since 3.7.0 use {@link #getConnection()} instead.
    */
+  @Removal(version = "3.9.0", message = "Use connection instead")
   public AdaptrisConnection getDatabaseConnection() {
     return databaseConnection;
   }
@@ -203,6 +206,7 @@ public class JdbcServiceList extends ServiceList implements ConnectedService {
    * @param c
    * @deprecated since 3.7.0 use {@link #setConnection(AdaptrisConnection)} instead.
    */
+  @Removal(version = "3.9.0", message = "Use connection instead")
   public void setDatabaseConnection(AdaptrisConnection c) {
     databaseConnection = c;
   }

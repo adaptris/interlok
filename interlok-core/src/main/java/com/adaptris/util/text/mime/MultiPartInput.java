@@ -33,6 +33,7 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.Removal;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.IdGenerator;
 import com.adaptris.util.stream.StreamUtil;
@@ -79,6 +80,7 @@ import com.adaptris.util.stream.StreamUtil;
  * @deprecated since 3.7.2 use one of {@link MultipartIterator} concrete sub-classes instead.
  */
 @Deprecated
+@Removal(version = "3.10.0")
 public class MultiPartInput implements Enumeration, Iterator {
 
   private List<PartHolder> bodyParts;

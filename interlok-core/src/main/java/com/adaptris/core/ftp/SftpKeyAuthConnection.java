@@ -28,6 +28,7 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.util.Args;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
@@ -72,6 +73,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
     tag = "connections,sftp")
 @DisplayOrder(order = {"defaultUserName", "privateKeyFilename", "privateKeyPassword", "defaultControlPort"})
 @Deprecated
+@Removal(version = "3.9.0", message = "Use StandardSftpConnection instead")
 public class SftpKeyAuthConnection extends FileTransferConnection {
   private static transient boolean warningLogged;
 

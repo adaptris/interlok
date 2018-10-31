@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.CoreException;
 import com.adaptris.util.TimeInterval;
@@ -50,6 +51,7 @@ public class InlineItemCache implements ProcessedItemCache {
   private TimeInterval ageBeforeEviction;
   
   @Deprecated
+  @Removal(version = "3.9.0", message = "Removed w/o replacement")
   private String uniqueId;
 
   public InlineItemCache() {
@@ -150,6 +152,7 @@ public class InlineItemCache implements ProcessedItemCache {
    * @deprecated since 3.6.3
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "Removed w/o replacement")
   public String getUniqueId() {
     return uniqueId;
   }
@@ -160,6 +163,7 @@ public class InlineItemCache implements ProcessedItemCache {
    * @deprecated since 3.6.3
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "Removed w/o replacement")
   public void setUniqueId(String uniqueId) {
     this.uniqueId = uniqueId;
   }

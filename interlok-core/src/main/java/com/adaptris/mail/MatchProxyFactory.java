@@ -25,6 +25,8 @@ import org.apache.oro.text.regex.Perl5Matcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.Removal;
+
 public abstract class MatchProxyFactory {
 
   private static transient Logger log = LoggerFactory.getLogger(MatchProxy.class);
@@ -49,6 +51,7 @@ public abstract class MatchProxyFactory {
      * @deprecated since 3.7.0
      */
     @Deprecated
+    @Removal(version = "3.9.0")
     AwkSimple("AWK") {
       @Override
       MatchProxy build(String expression) throws Exception {
@@ -60,6 +63,7 @@ public abstract class MatchProxyFactory {
      * @deprecated since 3.7.0
      */
     @Deprecated
+    @Removal(version = "3.9.0")
     AwkClass("org.apache.oro.text.awk.AwkCompiler") {
       @Override
       MatchProxy build(String expression) throws Exception {
@@ -71,6 +75,7 @@ public abstract class MatchProxyFactory {
      * @deprecated since 3.7.0
      */
     @Deprecated
+    @Removal(version = "3.9.0")
     GlobSimple("GLOB") {
       @Override
       MatchProxy build(String expression) throws Exception {
@@ -82,6 +87,7 @@ public abstract class MatchProxyFactory {
      * @deprecated since 3.7.0
      */
     @Deprecated
+    @Removal(version = "3.9.0")
     GlobClass("org.apache.oro.text.GlobCompiler") {
       @Override
       MatchProxy build(String expression) throws Exception {
@@ -93,6 +99,7 @@ public abstract class MatchProxyFactory {
      * @deprecated since 3.7.0
      */
     @Deprecated
+    @Removal(version = "3.9.0")
     PerlSimple("PERL5") {
 
       @Override
@@ -106,6 +113,7 @@ public abstract class MatchProxyFactory {
      * @deprecated since 3.7.0
      */
     @Deprecated
+    @Removal(version = "3.9.0")
     Perl5Class("org.apache.oro.text.regex.Perl5Compiler") {
       @Override
       MatchProxy build(String expression) throws Exception {

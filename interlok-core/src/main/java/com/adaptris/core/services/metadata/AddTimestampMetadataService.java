@@ -31,6 +31,7 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -75,11 +76,13 @@ public class AddTimestampMetadataService extends ServiceImp {
   private String metadataKey;
   @AdvancedConfig
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use DateFormatBuilder")
   private String dateFormat;
   @InputFieldDefault(value = "false")
   private Boolean alwaysReplace;
   @AdvancedConfig
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use TimestampGenerator")
   private String offset;
 
   @AdvancedConfig
@@ -164,6 +167,7 @@ public class AddTimestampMetadataService extends ServiceImp {
    * @deprecated since 3.6.6 use {@link #getDateFormatBuilder()} instead
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use DateFormatBuilder")
   public String getDateFormat() {
     return dateFormat;
   }
@@ -173,6 +177,7 @@ public class AddTimestampMetadataService extends ServiceImp {
    * @deprecated since 3.6.6 use {@link #setDateFormatBuilder(DateFormatBuilder)} instead.
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use DateFormatBuilder")
   public void setDateFormat(String dateFormat) {
     this.dateFormat = dateFormat;
   }
@@ -202,6 +207,7 @@ public class AddTimestampMetadataService extends ServiceImp {
    * @deprecated since 3.5.0 Use {@link OffsetTimestampGenerator} instead.
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use TimestampGenerator")
   public String getOffset() {
     return offset;
   }
@@ -262,6 +268,7 @@ public class AddTimestampMetadataService extends ServiceImp {
    * @deprecated since 3.5.0 Use {@link OffsetTimestampGenerator} instead.
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use TimestampGenerator")
   public void setOffset(String offset) {
     this.offset = offset;
   }

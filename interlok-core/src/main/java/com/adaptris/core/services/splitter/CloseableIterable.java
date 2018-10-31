@@ -19,6 +19,8 @@ package com.adaptris.core.services.splitter;
 import java.io.IOException;
 import java.util.Iterator;
 
+import com.adaptris.annotation.Removal;
+
 /**
  * This Iterable exists for the purpose of being able to iterate over a list of indeterminate size (possibly too large for memory),
  * while still guaranteeing that whatever resource is being held (like a Stream) will be closed when iteration finishes (or it goes
@@ -28,6 +30,7 @@ import java.util.Iterator;
  * @deprecated since 3.6.5 use {@link com.adaptris.core.util.CloseableIterable} instead.
  */
 @Deprecated
+@Removal(version = "3.9.0")
 public interface CloseableIterable<E> extends com.adaptris.core.util.CloseableIterable<E> {
   public static final CloseableIterableFactory FACTORY = new CloseableIterableFactory();
 }

@@ -22,6 +22,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -52,6 +53,7 @@ public class ConstantValueTranslator extends ValueTranslatorImp {
   
   @InputFieldDefault(value = "false")
   @Deprecated
+  @Removal(version = "3.9.0")
   private Boolean allowOverwrite;
   
   public ConstantValueTranslator() {
@@ -105,6 +107,7 @@ public class ConstantValueTranslator extends ValueTranslatorImp {
    * @deprecated since 3.6.5 behaviourally inconsistent and doesn't really have a good use-case.
    */
   @Deprecated
+  @Removal(version = "3.9.0")
   public Boolean getAllowOverwrite() {
     return allowOverwrite;
   }
@@ -120,6 +123,7 @@ public class ConstantValueTranslator extends ValueTranslatorImp {
    * @deprecated since 3.6.5 behaviourally inconsistent and doesn't really have a good use-case.
    */
   @Deprecated
+  @Removal(version = "3.9.0")
   public void setAllowOverwrite(Boolean allowOverwrite) {
     this.allowOverwrite = allowOverwrite;
   }

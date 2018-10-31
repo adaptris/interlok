@@ -25,6 +25,8 @@ import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.Removal;
+
 /**
  * A {@link FileFilter} that contains other filters.
  * 
@@ -116,6 +118,7 @@ public class CompositeFileFilter implements FileFilter {
     },
 
     @Deprecated
+    @Removal(version = "3.9.0", message = "Removed w/o replacement")
     Perl {
       @Override
       String filterImpl() {
@@ -124,6 +127,7 @@ public class CompositeFileFilter implements FileFilter {
       }
     },
     @Deprecated
+    @Removal(version = "3.9.0", message = "Removed w/o replacement")
     Awk {
       @Override
       String filterImpl() {
@@ -131,6 +135,7 @@ public class CompositeFileFilter implements FileFilter {
       }
     },
     @Deprecated
+    @Removal(version = "3.9.0", message = "Removed w/o replacement")
     Glob {
       @Override
       String filterImpl() {

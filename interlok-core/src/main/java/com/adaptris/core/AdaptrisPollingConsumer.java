@@ -22,6 +22,7 @@ import javax.validation.constraints.NotNull;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.FifoMutexLock;
@@ -105,6 +106,7 @@ public abstract class AdaptrisPollingConsumer extends AdaptrisMessageConsumerImp
    *             of {@link #setMaxMessagesPerPoll(Integer)}. This will be removed in a future release.
    */
   @Deprecated
+  @Removal(version = "3.9.0")
   public final boolean continueProcessingMessages() {
     if (!warningLogged) {
       log.warn("Use of continueProcessingMessages() is deprecated; use continueProcessingMessages(int) instead. "

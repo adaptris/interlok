@@ -24,6 +24,7 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -100,6 +101,7 @@ public class DefaultSmtpProducer extends MailProducer {
   private String attachmentContentEncoding = null;
   @AdvancedConfig
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use #setContentType(String) with an expression")
   private String contentTypeKey = null;
 
   /**
@@ -263,6 +265,7 @@ public class DefaultSmtpProducer extends MailProducer {
    * @deprecated since 3.6.6 {@link #setContentType(String)} supports expressions
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use #setContentType(String) with an expression")
   public String getContentTypeKey() {
     return contentTypeKey;
   }
@@ -277,6 +280,7 @@ public class DefaultSmtpProducer extends MailProducer {
    * @deprecated since 3.6.6 {@link #setContentType(String)} supports expressions
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use #setContentType(String) with an expression")
   public void setContentTypeKey(String s) {
     contentTypeKey = s;
   }

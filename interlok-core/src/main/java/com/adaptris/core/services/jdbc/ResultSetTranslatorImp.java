@@ -29,6 +29,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
@@ -63,6 +64,7 @@ public abstract class ResultSetTranslatorImp extends StyledResultTranslatorImp {
   private String updateCountMetadataItem;
   
   @Deprecated
+  @Removal(version = "3.9.0")
   private String uniqueId;
 
   protected ResultSetTranslatorImp() {
@@ -221,6 +223,7 @@ public abstract class ResultSetTranslatorImp extends StyledResultTranslatorImp {
    * @deprecated since 3.6.3
    */
   @Deprecated
+  @Removal(version = "3.9.0")
   public String getUniqueId() {
     return uniqueId;
   }
@@ -230,6 +233,8 @@ public abstract class ResultSetTranslatorImp extends StyledResultTranslatorImp {
    * 
    * @deprecated since 3.6.3
    */
+  @Deprecated
+  @Removal(version = "3.9.0")
   public void setUniqueId(String uniqueId) {
     this.uniqueId = uniqueId;
   }

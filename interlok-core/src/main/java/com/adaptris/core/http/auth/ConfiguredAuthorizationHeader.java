@@ -18,6 +18,7 @@ package com.adaptris.core.http.auth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.http.HttpConstants;
 
 /**
@@ -27,6 +28,7 @@ import com.adaptris.core.http.HttpConstants;
  * @deprecated since 3.6.0 use {@link com.adaptris.core.http.client.net.ConfiguredAuthorizationHeader} instead.
  */
 @Deprecated
+@Removal(version = "3.9.0", message = "Use com.adaptris.core.http.client.net.ConfiguredAuthorizationHeader instead")
 public class ConfiguredAuthorizationHeader extends com.adaptris.core.http.client.net.ConfiguredAuthorizationHeader {
 
   private static transient boolean warningLogged;

@@ -37,6 +37,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.CastorizedList;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -68,6 +69,7 @@ public class ChannelList extends AbstractCollection<Channel>
   private ChannelLifecycleStrategy lifecycleStrategy;
 
   @Deprecated
+  @Removal(version = "3.9.0")
   private String uniqueId;
   
   /**
@@ -385,6 +387,7 @@ public class ChannelList extends AbstractCollection<Channel>
    * @deprecated since 3.6.3
    */
   @Deprecated
+  @Removal(version = "3.9.0")
   public String getUniqueId() {
     return uniqueId;
   }
@@ -395,6 +398,7 @@ public class ChannelList extends AbstractCollection<Channel>
    * @deprecated since 3.6.3
    */
   @Deprecated
+  @Removal(version = "3.9.0")
   public void setUniqueId(String uniqueId) {
     this.uniqueId = uniqueId;
   }

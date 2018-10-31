@@ -18,7 +18,6 @@ package com.adaptris.jdbc;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.sql.CallableStatement;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -102,7 +101,7 @@ public class JdbcResult implements Closeable {
   @Override
   public void close() throws IOException {
     for(JdbcResultSet rs: getResultSets()) {
-      rs.close();
+      JdbcUtil.closeQuietly(rs);
     }
     JdbcUtil.closeQuietly(getStatement());
   }

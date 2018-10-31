@@ -32,6 +32,7 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataCollection;
@@ -64,6 +65,7 @@ public class CreateQueryStringFromMetadata extends ServiceImp {
 
   @XStreamImplicit(itemFieldName = "metadata-key")
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use metadata-filter")
   private List<String> metadataKeys;
   @NotBlank
   @AffectsMetadata
@@ -144,6 +146,7 @@ public class CreateQueryStringFromMetadata extends ServiceImp {
    * @deprecated since 3.7.1 use a metadata-filter instead
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use metadata-filter")
   public void addMetadataKey(String key) {
     metadataKeys.add(Args.notBlank(key, "key"));
   }
@@ -153,6 +156,7 @@ public class CreateQueryStringFromMetadata extends ServiceImp {
    * @deprecated since 3.7.1 use a metadata-filter instead
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use metadata-filter")
   public List<String> getMetadataKeys() {
     return metadataKeys;
   }
@@ -162,6 +166,7 @@ public class CreateQueryStringFromMetadata extends ServiceImp {
    * @deprecated since 3.7.1 use a metadata-filter instead
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use metadata-filter")
   public void setMetadataKeys(List<String> metadataKeys) {
     this.metadataKeys = Args.notNull(metadataKeys, "metadataKeys");
   }

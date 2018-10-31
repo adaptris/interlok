@@ -16,6 +16,7 @@
 
 package com.adaptris.core;
 
+import com.adaptris.annotation.Removal;
 
 /**
  * <p>
@@ -76,6 +77,7 @@ public interface MessageEventGenerator {
    * @deprecated since 3.6.2 No-one has ever produced a confirmation service. This will be removed.
    */
   @Deprecated
+  @Removal(version = "3.9.0")
   boolean isConfirmation();
 
 }
