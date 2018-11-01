@@ -16,6 +16,7 @@
 
 package com.adaptris.core.services.confirmation;
 
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MessageEventGenerator;
@@ -31,6 +32,7 @@ import com.adaptris.core.ServiceImp;
  * 
  */
 @Deprecated
+@Removal(version = "3.9.0")
 public abstract class SetUpConfirmationServiceImp extends ServiceImp {
 
   /**

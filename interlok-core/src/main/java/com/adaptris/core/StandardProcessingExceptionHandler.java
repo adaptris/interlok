@@ -99,7 +99,7 @@ public class StandardProcessingExceptionHandler extends RootProcessingExceptionH
   }
 
   @Override
-  public synchronized void stop() {
+  public void stop() {
     LifecycleHelper.stop(getProcessingExceptionService());
   }
 

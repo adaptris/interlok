@@ -25,6 +25,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.MarshallingCDATA;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -46,6 +47,7 @@ public class PollingTrigger extends AdaptrisPollingConsumer {
 
   @MarshallingCDATA
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use a message-provider")
   private String template;
   @Valid
   private MessageProvider messageProvider;
@@ -58,6 +60,7 @@ public class PollingTrigger extends AdaptrisPollingConsumer {
   }
 
   @Deprecated
+  @Removal(version = "3.9.0")
   public PollingTrigger(Poller p, String t) {
     this();
     setPoller(p);
@@ -143,6 +146,7 @@ public class PollingTrigger extends AdaptrisPollingConsumer {
    * @deprecated since 3.6.2 use {@link #setMessageProvider(MessageProvider)} instead.
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use a message-provider")
   public void setTemplate(String s) {
     template = s;
   }
@@ -156,6 +160,7 @@ public class PollingTrigger extends AdaptrisPollingConsumer {
    * @deprecated since 3.6.2 use {@link #getMessageProvider()} instead.
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use a message-provider")
   public String getTemplate() {
     return template;
   }

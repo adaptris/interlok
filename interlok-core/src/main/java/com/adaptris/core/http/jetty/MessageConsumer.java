@@ -16,11 +16,14 @@
 
 package com.adaptris.core.http.jetty;
 
+import com.adaptris.annotation.Removal;
+
 /**
  * 
  * @deprecated since 3.6.5 use {@link JettyMessageConsumer} instead.
  */
 @Deprecated
+@Removal(version = "3.9.0", message = "Use JettyMessageConsumer instead")
 public class MessageConsumer extends JettyMessageConsumer {
 
   private static boolean warningLogged = false;

@@ -22,6 +22,8 @@ import java.util.List;
 
 import javax.mail.internet.MimeMessage;
 
+import com.adaptris.annotation.Removal;
+
 /**
  * Interface for Adaptris mail receiver clients
  * 
@@ -43,6 +45,7 @@ public interface MailReceiver extends Iterable<MimeMessage>, Closeable {
    * @deprecated since 3.6.5 use {@link Closeable#close()} instead.
    */
   @Deprecated
+  @Removal(version = "3.9.0")
 	public void disconnect();
 	
 

@@ -24,6 +24,7 @@ import javax.jms.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.CoreException;
 
@@ -39,6 +40,7 @@ public abstract class ProducerSessionFactoryImpl implements ProducerSessionFacto
   protected transient ProducerSession session = null;
 
   @Deprecated
+  @Removal(version = "3.9.0")
   private String uniqueId;
   
   @Override
@@ -125,6 +127,7 @@ public abstract class ProducerSessionFactoryImpl implements ProducerSessionFacto
    * @deprecated since 3.6.3
    */
   @Deprecated
+  @Removal(version = "3.9.0")
   public String getUniqueId() {
     return uniqueId;
   }
@@ -135,6 +138,7 @@ public abstract class ProducerSessionFactoryImpl implements ProducerSessionFacto
    * @deprecated since 3.6.3
    */
   @Deprecated
+  @Removal(version = "3.9.0")
   public void setUniqueId(String uniqueId) {
     this.uniqueId = uniqueId;
   }

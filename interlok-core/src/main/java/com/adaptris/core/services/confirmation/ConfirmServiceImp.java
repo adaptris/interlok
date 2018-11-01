@@ -16,6 +16,7 @@
 
 package com.adaptris.core.services.confirmation;
 
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MessageEventGenerator;
@@ -30,6 +31,7 @@ import com.adaptris.core.ServiceImp;
  * @deprecated since 3.6.2 No-one has ever produced a confirmation service. This will be removed.
  */
 @Deprecated
+@Removal(version = "3.9.0")
 public abstract class ConfirmServiceImp extends ServiceImp {
   
   @Override

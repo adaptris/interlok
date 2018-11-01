@@ -30,6 +30,7 @@ import javax.validation.constraints.NotNull;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.JdbcUtil;
@@ -48,9 +49,11 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
   private Boolean saveReturnedKeys = null;
   @AdvancedConfig
   @Deprecated
+  @Removal(version = "3.9.0")
   private String saveReturnedKeysColumn = null;
   @AdvancedConfig
   @Deprecated
+  @Removal(version = "3.9.0")
   private String saveReturnedKeysTable = null;
   protected transient DatabaseActor actor;
 
@@ -137,6 +140,8 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
    * @deprecated since 3.6.2 {@link Statement#RETURN_GENERATED_KEYS} has been available since java 1.4, surely your JDBC driver is
    *             newer than that!
    */
+  @Deprecated
+  @Removal(version = "3.9.0")
   public void setSaveReturnedKeysColumn(String col) {
     saveReturnedKeysColumn = col;
   }
@@ -151,6 +156,8 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
    * @deprecated since 3.6.2 {@link Statement#RETURN_GENERATED_KEYS} has been available since java 1.4, surely your JDBC driver is
    *             newer than that!
    */
+  @Deprecated
+  @Removal(version = "3.9.0")
   public String getSaveReturnedKeysColumn() {
     return saveReturnedKeysColumn;
   }
@@ -166,6 +173,8 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
    * @deprecated since 3.6.2 {@link Statement#RETURN_GENERATED_KEYS} has been available since java 1.4, surely your JDBC driver is
    *             newer than that!
    */
+  @Deprecated
+  @Removal(version = "3.9.0")
   public void setSaveReturnedKeysTable(String table) {
     saveReturnedKeysTable = table;
   }
@@ -180,6 +189,8 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
    * @deprecated since 3.6.2 {@link Statement#RETURN_GENERATED_KEYS} has been available since java 1.4, surely your JDBC driver is
    *             newer than that!
    */
+  @Deprecated
+  @Removal(version = "3.9.0")
   public String getSaveReturnedKeysTable() {
     return saveReturnedKeysTable;
   }

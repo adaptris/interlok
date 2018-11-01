@@ -18,15 +18,17 @@ package com.adaptris.core.http.auth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.http.HttpConstants;
 
 /**
  * Build an {@link HttpConstants#AUTHORIZATION} header from metadata.
  * 
  * @author gdries
- * @deprecated since 3.6.0 use {@link com.adaptris.core.http.client.net.ConfiguredAuthorizationHeader} instead.
+ * @deprecated since 3.6.0 use {@link com.adaptris.core.http.client.net.MetadataAuthorizationHeader} instead.
  */
 @Deprecated
+@Removal(version = "3.9.0", message = "Use com.adaptris.core.http.client.net.MetadataAuthorizationHeader instead")
 public class MetadataAuthorizationHeader extends com.adaptris.core.http.client.net.MetadataAuthorizationHeader {
 
   private static transient boolean warningLogged;

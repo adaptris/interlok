@@ -51,6 +51,7 @@ import org.apache.commons.lang.StringUtils;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageConsumerImp;
 import com.adaptris.core.ClosedState;
@@ -86,6 +87,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
 
   @AdvancedConfig
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use timeoutAction")
   private TimeInterval maxWaitTime;
 
   @AdvancedConfig
@@ -101,6 +103,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
 
   @Deprecated
   @AdvancedConfig
+  @Removal(version = "3.9.0", message = "Use warnAfter")
   private Long warnAfterMessageHangMillis = null;
 
   static {
@@ -236,6 +239,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
    * @deprecated since 3.6.6 use {@link #getTimeoutAction()} instead.
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use #getTimeoutAction()")
   public TimeInterval getMaxWaitTime() {
     return maxWaitTime;
   }
@@ -252,6 +256,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
    * @deprecated since 3.6.6 use {@link #setTimeoutAction(TimeoutAction)} instead.
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use #setTimeoutAction(TimeoutAction)")
   public void setMaxWaitTime(TimeInterval maxWait) {
     maxWaitTime = maxWait;
   }
@@ -297,6 +302,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
    * @deprecated since 3.5.1 use {@link #getWarnAfter()} instead.
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use #getWarnAfter()")
   public Long getWarnAfterMessageHangMillis() {
     return warnAfterMessageHangMillis;
   }
@@ -305,6 +311,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
    * @deprecated since 3.5.1 use {@link #setWarnAfter(TimeInterval)} instead.
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use #setWarnAfter(TimeInterval)")
   public void setWarnAfterMessageHangMillis(Long w) {
     this.warnAfterMessageHangMillis = w;
   }

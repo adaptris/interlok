@@ -23,6 +23,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -69,6 +70,7 @@ public class RelaxedFtpConsumer extends FtpConsumerImpl {
 
   @AdvancedConfig
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use #getQuietInterval()")
   private TimeInterval olderThan;
   @AdvancedConfig
   @InputFieldDefault(value = "false")
@@ -123,6 +125,7 @@ public class RelaxedFtpConsumer extends FtpConsumerImpl {
    * @deprecated since 3.5.0 use {@link #getQuietInterval()} instead for consistency.
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use #getQuietInterval()")
   public TimeInterval getOlderThan() {
     return olderThan;
   }
@@ -131,6 +134,7 @@ public class RelaxedFtpConsumer extends FtpConsumerImpl {
    * @deprecated since 3.5.0 use {@link #setQuietInterval(TimeInterval)} instead for consistency.
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use #setQuietInterval(TimeInterval)")
   public void setOlderThan(TimeInterval interval) {
     olderThan = interval;
   }

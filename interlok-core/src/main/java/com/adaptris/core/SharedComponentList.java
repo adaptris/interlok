@@ -38,6 +38,7 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.transaction.TransactionManager;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
@@ -77,6 +78,7 @@ public class SharedComponentList implements ComponentLifecycle, ComponentLifecyc
   private SharedComponentLifecycleStrategy lifecycleStrategy;
   
   @Deprecated
+  @Removal(version = "3.9.0")
   private String uniqueId;
   private transient Object lock = new Object();
   private transient InitialContext context = null;
@@ -516,6 +518,7 @@ public class SharedComponentList implements ComponentLifecycle, ComponentLifecyc
    * @deprecated since 3.6.3
    */
   @Deprecated
+  @Removal(version = "3.9.0")
   public String getUniqueId() {
     return uniqueId;
   }
@@ -526,6 +529,7 @@ public class SharedComponentList implements ComponentLifecycle, ComponentLifecyc
    * @deprecated since 3.6.3
    */
   @Deprecated
+  @Removal(version = "3.9.0")
   public void setUniqueId(String uniqueId) {
     this.uniqueId = uniqueId;
   }

@@ -45,6 +45,7 @@ import org.slf4j.Logger;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageListener;
 import com.adaptris.core.CoreException;
@@ -356,6 +357,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
    * @deprecated use {@link #getTtl()} instead.
    */
   @Deprecated
+  @Removal(version = "3.9.0")
   public long getTimeToLive() {
     return timeToLive();
   }

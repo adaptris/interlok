@@ -22,6 +22,8 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 
+import com.adaptris.annotation.Removal;
+
 
 /**
  * Select a specific MimeBodyPart from a Mime Multipart.
@@ -38,6 +40,7 @@ public interface PartSelector {
    * @implSpec The default implementation will return null.
    */
   @Deprecated
+  @Removal(version = "3.10.0")
   default MimeBodyPart select(MultiPartInput in) throws MessagingException {
     return null;
   }

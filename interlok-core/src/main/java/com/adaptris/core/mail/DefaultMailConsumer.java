@@ -27,6 +27,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -61,9 +62,11 @@ public class DefaultMailConsumer extends ParsingMailConsumerImpl {
 
   @AdvancedConfig
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use #setHeaderHandler(MailHeaderHandler)")
   private Boolean preserveHeaders;
   @AdvancedConfig
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use #setHeaderHandler(MailHeaderHandler)")
   private String headerPrefix;
 
   /**
@@ -128,6 +131,7 @@ public class DefaultMailConsumer extends ParsingMailConsumerImpl {
    * @deprecated since 3.6.5 use {link {@link #setHeaderHandler(MailHeaderHandler)} instead.
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use #setHeaderHandler(MailHeaderHandler)")
   public Boolean getPreserveHeaders() {
     return preserveHeaders;
   }
@@ -144,6 +148,7 @@ public class DefaultMailConsumer extends ParsingMailConsumerImpl {
    * @deprecated since 3.6.5 use {link {@link #setHeaderHandler(MailHeaderHandler)} instead.
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use #setHeaderHandler(MailHeaderHandler)")
   public void setPreserveHeaders(Boolean b) {
     preserveHeaders = b;
   }
@@ -159,6 +164,7 @@ public class DefaultMailConsumer extends ParsingMailConsumerImpl {
    * @deprecated since 3.6.5 use {link {@link #setHeaderHandler(MailHeaderHandler)} instead.
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use #setHeaderHandler(MailHeaderHandler)")
   public void setHeaderPrefix(String s) {
     headerPrefix = s;
   }
@@ -170,6 +176,7 @@ public class DefaultMailConsumer extends ParsingMailConsumerImpl {
    * @deprecated since 3.6.5 use {link {@link #setHeaderHandler(MailHeaderHandler)} instead.
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use #setHeaderHandler(MailHeaderHandler)")
   public String getHeaderPrefix() {
     return headerPrefix;
   }

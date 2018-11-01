@@ -22,6 +22,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisConnectionImp;
 import com.adaptris.core.AdaptrisMessage;
@@ -44,6 +45,7 @@ public abstract class CacheServiceBase extends ServiceImp implements ConnectedSe
 
   @Deprecated
   @Valid
+  @Removal(version = "3.9.0")
   private Cache cache;
   @Valid
   private AdaptrisConnection connection;
@@ -109,6 +111,7 @@ public abstract class CacheServiceBase extends ServiceImp implements ConnectedSe
    * @deprecated since 3.6.4 - use {@link CacheConnection} with {@link #setConnection(AdaptrisConnection)} instead.
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "use #setConnection(AdaptrisConnection) with a CacheConnection")
   public void setCache(Cache cache) {
     this.cache = cache;
   }
@@ -118,6 +121,7 @@ public abstract class CacheServiceBase extends ServiceImp implements ConnectedSe
    * 
    * @deprecated since 3.6.4 - use {@link CacheConnection} with {@link #setConnection(AdaptrisConnection)} instead.
    */
+  @Removal(version = "3.9.0", message = "use #setConnection(AdaptrisConnection) with a CacheConnection")
   public Cache getCache() {
     return cache;
   }

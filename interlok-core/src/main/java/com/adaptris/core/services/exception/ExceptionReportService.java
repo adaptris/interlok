@@ -25,6 +25,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -58,16 +59,20 @@ public class ExceptionReportService extends ServiceImp {
   @Valid
   @Deprecated
   @AdvancedConfig
+  @Removal(version = "3.9.0", message = "use an ExceptionSerializer implementation")
   private DocumentMerge documentMerge;
   @Valid
   @Deprecated
   @AdvancedConfig
+  @Removal(version = "3.9.0", message = "use an ExceptionSerializer implementation")
   private ExceptionReportGenerator exceptionGenerator;
   @Deprecated
   @AdvancedConfig
+  @Removal(version = "3.9.0", message = "use an ExceptionSerializer implementation")
   private String xmlEncoding;
   @AdvancedConfig
   @Deprecated
+  @Removal(version = "3.9.0", message = "use an ExceptionSerializer implementation")
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 
   @Valid
@@ -129,6 +134,7 @@ public class ExceptionReportService extends ServiceImp {
   }
 
   @Deprecated
+  @Removal(version = "3.9.0", message = "use an ExceptionSerializer implementation")
   public DocumentMerge getDocumentMerge() {
     return documentMerge;
   }
@@ -140,11 +146,13 @@ public class ExceptionReportService extends ServiceImp {
    * @deprecated since 3.6.4 use a {@link ExceptionSerializer} instead.
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "use an ExceptionSerializer implementation")
   public void setDocumentMerge(DocumentMerge m) {
     documentMerge = m;
   }
 
   @Deprecated
+  @Removal(version = "3.9.0", message = "use an ExceptionSerializer implementation")
   public ExceptionReportGenerator getExceptionGenerator() {
     return exceptionGenerator;
   }
@@ -156,11 +164,13 @@ public class ExceptionReportService extends ServiceImp {
    * @deprecated since 3.6.4 use a {@link ExceptionSerializer} instead.
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "use an ExceptionSerializer implementation")
   public void setExceptionGenerator(ExceptionReportGenerator generator) {
     exceptionGenerator = generator;
   }
 
   @Deprecated
+  @Removal(version = "3.9.0", message = "use an ExceptionSerializer implementation")
   public String getXmlEncoding() {
     return xmlEncoding;
   }
@@ -172,11 +182,13 @@ public class ExceptionReportService extends ServiceImp {
    * @deprecated since 3.6.4 use a {@link ExceptionSerializer} instead.
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "use an ExceptionSerializer implementation")
   public void setXmlEncoding(String encoding) {
     xmlEncoding = encoding;
   }
 
   @Deprecated
+  @Removal(version = "3.9.0", message = "use an ExceptionSerializer implementation")
   public DocumentBuilderFactoryBuilder getXmlDocumentFactoryConfig() {
     return xmlDocumentFactoryConfig;
   }
@@ -187,6 +199,7 @@ public class ExceptionReportService extends ServiceImp {
    * @deprecated since 3.6.4 use a {@link ExceptionSerializer} instead.
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "use an ExceptionSerializer implementation")
   public void setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder xml) {
     this.xmlDocumentFactoryConfig = xml;
   }

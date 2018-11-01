@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -58,6 +59,7 @@ public class HashLoginServiceFactory implements JettyLoginServiceFactory {
   private String filename;
   @AdvancedConfig
   @Deprecated
+  @Removal(version = "3.9.0")
   private Integer refreshInterval;
 
   public HashLoginServiceFactory() {
@@ -107,6 +109,7 @@ public class HashLoginServiceFactory implements JettyLoginServiceFactory {
    * @deprecated since 3.6.0 refresh interval has no effect.
    */
   @Deprecated
+  @Removal(version = "3.9.0")
   public Integer getRefreshInterval() {
     return refreshInterval;
   }
@@ -119,6 +122,7 @@ public class HashLoginServiceFactory implements JettyLoginServiceFactory {
    * @param i the refreshInterval to set
    */
   @Deprecated
+  @Removal(version = "3.9.0")
   public void setRefreshInterval(Integer i) {
     this.refreshInterval = i;
   }

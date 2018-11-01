@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MessageDrivenDestination;
@@ -50,6 +51,7 @@ public class FileDataOutputParameter implements DataOutputParameter<String> {
 
   @Deprecated
   @AdvancedConfig
+  @Removal(version = "3.9.0", message = "use destination instead")
   private String url;
 
   @Valid
@@ -88,6 +90,7 @@ public class FileDataOutputParameter implements DataOutputParameter<String> {
    * @deprecated since 3.5.0 use {@link #getDestination()} instead for consistency.
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "use #getDestination()")
   public String getUrl() {
     return url;
   }
@@ -96,6 +99,7 @@ public class FileDataOutputParameter implements DataOutputParameter<String> {
    * @deprecated since 3.5.0 use {@link #setDestination(MessageDrivenDestination)} instead for consistency.
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "use #setDestination(MessageDrivenDestination)")
   public void setUrl(String url) {
     this.url = url;
   }

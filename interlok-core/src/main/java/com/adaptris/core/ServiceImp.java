@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.GuidGenerator;
@@ -55,6 +56,7 @@ public abstract class ServiceImp implements Service {
   @AdvancedConfig
   @InputFieldDefault(value = "false")
   @Deprecated
+  @Removal(version = "3.9.0")
   private Boolean isConfirmation;
 
   /**
@@ -161,6 +163,7 @@ public abstract class ServiceImp implements Service {
    * @deprecated since 3.6.2 No-one has ever produced a confirmation service. This will be removed.
    */
   @Deprecated
+  @Removal(version = "3.9.0")
   public Boolean getIsConfirmation() {
     return isConfirmation;
   }
@@ -173,6 +176,7 @@ public abstract class ServiceImp implements Service {
    * 
    */
   @Deprecated
+  @Removal(version = "3.9.0")
   public void setIsConfirmation(Boolean b) {
     isConfirmation = b;
   }
@@ -198,6 +202,7 @@ public abstract class ServiceImp implements Service {
    *             {@link ExceptionHelper#rethrowServiceException(Throwable)} instead.
    */
   @Deprecated
+  @Removal(version = "3.9.0")
   protected static void rethrowServiceException(Throwable e) throws ServiceException {
     throw ExceptionHelper.wrapServiceException(e);
   }

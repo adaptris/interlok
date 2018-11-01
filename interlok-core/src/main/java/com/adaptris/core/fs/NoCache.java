@@ -16,6 +16,7 @@
 
 package com.adaptris.core.fs;
 
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.CoreException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -32,6 +33,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class NoCache implements ProcessedItemCache {
 
   @Deprecated
+  @Removal(version = "3.9.0", message = "Removed w/o replacement")
   private String uniqueId;
 
   public NoCache() {
@@ -110,6 +112,7 @@ public class NoCache implements ProcessedItemCache {
    * @deprecated since 3.6.3
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "Removed w/o replacement")
   public String getUniqueId() {
     return uniqueId;
   }
@@ -120,6 +123,7 @@ public class NoCache implements ProcessedItemCache {
    * @deprecated since 3.6.3
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "Removed w/o replacement")
   public void setUniqueId(String uniqueId) {
     this.uniqueId = uniqueId;
   }

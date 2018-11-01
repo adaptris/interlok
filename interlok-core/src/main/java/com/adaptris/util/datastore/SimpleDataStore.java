@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -313,6 +314,7 @@ public class SimpleDataStore extends DataStore {
    * @deprecated since 3.6.6 use {@link #setDataFile(String)} instead.
    */
   @Deprecated
+  @Removal(version = "3.9.0")
   public void setDataFileName(String string) {
     setDataFile(string);
   }
@@ -324,6 +326,7 @@ public class SimpleDataStore extends DataStore {
    * @deprecated since 3.6.6 use {@link #setDataFile(String)} instead.
    */
   @Deprecated
+  @Removal(version = "3.9.0")
   public String getDataFileName() {
     return getDataFile();
   }
@@ -351,9 +354,10 @@ public class SimpleDataStore extends DataStore {
    * The lock file in url format.
    *
    * @param string the lock file
-   * @deprecated since 3.6.6 use {@link #setDataFile(String)} instead.
+   * @deprecated since 3.6.6 use {@link #setLockFile(String)} instead.
    */
   @Deprecated
+  @Removal(version = "3.9.0")
   public void setLockFileName(String string) {
     setLockFile(string);
   }
@@ -362,7 +366,10 @@ public class SimpleDataStore extends DataStore {
    * Get the lock file name.
    *
    * @return the lock file in URL format.
+   * @deprecated since 3.6.6 use {@link #setLockFile(String)} instead.
    */
+  @Deprecated
+  @Removal(version = "3.9.0")
   public String getLockFileName() {
     return getLockFile();
   }

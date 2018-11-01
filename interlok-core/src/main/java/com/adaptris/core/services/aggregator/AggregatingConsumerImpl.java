@@ -22,6 +22,7 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.ComponentLifecycle;
 import com.adaptris.core.CoreException;
@@ -48,6 +49,7 @@ public abstract class AggregatingConsumerImpl<E extends AggregatingConsumeServic
   @Valid
   private ConsumeDestinationGenerator destination;
   @Deprecated
+  @Removal(version = "3.9.0")
   private String uniqueId;
   
   public AggregatingConsumerImpl() {
@@ -135,6 +137,7 @@ public abstract class AggregatingConsumerImpl<E extends AggregatingConsumeServic
    * @deprecated since 3.6.3
    */
   @Deprecated
+  @Removal(version = "3.9.0")
   public String getUniqueId() {
     return uniqueId;
   }
@@ -145,6 +148,7 @@ public abstract class AggregatingConsumerImpl<E extends AggregatingConsumeServic
    * @deprecated since 3.6.3
    */
   @Deprecated
+  @Removal(version = "3.9.0")
   public void setUniqueId(String uniqueId) {
     this.uniqueId = uniqueId;
   }

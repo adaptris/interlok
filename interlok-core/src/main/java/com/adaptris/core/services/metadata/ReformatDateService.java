@@ -24,6 +24,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -59,9 +60,11 @@ public class ReformatDateService extends ReformatMetadata {
 
   @AdvancedConfig
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use sourceFormatBuilder")
   private String sourceDateFormat;
   @AdvancedConfig
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use destinationFormatBuilder")
   private String destinationDateFormat;
 
   @Valid
@@ -108,6 +111,7 @@ public class ReformatDateService extends ReformatMetadata {
    * @return the sourceDateFormat
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use sourceFormatBuilder")
   public String getSourceDateFormat() {
     return sourceDateFormat;
   }
@@ -120,6 +124,7 @@ public class ReformatDateService extends ReformatMetadata {
    * @deprecated since 3.6.6 use {@link #setSourceFormatBuilder(DateFormatBuilder)} instead.
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use sourceFormatBuilder")
   public void setSourceDateFormat(String s) {
     this.sourceDateFormat = s;
   }
@@ -128,6 +133,7 @@ public class ReformatDateService extends ReformatMetadata {
    * @return the destinationDateFormat
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use destinationFormatBuilder")
   public String getDestinationDateFormat() {
     return destinationDateFormat;
   }
@@ -140,6 +146,7 @@ public class ReformatDateService extends ReformatMetadata {
    * @deprecated since 3.6.6 use {@link #setDestinationFormatBuilder(DateFormatBuilder)} instead.
    */
   @Deprecated
+  @Removal(version = "3.9.0", message = "Use destinationFormatBuilder")
   public void setDestinationDateFormat(String s) {
     this.destinationDateFormat = s;
   }

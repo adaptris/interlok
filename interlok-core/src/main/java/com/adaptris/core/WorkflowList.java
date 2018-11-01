@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.util.CastorizedList;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
@@ -65,6 +66,7 @@ public final class WorkflowList extends AbstractCollection<Workflow>
   private transient WorkflowLifecycleStrategy defaultStrategy = new DefaultWorkflowLifecycleStrategy();
 
   @Deprecated
+  @Removal(version = "3.9.0")
   private String uniqueId;
   
   /**
@@ -337,6 +339,7 @@ public final class WorkflowList extends AbstractCollection<Workflow>
    * @deprecated since 3.6.3
    */
   @Deprecated
+  @Removal(version = "3.9.0")
   public String getUniqueId() {
     return uniqueId;
   }
@@ -347,6 +350,7 @@ public final class WorkflowList extends AbstractCollection<Workflow>
    * @deprecated since 3.6.3
    */
   @Deprecated
+  @Removal(version = "3.9.0")
   public void setUniqueId(String uniqueId) {
     this.uniqueId = uniqueId;
   }

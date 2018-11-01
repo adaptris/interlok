@@ -36,6 +36,7 @@ import javax.management.MalformedObjectNameException;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.runtime.ParentRuntimeInfoComponent;
 import com.adaptris.core.runtime.RuntimeInfoComponent;
 import com.adaptris.core.runtime.RuntimeInfoComponentFactory;
@@ -60,6 +61,7 @@ public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExce
 
   @AdvancedConfig
   @Deprecated
+  @Removal(version = "3.9.0")
   private TimeInterval lockTimeout;
   @InputFieldDefault(value = "10 minutes")
   private TimeInterval retryInterval;
@@ -82,7 +84,7 @@ public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExce
   }
 
   @Override
-  public void handleProcessingException(AdaptrisMessage msg) {
+  public synchronized void handleProcessingException(AdaptrisMessage msg) {
     if (shouldFail(msg) || failAll) {
       failMessage(msg);
     }
@@ -179,6 +181,7 @@ public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExce
    * @deprecated since 3.6.6 has no effect.
    */
   @Deprecated
+  @Removal(version = "3.9.0")
   public TimeInterval getLockTimeout() {
     return lockTimeout;
   }
@@ -190,6 +193,7 @@ public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExce
    * @deprecated since 3.6.6 has no effect.
    */
   @Deprecated
+  @Removal(version = "3.9.0")
   public void setLockTimeout(TimeInterval interval) {
     lockTimeout = interval;
   }
