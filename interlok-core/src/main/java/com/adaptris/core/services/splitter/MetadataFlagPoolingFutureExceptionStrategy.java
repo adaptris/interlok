@@ -1,18 +1,35 @@
 package com.adaptris.core.services.splitter;
 
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
-import com.adaptris.core.util.Args;
-import com.adaptris.core.util.ExceptionHelper;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
-public class MetadataFlagPoolingFutureExceptionStrategy implements PoolingFutureExceptionStrategy{
+import org.apache.commons.lang.BooleanUtils;
+
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+
+/**
+ * Ignores exception so long as some messages were considered successful based on a metadata key.
+ * 
+ * <p>
+ * This strategy is useful if messages within a split-join are transient, and can be ignored provided some of them work; it allows
+ * you to ignore exceptions processing individual mesages provided one or more messages have set a specific metadata to the value
+ * {@code true | 1}.
+ * </p>
+ * 
+ * @config metadata-flag-pooling-future-exception-strategy
+ *
+ */
+@XStreamAlias("metadata-flag-pooling-future-exception-strategy")
+public class MetadataFlagPoolingFutureExceptionStrategy implements PoolingFutureExceptionStrategy {
     @NotNull
     @Valid
     private String metadataFlagKey;
@@ -46,12 +63,10 @@ public class MetadataFlagPoolingFutureExceptionStrategy implements PoolingFuture
         try {
             AdaptrisMessage adaptrisMessage = msgResult.get();
             String metadataValue = adaptrisMessage.getMetadataValue(metadataFlagKey);
-            if (Boolean.valueOf(metadataValue) || "1".equals(metadataValue))
+            if (BooleanUtils.toBoolean(metadataValue) || "1".equals(metadataValue))
                 return true;
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
+        } catch (InterruptedException | ExecutionException  ignored) {
+            ;
         }
         return defaultFlagValue;
     }

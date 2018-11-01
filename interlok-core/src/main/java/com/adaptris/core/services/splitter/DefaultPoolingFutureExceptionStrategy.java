@@ -1,11 +1,18 @@
 package com.adaptris.core.services.splitter;
 
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
-
 import java.util.List;
 import java.util.concurrent.Future;
 
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreException;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+/**
+ * 
+ * @config default-pooling-future-exception-strategy
+ *
+ */
+@XStreamAlias("default-pooling-future-exception-strategy")
 public class DefaultPoolingFutureExceptionStrategy implements PoolingFutureExceptionStrategy {
 
     @Override

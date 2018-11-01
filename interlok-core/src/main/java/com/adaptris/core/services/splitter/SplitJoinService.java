@@ -32,6 +32,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
@@ -93,6 +94,8 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
   private transient ExecutorService executors;
   private transient EventHandler eventHandler;
 
+  @AdvancedConfig
+  @Valid
   private PoolingFutureExceptionStrategy exceptionStrategy;
 
   public SplitJoinService() {
