@@ -54,7 +54,7 @@ subprojects { subproject ->
     maven { url "$defaultNexusRepo" }
     maven { url "$nexusBaseUrl/content/groups/public" }
     maven { url "$nexusBaseUrl/content/repositories/snapshots" }
-    maven { url "$nexusBaseUrl/content/content/repositories/releases" }
+    maven { url "$nexusBaseUrl/content/repositories/releases" }
   }
 
   configurations {
