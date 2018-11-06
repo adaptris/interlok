@@ -56,7 +56,7 @@ public class UseXmlCharsetAsEncodingService extends ServiceImp {
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
 
-    XMLInputFactory factory = XMLInputFactory.newInstance();
+    XMLInputFactory factory = createInputFactory();
     XMLStreamReader reader = null;
     try {
       try (InputStream in = msg.getInputStream()) {
@@ -99,5 +99,11 @@ public class UseXmlCharsetAsEncodingService extends ServiceImp {
     catch (Exception ignored) {
 
     }
+  }
+
+  private static XMLInputFactory createInputFactory() {
+    XMLInputFactory factory = XMLInputFactory.newFactory();
+    factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
+    return factory;
   }
 }
