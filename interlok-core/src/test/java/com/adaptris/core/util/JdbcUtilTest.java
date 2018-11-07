@@ -24,13 +24,10 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Savepoint;
-import java.sql.Statement;
 import java.util.Properties;
 
 import org.junit.Test;
@@ -42,39 +39,11 @@ public class JdbcUtilTest extends JdbcUtil {
 
 
   @Test
-  public void testCloseStatement() throws Exception {
-    closeQuietly((Statement) null);
-    Statement mock = mock(Statement.class);
-    closeQuietly(mock);
-    doThrow(new SQLException("Expected")).when(mock).close();
-    closeQuietly(mock);
-  }
-
-
-  @Test
-  public void testCloseResultSet() throws Exception {
-    closeQuietly((ResultSet) null);
-    ResultSet mock = mock(ResultSet.class);
-    closeQuietly(mock);
-    doThrow(new SQLException("Expected")).when(mock).close();
-    closeQuietly(mock);
-  }
-
-  @Test
-  public void testCloseCloseable() throws Exception {
-    closeQuietly((Closeable) null);
-    Closeable mock = mock(Closeable.class);
-    closeQuietly(mock);
+  public void testClose_AutoCloseable() throws Exception {
+    closeQuietly((AutoCloseable) null);
+    AutoCloseable mock = mock(AutoCloseable.class);
+    closeQuietly(null, mock);
     doThrow(new IOException("Expected")).when(mock).close();
-    closeQuietly(mock);
-  }
-
-  @Test
-  public void testCloseConnection() throws Exception {
-    closeQuietly((Connection) null);
-    Connection mock = mock(Connection.class);
-    closeQuietly(mock);
-    doThrow(new SQLException("Expected")).when(mock).close();
     closeQuietly(mock);
   }
 

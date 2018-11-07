@@ -18,7 +18,6 @@ package com.adaptris.core.util;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
-import java.io.Closeable;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -36,51 +35,19 @@ import com.adaptris.security.password.Password;
 /**
  * Helper methods used internally to support JDBC operations within the framework.
  *
- * @author lchan
- * @author $Author: lchan $
  */
 public abstract class JdbcUtil {
 
   private static Logger log = LoggerFactory.getLogger(JdbcUtil.class);
 
-  public static void closeQuietly(Statement p) {
-    try {
-      if (p != null) {
-        p.close();
+  public static void closeQuietly(AutoCloseable... closeables) {
+    if (closeables != null) {
+      for (AutoCloseable c : closeables) {
+        try {
+          if (c != null) c.close();
+        } catch (Exception e) {
+        }
       }
-    }
-    catch (Exception e) {
-    }
-  }
-
-  public static void closeQuietly(ResultSet p) {
-    try {
-      if (p != null) {
-        p.close();
-      }
-    }
-    catch (Exception e) {
-    }
-  }
-
-  public static void closeQuietly(Closeable p) {
-    try {
-      if (p != null) {
-        p.close();
-      }
-    }
-    catch (Exception e) {
-    }
-  }
-
-  public static void closeQuietly(Connection c) {
-    try {
-      if (c != null) {
-        c.close();
-      }
-    }
-    catch (Exception e) {
-      ;
     }
   }
 
