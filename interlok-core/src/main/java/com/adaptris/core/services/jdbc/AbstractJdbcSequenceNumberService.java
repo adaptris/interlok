@@ -168,19 +168,16 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
     NumberFormat formatter = new DecimalFormat(getNumberFormat());
     Connection conn = null;
     ResultSet rs = null;
-    DatabaseActor actor = new DatabaseActor();
+    DatabaseActor actor = null;
 
     if (!alwaysReplaceMetadata() && msg.containsKey(getMetadataKey())) {
-      log.debug(getMetadataKey() + " already exists, not updating");
+      log.debug("{} already exists, not updating", getMetadataKey());
       return;
     }
+    String identity = getIdentity(msg);
     try {
       conn = getConnection(msg);
-      if (conn != actor.getSqlConnection()) {
-        actor.reInitialise(conn);
-      }
-      String identity = getIdentity(msg);
-      actor.applyIdentityParameter(identity);
+      actor = new DatabaseActor(conn).applyIdentityParameter(identity);
       rs = actor.executeSelect();
       if (rs.next()) {
         int count = rs.getInt(1);
@@ -211,8 +208,7 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
       throw new ServiceException("Failed whilst generating sequence number", e);
     }
     finally {
-      JdbcUtil.closeQuietly(rs);
-      actor.destroy();
+      JdbcUtil.closeQuietly(rs, actor, conn);
       JdbcUtil.closeQuietly(conn);
     }
   }
@@ -446,16 +442,11 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
   public void prepareService() throws CoreException {
   }
 
-  private class DatabaseActor {
+  private class DatabaseActor implements AutoCloseable {
     private PreparedStatement select = null, insert = null, update = null, reset = null;
     private Connection sqlConnection;
 
-    DatabaseActor() {
-
-    }
-
-    void reInitialise(Connection c) throws SQLException {
-      destroy();
+    DatabaseActor(Connection c) throws SQLException {
       sqlConnection = c;
       if (createDatabase()) {
         createSequenceDatabase(DEFAULT_TABLE_NAME);
@@ -466,18 +457,18 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
       reset = prepareStatement(sqlConnection, resetStatement());
     }
 
-    void applyIdentityParameter(String identity) throws SQLException {
+    DatabaseActor applyIdentityParameter(String identity) throws SQLException {
       if (identity != null) {
         select.setString(1, identity);
         insert.setString(1, identity);
         update.setString(1, identity);
         reset.setString(2, identity);
       }
+      return this;
     }
 
-
-    void destroy() {
-      JdbcUtil.closeQuietly(select, insert, update, reset, sqlConnection);
+    public void close() {
+      JdbcUtil.closeQuietly(select, insert, update, reset);
       sqlConnection = null;
     }
 
@@ -498,22 +489,17 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
       reset.executeUpdate();
     }
 
-    Connection getSqlConnection() {
-      return sqlConnection;
-    }
-
     private void createSequenceDatabase(String tableName) throws SQLException {
       Statement create = null;
-      ResultSet rs = getSqlConnection().getMetaData().getTables(null, null, tableName, null);
+      ResultSet rs = sqlConnection.getMetaData().getTables(null, null, tableName, null);
       try {
         // If ResultSet doesn't have any entries, then we can assume the table doesn't exist, so let's try and create it
         if (!rs.next()) {
-          create = createStatement(getSqlConnection());
+          create = createStatement(sqlConnection);
           create.execute(DEFAULT_CREATE_STATEMENT);
           resetStatements();
         }
-      }
-      finally {
+      } finally {
         JdbcUtil.closeQuietly(create);
         JdbcUtil.closeQuietly(rs);
       }
