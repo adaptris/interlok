@@ -20,14 +20,19 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Savepoint;
+import java.sql.Statement;
 import java.util.Properties;
 
 import org.junit.Test;
@@ -40,7 +45,7 @@ public class JdbcUtilTest extends JdbcUtil {
 
   @Test
   public void testClose_AutoCloseable() throws Exception {
-    closeQuietly((AutoCloseable) null);
+    closeQuietly((AutoCloseable[]) null);
     AutoCloseable mock = mock(AutoCloseable.class);
     closeQuietly(null, mock);
     doThrow(new IOException("Expected")).when(mock).close();
@@ -122,5 +127,25 @@ public class JdbcUtilTest extends JdbcUtil {
     mergeConnectionProperties(p, "", "");
     assertEquals(0, p.size());
     mergeConnectionProperties(p, "", "ALTPW:ABCDEFGGHJ");
+  }
+
+  @Test
+  public void testTestConnection() throws Exception {
+    Connection c = mock(Connection.class);
+    Statement s = mock(Statement.class);
+    ResultSet rs = mock(ResultSet.class);
+    ResultSetMetaData rsm = mock(ResultSetMetaData.class);
+    when(c.createStatement()).thenReturn(s);
+    when(s.executeQuery(anyString())).thenReturn(rs);
+    when(rs.next()).thenReturn(false, true);
+    when(rs.getObject(anyInt())).thenReturn("columnData");
+    when(rs.getMetaData()).thenReturn(rsm);
+    when(rsm.getColumnName(anyInt())).thenReturn("columnName");
+    when(rsm.getColumnCount()).thenReturn(1);
+    
+    testConnection(c, null, false); // won't fail because of the first isEmptyCheck
+    testConnection(c, "hello", true);
+    testConnection(c, "hello", true);
+    testConnection(c, "hello", false);
   }
 }
