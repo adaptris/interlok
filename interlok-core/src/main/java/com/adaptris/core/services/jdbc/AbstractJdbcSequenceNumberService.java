@@ -24,9 +24,12 @@ import java.sql.Statement;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
@@ -71,6 +74,8 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
   @NotBlank
   private String metadataKey;
   @NotBlank
+  @AutoPopulated
+  @InputFieldDefault("0")
   private String numberFormat;
   @AdvancedConfig
   @InputFieldDefault(value = "true")
@@ -90,44 +95,10 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
   @AdvancedConfig
   @InputFieldDefault(value = "false")
   private Boolean createDatabase;
+  @AdvancedConfig
+  private Long maximumSequenceNumber;
 
   private OverflowBehaviour overflowBehaviour;
-
-  private enum StatementType {
-    Select {
-      @Override
-      void doConfigure(DatabaseActor actor, String identity) throws SQLException {
-        actor.getSelect().setString(1, identity);
-      }
-    },
-    Insert {
-      @Override
-      void doConfigure(DatabaseActor actor, String identity) throws SQLException {
-        actor.getInsert().setString(1, identity);
-      }
-    },
-    Update {
-      @Override
-      void doConfigure(DatabaseActor actor, String id) throws SQLException {
-        actor.getUpdate().setString(1, id);
-      }
-    },
-    Reset {
-      @Override
-      void doConfigure(DatabaseActor actor, String identity) throws SQLException {
-        actor.getReset().setString(2, identity);
-      }
-
-    };
-    void configure(DatabaseActor actor, String id) throws SQLException {
-      if (id != null) {
-        doConfigure(actor, id);
-      }
-    }
-
-    abstract void doConfigure(DatabaseActor actor, String identity) throws SQLException;
-
-  }
 
   /**
    * The behaviour of the sequence number generator when the number exceeds that specified by the number format.
@@ -153,6 +124,7 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
 
   public AbstractJdbcSequenceNumberService() {
     super();
+    setNumberFormat("0");
   }
 
   @Override
@@ -208,28 +180,29 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
         actor.reInitialise(conn);
       }
       String identity = getIdentity(msg);
-      actor.configure(StatementType.Select, identity);
-      rs = actor.getSelect().executeQuery();
+      actor.applyIdentityParameter(identity);
+      rs = actor.executeSelect();
       if (rs.next()) {
         int count = rs.getInt(1);
         String countString = formatter.format(count);
-        if (countString.length() > getNumberFormat().length()) {
-          count = getBehaviour(getOverflowBehaviour()).wrap(count);
+        if (exceedsMaxSequence(count)) {
+          count = 1;
           countString = formatter.format(count);
-          actor.getReset().setInt(1, count + 1);
-          actor.configure(StatementType.Reset, identity);
-          actor.getReset().executeUpdate();
-        }
-        else {
-          actor.configure(StatementType.Update, identity);
-          actor.getUpdate().executeUpdate();
+          actor.executeReset(count + 1);
+        } else {
+          if (hasOverflowed(countString)) {
+            count = getBehaviour(getOverflowBehaviour()).wrap(count);
+            countString = formatter.format(count);
+            actor.executeReset(count + 1);
+          } else {
+            actor.executeUpdate();
+          }
         }
         msg.addMetadata(getMetadataKey(), countString);
       }
       else {
         msg.addMetadata(getMetadataKey(), formatter.format(1));
-        actor.configure(StatementType.Insert, identity);
-        actor.getInsert().executeUpdate();
+        actor.executeInsert();
       }
       commit(conn, msg);
     }
@@ -256,6 +229,14 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
    * @throws ServiceException wrapping any exception.
    */
   protected abstract String getIdentity(AdaptrisMessage msg) throws ServiceException;
+
+  protected boolean hasOverflowed(String formattedCount) {
+    return formattedCount.length() > getNumberFormat().length();
+  }
+
+  protected boolean exceedsMaxSequence(int count) {
+    return getMaximumSequenceNumber() != null ? count > getMaximumSequenceNumber() : false;
+  }
 
   /**
    * @return the selectStatement
@@ -321,7 +302,7 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
    * @param key the metadataKey to set
    */
   public void setMetadataKey(String key) {
-    metadataKey = key;
+    metadataKey = Args.notBlank(key, "metadataKey");
   }
 
   /**
@@ -344,7 +325,7 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
    *          overflow behaviour of 'Continue' then this will just use the raw number.
    */
   public void setNumberFormat(String format) {
-    numberFormat = format;
+    numberFormat = Args.notBlank(format, "numberFormat");
   }
 
   /**
@@ -364,7 +345,7 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
   }
 
   boolean alwaysReplaceMetadata() {
-    return getAlwaysReplaceMetadata() != null ? getAlwaysReplaceMetadata().booleanValue() : true;
+    return BooleanUtils.toBooleanDefaultIfNull(getAlwaysReplaceMetadata(), true);
   }
 
   /**
@@ -406,25 +387,37 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
     return s == null ? OverflowBehaviour.Continue : s;
   }
 
+  public Long getMaximumSequenceNumber() {
+    return maximumSequenceNumber;
+  }
+
+  /**
+   * Set the maximum sequence number which will reset the count when reached.
+   *
+   * @param l the maximum sequence number, a value of null means there is no maximum (default).
+   */
+  public void setMaximumSequenceNumber(Long l) {
+    this.maximumSequenceNumber = l;
+  }
+
   public Boolean getCreateDatabase() {
     return createDatabase;
   }
 
   String resetStatement() {
-    return getResetStatement() != null ? getResetStatement() : DEFAULT_RESET_STATEMENT;
+    return StringUtils.defaultIfBlank(getResetStatement(), DEFAULT_RESET_STATEMENT);
   }
 
   String insertStatement() {
-    return getInsertStatement() != null ? getInsertStatement() : DEFAULT_INSERT_STATEMENT;
-
+    return StringUtils.defaultIfBlank(getInsertStatement(), DEFAULT_INSERT_STATEMENT);
   }
 
   String selectStatement() {
-    return getSelectStatement() != null ? getSelectStatement() : DEFAULT_SELECT_STATEMENT;
+    return StringUtils.defaultIfBlank(getSelectStatement(), DEFAULT_SELECT_STATEMENT);
   }
 
   String updateStatement() {
-    return getUpdateStatement() != null ? getUpdateStatement() : DEFAULT_UPDATE_STATEMENT;
+    return StringUtils.defaultIfBlank(getUpdateStatement(), DEFAULT_UPDATE_STATEMENT);
   }
 
   /**
@@ -446,7 +439,7 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
   }
 
   private boolean createDatabase() {
-    return getCreateDatabase() != null ? getCreateDatabase().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getCreateDatabase(), false);
   }
 
   @Override
@@ -473,33 +466,36 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
       reset = prepareStatement(sqlConnection, resetStatement());
     }
 
-    void configure(StatementType type, String identity) throws SQLException {
-      type.configure(this, identity);
+    void applyIdentityParameter(String identity) throws SQLException {
+      if (identity != null) {
+        select.setString(1, identity);
+        insert.setString(1, identity);
+        update.setString(1, identity);
+        reset.setString(2, identity);
+      }
     }
 
+
     void destroy() {
-      JdbcUtil.closeQuietly(select);
-      JdbcUtil.closeQuietly(insert);
-      JdbcUtil.closeQuietly(update);
-      JdbcUtil.closeQuietly(reset);
-      JdbcUtil.closeQuietly(sqlConnection);
+      JdbcUtil.closeQuietly(select, insert, update, reset, sqlConnection);
       sqlConnection = null;
     }
 
-    PreparedStatement getSelect() {
-      return select;
+    ResultSet executeSelect() throws SQLException {
+      return select.executeQuery();
     }
 
-    PreparedStatement getInsert() {
-      return insert;
+    void executeInsert() throws SQLException {
+      insert.executeUpdate();
     }
 
-    PreparedStatement getUpdate() {
-      return update;
+    void executeUpdate() throws SQLException {
+      update.executeUpdate();
     }
 
-    PreparedStatement getReset() {
-      return reset;
+    void executeReset(int resetValue) throws SQLException {
+      reset.setInt(1, resetValue);
+      reset.executeUpdate();
     }
 
     Connection getSqlConnection() {

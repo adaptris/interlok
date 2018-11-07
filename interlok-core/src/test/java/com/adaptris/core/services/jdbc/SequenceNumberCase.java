@@ -108,15 +108,13 @@ public abstract class SequenceNumberCase extends JdbcServiceCase {
 
   public void testNumberFormat() {
     AbstractJdbcSequenceNumberService service = createService();
-    assertNull(service.getNumberFormat());
+    assertEquals("0", service.getNumberFormat());
     service.setNumberFormat("000");
     assertEquals("000", service.getNumberFormat());
   }
 
   public void testInit() throws Exception {
-    AbstractJdbcSequenceNumberService service = createServiceForTests();
-    service.setMetadataKey(null);
-    service.setNumberFormat(null);
+    AbstractJdbcSequenceNumberService service = createService();
     try {
       LifecycleHelper.init(service);
       fail();
@@ -125,13 +123,6 @@ public abstract class SequenceNumberCase extends JdbcServiceCase {
 
     }
     service.setMetadataKey("fred");
-    try {
-      LifecycleHelper.init(service);
-      fail();
-    }
-    catch (CoreException e) {
-
-    }
     service.setNumberFormat("000");
     try {
       LifecycleHelper.init(service);
@@ -288,6 +279,34 @@ public abstract class SequenceNumberCase extends JdbcServiceCase {
     assertTrue(msg.containsKey(DEFAULT_METADATA_KEY));
     assertEquals("000000001", msg.getMetadataValue(DEFAULT_METADATA_KEY));
     assertEquals(2, getCurrentSequenceNumber(DEFAULT_ID));
+  }
+
+  public void testSequenceNumber_ExceedsMaxConfigured_ResetToOne() throws Exception {
+    createDatabase();
+    populateDatabase(DEFAULT_ID, 10000);
+    AdaptrisMessage msg = createMessageForTests();
+    AbstractJdbcSequenceNumberService service = createServiceForTests();
+    service.setMaximumSequenceNumber(9999L);
+    service.setNumberFormat("00000");
+    service.setOverflowBehaviour(AbstractJdbcSequenceNumberService.OverflowBehaviour.ResetToOne);
+    execute(service, msg);
+    assertTrue(msg.containsKey(DEFAULT_METADATA_KEY));
+    assertEquals("00001", msg.getMetadataValue(DEFAULT_METADATA_KEY));
+    assertEquals(2, getCurrentSequenceNumber(DEFAULT_ID));
+  }
+
+  public void testSequenceNumber_MaxConfigured_ResetToOne() throws Exception {
+    createDatabase();
+    populateDatabase(DEFAULT_ID, 10000);
+    AdaptrisMessage msg = createMessageForTests();
+    AbstractJdbcSequenceNumberService service = createServiceForTests();
+    service.setMaximumSequenceNumber(50000L);
+    service.setNumberFormat("00000");
+    service.setOverflowBehaviour(AbstractJdbcSequenceNumberService.OverflowBehaviour.ResetToOne);
+    execute(service, msg);
+    assertTrue(msg.containsKey(DEFAULT_METADATA_KEY));
+    assertEquals("10000", msg.getMetadataValue(DEFAULT_METADATA_KEY));
+    assertEquals(10001, getCurrentSequenceNumber(DEFAULT_ID));
   }
 
   protected void createDatabase() throws Exception {
