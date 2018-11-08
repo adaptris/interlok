@@ -97,4 +97,12 @@ public class TimeInterval {
   public void setInterval(Long interval) {
     this.interval = interval;
   }
+
+  public static long toMillisecondsDefaultIfNull(TimeInterval t, long defaultMs) {
+    return t != null ? t.toMilliseconds() : defaultMs;
+  }
+
+  public static long toMillisecondsDefaultIfNull(TimeInterval t, TimeInterval defaultInterval) {
+    return toMillisecondsDefaultIfNull(t, defaultInterval.toMilliseconds());
+  }
 }
