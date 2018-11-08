@@ -18,6 +18,8 @@ package com.adaptris.core.jms;
 
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -108,7 +110,7 @@ public final class JmsTransactedWorkflow extends StandardWorkflow {
   protected void handleBadMessage(String logMsg, Exception e, AdaptrisMessage msg) {
     LAST_MSG_FAILED.set(Boolean.TRUE);
     if (retrieveActiveMsgErrorHandler() instanceof RetryMessageErrorHandler) {
-      log.warn(msg.getUniqueId() + " failed with [" + e.getMessage() + "], it will be retried");
+      log.warn("{} failed with [{}], it will be retried", msg.getUniqueId(), e.getMessage());
     }
     else {
       log.error(logMsg, e);
@@ -147,7 +149,7 @@ public final class JmsTransactedWorkflow extends StandardWorkflow {
   }
 
   boolean isStrict() {
-    return strict != null ? strict.booleanValue() : true;
+    return BooleanUtils.toBooleanDefaultIfNull(getStrict(), true);
   }
 
 
@@ -156,8 +158,7 @@ public final class JmsTransactedWorkflow extends StandardWorkflow {
   }
 
   public long waitPeriodAfterRollbackMs() {
-    return getWaitPeriodAfterRollback() != null ? getWaitPeriodAfterRollback().toMilliseconds() : DEFAULT_WAIT_PERIOD
-        .toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getWaitPeriodAfterRollback(), DEFAULT_WAIT_PERIOD);
   }
 
   /**

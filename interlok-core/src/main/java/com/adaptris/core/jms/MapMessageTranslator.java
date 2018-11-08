@@ -27,6 +27,7 @@ import javax.jms.MapMessage;
 import javax.jms.Message;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdvancedConfig;
@@ -172,6 +173,6 @@ public final class MapMessageTranslator extends MessageTypeTranslatorImp {
   }
 
   boolean treatMetadataAsPartOfMessage() {
-    return getTreatMetadataAsPartOfMessage() != null ? getTreatMetadataAsPartOfMessage().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getTreatMetadataAsPartOfMessage(), false);
   }
 }

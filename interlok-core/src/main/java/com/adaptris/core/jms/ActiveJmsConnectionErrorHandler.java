@@ -80,7 +80,7 @@ public class ActiveJmsConnectionErrorHandler extends JmsConnectionErrorHandlerIm
         }
       }
       if (additionalLogging()) {
-        log.debug("ActiveJmsConnectionErrorHandler for " + idForLogging + " started");
+        log.debug("ActiveJmsConnectionErrorHandler for {} started", idForLogging);
       }
     }
     catch (Exception e) {
@@ -167,7 +167,7 @@ public class ActiveJmsConnectionErrorHandler extends JmsConnectionErrorHandlerIm
         while (isActive) {
           try {
             if (additionalLogging()) {
-              log.trace("Attempting to verify " + idForLogging + " using " + temporaryDest.getDestination());
+              log.trace("Attempting to verify {} using {}", idForLogging, temporaryDest.getDestination());
             }
             MessageProducer messageProducer = session.createProducer(temporaryDest.getDestination());
             Message message = session.createMessage();
@@ -210,7 +210,7 @@ public class ActiveJmsConnectionErrorHandler extends JmsConnectionErrorHandlerIm
      */
     @Override
     public void uncaughtException(Thread t, Throwable e) {
-      log.warn("UnhandledException from " + t.getName(), e);
+      log.warn("UnhandledException from {}", t.getName(), e);
       lastCaughtException = e;
     }
 

@@ -90,7 +90,7 @@ public class JmsReplyToDestination implements MessageDrivenDestination {
     else {
       log.warn(keyToUse + " not found in object metadata");
     }
-    log.debug("Destination [" + result + "]");
+    log.debug("Destination [{}]", result);
     return (Destination) result;
   }
 

@@ -32,6 +32,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 
 import com.adaptris.annotation.AdvancedConfig;
@@ -201,7 +202,7 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
       }
     }
     catch (Exception e) {
-      log.warn("Failed to initialise JMS Connection, " + "will retry at next PollInterval");
+      log.warn("Failed to initialise JMS Connection, will retry at next PollInterval");
       if (additionalDebug()) {
         log.error("Exception Message :", e);
       }
@@ -230,7 +231,7 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
     messageConsumer = null;
     session = null;
     if (additionalDebug()) {
-      log.trace("disconnected from broker in [" + (System.currentTimeMillis() - start) + "] ms");
+      log.trace("disconnected from broker in [{}]", (System.currentTimeMillis() - start));
     }
   }
 
@@ -336,7 +337,7 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
   }
 
   long receiveTimeout() {
-    long period = getReceiveTimeout() != null ? getReceiveTimeout().toMilliseconds() : DEFAULT_RECEIVE_WAIT.toMilliseconds();
+    long period = TimeInterval.toMillisecondsDefaultIfNull(getReceiveTimeout(), DEFAULT_RECEIVE_WAIT);
     if (period < 0) {
       period = DEFAULT_RECEIVE_WAIT.toMilliseconds();
     }
@@ -441,8 +442,9 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
   }
 
   public boolean additionalDebug() {
-    return getAdditionalDebug() != null ? getAdditionalDebug().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getAdditionalDebug(), false);
   }
+
   /**
    * @param b the additionalDebug to set
    */

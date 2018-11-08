@@ -61,7 +61,6 @@ public class PasPollingConsumer extends JmsPollingConsumerImpl {
    */
   public PasPollingConsumer() {
     super();
-    this.setSubscriptionId("");
   }
 
   public PasPollingConsumer(ConsumeDestination d) {
@@ -112,9 +111,6 @@ public class PasPollingConsumer extends JmsPollingConsumerImpl {
    * @see JmsPollingConsumerImpl
    */
   public void setSubscriptionId(String s) {
-    if (s == null) {
-      throw new IllegalArgumentException("null param");
-    }
-    this.subscriptionId = s;
+    this.subscriptionId = Args.notBlank(s, "subscriptionId");
   }
 }

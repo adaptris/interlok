@@ -240,7 +240,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
     } else {
       deliveryMode = DeliveryMode.getMode(defaultDeliveryMode);
     }
-    log.trace("deliveryMode overridden to be " + deliveryMode);
+    log.trace("deliveryMode overridden to be {}", deliveryMode);
     return deliveryMode;
   }
 
@@ -287,7 +287,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
     if (msg.headersContainsKey(JMS_PRIORITY)) {
       priority = Integer.parseInt(msg.getMetadataValue(JMS_PRIORITY));
     }
-    log.trace("Priority overridden to be " + priority);
+    log.trace("Priority overridden to be {}", priority);
     return priority;
   }
 
@@ -494,7 +494,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
         log.trace("Attempting to rollback transacted session");
         currentSession().rollback();
       } catch (JMSException f) {
-        log.trace("Error encountered rolling back transaction :" + f.getMessage());
+        log.trace("Error encountered rolling back transaction : {}", f.getMessage());
       }
     }
   }

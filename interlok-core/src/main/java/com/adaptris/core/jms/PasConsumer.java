@@ -21,6 +21,8 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 
+import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -95,7 +97,7 @@ public class PasConsumer extends JmsConsumerImpl {
   }
 
   boolean durable() {
-    return getDurable() != null ? getDurable().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getDurable(), false);
   }
 
   /**

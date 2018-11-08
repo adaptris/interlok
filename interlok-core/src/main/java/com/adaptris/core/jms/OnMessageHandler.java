@@ -27,6 +27,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageListener;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 
 /**
  * <p>
@@ -65,10 +66,10 @@ public class OnMessageHandler {
         AdaptrisMessageListener aml = c.configuredMessageListener();
         if (aml instanceof JmsTransactedWorkflow) {
           if (((JmsTransactedWorkflow) aml).lastMessageFailed()) {
-            c.currentLogger().trace("Rolling back transaction because " + m.getJMSMessageID() + " has failed");
+            c.currentLogger().trace("Rolling back transaction because [{}] has failed", m.getJMSMessageID());
             c.currentSession().rollback();
             try {
-              c.currentLogger().trace("Waiting for " + c.rollbackTimeout() + "ms before continuing.");
+              c.currentLogger().trace("Waiting for {}ms before continuing", c.rollbackTimeout());
               Thread.sleep(c.rollbackTimeout());
             }
             catch (InterruptedException ignored) {
@@ -120,14 +121,12 @@ public class OnMessageHandler {
   }
 
   private static void verify(JmsActorConfig cfg) throws CoreException {
-    if (cfg.configuredCorrelationIdSource() == null) {
-      throw new CoreException("No CorrelationIdSource Configured");
-    }
-    if (cfg.configuredMessageListener() == null) {
-      throw new CoreException("No AdaptrisMessageListener Configured");
-    }
-    if (cfg.configuredMessageTranslator() == null) {
-      throw new CoreException("No MessageTypeTranslator Configured");
+    try {
+      Args.notNull(cfg.configuredCorrelationIdSource(), "correlationIdSource");
+      Args.notNull(cfg.configuredMessageListener(), "messageListener");
+      Args.notNull(cfg.configuredMessageTranslator(), "messageTranslator");
+    } catch (IllegalArgumentException e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
@@ -180,7 +179,7 @@ public class OnMessageHandler {
     }
     catch (Throwable e) { // impossible if AML is StandardWorkflow
       logR.error("Unexpected Throwable from AdaptrisMessageListener", e);
-      logR.error("logging message " + (adaptrisMessage != null ? adaptrisMessage.toString(true) : "no data available"));
+      logR.error("logging message [{}]", (adaptrisMessage != null ? adaptrisMessage.toString(true) : "no data available"));
     }
 
   }
@@ -198,7 +197,7 @@ public class OnMessageHandler {
     boolean result = false;
     try {
       if (onMsgConfig.currentSession().getTransacted()) {
-        logR.error("Exception processing message [" + msg.getJMSMessageID() + "], attempting rollback");
+        logR.error("Exception processing message [{}], attempting rollback", msg.getJMSMessageID());
         onMsgConfig.currentSession().rollback();
         result = true;
       }

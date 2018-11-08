@@ -287,9 +287,9 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
       result = translator.translate(msg);
     }
     catch (Exception e) {
-      logR.warn("Can't handle " + msg.getClass().getName() + " using " + translator.getClass().getName());
+      logR.warn("Can't handle {} using", msg.getClass().getName(), translator.getClass().getName());
       MessageTypeTranslator mt = replicate(translator);
-      logR.warn("Assuming mis-configuration and attempting to use " + mt.getClass().getName());
+      logR.warn("Assuming mis-configuration and attempting to use {}", mt.getClass().getName());
       try {
         start(mt);
         result = mt.translate(msg);
@@ -306,6 +306,7 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
     if (mt instanceof MessageTypeTranslatorImp) {
       copyConfiguration((MessageTypeTranslatorImp) mt, result);
     }
+    result.registerSession(mt.currentSession());
     return result;
   }
 
@@ -322,8 +323,7 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
 
   protected static void start(MessageTypeTranslator mt) throws JMSException {
     try {
-      LifecycleHelper.init(mt);
-      LifecycleHelper.start(mt);
+      LifecycleHelper.initAndStart(mt, false);
     }
     catch (CoreException e) {
       JmsUtils.rethrowJMSException(e);
@@ -331,7 +331,6 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
   }
 
   protected static void stop(MessageTypeTranslator mt) {
-    LifecycleHelper.stop(mt);
-    LifecycleHelper.close(mt);
+    LifecycleHelper.stopAndClose(mt, false);
   }
 }

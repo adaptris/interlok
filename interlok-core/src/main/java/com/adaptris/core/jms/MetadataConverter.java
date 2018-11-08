@@ -5,6 +5,7 @@ import javax.jms.Message;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,7 +77,7 @@ public abstract class MetadataConverter {
    * @throws JMSException
    */
   public void setProperty(MetadataElement element, Message out) throws JMSException {
-    log.trace("Setting JMS Metadata " + element + " as string");
+    log.trace("Setting JMS Metadata {} as string", element);
     out.setStringProperty(element.getKey(), element.getValue());
   }
 
@@ -109,7 +110,7 @@ public abstract class MetadataConverter {
   }
 
   protected boolean strict() {
-    return getStrictConversion() != null ? getStrictConversion().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getStrictConversion(), false);
   }
 
 }

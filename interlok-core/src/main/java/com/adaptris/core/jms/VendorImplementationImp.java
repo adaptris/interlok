@@ -131,19 +131,6 @@ public abstract class VendorImplementationImp implements VendorImplementation {
    */
   public void applyVendorSessionProperties(Session s) throws JMSException {}
 
-  /** @see java.lang.Object#toString() */
-  @Override
-  public String toString() {
-    StringBuffer result = new StringBuffer();
-
-    result.append("[");
-    result.append(this.getClass().getName());
-    result.append("]");
-
-    return result.toString();
-  }
-
-
   @Override
   public void prepare() throws CoreException {
   }

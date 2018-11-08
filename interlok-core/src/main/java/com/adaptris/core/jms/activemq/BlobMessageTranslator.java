@@ -144,7 +144,7 @@ public final class BlobMessageTranslator extends MessageTypeTranslatorImp {
       if (msg instanceof BlobMessage) {
         in = ((BlobMessage) msg).getInputStream();
         if (in == null) {
-          log.warn("BlobMessage [" + msg.getJMSMessageID() + "] has no content");
+          log.warn("BlobMessage [{}] has no content", msg.getJMSMessageID());
         }
         else {
           out = result.getOutputStream();

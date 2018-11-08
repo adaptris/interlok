@@ -29,7 +29,8 @@ import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.TextMessage;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
@@ -176,7 +177,7 @@ public class AutoConvertMessageTranslator extends MessageTypeTranslatorImp {
           mt = messageType.create(this);
           convertingBackToOriginal = true;
         } catch (IllegalArgumentException ex) {
-          log.warn("Cannot convert to type: " + msg.getMetadataValue(CONSUMED_MESSAGE_TYPE_KEY)); 
+          log.warn("Cannot convert to type: {}", msg.getMetadataValue(CONSUMED_MESSAGE_TYPE_KEY));
           for (SupportedMessageType mti : SupportedMessageType.values()) {
             if (mti.name().equalsIgnoreCase(getJmsOutputType())) {
               mt = mti.create(this);
@@ -224,7 +225,7 @@ public class AutoConvertMessageTranslator extends MessageTypeTranslatorImp {
       }
       if (mt != null) {
         start(mt);
-        log.trace("Converting [" + msg.getClass().getSimpleName() + "] using [" + mt.getClass().getSimpleName() + "]");
+        log.trace("Converting [{}] using [{}]", msg.getClass().getSimpleName(), mt.getClass().getSimpleName());
         result = mt.translate(msg);
         result.addMessageHeader(CONSUMED_MESSAGE_TYPE_KEY, messageType);
       }
@@ -261,7 +262,7 @@ public class AutoConvertMessageTranslator extends MessageTypeTranslatorImp {
   }
   
   boolean convertBackToConsumedType() {
-    return convertBackToConsumedType == null ? DEFAULT_CONVERT_BACK_TO_ORIGINAL_TYPE : convertBackToConsumedType;
+    return BooleanUtils.toBooleanDefaultIfNull(getConvertBackToConsumedType(), DEFAULT_CONVERT_BACK_TO_ORIGINAL_TYPE);
   }
 
   public void setConvertBackToConsumedType(Boolean convertBackToConsumedType) {
@@ -277,7 +278,7 @@ public class AutoConvertMessageTranslator extends MessageTypeTranslatorImp {
   }
   
   boolean removeOriginalMessageTypeKey() {
-    return removeOriginalMessageTypeKey == null ? true : removeOriginalMessageTypeKey;
+    return BooleanUtils.toBooleanDefaultIfNull(getRemoveOriginalMessageTypeKey(), true);
   }
 
 

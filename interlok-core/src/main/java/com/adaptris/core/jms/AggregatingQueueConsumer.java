@@ -102,7 +102,7 @@ public class AggregatingQueueConsumer extends AggregatingConsumerImpl<Aggregatin
       rethrowServiceException(e);
     }
     finally {
-      close(consumer);
+      JmsUtils.closeQuietly(consumer);
       stop(messageTranslator);
     }
   }
@@ -140,18 +140,7 @@ public class AggregatingQueueConsumer extends AggregatingConsumerImpl<Aggregatin
   }
 
   long timeoutMs() {
-    return getTimeout() != null ? getTimeout().toMilliseconds() : DEFAULT_TIMEOUT.toMilliseconds();
-  }
-
-  private void close(MessageConsumer c) {
-    try {
-      if (c != null) {
-        c.close();
-      }
-    }
-    catch (JMSException ignored) {
-      ;
-    }
+    return TimeInterval.toMillisecondsDefaultIfNull(getTimeout(), DEFAULT_TIMEOUT);
   }
 
   protected void startMessageTranslator(JmsActorConfig cfg, AdaptrisMessageFactory factory) throws CoreException {
