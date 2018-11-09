@@ -26,6 +26,8 @@ import java.net.URL;
 
 import javax.mail.URLName;
 
+import com.adaptris.annotation.Removal;
+
 /**
  * A Simple URL parser, that can parse any given URL into it's constituent parts.
  * <p>
@@ -80,11 +82,12 @@ public class URLString implements Serializable {
    */
   private String host;
 
-  /**
-   * The host's IP address, used in equals and hashCode. Computed on demand.
-   */
-  private InetAddress hostAddress;
-  private boolean hostAddressKnown = false;
+  @Deprecated
+  @Removal(version = "3.10.0")
+  private InetAddress hostAddress; // still here because of serialization
+  @Deprecated
+  @Removal(version = "3.10.0")
+  private boolean hostAddressKnown = false; // still here because of serialization
 
   /**
    * The protocol port to connect to.
@@ -101,10 +104,9 @@ public class URLString implements Serializable {
    */
   private String ref;
 
-  /**
-   * Our hash code.
-   */
-  private int hashCode = 0;
+  @Deprecated
+  @Removal(version = "3.10.0")
+  private int hashCode = 0; // still here because of serialization
 
   protected URLString() {
 
