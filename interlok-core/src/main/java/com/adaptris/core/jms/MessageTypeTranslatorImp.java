@@ -287,7 +287,7 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
       result = translator.translate(msg);
     }
     catch (Exception e) {
-      logR.warn("Can't handle {} using", msg.getClass().getName(), translator.getClass().getName());
+      logR.warn("Can't handle {} using {}", msg.getClass().getName(), translator.getClass().getName());
       MessageTypeTranslator mt = replicate(translator);
       logR.warn("Assuming mis-configuration and attempting to use {}", mt.getClass().getName());
       try {
@@ -301,23 +301,23 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
     return result;
   }
 
-  protected static AutoConvertMessageTranslator replicate(MessageTypeTranslator mt) throws JMSException {
+  private static AutoConvertMessageTranslator replicate(MessageTypeTranslator mt) throws JMSException {
     AutoConvertMessageTranslator result = new AutoConvertMessageTranslator();
-    if (mt instanceof MessageTypeTranslatorImp) {
-      copyConfiguration((MessageTypeTranslatorImp) mt, result);
-    }
-    result.registerSession(mt.currentSession());
+    copyConfiguration((MessageTypeTranslatorImp) mt, result);
     return result;
   }
 
-  protected static MessageTypeTranslatorImp copyConfiguration(MessageTypeTranslatorImp source, MessageTypeTranslatorImp dest)
+  protected static MessageTypeTranslatorImp copyConfiguration(MessageTypeTranslator source, MessageTypeTranslatorImp dest)
       throws JMSException {
-    dest.setMoveJmsHeaders(source.getMoveJmsHeaders());
-    dest.setReportAllErrors(source.getReportAllErrors());
-    dest.setMetadataFilter(source.getMetadataFilter());
-    dest.setMetadataConverters(source.getMetadataConverters());
-    dest.registerMessageFactory(source.currentMessageFactory());
     dest.registerSession(source.currentSession());
+    if (source instanceof MessageTypeTranslatorImp) {
+      MessageTypeTranslatorImp impl = (MessageTypeTranslatorImp) source;
+      dest.setMoveJmsHeaders(impl.getMoveJmsHeaders());
+      dest.setReportAllErrors(impl.getReportAllErrors());
+      dest.setMetadataFilter(impl.getMetadataFilter());
+      dest.setMetadataConverters(impl.getMetadataConverters());
+      dest.registerMessageFactory(impl.currentMessageFactory());
+    }
     return dest;
   }
 
