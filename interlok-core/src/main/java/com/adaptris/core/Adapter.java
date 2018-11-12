@@ -125,18 +125,8 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
   private transient ComponentState state;
   private transient boolean hasInitialised;
 
-  /**
-   * <p>
-   * Creates a new instance. Defaults to <code>EventHandlerImp</code>, <code>MessageErrorHandler</code>,
-   * <code>DefaultFailedMessageRetrier</code>, <code>NullLogHandler</code> all of which do nothing. Uses
-   * <code>DefaultAdapterStartUpEvent</code>, <code>HeartbeatEvent</code>, default heartbeat interval is 15 minutes.
-   * </p>
-   *
-   * @throws CoreException wrapping any underlying Exceptions
-   */
-  public Adapter() throws CoreException {
+  public Adapter()  {
     lastStopTime = new Date();
-
     setEventHandler(new DefaultEventHandler());
     setMessageErrorHandler(new NullProcessingExceptionHandler());
     setMessageErrorDigester(new StandardMessageErrorDigester("ErrorDigest"));

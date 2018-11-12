@@ -407,13 +407,13 @@ public abstract class WorkflowImp implements Workflow {
 
   protected void sendMessageLifecycleEvent(AdaptrisMessage wip) {
     try {
-      if (sendEvents()) { // eventH guaranteed not null
-        eventHandler.send(wip.getMessageLifecycleEvent());
+      if (sendEvents()) {
+        eventHandler.send(wip.getMessageLifecycleEvent(), wip.getMessageHeaders());
       }
     }
     catch (Exception e) {
-      log.warn("failed to produce MessageLifecycleEvent for this message, though the message itself was successful : "
-          + e.getMessage());
+      log.warn("failed to produce MessageLifecycleEvent for this message, though the message itself was successful : {}",
+          e.getMessage());
       log.trace("logging exception for informational purposes only", e);
 
     }
@@ -650,9 +650,7 @@ public abstract class WorkflowImp implements Workflow {
   }
 
   public long channelUnavailableWait() {
-    return getChannelUnavailableWaitInterval() != null
-        ? getChannelUnavailableWaitInterval().toMilliseconds()
-            : DEFAULT_CHANNEL_UNAVAILBLE_WAIT.toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getChannelUnavailableWaitInterval(), DEFAULT_CHANNEL_UNAVAILBLE_WAIT);
   }
 
   /**
@@ -738,7 +736,7 @@ public abstract class WorkflowImp implements Workflow {
 
   protected void handleBadMessage(String logMsg, Exception e, AdaptrisMessage msg) {
     if (retrieveActiveMsgErrorHandler() instanceof RetryMessageErrorHandler) {
-      log.warn(msg.getUniqueId() + " failed with [" + e.getMessage() + "], it will be retried");
+      log.warn("{} failed with [{}], it will be retried", msg.getUniqueId(), e.getMessage());
     }
     else {
       log.error(logMsg, e);
@@ -795,6 +793,6 @@ public abstract class WorkflowImp implements Workflow {
 
   @Override
   public boolean disableMessageCount() {
-    return getDisableDefaultMessageCount() != null ? getDisableDefaultMessageCount().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getDisableDefaultMessageCount(), false);
   }
 }

@@ -23,6 +23,8 @@ import java.util.concurrent.Future;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
@@ -105,7 +107,7 @@ public class AdvancedMessageSplitterService extends MessageSplitterServiceImp im
 
   protected void sendEvents(AdaptrisMessage msg) throws CoreException {
     if (eventHandler != null && sendEvents()) {
-      eventHandler.send(msg.getMessageLifecycleEvent());
+      eventHandler.send(msg.getMessageLifecycleEvent(), msg.getMessageHeaders());
     }
   }
 
@@ -159,7 +161,7 @@ public class AdvancedMessageSplitterService extends MessageSplitterServiceImp im
   }
 
   public boolean sendEvents() {
-    return getSendEvents() != null ? getSendEvents().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getSendEvents(), false);
   }
 
   /**
@@ -170,7 +172,7 @@ public class AdvancedMessageSplitterService extends MessageSplitterServiceImp im
    * {@link com.adaptris.core.CoreConstants#PARENT_UNIQUE_ID_KEY} set with the originating message id.
    * </p>
    *
-   * @param b true to send messages (default false)
+   * @param b true to send events (default false)
    */
   public void setSendEvents(Boolean b) {
     sendEvents = b;

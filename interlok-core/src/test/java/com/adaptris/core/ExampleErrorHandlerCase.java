@@ -59,18 +59,12 @@ public abstract class ExampleErrorHandlerCase extends ExampleConfigCase {
   }
 
   protected Object retrieveObjectForSampleConfig() {
-    Adapter result = null;
-    try {
-      result = new Adapter();
-      result.setUniqueId("dummy-adapter");
-      ProcessingExceptionHandler meh = createForExamples();
-      result.setMessageErrorHandler(meh);
-      result.setEventHandler(new StubEventHandler());
-      result.setChannelList(new ChannelList());
-    }
-    catch (CoreException e) {
-      throw new RuntimeException(e);
-    }
+    Adapter result = new Adapter();
+    result.setUniqueId("dummy-adapter");
+    ProcessingExceptionHandler meh = createForExamples();
+    result.setMessageErrorHandler(meh);
+    result.setEventHandler(new StubEventHandler());
+    result.setChannelList(new ChannelList());
     return result;
   }
 

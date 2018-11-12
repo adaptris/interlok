@@ -17,6 +17,9 @@
 package com.adaptris.core;
 
 import java.util.Iterator;
+import java.util.Map;
+
+import org.junit.Test;
 
 import com.adaptris.core.AdapterMarshallerFactory.MarshallingOutput;
 import com.adaptris.core.event.AdapterCloseEvent;
@@ -28,7 +31,7 @@ import com.adaptris.core.stubs.MockMessageProducer;
  * method for marshaling sample XML config.
  * </p>
  */
-public abstract class ExampleEventHandlerCase extends ExampleConfigCase {
+public abstract class ExampleEventHandlerCase<T extends EventHandlerBase> extends ExampleConfigCase {
 
   // private static final String CONFIG_REQUEST_EVENT = "<?xml version=\"1.0\"?>" + "<config-request-event>"
   // + "<unique-id>xxx-yyy-zzz</unique-id>" + "<destination-id>partnera</destination-id>" + "<source-id>sample_client</source-id>"
@@ -78,19 +81,19 @@ public abstract class ExampleEventHandlerCase extends ExampleConfigCase {
     return ((Adapter) object).getEventHandler().getClass().getName();
   }
 
-  protected abstract EventHandler applyConfiguration(EventHandler eh) throws CoreException;
+  protected abstract T applyConfiguration(T eh) throws CoreException;
 
-  protected abstract EventHandler newEventHandler(String uid) throws CoreException;
+  protected abstract T newEventHandler(String uid) throws CoreException;
 
-  protected MockMessageProducer getProducer(EventHandler eh) throws CoreException {
-    AdaptrisMessageSender ams = ((EventHandlerBase) eh).retrieveProducer();
+  protected MockMessageProducer getProducer(T eh) throws CoreException {
+    AdaptrisMessageSender ams = eh.retrieveProducer();
     if (ams instanceof StandaloneProducer) {
       return (MockMessageProducer) ((StandaloneProducer) ams).getProducer();
     }
     return (MockMessageProducer) ams;
   }
 
-  protected void doAssertions(EventHandler eh, int msgCount, Class expectedEventClass) throws Exception {
+  protected void doAssertions(T eh, int msgCount, Class expectedEventClass) throws Exception {
     AdaptrisMarshaller cm = DefaultMarshaller.getDefaultMarshaller();
     MockMessageProducer producer = getProducer(eh);
     waitForMessages(producer, msgCount);
@@ -102,6 +105,7 @@ public abstract class ExampleEventHandlerCase extends ExampleConfigCase {
     }
   }
 
+  @Test
   public void testLifecycle() throws Exception {
     EventHandler eventHandler = applyConfiguration(newEventHandler("testLifecycle"));
     eventHandler.requestInit();
@@ -114,6 +118,7 @@ public abstract class ExampleEventHandlerCase extends ExampleConfigCase {
     eventHandler.requestClose();
   }
 
+  @Test
   public void testSetMarshaller() throws Exception {
     EventHandlerBase eventHandler = (EventHandlerBase) applyConfiguration(newEventHandler(getName()));
     
@@ -125,26 +130,10 @@ public abstract class ExampleEventHandlerCase extends ExampleConfigCase {
     assertEquals(DefaultMarshaller.getDefaultMarshaller(), eventHandler.currentMarshaller());
   }
 
-  public void testCreateEvent() throws Exception {
-    EventHandlerBase eventHandler = (EventHandlerBase) applyConfiguration(newEventHandler(getName()));
-    eventHandler.setMarshaller(DefaultMarshaller.getDefaultMarshaller());
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    try {
-      eventHandler.createEvent(msg);
-      fail("Should have caused exception");
-    }
-    catch (CoreException e) {
-      // pass
-    }
-    msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(createEvent());
-    eventHandler.createEvent(msg);
-  }
-
-
-
+  @Test
   public void testSendEvent() throws Exception {
     Event e = EventFactory.create(AdapterCloseEvent.class);
-    EventHandler eh = applyConfiguration(newEventHandler(getName()));
+    T eh = applyConfiguration(newEventHandler(getName()));
     try {
       eh.requestStart();
       eh.send(e);
@@ -155,9 +144,30 @@ public abstract class ExampleEventHandlerCase extends ExampleConfigCase {
     }
   }
 
+  @Test
+  public void testSendEvent_WithProperties() throws Exception {
+    Event e = EventFactory.create(AdapterCloseEvent.class);
+    T eh = applyConfiguration(newEventHandler(getName()));
+    Map<String, String> properties = MetadataCollection.asMap(new MetadataCollection(new MetadataElement("hello", "world")));
+    try {
+      eh.requestStart();
+      eh.send(e, properties);
+      doAssertions(eh, 1, e.getClass());
+      MockMessageProducer p = getProducer(eh);
+      AdaptrisMessage msg = p.getMessages().get(0);
+      assertTrue(msg.headersContainsKey("hello"));
+      assertEquals("world", msg.getMetadataValue("hello"));
+    }
+    finally {
+      eh.requestClose();
+    }
+  }
+  
+  @SuppressWarnings("deprecation")
+  @Test
   public void testSendEventWithDestination() throws Exception {
     Event e = EventFactory.create(AdapterCloseEvent.class);
-    EventHandler eh = applyConfiguration(newEventHandler(getName()));
+    T eh = applyConfiguration(newEventHandler(getName()));
     try {
       eh.requestStart();
       eh.send(e, new ConfiguredProduceDestination("destination"));
@@ -169,10 +179,11 @@ public abstract class ExampleEventHandlerCase extends ExampleConfigCase {
     }
   }
 
+  @Test
   public void testSendMultipleEvent() throws Exception {
     int count = 10;
     Event e = EventFactory.create(AdapterCloseEvent.class);
-    EventHandler eh = applyConfiguration(newEventHandler(getName()));
+    T eh = applyConfiguration(newEventHandler(getName()));
     try {
       eh.requestStart();
       for (int i = 0; i < count; i++) {
@@ -184,21 +195,33 @@ public abstract class ExampleEventHandlerCase extends ExampleConfigCase {
       eh.requestClose();
     }
   }
-
-  private AdaptrisMessage createMessage(Event evt) throws CoreException {
-    AdaptrisMessage result = AdaptrisMessageFactory.getDefaultInstance().newMessage(defaultMarshaller.marshal(evt));
-    result.addMetadata(CoreConstants.EVENT_NAME_SPACE_KEY, evt.getNameSpace());
-    result.addMetadata(CoreConstants.EVENT_CLASS, evt.getClass().getName());
-    return result;
+  
+  @Test
+  public void testSetMessageFactory() throws Exception {
+    T eh = newEventHandler(getName());
+    assertNull(eh.getMessageFactory());
+    eh.setMessageFactory(new DefaultMessageFactory());
+    assertNotNull(eh.getMessageFactory());
+    assertEquals(DefaultMessageFactory.class, eh.getMessageFactory().getClass());
   }
 
-  public String createEvent() throws CoreException {
-    AdaptrisMarshaller m = DefaultMarshaller.getDefaultMarshaller();
-    AdapterCloseEvent e = EventFactory.create(AdapterCloseEvent.class);
-    e.setUniqueId("xxx-yyy-zzz");
-    e.setDestinationId("partnera");
-    e.setSourceId("sample_client");
-    return m.marshal(e);
+  @Test
+  public void testLogAllException() throws Exception {
+    T eh = newEventHandler(getName());
+    assertNull(eh.getLogAllExceptions());
+    eh.setLogAllExceptions(Boolean.FALSE);
+    assertNotNull(eh.getLogAllExceptions());
+    assertEquals(Boolean.FALSE, eh.getLogAllExceptions());
   }
+  
+  @Test
+  public void testShutdownWait() throws Exception {
+    T eh = newEventHandler(getName());
+    assertNull(eh.getShutdownWaitSeconds());
+    assertEquals(60, eh.shutdownWaitSeconds());
+    eh.setShutdownWaitSeconds(90);
+    assertNotNull(eh.getShutdownWaitSeconds());
+    assertEquals(90, eh.shutdownWaitSeconds());
 
+  }
 }

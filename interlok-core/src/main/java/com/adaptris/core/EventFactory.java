@@ -75,4 +75,11 @@ public abstract class EventFactory {
     return result;
   }
 
+  public static Event createEvent(AdaptrisMessage msg, AdaptrisMarshaller marshaller) throws CoreException {
+    return (Event) marshaller.unmarshal(msg.getContent());
+  }
+
+  public static Event createEvent(AdaptrisMessage msg) throws CoreException {
+    return createEvent(msg, DefaultMarshaller.getDefaultMarshaller());
+  }
 }

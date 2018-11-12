@@ -16,6 +16,8 @@
 
 package com.adaptris.core;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -23,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import javax.validation.Valid;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,48 +76,31 @@ public abstract class EventHandlerBase implements EventHandler {
 
   protected abstract AdaptrisMessageSender retrieveProducer() throws CoreException;
 
-  private AdaptrisMessage createMessage(Event evt) throws CoreException {
+  private AdaptrisMessage createMessage(Event evt, Map<String, String> metadata) throws CoreException {
     evt.setSourceId(retrieveSourceId());
-    AdaptrisMessage result = currentMessageFactory().newMessage(currentMarshaller().marshal(evt));
+    Map<String, String> metadataToUse = metadata == null ? new HashMap<>() : metadata;
+    AdaptrisMessage result = currentMessageFactory().newMessage(currentMarshaller().marshal(evt), new MetadataCollection(metadataToUse).toSet());
     result.setUniqueId(evt.getUniqueId());
     result.addMetadata(CoreConstants.EVENT_NAME_SPACE_KEY, evt.getNameSpace());
     result.addMetadata(CoreConstants.EVENT_CLASS, evt.getClass().getName());
     return result;
   }
 
-  /**
-   * <p>
-   * Creates an <code>Event</code> by unmarshalling the payload of the passed
-   * <code>AdaptrisMessage</code>.
-   * </p>
-   */
-  Event createEvent(AdaptrisMessage msg) throws CoreException {
-    Event result = null;
-
-    try {
-      result = (Event) currentMarshaller().unmarshal(msg.getContent());
-    }
-    catch (Exception e) {
-      throw ExceptionHelper.wrapCoreException(e);
-    }
-    return result;
-  }
-
-  /**
-   * @see com.adaptris.core.EventHandler#send (com.adaptris.core.Event,
-   *      com.adaptris.core.ProduceDestination)
-   */
   @Override
   public void send(Event evt, ProduceDestination dest) throws CoreException {
-    eventProducerDelegate.produce(retrieveProducer(), evt, dest);
+    eventProducerDelegate.produce(retrieveProducer(), createMessage(evt, null), dest);
   }
 
-  /** @see com.adaptris.core.EventHandler#send(com.adaptris.core.Event) */
   @Override
   public void send(Event evt) throws CoreException {
-    this.send(evt, null);
+    this.send(evt, (Map) null);
   }
 
+  @Override
+  public void send(Event evt, Map<String, String> properties) throws CoreException {
+    eventProducerDelegate.produce(retrieveProducer(), createMessage(evt, properties), null);
+  }
+  
   /**
    * Set the {@link AdaptrisMarshaller} implementation to use when sending events.
    * 
@@ -259,7 +245,7 @@ public abstract class EventHandlerBase implements EventHandler {
   }
 
   private boolean logAllExceptions() {
-    return getLogAllExceptions() != null ? getLogAllExceptions().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getLogAllExceptions(), false);
   }
 
   /**
@@ -301,16 +287,14 @@ public abstract class EventHandlerBase implements EventHandler {
     protected EventEmissary() {
     }
 
-    public void produce(final AdaptrisMessageSender producer, final Event msgEvent, final ProduceDestination dest) {
+    public void produce(final AdaptrisMessageSender producer, final AdaptrisMessage msg, final ProduceDestination dest) {
       executor.execute(new Thread() {
         @Override
         public void run() {
           String name = Thread.currentThread().getName();
           Thread.currentThread().setName("EventProducerThread");
-          String eventClass = null;
+          String eventClass = msg.getMetadataValue(CoreConstants.EVENT_CLASS);
           try {
-            AdaptrisMessage msg = createMessage(msgEvent);
-            eventClass = msg.getMetadataValue(CoreConstants.EVENT_CLASS);
             // should access to this producer be synchronized?
             // The null check here stops bug:844
             if (dest != null) {

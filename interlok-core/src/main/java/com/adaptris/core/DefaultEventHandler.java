@@ -48,22 +48,15 @@ public class DefaultEventHandler extends EventHandlerBase {
   @AutoPopulated
   private AdaptrisMessageProducer producer;
 
-  /**
-   * <p>
-   * Creates a new instance.
-   * </p>
-   * 
-   * @throws CoreException if any occurs
-   */
-  public DefaultEventHandler() throws CoreException {
+  public DefaultEventHandler() {
     this(new NullConnection(), new NullMessageProducer());
   }
 
-  public DefaultEventHandler(AdaptrisMessageProducer producer) throws CoreException {
+  public DefaultEventHandler(AdaptrisMessageProducer producer) {
     this(new NullConnection(), producer);
   }
 
-  public DefaultEventHandler(AdaptrisConnection connection, AdaptrisMessageProducer producer) throws CoreException {
+  public DefaultEventHandler(AdaptrisConnection connection, AdaptrisMessageProducer producer)  {
     setConnection(connection);
     setProducer(producer);
   }

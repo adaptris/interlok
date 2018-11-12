@@ -17,12 +17,16 @@
 package com.adaptris.core;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
+
+import javax.validation.constraints.NotNull;
 
 import com.adaptris.core.util.MetadataHelper;
 import com.adaptris.util.KeyValuePairBag;
@@ -31,11 +35,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * A container class for handling a {@link Collection} of {@link MetadataElement} instance.
  *
-* <p>
- * In the adapter configuration file this class is aliased as <b>metadata-collection</b> which is the preferred alternative to the
- * fully qualified classname when building your configuration.
- * </p>
- 
+ * @config metadata-collection
  * @author amcgrath
  *
  */
@@ -51,25 +51,29 @@ public class MetadataCollection extends ArrayList<MetadataElement> {
     super();
   }
 
-  public MetadataCollection(Set<MetadataElement> elements) {
-    super(elements);
+  public MetadataCollection(@NotNull Set<MetadataElement> elements) {   
+    super(Objects.requireNonNull(elements));
   }
 
-  public MetadataCollection(MetadataCollection metadataCollection) {
-    super(metadataCollection);
+  public MetadataCollection(@NotNull MetadataCollection metadataCollection) {
+    super(Objects.requireNonNull(metadataCollection));
   }
 
-  public MetadataCollection(KeyValuePairBag elements) {
-    this(MetadataHelper.convertFromKeyValuePairs(elements));
+  public MetadataCollection(@NotNull KeyValuePairBag elements) {
+    this(MetadataHelper.convertFromKeyValuePairs(Objects.requireNonNull(elements)));
   }
 
-  public MetadataCollection(Map<String, String> elements) {
+  public MetadataCollection(@NotNull Map<String, String> elements) {
     this();
-    for (Map.Entry<String, String> e : elements.entrySet()) {
+    for (Map.Entry<String, String> e : Objects.requireNonNull(elements).entrySet()) {
       add(new MetadataElement(e.getKey(), e.getValue()));
     }
   }
 
+  public MetadataCollection(@NotNull MetadataElement... elements) {
+    this(new HashSet<MetadataElement>(Arrays.asList(elements)));
+  }
+  
   /**
    * Will create an return a new <code>Set</code> from this <code>MetadataCollection</code>
    *

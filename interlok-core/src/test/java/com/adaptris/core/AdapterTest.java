@@ -220,7 +220,7 @@ public class AdapterTest extends BaseCase {
     waitForMessages(mockEventProducer, 1); // if channel.init() fails, we never
                                            // send a StartUp Event.
     assertEquals(1, mockEventProducer.messageCount());
-    Event event = ((EventHandlerBase) a.getEventHandler()).createEvent(mockEventProducer.getMessages().get(0));
+    Event event = EventFactory.createEvent(mockEventProducer.getMessages().get(0));
     assertEquals(AdapterInitEvent.class, event.getClass());
     assertEquals(false, ((AdapterInitEvent) event).getWasSuccessful());
     a.requestClose();
@@ -247,7 +247,7 @@ public class AdapterTest extends BaseCase {
     }
     waitForMessages(mockEventProducer, 3);
     assertEquals(3, mockEventProducer.messageCount());
-    Event event = ((EventHandlerBase) a.getEventHandler()).createEvent(mockEventProducer.getMessages().get(2));
+    Event event = EventFactory.createEvent(mockEventProducer.getMessages().get(2));
     assertEquals(AdapterStartEvent.class, event.getClass());
     assertEquals(false, ((AdapterStartEvent) event).getWasSuccessful());
     a.requestClose();

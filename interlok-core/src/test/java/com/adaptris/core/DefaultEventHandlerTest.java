@@ -26,7 +26,7 @@ import com.adaptris.core.stubs.FailFirstMockMessageProducer;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
 
-public class DefaultEventHandlerTest extends ExampleEventHandlerCase {
+public class DefaultEventHandlerTest extends ExampleEventHandlerCase<DefaultEventHandler> {
 
   public DefaultEventHandlerTest(java.lang.String testName) {
     super(testName);
@@ -48,7 +48,7 @@ public class DefaultEventHandlerTest extends ExampleEventHandlerCase {
   }
 
   @Override
-  protected DefaultEventHandler applyConfiguration(EventHandler eh) throws CoreException {
+  protected DefaultEventHandler applyConfiguration(DefaultEventHandler eh) throws CoreException {
     DefaultEventHandler eventHandler = (DefaultEventHandler) eh;
     eventHandler.setUniqueId(UUID.randomUUID().toString());
     eventHandler.setConnection(new NullConnection());
@@ -79,10 +79,15 @@ public class DefaultEventHandlerTest extends ExampleEventHandlerCase {
   public void testSendEventWithException() throws Exception {
     Event e = EventFactory.create(AdapterCloseEvent.class);
     DefaultEventHandler eh = applyConfiguration(newEventHandler("testSendEventWithException"));
-    eh.setProducer(new FailFirstMockMessageProducer());
-    eh.requestStart();
-    eh.send(e);
-    eh.requestClose();
+    eh.setProducer(new FailFirstMockMessageProducer(2));
+    try {
+      LifecycleHelper.initAndStart(eh);
+      eh.send(e);
+      eh.send(e);
+      
+    } finally {
+      eh.requestClose();
+    }
     doAssertions(eh, 0, e.getClass());
   }
 

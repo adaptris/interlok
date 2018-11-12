@@ -16,6 +16,8 @@
 
 package com.adaptris.core.stubs;
 
+import java.util.Map;
+
 import com.adaptris.core.ClosedState;
 import com.adaptris.core.ComponentState;
 import com.adaptris.core.CoreException;
@@ -48,6 +50,11 @@ public class StubEventHandler implements EventHandler {
       throws CoreException {
   }
 
+
+  @Override
+  public void send(Event evt, Map<String, String> properties) throws CoreException {
+  }
+  
   @Override
   public void registerSourceId(String sourceId) {
   }
@@ -129,5 +136,6 @@ public class StubEventHandler implements EventHandler {
   public void requestClose() {
     state.requestClose(this);
   }
+
 
 }
