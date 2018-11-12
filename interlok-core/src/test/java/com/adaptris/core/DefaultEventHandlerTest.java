@@ -83,8 +83,8 @@ public class DefaultEventHandlerTest extends ExampleEventHandlerCase<DefaultEven
     try {
       LifecycleHelper.initAndStart(eh);
       eh.send(e);
+      eh.setLogAllExceptions(true);
       eh.send(e);
-      
     } finally {
       eh.requestClose();
     }

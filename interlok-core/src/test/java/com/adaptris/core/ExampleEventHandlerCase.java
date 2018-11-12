@@ -23,6 +23,7 @@ import org.junit.Test;
 
 import com.adaptris.core.AdapterMarshallerFactory.MarshallingOutput;
 import com.adaptris.core.event.AdapterCloseEvent;
+import com.adaptris.core.lms.FileBackedMessageFactory;
 import com.adaptris.core.stubs.MockMessageProducer;
 
 /**
@@ -200,9 +201,11 @@ public abstract class ExampleEventHandlerCase<T extends EventHandlerBase> extend
   public void testSetMessageFactory() throws Exception {
     T eh = newEventHandler(getName());
     assertNull(eh.getMessageFactory());
-    eh.setMessageFactory(new DefaultMessageFactory());
+    assertEquals(DefaultMessageFactory.class, eh.currentMessageFactory().getClass());
+    eh.setMessageFactory(new FileBackedMessageFactory());
     assertNotNull(eh.getMessageFactory());
-    assertEquals(DefaultMessageFactory.class, eh.getMessageFactory().getClass());
+    assertEquals(FileBackedMessageFactory.class, eh.getMessageFactory().getClass());
+    assertEquals(FileBackedMessageFactory.class, eh.currentMessageFactory().getClass());
   }
 
   @Test
