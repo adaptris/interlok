@@ -58,95 +58,123 @@ public abstract class JdbcMapInsert extends JdbcService {
    */
   public static enum BasicType {
 
+    /**
+     * @see PreparedStatement#setString(int, String)
+     * 
+     */
     String() {
       @Override
-      Object attemptConvert(String s) {
-        return s;
+      StatementParam wrap(final java.lang.String s) {
+        return (i, p) -> { p.setString(i, s);}; 
       }
 
     },
+    /**
+     * @see PreparedStatement#setInt(int, int)
+     * 
+     */
     Integer() {
       @Override
-      Object attemptConvert(String s) throws NumberFormatException {
-        return java.lang.Integer.valueOf(s);
-      }
-    },
-    Long() {
-      @Override
-      Object attemptConvert(String s) throws NumberFormatException {
-        return java.lang.Long.valueOf(s);
+      StatementParam wrap(final java.lang.String s) {
+        return (i, p) -> { p.setInt(i, java.lang.Integer.valueOf(s)); };
       }
     },
     /**
-     * Handles {@link Boolean} via {@link BooleanUtils#toBooleanObject(String)}.
+     * @see PreparedStatement#setLong(int, long)
      * 
+     */
+    Long() {
+      @Override
+      StatementParam wrap(final java.lang.String s) {
+        return (i, p) -> { p.setLong(i, java.lang.Long.valueOf(s)); };
+      }
+    },
+    /**
+     * Converts to a boolean value via {@link BooleanUtils#toBooleanObject(String)}.
+     * 
+     * @see PreparedStatement#setBoolean(int, boolean)
      */
     Boolean() {
       @Override
-      Object attemptConvert(String s) throws NullPointerException {
-        boolean b = BooleanUtils.toBooleanObject(s); // commons-lang auto-box NullPointerException
-        return java.lang.Boolean.valueOf(b);
+      StatementParam wrap(final java.lang.String s) {        
+        return (i, p) -> { p.setBoolean(i, BooleanUtils.toBooleanObject(s));}; 
       }
     },
+    /**
+     * There doesn't appear to be an equivalent JDBC method for setting a {@code BigInteger} on a prepared statement so this uses
+     * {@link PreparedStatement#setObject(int, Object)} so behaviour will largely depend on the provider.
+     * 
+     */
     BigInteger() {
       @Override
-      Object attemptConvert(String s) throws NumberFormatException {
-        return java.math.BigInteger.valueOf(java.lang.Long.valueOf(s));
+      StatementParam wrap(final java.lang.String s) {
+        return (i, p) -> { p.setObject(i, java.math.BigInteger.valueOf(java.lang.Long.valueOf(s)));}; 
       }
     },
+    /**
+     * @see PreparedStatement#setBigDecimal(int, java.math.BigDecimal)
+     * 
+     */
     BigDecimal() {
       @Override
-      Object attemptConvert(String s) throws NumberFormatException {
-        return java.math.BigDecimal.valueOf(java.lang.Double.valueOf(s));
+      StatementParam wrap(final java.lang.String s) {
+        return (i, p) -> { p.setBigDecimal(i, java.math.BigDecimal.valueOf(java.lang.Double.valueOf(s)));}; 
       }
     },
+    /**
+     * @see PreparedStatement#setFloat(int, float)
+     * 
+     */
     Float() {
       @Override
-      Object attemptConvert(String s) throws NumberFormatException {
-        return java.lang.Float.valueOf(s);
+      StatementParam wrap(final java.lang.String s) {
+        return (i, p) -> { p.setFloat(i, java.lang.Float.valueOf(s));}; 
       }
     },
+    /**
+     * @see PreparedStatement#setDouble(int, double)
+     * 
+     */
     Double() {
       @Override
-      Object attemptConvert(String s) throws NumberFormatException {
-        return java.lang.Double.valueOf(s);
+      StatementParam wrap(final java.lang.String s) {
+        return (i, p) -> { p.setDouble(i, java.lang.Double.valueOf(s));}; 
       }
     },
-    /** Handles {@link java.sql.Date} via {@link java.sql.Date#valueOf(String)} */
+    /**
+     * Converts to {@link java.sql.Date} via {@link java.sql.Date#valueOf(String)}
+     * 
+     * @see PreparedStatement#setDate(int, java.sql.Date)
+     */
     Date() {
       @Override
-      Object attemptConvert(String s) {
-        return java.sql.Date.valueOf(s);
+      StatementParam wrap(final String s) {
+        return (i, p) -> { p.setDate(i, java.sql.Date.valueOf(s));}; 
       }
     },
-    /** Handles {@link java.sql.Timestamp} via {@link java.sql.Timestamp#valueOf(String)} */
-    Timestamp() {
+    /**
+     * Converts to {@link java.sql.Timestamp} via {@link java.sql.Timestamp#valueOf(String)}.
+     * 
+     * @see PreparedStatement#setTimestamp(int, java.sql.Timestamp)
+     */
+    Timestamp() {      
       @Override
-      Object attemptConvert(String s) {
-        return java.sql.Timestamp.valueOf(s);
+      StatementParam wrap(final String s) {
+        return (i, p) -> { p.setTimestamp(i, java.sql.Timestamp.valueOf(s));}; 
       }
     },
-    /** Handles {@link java.sql.Time} via {@link java.sql.Time#valueOf(String)} */
+    /**
+     * Converts to {@link java.sql.Time} via {@link java.sql.Time#valueOf(String)}.
+     * 
+     * @see PreparedStatement#setTime(int, java.sql.Time)
+     */
     Time() {
-      @Override
-      Object attemptConvert(String s) {
-        return java.sql.Time.valueOf(s);
-
+     @Override
+      StatementParam wrap(final String s) {
+        return (i, p) -> { p.setTime(i, java.sql.Time.valueOf(s));}; 
       }
     };
-
-    final Object convert(String s) {
-      try {
-        return attemptConvert(s);
-      }
-      catch (Exception quietly) {
-
-      }
-      return s;
-    }
-
-    abstract Object attemptConvert(String s) throws Exception;
-
+    abstract StatementParam wrap(String s);
   }
 
   @NotBlank
@@ -196,8 +224,8 @@ public abstract class JdbcMapInsert extends JdbcService {
    * Set the converters for various fields in the map.
    * <p>
    * In the event that the database doesn't auto-convert types (e.g. MySQL will convert {@code 2017-01-01} into a DATE if that is
-   * the column type); you can specify the java type that the string should be converted to; if the conversion fails, then it
-   * remains a string, if the type is not supported then it is assumed to be a full qualified classname with a String constructor.
+   * the column type); you can specify the java type that the string should be converted to; if the type cannot be handled
+   * automagically then it is assumed to be a fully qualified classname with a String constructor.
    * </p>
    * 
    * @param mappings the key is the key in the map (e.g. the JSON fieldname), the value is the {@link BasicType} that we should
@@ -217,24 +245,23 @@ public abstract class JdbcMapInsert extends JdbcService {
     return this;
   }
 
-  protected Object toObject(String key, String value) {
-    Object result = null;
+  protected StatementParam buildStatementParam(String key, final String value) {
     KeyValuePair kp = fieldMappings().getKeyValuePair(key);
-    // There's a mapping (yay?).
+    StatementParam result = (i, p) -> { p.setString(i, value); }; 
     if (kp != null) {
-      result = attemptBasicConversion(kp, value);
+      result = basicWrapper(kp, value);
       if (result == null) {
         result = reflectConversion(kp.getValue(), value);
       }
     }
-    return result != null ? result : value;
+    return result;
   }
-
-  private Object attemptBasicConversion(KeyValuePair kp, String value) {
-    Object result = null;
+ 
+  private StatementParam basicWrapper(KeyValuePair kp, String value) {
+    StatementParam result = null;
     try {
       BasicType type = BasicType.valueOf(kp.getValue());
-      result = type.convert(value);
+      result = type.wrap(value);
     }
     catch (IllegalArgumentException | NullPointerException e) {
       result = null;
@@ -325,25 +352,26 @@ public abstract class JdbcMapInsert extends JdbcService {
       statement.clearParameters();
       for (Iterator<String> i = columns.iterator(); i.hasNext(); paramIndex++) {
         String key = i.next();
-        statement.setObject(paramIndex, toObject(key, obj.get(key)));
+        buildStatementParam(key, obj.get(key)).apply(paramIndex, statement);
       }
       return statement;
     }
   }
 
-  private static Object reflectConversion(String classname, String value) {
-    Object result = null;
+  private static StatementParam reflectConversion(String classname, final String value) {
+    StatementParam result = null;
     try {
-      result = Class.forName(classname).getDeclaredConstructor(new Class[]
+      final Object o  = Class.forName(classname).getDeclaredConstructor(new Class[]
       {
-          classname.getClass()
+          String.class
       }).newInstance(new Object[]
       {
           value
       });
+      return (i, p) -> { p.setObject(i,  o);};
     }
     catch (Exception e) {
-      result = null;
+      result = (i, p) -> { p.setString(i,  value);};
     }
     return result;
   }
@@ -372,5 +400,10 @@ public abstract class JdbcMapInsert extends JdbcService {
 
   protected String columnBookend() {
     return StringUtils.defaultIfEmpty(CharUtils.toString(getColumnBookendCharacter()), "");
+  }
+  
+  @FunctionalInterface
+  protected interface StatementParam {
+    void apply(int index, PreparedStatement statement) throws SQLException;
   }
 }

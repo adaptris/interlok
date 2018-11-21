@@ -131,10 +131,10 @@ public abstract class JdbcMapUpsert extends JdbcMapInsert {
       // Set all the updates
       for (Iterator<String> i = columns.iterator(); i.hasNext(); paramIndex++) {
         String key = i.next();
-        statement.setObject(paramIndex, toObject(key, obj.get(key)));
+        buildStatementParam(key, obj.get(key)).apply(paramIndex, statement);
       }
       // Set the WHERE.
-      statement.setObject(columns.size() + 1, obj.get(idField()));
+      buildStatementParam(idField(), obj.get(idField())).apply(columns.size() + 1, statement);
       return statement;
     }
 
@@ -156,7 +156,7 @@ public abstract class JdbcMapUpsert extends JdbcMapInsert {
     @Override
     public PreparedStatement addParams(PreparedStatement statement, Map<String, String> obj) throws SQLException {
       statement.clearParameters();
-      statement.setObject(1, toObject(idField(), obj.get(idField())));
+      buildStatementParam(idField(), obj.get(idField())).apply(1, statement);
       return statement;
     }
 

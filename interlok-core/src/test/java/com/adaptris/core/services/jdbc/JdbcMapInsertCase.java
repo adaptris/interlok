@@ -39,7 +39,7 @@ public abstract class JdbcMapInsertCase {
       "firstname=alice\n" + 
       "lastname=smith\n" + 
       "dob=2017-01-01";
-
+  
   protected static final String INVALID_COLUMN =
       "fi$rstname=alice\n" + "la$stname=smith\n" + "dob=2017-01-01";
 
@@ -47,11 +47,15 @@ public abstract class JdbcMapInsertCase {
   protected static final String JDBC_URL = "jdbc:derby:memory:JDCB_OBJ_DB;create=true";
   protected static final String TABLE_NAME = "people";
   protected static final String DROP_STMT = String.format("DROP TABLE %s", TABLE_NAME);
-  protected static final String CREATE_STMT = String.format("CREATE TABLE %s (firstname VARCHAR(128) NOT NULL, lastname VARCHAR(128) NOT NULL, dob DATE)",
+  protected static final String CREATE_STMT = String.format("CREATE TABLE %s (firstname VARCHAR(128) NOT NULL, "
+      + "lastname VARCHAR(128) NOT NULL, "
+      + "dob DATE)",
       TABLE_NAME);
   protected static final String CREATE_QUOTED = String.format(
       "CREATE TABLE %s (\"firstname\" VARCHAR(128) NOT NULL, \"lastname\" VARCHAR(128) NOT NULL, \"dob\" DATE)", TABLE_NAME);
 
+  
+  
   @Test
   public void testService_Init() throws Exception {
     JdbcMapInsert service = createService();

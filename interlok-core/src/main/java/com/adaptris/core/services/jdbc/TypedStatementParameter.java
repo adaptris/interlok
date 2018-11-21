@@ -20,6 +20,7 @@ import java.sql.SQLException;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 
 /**
@@ -34,6 +35,7 @@ public abstract class TypedStatementParameter<T> extends StatementParameterImpl 
   // Should never be output as it should be null; doesn't have a getter/setter so the UI doesn't know about it.
   // Eventually we can remove this and sub-classes can just extend StatementParameterImpl directly.
   // This class was introduced in 3.2.0...
+  @Removal(version="3.9")
   private String queryClass;
 
   public TypedStatementParameter() {

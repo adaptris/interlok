@@ -71,7 +71,7 @@ public class JdbcMapInsertTest extends JdbcMapInsertCase {
     KeyValuePairSet mappings = new KeyValuePairSet();
     mappings.add(new KeyValuePair("dob", "com.adaptris.does.not.Exist"));
     mappings.add(new KeyValuePair("firstname", "java.lang.String"));
-    mappings.add(new KeyValuePair("lastname", "Date"));
+    // mappings.add(new KeyValuePair("lastname", "Date"));
     InsertProperties service = configureForTests(createService());
     service.setFieldMappings(mappings);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(CONTENT);
