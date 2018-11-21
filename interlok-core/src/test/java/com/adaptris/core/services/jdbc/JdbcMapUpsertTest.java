@@ -33,6 +33,7 @@ import com.adaptris.core.ServiceCase;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.JdbcUtil;
+import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairBag;
 import com.adaptris.util.KeyValuePairSet;
 
@@ -53,7 +54,39 @@ public class JdbcMapUpsertTest extends JdbcMapInsertCase {
 
   protected static final String SELECT_STMT = "SELECT * FROM %s WHERE firstname='%s'";
   protected static final String SELECT_QUOTED = "SELECT * FROM %s WHERE \"firstname\"='%s'";
-
+  protected static final String CREATE_ALL_BASIC_TYPES = String.format("CREATE TABLE %s (firstname VARCHAR(128) NOT NULL,"
+      + "lastname VARCHAR(128) NOT NULL,"
+      + "dob DATE,"
+      + "integerColumn INTEGER,"
+      + "longColumn BIGINT,"
+      + "booleanColumn BOOLEAN,"
+      + "bigIntegerColumn BIGINT,"
+      + "bigDecimalColumn DECIMAL,"
+      + "floatColumn FLOAT,"
+      + "doubleColumn DOUBLE,"
+      + "timestampColumn TIMESTAMP,"
+      + "timeColumn TIME)", TABLE_NAME);
+  
+  protected static final String CONTENT_ALL_TYPES =
+      "firstname=alice\n" + 
+      "lastname=smith\n" + 
+      "dob=2017-01-01\n" + 
+      "integerColumn=1\n" + 
+      "longColumn=1\n" + 
+      "booleanColumn=true\n" + 
+      "bigIntegerColumn=1\n" + 
+      "bigDecimalColumn=1.0\n" + 
+      "floatColumn=1.0\n" + 
+      "doubleColumn=1.0\n" + 
+      "timestampColumn=2017-01-01 00:01:00\n" + 
+      "timeColumn=00:01:00\n";
+  
+  protected static final String INSERT_STMT_ALL_TYPES = String.format("INSERT INTO %s "
+      + "(firstname, lastname, dob, integerColumn, longColumn, booleanColumn, bigIntegerColumn, bigDecimalColumn, "
+      + "floatColumn, doubleColumn, timestampColumn, timeColumn) "
+      + "VALUES ('%s', '%s' , '%s', 1, 1, false, 1, 1.0, 1.0, 1.0, '1970-01-01 00:00:00', '00:00:00')",
+      TABLE_NAME, ALICE, SMITH, UTC_0);
+  
   @Test
   public void testDatabaseId() {
     JdbcMapUpsert upsert = (JdbcMapUpsert) createService();
@@ -121,6 +154,42 @@ public class JdbcMapUpsertTest extends JdbcMapInsertCase {
     checkDob(SELECT_QUOTED, ALICE, DOB);
   }
 
+  @Test
+  public void testService_Update_AllColumns() throws Exception {
+    createDatabase(CREATE_ALL_BASIC_TYPES);
+    populateDatabase(INSERT_STMT_ALL_TYPES);
+    UpsertProperties service = configureForTests(createService());
+    KeyValuePairSet mappings = new KeyValuePairSet();
+    mappings.add(new KeyValuePair("firstname", JdbcMapInsert.BasicType.String.name()));
+    mappings.add(new KeyValuePair("lastname", JdbcMapInsert.BasicType.String.name()));
+    mappings.add(new KeyValuePair("dob", JdbcMapInsert.BasicType.Date.name()));
+    mappings.add(new KeyValuePair("integerColumn", JdbcMapInsert.BasicType.Integer.name()));
+    mappings.add(new KeyValuePair("longColumn", JdbcMapInsert.BasicType.Long.name()));
+    mappings.add(new KeyValuePair("booleanColumn", JdbcMapInsert.BasicType.Boolean.name()));
+    mappings.add(new KeyValuePair("bigIntegerColumn", JdbcMapInsert.BasicType.BigInteger.name()));
+    mappings.add(new KeyValuePair("bigDecimalColumn", JdbcMapInsert.BasicType.BigDecimal.name()));
+    mappings.add(new KeyValuePair("floatColumn", JdbcMapInsert.BasicType.Float.name()));
+    mappings.add(new KeyValuePair("doubleColumn", JdbcMapInsert.BasicType.Double.name()));
+    mappings.add(new KeyValuePair("timestampColumn", JdbcMapInsert.BasicType.Timestamp.name()));
+    mappings.add(new KeyValuePair("timeColumn", JdbcMapInsert.BasicType.Time.name()));
+    service.setFieldMappings(mappings);
+    service.setIdField(ID_ELEMENT_VALUE);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(CONTENT_ALL_TYPES);
+    ServiceCase.execute(service, msg);
+    doAssert(1);
+    checkDob(ALICE, DOB);
+    try (Connection c = createConnection();
+        Statement s = c.createStatement();
+        ResultSet rs = s.executeQuery(String.format(SELECT_STMT, TABLE_NAME, ALICE))) {
+      if (rs.next()) {
+        assertEquals(true, rs.getBoolean("booleanColumn"));
+      }
+      else {
+        fail("No Match for firstname: " + ALICE);
+      }
+    }
+  }
+  
   protected UpsertProperties createService() {
     return new UpsertProperties();
   }
@@ -130,16 +199,8 @@ public class JdbcMapUpsertTest extends JdbcMapInsertCase {
   }
 
   protected static void populateDatabase(String insertStmt) throws Exception {
-    Connection c = null;
-    Statement s = null;
-    try {
-      c = createConnection();
-      s = c.createStatement();
+    try (Connection c = createConnection(); Statement s = c.createStatement()) {
       s.execute(insertStmt);
-    }
-    finally {
-      JdbcUtil.closeQuietly(s);
-      JdbcUtil.closeQuietly(c);
     }
   }
 
@@ -148,23 +209,13 @@ public class JdbcMapUpsertTest extends JdbcMapInsertCase {
   }
 
   protected static void checkDob(String selectStmt, String firstname, String dob) throws Exception {
-    Connection c = null;
-    Statement s = null;
-    ResultSet rs = null;
-    try {
-      c = createConnection();
-      s = c.createStatement();
-      rs = s.executeQuery(String.format(selectStmt, TABLE_NAME, firstname));
+    try (Connection c = createConnection(); Statement s = c.createStatement(); ResultSet rs = s.executeQuery(String.format(selectStmt, TABLE_NAME, firstname))){
       if (rs.next()) {
         assertEquals(dob, rs.getString("dob"));
       }
       else {
         fail("No Match for firstname: " + firstname);
       }
-    }
-    finally {
-      JdbcUtil.closeQuietly(s);
-      JdbcUtil.closeQuietly(c);
     }
   }
 
