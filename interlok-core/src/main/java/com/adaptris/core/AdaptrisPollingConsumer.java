@@ -19,6 +19,8 @@ package com.adaptris.core;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
@@ -67,7 +69,7 @@ public abstract class AdaptrisPollingConsumer extends AdaptrisMessageConsumerImp
    */
   @Override
   public void start() throws CoreException {
-    lock.release(); // required when moving from stopped
+    releaseLock(); // required when moving from stopped
     LifecycleHelper.start(poller);
   }
 
@@ -76,17 +78,12 @@ public abstract class AdaptrisPollingConsumer extends AdaptrisMessageConsumerImp
    */
   @Override
   public void stop() {
-    try {
-      // log.trace("Releasing and acquiring lock...");
-      lock.release();
-
+    releaseLock();
+    tryQuietly(() -> {
       lock.acquire();
-      // log.trace("lock acquired");
-      LifecycleHelper.stop(poller);
-    } catch (InterruptedException e) {
-      ;
-    }
-
+      return true;
+    });
+    LifecycleHelper.stop(poller);
   }
 
   /**
@@ -95,8 +92,7 @@ public abstract class AdaptrisPollingConsumer extends AdaptrisMessageConsumerImp
   @Override
   public void close() {
     LifecycleHelper.close(poller);
-    lock.release(); // lock is held when stopped
-    // log.trace("lock released");
+    releaseLock();
   }
 
   /**
@@ -131,7 +127,7 @@ public abstract class AdaptrisPollingConsumer extends AdaptrisMessageConsumerImp
     if (retrieveComponentState() != StartedState.getInstance()) {
       return false;
     }
-    if (currentCount > maxMessagesPerPoll()) {
+    if (currentCount >= maxMessagesPerPoll()) {
       // we probably should stop, you're at 2^31 - 2 in the event that no max was specified.
       return false;
     }
@@ -141,48 +137,15 @@ public abstract class AdaptrisPollingConsumer extends AdaptrisMessageConsumerImp
     return reacquireLock();
   }
 
-  /**
-   * <p>
-   * Release the <code>lock</code> and acquire it again.
-   * </p>
-   * 
-   * @return true if the lock is acquired.
-   */
   final boolean reacquireLock() {
-    boolean result = false;
-    try {
-      lock.release();
-      result = lock.attempt(0L);
-    } catch (InterruptedException e) {
-      log.warn("ignoring InterruptedException [" + e.getMessage() + "]");
-    }
-    return result;
+    lock.release();
+    return tryQuietly(() -> { return lock.attempt(0L); });
   }
 
-  /**
-   * <p>
-   * Attempt to obtain the lock. Returns true if the lock is obtained,
-   * otherwise false.
-   * </p>
-   */
-  boolean attemptLock() {
-    boolean result = false;
-    try {
-      result = lock.attempt(0L);
-    } catch (InterruptedException e) {
-      log.debug("InteruptedException while attempting to get the lock"); // do nothing
-      ;
-    }
-
-    return result;
+  final boolean attemptLock() {
+    return tryQuietly(() -> { return lock.attempt(0L); });
   }
 
-  /**
-   * <p>
-   * Release the lock. If this method is called and the lock is not held it
-   * has no effect.
-   * </p>
-   */
   protected void releaseLock() {
     lock.release();
   }
@@ -220,7 +183,7 @@ public abstract class AdaptrisPollingConsumer extends AdaptrisMessageConsumerImp
   }
 
   private boolean reacquireLockBetweenMessages() {
-    return getReacquireLockBetweenMessages() != null ? getReacquireLockBetweenMessages().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getReacquireLockBetweenMessages(), false);
   }
 
   public Integer getMaxMessagesPerPoll() {
@@ -263,12 +226,25 @@ public abstract class AdaptrisPollingConsumer extends AdaptrisMessageConsumerImp
 
   @Override
   public final void prepare() throws CoreException {
-    getPoller().prepare();
+    getPoller().registerConsumer(this);
+    LifecycleHelper.prepare(getPoller());
     registerEncoderMessageFactory();
     prepareConsumer();
   }
 
   protected abstract void prepareConsumer() throws CoreException;
 
+  private static boolean tryQuietly(LockOperator l) {
+    try {
+      return l.doOperation();
+    } catch (InterruptedException e) {
+    }
+    return false;
+  }
+
+  @FunctionalInterface
+  protected interface LockOperator {
+    boolean doOperation() throws InterruptedException;
+  }
 
 }

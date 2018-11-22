@@ -113,6 +113,7 @@ public class StandaloneConsumerTest extends BaseCase {
     assertTrue(consumer.continueProcessingMessages());
     assertTrue(consumer.continueProcessingMessages(5));
     assertFalse(consumer.continueProcessingMessages(11));
+    assertFalse(consumer.continueProcessingMessages(10));
     LifecycleHelper.stopAndClose(sc);
 
     consumer.setReacquireLockBetweenMessages(true);
@@ -120,6 +121,7 @@ public class StandaloneConsumerTest extends BaseCase {
     LifecycleHelper.initAndStart(sc);
     assertTrue(consumer.continueProcessingMessages(5));
     assertFalse(consumer.continueProcessingMessages(11));
+    assertFalse(consumer.continueProcessingMessages(10));
     LifecycleHelper.stopAndClose(sc);
 
   }
