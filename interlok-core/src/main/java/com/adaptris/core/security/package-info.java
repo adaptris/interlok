@@ -1,0 +1,50 @@
+
+/**
+ *
+ * Implementation of the core {@link com.adaptris.core.Service} interface providing encryption and
+ * decryption functionality.
+ * <p>
+ * A number of difference keystore types can be configured for storing the certificates required for
+ * encryption/decryption. Any sun keystore provider can be used, provided that it is added as a
+ * provider before any concrete implementations are initialised. The default SUN keystore
+ * implementation JKS (or JCEKS in JDK1.4) is provided as part of the JRE. Keystores may be stored
+ * remotely provided they are accessible via the HTTP or HTTPS protocol.
+ * </p>
+ * <p>
+ * In additional to the standard keystore types the following are also supported within the Adapter
+ * :
+ * <ul>
+ * <li>IAIK - Provided by the IAIK JCE Implementation</li>
+ * <li>PKCS12 - where you wish to proxy a single PKCS12 file containing a private key</li>
+ * <li>X509 - where you wish to proxy a single file containing a certificate.</li>
+ * <li>XmlKeyInfo - where you wish to proxy a XML KeyInfo element that contains certifcate
+ * information</li>
+ * </ul>
+ * </p>
+ * <p>
+ * When using single certificate implementations such as PKCS12, X509, XmlKeyInfo, then you also
+ * need to provide an alias ({@link com.adaptris.security.util.Constants#KEYSTORE_ALIAS}) to be
+ * associated with the file.
+ * </p>
+ * <p>
+ * Example keystore configuration would be
+ *
+ * <pre>
+ * {@code
+    &lt;keystore-url xsi:type="java:com.adaptris.security.keystore.ConfiguredUrl">
+      &lt;url>file://localhost/path/keystore?keystoreType=JKS&amp;keystorePassword=pwd&lt;/url>
+    &lt;/keystore-url>
+    &lt;keystore-url xsi:type="java:com.adaptris.security.keystore.ConfiguredUrl">
+      &lt;url>file://localhost/path/keystore?keystoreType=X509?keystoreAlias=myAlias&lt;/url>
+    &lt;/keystore-url>
+    &lt;keystore-url xsi:type="java:com.adaptris.security.keystore.ConfiguredUrl">
+      &lt;url>http://localhost/path/keystore?keystoreType=PKCS12?keystoreAlias=myAlias&amp;keystorePassword=pwd&lt;/url>
+    &lt;/keystore-url>
+    &lt;keystore-url xsi:type="java:com.adaptris.security.keystore.ConfiguredUrl">
+      &lt;url>http://host/path/keystore?keystoreType=JKS&amp;keystorePassword=pwd&lt;/url>
+    &lt;/keystore-url>
+  }
+ * </pre>
+ * </p>
+ */
+package com.adaptris.core.security;
