@@ -26,10 +26,8 @@ artifacts {
 
 javadoc {
   configure(options) {
-    links = [
-      interlokJavadocs,
-      interlokCommonJavadocs,
-    ]
+    options.tags('apiNote:a:API Note:', 'implSpec:a:Implementation Requirements:','implNote:a:Implementation Note:')
+    title= componentName
   }
 }
 

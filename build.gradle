@@ -12,8 +12,10 @@ ext {
   repoUsername = project.hasProperty('repoUsername') ? project.getProperty('repoUsername') : 'unknown'
   repoPassword = project.hasProperty('repoPassword') ? project.getProperty('repoPassword') : 'unknown'
   defaultNexusRepo = project.hasProperty('defaultNexusRepo') ? project.getProperty('defaultNexusRepo') : 'https://repo1.maven.org/maven2/'
+  offlineJavadocPackageDir = new File(project.buildDir, "offline-javadoc-packages")
+
   interlokJavadocs= project.hasProperty('interlokJavadocs') ? project.getProperty('interlokJavadocs') : javadocsBaseUrl + "/interlok-core/" + interlokCoreVersion
-  interlokCommonJavadocs= project.hasProperty('interlokJavadocs') ? project.getProperty('interlokJavadocs') : javadocsBaseUrl + "/interlok-common/" + interlokCoreVersion
+  interlokCommonJavadocs= project.hasProperty('interlokCommonJavadocs') ? project.getProperty('interlokCommonJavadocs') : javadocsBaseUrl + "/interlok-common/" + interlokCoreVersion
   componentName='Interlok'
   organizationName = "Adaptris Ltd"
   organizationUrl = "http://interlok.adaptris.net"
@@ -32,6 +34,10 @@ if (JavaVersion.current().isJava8Compatible()) {
 
 ext.jacocoEnabled = { subproject ->
   return !subproject.name.equals("interlok-core-apt")
+}
+
+task clean(type: Delete) {
+  delete project.buildDir
 }
 
 subprojects { subproject ->
@@ -60,6 +66,7 @@ subprojects { subproject ->
   configurations {
     javadoc {}
     mavenDeploy{}
+    offlineJavadocPackages {}
     all*.exclude group: 'c3p0'
     all*.exclude group: 'commons-logging'
     all*.exclude group: 'javamail'

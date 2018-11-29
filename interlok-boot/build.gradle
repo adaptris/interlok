@@ -48,11 +48,8 @@ jar {
 
 javadoc {
   configure(options) {
-      links = [
-        interlokJavadocs,
-        interlokCommonJavadocs,
-      ]
     taglets = ["com.adaptris.taglet.ConfigTaglet", "com.adaptris.taglet.LicenseTaglet"]
+    options.tags('apiNote:a:API Note:', 'implSpec:a:Implementation Requirements:','implNote:a:Implementation Note:')
     options.addStringOption "tagletpath", configurations.javadoc.asPath
     title= componentName
   }
