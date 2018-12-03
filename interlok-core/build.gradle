@@ -113,7 +113,7 @@ dependencies {
 
   javadoc project(':interlok-core-apt')
 
-  offlineJavadocPackages ("com.adaptris:interlok-common:$interlokCoreVersion:javadoc@jar") { changing= true}
+  // offlineJavadocPackages ("com.adaptris:interlok-common:$interlokCoreVersion:javadoc@jar") { changing= true}
 
 }
 
@@ -284,7 +284,7 @@ artifacts {
 
 javadoc {
   configure(options) {
-    options.linksOffline(interlokCommonJavadocs, offlineJavadocPackageDir.getCanonicalPath() + "/interlok-common-$interlokCoreVersion-javadoc.jar")
+    // options.linksOffline(interlokCommonJavadocs, offlineJavadocPackageDir.getCanonicalPath() + "/interlok-common-$interlokCoreVersion-javadoc.jar")
 
     taglets = ["com.adaptris.taglet.ConfigTaglet", "com.adaptris.taglet.LicenseTaglet"]
     options.addStringOption "tagletpath", configurations.javadoc.asPath
@@ -360,4 +360,4 @@ check.dependsOn jacocoTestReport
 publish.dependsOn uploadArchives,uploadUnitTestStubs
 processTestResources.dependsOn prepareForTests
 clean.dependsOn deleteGeneratedFiles
-javadoc.dependsOn offlinePackageList
+// javadoc.dependsOn offlinePackageList
