@@ -1,0 +1,5 @@
+com.adaptris.annotation.XStreamAnnotationProcessor
+com.adaptris.annotation.XStreamImplicitAnnotationProcessor
+com.adaptris.annotation.CDataAnnotationProcessor
+com.adaptris.annotation.BeanInfoAnnotationProcessor
+com.adaptris.annotation.AdapterComponentAnnotationProcessor

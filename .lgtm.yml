@@ -1,0 +1,11 @@
+extraction:
+  java:
+    index:
+      gradle:
+        version: 4.8
+
+path_classifiers:
+  docs:
+  - "LICENSE*"
+  - "*.md"
+  - "*.html"

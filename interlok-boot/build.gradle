@@ -1,0 +1,79 @@
+ext {
+  componentName='Interlok Bootstrap'
+  springBootLoaderVersion='2.1.0.RELEASE'
+}
+
+configurations {
+  bundled{}
+}
+
+dependencies {
+  bundled "org.springframework.boot:spring-boot-loader:$springBootLoaderVersion"
+  compileOnly "org.springframework.boot:spring-boot-loader:$springBootLoaderVersion"
+  annotationProcessor project(':interlok-core-apt')
+  javadoc project(':interlok-core-apt')
+  testCompile "junit:junit:4.12"
+  testRuntimeOnly "org.springframework.boot:spring-boot-loader:$springBootLoaderVersion"
+  testCompileOnly "org.springframework.boot:spring-boot-loader:$springBootLoaderVersion"
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives javadocJar
+}
+
+task unzipSpringBoot(type: Copy) {
+  from zipTree(configurations.bundled.singleFile)
+  into "$project.buildDir/spring-boot-loader"
+}
+
+jar {
+  manifest {
+    attributes("Built-By": System.getProperty('user.name'),
+               "Build-Jdk": System.getProperty('java.version'),
+               "Implementation-Title": componentName,
+               "Implementation-Version": project.version,
+               "Implementation-Vendor-Id": project.group,
+               "Implementation-Vendor": organizationName,
+               "Main-Class": "com.adaptris.interlok.boot.InterlokLauncher")
+  }
+  from ("$project.buildDir/spring-boot-loader") {
+    exclude 'META-INF/MANIFEST.MF'
+  }
+}
+
+javadoc {
+  configure(options) {
+    taglets = ["com.adaptris.taglet.ConfigTaglet", "com.adaptris.taglet.LicenseTaglet"]
+    options.tags('apiNote:a:API Note:', 'implSpec:a:Implementation Requirements:','implNote:a:Implementation Note:')
+    options.addStringOption "tagletpath", configurations.javadoc.asPath
+    title= componentName
+  }
+  classpath += configurations.bundled
+}
+
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      repository(url: mavenPublishUrl) {
+        authentication(userName: repoUsername, password: repoPassword)
+      }
+      configuration = configurations.mavenDeploy
+      pom.withXml {
+        asNode().appendNode("description", "Wrapper around spring-boot-loader using PropertyLauncher to bootrap Interlok")
+        def properties = asNode().appendNode("properties")
+        properties.appendNode("target", "3.8.0+")
+        properties.appendNode("license", "false")
+      }
+
+    }
+  }
+}
+
+jar.dependsOn unzipSpringBoot
+publish.dependsOn uploadArchives
+

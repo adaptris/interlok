@@ -1,0 +1,134 @@
+plugins {
+  // Manage optional dependencies in maven pom.
+  id 'nebula.optional-base' version '4.0.1' apply false
+}
+
+ext {
+  interlokCoreVersion = project.hasProperty('interlokCoreVersion') ? project.getProperty('interlokCoreVersion') : '3.8-SNAPSHOT'
+  releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '3.8-SNAPSHOT'
+  nexusBaseUrl = project.hasProperty('nexusBaseUrl') ? project.getProperty('nexusBaseUrl') : 'https://nexus.adaptris.net/nexus'
+  mavenPublishUrl = project.hasProperty('mavenPublishUrl') ? project.getProperty('mavenPublishUrl') : nexusBaseUrl + '/content/repositories/snapshots'
+  javadocsBaseUrl = nexusBaseUrl + "/content/sites/javadocs/com/adaptris"
+  repoUsername = project.hasProperty('repoUsername') ? project.getProperty('repoUsername') : 'unknown'
+  repoPassword = project.hasProperty('repoPassword') ? project.getProperty('repoPassword') : 'unknown'
+  defaultNexusRepo = project.hasProperty('defaultNexusRepo') ? project.getProperty('defaultNexusRepo') : 'https://repo1.maven.org/maven2/'
+  offlineJavadocPackageDir = new File(project.buildDir, "offline-javadoc-packages")
+
+  interlokJavadocs= project.hasProperty('interlokJavadocs') ? project.getProperty('interlokJavadocs') : javadocsBaseUrl + "/interlok-core/" + interlokCoreVersion
+  interlokCommonJavadocs= project.hasProperty('interlokCommonJavadocs') ? project.getProperty('interlokCommonJavadocs') : javadocsBaseUrl + "/interlok-common/" + interlokCoreVersion
+  componentName='Interlok'
+  organizationName = "Adaptris Ltd"
+  organizationUrl = "http://interlok.adaptris.net"
+  slf4jVersion = '1.7.25'
+  log4j2Version = "2.9.1"
+  xstreamVersion = '1.4.11.1'
+}
+
+if (JavaVersion.current().isJava8Compatible()) {
+  allprojects {
+    tasks.withType(Javadoc) {
+      options.addStringOption('Xdoclint:none', '-quiet')
+    }
+  }
+}
+
+ext.jacocoEnabled = { subproject ->
+  return !subproject.name.equals("interlok-core-apt")
+}
+
+task clean(type: Delete) {
+  delete project.buildDir
+}
+
+subprojects { subproject ->
+  apply plugin: 'java'
+  apply plugin: 'maven'
+  apply plugin: 'maven-publish'
+  apply plugin: 'nebula.optional-base'
+  if (jacocoEnabled(subproject)) {
+    apply plugin: "jacoco"
+  }
+
+  sourceCompatibility = 1.8
+  group   = 'com.adaptris'
+  version = releaseVersion
+  def versionDir = "$buildDir/version"
+
+  // In this section you declare where to find the dependencies of your project
+  repositories {
+    mavenCentral()
+    maven { url "$defaultNexusRepo" }
+    maven { url "$nexusBaseUrl/content/groups/public" }
+    maven { url "$nexusBaseUrl/content/repositories/snapshots" }
+    maven { url "$nexusBaseUrl/content/repositories/releases" }
+  }
+
+  configurations {
+    javadoc {}
+    mavenDeploy{}
+    offlineJavadocPackages {}
+    all*.exclude group: 'c3p0'
+    all*.exclude group: 'commons-logging'
+    all*.exclude group: 'javamail'
+    all*.exclude group: 'javax.mail', module: 'mail'
+    all*.exclude group: 'org.glassfish.hk2.external'
+    all*.exclude group: 'xalan', module: 'xalan'
+    all*.exclude group: 'net.sf.saxon', module: 'saxon'
+    all*.exclude group: 'org.codehaus.woodstox'
+    all*.exclude group: 'org.eclipse.jetty.orbit', module: 'javax.mail.glassfish'
+  }
+
+  dependencies {
+    mavenDeploy ("org.apache.maven.wagon:wagon-http:3.2.0")
+  }
+
+  configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+  }
+
+
+  if (jacocoEnabled(subproject)) {
+    jacoco {
+      toolVersion="0.8.1"
+    }
+    jacocoTestReport {
+      reports {
+        xml.enabled true
+        html.enabled true
+      }
+    }
+    check.dependsOn jacocoTestReport
+  }
+
+  sourceSets {
+    main {
+      output.dir(versionDir, builtBy: 'generateVersion')
+    }
+  }
+
+  // Generate the META-INF/adaptris-version file
+  task generateVersion {
+    doLast {
+      def versionFile = new File(new File(versionDir, 'META-INF'), 'adaptris-version')
+      versionFile.getParentFile().mkdirs()
+      ant.propertyfile(file: versionFile) {
+        entry(key: 'component.name', value: componentName)
+        entry(key: 'build.version', value: project.version)
+        entry(key: 'groupId', value: project.group)
+        entry(key: 'artifactId', value: project.name)
+        entry(key: 'build.date', value: new Date().format('yyyy-MM-dd'))
+      }
+    }
+  }
+
+  jar {
+    manifest {
+      attributes("Built-By": System.getProperty('user.name'),
+               "Build-Jdk": System.getProperty('java.version'),
+               "Implementation-Title": componentName,
+               "Implementation-Version": project.version,
+               "Implementation-Vendor-Id": project.group,
+               "Implementation-Vendor": organizationName)
+    }
+  }
+}

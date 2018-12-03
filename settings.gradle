@@ -1,0 +1,6 @@
+rootProject.name = 'interlok'
+include 'interlok-core-apt'
+include 'interlok-common'
+include 'interlok-logging'
+include 'interlok-boot'
+include 'interlok-core'
