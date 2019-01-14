@@ -256,7 +256,7 @@ public class SplitJoinServiceTest {
       execute(service, msg);
       fail();
     } catch (ServiceException expected) {
-      assertEquals("Timeout exceeded waiting for job completion.", expected.getMessage());
+      assertEquals(DefaultPoolingFutureExceptionStrategy.EXCEPTION_MSG, expected.getMessage());
     } finally {
       Thread.currentThread().setName(oldname);
     }
