@@ -21,7 +21,7 @@ public class DefaultPoolingFutureExceptionStrategy implements PoolingFutureExcep
         // Now check the futures to see if any were cancelled.
         for (Future<AdaptrisMessage> f : results) {
             if (f.isCancelled()) {
-                throw new CoreException("Timeout exceeded waiting for job completion.");
+                throw new CoreException("Timeout exceeded waiting for split services to complete.");
             }
         }
     }
