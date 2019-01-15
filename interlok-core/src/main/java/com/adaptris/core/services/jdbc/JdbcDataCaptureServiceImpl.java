@@ -68,7 +68,9 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
   @Override
   protected void initJdbcService() throws CoreException {
     if (!isBlank(getSaveReturnedKeysColumn()) || !isBlank(getSaveReturnedKeysTable())) {
-      LoggingHelper.logWarning(warningLogged, ()->{warningLogged = true;}, "saveReturnedKeysColumn/saveReturnedKeysTable is deprecated; surely your JDBC driver supports Statement#RETURN_GENERATED_KEYS by now");
+      LoggingHelper.logWarning(warningLogged, () -> {
+        warningLogged = true;
+      }, "saveReturnedKeysColumn/saveReturnedKeysTable is deprecated; surely your JDBC driver supports Statement#RETURN_GENERATED_KEYS by now");
     }
   }
 
