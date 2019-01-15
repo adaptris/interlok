@@ -34,6 +34,7 @@ import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.JdbcUtil;
+import com.adaptris.core.util.LoggingHelper;
 
 /**
  * Base implementation for capturing data from an {@linkplain com.adaptris.core.AdaptrisMessage} and storing it in a jdbc database.
@@ -57,7 +58,7 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
   private String saveReturnedKeysTable = null;
   protected transient DatabaseActor actor;
 
-  private static boolean warningLogged = false;
+  private static transient boolean warningLogged = false;
 
   public JdbcDataCaptureServiceImpl() {
     super();
@@ -67,11 +68,7 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
   @Override
   protected void initJdbcService() throws CoreException {
     if (!isBlank(getSaveReturnedKeysColumn()) || !isBlank(getSaveReturnedKeysTable())) {
-      if (!warningLogged) {
-        log.warn("saveReturnedKeysColumn/saveReturnedKeysTable is deprecated; "
-                + "surely your JDBC driver supports Statement#RETURN_GENERATED_KEYS by now");
-        warningLogged = true;
-      }
+      LoggingHelper.logWarning(warningLogged, ()->{warningLogged = true;}, "saveReturnedKeysColumn/saveReturnedKeysTable is deprecated; surely your JDBC driver supports Statement#RETURN_GENERATED_KEYS by now");
     }
   }
 

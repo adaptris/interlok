@@ -37,6 +37,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.Removal;
 import com.adaptris.core.management.webserver.SecurityHandlerWrapper;
+import com.adaptris.core.util.LoggingHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -77,11 +78,7 @@ public class HashUserRealmProxy implements SecurityHandlerWrapper {
   private List<SecurityConstraint> securityConstraints;
   
   public HashUserRealmProxy() {
-    if (!warningLogged) {
-      log.warn("[{}] is deprecated, use [{}] instead", this.getClass().getSimpleName(),
-          ConfigurableSecurityHandler.class.getName());
-      warningLogged = true;
-    }
+    LoggingHelper.logDeprecation(warningLogged, ()-> { warningLogged=true;}, this.getClass().getSimpleName(), ConfigurableSecurityHandler.class.getName());
     securityConstraints = new ArrayList<>();
     this.setUserRealm("MediationFramework");
   }

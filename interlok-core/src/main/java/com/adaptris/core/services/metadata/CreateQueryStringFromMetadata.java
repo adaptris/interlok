@@ -39,10 +39,12 @@ import com.adaptris.core.MetadataCollection;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.ftp.StandardSftpConnection;
 import com.adaptris.core.metadata.MetadataFilter;
 import com.adaptris.core.metadata.MetadataFilterImpl;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.core.util.LoggingHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -114,10 +116,7 @@ public class CreateQueryStringFromMetadata extends ServiceImp {
   @Override
   protected void initService() throws CoreException {
     if (getMetadataKeys().size() > 0 && getMetadataFilter() == null) {
-      if (!warningLogged) {
-        log.warn("metadata-keys are deprecated; use a metadata-filter instead");
-        warningLogged = true;
-      }
+      LoggingHelper.logDeprecation(warningLogged, ()-> { warningLogged=true;}, "metadata-keys", "metadata-filter");
     }
   }
 

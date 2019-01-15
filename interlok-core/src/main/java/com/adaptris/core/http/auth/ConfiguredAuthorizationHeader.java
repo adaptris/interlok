@@ -19,7 +19,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.Removal;
+import com.adaptris.core.ftp.StandardSftpConnection;
 import com.adaptris.core.http.HttpConstants;
+import com.adaptris.core.util.LoggingHelper;
 
 /**
  * Build an {@link HttpConstants#AUTHORIZATION} header from static data.
@@ -36,10 +38,6 @@ public class ConfiguredAuthorizationHeader extends com.adaptris.core.http.client
 
   public ConfiguredAuthorizationHeader() {
     super();
-    if (!warningLogged) {
-      log.warn("[{}] is deprecated, use [{}] instead", this.getClass().getSimpleName(),
-          com.adaptris.core.http.client.net.ConfiguredAuthorizationHeader.class.getName());
-      warningLogged = true;
-    }
+    LoggingHelper.logDeprecation(warningLogged, ()-> { warningLogged=true;}, this.getClass().getSimpleName(), com.adaptris.core.http.client.net.ConfiguredAuthorizationHeader.class.getName());
   }
 }

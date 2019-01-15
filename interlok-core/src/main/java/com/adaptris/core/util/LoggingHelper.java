@@ -20,6 +20,9 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 
 import java.lang.reflect.Method;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.adaptris.core.ComponentLifecycle;
 import com.adaptris.core.Service;
 import com.adaptris.core.StateManagedComponent;
@@ -33,7 +36,19 @@ import com.adaptris.core.StateManagedComponent;
 public abstract class LoggingHelper {
   
   private static final String GUID_PATTERN = "^[0-9a-f]{8}\\-[0-9a-f]{4}\\-[0-9a-f]{4}\\-[0-9a-f]{4}\\-[0-9a-f]{12}$";
-
+  private static final Logger log = LoggerFactory.getLogger(LoggingHelper.class);
+  
+  public static void logDeprecation(boolean alreadyLogged, WarningLoggedCallback callback, String old, String replacement) {
+    logWarning(alreadyLogged, callback, "[{}] is deprecated, use [{}] instead", old, replacement);
+  }
+  
+  public static void logWarning(boolean alreadyLogged, WarningLoggedCallback callback, String text, Object...args) {
+    if (!alreadyLogged) {
+      log.warn(text, args);
+      callback.warningLogged();
+    }
+  }
+  
   public static String friendlyName(Service s) {
     if (s == null) {
       return "";
@@ -75,4 +90,8 @@ public abstract class LoggingHelper {
     return "(" + uid + ")";
   }
 
+  @FunctionalInterface
+  public interface WarningLoggedCallback {
+    void warningLogged();
+  }
 }

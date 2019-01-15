@@ -28,6 +28,8 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.StandardWorkflow;
+import com.adaptris.core.http.jetty.JettyMessageConsumer;
+import com.adaptris.core.util.LoggingHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -69,11 +71,7 @@ public final class JmsReplyToWorkflow extends StandardWorkflow {
 
   public JmsReplyToWorkflow() {
     super();
-    if (!warningLogged) {
-      log.warn("[{}] is deprecated, use StandardWorkflow+StandaloneProducer+JmsReplyToDestination instead",
-          this.getClass().getSimpleName());
-      warningLogged = true;
-    }
+    LoggingHelper.logDeprecation(warningLogged, ()-> { warningLogged=true;}, this.getClass().getSimpleName(), "StandardWorkflow+StandaloneProducer+JmsReplyToDestination instead");
   }
 
   @Override
