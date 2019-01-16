@@ -1,27 +1,29 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.services.jdbc;
 
+import java.sql.SQLException;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.jdbc.AdvancedJdbcPooledConnection;
 import com.adaptris.core.jdbc.JdbcConnection;
 import com.adaptris.core.jdbc.JdbcPooledConnection;
 import com.adaptris.core.jdbc.PooledConnectionHelper;
+import com.mysql.jdbc.Statement;
 
 public class JdbcBatchingDataCaptureServiceTest extends JdbcDataCaptureServiceCase {
 
@@ -55,13 +57,29 @@ public class JdbcBatchingDataCaptureServiceTest extends JdbcDataCaptureServiceCa
   public void testService_IterationsLessThanBatch() throws Exception {
     createDatabase();
     JdbcBatchingDataCaptureService service = (JdbcBatchingDataCaptureService) createBasicService();
+    service.setRowsUpdatedMetadataKey("rowsUpdatedKey");
     service.setBatchWindow(10);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_DOCUMENT);
     msg.addMetadata(METADATA_KEY, METADATA_VALUE);
     execute(service, msg);
+    assertEquals("1", msg.getMetadataValue("rowsUpdatedKey"));
     execute(service, msg);
+    assertEquals("1", msg.getMetadataValue("rowsUpdatedKey"));
     doBasicCaptureAsserts(2);
   }
+
+  public void testRowsUpdated() throws Exception {
+    try {
+      int[] results = {1, Statement.EXECUTE_FAILED, 2};
+      JdbcBatchingDataCaptureService.rowsUpdated(results);
+      fail();
+    } catch (SQLException expected) {
+
+    }
+    int[] results = {1, Statement.SUCCESS_NO_INFO, 2};
+    assertEquals(3L, JdbcBatchingDataCaptureService.rowsUpdated(results));
+  }
+
 
   @Override
   protected JdbcConnection createJdbcConnection() {

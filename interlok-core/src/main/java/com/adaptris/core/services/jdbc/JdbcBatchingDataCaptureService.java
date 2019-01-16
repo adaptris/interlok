@@ -1,18 +1,18 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.services.jdbc;
 
@@ -22,11 +22,8 @@ import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import javax.xml.namespace.NamespaceContext;
-
 import org.apache.commons.lang.ArrayUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -51,7 +48,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * contain namespaces, then Saxon can cause merry havoc in the sense that {@code //NonNamespaceXpath} doesn't work if the document
  * has namespaces in it. We have included a shim so that behaviour can be toggled based on what you have configured.
  * </p>
- * 
+ *
  * @see XPath#newXPathInstance(DocumentBuilderFactoryBuilder, NamespaceContext)
  * @see JdbcDataCaptureService
  * @config jdbc-batching-data-capture-service
@@ -59,11 +56,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("jdbc-batching-data-capture-service")
 @AdapterComponent
 @ComponentProfile(summary = "Capture data from the message and store it in a database", tag = "service,jdbc",
-    recommended = {DatabaseConnection.class})
-@DisplayOrder(order =
-{
-    "connection", "statement", "batchWindow", "iterationXpath", "iterates", "statementParameters", "parameterApplicator",
-    "xmlDocumentFactoryConfig", "namespaceContext", "saveReturnedKeys", "saveReturnedKeysColumn", "saveReturnedKeysTable"})
+recommended = {DatabaseConnection.class})
+@DisplayOrder(order = {"connection", "statement", "batchWindow", "iterationXpath", "iterates",
+    "rowsUpdatedMetadataKey", "statementParameters", "parameterApplicator",
+    "xmlDocumentFactoryConfig", "namespaceContext", "saveReturnedKeys", "saveReturnedKeysColumn",
+    "saveReturnedKeysTable"})
 public class JdbcBatchingDataCaptureService extends JdbcIteratingDataCaptureServiceImpl {
 
   private static final InheritableThreadLocal<AtomicInteger> counter = new InheritableThreadLocal<AtomicInteger>() {
@@ -88,27 +85,22 @@ public class JdbcBatchingDataCaptureService extends JdbcIteratingDataCaptureServ
   }
 
   @Override
-  protected void executeUpdate(PreparedStatement insert) throws SQLException {
+  protected long executeUpdate(PreparedStatement insert) throws SQLException {
     int count = counter.get().incrementAndGet();
     insert.addBatch();
+    long rowsUpdated = 0;
     if (count % batchWindow() == 0) {
       log.trace("BatchWindow reached, executeBatch()");
-      executeBatch(insert);
+      rowsUpdated = rowsUpdated(insert.executeBatch());
     }
+    return rowsUpdated;
   }
 
   @Override
-  protected void finishUpdate(PreparedStatement insert) throws SQLException {
-    executeBatch(insert);
+  protected long finishUpdate(PreparedStatement insert) throws SQLException {
+    long rowsUpdated = rowsUpdated(insert.executeBatch());
     counter.set(new AtomicInteger());
-  }
-
-  private void executeBatch(PreparedStatement insert) throws SQLException {
-    int[] rc = insert.executeBatch();
-    List<Integer> result = Arrays.asList(ArrayUtils.toObject(rc));
-    if (result.contains(Statement.EXECUTE_FAILED)) {
-      throw new SQLException("Batch Execution Failed.");
-    }
+    return rowsUpdated;
   }
 
   /**
@@ -120,15 +112,22 @@ public class JdbcBatchingDataCaptureService extends JdbcIteratingDataCaptureServ
 
   /**
    * Set the batch window for operations.
-   * 
+   *
    * @param i the batchWindow to set; default is {@value #DEFAULT_BATCH_WINDOW} if not specified.
    */
   public void setBatchWindow(Integer i) {
-    this.batchWindow = i;
+    batchWindow = i;
   }
 
   int batchWindow() {
     return getBatchWindow() != null ? getBatchWindow().intValue() : DEFAULT_BATCH_WINDOW;
   }
 
+  protected static long rowsUpdated(int[] rc) throws SQLException {
+    List<Integer> result = Arrays.asList(ArrayUtils.toObject(rc));
+    if (result.contains(Statement.EXECUTE_FAILED)) {
+      throw new SQLException("Batch Execution Failed.");
+    }
+    return result.stream().filter(e -> !(e == Statement.SUCCESS_NO_INFO)).mapToLong(i -> i).sum();
+  }
 }

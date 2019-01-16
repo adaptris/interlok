@@ -1,35 +1,32 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.services.jdbc;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-
 import javax.validation.Valid;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
@@ -65,6 +62,7 @@ public abstract class JdbcIteratingDataCaptureServiceImpl extends JdbcDataCaptur
     super();
   }
 
+  @Override
   protected void initJdbcService() throws CoreException {
     super.initJdbcService();
   }
@@ -84,18 +82,20 @@ public abstract class JdbcIteratingDataCaptureServiceImpl extends JdbcDataCaptur
       log.debug("Iterating {} times for statement [{}]", nodes.getLength(), getStatement());
       PreparedStatement insert = actor.getInsertStatement(msg);
       insert.clearParameters();
+      long rowsUpdated = 0;
       for (int i = 0; i < nodes.getLength(); i++) {
         log.trace("---Start Iteration {}", i);
         Node n = nodes.item(i);
-        this.getParameterApplicator().applyStatementParameters(msg, insert, createActualParams(xpath, n), getStatement());
-        executeUpdate(insert);
+        getParameterApplicator().applyStatementParameters(msg, insert, createActualParams(xpath, n), getStatement());
+        rowsUpdated += executeUpdate(insert);
         log.trace("---End Iteration {}", i);
 
       }
-      finishUpdate(insert);
+      rowsUpdated += finishUpdate(insert);
       // Will only store the generated keys from the last query
       saveKeys(msg, insert);
       commit(conn, msg);
+      updateMetadata(msg, rowsUpdated);
     }
     catch (Exception e) {
       rollback(conn, msg);
@@ -106,9 +106,9 @@ public abstract class JdbcIteratingDataCaptureServiceImpl extends JdbcDataCaptur
     }
   }
 
-  protected abstract void executeUpdate(PreparedStatement insert) throws SQLException;
+  protected abstract long executeUpdate(PreparedStatement insert) throws SQLException;
 
-  protected abstract void finishUpdate(PreparedStatement insert) throws SQLException;
+  protected abstract long finishUpdate(PreparedStatement insert) throws SQLException;
 
   private NodeList nodesToProcess(Document doc, XPath xpath) throws XPathExpressionException {
     // initially set the NodeList to be the whole document
@@ -198,12 +198,12 @@ public abstract class JdbcIteratingDataCaptureServiceImpl extends JdbcDataCaptur
    * <li>The key is the namespace prefix</li>
    * <li>The value is the namespace uri</li>
    * </ul>
-   * 
+   *
    * @param kvps the namespace context
    * @see SimpleNamespaceContext#create(KeyValuePairSet)
    */
   public void setNamespaceContext(KeyValuePairSet kvps) {
-    this.namespaceContext = kvps;
+    namespaceContext = kvps;
   }
 
   public DocumentBuilderFactoryBuilder getXmlDocumentFactoryConfig() {
@@ -212,7 +212,7 @@ public abstract class JdbcIteratingDataCaptureServiceImpl extends JdbcDataCaptur
 
 
   public void setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder xml) {
-    this.xmlDocumentFactoryConfig = xml;
+    xmlDocumentFactoryConfig = xml;
   }
 
   private DocumentBuilderFactoryBuilder documentFactoryBuilder() {

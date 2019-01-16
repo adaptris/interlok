@@ -1,18 +1,18 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.services.jdbc;
 
@@ -24,7 +24,6 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ComponentLifecycle;
@@ -147,7 +146,7 @@ public abstract class JdbcDataCaptureServiceCase extends JdbcServiceExample {
       public JdbcStatementParameter create() {
         return new TimestampStatementParameter("relative/xpath/to/timestamp/value", StatementParameter.QueryType.xpath, true, null,
             new SimpleDateFormat(
-            "yyyy-MM-dd'T'HH:mm:ssZ"));
+                "yyyy-MM-dd'T'HH:mm:ssZ"));
       }
     },
     DateCaptureColumn {
@@ -175,16 +174,17 @@ public abstract class JdbcDataCaptureServiceCase extends JdbcServiceExample {
     super(arg0);
   }
 
+  @Override
   protected Object retrieveObjectForSampleConfig() {
     return null;
   }
-  
+
   protected abstract JdbcIteratingDataCaptureServiceImpl newService();
 
   @Override
   protected List<JdbcService> buildExamples() {
     List<JdbcService> returnedObjects = new ArrayList<>();
-    
+
     JdbcIteratingDataCaptureServiceImpl service = newService();
     JdbcConnection connection = new JdbcConnection();
     connection.setConnectUrl("jdbc:mysql://localhost:3306/mydatabase");
@@ -203,7 +203,7 @@ public abstract class JdbcDataCaptureServiceCase extends JdbcServiceExample {
     columns = columns.substring(0, columns.lastIndexOf(','));
     values = values.substring(0, values.lastIndexOf(','));
     service.setStatement("insert into mytable (" + columns + ") values (" + values + ");");
-    
+
     JdbcIteratingDataCaptureServiceImpl service2 = newService();
     JdbcConnection connection2 = new JdbcConnection();
     connection2.setConnectUrl("jdbc:mysql://localhost:3306/mydatabase");
@@ -227,13 +227,13 @@ public abstract class JdbcDataCaptureServiceCase extends JdbcServiceExample {
     columns2 = columns2.substring(0, columns2.lastIndexOf(','));
     values2 = values2.substring(0, values2.lastIndexOf(','));
     service2.setStatement("insert into mytable (" + columns2 + ") values (" + values2 + ");");
-    
+
     returnedObjects.add(service);
     returnedObjects.add(service2);
-    
+
     return returnedObjects;
   }
-  
+
   @Override
   protected String createBaseFileName(Object o) {
     JdbcIteratingDataCaptureServiceImpl sc = (JdbcIteratingDataCaptureServiceImpl) o;
@@ -257,14 +257,16 @@ public abstract class JdbcDataCaptureServiceCase extends JdbcServiceExample {
   public void testService() throws Exception {
     createDatabase();
     JdbcIteratingDataCaptureServiceImpl service = createBasicService();
+    service.setRowsUpdatedMetadataKey("rowsUpdatedKey");
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_DOCUMENT);
     msg.addMetadata(METADATA_KEY, METADATA_VALUE);
     execute(service, msg);
+    assertEquals("1", msg.getMetadataValue("rowsUpdatedKey"));
     doBasicCaptureAsserts(1);
   }
-  
+
   public void testServiceSequentialParameterApplicator() throws Exception {
-    createDatabase();    
+    createDatabase();
     JdbcIteratingDataCaptureServiceImpl service = createBasicService();
     service.setParameterApplicator(new SequentialParameterApplicator()); // default anyway, so identical to the test above, but good to be explicit in case the default changes.
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_DOCUMENT);
@@ -272,17 +274,17 @@ public abstract class JdbcDataCaptureServiceCase extends JdbcServiceExample {
     execute(service, msg);
     doBasicCaptureAsserts(1);
   }
-  
+
   public void testServiceNamedParameterApplicator() throws Exception {
     createDatabase();
-    
+
     StatementParameterList statementParameterList = new StatementParameterList();
     statementParameterList.add(new StatementParameter("/document/content", String.class.getName(), StatementParameter.QueryType.xpath, null, "param3"));
     statementParameterList.add(new StatementParameter(null, String.class.getName(), StatementParameter.QueryType.payload, null, "param2"));
     statementParameterList.add(new StatementParameter(METADATA_KEY, String.class.getName(), StatementParameter.QueryType.metadata, null, "param1"));
-    
+
     String statement = "insert into jdbc_data_capture_basic (metadata_value, payload_value, xpath_value) values (#param1, #param2, #param3)";
-    
+
     JdbcIteratingDataCaptureServiceImpl service = createBasicService(true, statementParameterList, statement);
     service.setParameterApplicator(new NamedParameterApplicator());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_DOCUMENT);
@@ -297,7 +299,7 @@ public abstract class JdbcDataCaptureServiceCase extends JdbcServiceExample {
     int poolsize = maxServices - 1;
 
     createDatabase();
-    List<Service> serviceList = new ArrayList<Service>();
+    List<Service> serviceList = new ArrayList<>();
     String name = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
     JdbcPooledConnection conn = createPooledJdbcConnection(poolsize);
@@ -328,14 +330,14 @@ public abstract class JdbcDataCaptureServiceCase extends JdbcServiceExample {
       Thread.currentThread().setName(name);
     }
   }
-  
+
   public void testService_AdvancedPooledConnection() throws Exception {
     int maxServices = 5;
     final int iterations = 5;
     int poolsize = maxServices - 1;
 
     createDatabase();
-    List<Service> serviceList = new ArrayList<Service>();
+    List<Service> serviceList = new ArrayList<>();
     String name = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
     AdvancedJdbcPooledConnection conn = createAdvancedPooledJdbcConnection(poolsize);
@@ -388,7 +390,7 @@ public abstract class JdbcDataCaptureServiceCase extends JdbcServiceExample {
       JdbcUtil.closeQuietly(c);
     }
   }
-  
+
   public void testServiceSaveKeys() throws Exception {
     createDatabase();
     JdbcDataCaptureService service = createSaveKeysService();
@@ -520,17 +522,17 @@ public abstract class JdbcDataCaptureServiceCase extends JdbcServiceExample {
 
     return createBasicService(createConnection, statementParameterList);
   }
-  
+
   protected JdbcIteratingDataCaptureServiceImpl createBasicService(boolean createConnection, StatementParameterList parameterList)
       throws Exception {
     String statement = "insert into jdbc_data_capture_basic (metadata_value, payload_value, xpath_value) values (?, ?, ?)";
 
     return createBasicService(createConnection, parameterList, statement);
   }
-  
+
   protected JdbcIteratingDataCaptureServiceImpl createBasicService(boolean createConnection, StatementParameterList parameterList,
-                                                            String statement)
-      throws Exception {
+      String statement)
+          throws Exception {
     JdbcIteratingDataCaptureServiceImpl service = newService();
     if (createConnection) {
       service.setConnection(createJdbcConnection());

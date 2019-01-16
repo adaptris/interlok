@@ -1,33 +1,32 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.services.jdbc;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang.BooleanUtils;
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.annotation.Removal;
@@ -56,6 +55,11 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
   @Deprecated
   @Removal(version = "3.9.0")
   private String saveReturnedKeysTable = null;
+  @InputFieldDefault(value = "")
+  @InputFieldHint(style = "BLANKABLE")
+  @AffectsMetadata
+  private String rowsUpdatedMetadataKey;
+
   protected transient DatabaseActor actor;
 
   private static transient boolean warningLogged = false;
@@ -105,10 +109,10 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
   public String getStatement() {
     return statement;
   }
-  
+
 
   public boolean saveReturnedKeys() {
-    return getSaveReturnedKeys() != null ? getSaveReturnedKeys().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getSaveReturnedKeys(), false);
   }
 
   /**
@@ -134,7 +138,7 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
    * <p>
    * This is only applicable of the JDBC driver in question doesn't support {@link Statement#RETURN_GENERATED_KEYS}
    * </p>
-   * 
+   *
    * @param col the column
    * @deprecated since 3.6.2 {@link Statement#RETURN_GENERATED_KEYS} has been available since java 1.4, surely your JDBC driver is
    *             newer than that!
@@ -150,7 +154,7 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
    * <p>
    * This is only applicable of the JDBC driver in question doesn't support {@link Statement#RETURN_GENERATED_KEYS}
    * </p>
-   * 
+   *
    * @return the column
    * @deprecated since 3.6.2 {@link Statement#RETURN_GENERATED_KEYS} has been available since java 1.4, surely your JDBC driver is
    *             newer than that!
@@ -167,7 +171,7 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
    * <p>
    * This is only applicable of the JDBC driver in question doesn't support {@link Statement#RETURN_GENERATED_KEYS}
    * </p>
-   * 
+   *
    * @param table the table
    * @deprecated since 3.6.2 {@link Statement#RETURN_GENERATED_KEYS} has been available since java 1.4, surely your JDBC driver is
    *             newer than that!
@@ -183,7 +187,7 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
    * <p>
    * This is only applicable of the JDBC driver in question doesn't support {@link Statement#RETURN_GENERATED_KEYS}
    * </p>
-   * 
+   *
    * @return the table.
    * @deprecated since 3.6.2 {@link Statement#RETURN_GENERATED_KEYS} has been available since java 1.4, surely your JDBC driver is
    *             newer than that!
@@ -192,6 +196,30 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
   @Removal(version = "3.9.0")
   public String getSaveReturnedKeysTable() {
     return saveReturnedKeysTable;
+  }
+
+
+  public String getRowsUpdatedMetadataKey() {
+    return rowsUpdatedMetadataKey;
+  }
+
+  /**
+   * Set the metadata key which will contain the number of rows updated by this service.
+   * <p>
+   * The precise value will depend on the statement(s) being executed; this is simply an aggregation
+   * of the values returned by {@link Statement#executeUpdate(String)}.
+   * </p>
+   *
+   * @param key the metadata key, if set this metadata will contain the number of rows affected.
+   */
+  public void setRowsUpdatedMetadataKey(String key) {
+    rowsUpdatedMetadataKey = key;
+  }
+
+  protected void updateMetadata(AdaptrisMessage msg, long value) {
+    if (!isBlank(getRowsUpdatedMetadataKey())) {
+      msg.addMetadata(getRowsUpdatedMetadataKey(), String.valueOf(value));
+    }
   }
 
   protected void saveKeys(AdaptrisMessage msg, Statement stmt) throws SQLException {
@@ -292,4 +320,5 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
       return oldJDBC;
     }
   }
+
 }
