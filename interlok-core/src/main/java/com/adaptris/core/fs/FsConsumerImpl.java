@@ -1,18 +1,18 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.fs;
 
@@ -22,7 +22,6 @@ import static com.adaptris.core.CoreConstants.FS_CONSUME_PARENT_DIR;
 import static com.adaptris.core.CoreConstants.FS_FILE_SIZE;
 import static com.adaptris.core.CoreConstants.ORIGINAL_NAME_KEY;
 import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -30,11 +29,9 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 import javax.management.MalformedObjectNameException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
@@ -193,12 +190,13 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
     File f = FsHelper.createFileReference(FsHelper.createUrlFromString(getDestination().getDestination(), true));
     if (shouldCreateDirs()) {
       if (!f.exists()) {
-        log.trace("Creating non-existent directory " + f.getCanonicalPath());
+        log.trace("Creating non-existent directory {}", f.getCanonicalPath());
         f.mkdirs();
       }
     }
     if (!fsWorker.isWriteableDir(f)) {
-      throw new Exception("please check that [{}]" + f.getCanonicalPath() + "] exists and is writeable");
+      throw new Exception(
+          "please check that [" + f.getCanonicalPath() + "] exists and is writeable");
     }
     return f;
   }
@@ -265,7 +263,7 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
 
   /**
    * Set the filename filter
-   * 
+   *
    * @param string the classname of the {@link FileFilter} implementation to use, if not specified, then it defaults to
    *          {@code org.apache.commons.io.filefilter.RegexFileFilter} which uses {@link java.util.regex.Pattern}.
    * @see com.adaptris.core.ConsumeDestination#getFilterExpression()
