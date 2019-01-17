@@ -17,18 +17,30 @@
 package com.adaptris.jdbc;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class JdbcResultRow {
+  private static final Map<Integer, ParameterValueType> TYPE_MAP;
 
   private List<String> fieldNames;
   private List<Object> fieldValues;
-  private List<Integer> fieldTypes;
+  private List<ParameterValueType> fieldTypes;
+
+  static {
+    Map<Integer, ParameterValueType> typeMap = new HashMap<>();
+    for (ParameterValueType t : ParameterValueType.values()) {
+      typeMap.put(t.getValue(), t);
+    }
+    TYPE_MAP = Collections.unmodifiableMap(typeMap);
+  }
 
   public JdbcResultRow() {
     setFieldNames(new ArrayList<String>());
     setFieldValues(new ArrayList<>());
-    setFieldTypes(new ArrayList<Integer>());
+    setFieldTypes(new ArrayList<ParameterValueType>());
   }
 
   public List<String> getFieldNames() {
@@ -50,7 +62,7 @@ public class JdbcResultRow {
   public void setFieldValue(String fieldName, Object fieldValue, int type) {
     getFieldNames().add(fieldName);
     getFieldValues().add(fieldValue);
-    getFieldTypes().add(type);
+    getFieldTypes().add(TYPE_MAP.get(type));
   }
 
   public int getFieldCount() {
@@ -65,19 +77,31 @@ public class JdbcResultRow {
     return getFieldNames().get(order);
   }
 
+  public ParameterValueType getFieldType(int order) {
+    return getFieldTypes().get(order);
+  }
+
+  public ParameterValueType getFieldType(String fieldName) {
+    return getValue(getFieldTypes(), fieldName);
+  }
+
   public Object getFieldValue(String fieldName) {
+    return getValue(getFieldValues(), fieldName);
+  }
+
+  private <T> T getValue(List<T> list, String fieldName) {
     int index = getFieldNames().indexOf(fieldName);
-    if(index >= 0)
-      return getFieldValues().get(index);
+    if (index >= 0)
+      return (T) getFieldValues().get(index);
     else
       return null;
   }
 
-  public List<Integer> getFieldTypes() {
+  public List<ParameterValueType> getFieldTypes() {
     return fieldTypes;
   }
 
-  public void setFieldTypes(List<Integer> l) {
+  public void setFieldTypes(List<ParameterValueType> l) {
     fieldTypes = l;
   }
 

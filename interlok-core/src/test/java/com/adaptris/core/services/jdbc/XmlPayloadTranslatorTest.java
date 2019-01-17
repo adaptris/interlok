@@ -115,6 +115,33 @@ public class XmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlResults {
         xp.selectSingleTextItem(xmlDoc, "/Results/Row/INSERTED_ON"));
   }
 
+  // This should effectively give the same results as testService_WithTranslators...
+  public void testService_XpathParam_WithAutoConvert() throws Exception {
+    createDatabase();
+    List<AdapterTypeVersion> dbItems = generate(10);
+    AdapterTypeVersion entry = dbItems.get(0);
+    populateDatabase(dbItems, false);
+    JdbcDataQueryService s = createXmlService();
+    s.setResultSetTranslator(new XmlPayloadTranslator()
+        .withAttemptAutoConvert(true)
+        .withColumnNameStyle(ColumnStyle.NoStyle));
+    AdaptrisMessage msg = createMessage(entry);
+    execute(s, msg);
+    XPath xp = new XPath();
+    Document xmlDoc = XmlHelper.createDocument(msg, DocumentBuilderFactoryBuilder.newInstance());
+    assertNull(xp.selectSingleNode(xmlDoc, "/Results/OriginalMessage"));
+    assertNotNull(xp.selectSingleNode(xmlDoc, "/Results/Row"));
+    assertEquals(entry.getVersion(),
+        xp.selectSingleTextItem(xmlDoc, "/Results/Row/ADAPTER_VERSION"));
+    assertEquals(String.valueOf(entry.getCounter()),
+        xp.selectSingleTextItem(xmlDoc, "/Results/Row/COUNTER"));
+    assertEquals(entry.getTranslatorType(),
+        xp.selectSingleTextItem(xmlDoc, "/Results/Row/MESSAGE_TRANSLATOR_TYPE"));
+    // This should have been done by a TimestampColumnTranslator...
+    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+    assertEquals(df.format(entry.getDate()),
+        xp.selectSingleTextItem(xmlDoc, "/Results/Row/INSERTED_ON"));
+  }
 
   public void testPreserveOriginal() throws Exception {
     createDatabase();

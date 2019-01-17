@@ -32,7 +32,9 @@ import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.services.jdbc.types.ColumnHelper;
 import com.adaptris.core.services.jdbc.types.ColumnTranslator;
+import com.adaptris.core.services.jdbc.types.TimestampColumnTranslator;
 import com.adaptris.core.util.Args;
 import com.adaptris.jdbc.JdbcResult;
 import com.adaptris.jdbc.JdbcResultRow;
@@ -45,6 +47,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  *
  */
 public abstract class ResultSetTranslatorImp extends StyledResultTranslatorImp {
+
 
   @AdvancedConfig
   @InputFieldDefault(value = "false")
@@ -62,9 +65,14 @@ public abstract class ResultSetTranslatorImp extends StyledResultTranslatorImp {
   @AffectsMetadata
   private String updateCountMetadataItem;
 
+  @AdvancedConfig
+  @InputFieldDefault(value = "false")
+  private Boolean attemptAutoConvert;
+
   @Deprecated
   @Removal(version = "3.9.0")
   private String uniqueId;
+
 
   protected ResultSetTranslatorImp() {
     setColumnNameStyle(ColumnStyle.NoStyle);
@@ -83,29 +91,6 @@ public abstract class ResultSetTranslatorImp extends StyledResultTranslatorImp {
    */
   public abstract long translateResult(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException;
 
-
-  private String getValue(JdbcResultRow rs, int column) {
-    String value = null;
-    try {
-      Object o  = rs.getFieldValue(column);
-      if (o instanceof byte[]) {
-        value = new String((byte[]) o);
-      }
-      else {
-        value = o.toString();
-      }
-    }
-    catch (Exception e1) {
-      try {
-        value = (String) rs.getFieldValue(column);
-      }
-      catch (Exception e2) {
-        logColumnErrors(column, e1);
-      }
-    }
-    return value;
-  }
-
   protected String toString(JdbcResultRow rs, int column) {
     String result = null;
     try {
@@ -113,7 +98,11 @@ public abstract class ResultSetTranslatorImp extends StyledResultTranslatorImp {
         result = getColumnTranslators().get(column).translate(rs, column);
       }
       else {
-        result = getValue(rs, column);
+        if (attemptConversion()) {
+          result = ColumnHelper.translate(rs, column);
+        } else {
+          result = ColumnHelper.toString(rs, column);
+        }
       }
     }
     catch (Exception e) {
@@ -124,7 +113,7 @@ public abstract class ResultSetTranslatorImp extends StyledResultTranslatorImp {
 
   protected void logColumnErrors(int column, Exception e) {
     if (isDisplayColumnErrors()) {
-      log.debug("Unable to retrieve data item " + column, e);
+      log.debug("Unable to retrieve data item {}", column, e);
     }
   }
 
@@ -248,5 +237,34 @@ public abstract class ResultSetTranslatorImp extends StyledResultTranslatorImp {
   @Removal(version = "3.9.0")
   public void setUniqueId(String uniqueId) {
     this.uniqueId = uniqueId;
+  }
+
+  public Boolean getAttemptAutoConvert() {
+    return attemptAutoConvert;
+  }
+
+  /**
+   * Whether or not to attempt conversion with a {@link ColumnTranslator} rather than using a simple
+   * {@code toString()}.
+   *
+   * <p>
+   * Note that output may differ depending on defaults within the column translators. For instance
+   * {@code java.sql.Timestamp#toString()} differs from the default format in
+   * {@link TimestampColumnTranslator}.
+   * </p>
+   *
+   * @param b true to attempt conversion, default is false if not specified.
+   */
+  public void setAttemptAutoConvert(Boolean b) {
+    attemptAutoConvert = b;
+  }
+
+  public <T extends ResultSetTranslatorImp> T withAttemptAutoConvert(Boolean b) {
+    setAttemptAutoConvert(b);
+    return (T) this;
+  }
+
+  private boolean attemptConversion() {
+    return BooleanUtils.toBooleanDefaultIfNull(getAttemptAutoConvert(), false);
   }
 }
