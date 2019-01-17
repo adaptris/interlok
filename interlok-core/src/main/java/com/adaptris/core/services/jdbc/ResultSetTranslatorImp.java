@@ -1,30 +1,29 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.services.jdbc;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.AutoPopulated;
@@ -41,9 +40,9 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
  * Base implementation for converting a {@linkplain java.sql.ResultSet} into an {@linkplain com.adaptris.core.AdaptrisMessage}.
- * 
+ *
  * @author lchan
- * 
+ *
  */
 public abstract class ResultSetTranslatorImp extends StyledResultTranslatorImp {
 
@@ -55,14 +54,14 @@ public abstract class ResultSetTranslatorImp extends StyledResultTranslatorImp {
   @Valid
   @XStreamImplicit
   private List<ColumnTranslator> columnTranslators;
-  
+
   @AdvancedConfig
   @AffectsMetadata
   private String resultCountMetadataItem;
   @AdvancedConfig
   @AffectsMetadata
   private String updateCountMetadataItem;
-  
+
   @Deprecated
   @Removal(version = "3.9.0")
   private String uniqueId;
@@ -71,15 +70,16 @@ public abstract class ResultSetTranslatorImp extends StyledResultTranslatorImp {
     setColumnNameStyle(ColumnStyle.NoStyle);
     setColumnTranslators(new ArrayList<ColumnTranslator>());
   }
-  
+
+  @Override
   public final void translate(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException {
-    this.updateMetadataUpdateCount(target, source);
-    this.updateMetadataQueryCount(target, this.translateResult(source, target));;
+    updateMetadataUpdateCount(target, source);
+    updateMetadataQueryCount(target, translateResult(source, target));;
   }
-  
+
   /**
    * Translate the result returning the number of rows translated.
-   * 
+   *
    */
   public abstract long translateResult(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException;
 
@@ -127,19 +127,19 @@ public abstract class ResultSetTranslatorImp extends StyledResultTranslatorImp {
       log.debug("Unable to retrieve data item " + column, e);
     }
   }
-  
+
   protected void updateMetadataQueryCount(AdaptrisMessage message, long numResults) {
-    if(!StringUtils.isEmpty(this.getResultCountMetadataItem())) {
-      this.updateMetadata(message, numResults, getResultCountMetadataItem());
+    if(!StringUtils.isEmpty(getResultCountMetadataItem())) {
+      updateMetadata(message, numResults, getResultCountMetadataItem());
     }
   }
-  
+
   protected void updateMetadataUpdateCount(AdaptrisMessage message, JdbcResult jdbcResult) {
-    if(!StringUtils.isEmpty(this.getUpdateCountMetadataItem())) {
-      this.updateMetadata(message, jdbcResult.getNumRowsUpdated(), getUpdateCountMetadataItem());
+    if(!StringUtils.isEmpty(getUpdateCountMetadataItem())) {
+      updateMetadata(message, jdbcResult.getNumRowsUpdated(), getUpdateCountMetadataItem());
     }
   }
-  
+
   protected void updateMetadata(AdaptrisMessage message, long numResults, String metadataItemName) {
     message.addMessageHeader(metadataItemName, String.valueOf(numResults));
   }
@@ -158,7 +158,7 @@ public abstract class ResultSetTranslatorImp extends StyledResultTranslatorImp {
    * the date using JDBC. We ignore the exception and simply produce an empty element; setting this flag causes the exception to be
    * logged (handy during testing)
    * </p>
-   * 
+   *
    * @param b
    */
   public void setDisplayColumnErrors(Boolean b) {
@@ -166,11 +166,22 @@ public abstract class ResultSetTranslatorImp extends StyledResultTranslatorImp {
   }
 
   protected boolean isDisplayColumnErrors() {
-    return displayColumnErrors == null ? false : displayColumnErrors.booleanValue();
+    return BooleanUtils.toBooleanDefaultIfNull(getDisplayColumnErrors(), false);
   }
 
   public List<ColumnTranslator> getColumnTranslators() {
     return columnTranslators;
+  }
+
+  public <T extends ResultSetTranslatorImp> T withColumnTranslators(
+      ColumnTranslator... columnTranslators) {
+    return withColumnTranslators(new ArrayList<>(Arrays.asList(columnTranslators)));
+  }
+
+  public <T extends ResultSetTranslatorImp> T withColumnTranslators(
+      List<ColumnTranslator> translators) {
+    setColumnTranslators(translators);
+    return (T) this;
   }
 
   /**
@@ -197,11 +208,11 @@ public abstract class ResultSetTranslatorImp extends StyledResultTranslatorImp {
 
   /**
    * Add the number of resultsets to metadata.
-   * 
+   *
    * @param s the metadata to add the value against; default is null (no output)
    */
   public void setResultCountMetadataItem(String s) {
-    this.resultCountMetadataItem = s;
+    resultCountMetadataItem = s;
   }
 
   public String getUpdateCountMetadataItem() {
@@ -210,16 +221,16 @@ public abstract class ResultSetTranslatorImp extends StyledResultTranslatorImp {
 
   /**
    * Add the number of result sets updated to metadata.
-   * 
+   *
    * @param s the metadata to add the value against; default is null (no output)
    */
   public void setUpdateCountMetadataItem(String s) {
-    this.updateCountMetadataItem = s;
+    updateCountMetadataItem = s;
   }
 
   /**
    * Not required as this component doesn't need to extend {@link AdaptrisComponent}
-   * 
+   *
    * @deprecated since 3.6.3
    */
   @Deprecated
@@ -230,7 +241,7 @@ public abstract class ResultSetTranslatorImp extends StyledResultTranslatorImp {
 
   /**
    * Not required as this component doesn't need to extend {@link AdaptrisComponent}
-   * 
+   *
    * @deprecated since 3.6.3
    */
   @Deprecated
