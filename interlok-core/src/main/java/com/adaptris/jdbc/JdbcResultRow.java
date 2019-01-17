@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.adaptris.annotation.Removal;
 
 public class JdbcResultRow {
   private static final Map<Integer, ParameterValueType> TYPE_MAP;
@@ -47,22 +48,52 @@ public class JdbcResultRow {
     return fieldNames;
   }
 
-  public void setFieldNames(List<String> fieldNames) {
+  private void setFieldNames(List<String> fieldNames) {
     this.fieldNames = fieldNames;
   }
 
-  public List<Object> getFieldValues() {
+  private List<Object> getFieldValues() {
     return fieldValues;
   }
 
-  public void setFieldValues(List<Object> fieldValues) {
+  private void setFieldValues(List<Object> fieldValues) {
     this.fieldValues = fieldValues;
   }
 
-  public void setFieldValue(String fieldName, Object fieldValue, int type) {
+  /**
+   * @deprecated since 3.8.3 use {@link #setFieldValue(String, Object, int)} instead to add
+   *             additional Type information.
+   */
+  @Deprecated
+  @Removal(version = "3.11.0", message = "Use #setFieldValue(String, Object, Integer) instead")
+  public void setFieldValue(String fieldName, Object fieldValue) {
+    setFieldValue(fieldName, fieldValue, (ParameterValueType) null);
+  }
+
+
+  /**
+   * Set the field value.
+   *
+   * @param fieldName the fieldname
+   * @param fieldValue the field value
+   * @param type the type if possible.
+   */
+  public void setFieldValue(String fieldName, Object fieldValue, ParameterValueType type) {
     getFieldNames().add(fieldName);
     getFieldValues().add(fieldValue);
-    getFieldTypes().add(TYPE_MAP.get(type));
+    getFieldTypes().add(type);
+  }
+
+
+  /**
+   * Set the field value.
+   *
+   * @param fieldName the fieldname
+   * @param fieldValue the field value
+   * @param type the type from {@code java.sql.Types}.
+   */
+  public void setFieldValue(String fieldName, Object fieldValue, Integer type) {
+    setFieldValue(fieldName, fieldValue, TYPE_MAP.get(type));
   }
 
   public int getFieldCount() {
@@ -92,7 +123,7 @@ public class JdbcResultRow {
   private <T> T getValue(List<T> list, String fieldName) {
     int index = getFieldNames().indexOf(fieldName);
     if (index >= 0)
-      return (T) getFieldValues().get(index);
+      return list.get(index);
     else
       return null;
   }
@@ -101,7 +132,7 @@ public class JdbcResultRow {
     return fieldTypes;
   }
 
-  public void setFieldTypes(List<ParameterValueType> l) {
+  private void setFieldTypes(List<ParameterValueType> l) {
     fieldTypes = l;
   }
 
