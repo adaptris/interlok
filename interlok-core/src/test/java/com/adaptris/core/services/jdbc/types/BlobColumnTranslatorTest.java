@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Arrays;
 import org.apache.commons.io.output.WriterOutputStream;
 import org.junit.Test;
@@ -42,7 +43,7 @@ public class BlobColumnTranslatorTest {
     blob.setBytes(0, myData.getBytes("UTF-8"));
 
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", blob);
+    row.setFieldValue("testField", blob, Types.BLOB);
 
     String translated = translator.translate(row, 0);
 
@@ -57,7 +58,7 @@ public class BlobColumnTranslatorTest {
     blob.setBytes(0, myData.getBytes());
 
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", blob);
+    row.setFieldValue("testField", blob, Types.BLOB);
 
     String translated = translator.translate(row, 0);
 
@@ -72,7 +73,7 @@ public class BlobColumnTranslatorTest {
     blob.setBytes(0, myData.getBytes());
 
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", blob);
+    row.setFieldValue("testField", blob, Types.BLOB);
 
     String translated = translator.translate(row, "testField");
 
@@ -83,7 +84,7 @@ public class BlobColumnTranslatorTest {
   public void testBlobToStringWrongType() throws Exception {
     BlobColumnTranslator translator = new BlobColumnTranslator();
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", "SomeData");
+    row.setFieldValue("testField", "SomeData", Types.BLOB);
 
     try {
       translator.translate(row, "testField");
@@ -101,7 +102,7 @@ public class BlobColumnTranslatorTest {
     blob.setBytes(0, myData.getBytes("UTF-8"));
 
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", blob);
+    row.setFieldValue("testField", blob, Types.BLOB);
 
     StringWriter writer = new StringWriter();
     try (OutputStream out = new WriterOutputStream(writer)) {
@@ -120,7 +121,7 @@ public class BlobColumnTranslatorTest {
     blob.setBytes(0, myData.getBytes());
 
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", blob);
+    row.setFieldValue("testField", blob, Types.BLOB);
     StringWriter writer = new StringWriter();
     try (OutputStream out = new WriterOutputStream(writer)) {
       translator.write(row, 0, out);
@@ -137,7 +138,7 @@ public class BlobColumnTranslatorTest {
     blob.setBytes(0, myData.getBytes());
 
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", blob);
+    row.setFieldValue("testField", blob, Types.BLOB);
     StringWriter writer = new StringWriter();
     try (OutputStream out = new WriterOutputStream(writer)) {
       translator.write(row, "testField", out);

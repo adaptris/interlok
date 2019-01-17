@@ -26,6 +26,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.sql.Clob;
 import java.sql.SQLException;
+import java.sql.Types;
 import javax.sql.rowset.serial.SerialClob;
 import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.commons.io.output.WriterOutputStream;
@@ -47,7 +48,7 @@ public class ClobColumnTranslatorTest {
   public void testClobToString() throws Exception {
     Clob clob = new SerialClob("SomeData".toCharArray());
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", clob);
+    row.setFieldValue("testField", clob, Types.CLOB);
 
     String translated = translator.translate(row, 0);
 
@@ -58,7 +59,7 @@ public class ClobColumnTranslatorTest {
   public void testClobToStringColumnName() throws Exception {
     Clob clob = new SerialClob("SomeData".toCharArray());
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", clob);
+    row.setFieldValue("testField", clob, Types.CLOB);
 
     String translated = translator.translate(row, "testField");
 
@@ -68,7 +69,7 @@ public class ClobColumnTranslatorTest {
   @Test
   public void testClobIncorrectType() throws Exception {
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", new Integer(999));
+    row.setFieldValue("testField", new Integer(999), Types.CLOB);
 
     try {
       translator.translate(row, 0);
@@ -81,7 +82,7 @@ public class ClobColumnTranslatorTest {
   @Test
   public void testClobIncorrectTypeColumnName() throws Exception {
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", new Integer(999));
+    row.setFieldValue("testField", new Integer(999), Types.CLOB);
 
     try {
       translator.translate(row, "testField");
@@ -95,7 +96,7 @@ public class ClobColumnTranslatorTest {
   public void testClobWrite() throws Exception {
     Clob clob = new TestClob("SomeData");
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", clob);
+    row.setFieldValue("testField", clob, Types.CLOB);
 
     StringWriter writer = new StringWriter();
     try (OutputStream out = new WriterOutputStream(writer)) {
@@ -109,7 +110,7 @@ public class ClobColumnTranslatorTest {
   public void testClobWrite_ByName() throws Exception {
     Clob clob = new TestClob("SomeData");
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", clob);
+    row.setFieldValue("testField", clob, Types.CLOB);
 
     StringWriter writer = new StringWriter();
     try (OutputStream out = new WriterOutputStream(writer)) {

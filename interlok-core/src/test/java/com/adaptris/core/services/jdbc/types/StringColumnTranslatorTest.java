@@ -19,6 +19,7 @@ package com.adaptris.core.services.jdbc.types;
 import static org.junit.Assert.assertEquals;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.sql.Types;
 import org.apache.commons.io.output.WriterOutputStream;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,64 +36,98 @@ public class StringColumnTranslatorTest {
   }
 
   @Test
-  public void testIntegerTranslator() throws Exception {
+  public void testAsIntegerTranslator() throws Exception {
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", new Integer(111));
+    row.setFieldValue("testField", new Integer(111), Types.VARCHAR);
 
-    String translated = translator.translate(row, 0);
-    assertEquals("111", translated);
+    {
+      String translated = translator.translate(row, 0);
+      assertEquals("111", translated);
+    }
+    {
+      String translated = translator.translate(row, "testField");
+      assertEquals("111", translated);
+    }
   }
 
   @Test
-  public void testIntegerTranslatorColumnName() throws Exception {
+  public void testAsDoubleTranslator() throws Exception {
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", new Integer(111));
+    row.setFieldValue("testField", new Double(111), Types.VARCHAR);
 
-    String translated = translator.translate(row, "testField");
-    assertEquals("111", translated);
+    {
+      String translated = translator.translate(row, 0);
+      assertEquals("111.0", translated);
+    }
+    {
+      String translated = translator.translate(row, "testField");
+      assertEquals("111.0", translated);
+    }
   }
 
   @Test
-  public void testDoubleTranslator() throws Exception {
+  public void testAsFloatTranslator() throws Exception {
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", new Double(111));
+    row.setFieldValue("testField", new Float(111), Types.VARCHAR);
 
-    String translated = translator.translate(row, 0);
-    assertEquals("111.0", translated);
-  }
-
-  @Test
-  public void testFloatTranslator() throws Exception {
-    JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", new Float(111));
-
-    String translated = translator.translate(row, 0);
-    assertEquals("111.0", translated);
+    {
+      String translated = translator.translate(row, 0);
+      assertEquals("111.0", translated);
+    }
+    {
+      String translated = translator.translate(row, "testField");
+      assertEquals("111.0", translated);
+    }
   }
 
   @Test
   public void testStringTranslator() throws Exception {
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", new String("111"));
+    row.setFieldValue("testField", "111", Types.VARCHAR);
 
-    String translated = translator.translate(row, 0);
-    assertEquals("111", translated);
+    {
+      String translated = translator.translate(row, 0);
+      assertEquals("111", translated);
+    }
+    {
+      String translated = translator.translate(row, "testField");
+      assertEquals("111", translated);
+    }
   }
 
   @Test
-  public void testDoubleFormattedTranslator() throws Exception {
+  public void testAsByteTranslator() throws Exception {
+    JdbcResultRow row = new JdbcResultRow();
+    row.setFieldValue("testField", "111".getBytes(), Types.VARCHAR);
+    {
+      String translated = translator.translate(row, 0);
+      assertEquals("111", translated);
+    }
+    {
+      String translated = translator.translate(row, "testField");
+      assertEquals("111", translated);
+    }
+  }
+
+  @Test
+  public void testAsFormattedDoubleTranslator() throws Exception {
     translator.setFormat("%f");
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", new Double(111));
-
-    String translated = translator.translate(row, 0);
-    assertEquals("111.000000", translated);
+    row.setFieldValue("testField", new Double(111), Types.VARCHAR);
+    {
+      String translated = translator.translate(row, 0);
+      assertEquals("111.000000", translated);
+    }
+    {
+      String translated = translator.translate(row, "testField");
+      assertEquals("111.000000", translated);
+    }
   }
 
   @Test
   public void testStringWrite() throws Exception {
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", new String("SomeData"));
+    row.setFieldValue("testField", "SomeData", Types.VARCHAR);
     StringWriter writer = new StringWriter();
     try (OutputStream out = new WriterOutputStream(writer)) {
       translator.write(row, 0, out);
@@ -104,7 +139,7 @@ public class StringColumnTranslatorTest {
   @Test
   public void testStringWrite_ByName() throws Exception {
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", new String("SomeData"));
+    row.setFieldValue("testField", "SomeData", Types.VARCHAR);
 
     StringWriter writer = new StringWriter();
     try (OutputStream out = new WriterOutputStream(writer)) {

@@ -20,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.sql.Types;
 import org.apache.commons.io.output.WriterOutputStream;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,7 +39,7 @@ public class ByteArrayColumnTranslatorTest {
   @Test
   public void testByteToString() throws Exception {
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", "SomeData".getBytes());
+    row.setFieldValue("testField", "SomeData".getBytes(), Types.ARRAY);
 
     String translated = translator.translate(row, 0);
 
@@ -48,7 +49,7 @@ public class ByteArrayColumnTranslatorTest {
   @Test
   public void testByteToStringEncoded() throws Exception {
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", "SomeData".getBytes("UTF-8"));
+    row.setFieldValue("testField", "SomeData".getBytes("UTF-8"), Types.ARRAY);
 
     String translated = translator.translate(row, 0);
 
@@ -58,7 +59,7 @@ public class ByteArrayColumnTranslatorTest {
   @Test
   public void testByteToStringColName() throws Exception {
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", "SomeData".getBytes());
+    row.setFieldValue("testField", "SomeData".getBytes(), Types.ARRAY);
 
     String translated = translator.translate(row, "testField");
 
@@ -68,7 +69,7 @@ public class ByteArrayColumnTranslatorTest {
   @Test
   public void testByteIncorrectObject() throws Exception {
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", new Integer(10));
+    row.setFieldValue("testField", new Integer(10), Types.ARRAY);
 
     try {
       translator.translate(row, "testField");
@@ -82,7 +83,7 @@ public class ByteArrayColumnTranslatorTest {
   public void testBytesWrite() throws Exception {
 
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", "SomeData".getBytes());
+    row.setFieldValue("testField", "SomeData".getBytes(), Types.ARRAY);
 
     StringWriter writer = new StringWriter();
     try (OutputStream out = new WriterOutputStream(writer)) {
@@ -97,7 +98,7 @@ public class ByteArrayColumnTranslatorTest {
   public void testBytesWrite_ByName() throws Exception {
 
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", "SomeData".getBytes());
+    row.setFieldValue("testField", "SomeData".getBytes(), Types.ARRAY);
 
     StringWriter writer = new StringWriter();
     try (OutputStream out = new WriterOutputStream(writer)) {
