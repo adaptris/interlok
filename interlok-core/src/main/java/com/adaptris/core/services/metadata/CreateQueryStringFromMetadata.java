@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
-
+import org.apache.commons.lang3.BooleanUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
@@ -39,7 +39,6 @@ import com.adaptris.core.MetadataCollection;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
-import com.adaptris.core.ftp.StandardSftpConnection;
 import com.adaptris.core.metadata.MetadataFilter;
 import com.adaptris.core.metadata.MetadataFilterImpl;
 import com.adaptris.core.util.Args;
@@ -228,7 +227,7 @@ public class CreateQueryStringFromMetadata extends ServiceImp {
   }
 
   boolean includeQueryPrefix() {
-    return getIncludeQueryPrefix() != null ? getIncludeQueryPrefix().booleanValue() : true;
+    return BooleanUtils.toBooleanDefaultIfNull(getIncludeQueryPrefix(), true);
   }
 
   private class LegacyFilter extends MetadataFilterImpl {

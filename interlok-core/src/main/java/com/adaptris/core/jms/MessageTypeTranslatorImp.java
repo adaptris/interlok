@@ -23,7 +23,7 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
 import javax.validation.Valid;
-
+import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -248,12 +248,12 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
 
   @Override
   public boolean moveJmsHeaders() {
-    return getMoveJmsHeaders() != null ? getMoveJmsHeaders().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getMoveJmsHeaders(), false);
   }
 
   @Override
   public boolean reportAllErrors() {
-    return getReportAllErrors() != null ? getReportAllErrors().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getReportAllErrors(), false);
   }
 
 
@@ -303,7 +303,7 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
 
   private static AutoConvertMessageTranslator replicate(MessageTypeTranslator mt) throws JMSException {
     AutoConvertMessageTranslator result = new AutoConvertMessageTranslator();
-    copyConfiguration((MessageTypeTranslatorImp) mt, result);
+    copyConfiguration(mt, result);
     return result;
   }
 

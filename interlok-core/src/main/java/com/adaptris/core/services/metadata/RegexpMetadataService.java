@@ -23,7 +23,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -142,6 +142,6 @@ public class RegexpMetadataService extends ServiceImp {
   }
 
   boolean addNullValues() {
-    return getAddNullValues() != null ? getAddNullValues().booleanValue() : true;
+    return BooleanUtils.toBooleanDefaultIfNull(getAddNullValues(), true);
   }
 }

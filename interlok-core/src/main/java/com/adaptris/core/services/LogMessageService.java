@@ -17,7 +17,7 @@
 package com.adaptris.core.services;
 
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
-
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -106,7 +106,7 @@ public class LogMessageService extends LoggingServiceImpl {
   }
 
   boolean includePayload() {
-    return getIncludePayload() != null ? getIncludePayload().booleanValue() : true;
+    return BooleanUtils.toBooleanDefaultIfNull(getIncludePayload(), true);
   }
 
   public Boolean getIncludeEvents() {
@@ -123,6 +123,6 @@ public class LogMessageService extends LoggingServiceImpl {
   }
 
   boolean includeEvents() {
-    return getIncludeEvents() != null ? getIncludeEvents().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getIncludeEvents(), false);
   }
 }

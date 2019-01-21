@@ -24,7 +24,7 @@ import java.util.Date;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
@@ -467,7 +467,7 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
   }
 
   private boolean isAutoStart() {
-    return autoStart != null ? autoStart.booleanValue() : true;
+    return BooleanUtils.toBooleanDefaultIfNull(getAutoStart(), true);
   }
 
   public boolean shouldStart() {

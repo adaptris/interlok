@@ -32,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 import javax.management.MalformedObjectNameException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
@@ -223,7 +224,7 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
   }
 
   public boolean shouldCreateDirs() {
-    return getCreateDirs() != null ? getCreateDirs().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getCreateDirs(), false);
   }
 
   protected AdaptrisMessage createAdaptrisMessage(File fileToProcess) throws CoreException {
@@ -304,7 +305,7 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
   }
 
   public boolean logAllExceptions() {
-    return getLogAllExceptions() != null ? getLogAllExceptions().booleanValue() : true;
+    return BooleanUtils.toBooleanDefaultIfNull(getLogAllExceptions(), true);
   }
 
   long olderThanMs() {

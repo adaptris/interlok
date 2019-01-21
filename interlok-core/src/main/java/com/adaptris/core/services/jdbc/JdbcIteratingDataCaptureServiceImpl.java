@@ -24,6 +24,7 @@ import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
+import org.apache.commons.lang3.BooleanUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -269,6 +270,6 @@ public abstract class JdbcIteratingDataCaptureServiceImpl extends JdbcDataCaptur
   }
 
   private boolean iterates() {
-    return getIterates() != null ? getIterates().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getIterates(), false);
   }
 }

@@ -243,7 +243,7 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
   }
 
   boolean isTransacted() {
-    return isManagedTransaction() || (transacted != null ? transacted.booleanValue() : false);
+    return isManagedTransaction() || BooleanUtils.toBooleanDefaultIfNull(transacted, false);
   }
 
   void setTransacted(Boolean b) {

@@ -20,7 +20,7 @@ import java.util.regex.Matcher;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.adaptris.annotation.AdapterComponent;
@@ -180,7 +180,7 @@ public class PayloadFromMetadataService extends ServiceImp {
   }
 
   boolean escapeBackslash() {
-    return getEscapeBackslash() != null ? getEscapeBackslash().booleanValue() : true;
+    return BooleanUtils.toBooleanDefaultIfNull(getEscapeBackslash(), true);
   }
 
   public Boolean getQuiet() {
@@ -197,7 +197,7 @@ public class PayloadFromMetadataService extends ServiceImp {
   }
 
   private boolean quiet() {
-    return getQuiet() != null ? getQuiet().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getEscapeBackslash(), false);
   }
 
   @Override

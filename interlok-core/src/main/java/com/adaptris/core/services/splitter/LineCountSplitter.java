@@ -21,7 +21,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
@@ -132,7 +132,7 @@ public class LineCountSplitter extends MessageSplitterImp {
   }
 
   boolean ignoreBlankLines() {
-    return getIgnoreBlankLines() != null ? getIgnoreBlankLines().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getIgnoreBlankLines(), false);
   }
 
   public Integer getBufferSize() {

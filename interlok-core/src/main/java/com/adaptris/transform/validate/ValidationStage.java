@@ -22,7 +22,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
@@ -140,7 +140,7 @@ public class ValidationStage {
   }
 
   public final boolean failOnIteratorFailure() {
-    return getFailOnIterateFailure() != null ? getFailOnIterateFailure().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getFailOnIterateFailure(), false);
   }
 
 }

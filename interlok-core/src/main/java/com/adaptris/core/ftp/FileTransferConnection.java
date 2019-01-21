@@ -112,7 +112,7 @@ public abstract class FileTransferConnection extends NoOpConnection {
   }
 
   public boolean forceRelativePath() {
-    return getForceRelativePath() != null ? getForceRelativePath().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getForceRelativePath(), false);
   }
 
   /**

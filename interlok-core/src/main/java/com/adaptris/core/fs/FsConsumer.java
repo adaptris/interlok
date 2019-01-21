@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import org.apache.commons.io.filefilter.RegexFileFilter;
+import org.apache.commons.lang3.BooleanUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
@@ -252,7 +253,7 @@ public class FsConsumer extends FsConsumerImpl {
   }
 
   protected boolean resetWipFiles() {
-    return resetWipFiles != null ? resetWipFiles.booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getResetWipFiles(), false);
   }
 
   @Override

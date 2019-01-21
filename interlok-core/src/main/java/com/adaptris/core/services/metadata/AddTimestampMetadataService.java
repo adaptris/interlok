@@ -21,7 +21,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 import java.util.Date;
 
 import javax.validation.Valid;
-
+import org.apache.commons.lang3.BooleanUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
@@ -199,7 +199,7 @@ public class AddTimestampMetadataService extends ServiceImp {
   }
 
   boolean alwaysReplace() {
-    return getAlwaysReplace() != null ? getAlwaysReplace().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getAlwaysReplace(), false);
   }
 
   /**

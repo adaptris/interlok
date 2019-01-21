@@ -115,6 +115,7 @@ public abstract class XmlTransformerFactoryImpl implements XmlTransformerFactory
    * @deprecated since 3.6.5, XSLT 3.0 has eliminated all "recoverable errors" from the specification. If you are using a previous
    *             version of saxon or xalan then this will still have an effect.
    */
+  @Deprecated
   public Boolean getFailOnRecoverableError() {
     return failOnRecoverableError;
   }
@@ -126,12 +127,13 @@ public abstract class XmlTransformerFactoryImpl implements XmlTransformerFactory
    * @deprecated since 3.6.5, XSLT 3.0 has eliminated all "recoverable errors" from the specification. If you are using a previous
    *             version of saxon or xalan then this will still have an effect.
    */
+  @Deprecated
   public void setFailOnRecoverableError(Boolean b) {
     this.failOnRecoverableError = b;
   }
 
   private boolean failOnRecoverableError() {
-    return getFailOnRecoverableError() != null ? getFailOnRecoverableError().booleanValue() : true;
+    return BooleanUtils.toBooleanDefaultIfNull(getFailOnRecoverableError(), true);
   }
 
   private class DefaultErrorListener implements ErrorListener {

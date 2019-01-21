@@ -17,7 +17,7 @@
 package com.adaptris.core;
 
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
-
+import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,10 +122,7 @@ public abstract class ServiceImp implements Service {
 
   @Override
   public boolean continueOnFailure() {
-    if (getContinueOnFail() != null) {
-      return getContinueOnFail().booleanValue();
-    }
-    return false;
+    return BooleanUtils.toBooleanDefaultIfNull(getContinueOnFail(), false);
   }
 
   /**
@@ -183,18 +180,12 @@ public abstract class ServiceImp implements Service {
 
   @Override
   public boolean isTrackingEndpoint() {
-    if (isTrackingEndpoint != null) {
-      return isTrackingEndpoint.booleanValue();
-    }
-    return false;
+    return BooleanUtils.toBooleanDefaultIfNull(getIsTrackingEndpoint(), false);
   }
 
   @Override
   public boolean isConfirmation() {
-    if (isConfirmation != null) {
-      return isConfirmation.booleanValue();
-    }
-    return false;
+    return BooleanUtils.toBooleanDefaultIfNull(getIsConfirmation(), false);
   }
 
   /**

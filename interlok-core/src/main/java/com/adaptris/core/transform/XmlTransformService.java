@@ -26,7 +26,7 @@ import java.util.Map;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.xml.transform.Transformer;
-
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.adaptris.annotation.AdapterComponent;
@@ -278,7 +278,7 @@ public class XmlTransformService extends ServiceImp {
   }
 
   boolean cacheTransforms() {
-    return getCacheTransforms() != null ? getCacheTransforms().booleanValue() : true;
+    return BooleanUtils.toBooleanDefaultIfNull(getCacheTransforms(), true);
   }
 
   /**
@@ -308,7 +308,7 @@ public class XmlTransformService extends ServiceImp {
     if (overrideAllowOverride != null) {
       return overrideAllowOverride.booleanValue();
     }
-    return getAllowOverride() != null ? getAllowOverride().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getAllowOverride(), false);
   }
 
   public String getOutputMessageEncoding() {

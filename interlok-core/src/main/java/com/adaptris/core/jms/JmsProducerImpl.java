@@ -556,7 +556,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
   }
 
   boolean transactedSession() {
-    return getTransactedSession() != null ? getTransactedSession().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getTransactedSession(), false);
   }
 
   /**

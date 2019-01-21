@@ -20,7 +20,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
-
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -162,7 +162,7 @@ public class LargeFsProducer extends FsProducer {
   }
 
   boolean useRenameTo() {
-    return getUseRenameTo() != null ? getUseRenameTo().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getUseRenameTo(), false);
   }
 
 }

@@ -17,7 +17,7 @@
 package com.adaptris.core.ftp;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
-
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -140,7 +140,7 @@ public class RelaxedFtpConsumer extends FtpConsumerImpl {
   }
 
   private boolean failOnDeleteFailure() {
-    return getFailOnDeleteFailure() != null ? getFailOnDeleteFailure().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getFailOnDeleteFailure(), false);
   }
 
   /**

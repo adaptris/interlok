@@ -127,7 +127,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
 
   @Override
   public boolean continueOnFailure() {
-    return getContinueOnFail() != null ? getContinueOnFail().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getContinueOnFail(), false);
   }
 
   /**
@@ -177,10 +177,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
    */
   @Override
   public boolean isTrackingEndpoint() {
-    if (isTrackingEndpoint != null) {
-      return isTrackingEndpoint.booleanValue();
-    }
-    return false;
+    return BooleanUtils.toBooleanDefaultIfNull(getIsTrackingEndpoint(), false);
   }
 
   /**
@@ -189,10 +186,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
    */
   @Override
   public boolean isConfirmation() {
-    if (isConfirmation != null) {
-      return isConfirmation.booleanValue();
-    }
-    return false;
+    return BooleanUtils.toBooleanDefaultIfNull(getIsConfirmation(), false);
   }
 
   /**

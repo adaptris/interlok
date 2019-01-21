@@ -22,7 +22,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import javax.validation.Valid;
-
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -377,7 +377,7 @@ public class FtpProducer extends RequestReplyProducerImp {
   }
 
   public boolean replyUsesEncoder() {
-    return getReplyUsesEncoder() != null ? getReplyUsesEncoder().booleanValue() : true;
+    return BooleanUtils.toBooleanDefaultIfNull(getReplyUsesEncoder(), true);
   }
   /**
    * @return Returns the replyUsesEncoder.

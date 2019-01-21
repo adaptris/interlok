@@ -24,7 +24,7 @@ import java.util.Set;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
@@ -128,7 +128,7 @@ public abstract class HttpProducer<A, B> extends RequestReplyProducerImp {
   }
 
   boolean handleRedirection() {
-    return allowRedirect != null ? allowRedirect.booleanValue() : true;
+    return BooleanUtils.toBooleanDefaultIfNull(getAllowRedirect(), true);
   }
 
   /**
@@ -151,7 +151,7 @@ public abstract class HttpProducer<A, B> extends RequestReplyProducerImp {
   }
 
   boolean ignoreServerResponseCode() {
-    return ignoreServerResponseCode != null ? ignoreServerResponseCode.booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getIgnoreServerResponseCode(), false);
   }
 
   /**

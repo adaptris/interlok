@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -212,7 +212,7 @@ public class RetryingServiceWrapper extends ServiceImp implements EventHandlerAw
   }
 
   public boolean isRestartOnFailure() {
-    return getRestartOnFailure() != null ? getRestartOnFailure().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getRestartOnFailure(), false);
   }
 
   public void setRestartOnFailure(Boolean restartOnFailure) {

@@ -24,7 +24,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.ListIterator;
-
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -132,7 +132,7 @@ public class ServiceList extends ServiceListBase {
   }
 
   boolean forwardSearch() {
-    return getAllowForwardSearch() != null ? getAllowForwardSearch().booleanValue() : true;
+    return BooleanUtils.toBooleanDefaultIfNull(getAllowForwardSearch(), true);
   }
 
   private ListIterator<Service> resolveNext(ListIterator<Service> current, String serviceId) {

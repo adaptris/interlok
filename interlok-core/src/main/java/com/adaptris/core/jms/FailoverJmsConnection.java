@@ -25,7 +25,7 @@ import javax.jms.JMSException;
 import javax.jms.Session;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -227,7 +227,7 @@ public class FailoverJmsConnection extends JmsConnection {
   }
 
   boolean registerOwner() {
-    return getRegisterOwner() != null ? getRegisterOwner().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getRegisterOwner(), false);
   }
 
   JmsConnection currentJmsConnection() {

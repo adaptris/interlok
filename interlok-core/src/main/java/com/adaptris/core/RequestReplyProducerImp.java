@@ -17,7 +17,7 @@
 package com.adaptris.core;
 
 import java.io.IOException;
-
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.lms.FileBackedMessage;
@@ -136,6 +136,6 @@ public abstract class RequestReplyProducerImp extends AdaptrisMessageProducerImp
   }
 
   public boolean shouldIgnoreReplyMetadata() {
-    return ignoreReplyMetadata != null ? ignoreReplyMetadata.booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getIgnoreReplyMetadata(), false);
   }
 }

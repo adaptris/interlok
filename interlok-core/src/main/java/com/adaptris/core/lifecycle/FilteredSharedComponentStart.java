@@ -28,7 +28,7 @@ import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -201,7 +201,7 @@ public class FilteredSharedComponentStart implements SharedComponentLifecycleStr
   }
 
   boolean threadedStart() {
-    return getThreadedStart() != null ? getThreadedStart().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getThreadedStart(), false);
   }
 
   public List<String> getIncludes() {

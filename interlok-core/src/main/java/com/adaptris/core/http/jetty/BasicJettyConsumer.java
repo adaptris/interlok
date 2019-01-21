@@ -46,8 +46,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
@@ -295,7 +295,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   }
 
   boolean additionalDebug() {
-    return getAdditionalDebug() != null ? getAdditionalDebug().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getAdditionalDebug(), false);
   }
 
   /**

@@ -25,7 +25,7 @@ import java.util.List;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.adaptris.annotation.AdapterComponent;
@@ -115,6 +115,6 @@ public class RawMailConsumer extends MailConsumerImp {
   }
 
   boolean useEmailMessageIdAsUniqueId() {
-    return getUseEmailMessageIdAsUniqueId() != null ? getUseEmailMessageIdAsUniqueId().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getUseEmailMessageIdAsUniqueId(), false);
   }
 }

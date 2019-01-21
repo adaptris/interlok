@@ -18,7 +18,7 @@ package com.adaptris.core.services.metadata;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import org.apache.commons.lang3.BooleanUtils;
 import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -169,6 +169,6 @@ public class RegexpMetadataQuery {
   }
 
   boolean allowNullResults() {
-    return getAllowNulls() != null ? getAllowNulls().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getAllowNulls(), false);
   }
 }

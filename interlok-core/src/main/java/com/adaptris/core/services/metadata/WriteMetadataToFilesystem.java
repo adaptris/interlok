@@ -29,7 +29,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.io.FileUtils;
-
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -214,7 +214,7 @@ public class WriteMetadataToFilesystem extends ServiceImp {
   }
 
   public boolean overwriteIfExists() {
-    return getOverwriteIfExists() != null ? getOverwriteIfExists().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getOverwriteIfExists(), false);
   }
 
   private static OutputStyle getStyle(OutputStyle s) {

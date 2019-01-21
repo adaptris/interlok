@@ -31,7 +31,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -452,7 +452,7 @@ public class SharedComponentList implements ComponentLifecycle, ComponentLifecyc
   
 
   boolean isDebug() {
-    return getDebug() != null ? getDebug().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getDebug(), false);
   }
 
   public Boolean getDebug() {

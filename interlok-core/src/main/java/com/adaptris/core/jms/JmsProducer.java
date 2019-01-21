@@ -24,7 +24,7 @@ import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
-
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -181,7 +181,7 @@ public class JmsProducer extends JmsProducerImpl {
   
   @Override
   protected boolean perMessageProperties() {
-    return getPerMessageProperties() != null ? getPerMessageProperties().booleanValue() : true;
+    return BooleanUtils.toBooleanDefaultIfNull(getPerMessageProperties(), true);
   }
 
   private class MyJmsDestination implements JmsDestination {

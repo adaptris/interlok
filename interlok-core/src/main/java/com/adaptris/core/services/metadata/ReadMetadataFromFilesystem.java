@@ -28,7 +28,7 @@ import java.util.Set;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -201,7 +201,7 @@ public class ReadMetadataFromFilesystem extends ServiceImp {
   }
 
   public boolean overwriteExistingMetadata() {
-    return getOverwriteExistingMetadata() != null ? getOverwriteExistingMetadata().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getOverwriteExistingMetadata(), false);
   }
 
   private static InputStyle getStyle(InputStyle s) {
