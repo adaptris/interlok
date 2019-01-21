@@ -56,10 +56,8 @@ public class DebugPoolFactory extends DefaultPoolFactory {
   }
 
   int unreturnedConnectionTimeout() {
-    return Long
-        .valueOf(getUnreturnedConnectionTimeout() != null
-            ? TimeUnit.MILLISECONDS.toSeconds(getUnreturnedConnectionTimeout().toMilliseconds())
-        : TimeUnit.MILLISECONDS.toSeconds(DEFAULT_MAX_UNRETURNED.toMilliseconds())).intValue();
+    return Long.valueOf(TimeInterval.toSecondsDefaultIfNull(getUnreturnedConnectionTimeout(),
+        DEFAULT_MAX_UNRETURNED)).intValue();
   }
 
   /**

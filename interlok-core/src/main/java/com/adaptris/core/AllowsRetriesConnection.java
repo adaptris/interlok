@@ -17,10 +17,9 @@
 package com.adaptris.core;
 
 import java.util.concurrent.TimeUnit;
-
 import javax.validation.Valid;
-
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.util.NumberUtils;
 import com.adaptris.util.TimeInterval;
 
 /**
@@ -90,7 +89,7 @@ public abstract class AllowsRetriesConnection extends AdaptrisConnectionImp {
   }
 
   public int connectionAttempts() {
-    return getConnectionAttempts() != null ? getConnectionAttempts().intValue() : DEFAULT_CONNECTION_ATTEMPTS.intValue();
+    return NumberUtils.toIntDefaultIfNull(getConnectionAttempts(), DEFAULT_CONNECTION_ATTEMPTS);
   }
 
   /**
@@ -99,8 +98,8 @@ public abstract class AllowsRetriesConnection extends AdaptrisConnectionImp {
    * @return the connection retry interval in ms.
    */
   public long connectionRetryInterval() {
-    return getConnectionRetryInterval() != null ? getConnectionRetryInterval().toMilliseconds() : DEFAULT_CONNECTION_RETRY_INTERVAL
-        .toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getConnectionRetryInterval(),
+        DEFAULT_CONNECTION_RETRY_INTERVAL);
   }
 
   protected boolean logWarning(int attemptCount) {

@@ -18,18 +18,16 @@ package com.adaptris.core;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.Removal;
-import com.adaptris.core.services.exception.ThrowExceptionService;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.util.FifoMutexLock;
+import com.adaptris.util.NumberUtils;
 
 public abstract class AdaptrisPollingConsumer extends AdaptrisMessageConsumerImp {
 
@@ -204,7 +202,7 @@ public abstract class AdaptrisPollingConsumer extends AdaptrisMessageConsumerImp
   }
 
   private int maxMessagesPerPoll() {
-    return getMaxMessagesPerPoll() != null ? getMaxMessagesPerPoll().intValue() : THERES_NO_LIMIT;
+    return NumberUtils.toIntDefaultIfNull(getMaxMessagesPerPoll(), THERES_NO_LIMIT);
   }
 
   public Poller getPoller() {

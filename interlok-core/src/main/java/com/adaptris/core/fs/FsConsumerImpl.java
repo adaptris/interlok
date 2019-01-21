@@ -308,7 +308,7 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
   }
 
   long olderThanMs() {
-    return getQuietInterval() != null ? getQuietInterval().toMilliseconds() : DEFAULT_OLDER_THAN.toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getQuietInterval(), DEFAULT_OLDER_THAN);
   }
 
   public TimeInterval getQuietInterval() {

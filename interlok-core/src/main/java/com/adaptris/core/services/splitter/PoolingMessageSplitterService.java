@@ -34,6 +34,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.splitter.ServiceWorkerPool.Worker;
 import com.adaptris.core.util.ManagedThreadFactory;
+import com.adaptris.util.NumberUtils;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -57,8 +58,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
     "splitter", "service", "maxThreads", "warmStart", "ignoreSplitMessageFailures", "sendEvents"
 })
 public class PoolingMessageSplitterService extends AdvancedMessageSplitterService {
-
-  private static final long EVICT_RUN = new TimeInterval(60L, TimeUnit.SECONDS).toMilliseconds();
 
   @InputFieldDefault(value = "10")
   @AdvancedConfig
@@ -114,7 +113,7 @@ public class PoolingMessageSplitterService extends AdvancedMessageSplitterServic
   }
 
   int maxThreads() {
-    return getMaxThreads() != null ? getMaxThreads().intValue() : 10;
+    return NumberUtils.toIntDefaultIfNull(getMaxThreads(), 10);
   }
 
   boolean warmStart() {

@@ -110,7 +110,7 @@ public class WaitService extends ServiceImp {
   }
 
   protected long waitMs() {
-    long maxWaitMs = getWaitInterval() != null ? getWaitInterval().toMilliseconds() : DEFAULT_WAIT.toMilliseconds();
+    long maxWaitMs = TimeInterval.toMillisecondsDefaultIfNull(getWaitInterval(), DEFAULT_WAIT);
     return randomizeWait() ? ThreadLocalRandom.current().nextLong(maxWaitMs) : maxWaitMs;
   }
 
@@ -146,7 +146,7 @@ public class WaitService extends ServiceImp {
   }
 
   protected boolean randomizeWait() {
-    return getRandomize() != null ? getRandomize().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getRandomize(), false);
   }
 
   /**

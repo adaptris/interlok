@@ -20,10 +20,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.concurrent.TimeUnit;
-
 import javax.validation.Valid;
-
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConnectedService;
@@ -138,7 +135,7 @@ public abstract class JdbcService extends ServiceImp implements ConnectedService
   protected Connection getConnection(AdaptrisMessage msg) throws SQLException {
     Connection conn = (Connection) msg.getObjectHeaders().get(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY);
     
-    if ((conn != null) && (!conn.isClosed())){
+    if (conn != null && !conn.isClosed()){
       return conn;
     } else {
       return getConnection().retrieveConnection(DatabaseConnection.class).connect();
@@ -211,10 +208,11 @@ public abstract class JdbcService extends ServiceImp implements ConnectedService
     applyTimeout(p);
     return p;
   }
-  
+
   protected void applyTimeout(Statement stmt) throws SQLException {
     if (getStatementTimeout() != null) {
-      int seconds = Long.valueOf(TimeUnit.MILLISECONDS.toSeconds(getStatementTimeout().toMilliseconds())).intValue();
+      int seconds =
+          Long.valueOf(TimeInterval.toSecondsDefaultIfNull(getStatementTimeout(), 0)).intValue();
       stmt.setQueryTimeout(seconds);
     }
   }

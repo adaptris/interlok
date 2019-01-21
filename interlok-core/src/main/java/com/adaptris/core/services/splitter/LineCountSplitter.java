@@ -28,6 +28,7 @@ import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
+import com.adaptris.util.NumberUtils;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -104,7 +105,7 @@ public class LineCountSplitter extends MessageSplitterImp {
   }
 
   int splitOnLine() {
-    return getSplitOnLine() != null ? getSplitOnLine().intValue() : DEFAULT_SPLIT;
+    return NumberUtils.toIntDefaultIfNull(getSplitOnLine(), DEFAULT_SPLIT);
   }
 
   /**
@@ -152,7 +153,7 @@ public class LineCountSplitter extends MessageSplitterImp {
   }
 
   int bufferSize() {
-    return getBufferSize() != null ? getBufferSize().intValue() : DEFAULT_BUFFER_SIZE;
+    return NumberUtils.toIntDefaultIfNull(getBufferSize(), DEFAULT_BUFFER_SIZE);
   }
 
   public Integer getKeepHeaderLines() {
@@ -164,7 +165,7 @@ public class LineCountSplitter extends MessageSplitterImp {
   }
 
   int keepHeaderLines() {
-    return getKeepHeaderLines() != null ? getKeepHeaderLines().intValue() : DEFAULT_KEEPHEADER_LINES;
+    return NumberUtils.toIntDefaultIfNull(getKeepHeaderLines(), DEFAULT_KEEPHEADER_LINES);
   }
 
   /**

@@ -152,7 +152,7 @@ public class DefaultFailedMessageRetrier extends FailedMessageRetrierImp {
   }
 
   private long shutdownWaitTimeMs() {
-    return getShutdownWaitTime() != null ? getShutdownWaitTime().toMilliseconds() : DEFAULT_SHUTDOWN_WAIT.toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getShutdownWaitTime(), DEFAULT_SHUTDOWN_WAIT);
   }
 
   public TimeInterval getShutdownWaitTime() {

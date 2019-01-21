@@ -338,7 +338,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
       log.warn("Use of deprecated warn-after-message-hand-millis; use warn-after instead");
       result = getWarnAfterMessageHangMillis().longValue();
     } else {
-      result = getWarnAfter() != null ? getWarnAfter().toMilliseconds() : Long.MAX_VALUE;
+      result = TimeInterval.toMillisecondsDefaultIfNull(getWarnAfter(), Long.MAX_VALUE);
     }
     return result;
   }
@@ -360,7 +360,8 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   }
 
   long sendProcessingInterval() {
-    return getSendProcessingInterval() != null ? getSendProcessingInterval().toMilliseconds() : DEFAULT_EXPECT_INTERVAL;
+    return TimeInterval.toMillisecondsDefaultIfNull(getSendProcessingInterval(),
+        DEFAULT_EXPECT_INTERVAL);
   }
 
   protected class BasicServlet extends HttpServlet {

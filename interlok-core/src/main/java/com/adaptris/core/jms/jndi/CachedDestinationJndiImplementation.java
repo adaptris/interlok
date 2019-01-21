@@ -19,14 +19,13 @@ package com.adaptris.core.jms.jndi;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
 import javax.jms.JMSException;
 import javax.jms.Queue;
 import javax.jms.Topic;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.jms.JmsActorConfig;
+import com.adaptris.util.NumberUtils;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -115,7 +114,7 @@ public class CachedDestinationJndiImplementation extends StandardJndiImplementat
   }
 
   public int maxDestinationCacheSize() {
-    return getMaxDestinationCacheSize() != null ? getMaxDestinationCacheSize().intValue() : DEFAULT_MAX_CACHE_SIZE;
+    return NumberUtils.toIntDefaultIfNull(getMaxDestinationCacheSize(), DEFAULT_MAX_CACHE_SIZE);
   }
 
   private class FixedSizeMap<K, V> extends LinkedHashMap<K, V> {

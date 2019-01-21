@@ -41,6 +41,7 @@ import com.adaptris.core.ServiceWrapper;
 import com.adaptris.core.StartedState;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.util.NumberUtils;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -191,7 +192,7 @@ public class RetryingServiceWrapper extends ServiceImp implements EventHandlerAw
   }
 
   int numRetries() {
-    return getNumRetries() != null ? getNumRetries().intValue() : DEFAULT_NUM_RETRIES;
+    return NumberUtils.toIntDefaultIfNull(getNumRetries(), DEFAULT_NUM_RETRIES);
   }
 
   public void setNumRetries(Integer numRetries) {
@@ -203,7 +204,7 @@ public class RetryingServiceWrapper extends ServiceImp implements EventHandlerAw
   }
 
   long delayBetweenRetriesMs() {
-    return getDelayBetweenRetries() != null ? getDelayBetweenRetries().toMilliseconds() : DEFAULT_DELAY.toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getDelayBetweenRetries(), DEFAULT_DELAY);
   }
 
   public void setDelayBetweenRetries(TimeInterval delayBetweenRetries) {

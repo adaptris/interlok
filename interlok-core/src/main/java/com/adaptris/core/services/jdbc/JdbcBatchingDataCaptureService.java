@@ -30,6 +30,7 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.jdbc.DatabaseConnection;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
+import com.adaptris.util.NumberUtils;
 import com.adaptris.util.text.xml.XPath;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -120,7 +121,7 @@ public class JdbcBatchingDataCaptureService extends JdbcIteratingDataCaptureServ
   }
 
   int batchWindow() {
-    return getBatchWindow() != null ? getBatchWindow().intValue() : DEFAULT_BATCH_WINDOW;
+    return NumberUtils.toIntDefaultIfNull(getBatchWindow(), DEFAULT_BATCH_WINDOW);
   }
 
   protected static long rowsUpdated(int[] rc) throws SQLException {

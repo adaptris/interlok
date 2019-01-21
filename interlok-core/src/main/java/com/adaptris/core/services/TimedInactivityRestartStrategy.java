@@ -61,7 +61,8 @@ public class TimedInactivityRestartStrategy implements RestartStrategy {
   @Override
   public boolean requiresRestart() {
     long currentTime = new Date().getTime();
-    if((currentTime - lastMessageProcessedTime) > inactivityPeriod.toMilliseconds()) { // we have expired our session, lets close it all down and recreate later when we need it.
+    // we have expired our session, lets close it all down and recreate later when we need it.
+    if (currentTime - lastMessageProcessedTime > inactivityPeriodMs()) {
       return true;
     }
     return false;
@@ -75,4 +76,8 @@ public class TimedInactivityRestartStrategy implements RestartStrategy {
     this.inactivityPeriod = inactivityPeriod;
   }
 
+  protected long inactivityPeriodMs() {
+    return TimeInterval.toMillisecondsDefaultIfNull(getInactivityPeriod(),
+        DEFAULT_INACTIVITY_PERIOD);
+  }
 }

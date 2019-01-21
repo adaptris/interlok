@@ -21,18 +21,16 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
-
 import javax.management.MalformedObjectNameException;
-
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.runtime.AdapterManager;
 import com.adaptris.core.runtime.ParentRuntimeInfoComponent;
 import com.adaptris.core.runtime.RuntimeInfoComponent;
 import com.adaptris.core.runtime.RuntimeInfoComponentFactory;
 import com.adaptris.core.util.Args;
+import com.adaptris.util.NumberUtils;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -131,7 +129,7 @@ public class FileLogHandler extends LogHandlerImp {
   }
 
   int period() {
-    return getPeriod() != null ? getPeriod().intValue() : DEFAULT_PERIOD;
+    return NumberUtils.toIntDefaultIfNull(getPeriod(), DEFAULT_PERIOD);
   }
 
   /**

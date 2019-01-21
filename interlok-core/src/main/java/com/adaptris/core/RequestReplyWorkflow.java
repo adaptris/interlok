@@ -235,7 +235,7 @@ public class RequestReplyWorkflow extends StandardWorkflow {
   }
 
   long replyTimeout() {
-    return getReplyTimeout() != null ? getReplyTimeout().toMilliseconds() : DEFAULT_REPLY_TIMEOUT.toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getReplyTimeout(), DEFAULT_REPLY_TIMEOUT);
   }
 
   /** Set whether the reply message should retain the request message id.

@@ -46,6 +46,7 @@ import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.FifoMutexLock;
+import com.adaptris.util.NumberUtils;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -183,15 +184,15 @@ public class PoolingWorkflow extends WorkflowImp {
   }
 
   public int poolSize() {
-    return getPoolSize() != null ? getPoolSize().intValue() : DEFAULT_MAX_POOLSIZE;
+    return NumberUtils.toIntDefaultIfNull(getPoolSize(), DEFAULT_MAX_POOLSIZE);
   }
 
   public long threadLifetimeMs() {
-    return getThreadKeepAlive() != null ? getThreadKeepAlive().toMilliseconds() : DEFAULT_THREAD_LIFETIME.toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getThreadKeepAlive(), DEFAULT_THREAD_LIFETIME);
   }
 
   public long shutdownWaitTimeMs() {
-    return getShutdownWaitTime() != null ? getShutdownWaitTime().toMilliseconds() : DEFAULT_SHUTDOWN_WAIT.toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getShutdownWaitTime(), DEFAULT_SHUTDOWN_WAIT);
   }
 
   public TimeInterval getThreadKeepAlive() {
@@ -501,7 +502,7 @@ public class PoolingWorkflow extends WorkflowImp {
    * @return the maximum idle number
    */
   public int minIdle() {
-    return getMinIdle() != null ? getMinIdle().intValue() : DEFAULT_MIN_IDLE;
+    return NumberUtils.toIntDefaultIfNull(getMinIdle(), DEFAULT_MIN_IDLE);
   }
 
   /**
@@ -528,11 +529,11 @@ public class PoolingWorkflow extends WorkflowImp {
    * @return the maximum idle number
    */
   public int maxIdle() {
-    return getMaxIdle() != null ? getMaxIdle().intValue() : DEFAULT_MAX_IDLE;
+    return NumberUtils.toIntDefaultIfNull(getMaxIdle(), DEFAULT_MAX_IDLE);
   }
 
   public int threadPriority() {
-    return getThreadPriority() != null ? getThreadPriority().intValue() : Thread.NORM_PRIORITY;
+    return NumberUtils.toIntDefaultIfNull(getThreadPriority(), Thread.NORM_PRIORITY);
   }
 
 
@@ -556,7 +557,7 @@ public class PoolingWorkflow extends WorkflowImp {
   }
 
   public long initWaitTimeMs() {
-    return getInitWaitTime() != null ? getInitWaitTime().toMilliseconds() : DEFAULT_INIT_WAIT.toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getInitWaitTime(), DEFAULT_INIT_WAIT);
   }
 
   /**

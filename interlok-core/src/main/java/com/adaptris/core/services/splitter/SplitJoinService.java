@@ -236,7 +236,7 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
   }
 
   long timeoutMs() {
-    return getTimeout() != null ? getTimeout().toMilliseconds() : DEFAULT_TTL.toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getTimeout(), DEFAULT_TTL);
   }
 
   @Override

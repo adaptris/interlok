@@ -17,12 +17,9 @@
 package com.adaptris.core.ftp;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.io.IOException;
 import java.util.TimeZone;
-
 import javax.validation.constraints.NotNull;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.CoreException;
@@ -36,6 +33,7 @@ import com.adaptris.security.exc.PasswordException;
 import com.adaptris.security.password.Password;
 import com.adaptris.util.KeyValuePairBag;
 import com.adaptris.util.KeyValuePairSet;
+import com.adaptris.util.NumberUtils;
 
 /**
  * Abstract implementation of FTPConnection both vanilla and SSL.
@@ -127,7 +125,7 @@ public abstract class FtpConnectionImp extends FileTransferConnectionUsingPasswo
   }
 
   int socketTimeout() {
-    return getSocketTimeout() != null ? getSocketTimeout().intValue() : DEFAULT_SOCKET_TIMEOUT;
+    return NumberUtils.toIntDefaultIfNull(getSocketTimeout(), DEFAULT_SOCKET_TIMEOUT);
   }
 
   /**
@@ -267,7 +265,7 @@ public abstract class FtpConnectionImp extends FileTransferConnectionUsingPasswo
 
   @Override
   public int defaultControlPort() {
-    return getDefaultControlPort() != null ? getDefaultControlPort().intValue() : DEFAULT_FTP_CONTROL_PORT;
+    return NumberUtils.toIntDefaultIfNull(getDefaultControlPort(), DEFAULT_FTP_CONTROL_PORT);
   }
 
   public KeyValuePairSet getAdditionalSettings() {

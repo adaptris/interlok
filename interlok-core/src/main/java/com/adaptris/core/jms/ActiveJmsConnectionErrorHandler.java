@@ -122,10 +122,8 @@ public class ActiveJmsConnectionErrorHandler extends JmsConnectionErrorHandlerIm
   }
 
   long retryInterval() {
-    long period = 0;
-    if (getCheckInterval() != null) {
-      period = getCheckInterval().toMilliseconds();
-    }
+    long period =
+        TimeInterval.toMillisecondsDefaultIfNull(getCheckInterval(), DEFAULT_CHECK_INTERVAL);
     if (period <= 0) {
       period = DEFAULT_CHECK_INTERVAL.toMilliseconds();
     }

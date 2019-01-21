@@ -183,13 +183,12 @@ public class SlowMessageNotification extends NotifyingInterceptor {
   }
 
   long notifyThreshold() {
-    return getNotifyThreshold() != null ? getNotifyThreshold().toMilliseconds() : DEFAULT_THRESHOLD
-        .toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getNotifyThreshold(), DEFAULT_THRESHOLD);
   }
 
   long cleanupInterval() {
-    return cleanupInterval != null ? cleanupInterval.toMilliseconds() : notifyThreshold()
-        + DEFAULT_THRESHOLD.toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(cleanupInterval,
+        notifyThreshold() + DEFAULT_THRESHOLD.toMilliseconds());
   }
 
   private void scheduleTask() {

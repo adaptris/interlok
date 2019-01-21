@@ -53,6 +53,7 @@ import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.RequestReplyProducerImp;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.util.NumberUtils;
 
 public abstract class JmsProducerImpl extends RequestReplyProducerImp implements JmsActorConfig {
 
@@ -247,7 +248,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
 
   protected long calculateTimeToLive(AdaptrisMessage msg, Long defaultTTL)
       throws JMSException {
-    long ttl = defaultTTL != null ? defaultTTL.longValue() : 0;
+    long ttl = NumberUtils.toLongDefaultIfNull(defaultTTL, 0);
     try {
       if (msg.headersContainsKey(JMS_EXPIRATION)) {
         Date expiration = new Date();
@@ -262,7 +263,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
         ttl = expiration.getTime() - System.currentTimeMillis();
         if (ttl < 0) {
           log.trace("TTL calculated as negative number, using configured ttl");
-          ttl = defaultTTL != null ? defaultTTL.longValue() : 0;
+          ttl = NumberUtils.toLongDefaultIfNull(defaultTTL, 0);
         }
       }
     } catch (ParseException e) {
@@ -283,7 +284,8 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
   }
 
   protected int calculatePriority(AdaptrisMessage msg, Integer defaultPriority) {
-    int priority = defaultPriority != null ? defaultPriority.intValue() : DEFAULT_PRIORITY;
+    int priority = NumberUtils.toIntDefaultIfNull(defaultPriority, DEFAULT_PRIORITY);
+
     if (msg.headersContainsKey(JMS_PRIORITY)) {
       priority = Integer.parseInt(msg.getMetadataValue(JMS_PRIORITY));
     }
@@ -339,7 +341,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
   }
 
   protected int messagePriority() {
-    return getPriority() == null ? DEFAULT_PRIORITY : getPriority().intValue();
+    return NumberUtils.toIntDefaultIfNull(getPriority(), DEFAULT_PRIORITY);
   }
 
   /**
@@ -363,7 +365,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
   }
 
   protected long timeToLive() {
-    return getTtl() != null ? getTtl().longValue() : 0;
+    return NumberUtils.toLongDefaultIfNull(getTtl(), 0);
   }
 
   /**

@@ -223,7 +223,7 @@ public class JmxNotificationConsumer extends AdaptrisMessageConsumerImp implemen
   }
 
   long retryInterval() {
-    return getRetryInterval() != null ? getRetryInterval().toMilliseconds() : DEFAULT_INTERVAL.toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getRetryInterval(), DEFAULT_INTERVAL);
   }
 
 }

@@ -128,7 +128,8 @@ public class RetryOnceStandaloneProducer extends StandaloneProducer {
   // properties
 
   long waitBeforeRetry() {
-    return getWaitBeforeRetry() != null ? getWaitBeforeRetry().toMilliseconds() : DEFAULT_WAIT_BEFORE_RETRY.toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getWaitBeforeRetry(),
+        DEFAULT_WAIT_BEFORE_RETRY);
   }
 
   public TimeInterval getWaitBeforeRetry() {

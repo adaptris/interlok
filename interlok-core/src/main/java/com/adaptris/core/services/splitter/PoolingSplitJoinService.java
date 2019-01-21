@@ -31,7 +31,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.services.aggregator.MessageAggregator;
 import com.adaptris.core.services.splitter.ServiceWorkerPool.Worker;
-import com.adaptris.core.util.NumberUtils;
+import com.adaptris.util.NumberUtils;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**

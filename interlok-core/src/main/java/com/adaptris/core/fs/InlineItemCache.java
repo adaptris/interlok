@@ -21,10 +21,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisComponent;
@@ -127,7 +125,8 @@ public class InlineItemCache implements ProcessedItemCache {
   }
 
   long ageBeforeEvictionMs() {
-    return getAgeBeforeEviction() != null ? getAgeBeforeEviction().toMilliseconds() : DEFAULT_AGE_BEFORE_EVICTION.toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getAgeBeforeEviction(),
+        DEFAULT_AGE_BEFORE_EVICTION);
   }
 
   public TimeInterval getAgeBeforeEviction() {

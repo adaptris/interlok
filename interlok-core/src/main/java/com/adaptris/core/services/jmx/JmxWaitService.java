@@ -125,7 +125,7 @@ public class JmxWaitService extends JmxOperationServiceImpl {
   }
 
   long retryInterval() {
-    return getRetryInterval() != null ? getRetryInterval().toMilliseconds() : DEFAULT_INTERVAL.toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getRetryInterval(), DEFAULT_INTERVAL);
   }
 
   /**

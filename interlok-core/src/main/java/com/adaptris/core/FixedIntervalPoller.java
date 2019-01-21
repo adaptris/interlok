@@ -62,7 +62,7 @@ public class FixedIntervalPoller extends ScheduledTaskPoller {
   }
 
   long pollInterval() {
-    return getPollInterval() != null ? getPollInterval().toMilliseconds() : DEFAULT_POLL_INTERVAL.toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getPollInterval(), DEFAULT_POLL_INTERVAL);
   }
 
   public TimeInterval getPollInterval() {

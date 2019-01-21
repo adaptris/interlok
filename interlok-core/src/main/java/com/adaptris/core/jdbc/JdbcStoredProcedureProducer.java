@@ -343,10 +343,7 @@ public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
 
   @Override
   protected long defaultTimeout() {
-    if(this.getTimeout() != null)
-      return this.getTimeout().toMilliseconds();
-    else
-      return DEFAULT_TIMEOUT_MS;
+    return TimeInterval.toMillisecondsDefaultIfNull(getTimeout(), DEFAULT_TIMEOUT_MS);
   }
 
   public TimeInterval getTimeout() {
