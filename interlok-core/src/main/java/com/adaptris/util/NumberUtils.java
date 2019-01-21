@@ -1,4 +1,4 @@
-package com.adaptris.core.util;
+package com.adaptris.util;
 
 public abstract class NumberUtils {
 
