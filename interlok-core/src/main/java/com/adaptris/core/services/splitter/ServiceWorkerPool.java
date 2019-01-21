@@ -25,9 +25,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.pool.ObjectPool;
-import org.apache.commons.pool.PoolableObjectFactory;
-import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.commons.pool2.ObjectPool;
+import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.PooledObjectFactory;
+import org.apache.commons.pool2.impl.DefaultPooledObject;
+import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,13 +69,13 @@ public class ServiceWorkerPool {
   }
 
   public GenericObjectPool<Worker> createObjectPool() throws CoreException {
-    GenericObjectPool<Worker> pool = new GenericObjectPool(new WorkerFactory());
+    GenericObjectPool<Worker> pool = new GenericObjectPool<>(new WorkerFactory());
     // Make the pool the same size as the thread pool
-    pool.setMaxActive(maxThreads);
+    pool.setMaxTotal(maxThreads);
     pool.setMinIdle(maxThreads);
     pool.setMaxIdle(maxThreads);
-    pool.setMaxWait(-1L);
-    pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_BLOCK);
+    pool.setMaxWaitMillis(-1L);
+    pool.setBlockWhenExhausted(true);
     pool.setMinEvictableIdleTimeMillis(EVICT_RUN);
     pool.setTimeBetweenEvictionRunsMillis(EVICT_RUN + new Random(EVICT_RUN).nextLong());
     return pool;
@@ -84,7 +86,7 @@ public class ServiceWorkerPool {
   }
 
 
-  public static void closeQuietly(ObjectPool pool) {
+  public static void closeQuietly(ObjectPool<?> pool) {
     try {
       if (pool != null) pool.close();
     } catch (Exception ignored) {
@@ -168,32 +170,34 @@ public class ServiceWorkerPool {
 
   }
 
-  class WorkerFactory implements PoolableObjectFactory<Worker> {
+  class WorkerFactory implements PooledObjectFactory<Worker> {
 
     WorkerFactory() {
     }
 
     @Override
-    public Worker makeObject() throws Exception {
-      return new Worker().start();
+    public PooledObject<Worker> makeObject() throws Exception {
+      Worker w = new Worker();
+      w.start();
+      return new DefaultPooledObject<>(w);
     }
 
     @Override
-    public void destroyObject(Worker w) throws Exception {
-      w.stop();
+    public void destroyObject(PooledObject<Worker> arg0) throws Exception {
+      arg0.getObject().stop();
     }
 
     @Override
-    public boolean validateObject(Worker w) {
-      return w.isValid();
+    public boolean validateObject(PooledObject<Worker> arg0) {
+      return arg0.getObject().isValid();
     }
 
     @Override
-    public void activateObject(Worker arg0) throws Exception {
+    public void activateObject(PooledObject<Worker> arg0) throws Exception {
     }
 
     @Override
-    public void passivateObject(Worker arg0) throws Exception {
+    public void passivateObject(PooledObject<Worker> arg0) throws Exception {
     }
 
   }

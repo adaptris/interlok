@@ -1,18 +1,18 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.services.splitter;
 
@@ -20,10 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
-
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.pool.impl.GenericObjectPool;
-
+import org.apache.commons.pool2.impl.GenericObjectPool;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -33,11 +31,12 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.services.aggregator.MessageAggregator;
 import com.adaptris.core.services.splitter.ServiceWorkerPool.Worker;
+import com.adaptris.core.util.NumberUtils;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Variant of {@link SplitJoinService} that uses a underlying thread and object pool to execute the service on each split message.
- * 
+ *
  * <p>
  * This service splits a message according to the configured {@link MessageSplitter} implementation, executes the configured
  * {@link com.adaptris.core.Service} and subsequently joins all the messages back using the configured {@link MessageAggregator}
@@ -48,9 +47,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * re-used for each message; so the high cost of initialisation for the service, is not incurred (more than the max number of
  * threads specified) as much.
  * </p>
- * 
+ *
  * @config pooling-split-join-service
- * 
+ *
  */
 @XStreamAlias("pooling-split-join-service")
 @AdapterComponent
@@ -129,11 +128,11 @@ public class PoolingSplitJoinService extends SplitJoinService {
 
   /**
    * Set the max number of threads to handle the execution of the split messages.
-   * 
+   *
    * @param size the max number of threads, defaults to 10 if not specified.
    */
   public void setMaxThreads(Integer size) {
-    this.maxThreads = size;
+    maxThreads = size;
   }
 
   public PoolingSplitJoinService withMaxThreads(Integer max) {
@@ -142,7 +141,7 @@ public class PoolingSplitJoinService extends SplitJoinService {
   }
 
   int maxThreads() {
-    return getMaxThreads() != null ? getMaxThreads().intValue() : DEFAULT_THREADS;
+    return NumberUtils.toIntDefaultIfNull(getMaxThreads(), DEFAULT_THREADS);
   }
 
   boolean warmStart() {
@@ -155,11 +154,11 @@ public class PoolingSplitJoinService extends SplitJoinService {
 
   /**
    * Specify if the underlying object pool should be warmed up on {@link #start()}.
-   * 
+   *
    * @param b true or false (default false if not specified).
    */
   public void setWarmStart(Boolean b) {
-    this.warmStart = b;
+    warmStart = b;
   }
 
   public PoolingSplitJoinService withWarmStart(Boolean b) {
