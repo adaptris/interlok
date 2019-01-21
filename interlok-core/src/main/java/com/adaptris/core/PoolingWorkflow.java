@@ -30,8 +30,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
-import org.apache.commons.lang.math.IntRange;
-import org.apache.commons.pool.PoolableObjectFactory;
+import org.apache.commons.lang3.Range;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.PooledObjectFactory;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
@@ -42,8 +41,8 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.FifoMutexLock;
 import com.adaptris.util.NumberUtils;
@@ -118,7 +117,10 @@ public class PoolingWorkflow extends WorkflowImp {
    */
   private static final TimeInterval DEFAULT_INIT_WAIT = new TimeInterval(1L, TimeUnit.MINUTES.name());
 
-  private static final IntRange PRIORITY_RANGE = new IntRange(Thread.MIN_PRIORITY, Thread.MAX_PRIORITY);
+  private static final Range PRIORITY_RANGE =
+      Range.between(Thread.MIN_PRIORITY, Thread.MAX_PRIORITY);
+
+  private transient boolean priorityWarningLogged = false;
 
   @InputFieldDefault(value = "10")
   private Integer poolSize;
@@ -472,9 +474,6 @@ public class PoolingWorkflow extends WorkflowImp {
   }
 
   public void setThreadPriority(Integer i) {
-    if (!PRIORITY_RANGE.containsInteger(Args.notNull(i, "threadPriority"))) {
-      throw new IllegalArgumentException("OutOfBounds : " + PRIORITY_RANGE.toString());
-    }
     threadPriority = i;
   }
 
@@ -533,7 +532,15 @@ public class PoolingWorkflow extends WorkflowImp {
   }
 
   public int threadPriority() {
-    return NumberUtils.toIntDefaultIfNull(getThreadPriority(), Thread.NORM_PRIORITY);
+    int priority = NumberUtils.toIntDefaultIfNull(getThreadPriority(), Thread.NORM_PRIORITY);
+    if (!PRIORITY_RANGE.contains(priority)) {
+      LoggingHelper.logWarning(priorityWarningLogged, () -> {
+        priorityWarningLogged = true;
+      }, "thread-priority [{}] isn't in range {}, reset to default", priority,
+          PRIORITY_RANGE.toString());
+      priority = Thread.NORM_PRIORITY;
+    }
+    return priority;
   }
 
 
@@ -636,9 +643,7 @@ public class PoolingWorkflow extends WorkflowImp {
     WorkerFactory() {
     }
 
-    /**
-     * @see PoolableObjectFactory#makeObject()
-     */
+
     @Override
     public PooledObject<Worker> makeObject() throws Exception {
       Worker w = null;
@@ -653,32 +658,22 @@ public class PoolingWorkflow extends WorkflowImp {
       return new DefaultPooledObject<>(w);
     }
 
-    /**
-     * @see PoolableObjectFactory#destroyObject(java.lang.Object)
-     */
+
     @Override
     public void destroyObject(PooledObject<Worker> arg0) throws Exception {
       arg0.getObject().stop();
     }
 
-    /**
-     * @see PoolableObjectFactory#validateObject(java.lang.Object)
-     */
     @Override
     public boolean validateObject(PooledObject<Worker> arg0) {
       return arg0.getObject().isValid();
     }
 
-    /**
-     * @see PoolableObjectFactory#activateObject(java.lang.Object)
-     */
+
     @Override
     public void activateObject(PooledObject<Worker> arg0) throws Exception {
     }
 
-    /**
-     * @see PoolableObjectFactory#passivateObject(java.lang.Object)
-     */
     @Override
     public void passivateObject(PooledObject<Worker> arg0) throws Exception {
     }

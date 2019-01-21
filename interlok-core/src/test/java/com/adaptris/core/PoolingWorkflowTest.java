@@ -165,6 +165,25 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
 
   }
 
+  public void testInitWaitTime() throws Exception {
+    PoolingWorkflow workflow = new PoolingWorkflow();
+    TimeInterval defaultInterval = new TimeInterval(60L, TimeUnit.SECONDS.name());
+    assertNull(workflow.getInitWaitTime());
+    assertEquals(defaultInterval.toMilliseconds(), workflow.initWaitTimeMs());
+
+    TimeInterval interval = new TimeInterval(200L, TimeUnit.MILLISECONDS.name());
+    workflow.setInitWaitTime(interval);
+    assertEquals(interval, workflow.getInitWaitTime());
+    assertNotSame(defaultInterval.toMilliseconds(), workflow.initWaitTimeMs());
+    assertEquals(interval.toMilliseconds(), workflow.initWaitTimeMs());
+
+    workflow.setThreadKeepAlive(null);
+
+    assertNull(workflow.getThreadKeepAlive());
+    assertEquals(defaultInterval.toMilliseconds(), workflow.threadLifetimeMs());
+
+  }
+
   public void testSetMaxIdle() throws Exception {
     PoolingWorkflow workflow = new PoolingWorkflow();
     workflow.setPoolSize(20);
@@ -196,35 +215,16 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
     assertEquals(Thread.NORM_PRIORITY, workflow.threadPriority());
     assertEquals(Thread.NORM_PRIORITY, workflow.getThreadPriority().intValue());
 
-    try {
-      workflow.setThreadPriority(null);
-      fail();
-    }
-    catch (IllegalArgumentException expected) {
-
-    }
-    assertNotNull(workflow.getThreadPriority());
-    assertEquals(Thread.NORM_PRIORITY, workflow.getThreadPriority().intValue());
-
-    try {
-      workflow.setThreadPriority(99);
-      fail();
-    }
-    catch (IllegalArgumentException expected) {
-
-    }
-    assertNotNull(workflow.getThreadPriority());
-    assertEquals(Thread.NORM_PRIORITY, workflow.getThreadPriority().intValue());
+    workflow.setThreadPriority(null);
     assertEquals(Thread.NORM_PRIORITY, workflow.threadPriority());
-    try {
-      workflow.setThreadPriority(-1);
-      fail();
-    }
-    catch (IllegalArgumentException expected) {
+    assertNull(workflow.getThreadPriority());
 
-    }
+    workflow.setThreadPriority(99);
     assertNotNull(workflow.getThreadPriority());
-    assertEquals(Thread.NORM_PRIORITY, workflow.getThreadPriority().intValue());
+    // It might be set, but it won't be 99 when we get it.
+    assertEquals(Thread.NORM_PRIORITY, workflow.threadPriority());
+    workflow.setThreadPriority(-1);
+    assertNotNull(workflow.getThreadPriority());
     assertEquals(Thread.NORM_PRIORITY, workflow.threadPriority());
   }
 
