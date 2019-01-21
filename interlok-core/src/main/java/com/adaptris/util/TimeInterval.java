@@ -105,4 +105,14 @@ public class TimeInterval {
   public static long toMillisecondsDefaultIfNull(TimeInterval t, TimeInterval defaultInterval) {
     return toMillisecondsDefaultIfNull(t, defaultInterval.toMilliseconds());
   }
+
+  public static int toSecondsDefaultIfNull(TimeInterval t, TimeInterval defaultInterval) {
+    return Long.valueOf(TimeUnit.MILLISECONDS
+        .toSeconds(TimeInterval.toMillisecondsDefaultIfNull(t, defaultInterval))).intValue();
+  }
+
+  public static int toSecondsDefaultIfNull(TimeInterval t, long defaultMs) {
+    return Long.valueOf(TimeUnit.MILLISECONDS
+        .toSeconds(TimeInterval.toMillisecondsDefaultIfNull(t, defaultMs))).intValue();
+  }
 }
