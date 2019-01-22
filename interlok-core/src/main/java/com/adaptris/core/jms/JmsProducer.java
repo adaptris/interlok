@@ -192,6 +192,7 @@ public class JmsProducer extends JmsProducerImpl {
     private Long timeToLive;
     private Integer priority;
     private String subscriptionId;
+    private String sharedConsumerId;
     private boolean noLocal;
     private JmsDestination.DestinationType destType;
 
@@ -204,6 +205,7 @@ public class JmsProducer extends JmsProducerImpl {
       destType = orig.destinationType();
       noLocal = orig.noLocal();
       subscriptionId = orig.subscriptionId();
+      sharedConsumerId = orig.sharedConsumerId();
     }
 
     MyJmsDestination(Destination d) {
@@ -263,6 +265,11 @@ public class JmsProducer extends JmsProducerImpl {
 
     public String toString() {
       return getDestination().toString();
+    }
+
+    @Override
+    public String sharedConsumerId() {
+      return sharedConsumerId;
     }
   }
 }

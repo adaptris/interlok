@@ -51,6 +51,7 @@ public abstract class VendorImplementationImp implements VendorImplementation {
   private static final String RFC6167_DELIVERY_MODE = "deliveryMode";
   private static final String RFC6167_SUBSCRIPTION_ID = "subscriptionId";
   private static final String RFC6167_NO_LOCAL = "noLocal";
+  private static final String JMS20_SHARED_CONSUMER_ID = "sharedConsumerId";
 
   private static final String URI_CHARSET = "UTF-8";
   protected transient Logger log = LoggerFactory.getLogger(this.getClass());
@@ -157,6 +158,7 @@ public abstract class VendorImplementationImp implements VendorImplementation {
         jmsDest.setPriority(params.get(RFC6167_PRIORITY));
         jmsDest.setTimeToLive(params.get(RFC6167_TIME_TO_LIVE));
         jmsDest.setSubscriptionId(params.get(RFC6167_SUBSCRIPTION_ID));
+        jmsDest.setSharedConsumerId(params.get(JMS20_SHARED_CONSUMER_ID));
         jmsDest.setNoLocal(params.get(RFC6167_NO_LOCAL));
         String replyToName = params.get(RFC6167_REPLY_TO_NAME);
         if (!isEmpty(replyToName)) {
@@ -176,6 +178,7 @@ public abstract class VendorImplementationImp implements VendorImplementation {
     private Destination destination;
     private String deliveryMode;
     private String subscriptionId;
+    private String sharedConsumerId;
     private Destination replyTo;
     private Long timeToLive;
     private Integer priority;
@@ -252,6 +255,15 @@ public abstract class VendorImplementationImp implements VendorImplementation {
 
     private void setNoLocal(String b) {
       noLocal = Boolean.valueOf(b);
+    }
+
+    @Override
+    public String sharedConsumerId() {
+      return sharedConsumerId;
+    }
+    
+    private void setSharedConsumerId(String sharedConsumerId) {
+      this.sharedConsumerId = sharedConsumerId;
     }
   }
 
