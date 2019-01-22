@@ -21,9 +21,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.ExecutorService;
 
-import org.apache.commons.pool2.PooledObject;
-import org.apache.commons.pool2.PooledObjectFactory;
-import org.apache.commons.pool2.impl.GenericObjectPool;
+import org.apache.commons.pool.impl.GenericObjectPool;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,9 +31,10 @@ import com.adaptris.core.NullService;
 import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.TimeInterval;
 
-public class ServiceWorkerPoolTest extends ServiceWorkerPool {
+@SuppressWarnings("deprecation")
+public class ServiceWorkerPoolLegacyTest extends ServiceWorkerPool {
 
-  public ServiceWorkerPoolTest() throws Exception {
+  public ServiceWorkerPoolLegacyTest() throws Exception {
     super(new NullService(), null, 10);
   }
 
@@ -49,13 +48,13 @@ public class ServiceWorkerPoolTest extends ServiceWorkerPool {
 
   @Test
   public void testCreateObjectPool() throws Exception {
-    GenericObjectPool<ServiceWorkerPool.Worker> pool = createCommonsObjectPool();
+    GenericObjectPool<ServiceWorkerPool.Worker> pool = createObjectPool();
     assertNotNull(pool);
-    assertEquals(10, pool.getMaxTotal());
+    assertEquals(10, pool.getMaxActive());
     assertEquals(10, pool.getMinIdle());
     assertEquals(10, pool.getMaxIdle());
-    assertEquals(-1, pool.getMaxWaitMillis());
-    assertTrue(pool.getBlockWhenExhausted());
+    assertEquals(-1, pool.getMaxWait());
+    assertEquals(GenericObjectPool.WHEN_EXHAUSTED_BLOCK, pool.getWhenExhaustedAction());
   }
 
   @Test
@@ -68,12 +67,12 @@ public class ServiceWorkerPoolTest extends ServiceWorkerPool {
   @Test
   public void testCloseQuietly() {
     closeQuietly((GenericObjectPool) null);
-    closeQuietly(new GenericObjectPool(new DummyPooledObjectFactory()));
-    closeQuietly(new GenericObjectPool(new DummyPooledObjectFactory()) {
+    closeQuietly(new GenericObjectPool());
+    closeQuietly(new GenericObjectPool() {
 
       @Override
-      public void close() {
-        throw new RuntimeException();
+      public void close() throws Exception {
+        throw new Exception();
       }
 
     });
@@ -90,8 +89,8 @@ public class ServiceWorkerPoolTest extends ServiceWorkerPool {
 
   @Test
   public void testWorkerFactory() throws Exception {
-    ServiceWorkerPool.WorkerFactory workerFactory = new ServiceWorkerPool.WorkerFactory();
-    PooledObject<ServiceWorkerPool.Worker> worker = workerFactory.makeObject();
+    ServiceWorkerPool.LegacyCommonsPoolWorkerFactory workerFactory = new ServiceWorkerPool.LegacyCommonsPoolWorkerFactory();
+    ServiceWorkerPool.Worker worker = workerFactory.makeObject();
     assertNotNull(worker);
     workerFactory.validateObject(worker);
     workerFactory.activateObject(worker);
@@ -99,29 +98,4 @@ public class ServiceWorkerPoolTest extends ServiceWorkerPool {
     workerFactory.destroyObject(worker);
   }
 
-  private class DummyPooledObjectFactory implements PooledObjectFactory {
-
-    @Override
-    public PooledObject makeObject() throws Exception {
-      return null;
-    }
-
-    @Override
-    public void destroyObject(PooledObject p) throws Exception {
-    }
-
-    @Override
-    public boolean validateObject(PooledObject p) {
-      return false;
-    }
-
-    @Override
-    public void activateObject(PooledObject p) throws Exception {
-    }
-
-    @Override
-    public void passivateObject(PooledObject p) throws Exception {
-    }
-
-  }
 }

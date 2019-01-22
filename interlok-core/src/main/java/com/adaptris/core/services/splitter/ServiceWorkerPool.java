@@ -33,6 +33,7 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMarshaller;
@@ -41,6 +42,7 @@ import com.adaptris.core.Service;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.TimeInterval;
 
@@ -51,7 +53,7 @@ public class ServiceWorkerPool {
   private transient EventHandler eventHandler;
   private transient int maxThreads;
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
-
+  private static transient boolean warningLogged = false;
   public ServiceWorkerPool(Service s, EventHandler eh, int maxThreads) throws CoreException {
     try {
       this.wrappedService = Args.notNull(s, "service");
@@ -68,7 +70,7 @@ public class ServiceWorkerPool {
     return result;
   }
 
-  public GenericObjectPool<Worker> createObjectPool() throws CoreException {
+  public GenericObjectPool<Worker> createCommonsObjectPool() throws CoreException {
     GenericObjectPool<Worker> pool = new GenericObjectPool<>(new WorkerFactory());
     // Make the pool the same size as the thread pool
     pool.setMaxTotal(maxThreads);
@@ -81,7 +83,27 @@ public class ServiceWorkerPool {
     return pool;
   }
 
-  ExecutorService createExecutor(String prefix) {
+  /**
+   * 
+   * @deprecated since 3.8.3 switch to commons-pool2 and {@link createCommonsObjectPool()} instead.
+   */
+  @Deprecated
+  @Removal(version = "3.9.0", message = "use commons-pool2 + createCommonsObjectPool()")
+  public org.apache.commons.pool.impl.GenericObjectPool<Worker> createObjectPool() throws CoreException {
+    logDeprecationWarning();
+    org.apache.commons.pool.impl.GenericObjectPool<Worker> pool = new org.apache.commons.pool.impl.GenericObjectPool(
+        new LegacyCommonsPoolWorkerFactory());
+    pool.setMaxActive(maxThreads);
+    pool.setMinIdle(maxThreads);
+    pool.setMaxIdle(maxThreads);
+    pool.setMaxWait(-1L);
+    pool.setWhenExhaustedAction(org.apache.commons.pool.impl.GenericObjectPool.WHEN_EXHAUSTED_BLOCK);
+    pool.setMinEvictableIdleTimeMillis(EVICT_RUN);
+    pool.setTimeBetweenEvictionRunsMillis(EVICT_RUN + new Random(EVICT_RUN).nextLong());
+    return pool;
+  }
+  
+  public ExecutorService createExecutor(String prefix) {
     return Executors.newFixedThreadPool(maxThreads, new ManagedThreadFactory(prefix));
   }
 
@@ -94,6 +116,58 @@ public class ServiceWorkerPool {
     }
   }
 
+  /**
+   * 
+   * @deprecated since 3.8.3 switch to commons-pool2 instead.
+   */
+  @Deprecated
+  @Removal(version = "3.9.0", message="use commons-pool2 variant instead")
+  public static void closeQuietly(org.apache.commons.pool.ObjectPool<?> pool) {
+    logDeprecationWarning();
+    try {
+      if (pool != null) pool.close();
+    } catch (Exception ignored) {
+
+    }
+  }
+  
+  /**
+   * 
+   * @deprecated since 3.8.3 switch to commons-pool2 instead.
+   */
+  @Deprecated
+  @Removal(version = "3.9.0", message="use commons-pool2 variant instead")
+  public void warmup(final org.apache.commons.pool.impl.GenericObjectPool<Worker> objectPool) throws CoreException {
+    logDeprecationWarning();
+    ExecutorService populator = Executors.newCachedThreadPool(new ManagedThreadFactory(this.getClass().getSimpleName()));
+    try {
+      log.trace("Warming up {} service-workers", maxThreads);
+      final List<Future<Worker>> futures = new ArrayList<>(maxThreads);
+
+      for (int i = 0; i < maxThreads; i++) {
+        futures.add(populator.submit(new Callable<Worker>() {
+
+          @Override
+          public Worker call() throws Exception {
+            return objectPool.borrowObject();
+          }
+
+        }));
+      }
+      for (Worker w : waitFor(futures)) {
+        objectPool.returnObject(w);
+      }
+      log.trace("ObjectPool contains {} (active) of {} objects", objectPool.getNumActive(), objectPool.getNumIdle());
+
+    }
+    catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
+    }
+    finally {
+      populator.shutdownNow();
+    }
+  }
+  
   public void warmup(final GenericObjectPool<Worker> objectPool) throws CoreException {
     ExecutorService populator = Executors.newCachedThreadPool(new ManagedThreadFactory(this.getClass().getSimpleName()));
     try {
@@ -113,17 +187,23 @@ public class ServiceWorkerPool {
       for (Worker w : waitFor(futures)) {
         objectPool.returnObject(w);
       }
-      log.trace("Object contains {} (active) of {} objects", objectPool.getNumActive(), objectPool.getNumIdle());
-
+      log.trace("ObjectPool contains {} (active) of {} objects", objectPool.getNumActive(), objectPool.getNumIdle());
     }
     catch (Exception e) {
-      throw new CoreException(e);
+      throw ExceptionHelper.wrapCoreException(e);
     }
     finally {
       populator.shutdownNow();
     }
   }
-
+  
+  
+  private static void logDeprecationWarning() {
+    LoggingHelper.logWarning(warningLogged, () -> {
+      warningLogged = true;
+    }, "switch to using commons-pool2; commons-pool support will be removed w/o warning");    
+  }
+  
   private List<Worker> waitFor(List<Future<Worker>> tasks) throws Exception {
     List<Worker> result = new ArrayList<>();
     do {
@@ -201,5 +281,36 @@ public class ServiceWorkerPool {
     }
 
   }
+  
+  @Deprecated
+  class LegacyCommonsPoolWorkerFactory implements org.apache.commons.pool.PoolableObjectFactory<Worker> {
+
+    LegacyCommonsPoolWorkerFactory() {
+    }
+
+    @Override
+    public Worker makeObject() throws Exception {
+      return new Worker().start();
+    }
+
+    @Override
+    public void destroyObject(Worker w) throws Exception {
+      w.stop();
+    }
+
+    @Override
+    public boolean validateObject(Worker w) {
+      return w.isValid();
+    }
+
+    @Override
+    public void activateObject(Worker arg0) throws Exception {
+    }
+
+    @Override
+    public void passivateObject(Worker arg0) throws Exception {
+    }
+
+}
 
 }

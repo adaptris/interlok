@@ -76,7 +76,7 @@ public class PoolingMessageSplitterService extends AdvancedMessageSplitterServic
 
   protected void initService() throws CoreException {
     workerFactory = new ServiceWorkerPool(getService(), eventHandler, maxThreads());
-    objectPool = workerFactory.createObjectPool();
+    objectPool = workerFactory.createCommonsObjectPool();
     executor = workerFactory.createExecutor(this.getClass().getSimpleName());
     exceptionHandler = new ServiceExceptionHandler();
     super.initService();

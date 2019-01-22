@@ -85,7 +85,7 @@ public class PoolingSplitJoinService extends SplitJoinService {
 
   @Override
   public void initService() throws CoreException {
-    objectPool = workerFactory.createObjectPool();
+    objectPool = workerFactory.createCommonsObjectPool();
     super.initService();
   }
 
