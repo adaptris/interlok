@@ -18,6 +18,7 @@ package com.adaptris.core.services.splitter;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.concurrent.ExecutorService;
 
@@ -29,7 +30,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.CoreException;
 import com.adaptris.core.NullService;
+import com.adaptris.core.stubs.MockService;
+import com.adaptris.core.stubs.MockService.FailureCondition;
 import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.TimeInterval;
 
@@ -99,6 +103,30 @@ public class ServiceWorkerPoolTest extends ServiceWorkerPool {
     workerFactory.destroyObject(worker);
   }
 
+  @Test
+  public void testWarmup() throws Exception {
+    GenericObjectPool<ServiceWorkerPool.Worker> objPool = createCommonsObjectPool();
+    warmup(objPool);
+    assertEquals(10, objPool.getNumIdle());
+    closeQuietly(objPool);    
+  }
+  
+  @Test
+  public void testWarmup_WithException() throws Exception {
+    GenericObjectPool<ServiceWorkerPool.Worker> objPool = null;
+    try {
+      ServiceWorkerPool worker = new ServiceWorkerPool(new MockService(FailureCondition.Lifecycle), null, 10);
+      objPool= worker.createCommonsObjectPool();
+      worker.warmup(objPool);
+      fail();
+    } catch (CoreException expected) {
+      
+    } finally {
+      closeQuietly(objPool);
+    }
+  }
+  
+  
   private class DummyPooledObjectFactory implements PooledObjectFactory {
 
     @Override
