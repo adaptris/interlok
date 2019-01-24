@@ -59,7 +59,7 @@ public class LocalMarshallServiceStoreTest extends MarshallServiceStoreCase {
       store.validate();
     }
     catch (CoreException e) {
-      assertTrue(e.getMessage().matches(".*does not exist.*"));
+      assertTrue(e.getMessage().matches(".*Does not exist.*"));
     }
     tmpDir.mkdirs();
     store.validate();

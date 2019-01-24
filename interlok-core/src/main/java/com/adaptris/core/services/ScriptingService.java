@@ -29,6 +29,7 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.fs.FsWorker;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -94,9 +95,7 @@ public class ScriptingService extends ScriptingServiceImp {
     try {
       Args.notBlank(getScriptFilename(), "scriptFilename");
       File f = new File(getScriptFilename());
-      if (!f.exists() || !f.isFile() || !f.canRead()) {
-        throw new CoreException(getScriptFilename() + " is not accessible");
-      }
+      FsWorker.isFile(FsWorker.checkReadable(f));
       super.initService();
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);

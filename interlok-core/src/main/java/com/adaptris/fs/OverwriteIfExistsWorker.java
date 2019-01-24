@@ -18,6 +18,7 @@ package com.adaptris.fs;
 
 import java.io.File;
 
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -30,6 +31,7 @@ public class OverwriteIfExistsWorker extends NioWorker {
 
   @Override
   public void put(byte[] data, File file) throws FsException {
+    Args.notNull(file,  "file");
     if (file.exists() && !file.delete()) {
       throw new FsException("Could not delete [" + file + "]");
     }
