@@ -20,9 +20,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import org.mockito.Mockito;
-
 import com.adaptris.core.Adapter;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.MarshallingBaseCase;
@@ -77,6 +75,11 @@ public class PreProcessingXStreamMarshallerTest extends MarshallingBaseCase {
     verify(mockLoader, times(1)).load(any(String.class), any(KeyValuePairSet.class));
     verify(mockLoader, times(0)).load(any(BootstrapProperties.class));
     assertRoundtripEquality(adapter, unmarshalled);
+
+    unmarshalled = (Adapter) marshaller.unmarshal(xml);
+    verify(mockPreProc, times(2)).process(any(String.class));
+    verify(mockLoader, times(1)).load(any(String.class), any(KeyValuePairSet.class));
+    verify(mockLoader, times(0)).load(any(BootstrapProperties.class));
 
   }
 

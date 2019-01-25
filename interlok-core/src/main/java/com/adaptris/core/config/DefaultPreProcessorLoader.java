@@ -16,17 +16,11 @@
 
 package com.adaptris.core.config;
 import static com.adaptris.core.util.PropertyHelper.getPropertyIgnoringCase;
-import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isEmpty;
-
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.util.Properties;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.CoreException;
 import com.adaptris.core.management.AdapterConfigManager;
 import com.adaptris.core.management.BootstrapProperties;
@@ -94,26 +88,15 @@ public class DefaultPreProcessorLoader implements ConfigPreProcessorLoader {
   private ConfigPreProcessor resolve(String name, BootstrapProperties bootstrapProperties) throws CoreException {
     ConfigPreProcessor result = null;
     Properties p = getPropertyLoader().loadPropertyFile(name);
-    String classname = p.getProperty(CLASS_PROPERTY_KEY);
-    if (isBlank(classname)) {
-      result = this.createInstance(name, bootstrapProperties);
-    }
-    else {
-      result = this.createInstance(classname, bootstrapProperties);
-    }
-    return result;
+    String classname = p.getProperty(CLASS_PROPERTY_KEY, name);
+    return this.createInstance(classname, bootstrapProperties);
   }
 
   private ConfigPreProcessor resolve(String name, KeyValuePairSet config) throws CoreException {
     ConfigPreProcessor result = null;
     Properties p = getPropertyLoader().loadPropertyFile(name);
-    String classname = p.getProperty(CLASS_PROPERTY_KEY);
-    if (isBlank(classname)) {
-      result = this.createInstance(name, config);
-    } else {
-      result = this.createInstance(classname, config);
-    }
-    return result;
+    String classname = p.getProperty(CLASS_PROPERTY_KEY, name);
+    return this.createInstance(classname, config);
   }
 
   private ConfigPreProcessor createInstance(String classname, BootstrapProperties bootstrapProperties) throws CoreException {
@@ -124,10 +107,10 @@ public class DefaultPreProcessorLoader implements ConfigPreProcessorLoader {
     try {
       Class<?> clazz = Class.forName(classname);
       Constructor<?> cnst = clazz.getDeclaredConstructor(paramTypes);
-      preProcessor = ((ConfigPreProcessor) cnst.newInstance(args));
+      preProcessor = (ConfigPreProcessor) cnst.newInstance(args);
     }
     catch (Exception e) {
-      ExceptionHelper.rethrowCoreException(e);
+      throw ExceptionHelper.wrapCoreException(e);
     }
 
     return preProcessor;
@@ -141,11 +124,10 @@ public class DefaultPreProcessorLoader implements ConfigPreProcessorLoader {
     try {
       Class<?> clazz = Class.forName(classname);
       Constructor<?> cnst = clazz.getDeclaredConstructor(paramTypes);
-      preProcessor = ((ConfigPreProcessor) cnst.newInstance(args));
+      preProcessor = (ConfigPreProcessor) cnst.newInstance(args);
     } catch (Exception e) {
-      ExceptionHelper.rethrowCoreException(e);
+      throw ExceptionHelper.wrapCoreException(e);
     }
-
     return preProcessor;
   }
 
@@ -161,13 +143,8 @@ public class DefaultPreProcessorLoader implements ConfigPreProcessorLoader {
   class PropertyLoader {
 
     public Properties loadPropertyFile(String name) {
-      Properties p = new Properties();
-      try (InputStream in = this.getClass().getClassLoader().getResourceAsStream(PRE_PROCESSOR_RESOURCE + name)) {
-        p = PropertyHelper.loadQuietly(in);
-      } catch (IOException e) {
-        // Just return an empty properties is fine.
-      }
-      return p;
+      return PropertyHelper.loadQuietly(this.getClass().getClassLoader(),
+          PRE_PROCESSOR_RESOURCE + name);
     }
   }
 
