@@ -16,18 +16,21 @@
 package com.adaptris.core.common;
 
 import static org.junit.Assert.assertEquals;
-
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.List;
-
 import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.stubs.DefectiveAdaptrisMessage;
+import com.adaptris.core.stubs.DefectiveMessageFactory;
+import com.adaptris.util.GuidGenerator;
 
 public class PayloadStreamInputParameterTest {
 
@@ -44,6 +47,29 @@ public class PayloadStreamInputParameterTest {
       List<String> strings = IOUtils.readLines(in, Charset.defaultCharset());
       assertEquals(1, strings.size());
       assertEquals(TEXT, strings.get(0));
+    }
+  }
+
+  @Test(expected = CoreException.class)
+  public void testExtractWithException() throws Exception {
+    PayloadStreamInputParameter p = new PayloadStreamInputParameter();
+    AdaptrisMessage msg = new MyDefectiveMessage();
+    try (InputStream in = p.extract(msg)) {
+    }
+  }
+
+  private class MyDefectiveMessage extends DefectiveAdaptrisMessage {
+    public MyDefectiveMessage() {
+      super(new GuidGenerator(), new DefectiveMessageFactory());
+    }
+
+    public InputStream getInputStream() throws IOException {
+      throw new IOException("broken");
+    }
+
+    @Override
+    public OutputStream getOutputStream() throws IOException {
+      throw new IOException("broken");
     }
   }
 }
