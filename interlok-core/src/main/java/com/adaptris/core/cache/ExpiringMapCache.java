@@ -52,7 +52,6 @@ public class ExpiringMapCache implements Cache {
   private Integer maxEntries;
   @InputFieldDefault(value = "60 seconds")
   private TimeInterval expiration;
-  @AdvancedConfig
   @InputFieldDefault(value = "ACCESSED")
   private ExpirationPolicy expirationPolicy;
   @AdvancedConfig
