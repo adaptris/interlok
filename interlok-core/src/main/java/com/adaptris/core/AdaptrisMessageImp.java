@@ -73,8 +73,9 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   private static final String RESOLVE_REGEXP = "^.*%message\\{([\\w!\\$\"#&%'\\*\\+,\\-\\.:=]+)\\}.*$";
 
   private transient Logger log = LoggerFactory.getLogger(AdaptrisMessage.class);
-  private transient Pattern resolverPattern = Pattern.compile(RESOLVE_REGEXP);
-
+  private transient Pattern normalResolver = Pattern.compile(RESOLVE_REGEXP);
+  private transient Pattern dotAllResolver = Pattern.compile(RESOLVE_REGEXP, Pattern.DOTALL);
+  
   private IdGenerator guidGenerator;
   // persistent fields
   private String uniqueId;
@@ -416,12 +417,16 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   }
 
   @Override
-  public String resolve(String s) {
+  public String resolve(String s, boolean dotAll) {
+    return resolve(s, dotAll ? dotAllResolver : normalResolver);
+  }
+  
+  private String resolve(String s, Pattern pattern) {
     if (s == null) {
       return null;
     }
     String result = s;
-    Matcher m = resolverPattern.matcher(s);
+    Matcher m = pattern.matcher(s);
     while (m.matches()) {
       String key = m.group(1);
       String metadataValue = internalResolve(key);
@@ -433,11 +438,11 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
       result = result.replace(toReplace, metadataValue);
       // result = result.replace(toReplace, metadataValue
       // .orElseThrow(() -> new UnresolvedMetadataException("Could not resolve [" + key + "] as metadata/uniqueId/size")));
-      m = resolverPattern.matcher(result);
+      m = pattern.matcher(result);
     }
     return result;
   }
-
+  
   private String internalResolve(String key) {
     String value = null;
     for (Resolvers r : Resolvers.values()) {

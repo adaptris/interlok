@@ -167,17 +167,29 @@ public interface InterlokMessage {
   /**
    * Resolve against this message's metadata.
    * 
+   * @param s string to resolve.
+   * @return the original string, an item of metadata, or null (if the metadata key does not exist).
+   * @see #resolve(String, boolean)
+   * @implSpec The default implementation simply calls {@link #resolve(String, boolean)}.
+   */
+  default String resolve(String s) {
+    return resolve(s, false);
+  }
+
+  /**
+   * Resolve against this message's metadata.
+   * 
    * <p>
    * This is a helper method that allows you to pass in {@code %message{key1}} and get the metadata associated with {@code key1}.
-   * Strings that do not match that format will be returned as is. Support for punctuation characters is down to the implementaiton;
+   * Strings that do not match that format will be returned as is. Support for punctuation characters is down to the implementation;
    * the standard implementations only support a limited subset of punctuation characters in addition to standard word characters
    * ({@code [a-zA-Z_0-9]}); They are {@code _!"#&'+,-.:=}. The magic values {@code %message{%uniqueId}} and {@code %message{%size}}
    * should return the message unique-id and message size respectively
    * </p>
    * 
    * @param s string to resolve.
+   * @param multiline whether to resolve in {@link Pattern#DOTALL} mode, allowing you to match against multiple lines.
    * @return the original string, an item of metadata, or null (if the metadata key does not exist).
    */
-  String resolve(String s);
-
+  String resolve(String s, boolean multiline);
 }
