@@ -16,9 +16,12 @@
 
 package com.adaptris.core.services;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.CoreException;
@@ -110,7 +113,12 @@ public abstract class LoggingServiceImpl extends ServiceImp {
   @InputFieldDefault(value = "DEBUG")
   @AutoPopulated
   private LoggingLevel logLevel;
+  @AdvancedConfig
+  @InputFieldDefault(value="the classname")
+  private String logCategory;
 
+  private transient Logger slf4jLogger;
+  
   public LoggingServiceImpl() {
     super();
     setLogLevel(LoggingLevel.DEBUG);
@@ -120,9 +128,8 @@ public abstract class LoggingServiceImpl extends ServiceImp {
     return level != null ? level : LoggingLevel.DEBUG;
   }
 
-
   @Override
-  protected void initService() throws CoreException {
+  protected void initService() throws CoreException {    
   }
 
   @Override
@@ -131,6 +138,7 @@ public abstract class LoggingServiceImpl extends ServiceImp {
 
   @Override
   public void prepare() throws CoreException {
+    slf4jLogger = LoggerFactory.getLogger(StringUtils.defaultIfBlank(getLogCategory(), this.getClass().getCanonicalName()));
   }
 
   public LoggingLevel getLogLevel() {
@@ -147,4 +155,21 @@ public abstract class LoggingServiceImpl extends ServiceImp {
     logLevel = level;
   }
 
+
+  public String getLogCategory() {
+    return logCategory;
+  }
+
+  public void setLogCategory(String logCategory) {
+    this.logCategory = logCategory;
+  }
+  
+  public <T extends LoggingServiceImpl> T withLogCategory(String logCategory) {
+    setLogCategory(logCategory);
+    return (T) this;
+  }
+  
+  protected Logger slf4jLogger() { 
+    return slf4jLogger;
+  }
 }

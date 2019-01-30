@@ -16,6 +16,8 @@
 
 package com.adaptris.core.services;
 
+import org.slf4j.Logger;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -34,7 +36,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("logging-service")
 @AdapterComponent
 @ComponentProfile(summary = "Log a message to the log file; useful for debugging", tag = "service,logging,debug")
-@DisplayOrder(order = {"logLevel", "text"})
+@DisplayOrder(order = {"logLevel", "text", "logCategory"})
 public class LoggingService extends LoggingServiceImpl {
 
   @InputFieldHint(expression = true, style = "BLANKABLE")
@@ -57,8 +59,9 @@ public class LoggingService extends LoggingServiceImpl {
    */
   public void doService(AdaptrisMessage msg) throws ServiceException {
     LoggingLevel myLogger = getLogger(getLogLevel());
-    if (myLogger.isEnabled(log)) {
-      myLogger.log(log, msg.resolve(getText()));
+    Logger realLogger = slf4jLogger();
+    if (myLogger.isEnabled(realLogger)) {
+      myLogger.log(realLogger, msg.resolve(getText()));
     }
   }
 

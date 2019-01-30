@@ -17,11 +17,15 @@
 package com.adaptris.core.services;
 
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
+
 import org.apache.commons.lang3.BooleanUtils;
+import org.slf4j.Logger;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -37,10 +41,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("log-message-service")
 @AdapterComponent
 @ComponentProfile(summary = "Log the message to the log file; useful for debugging", tag = "service,logging,debug")
-@DisplayOrder(order = {"logLevel", "logPrefix", "includeEvents", "includePayload"})
+@DisplayOrder(order = {"logLevel", "logPrefix", "includeEvents", "includePayload", "logCategory"})
 public class LogMessageService extends LoggingServiceImpl {
 
-
+  @InputFieldHint(style="BLANKABLE")
   private String logPrefix;
   @InputFieldDefault(value = "true")
   private Boolean includePayload;
@@ -73,8 +77,9 @@ public class LogMessageService extends LoggingServiceImpl {
    */
   public void doService(AdaptrisMessage msg) throws ServiceException {
     LoggingLevel myLogger = getLogger(getLogLevel());
-    if (myLogger.isEnabled(log)) {
-      myLogger.log(log, defaultIfEmpty(getLogPrefix(), "") + msg.toString(includePayload(), includeEvents()));
+    Logger realLogger = slf4jLogger();
+    if (myLogger.isEnabled(realLogger)) {
+      myLogger.log(realLogger, defaultIfEmpty(getLogPrefix(), "") + msg.toString(includePayload(), includeEvents()));
     }
   }
 
