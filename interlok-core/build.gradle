@@ -55,7 +55,7 @@ dependencies {
     exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_1.1_spec"
   }
   compile ("org.apache.geronimo.specs:geronimo-jms_2.0_spec:1.0-alpha-2")
-  compile ("javax.validation:validation-api:1.0.0.GA")
+  compile ("javax.validation:validation-api:2.0.1.Final")
   compile ("javax.el:javax.el-api:2.2.4")
   compile ("org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.2.Final")
   compile ("org.hibernate:hibernate-validator:4.3.2.Final")
