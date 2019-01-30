@@ -51,7 +51,10 @@ dependencies {
   compile ("io.github.classgraph:classgraph:4.6.13")
   compile ("net.jodah:expiringmap:0.5.9")
   compile ("javax.activation:activation:1.1.1")
-  compile ("org.apache.activemq:activemq-client:$activeMqVersion")
+  compile ("org.apache.activemq:activemq-client:$activeMqVersion") {
+    exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_1.1_spec"
+  }
+  compile ("org.apache.geronimo.specs:geronimo-jms_2.0_spec:1.0-alpha-2")
   compile ("javax.validation:validation-api:1.0.0.GA")
   compile ("javax.el:javax.el-api:2.2.4")
   compile ("org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.2.Final")

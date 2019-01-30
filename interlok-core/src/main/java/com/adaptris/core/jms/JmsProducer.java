@@ -170,7 +170,7 @@ public class JmsProducer extends JmsProducerImpl {
     Destination replyTo = null;
     VendorImplementation vendorImp = retrieveConnection(JmsConnection.class).configuredVendorImplementation();
     if (target.getReplyToDestination() == null) {
-      if (msg.containsKey(JMS_ASYNC_STATIC_REPLY_TO)) {
+      if (msg.headersContainsKey(JMS_ASYNC_STATIC_REPLY_TO)) {
         replyTo = target.destinationType().create(vendorImp, this, msg.getMetadataValue(JMS_ASYNC_STATIC_REPLY_TO));
       } else {
         replyTo = alwaysCreate ? target.destinationType().createTemporaryDestination(currentSession()) : null;
@@ -192,6 +192,7 @@ public class JmsProducer extends JmsProducerImpl {
     private Long timeToLive;
     private Integer priority;
     private String subscriptionId;
+    private String sharedConsumerId;
     private boolean noLocal;
     private JmsDestination.DestinationType destType;
 
@@ -204,6 +205,7 @@ public class JmsProducer extends JmsProducerImpl {
       destType = orig.destinationType();
       noLocal = orig.noLocal();
       subscriptionId = orig.subscriptionId();
+      sharedConsumerId = orig.sharedConsumerId();
     }
 
     MyJmsDestination(Destination d) {
@@ -242,10 +244,6 @@ public class JmsProducer extends JmsProducerImpl {
       this.replyTo = replyTo;
     }
 
-    private void setDestination(Destination destination) {
-      this.destination = destination;
-    }
-
     @Override
     public JmsDestination.DestinationType destinationType() {
       return destType;
@@ -263,6 +261,11 @@ public class JmsProducer extends JmsProducerImpl {
 
     public String toString() {
       return getDestination().toString();
+    }
+
+    @Override
+    public String sharedConsumerId() {
+      return sharedConsumerId;
     }
   }
 }

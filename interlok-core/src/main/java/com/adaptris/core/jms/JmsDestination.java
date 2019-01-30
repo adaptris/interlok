@@ -116,6 +116,13 @@ public interface JmsDestination {
    * @return the subscription ID (for durable topic subscriptions); may be null.
    */
   String subscriptionId();
+  
+  /**
+   * Return the shared consumer (JMS 2.0) ID associated with this destination.
+   * 
+   * @return the shared consumer ID (for shared topic subscriptions); may be null.
+   */
+  String sharedConsumerId();
 
   /**
    * Custom parameter that matches the {@code nolocal} setting for
