@@ -98,8 +98,8 @@ public interface FsWorker {
    * </p>
    * 
    * @param oldFile the file to rename
-   * @param newName the new name for the file
-   * @throws FsFilenameExistsException if newName exists
+   * @param newFile the new name for the file
+   * @throws FsFilenameExistsException if newFile exists
    * @throws FsException wrapping any underlying Exception that may occur
    */
   default void rename(File oldFile, File newFile) throws FsException {
