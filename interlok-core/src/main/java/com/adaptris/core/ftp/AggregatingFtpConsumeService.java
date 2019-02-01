@@ -42,8 +42,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("aggregating-ftp-consume-service")
 @AdapterComponent
-@ComponentProfile(summary = "Allows you to aggregate messages from an FTP server", tag = "service,aggregation,ftp")
-@DisplayOrder(order ={"consumer"})
+@ComponentProfile(summary = "Allows you to aggregate messages from an FTP server", tag = "service,aggregation,ftp", recommended= {FileTransferConnection.class})
+@DisplayOrder(order ={"connection", "consumer"})
 public class AggregatingFtpConsumeService extends AggregatingConsumeServiceImpl<FileTransferConnection>
     implements ConnectedService {
 

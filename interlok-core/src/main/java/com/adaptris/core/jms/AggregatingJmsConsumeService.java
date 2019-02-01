@@ -47,7 +47,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("aggregating-jms-consume-service")
 @AdapterComponent
-@ComponentProfile(summary = "Allows you to aggregate messages from a JMS Queue", tag = "service,aggregation,jms")
+@ComponentProfile(summary = "Allows you to aggregate messages from a JMS Queue", tag = "service,aggregation,jms", recommended= {JmsConnection.class})
 @DisplayOrder(order = {"connection", "jmsConsumer"})
 public class AggregatingJmsConsumeService extends AggregatingConsumeServiceImpl<JmsConnection>
     implements JmsActorConfig, ConnectedService {
