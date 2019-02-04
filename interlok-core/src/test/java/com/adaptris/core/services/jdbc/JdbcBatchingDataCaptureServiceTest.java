@@ -17,13 +17,14 @@
 package com.adaptris.core.services.jdbc;
 
 import java.sql.SQLException;
+import java.sql.Statement;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.jdbc.AdvancedJdbcPooledConnection;
 import com.adaptris.core.jdbc.JdbcConnection;
 import com.adaptris.core.jdbc.JdbcPooledConnection;
 import com.adaptris.core.jdbc.PooledConnectionHelper;
-import com.mysql.jdbc.Statement;
 
 public class JdbcBatchingDataCaptureServiceTest extends JdbcDataCaptureServiceCase {
 
