@@ -17,6 +17,8 @@ package com.adaptris.core.services.exception;
 
 import javax.validation.Valid;
 
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -42,20 +44,26 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("exception-as-xml")
 @DisplayOrder(order =
 {
-    "xmlEncoding", "exceptionGenerator", "documentMerge"
+    "xmlEncoding", "exceptionGenerator", "ignoreXmlParseExceptions", "documentMerge"
 })
 public class ExceptionAsXml implements ExceptionSerializer {
   protected transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Valid
+  @InputFieldDefault(value = "ReplaceOriginal")
   private DocumentMerge documentMerge;
   @Valid
+  @InputFieldDefault(value = "SimpleExceptionReport")
   private ExceptionReportGenerator exceptionGenerator;
   @InputFieldDefault(value = "UTF-8")
   private String xmlEncoding;
   @AdvancedConfig
   @Valid
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
+
+  @AdvancedConfig
+  @InputFieldDefault(value = "false")
+  private Boolean ignoreXmlParseExceptions;
 
   public ExceptionAsXml() {
   }
@@ -80,11 +88,18 @@ public class ExceptionAsXml implements ExceptionSerializer {
     return this;
   }
 
+  public ExceptionAsXml withIgnoreXmlParseExceptions(Boolean b) {
+    setIgnoreXmlParseExceptions(b);
+    return this;
+  }
+  
   @Override
   public void serialize(Exception exception, AdaptrisMessage msg) throws CoreException {
     try {
       Document newDoc = exceptionGenerator().create(exception);
-      Document result = documentMerge().merge(XmlHelper.createDocument(msg, documentFactoryBuilder()), newDoc);
+      documentFactoryBuilder().build().newDocumentBuilder().newDocument();
+      Document result = documentMerge().merge(XmlHelper.createDocument(msg, documentFactoryBuilder(), ignoreXmlParseExceptions()),
+          newDoc);
       String encoding = XmlHelper.getXmlEncoding(msg, getXmlEncoding());
       XmlHelper.writeXmlDocument(result, msg, encoding);
     }
@@ -106,8 +121,8 @@ public class ExceptionAsXml implements ExceptionSerializer {
     documentMerge = m;
   }
 
-  DocumentMerge documentMerge() {
-    return getDocumentMerge() != null ? getDocumentMerge() : new ReplaceOriginal();
+  private DocumentMerge documentMerge() {
+    return ObjectUtils.defaultIfNull(getDocumentMerge(), new ReplaceOriginal());
   }
 
   public ExceptionReportGenerator getExceptionGenerator() {
@@ -123,8 +138,8 @@ public class ExceptionAsXml implements ExceptionSerializer {
     exceptionGenerator = generator;
   }
 
-  ExceptionReportGenerator exceptionGenerator() {
-    return getExceptionGenerator() != null ? getExceptionGenerator() : new SimpleExceptionReport();
+  private ExceptionReportGenerator exceptionGenerator() {
+    return ObjectUtils.defaultIfNull(getExceptionGenerator(), new SimpleExceptionReport());
   }
 
   public String getXmlEncoding() {
@@ -148,8 +163,32 @@ public class ExceptionAsXml implements ExceptionSerializer {
     this.xmlDocumentFactoryConfig = xml;
   }
 
-  DocumentBuilderFactoryBuilder documentFactoryBuilder() {
+
+  public Boolean getIgnoreXmlParseExceptions() {
+    return ignoreXmlParseExceptions;
+  }
+
+  /**
+   * Whether or not to ignore exceptions parsing the {@code AdaptrisMessage}.
+   * <p>
+   * In some situations you might have an empty payload (such as when the workflow is fired by an HTTP GET request); but you want to
+   * report the exception as XML using {@link ReplaceOriginal} as the {@link DocumentMerge} implementation. If that is the case,
+   * then you should set this value to be true. It defaults to false to preserve backwards compatibility.
+   * </p>
+   * 
+   * @param b true to ignore parse exceptions (default is false if not specified.
+   */
+  public void setIgnoreXmlParseExceptions(Boolean b) {
+    this.ignoreXmlParseExceptions = b;
+  }
+  
+  private boolean ignoreXmlParseExceptions() {
+    return BooleanUtils.toBooleanDefaultIfNull(getIgnoreXmlParseExceptions(), false);
+  }
+  
+  private DocumentBuilderFactoryBuilder documentFactoryBuilder() {
     return DocumentBuilderFactoryBuilder.newInstance(getXmlDocumentFactoryConfig());
   }
+
 
 }

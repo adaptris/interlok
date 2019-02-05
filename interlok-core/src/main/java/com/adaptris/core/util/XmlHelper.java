@@ -160,10 +160,21 @@ public class XmlHelper {
    */
   public static Document createDocument(AdaptrisMessage msg, DocumentBuilderFactoryBuilder builder)
       throws ParserConfigurationException, IOException, SAXException {
-    return createDocument(msg.getInputStream(), builder);
+    return createDocument(msg.getInputStream(), builder, false);
   }
 
-
+  /**
+   * Create a document from an AdaptrisMessage.
+   * @param msg the AdaptrisMessage
+   * @param builder configuration for the underlying {@link DocumentBuilderFactory} instance.
+   * @param newDocOnFailure create a new Document if the msg failed to parse.
+   * @return the Document element
+   */
+  public static Document createDocument(AdaptrisMessage msg, DocumentBuilderFactoryBuilder builder, boolean newDocOnFailure)
+      throws ParserConfigurationException, IOException, SAXException {
+    return createDocument(msg.getInputStream(), builder, newDocOnFailure);
+  }
+  
   /**
    * Convenience method to create a document from an AdaptrisMessage.
    * @deprecated since 3.1.0 use {{@link #createDocument(AdaptrisMessage, DocumentBuilderFactoryBuilder)} instead.
@@ -231,14 +242,35 @@ public class XmlHelper {
    */
   public static Document createDocument(String s, DocumentBuilderFactoryBuilder builder)
       throws ParserConfigurationException, IOException, SAXException {
+    return createDocument(s, builder, false);
+  }
+
+  /**
+   * Create a document from an AdaptrisMessage.
+   * @param s the string containing XML
+   * @param builder configuration for the underlying {@link DocumentBuilderFactory} instance..
+   * @param newDocOnFailure return a new document if the String is not XML.
+   * @return the Document element
+   */
+  public static Document createDocument(String s, DocumentBuilderFactoryBuilder builder, boolean newDocOnFailure)
+      throws ParserConfigurationException, IOException, SAXException {
     Document result = null;
+    DocumentBuilder docBuilder = newDocumentBuilder(builder);
 
     try (StringReader in = new StringReader(s)) {
-      result = newDocumentBuilder(builder).parse(new InputSource(in));
+      result = docBuilder.parse(new InputSource(in));
+    }
+    catch (IOException | SAXException e) {
+      if (newDocOnFailure) {
+        result = docBuilder.newDocument();
+      }
+      else {
+        throw e;
+      }
     }
     return result;
   }
-
+  
   /**
    * Create a document from an {@code InputStream}.
    * 
@@ -248,9 +280,31 @@ public class XmlHelper {
    */
   public static Document createDocument(InputStream in, DocumentBuilderFactoryBuilder builder)
       throws ParserConfigurationException, IOException, SAXException {
+    return createDocument(in, builder, false);
+  }
+  
+  /**
+   * Create a document from an {@code InputStream}.
+   * 
+   * @param in the inputstream
+   * @param builder configuration for the underlying {@link DocumentBuilderFactory} instance.
+   * @param newDocOnFailure return a new document if the input stream failed to parse.
+   * @return the Document element
+   */
+  public static Document createDocument(InputStream in, DocumentBuilderFactoryBuilder builder, boolean newDocOnFailure)
+      throws ParserConfigurationException, IOException, SAXException {
+    DocumentBuilder docBuilder = newDocumentBuilder(builder);
     Document result = null;
     try (InputStream docIn = in) {
-      result = newDocumentBuilder(builder).parse(new InputSource(docIn));
+      result = docBuilder.parse(new InputSource(docIn));
+    }
+    catch (IOException | SAXException e) {
+      if (newDocOnFailure) {
+        result = docBuilder.newDocument();
+      }
+      else {
+        throw e;
+      }
     }
     return result;
   }
