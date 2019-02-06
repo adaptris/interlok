@@ -17,9 +17,7 @@
 package com.adaptris.core.common;
 
 import java.io.IOException;
-
 import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.Removal;
@@ -41,7 +39,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("metadata-file-input-parameter")
 @DisplayOrder(order = {"metadataKey"})
 @Deprecated
-@Removal(version = "3.8.3", message = "use FileDataInputParameter with a MetadataDestination ")
+@Removal(version = "3.9.0", message = "use FileDataInputParameter with a MetadataDestination ")
 public class MetadataFileInputParameter extends FileInputParameterImpl {
   private static transient boolean warningLogged;
 
