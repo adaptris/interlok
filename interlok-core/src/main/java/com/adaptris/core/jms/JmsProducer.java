@@ -108,7 +108,7 @@ public class JmsProducer extends JmsProducerImpl {
     }
   }
 
-  private void produce(AdaptrisMessage msg, JmsDestination jmsDest)
+  protected void produce(AdaptrisMessage msg, JmsDestination jmsDest)
       throws JMSException, CoreException {
     setupSession(msg);
     Message jmsMsg = translate(msg, jmsDest.getReplyToDestination());
