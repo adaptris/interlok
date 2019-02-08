@@ -16,7 +16,6 @@
 package com.adaptris.core.http.client.net;
 
 import java.net.HttpURLConnection;
-
 import com.adaptris.core.http.auth.HttpAuthenticator;
 
 /**
@@ -34,6 +33,6 @@ public interface HttpURLConnectionAuthenticator extends HttpAuthenticator {
    * Perform whatever actions are required to the HttpURLConnection after it's been opened (setting custom headers, etc). Not
    * all implementations of this interface will have something to do here.
    */
-  public void configureConnection(HttpURLConnection conn);
+  public void configureConnection(HttpURLConnection conn) throws Exception;
 
 }
