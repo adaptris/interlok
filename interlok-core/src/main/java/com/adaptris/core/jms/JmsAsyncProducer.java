@@ -14,7 +14,8 @@ import com.adaptris.core.StandardProcessingExceptionHandler;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * JMS Producer implementation that extends all features of {@link JmsProducer}, but allows us to send messages asynchronously.
+ * JMS 2.0 Producer implementation that extends all features of {@link JmsProducer}, but allows us to send messages asynchronously. <br />
+ * Be aware, you must have a JMS 2.0 compatible broker, this producer is not backward compatible to JMS 1.1
  * <p>
  * Essentially the producer sending the message to the JMS provider will not wait for a response that would normally confirm the message
  * has been received and persisted.  Instead the producer sends the JMS message in a "fire-and-forget" manner. <br />
