@@ -202,7 +202,7 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
   }
 
   long maxStartupWaitTimeMs() {
-    return getMaxStartupWait() != null ? getMaxStartupWait().toMilliseconds() : DEFAULT_MAX_WAIT.toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getMaxStartupWait(), DEFAULT_MAX_WAIT);
   }
 
   /**

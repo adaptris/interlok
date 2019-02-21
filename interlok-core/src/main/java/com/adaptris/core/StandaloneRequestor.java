@@ -105,7 +105,7 @@ public class StandaloneRequestor extends StandaloneProducer {
   }
 
   long timeoutOverrideMs() {
-    return getReplyTimeout() != null ? getReplyTimeout().toMilliseconds() : DEFAULT_TIMEOUT.toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getReplyTimeout(), DEFAULT_TIMEOUT);
   }
 
   public TimeInterval getReplyTimeout() {

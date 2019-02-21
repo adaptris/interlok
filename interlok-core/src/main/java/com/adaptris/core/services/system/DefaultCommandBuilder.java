@@ -39,6 +39,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.util.Args;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
+import com.adaptris.util.NumberUtils;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -207,7 +208,7 @@ public class DefaultCommandBuilder implements CommandBuilder {
   }
 
   int successExitValue() {
-    return getSuccessExitCode() != null ? getSuccessExitCode().intValue() : 0;
+    return NumberUtils.toIntDefaultIfNull(getSuccessExitCode(), 0);
   }
 
   public Boolean getQuoteHandling() {

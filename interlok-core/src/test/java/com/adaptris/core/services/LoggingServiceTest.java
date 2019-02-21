@@ -23,18 +23,20 @@ import com.adaptris.core.services.LoggingServiceImpl.LoggingLevel;
 
 public class LoggingServiceTest extends GeneralServiceExample {
 
-
   @Override
   protected LoggingService retrieveObjectForSampleConfig() {
     return new LoggingService(LoggingLevel.DEBUG, "Using Metadata [%message{the-metadata-key}] to as the lookup");
   }
 
   public void testLogging() throws Exception {
-    LoggingService srv = new LoggingService(LoggingLevel.DEBUG, "Metadata key set to [%message{the-metadata-key}]");
+    LoggingService s1 = new LoggingService(LoggingLevel.FATAL, "Metadata key set to [%message{the-metadata-key}]");
+    LoggingService s2 = new LoggingService(LoggingLevel.DEBUG, "Metadata key set to [%message{the-metadata-key}]")
+        .withLogCategory(this.getClass().getCanonicalName());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("hello");
     msg.addMetadata("the-metadata-key", "hello world");
-    assertEquals("Metadata key set to [hello world]", msg.resolve(srv.getText()));
-    execute(srv, msg);
+    assertEquals("Metadata key set to [hello world]", msg.resolve(s1.getText()));
+    execute(s1, msg);
+    execute(s2, msg);
   }
 
 }

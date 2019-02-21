@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -41,6 +41,7 @@ import com.adaptris.core.ServiceWrapper;
 import com.adaptris.core.StartedState;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.util.NumberUtils;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -191,7 +192,7 @@ public class RetryingServiceWrapper extends ServiceImp implements EventHandlerAw
   }
 
   int numRetries() {
-    return getNumRetries() != null ? getNumRetries().intValue() : DEFAULT_NUM_RETRIES;
+    return NumberUtils.toIntDefaultIfNull(getNumRetries(), DEFAULT_NUM_RETRIES);
   }
 
   public void setNumRetries(Integer numRetries) {
@@ -203,7 +204,7 @@ public class RetryingServiceWrapper extends ServiceImp implements EventHandlerAw
   }
 
   long delayBetweenRetriesMs() {
-    return getDelayBetweenRetries() != null ? getDelayBetweenRetries().toMilliseconds() : DEFAULT_DELAY.toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getDelayBetweenRetries(), DEFAULT_DELAY);
   }
 
   public void setDelayBetweenRetries(TimeInterval delayBetweenRetries) {
@@ -211,7 +212,7 @@ public class RetryingServiceWrapper extends ServiceImp implements EventHandlerAw
   }
 
   public boolean isRestartOnFailure() {
-    return getRestartOnFailure() != null ? getRestartOnFailure().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getRestartOnFailure(), false);
   }
 
   public void setRestartOnFailure(Boolean restartOnFailure) {

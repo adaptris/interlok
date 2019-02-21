@@ -19,10 +19,8 @@ package com.adaptris.core.http.jetty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.security.HashLoginService;
@@ -32,11 +30,11 @@ import org.eclipse.jetty.util.security.Constraint;
 import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.Removal;
 import com.adaptris.core.management.webserver.SecurityHandlerWrapper;
+import com.adaptris.core.util.LoggingHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -56,7 +54,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  */
 @Deprecated
 @XStreamAlias("jetty-hash-user-realm-proxy")
-@Removal(version = "3.8.3", message = "Use ConfigurableSecurityHandler instead")
+@Removal(version = "3.9.0", message = "Use ConfigurableSecurityHandler instead")
 public class HashUserRealmProxy implements SecurityHandlerWrapper {
   private static transient boolean warningLogged;
 
@@ -77,11 +75,7 @@ public class HashUserRealmProxy implements SecurityHandlerWrapper {
   private List<SecurityConstraint> securityConstraints;
   
   public HashUserRealmProxy() {
-    if (!warningLogged) {
-      log.warn("[{}] is deprecated, use [{}] instead", this.getClass().getSimpleName(),
-          ConfigurableSecurityHandler.class.getName());
-      warningLogged = true;
-    }
+    LoggingHelper.logDeprecation(warningLogged, ()-> { warningLogged=true;}, this.getClass().getSimpleName(), ConfigurableSecurityHandler.class.getName());
     securityConstraints = new ArrayList<>();
     this.setUserRealm("MediationFramework");
   }

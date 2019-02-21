@@ -64,5 +64,28 @@ public class TimeIntervalTest {
     assertEquals(TimeUnit.SECONDS.toMillis(20L), t2.toMilliseconds());
   }
 
+
+  @Test
+  public void testToMillisecondsDefaultIfNull() throws Exception {
+    TimeInterval t = new TimeInterval(20L, TimeUnit.MINUTES);
+    TimeInterval defaultTime = new TimeInterval(10L, TimeUnit.SECONDS);
+    assertEquals(TimeUnit.MINUTES.toMillis(20L), TimeInterval.toMillisecondsDefaultIfNull(t, 0L));
+    assertEquals(TimeUnit.MINUTES.toMillis(20L),
+        TimeInterval.toMillisecondsDefaultIfNull(t, defaultTime));
+    assertEquals(TimeUnit.SECONDS.toMillis(10L),
+        TimeInterval.toMillisecondsDefaultIfNull(null, defaultTime));
+    assertEquals(0, TimeInterval.toMillisecondsDefaultIfNull(null, 0));
+  }
+
+  @Test
+  public void testToSecondsDefaultIfNull() throws Exception {
+    TimeInterval t = new TimeInterval(20L, TimeUnit.MINUTES);
+    TimeInterval defaultTime = new TimeInterval(10L, TimeUnit.SECONDS);
+    assertEquals(TimeUnit.MINUTES.toSeconds(20L), TimeInterval.toSecondsDefaultIfNull(t, 0L));
+    assertEquals(TimeUnit.MINUTES.toSeconds(20L),
+        TimeInterval.toSecondsDefaultIfNull(t, defaultTime));
+    assertEquals(10, TimeInterval.toSecondsDefaultIfNull(null, defaultTime));
+    assertEquals(0, TimeInterval.toSecondsDefaultIfNull(null, 0));
+  }
 }
 

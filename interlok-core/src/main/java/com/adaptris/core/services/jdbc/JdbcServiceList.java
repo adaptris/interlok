@@ -40,6 +40,7 @@ import com.adaptris.core.jdbc.JdbcService;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.core.util.LoggingHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -227,10 +228,7 @@ public class JdbcServiceList extends ServiceList implements ConnectedService {
 
   AdaptrisConnection connection() {
     if (getDatabaseConnection() != null) {
-      if (!warningLogged) {
-        log.warn("database-connection is deprecated; use connection instead");
-        warningLogged = true;
-      }
+      LoggingHelper.logDeprecation(warningLogged, ()-> { warningLogged=true;}, "database-connection", "connection");      
       return getDatabaseConnection();
     }
     return getConnection();

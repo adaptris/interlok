@@ -12,7 +12,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.BooleanUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdvancedConfig;
@@ -225,7 +225,7 @@ public abstract class BaseJndiImplementation extends VendorImplementationImp {
   }
 
   protected boolean useJndiForQueues() {
-    return getUseJndiForQueues() != null ? getUseJndiForQueues().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getUseJndiForQueues(), false);
   }
 
   /**
@@ -250,7 +250,7 @@ public abstract class BaseJndiImplementation extends VendorImplementationImp {
   }
 
   protected boolean useJndiForTopics() {
-    return getUseJndiForTopics() != null ? getUseJndiForTopics().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getUseJndiForTopics(), false);
   }
 
   /**
@@ -276,7 +276,7 @@ public abstract class BaseJndiImplementation extends VendorImplementationImp {
   }
 
   protected boolean enableEncodedPasswords() {
-    return getEnableEncodedPasswords() != null ? getEnableEncodedPasswords().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getEnableEncodedPasswords(), false);
   }
 
   public String getEncodedPasswordKeys() {
@@ -316,7 +316,7 @@ public abstract class BaseJndiImplementation extends VendorImplementationImp {
   }
 
   protected boolean newContextOnException() {
-    return getNewContextOnException() != null ? getNewContextOnException().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getNewContextOnException(), false);
   }
 
   public Boolean getNewContextOnException() {

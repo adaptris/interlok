@@ -19,10 +19,8 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.commons.pool2.impl.GenericObjectPool;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
@@ -34,6 +32,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.splitter.ServiceWorkerPool.Worker;
 import com.adaptris.core.util.ManagedThreadFactory;
+import com.adaptris.util.NumberUtils;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -58,8 +57,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 })
 public class PoolingMessageSplitterService extends AdvancedMessageSplitterService {
 
-  private static final long EVICT_RUN = new TimeInterval(60L, TimeUnit.SECONDS).toMilliseconds();
-
   @InputFieldDefault(value = "10")
   @AdvancedConfig
   private Integer maxThreads;
@@ -79,7 +76,7 @@ public class PoolingMessageSplitterService extends AdvancedMessageSplitterServic
 
   protected void initService() throws CoreException {
     workerFactory = new ServiceWorkerPool(getService(), eventHandler, maxThreads());
-    objectPool = workerFactory.createObjectPool();
+    objectPool = workerFactory.createCommonsObjectPool();
     executor = workerFactory.createExecutor(this.getClass().getSimpleName());
     exceptionHandler = new ServiceExceptionHandler();
     super.initService();
@@ -114,7 +111,7 @@ public class PoolingMessageSplitterService extends AdvancedMessageSplitterServic
   }
 
   int maxThreads() {
-    return getMaxThreads() != null ? getMaxThreads().intValue() : 10;
+    return NumberUtils.toIntDefaultIfNull(getMaxThreads(), 10);
   }
 
   boolean warmStart() {

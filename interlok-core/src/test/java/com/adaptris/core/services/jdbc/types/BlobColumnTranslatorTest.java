@@ -1,53 +1,56 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.services.jdbc.types;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Arrays;
-
+import org.apache.commons.io.output.WriterOutputStream;
+import org.junit.Test;
 import com.adaptris.jdbc.JdbcResultRow;
 
-import junit.framework.TestCase;
+@SuppressWarnings("deprecation")
+public class BlobColumnTranslatorTest {
 
-public class BlobColumnTranslatorTest extends TestCase {
-  
-  
-  public void setUp() throws Exception {
-  }
-  
+
+
+  @Test
   public void testBlobToString_WithEncoding() throws Exception {
     BlobColumnTranslator translator = new BlobColumnTranslator("UTF-8");
     TestBlob blob = new TestBlob();
     String myData = new String("SomeData");
     blob.setBytes(0, myData.getBytes("UTF-8"));
-    
+
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", blob);
-    
+    row.setFieldValue("testField", blob, Types.BLOB);
+
     String translated = translator.translate(row, 0);
-    
+
     assertEquals("SomeData", translated);
   }
-  
+
+  @Test
   public void testBlobToString() throws Exception {
     BlobColumnTranslator translator = new BlobColumnTranslator();
     TestBlob blob = new TestBlob();
@@ -55,32 +58,34 @@ public class BlobColumnTranslatorTest extends TestCase {
     blob.setBytes(0, myData.getBytes());
 
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", blob);
+    row.setFieldValue("testField", blob, Types.BLOB);
 
     String translated = translator.translate(row, 0);
 
     assertEquals("SomeData", translated);
   }
 
+  @Test
   public void testBlobToStringWithColumnName() throws Exception {
     BlobColumnTranslator translator = new BlobColumnTranslator();
     TestBlob blob = new TestBlob();
     String myData = new String("SomeData");
     blob.setBytes(0, myData.getBytes());
-    
+
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", blob);
-    
+    row.setFieldValue("testField", blob, Types.BLOB);
+
     String translated = translator.translate(row, "testField");
-    
+
     assertEquals("SomeData", translated);
   }
-  
+
+  @Test
   public void testBlobToStringWrongType() throws Exception {
     BlobColumnTranslator translator = new BlobColumnTranslator();
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", "SomeData");
-    
+    row.setFieldValue("testField", "SomeData", Types.BLOB);
+
     try {
       translator.translate(row, "testField");
       fail();
@@ -89,6 +94,7 @@ public class BlobColumnTranslatorTest extends TestCase {
     }
   }
 
+  @Test
   public void testBlobWrite_WithEncoding() throws Exception {
     BlobColumnTranslator translator = new BlobColumnTranslator("UTF-8");
     TestBlob blob = new TestBlob();
@@ -96,15 +102,18 @@ public class BlobColumnTranslatorTest extends TestCase {
     blob.setBytes(0, myData.getBytes("UTF-8"));
 
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", blob);
+    row.setFieldValue("testField", blob, Types.BLOB);
 
     StringWriter writer = new StringWriter();
-    translator.write(row, 0, writer);
+    try (OutputStream out = new WriterOutputStream(writer)) {
+      translator.write(row, 0, out);
+    }
     String translated = writer.toString();
 
     assertEquals("SomeData", translated);
   }
 
+  @Test
   public void testBlobWrite() throws Exception {
     BlobColumnTranslator translator = new BlobColumnTranslator();
     TestBlob blob = new TestBlob();
@@ -112,19 +121,37 @@ public class BlobColumnTranslatorTest extends TestCase {
     blob.setBytes(0, myData.getBytes());
 
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", blob);
-
+    row.setFieldValue("testField", blob, Types.BLOB);
     StringWriter writer = new StringWriter();
-    translator.write(row, 0, writer);
+    try (OutputStream out = new WriterOutputStream(writer)) {
+      translator.write(row, 0, out);
+    }
     String translated = writer.toString();
-
     assertEquals("SomeData", translated);
   }
+
+  @Test
+  public void testBlobWrite_ColumnName() throws Exception {
+    BlobColumnTranslator translator = new BlobColumnTranslator();
+    TestBlob blob = new TestBlob();
+    String myData = new String("SomeData");
+    blob.setBytes(0, myData.getBytes());
+
+    JdbcResultRow row = new JdbcResultRow();
+    row.setFieldValue("testField", blob, Types.BLOB);
+    StringWriter writer = new StringWriter();
+    try (OutputStream out = new WriterOutputStream(writer)) {
+      translator.write(row, "testField", out);
+    }
+    String translated = writer.toString();
+    assertEquals("SomeData", translated);
+  }
+
 
   private class TestBlob implements java.sql.Blob {
 
     private byte[] data = new byte[0];
-    
+
     @Override
     public void free() throws SQLException {
       data = new byte[0];
@@ -137,7 +164,7 @@ public class BlobColumnTranslatorTest extends TestCase {
 
     @Override
     public InputStream getBinaryStream(long pos, long length) throws SQLException {
-      return new ByteArrayInputStream(this.getBytes(pos, (int) length));
+      return new ByteArrayInputStream(getBytes(pos, (int) length));
     }
 
     @Override
@@ -172,7 +199,7 @@ public class BlobColumnTranslatorTest extends TestCase {
       byte[] concatted = new byte[aLen+bLen];
       System.arraycopy(data, 0, concatted, 0, aLen);
       System.arraycopy(bytes, 0, concatted, aLen, bLen);
-      
+
       data = concatted;
       return bytes.length;
     }
@@ -184,8 +211,8 @@ public class BlobColumnTranslatorTest extends TestCase {
 
     @Override
     public void truncate(long len) throws SQLException {
-      data = this.getBytes(0, (int) len);
+      data = getBytes(0, (int) len);
     }
-    
+
   }
 }

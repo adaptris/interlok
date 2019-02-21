@@ -17,7 +17,7 @@
 package com.adaptris.core.services.jmx;
 
 import java.util.Date;
-
+import org.apache.commons.lang3.BooleanUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.InputFieldDefault;
@@ -129,6 +129,6 @@ public class ConstantValueTranslator extends ValueTranslatorImp {
   }
 
   boolean allowOverwrite() {
-    return getAllowOverwrite() != null ? getAllowOverwrite().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getAllowOverwrite(), false);
   }
 }

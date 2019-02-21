@@ -20,7 +20,7 @@ import java.net.HttpURLConnection;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,7 +102,7 @@ public class MetadataRequestHeaders implements RequestHeaderProvider<HttpURLConn
   }
 
   boolean unfold() {
-    return getUnfold() != null ? getUnfold().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getUnfold(), false);
   }
 
   String unfold(String s) {

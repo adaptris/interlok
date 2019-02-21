@@ -41,6 +41,7 @@ import com.adaptris.core.runtime.ParentRuntimeInfoComponent;
 import com.adaptris.core.runtime.RuntimeInfoComponent;
 import com.adaptris.core.runtime.RuntimeInfoComponentFactory;
 import com.adaptris.core.util.ManagedThreadFactory;
+import com.adaptris.util.NumberUtils;
 import com.adaptris.util.TimeInterval;
 
 /**
@@ -169,11 +170,11 @@ public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExce
   }
 
   int retryLimit() {
-    return getRetryLimit() != null ? getRetryLimit().intValue() : RETRY_LIMIT_DEFAULT;
+    return NumberUtils.toIntDefaultIfNull(getRetryLimit(), RETRY_LIMIT_DEFAULT);
   }
 
   long retryIntervalMs() {
-    return getRetryInterval() != null ? getRetryInterval().toMilliseconds() : DEFAULT_RETRY_INTERVAL.toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getRetryInterval(), DEFAULT_RETRY_INTERVAL);
   }
 
 

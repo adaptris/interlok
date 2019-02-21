@@ -17,6 +17,7 @@
 package com.adaptris.core.http.jetty;
 
 import com.adaptris.annotation.Removal;
+import com.adaptris.core.util.LoggingHelper;
 
 /**
  * 
@@ -30,9 +31,6 @@ public class MessageConsumer extends JettyMessageConsumer {
 
   public MessageConsumer() {
     super();
-    if (!warningLogged) {
-      log.warn("{} is deprecated, use {} instead.", MessageConsumer.class.getName(), JettyMessageConsumer.class.getName());
-      warningLogged = true;
-    }
+    LoggingHelper.logDeprecation(warningLogged, ()-> { warningLogged=true;}, this.getClass().getSimpleName(), JettyMessageConsumer.class.getName());
   }
 }

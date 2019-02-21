@@ -20,6 +20,7 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
+import javax.jms.Session;
 import javax.jms.Topic;
 
 import com.adaptris.annotation.AdapterComponent;
@@ -62,6 +63,40 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"destination", "acknowledgeMode", "messageTranslator"})
 public class JmsConsumer extends JmsConsumerImpl {
 
+  enum consumerCreator {
+    
+    standardConsumer {
+      @Override
+      MessageConsumer createConsumer(Session session, JmsDestination destination, String filterExpression) throws JMSException {
+        return session.createConsumer(destination.getDestination(), filterExpression);
+      }
+    },
+    
+    standardDurableConsumer {
+      @Override
+      MessageConsumer createConsumer(Session session, JmsDestination destination, String filterExpression) throws JMSException {
+        return session.createDurableSubscriber((Topic) destination.getDestination(), destination.subscriptionId(), filterExpression, false);
+      }
+    },
+    
+    sharedConsumer {
+      @Override
+      MessageConsumer createConsumer(Session session, JmsDestination destination, String filterExpression) throws JMSException {
+        return session.createSharedConsumer((Topic) destination.getDestination(), destination.sharedConsumerId());
+      }
+    },
+    
+    sharedDurableConsumer {
+      @Override
+      MessageConsumer createConsumer(Session session, JmsDestination destination, String filterExpression) throws JMSException {
+        return session.createSharedDurableConsumer((Topic) destination.getDestination(), destination.sharedConsumerId());
+      }
+    };
+    
+    abstract MessageConsumer createConsumer(Session session, JmsDestination destination, String filterExpression) throws JMSException;
+    
+  }
+
   public JmsConsumer() {
   }
 
@@ -82,15 +117,30 @@ public class JmsConsumer extends JmsConsumerImpl {
     MessageConsumer consumer = null;
     
     VendorImplementation vendor = retrieveConnection(JmsConnection.class).configuredVendorImplementation();
-    JmsDestination d = vendor.createDestination(rfc6167, this);
-    if (d.destinationType().equals(DestinationType.TOPIC) && !isEmpty(d.subscriptionId())) {
-      consumer = currentSession().createDurableSubscriber((Topic) d.getDestination(), d.subscriptionId(), filterExp, false);
-    } else {
-      consumer = currentSession().createConsumer(d.getDestination(), filterExp);
+    JmsDestination destination = vendor.createDestination(rfc6167, this);
+    
+    if(destination.destinationType().equals(DestinationType.TOPIC)) {
+      if(!isEmpty(destination.subscriptionId())) {  // then durable, maybe shared
+        if(!isEmpty(destination.sharedConsumerId()))  {
+          log.trace("Creating new shared durable consumer.");
+          consumer = consumerCreator.sharedDurableConsumer.createConsumer(currentSession(), destination, filterExp);
+        }
+        else {
+          log.trace("Creating new durable consumer.");
+          consumer = consumerCreator.standardDurableConsumer.createConsumer(currentSession(), destination, filterExp);
+        }
+      } else if (!isEmpty(destination.sharedConsumerId())) {
+        log.trace("Creating new shared consumer.");
+        consumer = consumerCreator.sharedConsumer.createConsumer(currentSession(), destination, filterExp);
+      }
     }
+
+    if(consumer == null) {
+      log.trace("Creating new standard consumer.");
+      consumer = consumerCreator.standardConsumer.createConsumer(currentSession(), destination, filterExp);
+    }
+    
     return consumer;
   }
-
-
 
 }

@@ -24,7 +24,7 @@ import javax.mail.Header;
 import javax.mail.internet.MimeBodyPart;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -151,7 +151,7 @@ public class MimePartSelector extends ServiceImp {
   }
 
   boolean preserveHeadersAsMetadata() {
-    return getPreserveHeadersAsMetadata() != null ? getPreserveHeadersAsMetadata().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getPreserveHeadersAsMetadata(), false);
   }
 
   /**
@@ -211,7 +211,7 @@ public class MimePartSelector extends ServiceImp {
   }
 
   boolean preservePartHeadersAsMetadata() {
-    return getPreservePartHeadersAsMetadata() != null ? getPreservePartHeadersAsMetadata().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getPreservePartHeadersAsMetadata(), false);
   }
 
   /**
@@ -248,7 +248,7 @@ public class MimePartSelector extends ServiceImp {
   }
 
   boolean markAsNonMime() {
-    return getMarkAsNonMime() != null ? getMarkAsNonMime().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getMarkAsNonMime(), false);
   }
 
   @Override

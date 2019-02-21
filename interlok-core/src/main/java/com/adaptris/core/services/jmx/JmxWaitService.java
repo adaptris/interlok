@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import javax.validation.Valid;
-
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -125,7 +125,7 @@ public class JmxWaitService extends JmxOperationServiceImpl {
   }
 
   long retryInterval() {
-    return getRetryInterval() != null ? getRetryInterval().toMilliseconds() : DEFAULT_INTERVAL.toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getRetryInterval(), DEFAULT_INTERVAL);
   }
 
   /**
@@ -145,6 +145,6 @@ public class JmxWaitService extends JmxOperationServiceImpl {
   }
 
   boolean negate() {
-    return getNegate() != null ? getNegate().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getNegate(), false);
   }
 }

@@ -18,16 +18,22 @@ package com.adaptris.core.services.splitter;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.concurrent.ExecutorService;
 
-import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.PooledObjectFactory;
+import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.CoreException;
 import com.adaptris.core.NullService;
+import com.adaptris.core.stubs.MockService;
+import com.adaptris.core.stubs.MockService.FailureCondition;
 import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.TimeInterval;
 
@@ -47,13 +53,13 @@ public class ServiceWorkerPoolTest extends ServiceWorkerPool {
 
   @Test
   public void testCreateObjectPool() throws Exception {
-    GenericObjectPool<ServiceWorkerPool.Worker> pool = createObjectPool();
+    GenericObjectPool<ServiceWorkerPool.Worker> pool = createCommonsObjectPool();
     assertNotNull(pool);
-    assertEquals(10, pool.getMaxActive());
+    assertEquals(10, pool.getMaxTotal());
     assertEquals(10, pool.getMinIdle());
     assertEquals(10, pool.getMaxIdle());
-    assertEquals(-1, pool.getMaxWait());
-    assertEquals(GenericObjectPool.WHEN_EXHAUSTED_BLOCK, pool.getWhenExhaustedAction());
+    assertEquals(-1, pool.getMaxWaitMillis());
+    assertTrue(pool.getBlockWhenExhausted());
   }
 
   @Test
@@ -65,13 +71,13 @@ public class ServiceWorkerPoolTest extends ServiceWorkerPool {
 
   @Test
   public void testCloseQuietly() {
-    closeQuietly(null);
-    closeQuietly(new GenericObjectPool());
-    closeQuietly(new GenericObjectPool() {
+    closeQuietly((GenericObjectPool) null);
+    closeQuietly(new GenericObjectPool(new DummyPooledObjectFactory()));
+    closeQuietly(new GenericObjectPool(new DummyPooledObjectFactory()) {
 
       @Override
-      public void close() throws Exception {
-        throw new Exception();
+      public void close() {
+        throw new RuntimeException();
       }
 
     });
@@ -89,12 +95,61 @@ public class ServiceWorkerPoolTest extends ServiceWorkerPool {
   @Test
   public void testWorkerFactory() throws Exception {
     ServiceWorkerPool.WorkerFactory workerFactory = new ServiceWorkerPool.WorkerFactory();
-    ServiceWorkerPool.Worker worker = workerFactory.makeObject();
+    PooledObject<ServiceWorkerPool.Worker> worker = workerFactory.makeObject();
     assertNotNull(worker);
     workerFactory.validateObject(worker);
     workerFactory.activateObject(worker);
     workerFactory.passivateObject(worker);
     workerFactory.destroyObject(worker);
+  }
+
+  @Test
+  public void testWarmup() throws Exception {
+    GenericObjectPool<ServiceWorkerPool.Worker> objPool = createCommonsObjectPool();
+    warmup(objPool);
+    assertEquals(10, objPool.getNumIdle());
+    closeQuietly(objPool);    
+  }
+  
+  @Test
+  public void testWarmup_WithException() throws Exception {
+    GenericObjectPool<ServiceWorkerPool.Worker> objPool = null;
+    try {
+      ServiceWorkerPool worker = new ServiceWorkerPool(new MockService(FailureCondition.Lifecycle), null, 10);
+      objPool= worker.createCommonsObjectPool();
+      worker.warmup(objPool);
+      fail();
+    } catch (CoreException expected) {
+      
+    } finally {
+      closeQuietly(objPool);
+    }
+  }
+  
+  
+  private class DummyPooledObjectFactory implements PooledObjectFactory {
+
+    @Override
+    public PooledObject makeObject() throws Exception {
+      return null;
+    }
+
+    @Override
+    public void destroyObject(PooledObject p) throws Exception {
+    }
+
+    @Override
+    public boolean validateObject(PooledObject p) {
+      return false;
+    }
+
+    @Override
+    public void activateObject(PooledObject p) throws Exception {
+    }
+
+    @Override
+    public void passivateObject(PooledObject p) throws Exception {
+    }
 
   }
 }

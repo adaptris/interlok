@@ -18,10 +18,8 @@ package com.adaptris.core.ftp;
 
 import java.io.File;
 import java.io.IOException;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -36,6 +34,7 @@ import com.adaptris.security.exc.PasswordException;
 import com.adaptris.sftp.ConfigBuilder;
 import com.adaptris.sftp.InlineConfigBuilder;
 import com.adaptris.sftp.SftpClient;
+import com.adaptris.util.NumberUtils;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -128,7 +127,9 @@ public class StandardSftpConnection extends FileTransferConnection {
   }
 
   int socketTimeout() {
-    return getSocketTimeout() != null ? Long.valueOf(getSocketTimeout().toMilliseconds()).intValue() : DEFAULT_TIMEOUT;
+    return Long
+        .valueOf(TimeInterval.toMillisecondsDefaultIfNull(getSocketTimeout(), DEFAULT_TIMEOUT))
+        .intValue();
   }
 
 
@@ -151,7 +152,7 @@ public class StandardSftpConnection extends FileTransferConnection {
 
   @Override
   public int defaultControlPort() {
-    return getDefaultControlPort() != null ? getDefaultControlPort().intValue() : DEFAULT_CONTROL_PORT;
+    return NumberUtils.toIntDefaultIfNull(getDefaultControlPort(), DEFAULT_CONTROL_PORT);
   }
 
 

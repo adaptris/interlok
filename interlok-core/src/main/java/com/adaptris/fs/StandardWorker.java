@@ -16,9 +16,12 @@
 
 package com.adaptris.fs;
 
+import static com.adaptris.fs.FsWorker.checkNonExistent;
+import static com.adaptris.fs.FsWorker.checkWriteable;
+import static com.adaptris.fs.FsWorker.isDirectory;
+
 import java.io.File;
 import java.io.FileFilter;
-import java.io.IOException;
 import java.io.RandomAccessFile;
 
 import org.slf4j.Logger;
@@ -34,50 +37,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("fs-standard-worker")
 public class StandardWorker implements FsWorker {
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
-
-  public File[] listFiles(File dir) throws FsException {
-    return listFiles(dir, null);
-  }
-
-  public File[] listFiles(File dir, FileFilter filter) throws FsException {
-    File[] result = isDir(checkAcl(dir)).listFiles(filter);
-    if (result == null) {
-      throw new FsException("problem listing files in [" + dir + "]");
-    }
-    return result;
-  }
-
-  protected File checkAcl(File file) throws FsException {
-    if (file == null) {
-      throw new FsException("reference is null");
-    }
-
-    if (!file.exists()) {
-      throw new FsFileNotFoundException(file.getAbsolutePath());
-    }
-
-    if (!file.canRead()) {
-      throw new FsException("file not readable");
-    }
-
-    if (!file.canWrite()) {
-      throw new FsException("file not writable");
-    }
-
-    return file; // for method chaining
-  }
-
-  protected File isDir(File file) throws FsException {
-    if (!file.isDirectory()) {
-      throw new FsException("invalid directory [" + file + "]");
-    }
-
-    return file;
-  }
-
+  
   public byte[] get(File file) throws FsException {
     byte[] result = null;
-    try (RandomAccessFile raf = new RandomAccessFile(checkAcl(file), "r")) {
+    try (RandomAccessFile raf = new RandomAccessFile(checkWriteable(file), "r")) {
       result = new byte[(int) raf.length()];
       raf.readFully(result);
     }
@@ -88,48 +51,10 @@ public class StandardWorker implements FsWorker {
   }
 
   public void put(byte[] data, File file) throws FsException {
-    try {
-      if (file.exists()) {
-        throw new FsException("trying to write to file [" + file + "] which exists");
-      }
-      writeAndClose(data, new RandomAccessFile(file, "rw"));
+    try (RandomAccessFile raf = new RandomAccessFile(checkNonExistent(file), "rw")){
+      raf.write(data);
     } catch (Exception e) {
       throw wrapException(e);
-    }
-  }
-
-  protected void writeAndClose(byte[] data, RandomAccessFile file) throws IOException {
-    try (RandomAccessFile raf = file) {
-      raf.write(data);
-    }
-  }
-
-  public void rename(File oldFile, File newFile) throws FsException {
-    if (newFile.exists()) {
-      throw new FsFilenameExistsException("name [" + newFile + "] already exists");
-    }
-    if (!checkAcl(oldFile).renameTo(newFile)) {
-      throw new FsException("problem renaming file [" + oldFile + "] to [" + newFile + "]");
-    }
-  }
-
-  public void delete(File file) throws FsException {
-    try {
-      if (!checkAcl(file).delete()) {
-        throw new FsException("problem deleting file [" + file + "]");
-      }
-    }
-    catch (FsFileNotFoundException e) {
-    }
-  }
-
-  public boolean isWriteableDir(File dir) throws FsException {
-    try {
-      isDir(checkAcl(dir));
-      return true;
-    }
-    catch (FsException e) {
-      return false;
     }
   }
 

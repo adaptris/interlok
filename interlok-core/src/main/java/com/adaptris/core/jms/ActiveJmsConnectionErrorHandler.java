@@ -26,7 +26,7 @@ import javax.jms.Message;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TemporaryTopic;
-
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
@@ -118,14 +118,12 @@ public class ActiveJmsConnectionErrorHandler extends JmsConnectionErrorHandlerIm
   }
 
   public boolean additionalLogging() {
-    return getAdditionalLogging() != null ? getAdditionalLogging().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getAdditionalLogging(), false);
   }
 
   long retryInterval() {
-    long period = 0;
-    if (getCheckInterval() != null) {
-      period = getCheckInterval().toMilliseconds();
-    }
+    long period =
+        TimeInterval.toMillisecondsDefaultIfNull(getCheckInterval(), DEFAULT_CHECK_INTERVAL);
     if (period <= 0) {
       period = DEFAULT_CHECK_INTERVAL.toMilliseconds();
     }

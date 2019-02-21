@@ -91,6 +91,15 @@ public class ExceptionReportServiceTest extends ExceptionServiceExample {
     }
   }
 
+  public void testNonXml_IgnoreXmlParseException() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(RAW_DATA);
+    msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("This is the exception"));
+    ExceptionReportService service = new ExceptionReportService(new ExceptionAsXml()
+        .withExceptionGenerator(new SimpleExceptionReport()).withIgnoreXmlParseExceptions(true));
+    execute(service, msg);
+    assertNotSame(RAW_DATA, msg.getContent());
+  }
+  
   public void testDeprecated() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
     msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("This is the exception"));

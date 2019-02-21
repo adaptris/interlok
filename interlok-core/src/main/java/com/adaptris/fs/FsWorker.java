@@ -16,8 +16,14 @@
 
 package com.adaptris.fs;
 
+import static com.adaptris.fs.FsWorker.checkWriteable;
+import static com.adaptris.fs.FsWorker.isDirectory;
+
 import java.io.File;
 import java.io.FileFilter;
+
+import com.adaptris.core.CoreException;
+import com.adaptris.core.util.Args;
 
 /**
  * <p>
@@ -38,7 +44,9 @@ public interface FsWorker {
    * @return an array of <code>File</code>s
    * @throws FsException wrapping any underlying Exception
    */
-  File[] listFiles(File dir) throws FsException;
+  default File[] listFiles(File dir) throws FsException {
+    return listFiles(dir, null);
+  }
 
   /**
    * <p>
@@ -52,8 +60,13 @@ public interface FsWorker {
    * @return an array of <code>File</code>s
    * @throws FsException wrapping any underlying Exception
    */
-  File[] listFiles(File dir, FileFilter filter) throws FsException;
-
+  default File[] listFiles(File dir, FileFilter filter) throws FsException {
+    File[] result = isDirectory(checkWriteable(dir)).listFiles(filter);
+    if (result == null) {
+      throw new FsException("problem listing files in [" + dir + "]");
+    }
+    return result;
+  }
   /**
    * <p>
    * Gets the contents of the specified <code>File</code>. If the file doesn't exist or other I/O problems are encountered a
@@ -85,11 +98,15 @@ public interface FsWorker {
    * </p>
    * 
    * @param oldFile the file to rename
-   * @param newName the new name for the file
-   * @throws FsFilenameExistsException if newName exists
+   * @param newFile the new name for the file
+   * @throws FsFilenameExistsException if newFile exists
    * @throws FsException wrapping any underlying Exception that may occur
    */
-  void rename(File oldFile, File newName) throws FsException, FsFilenameExistsException;
+  default void rename(File oldFile, File newFile) throws FsException {
+    if (!checkWriteable(oldFile).renameTo(checkNonExistent(newFile))) {
+      throw new FsException("problem renaming file [" + oldFile + "] to [" + newFile + "]");
+    }
+  }
 
   /**
    * <p>
@@ -99,7 +116,15 @@ public interface FsWorker {
    * @param file the file to delete in the
    * @throws FsException wrapping any underlying Exception that may occur
    */
-  void delete(File file) throws FsException;
+  default void delete(File file) throws FsException {
+    try {
+      if (!checkWriteable(file).delete()) {
+        throw new FsException("problem deleting file [" + file + "]");
+      }
+    }
+    catch (FsFileNotFoundException e) {
+    }
+  }
 
   /**
    * <p>
@@ -110,5 +135,82 @@ public interface FsWorker {
    * @return true if the passed <code>File</code> is a writeable directory, otherwise false
    * @throws FsException wrapping any underlying Exception that may occur
    */
-  boolean isWriteableDir(File dir) throws FsException;
+
+  default boolean isWriteableDir(File dir) throws FsException {
+    try {
+      isDirectory(checkWriteable(dir));
+      return true;
+    }
+    catch (FsException e) {
+      return false;
+    }
+  }
+  
+  /** Throw an exception if the file does not exist.
+   * 
+   * @throws FsException if the file does not exist
+   */
+  static File checkExists(File file) throws FsException {
+    Args.notNull(file, "file");
+    if (!file.exists()) {
+      throw new FsFileNotFoundException("Does not exist [" + file + "]");
+    }
+    return file;
+  }
+
+  /** Throw an exception if the file exists.
+   * 
+   * @throws FsException if the file exists
+   */
+  static File checkNonExistent(File file) throws FsException {
+    Args.notNull(file,  "file");
+    if (file.exists()) {
+      throw new FsFilenameExistsException("Already exists [" + file + "]");
+    }
+    return file;
+  }
+
+  /** Throw an exception if the file is not readable
+   * 
+   */  
+  static File checkReadable(File file) throws FsException {
+    if (!checkExists(file).canRead()) {
+      throw new FsException("Not readable [" + file + "]");
+    }
+
+    return file;
+  }
+  
+  /** Throw an exception if the file is not readable or writeable
+   * 
+   */
+  static File checkWriteable(File file) throws FsException {
+    if (!checkReadable(file).canWrite()) {
+      throw new FsException("Not writeable [" + file + "]");
+    }
+    return file;
+  }
+  
+ 
+  /** Throw an exception if the file is not a directory
+   * 
+   */
+  static File isDirectory(File file) throws FsException {
+    if (!checkExists(file).isDirectory()) {
+      throw new FsException("Not a directory [" + file + "]");
+    }
+    return file;
+  }
+  
+  /** Throw an exception if the file is not a plain file.
+   * 
+   */ 
+  static File isFile(File file) throws FsException {
+    if (!checkExists(file).isFile()) {
+      throw new FsException("Not a file [" + file + "]");
+    }
+    return file;
+  }
+
+
 }

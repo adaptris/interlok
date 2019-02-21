@@ -16,6 +16,9 @@
 
 package com.adaptris.fs;
 
+import static com.adaptris.fs.FsWorker.checkNonExistent;
+import static com.adaptris.fs.FsWorker.checkWriteable;
+
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
@@ -34,10 +37,7 @@ public class NioWorker extends StandardWorker {
 
   @Override
   public void put(byte[] data, File file) throws FsException {
-    if (file.exists()) {
-      throw new FsException("trying to write to file [" + file + "] which exists");
-    }
-    write(data, file);
+    write(data, checkNonExistent(file));
   }
 
   protected void write(byte[] data, File file) throws FsException {
@@ -58,7 +58,7 @@ public class NioWorker extends StandardWorker {
   public byte[] get(File file) throws FsException {
     ByteBuffer buffer = null;
 
-    try (RandomAccessFile raf = new RandomAccessFile(checkAcl(file), "rw");
+    try (RandomAccessFile raf = new RandomAccessFile(checkWriteable(file), "rw");
         FileChannel channel = raf.getChannel();
         FileLock lock = channel.lock()) {
       buffer = ByteBuffer.allocate((int) raf.length());

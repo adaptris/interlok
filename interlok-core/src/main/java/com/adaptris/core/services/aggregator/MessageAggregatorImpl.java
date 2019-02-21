@@ -16,6 +16,7 @@
 
 package com.adaptris.core.services.aggregator;
 
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
@@ -49,7 +50,7 @@ public abstract class MessageAggregatorImpl implements MessageAggregator {
   }
 
   protected boolean overwriteMetadata() {
-    return getOverwriteMetadata() != null ? getOverwriteMetadata().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getOverwriteMetadata(), false);
   }
 
   protected void overwriteMetadata(AdaptrisMessage src, AdaptrisMessage target) {

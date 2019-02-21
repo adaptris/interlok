@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import org.springframework.boot.loader.Launcher;
 import org.springframework.boot.loader.PropertiesLauncher;
 import org.springframework.boot.loader.archive.Archive;
@@ -45,16 +44,24 @@ public class InterlokLauncher extends Launcher {
   private static final String ZIP_EXT = ".zip";
   private static final String JAR_EXT = ".jar";
   private static final String[] JAR_EXTS =
-  {
-      JAR_EXT, ZIP_EXT
-  };
+    {
+        JAR_EXT, ZIP_EXT
+    };
 
   private static final String DEFAULT_CONFIG_DIR = "config";
 
   private static final List<String> SPECIAL_DIRS = Collections.unmodifiableList(Arrays.asList(".git", ".svn", "CVS", ".hg"));
   private static final String DEBUG_PREFIX = "(" + InterlokLauncher.class.getSimpleName() + ") ";
 
-  private static final FileFilter JAR_FILTER = new JarFilter();
+  private static final FileFilter JAR_FILTER = file -> {
+    if (file.isHidden() || file.length() == 0) return false;
+    for (String s : JAR_EXTS) {
+      if (file.getName().toLowerCase().endsWith(s)) {
+        return true;
+      }
+    }
+    return false;
+  };
 
   private static final boolean DEBUG = Boolean.getBoolean("adp.bootstrap.debug") || Boolean.getBoolean("interlok.bootstrap.debug");
 
@@ -65,29 +72,29 @@ public class InterlokLauncher extends Launcher {
   static final String PASSWORD_GEN_MAIN_CLASS = "com.adaptris.security.password.Password";
 
   private static final String[] ARG_ADAPTER_CLASSPATH = new String[]
-  {
-      "-adapterClasspath", "--adapterClasspath"
-  };
+      {
+          "-adapterClasspath", "--adapterClasspath"
+      };
   private static final String[] ARG_IGNORE_SUBDIRS = new String[]
-  {
-      "-ignoreSubDirs", "--ignoreSubDirs"
-  };
+      {
+          "-ignoreSubDirs", "--ignoreSubDirs"
+      };
   private static final String[] ARG_FAILOVER = new String[]
-  {
-      "-failover", "--failover"
-  };
+      {
+          "-failover", "--failover"
+      };
   private static final String[] ARG_SERVICE_TEST = new String[]
-  {
-      "-serviceTest", "--serviceTest"
-  };
+      {
+          "-serviceTest", "--serviceTest"
+      };
   private static final String[] ARG_CONTAINER = new String[]
-  {
-      "-container", "--container"
-  };
+      {
+          "-container", "--container"
+      };
   private static final String[] ARG_PASSWORD = new String[]
-  {
-      "-password", "--password"
-  };
+      {
+          "-password", "--password"
+      };
 
 
   private final String DEFAULT_CLASSPATH = "./config,./lib";
@@ -209,7 +216,7 @@ public class InterlokLauncher extends Launcher {
   @Override
   protected List<Archive> getClassPathArchives() throws Exception {
     List<Archive> lib = new ArrayList<>();
-    for (String path : this.paths) {
+    for (String path : paths) {
       lib.addAll(createArchives(path));
     }
     return lib;
@@ -277,12 +284,8 @@ public class InterlokLauncher extends Launcher {
       addArchive(jar, jars);
     }
     if (loadSubdirs) {
-      File[] subDirs = dir.listFiles(new FileFilter() {
-
-        @Override
-        public boolean accept(File file) {
-          return file.isDirectory();
-        }
+      File[] subDirs = dir.listFiles(e-> {
+        return e.isDirectory();
       });
       for (File subDir : subDirs) {
         jars.addAll(createArchives(subDir, loadSubdirs));
@@ -294,18 +297,6 @@ public class InterlokLauncher extends Launcher {
   private static void addArchive(File f, List<Archive> list) throws IOException {
     if (f.exists()) {
       list.add(new JarFileArchive(f));
-    }
-  }
-
-  private static class JarFilter implements FileFilter {
-    @Override
-    public boolean accept(File file) {
-      for (String s : JAR_EXTS) {
-        if (file.getName().toLowerCase().endsWith(s)) {
-          return true;
-        }
-      }
-      return false;
     }
   }
 }

@@ -18,7 +18,6 @@ package com.adaptris.core.common;
 
 import java.io.IOException;
 import java.io.InputStream;
-
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.interlok.InterlokException;
 import com.adaptris.interlok.config.DataInputParameter;
@@ -46,7 +45,7 @@ public class PayloadStreamInputParameter implements DataInputParameter<InputStre
     try {
       result = message.getInputStream();
     } catch (IOException e) {
-      ExceptionHelper.rethrowCoreException(e);
+      throw ExceptionHelper.wrapCoreException(e);
     }
     return result;
   }

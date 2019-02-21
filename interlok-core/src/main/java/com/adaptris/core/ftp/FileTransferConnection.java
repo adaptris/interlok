@@ -36,8 +36,8 @@ import com.adaptris.core.NoOpConnection;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
 import com.adaptris.security.exc.PasswordException;
+import com.adaptris.util.NumberUtils;
 import com.adaptris.util.TimeInterval;
-
 import net.jodah.expiringmap.ExpirationListener;
 import net.jodah.expiringmap.ExpirationPolicy;
 import net.jodah.expiringmap.ExpiringMap;
@@ -112,7 +112,7 @@ public abstract class FileTransferConnection extends NoOpConnection {
   }
 
   public boolean forceRelativePath() {
-    return getForceRelativePath() != null ? getForceRelativePath().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getForceRelativePath(), false);
   }
 
   /**
@@ -333,7 +333,7 @@ public abstract class FileTransferConnection extends NoOpConnection {
   }
 
   public int maxClientCacheSize() {
-    return getMaxClientCacheSize() != null ? getMaxClientCacheSize().intValue() : DEFAULT_MAX_CACHE_SIZE;
+    return NumberUtils.toIntDefaultIfNull(getMaxClientCacheSize(), DEFAULT_MAX_CACHE_SIZE);
   }
 
   public TimeInterval getCacheExpiration() {
@@ -350,7 +350,7 @@ public abstract class FileTransferConnection extends NoOpConnection {
   }
 
   protected long expirationMillis() {
-    return getCacheExpiration() != null ? getCacheExpiration().toMilliseconds() : DEFAULT_EXPIRATION.toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getCacheExpiration(), DEFAULT_EXPIRATION);
   }
 
   /**

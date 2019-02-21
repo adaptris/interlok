@@ -17,7 +17,7 @@ package com.adaptris.core.services.jdbc;
 
 import javax.validation.constraints.NotNull;
 import javax.xml.namespace.NamespaceContext;
-
+import org.apache.commons.lang3.BooleanUtils;
 import org.w3c.dom.Node;
 
 import com.adaptris.annotation.AdvancedConfig;
@@ -134,7 +134,7 @@ public abstract class StatementParameterImpl extends NamedStatementParameter {
   }
 
   protected boolean convertNull() {
-    return getConvertNull() != null ? getConvertNull().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getConvertNull(), false);
   }
 
   /**

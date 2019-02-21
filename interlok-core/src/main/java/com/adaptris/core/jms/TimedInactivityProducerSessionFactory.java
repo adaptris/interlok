@@ -98,6 +98,7 @@ public class TimedInactivityProducerSessionFactory extends ProducerSessionFactor
   }
 
   private long inactivityIntervalMs() {
-    return getInactivityInterval() != null ? getInactivityInterval().toMilliseconds() : DEFAULT_INACVITY_INTERVAL.toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getInactivityInterval(),
+        DEFAULT_INACVITY_INTERVAL);
   }
 }

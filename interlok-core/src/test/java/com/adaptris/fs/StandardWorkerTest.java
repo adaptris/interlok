@@ -117,7 +117,7 @@ public class StandardWorkerTest extends FsCase {
     try {
       worker.listFiles(null);
       fail();
-    } catch (FsException expected) {
+    } catch (FsException | IllegalArgumentException expected) {
       
     }
   }
@@ -274,12 +274,11 @@ public class StandardWorkerTest extends FsCase {
   }
 
   @Test
-  public void testCheckAcl() throws Exception {
+  public void testCheckWriteable() throws Exception {
     File nonExistent = Mockito.mock(File.class);
     Mockito.when(nonExistent.exists()).thenReturn(false);
-    StandardWorker worker = createWorker();
     try {
-      worker.checkAcl(nonExistent);
+      FsWorker.checkWriteable(nonExistent);
       fail();
     }
     catch (FsException expected) {
@@ -290,7 +289,7 @@ public class StandardWorkerTest extends FsCase {
     Mockito.when(unreadable.exists()).thenReturn(true);
     Mockito.when(unreadable.canWrite()).thenReturn(true);
     try {
-      worker.checkAcl(unreadable);
+      FsWorker.checkWriteable(unreadable);
       fail();
     } catch (FsException expected) {
 
@@ -301,20 +300,110 @@ public class StandardWorkerTest extends FsCase {
     Mockito.when(unWriteable.exists()).thenReturn(true);
     Mockito.when(unWriteable.canRead()).thenReturn(true);
     try {
-      worker.checkAcl(unWriteable);
+      FsWorker.checkWriteable(unWriteable);
       fail();
     } catch (FsException expected) {
 
     }
     try {
-      worker.checkAcl(null);
+      FsWorker.checkWriteable(null);
       fail();
-    } catch (FsException expected) {
+    } catch (FsException | IllegalArgumentException expected) {
 
     }
 
   }
+  
+  @Test
+  public void testCheckExists() throws Exception {
+    File nonExistent = Mockito.mock(File.class);
+    Mockito.when(nonExistent.exists()).thenReturn(false);
+    try {
+      FsWorker.checkExists(nonExistent);
+      fail();
+    }
+    catch (FsException expected) {
 
+    }
+    File exists = Mockito.mock(File.class);
+    Mockito.when(exists.canRead()).thenReturn(false);
+    Mockito.when(exists.exists()).thenReturn(true);
+    Mockito.when(exists.canWrite()).thenReturn(true);
+    FsWorker.checkExists(exists);
+  }
+
+  @Test
+  public void testCheckNonExistent() throws Exception {
+    File exists = Mockito.mock(File.class);
+    Mockito.when(exists.exists()).thenReturn(true);
+    try {
+      FsWorker.checkNonExistent(exists);
+      fail();
+    }
+    catch (FsException expected) {
+
+    }
+    File nonExistent = Mockito.mock(File.class);
+    Mockito.when(nonExistent.canRead()).thenReturn(false);
+    Mockito.when(nonExistent.exists()).thenReturn(false);
+    Mockito.when(nonExistent.canWrite()).thenReturn(true);
+    FsWorker.checkNonExistent(nonExistent);
+  }
+
+  @Test
+  public void testCheckReadable() throws Exception {
+    File cannotRead = Mockito.mock(File.class);
+    Mockito.when(cannotRead.exists()).thenReturn(true);
+    Mockito.when(cannotRead.canRead()).thenReturn(false);
+    try {
+      FsWorker.checkReadable(cannotRead);
+      fail();
+    }
+    catch (FsException expected) {
+
+    }
+    File readable = Mockito.mock(File.class);
+    Mockito.when(readable.canRead()).thenReturn(true);
+    Mockito.when(readable.exists()).thenReturn(true);
+    FsWorker.checkReadable(readable);
+  }
+  
+  @Test
+  public void testIsDirectory() throws Exception {
+    File isFile = Mockito.mock(File.class);
+    Mockito.when(isFile.exists()).thenReturn(true);
+    Mockito.when(isFile.isDirectory()).thenReturn(false);
+    try {
+      FsWorker.isDirectory(isFile);
+      fail();
+    }
+    catch (FsException expected) {
+
+    }
+    File dir = Mockito.mock(File.class);
+    Mockito.when(dir.isDirectory()).thenReturn(true);
+    Mockito.when(dir.exists()).thenReturn(true);
+    FsWorker.isDirectory(dir);
+  }
+  
+  @Test
+  public void testIsFile() throws Exception {
+    File isDirectory = Mockito.mock(File.class);
+    Mockito.when(isDirectory.exists()).thenReturn(true);
+    Mockito.when(isDirectory.isFile()).thenReturn(false);
+    try {
+      FsWorker.isFile(isDirectory);
+      fail();
+    }
+    catch (FsException expected) {
+
+    }
+    File file = Mockito.mock(File.class);
+    Mockito.when(file.isFile()).thenReturn(true);
+    Mockito.when(file.exists()).thenReturn(true);
+    FsWorker.isFile(file);
+  }
+  
   private class TmpFilter implements java.io.FileFilter {
     public boolean accept(File file) {
       if (file.getName().endsWith(DEFAULT_FILTER_SUFFIX)) {

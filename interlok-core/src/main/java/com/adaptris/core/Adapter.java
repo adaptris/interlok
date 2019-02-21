@@ -515,8 +515,8 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
   }
 
   long heartbeatInterval() {
-    return getHeartbeatEventInterval() != null ? getHeartbeatEventInterval().toMilliseconds()
-        : DEFAULT_HB_EVENT_INTERVAL.toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getHeartbeatEventInterval(),
+        DEFAULT_HB_EVENT_INTERVAL);
   }
 
   /**

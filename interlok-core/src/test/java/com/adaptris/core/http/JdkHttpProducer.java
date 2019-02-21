@@ -61,7 +61,9 @@ import com.adaptris.core.http.auth.ThreadLocalCredentials;
 import com.adaptris.core.http.client.RequestMethodProvider;
 import com.adaptris.core.http.client.RequestMethodProvider.RequestMethod;
 import com.adaptris.core.http.client.net.StandardHttpProducer;
+import com.adaptris.core.http.jetty.StandardResponseProducer;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.util.stream.StreamUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -106,10 +108,7 @@ public class JdkHttpProducer extends HttpProducer {
   public JdkHttpProducer() {
     super();
     setMethod(RequestMethod.POST.name());
-    if (!warningLogged) {
-      log.warn("[{}] is deprecated, use [{}] instead", this.getClass().getSimpleName(), StandardHttpProducer.class.getName());
-      warningLogged = true;
-    }
+    LoggingHelper.logDeprecation(warningLogged, ()-> { warningLogged=true;}, this.getClass().getSimpleName(), StandardHttpProducer.class.getName());
   }
 
   public JdkHttpProducer(ProduceDestination d) {

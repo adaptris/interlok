@@ -23,20 +23,19 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
-
+import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.util.NumberUtils;
 import com.adaptris.util.URLHelper;
 import com.adaptris.util.URLString;
 import com.adaptris.util.stream.StreamUtil;
@@ -153,7 +152,7 @@ public class Resolver implements EntityResolver, URIResolver {
   }
 
   public int maxDestinationCacheSize() {
-    return getMaxDestinationCacheSize() != null ? getMaxDestinationCacheSize().intValue() : DEFAULT_MAX_CACHE_SIZE;
+    return NumberUtils.toIntDefaultIfNull(getMaxDestinationCacheSize(), DEFAULT_MAX_CACHE_SIZE);
   }
 
   public Boolean getAdditionalDebug() {
@@ -165,7 +164,7 @@ public class Resolver implements EntityResolver, URIResolver {
   }
 
   private boolean additionalDebug() {
-    return getAdditionalDebug() != null ? getAdditionalDebug().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getAdditionalDebug(), false);
   }
 
   protected void debugLog(String msg, Object... objects) {

@@ -23,7 +23,7 @@ import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.Session;
 import javax.validation.Valid;
-
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -349,7 +349,7 @@ public class JmsConnection extends AllowsRetriesConnection implements JmsConnect
   }
 
   protected boolean additionalDebug() {
-    return getAdditionalDebug() != null ? getAdditionalDebug().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getAdditionalDebug(), false);
   }
 
   @Override

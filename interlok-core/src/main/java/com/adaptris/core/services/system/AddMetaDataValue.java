@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.adaptris.annotation.AdvancedConfig;
@@ -117,7 +117,7 @@ public class AddMetaDataValue implements CommandOutputCapture {
   }
 
   private boolean strip() {
-    return getStrip() != null ? getStrip().booleanValue() : true;
+    return BooleanUtils.toBooleanDefaultIfNull(getStrip(), false);
   }
 
   private static class RunAfterCloseOutputStream extends FilterOutputStream {

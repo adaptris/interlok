@@ -18,12 +18,10 @@ package com.adaptris.core;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
-
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
-import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -79,21 +77,17 @@ public class WaitingOutOfStateHandler extends OutOfStateHandlerImp {
   private static final TimeInterval DEFAULT_MAX_WAIT = new TimeInterval(2L, TimeUnit.MINUTES);
   
   private static final TimeInterval DEFAULT_INTERVAL_TO_CHECK = new TimeInterval(5L, TimeUnit.SECONDS);
-  
-  @NotNull
+
   @Valid
-  @AutoPopulated
+  @InputFieldDefault(value = "2 Minutes")
   private TimeInterval maximumWaitTime;
-  
-  @NotNull
+
   @Valid
-  @AutoPopulated
+  @InputFieldDefault(value = "5 Seconds")
   private TimeInterval intervalToCheck;
   
   public WaitingOutOfStateHandler() {
     super();
-    this.setMaximumWaitTime(DEFAULT_MAX_WAIT);
-    this.setIntervalToCheck(DEFAULT_INTERVAL_TO_CHECK);
   }
   
   @Override
@@ -102,17 +96,12 @@ public class WaitingOutOfStateHandler extends OutOfStateHandlerImp {
     
     while(!component.retrieveComponentState().equals(this.getCorrectState().getComponentState())) {
       long now = new Date().getTime();
-      if((now - start) > this.getMaximumWaitTime().toMilliseconds())
+      if (now - start > maxWaitTimeMs())
         break;
       else {
-        try {
-          Thread.sleep(this.getIntervalToCheck().toMilliseconds());
-        } catch (InterruptedException ex) {
-          // do nothing
-        }
+        LifecycleHelper.waitQuietly(intervalToCheckMs());
       }
     }
-    
     if(!component.retrieveComponentState().equals(this.getCorrectState().getComponentState()))
       throw new OutOfStateException("Expected state: " + this.getCorrectState().getClass().getSimpleName() + " but got " + component.retrieveComponentState().getClass().getSimpleName());
   }
@@ -131,6 +120,15 @@ public class WaitingOutOfStateHandler extends OutOfStateHandlerImp {
 
   public void setIntervalToCheck(TimeInterval interval) {
     this.intervalToCheck = Args.notNull(interval, "Check interval");
+  }
+
+  protected long intervalToCheckMs() {
+    return TimeInterval.toMillisecondsDefaultIfNull(getIntervalToCheck(),
+        DEFAULT_INTERVAL_TO_CHECK);
+  }
+
+  protected long maxWaitTimeMs() {
+    return TimeInterval.toMillisecondsDefaultIfNull(getMaximumWaitTime(), DEFAULT_MAX_WAIT);
   }
 
 }

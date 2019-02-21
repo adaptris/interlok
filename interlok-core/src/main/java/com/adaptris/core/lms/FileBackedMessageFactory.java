@@ -37,6 +37,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.util.Args;
+import com.adaptris.util.NumberUtils;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -121,7 +122,7 @@ public class FileBackedMessageFactory extends DefaultMessageFactory {
   }
 
   protected int defaultBufferSize() {
-    return getDefaultBufferSize() != null ? getDefaultBufferSize().intValue() : DEFAULT_BUFSIZE;
+    return NumberUtils.toIntDefaultIfNull(getDefaultBufferSize(), DEFAULT_BUFSIZE);
   }
 
   /**
@@ -143,7 +144,7 @@ public class FileBackedMessageFactory extends DefaultMessageFactory {
   }
 
   protected long maxMemorySizeBytes() {
-    return getMaxMemorySizeBytes() != null ? getMaxMemorySizeBytes().longValue() : INLINE_MAX_SIZE;
+    return NumberUtils.toLongDefaultIfNull(getMaxMemorySizeBytes(), INLINE_MAX_SIZE);
   }
 
 

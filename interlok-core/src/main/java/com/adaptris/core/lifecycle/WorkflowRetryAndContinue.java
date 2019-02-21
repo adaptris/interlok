@@ -26,6 +26,7 @@ import com.adaptris.core.DefaultWorkflowLifecycleStrategy;
 import com.adaptris.core.Workflow;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.LoggingHelper;
+import com.adaptris.util.NumberUtils;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -147,7 +148,7 @@ public class WorkflowRetryAndContinue extends DefaultWorkflowLifecycleStrategy {
   }
 
   int maxRetries() {
-    return getMaxRetries() != null ? getMaxRetries().intValue() : DEFAULT_MAX_RETRIES;
+    return NumberUtils.toIntDefaultIfNull(getMaxRetries(), DEFAULT_MAX_RETRIES);
   }
 
   public TimeInterval getWaitBetweenRetries() {
@@ -164,8 +165,8 @@ public class WorkflowRetryAndContinue extends DefaultWorkflowLifecycleStrategy {
   }
 
   long waitInterval() {
-    return getWaitBetweenRetries() != null ? getWaitBetweenRetries().toMilliseconds() : DEFAULT_INTERVAL_BETWEEN_RETRIES
-        .toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getWaitBetweenRetries(),
+        DEFAULT_INTERVAL_BETWEEN_RETRIES);
   }
 
 

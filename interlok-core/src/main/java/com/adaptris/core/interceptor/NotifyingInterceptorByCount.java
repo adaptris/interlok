@@ -110,8 +110,8 @@ public abstract class NotifyingInterceptorByCount extends NotifyingInterceptor {
   }
 
   long timesliceDurationMs() {
-    return getTimesliceDuration() != null ? getTimesliceDuration().toMilliseconds()
-        : DEFAULT_TIMESLICE_DURATION.toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getTimesliceDuration(),
+        DEFAULT_TIMESLICE_DURATION);
   }
 
 }

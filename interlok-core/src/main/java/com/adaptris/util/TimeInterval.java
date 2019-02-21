@@ -17,7 +17,6 @@
 package com.adaptris.util;
 
 import java.util.concurrent.TimeUnit;
-
 import com.adaptris.annotation.DisplayOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -104,5 +103,15 @@ public class TimeInterval {
 
   public static long toMillisecondsDefaultIfNull(TimeInterval t, TimeInterval defaultInterval) {
     return toMillisecondsDefaultIfNull(t, defaultInterval.toMilliseconds());
+  }
+
+  public static long toSecondsDefaultIfNull(TimeInterval t, TimeInterval defaultInterval) {
+    return TimeUnit.MILLISECONDS
+        .toSeconds(TimeInterval.toMillisecondsDefaultIfNull(t, defaultInterval));
+  }
+
+  public static long toSecondsDefaultIfNull(TimeInterval t, long defaultMs) {
+    return TimeUnit.MILLISECONDS
+        .toSeconds(TimeInterval.toMillisecondsDefaultIfNull(t, defaultMs));
   }
 }

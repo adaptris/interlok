@@ -39,6 +39,7 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.jmx.JmxConnection;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.util.NumberUtils;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -209,7 +210,7 @@ public class DynamicJmxOperationService extends JmxOperationImpl {
   }
 
   int maxCache() {
-    return getMaxJmxConnectionCache() != null ? getMaxJmxConnectionCache().intValue() : DEFAULT_MAX_CACHE_SIZE;
+    return NumberUtils.toIntDefaultIfNull(getMaxJmxConnectionCache(), DEFAULT_MAX_CACHE_SIZE);
   }
 
   private void clearCache() {

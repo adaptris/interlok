@@ -192,7 +192,8 @@ public class ThrottlingInterceptor extends WorkflowInterceptorImpl {
   }
 
   private long getMillisecondDuration() {
-    return getTimeSliceInterval() != null ? getTimeSliceInterval().toMilliseconds() : DEFAULT_TIMESLICE_INTERVAL.toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getTimeSliceInterval(),
+        DEFAULT_TIMESLICE_INTERVAL);
   }
 
   @Override

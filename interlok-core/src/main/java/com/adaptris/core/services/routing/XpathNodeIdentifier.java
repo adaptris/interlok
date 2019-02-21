@@ -19,7 +19,7 @@ package com.adaptris.core.services.routing;
 import java.util.List;
 
 import javax.xml.xpath.XPathConstants;
-
+import org.apache.commons.lang3.BooleanUtils;
 import org.w3c.dom.Document;
 
 import com.adaptris.annotation.AdvancedConfig;
@@ -115,6 +115,6 @@ public class XpathNodeIdentifier extends XmlSyntaxIdentifierImpl {
   }
 
   protected boolean resolveAsNodeset() {
-    return getResolveAsNodeset() != null ? getResolveAsNodeset().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getResolveAsNodeset(), false);
   }
 }

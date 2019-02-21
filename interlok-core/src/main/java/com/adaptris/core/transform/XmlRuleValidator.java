@@ -1,35 +1,30 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *     http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
-*/
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
 
 package com.adaptris.core.transform;
 
 import static com.adaptris.core.util.XmlHelper.createDocument;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
+import java.util.regex.Matcher;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.xml.namespace.NamespaceContext;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
@@ -49,15 +44,16 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 /**
  * Used with {@link XmlValidationService} to validate an XML message against various rules.
  * <p>
- * If the {@code DocumentBuilderFactoryBuilder} has been explicitly set to be not namespace aware and the document does in fact
- * contain namespaces, then Saxon can cause merry havoc in the sense that {@code //NonNamespaceXpath} doesn't work if the document
- * has namespaces in it. We have included a shim so that behaviour can be toggled based on what you have configured.
+ * If the {@code DocumentBuilderFactoryBuilder} has been explicitly set to be not namespace aware
+ * and the document does in fact contain namespaces, then Saxon can cause merry havoc in the sense
+ * that {@code //NonNamespaceXpath} doesn't work if the document has namespaces in it. We have
+ * included a shim so that behaviour can be toggled based on what you have configured.
  * </p>
- * 
+ *
  * @see XPath#newXPathInstance(DocumentBuilderFactoryBuilder, NamespaceContext)
- * 
+ *
  * @config xml-rule-validator
- * 
+ *
  * @author lchan
  * @see ValidationStage
  */
@@ -72,13 +68,13 @@ public class XmlRuleValidator extends MessageValidatorImpl {
   private static final String VALIDATION_MSG = "@VALIDATION_MSG@";
 
   private static final String ERR_MSG = "NodeList entry " + I_COUNT + " from [" + I_XP + "] with element retrieved by XPath ["
-      + E_XP + "][" + CONTENTS + "] was invalid : " + VALIDATION_MSG;
+          + E_XP + "][" + CONTENTS + "] was invalid : " + VALIDATION_MSG;
 
   @Valid
   @XStreamImplicit(itemFieldName = "validation-stage")
   @NotNull
   @AutoPopulated
-  private List<ValidationStage> validationStages = new ArrayList<ValidationStage>();
+  private List<ValidationStage> validationStages = new ArrayList<>();
   @AdvancedConfig
   private KeyValuePairSet namespaceContext;
   @AdvancedConfig
@@ -102,7 +98,7 @@ public class XmlRuleValidator extends MessageValidatorImpl {
       Document doc = createDocument(msg, builder);
       XPath xp = XPath.newXPathInstance(builder, namespaceCtx);
       for (int stageIndex = 0; stageIndex < validationStages.size(); stageIndex++) {
-        ValidationStage v = (ValidationStage) validationStages.get(stageIndex);
+        ValidationStage v = validationStages.get(stageIndex);
         NodeList n = xp.selectNodeList(doc, v.getIterationXpath());
         validate(n, v.getIterationXpath(), v.failOnIteratorFailure());
         for (int i = 0; i < n.getLength(); i++) {
@@ -110,8 +106,11 @@ public class XmlRuleValidator extends MessageValidatorImpl {
           String contents = xp.selectSingleTextItem(node, v.getElementXpath());
           for (ContentValidation cv : v.getRules()) {
             if (!cv.isValid(contents)) {
-              throw new ServiceException(ERR_MSG.replaceAll(I_COUNT, "" + i).replaceAll(I_XP, v.getIterationXpath())
-                  .replaceAll(E_XP, v.getElementXpath()).replaceAll(CONTENTS, contents).replaceAll(VALIDATION_MSG, cv.getMessage()));
+              throw new ServiceException(ERR_MSG.replaceAll(I_COUNT, "" + i)
+                  .replaceAll(I_XP, Matcher.quoteReplacement(v.getIterationXpath()))
+                  .replaceAll(E_XP, Matcher.quoteReplacement(v.getElementXpath()))
+                  .replaceAll(CONTENTS, Matcher.quoteReplacement(contents))
+                  .replaceAll(VALIDATION_MSG, Matcher.quoteReplacement(cv.getMessage())));
             }
           }
         }
@@ -129,7 +128,7 @@ public class XmlRuleValidator extends MessageValidatorImpl {
   }
 
   /**
-   * 
+   *
    * @param vs a {@link ValidationStage} to apply.
    */
   public void addValidationStage(ValidationStage vs) {
@@ -154,11 +153,11 @@ public class XmlRuleValidator extends MessageValidatorImpl {
    * <li>The key is the namespace prefix</li>
    * <li>The value is the namespace uri</li>
    * </ul>
-   * 
+   *
    * @param set the mapping for the namespace context.
    */
   public void setNamespaceContext(KeyValuePairSet set) {
-    this.namespaceContext = set;
+    namespaceContext = set;
   }
 
   public DocumentBuilderFactoryBuilder getXmlDocumentFactoryConfig() {
@@ -167,7 +166,7 @@ public class XmlRuleValidator extends MessageValidatorImpl {
 
 
   public void setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder xml) {
-    this.xmlDocumentFactoryConfig = xml;
+    xmlDocumentFactoryConfig = xml;
   }
 
   private DocumentBuilderFactoryBuilder documentFactoryBuilder(NamespaceContext nc) {

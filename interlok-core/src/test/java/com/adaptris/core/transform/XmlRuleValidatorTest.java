@@ -1,23 +1,22 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.transform;
 
 import java.util.Arrays;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.DefaultMessageFactory;
@@ -65,24 +64,24 @@ public class XmlRuleValidatorTest extends BaseCase {
       + "</document>\n";
 
   static final String[] THE_TWELVE_TITANS =
-  {
-      "Hyperion", "Iapetus", "Coeus", "Krios", "Cronus", "Mnemosyne", "Oceanus", "Phoebe", "Rhea", "Tethys", "Theia", "Themis"
-  };
+    {
+        "Hyperion", "Iapetus", "Coeus", "Krios", "Cronus", "Mnemosyne", "Oceanus", "Phoebe", "Rhea", "Tethys", "Theia", "Themis"
+    };
 
   static final String[] CHILDREN_OF_HERA =
-  {
-      "Hebe", "Ares", "Hephaestus"
-  };
+    {
+        "Hebe", "Ares", "Hephaestus"
+    };
 
   static final String[] CHILDREN_OF_RHEA = new String[]
-  {
-      "Zeus", "Demeter", "Hades", "Hera"
-  };
+      {
+          "Zeus", "Demeter", "Hades", "Hera"
+      };
 
   static final String[] CHILDREN_OF_LETO = new String[]
-  {
-      "Apollo", "Artemis"
-  };
+      {
+          "Apollo", "Artemis"
+      };
 
   static final String XPATH_CHILDREN_OF_LETO = "child[@mother='Leto']/name";
   static final String XPATH_CHILDREN_OF_RHEA = "child[@mother='Rhea']/name";
@@ -97,6 +96,11 @@ public class XmlRuleValidatorTest extends BaseCase {
   static final String XPATH_NS_ITERATION_OLYMPIAN_NAMES = "/document/olympian:names";
   static final String XPATH_NS_TITAN_NAME = "titan:name";
   static final String XPATH_NS_ITERATION_TITAN_NAMES = "/document/titan:names";
+
+  static final String REGEXP_XML="<document>\n" +
+      "  <PartnerIdentifier Type=\"GLN\">1234567890123</PartnerIdentifier>\n"
+      + "  <PartnerIdentifier Type=\"GLN\">1234567890ABC</PartnerIdentifier>\n" +
+      "</document>";
 
   public XmlRuleValidatorTest(String name) {
     super(name);
@@ -215,10 +219,10 @@ public class XmlRuleValidatorTest extends BaseCase {
     XmlRuleValidator validator = new XmlRuleValidator();
     validator.setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder.newInstance());
     validator.setValidationStages(Arrays.asList(new ValidationStage[]
-    {
-      new ValidationStage(XPATH_ITERATION_CHILDREN_OF_ZEUS, XPATH_CHILDREN_OF_HERA, new SimpleListContentValidation(
-          CHILDREN_OF_HERA))
-    }));
+        {
+            new ValidationStage(XPATH_ITERATION_CHILDREN_OF_ZEUS, XPATH_CHILDREN_OF_HERA, new SimpleListContentValidation(
+                CHILDREN_OF_HERA))
+        }));
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(XML_FAMILY_TREE);
     XmlValidationService service = new XmlValidationService(validator);
     try {
@@ -348,7 +352,7 @@ public class XmlRuleValidatorTest extends BaseCase {
 
     ValidationStage vs2 = new ValidationStage(XPATH_ITERATION_CHILDREN_OF_CRONOS, XPATH_CHILDREN_OF_RHEA,
         new SimpleListContentValidation(
-        CHILDREN_OF_RHEA), new NotNullContentValidation());
+            CHILDREN_OF_RHEA), new NotNullContentValidation());
     validator.addValidationStage(vs2);
 
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(XML_FAMILY_TREE);
@@ -358,6 +362,25 @@ public class XmlRuleValidatorTest extends BaseCase {
     }
     catch (ServiceException e) {
       fail("RuleValidationService failure when expecting success");
+    }
+  }
+
+
+  public void testRegexpContentValidation_ComplexRegexp() throws Exception {
+    XmlRuleValidator validator = new XmlRuleValidator();
+    validator.addValidationStage(new ValidationStage("//PartnerIdentifier[@Type='GLN']",
+        "text()", new RegexpContentValidation("^[0-9]{13}$")));
+
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage(REGEXP_XML);
+    XmlValidationService service = new XmlValidationService(validator);
+    try {
+      ServiceCase.execute(service, msg);
+      fail("RuleValidationService success when expecting failure");
+    } catch (ServiceException expected) {
+      // Should be a good msg, not some kind of IllegalArgumentException / no group index.
+      assertTrue(expected.getMessage().startsWith("NodeList entry "));
+    } finally {
+      ServiceCase.stop(service);
     }
   }
 

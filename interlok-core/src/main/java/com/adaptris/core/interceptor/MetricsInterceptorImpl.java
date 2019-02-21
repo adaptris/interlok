@@ -17,11 +17,10 @@
 package com.adaptris.core.interceptor;
 
 import java.util.concurrent.TimeUnit;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.CoreException;
+import com.adaptris.util.NumberUtils;
 import com.adaptris.util.TimeInterval;
 
 /**
@@ -62,7 +61,8 @@ public abstract class MetricsInterceptorImpl<T> extends WorkflowInterceptorImpl 
 
 
   protected int timesliceHistoryCount() {
-    return getTimesliceHistoryCount() != null ? getTimesliceHistoryCount().intValue() : DEFAULT_TIMESLICE_HISTORY_COUNT;
+    return NumberUtils.toIntDefaultIfNull(getTimesliceHistoryCount(),
+        DEFAULT_TIMESLICE_HISTORY_COUNT);
   }
 
   public Integer getTimesliceHistoryCount() {
@@ -94,7 +94,8 @@ public abstract class MetricsInterceptorImpl<T> extends WorkflowInterceptorImpl 
   }
 
   long timesliceDurationMs() {
-    return getTimesliceDuration() != null ? getTimesliceDuration().toMilliseconds() : DEFAULT_TIMESLICE_DURATION.toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getTimesliceDuration(),
+        DEFAULT_TIMESLICE_DURATION);
   }
 
   public interface StatisticsDelta<E extends InterceptorStatistic> {

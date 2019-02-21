@@ -16,19 +16,10 @@
 
 package com.adaptris.core.config;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.nio.charset.Charset;
-
-import org.apache.commons.io.IOUtils;
-
-import com.adaptris.core.CoreException;
 import com.adaptris.core.management.BootstrapProperties;
-import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.KeyValuePairSet;
 
-public class DummyConfigurationPreProcessor2 extends ConfigPreProcessorImpl {
+public class DummyConfigurationPreProcessor2 extends DummyConfigurationPreProcessor {
 
   public DummyConfigurationPreProcessor2(BootstrapProperties properties) {
     super(properties);
@@ -36,23 +27,6 @@ public class DummyConfigurationPreProcessor2 extends ConfigPreProcessorImpl {
 
   public DummyConfigurationPreProcessor2(KeyValuePairSet properties) {
     super(properties);
-  }
-
-  @Override
-  public String process(String xml) throws CoreException {
-    return xml;
-  }
-
-  @Override
-  public String process(URL urlToXml) throws CoreException {
-    String xml = null;
-    try (InputStream in = urlToXml.openStream()) {
-      xml = IOUtils.toString(in, Charset.defaultCharset());
-    }
-    catch (IOException e) {
-      ExceptionHelper.rethrowCoreException(e);
-    }
-    return xml;
   }
 
 }

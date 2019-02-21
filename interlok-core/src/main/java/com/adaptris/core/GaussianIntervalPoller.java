@@ -87,7 +87,7 @@ public class GaussianIntervalPoller extends ScheduledTaskPoller  {
   }
 
   long meanInterval() {
-    return getMeanInterval() != null ? getMeanInterval().toMilliseconds() : DEFAULT_MEAN_INTERVAL.toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getMeanInterval(), DEFAULT_MEAN_INTERVAL);
   }
 
   @SuppressWarnings("WeakerAccess")
@@ -106,7 +106,8 @@ public class GaussianIntervalPoller extends ScheduledTaskPoller  {
   }
 
   long standardDeviationInterval() {
-    return getStandardDeviationInterval() != null ? getStandardDeviationInterval().toMilliseconds() : DEFAULT_STANDARD_DEVIATION_INTERVAL.toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getStandardDeviationInterval(),
+        DEFAULT_STANDARD_DEVIATION_INTERVAL);
   }
 
   @SuppressWarnings("WeakerAccess")

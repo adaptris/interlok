@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
-
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -127,7 +127,7 @@ public class FindAndReplaceService extends ServiceImp {
   }
 
   boolean replaceFirstOnly() {
-    return getReplaceFirstOnly() != null ? getReplaceFirstOnly().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getReplaceFirstOnly(), false);
   }
 
   public List<FindAndReplaceUnit> getFindAndReplaceUnits() {

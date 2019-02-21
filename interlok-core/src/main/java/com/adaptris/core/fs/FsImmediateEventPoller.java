@@ -192,7 +192,8 @@ public class FsImmediateEventPoller extends PollerImp {
   }
 
   long createCompleteCheckMs() {
-    return getCreationCompleteCheck() != null ? getCreationCompleteCheck().toMilliseconds() : DEFAULT_CREATION_COMPLETE_CHECK_MS;
+    return TimeInterval.toMillisecondsDefaultIfNull(getCreationCompleteCheck(),
+        DEFAULT_CREATION_COMPLETE_CHECK_MS);
   }
 
   public TimeInterval getCreationCompleteCheck() {

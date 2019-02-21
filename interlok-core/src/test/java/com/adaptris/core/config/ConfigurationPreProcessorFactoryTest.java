@@ -18,15 +18,12 @@ package com.adaptris.core.config;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
-
 import java.util.Properties;
-
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import com.adaptris.core.config.DefaultPreProcessorLoader.PropertyLoader;
 import com.adaptris.core.stubs.JunitBootstrapProperties;
-
+import com.adaptris.util.KeyValuePairSet;
 import junit.framework.TestCase;
 
 public class ConfigurationPreProcessorFactoryTest extends TestCase {
@@ -56,7 +53,7 @@ public class ConfigurationPreProcessorFactoryTest extends TestCase {
     assertEquals(0, loaded.size());
   }
   
-  public void testEmptyConfiguredPreProcessors() throws Exception {
+  public void testBootstrapProperties_EmptyConfiguredPreProcessors() throws Exception {
     Properties props = new Properties();
     props.put("preProcessors", "");
     
@@ -65,7 +62,7 @@ public class ConfigurationPreProcessorFactoryTest extends TestCase {
     assertEquals(0, loaded.size());
   }
   
-  public void testSingleConfiguredPreProcessors() throws Exception {
+  public void testBootstrapProperties_SingleConfiguredPreProcessors() throws Exception {
     //Bypass the searching for meta-inf property files
     when(mockPropertyLoader.loadPropertyFile(anyString())).thenReturn(sampleProperties);
     preProcessorFactory.setPropertyLoader(mockPropertyLoader);
@@ -80,7 +77,7 @@ public class ConfigurationPreProcessorFactoryTest extends TestCase {
   }
   
   
-  public void testMisConfiguredPreProcessorNoClassName() throws Exception {
+  public void testBootstrapProperties_MisConfiguredPreProcessorNoClassName() throws Exception {
     when(mockPropertyLoader.loadPropertyFile(anyString())).thenReturn(new Properties());
     preProcessorFactory.setPropertyLoader(mockPropertyLoader);
     
@@ -89,7 +86,8 @@ public class ConfigurationPreProcessorFactoryTest extends TestCase {
     assertEquals(0, preProcessorFactory.load(new JunitBootstrapProperties(props)).size());
   }
   
-  public void testMultipleExternalPropertyFilesOnly1Configured() throws Exception {
+  public void testBootstrapProperties_MultipleExternalPropertyFilesOnly1Configured()
+      throws Exception {
     Properties sampleProperties2 = new Properties();
     sampleProperties2.put("name", "testPreProcessor2");
     sampleProperties2.put("class", DummyConfigurationPreProcessor2.class.getCanonicalName());
@@ -106,7 +104,7 @@ public class ConfigurationPreProcessorFactoryTest extends TestCase {
     assertEquals(DummyConfigurationPreProcessor.class.getCanonicalName(), processorsList.toArray()[0].getClass().getName());
   }
   
-  public void testMultipleExternalPropertyFiles2Configured() throws Exception {
+  public void testBootstrapProperties_MultipleExternalPropertyFiles2Configured() throws Exception {
     Properties sampleProperties2 = new Properties();
     sampleProperties2.put("name", "testPreProcessor2");
     sampleProperties2.put("class", DummyConfigurationPreProcessor2.class.getCanonicalName());
@@ -122,6 +120,19 @@ public class ConfigurationPreProcessorFactoryTest extends TestCase {
     assertEquals(2, processorsList.size());
     assertEquals(DummyConfigurationPreProcessor.class.getCanonicalName(), processorsList.toArray()[0].getClass().getName());
     assertEquals(DummyConfigurationPreProcessor2.class.getCanonicalName(), processorsList.toArray()[1].getClass().getName());
+  }
+
+  public void testKeyValuePairSet_MisConfiguredPreProcessorNoClassName() throws Exception {
+    when(mockPropertyLoader.loadPropertyFile(anyString())).thenReturn(new Properties());
+    preProcessorFactory.setPropertyLoader(mockPropertyLoader);
+    assertEquals(0,
+        preProcessorFactory.load("testPreProcessor", new KeyValuePairSet()).size());
+  }
+
+  public void testKeyValuePairSet_NoValues() throws Exception {
+    when(mockPropertyLoader.loadPropertyFile(anyString())).thenReturn(new Properties());
+    preProcessorFactory.setPropertyLoader(mockPropertyLoader);
+    assertEquals(0, preProcessorFactory.load("", new KeyValuePairSet()).size());
   }
 
 }

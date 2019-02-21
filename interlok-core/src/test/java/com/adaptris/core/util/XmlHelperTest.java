@@ -77,11 +77,23 @@ public class XmlHelperTest extends XmlHelper {
     createDocument(AdaptrisMessageFactory.getDefaultInstance().newMessage("AAAAAAAA"));
   }
 
+  @Test
+  public void testCreateDocumentInvalidXmlMessage_NewDocOnFailure() throws Exception {
+    Document doc = createDocument(AdaptrisMessageFactory.getDefaultInstance().newMessage("AAAAAAAA"), DocumentBuilderFactoryBuilder.newInstance(), true);
+    assertNotNull(doc);
+  }
+  
   @Test(expected = Exception.class)
   public void testCreateDocumentInvalidXmlString() throws Exception {
     createDocument("AAAAAAAA");
   }
-
+  
+  @Test
+  public void testCreateDocumentInvalidXmlString_NoDocOnFailure() throws Exception {
+    Document doc = createDocument("AAAAAAAA", DocumentBuilderFactoryBuilder.newInstance(), true);
+    assertNotNull(doc);
+  }
+  
   @Test
   public void testCreateXmlUtils() throws Exception {
     assertNotNull(createXmlUtils(AdaptrisMessageFactory.getDefaultInstance().newMessage(EXAMPLE_XML)));

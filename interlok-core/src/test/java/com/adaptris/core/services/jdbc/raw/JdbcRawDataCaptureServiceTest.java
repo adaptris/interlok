@@ -1,18 +1,18 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.services.jdbc.raw;
 
@@ -27,7 +27,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ComponentLifecycle;
@@ -81,9 +80,11 @@ public class JdbcRawDataCaptureServiceTest extends JdbcServiceExample {
   public void testService() throws Exception {
     createDatabase();
     JdbcRawDataCaptureService service = createService();
+    service.setRowsUpdatedMetadataKey("rowsUpdatedKey");
     AdaptrisMessage msg = createMessage();
     execute(service, msg);
     doBasicCaptureAsserts(1);
+    assertEquals("1", msg.getMetadataValue("rowsUpdatedKey"));
   }
 
   public void testService_Resolveable() throws Exception {
@@ -129,7 +130,7 @@ public class JdbcRawDataCaptureServiceTest extends JdbcServiceExample {
     int poolsize = maxServices - 1;
 
     createDatabase();
-    List<Service> serviceList = new ArrayList<Service>();
+    List<Service> serviceList = new ArrayList<>();
     String name = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
     JdbcPooledConnection conn = PooledConnectionHelper.createPooledConnection(PROPERTIES.getProperty(JDBC_CAPTURE_SERVICE_DRIVER),
@@ -159,14 +160,14 @@ public class JdbcRawDataCaptureServiceTest extends JdbcServiceExample {
       Thread.currentThread().setName(name);
     }
   }
-  
+
   public void testService_AdvancedPooledConnection() throws Exception {
     int maxServices = 5;
     final int iterations = 5;
     int poolsize = maxServices - 1;
 
     createDatabase();
-    List<Service> serviceList = new ArrayList<Service>();
+    List<Service> serviceList = new ArrayList<>();
     String name = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
     AdvancedJdbcPooledConnection conn = PooledConnectionHelper.createAdvancedPooledConnection(PROPERTIES.getProperty(JDBC_CAPTURE_SERVICE_DRIVER),
@@ -234,7 +235,7 @@ public class JdbcRawDataCaptureServiceTest extends JdbcServiceExample {
     execute(service, msg);
     doBasicCaptureAsserts(1);
   }
-  
+
   @Override
   public void testBackReferences() throws Exception {
     this.testBackReferences(new JdbcRawDataCaptureService("INSERT INTO MYTABLE ('ABC');"));
@@ -278,15 +279,15 @@ public class JdbcRawDataCaptureServiceTest extends JdbcServiceExample {
     service.addStatementParameter(new BinaryStreamStatementParameter());
     service.addStatementParameter(new StatementParameter(null, "java.lang.String", StatementParameter.QueryType.id));
     service
-        .addStatementParameter(new StatementParameter(CONSTANT_VALUE, "java.lang.String", StatementParameter.QueryType.constant));
-    
+    .addStatementParameter(new StatementParameter(CONSTANT_VALUE, "java.lang.String", StatementParameter.QueryType.constant));
+
     service
-        .setStatement("insert into jdbc_raw_data_capture_basic "
-            + "(string_value, date_value, timestamp_value, time_value, payload_clob, payload_blob, payload_clob2, payload_blob2, id_value, constant_value) "
-            + "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    .setStatement("insert into jdbc_raw_data_capture_basic "
+        + "(string_value, date_value, timestamp_value, time_value, payload_clob, payload_blob, payload_clob2, payload_blob2, id_value, constant_value) "
+        + "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     return service;
   }
-  
+
   private JdbcRawDataCaptureService createResolveableStatement(boolean createConnection) {
     JdbcRawDataCaptureService service = new JdbcRawDataCaptureService();
     if (createConnection) {
@@ -307,7 +308,7 @@ public class JdbcRawDataCaptureServiceTest extends JdbcServiceExample {
     service.addStatementParameter(new BinaryStreamStatementParameter());
     service.addStatementParameter(new StatementParameter(null, "java.lang.String", StatementParameter.QueryType.id));
     service
-        .addStatementParameter(new StatementParameter(CONSTANT_VALUE, "java.lang.String", StatementParameter.QueryType.constant));
+    .addStatementParameter(new StatementParameter(CONSTANT_VALUE, "java.lang.String", StatementParameter.QueryType.constant));
 
     service.setStatement("insert into jdbc_raw_data_capture_basic "
         + "(string_value, date_value, timestamp_value, time_value, payload_clob, payload_blob, payload_clob2, payload_blob2, id_value, constant_value) "
@@ -324,9 +325,9 @@ public class JdbcRawDataCaptureServiceTest extends JdbcServiceExample {
       connection.setDriverImp(PROPERTIES.getProperty(JDBC_CAPTURE_SERVICE_DRIVER));
       service.setConnection(connection);
     }
-    
+
     service.setParameterApplicator(new NamedParameterApplicator());
-    
+
     StatementParameter param1 = new StatementParameter(METADATA_KEY, "java.lang.String", StatementParameter.QueryType.metadata);
     param1.setName("param1");
     service.addStatementParameter(param1);
@@ -360,14 +361,14 @@ public class JdbcRawDataCaptureServiceTest extends JdbcServiceExample {
     StatementParameter param10 = new StatementParameter(CONSTANT_VALUE, "java.lang.String", StatementParameter.QueryType.constant);
     param10.setName("param10");
     service.addStatementParameter(param10);
-    
+
     service
-        .setStatement("insert into jdbc_raw_data_capture_basic "
-            + "(string_value, date_value, timestamp_value, time_value, payload_clob, payload_blob, payload_clob2, payload_blob2, id_value, constant_value) "
-            + "values (#param1, #param2, #param3, #param4, #param5, #param6, #param7, #param8, #param9, #param10)");
+    .setStatement("insert into jdbc_raw_data_capture_basic "
+        + "(string_value, date_value, timestamp_value, time_value, payload_clob, payload_blob, payload_clob2, payload_blob2, id_value, constant_value) "
+        + "values (#param1, #param2, #param3, #param4, #param5, #param6, #param7, #param8, #param9, #param10)");
     return service;
   }
-  
+
   private static Connection createConnection() throws Exception {
     Connection c = null;
     Class.forName(PROPERTIES.getProperty(JDBC_CAPTURE_SERVICE_DRIVER));

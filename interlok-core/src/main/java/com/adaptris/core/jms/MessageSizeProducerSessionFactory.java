@@ -17,10 +17,10 @@
 package com.adaptris.core.jms;
 
 import javax.jms.JMSException;
-
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
+import com.adaptris.util.NumberUtils;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -94,7 +94,7 @@ public class MessageSizeProducerSessionFactory extends ProducerSessionFactoryImp
   }
 
   long maxSizeBytes() {
-    return getMaxSizeBytes() != null ? getMaxSizeBytes().longValue() : DEFAULT_MAX_SIZE;
+    return NumberUtils.toLongDefaultIfNull(getMaxSizeBytes(), DEFAULT_MAX_SIZE);
   }
 
 }

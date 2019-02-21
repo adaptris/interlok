@@ -28,7 +28,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -40,7 +39,6 @@ import com.adaptris.core.services.jdbc.types.ClobColumnTranslator;
 import com.adaptris.core.services.jdbc.types.DateColumnTranslator;
 import com.adaptris.core.services.jdbc.types.IntegerColumnTranslator;
 import com.adaptris.core.services.jdbc.types.StringColumnTranslator;
-import com.adaptris.core.services.jdbc.types.TimestampColumnTranslator;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.GuidGenerator;
@@ -170,6 +168,7 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
 
   protected abstract ResultSetTranslator createTranslatorForConfig();
 
+  @Override
   protected Object retrieveObjectForSampleConfig() {
     return null;
   }
@@ -185,6 +184,7 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
     return rst;
   }
 
+  @Override
   protected List<JdbcService> buildExamples() {
     ArrayList<JdbcService> objects = new ArrayList<>();
     
@@ -419,7 +419,7 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
 
   protected static List<AdapterTypeVersion> generate(int max, Date date) throws Exception {
     GuidGenerator guid = new GuidGenerator();
-    List<AdapterTypeVersion> result = new ArrayList<AdapterTypeVersion>(max);
+    List<AdapterTypeVersion> result = new ArrayList<>(max);
     for (int i = 0; i < max; i++) {
       AdapterTypeVersion atv = new AdapterTypeVersion(guid.safeUUID(), guid.safeUUID(), guid.safeUUID(), i);
       atv.setDate(date);
@@ -510,13 +510,6 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
     service.setConnection(connection);
     service.setStatementCreator(new ConfiguredSQLStatement(QUERY_SQL_MULTI_RESULT));
     return service;
-  }
-
-  protected static void applyColumnTranslators(ResultSetTranslatorImp t) {
-    t.addColumnTranslator(new StringColumnTranslator());
-    t.addColumnTranslator(new StringColumnTranslator());
-    t.addColumnTranslator(new TimestampColumnTranslator());
-    t.addColumnTranslator(new IntegerColumnTranslator());
   }
 
   protected static AdaptrisMessage createMessage(AdapterTypeVersion atv) throws Exception {

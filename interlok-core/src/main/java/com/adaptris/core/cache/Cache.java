@@ -102,4 +102,16 @@ public interface Cache extends ComponentLifecycle {
     throw new UnsupportedOperationException("size");
   }
 
+  @Override
+  default void init() throws CoreException {}
+
+  @Override
+  default void start() throws CoreException {}
+
+  @Override
+  default void stop() {}
+
+  @Override
+  default void close() {}
+
 }

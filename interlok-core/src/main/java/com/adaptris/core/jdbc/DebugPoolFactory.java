@@ -2,7 +2,7 @@ package com.adaptris.core.jdbc;
 
 import java.io.PrintWriter;
 import java.util.concurrent.TimeUnit;
-
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.CoreException;
@@ -56,10 +56,8 @@ public class DebugPoolFactory extends DefaultPoolFactory {
   }
 
   int unreturnedConnectionTimeout() {
-    return Long
-        .valueOf(getUnreturnedConnectionTimeout() != null
-            ? TimeUnit.MILLISECONDS.toSeconds(getUnreturnedConnectionTimeout().toMilliseconds())
-        : TimeUnit.MILLISECONDS.toSeconds(DEFAULT_MAX_UNRETURNED.toMilliseconds())).intValue();
+    return Long.valueOf(TimeInterval.toSecondsDefaultIfNull(getUnreturnedConnectionTimeout(),
+        DEFAULT_MAX_UNRETURNED)).intValue();
   }
 
   /**
@@ -77,6 +75,6 @@ public class DebugPoolFactory extends DefaultPoolFactory {
   }
 
   boolean debugUnreturnedConnectionStackTraces() {
-    return getDebugUnreturnedConnectionStackTraces() == null ? false : getDebugUnreturnedConnectionStackTraces().booleanValue();
+    return BooleanUtils.toBooleanDefaultIfNull(getDebugUnreturnedConnectionStackTraces(), false);
   }
 }

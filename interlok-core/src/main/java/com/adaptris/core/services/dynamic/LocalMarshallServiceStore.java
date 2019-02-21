@@ -16,8 +16,8 @@
 
 package com.adaptris.core.services.dynamic;
 
+import static com.adaptris.fs.FsWorker.*;
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
-import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.io.File;
 
@@ -27,8 +27,10 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.Service;
 import com.adaptris.core.fs.FsHelper;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.fs.FsFileNotFoundException;
+import com.adaptris.fs.FsException;
+import com.adaptris.fs.FsWorker;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -75,14 +77,12 @@ public class LocalMarshallServiceStore extends MarshallFileServiceStore {
   @Override
   public void validate() throws CoreException {
     try {
-      if (isEmpty(baseDirUrl)) {
-        throw new CoreException("BaseDirURL is null");
-      }
-      baseDir = isDirectory(exists(FsHelper.createFileReference(FsHelper.createUrlFromString(baseDirUrl, true))));
+      Args.notBlank(getBaseDirUrl(), "baseDirUrl");
+      baseDir = isDirectory(checkReadable(FsHelper.createFileReference(FsHelper.createUrlFromString(baseDirUrl, true))));
       log.trace("Base directory validated [{}]", baseDir);
     }
     catch (Exception e) {
-      ExceptionHelper.rethrowCoreException(e);
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
@@ -95,10 +95,10 @@ public class LocalMarshallServiceStore extends MarshallFileServiceStore {
       if (baseDir == null) {
         validate();
       }
-      result = (Service) currentMarshaller().unmarshal(isFile(exists(new File(baseDir, filename))));
+      result = (Service) currentMarshaller().unmarshal(isFile(checkReadable(new File(baseDir, filename))));
       log.trace("service file name [{}] found in store", filename);
     }
-    catch (FsFileNotFoundException e) {
+    catch (Exception e) {
       log.debug("service file name [{}] not found in store", filename);
       result = null;
     }
@@ -125,36 +125,7 @@ public class LocalMarshallServiceStore extends MarshallFileServiceStore {
    * @param s the base directory of the store in the form of a file URL
    */
   public void setBaseDirUrl(String s) {
-    if (isEmpty(s)) {
-      throw new IllegalArgumentException("null or empty param");
-    }
-    baseDirUrl = s;
-  }
-
-  private File exists(File file) throws CoreException, FsFileNotFoundException {
-    if (!file.exists()) {
-      throw new FsFileNotFoundException(file.getAbsolutePath() + " does not exist");
-    }
-
-    if (!file.canRead()) {
-      throw new CoreException(file.getAbsolutePath() + " not readable");
-    }
-
-    return file;
-  }
-
-  private File isFile(File file) throws CoreException {
-    if (!file.isFile()) {
-      throw new CoreException(file.getAbsolutePath() + " is not a file");
-    }
-    return file;
-  }
-
-  private File isDirectory(File file) throws CoreException {
-    if (!file.isDirectory()) {
-      throw new CoreException(file.getAbsolutePath() + " is not a directory");
-    }
-    return file;
+    baseDirUrl = Args.notBlank(s,  "baseDirUrl");
   }
 
 }

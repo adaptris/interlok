@@ -23,7 +23,7 @@ import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Properties;
-
+import org.apache.commons.lang3.BooleanUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
@@ -223,7 +223,7 @@ public class SimpleSequenceNumberService extends ServiceImp {
   }
 
   private boolean alwaysReplaceMetadata() {
-    return getAlwaysReplaceMetadata() != null ? getAlwaysReplaceMetadata().booleanValue() : true;
+    return BooleanUtils.toBooleanDefaultIfNull(getAlwaysReplaceMetadata(), true);
   }
 
   public OverflowBehaviour getOverflowBehaviour() {

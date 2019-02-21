@@ -19,10 +19,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
@@ -30,9 +28,9 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
+import com.adaptris.util.NumberUtils;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-
 import net.jodah.expiringmap.ExpirationPolicy;
 import net.jodah.expiringmap.ExpiringMap;
 
@@ -54,7 +52,6 @@ public class ExpiringMapCache implements Cache {
   private Integer maxEntries;
   @InputFieldDefault(value = "60 seconds")
   private TimeInterval expiration;
-  @AdvancedConfig
   @InputFieldDefault(value = "ACCESSED")
   private ExpirationPolicy expirationPolicy;
   @AdvancedConfig
@@ -131,7 +128,7 @@ public class ExpiringMapCache implements Cache {
   }
 
   public int maxEntries() {
-    return getMaxEntries() != null ? getMaxEntries().intValue() : DEFAULT_MAX_VALUES;
+    return NumberUtils.toIntDefaultIfNull(getMaxEntries(), DEFAULT_MAX_VALUES);
   }
 
   public TimeInterval getExpiration() {
@@ -143,7 +140,7 @@ public class ExpiringMapCache implements Cache {
   }
 
   public long expiration() {
-    return getExpiration() != null ? getExpiration().toMilliseconds() : DEFAULT_EXPIRATION.toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getExpiration(), DEFAULT_EXPIRATION);
   }
 
   public ExpiringMapCacheListener getEventListener() {

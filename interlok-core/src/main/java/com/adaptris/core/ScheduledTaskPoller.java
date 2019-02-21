@@ -84,9 +84,9 @@ public abstract class ScheduledTaskPoller extends PollerImp {
 
   // properties...
   long shutdownWaitTimeMs() {
-    return getShutdownWaitTime() != null ? getShutdownWaitTime().toMilliseconds() : DEFAULT_SHUTDOWN_WAIT.toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getShutdownWaitTime(), DEFAULT_SHUTDOWN_WAIT);
   }
-  
+
 
   public TimeInterval getShutdownWaitTime() {
     return shutdownWaitTime;

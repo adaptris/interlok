@@ -81,7 +81,7 @@ public class TimeoutAction {
 
 
   long maxWaitTime() {
-    return getMaxWaitTime() != null ? getMaxWaitTime().toMilliseconds() : DEFAULT_MAX_WAIT_TIME.toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getMaxWaitTime(), DEFAULT_MAX_WAIT_TIME);
   }
 
   public HttpStatusProvider.HttpStatus getStatus() {

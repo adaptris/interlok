@@ -16,7 +16,7 @@
 package com.adaptris.jdbc;
 
 import java.sql.Statement;
-
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.InputFieldDefault;
 
 public abstract class CallableStatementExecutorImpl implements CallableStatementExecutor {
@@ -42,6 +42,6 @@ public abstract class CallableStatementExecutorImpl implements CallableStatement
   }
 
   protected boolean ignoreMoreResultsException() {
-    return getHandleMultipleResultsetsQuietly() != null ? getHandleMultipleResultsetsQuietly().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getHandleMultipleResultsetsQuietly(), false);
   }
 }

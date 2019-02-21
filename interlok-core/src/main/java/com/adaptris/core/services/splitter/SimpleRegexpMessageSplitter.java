@@ -21,7 +21,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.BooleanUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdvancedConfig;
@@ -246,7 +246,7 @@ public class SimpleRegexpMessageSplitter extends StringPayloadSplitter {
   }
 
   public boolean compareToPreviousMatch() {
-    return getCompareToPreviousMatch() != null ? getCompareToPreviousMatch().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getCompareToPreviousMatch(), false);
   }
 
   /**
@@ -273,6 +273,6 @@ public class SimpleRegexpMessageSplitter extends StringPayloadSplitter {
   }
 
   public boolean ignoreFirstSubMessage() {
-    return getIgnoreFirstSubMessage() != null ? getIgnoreFirstSubMessage().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getIgnoreFirstSubMessage(), false);
   }
 }

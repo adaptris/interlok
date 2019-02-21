@@ -17,7 +17,7 @@
 package com.adaptris.core;
 
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
-
+import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +25,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -296,10 +297,22 @@ public class StandaloneConsumer implements AdaptrisMessageConsumer, StateManaged
     isTrackingEndpoint = b;
   }
 
+  /**
+   * 
+   * @deprecated since 3.6.2 No-one has ever produced a confirmation service. This will be removed.
+   */
+  @Deprecated
+  @Removal(version = "3.9.0")
   public Boolean getIsConfirmation() {
     return isConfirmation;
   }
 
+  /**
+   * 
+   * @deprecated since 3.6.2 No-one has ever produced a confirmation service. This will be removed.
+   */
+  @Deprecated
+  @Removal(version = "3.9.0")
   public void setIsConfirmation(Boolean b) {
     isConfirmation = b;
   }
@@ -310,10 +323,7 @@ public class StandaloneConsumer implements AdaptrisMessageConsumer, StateManaged
    */
   @Override
   public boolean isTrackingEndpoint() {
-    if (isTrackingEndpoint != null) {
-      return isTrackingEndpoint.booleanValue();
-    }
-    return false;
+    return BooleanUtils.toBooleanDefaultIfNull(getIsTrackingEndpoint(), false);
   }
 
   /**
@@ -321,11 +331,10 @@ public class StandaloneConsumer implements AdaptrisMessageConsumer, StateManaged
    * @see com.adaptris.core.MessageEventGenerator#isConfirmation()
    */
   @Override
+  @Deprecated
+  @Removal(version = "3.9.0")
   public boolean isConfirmation() {
-    if (isConfirmation != null) {
-      return isConfirmation.booleanValue();
-    }
-    return false;
+    return BooleanUtils.toBooleanDefaultIfNull(getIsConfirmation(), false);
   }
 
   /**

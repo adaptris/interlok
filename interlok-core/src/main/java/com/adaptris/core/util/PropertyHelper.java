@@ -113,8 +113,20 @@ public class PropertyHelper {
    * @return a possibly empty set of properties.
    */
   public static Properties loadQuietly(final String resource) {
+    return loadQuietly(Thread.currentThread().getContextClassLoader(), resource);
+  }
+
+  /**
+   * Convenience method to load a set of properties from a resource on the classpath.
+   * 
+   * @param cl the classloader.
+   * @param resource the resource that will be found via
+   *        {@code ClassLoader#getResourceAsStream(String)}.
+   * @return a possibly empty set of properties.
+   */
+  public static Properties loadQuietly(final ClassLoader cl, final String resource) {
     return loadQuietly(() -> {
-      return Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);
+      return cl.getResourceAsStream(resource);
     });
   }
 

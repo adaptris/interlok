@@ -200,7 +200,7 @@ public class BlockingChannelLifecycleStrategy extends DefaultChannelLifecycleStr
   }
 
   private long timeoutMs() {
-    return getTimeout() != null ? getTimeout().toMilliseconds() : DEFAULT_TIMEOUT_INTERVAL.toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getTimeout(), DEFAULT_TIMEOUT_INTERVAL);
   }
 
   public TimeInterval getTimeout() {

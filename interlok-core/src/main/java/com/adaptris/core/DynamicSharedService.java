@@ -13,9 +13,9 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.util.NumberUtils;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-
 import net.jodah.expiringmap.ExpirationListener;
 import net.jodah.expiringmap.ExpirationPolicy;
 import net.jodah.expiringmap.ExpiringMap;
@@ -134,7 +134,7 @@ public class DynamicSharedService extends SharedServiceImpl {
   }
 
   protected int maxEntries() {
-    return getMaxEntries() != null ? getMaxEntries().intValue() : DEFAULT_MAX_CACHE_SIZE;
+    return NumberUtils.toIntDefaultIfNull(getMaxEntries(), DEFAULT_MAX_CACHE_SIZE);
   }
 
   public <T extends DynamicSharedService> T withMaxEntries(Integer i) {
@@ -156,7 +156,7 @@ public class DynamicSharedService extends SharedServiceImpl {
   }
 
   protected long expirationMillis() {
-    return getExpiration() != null ? getExpiration().toMilliseconds() : DEFAULT_EXPIRATION.toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getExpiration(), DEFAULT_EXPIRATION);
   }
 
   private class ExpiredServiceListener implements ExpirationListener<String, Service> {

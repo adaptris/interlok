@@ -72,8 +72,8 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
     DefinedJmsProducer producer = createProducer(new ConfiguredProduceDestination(getName()));
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
     try {
-      start(standaloneProducer);
       activeMqBroker.start();
+      start(standaloneProducer);
       AdaptrisMessage msg = createMessage();
       standaloneProducer.doService(msg);
       assertNotNull(producer.producerSession);

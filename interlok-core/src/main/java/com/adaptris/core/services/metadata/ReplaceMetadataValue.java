@@ -20,7 +20,7 @@ import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import org.apache.commons.lang3.BooleanUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
@@ -160,6 +160,6 @@ public class ReplaceMetadataValue extends ReformatMetadata {
   }
 
   boolean replaceAll() {
-    return getReplaceAll() != null ? getReplaceAll().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getReplaceAll(), false);
   }
 }

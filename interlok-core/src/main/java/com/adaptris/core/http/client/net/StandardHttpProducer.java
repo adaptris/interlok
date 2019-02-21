@@ -40,7 +40,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.io.IOUtils;
-
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -381,7 +381,7 @@ public class StandardHttpProducer extends HttpProducer<HttpURLConnection, HttpUR
   }
 
   boolean alwaysSendPayload() {
-    return getAlwaysSendPayload() != null ? getAlwaysSendPayload().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getAlwaysSendPayload(), false);
   }
 
   public TimeInterval getConnectTimeout() {

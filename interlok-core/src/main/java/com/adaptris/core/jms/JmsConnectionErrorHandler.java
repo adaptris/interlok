@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
-
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.CoreException;
@@ -126,6 +126,6 @@ public class JmsConnectionErrorHandler extends JmsConnectionErrorHandlerImpl imp
   }
 
   boolean singleExecution() {
-    return getSingleExecution() != null ? getSingleExecution().booleanValue() : true;
+    return BooleanUtils.toBooleanDefaultIfNull(getSingleExecution(), true);
   }
 }

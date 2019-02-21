@@ -21,19 +21,16 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
 import javax.validation.Valid;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
+import com.adaptris.util.NumberUtils;
 import com.adaptris.util.TimeInterval;
 
 /**
@@ -162,7 +159,7 @@ public abstract class EventHandlerBase implements EventHandler {
   }
 
   int shutdownWaitSeconds() {
-    return getShutdownWaitSeconds() != null ? getShutdownWaitSeconds().intValue() : DEFAULT_SHUTDOWN_WAIT;
+    return NumberUtils.toIntDefaultIfNull(getShutdownWaitSeconds(), DEFAULT_SHUTDOWN_WAIT);
   }
   
   /**

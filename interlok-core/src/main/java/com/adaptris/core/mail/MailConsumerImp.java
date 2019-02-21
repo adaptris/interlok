@@ -28,7 +28,7 @@ import java.util.Map;
 import javax.mail.internet.MimeMessage;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.adaptris.annotation.AdvancedConfig;
@@ -230,7 +230,7 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
   }
 
   boolean deleteOnReceive() {
-    return getDeleteOnReceive() != null ? getDeleteOnReceive().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getDeleteOnReceive(), false);
   }
   
   /**
@@ -300,7 +300,7 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
   }
 
   boolean attemptConnectOnInit() {
-    return getAttemptConnectOnInit() != null ? getAttemptConnectOnInit().booleanValue() : true;
+    return BooleanUtils.toBooleanDefaultIfNull(getAttemptConnectOnInit(), true);
   }
 
   public MailReceiverFactory getMailReceiverFactory() {

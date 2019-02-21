@@ -8,6 +8,7 @@ ext {
   verboseTests= project.hasProperty('verboseTests') ? project.getProperty('verboseTests') : "false"
   classesToTest = project.hasProperty("junit.test.classes") ? project.getProperty("junit.test.classes") : "**/*Test*"
   maxThreads = project.hasProperty("junit.threads") ? project.getProperty("junit.threads") : 1
+  interlokCommonsOfflineJavadocDir = project.rootDir.getCanonicalPath() + "/interlok-common/build/docs/javadoc"
 
 }
 
@@ -47,10 +48,13 @@ dependencies {
 
   compile ("com.thoughtworks.xstream:xstream:$xstreamVersion")
   compile ("org.codehaus.jettison:jettison:1.2")
-  compile ("io.github.classgraph:classgraph:4.4.12")
-  compile ("net.jodah:expiringmap:0.5.8")
+  compile ("io.github.classgraph:classgraph:4.6.13")
+  compile ("net.jodah:expiringmap:0.5.9")
   compile ("javax.activation:activation:1.1.1")
-  compile ("org.apache.activemq:activemq-client:$activeMqVersion")
+  compile ("org.apache.activemq:activemq-client:$activeMqVersion") {
+    exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_1.1_spec"
+  }
+  compile ("org.apache.geronimo.specs:geronimo-jms_2.0_spec:1.0-alpha-2")
   compile ("javax.validation:validation-api:1.0.0.GA")
   compile ("javax.el:javax.el-api:2.2.4")
   compile ("org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.2.Final")
@@ -71,14 +75,14 @@ dependencies {
   compile ("org.glassfish.external:opendmk_jmxremote_optional_jar:1.0-b01-ea")
   compile ("org.glassfish.external:opendmk_jdmkrt_jar:1.0-b01-ea")
   compile ("javax.xml.bind:jaxb-api:2.3.1")
-  compile ("com.jcraft:jsch:0.1.54")
+  compile ("com.jcraft:jsch:0.1.55")
   compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.14.v20181114")
   compile ("javax.servlet:javax.servlet-api:3.1.0")
   compile ("net.sf.joost:joost:0.9.1")
   compile ("org.quartz-scheduler:quartz:2.3.0")
   compile ("net.sf.saxon:Saxon-HE:9.7.0-20")
   compile ("xerces:xercesImpl:2.12.0")
-  compile ("com.mchange:c3p0:0.9.5.2")
+  compile ("com.mchange:c3p0:0.9.5.3")
   compile ("org.apache.derby:derby:10.14.2.0")
 
   compile ("org.slf4j:slf4j-api:$slf4jVersion")
@@ -95,9 +99,9 @@ dependencies {
   testCompile ("org.apache.activemq:activemq-jaas:$activeMqVersion")
   testCompile ("org.apache.activemq:activemq-kahadb-store:$activeMqVersion")
   testCompile ("org.apache.activemq.protobuf:activemq-protobuf:1.1")
-  testCompile ("org.jruby:jruby-complete:9.2.4.0")
+  testCompile ("org.jruby:jruby-complete:9.2.5.0")
   testCompile ("org.mockftpserver:MockFtpServer:2.7.1")
-  testCompile ("com.icegreen:greenmail:1.5.8")
+  testCompile ("com.icegreen:greenmail:1.5.9")
   testCompile ("org.mockito:mockito-all:1.10.19")
 
   testCompile("net.sourceforge.jtds:jtds:1.3.1")
@@ -113,23 +117,8 @@ dependencies {
 
   javadoc project(':interlok-core-apt')
 
-  // offlineJavadocPackages ("com.adaptris:interlok-common:$interlokCoreVersion:javadoc@jar") { changing= true}
-
 }
 
-
-task offlinePackageList(type: Copy) {
-  description 'Build an offline package-list for javadocs'
-  group 'Documentation'
-
-  project.configurations.offlineJavadocPackages.collect { dependency ->
-    from(zipTree(dependency)) {
-      into dependency.name
-    }
-  }
-  include "package-list"
-  into offlineJavadocPackageDir
-}
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
   classifier = 'javadoc'
@@ -284,7 +273,7 @@ artifacts {
 
 javadoc {
   configure(options) {
-    // options.linksOffline(interlokCommonJavadocs, offlineJavadocPackageDir.getCanonicalPath() + "/interlok-common-$interlokCoreVersion-javadoc.jar")
+    options.linksOffline(interlokCommonJavadocs, interlokCommonsOfflineJavadocDir)
 
     taglets = ["com.adaptris.taglet.ConfigTaglet", "com.adaptris.taglet.LicenseTaglet"]
     options.addStringOption "tagletpath", configurations.javadoc.asPath

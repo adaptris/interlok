@@ -40,6 +40,7 @@ import com.adaptris.core.NullConnection;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ProduceOnlyProducerImp;
+import com.adaptris.core.ftp.StandardSftpConnection;
 import com.adaptris.core.http.server.HttpStatusBuilder;
 import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.http.server.HttpStatusProvider.Status;
@@ -47,6 +48,7 @@ import com.adaptris.core.metadata.MetadataFilter;
 import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.metadata.RemoveAllMetadataFilter;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.stream.StreamUtil;
@@ -111,10 +113,7 @@ public class ResponseProducer extends ProduceOnlyProducerImp {
     setContentTypeKey(null);
     setMetadataFilter(new RemoveAllMetadataFilter());
     setHttpResponseCode(DEFAULT_RESPONSE_CODE);
-    if (!warningLogged) {
-      log.warn("[{}] is deprecated, use [{}] instead", this.getClass().getSimpleName(), StandardResponseProducer.class.getName());
-      warningLogged = true;
-    }
+    LoggingHelper.logDeprecation(warningLogged, ()-> { warningLogged=true;}, this.getClass().getSimpleName(), StandardResponseProducer.class.getName());
   }
 
   @Deprecated

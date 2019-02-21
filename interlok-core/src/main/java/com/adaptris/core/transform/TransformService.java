@@ -21,7 +21,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
@@ -195,7 +195,7 @@ public abstract class TransformService extends ServiceImp {
   }
 
   boolean cacheTransforms() {
-    return getCacheTransforms() != null ? getCacheTransforms().booleanValue() : true;
+    return BooleanUtils.toBooleanDefaultIfNull(getCacheTransforms(), true);
   }
 
   /**
@@ -228,7 +228,7 @@ public abstract class TransformService extends ServiceImp {
   }
 
   boolean allowOverride() {
-    return getAllowOverride() != null ? getAllowOverride().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getAllowOverride(), true);
   }
   /**
    * <p>

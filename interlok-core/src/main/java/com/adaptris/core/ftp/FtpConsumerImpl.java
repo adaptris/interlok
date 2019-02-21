@@ -195,7 +195,7 @@ public abstract class FtpConsumerImpl extends AdaptrisPollingConsumer {
   }
 
   protected long olderThanMs() {
-    return getQuietInterval() != null ? getQuietInterval().toMilliseconds() : DEFAULT_OLDER_THAN.toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getQuietInterval(), DEFAULT_OLDER_THAN);
   }
 
   public TimeInterval getQuietInterval() {

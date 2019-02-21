@@ -22,7 +22,7 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 import javax.validation.Valid;
-
+import org.apache.commons.lang3.BooleanUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdvancedConfig;
@@ -195,7 +195,7 @@ public abstract class DatabaseConnection extends AllowsRetriesConnection {
   }
 
   public boolean autoCommit() {
-    return autoCommit == null ? true : autoCommit.booleanValue();
+    return BooleanUtils.toBooleanDefaultIfNull(getAutoCommit(), true);
   }
 
   /**
@@ -224,7 +224,7 @@ public abstract class DatabaseConnection extends AllowsRetriesConnection {
   }
 
   public boolean debugMode() {
-    return debugMode == null ? false : debugMode.booleanValue();
+    return BooleanUtils.toBooleanDefaultIfNull(getDebugMode(), false);
   }
 
   /**
@@ -427,7 +427,7 @@ public abstract class DatabaseConnection extends AllowsRetriesConnection {
   }
 
   public boolean alwaysValidateConnection() {
-    return alwaysValidateConnection == null ? false : alwaysValidateConnection.booleanValue();
+    return BooleanUtils.toBooleanDefaultIfNull(getAlwaysValidateConnection(), false);
   }
 
   /**

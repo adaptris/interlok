@@ -18,12 +18,9 @@ package com.adaptris.core.jdbc;
 
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
-
 import javax.validation.Valid;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -33,6 +30,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.interlok.resolver.ExternalResolver;
 import com.adaptris.security.password.Password;
+import com.adaptris.util.NumberUtils;
 import com.adaptris.util.TimeInterval;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -138,7 +136,7 @@ public class JdbcPooledConnection extends JdbcPooledConnectionImpl implements Jd
   }
 
   public int minPoolSize() {
-    return getMinimumPoolSize() != null ? getMinimumPoolSize().intValue() : DEFAULT_MINIMUM_POOL_SIZE;
+    return NumberUtils.toIntDefaultIfNull(getMinimumPoolSize(), DEFAULT_MINIMUM_POOL_SIZE);
   }
 
   public Integer getMaximumPoolSize() {
@@ -150,7 +148,7 @@ public class JdbcPooledConnection extends JdbcPooledConnectionImpl implements Jd
   }
 
   public int maxPoolSize() {
-    return getMaximumPoolSize() != null ? getMaximumPoolSize().intValue() : DEFAULT_MAXIMUM_POOL_SIZE;
+    return NumberUtils.toIntDefaultIfNull(getMaximumPoolSize(), DEFAULT_MAXIMUM_POOL_SIZE);
   }
 
   public Integer getAcquireIncrement() {
@@ -162,7 +160,7 @@ public class JdbcPooledConnection extends JdbcPooledConnectionImpl implements Jd
   }
 
   public int acquireIncrement() {
-    return getAcquireIncrement() != null ? getAcquireIncrement().intValue() : DEFAULT_ACQUIRE_INCREMENT;
+    return NumberUtils.toIntDefaultIfNull(getAcquireIncrement(), DEFAULT_ACQUIRE_INCREMENT);
   }
 
   public TimeInterval getConnectionAcquireWait() {
@@ -170,9 +168,8 @@ public class JdbcPooledConnection extends JdbcPooledConnectionImpl implements Jd
   }
 
   public int connectionAcquireWait() {
-    return Long.valueOf(
-        getConnectionAcquireWait() != null ? getConnectionAcquireWait().toMilliseconds() : DEFAULT_CONN_ACQUIRE_WAIT
-            .toMilliseconds()).intValue();
+    return Long.valueOf(TimeInterval.toMillisecondsDefaultIfNull(getIdleConnectionTestPeriod(),
+        DEFAULT_IDLE_TEST_PERIOD)).intValue();
   }
 
   public void setConnectionAcquireWait(TimeInterval connectionAcquireWait) {
@@ -184,10 +181,8 @@ public class JdbcPooledConnection extends JdbcPooledConnectionImpl implements Jd
   }
 
   public int idleConnectionTestPeriod() {
-    return Long.valueOf(
-        getIdleConnectionTestPeriod() == null
-        ? TimeUnit.MILLISECONDS.toSeconds(DEFAULT_IDLE_TEST_PERIOD.toMilliseconds())
-            : TimeUnit.MILLISECONDS.toSeconds(getIdleConnectionTestPeriod().toMilliseconds())).intValue();
+    return Long.valueOf(TimeInterval.toSecondsDefaultIfNull(getIdleConnectionTestPeriod(),
+        DEFAULT_IDLE_TEST_PERIOD)).intValue();
   }
 
   public void setIdleConnectionTestPeriod(TimeInterval idleConnectionTestPeriod) {
@@ -203,9 +198,9 @@ public class JdbcPooledConnection extends JdbcPooledConnectionImpl implements Jd
   }
 
   public int maxIdleTime() {
-    return Long.valueOf(
-        getMaxIdleTime() != null ? TimeUnit.MILLISECONDS.toSeconds(getMaxIdleTime().toMilliseconds()) : TimeUnit.MILLISECONDS
-            .toSeconds(DEFAULT_MAX_IDLE_TIME.toMilliseconds())).intValue();
+    return Long
+        .valueOf(TimeInterval.toSecondsDefaultIfNull(getMaxIdleTime(), DEFAULT_MAX_IDLE_TIME))
+        .intValue();
   }
   
   public int currentBusyConnectionCount() throws SQLException {

@@ -25,12 +25,16 @@ public class DefaultPoolFactory implements JdbcPoolFactory {
       result.setMinPoolSize(cfg.minPoolSize());
       result.setAcquireIncrement(cfg.acquireIncrement());
       result.setMaxPoolSize(cfg.maxPoolSize());
+      // Milliseconds
       result.setCheckoutTimeout(cfg.connectionAcquireWait());
+      // Milliseconds
       result.setAcquireRetryDelay(Long.valueOf(cfg.connectionRetryInterval()).intValue());
       result.setAcquireRetryAttempts(cfg.connectionAttempts());
       result.setTestConnectionOnCheckin(cfg.alwaysValidateConnection());
       result.setTestConnectionOnCheckout(cfg.alwaysValidateConnection());
+      // Seconds
       result.setIdleConnectionTestPeriod(cfg.idleConnectionTestPeriod());
+      // Seconds
       result.setMaxIdleTime(cfg.maxIdleTime());
     } catch (Exception ex) {
       throw new CoreException(ex);

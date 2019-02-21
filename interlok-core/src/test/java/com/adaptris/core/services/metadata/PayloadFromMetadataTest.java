@@ -24,6 +24,10 @@ import com.adaptris.util.KeyValuePairSet;
 
 public class PayloadFromMetadataTest extends MetadataServiceExample {
 
+  private static final String PAYLOAD_EXP_NEWLINE_RESULT = "{ \n\"key\": \"Hello\"\n}";
+  private static final String PAYLOAD_EXPR_RESULT = "{ \"key\": \"Hello\"}";
+  private static final String PAYLOAD_TEMPLATE_EXP_NEWLINE = "{ \n\"key\": \"%message{helloMetadataKey}\"\n}";
+  private static final String PAYLOAD_TEMPLATE_EXPR = "{ \"key\": \"%message{helloMetadataKey}\"}";
   private static final String DEFAULT_METADATA_KEY = "helloMetadataKey";
 
   public PayloadFromMetadataTest(String arg0) {
@@ -54,20 +58,26 @@ public class PayloadFromMetadataTest extends MetadataServiceExample {
   }
 
   public void testValid() throws Exception {
-    PayloadFromMetadataService service = createService();
+    PayloadFromMetadataService s1 = createService().withQuietMode(true);
+    PayloadFromMetadataService s2 = createService().withQuietMode(false);
     AdaptrisMessage msg = createMessage();
-    execute(service, msg);
-
+    execute(s1, msg);
+    assertEquals("Hello", msg.getMetadataValue(DEFAULT_METADATA_KEY));
+    assertEquals("Hello World", msg.getContent());
+    execute(s2, msg);
     assertEquals("Hello", msg.getMetadataValue(DEFAULT_METADATA_KEY));
     assertEquals("Hello World", msg.getContent());
   }
 
   public void testNoMetadataMatch() throws Exception {
-    PayloadFromMetadataService service = createService();
-    service.setQuiet(true);
+    PayloadFromMetadataService s1 = createService().withQuietMode(false);
+    PayloadFromMetadataService s2 = createService().withQuietMode(true);
     AdaptrisMessage msg = createMessage();
     msg.removeMetadata(new MetadataElement(DEFAULT_METADATA_KEY, ""));
-    execute(service, msg);
+    execute(s1, msg);
+    assertNotSame("Hello World", msg.getContent());
+    assertEquals("__HELLO__ World", msg.getContent());
+    execute(s2, msg);
     assertNotSame("Hello World", msg.getContent());
     assertEquals("__HELLO__ World", msg.getContent());
   }
@@ -82,9 +92,8 @@ public class PayloadFromMetadataTest extends MetadataServiceExample {
   }
 
   public void testService_MetadataValueHasSlash_NoEscape() throws Exception {
-    PayloadFromMetadataService service = createService();
+    PayloadFromMetadataService service = createService().withEscapeBackslash(false);
     AdaptrisMessage msg = createMessage();
-    service.setEscapeBackslash(false);
     msg.addMetadata(DEFAULT_METADATA_KEY, "\\tHello");
     execute(service, msg);
     assertEquals("\\tHello", msg.getMetadataValue(DEFAULT_METADATA_KEY));
@@ -92,9 +101,8 @@ public class PayloadFromMetadataTest extends MetadataServiceExample {
   }
 
   public void testService_MetadataValueHasDollar_NoEscape() throws Exception {
-    PayloadFromMetadataService service = createService();
+    PayloadFromMetadataService service = createService().withEscapeBackslash(false);
     AdaptrisMessage msg = createMessage();
-    service.setEscapeBackslash(false);
     msg.addMetadata(DEFAULT_METADATA_KEY, "Hello$");
     try {
       execute(service, msg);
@@ -122,14 +130,32 @@ public class PayloadFromMetadataTest extends MetadataServiceExample {
   }
 
   public void testService_MetadataValueHasDollar_CanEscape() throws Exception {
-    PayloadFromMetadataService service = createService();
+    PayloadFromMetadataService service = createService().withEscapeBackslash(true);
     AdaptrisMessage msg = createMessage();
-    service.setEscapeBackslash(true);
     msg.addMetadata(DEFAULT_METADATA_KEY, "Hello$");
     execute(service, msg);
     assertEquals("Hello$", msg.getMetadataValue(DEFAULT_METADATA_KEY));
     assertEquals("Hello$ World", msg.getContent());
   }
+  
+  public void testService_Expression() throws Exception {
+    PayloadFromMetadataService service = new PayloadFromMetadataService(PAYLOAD_TEMPLATE_EXPR).withQuietMode(false);
+    AdaptrisMessage msg = createMessage();
+    execute(service, msg);
+    assertEquals(PAYLOAD_EXPR_RESULT,msg.getContent());
+  }
+  
+  public void testService_Expression_WithNewLine() throws Exception {
+    PayloadFromMetadataService s1 = new PayloadFromMetadataService(PAYLOAD_TEMPLATE_EXP_NEWLINE).withMultiLineExpression(true);
+    PayloadFromMetadataService s2 = new PayloadFromMetadataService(PAYLOAD_TEMPLATE_EXP_NEWLINE).withMultiLineExpression(false);
+    AdaptrisMessage msg = createMessage();
+    execute(s1, msg);
+    assertEquals(PAYLOAD_EXP_NEWLINE_RESULT,msg.getContent());
+    execute(s2, msg);
+    assertNotSame(PAYLOAD_EXP_NEWLINE_RESULT,msg.getContent());
+    assertEquals(PAYLOAD_TEMPLATE_EXP_NEWLINE,msg.getContent());
+    
+  }  
   
   private KeyValuePairSet KVPS(KeyValuePair... kvps) {
     KeyValuePairSet res = new KeyValuePairSet();

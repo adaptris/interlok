@@ -21,8 +21,10 @@ import org.apache.commons.lang.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -35,18 +37,22 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config cache-entry-evaluator
  */
 @XStreamAlias("cache-entry-evaluator")
-@DisplayOrder(order ={"friendlyName", "errorOnEmptyKey", "errorOnEmptyValue"})
+@DisplayOrder(order ={"friendlyName", "keyTranslator", "valueTranslator", "errorOnEmptyKey", "errorOnEmptyValue"})
 public class CacheEntryEvaluator {
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   @InputFieldDefault(value = "true")
+  @AdvancedConfig
   private Boolean errorOnEmptyKey;
   @InputFieldDefault(value = "true")
+  @AdvancedConfig
   private Boolean errorOnEmptyValue;
   @Valid
   private CacheKeyTranslator keyTranslator;
   @Valid
   private CacheValueTranslator valueTranslator;
+  @AdvancedConfig
+  @InputFieldHint(style="BLANKABLE")
   private String friendlyName;
 
   public CacheEntryEvaluator() {

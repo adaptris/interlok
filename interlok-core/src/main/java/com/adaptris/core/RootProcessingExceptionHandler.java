@@ -16,6 +16,7 @@
 
 package com.adaptris.core;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -161,6 +162,6 @@ public abstract class RootProcessingExceptionHandler implements ProcessingExcept
   }
 
   boolean alwaysHandleException() {
-    return getAlwaysHandleException() != null ? getAlwaysHandleException().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getAlwaysHandleException(), false);
   }
 }

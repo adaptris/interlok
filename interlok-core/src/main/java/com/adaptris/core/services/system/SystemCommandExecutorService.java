@@ -159,7 +159,7 @@ public class SystemCommandExecutorService extends ServiceImp {
   }
 
   long timeoutMs() {
-    return getTimeout() != null ? getTimeout().toMilliseconds() : DEFAULT_TIMEOUT.toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getTimeout(), DEFAULT_TIMEOUT);
   }
 
   public TimeInterval getTimeout() {

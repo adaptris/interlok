@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
-
+import org.apache.commons.lang3.BooleanUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
@@ -43,6 +43,7 @@ import com.adaptris.core.metadata.MetadataFilter;
 import com.adaptris.core.metadata.MetadataFilterImpl;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.core.util.LoggingHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -114,10 +115,7 @@ public class CreateQueryStringFromMetadata extends ServiceImp {
   @Override
   protected void initService() throws CoreException {
     if (getMetadataKeys().size() > 0 && getMetadataFilter() == null) {
-      if (!warningLogged) {
-        log.warn("metadata-keys are deprecated; use a metadata-filter instead");
-        warningLogged = true;
-      }
+      LoggingHelper.logDeprecation(warningLogged, ()-> { warningLogged=true;}, "metadata-keys", "metadata-filter");
     }
   }
 
@@ -229,7 +227,7 @@ public class CreateQueryStringFromMetadata extends ServiceImp {
   }
 
   boolean includeQueryPrefix() {
-    return getIncludeQueryPrefix() != null ? getIncludeQueryPrefix().booleanValue() : true;
+    return BooleanUtils.toBooleanDefaultIfNull(getIncludeQueryPrefix(), true);
   }
 
   private class LegacyFilter extends MetadataFilterImpl {

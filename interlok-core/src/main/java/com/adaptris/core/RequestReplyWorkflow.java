@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -235,7 +235,7 @@ public class RequestReplyWorkflow extends StandardWorkflow {
   }
 
   long replyTimeout() {
-    return getReplyTimeout() != null ? getReplyTimeout().toMilliseconds() : DEFAULT_REPLY_TIMEOUT.toMilliseconds();
+    return TimeInterval.toMillisecondsDefaultIfNull(getReplyTimeout(), DEFAULT_REPLY_TIMEOUT);
   }
 
   /** Set whether the reply message should retain the request message id.
@@ -252,7 +252,7 @@ public class RequestReplyWorkflow extends StandardWorkflow {
   }
 
   boolean retainUniqueId() {
-    return getRetainUniqueId() != null ? getRetainUniqueId().booleanValue() : false;
+    return BooleanUtils.toBooleanDefaultIfNull(getRetainUniqueId(), false);
   }
 
   @Override
