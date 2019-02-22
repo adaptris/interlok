@@ -16,11 +16,11 @@
 
 package com.adaptris.core.services;
 
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -93,7 +93,8 @@ public class WaitService extends ServiceImp {
 
     try {
       long waitMs = waitMs();
-      log.trace("waiting for [" + waitMs + "] ms...");
+      log.trace("Waiting for [{}] ms; waking up at approx. {}", waitMs,
+          DateFormat.getDateTimeInstance().format(new Date(System.currentTimeMillis() + waitMs)));
       Thread.sleep(waitMs);
     }
     catch (InterruptedException e) {
