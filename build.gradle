@@ -1,6 +1,7 @@
 plugins {
   // Manage optional dependencies in maven pom.
   id 'nebula.optional-base' version '4.0.1' apply false
+  id 'com.github.spotbugs' version '1.6.10' apply false
 }
 
 ext {
@@ -44,6 +45,7 @@ subprojects { subproject ->
   apply plugin: 'maven'
   apply plugin: 'maven-publish'
   apply plugin: 'nebula.optional-base'
+  apply plugin: 'com.github.spotbugs'
   if (jacocoEnabled(subproject)) {
     apply plugin: "jacoco"
   }
@@ -129,4 +131,26 @@ subprojects { subproject ->
                "Implementation-Vendor": organizationName)
     }
   }
+
+  spotbugs {
+    // showProgress = "true"
+    effort = "max"
+    // Ignore failures?
+    // ignoreFailures = false
+
+    // We only care about "high priority" issues...
+    reportLevel = "high"
+  }
+
+  // disable spotbugsTests which checks our test code..
+  spotbugsTest.enabled = false
+
+  tasks.withType(com.github.spotbugs.SpotBugsTask) {
+    reports {
+      xml.enabled = false
+      html.enabled = true
+    }
+    includeFilter = new File("$rootDir/gradle/spotbugs-filter.xml")
+  }
+
 }

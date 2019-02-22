@@ -6,6 +6,8 @@ ext {
 dependencies {
   compile "org.apache.logging.log4j:log4j-core:$log4j2Version", optional
   compile "org.apache.logging.log4j:log4j-api:$log4j2Version", optional
+  annotationProcessor ("org.apache.logging.log4j:log4j-api:$log4j2Version")
+  annotationProcessor ("org.apache.logging.log4j:log4j-core:$log4j2Version")
 
   javadoc project(':interlok-core-apt')
 
