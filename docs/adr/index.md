@@ -9,6 +9,7 @@ This log lists the architectural decisions for Interlok
 <!-- adrlog -->
 
 - [ADR-0000](0000-use-markdown-architectural-decision-records.md) - Use Markdown Architectural Decision Records
+* [ADR-0001](0001-add-messagelogger-interface.md) - Add MessageLogger interface, remove AdaptrisMessage.toString()
 
 <!-- adrlogstop -->
 
