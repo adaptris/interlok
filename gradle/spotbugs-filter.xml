@@ -7,7 +7,7 @@
   <Match>
     <Not>
       <!-- Ignore the Default encoding bugs -->
-      <Bug code="Dm" />
+      <Bug pattern="DM_DEFAULT_ENCODING" />
     </Not>
   </Match>
 
