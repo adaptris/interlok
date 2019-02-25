@@ -18,6 +18,7 @@ package com.adaptris.core;
 
 import java.util.Map;
 import java.util.Set;
+import com.adaptris.annotation.Removal;
 import com.adaptris.interlok.types.InterlokMessage;
 
 /**
@@ -309,6 +310,7 @@ public interface AdaptrisMessage extends InterlokMessage {
    * @deprecated since 3.8.4 use {@link MessageLogger#toString(AdaptrisMessage)} instead.
    */
   @Deprecated
+  @Removal(version = "3.11.0")
   String toString(boolean includePayload);
 
   /**
@@ -323,6 +325,7 @@ public interface AdaptrisMessage extends InterlokMessage {
    * @deprecated since 3.8.4 use {@link MessageLogger#toString(AdaptrisMessage)} instead.
    */
   @Deprecated
+  @Removal(version = "3.11.0")
   String toString(boolean includePayload, boolean includeEvents);
 
   default String getPayloadForLogging() {
