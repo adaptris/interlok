@@ -1,0 +1,25 @@
+theme: minima
+baseurl: ""
+url: ""
+title: ADR (Interlok)
+description: > 
+  Interlok (woot!)
+
+markdown: JekyllMarkdownLinkConverter
+header_pages:
+ - index.md
+exclude: 
+  - Gemfile
+  - Gemfile.lock
+  - _config_dev.yml
+  - Dockerfile
+  - docker-compose.yml
+
+permalink: /:title:output_ext
+
+defaults:
+  -
+    scope:
+      path: ""
+    values:
+      layout: "page"

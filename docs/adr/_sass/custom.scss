@@ -1,0 +1,15 @@
+$on-large:        800px !default;
+
+.post-header, .page-heading {
+  display: none;
+}
+
+.home h1, .post-content h1 {
+  @include relative-font-size(2.625);
+  letter-spacing: -1px;
+  line-height: 1;
+
+  @media screen and (min-width: $on-large) {
+    @include relative-font-size(2.625);
+  }
+}

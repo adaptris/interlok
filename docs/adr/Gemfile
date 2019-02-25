@@ -1,0 +1,7 @@
+source "https://rubygems.org"
+# Basically this requires a bunch of github metadata which is kinda lame.
+# gem 'github-pages', group: :jekyll_plugins
+gem 'jekyll'
+gem "minima"
+gem 'therubyracer'
+
