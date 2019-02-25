@@ -14,6 +14,8 @@ Often, integrators use a `RegexpMetadataService` and extract the whole payload a
 
 When the message enters the second workflow, it is logged optionally including the payload, but always with the metadata. In the event that we have extra long metadata values, then this can make logging unusable when attempting to debug various runtime operations.
 
+This is recorded as [INTERLOK-2647](https://adaptris.atlassian.net/browse/INTERLOK-2647)
+
 ## Considered Options
 
 * Add an AdaptrisMessage#toString(boolean, boolean, boolean) method.
