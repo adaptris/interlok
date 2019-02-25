@@ -17,7 +17,6 @@
 package com.adaptris.core;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FilterOutputStream;
@@ -26,9 +25,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
-
 import org.apache.commons.lang3.StringUtils;
-
 import com.adaptris.util.IdGenerator;
 
 /**
@@ -63,11 +60,6 @@ public class DefaultAdaptrisMessageImp extends AdaptrisMessageImp {
       }
     }
     return result;
-  }
-
-  @Override
-  protected String getPayloadForLogging() {
-    return getStringPayload();
   }
 
   /** @see AdaptrisMessage#setPayload(byte[]) */
