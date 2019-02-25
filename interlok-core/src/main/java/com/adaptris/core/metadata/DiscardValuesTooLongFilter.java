@@ -37,14 +37,14 @@ public class DiscardValuesTooLongFilter extends MetadataFilterImpl {
   private static final int DEFAULT_MAX_LENGTH = 256;
 
   @InputFieldDefault(value = "256")
-  private Integer maxLengthBytes;
+  private Integer maxLengthChars;
 
   public DiscardValuesTooLongFilter() {
   }
 
   public DiscardValuesTooLongFilter(Integer i) {
     this();
-    setMaxLengthBytes(i);
+    setMaxLengthChars(i);
   }
 
   @Override
@@ -56,8 +56,8 @@ public class DiscardValuesTooLongFilter extends MetadataFilterImpl {
     return result;
   }
 
-  public Integer getMaxLengthBytes() {
-    return maxLengthBytes;
+  public Integer getMaxLengthChars() {
+    return maxLengthChars;
   }
 
   /**
@@ -65,12 +65,12 @@ public class DiscardValuesTooLongFilter extends MetadataFilterImpl {
    * 
    * @param bytes the length; default is 256 if not specified.
    */
-  public void setMaxLengthBytes(Integer bytes) {
-    this.maxLengthBytes = bytes;
+  public void setMaxLengthChars(Integer bytes) {
+    this.maxLengthChars = bytes;
   }
 
 
   private int maxLength() {
-    return NumberUtils.toIntDefaultIfNull(getMaxLengthBytes(), DEFAULT_MAX_LENGTH);
+    return NumberUtils.toIntDefaultIfNull(getMaxLengthChars(), DEFAULT_MAX_LENGTH);
   }
 }
