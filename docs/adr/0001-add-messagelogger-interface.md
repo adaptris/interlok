@@ -4,7 +4,7 @@ title: 0001-add-messagelogger-interface
 ---
 # Add MessageLogger interface; remove AdaptrisMessage toString()
 
-* Status: Draft
+* Status: Accepted
 * Deciders: Aaron McGrath, Lewin Chan, (Matthew Warman)
 * Date: 2019-02-25
 
