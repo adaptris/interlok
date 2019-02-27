@@ -22,7 +22,6 @@ import static com.adaptris.annotation.AnnotationConstants.XSTREAM_ALIAS_PROPERTI
 import static com.adaptris.annotation.AnnotationConstants.XSTREAM_IMPLICIT_PROPERTIES_FILE;
 import static com.adaptris.core.marshaller.xstream.XStreamUtils.getClasses;
 import static com.adaptris.core.marshaller.xstream.XStreamUtils.readResource;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -31,10 +30,8 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.marshaller.xstream.LowerCaseHyphenatedMapper;
 import com.adaptris.core.marshaller.xstream.PrettyStaxDriver;
 import com.thoughtworks.xstream.XStream;
@@ -130,7 +127,7 @@ public class AdapterXStreamMarshallerFactory extends AdapterMarshallerFactory {
   /**
    * Reads in and stores all of the xstream configuration items from various resources
    */
-  protected void readXStreamConfigProperties() {
+  protected static void readXStreamConfigProperties() {
     // Process annotations
     xstreamAnnotatedClasses = new PropertyClassListProcessor().process(XSTREAM_ALIAS_PROPERTIES_FILE, new ArrayList<Class<?>>());
     // Process classes with special field handling
