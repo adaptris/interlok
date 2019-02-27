@@ -19,7 +19,6 @@ package com.adaptris.core;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
-
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockWorkflowInterceptor;
 import com.adaptris.core.stubs.StubAdapterStartUpEvent;
@@ -99,14 +98,21 @@ public abstract class ExampleWorkflowCase extends ExampleConfigCase {
     assertTrue(wf.sendEvents());
   }
 
+  @SuppressWarnings("deprecation")
   public void testSetLogPayload() throws Exception {
     WorkflowImp wf = createWorkflowForGenericTests();
     assertNull(wf.getLogPayload());
     wf.setLogPayload(Boolean.TRUE);
     assertNotNull(wf.getLogPayload());
     assertEquals(Boolean.TRUE, wf.getLogPayload());
+    assertNotNull(wf.messageLogger());
+    assertNotSame(DefaultMessageLogger.class, wf.messageLogger().getClass());
+
     wf.setLogPayload(null);
     assertNull(wf.getLogPayload());
+
+    assertNotNull(wf.messageLogger());
+    assertEquals(DefaultMessageLogger.class, wf.messageLogger().getClass());
   }
 
   public void testSetChannelUnavailableWait() throws Exception {
