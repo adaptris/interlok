@@ -65,7 +65,7 @@ public class DeliveryMode {
       result = mode.deliveryMode();
     }
     catch (IllegalArgumentException e) {
-      result = Integer.valueOf(s).intValue();
+      result = Integer.parseInt(s);
     }
     return result;
   }

@@ -18,24 +18,21 @@ package com.adaptris.core;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-
 import org.apache.commons.lang3.Range;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.PooledObjectFactory;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.commons.pool2.impl.GenericObjectPool;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -396,13 +393,15 @@ public class PoolingWorkflow extends WorkflowImp {
 
   private GenericObjectPool<Worker> createObjectPool() {
     GenericObjectPool<Worker> pool = new GenericObjectPool<>(new WorkerFactory());
+    long lifetime = threadLifetimeMs();
     pool.setMaxTotal(poolSize());
     pool.setMinIdle(minIdle());
     pool.setMaxIdle(maxIdle());
     pool.setMaxWaitMillis(-1L);
     pool.setBlockWhenExhausted(true);
-    pool.setMinEvictableIdleTimeMillis(threadLifetimeMs());
-    pool.setTimeBetweenEvictionRunsMillis(threadLifetimeMs() + new Random(threadLifetimeMs()).nextLong());
+    pool.setMinEvictableIdleTimeMillis(lifetime);
+    pool.setTimeBetweenEvictionRunsMillis(
+        lifetime + ThreadLocalRandom.current().nextLong(lifetime));
     return pool;
   }
 

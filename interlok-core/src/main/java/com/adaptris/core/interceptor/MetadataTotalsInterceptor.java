@@ -17,13 +17,10 @@
 package com.adaptris.core.interceptor;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.management.MalformedObjectNameException;
 import javax.validation.constraints.NotNull;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisComponent;
@@ -102,7 +99,7 @@ public class MetadataTotalsInterceptor extends MetadataMetricsInterceptorImpl {
     if (!msg.headersContainsKey(key)) {
       return 0;
     }
-    return Integer.valueOf(msg.getMetadataValue(key)).intValue();
+    return Integer.parseInt(msg.getMetadataValue(key));
   }
 
   public List<String> getMetadataKeys() {

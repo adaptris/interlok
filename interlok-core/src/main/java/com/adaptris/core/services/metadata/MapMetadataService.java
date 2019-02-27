@@ -19,12 +19,9 @@ package com.adaptris.core.services.metadata;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.AutoPopulated;
@@ -98,7 +95,7 @@ public class MapMetadataService extends ServiceImp {
     Pattern keyPattern = Pattern.compile(MATCH_GROUP_REGEX);
     Matcher keyMatcher = keyPattern.matcher(result);
     if (keyMatcher.matches()) {
-      int group = Integer.valueOf(keyMatcher.group(1)).intValue();
+      int group = Integer.parseInt(keyMatcher.group(1));
       Pattern p = Pattern.compile(kvp.getKey());
       Matcher m = p.matcher(metadataValue);
       if (m.matches()) {

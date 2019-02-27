@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.ExceptionHelper;
@@ -36,7 +35,7 @@ import com.adaptris.core.util.JdbcUtil;
  */
 public abstract class JdbcMapUpsert extends JdbcMapInsert {
 
-  public static String DEFAULT_ID_FIELD = "id";
+  public static final String DEFAULT_ID_FIELD = "id";
 
   @InputFieldDefault(value = "id")
   private String idField;

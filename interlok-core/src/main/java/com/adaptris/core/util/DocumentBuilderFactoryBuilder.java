@@ -1,17 +1,14 @@
 package com.adaptris.core.util;
 
 import java.util.Map;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.commons.lang.BooleanUtils;
 import org.xml.sax.EntityResolver;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
@@ -32,7 +29,8 @@ order = {"validating", "namespaceAware", "xincludeAware", "expandEntityReference
     "ignoreWhitespace", "features"})
 public class DocumentBuilderFactoryBuilder {
 
-  public static String DISABLE_DOCTYP = "http://apache.org/xml/features/disallow-doctype-decl";
+  public static final String DISABLE_DOCTYP =
+      "http://apache.org/xml/features/disallow-doctype-decl";
 
   @NotNull
   @AutoPopulated

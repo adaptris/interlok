@@ -16,14 +16,9 @@
 
 package com.adaptris.core.services.splitter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
@@ -68,7 +63,6 @@ public class SplitByMetadata extends MessageCopier {
 
   @Override
   public Iterable<AdaptrisMessage> splitMessage(AdaptrisMessage msg) throws CoreException {
-    List<AdaptrisMessage> result = new ArrayList<AdaptrisMessage>();
     String value = msg.getMetadataValue(getMetadataKey());
     if (StringUtils.isEmpty(value)) {
       logR.warn("[{}] does not contain a value", getMetadataKey());
