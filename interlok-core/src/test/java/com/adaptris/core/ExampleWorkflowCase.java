@@ -102,14 +102,11 @@ public abstract class ExampleWorkflowCase extends ExampleConfigCase {
   public void testSetLogPayload() throws Exception {
     WorkflowImp wf = createWorkflowForGenericTests();
     assertNull(wf.getLogPayload());
-    assertFalse(wf.logPayload());
     wf.setLogPayload(Boolean.TRUE);
     assertNotNull(wf.getLogPayload());
     assertEquals(Boolean.TRUE, wf.getLogPayload());
-    assertEquals(true, wf.logPayload());
     wf.setLogPayload(null);
     assertNull(wf.getLogPayload());
-    assertFalse(wf.logPayload());
   }
 
   public void testSetChannelUnavailableWait() throws Exception {

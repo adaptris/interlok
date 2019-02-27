@@ -13,16 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package com.adaptris.core.util;
+package com.adaptris.core;
 
 import java.util.Collection;
 import java.util.Set;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.MessageLogger;
-import com.adaptris.core.MetadataCollection;
-import com.adaptris.core.MetadataElement;
 
 public abstract class MessageLoggerImpl implements MessageLogger {
 
@@ -30,6 +26,16 @@ public abstract class MessageLoggerImpl implements MessageLogger {
   protected static final String FIELD_METADATA = "metadata";
   protected static final String FIELD_MESSAGE_EVENTS = "message events";
   protected static final String FIELD_PAYLOAD = "payload";
+
+  public static final MessageLogger LAST_RESORT_LOGGER = new MessageLoggerImpl() {
+
+    @Override
+    public String toString(AdaptrisMessage m) {
+      return builder(m).append(FIELD_METADATA, format(m.getMetadata()))
+          .append(FIELD_PAYLOAD, m.getPayloadForLogging()).toString();
+    }
+    
+  };
 
   protected ToStringBuilder builder(AdaptrisMessage msg) {
     return new ToStringBuilder(msg, ToStringStyle.SHORT_PREFIX_STYLE).append(FIELD_UNIQUE_ID,

@@ -21,27 +21,26 @@ import static com.adaptris.core.CoreConstants.OBJ_METADATA_EXCEPTION;
 import static com.adaptris.core.CoreConstants.OBJ_METADATA_EXCEPTION_CAUSE;
 import static com.adaptris.core.CoreConstants.UNIQUE_ID_JMX_PATTERN;
 import static org.apache.commons.lang.StringUtils.isBlank;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.util.PlainIdGenerator;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
@@ -55,6 +54,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 public abstract class WorkflowImp implements Workflow {
   private static final TimeInterval DEFAULT_CHANNEL_UNAVAILBLE_WAIT = new TimeInterval(30L, TimeUnit.SECONDS);
   private static final String ID_SEPARATOR = "@";
+  private static final MessageLogger DEFAULT_MSG_LOGGER = new DefaultMessageLogger();
 
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
@@ -86,6 +86,8 @@ public abstract class WorkflowImp implements Workflow {
   private Boolean sendEvents;
   @AdvancedConfig
   @InputFieldDefault(value = "false")
+  @Deprecated
+  @Removal(version = "3.11.0", message="use a message-logger instead")
   private Boolean logPayload;
   @NotNull
   @AutoPopulated
@@ -101,11 +103,13 @@ public abstract class WorkflowImp implements Workflow {
   @NotNull
   @AutoPopulated
   private List<WorkflowInterceptor> interceptors;
-
   @Valid
   @AdvancedConfig
   private TimeInterval channelUnavailableWaitInterval;
-
+  @AdvancedConfig
+  @InputFieldDefault(value = "message-logger-default")
+  private MessageLogger messageLogger;
+  
   // not marshalled
   private transient Channel channel;
   private transient ProcessingExceptionHandler activeErrorHandler;
@@ -114,6 +118,7 @@ public abstract class WorkflowImp implements Workflow {
   protected transient Date startTime;
   protected transient Date stopTime;
   private transient boolean prepared = false;
+  private transient boolean warningLogged;
 
   /**
    * <p>
@@ -401,7 +406,7 @@ public abstract class WorkflowImp implements Workflow {
       activeErrorHandler.handleProcessingException(msg);
     }
     catch (Exception e) { // unlikely runtime Exc.
-      log.error("exception handling bad message [" + msg.toString(true) + "]", e);
+      log.error("exception handling bad message [" + DEFAULT_MSG_LOGGER.toString(msg) + "]", e);
     }
   }
 
@@ -587,7 +592,10 @@ public abstract class WorkflowImp implements Workflow {
    * </p>
    *
    * @return true if payload should be logged
+   * @deprecated since 3.8.4 use {@link #setMessageLogger(MessageLogger)} instead.
    */
+  @Deprecated
+  @Removal(version="3.11.0")
   public Boolean getLogPayload() {
     return logPayload;
   }
@@ -598,15 +606,14 @@ public abstract class WorkflowImp implements Workflow {
    * </p>
    *
    * @param b true if payload should be logged
+   * @deprecated since 3.8.4 use {@link #setMessageLogger(MessageLogger)} instead.
    */
+  @Deprecated
+  @Removal(version="3.11.0")
   public void setLogPayload(Boolean b) {
     logPayload = b;
   }
-
-  boolean logPayload() {
-    return BooleanUtils.toBooleanDefaultIfNull(getLogPayload(), false);
-  }
-
+  
   /**
    * @see com.adaptris.core.Workflow#obtainChannel()
    */
@@ -746,7 +753,7 @@ public abstract class WorkflowImp implements Workflow {
   }
 
   protected void logSuccess(AdaptrisMessage msg, long start) {
-    log.info("message [{}] processed in [{}] ms", msg.getUniqueId(), (System.currentTimeMillis() - start));
+    log.info("message [{}] processed in [{}] ms", msg.getUniqueId(), System.currentTimeMillis() - start);
   }
 
   /**
@@ -794,5 +801,26 @@ public abstract class WorkflowImp implements Workflow {
   @Override
   public boolean disableMessageCount() {
     return BooleanUtils.toBooleanDefaultIfNull(getDisableDefaultMessageCount(), false);
+  }
+  
+  public MessageLogger getMessageLogger() {
+    return messageLogger;
+  }
+
+  public void setMessageLogger(MessageLogger ml) {
+    this.messageLogger = ml;
+  }
+  
+  @SuppressWarnings("deprecation")
+  public MessageLogger messageLogger() {
+    if (getLogPayload() != null) {
+      LoggingHelper.logWarning(warningLogged, () -> {
+        warningLogged = true;
+      }, "Use message-logger instead of log-payload");
+      return (m) -> {
+        return m.toString(BooleanUtils.toBooleanDefaultIfNull(getLogPayload(), false));
+      };
+    }
+    return ObjectUtils.defaultIfNull(getMessageLogger(), DEFAULT_MSG_LOGGER);
   }
 }

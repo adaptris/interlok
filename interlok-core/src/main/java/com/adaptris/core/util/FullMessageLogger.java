@@ -17,6 +17,7 @@ package com.adaptris.core.util;
 
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.MessageLoggerImpl;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
