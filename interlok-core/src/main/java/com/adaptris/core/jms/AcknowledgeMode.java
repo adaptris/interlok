@@ -76,7 +76,7 @@ public class AcknowledgeMode {
       result = mode.acknowledgeMode();
     }
     catch (IllegalArgumentException e) {
-      result = Integer.valueOf(s).intValue();
+      result = Integer.parseInt(s);
     }
     return result;
   }

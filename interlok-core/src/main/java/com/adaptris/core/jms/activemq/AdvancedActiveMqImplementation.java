@@ -18,9 +18,7 @@ package com.adaptris.core.jms.activemq;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.apache.activemq.ActiveMQConnectionFactory;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
@@ -76,7 +74,7 @@ public class AdvancedActiveMqImplementation extends BasicActiveMqImplementation 
     AlwaysSessionAsync {
       @Override
       void applyProperty(ActiveMQConnectionFactory cf, String o) {
-        cf.setAlwaysSessionAsync(Boolean.valueOf(o));
+        cf.setAlwaysSessionAsync(Boolean.parseBoolean(o));
       }
     },
     /**
@@ -85,7 +83,7 @@ public class AdvancedActiveMqImplementation extends BasicActiveMqImplementation 
     AlwaysSyncSend {
       @Override
       void applyProperty(ActiveMQConnectionFactory cf, String o) {
-        cf.setAlwaysSyncSend(Boolean.valueOf(o));
+        cf.setAlwaysSyncSend(Boolean.parseBoolean(o));
       }
     },
     /**
@@ -140,7 +138,7 @@ public class AdvancedActiveMqImplementation extends BasicActiveMqImplementation 
     CloseTimeout {
       @Override
       void applyProperty(ActiveMQConnectionFactory cf, String o) {
-        cf.setCloseTimeout(Integer.valueOf(o));
+        cf.setCloseTimeout(Integer.parseInt(o));
       }
     },
     /**
@@ -169,7 +167,7 @@ public class AdvancedActiveMqImplementation extends BasicActiveMqImplementation 
     CopyMessageOnSend {
       @Override
       void applyProperty(ActiveMQConnectionFactory cf, String o) {
-        cf.setCopyMessageOnSend(Boolean.valueOf(o));
+        cf.setCopyMessageOnSend(Boolean.parseBoolean(o));
       }
     },
     /**
@@ -178,7 +176,7 @@ public class AdvancedActiveMqImplementation extends BasicActiveMqImplementation 
     DisableTimeStampsByDefault {
       @Override
       void applyProperty(ActiveMQConnectionFactory cf, String o) {
-        cf.setDisableTimeStampsByDefault(Boolean.valueOf(o));
+        cf.setDisableTimeStampsByDefault(Boolean.parseBoolean(o));
       }
     },
     /**
@@ -187,7 +185,7 @@ public class AdvancedActiveMqImplementation extends BasicActiveMqImplementation 
     DispatchAsync {
       @Override
       void applyProperty(ActiveMQConnectionFactory cf, String o) {
-        cf.setDispatchAsync(Boolean.valueOf(o));
+        cf.setDispatchAsync(Boolean.parseBoolean(o));
       }
     },
     /**
@@ -196,7 +194,7 @@ public class AdvancedActiveMqImplementation extends BasicActiveMqImplementation 
     ExclusiveConsumer {
       @Override
       void applyProperty(ActiveMQConnectionFactory cf, String o) {
-        cf.setExclusiveConsumer(Boolean.valueOf(o));
+        cf.setExclusiveConsumer(Boolean.parseBoolean(o));
       }
     },
     /**
@@ -206,7 +204,7 @@ public class AdvancedActiveMqImplementation extends BasicActiveMqImplementation 
     MaxThreadPoolSize {
       @Override
       void applyProperty(ActiveMQConnectionFactory cf, String o) {
-        cf.setMaxThreadPoolSize(Integer.valueOf(o));
+        cf.setMaxThreadPoolSize(Integer.parseInt(o));
       }
     },
     /**
@@ -225,7 +223,7 @@ public class AdvancedActiveMqImplementation extends BasicActiveMqImplementation 
     NestedMapAndListEnabled {
       @Override
       void applyProperty(ActiveMQConnectionFactory cf, String o) {
-        cf.setNestedMapAndListEnabled(Boolean.valueOf(o));
+        cf.setNestedMapAndListEnabled(Boolean.parseBoolean(o));
       }
     },
     /**
@@ -235,7 +233,7 @@ public class AdvancedActiveMqImplementation extends BasicActiveMqImplementation 
     NonBlockingRedelivery {
       @Override
       void applyProperty(ActiveMQConnectionFactory cf, String o) {
-        cf.setNonBlockingRedelivery(Boolean.valueOf(o));
+        cf.setNonBlockingRedelivery(Boolean.parseBoolean(o));
       }
     },
     /**
@@ -247,7 +245,7 @@ public class AdvancedActiveMqImplementation extends BasicActiveMqImplementation 
     ObjectMessageSerializationDeferred {
       @Override
       void applyProperty(ActiveMQConnectionFactory cf, String o) {
-        cf.setObjectMessageSerializationDefered(Boolean.valueOf(o));
+        cf.setObjectMessageSerializationDefered(Boolean.parseBoolean(o));
       }
     },
     /**
@@ -256,7 +254,7 @@ public class AdvancedActiveMqImplementation extends BasicActiveMqImplementation 
     OptimizeAcknowledge {
       @Override
       void applyProperty(ActiveMQConnectionFactory cf, String o) {
-        cf.setOptimizeAcknowledge(Boolean.valueOf(o));
+        cf.setOptimizeAcknowledge(Boolean.parseBoolean(o));
       }
     },
     /**
@@ -265,7 +263,7 @@ public class AdvancedActiveMqImplementation extends BasicActiveMqImplementation 
     OptimizeAcknowledgeTimeout {
       @Override
       void applyProperty(ActiveMQConnectionFactory cf, String o) {
-        cf.setOptimizeAcknowledgeTimeOut(Long.valueOf(o));
+        cf.setOptimizeAcknowledgeTimeOut(Long.parseLong(o));
       }
     },
     /**
@@ -274,7 +272,7 @@ public class AdvancedActiveMqImplementation extends BasicActiveMqImplementation 
     OptimizedAckScheduledAckInterval {
       @Override
       void applyProperty(ActiveMQConnectionFactory cf, String o) {
-        cf.setOptimizedAckScheduledAckInterval(Long.valueOf(o));
+        cf.setOptimizedAckScheduledAckInterval(Long.parseLong(o));
       }
     },
     /**
@@ -283,7 +281,7 @@ public class AdvancedActiveMqImplementation extends BasicActiveMqImplementation 
     OptimizedMessageDispatch {
       @Override
       void applyProperty(ActiveMQConnectionFactory cf, String o) {
-        cf.setOptimizedMessageDispatch(Boolean.valueOf(o));
+        cf.setOptimizedMessageDispatch(Boolean.parseBoolean(o));
       }
 
     },
@@ -293,7 +291,7 @@ public class AdvancedActiveMqImplementation extends BasicActiveMqImplementation 
     ProducerWindowSize {
       @Override
       void applyProperty(ActiveMQConnectionFactory cf, String o) {
-        cf.setProducerWindowSize(Integer.valueOf(o));
+        cf.setProducerWindowSize(Integer.parseInt(o));
       }
     },
     /**
@@ -302,7 +300,7 @@ public class AdvancedActiveMqImplementation extends BasicActiveMqImplementation 
     SendAcksAsync {
       @Override
       void applyProperty(ActiveMQConnectionFactory cf, String o) {
-        cf.setSendAcksAsync(Boolean.valueOf(o));
+        cf.setSendAcksAsync(Boolean.parseBoolean(o));
       }
     },
     /**
@@ -311,7 +309,7 @@ public class AdvancedActiveMqImplementation extends BasicActiveMqImplementation 
     SendTimeout {
       @Override
       void applyProperty(ActiveMQConnectionFactory cf, String o) {
-        cf.setSendTimeout(Integer.valueOf(o));
+        cf.setSendTimeout(Integer.parseInt(o));
       }
     },
     /**
@@ -347,7 +345,7 @@ public class AdvancedActiveMqImplementation extends BasicActiveMqImplementation 
     UseCompression {
       @Override
       void applyProperty(ActiveMQConnectionFactory cf, String o) {
-        cf.setUseCompression(Boolean.valueOf(o));
+        cf.setUseCompression(Boolean.parseBoolean(o));
       }
     },
     /**
@@ -356,7 +354,7 @@ public class AdvancedActiveMqImplementation extends BasicActiveMqImplementation 
     UseDedicatedTaskRunner {
       @Override
       void applyProperty(ActiveMQConnectionFactory cf, String o) {
-        cf.setUseDedicatedTaskRunner(Boolean.valueOf(o));
+        cf.setUseDedicatedTaskRunner(Boolean.parseBoolean(o));
       }
     },
     /**
@@ -365,7 +363,7 @@ public class AdvancedActiveMqImplementation extends BasicActiveMqImplementation 
     UseRetroactiveConsumer {
       @Override
       void applyProperty(ActiveMQConnectionFactory cf, String o) {
-        cf.setUseRetroactiveConsumer(Boolean.valueOf(o));
+        cf.setUseRetroactiveConsumer(Boolean.parseBoolean(o));
       }
     },
     /**
@@ -374,7 +372,7 @@ public class AdvancedActiveMqImplementation extends BasicActiveMqImplementation 
     WarnAboutUnstartedConnectionTimeout {
       @Override
       void applyProperty(ActiveMQConnectionFactory cf, String o) {
-        cf.setWarnAboutUnstartedConnectionTimeout(Long.valueOf(o));
+        cf.setWarnAboutUnstartedConnectionTimeout(Long.parseLong(o));
       }
     };
     abstract void applyProperty(ActiveMQConnectionFactory cf, String s);

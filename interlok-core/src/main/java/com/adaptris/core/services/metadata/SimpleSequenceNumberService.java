@@ -25,7 +25,6 @@ import java.text.NumberFormat;
 import java.util.Properties;
 import org.apache.commons.lang3.BooleanUtils;
 import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AffectsMetadata;
@@ -96,7 +95,7 @@ public class SimpleSequenceNumberService extends ServiceImp {
     ResetToOne() {
       @Override
       long wrap(long i) {
-        return Long.valueOf(ONE);
+        return Long.parseLong(ONE);
       }
 
     },

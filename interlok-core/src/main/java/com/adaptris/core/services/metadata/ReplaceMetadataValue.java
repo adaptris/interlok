@@ -17,12 +17,10 @@
 package com.adaptris.core.services.metadata;
 
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.BooleanUtils;
 import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -103,7 +101,7 @@ public class ReplaceMetadataValue extends ReformatMetadata {
     String result = replacement;
     Matcher matchGroup = matchGroupPattern.matcher(replacement);
     if (matchGroup.matches() && metadataValue.matches()) {
-      int group = Integer.valueOf(matchGroup.group(2)).intValue();
+      int group = Integer.parseInt(matchGroup.group(2));
       result = matchGroup.group(1) + metadataValue.group(group) + matchGroup.group(3);
       if (matchGroupPattern.matcher(result).matches()) {
         return buildReplacementValue(metadataValue, result);
