@@ -101,6 +101,7 @@ public abstract class ExampleWorkflowCase extends ExampleConfigCase {
 
   @SuppressWarnings("deprecation")
   public void testSetLogPayload() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     WorkflowImp wf = createWorkflowForGenericTests();
     assertNull(wf.getLogPayload());
     wf.setLogPayload(Boolean.TRUE);
@@ -108,25 +109,29 @@ public abstract class ExampleWorkflowCase extends ExampleConfigCase {
     assertEquals(Boolean.TRUE, wf.getLogPayload());
     assertNotNull(wf.messageLogger());
     assertNotSame(DefaultMessageLogger.class, wf.messageLogger().getClass());
-
+    assertNotNull(wf.messageLogger().toString(msg));
     wf.setLogPayload(null);
     assertNull(wf.getLogPayload());
 
     assertNotNull(wf.messageLogger());
     assertEquals(DefaultMessageLogger.class, wf.messageLogger().getClass());
+    assertNotNull(wf.messageLogger().toString(msg));
   }
 
 
   public void testSetMessageLogger() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     WorkflowImp wf = createWorkflowForGenericTests();
     assertNull(wf.getMessageLogger());
     assertNotNull(wf.messageLogger());
     assertEquals(DefaultMessageLogger.class, wf.messageLogger().getClass());
+    assertNotNull(wf.messageLogger().toString(msg));
 
     wf.setMessageLogger(new PayloadMessageLogger());
     assertNotNull(wf.getMessageLogger());
     assertNotNull(wf.messageLogger());
     assertEquals(PayloadMessageLogger.class, wf.messageLogger().getClass());
+    assertNotNull(wf.messageLogger().toString(msg));
   }
 
   public void testSetChannelUnavailableWait() throws Exception {
