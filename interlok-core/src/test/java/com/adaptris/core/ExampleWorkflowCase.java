@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockWorkflowInterceptor;
 import com.adaptris.core.stubs.StubAdapterStartUpEvent;
+import com.adaptris.core.util.PayloadMessageLogger;
 import com.adaptris.util.TimeInterval;
 
 /**
@@ -113,6 +114,19 @@ public abstract class ExampleWorkflowCase extends ExampleConfigCase {
 
     assertNotNull(wf.messageLogger());
     assertEquals(DefaultMessageLogger.class, wf.messageLogger().getClass());
+  }
+
+
+  public void testSetMessageLogger() throws Exception {
+    WorkflowImp wf = createWorkflowForGenericTests();
+    assertNull(wf.getMessageLogger());
+    assertNotNull(wf.messageLogger());
+    assertEquals(DefaultMessageLogger.class, wf.messageLogger().getClass());
+
+    wf.setMessageLogger(new PayloadMessageLogger());
+    assertNotNull(wf.getMessageLogger());
+    assertNotNull(wf.messageLogger());
+    assertEquals(PayloadMessageLogger.class, wf.messageLogger().getClass());
   }
 
   public void testSetChannelUnavailableWait() throws Exception {
