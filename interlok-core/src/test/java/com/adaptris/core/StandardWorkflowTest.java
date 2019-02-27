@@ -24,10 +24,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
 import com.adaptris.core.services.metadata.AddMetadataService;
@@ -39,6 +37,7 @@ import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.stubs.MockSkipProducerService;
 import com.adaptris.core.stubs.MockWorkflowInterceptor;
+import com.adaptris.core.util.MinimalMessageLogger;
 import com.adaptris.util.TimeInterval;
 
 @SuppressWarnings("deprecation")
@@ -452,6 +451,33 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
     assertEquals(1, serviceProducer.messageCount());
     assertEquals(0, producer.messageCount());
   }
+
+
+  public void testOnMessage_LogPayload() throws Exception {
+    MockMessageProducer producer = new MockMessageProducer();
+    MockChannel channel = createChannel(producer, Arrays.asList(
+        new Service[] {new NullService()}));
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD_1);
+    StandardWorkflow workflow = (StandardWorkflow) channel.getWorkflowList().get(0);
+    workflow.setLogPayload(true);
+    channel.prepare();
+    start(channel);
+    workflow.onAdaptrisMessage(msg);
+    assertEquals(1, producer.messageCount());
+  }
+
+  public void testOnMessage_MessageLogger() throws Exception {
+    MockMessageProducer producer = new MockMessageProducer();
+    MockChannel channel = createChannel(producer, Arrays.asList(new Service[] {new NullService()}));
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD_1);
+    StandardWorkflow workflow = (StandardWorkflow) channel.getWorkflowList().get(0);
+    workflow.setMessageLogger(new MinimalMessageLogger());
+    channel.prepare();
+    start(channel);
+    workflow.onAdaptrisMessage(msg);
+    assertEquals(1, producer.messageCount());
+  }
+
 
   @Override
   protected Object retrieveObjectForSampleConfig() {
