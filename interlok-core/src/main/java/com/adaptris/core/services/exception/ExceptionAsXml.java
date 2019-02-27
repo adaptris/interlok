@@ -16,18 +16,18 @@
 package com.adaptris.core.services.exception;
 
 import javax.validation.Valid;
-
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.Workflow;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.XmlHelper;
@@ -96,7 +96,9 @@ public class ExceptionAsXml implements ExceptionSerializer {
   @Override
   public void serialize(Exception exception, AdaptrisMessage msg) throws CoreException {
     try {
-      Document newDoc = exceptionGenerator().create(exception);
+      Document newDoc =
+          exceptionGenerator().create(exception, msg.getMetadataValue(Workflow.WORKFLOW_ID_KEY),
+              (String) msg.getObjectHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION_CAUSE));
       documentFactoryBuilder().build().newDocumentBuilder().newDocument();
       Document result = documentMerge().merge(XmlHelper.createDocument(msg, documentFactoryBuilder(), ignoreXmlParseExceptions()),
           newDoc);
