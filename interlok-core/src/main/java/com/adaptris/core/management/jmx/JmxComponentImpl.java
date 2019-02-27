@@ -17,15 +17,9 @@
 package com.adaptris.core.management.jmx;
 
 import java.util.Properties;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.management.MgmtComponentImpl;
 
 abstract class JmxComponentImpl extends MgmtComponentImpl {
-
-  protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
   private transient JmxComponent wrapper = new JmxComponent() {
 
