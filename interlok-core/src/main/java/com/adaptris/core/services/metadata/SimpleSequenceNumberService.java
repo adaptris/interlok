@@ -271,7 +271,6 @@ public class SimpleSequenceNumberService extends ServiceImp {
   }
 
   private static Properties load(File myFile) throws IOException {
-    Properties result = new Properties();
     if (!myFile.exists()) {
       myFile.createNewFile();
     }
