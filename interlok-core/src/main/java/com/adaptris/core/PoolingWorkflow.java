@@ -750,7 +750,7 @@ public class PoolingWorkflow extends WorkflowImp {
       AdaptrisMessage wip = null;
       try {
         long start = System.currentTimeMillis();
-        log.debug("start processing message [{}]", msg.toString(logPayload()));
+        log.debug("start processing msg [{}]", messageLogger().toString(msg));
         wip = (AdaptrisMessage) msg.clone();
         // Set the channel id and workflow id on the message lifecycle.
         wip.getMessageLifecycleEvent().setChannelId(obtainChannel().getUniqueId());

@@ -19,13 +19,12 @@ package com.adaptris.core.jms;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageListener;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.MessageLoggerImpl;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 
@@ -179,7 +178,9 @@ public class OnMessageHandler {
     }
     catch (Throwable e) { // impossible if AML is StandardWorkflow
       logR.error("Unexpected Throwable from AdaptrisMessageListener", e);
-      logR.error("logging message [{}]", (adaptrisMessage != null ? adaptrisMessage.toString(true) : "no data available"));
+      logR.error("logging message [{}]",
+          adaptrisMessage != null ? MessageLoggerImpl.LAST_RESORT_LOGGER.toString(adaptrisMessage)
+              : "no data available");
     }
 
   }

@@ -19,10 +19,10 @@ package com.adaptris.core;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
-
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockWorkflowInterceptor;
 import com.adaptris.core.stubs.StubAdapterStartUpEvent;
+import com.adaptris.core.util.PayloadMessageLogger;
 import com.adaptris.util.TimeInterval;
 
 /**
@@ -99,17 +99,39 @@ public abstract class ExampleWorkflowCase extends ExampleConfigCase {
     assertTrue(wf.sendEvents());
   }
 
+  @SuppressWarnings("deprecation")
   public void testSetLogPayload() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     WorkflowImp wf = createWorkflowForGenericTests();
     assertNull(wf.getLogPayload());
-    assertFalse(wf.logPayload());
     wf.setLogPayload(Boolean.TRUE);
     assertNotNull(wf.getLogPayload());
     assertEquals(Boolean.TRUE, wf.getLogPayload());
-    assertEquals(true, wf.logPayload());
+    assertNotNull(wf.messageLogger());
+    assertNotSame(DefaultMessageLogger.class, wf.messageLogger().getClass());
+    assertNotNull(wf.messageLogger().toString(msg));
     wf.setLogPayload(null);
     assertNull(wf.getLogPayload());
-    assertFalse(wf.logPayload());
+
+    assertNotNull(wf.messageLogger());
+    assertEquals(DefaultMessageLogger.class, wf.messageLogger().getClass());
+    assertNotNull(wf.messageLogger().toString(msg));
+  }
+
+
+  public void testSetMessageLogger() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    WorkflowImp wf = createWorkflowForGenericTests();
+    assertNull(wf.getMessageLogger());
+    assertNotNull(wf.messageLogger());
+    assertEquals(DefaultMessageLogger.class, wf.messageLogger().getClass());
+    assertNotNull(wf.messageLogger().toString(msg));
+
+    wf.setMessageLogger(new PayloadMessageLogger());
+    assertNotNull(wf.getMessageLogger());
+    assertNotNull(wf.messageLogger());
+    assertEquals(PayloadMessageLogger.class, wf.messageLogger().getClass());
+    assertNotNull(wf.messageLogger().toString(msg));
   }
 
   public void testSetChannelUnavailableWait() throws Exception {

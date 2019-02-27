@@ -17,7 +17,6 @@
 package com.adaptris.core.lms;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,12 +27,10 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.channels.FileLock;
 import java.nio.charset.Charset;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageImp;
 import com.adaptris.util.IdGenerator;
@@ -60,7 +57,7 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
   }
 
   @Override
-  protected String getPayloadForLogging() {
+  public String getPayloadForLogging() {
     return "file-location:" + inputFile;
   }
 
@@ -116,7 +113,7 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
   @Override
   public void setContent(String content, String charEncoding) {
     wrappedTry(() -> {
-      try (PrintStream out = (!isEmpty(charEncoding)) ? new PrintStream(getOutputStream(), true, charEncoding)
+      try (PrintStream out = !isEmpty(charEncoding) ? new PrintStream(getOutputStream(), true, charEncoding)
           : new PrintStream(getOutputStream(), true)) {
         out.print(content != null ? content : "");
         setContentEncoding(charEncoding);

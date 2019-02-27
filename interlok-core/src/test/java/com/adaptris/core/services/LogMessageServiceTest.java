@@ -16,9 +16,12 @@
 
 package com.adaptris.core.services;
 
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.GeneralServiceExample;
 import com.adaptris.core.services.LoggingServiceImpl.LoggingLevel;
+import com.adaptris.core.util.MinimalMessageLogger;
+import com.adaptris.core.util.PayloadMessageLogger;
 
 @SuppressWarnings("deprecation")
 public class LogMessageServiceTest extends GeneralServiceExample {
@@ -32,37 +35,57 @@ public class LogMessageServiceTest extends GeneralServiceExample {
     return new LogMessageService(LoggingLevel.DEBUG);
   }
 
+  @Test
   public void testSetPrefix() {
     LogMessageService srv = new LogMessageService();
     srv.setLogPrefix("HELLO");
     assertEquals("HELLO", srv.getLogPrefix());
   }
 
+  @Test
   public void testSetLogPayload() {
     LogMessageService srv = new LogMessageService();
     assertNull(srv.getIncludePayload());
-    assertEquals(true, srv.includePayload());
     srv.setIncludePayload(Boolean.FALSE);
     assertEquals(Boolean.FALSE, srv.getIncludePayload());
-    assertEquals(false, srv.includePayload());
     srv.setIncludePayload(null);
     assertNull(srv.getIncludePayload());
-    assertEquals(true, srv.includePayload());
   }
 
 
+  @Test
   public void testSetIncludeEvents() {
     LogMessageService srv = new LogMessageService();
     assertNull(srv.getIncludeEvents());
-    assertEquals(false, srv.includeEvents());
     srv.setIncludeEvents(Boolean.TRUE);
     assertEquals(Boolean.TRUE, srv.getIncludeEvents());
-    assertEquals(true, srv.includeEvents());
     srv.setIncludeEvents(null);
     assertNull(srv.getIncludeEvents());
-    assertEquals(false, srv.includeEvents());
   }
 
+  @Test
+  public void testSetLoggingFormat() throws Exception {
+    LogMessageService srv = new LogMessageService(LoggingLevel.ERROR, "testSetLoggingFormat: ");
+    assertNull(srv.getLoggingFormat());
+    assertEquals(PayloadMessageLogger.class, srv.loggingFormat().getClass());
+
+    srv.setLoggingFormat(new MinimalMessageLogger());
+    assertEquals(MinimalMessageLogger.class, srv.loggingFormat().getClass());
+
+    srv.setIncludeEvents(true);
+    assertNotNull(srv.loggingFormat());
+    assertNotSame(MinimalMessageLogger.class, srv.loggingFormat().getClass());
+    assertNotSame(PayloadMessageLogger.class, srv.loggingFormat().getClass());
+    execute(srv, AdaptrisMessageFactory.getDefaultInstance().newMessage("+Event,-Payload"));
+
+    srv.setIncludePayload(true);
+    assertNotNull(srv.loggingFormat());
+    assertNotSame(MinimalMessageLogger.class, srv.loggingFormat().getClass());
+    assertNotSame(PayloadMessageLogger.class, srv.loggingFormat().getClass());
+    execute(srv, AdaptrisMessageFactory.getDefaultInstance().newMessage("+Event,+Payload"));
+  }
+
+  @Test
   public void testSetLogLevel() {
     LogMessageService srv = new LogMessageService();
     assertEquals(LoggingLevel.DEBUG, srv.getLogLevel());
@@ -72,42 +95,50 @@ public class LogMessageServiceTest extends GeneralServiceExample {
     assertNull(srv.getLogLevel());
   }
 
+
+  @Test
   public void testLoggingAtFatal() throws Exception {
     LogMessageService srv = new LogMessageService();
     srv.setLogLevel(LoggingLevel.FATAL);
     execute(srv, AdaptrisMessageFactory.getDefaultInstance().newMessage("Hello"));
   }
 
+  @Test
   public void testLoggingAtError() throws Exception {
     LogMessageService srv = new LogMessageService();
     srv.setLogLevel(LoggingLevel.ERROR);
     execute(srv, AdaptrisMessageFactory.getDefaultInstance().newMessage("Hello"));
   }
 
+  @Test
   public void testLoggingAtWarn() throws Exception {
     LogMessageService srv = new LogMessageService();
     srv.setLogLevel(LoggingLevel.WARN);
     execute(srv, AdaptrisMessageFactory.getDefaultInstance().newMessage("Hello"));
   }
 
+  @Test
   public void testLoggingAtInfo() throws Exception {
     LogMessageService srv = new LogMessageService();
     srv.setLogLevel(LoggingLevel.INFO);
     execute(srv, AdaptrisMessageFactory.getDefaultInstance().newMessage("Hello"));
   }
 
+  @Test
   public void testLoggingAtDebug() throws Exception {
     LogMessageService srv = new LogMessageService();
     srv.setLogLevel(LoggingLevel.DEBUG);
     execute(srv, AdaptrisMessageFactory.getDefaultInstance().newMessage("Hello"));
   }
 
+  @Test
   public void testLoggingAtTrace() throws Exception {
     LogMessageService srv = new LogMessageService();
     srv.setLogLevel(LoggingLevel.TRACE);
     execute(srv, AdaptrisMessageFactory.getDefaultInstance().newMessage("Hello"));
   }
 
+  @Test
   public void testDefaultLogging() throws Exception {
     LogMessageService srv = new LogMessageService();
     srv.setLogLevel(null);

@@ -97,7 +97,7 @@ public class MultiProducerWorkflow extends StandardWorkflow {
     workflowStart(msg);
     try {
       long start = System.currentTimeMillis();
-      log.debug("start processing msg [{}]", msg.toString(logPayload()));
+      log.debug("start processing msg [{}]", messageLogger().toString(msg));
       wip = (AdaptrisMessage) msg.clone();
       wip.getMessageLifecycleEvent().setChannelId(obtainChannel().getUniqueId());
       wip.getMessageLifecycleEvent().setWorkflowId(obtainWorkflowId());
