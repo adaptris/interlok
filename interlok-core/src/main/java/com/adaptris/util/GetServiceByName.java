@@ -25,7 +25,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,7 +84,7 @@ public final class GetServiceByName {
   private void setFile(String s) throws IOException {
 
     File f = new File(s);
-    int size = Integer.valueOf(String.valueOf(f.length())).intValue();
+    int size = Integer.parseInt(String.valueOf(f.length()));
     DataInputStream di = new DataInputStream(new FileInputStream(f));
     byte[] b = new byte[size];
 

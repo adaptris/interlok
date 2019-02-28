@@ -19,11 +19,9 @@ import java.net.PasswordAuthentication;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.http.ResourceAuthenticator;
 
 public class ThreadLocalCredentials implements ResourceAuthenticator {
@@ -39,7 +37,8 @@ public class ThreadLocalCredentials implements ResourceAuthenticator {
    */
   private transient final ThreadLocal<PasswordAuthentication> threadAuthentication = new ThreadLocal<PasswordAuthentication>();
 
-  protected static transient Logger log = LoggerFactory.getLogger(ThreadLocalCredentials.class);
+  protected static final transient Logger log =
+      LoggerFactory.getLogger(ThreadLocalCredentials.class);
 
   private final String target;
   private final ResourceTargetMatcher matcher;

@@ -18,9 +18,6 @@ package com.adaptris.core.interceptor;
 
 import java.util.Properties;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * 
  * @since 3.0.4
@@ -28,7 +25,6 @@ import org.slf4j.LoggerFactory;
 public abstract class NotifyingInterceptor extends WorkflowInterceptorImpl {
 
   private transient InterceptorNotificationMBean notifier;
-  protected transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   void registerNotificationEmitter(InterceptorNotificationMBean notifier) {
     this.notifier = notifier;
