@@ -18,11 +18,12 @@ package com.adaptris.core.transform;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.cache.ExpiringMapCache;
+import com.adaptris.core.services.cache.CacheConnection;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.transform.validate.NotNullContentValidation;
@@ -30,6 +31,7 @@ import com.adaptris.transform.validate.ValidationStage;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 
+@SuppressWarnings("deprecation")
 public class XmlValidationServiceTest extends TransformServiceExample {
 
   public static final String KEY_WILL_VALIDATE_SCHEMA = "XmlValidationServiceTest.schemaUrl";
@@ -49,12 +51,6 @@ public class XmlValidationServiceTest extends TransformServiceExample {
   public void testSchemaValidator_SetUrl() {
     XmlSchemaValidator v = new XmlSchemaValidator();
     assertNull(v.getSchema());
-    try {
-      v.setSchema("");
-      fail();
-    }
-    catch (IllegalArgumentException expected) {
-    }
     v.setSchema("schema");
     assertEquals("schema", v.getSchema());
     v.setSchema(null);
@@ -65,12 +61,6 @@ public class XmlValidationServiceTest extends TransformServiceExample {
   public void testSchemaValidator_SetMetadataKey() {
     XmlSchemaValidator v = new XmlSchemaValidator();
     assertNull(v.getSchemaMetadataKey());
-    try {
-      v.setSchemaMetadataKey("");
-      fail();
-    }
-    catch (IllegalArgumentException expected) {
-    }
     v.setSchemaMetadataKey("schema");
     assertEquals("schema", v.getSchemaMetadataKey());
     v.setSchemaMetadataKey(null);
@@ -90,35 +80,13 @@ public class XmlValidationServiceTest extends TransformServiceExample {
     }
   }
 
-  public void testSchemaValidator_InitWithInvalidSchema() {
-    String schemaUrl = PROPERTIES.getProperty(KEY_INVALID_SCHEMA_URL);
-    // if (!ExternalResourcesHelper.isExternalServerAvailable(new URLString(schemaUrl))) {
-    // log.debug(schemaUrl + " not available, ignoring testInitWithInvalidSchema test");
-    // return;
-    // }
-    XmlSchemaValidator validator = new XmlSchemaValidator();
-    XmlValidationService service = new XmlValidationService(validator);
-    validator.setSchema(schemaUrl);
-
-    try {
-      LifecycleHelper.init(service);
-      fail();
-    }
-    catch (CoreException expected) {
-    }
-    finally {
-      LifecycleHelper.close(service);
-    }
-  }
-
   public void testSchemaValidator_ValidXmlConfiguredSchemaOnly() throws Exception {
     String schemaUrl = PROPERTIES.getProperty(KEY_WILL_VALIDATE_SCHEMA);
     // if (!ExternalResourcesHelper.isExternalServerAvailable(new URLString(schemaUrl))) {
     // log.debug(schemaUrl + " not available, ignoring testValidXmlConfiguredSchemaOnly test");
     // return;
     // }
-    XmlSchemaValidator validator = new XmlSchemaValidator();
-    validator.setSchema(schemaUrl);
+    XmlSchemaValidator validator = new XmlSchemaValidator(schemaUrl);
     AdaptrisMessage msg = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_INPUT_FILE));
     XmlValidationService service = new XmlValidationService(validator);
     execute(service, msg);
@@ -130,8 +98,7 @@ public class XmlValidationServiceTest extends TransformServiceExample {
     // log.debug(schemaUrl + " not available, ignoring testValidXmlConfiguredSchemaOnly test");
     // return;
     // }
-    XmlSchemaValidator validator = new XmlSchemaValidator();
-    validator.setSchema(schemaUrl);
+    XmlSchemaValidator validator = new XmlSchemaValidator(schemaUrl);
     AdaptrisMessage msg = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_INPUT_FILE));
     XmlValidationService service = new XmlValidationService(validator);
     try {
@@ -149,9 +116,7 @@ public class XmlValidationServiceTest extends TransformServiceExample {
     // log.debug(schemaUrl + " not available, ignoring testMetadataSchemaKeyDoesNotExist test");
     // return;
     // }
-    XmlSchemaValidator validator = new XmlSchemaValidator();
-    validator.setSchema(schemaUrl);
-    validator.setSchemaMetadataKey("schema-key");
+    XmlSchemaValidator validator = new XmlSchemaValidator(schemaUrl, "schema-key");
     AdaptrisMessage msg = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_INPUT_FILE));
     XmlValidationService service = new XmlValidationService(validator);
     try {
@@ -168,9 +133,7 @@ public class XmlValidationServiceTest extends TransformServiceExample {
     // return;
     // }
 
-    XmlSchemaValidator validator = new XmlSchemaValidator();
-    validator.setSchema(schemaUrl);
-    validator.setSchemaMetadataKey("schema-key");
+    XmlSchemaValidator validator = new XmlSchemaValidator(schemaUrl, "schema-key");
     AdaptrisMessage msg = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_INPUT_FILE));
     msg.addMetadata("schema-key", "");
     XmlValidationService service = new XmlValidationService(validator);
@@ -193,6 +156,27 @@ public class XmlValidationServiceTest extends TransformServiceExample {
     msg.addMetadata("schema-key", schemaUrl);
     XmlValidationService service = new XmlValidationService(validator);
     execute(service, msg);
+  }
+
+  public void testValidXmlSchema_Expression() throws Exception {
+    String schemaUrl = PROPERTIES.getProperty(KEY_WILL_VALIDATE_SCHEMA);
+    // if (!ExternalResourcesHelper.isExternalServerAvailable(new URLString(schemaUrl))) {
+    // log.debug(schemaUrl + " not available, ignoring testMetadataSchemaKeyIsEmpty test");
+    // return;
+    // }
+    XmlSchemaValidator validator = new XmlSchemaValidator("%message{schema-key}")
+        .withSchemaCache(new CacheConnection(new ExpiringMapCache().withMaxEntries(1)));
+    AdaptrisMessage msg = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_INPUT_FILE));
+    msg.addMetadata("schema-key", schemaUrl);
+    XmlValidationService service = new XmlValidationService(validator);
+    try {
+      LifecycleHelper.initAndStart(service);
+      service.doService(msg);
+      // Hits the cache the 2nd time round
+      service.doService(msg);
+    } finally {
+      LifecycleHelper.stopAndClose(service);
+    }
   }
 
   public void testValidXmlSchemaInMetadataAndConfiguredSchema() throws Exception {
@@ -311,7 +295,7 @@ public class XmlValidationServiceTest extends TransformServiceExample {
     KeyValuePair disableDoctypeDecl = new KeyValuePair("http://apache.org/xml/features/disallow-doctype-decl", "true");
     return new XmlValidationService(new XmlBasicValidator(new DocumentBuilderFactoryBuilder().withNamespaceAware(true).withFeatures(
         new KeyValuePairSet(Arrays.asList(disableExternalEntities, disableDoctypeDecl)))),
-        new XmlSchemaValidator("http://host/schema.xsd", "optional metadata key against which a schema can be stored"),
+        new XmlSchemaValidator("http://host/schema.xsd or %message{metadatKey}"),
         new XmlRuleValidator(vs));
   }
   
