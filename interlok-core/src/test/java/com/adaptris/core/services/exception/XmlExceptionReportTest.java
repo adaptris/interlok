@@ -31,12 +31,30 @@ public class XmlExceptionReportTest {
     assertNotNull(d);
     new XmlUtils().writeDocument(d, System.err);
   }
+  
+  @Test
+  public void testNoStacktraceNoWorkflow() throws Exception {
+    XmlExceptionReport reporter = new XmlExceptionReport();
+    Document d =
+        reporter.create(new Exception("testNoStacktraceNoWorkflow"), null, "ThrowExceptionService");
+    assertNotNull(d);
+    new XmlUtils().writeDocument(d, System.err);
+  }
 
   @Test
   public void testWithStacktrace() throws Exception {
     XmlReportWithStacktrace reporter = new XmlReportWithStacktrace();
     Document d =
         reporter.create(new Exception("testWithStacktrace"), "myWorkflow", "ThrowExceptionService");
+    assertNotNull(d);
+    new XmlUtils().writeDocument(d, System.err);
+  }
+  
+  @Test
+  public void testWithStacktraceNoWorkflow() throws Exception {
+    XmlReportWithStacktrace reporter = new XmlReportWithStacktrace();
+    Document d =
+        reporter.create(new Exception("testWithStacktraceNoWorkflow"), null, "ThrowExceptionService");
     assertNotNull(d);
     new XmlUtils().writeDocument(d, System.err);
   }
@@ -52,6 +70,19 @@ public class XmlExceptionReportTest {
     assertTrue(map.containsKey(ExceptionReport.EXCEPTION_MESSAGE));
     assertFalse(map.containsKey(ExceptionReport.STACKTRACE));
     assertEquals("myWorkflow", map.get(ExceptionReport.WORKFLOW));
+  }
+  
+  @Test
+  public void testExceptionReport_NoStacktrace_NoWorkflow() throws Exception {
+    ExceptionReport report =
+        new ExceptionReport(new Exception("testExceptionReport_NoStacktrace_NoWorkflow"), false)
+        .withWorkflow(null).withExceptionLocation("ThrowExceptionService");
+    Map<String, Object> map = report.asMap();
+    assertTrue(map.containsKey(ExceptionReport.EXCEPTION_LOCATION));
+    assertTrue(map.containsKey(ExceptionReport.WORKFLOW));
+    assertTrue(map.containsKey(ExceptionReport.EXCEPTION_MESSAGE));
+    assertFalse(map.containsKey(ExceptionReport.STACKTRACE));
+    assertEquals(null, map.get(ExceptionReport.WORKFLOW));
   }
 
   @Test
