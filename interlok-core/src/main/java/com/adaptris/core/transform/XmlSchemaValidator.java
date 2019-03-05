@@ -59,17 +59,23 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * Used with {@link XmlValidationService} to validate an XML message against a schema.
  * <p>
- * This validates an input XML document against a schema. After first use, it caches the schema for
- * re-use against the URL that was resolved as an expression or as
+ * This validates an input XML document against a schema. After first use, it caches the schema for re-use against the URL that was
+ * resolved as an expression or from static configuration. This means that until first use, no attempt is made to access the schema
+ * URL.
  * </p>
  * 
  * @config xml-schema-validator
  * 
  */
 @XStreamAlias("xml-schema-validator")
-@DisplayOrder(order = {"schema", "schemaCache"})
-@ComponentProfile(summary = "Validate an XML document against a schema",
-    recommended = {CacheConnection.class})
+@DisplayOrder(order =
+{
+    "schema", "schemaCache"
+})
+@ComponentProfile(summary = "Validate an XML document against a schema", recommended =
+{
+    CacheConnection.class
+})
 public class XmlSchemaValidator extends MessageValidatorImpl {
 
   private static final int DEFAULT_CACHE_SIZE = 16;
@@ -94,8 +100,8 @@ public class XmlSchemaValidator extends MessageValidatorImpl {
   private transient boolean warningLogged;
 
   public XmlSchemaValidator() {
-    setSchemaCache(new CacheConnection(new ExpiringMapCache()
-        .withExpiration(new TimeInterval(2L, TimeUnit.HOURS)).withMaxEntries(DEFAULT_CACHE_SIZE)));
+    setSchemaCache(new CacheConnection(
+        new ExpiringMapCache().withExpiration(new TimeInterval(2L, TimeUnit.HOURS)).withMaxEntries(DEFAULT_CACHE_SIZE)));
   }
 
   public XmlSchemaValidator(String schema) {
@@ -109,7 +115,6 @@ public class XmlSchemaValidator extends MessageValidatorImpl {
     setSchemaMetadataKey(metadataKey);
   }
 
-
   @Override
   public void validate(AdaptrisMessage msg) throws CoreException {
     try (InputStream in = msg.getInputStream()) {
@@ -118,9 +123,8 @@ public class XmlSchemaValidator extends MessageValidatorImpl {
       validator.validate(new SAXSource(new InputSource(in)));
     }
     catch (SAXParseException e) {
-      throw new ServiceException("Error validating message [" + e.getMessage() + "] line ["
-          + e.getLineNumber() + "] column ["
-          + e.getColumnNumber() + "]", e);
+      throw new ServiceException(String.format("Error validating message[%s] line [%s] column[%s]", e.getMessage(),
+          e.getLineNumber(), e.getColumnNumber()), e);
     }
     catch (Exception e) {
       throw ExceptionHelper.wrapServiceException("Failed to validate message", e);
@@ -174,7 +178,7 @@ public class XmlSchemaValidator extends MessageValidatorImpl {
     Schema schema = (Schema) cache.get(urlString);
     if (schema == null) {
       schema = schemaFactory.newSchema(toURL(urlString));
-      cache.put(urlString,  schema);
+      cache.put(urlString, schema);
     }
     return schema;
   }
@@ -183,7 +187,8 @@ public class XmlSchemaValidator extends MessageValidatorImpl {
   private URL toURL(String urlString) throws IOException, URISyntaxException {
     try {
       return new URL(urlString);
-    } catch (MalformedURLException e) {
+    }
+    catch (MalformedURLException e) {
       return FsHelper.createUrlFromString(urlString, true);
     }
   }
@@ -260,11 +265,10 @@ public class XmlSchemaValidator extends MessageValidatorImpl {
   /**
    * Configure the internal cache for schemas.
    * <p>
-   * While it is possible to configure a distributed cache (a-la ehcache or JSR107) the
-   * {@link javax.xml.validation.Schema} object isn't serializable, so you may run into issues. It
-   * will be best to stick with {@link ExpiringMapCache} if you want to enable caching. The default
-   * behaviour is to cache 16 schemas for a max of 2 hours (last-access) if you don't explicitly
-   * configure it differently.
+   * While it is possible to configure a distributed cache (a-la ehcache or JSR107) the {@link javax.xml.validation.Schema} object
+   * isn't serializable, so you may run into issues. It will be best to stick with {@link ExpiringMapCache} if you want to enable
+   * caching. The default behaviour is to cache 16 schemas for a max of 2 hours (last-access) if you don't explicitly configure it
+   * differently.
    * </p>
    * 
    * @param cache the cache, generally a {@link CacheConnection} or {@link SharedConnection}.
