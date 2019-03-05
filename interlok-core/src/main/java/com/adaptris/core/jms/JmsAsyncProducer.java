@@ -1,5 +1,7 @@
 package com.adaptris.core.jms;
 
+import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
+
 import javax.jms.CompletionListener;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -11,6 +13,9 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.StandardProcessingExceptionHandler;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -96,5 +101,14 @@ public class JmsAsyncProducer extends JmsProducer implements CompletionListener 
   public void setAsyncMessageErrorHandler(StandardProcessingExceptionHandler asyncMessageErrorHandler) {
     this.asyncMessageErrorHandler = asyncMessageErrorHandler;
   }
-  
+
+  @Override
+  public void init() throws CoreException {
+    try {
+      Args.notNull(getAsyncMessageErrorHandler(), "asyncMessageErrorHandler");
+      super.init();
+    } catch (IllegalArgumentException e) {
+      throw ExceptionHelper.wrapCoreException(e);
+    }
+  }
 }
