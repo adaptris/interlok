@@ -29,8 +29,10 @@ public interface ExceptionReportGenerator {
    * Create a Document from the exception.
    *
    * @param e the exception
+   * @param workflow the workflow where it happened
+   * @param location where in the workflow it happened.
    * @return a document ready to be merged.
    * @throws Exception on error.
    */
-  Document create(Exception e) throws Exception;
+  Document create(Exception e, String workflow, String location) throws Exception;
 }
