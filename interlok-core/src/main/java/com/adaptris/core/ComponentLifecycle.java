@@ -26,42 +26,48 @@ package com.adaptris.core;
  */
 public interface ComponentLifecycle {
   /**
+   * Initialises the component.
    * <p>
-   * Initialises the component. Component initialisation includes config
-   * verification, creation of connections etc.
+   * Component initialisation includes config verification, creation of connections etc.
    * </p>
    *
    * @throws CoreException wrapping any underlying <code>Exception</code>s
+   * @implSpec The default implementation is no-op
    */
-  void init() throws CoreException;
+  default void init() throws CoreException {}
 
   /**
+   * Starts the component.
    * <p>
-   * Starts the component. Once a component is started it should be ready to
-   * process messages. In the case of <code>AdaptrisMessageConsumer</code>s,
-   * calling start will begin message delivery.
+   * Once a component is started it should be ready to process messages. In the case of
+   * {@link AdaptrisMessageConsumer}, calling start will begin message delivery.
    * </p>
    *
    * @throws CoreException wrapping any underlying <code>Exception</code>s
+   * @implSpec The default implementation is no-op
    */
-  void start() throws CoreException;
+  default void start() throws CoreException {}
 
   /**
+   * Stop the component
    * <p>
-   * Stops the component. A stopped component is not expected to be ready to
-   * process messages. In the case of <code>AdaptrisMessageConsumer</code>s,
-   * calling stop will pause message delivery. Throwing a
-   * <code>RuntimeException</code> is considered to be a bug.
+   * A stopped component is not expected to be ready to process messages. In the case of
+   * {@link AdaptrisMessageConsumer}, calling stop will pause message delivery. Throwing a
+   * {@link RuntimeException} may cause unintended consequences
    * </p>
+   * 
+   * @implSpec The default implementation is no-op
    */
-  void stop();
+  default void stop() {}
 
   /**
+   * Closes the component.
    * <p>
-   * Closes the component. A closed component should release any connections it
-   * uses, etc. and clean up completely. Throwing a
-   * <code>RuntimeException</code> is considered to be a bug.
+   * A closed component should release any connections it uses, etc. and clean up completely.
+   * Throwing a {@link RuntimeException} may cause unintended consequences
    * </p>
+   * 
+   * @implSpec The default implementation is no-op
    */
-  void close();
+  default void close() {}
 }
