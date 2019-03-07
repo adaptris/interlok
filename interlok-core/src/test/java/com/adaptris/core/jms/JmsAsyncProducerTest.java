@@ -17,12 +17,14 @@ import org.mockito.MockitoAnnotations;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConfiguredProduceDestination;
+import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.NullConnection;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandardProcessingExceptionHandler;
 import com.adaptris.core.fs.FsProducer;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.KeyValuePair;
 
 public class JmsAsyncProducerTest extends JmsProducerExample {
@@ -114,6 +116,25 @@ public class JmsAsyncProducerTest extends JmsProducerExample {
     verify(mockMessage, times(0)).getJMSType();
     verify(mockMessage, times(0)).getJMSDeliveryMode();
     verify(mockMessage, times(0)).getJMSPriority();
+  }
+  
+  public void testInitWithoutExceptionHandlerFails() throws Exception {
+    producer.setAsyncMessageErrorHandler(null);
+    
+    try {
+      LifecycleHelper.init(producer);
+      fail("Should throw core exception without a configured exception handler.");
+    } catch (CoreException ex) {
+      //expected.
+    }
+  }
+  
+  public void testInitWithExceptionHandler() throws Exception {    
+    try {
+      LifecycleHelper.init(producer);
+    } catch (CoreException ex) {
+      fail("Shouldn't throw core exception with a configured exception handler.");
+    }
   }
   
   public void testExceptionHandler() throws Exception {

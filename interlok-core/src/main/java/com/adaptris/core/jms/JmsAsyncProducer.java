@@ -1,7 +1,5 @@
 package com.adaptris.core.jms;
 
-import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
-
 import javax.jms.CompletionListener;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -15,7 +13,6 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.StandardProcessingExceptionHandler;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -28,6 +25,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * <p>
  * Should the message have failed to be fully received or persisted, you can configure an async-message-error-handler.
+ * </p>
+ * <p>
+ * An important note about the async-message-error-handle, is that it will process the message in the state it was in just before the produce was attempted.
+ * If you have modified the message in the workflow before producing then attempting to "retry" this failed message through the same workflow may therefore be problematic.
  * </p>
  * <p>
  * One of the benefits to sending messages asynchronously simply comes down to processing speed.  During any producer, it is generally the time waiting for the JMS provider
