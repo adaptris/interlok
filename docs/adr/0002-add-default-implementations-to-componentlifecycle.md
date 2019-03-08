@@ -4,7 +4,7 @@ title: 0002-add-default-implementations-to-componentlifecycle
 ---
 # Add Default methods to ComponentLifecycle interface
 
-* Status: Draft
+* Status: Accepted
 * Deciders: Aaron McGrath, Lewin Chan
 * Date: 2019-03-07
 
