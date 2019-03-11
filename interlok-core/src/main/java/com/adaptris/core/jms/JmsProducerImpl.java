@@ -206,7 +206,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
   protected ProducerSession setupSession(AdaptrisMessage msg) throws JMSException {
     if (!msg.getUniqueId().equals(CURRENT_MESSAGE_ID) || producerSession == null) {
       producerSession = getSessionFactory().createProducerSession(this, msg);
-      getMessageTranslator().registerSession(producerSession.getSession());
+      configuredMessageTranslator().registerSession(producerSession.getSession());
       CURRENT_MESSAGE_ID = msg.getUniqueId();
     }
     return producerSession;
@@ -216,12 +216,12 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
     if (!(e instanceof JMSException))
       return;
     JMSException je = (JMSException) e;
-    log.warn("JMSException caught [{}], [{}]", StringUtils.defaultIfEmpty(prefix, ""), e.getMessage());
+    currentLogger().warn("JMSException caught [{}], [{}]", StringUtils.defaultIfEmpty(prefix, ""), e.getMessage());
     if (je.getLinkedException() != null) {
-      log.trace("Linked Exception available...");
-      log.trace(je.getLinkedException().getMessage(), je.getLinkedException());
+      currentLogger().trace("Linked Exception available...");
+      currentLogger().trace(je.getLinkedException().getMessage(), je.getLinkedException());
     } else {
-      log.trace("No Linked Exception available");
+      currentLogger().trace("No Linked Exception available");
     }
   }
 
@@ -241,7 +241,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
     } else {
       deliveryMode = DeliveryMode.getMode(defaultDeliveryMode);
     }
-    log.trace("deliveryMode overridden to be {}", deliveryMode);
+    currentLogger().trace("deliveryMode overridden to be {}", deliveryMode);
     return deliveryMode;
   }
 
@@ -259,23 +259,23 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
             break;
           }
         }
-        log.trace("Expiration Date from metadata is " + expiration);
+        currentLogger().trace("Expiration Date from metadata is " + expiration);
         ttl = expiration.getTime() - System.currentTimeMillis();
         if (ttl < 0) {
-          log.trace("TTL calculated as negative number, using configured ttl");
+          currentLogger().trace("TTL calculated as negative number, using configured ttl");
           ttl = NumberUtils.toLongDefaultIfNull(defaultTTL, 0);
         }
       }
     } catch (ParseException e) {
       JmsUtils.rethrowJMSException(e);
     }
-    log.trace("Time to live overridden to be " + ttl);
+    currentLogger().trace("Time to live overridden to be " + ttl);
     return ttl;
   }
 
 
   protected Message translate(AdaptrisMessage msg, Destination replyTo) throws JMSException {
-    Message result = getMessageTranslator().translate(msg);
+    Message result = configuredMessageTranslator().translate(msg);
     configuredCorrelationIdSource().processCorrelationId(msg, result);
     if (replyTo != null) { // OpenJMS is fussy about null here
       result.setJMSReplyTo(replyTo);
@@ -289,7 +289,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
     if (msg.headersContainsKey(JMS_PRIORITY)) {
       priority = Integer.parseInt(msg.getMetadataValue(JMS_PRIORITY));
     }
-    log.trace("Priority overridden to be {}", priority);
+    currentLogger().trace("Priority overridden to be {}", priority);
     return priority;
   }
 
@@ -478,7 +478,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
   // BUG#915
   protected void commit() throws JMSException {
     if (currentSession().getTransacted()) {
-      log.trace("Committing transacted session");
+      currentLogger().trace("Committing transacted session");
       currentSession().commit();
     }
   }
@@ -493,10 +493,10 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
     }
     if (tryRollback) {
       try {
-        log.trace("Attempting to rollback transacted session");
+        currentLogger().trace("Attempting to rollback transacted session");
         currentSession().rollback();
       } catch (JMSException f) {
-        log.trace("Error encountered rolling back transaction : {}", f.getMessage());
+        currentLogger().trace("Error encountered rolling back transaction : {}", f.getMessage());
       }
     }
   }

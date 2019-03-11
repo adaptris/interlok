@@ -20,7 +20,6 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
-import javax.jms.Session;
 import javax.jms.Topic;
 
 import com.adaptris.annotation.AdapterComponent;
@@ -45,11 +44,17 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * {@code myId}. If a subscription ID is not specified, then a durable subscriber is never created; specifying a subscription ID
  * automatically means a durable subscriber.
  * </p>
+ * <p>
+ * Also supported is the JMS 2.0 sharedConsumerId, should you wish to create a multiple load balancing consumers on a single topic endpoint;
+ * {@code jms:topic:MyTopicName?sharedConsumerId=12345}
+ * </p>
  * For instance you could have the following destinations:
  * <ul>
  * <li>jms:queue:MyQueueName</li>
  * <li>jms:topic:MyTopicName</li>
  * <li>jms:topic:MyTopicName?subscriptionId=mySubscriptionId</li>
+ * <li>jms:topic:MyTopicName?sharedConsumerId=mySharedConsumerId</li>
+ * <li>jms:topic:MyTopicName?subscriptionId=mySubscriptionId&sharedConsumerId=mySharedConsumerId</li>
  * </ul>
  * </p>
  * 
@@ -62,40 +67,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
     recommended = {JmsConnection.class})
 @DisplayOrder(order = {"destination", "acknowledgeMode", "messageTranslator"})
 public class JmsConsumer extends JmsConsumerImpl {
-
-  enum consumerCreator {
-    
-    standardConsumer {
-      @Override
-      MessageConsumer createConsumer(Session session, JmsDestination destination, String filterExpression) throws JMSException {
-        return session.createConsumer(destination.getDestination(), filterExpression);
-      }
-    },
-    
-    standardDurableConsumer {
-      @Override
-      MessageConsumer createConsumer(Session session, JmsDestination destination, String filterExpression) throws JMSException {
-        return session.createDurableSubscriber((Topic) destination.getDestination(), destination.subscriptionId(), filterExpression, false);
-      }
-    },
-    
-    sharedConsumer {
-      @Override
-      MessageConsumer createConsumer(Session session, JmsDestination destination, String filterExpression) throws JMSException {
-        return session.createSharedConsumer((Topic) destination.getDestination(), destination.sharedConsumerId());
-      }
-    },
-    
-    sharedDurableConsumer {
-      @Override
-      MessageConsumer createConsumer(Session session, JmsDestination destination, String filterExpression) throws JMSException {
-        return session.createSharedDurableConsumer((Topic) destination.getDestination(), destination.sharedConsumerId());
-      }
-    };
-    
-    abstract MessageConsumer createConsumer(Session session, JmsDestination destination, String filterExpression) throws JMSException;
-    
-  }
 
   public JmsConsumer() {
   }
@@ -123,21 +94,29 @@ public class JmsConsumer extends JmsConsumerImpl {
       if(!isEmpty(destination.subscriptionId())) {  // then durable, maybe shared
         if(!isEmpty(destination.sharedConsumerId()))  {
           log.trace("Creating new shared durable consumer.");
-          consumer = consumerCreator.sharedDurableConsumer.createConsumer(currentSession(), destination, filterExp);
+          consumer = ((ConsumerCreator) 
+              (session, dest, filterExpression) -> session.createSharedDurableConsumer((Topic) dest.getDestination(), filterExpression)
+          ).createConsumer(currentSession(), destination, filterExp);
         }
         else {
           log.trace("Creating new durable consumer.");
-          consumer = consumerCreator.standardDurableConsumer.createConsumer(currentSession(), destination, filterExp);
+          consumer = ((ConsumerCreator) 
+              (session, dest, filterExpression) -> session.createDurableSubscriber((Topic) dest.getDestination(), filterExpression)
+          ).createConsumer(currentSession(), destination, filterExp);
         }
       } else if (!isEmpty(destination.sharedConsumerId())) {
         log.trace("Creating new shared consumer.");
-        consumer = consumerCreator.sharedConsumer.createConsumer(currentSession(), destination, filterExp);
+        consumer = ((ConsumerCreator) 
+            (session, dest, filterExpression) -> session.createSharedConsumer((Topic) dest.getDestination(), filterExpression)
+        ).createConsumer(currentSession(), destination, filterExp);
       }
     }
 
     if(consumer == null) {
       log.trace("Creating new standard consumer.");
-      consumer = consumerCreator.standardConsumer.createConsumer(currentSession(), destination, filterExp);
+      consumer = ((ConsumerCreator) 
+          (session, dest, filterExpression) -> session.createConsumer(dest.getDestination(), filterExpression)
+      ).createConsumer(currentSession(), destination, filterExp);
     }
     
     return consumer;
