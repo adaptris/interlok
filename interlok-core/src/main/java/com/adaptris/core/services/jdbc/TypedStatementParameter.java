@@ -51,7 +51,7 @@ public abstract class TypedStatementParameter<T> extends StatementParameterImpl 
       throws SQLException {
     Object o = getQueryValue(msg);
     T typedParam = convert(o);
-    log.trace("Setting argument {} to [{}]", parameterIndex, typedParam);
+    logger().log(parameterIndex, typedParam);   
     statement.setObject(parameterIndex, typedParam);
   }
 
