@@ -17,12 +17,11 @@
 package com.adaptris.core.fs;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
 import java.io.File;
 import java.net.URL;
-
 import org.junit.Test;
 
 @SuppressWarnings("deprecation")
@@ -84,10 +83,22 @@ public class FsHelperTest extends FsHelper {
   }
 
   @Test
+  public void testToFile() throws Exception {
+    File f = FsHelper.toFile("file://localhost/./fred");
+    assertEquals("fred", f.getName());
+    assertEquals("." + File.separator + "fred", f.getPath());
+    File f2 = FsHelper.toFile("c:/home/fred");
+    assertEquals("fred", f2.getName());
+    assertNotNull(f2.getParentFile());
+  }
+
+
+  @Test
   public void testRelativeURL() throws Exception {
     File f = FsHelper.toFile("file://localhost/./fred");
     assertEquals("fred", f.getName());
     assertEquals("." + File.separator + "fred", f.getPath());
+    File f2 = FsHelper.toFile("c:/home/fred");
   }
 
   @Test
