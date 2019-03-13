@@ -16,8 +16,7 @@
 
 package com.adaptris.core.fs;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -28,10 +27,9 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.fs.FsException;
 import com.adaptris.fs.FsFilenameExistsException;
 import com.adaptris.fs.FsWorker;
@@ -47,7 +45,12 @@ public abstract class FsHelper {
    * 
    */
   public static File toFile(String s) throws IOException, URISyntaxException {
-    return createFileReference(createUrlFromString(s, true));
+    try {
+      return createFileReference(createUrlFromString(s, true));
+    } catch (IllegalArgumentException e) {
+      // Catch it from createUrlFromString(), since it's probably c:/file.
+      return new File(s);
+    }
   }
 
   /**
@@ -68,7 +71,7 @@ public abstract class FsHelper {
    * @throws UnsupportedEncodingException if the encoding was not supported.
    */
   public static File createFileReference(URL url, String charset) throws UnsupportedEncodingException {
-    String charSetToUse = charset == null ? System.getProperty("file.encoding") : charset;
+    String charSetToUse = StringUtils.defaultIfBlank(charset, System.getProperty("file.encoding"));
     String filename = URLDecoder.decode(url.getPath(), charSetToUse);
     // Cope with file://localhost/./config/blah -> /./config/blah is the result of getPath()
     // Munge that properly.
@@ -142,7 +145,7 @@ public abstract class FsHelper {
         return relativeConfig(configuredUri);
       }
       else {
-        throw new IllegalArgumentException("illegal destination [" + s + "]");
+        throw new IllegalArgumentException("Illegal URL [" + s + "]");
       }
     }
   }
