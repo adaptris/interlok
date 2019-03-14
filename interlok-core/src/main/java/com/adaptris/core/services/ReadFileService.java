@@ -25,6 +25,7 @@ import com.adaptris.core.ServiceImp;
 import com.adaptris.core.fs.FsHelper;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.fs.FsException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -58,7 +59,8 @@ public class ReadFileService extends ServiceImp {
   @Override
   public void doService(final AdaptrisMessage message) throws ServiceException {
     try {
-      final File file = isFile(checkReadable(FsHelper.toFile(message.resolve(getFilePath()))));
+      final File file = convertToFile(message.resolve(getFilePath()));
+      System.err.println("Attempting to read : " + file.getCanonicalPath());
       log.debug("Reading file : {}", file.getCanonicalPath());
       try (FileInputStream in = new FileInputStream(file);
           OutputStream out = message.getOutputStream()) {
@@ -69,6 +71,14 @@ public class ReadFileService extends ServiceImp {
       }
     } catch (Exception e) {
       throw ExceptionHelper.wrapServiceException(e);
+    }
+  }
+  
+  private static File convertToFile(String filepath) throws FsException {
+    try {
+      return isFile(checkReadable(FsHelper.toFile(filepath)));
+    } catch (Exception e) {
+      return isFile(checkReadable(new File(filepath)));
     }
   }
 
