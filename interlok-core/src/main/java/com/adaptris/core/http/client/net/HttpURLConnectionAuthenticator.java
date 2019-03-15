@@ -16,6 +16,7 @@
 package com.adaptris.core.http.client.net;
 
 import java.net.HttpURLConnection;
+
 import com.adaptris.core.http.auth.HttpAuthenticator;
 
 /**

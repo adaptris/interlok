@@ -17,7 +17,6 @@
 package com.adaptris.http.legacy;
 
 import com.adaptris.core.CoreException;
-import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.adaptris.core.security.ConfiguredPrivateKeyPasswordProvider;
 import com.adaptris.core.security.PrivateKeyPasswordProvider;
 import com.adaptris.http.HttpException;
@@ -28,6 +27,7 @@ import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.adaptris.security.keystore.KeystoreFactory;
 import com.adaptris.security.keystore.KeystoreLocation;
 import com.adaptris.security.password.Password;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * The consume connection for HTTPs.

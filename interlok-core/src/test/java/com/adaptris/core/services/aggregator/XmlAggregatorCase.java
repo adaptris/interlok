@@ -21,7 +21,6 @@ import java.util.Arrays;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.services.aggregator.XmlDocumentAggregator;
 import com.adaptris.core.services.splitter.SplitJoinServiceTest;
 import com.adaptris.core.stubs.DefectiveMessageFactory;
 import com.adaptris.util.text.xml.InsertNode;

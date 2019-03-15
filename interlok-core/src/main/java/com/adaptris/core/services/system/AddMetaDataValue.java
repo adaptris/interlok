@@ -22,8 +22,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import javax.validation.constraints.NotNull;
-import org.apache.commons.lang3.BooleanUtils;
+
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.BooleanUtils;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;

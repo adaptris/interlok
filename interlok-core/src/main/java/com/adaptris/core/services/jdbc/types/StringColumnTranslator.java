@@ -19,7 +19,9 @@ package com.adaptris.core.services.jdbc.types;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.SQLException;
+
 import org.apache.commons.io.IOUtils;
+
 import com.adaptris.jdbc.JdbcResultRow;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 

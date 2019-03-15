@@ -24,8 +24,6 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
-import junit.framework.TestCase;
-
 import com.adaptris.core.ftp.FtpConnection;
 import com.adaptris.core.http.jetty.HttpConnection;
 import com.adaptris.core.jdbc.MockJdbcConnection;
@@ -34,6 +32,8 @@ import com.adaptris.core.management.Constants;
 import com.adaptris.core.management.SystemPropertiesUtil;
 import com.adaptris.core.util.JndiHelper;
 import com.adaptris.naming.adapter.NamingContext;
+
+import junit.framework.TestCase;
 
 public class JndiContextFactoryTest extends TestCase {
 

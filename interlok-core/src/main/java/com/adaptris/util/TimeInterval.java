@@ -17,6 +17,7 @@
 package com.adaptris.util;
 
 import java.util.concurrent.TimeUnit;
+
 import com.adaptris.annotation.DisplayOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 

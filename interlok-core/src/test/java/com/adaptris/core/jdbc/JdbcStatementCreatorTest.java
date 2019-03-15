@@ -16,12 +16,12 @@
 
 package com.adaptris.core.jdbc;
 
-import junit.framework.TestCase;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.services.jdbc.ConfiguredSQLStatement;
 import com.adaptris.core.services.jdbc.MetadataSQLStatement;
+
+import junit.framework.TestCase;
 
 public class JdbcStatementCreatorTest extends TestCase {
   

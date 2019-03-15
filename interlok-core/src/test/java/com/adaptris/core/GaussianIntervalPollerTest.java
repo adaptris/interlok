@@ -1,10 +1,10 @@
 package com.adaptris.core;
 
+import java.util.concurrent.TimeUnit;
+
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.util.TimeInterval;
-
-import java.util.concurrent.TimeUnit;
 
 public class GaussianIntervalPollerTest extends BaseCase {
 

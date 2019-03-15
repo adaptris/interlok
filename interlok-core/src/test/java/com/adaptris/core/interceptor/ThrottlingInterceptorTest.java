@@ -19,12 +19,12 @@ package com.adaptris.core.interceptor;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
-import junit.framework.TestCase;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
+
+import junit.framework.TestCase;
 
 public class ThrottlingInterceptorTest extends TestCase {
 

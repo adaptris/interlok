@@ -19,6 +19,7 @@ package com.adaptris.core.services.splitter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;

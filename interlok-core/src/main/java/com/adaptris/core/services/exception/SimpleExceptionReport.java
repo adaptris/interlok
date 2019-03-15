@@ -17,12 +17,15 @@
 package com.adaptris.core.services.exception;
 
 import static com.adaptris.core.util.XmlHelper.createDocument;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;

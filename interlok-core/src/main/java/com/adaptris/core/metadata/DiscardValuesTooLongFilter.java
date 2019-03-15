@@ -15,6 +15,7 @@
 package com.adaptris.core.metadata;
 
 import java.util.stream.Collectors;
+
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.MetadataCollection;

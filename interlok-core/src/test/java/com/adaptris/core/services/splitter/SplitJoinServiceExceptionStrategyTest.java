@@ -16,23 +16,24 @@
 
 package com.adaptris.core.services.splitter;
 
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ServiceException;
-import com.adaptris.core.services.aggregator.MimeAggregator;
-import com.adaptris.core.services.exception.ConfiguredException;
-import com.adaptris.core.services.exception.ThrowExceptionService;
-import com.adaptris.util.TimeInterval;
+import static com.adaptris.core.ServiceCase.asCollection;
+import static com.adaptris.core.ServiceCase.execute;
+import static org.junit.Assert.fail;
+
+import java.util.concurrent.TimeUnit;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
 
-import java.util.concurrent.TimeUnit;
-
-import static com.adaptris.core.ServiceCase.asCollection;
-import static com.adaptris.core.ServiceCase.execute;
-import static org.junit.Assert.fail;
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.ServiceException;
+import com.adaptris.core.services.aggregator.MimeAggregator;
+import com.adaptris.core.services.exception.ConfiguredException;
+import com.adaptris.core.services.exception.ThrowExceptionService;
+import com.adaptris.util.TimeInterval;
 
 @SuppressWarnings("deprecation")
 public class SplitJoinServiceExceptionStrategyTest {

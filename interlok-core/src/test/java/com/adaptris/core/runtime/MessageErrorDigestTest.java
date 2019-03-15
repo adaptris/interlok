@@ -19,10 +19,10 @@ package com.adaptris.core.runtime;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.DefaultMessageFactory;
+
+import junit.framework.TestCase;
 
 public class MessageErrorDigestTest extends TestCase {
 

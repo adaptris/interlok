@@ -1,7 +1,9 @@
 package com.adaptris.core.cache;
 
 import java.io.Serializable;
+
 import org.junit.Test;
+
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.LifecycleHelper;
 

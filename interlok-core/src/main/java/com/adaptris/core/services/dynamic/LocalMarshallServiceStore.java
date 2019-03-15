@@ -16,7 +16,9 @@
 
 package com.adaptris.core.services.dynamic;
 
-import static com.adaptris.fs.FsWorker.*;
+import static com.adaptris.fs.FsWorker.checkReadable;
+import static com.adaptris.fs.FsWorker.isDirectory;
+import static com.adaptris.fs.FsWorker.isFile;
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 
 import java.io.File;
@@ -29,8 +31,6 @@ import com.adaptris.core.Service;
 import com.adaptris.core.fs.FsHelper;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.fs.FsException;
-import com.adaptris.fs.FsWorker;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**

@@ -19,9 +19,11 @@ import java.net.PasswordAuthentication;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.adaptris.core.http.ResourceAuthenticator;
 
 public class ThreadLocalCredentials implements ResourceAuthenticator {

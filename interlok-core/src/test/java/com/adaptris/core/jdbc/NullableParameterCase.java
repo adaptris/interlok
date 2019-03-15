@@ -16,10 +16,10 @@
 
 package com.adaptris.core.jdbc;
 
-import junit.framework.TestCase;
-
 import com.adaptris.util.text.NullPassThroughConverter;
 import com.adaptris.util.text.NullsNotSupportedConverter;
+
+import junit.framework.TestCase;
 
 public abstract class NullableParameterCase extends TestCase {
 

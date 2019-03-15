@@ -17,10 +17,10 @@
 package com.adaptris.http.legacy;
 
 import com.adaptris.core.CoreException;
-import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.adaptris.http.HttpException;
 import com.adaptris.http.HttpListener;
 import com.adaptris.http.Listener;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * The Consume Connection for vanilla Http.

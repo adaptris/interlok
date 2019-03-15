@@ -22,14 +22,14 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.util.Properties;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.adaptris.security.keystore.KeystoreFactory;
 import com.adaptris.security.keystore.KeystoreLocation;
+
+import junit.framework.TestCase;
 
 /**
  * Test Keystore Functionality.

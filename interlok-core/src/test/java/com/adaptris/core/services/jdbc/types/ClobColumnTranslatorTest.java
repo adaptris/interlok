@@ -18,6 +18,7 @@ package com.adaptris.core.services.jdbc.types;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
@@ -27,11 +28,14 @@ import java.io.Writer;
 import java.sql.Clob;
 import java.sql.SQLException;
 import java.sql.Types;
+
 import javax.sql.rowset.serial.SerialClob;
+
 import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.commons.io.output.WriterOutputStream;
 import org.junit.Before;
 import org.junit.Test;
+
 import com.adaptris.jdbc.JdbcResultRow;
 
 @SuppressWarnings("deprecation")

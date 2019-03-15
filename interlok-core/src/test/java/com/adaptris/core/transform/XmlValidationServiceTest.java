@@ -18,6 +18,7 @@ package com.adaptris.core.transform;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;

@@ -1,13 +1,15 @@
 package com.adaptris.core.services.metadata;
 
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisMessageFactory;
-import org.junit.Test;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.text.ParseException;
 import java.util.Date;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
+
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.AdaptrisMessageFactory;
 
 /**
  * @author mwarman

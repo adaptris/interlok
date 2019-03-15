@@ -23,8 +23,10 @@ import java.io.ObjectOutput;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Properties;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**

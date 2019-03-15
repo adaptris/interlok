@@ -18,15 +18,15 @@ package com.adaptris.security;
 
 import java.util.Properties;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.adaptris.security.keystore.ConfiguredUrl;
 import com.adaptris.security.util.Constants;
+
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
 /**
  * Test Inline Keystore Functionality wrapping a single KEYSTORE_X509

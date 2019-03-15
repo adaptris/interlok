@@ -17,7 +17,9 @@
 package com.adaptris.core.mail;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
+
 import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;

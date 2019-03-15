@@ -27,8 +27,8 @@ import org.junit.Test;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
-import com.adaptris.core.http.server.RawStatusProvider;
 import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
+import com.adaptris.core.http.server.RawStatusProvider;
 
 public class RawStatusProviderTest {
 

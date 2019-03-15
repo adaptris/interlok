@@ -3,6 +3,7 @@ package com.adaptris.core.services.jdbc.types;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
 import com.adaptris.jdbc.JdbcResultRow;
 import com.adaptris.jdbc.ParameterValueType;
 

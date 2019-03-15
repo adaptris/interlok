@@ -18,7 +18,9 @@ package com.adaptris.core;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.validation.Valid;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.util.LifecycleHelper;
