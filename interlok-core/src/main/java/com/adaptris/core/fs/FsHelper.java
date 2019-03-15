@@ -142,7 +142,7 @@ public abstract class FsHelper {
     }
     else {
       if (scheme == null) {
-        return relativeConfig(configuredUri);
+        return new URL("file:///" + configuredUri.toString());
       }
       else {
         throw new IllegalArgumentException("Illegal URL [" + s + "]");
@@ -197,21 +197,22 @@ public abstract class FsHelper {
     return newFile;
   }
 
-  /**
-   * 
-   * @param uri the relative <code>URI</code> to process
-   * @return a <code>file:/// URL</code> based on the current working directory (obtained by calling
-   *         <code>System.getProperty("user.dir")</code>) plus the passed relative <code>uri</code>
-   * @throws Exception wrapping any underlying <code>Exception</code>
-   */
-  private static URL relativeConfig(URI uri) throws IOException {
-    String pwd = System.getProperty("user.dir");
-
-    String path = pwd + "/" + uri; // ok even if uri starts with a /
-    URL result = new URL("file:///" + path);
-
-    return result;
-  }
+  // /**
+  // *
+  // * @param uri the relative <code>URI</code> to process
+  // * @return a <code>file:/// URL</code> based on the current working directory (obtained by
+  // calling
+  // * <code>System.getProperty("user.dir")</code>) plus the passed relative <code>uri</code>
+  // * @throws Exception wrapping any underlying <code>Exception</code>
+  // */
+  // private static URL relativeConfig(URI uri) throws IOException {
+  // String pwd = System.getProperty("user.dir");
+  //
+  // String path = pwd + "/" + uri; // ok even if uri starts with a /
+  // URL result = new URL("file:///" + path);
+  //
+  // return result;
+  // }
 
   private static String backslashToSlash(String url) {
     if (!isEmpty(url)) {
