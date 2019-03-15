@@ -18,6 +18,7 @@ package com.adaptris.core.services.jdbc;
 import javax.validation.constraints.NotNull;
 import javax.xml.namespace.NamespaceContext;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.w3c.dom.Node;
 
 import com.adaptris.annotation.AdvancedConfig;
@@ -81,6 +82,9 @@ public abstract class StatementParameterImpl extends NamedStatementParameter {
   @InputFieldDefault(value = "false")
   @AdvancedConfig
   private Boolean convertNull;
+  @AdvancedConfig
+  @InputFieldDefault(value = "log everything")
+  private ParameterLogger parameterLogger;
 
   public StatementParameterImpl() {
     
@@ -160,7 +164,23 @@ public abstract class StatementParameterImpl extends NamedStatementParameter {
     return queryString;
   }
 
+  public ParameterLogger getParameterLogger() {
+    return parameterLogger;
+  }
 
+  /** Set the logger for non binary parameters.
+   * 
+   * @param parameterLogger
+   */
+  public void setParameterLogger(ParameterLogger parameterLogger) {
+    this.parameterLogger = parameterLogger;
+  }
+  
+  protected ParameterLogger logger() {
+    return ObjectUtils.defaultIfNull(getParameterLogger(), (i, o) -> {
+      log.trace("Setting argument {} to [{}]", i, o);
+    });
+  }
 
   public Object getQueryValue(AdaptrisMessage msg) {
     return getHandler(getQueryType()).getValue(msg, getQueryString());

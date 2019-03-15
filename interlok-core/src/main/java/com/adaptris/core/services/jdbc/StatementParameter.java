@@ -65,8 +65,9 @@ public class StatementParameter extends StatementParameterImpl {
 
   @Override
   public void apply(int parameterIndex, PreparedStatement statement, AdaptrisMessage msg) throws SQLException, ServiceException {
-    log.trace("Setting argument {} to [{}]", parameterIndex, getQueryValue(msg));
-    statement.setObject(parameterIndex, this.convertToQueryClass(getQueryValue(msg)));
+    Object queryValue = getQueryValue(msg);
+    logger().log(parameterIndex, queryValue);
+    statement.setObject(parameterIndex, this.convertToQueryClass(queryValue));
   }
 
   /**
