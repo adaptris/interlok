@@ -14,7 +14,8 @@ before_script:
   - echo "default.jdbc.storedproc.url.params=?useSSL=false" >> interlok-core/build.properties
 
 install: ./gradlew --version
-script: ./gradlew --no-daemon -PverboseTests=true test
+
+script: ./gradlew --no-daemon -PverboseTests=true test jacocoTestReport
 
 addons:
   apt:
