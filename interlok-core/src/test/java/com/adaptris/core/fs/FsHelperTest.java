@@ -106,6 +106,18 @@ public class FsHelperTest extends FsHelper {
     // should be "/"
     assertNotNull(f3.getParentFile().getParentFile());
     assertNull(f3.getParentFile().getParentFile().getParentFile());
+
+    File f4 = FsHelper.toFile("build.gradle");
+    assertEquals("build.gradle", f4.getName());
+    // will be "/"
+    assertNotNull(f4.getParentFile());
+    assertNull(f4.getParentFile().getParentFile());
+
+    File f5 = FsHelper.toFile("./build.gradle");
+    assertEquals("build.gradle", f4.getName());
+    // will be "."
+    assertNotNull(f4.getParentFile());
+    assertNull(f4.getParentFile().getParentFile());
   }
 
 
