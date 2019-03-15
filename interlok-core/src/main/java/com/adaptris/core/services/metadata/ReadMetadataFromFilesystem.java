@@ -17,15 +17,12 @@
 package com.adaptris.core.services.metadata;
 
 import static com.adaptris.core.util.MetadataHelper.convertFromProperties;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Properties;
 import java.util.Set;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.BooleanUtils;
@@ -117,14 +114,13 @@ public class ReadMetadataFromFilesystem extends ServiceImp {
     String filenameToRead = "[could not create filename]";
     try {
       String baseUrl = getDestination().getDestination(msg);
-      URL url = FsHelper.createUrlFromString(baseUrl, true);
-      File parentFile = FsHelper.createFileReference(url);
-      File fileToRead = new File(FsHelper.createFileReference(url), filenameCreator().createName(msg));
+      File parentFile = FsHelper.toFile(baseUrl);
+      File fileToRead = new File(parentFile, filenameCreator().createName(msg));
       if (parentFile.isFile()) {
         fileToRead = parentFile;
       }
       filenameToRead = fileToRead.getCanonicalPath();
-      log.trace("Reading " + filenameToRead);
+      log.trace("Reading {}", filenameToRead);
       try (InputStream in = new FileInputStream(fileToRead)) {
         Set<MetadataElement> set = getStyle(getInputStyle()).load(in);
         for (MetadataElement e : set) {

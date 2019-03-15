@@ -20,11 +20,9 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
-
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.commons.lang3.BooleanUtils;
 import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -37,7 +35,6 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.NullConnection;
 import com.adaptris.core.util.Args;
 import com.adaptris.fs.FsException;
-import com.adaptris.fs.FsFilenameExistsException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -153,16 +150,7 @@ public class FsConsumer extends FsConsumerImpl {
   }
 
   protected File renameFile(File file) throws FsException {
-    File newFile = new File(file.getAbsolutePath() + wipSuffix);
-
-    try {
-      fsWorker.rename(file, newFile);
-    }
-    catch (FsFilenameExistsException e) {
-      newFile = new File(file.getParentFile(), System.currentTimeMillis() + "." + file.getName() + wipSuffix);
-      fsWorker.rename(file, newFile);
-    }
-    return newFile;
+    return FsHelper.renameFile(file, wipSuffix, fsWorker);
   }
 
   /**
