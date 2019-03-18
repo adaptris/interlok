@@ -25,14 +25,17 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+
 import org.apache.commons.lang3.Range;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.PooledObjectFactory;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.commons.pool2.impl.GenericObjectPool;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -399,7 +402,7 @@ public class PoolingWorkflow extends WorkflowImp {
     pool.setMaxIdle(maxIdle());
     pool.setMaxWaitMillis(-1L);
     pool.setBlockWhenExhausted(true);
-    pool.setMinEvictableIdleTimeMillis(lifetime);
+    pool.setSoftMinEvictableIdleTimeMillis(lifetime);
     pool.setTimeBetweenEvictionRunsMillis(
         lifetime + ThreadLocalRandom.current().nextLong(lifetime));
     return pool;
