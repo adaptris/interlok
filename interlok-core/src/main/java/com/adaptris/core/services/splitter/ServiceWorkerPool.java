@@ -24,6 +24,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
+
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.PooledObjectFactory;
@@ -31,6 +32,7 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -76,7 +78,7 @@ public class ServiceWorkerPool {
     pool.setMaxIdle(maxThreads);
     pool.setMaxWaitMillis(-1L);
     pool.setBlockWhenExhausted(true);
-    pool.setMinEvictableIdleTimeMillis(EVICT_RUN);
+    pool.setSoftMinEvictableIdleTimeMillis(EVICT_RUN);
     pool.setTimeBetweenEvictionRunsMillis(
         EVICT_RUN + ThreadLocalRandom.current().nextLong(EVICT_RUN));
     return pool;
