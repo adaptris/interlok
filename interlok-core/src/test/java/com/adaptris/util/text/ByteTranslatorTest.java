@@ -16,9 +16,9 @@
 
 package com.adaptris.util.text;
 
-import junit.framework.TestCase;
-
 import com.adaptris.util.GuidGenerator;
+
+import junit.framework.TestCase;
 
 public class ByteTranslatorTest extends TestCase {
 

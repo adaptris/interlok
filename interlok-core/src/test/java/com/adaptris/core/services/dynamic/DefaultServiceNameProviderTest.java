@@ -16,9 +16,9 @@
 
 package com.adaptris.core.services.dynamic;
 
-import junit.framework.TestCase;
-
 import com.adaptris.core.TradingRelationship;
+
+import junit.framework.TestCase;
 
 public class DefaultServiceNameProviderTest extends TestCase {
 

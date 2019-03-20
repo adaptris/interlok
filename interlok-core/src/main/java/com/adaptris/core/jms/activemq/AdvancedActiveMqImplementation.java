@@ -18,7 +18,9 @@ package com.adaptris.core.jms.activemq;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
 import org.apache.activemq.ActiveMQConnectionFactory;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;

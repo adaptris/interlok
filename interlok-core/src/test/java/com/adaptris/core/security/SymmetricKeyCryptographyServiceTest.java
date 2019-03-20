@@ -1,18 +1,20 @@
 package com.adaptris.core.security;
 
+import java.security.SecureRandom;
+import java.util.Arrays;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ServiceCase;
 import com.adaptris.core.common.ConstantDataInputParameter;
 import com.adaptris.util.text.Conversion;
-import org.junit.Before;
-import org.junit.Test;
-
-import javax.crypto.Cipher;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
-import java.security.SecureRandom;
-import java.util.Arrays;
 
 /**
  * @author mwarman

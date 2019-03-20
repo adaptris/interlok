@@ -18,10 +18,10 @@ package com.adaptris.core.services.jmx;
 
 import java.util.Date;
 
-import junit.framework.TestCase;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
+
+import junit.framework.TestCase;
 
 public class ObjectMetadataValueTranslatorTest extends TestCase {
   

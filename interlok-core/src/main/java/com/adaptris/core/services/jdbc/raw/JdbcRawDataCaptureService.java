@@ -18,6 +18,7 @@ package com.adaptris.core.services.jdbc.raw;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;

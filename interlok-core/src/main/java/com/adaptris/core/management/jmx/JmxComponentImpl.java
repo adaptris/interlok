@@ -17,6 +17,7 @@
 package com.adaptris.core.management.jmx;
 
 import java.util.Properties;
+
 import com.adaptris.core.management.MgmtComponentImpl;
 
 abstract class JmxComponentImpl extends MgmtComponentImpl {

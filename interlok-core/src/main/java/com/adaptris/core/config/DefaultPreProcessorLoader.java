@@ -17,10 +17,13 @@
 package com.adaptris.core.config;
 import static com.adaptris.core.util.PropertyHelper.getPropertyIgnoringCase;
 import static org.apache.commons.lang.StringUtils.isEmpty;
+
 import java.lang.reflect.Constructor;
 import java.util.Properties;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.adaptris.core.CoreException;
 import com.adaptris.core.management.AdapterConfigManager;
 import com.adaptris.core.management.BootstrapProperties;

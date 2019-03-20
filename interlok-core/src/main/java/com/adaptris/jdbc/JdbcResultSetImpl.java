@@ -21,7 +21,9 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+
 import org.apache.commons.lang.StringUtils;
+
 import com.adaptris.core.util.JdbcUtil;
 
 public class JdbcResultSetImpl implements JdbcResultSet {

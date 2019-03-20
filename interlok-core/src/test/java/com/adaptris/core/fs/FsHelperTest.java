@@ -23,12 +23,15 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.net.URL;
+
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.oro.io.AwkFilenameFilter;
 import org.junit.Test;
+
 import com.adaptris.core.stubs.TempFileUtils;
 import com.adaptris.fs.FsWorker;
 import com.adaptris.fs.StandardWorker;

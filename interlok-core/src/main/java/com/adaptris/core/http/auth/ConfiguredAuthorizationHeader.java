@@ -19,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.Removal;
-import com.adaptris.core.ftp.StandardSftpConnection;
 import com.adaptris.core.http.HttpConstants;
 import com.adaptris.core.util.LoggingHelper;
 

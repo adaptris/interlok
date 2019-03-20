@@ -21,10 +21,6 @@ import java.io.InputStream;
 import java.net.UnknownHostException;
 import java.util.Calendar;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -32,6 +28,10 @@ import com.adaptris.security.certificate.CertificateHandler;
 import com.adaptris.security.certificate.CertificateHandlerFactory;
 import com.adaptris.security.exc.CertException;
 import com.adaptris.security.keystore.KeystoreFactory;
+
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
 /**
  * Test Certificate Handling.

@@ -19,9 +19,9 @@ package com.adaptris.http.test;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
 import com.adaptris.http.HttpRequest;
+
+import junit.framework.TestCase;
 
 public class TestHttpRequest extends TestCase {
 

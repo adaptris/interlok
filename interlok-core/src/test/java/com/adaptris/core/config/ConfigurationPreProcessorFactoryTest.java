@@ -18,12 +18,16 @@ package com.adaptris.core.config;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
+
 import java.util.Properties;
+
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import com.adaptris.core.config.DefaultPreProcessorLoader.PropertyLoader;
 import com.adaptris.core.stubs.JunitBootstrapProperties;
 import com.adaptris.util.KeyValuePairSet;
+
 import junit.framework.TestCase;
 
 public class ConfigurationPreProcessorFactoryTest extends TestCase {

@@ -15,8 +15,6 @@
 */
 package com.adaptris.core.fs;
 
-import static com.adaptris.core.runtime.AdapterComponentMBean.JMX_FS_MONITOR_TYPE;
-
 import com.adaptris.core.runtime.ConsumerMonitorImpl;
 import com.adaptris.core.runtime.WorkflowManager;
 

@@ -18,8 +18,10 @@ package com.adaptris.core.fs;
 
 import java.io.FileFilter;
 import java.util.Date;
+
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
+
 import org.apache.commons.lang.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -19,9 +19,12 @@ package com.adaptris.core.services.metadata;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
 import org.hibernate.validator.constraints.NotBlank;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.AutoPopulated;

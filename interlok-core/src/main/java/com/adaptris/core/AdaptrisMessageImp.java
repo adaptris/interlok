@@ -18,6 +18,7 @@ package com.adaptris.core;
 
 import static com.adaptris.core.metadata.MetadataResolver.resolveKey;
 import static org.apache.commons.lang.StringUtils.isEmpty;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -32,11 +33,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.adaptris.core.util.Args;
 import com.adaptris.util.IdGenerator;
 import com.adaptris.util.stream.StreamUtil;

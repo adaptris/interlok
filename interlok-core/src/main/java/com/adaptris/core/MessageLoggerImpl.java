@@ -17,6 +17,7 @@ package com.adaptris.core;
 
 import java.util.Collection;
 import java.util.Set;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 

@@ -2,7 +2,9 @@ package com.adaptris.core.jdbc;
 
 import java.io.PrintWriter;
 import java.util.concurrent.TimeUnit;
+
 import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.CoreException;

@@ -19,6 +19,7 @@ package com.adaptris.core.services.jdbc.types;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.SQLException;
+
 import com.adaptris.jdbc.JdbcResultRow;
 
 /**

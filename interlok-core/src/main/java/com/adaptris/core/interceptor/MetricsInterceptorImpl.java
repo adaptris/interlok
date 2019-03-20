@@ -17,6 +17,7 @@
 package com.adaptris.core.interceptor;
 
 import java.util.concurrent.TimeUnit;
+
 import com.adaptris.core.CoreException;
 import com.adaptris.util.NumberUtils;
 import com.adaptris.util.TimeInterval;

@@ -17,6 +17,7 @@
 package com.adaptris.core.services;
 
 import org.junit.Test;
+
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.GeneralServiceExample;
 import com.adaptris.core.services.LoggingServiceImpl.LoggingLevel;

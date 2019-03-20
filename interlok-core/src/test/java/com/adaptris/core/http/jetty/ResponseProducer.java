@@ -40,7 +40,6 @@ import com.adaptris.core.NullConnection;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ProduceOnlyProducerImp;
-import com.adaptris.core.ftp.StandardSftpConnection;
 import com.adaptris.core.http.server.HttpStatusBuilder;
 import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.http.server.HttpStatusProvider.Status;

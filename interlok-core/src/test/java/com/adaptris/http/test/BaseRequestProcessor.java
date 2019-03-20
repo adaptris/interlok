@@ -20,13 +20,8 @@ package com.adaptris.http.test;
 
 import java.util.Properties;
 
-
-
 import org.apache.commons.logging.Log;
-
 import org.apache.commons.logging.LogFactory;
-
-
 
 import com.adaptris.http.RequestProcessor;
 

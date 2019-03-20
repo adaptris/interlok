@@ -1,8 +1,11 @@
 package com.adaptris.core.services.jdbc.types;
 
 import static org.junit.Assert.assertEquals;
+
 import java.sql.Types;
+
 import org.junit.Test;
+
 import com.adaptris.jdbc.JdbcResultRow;
 
 public class ColumnHelperTest extends ColumnHelper {

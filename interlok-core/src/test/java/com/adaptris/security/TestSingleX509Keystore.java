@@ -19,10 +19,10 @@ package com.adaptris.security;
 import java.security.PrivateKey;
 import java.security.cert.Certificate;
 
-import junit.framework.TestCase;
-
 import com.adaptris.security.keystore.KeystoreFactory;
 import com.adaptris.security.keystore.KeystoreProxy;
+
+import junit.framework.TestCase;
 
 /**
  * Test Keystore Functionality wrapping a single KEYSTORE_X509 certificate

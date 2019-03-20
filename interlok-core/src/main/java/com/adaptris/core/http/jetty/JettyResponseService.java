@@ -16,10 +16,13 @@
 package com.adaptris.core.http.jetty;
 
 import java.net.HttpURLConnection;
+
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
 import org.hibernate.validator.constraints.NotBlank;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;

@@ -15,11 +15,14 @@
 package com.adaptris.core.services;
 
 import static org.junit.Assert.assertArrayEquals;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.file.Files;
+
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;

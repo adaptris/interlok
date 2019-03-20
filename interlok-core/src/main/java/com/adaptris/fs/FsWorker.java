@@ -16,13 +16,9 @@
 
 package com.adaptris.fs;
 
-import static com.adaptris.fs.FsWorker.checkWriteable;
-import static com.adaptris.fs.FsWorker.isDirectory;
-
 import java.io.File;
 import java.io.FileFilter;
 
-import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
 
 /**

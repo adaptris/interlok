@@ -16,10 +16,10 @@
 
 package com.adaptris.security;
 
-import junit.framework.TestCase;
-
 import com.adaptris.security.keystore.InlineKeystore;
 import com.adaptris.security.util.Constants;
+
+import junit.framework.TestCase;
 
 /**
  * Test Inline Keystore Functionality wrapping a single KEYSTORE_X509

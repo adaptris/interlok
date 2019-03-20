@@ -19,7 +19,9 @@ package com.adaptris.core.services.jdbc;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.List;
+
 import org.w3c.dom.Document;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.services.jdbc.StyledResultTranslatorImp.ColumnStyle;
 import com.adaptris.core.services.jdbc.types.IntegerColumnTranslator;

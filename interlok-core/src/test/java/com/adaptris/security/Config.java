@@ -18,10 +18,8 @@ package com.adaptris.security;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.PrivateKey;
 import java.security.cert.Certificate;
-import java.util.Iterator;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;

@@ -17,12 +17,15 @@
 package com.adaptris.core.services.jdbc;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Iterator;
+
 import javax.validation.Valid;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.jdbc.types.ColumnWriter;

@@ -2,6 +2,7 @@ package com.adaptris.core.services.exception;
 
 import java.util.Map;
 import java.util.TreeMap;
+
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**

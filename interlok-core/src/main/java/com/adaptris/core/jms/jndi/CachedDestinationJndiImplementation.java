@@ -19,9 +19,11 @@ package com.adaptris.core.jms.jndi;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
 import javax.jms.JMSException;
 import javax.jms.Queue;
 import javax.jms.Topic;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.jms.JmsActorConfig;
