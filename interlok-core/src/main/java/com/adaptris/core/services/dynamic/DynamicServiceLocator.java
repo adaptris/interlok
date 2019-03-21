@@ -17,18 +17,16 @@
 package com.adaptris.core.services.dynamic;
 
 import static com.adaptris.core.util.LoggingHelper.friendlyName;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -46,17 +44,22 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * Implementation of {@link com.adaptris.core.Service} which dynamically obtains and applies a {@link com.adaptris.core.Service} to an {@link com.adaptris.core.AdaptrisMessage} based on
- * its {@link TradingRelationship}.
+ * Implementation of {@link com.adaptris.core.Service} which dynamically obtains and applies a
+ * {@link com.adaptris.core.Service} to an {@link com.adaptris.core.AdaptrisMessage} based on its
+ * {@link TradingRelationship}.
  * </p>
  * 
  * @config dynamic-service-locator
+ * @deprecated since 3.8.4 use {@link DynamicServiceExecutor} with a URL based
+ *             {@link ServiceExtractor} instead.
  * 
  */
+@Deprecated
 @XStreamAlias("dynamic-service-locator")
 @AdapterComponent
 @ComponentProfile(summary = "Locate and execute a service definition based on attributes of the message", tag = "service,dynamic")
 @DisplayOrder(order = {"treatNotFoundAsError"})
+@Removal(version = "3.11.0")
 public class DynamicServiceLocator extends ServiceImp implements EventHandlerAware {
 
   @NotNull

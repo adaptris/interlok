@@ -17,10 +17,10 @@
 package com.adaptris.core.services.dynamic;
 
 import java.io.File;
-
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceList;
 
+@SuppressWarnings("deprecation")
 public class RemoteCastorserviceStoreTest extends MarshallServiceStoreCase {
 
   public RemoteCastorserviceStoreTest(String s) {

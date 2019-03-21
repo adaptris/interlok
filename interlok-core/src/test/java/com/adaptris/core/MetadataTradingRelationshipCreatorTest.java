@@ -16,6 +16,7 @@
 
 package com.adaptris.core;
 
+@SuppressWarnings("deprecation")
 public class MetadataTradingRelationshipCreatorTest extends BaseCase {
   private static final String TYPE = "type";
   private static final String DEST = "dest";

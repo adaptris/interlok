@@ -17,17 +17,15 @@
 package com.adaptris.core.services.dynamic;
 
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
 import java.net.URLConnection;
-
 import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.Service;
 import com.adaptris.core.util.Args;
@@ -36,13 +34,18 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * Implementation of <code>ServiceStore</code> which uses a remote URL to store marshalled <code>Service</code>s.
+ * Implementation of <code>ServiceStore</code> which uses a remote URL to store marshalled
+ * <code>Service</code>s.
  * </p>
  * 
  * @config remote-marshall-service-store
+ * @deprecated since 3.8.4 use {@link DynamicServiceExecutor} with a URL based
+ *             {@link ServiceExtractor} instead.
  */
+@Deprecated
 @XStreamAlias("remote-marshall-service-store")
 @DisplayOrder(order = {"baseUrl"})
+@Removal(version = "3.11.0")
 public class RemoteMarshallServiceStore extends MarshallFileServiceStore {
 
   @NotBlank

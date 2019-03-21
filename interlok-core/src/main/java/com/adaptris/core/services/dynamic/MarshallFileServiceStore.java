@@ -17,21 +17,23 @@
 package com.adaptris.core.services.dynamic;
 
 import javax.validation.constraints.NotNull;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.Service;
 import com.adaptris.core.util.Args;
 
 /**
- * Abstract base implementation of a file based service store that uses your choice of 
- * marshalling technology.
+ * Abstract base implementation of a file based service store that uses your choice of marshalling
+ * technology.
  *
- * @author lchan
- * @author $Author: lchan $
+ * @deprecated since 3.8.4 use {@link DynamicServiceExecutor} with a URL based
+ *             {@link ServiceExtractor} instead.
  */
+@Deprecated
+@Removal(version = "3.11.0")
 public abstract class MarshallFileServiceStore extends MarshallServiceStore {
   @NotNull
   @InputFieldDefault(value = "")

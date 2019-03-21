@@ -17,11 +17,11 @@
 package com.adaptris.core.services.dynamic;
 
 import javax.validation.constraints.NotNull;
-
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.TradingRelationship;
 import com.adaptris.core.util.Args;
@@ -29,14 +29,20 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * Implementation of {@link ServiceNameProvider} which returns the passed {@link TradingRelationship} source, destination and type
- * separated by an (optional) configurable character.
+ * Implementation of {@link ServiceNameProvider} which returns the passed
+ * {@link TradingRelationship} source, destination and type separated by an (optional) configurable
+ * character.
  * </p>
  * 
  * @config default-service-name-provider
+ * @deprecated since 3.8.4 use {@link DynamicServiceExecutor} with a URL based
+ *             {@link ServiceExtractor} instead.
+ * 
  */
+@Deprecated
 @XStreamAlias("default-service-name-provider")
 @DisplayOrder(order = {"separator"})
+@Removal(version = "3.11.0")
 public class DefaultServiceNameProvider extends ServiceNameProviderImp {
 
   @AutoPopulated

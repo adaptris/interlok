@@ -16,19 +16,24 @@
 
 package com.adaptris.core.services.dynamic;
 
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.TradingRelationship;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * <code>ExactMatchingStrategy</code> returns a <code>TradingRelationship[]</code> containing the passed
- * <code>TradingRelationship</code> only, or an empty array if the parameter is null.
+ * <code>ExactMatchingStrategy</code> returns a <code>TradingRelationship[]</code> containing the
+ * passed <code>TradingRelationship</code> only, or an empty array if the parameter is null.
  * </p>
  * 
  * @config exact-matching-strategy
+ * @deprecated since 3.8.4 use {@link DynamicServiceExecutor} with a URL based
+ *             {@link ServiceExtractor} instead.
  */
+@Deprecated
 @XStreamAlias("exact-matching-strategy")
+@Removal(version = "3.11.0")
 public class ExactMatchingStrategy implements MatchingStrategy {
 
   /**

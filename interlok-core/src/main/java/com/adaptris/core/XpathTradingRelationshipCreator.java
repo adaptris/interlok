@@ -19,17 +19,16 @@ package com.adaptris.core;
 import static com.adaptris.core.util.XmlHelper.createDocument;
 import static com.adaptris.util.text.xml.XPath.newXPathInstance;
 import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import javax.validation.Valid;
 import javax.xml.namespace.NamespaceContext;
-
 import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.Removal;
+import com.adaptris.core.services.dynamic.DynamicServiceLocator;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.util.KeyValuePairSet;
@@ -39,21 +38,25 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * Implementation of <code>TradingRelationshipCreator</code> which populates the <code>TradingRelationship</code> with values
- * returned from configurable xpaths.
+ * Implementation of <code>TradingRelationshipCreator</code> which populates the
+ * <code>TradingRelationship</code> with values returned from configurable xpaths.
  * </p>
  *
  * <p>
- * If the {@code DocumentBuilderFactoryBuilder} has been explicitly set to be not namespace aware and the document does in fact
- * contain namespaces, then Saxon can cause merry havoc in the sense that {@code //NonNamespaceXpath} doesn't work if the document
- * has namespaces in it. We have included a shim so that behaviour can be toggled based on what you have configured.
+ * If the {@code DocumentBuilderFactoryBuilder} has been explicitly set to be not namespace aware
+ * and the document does in fact contain namespaces, then Saxon can cause merry havoc in the sense
+ * that {@code //NonNamespaceXpath} doesn't work if the document has namespaces in it. We have
+ * included a shim so that behaviour can be toggled based on what you have configured.
  * </p>
  * 
  * @see XPath#newXPathInstance(DocumentBuilderFactoryBuilder, NamespaceContext)
  * @config xpath-trading-relationship-creator
+ * @deprecated since 3.8.4 since only {@link DynamicServiceLocator} uses this.
  */
+@Deprecated
 @XStreamAlias("xpath-trading-relationship-creator")
 @DisplayOrder(order = {"sourceXpath", "destinationXpath", "typeXpath", "namespaceContext"})
+@Removal(version = "3.11.0")
 public class XpathTradingRelationshipCreator implements
     TradingRelationshipCreator {
 

@@ -17,9 +17,9 @@
 package com.adaptris.core.services.dynamic;
 
 import com.adaptris.core.TradingRelationship;
-
 import junit.framework.TestCase;
 
+@SuppressWarnings("deprecation")
 public class SafeServiceNameProviderTest extends TestCase {
 
   private DefaultServiceNameProvider provider;

@@ -18,12 +18,12 @@ package com.adaptris.core.services.dynamic;
 
 import java.util.Arrays;
 import java.util.HashSet;
-
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.TradingRelationship;
 
+@SuppressWarnings("deprecation")
 public class ConfiguredServiceNameProviderTest extends BaseCase {
 
   private ConfiguredServiceNameProvider provider;
