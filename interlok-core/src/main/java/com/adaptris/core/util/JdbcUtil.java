@@ -17,7 +17,6 @@
 package com.adaptris.core.util;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -25,10 +24,12 @@ import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.util.Properties;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import com.adaptris.core.AdaptrisConnection;
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.jdbc.DatabaseConnection;
+import com.adaptris.core.jdbc.JdbcConstants;
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.security.password.Password;
 
@@ -178,4 +179,61 @@ public abstract class JdbcUtil {
     }
     return p;
   }
+
+  /**
+   * Convenience method to get the {@link Connection} either from the
+   * {@link com.adaptris.core.AdaptrisMessage} object or from configuration.
+   * 
+   * @param msg the adaptrisMessage object
+   * @param adpCon the configured {@link AdaptrisConnection}
+   * @return the connection either from the adaptris message or from configuration.
+   */
+  public static Connection getConnection(AdaptrisMessage msg, AdaptrisConnection adpCon)
+      throws SQLException {
+    Connection conn =
+        (Connection) msg.getObjectHeaders().get(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY);
+    if (conn != null && !conn.isClosed()) {
+      return conn;
+    } else {
+      return adpCon.retrieveConnection(DatabaseConnection.class).connect();
+    }
+  }
+
+  /**
+   * Rollback to the stored savepoint.
+   * <p>
+   * If a database connection exists in the AdaptrisMessage object metadata then you don't want to
+   * rollback, you want to let the parent (presumably a
+   * {@link com.adaptris.core.services.jdbc.JdbcServiceList}) to do it for you.
+   * </p>
+   *
+   * @param sqlConnection the database connection.
+   * @param msg the AdaptrisMessage
+   */
+  public static void rollback(Connection sqlConnection, AdaptrisMessage msg) {
+    if (msg.getObjectHeaders().containsKey(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY)) {
+      return;
+    }
+    rollback(sqlConnection);
+  }
+
+  /**
+   * Commit the connection
+   * <p>
+   * If a database connection exists in the AdaptrisMessage object metadata then you don't want to
+   * rollback, you want to let the parent (presumably a
+   * {@link com.adaptris.core.services.jdbc.JdbcServiceList}) to do it for you.
+   * </p>
+   *
+   * @param sqlConnection the SQL Connection
+   * @param msg the AdaptrisMessage currently being processed.
+   * @throws SQLException if the commit fails.
+   */
+  public static void commit(Connection sqlConnection, AdaptrisMessage msg) throws SQLException {
+    if (msg.getObjectHeaders().containsKey(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY)) {
+      return;
+    }
+    commit(sqlConnection);
+  }
+
 }
