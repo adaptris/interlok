@@ -43,27 +43,27 @@ import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Implementation of {@link com.adaptris.core.Service} which dynamically obtains and applies a {@link com.adaptris.core.Service} to
- * an {@link com.adaptris.core.AdaptrisMessage} based on
- * the contents of the message.
+ * Implementation of {@link com.adaptris.core.Service} which dynamically obtains and applies a
+ * {@link com.adaptris.core.Service} to an {@link com.adaptris.core.AdaptrisMessage} based on the
+ * contents of the message.
  * 
  * <p>
- * This class will attempt to extract a marshalled service (roughly analagous to {@link DynamicServiceLocator}) from the payload of
- * the current message, unmarshal that service, and then execute that service against the current message. The use of this type of
- * service is discouraged from a supportability perspective; however there will be use cases where it is appropriate. No checks are
- * performed on the {@link com.adaptris.core.Service} that is unmarshalled other than license verification; any exceptions thrown by
- * unmarshalled
- * service are simply rethrown back to the workflow for standard message error handling.
+ * This class will attempt to extract a marshalled service (roughly analagous to
+ * {@link DynamicServiceLocator}) from the specified location (which might be the current message),
+ * unmarshal that service, and then execute that service against the current message. The use of
+ * this type of service is discouraged from a supportability perspective; however there will be use
+ * cases where it is appropriate. No checks are performed on the {@link com.adaptris.core.Service}
+ * that is unmarshalled; any exceptions thrown by unmarshalled service are simply rethrown back to
+ * the workflow for standard message error handling.
  * </p>
  * 
  * @config dynamic-service-executor
  * 
- * @author lchan
  * @see ServiceExtractor
  */
 @XStreamAlias("dynamic-service-executor")
 @AdapterComponent
-@ComponentProfile(summary = "Execute a service definition which is defined in the message itself", tag = "service,dynamic")
+@ComponentProfile(summary = "Lookup and execute a dynamic service", tag = "service,dynamic")
 @DisplayOrder(order = {"serviceExtractor", "marshaller", "treatNotFoundAsError"})
 public class DynamicServiceExecutor extends ServiceImp implements EventHandlerAware {
 
@@ -125,10 +125,12 @@ public class DynamicServiceExecutor extends ServiceImp implements EventHandlerAw
     LifecycleHelper.init(getServiceExtractor());
   }
 
+  @Override
   public void start() throws CoreException {
     LifecycleHelper.start(getServiceExtractor());
   }
 
+  @Override
   public void stop() {
     LifecycleHelper.stop(getServiceExtractor());
   }
