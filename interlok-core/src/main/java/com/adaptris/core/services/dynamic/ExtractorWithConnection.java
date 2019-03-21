@@ -20,6 +20,7 @@ import javax.validation.constraints.NotNull;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 
 public abstract class ExtractorWithConnection implements ServiceExtractor {
@@ -34,8 +35,13 @@ public abstract class ExtractorWithConnection implements ServiceExtractor {
 
   @Override
   public void init() throws CoreException {
-    LifecycleHelper.prepare(getConnection());
-    LifecycleHelper.init(getConnection());
+    try {
+      Args.notNull(getConnection(), "connection");
+      LifecycleHelper.prepare(getConnection());
+      LifecycleHelper.init(getConnection());
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
+    }
   }
 
   @Override
