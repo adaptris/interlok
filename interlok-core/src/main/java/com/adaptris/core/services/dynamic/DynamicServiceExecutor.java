@@ -17,17 +17,16 @@
 package com.adaptris.core.services.dynamic;
 
 import static com.adaptris.core.util.LoggingHelper.friendlyName;
-
-import java.io.IOException;
 import java.io.InputStream;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -37,6 +36,7 @@ import com.adaptris.core.EventHandlerAware;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.ServiceList;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
@@ -64,6 +64,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("dynamic-service-executor")
 @AdapterComponent
 @ComponentProfile(summary = "Execute a service definition which is defined in the message itself", tag = "service,dynamic")
+@DisplayOrder(order = {"serviceExtractor", "marshaller", "treatNotFoundAsError"})
 public class DynamicServiceExecutor extends ServiceImp implements EventHandlerAware {
 
   private transient EventHandler eventHandler;
@@ -75,6 +76,9 @@ public class DynamicServiceExecutor extends ServiceImp implements EventHandlerAw
   @Valid
   @AdvancedConfig
   private AdaptrisMarshaller marshaller;
+
+  @InputFieldDefault(value = "true")
+  private Boolean treatNotFoundAsError;
 
   public DynamicServiceExecutor() {
     this(new DefaultServiceExtractor());
@@ -94,27 +98,49 @@ public class DynamicServiceExecutor extends ServiceImp implements EventHandlerAw
       service.doService(msg);
       LifecycleHelper.stopAndClose(service, false);
     }
-    catch (IOException | CoreException e) {
+    catch (Exception e) {
       throw ExceptionHelper.wrapServiceException(e);
     }
   }
 
-  private Service createService(AdaptrisMessage msg) throws CoreException, IOException {
+  private Service createService(AdaptrisMessage msg) throws Exception {
     try (InputStream in = serviceExtractor.getInputStream(msg)) {
       return (Service) currentMarshaller().unmarshal(in);
+    } catch (Exception e) {
+      return onException(e);
     }
+  }
+
+  private Service onException(Exception e) throws Exception {
+    if (treatNotFoundAsError()) {
+      throw e;
+    }
+    log.trace("Encountered [{}] attempting to create dynamic-service; using empty service-list",
+        e.getMessage());
+    return new ServiceList();
   }
 
   @Override
   protected void initService() throws CoreException {
+    LifecycleHelper.init(getServiceExtractor());
+  }
+
+  public void start() throws CoreException {
+    LifecycleHelper.start(getServiceExtractor());
+  }
+
+  public void stop() {
+    LifecycleHelper.stop(getServiceExtractor());
   }
 
   @Override
   protected void closeService() {
+    LifecycleHelper.close(getServiceExtractor());
   }
 
   @Override
   public void prepare() throws CoreException {
+    LifecycleHelper.prepare(getServiceExtractor());
   }
 
 
@@ -150,8 +176,25 @@ public class DynamicServiceExecutor extends ServiceImp implements EventHandlerAw
     this.marshaller = m;
   }
 
-  AdaptrisMarshaller currentMarshaller() {
+  private AdaptrisMarshaller currentMarshaller() {
     return DefaultMarshaller.defaultIfNull(getMarshaller());
   }
 
+  public Boolean getTreatNotFoundAsError() {
+    return treatNotFoundAsError;
+  }
+
+  /**
+   * Specify whether a failure to find a dynamic service is treated as an exception.
+   *
+   * @param b true to treat failures to unmarshal / find the service as an exception; default is
+   *        true if not specified
+   */
+  public void setTreatNotFoundAsError(Boolean b) {
+    treatNotFoundAsError = b;
+  }
+
+  private boolean treatNotFoundAsError() {
+    return BooleanUtils.toBooleanDefaultIfNull(getTreatNotFoundAsError(), true);
+  }
 }
