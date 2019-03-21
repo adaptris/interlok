@@ -27,7 +27,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Extract the service to execute based on the configured URL.
  * 
  * @config dynamic-service-from-url
- *
+ * @see DynamicServiceExecutor
+ * 
  */
 @XStreamAlias("dynamic-service-from-url")
 @ComponentProfile(summary = "Extract the service to execute from a URL (file/http etc)")

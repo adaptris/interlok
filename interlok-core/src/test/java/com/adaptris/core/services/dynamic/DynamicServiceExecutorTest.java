@@ -30,6 +30,7 @@ import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceList;
 import com.adaptris.core.XStreamMarshaller;
+import com.adaptris.core.common.MetadataDataInputParameter;
 import com.adaptris.core.services.LogMessageService;
 import com.adaptris.core.services.metadata.AddMetadataService;
 import com.adaptris.util.GuidGenerator;
@@ -89,6 +90,30 @@ public class DynamicServiceExecutorTest extends DynamicServiceExample {
             })).getContent() + "\n-->\n";
       }
       
+    },
+    DATA_INPUT {
+      @Override
+      boolean matches(ServiceExtractor e) {
+        return e instanceof ServiceFromDataInputParameter;
+      }
+
+      @Override
+      ServiceExtractor create() {
+        return new ServiceFromDataInputParameter(new MetadataDataInputParameter("metadataKey"));
+      }
+
+      @Override
+      String getExampleCommentHeader() throws Exception {
+        return "\n<!--"
+            + "\nUsing this extractor implementation, the expectation is that the configured"
+            + "\nDataInputParameter<String> will resolve to a "
+            + "\nwill contain a well formed service that can be unmarshalled and executed."
+            + "\ne.g. something like:\n"
+            + createMessage(new ServiceList(new Service[]
+            {
+              new LogMessageService()
+            })).getContent() + "\n-->\n";
+      }
     },
     MIME {
 
