@@ -48,7 +48,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("dynamic-service-from-cache")
 @ComponentProfile(summary = "Extract the service to execute from a cache",
-    recommended = {CacheConnection.class})
+    recommended = {CacheConnection.class}, since = "3.8.4")
 @DisplayOrder(order = {"key", "connection"})
 public class ServiceFromCache extends ExtractorWithConnection {
 

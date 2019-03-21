@@ -44,7 +44,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  *
  */
 @XStreamAlias("dynamic-service-from-data-input")
-@ComponentProfile(summary = "Extract the service to execute from a DataInputParameter")
+@ComponentProfile(summary = "Extract the service to execute from a DataInputParameter",
+    since = "3.8.4")
 public class ServiceFromDataInputParameter implements ServiceExtractor {
 
   @NotNull

@@ -68,7 +68,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("dynamic-service-from-database")
 @ComponentProfile(summary = "Extract the service to execute from a database",
-    recommended = {DatabaseConnection.class})
+    recommended = {DatabaseConnection.class}, since = "3.8.4")
 @DisplayOrder(order = {"key", "connection"})
 public class ServiceFromDatabase extends ExtractorWithConnection {
 

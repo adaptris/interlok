@@ -32,7 +32,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("dynamic-service-from-url")
-@ComponentProfile(summary = "Extract the service to execute from a URL (file/http etc)")
+@ComponentProfile(summary = "Extract the service to execute from a URL (file/http etc)",
+    since = "3.8.4")
 public class ServiceFromUrl implements ServiceExtractor {
 
   @NotBlank
