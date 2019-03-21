@@ -20,17 +20,18 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
+import java.io.OutputStream;
 import javax.mail.internet.MimeBodyPart;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.MimeHelper;
 import com.adaptris.util.stream.StreamUtil;
+import com.adaptris.util.text.mime.BodyPartIterator;
 import com.adaptris.util.text.mime.PartSelector;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -42,6 +43,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("dynamic-mime-service-extractor")
+@ComponentProfile(
+    summary = "Select the service to executed based on a MIME selector on the message")
 public class MimeServiceExtractor implements ServiceExtractor {
 
   @NotNull
@@ -62,12 +65,14 @@ public class MimeServiceExtractor implements ServiceExtractor {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     try {
       Args.notNull(getSelector(), "selector");
-      MimeBodyPart part = selector.select(MimeHelper.createBodyPartIterator(m));
-      if (part != null) {
-        StreamUtil.copyAndClose(part.getInputStream(), out);
-      }
-      else {
-        throw new ServiceException("Could not select a part");
+      try (BodyPartIterator itr = MimeHelper.createBodyPartIterator(m);
+          OutputStream closeOut = out) {
+        MimeBodyPart part = selector.select(itr);
+        if (part != null) {
+          StreamUtil.copyAndClose(part.getInputStream(), closeOut);
+        } else {
+          throw new ServiceException("Could not select a part");
+        }
       }
     }
     catch (Exception e) {
