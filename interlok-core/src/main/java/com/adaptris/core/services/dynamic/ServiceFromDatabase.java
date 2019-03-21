@@ -85,6 +85,7 @@ public class ServiceFromDatabase extends ExtractorWithConnection {
 
   @Override
   public InputStream getInputStream(AdaptrisMessage m) throws Exception {
+    Args.notBlank(getQuery(), "query");
     Connection jdbcCon = getConnection().retrieveConnection(DatabaseConnection.class).connect();
     String jdbcQuery = m.resolve(getQuery());
     ResultSet resultSet = null;

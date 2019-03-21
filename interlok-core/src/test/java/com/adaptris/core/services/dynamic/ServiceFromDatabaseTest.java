@@ -17,6 +17,7 @@ package com.adaptris.core.services.dynamic;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -51,6 +52,26 @@ public class ServiceFromDatabaseTest {
       "SELECT dynamicService FROM %s WHERE source='%%message{source}' AND destination='%%message{destination}'",
       TABLE_NAME);
 
+  @Test
+  public void testLifecycle() throws Exception {
+    JdbcConnection jdbcConn = configure(new JdbcConnection());
+    ServiceFromDatabase extractor =
+        new ServiceFromDatabase().withQuery(SELECT_STMT);
+    try {
+      LifecycleHelper.initAndStart(extractor);
+      fail();
+    } catch (Exception expected) {
+
+    } finally {
+      LifecycleHelper.stopAndClose(extractor);
+    }
+    extractor.setConnection(jdbcConn);
+    try {
+      LifecycleHelper.initAndStart(extractor);
+    } finally {
+      LifecycleHelper.stopAndClose(extractor);
+    }
+  }
 
   @Test
   public void testGetInputStream() throws Exception {

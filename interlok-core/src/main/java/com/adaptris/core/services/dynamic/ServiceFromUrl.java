@@ -20,6 +20,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.util.Args;
 import com.adaptris.util.URLHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -49,6 +50,7 @@ public class ServiceFromUrl implements ServiceExtractor {
 
   @Override
   public InputStream getInputStream(AdaptrisMessage m) throws Exception {
+    Args.notBlank(getUrl(), "url");
     String urlToConnectTo = m.resolve(getUrl());
     return URLHelper.connect(urlToConnectTo);
   }
