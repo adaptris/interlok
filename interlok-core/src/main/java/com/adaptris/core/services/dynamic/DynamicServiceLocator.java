@@ -40,6 +40,7 @@ import com.adaptris.core.TradingRelationshipCreator;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.core.util.LoggingHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -82,6 +83,7 @@ public class DynamicServiceLocator extends ServiceImp implements EventHandlerAwa
 
   private transient EventHandler eventHandler;
 
+  private static transient boolean warningLogged = false;
   /**
    * Creates a new Instance.
    * <p>
@@ -92,6 +94,9 @@ public class DynamicServiceLocator extends ServiceImp implements EventHandlerAwa
    * </p>
    */
   public DynamicServiceLocator() {
+    LoggingHelper.logDeprecation(warningLogged, () -> {
+      warningLogged = true;
+    }, this.getClass().getSimpleName(), DynamicServiceExecutor.class.getName());
     // defaults...
     setMatchingStrategy(new ExactMatchingStrategy());
   }
