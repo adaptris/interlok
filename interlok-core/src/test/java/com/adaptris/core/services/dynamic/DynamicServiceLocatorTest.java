@@ -21,9 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-
 import org.apache.commons.io.FileUtils;
-
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ClosedState;
@@ -41,6 +39,7 @@ import com.adaptris.core.XpathTradingRelationshipCreator;
 import com.adaptris.core.services.dynamic.DynamicFailingService.WhenToFail;
 import com.adaptris.core.util.LifecycleHelper;
 
+@SuppressWarnings("deprecation")
 public class DynamicServiceLocatorTest extends DynamicServiceExample {
 
   private static final String DEFAULT_DEST = "TheDestination";

@@ -16,14 +16,20 @@
 
 package com.adaptris.core;
 
+import com.adaptris.annotation.Removal;
+import com.adaptris.core.services.dynamic.DynamicServiceLocator;
 import com.adaptris.core.util.Args;
 
 /**
  * <p>
- * Encapsulates a source, destination and type <i>trading relationship</i>.  A
- * wild card identifier may be used for any or all of the three components.
+ * Encapsulates a source, destination and type <i>trading relationship</i>. A wild card identifier
+ * may be used for any or all of the three components.
  * </p>
+ * 
+ * @deprecated since 3.8.4 since only {@link DynamicServiceLocator} uses this.
  */
+@Deprecated
+@Removal(version = "3.11.0")
 public class TradingRelationship implements Cloneable {
 
   /**

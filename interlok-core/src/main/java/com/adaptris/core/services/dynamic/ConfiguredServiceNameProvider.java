@@ -18,21 +18,27 @@ package com.adaptris.core.services.dynamic;
 
 import java.util.HashSet;
 import java.util.Set;
-
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.TradingRelationship;
 import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Implementation of {@link ServiceNameProvider} that has static mappings for trading relationships and service names
+ * Implementation of {@link ServiceNameProvider} that has static mappings for trading relationships
+ * and service names
  * <p>
- * This is primiarily a basic implementation of <code>ServiceNameProvider</code> for testing. We do not recommend it for production
- * use as additional dynamic services will require you to restart the adapter every time you add one.
+ * This is primiarily a basic implementation of <code>ServiceNameProvider</code> for testing. We do
+ * not recommend it for production use as additional dynamic services will require you to restart
+ * the adapter every time you add one.
  * </p>
  * 
  * @config configured-service-name-provider
+ * @deprecated since 3.8.4 use {@link DynamicServiceExecutor} with a URL based
+ *             {@link ServiceExtractor} instead.
  */
 @XStreamAlias("configured-service-name-provider")
+@Deprecated
+@Removal(version = "3.11.0")
 public class ConfiguredServiceNameProvider extends ServiceNameProviderImp {
 
   private Set<ServiceNameMapper> serviceNameMappers;

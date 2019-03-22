@@ -19,11 +19,9 @@ package com.adaptris.core.services.dynamic;
 import static com.adaptris.util.text.mime.MimeConstants.ENCODING_7BIT;
 import static com.adaptris.util.text.mime.MimeConstants.ENCODING_8BIT;
 import static com.adaptris.util.text.mime.MimeConstants.ENCODING_BASE64;
-
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.DefaultMarshaller;
@@ -32,8 +30,8 @@ import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceList;
 import com.adaptris.core.XStreamMarshaller;
+import com.adaptris.core.common.MetadataDataInputParameter;
 import com.adaptris.core.services.LogMessageService;
-import com.adaptris.core.services.jdbc.JdbcDataQueryService;
 import com.adaptris.core.services.metadata.AddMetadataService;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.text.mime.MultiPartOutput;
@@ -64,6 +62,53 @@ public class DynamicServiceExecutorTest extends DynamicServiceExample {
       String getExampleCommentHeader() throws Exception {
         return "\n<!--" + "\nUsing this extractor implementation, the expectation is that the message payload contains"
             + "\na well formed service which can be unmarshalled and executed " + "e.g. something like:\n"
+            + createMessage(new ServiceList(new Service[]
+            {
+              new LogMessageService()
+            })).getContent() + "\n-->\n";
+      }
+    },
+    URL {
+      @Override
+      boolean matches(ServiceExtractor e) {
+        return e instanceof ServiceFromUrl;
+      }
+
+      @Override
+      ServiceExtractor create() {
+        return new ServiceFromUrl("file:///path/to/store/%message{SOURCE}/%message{DEST}/%message{MSG_TYPE}.xml");
+      }
+
+      @Override
+      String getExampleCommentHeader() throws Exception {
+        return "\n<!--" + "\nUsing this extractor implementation, the expectation is that a resolvable URL"
+            + "\nwill contain a well formed service that can be unmarshalled and executed."
+            + "\ne.g. something like:\n"
+            + createMessage(new ServiceList(new Service[]
+            {
+              new LogMessageService()
+            })).getContent() + "\n-->\n";
+      }
+      
+    },
+    DATA_INPUT {
+      @Override
+      boolean matches(ServiceExtractor e) {
+        return e instanceof ServiceFromDataInputParameter;
+      }
+
+      @Override
+      ServiceExtractor create() {
+        return new ServiceFromDataInputParameter(new MetadataDataInputParameter("metadataKey"));
+      }
+
+      @Override
+      String getExampleCommentHeader() throws Exception {
+        return "\n<!--"
+            + "\nUsing this extractor implementation, the expectation is that the configured"
+            + "\nDataInputParameter<String> will resolve to a "
+            + "\nwill contain a well formed service that can be unmarshalled and executed."
+            + "\ne.g. something like:\n"
             + createMessage(new ServiceList(new Service[]
             {
               new LogMessageService()
@@ -201,20 +246,12 @@ public class DynamicServiceExecutorTest extends DynamicServiceExample {
     }
   }
 
-  public void testDoService_DefaultServiceExtractor_NotLicensed() throws Exception {
-    JdbcDataQueryService marshalledService = new JdbcDataQueryService();
-    DynamicServiceExecutor dynamicService = createService();
-    AdaptrisMessage msg = createMessage(new ServiceList(new Service[]
-    {
-      marshalledService
-    }));
-    try {
-      execute(dynamicService, msg);
-      fail();
-    }
-    catch (ServiceException expected) {
 
-    }
+  public void testDoService_DefaultServiceExtractor_SwallowException() throws Exception {
+    DynamicServiceExecutor dynamicService = createService();
+    dynamicService.setTreatNotFoundAsError(false);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(getName());
+    execute(dynamicService, msg);
   }
 
   public void testDoService_MimeServiceExtractor_NullSelector() throws Exception {
@@ -285,7 +322,7 @@ public class DynamicServiceExecutorTest extends DynamicServiceExample {
     return service;
   }
 
-  private static AdaptrisMessage createMessage(Service s) throws Exception {
+  public static AdaptrisMessage createMessage(Service s) throws Exception {
     String xml = DefaultMarshaller.getDefaultMarshaller().marshal(s);
     return AdaptrisMessageFactory.getDefaultInstance().newMessage(xml);
   }

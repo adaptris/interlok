@@ -16,24 +16,31 @@
 
 package com.adaptris.core.services.dynamic;
 
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.TradingRelationship;
 import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Extension of <code>DefaultServiceNameProvider</code> which strips the following characters from any component of the Trading
- * Relationship:
+ * Extension of <code>DefaultServiceNameProvider</code> which strips the following characters from
+ * any component of the Trading Relationship:
  * <p>
  * <code>/,\,?,*,:,|, ,&,",&lt;,&gt;,'</code>
  * </p>
- * Of particular use for ebXML where it is feasible that URLs might be used to identify the parties or message type.
+ * Of particular use for ebXML where it is feasible that URLs might be used to identify the parties
+ * or message type.
  * 
  * @config safe-service-name-provider
  * 
  * @author Stuart Ellidge
+ * @deprecated since 3.8.4 use {@link DynamicServiceExecutor} with a URL based
+ *             {@link ServiceExtractor} instead.
+ * 
  */
+@Deprecated
 @XStreamAlias("safe-service-name-provider")
+@Removal(version = "3.11.0")
 public final class SafeServiceNameProvider extends DefaultServiceNameProvider {
   public SafeServiceNameProvider() {
 	super();

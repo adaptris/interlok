@@ -19,21 +19,25 @@ package com.adaptris.core;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.Removal;
+import com.adaptris.core.services.dynamic.DynamicServiceLocator;
 import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * Implementation of <code>TradingRelationshipCreator</code> which populates the <code>TradingRelationship</code> with values
- * returned from configurable metadata keys.
+ * Implementation of <code>TradingRelationshipCreator</code> which populates the
+ * <code>TradingRelationship</code> with values returned from configurable metadata keys.
  * </p>
  * 
  * @config metadata-trading-relationship-creator
+ * @deprecated since 3.8.4 since only {@link DynamicServiceLocator} uses this.
  */
+@Deprecated
 @XStreamAlias("metadata-trading-relationship-creator")
 @DisplayOrder(order = {"sourceKey", "destinationKey", "typeKey"})
+@Removal(version = "3.11.0")
 public class MetadataTradingRelationshipCreator
   implements TradingRelationshipCreator {
 

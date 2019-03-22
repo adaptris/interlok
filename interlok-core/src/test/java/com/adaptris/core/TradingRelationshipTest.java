@@ -18,6 +18,7 @@ package com.adaptris.core;
 
 import junit.framework.TestCase;
 
+@SuppressWarnings("deprecation")
 public class TradingRelationshipTest extends TestCase {
 
   public TradingRelationshipTest(String name) {

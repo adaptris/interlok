@@ -17,23 +17,27 @@
 package com.adaptris.core.services.dynamic;
 
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.StringUtils;
-
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.TradingRelationship;
 import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * Maps a name for a <code>Service</code> to a <code>TradingRelationship</code>. Used by {@link ConfiguredServiceNameProvider}.
+ * Maps a name for a <code>Service</code> to a <code>TradingRelationship</code>. Used by
+ * {@link ConfiguredServiceNameProvider}.
  * </p>
  * 
  * @config configured-service-name-mapper
+ * @deprecated since 3.8.4 use {@link DynamicServiceExecutor} with a URL based
+ *             {@link ServiceExtractor} instead.
  */
+@Deprecated
 @XStreamAlias("configured-service-name-mapper")
 @DisplayOrder(order = {"serviceName", "tradingRelationship"})
+@Removal(version = "3.11.0")
 public class ServiceNameMapper {
 
   @NotNull

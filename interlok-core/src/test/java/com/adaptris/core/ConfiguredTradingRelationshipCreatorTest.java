@@ -16,6 +16,7 @@
 
 package com.adaptris.core;
 
+@SuppressWarnings("deprecation")
 public class ConfiguredTradingRelationshipCreatorTest extends BaseCase {
 
   private static final String TYPE = "type";

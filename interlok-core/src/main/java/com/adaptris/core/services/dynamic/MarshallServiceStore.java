@@ -18,7 +18,7 @@ package com.adaptris.core.services.dynamic;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMarshaller;
@@ -27,7 +27,12 @@ import com.adaptris.core.DefaultMarshaller;
  * <p>
  * Implementation of {@link ServiceStore} which uses an XML marshaller for Services.
  * </p>
+ * 
+ * @deprecated since 3.8.4 use {@link DynamicServiceExecutor} with a URL based
+ *             {@link ServiceExtractor} instead.
  */
+@Deprecated
+@Removal(version = "3.11.0")
 public abstract class MarshallServiceStore implements ServiceStore {
 
   private AdaptrisMarshaller marshaller;

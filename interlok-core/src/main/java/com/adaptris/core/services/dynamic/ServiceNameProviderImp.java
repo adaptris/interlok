@@ -18,7 +18,7 @@ package com.adaptris.core.services.dynamic;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.TradingRelationship;
 import com.adaptris.core.util.Args;
@@ -27,7 +27,12 @@ import com.adaptris.core.util.Args;
  * <p>
  * Partial implementation of <code>ServiceNameProvider</code>.
  * </p>
+ * 
+ * @deprecated since 3.8.4 use {@link DynamicServiceExecutor} with a URL based
+ *             {@link ServiceExtractor} instead.
  */
+@Deprecated
+@Removal(version = "3.11.0")
 public abstract class ServiceNameProviderImp implements ServiceNameProvider {
 
   protected transient Logger log = LoggerFactory.getLogger(this.getClass());

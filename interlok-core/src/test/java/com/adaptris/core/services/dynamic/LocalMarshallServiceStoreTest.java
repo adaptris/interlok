@@ -17,11 +17,11 @@
 package com.adaptris.core.services.dynamic;
 
 import java.io.File;
-
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceList;
 import com.adaptris.core.stubs.TempFileUtils;
 
+@SuppressWarnings("deprecation")
 public class LocalMarshallServiceStoreTest extends MarshallServiceStoreCase {
 
   public LocalMarshallServiceStoreTest(String s) {

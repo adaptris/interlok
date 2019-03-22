@@ -18,10 +18,8 @@ package com.adaptris.core.services.dynamic;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.io.FileCleaningTracker;
 import org.apache.commons.io.FileDeleteStrategy;
-
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.DefaultMarshaller;
@@ -30,6 +28,7 @@ import com.adaptris.core.ServiceList;
 import com.adaptris.core.services.WaitService;
 import com.adaptris.util.TimeInterval;
 
+@SuppressWarnings("deprecation")
 public abstract class MarshallServiceStoreCase extends BaseCase {
 
   private static FileCleaningTracker cleaner = new FileCleaningTracker();
