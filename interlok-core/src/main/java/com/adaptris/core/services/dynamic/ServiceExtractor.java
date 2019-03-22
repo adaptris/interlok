@@ -24,7 +24,6 @@ import com.adaptris.core.ComponentLifecycle;
  * Interface for use with {@link DynamicServiceExecutor}.
  * 
  */
-@FunctionalInterface
 public interface ServiceExtractor extends ComponentLifecycle {
 
   /**
