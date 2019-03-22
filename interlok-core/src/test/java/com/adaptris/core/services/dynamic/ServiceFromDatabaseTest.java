@@ -49,7 +49,9 @@ public class ServiceFromDatabaseTest {
   private static final String INSERT_STMT = String.format(
       "INSERT INTO %s (source, destination, dynamicService)" + "values (?,?,?)", TABLE_NAME);
   private static final String SELECT_STMT = String.format(
-      "SELECT dynamicService FROM %s WHERE source='%%message{source}' AND destination='%%message{destination}'",
+      "SELECT dynamicService FROM %s "
+      + "\nWHERE source='%%message{source}' "
+      + "\nAND destination='%%message{destination}'",
       TABLE_NAME);
 
   @Test

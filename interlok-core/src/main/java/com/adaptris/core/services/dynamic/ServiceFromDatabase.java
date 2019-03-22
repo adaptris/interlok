@@ -87,7 +87,8 @@ public class ServiceFromDatabase extends ExtractorWithConnection {
   public InputStream getInputStream(AdaptrisMessage m) throws Exception {
     Args.notBlank(getQuery(), "query");
     Connection jdbcCon = getConnection().retrieveConnection(DatabaseConnection.class).connect();
-    String jdbcQuery = m.resolve(getQuery());
+    // needs multi-line mode.
+    String jdbcQuery = m.resolve(getQuery(), true);
     ResultSet resultSet = null;
     Statement statement = null;
     InputStream result = null;
