@@ -58,7 +58,7 @@ dependencies {
   compile ("javax.validation:validation-api:1.0.0.GA")
   compile ("javax.el:javax.el-api:2.2.4")
   compile ("org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.2.Final")
-  compile ("org.hibernate:hibernate-validator:4.3.2.Final")
+  compile ("org.hibernate:hibernate-validator:6.0.16.Final")
   compile ("commons-collections:commons-collections:3.2.2")
   compile ("commons-io:commons-io:2.6")
   compile ("commons-lang:commons-lang:2.6")
