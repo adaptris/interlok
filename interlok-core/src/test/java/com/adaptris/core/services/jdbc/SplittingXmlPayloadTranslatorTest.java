@@ -17,10 +17,11 @@
 package com.adaptris.core.services.jdbc;
 
 import java.util.List;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.DefaultMessageFactory;
+import com.adaptris.core.NullConnection;
 import com.adaptris.core.stubs.DummyMessageProducer;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.XmlHelper;
@@ -51,9 +52,8 @@ public class SplittingXmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlRe
     s.setResultSetTranslator(createPayloadTranslator());
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
-    assertTrue(ADAPTER_ID_KEY + " exists", msg.containsKey(ADAPTER_ID_KEY));
-    assertNotSame(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
-    assertFalse(msg.containsKey(JdbcDataQueryService.class.getCanonicalName()));
+    assertTrue(msg.headersContainsKey(ADAPTER_ID_KEY));
+    assertFalse(msg.headersContainsKey(JdbcDataQueryService.class.getCanonicalName()));
     AdaptrisMessage outputMessage = producer.getMessages().get(0);
     XmlUtils xu = XmlHelper.createXmlUtils(outputMessage);
     assertNull("Xpath /Results/OriginalMessage", xu.getSingleNode("/Results/OriginalMessage"));
@@ -70,9 +70,8 @@ public class SplittingXmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlRe
     s.setResultSetTranslator(createPayloadTranslator());
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
-    assertTrue(ADAPTER_ID_KEY + " exists", msg.containsKey(ADAPTER_ID_KEY));
-    assertNotSame(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
-    assertFalse(msg.containsKey(JdbcDataQueryService.class.getCanonicalName()));
+    assertTrue(msg.headersContainsKey(ADAPTER_ID_KEY));
+    assertFalse(msg.headersContainsKey(JdbcDataQueryService.class.getCanonicalName()));
     AdaptrisMessage outputMessage = producer.getMessages().get(0);
     XmlUtils xu = XmlHelper.createXmlUtils(outputMessage);
     assertNull("Xpath /Results/OriginalMessage", xu.getSingleNode("/Results/OriginalMessage"));
@@ -91,9 +90,8 @@ public class SplittingXmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlRe
     s.setResultSetTranslator(t);
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
-    assertTrue(ADAPTER_ID_KEY + " exists", msg.containsKey(ADAPTER_ID_KEY));
-    assertNotSame(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
-    assertFalse(msg.containsKey(JdbcDataQueryService.class.getCanonicalName()));
+    assertTrue(msg.headersContainsKey(ADAPTER_ID_KEY));
+    assertFalse(msg.headersContainsKey(JdbcDataQueryService.class.getCanonicalName()));
     AdaptrisMessage outputMessage = producer.getMessages().get(0);
     XmlUtils xu = XmlHelper.createXmlUtils(outputMessage);
     log.warn(msg.getContent());
@@ -101,6 +99,7 @@ public class SplittingXmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlRe
     assertNotNull("/Results/Row", xu.getSingleNode("/results/row"));
   }
   
+  @Override
   public void testDoService_WithEncoding() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -118,6 +117,7 @@ public class SplittingXmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlRe
     assertEquals("UTF-8", outputMessage.getContentEncoding());
   }
 
+  @Override
   public void testDoService_WithEncodingUnspecified() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -134,6 +134,7 @@ public class SplittingXmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlRe
     assertEquals("UTF-8", outputMessage.getContentEncoding());
   }
   
+  @Override
   public void testDoService_IllegalXmlCharacters() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generateWithIllegalXmlChars(10);
@@ -164,14 +165,12 @@ public class SplittingXmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlRe
     
     populateDatabase(dbItems, false);
     JdbcDataQueryService s = createMultiService();
-    SplittingXmlPayloadTranslator translator = createPayloadTranslator();
-    translator.setMaxRowsPerMessage(2);
+    SplittingXmlPayloadTranslator translator = createPayloadTranslator().withMaxRowsPerMessage(2);
     s.setResultSetTranslator(translator);
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
-    assertTrue(ADAPTER_ID_KEY + " exists", msg.containsKey(ADAPTER_ID_KEY));
-    assertNotSame(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
-    assertFalse(msg.containsKey(JdbcDataQueryService.class.getCanonicalName()));
+    assertTrue(msg.headersContainsKey(ADAPTER_ID_KEY));
+    assertFalse(msg.headersContainsKey(JdbcDataQueryService.class.getCanonicalName()));
     
     List<AdaptrisMessage> outputMessages = producer.getMessages();
     assertEquals(6, outputMessages.size());
@@ -182,6 +181,36 @@ public class SplittingXmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlRe
       assertNull("Xpath /Results/OriginalMessage", xu.getSingleNode("/Results/OriginalMessage"));
       assertEquals("/Results/Row", count<5 ? 2 : 1, 
           xu.getNodeList("/Results/Row").getLength());
+      assertFalse(outputMessage.headersContainsKey(ADAPTER_ID_KEY));
+      count++;
+    }
+  }
+
+  public void testMultipleResultMessages_CopyMetadata() throws Exception {
+    createDatabase();
+    List<AdapterTypeVersion> dbItems = generate(11);
+    AdapterTypeVersion entry = dbItems.get(0);
+
+    populateDatabase(dbItems, false);
+    JdbcDataQueryService s = createMultiService();
+    SplittingXmlPayloadTranslator translator =
+        createPayloadTranslator().withMaxRowsPerMessage(2).withCopyMetadata(true)
+            .withMessageFactory(new DefaultMessageFactory());
+    s.setResultSetTranslator(translator);
+    AdaptrisMessage msg = createMessage(entry);
+    execute(s, msg);
+    assertTrue(msg.headersContainsKey(ADAPTER_ID_KEY));
+    assertFalse(msg.headersContainsKey(JdbcDataQueryService.class.getCanonicalName()));
+
+    List<AdaptrisMessage> outputMessages = producer.getMessages();
+    assertEquals(6, outputMessages.size());
+
+    int count = 0;
+    for (AdaptrisMessage outputMessage : outputMessages) {
+      XmlUtils xu = XmlHelper.createXmlUtils(outputMessage);
+      assertNull("Xpath /Results/OriginalMessage", xu.getSingleNode("/Results/OriginalMessage"));
+      assertEquals("/Results/Row", count < 5 ? 2 : 1, xu.getNodeList("/Results/Row").getLength());
+      assertTrue(outputMessage.headersContainsKey(ADAPTER_ID_KEY));
       count++;
     }
   }
@@ -197,9 +226,8 @@ public class SplittingXmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlRe
 
   @Override
   protected SplittingXmlPayloadTranslator createPayloadTranslator() {
-    SplittingXmlPayloadTranslator t = new SplittingXmlPayloadTranslator();
-    t.setProducer(producer);
-    return t;
+    return new SplittingXmlPayloadTranslator()
+        .withConnection(new NullConnection()).withProducer(producer);
   }
 
 }
