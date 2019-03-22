@@ -48,8 +48,10 @@ public interface ServiceExtractor extends ComponentLifecycle {
    * @param m the marshaller
    * @return a service
    * @throws Exception if no service could be created
+   * @since 3.8.4
    * @implSpec The default implementation still uses {@link #getInputStream(AdaptrisMessage)} for
-   *           expediency but will be removed in 3.11.0
+   *           expediency but will be removed in 3.11.0. Just extend {@link ServiceExtractorImpl}
+   *           for future compatibility.
    */
   @SuppressWarnings("deprecation")
   default Service getService(AdaptrisMessage msg, AdaptrisMarshaller m) throws Exception {

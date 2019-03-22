@@ -20,6 +20,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.apache.commons.io.IOUtils;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.common.ConstantDataInputParameter;
 import com.adaptris.core.common.MetadataDataInputParameter;
@@ -46,7 +47,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("dynamic-service-from-data-input")
 @ComponentProfile(summary = "Extract the service to execute from a DataInputParameter",
     since = "3.8.4")
-public class ServiceFromDataInputParameter implements ServiceExtractor {
+@DisplayOrder(order = {"input"})
+public class ServiceFromDataInputParameter extends ServiceExtractorImpl {
 
   @NotNull
   @Valid

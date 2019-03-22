@@ -27,11 +27,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Default {@link ServiceExtractor} implementation that treats the entire payload as the service.
  * 
  * @config dynamic-default-service-extractor
- * @author lchan
  * 
  */
 @XStreamAlias("dynamic-default-service-extractor")
 @ComponentProfile(summary = "Treat the message body as the service to execute.")
+// intentionally doesn't extend ServiceExtratorImpl because _coverage_
 public class DefaultServiceExtractor implements ServiceExtractor {
 
   @Override

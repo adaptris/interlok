@@ -18,6 +18,7 @@ package com.adaptris.core.services.dynamic;
 import java.io.InputStream;
 import org.hibernate.validator.constraints.NotBlank;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.util.Args;
@@ -34,7 +35,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("dynamic-service-from-url")
 @ComponentProfile(summary = "Extract the service to execute from a URL (file/http etc)",
     since = "3.8.4")
-public class ServiceFromUrl implements ServiceExtractor {
+@DisplayOrder(order = {"url"})
+public class ServiceFromUrl extends ServiceExtractorImpl {
 
   @NotBlank
   @InputFieldHint(expression = true)
