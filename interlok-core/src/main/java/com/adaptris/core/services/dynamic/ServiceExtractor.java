@@ -17,8 +17,11 @@
 package com.adaptris.core.services.dynamic;
 
 import java.io.InputStream;
+import com.adaptris.annotation.Removal;
+import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ComponentLifecycle;
+import com.adaptris.core.Service;
 
 /**
  * Interface for use with {@link DynamicServiceExecutor}.
@@ -31,6 +34,30 @@ public interface ServiceExtractor extends ComponentLifecycle {
    * 
    * @param m the adaptris message.
    * @return an input stream.
+   * @deprecated since 3.8.4 use {@link #getService(AdaptrisMessage)} or
+   *             {@link #getService(AdaptrisMessage, AdaptrisMarshaller)} instead.
    */
+  @Deprecated
+  @Removal(version = "3.11.0")
   InputStream getInputStream(AdaptrisMessage m) throws Exception;
+
+  /**
+   * Build a service from the message.
+   * 
+   * @param msg the message
+   * @param m the marshaller
+   * @return a service
+   * @throws Exception if no service could be created
+   * @since 3.8.4
+   * @implSpec The default implementation still uses {@link #getInputStream(AdaptrisMessage)} for
+   *           expediency but will be removed in 3.11.0. Just extend {@link ServiceExtractorImpl}
+   *           for future compatibility.
+   */
+  @SuppressWarnings("deprecation")
+  default Service getService(AdaptrisMessage msg, AdaptrisMarshaller m) throws Exception {
+    try (InputStream in = getInputStream(msg)) {
+      return (Service) m.unmarshal(in);
+    }
+  }
+
 }

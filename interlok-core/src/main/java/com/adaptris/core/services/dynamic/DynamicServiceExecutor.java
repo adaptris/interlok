@@ -17,7 +17,6 @@
 package com.adaptris.core.services.dynamic;
 
 import static com.adaptris.core.util.LoggingHelper.friendlyName;
-import java.io.InputStream;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.BooleanUtils;
@@ -104,8 +103,8 @@ public class DynamicServiceExecutor extends ServiceImp implements EventHandlerAw
   }
 
   private Service createService(AdaptrisMessage msg) throws Exception {
-    try (InputStream in = serviceExtractor.getInputStream(msg)) {
-      return (Service) currentMarshaller().unmarshal(in);
+    try {
+      return getServiceExtractor().getService(msg, currentMarshaller());
     } catch (Exception e) {
       return onException(e);
     }
@@ -172,7 +171,8 @@ public class DynamicServiceExecutor extends ServiceImp implements EventHandlerAw
   /**
    * Set the marshaller to use to unmarshal the service.
    * 
-   * @param m the marshaller, if not configured will default to {@link DefaultMarshaller#getDefaultMarshaller()}
+   * @param m the marshaller, if not configured will default to
+   *        {@link DefaultMarshaller#getDefaultMarshaller()}
    */
   public void setMarshaller(AdaptrisMarshaller m) {
     this.marshaller = m;

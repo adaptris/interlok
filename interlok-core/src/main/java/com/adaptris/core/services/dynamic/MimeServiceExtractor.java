@@ -25,6 +25,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.Args;
@@ -45,7 +46,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("dynamic-mime-service-extractor")
 @ComponentProfile(
     summary = "Select the service to executed based on a MIME selector on the message")
-public class MimeServiceExtractor implements ServiceExtractor {
+@DisplayOrder(order = {"selector"})
+public class MimeServiceExtractor extends ServiceExtractorImpl {
 
   @NotNull
   @Valid

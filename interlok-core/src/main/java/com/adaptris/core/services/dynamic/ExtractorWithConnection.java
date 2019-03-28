@@ -23,7 +23,7 @@ import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 
-public abstract class ExtractorWithConnection implements ServiceExtractor {
+public abstract class ExtractorWithConnection extends ServiceExtractorImpl {
   @NotNull
   @Valid
   private AdaptrisConnection connection;
