@@ -16,7 +16,6 @@
 package com.adaptris.core;
 
 import java.util.Collection;
-import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
@@ -44,7 +43,7 @@ public abstract class MessageLoggerImpl implements MessageLogger {
   }
 
 
-  protected Collection<MetadataElement> format(Set<MetadataElement> set) {
+  protected Collection<MetadataElement> format(Collection<MetadataElement> set) {
     MetadataCollection metadata = new MetadataCollection();
     set.parallelStream().forEach(e -> {
       metadata.add(wrap(e.getKey(), e.getValue()));
@@ -57,6 +56,7 @@ public abstract class MessageLoggerImpl implements MessageLogger {
   }
 
   private static class FormattedElement extends MetadataElement {
+    private static final long serialVersionUID = 2019040201L;
 
     public FormattedElement(String key, String value) {
       super(key, value);

@@ -15,6 +15,8 @@
  *******************************************************************************/
 package com.adaptris.core.util;
 
+import java.util.Collection;
+
 import org.apache.commons.lang.StringUtils;
 
 import com.adaptris.annotation.ComponentProfile;
@@ -22,18 +24,21 @@ import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.MessageLoggerImpl;
 import com.adaptris.core.MetadataElement;
+import com.adaptris.core.MetadataLogger;
 import com.adaptris.util.NumberUtils;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * MessageLogger implementation that that logs unique-id and metadata but truncates metadata at the
+ * MessageLogger & MetadataLogger implementation that that logs unique-id and metadata but truncates metadata at the
  * configured length.
  * 
  * @config message-logging-with-truncated-metadata
+ * @see MessageLogger
+ * @see MetadataLogger
  */
 @XStreamAlias("message-logging-with-truncated-metadata")
 @ComponentProfile(summary = "Log unique-id & metadata (values are truncated) only", since = "3.8.4")
-public class TruncateMetadata extends MessageLoggerImpl {
+public class TruncateMetadata extends MessageLoggerImpl implements MetadataLogger {
 
   private static final int DEFAULT_MAX_LENGTH = 256;
 
@@ -68,16 +73,22 @@ public class TruncateMetadata extends MessageLoggerImpl {
     this.maxLength = bytes;
   }
 
+  @Override
+  public String toString(Collection<MetadataElement> elements) {
+    return format(elements).toString();
+  }
 
   private int maxLength() {
     return NumberUtils.toIntDefaultIfNull(getMaxLength(), DEFAULT_MAX_LENGTH);
   }
 
+  @Override
   protected MetadataElement wrap(String key, String value) {
     return new TruncateValue(key, value);
   }
 
   private class TruncateValue extends MetadataElement {
+    private static final long serialVersionUID = 2019040201L;
 
     public TruncateValue(String key, String value) {
       super(key, value);
@@ -89,4 +100,5 @@ public class TruncateMetadata extends MessageLoggerImpl {
           StringUtils.abbreviate(getValue(), maxLength()));
     }
   }
+
 }
