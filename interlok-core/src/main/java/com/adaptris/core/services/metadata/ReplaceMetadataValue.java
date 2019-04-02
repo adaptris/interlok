@@ -56,7 +56,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("replace-metadata-value")
 @AdapterComponent
 @ComponentProfile(summary = "Perform a find and replace on metadata", tag = "service,metadata")
-@DisplayOrder(order = {"metadataKeyRegexp", "searchValue", "replacementValue", "replaceAll"})
+@DisplayOrder(order = {"metadataKeyRegexp", "searchValue", "replacementValue", "replaceAll", "metadataLogger"})
 public class ReplaceMetadataValue extends ReformatMetadata {
 
   @NotBlank

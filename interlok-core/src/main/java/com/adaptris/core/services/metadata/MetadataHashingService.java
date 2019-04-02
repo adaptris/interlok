@@ -52,7 +52,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("metadata-hashing-service")
 @AdapterComponent
 @ComponentProfile(summary = "Hash a metadata value, and store it", tag = "service,metadata")
-@DisplayOrder(order = {"metadataKeyRegexp", "hashAlgorithm", "byteTranslator"})
+@DisplayOrder(order = {"metadataKeyRegexp", "hashAlgorithm", "byteTranslator", "metadataLogger"})
 public class MetadataHashingService extends ReformatMetadata {
   private static final String DEFAULT_HASH_ALG = "SHA1";
   @NotBlank
@@ -90,11 +90,6 @@ public class MetadataHashingService extends ReformatMetadata {
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
-  }
-
-  @Override
-  protected void closeService() {
-    super.closeService();
   }
 
 

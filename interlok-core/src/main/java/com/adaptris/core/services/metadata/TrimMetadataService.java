@@ -37,7 +37,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("trim-metadata-service")
 @AdapterComponent
 @ComponentProfile(summary = "Trim leading/trailing spaces from metadata", tag = "service,metadata")
-@DisplayOrder(order = {"metadataKeyRegexp"})
+@DisplayOrder(order = {"metadataKeyRegexp", "metadataLogger"})
 public class TrimMetadataService extends ReformatMetadata {
 
   public TrimMetadataService() {

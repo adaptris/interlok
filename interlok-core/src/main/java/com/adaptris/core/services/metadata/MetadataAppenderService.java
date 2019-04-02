@@ -29,8 +29,7 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
-import com.adaptris.core.ServiceImp;
+import com.adaptris.core.MetadataElement;
 import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
@@ -48,8 +47,8 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @XStreamAlias("metadata-appender-service")
 @AdapterComponent
 @ComponentProfile(summary = "Concatenate various metadata values into one", tag = "service,metadata")
-@DisplayOrder(order = {"appendKeys", "resultKey"})
-public class MetadataAppenderService extends ServiceImp {
+@DisplayOrder(order = {"appendKeys", "resultKey", "metadataLogger"})
+public class MetadataAppenderService extends MetadataServiceImpl {
 
   @NotNull
   @AutoPopulated
@@ -79,9 +78,9 @@ public class MetadataAppenderService extends ServiceImp {
         result.append(msg.getMetadataValue(key));
       }
     }
-    msg.addMetadata(resultKey, result.toString());
-    log.debug("added metadata key [" + resultKey + "] value ["
-      + result.toString() + "]");
+    MetadataElement e = new MetadataElement(resultKey, result.toString());
+    logMetadata("Added {}", e);
+    msg.addMetadata(e);
   }
 
   /**
@@ -141,19 +140,6 @@ public class MetadataAppenderService extends ServiceImp {
    */
   public void setResultKey(String string) {
     resultKey = Args.notBlank(string, "resultKey");
-  }
-
-
-  @Override
-  protected void initService() throws CoreException {
-  }
-
-  @Override
-  protected void closeService() {
-  }
-
-  @Override
-  public void prepare() throws CoreException {
   }
 
 }
