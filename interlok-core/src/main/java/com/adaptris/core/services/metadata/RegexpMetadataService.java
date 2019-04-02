@@ -83,8 +83,7 @@ public class RegexpMetadataService extends MetadataServiceImpl {
     String message = msg.getContent();
     List<MetadataElement> added = new ArrayList<>();
     try {
-      for (int i = 0; i < regexpMetadataQueries.size(); i++) {
-        RegexpMetadataQuery q = regexpMetadataQueries.get(i);
+      for (RegexpMetadataQuery q : getRegexpMetadataQueries()) {
         MetadataElement elem = q.doQuery(message);
         if (!isEmpty(elem.getValue()) || addNullValues()) {
           msg.addMetadata(elem);
