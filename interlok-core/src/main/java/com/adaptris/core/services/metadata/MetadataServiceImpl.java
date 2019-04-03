@@ -16,11 +16,9 @@
 package com.adaptris.core.services.metadata;
 
 import java.util.Collection;
-
 import javax.validation.Valid;
-
 import org.apache.commons.lang3.ObjectUtils;
-
+import org.slf4j.Logger;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.CoreException;
@@ -33,6 +31,12 @@ public abstract class MetadataServiceImpl extends ServiceImp {
   private static final MetadataLogger DEFAULT_LOGGER = (list) -> {
     return list.toString();
   };
+
+  protected static final LogWrapper TRACE = (logger, msg, metadata) -> logger.trace(msg, metadata);
+  protected static final LogWrapper DEBUG = (logger, msg, metadata) -> logger.debug(msg, metadata);
+  protected static final LogWrapper INFO = (logger, msg, metadata) -> logger.info(msg, metadata);
+  protected static final LogWrapper WARN = (logger, msg, metadata) -> logger.warn(msg, metadata);
+  protected static final LogWrapper ERROR = (logger, msg, metadata) -> logger.error(msg, metadata);
 
   @AdvancedConfig
   @InputFieldDefault(value = "full key and value")
@@ -54,11 +58,19 @@ public abstract class MetadataServiceImpl extends ServiceImp {
   }
 
   protected void logMetadata(String logMsg, MetadataElement... elements) {
-    log.trace(logMsg, metadataLogger().toString(elements));
+    logMetadata(TRACE, logMsg, elements);
   }
 
   protected void logMetadata(String logMsg, Collection<MetadataElement> list) {
-    log.trace(logMsg, metadataLogger().toString(list));
+    logMetadata(TRACE, logMsg, list);
+  }
+
+  protected void logMetadata(LogWrapper lvl, String logMsg, MetadataElement... elements) {
+    lvl.log(log, logMsg, metadataLogger().toString(elements));
+  }
+
+  protected void logMetadata(LogWrapper lvl, String logMsg, Collection<MetadataElement> list) {
+    lvl.log(log, logMsg, metadataLogger().toString(list));
   }
 
   public MetadataLogger getMetadataLogger() {
@@ -76,5 +88,10 @@ public abstract class MetadataServiceImpl extends ServiceImp {
 
   private MetadataLogger metadataLogger() {
     return ObjectUtils.defaultIfNull(getMetadataLogger(), DEFAULT_LOGGER);
+  }
+  
+  @FunctionalInterface
+  protected interface LogWrapper {
+    void log(Logger logger, String logMsg, String stringifiedMetadata);
   }
 }
