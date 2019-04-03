@@ -26,9 +26,8 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
+import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.ServiceImp;
 import com.adaptris.core.util.Args;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.IdGenerator;
@@ -49,8 +48,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("generate-unique-metadata-value-service")
 @AdapterComponent
 @ComponentProfile(summary = "Generate a unique value and attach it as metadata", tag = "service,metadata")
-@DisplayOrder(order = {"metadataKey", "generator"})
-public class GenerateUniqueMetadataValueService extends ServiceImp {
+@DisplayOrder(order = {"metadataKey", "generator", "metadataLogger"})
+public class GenerateUniqueMetadataValueService extends MetadataServiceImpl {
 
   @AffectsMetadata
   private String metadataKey;
@@ -71,23 +70,13 @@ public class GenerateUniqueMetadataValueService extends ServiceImp {
     setGenerator(generator);
   }
 
-
-  @Override
-  protected void initService() throws CoreException {
-
-  }
-
-  @Override
-  protected void closeService() {
-
-  }
-
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     String metadataKey = metadataKey(msg);
     String metadataValue = getGenerator().create(msg);
-    log.trace("Adding [" + metadataValue + "] to metadata key [" + metadataKey + "]");
-    msg.addMetadata(metadataKey, metadataValue);
+    MetadataElement e = new MetadataElement(metadataKey, metadataValue);
+    msg.addMetadata(e);
+    logMetadata("Added {}", e);
   }
 
   /**
@@ -126,10 +115,6 @@ public class GenerateUniqueMetadataValueService extends ServiceImp {
    */
   public void setGenerator(IdGenerator idg) {
     generator = Args.notNull(idg, "generator");
-  }
-
-  @Override
-  public void prepare() throws CoreException {
   }
 
 }

@@ -16,7 +16,9 @@
 
 package com.adaptris.core.services.metadata;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,9 +33,8 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
+import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.ServiceImp;
 import com.adaptris.core.util.Args;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairList;
@@ -56,8 +57,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("map-metadata-service")
 @AdapterComponent
 @ComponentProfile(summary = "Change a metadata value based on a regular expression match", tag = "service,metadata")
-@DisplayOrder(order = {"metadataKey", "metadataKeyMap"})
-public class MapMetadataService extends ServiceImp {
+@DisplayOrder(order = {"metadataKey", "metadataKeyMap", "metadataLogger"})
+public class MapMetadataService extends MetadataServiceImpl {
   private static final String MATCH_GROUP_REGEX = "\\{([0-9]+)\\}";
   @NotBlank
   @AffectsMetadata
@@ -74,6 +75,7 @@ public class MapMetadataService extends ServiceImp {
   /**
    * @see com.adaptris.core.Service#doService(AdaptrisMessage)
    */
+  @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     if (metadataKey == null || !msg.containsKey(metadataKey)) {
       log.debug("Message does not contain metadatakey [" + metadataKey + "]");
@@ -81,16 +83,18 @@ public class MapMetadataService extends ServiceImp {
     }
     String metadataValue = msg.getMetadataValue(metadataKey);
     metadataValue = metadataValue == null ? "" : metadataValue;
-
+    List<MetadataElement> mapped = new ArrayList<>();
     for (Iterator i = getMetadataKeyMap().getKeyValuePairs().iterator(); i.hasNext();) {
       KeyValuePair k = (KeyValuePair) i.next();
       if (metadataValue.matches(k.getKey())) {
         String newMetadataValue = doSubstitution(metadataValue, k, msg);
-        log.debug("Modifying value [" + metadataValue + "] to [" + newMetadataValue + "]");
-        msg.addMetadata(metadataKey, newMetadataValue);
+        MetadataElement e = new MetadataElement(metadataKey, newMetadataValue);
+        msg.addMetadata(e);
+        mapped.add(e);
         break;
       }
     }
+    logMetadata("Modified Metadata : {}", mapped);
   }
 
   private String doSubstitution(String metadataValue, KeyValuePair kvp, AdaptrisMessage msg) {
@@ -106,17 +110,6 @@ public class MapMetadataService extends ServiceImp {
       }
     }
     return result;
-  }
-
-
-  @Override
-  protected void initService() throws CoreException {
-
-  }
-
-  @Override
-  protected void closeService() {
-
   }
 
   /**
@@ -160,10 +153,6 @@ public class MapMetadataService extends ServiceImp {
    */
   public void setMetadataKey(String s) {
     this.metadataKey = s;
-  }
-
-  @Override
-  public void prepare() throws CoreException {
   }
 
 }

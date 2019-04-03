@@ -42,7 +42,6 @@ import com.adaptris.core.FormattedFilenameCreator;
 import com.adaptris.core.MessageDrivenDestination;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.ServiceImp;
 import com.adaptris.core.fs.FsHelper;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
@@ -67,9 +66,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(summary = "Read a set of metadata from the filesystem and add/replace current metadata", tag = "service,metadata")
 @DisplayOrder(order =
 {
-    "destination", "inputStyle", "overwriteExistingMetadata", "filenameCreator"
+    "destination", "inputStyle", "overwriteExistingMetadata", "filenameCreator", "metadataLogger"
 })
-public class ReadMetadataFromFilesystem extends ServiceImp {
+public class ReadMetadataFromFilesystem extends MetadataServiceImpl {
 
   private InputStyle inputStyle;
   @NotNull
@@ -132,7 +131,7 @@ public class ReadMetadataFromFilesystem extends ServiceImp {
             msg.addMetadata(e);
           }
         }
-        log.trace("New Metadata for message {}", msg.getMetadata());
+        logMetadata("New Metadata for message {}", msg.getMetadata());
       }
     }
     catch (Exception e) {
@@ -150,11 +149,6 @@ public class ReadMetadataFromFilesystem extends ServiceImp {
       throw ExceptionHelper.wrapCoreException(e);
     }
   }
-
-  @Override
-  protected void closeService() {
-  }
-
 
   public InputStyle getInputStyle() {
     return inputStyle;
@@ -224,10 +218,5 @@ public class ReadMetadataFromFilesystem extends ServiceImp {
   FileNameCreator filenameCreator() {
     return getFilenameCreator() != null ? getFilenameCreator() : new FormattedFilenameCreator();
   }
-
-  @Override
-  public void prepare() throws CoreException {
-  }
-
 
 }

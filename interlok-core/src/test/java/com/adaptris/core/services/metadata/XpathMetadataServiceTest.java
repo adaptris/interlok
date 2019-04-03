@@ -30,6 +30,7 @@ import com.adaptris.core.services.metadata.xpath.MultiItemConfiguredXpathQuery;
 import com.adaptris.core.services.metadata.xpath.MultiItemMetadataXpathQuery;
 import com.adaptris.core.services.metadata.xpath.XpathQuery;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
+import com.adaptris.core.util.TruncateMetadata;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 
@@ -78,7 +79,7 @@ public class XpathMetadataServiceTest extends MetadataServiceExample {
 
   public void testDoService_NotXML() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("ABCDEFG");
-    XpathMetadataService service = new XpathMetadataService();
+    XpathMetadataService service = new XpathMetadataService().withMetadataLogger(new TruncateMetadata(20));
     service.setXpathQueries(new ArrayList<XpathQuery>(Arrays.asList(new ConfiguredXpathQuery("source",
         "//source-id"), new ConfiguredXpathQuery("destination", "//destination-id"))));
     try {

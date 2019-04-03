@@ -35,7 +35,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("string-to-hex-metadata-service")
 @ComponentProfile(summary = "Turn a metadata value into a hex string using the specified character encoding",
     tag = "service,metadata")
-@DisplayOrder(order = {"metadataKeyRegexp", "charset"})
+@DisplayOrder(order = {"metadataKeyRegexp", "charset", "metadataLogger"})
 public class StringToHexService extends HexToStringService {
 
   public StringToHexService() {

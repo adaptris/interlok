@@ -33,7 +33,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("url-encode-metadata-service")
 @AdapterComponent
 @ComponentProfile(summary = "URL Encode some metadata", tag = "service,metadata")
-@DisplayOrder(order = {"metadataKeyRegexp"})
+@DisplayOrder(order = {"metadataKeyRegexp", "metadataLogger"})
 public class UrlEncodeMetadataService extends ReformatMetadata {
 
   public UrlEncodeMetadataService() {

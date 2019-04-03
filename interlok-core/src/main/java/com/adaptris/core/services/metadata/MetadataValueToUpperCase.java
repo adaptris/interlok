@@ -34,7 +34,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("metadata-value-to-upper-case")
 @AdapterComponent
 @ComponentProfile(summary = "Changes matching metadata to uppercase", tag = "service,metadata")
-@DisplayOrder(order = {"metadataKeyRegexp"})
+@DisplayOrder(order = {"metadataKeyRegexp", "metadataLogger"})
 public class MetadataValueToUpperCase extends ReformatMetadata {
 
   public MetadataValueToUpperCase() {
