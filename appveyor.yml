@@ -7,10 +7,15 @@ image: Ubuntu1804
 init:
 - sh: >-
     sudo apt-get -y install haveged
+
     sudo systemctl enable haveged
+
     sudo systemctl restart haveged
+
     mkdir -p $HOME/.gradle
+
     echo "org.gradle.console=plain" >>$HOME/.gradle/gradle.properties
+
     echo "org.gradle.warning.mode=none" >>$HOME/.gradle/gradle.properties
 
 environment:
@@ -21,13 +26,21 @@ services: mysql
 install:
 - sh: >-
     echo "default.jdbc.storedproc.tests.enabled=true" >> interlok-core/build.properties
+
     echo "default.jdbc.storedproc.url=jdbc:mysql://localhost:3306/" >> interlok-core/build.properties
+
     echo "default.jdbc.storedproc.driver=com.mysql.jdbc.Driver" >> interlok-core/build.properties
+
     echo "default.jdbc.storedproc.database=ci_appveyor" >> interlok-core/build.properties
+
     echo "default.jdbc.storedproc.username=root" >> interlok-core/build.properties
+
     echo "default.jdbc.storedproc.password=Password12!" >> interlok-core/build.properties
+
     echo "default.jdbc.storedproc.vendor=mysql" >> interlok-core/build.properties
+
     echo "default.jdbc.storedproc.teststatement=" >> interlok-core/build.properties
+
     echo "default.jdbc.storedproc.url.params=?useSSL=false" >> interlok-core/build.properties
 
 cache:
