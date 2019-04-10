@@ -22,12 +22,12 @@ jobs:
       TERM: dumb
 
     steps:
-      - run: 
+      - run:
           name: Configure Gradle
           command: |
             mkdir -p ~/.gradle
             echo "org.gradle.warning.mode=none" > ~/.gradle/gradle.properties
-            echo "systemProp.java.security.egd=file:/dev/./urandom" >> ~/.gradle/gradle.properties
+            echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties
 
       - checkout
 
@@ -40,9 +40,9 @@ jobs:
 
 
       # run tests!
-      - run: 
+      - run:
           name: Run Tests
-          command: ./gradlew -PverboseTests=true test 
+          command: ./gradlew -Djava.security.egd=file:/dev/./urandom -PverboseTests=true test
 
       - save_cache:
           paths:
