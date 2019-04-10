@@ -51,3 +51,7 @@ build_script:
 - sh: ./gradlew -Dorg.gradle.console=plain -PverboseTests=true test jacocoTestReport
 
 test: off
+
+on_success:
+- sh: bash <(curl -s https://codecov.io/bash)
+
