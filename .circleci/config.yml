@@ -44,6 +44,11 @@ jobs:
             find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
           when: always
 
+      - run:
+          name: codecov.io
+          command: |
+            bash <(curl -s https://codecov.io/bash)
+
       - store_test_results:
           path: ~/test-results
       - store_artifacts:
