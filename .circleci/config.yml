@@ -11,8 +11,7 @@ jobs:
     working_directory: ~/interlok
 
     environment:
-      JAVA_TOOL_OPTIONS: -Xmx2G
-      GRADLE_OPTS: -Djava.security.egd=file:/dev/./urandom
+      JAVA_TOOL_OPTIONS: -Xmx2G -Djava.security.egd=file:/dev/./urandom
       TERM: dumb
 
     steps:
@@ -21,10 +20,6 @@ jobs:
           command: |
             mkdir -p ~/.gradle
             echo "org.gradle.warning.mode=none" > ~/.gradle/gradle.properties
-
-      - run:
-          name: Use /dev/urandom
-          command: |
             sudo sed -i.bak -e "s/securerandom.source=file:\/dev\/random/securerandom.source=file:\/dev\/.\/urandom/g" -e "s/securerandom.strongAlgorithms=NativePRNGBlocking/securerandom.strongAlgorithms=NativePRNG/g" /etc/java-8-openjdk/security/java.security
 
       - checkout
@@ -41,6 +36,18 @@ jobs:
       - run:
           name: Run Tests
           command: ./gradlew -PverboseTests=true test
+
+      - run:
+          name: Save test results
+          command: |
+            mkdir -p ~/test-results/junit/
+            find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
+          when: always
+
+      - store_test_results:
+          path: ~/test-results
+      - store_artifacts:
+          path: ~/test-results/junit
 
       - save_cache:
           paths:
