@@ -5,11 +5,14 @@
 version: 2
 jobs:
   build:
-    machine: true
+    docker:
+      image: circleci/openjdk:8-jdk
 
     working_directory: ~/interlok
 
     environment:
+      JAVA_TOOL_OPTIONS: -Xmx2G
+      GRADLE_OPTS: -Djava.security.egd=file:/dev/./urandom
       TERM: dumb
 
     steps:
@@ -18,7 +21,11 @@ jobs:
           command: |
             mkdir -p ~/.gradle
             echo "org.gradle.warning.mode=none" > ~/.gradle/gradle.properties
-            echo "org.gradle.jvmargs=-Xmx2G -Djava.security.egd=file:/dev/./urandom" >> ~/.gradle/gradle.properties
+
+      - run:
+          name: Use /dev/urandom
+          command: |
+            sudo sed -i.bak -e "s/securerandom.source=file:\/dev\/random/securerandom.source=file:\/dev\/.\/urandom/g" -e "s/securerandom.strongAlgorithms=NativePRNGBlocking/securerandom.strongAlgorithms=NativePRNG/g" /etc/java-8-openjdk/security/java.security
 
       - checkout
 
