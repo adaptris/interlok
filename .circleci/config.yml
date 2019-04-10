@@ -5,9 +5,8 @@
 version: 2
 jobs:
   build:
-    docker:
-      # specify the version you desire here
-      - image: circleci/openjdk:8-jdk
+    machine: true
+      - image: circleci/classic:latest
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -17,8 +16,6 @@ jobs:
     working_directory: ~/interlok
 
     environment:
-      # Customize the JVM maximum heap limit
-      JVM_OPTS: -Xmx3200m
       TERM: dumb
 
     steps:
@@ -27,16 +24,16 @@ jobs:
           command: |
             mkdir -p ~/.gradle
             echo "org.gradle.warning.mode=none" > ~/.gradle/gradle.properties
-            echo "org.gradle.jvmargs=-Djava.security.egd=file:/dev/./urandom" >> ~/.gradle/gradle.properties
+            echo "org.gradle.jvmargs=-Xmx2G -Djava.security.egd=file:/dev/./urandom" >> ~/.gradle/gradle.properties
 
       - checkout
 
       # Download and cache dependencies
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "build.gradle" }}
+            - dependencies{{ checksum "build.gradle" }}
             # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
+            - dependencies
 
 
       # run tests!
@@ -48,4 +45,4 @@ jobs:
           paths:
             - ~/.gradle/caches
             - ~/.gradle/wrapper
-          key: v1-dependencies-{{ checksum "build.gradle" }}
+          key: dependencies{{ checksum "build.gradle" }}
