@@ -41,8 +41,8 @@ jobs:
 
       # run tests!
       - run: 
-        name: Run Tests
-        command: ./gradlew -DverboseTests=true test 
+          name: Run Tests
+          command: ./gradlew -DverboseTests=true test 
 
       - save_cache:
           paths:
