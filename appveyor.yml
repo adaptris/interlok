@@ -52,6 +52,6 @@ build_script:
 
 test: off
 
-on_success:
-- sh: bash <(curl -s https://codecov.io/bash)
+# on_success:
+# - sh: bash <(curl -s https://codecov.io/bash)
 
