@@ -27,7 +27,7 @@ jobs:
           command: |
             mkdir -p ~/.gradle
             echo "org.gradle.warning.mode=none" > ~/.gradle/gradle.properties
-            echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties
+            echo "org.gradle.jvmargs=-Djava.security.egd=file:/dev/./urandom" >> ~/.gradle/gradle.properties
 
       - checkout
 
@@ -42,7 +42,7 @@ jobs:
       # run tests!
       - run:
           name: Run Tests
-          command: ./gradlew -Djava.security.egd=file:/dev/./urandom -PverboseTests=true test
+          command: ./gradlew-PverboseTests=true test
 
       - save_cache:
           paths:
