@@ -27,6 +27,7 @@ jobs:
           command: |
             mkdir -p ~/.gradle
             echo "org.gradle.warning.mode=none" > ~/.gradle/gradle.properties
+            echo "systemProp.java.security.egd=file:/dev/./urandom" >> ~/.gradle/gradle.properties
 
       - checkout
 
