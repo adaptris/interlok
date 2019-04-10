@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - run:
-          name: Configure Gradle
+          name: Configure
           command: |
             mkdir -p ~/.gradle
             echo "org.gradle.warning.mode=none" > ~/.gradle/gradle.properties
@@ -35,7 +35,7 @@ jobs:
       # run tests!
       - run:
           name: Run Tests
-          command: ./gradlew -PverboseTests=true test
+          command: ./gradlew -PverboseTests=true test jacocoTestReport
 
       - run:
           name: Save test results
@@ -44,15 +44,12 @@ jobs:
             find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
           when: always
 
-      - run:
-          name: codecov.io
-          command: |
-            bash <(curl -s https://codecov.io/bash)
-
       - store_test_results:
           path: ~/test-results
-      - store_artifacts:
-          path: ~/test-results/junit
+
+      - run:
+          name: codecov.io
+          command: bash <(curl -s https://codecov.io/bash)
 
       - save_cache:
           paths:
