@@ -27,7 +27,6 @@ jobs:
           command: |
             mkdir -p ~/.gradle
             echo "org.gradle.warning.mode=none" > ~/.gradle/gradle.properties
-            echo "org.gradle.logging.level=quiet" >> ~/.gradle/gradle.properties
 
       - checkout
 
