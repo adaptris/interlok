@@ -19,16 +19,13 @@ package com.adaptris.security;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
-
 import java.util.Properties;
 import java.util.Random;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.security.keystore.Alias;
 import com.adaptris.security.keystore.ConfiguredUrl;
 import com.adaptris.security.keystore.KeystoreLocation;
@@ -43,7 +40,7 @@ public class TestDefaultSecurityService {
   private KeystoreProxy ksm = null;
   private KeystoreLocation ksi = null;
   private Properties config;
-  private static Logger logR = null;
+  private Logger logR = LoggerFactory.getLogger(this.getClass());
   private SecurityService service = null;
   private Alias us;
   private Alias them;
@@ -51,9 +48,6 @@ public class TestDefaultSecurityService {
   private static final String RAW_DATA = "The quick brown fox " + "jumps over the lazy dog";
 
   public TestDefaultSecurityService() {
-    if (logR == null) {
-      logR = LoggerFactory.getLogger(TestDefaultSecurityService.class);
-    }
   }
 
   @Before

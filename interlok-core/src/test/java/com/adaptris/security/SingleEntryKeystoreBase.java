@@ -16,42 +16,39 @@
 
 package com.adaptris.security;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.InputStream;
 import java.security.cert.Certificate;
-import java.util.Properties;
 import java.util.Random;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.adaptris.security.exc.KeystoreException;
 import com.adaptris.security.keystore.KeystoreFactory;
 import com.adaptris.security.keystore.KeystoreLocation;
 import com.adaptris.security.keystore.KeystoreProxy;
-
 import junit.framework.TestCase;
 
 /**
  * Test Keystore Functionality wrapping a single KEYSTORE_PKCS12 certificate
  * 
- * @author lchan
  */
-public abstract class SingleEntryKeystoreBase extends TestCase {
+public abstract class SingleEntryKeystoreBase {
   protected KeystoreLocation kloc = null;
-  protected Properties cfg;
   protected Config config;
-  protected transient Log logR = null;
+  protected transient Logger logR = null;
 
   /** @see TestCase */
-  public SingleEntryKeystoreBase(String testName) {
-    super(testName);
-    logR = LogFactory.getLog(this.getClass());
+  public SingleEntryKeystoreBase() {
+    logR = LoggerFactory.getLogger(this.getClass());
   }
 
-  /**
-   * Get a certificate out of the keystore.
-   */
+  protected abstract void setUp() throws Exception;
+
+  @Test
   public void testContainsNonExistentAlias() throws Exception {
     KeystoreProxy ksp = KeystoreFactory.getDefault().create(kloc);
     ksp.load();
@@ -62,9 +59,7 @@ public abstract class SingleEntryKeystoreBase extends TestCase {
     }
   }
 
-  /**
-   * Get the underlying keystore object
-   */
+  @Test
   public void testKeystoreGetKeyStore() {
     try {
       KeystoreProxy ksp = KeystoreFactory.getDefault().create(kloc);
@@ -77,6 +72,7 @@ public abstract class SingleEntryKeystoreBase extends TestCase {
     }
   }
 
+  @Test
   public void testImportCertificate() throws Exception {
     KeystoreProxy ksp = KeystoreFactory.getDefault().create(kloc);
     ksp.load();
@@ -110,6 +106,7 @@ public abstract class SingleEntryKeystoreBase extends TestCase {
     }
   }
 
+  @Test
   public void testImportCertificateChain() throws Exception {
     KeystoreProxy ksp = KeystoreFactory.getDefault().create(kloc);
     ksp.load();
@@ -136,6 +133,7 @@ public abstract class SingleEntryKeystoreBase extends TestCase {
     }
   }
 
+  @Test
   public void testImportPrivateKey() throws Exception {
     KeystoreProxy ksp = KeystoreFactory.getDefault().create(kloc);
     ksp.load();

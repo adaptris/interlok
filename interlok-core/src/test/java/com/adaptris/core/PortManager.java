@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
-
 import com.adaptris.security.util.SecurityUtil;
 
 /**
@@ -58,10 +57,8 @@ public class PortManager {
     if (usedPorts.contains(port)) {
       return result;
     }
-    try {
-      ServerSocket srv = new ServerSocket(port);
-      srv.close();
-      srv = null;
+    try (ServerSocket srv = new ServerSocket(port)) {
+      srv.setReuseAddress(true);
       result = true;
     }
     catch (IOException e) {
