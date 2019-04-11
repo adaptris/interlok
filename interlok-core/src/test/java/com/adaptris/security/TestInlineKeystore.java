@@ -16,16 +16,20 @@
 
 package com.adaptris.security;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.security.keystore.InlineKeystore;
 import com.adaptris.security.util.Constants;
-
-import junit.framework.TestCase;
 
 /**
  * Test Inline Keystore Functionality wrapping a single KEYSTORE_X509
  * certificate
  *
- * @author $Author: lchan $
  */
 public class TestInlineKeystore extends SingleEntryKeystoreBase {
   private static final String EXAMPLE_KEYINFO = "<KeyInfo xmlns=\"http://www.w3.org/2000/09/xmldsig#\""
@@ -63,23 +67,13 @@ public class TestInlineKeystore extends SingleEntryKeystoreBase {
 
   private InlineKeystore inline, copy;
 
-  /** @see TestCase */
-  public TestInlineKeystore(String testName) {
-    super(testName);
+  public TestInlineKeystore() {
   }
 
-  /**
-   * @see TestCase#setUp()
-   */
   @Override
+  @Before
   public void setUp() throws Exception {
-    super.setUp();
     config = Config.getInstance();
-    cfg = config.getProperties();
-
-    if (cfg == null) {
-      fail("No Configuration(!) available");
-    }
     inline = new InlineKeystore();
     inline.setCertificate(EXAMPLE_KEYINFO);
     inline.setType(Constants.KEYSTORE_XMLKEYINFO);
@@ -92,14 +86,8 @@ public class TestInlineKeystore extends SingleEntryKeystoreBase {
     kloc = inline.asKeystoreLocation();
   }
 
-  /**
-   * @see TestCase#tearDown()
-   */
-  @Override
-  public void tearDown() throws Exception {
-    super.tearDown();
-  }
 
+  @Test
   public void testEquality() throws Exception {
     assertNotSame(inline, new Object());
     assertEquals(inline, copy);
@@ -108,16 +96,19 @@ public class TestInlineKeystore extends SingleEntryKeystoreBase {
     assertNotNull(inline.toString());
   }
 
+  @Test
   public void testAsKeystoreLocation() throws Exception {
     assertNotNull(inline.asKeystoreLocation());
     assertEquals(inline.asKeystoreLocation(), copy.asKeystoreLocation());
     assertEquals(inline.asKeystoreLocation().hashCode(), copy.asKeystoreLocation().hashCode());
   }
 
+  @Test
   public void testAsKeystoreProxy() throws Exception {
     assertNotNull(inline.asKeystoreProxy());
   }
 
+  @Test
   public void testWriteable() throws Exception {
     assertTrue(!inline.asKeystoreLocation().isWriteable());
     try {

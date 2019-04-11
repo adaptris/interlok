@@ -16,54 +16,37 @@
 
 package com.adaptris.security;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.fail;
 import java.util.Properties;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.junit.Before;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.adaptris.security.keystore.ConfiguredUrl;
 import com.adaptris.security.util.Constants;
-
-import junit.framework.Test;
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 /**
- * Test Inline Keystore Functionality wrapping a single KEYSTORE_X509
- * certificate
- *
- * @author $Author: lchan $
+ * Test Inline Keystore Functionality wrapping a single KEYSTORE_X509 certificate
  */
-public class TestConfiguredUrl extends TestCase {
+public class TestConfiguredUrl {
 
   private Properties cfg;
   private ConfiguredUrl url, copy;
-  private static Log logR = null;
+  private Logger logR = LoggerFactory.getLogger(this.getClass());
 
-  /** @see TestCase */
-  public TestConfiguredUrl(String testName) {
-    super(testName);
-    if (logR == null) {
-      logR = LogFactory.getLog(TestConfiguredUrl.class);
-    }
-  }
+  public TestConfiguredUrl() {
 
-  /** main. */
-  public static void main(java.lang.String[] args) {
-    junit.textui.TestRunner.run(suite());
-  }
-
-  public static Test suite() {
-    TestSuite suite = new TestSuite(TestConfiguredUrl.class);
-    return suite;
   }
 
   /**
    * @see TestCase#setUp()
    */
-  @Override
+  @Before
   public void setUp() throws Exception {
-    super.setUp();
     Config config = Config.getInstance();
     cfg = config.getProperties();
 
@@ -80,24 +63,19 @@ public class TestConfiguredUrl extends TestCase {
     config.buildKeystore(cfg.getProperty(Config.KEYSTORE_TEST_URL), null, true);
   }
 
-  /**
-   * @see TestCase#tearDown()
-   */
-  @Override
-  public void tearDown() throws Exception {
-    super.tearDown();
-  }
-
+  @Test
   public void testAsKeystoreLocation() throws Exception {
     assertNotNull(url.asKeystoreLocation());
     assertEquals(url.asKeystoreLocation(), copy.asKeystoreLocation());
     assertEquals(url.asKeystoreLocation().hashCode(), copy.asKeystoreLocation().hashCode());
   }
 
+  @Test
   public void testAsKeystoreProxy() throws Exception {
     assertNotNull(url.asKeystoreProxy());
   }
 
+  @Test
   public void testEquality() throws Exception {
     assertNotSame(url, new Object());
     assertEquals(url, copy);

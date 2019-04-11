@@ -21,13 +21,12 @@ import java.io.IOException;
 import java.security.PrivateKey;
 import java.security.cert.Certificate;
 import java.util.Properties;
-
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x509.X509ObjectIdentifiers;
-
 import com.adaptris.core.util.PropertyHelper;
 import com.adaptris.security.certificate.CertificateBuilder;
 import com.adaptris.security.certificate.CertificateBuilderFactory;
@@ -38,6 +37,7 @@ import com.adaptris.security.keystore.KeystoreLocation;
 import com.adaptris.security.keystore.KeystoreProxy;
 import com.adaptris.security.util.Constants;
 import com.adaptris.security.util.SecurityUtil;
+import com.adaptris.util.SafeGuidGenerator;
 
 /**
  */
@@ -139,6 +139,15 @@ public class Config {
     return PropertyHelper.getPropertySubset(config, prefix);
   }
 
+  public String getProperty(String key) {
+    return config.getProperty(key);
+  }
+
+  public String getProperty(String key, String defaultValue) {
+    return config.getProperty(key, defaultValue);
+  }
+
+
   public CertificateBuilder getBuilder(String commonName) throws Exception {
 
     CertificateBuilder builder = CertificateBuilderFactory.getInstance().createBuilder();
@@ -162,9 +171,11 @@ public class Config {
     return builder;
   }
 
-  public void buildKeystore(String ksUrl, String cn, boolean overwrite) throws Exception {
+  public KeystoreLocation buildKeystore(String ksUrl, String cn, boolean overwrite)
+      throws Exception {
 
-    String commonName = cn == null ? config.getProperty(KEYSTORE_COMMON_PRIVKEY_ALIAS) : cn;
+    String commonName =
+        StringUtils.defaultIfBlank(cn, config.getProperty(KEYSTORE_COMMON_PRIVKEY_ALIAS));
     KeystoreLocation ksc = KeystoreFactory.getDefault().create(ksUrl,
         config.getProperty(Config.KEYSTORE_COMMON_KEYSTORE_PW).toCharArray());
     KeystoreProxy ksp = KeystoreFactory.getDefault().create(ksc);
@@ -179,6 +190,14 @@ public class Config {
     certChain[0] = selfCert;
     ksp.setPrivateKey(commonName, privkey, password, certChain);
     ksp.commit();
+    return ksc;
+  }
+
+  public KeystoreLocation newKeystore(String cn) throws Exception {
+    String uniqueName = new SafeGuidGenerator().safeUUID();
+    String keystoreUrl =
+        String.format("file:///%s/%s?keystoreType=jks", config.getProperty(CFG_ROOT), uniqueName);
+    return buildKeystore(keystoreUrl, cn, false);
   }
 
   public void importPrivateKey(String ksUrl, String filename, boolean overwrite) throws AdaptrisSecurityException, IOException {

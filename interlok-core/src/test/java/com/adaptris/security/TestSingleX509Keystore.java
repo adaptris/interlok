@@ -16,57 +16,45 @@
 
 package com.adaptris.security;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import java.security.PrivateKey;
 import java.security.cert.Certificate;
-
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.security.keystore.KeystoreFactory;
 import com.adaptris.security.keystore.KeystoreProxy;
-
-import junit.framework.TestCase;
 
 /**
  * Test Keystore Functionality wrapping a single KEYSTORE_X509 certificate
  * 
- * @author $Author: lchan $
+ * 
  */
 public class TestSingleX509Keystore extends SingleEntryKeystoreBase {
-  /** @see TestCase */
-  public TestSingleX509Keystore(String testName) {
-    super(testName);
+
+  public TestSingleX509Keystore() {
+    super();
   }
 
-  /**
-   * @see TestCase#setUp()
-   */
+  @Override
+  @Before
   public void setUp() throws Exception {
-    super.setUp();
     config = Config.getInstance();
-    cfg = config.getProperties();
-
-    if (cfg == null) {
-      fail("No Configuration(!) available");
-    }
     kloc = KeystoreFactory.getDefault().create(
-        cfg.getProperty(Config.KEYSTORE_SINGLE_X509_URL),
-        cfg.getProperty(Config.KEYSTORE_COMMON_KEYSTORE_PW).toCharArray());
+        config.getProperty(Config.KEYSTORE_SINGLE_X509_URL),
+        config.getProperty(Config.KEYSTORE_COMMON_KEYSTORE_PW).toCharArray());
   }
 
-  /**
-   * @see TestCase#tearDown()
-   */
-  public void tearDown() throws Exception {
-    super.tearDown();
-  }
 
-  /**
-   * Get a certificate out of the keystore.
-   */
+  @Test
   public void testContainsAlias() {
     try {
       KeystoreProxy ksp = KeystoreFactory.getDefault().create(kloc);
       ksp.load();
 
-      String alias = cfg.getProperty(Config.KEYSTORE_SINGLE_X509_ALIAS);
+      String alias = config.getProperty(Config.KEYSTORE_SINGLE_X509_ALIAS);
       if (!ksp.containsAlias(alias)) {
         fail(alias + " doesn't exist in the specified keystore!");
       }
@@ -77,17 +65,15 @@ public class TestSingleX509Keystore extends SingleEntryKeystoreBase {
     }
   }
 
-  /**
-   * Get a certificate out of the keystore.
-   */
+  @Test
   public void testKeystoreGetCertificate() {
     try {
       KeystoreProxy ksp = KeystoreFactory.getDefault().create(kloc);
       ksp.load();
-      String alias = cfg.getProperty(Config.KEYSTORE_SINGLE_X509_ALIAS);
+      String alias = config.getProperty(Config.KEYSTORE_SINGLE_X509_ALIAS);
       if (ksp.containsAlias(alias)) {
         Certificate thisCert = ksp.getCertificate(alias);
-        logR.trace(thisCert);
+        assertNotNull(thisCert);
       }
       else {
         fail(alias + " does not exist in the specified keystore");
@@ -99,11 +85,12 @@ public class TestSingleX509Keystore extends SingleEntryKeystoreBase {
     }
   }
 
+  @Test
   public void testKeystoreGetCertificateChain() {
     try {
       KeystoreProxy ksp = KeystoreFactory.getDefault().create(kloc);
       ksp.load();
-      String alias = cfg.getProperty(Config.KEYSTORE_SINGLE_X509_ALIAS);
+      String alias = config.getProperty(Config.KEYSTORE_SINGLE_X509_ALIAS);
       if (ksp.containsAlias(alias)) {
         Certificate[] thisCert = ksp.getCertificateChain(alias);
         assertEquals(1, thisCert.length);
@@ -118,14 +105,12 @@ public class TestSingleX509Keystore extends SingleEntryKeystoreBase {
     }
   }
 
-  /**
-   * Get the private key out off the keystore.
-   */
+  @Test
   public void testKeystoreGetPrivateKey() {
     try {
       KeystoreProxy ksp = KeystoreFactory.getDefault().create(kloc);
       ksp.load();
-      String alias = cfg.getProperty(Config.KEYSTORE_SINGLE_X509_ALIAS);
+      String alias = config.getProperty(Config.KEYSTORE_SINGLE_X509_ALIAS);
       if (ksp.containsAlias(alias)) {
         PrivateKey pk = ksp.getPrivateKey(alias, "".toCharArray());
         assertNull(pk);

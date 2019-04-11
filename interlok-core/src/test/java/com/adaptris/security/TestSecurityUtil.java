@@ -19,18 +19,14 @@ package com.adaptris.security;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-
 import java.security.SecureRandom;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import com.adaptris.security.util.SecurityUtil;
 
 /**
- * @author lchan
- *
+*
  */
 public class TestSecurityUtil extends SecurityUtil {
 
