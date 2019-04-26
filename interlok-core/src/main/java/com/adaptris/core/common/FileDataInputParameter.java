@@ -17,12 +17,9 @@
 package com.adaptris.core.common;
 
 import java.io.IOException;
-
 import javax.validation.Valid;
-
-import com.adaptris.annotation.AdvancedConfig;
+import javax.validation.constraints.NotNull;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MessageDrivenDestination;
@@ -41,12 +38,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"destination","url"})
 public class FileDataInputParameter extends FileInputParameterImpl {
 
-  @Deprecated
-  @AdvancedConfig
-  @Removal(version = "3.9.0", message = "use destination instead")
-  private String url;
-
   @Valid
+  @NotNull(message = "destination may not be null")
   private MessageDrivenDestination destination;
 
   public FileDataInputParameter() {
@@ -63,34 +56,13 @@ public class FileDataInputParameter extends FileInputParameterImpl {
   }
 
   protected String url(InterlokMessage msg) throws CoreException {
-    if (getDestination() != null) {
-      if (msg instanceof AdaptrisMessage) {
-        return getDestination().getDestination((AdaptrisMessage) msg);
-      } else {
-        throw new RuntimeException("Message is not instance of Adaptris Message");
-      }
+    if (msg instanceof AdaptrisMessage) {
+      return getDestination().getDestination((AdaptrisMessage) msg);
+    } else {
+      throw new RuntimeException("Message is not instance of Adaptris Message");
     }
-    log.warn("[url] is deprecated, use [destination] instead");
-    return getUrl();
   }
 
-  /**
-   * @deprecated since 3.5.0 use {@link #getDestination()} instead for consistency.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0", message = "use #getDestination()")
-  public String getUrl() {
-    return url;
-  }
-
-  /**
-   * @deprecated since 3.5.0 use {@link #setDestination(MessageDrivenDestination)} instead for consistency.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0", message = "use #setDestination(MessageDrivenDestination)")
-  public void setUrl(String url) {
-    this.url = url;
-  }
 
   public MessageDrivenDestination getDestination() {
     return destination;
