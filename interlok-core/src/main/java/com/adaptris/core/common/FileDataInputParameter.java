@@ -56,6 +56,7 @@ public class FileDataInputParameter extends FileInputParameterImpl {
   }
 
   protected String url(InterlokMessage msg) throws CoreException {
+    Args.notNull(getDestination(), "destination");
     if (msg instanceof AdaptrisMessage) {
       return getDestination().getDestination((AdaptrisMessage) msg);
     } else {

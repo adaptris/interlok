@@ -19,7 +19,6 @@ import static com.adaptris.core.http.jetty.EmbeddedJettyHelper.URL_TO_POST_TO;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 import java.io.File;
 import org.apache.commons.io.FileUtils;
@@ -55,7 +54,12 @@ public class FileDataInputParameterTest {
   public void testDestination() throws Exception {
     AdaptrisMessage m = new DefaultMessageFactory().newMessage();
     FileDataInputParameter p = new FileDataInputParameter();
-    assertNull(p.url(m));
+    try {
+      p.url(m);
+      fail();
+    } catch (IllegalArgumentException e) {
+      // ok
+    }
     p.setDestination(new ConfiguredProduceDestination("file:////tmp/abc"));
     assertEquals("file:////tmp/abc", p.url(m));
     try {
@@ -79,7 +83,12 @@ public class FileDataInputParameterTest {
   public void testNonExistingFile() throws Exception {
     AdaptrisMessage m = new DefaultMessageFactory().newMessage();
     FileDataInputParameter p = new FileDataInputParameter();
-    assertNull(p.url(m));
+    try {
+      p.url(m);
+      fail();
+    } catch (IllegalArgumentException e) {
+      // ok
+    }
     p.setDestination(new ConfiguredProduceDestination("file:////tmp/doesnotexist"));
     assertEquals("file:////tmp/doesnotexist", p.url(m));
     String result = p.extract(m);
