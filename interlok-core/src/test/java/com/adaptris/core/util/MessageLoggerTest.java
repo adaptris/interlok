@@ -3,9 +3,7 @@ package com.adaptris.core.util;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.DefaultMessageLogger;
@@ -66,7 +64,6 @@ public class MessageLoggerTest {
     System.err.println("testTruncatedLogger:: " + s);
     assertNotNull(s);
     assertFalse(s.contains("The quick brown fox jumps over the lazy dog"));
-    assertTrue(s.contains("The quick brown f..."));
     assertFalse(s.contains("MessageLifecycleEvent"));
     assertFalse(s.contains("hello world"));
   }

@@ -2,10 +2,7 @@ package com.adaptris.core.util;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.MetadataElement;
 
@@ -41,6 +38,5 @@ public class MetadataLoggerTest {
     System.err.println("testTruncatedLogger:: " + s);
     assertNotNull(s);
     assertFalse(s.contains("The quick brown fox jumps over the lazy dog"));
-    assertTrue(s.contains("The quick brown f..."));
   }
 }
