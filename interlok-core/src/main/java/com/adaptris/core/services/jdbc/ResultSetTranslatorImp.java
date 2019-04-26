@@ -20,19 +20,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.annotation.Removal;
-import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.jdbc.types.ColumnHelper;
@@ -71,10 +66,6 @@ public abstract class ResultSetTranslatorImp extends StyledResultTranslatorImp {
   @AdvancedConfig
   @InputFieldDefault(value = "false")
   private Boolean attemptAutoConvert;
-
-  @Deprecated
-  @Removal(version = "3.9.0")
-  private String uniqueId;
 
 
   protected ResultSetTranslatorImp() {
@@ -220,27 +211,6 @@ public abstract class ResultSetTranslatorImp extends StyledResultTranslatorImp {
     updateCountMetadataItem = s;
   }
 
-  /**
-   * Not required as this component doesn't need to extend {@link AdaptrisComponent}
-   *
-   * @deprecated since 3.6.3
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public String getUniqueId() {
-    return uniqueId;
-  }
-
-  /**
-   * Not required as this component doesn't need to extend {@link AdaptrisComponent}
-   *
-   * @deprecated since 3.6.3
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public void setUniqueId(String uniqueId) {
-    this.uniqueId = uniqueId;
-  }
 
   public Boolean getAttemptAutoConvert() {
     return attemptAutoConvert;
