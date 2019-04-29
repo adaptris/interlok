@@ -61,10 +61,6 @@ public class ExceptionReportServiceTest extends ExceptionServiceExample {
     catch (CoreException expected) {
 
     }
-    service.setExceptionGenerator(new SimpleExceptionReport());
-    service.prepare();
-    assertNotNull(service.getExceptionSerializer());
-    assertEquals(ExceptionAsXml.class, service.getExceptionSerializer().getClass());
   }
 
   public void testNoObjectMetadata() throws Exception {
@@ -99,22 +95,8 @@ public class ExceptionReportServiceTest extends ExceptionServiceExample {
     execute(service, msg);
     assertNotSame(RAW_DATA, msg.getContent());
   }
-  
-  public void testDeprecated() throws Exception {
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
-    msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("This is the exception"));
-    ExceptionReportService service = new ExceptionReportService();
-    service.setDocumentMerge(new ReplaceNode(XPATH_ORIGINAL_NODE));
-    service.setExceptionGenerator(new SimpleExceptionReport());
-    service.setXmlEncoding("UTF-8");
-    service.setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder.newInstance());
-    execute(service, msg);
-    assertNotSame(XML_PAYLOAD, msg.getContent());
-    XmlUtils xml = XmlHelper.createXmlUtils(msg);
-    assertNotSame(RAW_DATA, xml.getSingleNode(XPATH_ORIGINAL_NODE));
-    assertEquals("UTF-8", msg.getContentEncoding());
-  }
 
+  @Override
   public void testDefaults() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
     msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("This is the exception"));
