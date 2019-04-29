@@ -19,6 +19,8 @@ package com.adaptris.core.ftp;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.oro.io.GlobFilenameFilter;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ConfiguredConsumeDestination;
@@ -278,7 +280,7 @@ public abstract class RelaxedFtpCase extends FtpConsumerExample {
       ftpConsumer.setDestination(ccd);
       ftpConsumer.setOlderThan(DEFAULT_QUIET_PERIOD);
 
-      ftpConsumer.setFileFilterImp("org.apache.oro.io.GlobFilenameFilter");
+      ftpConsumer.setFileFilterImp(GlobFilenameFilter.class.getCanonicalName());
       ftpConsumer.registerAdaptrisMessageListener(listener);
       ftpConsumer.setPoller(new QuartzCronPoller("*/1 * * * * ?"));
       StandaloneConsumer sc = new StandaloneConsumer(createConnection(), ftpConsumer);
@@ -337,7 +339,7 @@ public abstract class RelaxedFtpCase extends FtpConsumerExample {
       ccd.setConfiguredThreadName("testConsumeWithNonMatchingFilter");
       ftpConsumer.setDestination(ccd);
       ftpConsumer.setOlderThan(DEFAULT_QUIET_PERIOD);
-      ftpConsumer.setFileFilterImp("org.apache.oro.io.GlobFilenameFilter");
+      ftpConsumer.setFileFilterImp(GlobFilenameFilter.class.getCanonicalName());
       ftpConsumer.registerAdaptrisMessageListener(listener);
       ftpConsumer.setPoller(new QuartzCronPoller("*/1 * * * * ?"));
       StandaloneConsumer sc = new StandaloneConsumer(createConnection(), ftpConsumer);

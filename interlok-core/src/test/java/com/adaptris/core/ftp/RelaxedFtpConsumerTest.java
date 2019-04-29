@@ -30,6 +30,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.oro.io.GlobFilenameFilter;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -70,6 +71,7 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
     super(name);
   }
   
+  @Override
   public void setUp() throws Exception {
     consumer = new RelaxedFtpConsumer();
     
@@ -96,6 +98,7 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
     calendarOneYearAgo.add(Calendar.DAY_OF_YEAR, -1);
   }
   
+  @Override
   public void tearDown() throws Exception {
     LifecycleHelper.stop(consumer);
     LifecycleHelper.close(consumer);
@@ -281,7 +284,7 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
     );
     
     consumer.setDestination(new ConfiguredConsumeDestination("myDestination", "myFilter"));
-    consumer.setFileFilterImp("org.apache.oro.io.GlobFilenameFilter");
+    consumer.setFileFilterImp(GlobFilenameFilter.class.getCanonicalName());
     
     LifecycleHelper.init(consumer);
     LifecycleHelper.start(consumer);

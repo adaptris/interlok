@@ -44,10 +44,6 @@ public class CompositeFileFilterTest {
       "SizeGTE=1024",
       "SizeLT=1024",
       "SizeLTE=1024",
-      "Perl=.*\\.xml",
-      "Awk=.*",
-      "Glob=*.xml",
-      "Regex=.*\\.xml",
       "com.adaptris.core.fs.YesOrNo=false",
       "IWon'tWork"
   };
