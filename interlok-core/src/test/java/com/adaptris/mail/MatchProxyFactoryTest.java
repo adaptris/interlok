@@ -25,12 +25,6 @@ public class MatchProxyFactoryTest extends MatchProxyFactory {
   private static final String[][] VALID_PATTERNS = {
       new String[] { "Regex", ".*"},
       new String[] { "java.util.regex.Pattern", ".*"},
-      new String[] { "Awk", "Awk*"},
-      new String[] { "org.apache.oro.text.awk.AwkCompiler", "Awk*"},
-      new String[] { "Glob", "Glob*"},
-      new String[] { "org.apache.oro.text.GlobCompiler", "Glob*"},
-      new String[] { "Perl5", ".*"},
-      new String[] { "org.apache.oro.text.regex.Perl5Compiler", ".*"}
   };
 
   @Test

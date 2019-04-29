@@ -57,6 +57,7 @@ abstract class MessageFilterImp implements MessageFilter {
 
   abstract List<String> getHeaders(Message m) throws MessagingException;
 
+  @Override
   public final boolean accept(Message m) throws MessagingException {
     // no matcher, always true.
     if (matcher == null) {

@@ -62,9 +62,6 @@ public abstract class MailReceiverCase extends BaseCase {
 
   protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
-  protected static final String GLOB = "GLOB";
-  protected static final String PERL5 = "PERL5";
-  protected static final String AWK = "AWK";
   protected static final String JAVA_UTIL = "Regex";
 
   public MailReceiverCase(String name) {
@@ -73,6 +70,7 @@ public abstract class MailReceiverCase extends BaseCase {
 
   abstract MailReceiver createClient(GreenMail gm) throws Exception;
 
+  @Override
   public void setUp() throws Exception {
     super.setUp();
   }
@@ -118,7 +116,7 @@ public abstract class MailReceiverCase extends BaseCase {
     sendMessage("anotherAddress@anotherDomain.com", DEFAULT_RECEIVER, smtpServerSetup);
     MailReceiver mbox = createClient(gm);
     mbox.purge(true);
-    mbox.setRegularExpressionCompiler(PERL5);
+    mbox.setRegularExpressionCompiler(JAVA_UTIL);
     mbox.setSubjectFilter(".*ZZZZZZ.*");
     MailReceiver mboxChecker = createClient(gm);
     try {
@@ -149,7 +147,7 @@ public abstract class MailReceiverCase extends BaseCase {
     sendMessage("anotherAddress@anotherDomain.com", DEFAULT_RECEIVER, smtpServerSetup);
     MailReceiver mbox = createClient(gm);
     mbox.purge(true);
-    mbox.setRegularExpressionCompiler(PERL5);
+    mbox.setRegularExpressionCompiler(JAVA_UTIL);
     mbox.setSubjectFilter(".*Junit.*");
     MailReceiver mboxChecker = createClient(gm);
     try {
@@ -175,88 +173,6 @@ public abstract class MailReceiverCase extends BaseCase {
     }
   }
 
-  public void testGlobFromFilter() throws Exception {
-    if (!testsEnabled()) return;
-
-    GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
-    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
-    MailReceiver mbox = createClient(gm);
-    mbox.setRegularExpressionCompiler(GLOB);
-    mbox.setFromFilter(DEFAULT_SENDER);
-
-    try {
-      mbox.connect();
-      assertEquals(1, mbox.getMessages().size());
-      for (MimeMessage msg : mbox.getMessages()) {
-        mbox.setMessageRead(msg);
-        printMessageInfo(msg);
-        assertTo(msg, DEFAULT_RECEIVER);
-        assertFrom(msg, DEFAULT_SENDER);
-      }
-    }
-    finally {
-      mbox.disconnect();
-      stopServer(gm);
-    }
-  }
-
-  public void testPerl5FromFilter() throws Exception {
-    if (!testsEnabled()) return;
-
-    GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
-    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
-    MailReceiver mbox = createClient(gm);
-    mbox.setRegularExpressionCompiler(PERL5);
-    mbox.setFromFilter(DEFAULT_SENDER);
-
-    try {
-      mbox.connect();
-      assertEquals(1, mbox.getMessages().size());
-      for (MimeMessage msg : mbox.getMessages()) {
-        mbox.setMessageRead(msg);
-        printMessageInfo(msg);
-        assertTo(msg, DEFAULT_RECEIVER);
-        assertFrom(msg, DEFAULT_SENDER);
-      }
-    }
-    finally {
-      mbox.disconnect();
-      stopServer(gm);
-    }
-  }
-
-
-  public void testAwkFromFilter() throws Exception {
-    if (!testsEnabled()) return;
-
-    GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
-    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
-    MailReceiver mbox = createClient(gm);
-    mbox.setRegularExpressionCompiler(AWK);
-    mbox.setFromFilter(DEFAULT_SENDER);
-
-    try {
-      mbox.connect();
-      assertEquals(1, mbox.getMessages().size());
-      for (MimeMessage msg : mbox.getMessages()) {
-        mbox.setMessageRead(msg);
-        printMessageInfo(msg);
-        assertTo(msg, DEFAULT_RECEIVER);
-        assertFrom(msg, DEFAULT_SENDER);
-      }
-    }
-    finally {
-      mbox.disconnect();
-      stopServer(gm);
-    }
-  }
-
   public void testJavaUtil_FromFilter() throws Exception {
     if (!testsEnabled()) return;
 
@@ -277,146 +193,6 @@ public abstract class MailReceiverCase extends BaseCase {
         assertTo(msg, DEFAULT_RECEIVER);
         assertFrom(msg, DEFAULT_SENDER);
       }
-    }
-    finally {
-      mbox.disconnect();
-      stopServer(gm);
-    }
-  }
-
-  public void testGlobToFilterNoMatch() throws Exception {
-    if (!testsEnabled()) return;
-
-    GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
-    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
-    MailReceiver mbox = createClient(gm);
-    mbox.setRegularExpressionCompiler(GLOB);
-    mbox.setFromFilter("ABCDEFG");
-
-    try {
-      mbox.connect();
-      assertEquals(0, mbox.getMessages().size());
-    }
-    finally {
-      mbox.disconnect();
-      stopServer(gm);
-    }
-  }
-
-  public void testGlobToFilter() throws Exception {
-    if (!testsEnabled()) return;
-
-    GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
-    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
-    MailReceiver mbox = createClient(gm);
-    mbox.setRegularExpressionCompiler(GLOB);
-    mbox.setRecipientFilter(DEFAULT_RECEIVER + "*");
-
-    try {
-      mbox.connect();
-      assertEquals(1, mbox.getMessages().size());
-      for (MimeMessage msg : mbox.getMessages()) {
-        mbox.setMessageRead(msg);
-        printMessageInfo(msg);
-        assertTo(msg, DEFAULT_RECEIVER);
-        assertFrom(msg, DEFAULT_SENDER);
-      }
-    }
-    finally {
-      mbox.disconnect();
-      stopServer(gm);
-    }
-  }
-
-  public void testPerl5ToFilter() throws Exception {
-    if (!testsEnabled()) return;
-    GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
-    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
-    MailReceiver mbox = createClient(gm);
-    mbox.setRegularExpressionCompiler(PERL5);
-    mbox.setRecipientFilter(".*" + DEFAULT_RECEIVER + ".*");
-
-    try {
-      mbox.connect();
-      assertEquals(1, mbox.getMessages().size());
-      for (MimeMessage msg : mbox.getMessages()) {
-        mbox.setMessageRead(msg);
-        printMessageInfo(msg);
-        assertTo(msg, DEFAULT_RECEIVER);
-        assertFrom(msg, DEFAULT_SENDER);
-      }
-    }
-    finally {
-      mbox.disconnect();
-      stopServer(gm);
-    }
-  }
-
-  public void testPerl5ToFilterNoMatch() throws Exception {
-    if (!testsEnabled()) return;
-    GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
-    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
-    MailReceiver mbox = createClient(gm);
-    mbox.setRegularExpressionCompiler(PERL5);
-    mbox.setRecipientFilter("ABCDEFG");
-
-    try {
-      mbox.connect();
-      assertEquals(0, mbox.getMessages().size());
-    }
-    finally {
-      mbox.disconnect();
-      stopServer(gm);
-    }
-  }
-
-  public void testAwkToFilter() throws Exception {
-    if (!testsEnabled()) return;
-    GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
-    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
-    MailReceiver mbox = createClient(gm);
-    mbox.setRegularExpressionCompiler(AWK);
-    mbox.setRecipientFilter(".*" + DEFAULT_RECEIVER + ".*");
-
-    try {
-      mbox.connect();
-      assertEquals(1, mbox.getMessages().size());
-      for (MimeMessage msg : mbox.getMessages()) {
-        mbox.setMessageRead(msg);
-        printMessageInfo(msg);
-        assertTo(msg, DEFAULT_RECEIVER);
-        assertFrom(msg, DEFAULT_SENDER);
-      }
-    }
-    finally {
-      mbox.disconnect();
-      stopServer(gm);
-    }
-  }
-
-  public void testAwkToFilterNoMatch() throws Exception {
-    if (!testsEnabled()) return;
-    GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
-    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
-    MailReceiver mbox = createClient(gm);
-    mbox.setRegularExpressionCompiler(AWK);
-    mbox.setRecipientFilter("ABCDEFG");
-
-    try {
-      mbox.connect();
-      assertEquals(0, mbox.getMessages().size());
     }
     finally {
       mbox.disconnect();
@@ -470,82 +246,6 @@ public abstract class MailReceiverCase extends BaseCase {
     }
   }
 
-  public void testGlobCustomFilter() throws Exception {
-    if (!testsEnabled()) return;
-
-    GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
-    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
-    MailReceiver mbox = createClient(gm);
-    mbox.setRegularExpressionCompiler(GLOB);
-    mbox.addCustomFilter("From", DEFAULT_SENDER);
-    try {
-      mbox.connect();
-      assertEquals(1, mbox.getMessages().size());
-      for (MimeMessage msg : mbox.getMessages()) {
-        mbox.setMessageRead(msg);
-        printMessageInfo(msg);
-        assertTo(msg, DEFAULT_RECEIVER);
-        assertFrom(msg, DEFAULT_SENDER);
-      }
-    }
-    finally {
-      mbox.disconnect();
-      stopServer(gm);
-    }
-  }
-
-  public void testPerl5CustomFilter() throws Exception {
-    if (!testsEnabled()) return;
-    GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
-    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
-    MailReceiver mbox = createClient(gm);
-    mbox.setRegularExpressionCompiler(PERL5);
-    mbox.addCustomFilter("From", ".*" + DEFAULT_SENDER + ".*");
-    try {
-      mbox.connect();
-      assertEquals(1, mbox.getMessages().size());
-      for (MimeMessage msg : mbox.getMessages()) {
-        mbox.setMessageRead(msg);
-        printMessageInfo(msg);
-        assertTo(msg, DEFAULT_RECEIVER);
-        assertFrom(msg, DEFAULT_SENDER);
-      }
-    }
-    finally {
-      mbox.disconnect();
-      stopServer(gm);
-    }
-  }
-
-  public void testAwkCustomFilter() throws Exception {
-    if (!testsEnabled()) return;
-
-    GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
-    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
-    MailReceiver mbox = createClient(gm);
-    mbox.setRegularExpressionCompiler(AWK);
-    mbox.addCustomFilter("From", ".*" + DEFAULT_SENDER + ".*");
-    try {
-      mbox.connect();
-      assertEquals(1, mbox.getMessages().size());
-      for (MimeMessage msg : mbox.getMessages()) {
-        mbox.setMessageRead(msg);
-        printMessageInfo(msg);
-        assertTo(msg, DEFAULT_RECEIVER);
-        assertFrom(msg, DEFAULT_SENDER);
-      }
-    }
-    finally {
-      mbox.disconnect();
-      stopServer(gm);
-    }
-  }
 
   public void testJavaUtil_CustomFilter() throws Exception {
     if (!testsEnabled()) return;
@@ -572,83 +272,6 @@ public abstract class MailReceiverCase extends BaseCase {
     }
   }
 
-  public void testGlobSubjectFilter() throws Exception {
-    if (!testsEnabled()) return;
-
-    GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
-    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
-    MailReceiver mbox = createClient(gm);
-    mbox.setRegularExpressionCompiler(GLOB);
-    mbox.setSubjectFilter("Junit*");
-    try {
-      mbox.connect();
-      assertEquals(1, mbox.getMessages().size());
-      for (MimeMessage msg : mbox.getMessages()) {
-        mbox.setMessageRead(msg);
-        printMessageInfo(msg);
-        assertTo(msg, DEFAULT_RECEIVER);
-        assertFrom(msg, DEFAULT_SENDER);
-      }
-    }
-    finally {
-      mbox.disconnect();
-      stopServer(gm);
-    }
-  }
-
-  public void testPerl5SubjectFilter() throws Exception {
-    if (!testsEnabled()) return;
-
-    GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
-    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
-    MailReceiver mbox = createClient(gm);
-    mbox.setRegularExpressionCompiler(PERL5);
-    mbox.setSubjectFilter(".*Junit.*");
-    try {
-      mbox.connect();
-      assertEquals(1, mbox.getMessages().size());
-      for (MimeMessage msg : mbox.getMessages()) {
-        mbox.setMessageRead(msg);
-        printMessageInfo(msg);
-        assertTo(msg, DEFAULT_RECEIVER);
-        assertFrom(msg, DEFAULT_SENDER);
-      }
-    }
-    finally {
-      mbox.disconnect();
-      stopServer(gm);
-    }
-  }
-
-  public void testAwkSubjectFilter() throws Exception {
-    if (!testsEnabled()) return;
-
-    GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
-    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
-    MailReceiver mbox = createClient(gm);
-    mbox.setRegularExpressionCompiler(AWK);
-    mbox.setSubjectFilter(".*Junit.*");
-    try {
-      mbox.connect();
-      assertEquals(1, mbox.getMessages().size());
-      for (MimeMessage msg : mbox.getMessages()) {
-        mbox.setMessageRead(msg);
-        printMessageInfo(msg);
-        assertTo(msg, DEFAULT_RECEIVER);
-        assertFrom(msg, DEFAULT_SENDER);
-      }
-    }
-    finally {
-      mbox.disconnect();
-      stopServer(gm);
-    }
-  }
 
   public void testJavaUtil_SubjectFilter() throws Exception {
     if (!testsEnabled()) return;
@@ -713,92 +336,6 @@ public abstract class MailReceiverCase extends BaseCase {
     mbox.setRegularExpressionCompiler(JAVA_UTIL);
     mbox.setFromFilter(DEFAULT_SENDER);
     mbox.setSubjectFilter(".*Junit.*");
-    mbox.purge(true);
-    try {
-      mbox.connect();
-      assertEquals(1, mbox.getMessages().size());
-      for (MimeMessage msg : mbox.getMessages()) {
-        mbox.setMessageRead(msg);
-        printMessageInfo(msg);
-        assertTo(msg, DEFAULT_RECEIVER);
-        assertFrom(msg, DEFAULT_SENDER);
-      }
-      mbox.disconnect();
-      mbox.connect();
-      assertEquals(0, mbox.getMessages().size());
-      mbox.disconnect();
-    }
-    finally {
-      mbox.disconnect();
-      stopServer(gm);
-    }
-  }
-
-  public void testGlobFromSubjectFilter() throws Exception {
-    if (!testsEnabled()) return;
-
-    GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
-    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
-    MailReceiver mbox = createClient(gm);
-    mbox.setRegularExpressionCompiler(GLOB);
-    mbox.setFromFilter(DEFAULT_SENDER);
-    mbox.setSubjectFilter("Junit*");
-    try {
-      mbox.connect();
-      assertEquals(1, mbox.getMessages().size());
-      for (MimeMessage msg : mbox.getMessages()) {
-        mbox.setMessageRead(msg);
-        printMessageInfo(msg);
-        assertTo(msg, DEFAULT_RECEIVER);
-        assertFrom(msg, DEFAULT_SENDER);
-      }
-    }
-    finally {
-      mbox.disconnect();
-      stopServer(gm);
-    }
-  }
-
-  // INTERLOK-1849
-  public void testGlobFromSubjectFilter_NullSubject() throws Exception {
-    if (!testsEnabled()) return;
-
-    GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, null, smtpServerSetup);
-    MailReceiver mbox = createClient(gm);
-    mbox.setRegularExpressionCompiler(GLOB);
-    mbox.setFromFilter(DEFAULT_SENDER);
-    mbox.setSubjectFilter("Junit*");
-
-    MailReceiver checker = createClient(gm);
-    checker.setFromFilter(DEFAULT_SENDER);
-    try {
-      mbox.connect();
-      assertEquals(0, mbox.getMessages().size());
-      checker.connect();
-      assertEquals(1, checker.getMessages().size());
-    }
-    finally {
-      mbox.disconnect();
-      checker.disconnect();
-      stopServer(gm);
-    }
-  }
-
-  public void testGlobFromSubjectFilterWithDelete() throws Exception {
-    if (!testsEnabled()) return;
-
-    GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
-    sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
-    sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
-    MailReceiver mbox = createClient(gm);
-    mbox.setRegularExpressionCompiler(GLOB);
-    mbox.setFromFilter(DEFAULT_SENDER);
-    mbox.setSubjectFilter("Junit*");
     mbox.purge(true);
     try {
       mbox.connect();

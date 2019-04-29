@@ -123,7 +123,8 @@ public abstract class MailClientImp implements MailReceiver {
   /**
    * Set the handler for regular expressions.
    * 
-   * @param type one of "GLOB", "AWK", "PERL5" or their respective compiler classnames
+   * @param type a regular expression compiler, default is "REGEX" which uses java.util
+   *        regular expressions.
    */
   @Override
   public void setRegularExpressionCompiler(String type) {

@@ -110,7 +110,7 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
       sendMessage(gm);
       MockMessageListener mockListener = new MockMessageListener();
       DefaultMailConsumer imp = (DefaultMailConsumer) createConsumerForTests(gm);
-      imp.setRegularExpressionStyle("PERL5");
+      imp.setRegularExpressionStyle(REGEX_STYLE);
       imp.getDestination().setFilterExpression("SUBJECT=.*");
       imp.setHeaderHandler(new MetadataMailHeaders().withHeaderFilter(new NoOpMetadataFilter()));
 
