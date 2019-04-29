@@ -17,7 +17,6 @@
 package com.adaptris.core;
 
 import java.util.concurrent.TimeUnit;
-
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageConsumer;
 import com.adaptris.core.stubs.MockMessageListener;
@@ -109,8 +108,6 @@ public class StandaloneConsumerTest extends BaseCase {
     // Not started, so should always return false.
     assertFalse(consumer.continueProcessingMessages(1));
     LifecycleHelper.initAndStart(sc);
-    assertTrue(consumer.continueProcessingMessages());
-    assertTrue(consumer.continueProcessingMessages());
     assertTrue(consumer.continueProcessingMessages(5));
     assertFalse(consumer.continueProcessingMessages(11));
     assertFalse(consumer.continueProcessingMessages(10));

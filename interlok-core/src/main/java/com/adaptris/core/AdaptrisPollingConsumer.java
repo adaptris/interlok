@@ -18,24 +18,18 @@ package com.adaptris.core;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.util.FifoMutexLock;
 import com.adaptris.util.NumberUtils;
 
 public abstract class AdaptrisPollingConsumer extends AdaptrisMessageConsumerImp {
 
   private static final int THERES_NO_LIMIT = Integer.MAX_VALUE - 1;
-  private static boolean warningLogged = false;
-  
   @NotNull
   @AutoPopulated
   @Valid
@@ -95,19 +89,6 @@ public abstract class AdaptrisPollingConsumer extends AdaptrisMessageConsumerImp
   public void close() {
     LifecycleHelper.close(poller);
     releaseLock();
-  }
-
-  /**
-   * 
-   * @return true if it's ok to carry on.
-   * @deprecated since 3.6.6 use {@link #continueProcessingMessages(int)} instead passing in the current msg count to take advantage
-   *             of {@link #setMaxMessagesPerPoll(Integer)}. This will be removed in a future release.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public final boolean continueProcessingMessages() {
-    LoggingHelper.logDeprecation(warningLogged, ()-> { warningLogged=true;}, "continueProcessingMessages", "continueProcessingMessages(int)");      
-    return continueProcessingMessages(0);
   }
 
   /**
