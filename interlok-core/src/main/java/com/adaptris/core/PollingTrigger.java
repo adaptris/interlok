@@ -19,12 +19,12 @@ package com.adaptris.core;
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import org.apache.commons.lang3.ObjectUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.Args;
-import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -44,8 +44,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"poller", "messageProvider"})
 public class PollingTrigger extends AdaptrisPollingConsumer {
 
+  private static MessageProvider DEFAULT_MSG_PROVIDER = (factory) ->  {
+    return factory.newMessage();
+  };
+
   @Valid
-  @NotNull
+  @InputFieldDefault(value = "empty message")
   private MessageProvider messageProvider;
 
   private static final ConfiguredConsumeDestination DEFAULT_DEST = new ConfiguredConsumeDestination(
@@ -68,12 +72,7 @@ public class PollingTrigger extends AdaptrisPollingConsumer {
 
   @Override
   protected void prepareConsumer() throws CoreException {
-    try {
-      Args.notNull(getMessageProvider(), "messageProvider");
-      LifecycleHelper.prepare(getMessageProvider());
-    } catch (IllegalArgumentException e) {
-      throw ExceptionHelper.wrapCoreException(e);
-    }
+    LifecycleHelper.prepare(messageProvider());
   }
 
   /**
@@ -88,7 +87,7 @@ public class PollingTrigger extends AdaptrisPollingConsumer {
   protected int processMessages() {
     int count = 0;
     try {
-      AdaptrisMessage msg = getMessageProvider().createMessage(defaultIfNull(getMessageFactory()));
+      AdaptrisMessage msg = messageProvider().createMessage(defaultIfNull(getMessageFactory()));
       retrieveAdaptrisMessageListener().onAdaptrisMessage(msg);
       count = 1;
     }
@@ -102,19 +101,19 @@ public class PollingTrigger extends AdaptrisPollingConsumer {
   @Override
   public void init() throws CoreException {
     getPoller().registerConsumer(this);
-    LifecycleHelper.init(getMessageProvider());
+    LifecycleHelper.init(messageProvider());
     LifecycleHelper.init(getPoller());
   }
 
   @Override
   public void start() throws CoreException {
-    LifecycleHelper.start(getMessageProvider());
+    LifecycleHelper.start(messageProvider());
     super.start();
   }
 
   @Override
   public void stop() {
-    LifecycleHelper.stop(getMessageProvider());
+    LifecycleHelper.stop(messageProvider());
     super.stop();
   }
 
@@ -153,6 +152,9 @@ public class PollingTrigger extends AdaptrisPollingConsumer {
     this.messageProvider = Args.notNull(p, "messageProvider");
   }
 
+  MessageProvider messageProvider() {
+    return ObjectUtils.defaultIfNull(getMessageProvider(), DEFAULT_MSG_PROVIDER);
+  }
   /**
    * How to generate the template that will be sent to the workflow.
    * 

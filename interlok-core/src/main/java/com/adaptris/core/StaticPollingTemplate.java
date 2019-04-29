@@ -15,8 +15,7 @@
 */
 package com.adaptris.core;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
+import org.apache.commons.lang.StringUtils;
 import com.adaptris.annotation.MarshallingCDATA;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -40,22 +39,6 @@ public class StaticPollingTemplate implements PollingTrigger.MessageProvider {
     setTemplate(s);
   }
 
-  @Override
-  public void init() throws CoreException {
-  }
-
-  @Override
-  public void start() throws CoreException {
-  }
-
-  @Override
-  public void stop() {
-  }
-
-  @Override
-  public void close() {
-  }
-
   /**
    *
    * @param s the template message to use
@@ -74,7 +57,7 @@ public class StaticPollingTemplate implements PollingTrigger.MessageProvider {
 
   @Override
   public AdaptrisMessage createMessage(AdaptrisMessageFactory fac) {
-    return fac.newMessage(isEmpty(getTemplate()) ? "" : getTemplate());
+    return fac.newMessage(StringUtils.defaultIfBlank(getTemplate(), ""));
   }
 
 }
