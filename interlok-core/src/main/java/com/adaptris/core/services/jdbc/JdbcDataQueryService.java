@@ -16,8 +16,6 @@
 
 package com.adaptris.core.services.jdbc;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -36,13 +34,12 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.annotation.InputFieldHint;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DynamicPollingTemplate;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.jdbc.DatabaseConnection;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.JdbcUtil;
@@ -75,11 +72,8 @@ public class JdbcDataQueryService extends JdbcServiceWithParameters implements D
   static final String KEY_NAMESPACE_CTX = "NamespaceCtx_" + JdbcDataQueryService.class.getCanonicalName();
   static final String KEY_DOCBUILDER_FAC = "DocBuilderFactoryBuilder_" + JdbcDataQueryService.class.getCanonicalName();
 
-  @InputFieldHint(style="SQL")
-  @Deprecated
-  @Removal(version = "3.9.0", message = "Use a StatementCreator")
-  private String statement;  
   @Valid
+  @NotNull
   private JdbcStatementCreator statementCreator;
   @NotNull
   @AutoPopulated
@@ -114,13 +108,11 @@ public class JdbcDataQueryService extends JdbcServiceWithParameters implements D
 
   @Override
   protected void initJdbcService() throws CoreException {
-    LifecycleHelper.init(resultSetTranslator);
-    if (isEmpty(getStatement()) && getStatementCreator() == null) {
-      throw new CoreException("No JDBC Statement or creator defined");
-    }
-    if(getStatementCreator() == null) {
-      log.warn("'statement' is deprecated; use a statement-creator instead");
-      setStatementCreator(new ConfiguredSQLStatement(statement));
+    try {
+      Args.notNull(getStatementCreator(), "statementCreator");
+      LifecycleHelper.init(resultSetTranslator);
+    } catch (IllegalArgumentException e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
@@ -232,30 +224,6 @@ public class JdbcDataQueryService extends JdbcServiceWithParameters implements D
   private String prepareStringStatement(String statement) {
     return this.getParameterApplicator().prepareParametersToStatement(statement);
   }
-
-  /**
-   * 
-   * @return Returns the statement.
-   * @deprecated since 3.4.0 use a {@link JdbcStatementCreator} instead.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0", message = "Use a JdbcStatementCreator")
-  public String getStatement() {
-    return statement;
-  }
-
-  /**
-   * Set the SQL Query statement
-   * 
-   * @param statement The statement to set.
-   * @deprecated since 3.4.0 use a {@link JdbcStatementCreator} instead.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0", message = "Use a JdbcStatementCreator")
-  public void setStatement(String statement) {
-    this.statement = statement;
-  }
-
 
   /**
    * 

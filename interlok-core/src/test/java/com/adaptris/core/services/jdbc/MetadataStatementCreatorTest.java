@@ -54,9 +54,6 @@ public class MetadataStatementCreatorTest extends JdbcQueryServiceCase {
 
     // Copy the statement from the service to the metadata of the message to test the metadatastamentcreator
     msg.addMetadata("sqlStatement", sql);
-    s.setStatement(null); // Get rid of the statement in the service
-    assertNull(s.getStatement()); // Make sure the service doesn't have the statement anymore
-    
     execute(s, msg);
     assertEquals(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
     assertTrue(msg.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION));
@@ -88,8 +85,6 @@ public class MetadataStatementCreatorTest extends JdbcQueryServiceCase {
     MetadataSQLStatement ms = new MetadataSQLStatement();
     ms.setMetadataKey("sqlStatement");
     s.setStatementCreator(ms);
-    s.setStatement(null); // Get rid of the statement in the service
-
     try {
       start(s);
       s.doService(msg1);
