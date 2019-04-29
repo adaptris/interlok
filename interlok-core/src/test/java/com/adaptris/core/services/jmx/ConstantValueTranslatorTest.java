@@ -70,16 +70,6 @@ public class ConstantValueTranslatorTest extends TestCase {
     assertEquals(originalValue, Long.toString(((Date)value).getTime()));
   }
   
-  public void testSetValueDateType() throws Exception {
-    Date todaysDate = new Date();
-    String originalValue = Long.toString(todaysDate.getTime());
-    constantValueTranslator.setType(Date.class.getName());
-    constantValueTranslator.setValue(message, todaysDate);
-    Object value = constantValueTranslator.getValue(message);
-    assertTrue(value instanceof Date);
-    assertEquals(originalValue, Long.toString(((Date)value).getTime()));
-  }
-  
   public void testGetValueIntegerType() throws Exception {
     String originalValue = "1";
     constantValueTranslator.setType(Integer.class.getName());
