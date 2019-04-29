@@ -196,7 +196,7 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
         new long[] { calendarNow.getTimeInMillis() + 100000 }
     );
     
-    consumer.setOlderThan(new TimeInterval(1L, TimeUnit.MILLISECONDS));
+    consumer.setQuietInterval(new TimeInterval(1L, TimeUnit.MILLISECONDS));
     
     LifecycleHelper.init(consumer);
     LifecycleHelper.start(consumer);
