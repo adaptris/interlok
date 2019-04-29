@@ -16,8 +16,6 @@
 
 package com.adaptris.core.mail;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import org.apache.commons.lang3.BooleanUtils;
 
 import com.adaptris.annotation.AdapterComponent;
@@ -26,10 +24,8 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.NullConnection;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
@@ -101,10 +97,6 @@ public class DefaultSmtpProducer extends MailProducer {
   @InputFieldDefault(value = "base64")
   @InputFieldHint(expression = true)
   private String attachmentContentEncoding = null;
-  @AdvancedConfig
-  @Deprecated
-  @Removal(version = "3.9.0", message = "Use #setContentType(String) with an expression")
-  private String contentTypeKey = null;
 
   /**
    * @see Object#Object()
@@ -113,14 +105,6 @@ public class DefaultSmtpProducer extends MailProducer {
    */
   public DefaultSmtpProducer() {
     super();
-  }
-
-  @Override
-  public void init() throws CoreException {
-    super.init();
-    if (!isEmpty(getContentTypeKey())) {
-      log.warn("Use of deprecated content-type-key; use %message{metadata} in content-type instead");
-    }
   }
 
   /**
@@ -260,33 +244,6 @@ public class DefaultSmtpProducer extends MailProducer {
     return getAttachmentContentType() != null ? getAttachmentContentType() : "application/octet-stream";
   }
 
-  /**
-   * Get the metadata key from which to extract the metadata.
-   *
-   * @return the contentTypeKey
-   * @deprecated since 3.6.6 {@link #setContentType(String)} supports expressions
-   */
-  @Deprecated
-  @Removal(version = "3.9.0", message = "Use #setContentType(String) with an expression")
-  public String getContentTypeKey() {
-    return contentTypeKey;
-  }
-
-  /**
-   * Set the content type metadata key that will be used to extract the Content Type.
-   * <p>
-   * In the event that this metadata key exists, it will be used in preference to the configured content-type.
-   * </p>
-   *
-   * @param s the contentTypeKey to set
-   * @deprecated since 3.6.6 {@link #setContentType(String)} supports expressions
-   */
-  @Deprecated
-  @Removal(version = "3.9.0", message = "Use #setContentType(String) with an expression")
-  public void setContentTypeKey(String s) {
-    contentTypeKey = s;
-  }
-
   public String getAttachmentContentEncoding() {
     return attachmentContentEncoding;
   }
@@ -306,13 +263,6 @@ public class DefaultSmtpProducer extends MailProducer {
 
   private String getContentType(AdaptrisMessage msg) {
     String type = msg.resolve(contentType());
-    if (getContentTypeKey() != null) {
-      String s = msg.getMetadataValue(getContentTypeKey());
-      if (!isEmpty(s)) {
-        log.trace("{} metadata overrides configured content type", getContentTypeKey());
-        type = s;
-      }
-    }
     log.trace("Content-Type set to {}", type);
     return type;
   }
