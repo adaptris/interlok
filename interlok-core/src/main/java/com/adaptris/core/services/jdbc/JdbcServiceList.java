@@ -20,9 +20,7 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-
 import javax.validation.Valid;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -87,7 +85,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 })
 public class JdbcServiceList extends ServiceList implements ConnectedService {
 
-  private static transient boolean warningLogged = false;
   @Valid
   private AdaptrisConnection connection;
 
@@ -115,7 +112,7 @@ public class JdbcServiceList extends ServiceList implements ConnectedService {
       super.applyServices(msg);
       // We may not have a valid connection here if we're using pooled connections.  If not, then no point in committing on a new connection.
       Connection conn = (Connection) msg.getObjectHeaders().get(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY);
-      if((conn != null) && (!conn.isClosed()))
+      if(conn != null && !conn.isClosed())
         JdbcUtil.commit(conn);
     }
     catch (Exception e) {
