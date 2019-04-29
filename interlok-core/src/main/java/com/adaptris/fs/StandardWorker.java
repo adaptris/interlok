@@ -18,10 +18,8 @@ package com.adaptris.fs;
 
 import static com.adaptris.fs.FsWorker.checkNonExistent;
 import static com.adaptris.fs.FsWorker.checkWriteable;
-import static com.adaptris.fs.FsWorker.isDirectory;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.RandomAccessFile;
 
 import org.slf4j.Logger;

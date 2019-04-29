@@ -16,7 +16,11 @@
 
 package com.adaptris.transform.ff;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.PushbackReader;
+import java.io.Reader;
+import java.io.StreamTokenizer;
+import java.io.StringReader;
 
 /**
  * 

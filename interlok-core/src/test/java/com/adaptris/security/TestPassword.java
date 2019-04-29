@@ -17,20 +17,15 @@
 package com.adaptris.security;
 
 import static org.junit.Assert.assertEquals;
-
 import java.security.KeyStore;
 import java.security.cert.X509Certificate;
-
 import org.junit.Test;
-
 import com.adaptris.security.certificate.CertificateBuilder;
 import com.adaptris.security.password.Password;
 import com.adaptris.security.password.PasswordCodec;
 import com.adaptris.util.system.Os;
 
 /**
- * @author lchan
- *
  */
 public class TestPassword {
   private static final String CHARSET = "ISO-8859-1";

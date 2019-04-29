@@ -16,14 +16,18 @@
 
 package com.adaptris.core;
 
-
+import com.adaptris.annotation.Removal;
+import com.adaptris.core.services.dynamic.DynamicServiceLocator;
 
 /**
- * <p> 
- * Create a <code>TradingRelationship</code> from an 
- * <code>AdaptrisMessage</code>.
+ * <p>
+ * Create a <code>TradingRelationship</code> from an <code>AdaptrisMessage</code>.
  * </p>
+ * 
+ * @deprecated since 3.8.4 since only {@link DynamicServiceLocator} uses this.
  */
+@Deprecated
+@Removal(version = "3.11.0")
 public interface TradingRelationshipCreator {
 
   /**

@@ -1,0 +1,85 @@
+# Java Gradle CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-java/ for more details
+#
+version: 2
+
+jobs:
+  build:
+    docker:
+      - image: circleci/openjdk:8-jdk
+      - image: circleci/mysql:5.7.25
+
+    working_directory: ~/interlok
+
+    environment:
+      JAVA_TOOL_OPTIONS: -Xmx2G -Djava.security.egd=file:/dev/./urandom -Djava.util.concurrent.ForkJoinPool.common.parallelism=2
+      TERM: dumb
+
+    steps:
+      - checkout
+
+      - run:
+          name: Configure
+          command: |
+            mkdir -p ~/.gradle
+            echo "org.gradle.warning.mode=none" > ~/.gradle/gradle.properties
+            sudo sed -i.bak -e "s/securerandom.source=file:\/dev\/random/securerandom.source=file:\/dev\/.\/urandom/g" -e "s/securerandom.strongAlgorithms=NativePRNGBlocking/securerandom.strongAlgorithms=NativePRNG/g" /etc/java-8-openjdk/security/java.security
+            echo "default.jdbc.storedproc.tests.enabled=true" >> interlok-core/build.properties
+            echo "default.jdbc.storedproc.url=jdbc:mysql://localhost:3306/" >> interlok-core/build.properties
+            echo "default.jdbc.storedproc.driver=com.mysql.jdbc.Driver" >> interlok-core/build.properties
+            echo "default.jdbc.storedproc.database=circle_test" >> interlok-core/build.properties
+            echo "default.jdbc.storedproc.username=root" >> interlok-core/build.properties
+            echo "default.jdbc.storedproc.password=" >> interlok-core/build.properties
+            echo "default.jdbc.storedproc.vendor=mysql" >> interlok-core/build.properties
+            echo "default.jdbc.storedproc.teststatement=" >> interlok-core/build.properties
+            echo "default.jdbc.storedproc.url.params=?useSSL=false" >> interlok-core/build.properties
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - dependencies{{ checksum "build.gradle" }}
+            # fallback to using the latest cache if no exact match is found
+            - dependencies
+
+
+      # run tests!
+      - run:
+          name: Run Tests
+          command: ./gradlew -PverboseTests=true test jacocoTestReport
+
+      - run:
+          name: Save test results
+          command: |
+            mkdir -p ~/test-results/junit/
+            find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
+          when: always
+
+      - store_test_results:
+          path: ~/test-results
+
+      - run:
+          name: codecov.io
+          command: bash <(curl -s https://codecov.io/bash)
+
+      - save_cache:
+          paths:
+            - ~/.gradle/caches
+            - ~/.gradle/wrapper
+          key: dependencies{{ checksum "build.gradle" }}
+
+workflows:
+  version: 2
+  commit:
+    jobs:
+      - build
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 01 * * *"
+          filters:
+            branches:
+              only:
+                - develop
+    jobs:
+      - build

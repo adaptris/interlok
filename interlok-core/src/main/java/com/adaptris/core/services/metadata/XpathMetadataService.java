@@ -36,7 +36,6 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.ServiceImp;
 import com.adaptris.core.services.metadata.xpath.XpathQuery;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
@@ -63,8 +62,8 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @XStreamAlias("xpath-metadata-service")
 @AdapterComponent
 @ComponentProfile(summary = "Extract data via XPath and store it as metadata", tag = "service,metadata,xml,xpath")
-@DisplayOrder(order = {"xpathQueries", "namespaceContext", "xmlDocumentFactoryConfig"})
-public class XpathMetadataService extends ServiceImp {
+@DisplayOrder(order = {"xpathQueries", "namespaceContext", "xmlDocumentFactoryConfig", "metadataLogger"})
+public class XpathMetadataService extends MetadataServiceImpl {
 
   @NotNull
   @AutoPopulated
@@ -99,11 +98,6 @@ public class XpathMetadataService extends ServiceImp {
   }
 
   @Override
-  protected void closeService() {
-
-  }
-
-
   public void doService(AdaptrisMessage msg) throws ServiceException {
 
     Set<MetadataElement> metadataElements = new HashSet<MetadataElement>();
@@ -118,7 +112,7 @@ public class XpathMetadataService extends ServiceImp {
       for (XpathQuery query : queriesToExecute) {
         metadataElements.add(query.resolveXpath(doc, xpathToUse, query.createXpathQuery(msg)));
       }
-      log.debug("Xpath Metadata resolved {}", metadataElements);
+      logMetadata("Xpath Metadata resolved {}", metadataElements);
       msg.setMetadata(metadataElements);
     }
     catch (Exception e) {
@@ -161,11 +155,6 @@ public class XpathMetadataService extends ServiceImp {
   public void addXpathQuery(XpathQuery query) {
     xpathQueries.add(Args.notNull(query, "query"));
   }
-
-  @Override
-  public void prepare() throws CoreException {
-  }
-
 
   public DocumentBuilderFactoryBuilder getXmlDocumentFactoryConfig() {
     return xmlDocumentFactoryConfig;

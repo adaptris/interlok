@@ -36,7 +36,10 @@ public class TempFileUtils {
   public static File createTrackedFile(String prefix, String suffix, File baseDir, Object tracker) throws IOException {
     File f = File.createTempFile(prefix, suffix, baseDir);
     f.delete();
-    f.deleteOnExit();
+    return trackFile(f, tracker);
+  }
+
+  public static File trackFile(File f, Object tracker) {
     cleaner.track(f, tracker, FileDeleteStrategy.FORCE);
     return f;
   }
@@ -53,9 +56,8 @@ public class TempFileUtils {
     File f = File.createTempFile(prefix, suffix, baseDir);
     f.delete();
     f.mkdirs();
-    f.deleteOnExit();
     cleaner.track(f, tracker, FileDeleteStrategy.FORCE);
-    return f;
+    return trackFile(f, tracker);
   }
 
 }

@@ -17,14 +17,18 @@
 package com.adaptris.core.services.jdbc;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+
 import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang.BooleanUtils;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.InputFieldDefault;

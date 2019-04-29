@@ -21,7 +21,9 @@ import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -97,7 +99,7 @@ public class MultiProducerWorkflow extends StandardWorkflow {
     workflowStart(msg);
     try {
       long start = System.currentTimeMillis();
-      log.debug("start processing msg [{}]", msg.toString(logPayload()));
+      log.debug("start processing msg [{}]", messageLogger().toString(msg));
       wip = (AdaptrisMessage) msg.clone();
       wip.getMessageLifecycleEvent().setChannelId(obtainChannel().getUniqueId());
       wip.getMessageLifecycleEvent().setWorkflowId(obtainWorkflowId());

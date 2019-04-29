@@ -1,6 +1,7 @@
 plugins {
   // Manage optional dependencies in maven pom.
   id 'nebula.optional-base' version '4.0.1' apply false
+  id 'com.github.spotbugs' version '1.6.10' apply false
 }
 
 ext {
@@ -18,8 +19,8 @@ ext {
   componentName='Interlok'
   organizationName = "Adaptris Ltd"
   organizationUrl = "http://interlok.adaptris.net"
-  slf4jVersion = '1.7.25'
-  log4j2Version = "2.9.1"
+  slf4jVersion = '1.7.26'
+  log4j2Version = "2.11.2"
   xstreamVersion = '1.4.11.1'
 }
 
@@ -44,6 +45,7 @@ subprojects { subproject ->
   apply plugin: 'maven'
   apply plugin: 'maven-publish'
   apply plugin: 'nebula.optional-base'
+  apply plugin: 'com.github.spotbugs'
   if (jacocoEnabled(subproject)) {
     apply plugin: "jacoco"
   }
@@ -77,7 +79,7 @@ subprojects { subproject ->
   }
 
   dependencies {
-    mavenDeploy ("org.apache.maven.wagon:wagon-http:3.3.1")
+    mavenDeploy ("org.apache.maven.wagon:wagon-http:3.3.2")
   }
 
   configurations.all {
@@ -129,4 +131,27 @@ subprojects { subproject ->
                "Implementation-Vendor": organizationName)
     }
   }
+
+  spotbugs {
+    // showProgress = "true"
+    effort = "max"
+    // Ignore failures?
+    // ignoreFailures = false
+
+    // We only care about "high priority" issues...
+    reportLevel = "high"
+  }
+
+  // disable spotbugsTests which checks our test code..
+  spotbugsTest.enabled = false
+
+  tasks.withType(com.github.spotbugs.SpotBugsTask) {
+    reports {
+      xml.enabled = false
+      html.enabled = true
+    }
+    includeFilter = new File("$rootDir/gradle/spotbugs-filter.xml")
+    excludeFilter = new File("$rootDir/gradle/spotbugs-exclude.xml")
+  }
+
 }

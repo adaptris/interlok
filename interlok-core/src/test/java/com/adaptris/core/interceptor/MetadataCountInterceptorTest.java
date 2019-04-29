@@ -25,8 +25,6 @@ import java.util.concurrent.TimeUnit;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import junit.framework.TestCase;
-
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -36,6 +34,8 @@ import com.adaptris.core.MetadataElement;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
+
+import junit.framework.TestCase;
 
 public class MetadataCountInterceptorTest extends TestCase {
 

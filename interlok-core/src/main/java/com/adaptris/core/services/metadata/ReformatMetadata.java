@@ -25,10 +25,8 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.ServiceImp;
 import com.adaptris.core.util.ExceptionHelper;
 
 /**
@@ -45,7 +43,7 @@ import com.adaptris.core.util.ExceptionHelper;
  * @see TrimMetadataService
  * @see ReplaceMetadataValue
  */
-public abstract class ReformatMetadata extends ServiceImp implements MetadataReformatter {
+public abstract class ReformatMetadata extends MetadataServiceImpl implements MetadataReformatter {
 
   @NotBlank
   @AffectsMetadata
@@ -58,15 +56,6 @@ public abstract class ReformatMetadata extends ServiceImp implements MetadataRef
     this();
     setMetadataKeyRegexp(regexp);
   }
-
-  @Override
-  protected void initService() throws CoreException {
-  }
-
-  @Override
-  protected void closeService() {
-  }
-
 
   /**
    * <p>
@@ -88,7 +77,7 @@ public abstract class ReformatMetadata extends ServiceImp implements MetadataRef
           modifiedMetadata.add(new MetadataElement(e.getKey(), reformat(e.getValue(), msg)));
         }
       }
-      log.trace("Modified metadata : " + modifiedMetadata);
+      logMetadata("Modified metadata : {}", modifiedMetadata);
       msg.setMetadata(modifiedMetadata);
     }
     catch (Exception e) {
@@ -113,9 +102,6 @@ public abstract class ReformatMetadata extends ServiceImp implements MetadataRef
     metadataKeyRegexp = s;
   }
 
-  @Override
-  public void prepare() throws CoreException {
-  }
 
 
 }

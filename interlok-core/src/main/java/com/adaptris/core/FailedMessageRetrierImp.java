@@ -76,7 +76,7 @@ public abstract class FailedMessageRetrierImp implements FailedMessageRetrier {
     }
     catch (Exception e) { // inc. runtime, exc. Workflow
       log.error("exception retrying message", e);
-      log.error("message " + msg.toString(true));
+      log.error("message {}", MessageLoggerImpl.LAST_RESORT_LOGGER.toString(msg));
     }
   }
 
@@ -97,17 +97,17 @@ public abstract class FailedMessageRetrierImp implements FailedMessageRetrier {
 
     if (countString != null) {
       try {
-        count = new Integer(countString).intValue() + 1;
+        count = Integer.parseInt(countString) + 1;
       }
       catch (NumberFormatException e) {
-        log.warn("illegal retry count metadata [" + countString + "] resetting count to 1");
+        log.warn("illegal retry count metadata [{}] resetting count to 1", countString);
         count = 1;
       }
     }
     else {
       count = 1;
     }
-    msg.addMetadata(CoreConstants.RETRY_COUNT_KEY, new Integer(count).toString());
+    msg.addMetadata(CoreConstants.RETRY_COUNT_KEY, String.valueOf(count));
   }
 
   /** @see com.adaptris.core.AdaptrisComponent#init() */

@@ -78,7 +78,7 @@ public class MetadataStatistic extends InterceptorStatistic implements Externali
     if (!getMetadataStatistics().containsKey(key)) {
       return 0;
     }
-    return Integer.valueOf(getMetadataStatistics().getProperty(key));
+    return Integer.parseInt(getMetadataStatistics().getProperty(key));
   }
 
   public void putValue(String key, int value) {
@@ -105,7 +105,7 @@ public class MetadataStatistic extends InterceptorStatistic implements Externali
     if (!getMetadataStatistics().containsKey(key)) {
       putValue(key, increment);
     } else {
-      int current = Integer.valueOf(getMetadataStatistics().getProperty(key)).intValue();
+      int current = Integer.parseInt(getMetadataStatistics().getProperty(key));
       current += increment;
       putValue(key, current);
     }

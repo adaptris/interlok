@@ -25,10 +25,7 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataCollection;
-import com.adaptris.core.MetadataElement;
-import com.adaptris.core.ServiceImp;
 import com.adaptris.core.metadata.MetadataFilter;
 import com.adaptris.core.metadata.NoOpMetadataFilter;
 import com.adaptris.core.util.Args;
@@ -47,8 +44,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("metadata-filter-service")
 @AdapterComponent
 @ComponentProfile(summary = "Filter and remove metadata", tag = "service,metadata")
-@DisplayOrder(order = {"filter"})
-public class MetadataFilterService extends ServiceImp {
+@DisplayOrder(order = {"filter", "metadataLogger"})
+public class MetadataFilterService extends MetadataServiceImpl {
 
   @NotNull
   @AutoPopulated
@@ -62,28 +59,13 @@ public class MetadataFilterService extends ServiceImp {
 
   @Override
   public void doService(AdaptrisMessage msg) {
-    log.trace("Filtering metadata using [" + filter.getClass().getCanonicalName() + "]");
+    log.trace("Filtering metadata using [{}]", filter.getClass().getCanonicalName());
     MetadataCollection filtered = filter.filter(msg);
     msg.clearMetadata();
-    StringBuffer filteredKeys = new StringBuffer("Metadata keys preserved:");
-    for (MetadataElement e : filtered) {
-      filteredKeys.append(" ");
-      filteredKeys.append(e.getKey());
-      msg.addMetadata(e);
-    }
-    log.trace(filteredKeys.toString());
+    msg.setMetadata(filtered.toSet());
+    logMetadata("Metadata preserved : {}", filtered);
   }
 
-
-  @Override
-  protected void initService() throws CoreException {
-
-  }
-
-  @Override
-  protected void closeService() {
-
-  }
   public MetadataFilter getFilter() {
     return filter;
   }
@@ -96,9 +78,4 @@ public class MetadataFilterService extends ServiceImp {
     setFilter(mf);
     return this;
   }
-
-  @Override
-  public void prepare() throws CoreException {
-  }
-
 }

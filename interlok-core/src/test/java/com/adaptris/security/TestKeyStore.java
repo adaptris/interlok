@@ -16,18 +16,16 @@
 
 package com.adaptris.security;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import java.security.PrivateKey;
 import java.security.cert.Certificate;
 import java.util.Properties;
 import java.util.Random;
-
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.junit.Before;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.adaptris.security.keystore.KeystoreFactory;
 import com.adaptris.security.keystore.KeystoreLocation;
@@ -36,38 +34,20 @@ import com.adaptris.security.keystore.KeystoreProxy;
 /**
  * Test Keystore Functionality.
  * 
- * @author $Author: lchan $
  */
-public class TestKeyStore extends TestCase {
+public class TestKeyStore {
   private KeystoreProxy ksp = null;
   private KeystoreLocation kloc = null;
   private Properties cfg;
   private Config config;
-  private static Log logR = null;
+  private Logger logR = LoggerFactory.getLogger(this.getClass());
 
-  /** @see TestCase */
-  public TestKeyStore(String testName) {
-    super(testName);
-    if (logR == null) {
-      logR = LogFactory.getLog(TestKeyStore.class);
-    }
+  public TestKeyStore() {
   }
 
-  /** main. */
-  public static void main(java.lang.String[] args) {
-    junit.textui.TestRunner.run(suite());
-  }
 
-  public static Test suite() {
-    TestSuite suite = new TestSuite(TestKeyStore.class);
-    return suite;
-  }
-
-  /**
-   * @see TestCase#setUp()
-   */
+  @Before
   public void setUp() throws Exception {
-    super.setUp();
     config = Config.getInstance();
     cfg = config.getProperties();
 
@@ -81,16 +61,8 @@ public class TestKeyStore extends TestCase {
         .buildKeystore(cfg.getProperty(Config.KEYSTORE_TEST_URL), null, false);
   }
 
-  /**
-   * @see TestCase#tearDown()
-   */
-  public void tearDown() throws Exception {
-    super.tearDown();
-  }
 
-  /**
-   * Get a certificate out of the keystore.
-   */
+  @Test
   public void testKeystoreGetCertificate() throws Exception {
     Certificate thisCert;
     ksp = KeystoreFactory.getDefault().create(kloc);
@@ -99,13 +71,13 @@ public class TestKeyStore extends TestCase {
     if (ksp.containsAlias(alias)) {
       thisCert = ksp.getCertificate(alias);
       assertNotNull("Certificate is not null", thisCert);
-      logR.trace(thisCert);
     }
     else {
       fail(alias + " does not exist in the specified keystore");
     }
   }
 
+  @Test
   public void testKeystoreImportCertificate() throws Exception {
     ksp = KeystoreFactory.getDefault().create(kloc);
     ksp.load();
@@ -113,6 +85,7 @@ public class TestKeyStore extends TestCase {
         .getProperty(Config.KEYSTORE_IMPORT_X509_FILE));
   }
 
+  @Test
   public void testKeystoreImportCertificateInvalidFilename() throws Exception {
     ksp = KeystoreFactory.getDefault().create(kloc);
     ksp.load();
@@ -125,9 +98,7 @@ public class TestKeyStore extends TestCase {
     }
   }
 
-  /**
-   * Get the private key out off the keystore.
-   */
+  @Test
   public void testKeystoreGetPrivateKey() throws Exception {
     ksp = KeystoreFactory.getDefault().create(kloc);
     ksp.load();
@@ -136,13 +107,13 @@ public class TestKeyStore extends TestCase {
       PrivateKey pk = ksp.getPrivateKey(alias, cfg.getProperty(
           Config.KEYSTORE_COMMON_PRIVKEY_PW).toCharArray());
       assertNotNull("PrivateKey is not null", pk);
-      logR.trace(pk);
     }
     else {
       fail(alias + " does not exist in the specified keystore");
     }
   }
 
+  @Test
   public void testKeystoreNoPrivateKeyPassword() throws Exception {
     ksp = KeystoreFactory.getDefault().create(kloc);
     ksp.load();
@@ -150,13 +121,13 @@ public class TestKeyStore extends TestCase {
     if (ksp.containsAlias(alias)) {
       PrivateKey pk = ksp.getPrivateKey(alias, null);
       assertNotNull("PrivateKey is not null", pk);
-      logR.trace(pk);
     }
     else {
       fail(alias + " does not exist in the specified keystore");
     }
   }
 
+  @Test
   public void testKeystoreImportPrivateKey() throws Exception {
     config.importPrivateKey(cfg.getProperty(Config.KEYSTORE_TEST_URL), cfg
         .getProperty(Config.KEYSTORE_IMPORT_PKCS12_FILE), false);
@@ -167,13 +138,13 @@ public class TestKeyStore extends TestCase {
       PrivateKey pk = ksp.getPrivateKey(alias, cfg.getProperty(
           Config.KEYSTORE_COMMON_PRIVKEY_PW).toCharArray());
       assertNotNull("PrivateKey is not null", pk);
-      logR.trace(pk);
     }
     else {
       fail(alias + " does not exist in the specified keystore");
     }
   }
 
+  @Test
   public void testKeystoreImportInvalidPrivateKey() throws Exception {
     try {
       config.importPrivateKey(cfg.getProperty(Config.KEYSTORE_TEST_URL),
@@ -185,6 +156,7 @@ public class TestKeyStore extends TestCase {
     }
   }
 
+  @Test
   public void testKeystoreImportCertificateChain() throws Exception {
     config.importPrivateKey(cfg.getProperty(Config.KEYSTORE_TEST_URL), cfg
         .getProperty(Config.KEYSTORE_IMPORT_PKCS12_FILE), false);
@@ -197,6 +169,7 @@ public class TestKeyStore extends TestCase {
     ksp.commit();
   }
 
+  @Test
   public void testKeystoreImportCertificateChainInvalidFile() throws Exception {
     config.importPrivateKey(cfg.getProperty(Config.KEYSTORE_TEST_URL), cfg
         .getProperty(Config.KEYSTORE_IMPORT_PKCS12_FILE), true);
@@ -214,6 +187,7 @@ public class TestKeyStore extends TestCase {
     ksp.commit();
   }
 
+  @Test
   public void testKeystoreImportCertificateChainInvalidAlias() throws Exception {
     config.importPrivateKey(cfg.getProperty(Config.KEYSTORE_TEST_URL), cfg
         .getProperty(Config.KEYSTORE_IMPORT_PKCS12_FILE), true);

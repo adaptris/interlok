@@ -102,7 +102,7 @@ public class MetadataTotalsInterceptor extends MetadataMetricsInterceptorImpl {
     if (!msg.headersContainsKey(key)) {
       return 0;
     }
-    return Integer.valueOf(msg.getMetadataValue(key)).intValue();
+    return Integer.parseInt(msg.getMetadataValue(key));
   }
 
   public List<String> getMetadataKeys() {

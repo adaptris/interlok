@@ -23,6 +23,7 @@ import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Properties;
+
 import org.apache.commons.lang3.BooleanUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -96,7 +97,7 @@ public class SimpleSequenceNumberService extends ServiceImp {
     ResetToOne() {
       @Override
       long wrap(long i) {
-        return Long.valueOf(ONE);
+        return Long.parseLong(ONE);
       }
 
     },
@@ -272,7 +273,6 @@ public class SimpleSequenceNumberService extends ServiceImp {
   }
 
   private static Properties load(File myFile) throws IOException {
-    Properties result = new Properties();
     if (!myFile.exists()) {
       myFile.createNewFile();
     }

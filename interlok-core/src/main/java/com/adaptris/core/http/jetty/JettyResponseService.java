@@ -129,7 +129,8 @@ public class JettyResponseService extends ServiceImp {
     StandardResponseProducer p = new StandardResponseProducer()
         .withContentTypeProvider(new RawContentTypeProvider(msg.resolve(getContentType())))
         .withResponseHeaderProvider(getResponseHeaderProvider()).withSendPayload(true).withForwardConnectionException(false)
-        .withFlushBuffer(true).withStatusProvider(new RawStatusProvider(Integer.valueOf(msg.resolve(getHttpStatus()))))
+        .withFlushBuffer(true)
+        .withStatusProvider(new RawStatusProvider(Integer.parseInt(msg.resolve(getHttpStatus()))))
         .withMessageFactory(msg.getFactory());
     p.registerConnection(new NullConnection());
     return p;

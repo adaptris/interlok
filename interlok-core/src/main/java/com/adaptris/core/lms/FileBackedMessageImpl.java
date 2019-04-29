@@ -60,7 +60,7 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
   }
 
   @Override
-  protected String getPayloadForLogging() {
+  public String getPayloadForLogging() {
     return "file-location:" + inputFile;
   }
 
@@ -116,7 +116,7 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
   @Override
   public void setContent(String content, String charEncoding) {
     wrappedTry(() -> {
-      try (PrintStream out = (!isEmpty(charEncoding)) ? new PrintStream(getOutputStream(), true, charEncoding)
+      try (PrintStream out = !isEmpty(charEncoding) ? new PrintStream(getOutputStream(), true, charEncoding)
           : new PrintStream(getOutputStream(), true)) {
         out.print(content != null ? content : "");
         setContentEncoding(charEncoding);

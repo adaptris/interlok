@@ -130,7 +130,7 @@ public class AdapterXStreamMarshallerFactory extends AdapterMarshallerFactory {
   /**
    * Reads in and stores all of the xstream configuration items from various resources
    */
-  protected void readXStreamConfigProperties() {
+  protected static void readXStreamConfigProperties() {
     // Process annotations
     xstreamAnnotatedClasses = new PropertyClassListProcessor().process(XSTREAM_ALIAS_PROPERTIES_FILE, new ArrayList<Class<?>>());
     // Process classes with special field handling

@@ -17,17 +17,15 @@
 package com.adaptris.core.services.dynamic;
 
 import static com.adaptris.core.util.LoggingHelper.friendlyName;
-
-import java.io.IOException;
-import java.io.InputStream;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -37,33 +35,35 @@ import com.adaptris.core.EventHandlerAware;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.ServiceList;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Implementation of {@link com.adaptris.core.Service} which dynamically obtains and applies a {@link com.adaptris.core.Service} to
- * an {@link com.adaptris.core.AdaptrisMessage} based on
- * the contents of the message.
+ * Implementation of {@link com.adaptris.core.Service} which dynamically obtains and applies a
+ * {@link com.adaptris.core.Service} to an {@link com.adaptris.core.AdaptrisMessage} based on the
+ * contents of the message.
  * 
  * <p>
- * This class will attempt to extract a marshalled service (roughly analagous to {@link DynamicServiceLocator}) from the payload of
- * the current message, unmarshal that service, and then execute that service against the current message. The use of this type of
- * service is discouraged from a supportability perspective; however there will be use cases where it is appropriate. No checks are
- * performed on the {@link com.adaptris.core.Service} that is unmarshalled other than license verification; any exceptions thrown by
- * unmarshalled
- * service are simply rethrown back to the workflow for standard message error handling.
+ * This class will attempt to extract a marshalled service (roughly analagous to
+ * {@link DynamicServiceLocator}) from the specified location (which might be the current message),
+ * unmarshal that service, and then execute that service against the current message. The use of
+ * this type of service is discouraged from a supportability perspective; however there will be use
+ * cases where it is appropriate. No checks are performed on the {@link com.adaptris.core.Service}
+ * that is unmarshalled; any exceptions thrown by unmarshalled service are simply rethrown back to
+ * the workflow for standard message error handling.
  * </p>
  * 
  * @config dynamic-service-executor
  * 
- * @author lchan
  * @see ServiceExtractor
  */
 @XStreamAlias("dynamic-service-executor")
 @AdapterComponent
-@ComponentProfile(summary = "Execute a service definition which is defined in the message itself", tag = "service,dynamic")
+@ComponentProfile(summary = "Lookup and execute a dynamic service", tag = "service,dynamic")
+@DisplayOrder(order = {"serviceExtractor", "marshaller", "treatNotFoundAsError"})
 public class DynamicServiceExecutor extends ServiceImp implements EventHandlerAware {
 
   private transient EventHandler eventHandler;
@@ -75,6 +75,9 @@ public class DynamicServiceExecutor extends ServiceImp implements EventHandlerAw
   @Valid
   @AdvancedConfig
   private AdaptrisMarshaller marshaller;
+
+  @InputFieldDefault(value = "true")
+  private Boolean treatNotFoundAsError;
 
   public DynamicServiceExecutor() {
     this(new DefaultServiceExtractor());
@@ -94,27 +97,51 @@ public class DynamicServiceExecutor extends ServiceImp implements EventHandlerAw
       service.doService(msg);
       LifecycleHelper.stopAndClose(service, false);
     }
-    catch (IOException | CoreException e) {
+    catch (Exception e) {
       throw ExceptionHelper.wrapServiceException(e);
     }
   }
 
-  private Service createService(AdaptrisMessage msg) throws CoreException, IOException {
-    try (InputStream in = serviceExtractor.getInputStream(msg)) {
-      return (Service) currentMarshaller().unmarshal(in);
+  private Service createService(AdaptrisMessage msg) throws Exception {
+    try {
+      return getServiceExtractor().getService(msg, currentMarshaller());
+    } catch (Exception e) {
+      return onException(e);
     }
+  }
+
+  private Service onException(Exception e) throws Exception {
+    if (treatNotFoundAsError()) {
+      throw e;
+    }
+    log.trace("Encountered [{}] attempting to create dynamic-service; using empty service-list",
+        e.getMessage());
+    return new ServiceList();
   }
 
   @Override
   protected void initService() throws CoreException {
+    LifecycleHelper.init(getServiceExtractor());
+  }
+
+  @Override
+  public void start() throws CoreException {
+    LifecycleHelper.start(getServiceExtractor());
+  }
+
+  @Override
+  public void stop() {
+    LifecycleHelper.stop(getServiceExtractor());
   }
 
   @Override
   protected void closeService() {
+    LifecycleHelper.close(getServiceExtractor());
   }
 
   @Override
   public void prepare() throws CoreException {
+    LifecycleHelper.prepare(getServiceExtractor());
   }
 
 
@@ -144,14 +171,32 @@ public class DynamicServiceExecutor extends ServiceImp implements EventHandlerAw
   /**
    * Set the marshaller to use to unmarshal the service.
    * 
-   * @param m the marshaller, if not configured will default to {@link DefaultMarshaller#getDefaultMarshaller()}
+   * @param m the marshaller, if not configured will default to
+   *        {@link DefaultMarshaller#getDefaultMarshaller()}
    */
   public void setMarshaller(AdaptrisMarshaller m) {
     this.marshaller = m;
   }
 
-  AdaptrisMarshaller currentMarshaller() {
+  private AdaptrisMarshaller currentMarshaller() {
     return DefaultMarshaller.defaultIfNull(getMarshaller());
   }
 
+  public Boolean getTreatNotFoundAsError() {
+    return treatNotFoundAsError;
+  }
+
+  /**
+   * Specify whether a failure to find a dynamic service is treated as an exception.
+   *
+   * @param b true to treat failures to unmarshal / find the service as an exception; default is
+   *        true if not specified
+   */
+  public void setTreatNotFoundAsError(Boolean b) {
+    treatNotFoundAsError = b;
+  }
+
+  private boolean treatNotFoundAsError() {
+    return BooleanUtils.toBooleanDefaultIfNull(getTreatNotFoundAsError(), true);
+  }
 }

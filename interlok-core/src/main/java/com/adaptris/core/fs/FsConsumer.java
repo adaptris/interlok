@@ -37,7 +37,6 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.NullConnection;
 import com.adaptris.core.util.Args;
 import com.adaptris.fs.FsException;
-import com.adaptris.fs.FsFilenameExistsException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -153,16 +152,7 @@ public class FsConsumer extends FsConsumerImpl {
   }
 
   protected File renameFile(File file) throws FsException {
-    File newFile = new File(file.getAbsolutePath() + wipSuffix);
-
-    try {
-      fsWorker.rename(file, newFile);
-    }
-    catch (FsFilenameExistsException e) {
-      newFile = new File(file.getParentFile(), System.currentTimeMillis() + "." + file.getName() + wipSuffix);
-      fsWorker.rename(file, newFile);
-    }
-    return newFile;
+    return FsHelper.renameFile(file, wipSuffix, fsWorker);
   }
 
   /**

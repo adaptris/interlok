@@ -18,7 +18,9 @@ package com.adaptris.core.services.jdbc;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+
 import javax.xml.namespace.NamespaceContext;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;

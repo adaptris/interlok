@@ -32,7 +32,8 @@ order = {"validating", "namespaceAware", "xincludeAware", "expandEntityReference
     "ignoreWhitespace", "features"})
 public class DocumentBuilderFactoryBuilder {
 
-  public static String DISABLE_DOCTYP = "http://apache.org/xml/features/disallow-doctype-decl";
+  public static final String DISABLE_DOCTYP =
+      "http://apache.org/xml/features/disallow-doctype-decl";
 
   @NotNull
   @AutoPopulated

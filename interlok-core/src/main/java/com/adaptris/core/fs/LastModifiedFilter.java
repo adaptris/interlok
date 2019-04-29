@@ -54,7 +54,7 @@ public abstract class LastModifiedFilter implements FileFilter {
   protected Date filterDate() throws Exception {
     Date filterDate = new Date();
     if (NumberUtils.isDigits(when)) {
-      filterDate.setTime(Long.valueOf(when));
+      filterDate.setTime(Long.parseLong(when));
     }
     else {
       Duration duration = DatatypeFactory.newInstance().newDuration(when);

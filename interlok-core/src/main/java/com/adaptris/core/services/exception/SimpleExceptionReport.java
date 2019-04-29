@@ -60,7 +60,7 @@ public class SimpleExceptionReport implements ExceptionReportGenerator {
     setElementName(elementName);
   }
 
-  public Document create(Exception e) throws Exception {
+  public Document create(Exception e, String workflow, String location) throws Exception {
     StringWriter sw = new StringWriter();
     PrintWriter pw = new PrintWriter(sw, true);
     pw.println("<" + elementName() + ">");

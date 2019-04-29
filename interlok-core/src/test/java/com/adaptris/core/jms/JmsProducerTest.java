@@ -18,6 +18,11 @@ package com.adaptris.core.jms;
 
 import static com.adaptris.core.jms.JmsConfig.DEFAULT_PAYLOAD;
 import static com.adaptris.core.jms.JmsConfig.MESSAGE_TRANSLATOR_LIST;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,12 +30,15 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.jms.Destination;
+import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
 import javax.jms.Topic;
 
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQSession;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -50,7 +58,17 @@ import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.util.TimeInterval;
 
 public class JmsProducerTest extends JmsProducerCase {
+  
+  @Mock private ProducerSessionFactory mockSessionFactory;
+  @Mock private ProducerSession mockProducerSession;
+  @Mock private Session mockSession;
+  @Mock private Message mockMessage;
 
+  public void setUp() throws Exception {
+    super.setUp();
+    MockitoAnnotations.initMocks(this);
+  }
+  
   public JmsProducerTest(String name) {
     super(name);
   }
@@ -81,6 +99,202 @@ public class JmsProducerTest extends JmsProducerCase {
     return session.createTopic(name);
   }
 
+  public void testTransactedCommit() throws Exception {
+    when(mockSessionFactory.createProducerSession(any(), any()))
+      .thenReturn(mockProducerSession);
+    when(mockProducerSession.getSession())
+      .thenReturn(mockSession);
+    when(mockSession.getTransacted())
+      .thenReturn(true);
+    
+    JmsProducer producer = this.createProducer(new ConfiguredProduceDestination("myDestination"));
+    producer.setSessionFactory(mockSessionFactory);
+    producer.setupSession(AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx"));
+    producer.commit();
+    
+    verify(mockSession).commit();
+  }
+  
+  public void testNonTransactedNoCommit() throws Exception {
+    when(mockSessionFactory.createProducerSession(any(), any()))
+      .thenReturn(mockProducerSession);
+    when(mockProducerSession.getSession())
+      .thenReturn(mockSession);
+    when(mockSession.getTransacted())
+      .thenReturn(false);
+    
+    JmsProducer producer = this.createProducer(new ConfiguredProduceDestination("myDestination"));
+    producer.setSessionFactory(mockSessionFactory);
+    producer.setupSession(AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx"));
+    producer.commit();
+    
+    verify(mockSession, times(0)).commit();
+  }
+  
+  public void testTransactedRollback() throws Exception {
+    when(mockSessionFactory.createProducerSession(any(), any()))
+      .thenReturn(mockProducerSession);
+    when(mockProducerSession.getSession())
+      .thenReturn(mockSession);
+    when(mockSession.getTransacted())
+      .thenReturn(true);
+    
+    JmsProducer producer = this.createProducer(new ConfiguredProduceDestination("myDestination"));
+    producer.setSessionFactory(mockSessionFactory);
+    producer.setupSession(AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx"));
+    producer.rollback();
+    
+    verify(mockSession).rollback();
+  }
+  
+  public void testAttemptedTransactedRollback() throws Exception {
+    when(mockSessionFactory.createProducerSession(any(), any()))
+      .thenReturn(mockProducerSession);
+    when(mockProducerSession.getSession())
+      .thenReturn(mockSession);
+    when(mockSession.getTransacted())
+      .thenReturn(true);
+    doThrow(new JMSException("expected"))
+      .when(mockSession).rollback();
+    
+    JmsProducer producer = this.createProducer(new ConfiguredProduceDestination("myDestination"));
+    producer.setSessionFactory(mockSessionFactory);
+    producer.setupSession(AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx"));
+    producer.rollback();
+    
+    verify(mockSession).rollback();
+  }
+  
+  public void testSessionDeadOnRollback() throws Exception {
+    when(mockSessionFactory.createProducerSession(any(), any()))
+      .thenReturn(mockProducerSession);
+    when(mockProducerSession.getSession())
+      .thenReturn(mockSession);
+    when(mockSession.getTransacted())
+      .thenThrow(new JMSException("expected"));
+    
+    JmsProducer producer = this.createProducer(new ConfiguredProduceDestination("myDestination"));
+    producer.setSessionFactory(mockSessionFactory);
+    producer.setupSession(AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx"));
+    producer.rollback();
+    
+    verify(mockSession, times(0)).rollback();
+  }
+  
+  public void testNotTransactedNoRollback() throws Exception {
+    when(mockSessionFactory.createProducerSession(any(), any()))
+      .thenReturn(mockProducerSession);
+    when(mockProducerSession.getSession())
+      .thenReturn(mockSession);
+    when(mockSession.getTransacted())
+      .thenReturn(false);
+    
+    JmsProducer producer = new JmsProducer(new ConfiguredProduceDestination("myDestination"));
+    producer.setSessionFactory(mockSessionFactory);
+    producer.setupSession(AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx"));
+    producer.rollback();
+    
+    verify(mockSession, times(0)).rollback();
+  }
+  
+  public void testNullMessageAck() throws Exception {
+    when(mockSessionFactory.createProducerSession(any(), any()))
+      .thenReturn(mockProducerSession);
+    when(mockProducerSession.getSession())
+      .thenReturn(mockSession);
+    when(mockSession.getTransacted())
+      .thenReturn(false);
+  
+    JmsProducer producer = new JmsProducer(new ConfiguredProduceDestination("myDestination"));
+    producer.setSessionFactory(mockSessionFactory);
+    producer.setupSession(AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx"));
+    producer.acknowledge(null);
+    
+    verify(mockMessage, times(0)).acknowledge();
+  }
+  
+  public void testMessageAckNotTransacted() throws Exception {
+    when(mockSessionFactory.createProducerSession(any(), any()))
+      .thenReturn(mockProducerSession);
+    when(mockProducerSession.getSession())
+      .thenReturn(mockSession);
+    when(mockSession.getTransacted())
+      .thenReturn(false);
+  
+    JmsProducer producer = new JmsProducer(new ConfiguredProduceDestination("myDestination"));
+    producer.setSessionFactory(mockSessionFactory);
+    producer.setupSession(AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx"));
+    producer.acknowledge(mockMessage);
+    
+    verify(mockMessage).acknowledge();
+  }
+  
+  public void testMessageAckTransacted() throws Exception {
+    when(mockSessionFactory.createProducerSession(any(), any()))
+      .thenReturn(mockProducerSession);
+    when(mockProducerSession.getSession())
+      .thenReturn(mockSession);
+    when(mockSession.getTransacted())
+      .thenReturn(true);
+  
+    JmsProducer producer = new JmsProducer(new ConfiguredProduceDestination("myDestination"));
+    producer.setSessionFactory(mockSessionFactory);
+    producer.setupSession(AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx"));
+    producer.acknowledge(mockMessage);
+    
+    verify(mockMessage, times(0)).acknowledge();
+  }
+  
+  public void testMessageAckTransactedAutoMode() throws Exception {
+    when(mockSessionFactory.createProducerSession(any(), any()))
+      .thenReturn(mockProducerSession);
+    when(mockProducerSession.getSession())
+      .thenReturn(mockSession);
+    when(mockSession.getTransacted())
+      .thenReturn(true);
+  
+    JmsProducer producer = new JmsProducer(new ConfiguredProduceDestination("myDestination"));
+    producer.setSessionFactory(mockSessionFactory);
+    producer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
+    producer.setupSession(AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx"));
+    producer.acknowledge(mockMessage);
+    
+    verify(mockMessage, times(0)).acknowledge();
+  }
+  
+  public void testMessageAckNonTransactedAutoMode() throws Exception {
+    when(mockSessionFactory.createProducerSession(any(), any()))
+      .thenReturn(mockProducerSession);
+    when(mockProducerSession.getSession())
+      .thenReturn(mockSession);
+    when(mockSession.getTransacted())
+      .thenReturn(false);
+  
+    JmsProducer producer = new JmsProducer(new ConfiguredProduceDestination("myDestination"));
+    producer.setSessionFactory(mockSessionFactory);
+    producer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
+    producer.setupSession(AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx"));
+    producer.acknowledge(mockMessage);
+    
+    verify(mockMessage, times(0)).acknowledge();
+  }
+  
+  public void testMessageAckNonTransactedClientMode() throws Exception {
+    when(mockSessionFactory.createProducerSession(any(), any()))
+      .thenReturn(mockProducerSession);
+    when(mockProducerSession.getSession())
+      .thenReturn(mockSession);
+    when(mockSession.getTransacted())
+      .thenReturn(false);
+  
+    JmsProducer producer = new JmsProducer(new ConfiguredProduceDestination("myDestination"));
+    producer.setSessionFactory(mockSessionFactory);
+    producer.setAcknowledgeMode("CLIENT_ACKNOWLEDGE");
+    producer.setupSession(AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx"));
+    producer.acknowledge(mockMessage);
+    
+    verify(mockMessage).acknowledge();
+  }
 
   public void testProduce_JmsReplyToDestination() throws Exception {
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();

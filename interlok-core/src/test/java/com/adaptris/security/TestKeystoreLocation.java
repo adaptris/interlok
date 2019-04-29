@@ -16,45 +16,38 @@
 
 package com.adaptris.security;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.Properties;
-
-import junit.framework.TestCase;
-
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.junit.Before;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.adaptris.security.keystore.KeystoreFactory;
 import com.adaptris.security.keystore.KeystoreLocation;
+import junit.framework.TestCase;
 
 /**
  * Test Keystore Functionality.
  *
- * @author $Author: lchan $
  */
-public class TestKeystoreLocation extends TestCase {
+public class TestKeystoreLocation {
   private Properties cfg;
   private Config config;
-  private static Log logR = null;
+  private Logger logR = LoggerFactory.getLogger(this.getClass());
 
   /** @see TestCase */
-  public TestKeystoreLocation(String testName) {
-    super(testName);
-    if (logR == null) {
-      logR = LogFactory.getLog(TestKeystoreLocation.class);
-    }
+  public TestKeystoreLocation() {
   }
 
-  /**
-   * @see TestCase#setUp()
-   */
-  @Override
+  @Before
   public void setUp() throws Exception {
-    super.setUp();
     config = Config.getInstance();
     cfg = config.getProperties();
 
@@ -65,14 +58,8 @@ public class TestKeystoreLocation extends TestCase {
         .buildKeystore(cfg.getProperty(Config.KEYSTORE_TEST_URL), null, false);
   }
 
-  /**
-   * @see TestCase#tearDown()
-   */
-  @Override
-  public void tearDown() throws Exception {
-    super.tearDown();
-  }
 
+  @Test
   public void testKeystoreEquality() {
     try {
       KeystoreLocation ksi = KeystoreFactory.getDefault().create(
@@ -87,6 +74,7 @@ public class TestKeystoreLocation extends TestCase {
     }
   }
 
+  @Test
   public void testKeystoreFactory() {
     try {
       KeystoreLocation ksi = KeystoreFactory.getDefault().create(
@@ -101,6 +89,7 @@ public class TestKeystoreLocation extends TestCase {
     }
   }
 
+  @Test
   public void testLocalKeystore() {
     try {
       KeystoreLocation k = KeystoreFactory.getDefault().create(
@@ -116,6 +105,7 @@ public class TestKeystoreLocation extends TestCase {
     }
   }
 
+  @Test
   public void testNonExistentLocalKeystore() {
     try {
       KeystoreLocation k = KeystoreFactory.getDefault().create(
@@ -129,6 +119,7 @@ public class TestKeystoreLocation extends TestCase {
     }
   }
 
+  @Test
   public void testRemoteKeystore() throws Exception {
     if (Boolean.parseBoolean(cfg.getProperty(Config.REMOTE_TESTS_ENABLED,
         "false"))) {
@@ -167,6 +158,7 @@ public class TestKeystoreLocation extends TestCase {
     }
   }
 
+  @Test
   public void testNonExistentRemoteKeystore() {
     if (Boolean.parseBoolean(cfg.getProperty(Config.REMOTE_TESTS_ENABLED,
         "false"))) {

@@ -23,7 +23,9 @@ import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -34,7 +36,6 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.ServiceImp;
 import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
@@ -53,8 +54,8 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @AdapterComponent
 @ComponentProfile(summary = "Extract data from the message via a regular expression and store it as metadata",
     tag = "service,metadata")
-@DisplayOrder(order = {"regexpMetadataQueries"})
-public class RegexpMetadataService extends ServiceImp {
+@DisplayOrder(order = {"regexpMetadataQueries", "addNullValues", "metadataLogger"})
+public class RegexpMetadataService extends MetadataServiceImpl {
 
   @NotNull
   @AutoPopulated
@@ -75,23 +76,25 @@ public class RegexpMetadataService extends ServiceImp {
     setRegexpMetadataQueries(list);
   }
 
+  @Override
   public void doService(AdaptrisMessage msg)
     throws ServiceException {
 
     String message = msg.getContent();
-
+    List<MetadataElement> added = new ArrayList<>();
     try {
-      for (int i = 0; i < regexpMetadataQueries.size(); i++) {
-        RegexpMetadataQuery q = regexpMetadataQueries.get(i);
+      for (RegexpMetadataQuery q : getRegexpMetadataQueries()) {
         MetadataElement elem = q.doQuery(message);
         if (!isEmpty(elem.getValue()) || addNullValues()) {
           msg.addMetadata(elem);
+          added.add(elem);
         }
       }
     }
     catch (CoreException e) {
       throw new ServiceException(e);
     }
+    logMetadata("Added metadata : {}", added);
   }
 
   /**
@@ -111,19 +114,6 @@ public class RegexpMetadataService extends ServiceImp {
    */
   public void setRegexpMetadataQueries(List<RegexpMetadataQuery> l) {
     regexpMetadataQueries = Args.notNull(l, "regexp-metadata-queries");
-  }
-
-  @Override
-  protected void initService() throws CoreException {
-  }
-
-  @Override
-  protected void closeService() {
-
-  }
-
-  @Override
-  public void prepare() throws CoreException {
   }
 
   public Boolean getAddNullValues() {

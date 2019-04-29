@@ -17,7 +17,9 @@
 package com.adaptris.core;
 
 import java.util.concurrent.TimeUnit;
+
 import javax.validation.Valid;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.util.NumberUtils;
 import com.adaptris.util.TimeInterval;

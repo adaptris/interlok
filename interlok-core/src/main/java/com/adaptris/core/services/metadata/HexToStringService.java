@@ -21,7 +21,6 @@ import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.core.CoreException;
 import com.adaptris.util.text.ByteTranslator;
 import com.adaptris.util.text.CharsetByteTranslator;
 import com.adaptris.util.text.HexStringByteTranslator;
@@ -39,7 +38,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Turn a hex encoded string into a java string using the specified character encoding",
     tag = "service,metadata")
-@DisplayOrder(order = {"metadataKeyRegexp", "charset"})
+@DisplayOrder(order = {"metadataKeyRegexp", "charset", "metadataLogger"})
 public class HexToStringService extends ReformatMetadata {
 
   private String charset;
@@ -54,14 +53,6 @@ public class HexToStringService extends ReformatMetadata {
     setCharset(UTF_8);
   }
 
-
-  @Override
-  protected void initService() throws CoreException {
-  }
-
-  @Override
-  protected void closeService() {
-  }
   public String getCharset() {
     return charset;
   }

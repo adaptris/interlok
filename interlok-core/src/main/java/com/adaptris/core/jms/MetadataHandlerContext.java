@@ -16,9 +16,9 @@
 
 package com.adaptris.core.jms;
 
-import com.adaptris.core.metadata.MetadataFilter;
-
 import java.util.List;
+
+import com.adaptris.core.metadata.MetadataFilter;
 
 /**
  * Interface that abstracts the handling of AdaptrisMessage metadata and JMS

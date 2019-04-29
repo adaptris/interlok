@@ -20,6 +20,7 @@ import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.apache.commons.lang3.BooleanUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -55,7 +56,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("replace-metadata-value")
 @AdapterComponent
 @ComponentProfile(summary = "Perform a find and replace on metadata", tag = "service,metadata")
-@DisplayOrder(order = {"metadataKeyRegexp", "searchValue", "replacementValue", "replaceAll"})
+@DisplayOrder(order = {"metadataKeyRegexp", "searchValue", "replacementValue", "replaceAll", "metadataLogger"})
 public class ReplaceMetadataValue extends ReformatMetadata {
 
   @NotBlank
@@ -103,7 +104,7 @@ public class ReplaceMetadataValue extends ReformatMetadata {
     String result = replacement;
     Matcher matchGroup = matchGroupPattern.matcher(replacement);
     if (matchGroup.matches() && metadataValue.matches()) {
-      int group = Integer.valueOf(matchGroup.group(2)).intValue();
+      int group = Integer.parseInt(matchGroup.group(2));
       result = matchGroup.group(1) + metadataValue.group(group) + matchGroup.group(3);
       if (matchGroupPattern.matcher(result).matches()) {
         return buildReplacementValue(metadataValue, result);

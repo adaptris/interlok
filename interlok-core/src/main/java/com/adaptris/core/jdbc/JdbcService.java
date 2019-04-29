@@ -133,13 +133,7 @@ public abstract class JdbcService extends ServiceImp implements ConnectedService
    * @return the connection either from the adaptris message or from configuration.
    */
   protected Connection getConnection(AdaptrisMessage msg) throws SQLException {
-    Connection conn = (Connection) msg.getObjectHeaders().get(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY);
-    
-    if (conn != null && !conn.isClosed()){
-      return conn;
-    } else {
-      return getConnection().retrieveConnection(DatabaseConnection.class).connect();
-    }
+    return JdbcUtil.getConnection(msg, getConnection());
   }
 
   /**
@@ -153,10 +147,7 @@ public abstract class JdbcService extends ServiceImp implements ConnectedService
    * @param msg the AdaptrisMessage
    */
   protected void rollback(Connection sqlConnection, AdaptrisMessage msg) {
-    if (msg.getObjectHeaders().containsKey(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY)) {
-      return;
-    }
-    JdbcUtil.rollback(sqlConnection);
+    JdbcUtil.rollback(sqlConnection, msg);
   }
 
   /**
@@ -170,11 +161,9 @@ public abstract class JdbcService extends ServiceImp implements ConnectedService
    * @param msg the AdaptrisMessage currently being processed.
    * @throws SQLException if the commit fails.
    */
+  @Deprecated
   protected void commit(Connection sqlConnection, AdaptrisMessage msg) throws SQLException {
-    if (msg.getObjectHeaders().containsKey(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY)) {
-      return;
-    }
-    JdbcUtil.commit(sqlConnection);
+    JdbcUtil.commit(sqlConnection, msg);
   }
 
   public TimeInterval getStatementTimeout() {

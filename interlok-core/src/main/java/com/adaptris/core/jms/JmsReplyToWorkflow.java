@@ -28,7 +28,6 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.StandardWorkflow;
-import com.adaptris.core.http.jetty.JettyMessageConsumer;
 import com.adaptris.core.util.LoggingHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 

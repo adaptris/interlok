@@ -18,11 +18,11 @@ package com.adaptris.core.services.splitter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.pool2.ObjectPool;
@@ -78,8 +78,9 @@ public class ServiceWorkerPool {
     pool.setMaxIdle(maxThreads);
     pool.setMaxWaitMillis(-1L);
     pool.setBlockWhenExhausted(true);
-    pool.setMinEvictableIdleTimeMillis(EVICT_RUN);
-    pool.setTimeBetweenEvictionRunsMillis(EVICT_RUN + new Random(EVICT_RUN).nextLong());
+    pool.setSoftMinEvictableIdleTimeMillis(EVICT_RUN);
+    pool.setTimeBetweenEvictionRunsMillis(
+        EVICT_RUN + ThreadLocalRandom.current().nextLong(EVICT_RUN));
     return pool;
   }
 
@@ -99,7 +100,8 @@ public class ServiceWorkerPool {
     pool.setMaxWait(-1L);
     pool.setWhenExhaustedAction(org.apache.commons.pool.impl.GenericObjectPool.WHEN_EXHAUSTED_BLOCK);
     pool.setMinEvictableIdleTimeMillis(EVICT_RUN);
-    pool.setTimeBetweenEvictionRunsMillis(EVICT_RUN + new Random(EVICT_RUN).nextLong());
+    pool.setTimeBetweenEvictionRunsMillis(
+        EVICT_RUN + ThreadLocalRandom.current().nextLong(EVICT_RUN));
     return pool;
   }
   

@@ -36,7 +36,7 @@ import com.adaptris.core.util.JdbcUtil;
  */
 public abstract class JdbcMapUpsert extends JdbcMapInsert {
 
-  public static String DEFAULT_ID_FIELD = "id";
+  public static final String DEFAULT_ID_FIELD = "id";
 
   @InputFieldDefault(value = "id")
   private String idField;

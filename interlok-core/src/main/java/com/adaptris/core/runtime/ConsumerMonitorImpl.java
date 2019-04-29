@@ -15,9 +15,9 @@
  */
 package com.adaptris.core.runtime;
 
-import com.adaptris.core.AdaptrisMessageConsumer;
-
 import static com.adaptris.core.runtime.AdapterComponentMBean.JMX_CONSUMER_MONITOR_TYPE;
+
+import com.adaptris.core.AdaptrisMessageConsumer;
 
 public abstract class ConsumerMonitorImpl<T extends AdaptrisMessageConsumer> extends ChildRuntimeInfoComponentImpl implements ConsumerMonitorMBean {
 

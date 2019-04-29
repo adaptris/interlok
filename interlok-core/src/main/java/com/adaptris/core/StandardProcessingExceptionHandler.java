@@ -82,7 +82,8 @@ public class StandardProcessingExceptionHandler extends RootProcessingExceptionH
     }
     catch (Exception e) {
       logErrorMessage(getProcessingExceptionService(), msg);
-      log.error("Exception handling error msg [{}]", msg.toString(true), e);
+      log.error("Exception handling error msg [{}]",
+          MessageLoggerImpl.LAST_RESORT_LOGGER.toString(msg), e);
     }
     notifyParent(msg);
   }

@@ -17,11 +17,10 @@
 package com.adaptris.core.jmx;
 
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessageConsumer;
 import com.adaptris.core.AdaptrisMessageListener;
@@ -31,6 +30,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.core.util.JmxHelper;
+import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.TimeInterval;
 
 public class JmxNotificationConsumerTest extends ConsumerCase {
@@ -44,8 +44,10 @@ public class JmxNotificationConsumerTest extends ConsumerCase {
     }
   }
 
+  @Override
   public void setUp() throws Exception {}
 
+  @Override
   public void tearDown() throws Exception {}
 
   public void testNotFound() throws Exception {
@@ -120,27 +122,30 @@ public class JmxNotificationConsumerTest extends ConsumerCase {
     consumer.setRetryInterval(new TimeInterval(1L, TimeUnit.SECONDS));
     consumer.setDestination(new ConfiguredConsumeDestination(myObjectName));
     StandaloneConsumer sc = wrap(new JmxConnection(), consumer, listener);
+    ScheduledExecutorService scheduler = Executors
+        .newSingleThreadScheduledExecutor(new ManagedThreadFactory(getClass().getSimpleName()));
     try {
       start(sc);
-      Executors.newSingleThreadScheduledExecutor().schedule(new Runnable() {
+      scheduler.scheduleWithFixedDelay(new Runnable() {
+        @Override
         public void run() {
           try {
-            mbeanServer.registerMBean(broadcast, ObjectName.getInstance(myObjectName));
-            while (!broadcast.hasListeners()) {
-              TimeUnit.MILLISECONDS.sleep(500);
+            if (!mbeanServer.isRegistered(ObjectName.getInstance(myObjectName))) {
+              mbeanServer.registerMBean(broadcast, ObjectName.getInstance(myObjectName));
             }
             broadcast.sendNotification(getName(), new Object());
           } catch (Exception e) {
             throw new RuntimeException();
           }
         }
-      }, 5, TimeUnit.SECONDS);
+      }, 3, 1, TimeUnit.SECONDS);
       waitForMessages(listener, 1);
-      assertEquals(1, listener.messageCount());
+      assertTrue(listener.messageCount() >= 1);
       assertNotNull(listener.getMessages().get(0).getObjectHeaders().get(NotificationSerializer.OBJ_METADATA_USERDATA));
     } catch (CoreException e) {
     } finally {
       stop(sc);
+      ManagedThreadFactory.shutdownQuietly(scheduler, 100L);
     }
   }
 

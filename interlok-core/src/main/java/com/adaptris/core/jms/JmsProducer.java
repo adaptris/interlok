@@ -24,7 +24,9 @@ import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
+
 import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -108,7 +110,7 @@ public class JmsProducer extends JmsProducerImpl {
     }
   }
 
-  private void produce(AdaptrisMessage msg, JmsDestination jmsDest)
+  protected void produce(AdaptrisMessage msg, JmsDestination jmsDest)
       throws JMSException, CoreException {
     setupSession(msg);
     Message jmsMsg = translate(msg, jmsDest.getReplyToDestination());

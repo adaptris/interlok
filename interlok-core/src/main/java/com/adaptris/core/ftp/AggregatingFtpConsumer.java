@@ -24,7 +24,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.validation.Valid;
+
 import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;

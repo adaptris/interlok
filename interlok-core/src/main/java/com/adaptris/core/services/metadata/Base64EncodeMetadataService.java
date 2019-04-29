@@ -42,7 +42,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("metadata-base64-encode")
 @AdapterComponent
 @ComponentProfile(summary = "Base64 encode an item of metadata", tag = "service,metadata,base64")
-@DisplayOrder(order = {"metadataKeyRegexp"})
+@DisplayOrder(order = {"metadataKeyRegexp", "metadataLogger"})
 public class Base64EncodeMetadataService extends ReformatMetadata {
 
   private transient ByteTranslator byteTranslator = new Base64ByteTranslator();

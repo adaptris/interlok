@@ -1,8 +1,6 @@
 package com.adaptris.core.services.metadata;
 
-import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.core.AdaptrisMessage;
-import com.thoughtworks.xstream.annotations.XStreamAlias;
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 import java.text.ParseException;
 import java.time.Instant;
@@ -16,7 +14,9 @@ import java.time.temporal.ChronoField;
 import java.util.Date;
 import java.util.Locale;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
+import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.core.AdaptrisMessage;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Builds a DateFormat instance for use with {@link ReformatDateService} and {@link AddTimestampMetadataService}.

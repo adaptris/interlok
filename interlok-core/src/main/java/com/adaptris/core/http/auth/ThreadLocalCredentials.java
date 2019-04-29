@@ -39,7 +39,8 @@ public class ThreadLocalCredentials implements ResourceAuthenticator {
    */
   private transient final ThreadLocal<PasswordAuthentication> threadAuthentication = new ThreadLocal<PasswordAuthentication>();
 
-  protected static transient Logger log = LoggerFactory.getLogger(ThreadLocalCredentials.class);
+  protected static final transient Logger log =
+      LoggerFactory.getLogger(ThreadLocalCredentials.class);
 
   private final String target;
   private final ResourceTargetMatcher matcher;

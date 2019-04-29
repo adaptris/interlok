@@ -18,12 +18,12 @@ package com.adaptris.util;
 
 import java.io.ByteArrayOutputStream;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.adaptris.util.text.mime.ByteArrayDataSource;
+
+import junit.framework.TestCase;
 
 public class ByteArrayDataSourceTest extends TestCase {
 

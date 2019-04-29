@@ -35,11 +35,7 @@ public abstract class MultipartIterator implements Closeable {
 
   protected transient Logger log = LoggerFactory.getLogger(this.getClass());
   protected DataSource dataSource;
-  protected static IdGenerator idGenerator;
-
-  static {
-    idGenerator = new GuidGenerator();
-  }
+  protected static final IdGenerator idGenerator = new GuidGenerator();
 
   /**
    * Constructor.

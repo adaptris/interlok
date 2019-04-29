@@ -19,6 +19,7 @@ package com.adaptris.core;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 
+@SuppressWarnings("deprecation")
 public class XpathTradingRelationshipCreatorTest extends BaseCase {
 
   private static final String TYPE = "type";

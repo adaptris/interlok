@@ -19,8 +19,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.adaptris.jdbc.MysqlStatementCreator;
-
 public class MysqlStatementCreatorTest {
 
   @Test

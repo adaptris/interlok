@@ -41,7 +41,7 @@ abstract class SizeBasedFileFilter implements FileFilter {
    * @param size the size of the file in bytes.
    */
   public SizeBasedFileFilter(String size) {
-    this(Long.valueOf(size));
+    this(Long.parseLong(size));
   }
 
   /**

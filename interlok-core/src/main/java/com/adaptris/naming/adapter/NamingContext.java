@@ -55,7 +55,7 @@ public class NamingContext implements Context, Serializable {
   /**
    * Bindings in this Context.
    */
-  protected HashMap<String, NamingEntry> bindings;
+  protected transient HashMap<String, NamingEntry> bindings;
 
   /**
    * Name Parser
@@ -128,7 +128,7 @@ public class NamingContext implements Context, Serializable {
         }
       }
     } else {
-      if ((!rebind) && (entry != null)) {
+      if (!rebind && entry != null) {
         throw new NameAlreadyBoundException("Name already bound: " + name.get(0).toString());
       } else {
         Object toBind = NamingManager.getStateToBind(object, name, this, this.environment);
@@ -412,7 +412,7 @@ public class NamingContext implements Context, Serializable {
 
   private Name stripEmptyPrefix(Name toStrip) {
     Name stripped = toStrip;
-    while ((!stripped.isEmpty()) && (stripped.get(0).length() == 0))
+    while (!stripped.isEmpty() && stripped.get(0).length() == 0)
       stripped = stripped.getSuffix(1);
     return stripped;
   }

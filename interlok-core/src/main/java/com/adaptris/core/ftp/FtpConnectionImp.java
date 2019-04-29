@@ -17,9 +17,12 @@
 package com.adaptris.core.ftp;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
+
 import java.io.IOException;
 import java.util.TimeZone;
+
 import javax.validation.constraints.NotNull;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.CoreException;

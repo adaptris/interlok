@@ -20,7 +20,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
+
 import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.CoreException;

@@ -60,7 +60,7 @@ public abstract class URLHelper {
    */
   public static InputStream connect(String loc) throws IOException, URISyntaxException {
     try {
-      URI uri = new URI(loc);
+      new URI(loc);
       return connect(new URLString(loc));
     } catch (URISyntaxException e) {
       // URISyntax exception (possibly because of file:///c:/xxx); so let's just assume that

@@ -24,7 +24,6 @@ import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.DefaultMessageFactory;
-import com.adaptris.core.services.aggregator.ConsumeDestinationFromMetadata;
 
 public class MetadataConsumeDestinationGeneratorTest {
   private static final String DEFAULT_FILTER_KEY = "metadataFilterKey";

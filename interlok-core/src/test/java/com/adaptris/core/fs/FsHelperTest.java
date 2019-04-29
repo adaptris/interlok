@@ -17,20 +17,31 @@
 package com.adaptris.core.fs;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.net.URL;
 
+import org.apache.commons.io.filefilter.RegexFileFilter;
+import org.apache.oro.io.AwkFilenameFilter;
 import org.junit.Test;
+
+import com.adaptris.core.stubs.TempFileUtils;
+import com.adaptris.fs.FsWorker;
+import com.adaptris.fs.StandardWorker;
 
 @SuppressWarnings("deprecation")
 public class FsHelperTest extends FsHelper {
 
   @Test
   public void testUnixStyleFullURI() throws Exception {
-    FsHelper.createUrlFromString("file:////home/fred");
+    assertNotNull(FsHelper.createUrlFromString("file:////home/fred"));
   }
 
   @Test
@@ -84,6 +95,36 @@ public class FsHelperTest extends FsHelper {
   }
 
   @Test
+  public void testToFile() throws Exception {
+    File f = FsHelper.toFile("file://localhost/./fred");
+    assertEquals("fred", f.getName());
+    assertEquals("." + File.separator + "fred", f.getPath());
+    File f2 = FsHelper.toFile("c:/home/fred");
+    assertEquals("fred", f2.getName());
+    assertNotNull(f2.getParentFile());
+    File f3 = FsHelper.toFile("/home/fred");
+    assertEquals("fred", f3.getName());
+    // "/home"
+    assertNotNull(f3.getParentFile());
+    // should be "/"
+    assertNotNull(f3.getParentFile().getParentFile());
+    assertNull(f3.getParentFile().getParentFile().getParentFile());
+
+    File f4 = FsHelper.toFile("build.gradle");
+    assertEquals("build.gradle", f4.getName());
+    // will be "/"
+    assertNotNull(f4.getParentFile());
+    assertNull(f4.getParentFile().getParentFile());
+
+    File f5 = FsHelper.toFile("./build.gradle");
+    assertEquals("build.gradle", f4.getName());
+    // will be "."
+    assertNotNull(f4.getParentFile());
+    assertNull(f4.getParentFile().getParentFile());
+  }
+
+
+  @Test
   public void testRelativeURL() throws Exception {
     File f = FsHelper.toFile("file://localhost/./fred");
     assertEquals("fred", f.getName());
@@ -91,73 +132,96 @@ public class FsHelperTest extends FsHelper {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testCreateUrlFromString() throws Exception {
-    // 1 - valid absolute URL...
-    String urlString = "file:///c:/tmp/";
-    URL url = FsHelper.createUrlFromString(urlString);
 
-    // can't use this - the number of slashes changes to one...
-    // assertTrue(urlString.equals(url.toString()));
+    String urlString = "file:///c:/tmp/";
+    URL url = FsHelper.createUrlFromString(urlString, true);
 
     assertTrue("protocol", "file".equals(url.getProtocol()));
     assertTrue("path " + url.getPath(), "/c:/tmp/".equals(url.getPath()));
 
-    // 2 - valid absolute URL with 1 slash...
     String urlString2 = "file:/c:/tmp/";
-    URL url2 = FsHelper.createUrlFromString(urlString2);
-
+    URL url2 = FsHelper.createUrlFromString(urlString2, true);
     assertTrue("protocol", "file".equals(url2.getProtocol()));
     assertTrue("path " + url.getPath(), "/c:/tmp/".equals(url2.getPath()));
 
-    // 3 - valid relative URI...
     String urlString3 = "../dir/";
-    URL url3 = FsHelper.createUrlFromString(urlString3);
-
+    URL url3 = FsHelper.createUrlFromString(urlString3, true);
     assertTrue("protocol", "file".equals(url3.getProtocol()));
 
-    // either configure where you are running or rewrite method to obtain sthg
-    // to test against!
-    // assertTrue("path " + url.getPath(),
-    // "/c:/tmp/dir/".equals(url3.getPath()));
+    tryExpectingException(() -> {
+      FsHelper.createUrlFromString("..\\dir\\");
+    });
+    tryExpectingException(() -> {
+      FsHelper.createUrlFromString("c:\\dir\\");
+    });
+    tryExpectingException(() -> {
+      FsHelper.createUrlFromString("http://file/");
+    });
+    tryExpectingException(() -> {
+      FsHelper.createUrlFromString("file:\\\file\\");
+    });
+    tryExpectingException(() -> {
+      FsHelper.createUrlFromString(null, true);
+    });
+  }
 
-    // 4 - invalid relative URI...
-    String urlString4 = "..\\dir\\";
 
+  @Test
+  public void testCreateFilter() throws Exception {
+    FileFilter filter = createFilter("", RegexFileFilter.class.getCanonicalName());
+    // no op filter.
+    assertTrue(filter.accept(new File("build.gradle")));
+    assertNotEquals(RegexFileFilter.class, filter.getClass());
+    filter = createFilter(".*", RegexFileFilter.class.getCanonicalName());
+    assertEquals(RegexFileFilter.class, filter.getClass());
+    assertTrue(filter.accept(new File("build.gradle")));
+
+    // Just to fire the warning.
+    assertEquals(AwkFilenameFilter.class,
+        createFilter(".*", AwkFilenameFilter.class.getCanonicalName()).getClass());
+  }
+
+  @Test
+  public void testRenameFile() throws Exception {
+    FsWorker worker = new StandardWorker();
+    File src = TempFileUtils.createTrackedFile(this);
+    src.createNewFile();
+    File renamed = renameFile(src, ".wip", new StandardWorker());
+    assertTrue(renamed.exists());
+    assertFalse(src.exists());
+  }
+
+  @Test
+  public void testRenameFile_AlreadyExists() throws Exception {
+    File src = TempFileUtils.createTrackedFile(this);
+    src.createNewFile();
+
+    File wipFile = new File(src.getCanonicalPath() + ".wip");
+    wipFile.createNewFile();
+    TempFileUtils.trackFile(wipFile, this);
+
+    File renamed = renameFile(src, ".wip", new StandardWorker());
+    // Should have a timestamp addition.
+    assertNotEquals(wipFile, renamed);
+    assertFalse(src.exists());
+    assertTrue(wipFile.exists());
+    assertTrue(renamed.exists());
+  }
+
+
+  private void tryExpectingException(Attempt t) {
     try {
-      FsHelper.createUrlFromString(urlString4);
-      fail("no Exc. from invalid URI " + urlString4);
-    }
-    catch (Exception e) { /* okay */
-    }
+      t.tryIt();
+      fail();
+    } catch (Exception expected) {
 
-    // 5 - invalid relative URI...
-    String urlString5 = "c:\\dir\\";
+    }
+  }
 
-    try {
-      FsHelper.createUrlFromString(urlString5);
-      fail("no Exc. from invalid URI " + urlString5);
-    }
-    catch (Exception e) { /* okay */
-    }
-
-    // 6 - invalid absolute URL...
-    String urlString6 = "http://file/";
-
-    try {
-      FsHelper.createUrlFromString(urlString6);
-      fail("no Exc. from invalid URI " + urlString6);
-    }
-    catch (Exception e) { /* okay */
-    }
-
-    // 7 - invalid absolute URL...
-    String urlString7 = "file:\\\file\\";
-
-    try {
-      FsHelper.createUrlFromString(urlString7);
-      fail("no Exc. from invalid URI " + urlString7);
-    }
-    catch (Exception e) { /* okay */
-    }
+  @FunctionalInterface
+  private interface Attempt {
+    void tryIt() throws Exception;
   }
 }

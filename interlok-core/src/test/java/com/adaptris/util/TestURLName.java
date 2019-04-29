@@ -18,10 +18,10 @@ package com.adaptris.util;
 
 import javax.mail.URLName;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import junit.framework.TestCase;
 
 /**
  *

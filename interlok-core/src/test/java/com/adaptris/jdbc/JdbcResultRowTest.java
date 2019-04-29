@@ -2,7 +2,9 @@ package com.adaptris.jdbc;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+
 import java.sql.Types;
+
 import org.junit.Test;
 
 public class JdbcResultRowTest {

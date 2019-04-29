@@ -21,11 +21,9 @@ import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataCollection;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.ServiceImp;
 import com.adaptris.core.metadata.MetadataFilter;
 import com.adaptris.core.metadata.RemoveAllMetadataFilter;
 
@@ -34,7 +32,7 @@ import com.adaptris.core.metadata.RemoveAllMetadataFilter;
  * 
  * 
  */
-public abstract class ReformatMetadataKey extends ServiceImp {
+public abstract class ReformatMetadataKey extends MetadataServiceImpl {
 
   @AutoPopulated
   @NotNull
@@ -45,21 +43,7 @@ public abstract class ReformatMetadataKey extends ServiceImp {
     setKeysToModify(new RemoveAllMetadataFilter());
   }
 
-  @Override
-  protected void initService() throws CoreException {
-  }
-
-  @Override
-  protected void closeService() {
-  }
-
-
   protected abstract String reformatKey(String s) throws ServiceException;
-
-
-  @Override
-  public void prepare() throws CoreException {
-  }
 
   public MetadataFilter getKeysToModify() {
     return keysToModify;
@@ -76,9 +60,9 @@ public abstract class ReformatMetadataKey extends ServiceImp {
     MetadataCollection replacements = buildReplacements(toFilter);
     // toFilter.forEach(e -> { msg.removeMetadata(e); });
     // replacements.forEach(e -> { msg.addMetadata(e); });
-    log.trace("Removing {}", toFilter.toString());
+    logMetadata("Removing {}", toFilter);
     removeMetadata(msg, toFilter);
-    log.trace("Adding {}", replacements.toString());
+    logMetadata("Adding {}", replacements);
     addMetadata(msg, replacements);
   }
 

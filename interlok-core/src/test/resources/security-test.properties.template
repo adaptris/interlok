@@ -44,9 +44,8 @@ junitsecurity.keystore.import.pkcs12.file=@BASE_DIR@/src/test/resources/security
 junitsecurity.keystore.import.certchain.file=@BASE_DIR@/src/test/resources/security/pkey.certchain.p7b
 junitsecurity.keystore.import.x509.file=@BASE_DIR@/src/test/resources/security/good.cer
 
-junitsecurity.keystore.composite.1=${junitsecurity.keystore.keystoreUrl}
-junitsecurity.keystore.composite.2=${junitsecurity.keystore.single.x509url}
-junitsecurity.keystore.composite.3=${junitsecurity.keystore.single.pkcs12url}
+junitsecurity.keystore.composite.1=${junitsecurity.keystore.single.x509url}
+junitsecurity.keystore.composite.2=${junitsecurity.keystore.single.pkcs12url}
 
 # The algorithm to use when testing encryption/decryption
 junitsecurity.security.algorithm=DESede/CBC/PKCS5Padding

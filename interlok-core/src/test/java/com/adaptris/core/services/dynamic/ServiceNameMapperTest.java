@@ -16,12 +16,12 @@
 
 package com.adaptris.core.services.dynamic;
 
-import junit.framework.TestCase;
-
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.TradingRelationship;
+import junit.framework.TestCase;
 
+@SuppressWarnings("deprecation")
 public class ServiceNameMapperTest extends TestCase {
 
   public ServiceNameMapperTest(String arg0) {

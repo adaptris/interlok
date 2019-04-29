@@ -16,15 +16,21 @@
 
 package com.adaptris.core.services.dynamic;
 
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.TradingRelationship;
 
 /**
- * <p> 
+ * <p>
  * Returns a logical name for a passed <code>TradingRelationship</code> or
  * <code>TradingRelationship[]</code>.
  * </p>
+ * 
+ * @deprecated since 3.8.4 use {@link DynamicServiceExecutor} with a URL based
+ *             {@link ServiceExtractor} instead.
  */
+@Deprecated
+@Removal(version = "3.11.0")
 public interface ServiceNameProvider {
 
   /**

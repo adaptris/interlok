@@ -34,7 +34,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("metadata-value-to-lower-case")
 @AdapterComponent
 @ComponentProfile(summary = "Changes matching metadata into lowercase", tag = "service,metadata")
-@DisplayOrder(order = {"metadataKeyRegexp"})
+@DisplayOrder(order = {"metadataKeyRegexp", "metadataLogger"})
 public class MetadataValueToLowerCase extends ReformatMetadata {
 
   public MetadataValueToLowerCase() {

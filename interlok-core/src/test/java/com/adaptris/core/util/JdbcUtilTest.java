@@ -25,7 +25,6 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -34,9 +33,12 @@ import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.util.Properties;
-
 import org.junit.Test;
-
+import org.mockito.Mockito;
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.jdbc.JdbcConnection;
+import com.adaptris.core.jdbc.JdbcConstants;
 import com.adaptris.security.exc.PasswordException;
 
 // This is all just a bit of fakery to get 100% (ha ha).
@@ -54,7 +56,7 @@ public class JdbcUtilTest extends JdbcUtil {
 
   @Test
   public void testRollbackSavepointConnection() throws Exception {
-    rollback(null, null);
+    rollback((Savepoint) null, (Connection) null);
     Savepoint savepoint = mock(Savepoint.class);
     Connection c = mock(Connection.class);
     when(c.getAutoCommit()).thenReturn(true);
@@ -147,5 +149,70 @@ public class JdbcUtilTest extends JdbcUtil {
     testConnection(c, "hello", true);
     testConnection(c, "hello", true);
     testConnection(c, "hello", false);
+  }
+
+  @Test
+  public void testGetConnection() throws Exception {
+    Connection metadata = mock(Connection.class);
+    Connection closed = mock(Connection.class);
+    Connection configured = mock(Connection.class);
+    Mockito.when(configured.getAutoCommit()).thenReturn(true);
+    Mockito.when(closed.isClosed()).thenReturn(true);
+
+    JdbcConnection jdbcCon = new MyJdbcConnection(configured);
+    try {
+      LifecycleHelper.initAndStart(jdbcCon);
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+
+      msg.getObjectHeaders().put(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY, metadata);
+      assertEquals(metadata, getConnection(msg, jdbcCon));
+
+      msg.getObjectHeaders().put(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY, closed);
+      assertEquals(configured, getConnection(msg, jdbcCon));
+
+      msg.getObjectHeaders().clear();
+      assertEquals(configured, getConnection(msg, jdbcCon));
+    } finally {
+      LifecycleHelper.stopAndClose(jdbcCon);
+    }
+  }
+
+  @Test
+  public void testRollback_Message() throws Exception {
+    Connection jdbcCon = mock(Connection.class);
+    Mockito.when(jdbcCon.getAutoCommit()).thenReturn(false);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    msg.getObjectHeaders().put(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY, jdbcCon);
+    rollback(jdbcCon, msg);
+    Mockito.verify(jdbcCon, Mockito.times(0)).rollback();
+    msg.getObjectHeaders().clear();
+    rollback(jdbcCon, msg);
+    Mockito.verify(jdbcCon, Mockito.atLeast(1)).rollback();
+  }
+
+  @Test
+  public void testCommit_Message() throws Exception {
+    Connection jdbcCon = mock(Connection.class);
+    Mockito.when(jdbcCon.getAutoCommit()).thenReturn(false);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    msg.getObjectHeaders().put(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY, jdbcCon);
+    commit(jdbcCon, msg);
+    Mockito.verify(jdbcCon, Mockito.times(0)).commit();
+    msg.getObjectHeaders().clear();
+    commit(jdbcCon, msg);
+    Mockito.verify(jdbcCon, Mockito.atLeast(1)).commit();
+  }
+
+  private class MyJdbcConnection extends JdbcConnection {
+    private Connection jdbcCon;
+
+    private MyJdbcConnection(Connection c) throws Exception {
+      jdbcCon = c;
+    }
+
+    @Override
+    protected Connection makeConnection() throws SQLException {
+      return jdbcCon;
+    }
   }
 }

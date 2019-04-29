@@ -36,3 +36,6 @@ unit-tests.properties.resolved
 security.properties
 out/
 null/
+Gemfile.lock
+.sass-cache
+_site

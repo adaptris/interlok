@@ -52,7 +52,7 @@ public class ConstantDataInputParameter implements DataInputParameter<String> {
 
   @Override
   public String extract(InterlokMessage m) throws InterlokException {
-    return m.resolve(getValue());
+    return m.resolve(getValue(), true);
   }
 
 

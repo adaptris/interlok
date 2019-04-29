@@ -18,12 +18,15 @@ package com.adaptris.core.services.jdbc.types;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.sql.Types;
+
 import org.apache.commons.io.output.WriterOutputStream;
 import org.junit.Before;
 import org.junit.Test;
+
 import com.adaptris.jdbc.JdbcResultRow;
 
 @SuppressWarnings("deprecation")

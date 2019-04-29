@@ -28,7 +28,6 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.Removal;
-import com.adaptris.core.common.FileDataInputParameter;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.filetransfer.FileTransferClient;

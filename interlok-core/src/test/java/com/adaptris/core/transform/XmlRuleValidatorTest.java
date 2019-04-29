@@ -17,6 +17,7 @@
 package com.adaptris.core.transform;
 
 import java.util.Arrays;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.DefaultMessageFactory;

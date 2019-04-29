@@ -18,6 +18,7 @@ package com.adaptris.core.services.metadata;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.apache.commons.lang3.BooleanUtils;
 import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;

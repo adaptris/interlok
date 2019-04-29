@@ -403,8 +403,6 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     return toString(extended, false);
   }
 
-  protected abstract String getPayloadForLogging();
-
   /** @see AdaptrisMessage#getNextServiceId() */
   @Override
   public String getNextServiceId() {
@@ -513,7 +511,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     result.clearMetadata();
     result.setMetadata(cloneMetadata());
 
-    MessageLifecycleEvent copy = (MessageLifecycleEvent) getMessageLifecycleEvent().clone();
+    MessageLifecycleEvent copy = getMessageLifecycleEvent().clone();
     ((AdaptrisMessageImp) result).messageLifeCycle = copy;
 
     Map objMdCopy = new HashMap();

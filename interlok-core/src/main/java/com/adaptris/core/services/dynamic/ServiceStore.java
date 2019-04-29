@@ -16,15 +16,20 @@
 
 package com.adaptris.core.services.dynamic;
 
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.Service;
 
 /**
- * <p> 
- * Implementations provide a store of <code>Service</code>s which may be 
- * retrieved by name.  
+ * <p>
+ * Implementations provide a store of <code>Service</code>s which may be retrieved by name.
  * </p>
+ * 
+ * @deprecated since 3.8.4 use {@link DynamicServiceExecutor} with a URL based
+ *             {@link ServiceExtractor} instead.
  */
+@Deprecated
+@Removal(version = "3.11.0")
 public interface ServiceStore {
   
   /**

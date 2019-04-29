@@ -18,11 +18,11 @@ package com.adaptris.core;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -396,13 +396,15 @@ public class PoolingWorkflow extends WorkflowImp {
 
   private GenericObjectPool<Worker> createObjectPool() {
     GenericObjectPool<Worker> pool = new GenericObjectPool<>(new WorkerFactory());
+    long lifetime = threadLifetimeMs();
     pool.setMaxTotal(poolSize());
     pool.setMinIdle(minIdle());
     pool.setMaxIdle(maxIdle());
     pool.setMaxWaitMillis(-1L);
     pool.setBlockWhenExhausted(true);
-    pool.setMinEvictableIdleTimeMillis(threadLifetimeMs());
-    pool.setTimeBetweenEvictionRunsMillis(threadLifetimeMs() + new Random(threadLifetimeMs()).nextLong());
+    pool.setSoftMinEvictableIdleTimeMillis(lifetime);
+    pool.setTimeBetweenEvictionRunsMillis(
+        lifetime + ThreadLocalRandom.current().nextLong(lifetime));
     return pool;
   }
 
@@ -750,7 +752,7 @@ public class PoolingWorkflow extends WorkflowImp {
       AdaptrisMessage wip = null;
       try {
         long start = System.currentTimeMillis();
-        log.debug("start processing message [{}]", msg.toString(logPayload()));
+        log.debug("start processing msg [{}]", messageLogger().toString(msg));
         wip = (AdaptrisMessage) msg.clone();
         // Set the channel id and workflow id on the message lifecycle.
         wip.getMessageLifecycleEvent().setChannelId(obtainChannel().getUniqueId());

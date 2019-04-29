@@ -61,7 +61,6 @@ import com.adaptris.core.http.auth.ThreadLocalCredentials;
 import com.adaptris.core.http.client.RequestMethodProvider;
 import com.adaptris.core.http.client.RequestMethodProvider.RequestMethod;
 import com.adaptris.core.http.client.net.StandardHttpProducer;
-import com.adaptris.core.http.jetty.StandardResponseProducer;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.util.stream.StreamUtil;

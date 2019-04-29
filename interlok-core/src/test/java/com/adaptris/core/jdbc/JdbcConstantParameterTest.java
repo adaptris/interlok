@@ -16,10 +16,10 @@
 
 package com.adaptris.core.jdbc;
 
-import junit.framework.TestCase;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
+
+import junit.framework.TestCase;
 
 public class JdbcConstantParameterTest extends TestCase {
   

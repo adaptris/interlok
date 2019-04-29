@@ -16,18 +16,18 @@
 
 package com.adaptris.security;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.UnknownHostException;
 import java.util.Calendar;
-
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.junit.Before;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.adaptris.security.certificate.CertificateHandler;
 import com.adaptris.security.certificate.CertificateHandlerFactory;
 import com.adaptris.security.exc.CertException;
@@ -35,41 +35,16 @@ import com.adaptris.security.keystore.KeystoreFactory;
 
 /**
  * Test Certificate Handling.
- *
- * @author $Author: lchan $
  */
-public class TestCertificateHandler extends TestCase {
+public class TestCertificateHandler {
   private Config config;
-  private static Log logR = null;
+  private Logger logR = LoggerFactory.getLogger(this.getClass());
 
-  /**
-   * @see TestCase
-   */
-  public TestCertificateHandler(String testName) {
-    super(testName);
-    if (logR == null) {
-      logR = LogFactory.getLog(TestCertificateHandler.class);
-    }
+  public TestCertificateHandler() {
   }
 
-  /**
-   * Main class.
-   */
-  public static void main(java.lang.String[] args) {
-    junit.textui.TestRunner.run(suite());
-  }
-
-  public static Test suite() {
-    TestSuite suite = new TestSuite(TestCertificateHandler.class);
-    return suite;
-  }
-
-  /**
-   * @see TestCase#setUp()
-   */
-  @Override
+  @Before
   public void setUp() throws Exception {
-    super.setUp();
     config = Config.getInstance();
     if (config == null) {
       fail("No Configuration(!) available");
@@ -79,17 +54,7 @@ public class TestCertificateHandler extends TestCase {
     config.buildKeystore(config.getProperties().getProperty(Config.KEYSTORE_TEST_URL), null, true);
   }
 
-  /**
-   * @see TestCase#tearDown()
-   */
-  @Override
-  public void tearDown() throws Exception {
-    super.tearDown();
-  }
-
-  /**
-   * Test a un-expired certificate for expiry.
-   */
+  @Test
   public void testGoodCertificateExpiry() throws Exception {
     InputStream input = new FileInputStream(config.getProperties().getProperty(Config.CERTHANDLER_GOOD));
 
@@ -100,11 +65,7 @@ public class TestCertificateHandler extends TestCase {
     assertTrue("Expiry on \n" + handler.getCertificate().toString(), !handler.isExpired());
   }
 
-  /**
-   * Test that the good cert hasn't been revoked.
-   * <p>
-   * If we log a failure against this, then this dupont cert has been revoked
-   */
+  @Test
   public void testGoodCertificateRevocation() throws Exception {
     InputStream input = new FileInputStream(config.getProperties().getProperty(Config.CERTHANDLER_GOOD));
 
@@ -116,9 +77,7 @@ public class TestCertificateHandler extends TestCase {
 
   }
 
-  /**
-   * Check again. but check the getLastRevocationCheck() is the same as one we stored previously
-   */
+  @Test
   public void testGoodCertificateRevocationCache() throws Exception {
     InputStream input = new FileInputStream(config.getProperties().getProperty(Config.CERTHANDLER_GOOD));
 
@@ -132,9 +91,7 @@ public class TestCertificateHandler extends TestCase {
 
   }
 
-  /**
-   * This certificate we know is expired...
-   */
+  @Test
   public void testExpiredCertificateExpiry() throws Exception {
     InputStream input = new FileInputStream(config.getProperties().getProperty(Config.CERTHANDLER_EXPIRED));
 
@@ -146,9 +103,7 @@ public class TestCertificateHandler extends TestCase {
 
   }
 
-  /**
-   * Expired Certis should still be good. If we log a failure against this, then this dupont cert has been revoked
-   */
+  @Test
   public void testExpiredCertificateRevocation() throws Exception {
     try {
       InputStream input = new FileInputStream(config.getProperties().getProperty(Config.CERTHANDLER_EXPIRED));
@@ -167,9 +122,7 @@ public class TestCertificateHandler extends TestCase {
 
   }
 
-  /*
-   * Check again..., but check the getLastRevocationCheck() is the same as one we stored previously
-   */
+  @Test
   public void testExpiredCertificateRevocationCache() throws Exception {
     try {
       InputStream input = new FileInputStream(config.getProperties().getProperty(Config.CERTHANDLER_EXPIRED));

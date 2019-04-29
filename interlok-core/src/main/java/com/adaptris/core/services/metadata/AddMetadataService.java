@@ -36,10 +36,8 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.ServiceImp;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -65,11 +63,8 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @XStreamAlias("add-metadata-service")
 @AdapterComponent
 @ComponentProfile(summary = "Add Static Metadata to a Message", tag = "service,metadata")
-@DisplayOrder(order =
-{
-    "metadataElements", "overwrite"
-})
-public class AddMetadataService extends ServiceImp {
+@DisplayOrder(order = {"metadataElements", "overwrite", "metadataLogger"})
+public class AddMetadataService extends MetadataServiceImpl {
 
   private static final String UNIQUE_ID_MNENOMIC = "$UNIQUE_ID$";
   private static final String FILE_SIZE_MNEMONIC = "$MSG_SIZE$";
@@ -147,6 +142,7 @@ public class AddMetadataService extends ServiceImp {
    *
    * @param msg the message to process
    */
+  @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     Set<MetadataElement> addedMetadata = new HashSet<MetadataElement>();
     for (MetadataElement e : metadataElements) {
@@ -156,16 +152,7 @@ public class AddMetadataService extends ServiceImp {
         addedMetadata.add(addMe);
       }
     }
-    log.debug("metadata added {}", addedMetadata);
-  }
-
-  @Override
-  protected void initService() throws CoreException {
-  }
-
-  @Override
-  protected void closeService() {
-
+    logMetadata("metadata added : {}", addedMetadata);
   }
 
   /**
@@ -212,10 +199,6 @@ public class AddMetadataService extends ServiceImp {
    */
   public void addMetadataElement(String key, String value) {
     metadataElements.add(new MetadataElement(key, value));
-  }
-
-  @Override
-  public void prepare() throws CoreException {
   }
 
   /**

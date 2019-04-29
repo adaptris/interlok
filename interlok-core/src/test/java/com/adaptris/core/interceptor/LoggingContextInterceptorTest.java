@@ -18,16 +18,13 @@ package com.adaptris.core.interceptor;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-
 import java.util.Map;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
 import org.slf4j.MDC;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.BaseCase;
@@ -158,7 +155,7 @@ public class LoggingContextInterceptorTest {
       Map<String, String> metadata = prod.getMessages().get(0).getMessageHeaders();
       metadata.remove(CoreConstants.MLE_SEQUENCE_KEY);
       // At this point we have no idea what the metadata key will be so just check the size.
-      assertEquals(1, metadata.size());
+      assertTrue(metadata.size() >= 1);
     } finally {
       BaseCase.stop(c);
     }

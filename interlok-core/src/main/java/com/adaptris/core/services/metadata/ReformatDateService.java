@@ -53,7 +53,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("reformat-date-service")
 @AdapterComponent
 @ComponentProfile(summary = "Reformat a data value stored in metadata", tag = "service,metadata,timestamp,datetime")
-@DisplayOrder(order = {"metadataKeyRegexp", "sourceDateFormat", "sourceFormatBuilder", "destinationDateFormat", "destinationFormatBuilder"})
+@DisplayOrder(order = {"metadataKeyRegexp", "sourceDateFormat", "sourceFormatBuilder", "destinationDateFormat",
+    "destinationFormatBuilder", "metadataLogger"})
 public class ReformatDateService extends ReformatMetadata {
 
   private static final DateFormatBuilder DEFAULT_FORMAT_BUILDER = new DateFormatBuilder();
@@ -100,11 +101,6 @@ public class ReformatDateService extends ReformatMetadata {
     if (!isBlank(getDestinationDateFormat())) {
       log.warn("destination-date-format is deprecated, use destination-format-builder instead");
     }
-  }
-
-  @Override
-  protected void closeService() {
-    super.closeService();
   }
 
   /**

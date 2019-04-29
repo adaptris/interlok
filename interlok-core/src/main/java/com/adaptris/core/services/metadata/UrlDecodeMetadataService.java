@@ -34,7 +34,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("url-decode-metadata-service")
 @AdapterComponent
 @ComponentProfile(summary = "URL Decode some metadata", tag = "service,metadata")
-@DisplayOrder(order = {"metadataKeyRegexp"})
+@DisplayOrder(order = {"metadataKeyRegexp", "metadataLogger"})
 public class UrlDecodeMetadataService extends ReformatMetadata {
 
   public UrlDecodeMetadataService() {

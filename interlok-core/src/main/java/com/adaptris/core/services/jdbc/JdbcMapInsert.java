@@ -76,7 +76,9 @@ public abstract class JdbcMapInsert extends JdbcService {
     Integer() {
       @Override
       StatementParam wrap(final java.lang.String s) {
-        return (i, p) -> { p.setInt(i, java.lang.Integer.valueOf(s)); };
+        return (i, p) -> {
+          p.setInt(i, java.lang.Integer.parseInt(s));
+        };
       }
     },
     /**
@@ -86,7 +88,9 @@ public abstract class JdbcMapInsert extends JdbcService {
     Long() {
       @Override
       StatementParam wrap(final java.lang.String s) {
-        return (i, p) -> { p.setLong(i, java.lang.Long.valueOf(s)); };
+        return (i, p) -> {
+          p.setLong(i, java.lang.Long.parseLong(s));
+        };
       }
     },
     /**
@@ -108,7 +112,9 @@ public abstract class JdbcMapInsert extends JdbcService {
     BigInteger() {
       @Override
       StatementParam wrap(final java.lang.String s) {
-        return (i, p) -> { p.setObject(i, java.math.BigInteger.valueOf(java.lang.Long.valueOf(s)));}; 
+        return (i, p) -> {
+          p.setObject(i, java.math.BigInteger.valueOf(java.lang.Long.parseLong(s)));
+        };
       }
     },
     /**
@@ -118,7 +124,9 @@ public abstract class JdbcMapInsert extends JdbcService {
     BigDecimal() {
       @Override
       StatementParam wrap(final java.lang.String s) {
-        return (i, p) -> { p.setBigDecimal(i, java.math.BigDecimal.valueOf(java.lang.Double.valueOf(s)));}; 
+        return (i, p) -> {
+          p.setBigDecimal(i, java.math.BigDecimal.valueOf(java.lang.Double.parseDouble(s)));
+        };
       }
     },
     /**
@@ -128,7 +136,9 @@ public abstract class JdbcMapInsert extends JdbcService {
     Float() {
       @Override
       StatementParam wrap(final java.lang.String s) {
-        return (i, p) -> { p.setFloat(i, java.lang.Float.valueOf(s));}; 
+        return (i, p) -> {
+          p.setFloat(i, java.lang.Float.parseFloat(s));
+        };
       }
     },
     /**
@@ -138,7 +148,9 @@ public abstract class JdbcMapInsert extends JdbcService {
     Double() {
       @Override
       StatementParam wrap(final java.lang.String s) {
-        return (i, p) -> { p.setDouble(i, java.lang.Double.valueOf(s));}; 
+        return (i, p) -> {
+          p.setDouble(i, java.lang.Double.parseDouble(s));
+        };
       }
     },
     /**

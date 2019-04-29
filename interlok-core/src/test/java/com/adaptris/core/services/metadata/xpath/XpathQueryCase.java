@@ -26,12 +26,12 @@ import java.util.Set;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.adaptris.core.CoreException;
+
+import junit.framework.TestCase;
 
 public abstract class XpathQueryCase extends TestCase {
 

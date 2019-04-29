@@ -32,7 +32,6 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.ServiceImp;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -53,8 +52,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("convert-object-metadata-service")
 @AdapterComponent
 @ComponentProfile(summary = "Convert object metadata into normal metadata", tag = "service,metadata")
-@DisplayOrder(order = {"objectMetadataKeyRegexp"})
-public class ConvertObjectMetadataService extends ServiceImp {
+@DisplayOrder(order = {"objectMetadataKeyRegexp", "metadataLogger"})
+public class ConvertObjectMetadataService extends MetadataServiceImpl {
 
   @NotBlank
   @AffectsMetadata
@@ -71,6 +70,7 @@ public class ConvertObjectMetadataService extends ServiceImp {
     setObjectMetadataKeyRegexp(regexp);
   }
 
+  @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     Set<MetadataElement> metadataToAdd = new HashSet<MetadataElement>();
     for (Iterator i = msg.getObjectHeaders().entrySet().iterator(); i.hasNext();) {
@@ -82,7 +82,7 @@ public class ConvertObjectMetadataService extends ServiceImp {
         metadataToAdd.add(e);
       }
     }
-    log.trace("metadata added " + metadataToAdd);
+    logMetadata("Metadata Added : {}", metadataToAdd);
   }
 
   @Override
@@ -90,12 +90,6 @@ public class ConvertObjectMetadataService extends ServiceImp {
     objectMetadataKeyPattern = Pattern.compile(getObjectMetadataKeyRegexp());
 
   }
-
-  @Override
-  protected void closeService() {
-
-  }
-
 
   public String getObjectMetadataKeyRegexp() {
     return objectMetadataKeyRegexp;
@@ -111,8 +105,5 @@ public class ConvertObjectMetadataService extends ServiceImp {
     this.objectMetadataKeyRegexp = s;
   }
 
-  @Override
-  public void prepare() throws CoreException {
-  }
 
 }

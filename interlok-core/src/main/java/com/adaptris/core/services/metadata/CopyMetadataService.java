@@ -16,6 +16,9 @@
 
 package com.adaptris.core.services.metadata;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -25,9 +28,8 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
+import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.ServiceImp;
 import com.adaptris.core.util.Args;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairCollection;
@@ -53,8 +55,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("copy-metadata-service")
 @AdapterComponent
 @ComponentProfile(summary = "Copy metadata values to other metadata keys", tag = "service,metadata")
-@DisplayOrder(order = {"metadataKeys"})
-public class CopyMetadataService extends ServiceImp {
+@DisplayOrder(order = {"metadataKeys", "metadataLogger"})
+public class CopyMetadataService extends MetadataServiceImpl {
 
   @NotNull
   @AutoPopulated
@@ -69,28 +71,18 @@ public class CopyMetadataService extends ServiceImp {
   /**
    * {@inheritDoc}
    */
+  @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
+    List<MetadataElement> copied = new ArrayList<>();
     for (KeyValuePair k : getMetadataKeys()) {
       String value = msg.getMetadataValue(k.getKey());
       if (value != null) {
-        msg.addMetadata(k.getValue(), value);
-        log.debug("found metadata [" + value + "] against key [" + k.getKey()
-            + "] copied to key [" + k.getValue() + "]");
+        MetadataElement e = new MetadataElement(k.getValue(), value);
+        msg.addMetadata(e);
       }
     }
+    logMetadata("Copied Metadata : {}", copied);
   }
-
-
-  @Override
-  protected void initService() throws CoreException {
-
-  }
-
-  @Override
-  protected void closeService() {
-
-  }
-
 
   /**
    * <p>
@@ -115,10 +107,6 @@ public class CopyMetadataService extends ServiceImp {
    */
   public void setMetadataKeys(KeyValuePairCollection m) {
     this.metadataKeys = Args.notNull(m, "metadataKeys");
-  }
-
-  @Override
-  public void prepare() throws CoreException {
   }
 
 }

@@ -16,31 +16,34 @@
 
 package com.adaptris.core.services.dynamic;
 
-import static com.adaptris.fs.FsWorker.*;
+import static com.adaptris.fs.FsWorker.checkReadable;
+import static com.adaptris.fs.FsWorker.isDirectory;
+import static com.adaptris.fs.FsWorker.isFile;
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
-
 import java.io.File;
-
 import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.Service;
 import com.adaptris.core.fs.FsHelper;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.fs.FsException;
-import com.adaptris.fs.FsWorker;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * Implementation of <code>ServiceStore</code> which uses the local file system to store marshalled <code>Service</code>s.
+ * Implementation of <code>ServiceStore</code> which uses the local file system to store marshalled
+ * <code>Service</code>s.
  * </p>
  * 
  * @config local-marshall-service-store
+ * @deprecated since 3.8.4 use {@link DynamicServiceExecutor} with a URL based
+ *             {@link ServiceExtractor} instead.
  */
+@Deprecated
 @XStreamAlias("local-marshall-service-store")
+@Removal(version = "3.11.0")
 public class LocalMarshallServiceStore extends MarshallFileServiceStore {
 
   @NotBlank

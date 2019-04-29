@@ -1,0 +1,24 @@
+version: '3.5'
+services:
+  interlok_adr:
+    networks:
+      - interlok_adr
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: interlok_adr:latest
+    container_name: interlok_adr
+    hostname: interlok_adr
+    ports:
+      - '127.0.0.1:4000:4000'
+    volumes:
+      - .:/srv/jekyll
+    command: [ "jekyll", "serve", "--config", "_config_dev.yml", "--watch", "--force_polling" , "--drafts"]
+
+
+# Force the network name, otherwise
+# we create it based on the directory we're in
+# which will be "adr"
+networks:
+  interlok_adr:
+    name: interlok_adr

@@ -65,11 +65,6 @@ public class DefaultAdaptrisMessageImp extends AdaptrisMessageImp {
     return result;
   }
 
-  @Override
-  protected String getPayloadForLogging() {
-    return getStringPayload();
-  }
-
   /** @see AdaptrisMessage#setPayload(byte[]) */
   @Override
   public void setPayload(byte[] bytes) {

@@ -18,15 +18,16 @@ package com.adaptris.core.services.dynamic;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.TradingRelationship;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * <code>StandardMatchingStrategy</code> creates a <code>TradingRelationship[]</code> which substitutes
- * <code>TradingRelationship.WILD_CARD</code>s in the progressively more generic order described below.
+ * <code>StandardMatchingStrategy</code> creates a <code>TradingRelationship[]</code> which
+ * substitutes <code>TradingRelationship.WILD_CARD</code>s in the progressively more generic order
+ * described below.
  * <ul>
  * <li>source</li>
  * <li>destination</li>
@@ -42,8 +43,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config standard-matching-strategy
+ * @deprecated since 3.8.4 use {@link DynamicServiceExecutor} with a URL based
+ *             {@link ServiceExtractor} instead.
  */
+@Deprecated
 @XStreamAlias("standard-matching-strategy")
+@Removal(version = "3.11.0")
 public class StandardMatchingStrategy implements MatchingStrategy {
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
