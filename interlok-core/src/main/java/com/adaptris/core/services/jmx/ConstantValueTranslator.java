@@ -17,13 +17,8 @@
 package com.adaptris.core.services.jmx;
 
 import java.util.Date;
-
-import org.apache.commons.lang3.BooleanUtils;
 import org.hibernate.validator.constraints.NotBlank;
-
-import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -51,12 +46,6 @@ public class ConstantValueTranslator extends ValueTranslatorImp {
   @InputFieldHint(expression = true)
   private String value;
   
-  
-  @InputFieldDefault(value = "false")
-  @Deprecated
-  @Removal(version = "3.9.0")
-  private Boolean allowOverwrite;
-  
   public ConstantValueTranslator() {
   }
 
@@ -68,12 +57,7 @@ public class ConstantValueTranslator extends ValueTranslatorImp {
 
   @Override
   public void setValue(AdaptrisMessage message, Object object) {
-    if (this.allowOverwrite()) {
-      if(this.getType().equals(Date.class.getName()))
-        this.setValue(Long.toString(((Date) object).getTime()));
-      else
-        this.setValue(object.toString());
-    }
+    return;
   }
   
   @Override
@@ -101,35 +85,5 @@ public class ConstantValueTranslator extends ValueTranslatorImp {
 
   public void setValue(String value) {
     this.value = value;
-  }
-
-  /**
-   * 
-   * @deprecated since 3.6.5 behaviourally inconsistent and doesn't really have a good use-case.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public Boolean getAllowOverwrite() {
-    return allowOverwrite;
-  }
-
-  /**
-   * Whether or not the constant can change value.
-   * <p>
-   * You can also allow this constant value to change value. Any time this translator is used as a result translator, should you set
-   * "allow-overwrite" to true, then the new value will be used for further invocations. The default value is false;
-   * </p>
-   * 
-   * @param allowOverwrite
-   * @deprecated since 3.6.5 behaviourally inconsistent and doesn't really have a good use-case.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public void setAllowOverwrite(Boolean allowOverwrite) {
-    this.allowOverwrite = allowOverwrite;
-  }
-
-  boolean allowOverwrite() {
-    return BooleanUtils.toBooleanDefaultIfNull(getAllowOverwrite(), false);
   }
 }
