@@ -24,10 +24,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ServiceException;
@@ -93,18 +91,6 @@ public class ReformatDateServiceTest extends MetadataServiceExample {
     execute(service, msg);
     assertTrue(msg.headersContainsKey(DATE_METADATA_KEY));
     assertEquals(date, new SimpleDateFormat(DEST_DATE_FORMAT).parse(msg.getMetadataValue(DATE_METADATA_KEY)));
-  }
-
-  public void testService_Legacy() throws Exception {
-    ReformatDateService service = new ReformatDateService();
-    service.setSourceDateFormat(DateFormatBuilder.DEFAULT_DATE_FORMAT);
-    service.setDestinationDateFormat(DEST_DATE_FORMAT);
-    service.setMetadataKeyRegexp(DATE_METADATA_KEY);
-    AdaptrisMessage msg = createMessage();
-    Date date = new SimpleDateFormat(DateFormatBuilder.DEFAULT_DATE_FORMAT).parse(msg.getMetadataValue(DATE_METADATA_KEY));
-    execute(service, msg);
-    assertTrue(msg.headersContainsKey(DATE_METADATA_KEY));
-    assertEquals("Dates", date, new SimpleDateFormat(DEST_DATE_FORMAT).parse(msg.getMetadataValue(DATE_METADATA_KEY)));
   }
 
   public void testService_SourceFormat_SecondsEpoch() throws Exception {
@@ -220,7 +206,7 @@ public class ReformatDateServiceTest extends MetadataServiceExample {
   private static String scientific(BigDecimal x) {
     NumberFormat formatter = new DecimalFormat("0.########E0");
     formatter.setRoundingMode(RoundingMode.HALF_UP);
-    formatter.setMinimumFractionDigits((x.scale() > 0) ? x.precision() : x.scale());
+    formatter.setMinimumFractionDigits(x.scale() > 0 ? x.precision() : x.scale());
     return formatter.format(x);
   }
 
