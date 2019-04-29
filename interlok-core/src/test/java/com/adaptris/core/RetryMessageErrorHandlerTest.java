@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
 import com.adaptris.core.fs.FsProducer;
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
@@ -195,21 +194,6 @@ public class RetryMessageErrorHandlerTest extends ExampleErrorHandlerCase {
     }
   }
 
-  @SuppressWarnings("deprecation")
-  public void testSetLockTimeout() throws Exception {
-    RetryMessageErrorHandler meh = new RetryMessageErrorHandler();
-    TimeInterval defaultInterval = new TimeInterval(1L, TimeUnit.SECONDS);
-    TimeInterval interval = new TimeInterval(20L, TimeUnit.SECONDS);
-    assertNull(meh.getLockTimeout());
-
-    meh.setLockTimeout(interval);
-    assertEquals(interval, meh.getLockTimeout());
-    LifecycleHelper.initAndStart(meh);
-    LifecycleHelper.stopAndClose(meh);
-    meh.setLockTimeout(null);
-    assertNull(meh.getLockTimeout());
-  }
-
   public void testSetRetryInterval() throws Exception {
     RetryMessageErrorHandler meh = new RetryMessageErrorHandler();
     TimeInterval defaultInterval = new TimeInterval(10L, TimeUnit.MINUTES);
@@ -290,6 +274,7 @@ public class RetryMessageErrorHandlerTest extends ExampleErrorHandlerCase {
     try {
       MockMessageProducer failProducer = new MockMessageProducer();
       RetryMessageErrorHandler meh = configure(new RetryMessageErrorHandler() {
+        @Override
         public void handleProcessingException(AdaptrisMessage msg) {
           ManagedThreadFactory.shutdownQuietly(executor, new TimeInterval(1L, TimeUnit.SECONDS));
           super.handleProcessingException(msg);
