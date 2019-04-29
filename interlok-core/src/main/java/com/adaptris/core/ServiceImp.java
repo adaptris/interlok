@@ -17,16 +17,12 @@
 package com.adaptris.core;
 
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.util.Args;
-import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.GuidGenerator;
 
 /**
@@ -158,16 +154,6 @@ public abstract class ServiceImp implements Service {
   @Override
   public boolean isTrackingEndpoint() {
     return BooleanUtils.toBooleanDefaultIfNull(getIsTrackingEndpoint(), false);
-  }
-
-  /**
-   * @deprecated use {@link ExceptionHelper#wrapServiceException(Throwable)} or
-   *             {@link ExceptionHelper#rethrowServiceException(Throwable)} instead.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  protected static void rethrowServiceException(Throwable e) throws ServiceException {
-    throw ExceptionHelper.wrapServiceException(e);
   }
 
   /**
