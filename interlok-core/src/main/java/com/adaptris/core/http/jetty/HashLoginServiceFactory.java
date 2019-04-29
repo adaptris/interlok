@@ -1,14 +1,14 @@
 package com.adaptris.core.http.jetty;
 
 import javax.validation.constraints.NotNull;
+
 import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.security.LoginService;
 import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.adaptris.annotation.AdvancedConfig;
+
 import com.adaptris.annotation.AutoPopulated;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -63,10 +63,6 @@ public class HashLoginServiceFactory implements JettyLoginServiceFactory {
   @NotNull
   @NotBlank
   private String filename;
-  @AdvancedConfig
-  @Deprecated
-  @Removal(version = "3.9.0")
-  private Integer refreshInterval;
 
   public HashLoginServiceFactory() {
     setUserRealm("InterlokJetty");
@@ -81,9 +77,6 @@ public class HashLoginServiceFactory implements JettyLoginServiceFactory {
   @Override
   public LoginService retrieveLoginService() {
     HashLoginService loginService = new HashLoginService(getUserRealm(), getFilename());
-    if (refreshInterval != null) {
-      log.warn("[refresh-interval] is deprecated, and has no effect");
-    }
     loginService.setHotReload(true);
     return loginService;
   }
@@ -107,29 +100,5 @@ public class HashLoginServiceFactory implements JettyLoginServiceFactory {
    */
   public void setFilename(String filename) {
     this.filename = Args.notNull(filename, "filename");
-  }
-
-
-  /**
-   * @return the refreshInterval
-   * @deprecated since 3.6.0 refresh interval has no effect.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public Integer getRefreshInterval() {
-    return refreshInterval;
-  }
-
-
-  /**
-   * Specify the refresh interval (in seconds) for monitoring the password file.
-   * 
-   * @deprecated since 3.6.0 refresh interval has no effect.
-   * @param i the refreshInterval to set
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public void setRefreshInterval(Integer i) {
-    this.refreshInterval = i;
   }
 }
