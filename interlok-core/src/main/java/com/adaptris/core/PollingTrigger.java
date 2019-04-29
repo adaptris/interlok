@@ -18,14 +18,13 @@ package com.adaptris.core;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import javax.validation.Valid;
-
+import javax.validation.constraints.NotNull;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.annotation.MarshallingCDATA;
-import com.adaptris.annotation.Removal;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -45,11 +44,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"poller", "messageProvider"})
 public class PollingTrigger extends AdaptrisPollingConsumer {
 
-  @MarshallingCDATA
-  @Deprecated
-  @Removal(version = "3.9.0", message = "Use a message-provider")
-  private String template;
   @Valid
+  @NotNull
   private MessageProvider messageProvider;
 
   private static final ConfiguredConsumeDestination DEFAULT_DEST = new ConfiguredConsumeDestination(
@@ -57,14 +53,6 @@ public class PollingTrigger extends AdaptrisPollingConsumer {
 
   public PollingTrigger() {
 
-  }
-
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public PollingTrigger(Poller p, String t) {
-    this();
-    setPoller(p);
-    setTemplate(t);
   }
 
   public PollingTrigger(Poller p, MessageProvider t) {
@@ -80,13 +68,12 @@ public class PollingTrigger extends AdaptrisPollingConsumer {
 
   @Override
   protected void prepareConsumer() throws CoreException {
-    if (getMessageProvider() == null) {
-      if (!isEmpty(getTemplate())) {
-        log.warn("template is deprecated; use a message-provider instead");
-      }
-      setMessageProvider(new StaticPollingTemplate(getTemplate()));
+    try {
+      Args.notNull(getMessageProvider(), "messageProvider");
+      LifecycleHelper.prepare(getMessageProvider());
+    } catch (IllegalArgumentException e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
-    LifecycleHelper.prepare(getMessageProvider());
   }
 
   /**
@@ -137,34 +124,6 @@ public class PollingTrigger extends AdaptrisPollingConsumer {
     super.close();
   }
 
-  /**
-   * <p>
-   * Sets the template message to use.
-   * </p>
-   *
-   * @param s the template message to use
-   * @deprecated since 3.6.2 use {@link #setMessageProvider(MessageProvider)} instead.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0", message = "Use a message-provider")
-  public void setTemplate(String s) {
-    template = s;
-  }
-
-  /**
-   * <p>
-   * Returns the template message to use.
-   * </p>
-   *
-   * @return the template message to use
-   * @deprecated since 3.6.2 use {@link #getMessageProvider()} instead.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0", message = "Use a message-provider")
-  public String getTemplate() {
-    return template;
-  }
-
   @Override
   protected String renameThread() {
     String oldName = Thread.currentThread().getName();
@@ -191,15 +150,14 @@ public class PollingTrigger extends AdaptrisPollingConsumer {
    * @param p the templateProvider to set
    */
   public void setMessageProvider(MessageProvider p) {
-    this.messageProvider = p;
+    this.messageProvider = Args.notNull(p, "messageProvider");
   }
 
   /**
    * How to generate the template that will be sent to the workflow.
    * 
-   * @author lchan
-   *
    */
+  @FunctionalInterface
   public interface MessageProvider extends ComponentLifecycle {
 
     AdaptrisMessage createMessage(AdaptrisMessageFactory fac) throws CoreException;
