@@ -59,8 +59,9 @@ import com.adaptris.core.management.Constants;
 import com.adaptris.core.management.vcs.RuntimeVersionControl;
 import com.adaptris.core.management.vcs.VcsException;
 import com.adaptris.core.management.vcs.VersionControlSystem;
+import com.adaptris.core.services.metadata.ReformatDateService;
+import com.adaptris.core.services.metadata.ReformatMetadata;
 import com.adaptris.core.stubs.JunitBootstrapProperties;
-import com.adaptris.core.stubs.MockConfirmService;
 import com.adaptris.core.stubs.StaticMockEventProducer;
 import com.adaptris.core.util.JmxHelper;
 import com.adaptris.util.URLString;
@@ -907,11 +908,11 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     Properties custom = new Properties();
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry.findInstance(new JunitBootstrapProperties(custom));
 
-    String adapterRegistryTestJsonDef = myAdapterRegistry.getClassDefinition("com.adaptris.core.services.confirmation.ConfirmServiceImp");
+    String adapterRegistryTestJsonDef = myAdapterRegistry.getClassDefinition(ReformatMetadata.class.getCanonicalName());
     ClassDescriptor adapterRegistryTestDef = (ClassDescriptor) new XStreamJsonMarshaller().unmarshal(adapterRegistryTestJsonDef);
     
     assertTrue(adapterRegistryTestDef.getSubTypes().size() > 0);
-    assertTrue(adapterRegistryTestDef.getSubTypes().contains(MockConfirmService.class.getName()));
+    assertTrue(adapterRegistryTestDef.getSubTypes().contains(ReformatDateService.class.getName()));
   }
 
   private class MockRuntimeVersionControl implements RuntimeVersionControl {

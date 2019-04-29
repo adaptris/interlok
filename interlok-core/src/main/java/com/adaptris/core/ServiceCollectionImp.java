@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
@@ -65,11 +64,6 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   @AdvancedConfig
   @InputFieldDefault(value = "false")
   private Boolean isTrackingEndpoint;
-  @AdvancedConfig
-  @InputFieldDefault(value = "false")
-  @Deprecated
-  @Removal(version = "3.9.0")
-  private Boolean isConfirmation;
   @AdvancedConfig
   @Valid
   private OutOfStateHandler outOfStateHandler;
@@ -154,39 +148,12 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   }
 
   /**
-   * @deprecated since 3.6.2 No-one has ever produced a confirmation service. This will be removed.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public Boolean getIsConfirmation() {
-    return isConfirmation;
-  }
-
-  /**
-   * @deprecated since 3.6.2 No-one has ever produced a confirmation service. This will be removed.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public void setIsConfirmation(Boolean b) {
-    isConfirmation = b;
-  }
-
-  /**
    *
    * @see com.adaptris.core.MessageEventGenerator#isTrackingEndpoint()
    */
   @Override
   public boolean isTrackingEndpoint() {
     return BooleanUtils.toBooleanDefaultIfNull(getIsTrackingEndpoint(), false);
-  }
-
-  /**
-   *
-   * @see com.adaptris.core.MessageEventGenerator#isConfirmation()
-   */
-  @Override
-  public boolean isConfirmation() {
-    return BooleanUtils.toBooleanDefaultIfNull(getIsConfirmation(), false);
   }
 
   /**
@@ -364,6 +331,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
    * Updates the state for the component <code>ComponentState</code>.
    * </p>
    */
+  @Override
   public void changeState(ComponentState newState) {
     serviceListState = newState;
   }
@@ -374,6 +342,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
    * </p>
    * @return the current <code>ComponentState</code>
    */
+  @Override
   public ComponentState retrieveComponentState() {
     return serviceListState;
   }
@@ -384,6 +353,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
    * </p>
    * @throws CoreException wrapping any underlying Exceptions
    */
+  @Override
   public void requestInit() throws CoreException {
     serviceListState.requestInit(this);
   }
@@ -394,6 +364,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
    * </p>
    * @throws CoreException wrapping any underlying Exceptions
    */
+  @Override
   public void requestStart() throws CoreException {
     serviceListState.requestStart(this);
   }
@@ -403,6 +374,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
    * Request this component is stopped.
    * </p>
    */
+  @Override
   public void requestStop() {
     serviceListState.requestStop(this);
   }
@@ -412,6 +384,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
    * Request this component is closed.
    * </p>
    */
+  @Override
   public void requestClose() {
     serviceListState.requestClose(this);
   }
@@ -599,6 +572,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
     return getOutOfStateHandler() != null ? getOutOfStateHandler() : DEFAULT_STATE_HANDLER;
   }
 
+  @Override
   public String getLookupName() {
     return lookupName;
   }

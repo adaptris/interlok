@@ -27,7 +27,6 @@ import com.adaptris.core.services.WaitService;
 import com.adaptris.core.stubs.EventHandlerAwareService;
 import com.adaptris.core.util.LifecycleHelper;
 
-@SuppressWarnings("deprecation")
 public abstract class ServiceCollectionCase extends ServiceCollectionExample {
 
   public ServiceCollectionCase(String name) {
@@ -77,17 +76,9 @@ public abstract class ServiceCollectionCase extends ServiceCollectionExample {
   }
 
   public static void assertMessageEventGenerator(ServiceCollectionImp meg) {
-    meg.setIsConfirmation(null);
-    assertNull(meg.getIsConfirmation());
-    assertFalse(meg.isConfirmation());
-
     meg.setIsTrackingEndpoint(null);
     assertNull(meg.getIsTrackingEndpoint());
     assertFalse(meg.isTrackingEndpoint());
-
-    meg.setIsConfirmation(Boolean.TRUE);
-    assertNotNull(meg.getIsConfirmation());
-    assertTrue(meg.isConfirmation());
 
     meg.setIsTrackingEndpoint(Boolean.TRUE);
     assertNotNull(meg.getIsTrackingEndpoint());
