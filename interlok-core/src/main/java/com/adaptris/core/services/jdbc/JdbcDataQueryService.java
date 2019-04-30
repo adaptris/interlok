@@ -174,10 +174,10 @@ public class JdbcDataQueryService extends JdbcServiceWithParameters implements D
       }
       resultSetTranslator.translate(result, msg);
       destroyXmlHelper(msg);
-      commit(conn, msg);
+      JdbcUtil.commit(conn, msg);
     }
     catch (Exception e) {
-      rollback(conn, msg);
+      JdbcUtil.rollback(conn, msg);
       throw ExceptionHelper.wrapServiceException(e);
     }
     finally {
