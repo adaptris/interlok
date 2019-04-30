@@ -71,7 +71,7 @@ public class MetadataProducerSessionFactory extends ProducerSessionFactoryImpl {
   }
 
   boolean newSessionRequired(AdaptrisMessage msg) {
-    return msg.containsKey(getMetadataKey())
+    return msg.headersContainsKey(getMetadataKey())
         && Boolean.valueOf(defaultIfEmpty(msg.getMetadataValue(getMetadataKey()), "false")).booleanValue();
   }
 
