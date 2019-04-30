@@ -17,6 +17,7 @@
 package com.adaptris.core;
 
 import java.util.concurrent.TimeUnit;
+
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageConsumer;
 import com.adaptris.core.stubs.MockMessageListener;
@@ -87,7 +88,6 @@ public class StandaloneConsumerTest extends BaseCase {
     LifecycleHelper.stopAndClose(sc);
   }
 
-  @SuppressWarnings("deprecation")
   public void testPollingConsumerContinueProcessing() throws Exception {
     AdaptrisPollingConsumer consumer = new AdaptrisPollingConsumer() {
 

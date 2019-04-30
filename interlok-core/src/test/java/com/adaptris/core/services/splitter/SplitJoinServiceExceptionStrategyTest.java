@@ -35,7 +35,6 @@ import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
 import com.adaptris.util.TimeInterval;
 
-@SuppressWarnings("deprecation")
 public class SplitJoinServiceExceptionStrategyTest {
 
   @Rule

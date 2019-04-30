@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.DefaultMessageFactory;
@@ -37,7 +38,6 @@ import com.adaptris.core.util.CloseableIterable;
  * @author lchan
  * @author $Author: lchan $
  */
-@SuppressWarnings("deprecation")
 public abstract class SplitterCase extends SplitterServiceExample {
 
   public static final String XML_MESSAGE = "<?xml version=\"1.0\" "

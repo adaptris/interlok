@@ -20,7 +20,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+
 import javax.validation.Valid;
+
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConnectedService;
@@ -162,6 +165,7 @@ public abstract class JdbcService extends ServiceImp implements ConnectedService
    * @throws SQLException if the commit fails.
    */
   @Deprecated
+  @Removal(version = "3.11.0")
   protected void commit(Connection sqlConnection, AdaptrisMessage msg) throws SQLException {
     JdbcUtil.commit(sqlConnection, msg);
   }
