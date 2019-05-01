@@ -21,11 +21,6 @@ junit.FsMessageProducerTest.baseUrl=file:///@BUILD_DIR@/junit/fs-produce
 junit.FsMessageProducerTest.tempDirUrl=file:///@BUILD_DIR@/junit/fs-temp
 junit.FileSorterTest.tempDirUrl=file:///@BUILD_DIR@/junit/fs-sorter
 
-junit.FfTransformService.stylesheet=file:///@BASE_DIR@/src/test/resources/transform/ff.definition.xml
-junit.FfTransformService.inputFile=@BASE_DIR@/src/test/resources/transform/ff.input.txt
-junit.FfTransformService.inputFile_ISO_8859=@BASE_DIR@/src/test/resources/transform/ff.input.iso8859.txt
-junit.FfTransformService.issue2661.input=@BASE_DIR@/src/test/resources/transform/issue2661.csv
-junit.FfTransformService.issue2661.definition=file:///@BASE_DIR@/src/test/resources/transform/issue2661-ffdef.xml
 
 junit.XpathSyntaxIdentifierTest.inputFile=@BASE_DIR@/src/test/resources/transform/inv.xml
 junit.XpathSyntaxIdentifierTest.non_text_node_input=@BASE_DIR@/src/test/resources/transform/redmine-issue1020.xml
@@ -90,17 +85,6 @@ junit.TranscodingServiceExamples.baseDir=${junit.ServiceCase.baseDir}/transcodin
 junit.CacheServiceExamples.baseDir=${junit.ServiceCase.baseDir}/cache
 
 
-
-
-
-
-junit.EdiTransformServiceTest.gxml=@BASE_DIR@/src/test/resources/transform/ordersD96A.gxml
-junit.EdiTransformServiceTest.input.edi=@BASE_DIR@/src/test/resources/transform/ordersD96a.edi
-junit.EdiTransformServiceTest.input.xml=@BASE_DIR@/src/test/resources/transform/ordersD96a.xml
-junit.EdiTransformServiceTest.charset=com.adaptris.edi.parser.StandardEdifactCharacterSet
-junit.EdiTransformServiceTest.gxml.url=file:///@BASE_DIR@/src/test/resources/transform/ordersD96A.gxml
-
-
 junit.XmlValidationServiceTest.schemaUrl=file://localhost/@BASE_DIR@/src/test/resources/transform/schema-simple.xsd
 junit.XmlValidationServiceTest.schemaUrl2=file://localhost/@BASE_DIR@/src/test/resources/transform/schema-simple-alternate.xsd
 junit.XmlValidationServiceTest.invalidSchemaUrl=file://localhost/@BASE_DIR@/src/test/resources/transform/schema-input.xml
@@ -121,10 +105,6 @@ junit.XmlTransformService.remove.namespace.mapping=file:///@BASE_DIR@/src/test/r
 
 
 junit.XpathSplitter.issue2658.input=@BASE_DIR@/src/test/resources/services/issue2658.xml
-
-
-junit.FopTransformService.inputMessage=@BASE_DIR@/src/test/resources/transform/fop/sample_input.fo
-junit.FopTransformService.outputMessage=@BASE_DIR@/src/test/resources/transform/fop/sample_output.pdf
 
 junit.StoreMetadataValueServiceTest.storeFileUrl=file:///@BASE_DIR@/src/test/resources/store
 junit.CheckMetadataValueServiceTest.storeFileUrl=file:///@BASE_DIR@/src/test/resources/store
