@@ -89,7 +89,7 @@ public class JdbcMapUpsertTest extends JdbcMapInsertCase {
   
   @Test
   public void testDatabaseId() {
-    JdbcMapUpsert upsert = (JdbcMapUpsert) createService();
+    JdbcMapUpsert upsert = createService();
     assertEquals(JdbcMapUpsert.DEFAULT_ID_FIELD, upsert.idField());
     assertEquals("hello", upsert.withId("hello").idField());
   }
@@ -190,6 +190,7 @@ public class JdbcMapUpsertTest extends JdbcMapInsertCase {
     }
   }
   
+  @Override
   protected UpsertProperties createService() {
     return new UpsertProperties();
   }
@@ -219,6 +220,7 @@ public class JdbcMapUpsertTest extends JdbcMapInsertCase {
     }
   }
 
+  @SuppressWarnings("deprecation")
   protected class UpsertProperties extends JdbcMapUpsert {
 
     @Override

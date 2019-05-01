@@ -158,6 +158,7 @@ public class MessageLifecycleEventTest {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testMleMarkerSetIsConfirmation() throws Exception {
     MleMarker m = new MleMarker();
     m.setIsConfirmation(true);
@@ -165,6 +166,7 @@ public class MessageLifecycleEventTest {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testMleMarkerSetConfirmationId() throws Exception {
     MleMarker m = new MleMarker();
     m.setConfirmationId(DEFAULT_ID);

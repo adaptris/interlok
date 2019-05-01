@@ -26,7 +26,6 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -50,9 +49,6 @@ public class StandaloneConsumer implements AdaptrisMessageConsumer, StateManaged
   @AdvancedConfig
   @InputFieldDefault(value = "false")
   private Boolean isTrackingEndpoint;
-  @AdvancedConfig
-  @InputFieldDefault(value = "false")
-  private Boolean isConfirmation;
   private transient ComponentState consumerState;
 
   /**
@@ -299,43 +295,12 @@ public class StandaloneConsumer implements AdaptrisMessageConsumer, StateManaged
   }
 
   /**
-   * 
-   * @deprecated since 3.6.2 No-one has ever produced a confirmation service. This will be removed.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public Boolean getIsConfirmation() {
-    return isConfirmation;
-  }
-
-  /**
-   * 
-   * @deprecated since 3.6.2 No-one has ever produced a confirmation service. This will be removed.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public void setIsConfirmation(Boolean b) {
-    isConfirmation = b;
-  }
-
-  /**
    *
    * @see com.adaptris.core.MessageEventGenerator#isTrackingEndpoint()
    */
   @Override
   public boolean isTrackingEndpoint() {
     return BooleanUtils.toBooleanDefaultIfNull(getIsTrackingEndpoint(), false);
-  }
-
-  /**
-   *
-   * @see com.adaptris.core.MessageEventGenerator#isConfirmation()
-   */
-  @Override
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public boolean isConfirmation() {
-    return BooleanUtils.toBooleanDefaultIfNull(getIsConfirmation(), false);
   }
 
   /**
@@ -356,26 +321,32 @@ public class StandaloneConsumer implements AdaptrisMessageConsumer, StateManaged
     getConsumer().setMessageFactory(f);
   }
 
+  @Override
   public void changeState(ComponentState newState) {
     consumerState = newState;
   }
 
+  @Override
   public ComponentState retrieveComponentState() {
     return consumerState;
   }
 
+  @Override
   public void requestInit() throws CoreException {
     consumerState.requestInit(this);
   }
 
+  @Override
   public void requestStart() throws CoreException {
     consumerState.requestStart(this);
   }
 
+  @Override
   public void requestStop() {
     consumerState.requestStop(this);
   }
 
+  @Override
   public void requestClose() {
     consumerState.requestClose(this);
   }

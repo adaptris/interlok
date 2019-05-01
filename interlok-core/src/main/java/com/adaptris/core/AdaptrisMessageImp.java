@@ -303,7 +303,6 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
   @Override
   public void addEvent(MessageEventGenerator meg, boolean wasSuccessful) {
-    String confirmationId = (String) getObjectHeaders().get(MessageEventGenerator.CONFIRMATION_ID_KEY);
     if (meg == null) {
       messageLifeCycle.addMleMarker(getNextMleMarker(new MessageEventGenerator() {
         @Override
@@ -321,15 +320,10 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
           return false;
         }
 
-        @Override
-        public boolean isConfirmation() {
-          return false;
-        }
-
-      }, wasSuccessful, confirmationId));
+      }, wasSuccessful));
     }
     else {
-      messageLifeCycle.addMleMarker(getNextMleMarker(meg, wasSuccessful, confirmationId));
+      messageLifeCycle.addMleMarker(getNextMleMarker(meg, wasSuccessful));
     }
   }
 
@@ -364,6 +358,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
    * @param object the <code>Object</code> to set as metadata
    * @param key the key to store this object against.
    */
+  @Override
   public void addObjectHeader(Object key, Object object) {
     objectMetadata.put(key, object);
   }
@@ -452,10 +447,10 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     return value;
   }
 
-  private MleMarker getNextMleMarker(MessageEventGenerator meg, boolean successful, String confId) {
+  private MleMarker getNextMleMarker(MessageEventGenerator meg, boolean successful) {
     long seq = nextSequenceNumber();
     this.addMetadata(CoreConstants.MLE_SEQUENCE_KEY, String.valueOf(seq));
-    MleMarker mleMarker = new MleMarker(meg, successful, seq, guidGenerator.create(meg), confId);
+    MleMarker mleMarker = new MleMarker(meg, successful, seq, guidGenerator.create(meg));
     return mleMarker;
   }
 
@@ -563,6 +558,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
       this.charset = charsetName;
     }
     
+    @Override
     public void close() throws IOException {
       super.close();
       setContentEncoding(charset);

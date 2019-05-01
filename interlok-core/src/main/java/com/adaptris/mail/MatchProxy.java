@@ -15,6 +15,7 @@
 */
 package com.adaptris.mail;
 
+@FunctionalInterface
 public interface MatchProxy {
 
   boolean matches(String headerValue);

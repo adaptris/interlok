@@ -41,7 +41,6 @@ import com.adaptris.util.KeyValuePair;
 import com.icegreen.greenmail.smtp.SmtpServer;
 import com.icegreen.greenmail.util.GreenMail;
 
-@SuppressWarnings("deprecation")
 public class DefaultMailProducerTest extends MailProducerExample {
 
 
@@ -329,80 +328,6 @@ public class DefaultMailProducerTest extends MailProducerExample {
       JunitMailHelper.stopServer(gm);
     }
 
-  }
-
-  public void testProduceWithContentTypeMetadata() throws Exception {
-    if (!testsEnabled()) return;
-    GreenMail gm = JunitMailHelper.startServer();
-    try {
-      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
-      StandaloneProducer producer = createProducerForTests(gm);
-      DefaultSmtpProducer mailer = (DefaultSmtpProducer) producer.getProducer();
-      mailer.setContentType("text/xml");
-      mailer.setContentTypeKey("MetadataContentType");
-      msg.addMetadata("MetadataContentType", "text/plain");
-      ServiceCase.execute(producer, msg);
-
-      gm.waitForIncomingEmail(1);
-      MimeMessage[] msgs = gm.getReceivedMessages();
-      assertEquals(1, msgs.length);
-      MimeMessage mailmsg = msgs[0];
-      JunitMailHelper.assertFrom(mailmsg, DEFAULT_SENDER);
-      JunitMailHelper.assertTo(mailmsg, DEFAULT_RECEIVER);
-      JunitMailHelper.assertContentType(mailmsg, "text/plain");
-    }
-    finally {
-      JunitMailHelper.stopServer(gm);
-    }
-  }
-
-  public void testProduceWithContentTypeMetadataButMissingMetadata() throws Exception {
-    if (!testsEnabled()) return;
-    GreenMail gm = JunitMailHelper.startServer();
-    try {
-      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
-      StandaloneProducer producer = createProducerForTests(gm);
-      DefaultSmtpProducer mailer = (DefaultSmtpProducer) producer.getProducer();
-      mailer.setContentTypeKey("MetadataContentType");
-      mailer.setContentType("text/plain");
-      ServiceCase.execute(producer, msg);
-
-      gm.waitForIncomingEmail(1);
-      MimeMessage[] msgs = gm.getReceivedMessages();
-      assertEquals(1, msgs.length);
-      MimeMessage mailmsg = msgs[0];
-      JunitMailHelper.assertFrom(mailmsg, DEFAULT_SENDER);
-      JunitMailHelper.assertTo(mailmsg, DEFAULT_RECEIVER);
-      JunitMailHelper.assertContentType(mailmsg, "text/plain");
-    }
-    finally {
-      JunitMailHelper.stopServer(gm);
-    }
-  }
-
-  public void testProduceWithContentTypeMetadataButEmptyMetadata() throws Exception {
-    if (!testsEnabled()) return;
-    GreenMail gm = JunitMailHelper.startServer();
-    try {
-      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
-      msg.addMetadata("MetadataContentType", "");
-      StandaloneProducer producer = createProducerForTests(gm);
-      DefaultSmtpProducer mailer = (DefaultSmtpProducer) producer.getProducer();
-      mailer.setContentTypeKey("MetadataContentType");
-      mailer.setContentType("text/plain");
-      ServiceCase.execute(producer, msg);
-
-      gm.waitForIncomingEmail(1);
-      MimeMessage[] msgs = gm.getReceivedMessages();
-      assertEquals(1, msgs.length);
-      MimeMessage mailmsg = msgs[0];
-      JunitMailHelper.assertFrom(mailmsg, DEFAULT_SENDER);
-      JunitMailHelper.assertTo(mailmsg, DEFAULT_RECEIVER);
-      JunitMailHelper.assertContentType(mailmsg, "text/plain");
-    }
-    finally {
-      JunitMailHelper.stopServer(gm);
-    }
   }
 
   /**

@@ -22,7 +22,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AutoPopulated;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisConnectionImp;
 import com.adaptris.core.AdaptrisMessage;
@@ -43,10 +42,6 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  */
 public abstract class CacheServiceBase extends ServiceImp implements ConnectedService {
 
-  @Deprecated
-  @Valid
-  @Removal(version = "3.9.0")
-  private Cache cache;
   @Valid
   private AdaptrisConnection connection;
 
@@ -67,13 +62,7 @@ public abstract class CacheServiceBase extends ServiceImp implements ConnectedSe
   @Override
   public void prepare() throws CoreException {
     try {
-      if (cache != null) {
-        log.warn("'cache' is deprecated; use a connection instead");
-        cacheConnection = new CacheWrapper(cache);
-      }
-      else {
-        cacheConnection = Args.notNull(connection, "connection");
-      }
+      cacheConnection = Args.notNull(connection, "connection");
       LifecycleHelper.prepare(cacheConnection);
     }
     catch (IllegalArgumentException e) {
@@ -104,28 +93,6 @@ public abstract class CacheServiceBase extends ServiceImp implements ConnectedSe
     LifecycleHelper.stop(cacheConnection);
   }
 
-  /**
-   * The cache object to be used by this service
-   * 
-   * @param cache
-   * @deprecated since 3.6.4 - use {@link CacheConnection} with {@link #setConnection(AdaptrisConnection)} instead.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0", message = "use #setConnection(AdaptrisConnection) with a CacheConnection")
-  public void setCache(Cache cache) {
-    this.cache = cache;
-  }
-
-  /**
-   * The cache object to be used by this service
-   * 
-   * @deprecated since 3.6.4 - use {@link CacheConnection} with {@link #setConnection(AdaptrisConnection)} instead.
-   */
-  @Removal(version = "3.9.0", message = "use #setConnection(AdaptrisConnection) with a CacheConnection")
-  public Cache getCache() {
-    return cache;
-  }
-
   protected Cache retrieveCache() {
     return cacheConnection.retrieveConnection(CacheProvider.class).retrieveCache();
   }
@@ -146,10 +113,12 @@ public abstract class CacheServiceBase extends ServiceImp implements ConnectedSe
     cacheEntryEvaluators.add(generator);
   }
 
+  @Override
   public AdaptrisConnection getConnection() {
     return connection;
   }
 
+  @Override
   public void setConnection(AdaptrisConnection cacheConnection) {
     this.connection = cacheConnection;
   }

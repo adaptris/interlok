@@ -63,6 +63,7 @@ import com.icegreen.greenmail.util.GreenMail;
 
 public abstract class MailConsumerCase extends MailConsumerExample {
 
+  static final String REGEX_STYLE = "Regex";
   static final String[] TEXT_PAYLOADS = {"The Quick Brown Fox Jumps Over the Lazy Dog",
                                          "The Quicker Browner Hound Leaps At The Fox",
                                          "R2D2 and C3PO go into a bar"};
@@ -180,7 +181,7 @@ public abstract class MailConsumerCase extends MailConsumerExample {
     consumer.setDeleteOnReceive(true);
     consumer.setPoller(new FixedIntervalPoller(new TimeInterval(300L, TimeUnit.MILLISECONDS)));
     consumer.setReacquireLockBetweenMessages(true);
-    consumer.setRegularExpressionStyle("PERL5");
+    consumer.setRegularExpressionStyle(REGEX_STYLE);
     ConfiguredConsumeDestination dest = new ConfiguredConsumeDestination(pop3Url, "SUBJECT=.*Junit Test.*");
     consumer.setDestination(dest);
     consumer.setUsername(DEFAULT_POP3_USER);

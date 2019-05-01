@@ -18,17 +18,10 @@ package com.adaptris.core.transform;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.adaptris.annotation.Removal;
-import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.CoreException;
 
 public abstract class MessageValidatorImpl implements MessageValidator {
 
-  @Deprecated
-  @Removal(version = "3.9.0")
-  private String uniqueId;
-  
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
   @Override
@@ -52,30 +45,6 @@ public abstract class MessageValidatorImpl implements MessageValidator {
   @Override
   public void close() {
 
-  }
-
-
-  /**
-   * Not required as this component doesn't need to extend {@link AdaptrisComponent}
-   * 
-   * @deprecated since 3.6.3
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public String getUniqueId() {
-    return uniqueId;
-  }
-
-
-  /**
-   * Not required as this component doesn't need to extend {@link AdaptrisComponent}
-   * 
-   * @deprecated since 3.6.3
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public void setUniqueId(String uniqueId) {
-    this.uniqueId = uniqueId;
   }
 
 }

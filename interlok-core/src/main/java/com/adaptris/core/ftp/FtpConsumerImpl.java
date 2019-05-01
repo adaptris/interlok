@@ -40,7 +40,7 @@ import com.adaptris.util.TimeInterval;
  */
 public abstract class FtpConsumerImpl extends AdaptrisPollingConsumer {
   protected static final TimeInterval DEFAULT_OLDER_THAN = new TimeInterval(0L, TimeUnit.MILLISECONDS);
-  protected static final String DEFAULT_FILE_FILTER_IMPL = "org.apache.oro.io.GlobFilenameFilter";
+  protected static final String DEFAULT_FILE_FILTER_IMPL = "org.apache.commons.io.filefilter.RegexFileFilter";
 
   @AdvancedConfig
   private String fileFilterImp;
@@ -186,8 +186,9 @@ public abstract class FtpConsumerImpl extends AdaptrisPollingConsumer {
    * by filename only.
    * </p>
    * 
-   * @param s The fileFilterImp to set, if not specified, then the default is "org.apache.oro.io.GlobFilenameFilter" which uses the
-   *          jakarta oro package to perform unix glob style filtering
+   * @param s The fileFilterImp to set, if not specified, then the default is
+   *        {@code org.apache.commons.io.filefilter.RegexFileFilter} which uses the
+   *        java.util regular expressions to perform filtering
    * @see com.adaptris.core.ConsumeDestination#getFilterExpression()
    */
   public void setFileFilterImp(String s) {

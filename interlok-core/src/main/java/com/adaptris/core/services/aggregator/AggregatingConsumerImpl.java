@@ -18,12 +18,8 @@ package com.adaptris.core.services.aggregator;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.adaptris.annotation.Removal;
-import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.ComponentLifecycle;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -48,9 +44,6 @@ public abstract class AggregatingConsumerImpl<E extends AggregatingConsumeServic
   @NotNull
   @Valid
   private ConsumeDestinationGenerator destination;
-  @Deprecated
-  @Removal(version = "3.9.0")
-  private String uniqueId;
   
   public AggregatingConsumerImpl() {
   }
@@ -71,6 +64,7 @@ public abstract class AggregatingConsumerImpl<E extends AggregatingConsumeServic
     this.messageAggregator = Args.notNull(cmh, "messageAggregator");
   }
 
+  @Override
   public void init() throws CoreException {
     try {
       Args.notNull(getDestination(), "destination");
@@ -129,27 +123,5 @@ public abstract class AggregatingConsumerImpl<E extends AggregatingConsumeServic
   protected void stop(ComponentLifecycle ac) {
     LifecycleHelper.stop(ac);
     LifecycleHelper.close(ac);
-  }
-
-  /**
-   * Not required as this component doesn't need to extend {@link AdaptrisComponent}
-   * 
-   * @deprecated since 3.6.3
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public String getUniqueId() {
-    return uniqueId;
-  }
-
-  /**
-   * Not required as this component doesn't need to extend {@link AdaptrisComponent}
-   * 
-   * @deprecated since 3.6.3
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public void setUniqueId(String uniqueId) {
-    this.uniqueId = uniqueId;
   }
 }

@@ -48,11 +48,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageConsumerImp;
 import com.adaptris.core.ClosedState;
@@ -87,11 +87,6 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   private Boolean additionalDebug;
 
   @AdvancedConfig
-  @Deprecated
-  @Removal(version = "3.9.0", message = "Use timeoutAction")
-  private TimeInterval maxWaitTime;
-
-  @AdvancedConfig
   @InputFieldDefault(value = "return 202 after 10 minutes")
   private TimeoutAction timeoutAction;
 
@@ -101,11 +96,6 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   @AdvancedConfig
   @InputFieldDefault(value = "20 Seconds")
   private TimeInterval sendProcessingInterval;
-
-  @Deprecated
-  @AdvancedConfig
-  @Removal(version = "3.9.0", message = "Use warnAfter")
-  private Long warnAfterMessageHangMillis = null;
 
   static {
     List<String> methods = new ArrayList<>();
@@ -198,6 +188,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
    * 
    * @see com.adaptris.core.AdaptrisComponent#init()
    */
+  @Override
   public void init() throws CoreException {
     if (!isEmpty(getDestination().getFilterExpression())) {
       acceptedMethods = Arrays.asList(getDestination().getFilterExpression().split(","));
@@ -209,6 +200,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
    * 
    * @see com.adaptris.core.AdaptrisComponent#start()
    */
+  @Override
   public void start() throws CoreException {
     retrieveConnection(JettyServletRegistrar.class).addServlet(asServletWrapper());
   }
@@ -217,6 +209,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
    * 
    * @see com.adaptris.core.AdaptrisComponent#stop()
    */
+  @Override
   public void stop() {
     String loggingUrl = "";
     try {
@@ -232,42 +225,12 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
    * 
    * @see com.adaptris.core.AdaptrisComponent#close()
    */
+  @Override
   public void close() {
   }
 
-  /**
-   * @return the maxWaitTime
-   * @deprecated since 3.6.6 use {@link #getTimeoutAction()} instead.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0", message = "Use #getTimeoutAction()")
-  public TimeInterval getMaxWaitTime() {
-    return maxWaitTime;
-  }
-
-  /**
-   * Set the max wait time for an individual worker in a workflow to finish.
-   * <p>
-   * This setting only has an impact if the consumer is the entry point for a {@link com.adaptris.core.PoolingWorkflow} instance. In
-   * the event that the wait time is exceeded, then the internal {@link javax.servlet.http.HttpServlet} instance commits the
-   * response in its current state and returns control back to the Jetty engine.
-   * </p>
-   * 
-   * @param maxWait the maxWaitTime to set (default 10 minutes)
-   * @deprecated since 3.6.6 use {@link #setTimeoutAction(TimeoutAction)} instead.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0", message = "Use #setTimeoutAction(TimeoutAction)")
-  public void setMaxWaitTime(TimeInterval maxWait) {
-    maxWaitTime = maxWait;
-  }
-
   TimeoutAction timeoutAction() {
-    if (getMaxWaitTime() != null) {
-      log.warn("max-wait-time is deprecated); use timeout-action instead");
-      return new TimeoutAction(getMaxWaitTime());
-    }
-    return getTimeoutAction() != null ? getTimeoutAction() : new TimeoutAction();
+    return ObjectUtils.defaultIfNull(getTimeoutAction(), new TimeoutAction());
   }
 
   public TimeoutAction getTimeoutAction() {
@@ -300,24 +263,6 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   }
 
   /**
-   * @deprecated since 3.5.1 use {@link #getWarnAfter()} instead.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0", message = "Use #getWarnAfter()")
-  public Long getWarnAfterMessageHangMillis() {
-    return warnAfterMessageHangMillis;
-  }
-
-  /**
-   * @deprecated since 3.5.1 use {@link #setWarnAfter(TimeInterval)} instead.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0", message = "Use #setWarnAfter(TimeInterval)")
-  public void setWarnAfterMessageHangMillis(Long w) {
-    this.warnAfterMessageHangMillis = w;
-  }
-
-  /**
    * @return the warnAfter
    */
   public TimeInterval getWarnAfter() {
@@ -334,14 +279,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   }
 
   long warnAfter() {
-    long result = Long.MAX_VALUE;
-    if (getWarnAfterMessageHangMillis() != null) {
-      log.warn("Use of deprecated warn-after-message-hand-millis; use warn-after instead");
-      result = getWarnAfterMessageHangMillis().longValue();
-    } else {
-      result = TimeInterval.toMillisecondsDefaultIfNull(getWarnAfter(), Long.MAX_VALUE);
-    }
-    return result;
+    return TimeInterval.toMillisecondsDefaultIfNull(getWarnAfter(), Long.MAX_VALUE);
   }
 
   /**
@@ -410,6 +348,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
       if (httpHandlers == null) {
         httpHandlers = new HashMap<String, HttpOperation>();
         HttpOperation defaultHandler = new HttpOperation() {
+          @Override
           public void handle(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
             processRequest(request, response);
           }
@@ -418,6 +357,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
           httpHandlers.put(m.toUpperCase().trim(), defaultHandler);
         }
         httpHandlers.put(RequestMethod.OPTIONS.name(), new HttpOperation() {
+          @Override
           public void handle(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
             addAllow(response).setStatus(HttpURLConnection.HTTP_OK);
           }

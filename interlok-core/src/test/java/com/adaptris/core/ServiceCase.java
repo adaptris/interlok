@@ -18,7 +18,6 @@ package com.adaptris.core;
 
 import java.util.List;
 
-import com.adaptris.core.services.confirmation.ConfirmServiceImp;
 import com.adaptris.core.util.LifecycleHelper;
 
 /**
@@ -26,7 +25,6 @@ import com.adaptris.core.util.LifecycleHelper;
  * Extension to <code>BaseCase</code> for <code>Service</code>s which provides a method for marshaling sample XML config.
  * </p>
  */
-@SuppressWarnings("deprecation")
 public abstract class ServiceCase extends ExampleConfigCase {
 
   /**
@@ -105,17 +103,9 @@ public abstract class ServiceCase extends ExampleConfigCase {
   }
 
   private void assertMessageEventGenerator(ServiceImp meg) {
-    meg.setIsConfirmation(null);
-    assertNull(meg.getIsConfirmation());
-    assertFalse(meg.isConfirmation());
-
     meg.setIsTrackingEndpoint(null);
     assertNull(meg.getIsTrackingEndpoint());
     assertFalse(meg.isTrackingEndpoint());
-
-    meg.setIsConfirmation(Boolean.TRUE);
-    assertNotNull(meg.getIsConfirmation());
-    assertTrue(meg.isConfirmation());
 
     meg.setIsTrackingEndpoint(Boolean.TRUE);
     assertNotNull(meg.getIsTrackingEndpoint());
@@ -123,17 +113,10 @@ public abstract class ServiceCase extends ExampleConfigCase {
   }
 
   private void assertMessageEventGenerator(ServiceCollectionImp meg) {
-    meg.setIsConfirmation(null);
-    assertNull(meg.getIsConfirmation());
-    assertFalse(meg.isConfirmation());
 
     meg.setIsTrackingEndpoint(null);
     assertNull(meg.getIsTrackingEndpoint());
     assertFalse(meg.isTrackingEndpoint());
-
-    meg.setIsConfirmation(Boolean.TRUE);
-    assertNotNull(meg.getIsConfirmation());
-    assertTrue(meg.isConfirmation());
 
     meg.setIsTrackingEndpoint(Boolean.TRUE);
     assertNotNull(meg.getIsTrackingEndpoint());
@@ -261,9 +244,6 @@ public abstract class ServiceCase extends ExampleConfigCase {
   }
 
   protected void assertDefaults(Service s, boolean assertBranching) throws Exception {
-    if (s instanceof ConfirmServiceImp) {
-      assertFalse(s.getClass().getName(), s.isConfirmation());
-    }
     if (assertBranching) {
       if (s instanceof BranchingServiceImp) {
         assertTrue(s.getClass().getName(), s.isBranching());
@@ -275,8 +255,6 @@ public abstract class ServiceCase extends ExampleConfigCase {
     assertFalse(s.getClass().getName(), s.isTrackingEndpoint());
     assertFalse(s.getClass().getName(), s.continueOnFailure());
     if (s instanceof ServiceImp) {
-      ((ServiceImp) s).setIsConfirmation(true);
-      assertEquals(Boolean.TRUE, ((ServiceImp) s).getIsConfirmation());
       ((ServiceImp) s).setIsTrackingEndpoint(true);
       assertEquals(Boolean.TRUE, ((ServiceImp) s).getIsTrackingEndpoint());
       ((ServiceImp) s).setContinueOnFail(true);
@@ -285,8 +263,6 @@ public abstract class ServiceCase extends ExampleConfigCase {
     if (s instanceof ServiceCollectionImp) {
       ((ServiceCollectionImp) s).setContinueOnFail(true);
       assertEquals(Boolean.TRUE, ((ServiceCollectionImp) s).getContinueOnFail());
-      ((ServiceCollectionImp) s).setIsConfirmation(true);
-      assertEquals(Boolean.TRUE, ((ServiceCollectionImp) s).getIsConfirmation());
       ((ServiceCollectionImp) s).setIsTrackingEndpoint(true);
       assertEquals(Boolean.TRUE, ((ServiceCollectionImp) s).getIsTrackingEndpoint());
       ((ServiceCollectionImp) s).setRestartAffectedServiceOnException(Boolean.TRUE);

@@ -30,8 +30,6 @@ import javax.management.ObjectName;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.RegexFileFilter;
-import org.apache.oro.io.AwkFilenameFilter;
-import org.apache.oro.io.GlobFilenameFilter;
 import org.apache.oro.io.Perl5FilenameFilter;
 
 import com.adaptris.core.Adapter;
@@ -230,64 +228,6 @@ public abstract class FsConsumerCase extends ConsumerCase {
             + "\n\n-->\n";
       }
     },
-    Awk {
-      @Override
-      public String getExpression() {
-        return "*.xml";
-      }
-
-      @Override
-      public String getImpl() {
-        return AwkFilenameFilter.class.getCanonicalName();
-      }
-
-      @Override
-      public String getXmlHeader() {
-        return "<!--\n\nThe configured <file-filter-imp> you to filter filenames based on an AWK regular expression"
-            + "\n<filter-expression> contains the AWK regular expression"
-            + "\nDEPRECATED since 3.7.0"
-            + "\n\n-->\n";
-      }
-    },
-    Glob {
-      @Override
-      public String getExpression() {
-        return "*.xml";
-      }
-
-      @Override
-      public String getImpl() {
-        return GlobFilenameFilter.class.getCanonicalName();
-      }
-
-      @Override
-      public String getXmlHeader() {
-        return "<!--\n\nThe configured <file-filter-imp> allows you to filter filenames based on a simple GLOB regular expression"
-            + "\n<filter-expression> contains the GLOB regular expression"
-            + "\nDEPRECATED since 3.7.0"
-            + "\n\n-->\n";
-      }
-
-    },
-    Perl {
-      @Override
-      public String getExpression() {
-        return ".*\\.xml";
-      }
-
-      @Override
-      public String getImpl() {
-        return Perl5FilenameFilter.class.getCanonicalName();
-      }
-
-      @Override
-      public String getXmlHeader() {
-        return "<!--\n\nThe configured <file-filter-imp> allows you to filter filenames based on a Perl regular expression"
-            + "\n<filter-expression> contains the Perl regular expression"
-            + "\nDEPRECATED since 3.7.0"
-            + "\n\n-->\n";
-      }
-    },
     LargerThan {
       @Override
       public String getExpression() {
@@ -383,7 +323,7 @@ public abstract class FsConsumerCase extends ConsumerCase {
 
       @Override
       public String getExpression() {
-        return "SizeGT=4096__@@__Perl=.*\\.xml";
+        return "SizeGT=4096__@@__Regex=.*\\.xml";
       }
 
       @Override

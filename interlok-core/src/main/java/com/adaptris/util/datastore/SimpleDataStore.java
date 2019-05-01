@@ -24,14 +24,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Properties;
-
 import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -234,7 +231,7 @@ public class SimpleDataStore extends DataStore {
     if (haveLock) {
       return;
     }
-    File lock = new File(getLockFileName());
+    File lock = new File(getLockFile());
     int attempts = 1;
 
     while (lock.exists() && attempts++ < maxAttempts) {
@@ -262,7 +259,7 @@ public class SimpleDataStore extends DataStore {
       return;
     }
 
-    File lock = new File(getLockFileName());
+    File lock = new File(getLockFile());
 
     if (lock.exists()) {
       lock.delete();
@@ -305,32 +302,6 @@ public class SimpleDataStore extends DataStore {
     }
   }
 
-
-
-  /**
-   * The Data file stored url format.
-   *
-   * @param string the data file.
-   * @deprecated since 3.6.6 use {@link #setDataFile(String)} instead.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public void setDataFileName(String string) {
-    setDataFile(string);
-  }
-
-  /**
-   * Get the data filename.
-   *
-   * @return the filename in url format.
-   * @deprecated since 3.6.6 use {@link #setDataFile(String)} instead.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public String getDataFileName() {
-    return getDataFile();
-  }
-
   /**
    * The Data file stored url format.
    *
@@ -347,31 +318,6 @@ public class SimpleDataStore extends DataStore {
    */
   public String getDataFile() {
     return dataFile;
-  }
-
-  
-  /**
-   * The lock file in url format.
-   *
-   * @param string the lock file
-   * @deprecated since 3.6.6 use {@link #setLockFile(String)} instead.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public void setLockFileName(String string) {
-    setLockFile(string);
-  }
-  
-  /**
-   * Get the lock file name.
-   *
-   * @return the lock file in URL format.
-   * @deprecated since 3.6.6 use {@link #setLockFile(String)} instead.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public String getLockFileName() {
-    return getLockFile();
   }
 
   /**

@@ -18,29 +18,24 @@ package com.adaptris.core;
 
 import static com.adaptris.core.util.JndiHelper.bind;
 import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.transaction.TransactionManager;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
@@ -79,9 +74,6 @@ public class SharedComponentList implements ComponentLifecycle, ComponentLifecyc
   @AdvancedConfig
   private SharedComponentLifecycleStrategy lifecycleStrategy;
   
-  @Deprecated
-  @Removal(version = "3.9.0")
-  private String uniqueId;
   private transient Object lock = new Object();
   private transient InitialContext context = null;
 
@@ -512,28 +504,6 @@ public class SharedComponentList implements ComponentLifecycle, ComponentLifecyc
 
   public void setTransactionManager(TransactionManager tm) {
     this.transactionManager = tm;
-  }
-
-  /**
-   * Not required as this component doesn't need to extend {@link AdaptrisComponent}
-   * 
-   * @deprecated since 3.6.3
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public String getUniqueId() {
-    return uniqueId;
-  }
-
-  /**
-   * Not required as this component doesn't need to extend {@link AdaptrisComponent}
-   * 
-   * @deprecated since 3.6.3
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public void setUniqueId(String uniqueId) {
-    this.uniqueId = uniqueId;
   }
 
   private static class DefaultLifecycleStrategy implements SharedComponentLifecycleStrategy {

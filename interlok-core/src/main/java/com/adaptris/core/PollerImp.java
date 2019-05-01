@@ -18,8 +18,6 @@ package com.adaptris.core;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.util.Args;
 
 /**
@@ -28,10 +26,6 @@ import com.adaptris.core.util.Args;
  * </p>
  */
 public abstract class PollerImp implements Poller {
-  
-  @Deprecated
-  @Removal(version = "3.9.0")
-  private String uniqueId;
   
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
@@ -78,7 +72,7 @@ public abstract class PollerImp implements Poller {
       try {
         long start = System.currentTimeMillis();
         count = retrieveConsumer().processMessages();
-        log.debug("time to process [{}] messages [{}] ms", count, (System.currentTimeMillis() - start));
+        log.debug("time to process [{}] messages [{}] ms", count, System.currentTimeMillis() - start);
       }
       catch (Exception e) { // mop up any runtime
         log.error("exception thrown to run", e);
@@ -99,28 +93,6 @@ public abstract class PollerImp implements Poller {
     }
     callback.pollTriggered(count);
     Thread.currentThread().setName(oldName);
-  }
-
-  /**
-   * Not required as this component doesn't need to extend {@link AdaptrisComponent}
-   * 
-   * @deprecated since 3.6.3
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public String getUniqueId() {
-    return uniqueId;
-  }
-
-  /**
-   * Not required as this component doesn't need to extend {@link AdaptrisComponent}
-   * 
-   * @deprecated since 3.6.3
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public void setUniqueId(String uniqueId) {
-    this.uniqueId = uniqueId;
   }
 
   @FunctionalInterface

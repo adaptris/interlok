@@ -17,15 +17,8 @@
 package com.adaptris.mail;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.oro.text.GlobCompiler;
-import org.apache.oro.text.awk.AwkCompiler;
-import org.apache.oro.text.awk.AwkMatcher;
-import org.apache.oro.text.regex.Perl5Compiler;
-import org.apache.oro.text.regex.Perl5Matcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.adaptris.annotation.Removal;
 
 public abstract class MatchProxyFactory {
 
@@ -44,81 +37,6 @@ public abstract class MatchProxyFactory {
       @Override
       MatchProxy build(String expression) throws Exception {
         return new JavaMatchProxy(expression);
-      }
-
-    },
-    /**
-     * @deprecated since 3.7.0
-     */
-    @Deprecated
-    @Removal(version = "3.9.0")
-    AwkSimple("AWK") {
-      @Override
-      MatchProxy build(String expression) throws Exception {
-        log.warn("org.apache.oro.text.awk.AwkCompiler is deprecated, use a java.util.regex.Pattern based filter instead");
-        return new OroMatchProxy(new AwkMatcher(), new AwkCompiler().compile(expression));
-      }
-    },
-    /**
-     * @deprecated since 3.7.0
-     */
-    @Deprecated
-    @Removal(version = "3.9.0")
-    AwkClass("org.apache.oro.text.awk.AwkCompiler") {
-      @Override
-      MatchProxy build(String expression) throws Exception {
-        log.warn("org.apache.oro.text.awk.AwkCompiler is deprecated, use a java.util.regex.Pattern based filter instead");
-        return new OroMatchProxy(new AwkMatcher(), new AwkCompiler().compile(expression));
-      }
-    },
-    /**
-     * @deprecated since 3.7.0
-     */
-    @Deprecated
-    @Removal(version = "3.9.0")
-    GlobSimple("GLOB") {
-      @Override
-      MatchProxy build(String expression) throws Exception {
-        log.warn("org.apache.oro.text.GlobCompiler is deprecated, use a java.util.regex.Pattern based filter instead");
-        return new OroMatchProxy(new Perl5Matcher(), new GlobCompiler().compile(expression));
-      }
-    },
-    /**
-     * @deprecated since 3.7.0
-     */
-    @Deprecated
-    @Removal(version = "3.9.0")
-    GlobClass("org.apache.oro.text.GlobCompiler") {
-      @Override
-      MatchProxy build(String expression) throws Exception {
-        log.warn("org.apache.oro.text.GlobCompiler is deprecated, use a java.util.regex.Pattern based filter instead");
-        return new OroMatchProxy(new Perl5Matcher(), new GlobCompiler().compile(expression));
-      }
-    },
-    /**
-     * @deprecated since 3.7.0
-     */
-    @Deprecated
-    @Removal(version = "3.9.0")
-    PerlSimple("PERL5") {
-
-      @Override
-      MatchProxy build(String expression) throws Exception {
-        log.warn("org.apache.oro.text.regex.Perl5Compiler is deprecated, use a java.util.regex.Pattern based filter instead");
-        return new OroMatchProxy(new Perl5Matcher(), new Perl5Compiler().compile(expression));
-      }
-
-    },
-    /**
-     * @deprecated since 3.7.0
-     */
-    @Deprecated
-    @Removal(version = "3.9.0")
-    Perl5Class("org.apache.oro.text.regex.Perl5Compiler") {
-      @Override
-      MatchProxy build(String expression) throws Exception {
-        log.warn("org.apache.oro.text.regex.Perl5Compiler is deprecated, use a java.util.regex.Pattern based filter instead");
-        return new OroMatchProxy(new Perl5Matcher(), new Perl5Compiler().compile(expression));
       }
 
     };

@@ -50,35 +50,6 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
     super(name);
   }
 
-  @SuppressWarnings("deprecation")
-  public void testConsume_Legacy() throws Exception {
-    if (!testsEnabled()) return;
-    GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    try {
-
-      sendMessage(gm);
-      MockMessageListener mockListener = new MockMessageListener();
-      DefaultMailConsumer imp = (DefaultMailConsumer) createConsumerForTests(gm);
-      imp.setPreserveHeaders(true);
-      imp.setHeaderPrefix("");
-      imp.getDestination().setFilterExpression("BLAH=");
-
-      StandaloneConsumer c = new StandaloneConsumer(imp);
-      c.registerAdaptrisMessageListener(mockListener);
-      LifecycleHelper.initAndStart(c);
-      waitForMessages(mockListener, 1);
-      LifecycleHelper.stopAndClose(c);
-      AdaptrisMessage prdMsg = mockListener.getMessages().get(0);
-      assertEquals(TEXT_PAYLOADS[0], prdMsg.getContent());
-      assertEquals(JunitMailHelper.DEFAULT_RECEIVER, prdMsg.getMetadataValue("To"));
-
-    }
-    finally {
-      JunitMailHelper.stopServer(gm);
-    }
-
-  }
-
   public void testConsume_NoHandler() throws Exception {
     if (!testsEnabled()) return;
     GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
@@ -110,7 +81,7 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
       sendMessage(gm);
       MockMessageListener mockListener = new MockMessageListener();
       DefaultMailConsumer imp = (DefaultMailConsumer) createConsumerForTests(gm);
-      imp.setRegularExpressionStyle("PERL5");
+      imp.setRegularExpressionStyle(REGEX_STYLE);
       imp.getDestination().setFilterExpression("SUBJECT=.*");
       imp.setHeaderHandler(new MetadataMailHeaders().withHeaderFilter(new NoOpMetadataFilter()));
 

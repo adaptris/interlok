@@ -201,10 +201,10 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
         msg.addMetadata(getMetadataKey(), formatter.format(1));
         actor.executeInsert();
       }
-      commit(conn, msg);
+      JdbcUtil.commit(conn, msg);
     }
     catch (SQLException e) {
-      rollback(conn, msg);
+      JdbcUtil.rollback(conn, msg);
       throw new ServiceException("Failed whilst generating sequence number", e);
     }
     finally {
@@ -467,6 +467,7 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
       return this;
     }
 
+    @Override
     public void close() {
       JdbcUtil.closeQuietly(select, insert, update, reset);
       sqlConnection = null;

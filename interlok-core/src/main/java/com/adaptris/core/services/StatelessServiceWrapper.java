@@ -75,14 +75,6 @@ public class StatelessServiceWrapper extends ServiceImp implements EventHandlerA
       Boolean getIsTrackingEndpoint(Service s) {
         return ((ServiceImp) s).getIsTrackingEndpoint();
       }
-      @Override
-      void setIsConfirmation(Service s, Boolean b) {
-        ((ServiceImp) s).setIsConfirmation(b);
-      }
-      @Override
-      Boolean getIsConfirmation(Service s) {
-        return ((ServiceImp) s).getIsConfirmation();
-      }
     },
     ServiceCollectionProxy {
       @Override
@@ -97,20 +89,10 @@ public class StatelessServiceWrapper extends ServiceImp implements EventHandlerA
       Boolean getIsTrackingEndpoint(Service s) {
         return ((ServiceCollectionImp) s).getIsTrackingEndpoint();
       }
-      @Override
-      void setIsConfirmation(Service s, Boolean b) {
-        ((ServiceCollectionImp) s).setIsConfirmation(b);
-      }
-      @Override
-      Boolean getIsConfirmation(Service s) {
-        return ((ServiceCollectionImp) s).getIsConfirmation();
-      }
     };
     abstract boolean matches(Service s);
     abstract void setIsTrackingEndpoint(Service s, Boolean b);
     abstract Boolean getIsTrackingEndpoint(Service s);
-    abstract void setIsConfirmation(Service s, Boolean b);
-    abstract Boolean getIsConfirmation(Service s);
   }
   
   @NotNull
@@ -166,14 +148,6 @@ public class StatelessServiceWrapper extends ServiceImp implements EventHandlerA
       return getService().isTrackingEndpoint();
     }
     return super.isTrackingEndpoint();
-  }
-
-  @Override
-  public boolean isConfirmation() {
-    if (getService() != null) {
-      return getService().isConfirmation();
-    }
-    return super.isConfirmation();
   }
 
   @Override
@@ -263,30 +237,6 @@ public class StatelessServiceWrapper extends ServiceImp implements EventHandlerA
     }
     catch (IllegalArgumentException e) {
       super.setIsTrackingEndpoint(b);
-    }
-  }
-
-  @Override
-  @Deprecated
-  public Boolean getIsConfirmation() {
-    try {
-      MessageEventGeneratorProxy what = getProxy(getService());
-      return what.getIsConfirmation(getService());
-    }
-    catch (IllegalArgumentException e) {
-      return super.getIsConfirmation();
-    }
-  }
-
-  @Deprecated
-  @Override
-  public void setIsConfirmation(Boolean b) {
-    try {
-      MessageEventGeneratorProxy what = getProxy(getService());
-      what.setIsConfirmation(getService(), b);
-    }
-    catch (IllegalArgumentException e) {
-      super.setIsConfirmation(b);
     }
   }
 

@@ -24,10 +24,8 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import com.adaptris.annotation.AdapterComponent;
-import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -59,15 +57,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
     recommended = {NullConnection.class})
 @DisplayOrder(order = {"poller", "username", "password", "mailReceiverFactory", "partSelector", "headerHandler"})
 public class DefaultMailConsumer extends ParsingMailConsumerImpl {
-
-  @AdvancedConfig
-  @Deprecated
-  @Removal(version = "3.9.0", message = "Use #setHeaderHandler(MailHeaderHandler)")
-  private Boolean preserveHeaders;
-  @AdvancedConfig
-  @Deprecated
-  @Removal(version = "3.9.0", message = "Use #setHeaderHandler(MailHeaderHandler)")
-  private String headerPrefix;
 
   /**
    * <p>
@@ -114,80 +103,7 @@ public class DefaultMailConsumer extends ParsingMailConsumerImpl {
     return result;
   }
 
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#init()
-   */
   @Override
-  protected void initConsumer() throws CoreException {
-    if (getPreserveHeaders() != null) {
-      log.warn("preserve-headers is deprecated; use header-handler instead");
-    }
-  }
-
-  /**
-   * Get the preserve headers flag.
-   *
-   * @return the flag.
-   * @deprecated since 3.6.5 use {link {@link #setHeaderHandler(MailHeaderHandler)} instead.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0", message = "Use #setHeaderHandler(MailHeaderHandler)")
-  public Boolean getPreserveHeaders() {
-    return preserveHeaders;
-  }
-
-  /**
-   * Set the preserve headers flag.
-   * <p>
-   * If set to true, then an attempt is made to copy all the email headers from the email message as metadata to the AdaptrisMessage
-   * object. Each header can optionally be prefixed with the value specfied by <code>
-   *  getHeaderPrefix()</code>
-   * </p>
-   *
-   * @param b true or false.
-   * @deprecated since 3.6.5 use {link {@link #setHeaderHandler(MailHeaderHandler)} instead.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0", message = "Use #setHeaderHandler(MailHeaderHandler)")
-  public void setPreserveHeaders(Boolean b) {
-    preserveHeaders = b;
-  }
-
-
-  /**
-   * Set the header prefix.
-   * <p>
-   * The header prefix is used to prefix any headers that are preserved from the email message.
-   * </p>
-   *
-   * @param s the prefix.
-   * @deprecated since 3.6.5 use {link {@link #setHeaderHandler(MailHeaderHandler)} instead.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0", message = "Use #setHeaderHandler(MailHeaderHandler)")
-  public void setHeaderPrefix(String s) {
-    headerPrefix = s;
-  }
-
-  /**
-   * Get the header prefix.
-   *
-   * @return the header prefix
-   * @deprecated since 3.6.5 use {link {@link #setHeaderHandler(MailHeaderHandler)} instead.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0", message = "Use #setHeaderHandler(MailHeaderHandler)")
-  public String getHeaderPrefix() {
-    return headerPrefix;
-  }
-
-  @Override
-  protected MailHeaderHandler headerHandler() {
-    MailHeaderHandler result = super.headerHandler();
-    if (getPreserveHeaders() != null) {
-      result = getPreserveHeaders() == Boolean.TRUE ? new MetadataMailHeaders(getHeaderPrefix()) : new IgnoreMailHeaders();
-    }
-    return result;
-  }
+  protected void initConsumer() throws CoreException {}
 
 }

@@ -15,9 +15,14 @@
 */
 package com.adaptris.core.ftp;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.lang3.BooleanUtils;
 
 import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.GaussianIntervalPoller;
@@ -32,6 +37,18 @@ import com.adaptris.sftp.SftpClient;
 import com.adaptris.util.KeyValuePair;
 
 public class SftpExampleHelper {
+  public static final String CFG_HOST = "SftpConsumerTest.host";
+  public static final String CFG_USER = "SftpConsumerTest.username";
+  public static final String CFG_PASSWORD = "SftpConsumerTest.password";
+  public static final String CFG_REMOTE_DIR = "SftpConsumerTest.remotedir";
+
+  // DO NOT use the top two directly, use @setupTempHostsFile and the CFG_TEMP_HOSTS_FILE
+  public static final String CFG_KNOWN_HOSTS_FILE = "SftpConsumerTest.knownHostsFile";
+  public static final String CFG_UNKNOWN_HOSTS_FILE = "SftpConsumerTest.unknownHostsFile";
+  public static final String CFG_TEMP_HOSTS_FILE = "SftpConsumerTest.tempHostsFile";
+
+  public static final String CFG_PRIVATE_KEY_FILE = "SftpConsumerTest.privateKeyFile";
+  public static final String CFG_PRIVATE_KEY_PW = "SftpConsumerTest.privateKeyPassword";
 
   private enum ConnectionType {
     Standard() {
@@ -41,19 +58,6 @@ public class SftpExampleHelper {
         return standardSftpConnection();
       }
 
-    },
-    KeyAuth() {
-      @Override
-      FileTransferConnection create() {
-        return sftpKeyAuthConnection();
-      }
-
-    },
-    Basic() {
-      @Override
-      FileTransferConnection create() {
-        return sftpConnection();
-      }
     };
 
     abstract FileTransferConnection create();
@@ -117,32 +121,23 @@ public class SftpExampleHelper {
     return con;
   }
 
-  @SuppressWarnings("deprecation")
-  public static SftpKeyAuthConnection sftpKeyAuthConnection() {
-    SftpKeyAuthConnection con = new SftpKeyAuthConnection();
-    con.setDefaultUserName("username");
-    con.setPrivateKeyFilename("/path/to/private/key/in/openssh/format");
-    con.setPrivateKeyPassword("my_super_secret_password");
-    con.setSocketTimeout(10000);
-    con.setKnownHostsFile("/optional/path/to/known_hosts");
-    return con;
-  }
-
-  @SuppressWarnings("deprecation")
-  public static SftpConnection sftpConnection() {
-    SftpConnection con = new SftpConnection();
-    con.setDefaultUserName("default-username-if-not-specified");
-    con.setDefaultPassword("default-password-if-not-specified");
-    con.setKnownHostsFile("/optional/path/to/known_hosts");
-    return con;
-  }
-
   public static ConfigBuilder createOpensshRepo() {
     return new OpenSSHConfigBuilder("/path/openssh/config/file");
   }
 
   public static ConfigBuilder createInlineConfigRepo() {
     return new InlineConfigRepositoryBuilder(false).build();
+  }
+
+  public static File createOpenSshConfig(File targetDir, boolean strict) throws Exception {
+    targetDir.mkdirs();
+    File tempFile = File.createTempFile(SftpExampleHelper.class.getSimpleName(), "", targetDir);
+    try (PrintStream out = new PrintStream(new FileOutputStream(tempFile))) {
+      out.println("Host *");
+      out.println("  StrictHostKeyChecking " + BooleanUtils.toStringYesNo(strict));
+      out.println("  " + SftpClient.SSH_PREFERRED_AUTHENTICATIONS + " " + SftpClient.NO_KERBEROS_AUTH);
+    }
+    return tempFile;
   }
 
   public static PerHostConfigBuilder createPerHostConfigRepo() {

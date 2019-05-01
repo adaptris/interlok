@@ -191,6 +191,7 @@ public abstract class EventHandlerBase implements EventHandler {
     uniqueId = s;
   }
 
+  @Override
   public void changeState(ComponentState c) {
     state = c;
   }

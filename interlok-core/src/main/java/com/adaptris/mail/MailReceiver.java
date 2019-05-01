@@ -79,11 +79,12 @@ public interface MailReceiver extends Iterable<MimeMessage>, Closeable {
 	public void addCustomFilter(String headerValue, String filter);
 
 	/**
-	 * Set the handler for regular expressions.
-	 * 
-	 * @param type one of "GLOB", "AWK", "PERL5" or their respective compiler
-	 *          classnames
-	 */
+   * Set the handler for regular expressions.
+   * 
+   * @param type a regular expression compiler, default is "REGEX" which uses java.util
+   *        regular expressions.
+   * 
+   */
 	public void setRegularExpressionCompiler(String type);
 	
 	/**
@@ -113,6 +114,7 @@ public interface MailReceiver extends Iterable<MimeMessage>, Closeable {
    * @return an iterator of filtered messages.
    * @throws RuntimeException if we couldn't interact with the mailbox.
    */
+  @Override
   public Iterator<MimeMessage> iterator();
 
 	/**
