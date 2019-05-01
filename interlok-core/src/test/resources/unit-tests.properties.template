@@ -53,7 +53,6 @@ junit.JmsConsumerExamples.baseDir=${junit.ConsumerCase.baseDir}/jms
 junit.FtpConsumerExamples.baseDir=${junit.ConsumerCase.baseDir}/ftp
 junit.FtpsConsumerExamples.baseDir=${junit.ConsumerCase.baseDir}/ftps
 junit.SftpConsumerExamples.baseDir=${junit.ConsumerCase.baseDir}/sftp
-junit.MailConsumerExamples.baseDir=${junit.ConsumerCase.baseDir}/mail
 junit.HttpConsumerExamples.baseDir=${junit.ConsumerCase.baseDir}/http
 junit.SocketConsumerExamples.baseDir=${junit.ConsumerCase.baseDir}/socket
 junit.JmxConsumerExamples.baseDir=${junit.ConsumerCase.baseDir}/jmx
@@ -63,7 +62,6 @@ junit.JmsProducerExamples.baseDir=${junit.ProducerCase.baseDir}/jms
 junit.FtpProducerExamples.baseDir=${junit.ProducerCase.baseDir}/ftp
 junit.FtpsProducerExamples.baseDir=${junit.ProducerCase.baseDir}/ftps
 junit.SftpProducerExamples.baseDir=${junit.ProducerCase.baseDir}/sftp
-junit.MailProducerExamples.baseDir=${junit.ProducerCase.baseDir}/mail
 junit.HttpProducerExamples.baseDir=${junit.ProducerCase.baseDir}/http
 junit.JdbcProducerExamples.baseDir=${junit.ProducerCase.baseDir}/jdbc
 junit.SocketProducerExamples.baseDir=${junit.ProducerCase.baseDir}/socket
@@ -170,9 +168,6 @@ junit.jetty.user.realm.properties=@BASE_DIR@/src/test/resources/realm.properties
 
 junit.DuplicateMessageRoutingService.store=file:///@BUILD_DIR@/DMR.dat
 
-
-junit.mail.email.with.cd=@BASE_DIR@/src/test/resources/mail/email-with-content-disposition.txt
-junit.mail.email.without.cd=@BASE_DIR@/src/test/resources/mail/email-without-content-disposition.txt
 
 junit.jdbc.sequencenumber.url=jdbc:derby:memory:sequencenumber;create=true
 junit.jdbc.sequencenumber.driver=org.apache.derby.jdbc.EmbeddedDriver
