@@ -21,24 +21,24 @@ import static com.adaptris.core.ServiceCase.execute;
 import static com.adaptris.core.services.splitter.XpathSplitterTest.ENCODING_UTF8;
 import static com.adaptris.core.services.splitter.XpathSplitterTest.ENVELOPE_DOCUMENT;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.DefaultEventHandler;
 import com.adaptris.core.NullService;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.WaitService;
@@ -47,6 +47,7 @@ import com.adaptris.core.services.aggregator.MimeAggregator;
 import com.adaptris.core.services.aggregator.XmlDocumentAggregator;
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
+import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.MimeHelper;
 import com.adaptris.core.util.XmlHelper;
@@ -146,6 +147,8 @@ public class SplitJoinServiceTest {
     service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
     service.setSplitter(new LineCountSplitter());
     service.setAggregator(new MimeAggregator());
+    service.registerEventHandler(LifecycleHelper.initAndStart(new DefaultEventHandler()));
+
     execute(service, msg);
     BodyPartIterator input = MimeHelper.createBodyPartIterator(msg);
     assertEquals(11, input.size());
@@ -234,6 +237,7 @@ public class SplitJoinServiceTest {
     service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
     service.setSplitter(new XpathMessageSplitter(ENVELOPE_DOCUMENT, ENCODING_UTF8));
     service.setAggregator(new XmlDocumentAggregator(new InsertNode(XPATH_ENVELOPE)));
+    service.setSendEvents(true);
     execute(service, msg);
 
     // Should now be 6 document nodes
@@ -260,6 +264,35 @@ public class SplitJoinServiceTest {
     } finally {
       Thread.currentThread().setName(oldname);
     }
+  }
+
+  @Test
+  public void testSendEvents() throws Exception {
+    SplitJoinService service = new SplitJoinService();
+    assertNull(service.getSendEvents());
+    assertFalse(service.sendEvents());
+    service.setSendEvents(Boolean.TRUE);
+    assertEquals(Boolean.TRUE, service.getSendEvents());
+    assertTrue(service.sendEvents());
+  }
+
+  @Test
+  public void testService_WithEvents() throws Exception {
+    // This is a XML doc with 3 iterable elements...
+    AdaptrisMessage msg =
+        AdaptrisMessageFactory.getDefaultInstance().newMessage(SplitterCase.XML_MESSAGE);
+    SplitJoinService service = createServiceForTests();
+    MockMessageProducer eventProducer = new MockMessageProducer();
+    service.setSendEvents(true);
+    service.registerEventHandler(LifecycleHelper.initAndStart(new DefaultEventHandler(eventProducer)));
+    // The service doesn't actually matter right now.
+    service.setService(asCollection(new NullService()));
+    service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
+    service.setSplitter(new XpathMessageSplitter(ENVELOPE_DOCUMENT, ENCODING_UTF8));
+    service.setAggregator(new XmlDocumentAggregator(new InsertNode(XPATH_ENVELOPE)));
+    execute(service, msg);
+
+    assertTrue(eventProducer.getMessages().size() > 0);
   }
 
   protected SplitJoinService createServiceForTests() {
