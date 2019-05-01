@@ -17,13 +17,10 @@ package com.adaptris.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-
 import java.lang.reflect.Constructor;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import com.adaptris.core.jdbc.JdbcParameterException;
 import com.adaptris.core.management.vcs.VcsConflictException;
 import com.adaptris.core.management.vcs.VcsException;
@@ -32,7 +29,6 @@ import com.adaptris.fs.FsException;
 import com.adaptris.fs.FsFileNotFoundException;
 import com.adaptris.fs.FsFilenameExistsException;
 import com.adaptris.ftp.FtpException;
-import com.adaptris.mail.MailException;
 import com.adaptris.naming.adapter.AdapterNamingException;
 import com.adaptris.sftp.SftpException;
 import com.adaptris.util.datastore.DataStoreException;
@@ -45,7 +41,7 @@ public class CoreExceptionTest {
       VcsException.class.getName(), VcsConflictException.class.getName(), UnresolvedMetadataException.class.getName(),
 
       FileTransferException.class.getName(), FsException.class.getName(), FsFilenameExistsException.class.getName(),
-      FsFileNotFoundException.class.getName(), FtpException.class.getName(), MailException.class.getName(),
+          FsFileNotFoundException.class.getName(), FtpException.class.getName(),
       SftpException.class.getName(), DataStoreException.class.getName()
   };
 
@@ -85,7 +81,7 @@ public class CoreExceptionTest {
     for (String s : EXCEPTION_NAMES) {
       try {
         Constructor<?> cnst = Class.forName(s).getDeclaredConstructor(paramTypes);
-        Exception e = ((Exception) cnst.newInstance(args));
+        Exception e = (Exception) cnst.newInstance(args);
         assertEquals(cause, e.getCause());
         assertEquals(Exception.class.getName(), e.getMessage());
       }
@@ -109,7 +105,7 @@ public class CoreExceptionTest {
     for (String s : EXCEPTION_NAMES) {
       try {
         Constructor<?> cnst = Class.forName(s).getDeclaredConstructor(paramTypes);
-        Exception e = ((Exception) cnst.newInstance(args));
+        Exception e = (Exception) cnst.newInstance(args);
         assertEquals(cause, e.getCause());
         assertEquals(Exception.class.getName(), e.getMessage());
       }
@@ -132,7 +128,7 @@ public class CoreExceptionTest {
     for (String s : EXCEPTION_NAMES) {
       try {
         Constructor<?> cnst = Class.forName(s).getDeclaredConstructor(paramTypes);
-        Exception e = ((Exception) cnst.newInstance(args));
+        Exception e = (Exception) cnst.newInstance(args);
         assertNull(e.getCause());
         assertEquals("hello", e.getMessage());
       }
@@ -156,7 +152,7 @@ public class CoreExceptionTest {
     for (String s : EXCEPTION_NAMES) {
       try {
         Constructor<?> cnst = Class.forName(s).getDeclaredConstructor(paramTypes);
-        Exception e = ((Exception) cnst.newInstance(args));
+        Exception e = (Exception) cnst.newInstance(args);
         assertEquals(cause, e.getCause());
         assertEquals("hello", e.getMessage());
       }
@@ -180,7 +176,7 @@ public class CoreExceptionTest {
     for (String s : EXCEPTION_NAMES) {
       try {
         Constructor<?> cnst = Class.forName(s).getDeclaredConstructor(paramTypes);
-        Exception e = ((Exception) cnst.newInstance(args));
+        Exception e = (Exception) cnst.newInstance(args);
         assertEquals(cause, e.getCause());
         assertEquals("hello", e.getMessage());
       }

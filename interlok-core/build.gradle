@@ -101,7 +101,6 @@ dependencies {
   testCompile ("org.apache.activemq.protobuf:activemq-protobuf:1.1")
   testCompile ("org.jruby:jruby-complete:9.2.7.0")
   testCompile ("org.mockftpserver:MockFtpServer:2.7.1")
-  testCompile ("com.icegreen:greenmail:1.5.10")
   testCompile ("org.mockito:mockito-all:1.10.19")
 
   testCompile("net.sourceforge.jtds:jtds:1.3.1")
@@ -160,6 +159,7 @@ task unitTestStubsJar(type: Jar, dependsOn: compileTestJava) {
   include   '**/core/jms/ActiveJmsConnectionErrorHandlerCase*'
   include   '**/core/transform/TransformServiceExample*'
   include   '**/core/services/cache/*Example*'
+  include   '**/core/services/mime/MimeJunitHelper*'
   include   '**/core/jdbc/JdbcServiceCase*'
   include   '**/core/runtime/ComponentManagerCase*'
   include   '**/stubs/**'
