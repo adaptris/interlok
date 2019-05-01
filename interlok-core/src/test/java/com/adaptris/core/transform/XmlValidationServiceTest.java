@@ -18,13 +18,13 @@ package com.adaptris.core.transform;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.cache.ExpiringMapCache;
 import com.adaptris.core.services.cache.CacheConnection;
+import com.adaptris.core.stubs.MessageHelper;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.transform.validate.NotNullContentValidation;
@@ -88,7 +88,7 @@ public class XmlValidationServiceTest extends TransformServiceExample {
     // return;
     // }
     XmlSchemaValidator validator = new XmlSchemaValidator(schemaUrl);
-    AdaptrisMessage msg = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_INPUT_FILE));
+    AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_INPUT_FILE));
     XmlValidationService service = new XmlValidationService(validator);
     execute(service, msg);
   }
@@ -100,7 +100,7 @@ public class XmlValidationServiceTest extends TransformServiceExample {
     // return;
     // }
     XmlSchemaValidator validator = new XmlSchemaValidator(schemaUrl);
-    AdaptrisMessage msg = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_INPUT_FILE));
+    AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_INPUT_FILE));
     XmlValidationService service = new XmlValidationService(validator);
     try {
       execute(service, msg);
@@ -118,7 +118,7 @@ public class XmlValidationServiceTest extends TransformServiceExample {
     // return;
     // }
     XmlSchemaValidator validator = new XmlSchemaValidator(schemaUrl, "schema-key");
-    AdaptrisMessage msg = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_INPUT_FILE));
+    AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_INPUT_FILE));
     XmlValidationService service = new XmlValidationService(validator);
     try {
       execute(service, msg);
@@ -135,7 +135,7 @@ public class XmlValidationServiceTest extends TransformServiceExample {
     // }
 
     XmlSchemaValidator validator = new XmlSchemaValidator(schemaUrl, "schema-key");
-    AdaptrisMessage msg = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_INPUT_FILE));
+    AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_INPUT_FILE));
     msg.addMetadata("schema-key", "");
     XmlValidationService service = new XmlValidationService(validator);
     try {
@@ -153,7 +153,7 @@ public class XmlValidationServiceTest extends TransformServiceExample {
     // }
     XmlSchemaValidator validator = new XmlSchemaValidator();
     validator.setSchemaMetadataKey("schema-key");
-    AdaptrisMessage msg = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_INPUT_FILE));
+    AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_INPUT_FILE));
     msg.addMetadata("schema-key", schemaUrl);
     XmlValidationService service = new XmlValidationService(validator);
     execute(service, msg);
@@ -167,7 +167,7 @@ public class XmlValidationServiceTest extends TransformServiceExample {
     // }
     XmlSchemaValidator validator = new XmlSchemaValidator("%message{schema-key}")
         .withSchemaCache(new CacheConnection(new ExpiringMapCache().withMaxEntries(1)));
-    AdaptrisMessage msg = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_INPUT_FILE));
+    AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_INPUT_FILE));
     msg.addMetadata("schema-key", schemaUrl);
     XmlValidationService service = new XmlValidationService(validator);
     try {
@@ -192,7 +192,7 @@ public class XmlValidationServiceTest extends TransformServiceExample {
     XmlSchemaValidator validator = new XmlSchemaValidator();
     validator.setSchema(schemaUrl2);
     validator.setSchemaMetadataKey("schema-key");
-    AdaptrisMessage msg = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_INPUT_FILE));
+    AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_INPUT_FILE));
     msg.addMetadata("schema-key", schemaUrl);
     XmlValidationService service = new XmlValidationService(validator);
 
@@ -227,7 +227,7 @@ public class XmlValidationServiceTest extends TransformServiceExample {
 
     XmlSchemaValidator validator = new XmlSchemaValidator();
     validator.setSchemaMetadataKey("schema-key");
-    AdaptrisMessage msg = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_INPUT_FILE));
+    AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_INPUT_FILE));
     msg.addMetadata("schema-key", schemaUrl);
     XmlValidationService service = new XmlValidationService(validator);
     try {
@@ -301,6 +301,7 @@ public class XmlValidationServiceTest extends TransformServiceExample {
   }
   
   
+  @Override
   protected boolean doStateTests() {
     return false;
   }
