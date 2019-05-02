@@ -19,15 +19,15 @@ package com.adaptris.core.common;
 import static com.adaptris.util.stream.StreamUtil.copyAndClose;
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.io.IOException;
-
+import java.io.OutputStream;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.interlok.InterlokException;
 import com.adaptris.interlok.config.DataOutputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
+import com.adaptris.interlok.types.InterlokMessage.MessageWrapper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -39,7 +39,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("stream-payload-output-parameter")
 @DisplayOrder(order = {"contentEncoding"})
-public class PayloadStreamOutputParameter implements DataOutputParameter<InputStreamWithEncoding> {
+public class PayloadStreamOutputParameter implements DataOutputParameter<InputStreamWithEncoding>,
+    MessageWrapper<OutputStream> {
 
   @AdvancedConfig
   private String contentEncoding;
@@ -65,5 +66,10 @@ public class PayloadStreamOutputParameter implements DataOutputParameter<InputSt
 
   public void setContentEncoding(String contentEncoding) {
     this.contentEncoding = contentEncoding;
+  }
+
+  @Override
+  public OutputStream wrap(InterlokMessage m) throws Exception {
+    return m.getOutputStream();
   }
 }

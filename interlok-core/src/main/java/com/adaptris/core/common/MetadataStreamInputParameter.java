@@ -16,9 +16,12 @@
 
 package com.adaptris.core.common;
 
-import java.io.IOException;
+import static com.adaptris.core.common.MetadataDataInputParameter.DEFAULT_METADATA_KEY;
 import java.io.InputStream;
-import com.adaptris.core.util.ExceptionHelper;
+import java.io.StringReader;
+import org.apache.commons.io.input.ReaderInputStream;
+import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.core.util.Args;
 import com.adaptris.interlok.InterlokException;
 import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
@@ -26,30 +29,30 @@ import com.adaptris.interlok.types.InterlokMessage.MessageWrapper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * This {@code DataInputParameter} is used when you want to source data from the {@link com.adaptris.core.AdaptrisMessage} payload.
+ * This {@code DataInputParameter} is used when you want to read some data from metadata.
  * 
- * 
- * @author amcgrath
- * @config stream-payload-input-parameter
+ * @config metadata-stream-input-parameter
  * 
  */
-@XStreamAlias("stream-payload-input-parameter")
-public class PayloadStreamInputParameter
+@XStreamAlias("metadata-stream-input-parameter")
+@DisplayOrder(order = {"metadataKey", "contentEncoding"})
+public class MetadataStreamInputParameter extends MetadataStreamParameter
     implements DataInputParameter<InputStream>, MessageWrapper<InputStream> {
 
-  public PayloadStreamInputParameter() {
-    
+  public MetadataStreamInputParameter() {
+    this.setMetadataKey(DEFAULT_METADATA_KEY);
   }
   
+  public MetadataStreamInputParameter(String key) {
+    this();
+    setMetadataKey(key);
+  }
+
   @Override
-  public InputStream extract(InterlokMessage message) throws InterlokException {
-    InputStream result = null;
-    try {
-      result = message.getInputStream();
-    } catch (IOException e) {
-      throw ExceptionHelper.wrapCoreException(e);
-    }
-    return result;
+  public InputStream extract(InterlokMessage m) throws InterlokException {
+    Args.notBlank(getMetadataKey(), "metadataKey");
+    String data= m.getMessageHeaders().get(getMetadataKey());
+    return new ReaderInputStream(new StringReader(data), charset(getContentEncoding()));
   }
 
   @Override

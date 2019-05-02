@@ -17,7 +17,7 @@
 package com.adaptris.core.common;
 
 import org.hibernate.validator.constraints.NotBlank;
-
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.util.Args;
@@ -35,13 +35,17 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("metadata-data-output-parameter")
 @DisplayOrder(order = {"metadataKey"})
-public class MetadataDataOutputParameter implements DataOutputParameter<String> {
+public class MetadataDataOutputParameter
+    implements DataOutputParameter<String> {
   
   static final String DEFAULT_METADATA_KEY = "destinationKey";
 
   @NotBlank
   @AutoPopulated
   private String metadataKey;
+  
+  @AdvancedConfig
+  private String contentEncoding;
   
   public MetadataDataOutputParameter() {
     this.setMetadataKey(DEFAULT_METADATA_KEY);
@@ -64,5 +68,4 @@ public class MetadataDataOutputParameter implements DataOutputParameter<String> 
   public void setMetadataKey(String key) {
     this.metadataKey = Args.notBlank(key, "metadata key");
   }
-
 }
