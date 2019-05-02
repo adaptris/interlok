@@ -1,7 +1,7 @@
 plugins {
   // Manage optional dependencies in maven pom.
   id 'nebula.optional-base' version '4.0.1' apply false
-  id 'com.github.spotbugs' version '1.6.10' apply false
+  id 'com.github.spotbugs' version '1.7.1' apply false
 }
 
 ext {
