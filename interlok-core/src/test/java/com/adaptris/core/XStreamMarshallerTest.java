@@ -19,12 +19,10 @@ package com.adaptris.core;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-
 import com.adaptris.core.services.LogMessageService;
 import com.adaptris.core.services.metadata.AddMetadataService;
 import com.adaptris.core.services.metadata.XpathMetadataService;
@@ -83,6 +81,7 @@ public class XStreamMarshallerTest extends MarshallingBaseCase {
     String id = wrapper.getMarshalledIdentity();
     assertFalse(wrapper.getSetterCalled());
     String xml = xm.marshal(wrapper);
+    System.err.println(xml);
     XStreamBeanInfoWrapper roundTrip = (XStreamBeanInfoWrapper) xm.unmarshal(xml);
     assertEquals(id, roundTrip.getMarshalledIdentity());
     assertTrue(roundTrip.getSetterCalled());
@@ -155,7 +154,7 @@ public class XStreamMarshallerTest extends MarshallingBaseCase {
     Set<MetadataElement> metadataElements = ((AddMetadataService)service1).getMetadataElements();
     assertEquals(1, metadataElements.size());
     for (Iterator<MetadataElement> iterator = metadataElements.iterator(); iterator.hasNext();) {
-      MetadataElement metadataElement = (MetadataElement) iterator.next();
+      MetadataElement metadataElement = iterator.next();
       assertEquals("key1", metadataElement.getKey());
       assertEquals("val1", metadataElement.getValue());
       break;
