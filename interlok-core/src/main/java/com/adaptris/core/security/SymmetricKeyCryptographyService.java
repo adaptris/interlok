@@ -143,10 +143,14 @@ public class SymmetricKeyCryptographyService extends ServiceImp {
 
   @Override
   public void prepare() throws CoreException {
-    Args.notBlank(getAlgorithm(), "algorithm");
-    Args.notBlank(getCipherTransformation(), "cipherTransformation");
-    Args.notNull(getKey(), "key");
-    Args.notNull(getInitialVector(), "initalVector");
+    try {
+      Args.notBlank(getAlgorithm(), "algorithm");
+      Args.notBlank(getCipherTransformation(), "cipherTransformation");
+      Args.notNull(getKey(), "key");
+      Args.notNull(getInitialVector(), "initalVector");
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
+    }
   }
 
   /**

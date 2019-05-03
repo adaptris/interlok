@@ -9,9 +9,13 @@ import org.junit.Before;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.ServiceCase;
+import com.adaptris.core.ServiceException;
 import com.adaptris.core.common.ConstantDataInputParameter;
 import com.adaptris.core.common.PayloadStreamInputParameter;
 import com.adaptris.core.common.PayloadStreamOutputParameter;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.text.Conversion;
 
 /**
@@ -36,6 +40,28 @@ public class SymmetricKeyCryptographyServiceTest extends SecurityServiceExample 
     encryptedPayload = encrypt(PAYLOAD, key, iv);
   }
 
+  @Test
+  public void testDoService_BadConfig() throws Exception {
+    try {
+      LifecycleHelper.initAndStart(new SymmetricKeyCryptographyService());
+      fail();
+    } catch (CoreException expected) {
+
+    }
+    SymmetricKeyCryptographyService service = new SymmetricKeyCryptographyService()
+        .withAlgorithm("BLAH").withCipherTransformation("AES/Blah/Blah")
+        .withKey(new ConstantDataInputParameter("123"))
+        .withInitialVector(new ConstantDataInputParameter("123"));
+    AdaptrisMessage message =
+        AdaptrisMessageFactory.getDefaultInstance().newMessage(encryptedPayload);
+    try {
+      ServiceCase.execute(service, message);
+      fail();
+    } catch (ServiceException expected) {
+
+    }
+  }
+
 
   @Test
   public void testDoService() throws Exception {
@@ -45,7 +71,7 @@ public class SymmetricKeyCryptographyServiceTest extends SecurityServiceExample 
     service.setKey(new ConstantDataInputParameter(Conversion.byteArrayToBase64String(key)));
     service.setInitialVector(new ConstantDataInputParameter(Conversion.byteArrayToBase64String(iv)));
     AdaptrisMessage message = AdaptrisMessageFactory.getDefaultInstance().newMessage(encryptedPayload);
-    service.doService(message);
+    ServiceCase.execute(service, message);
     assertEquals(PAYLOAD, message.getContent());
   }
 
@@ -58,7 +84,7 @@ public class SymmetricKeyCryptographyServiceTest extends SecurityServiceExample 
     service.setKey(new ConstantDataInputParameter(Conversion.byteArrayToBase64String(key)));
     service.setInitialVector(new ConstantDataInputParameter(Conversion.byteArrayToBase64String(iv)));
     AdaptrisMessage message = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD);
-    service.doService(message);
+    ServiceCase.execute(service, message);
     assertTrue(Arrays.equals(encryptedPayload, message.getPayload()));
   }
 
@@ -73,7 +99,7 @@ public class SymmetricKeyCryptographyServiceTest extends SecurityServiceExample 
     service.setSource(new PayloadStreamInputParameter());
     service.setTarget(new PayloadStreamOutputParameter());
     AdaptrisMessage message = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD);
-    service.doService(message);
+    ServiceCase.execute(service, message);
     assertTrue(Arrays.equals(encryptedPayload, message.getPayload()));
   }
 
