@@ -17,7 +17,6 @@
 package com.adaptris.core.services.splitter;
 
 import static com.adaptris.core.util.ServiceUtil.discardNulls;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,14 +26,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMarshaller;
@@ -90,6 +89,8 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
   private MessageAggregator aggregator;
   @Valid
   private TimeInterval timeout;
+  @InputFieldDefault(value = "false")
+  private Boolean sendEvents;
 
   private transient ExecutorService executors;
   private transient EventHandler eventHandler;
@@ -211,7 +212,7 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
       } finally {
         LifecycleHelper.stopAndClose(service);
       }
-      return msg;
+      return sendEvents(msg);
     }
 
   }
@@ -304,4 +305,40 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
   public void setExceptionStrategy(PoolingFutureExceptionStrategy exceptionStrategy) {
     this.exceptionStrategy = exceptionStrategy;
   }
+
+  /**
+   * @return the sendEvents
+   * @since 3.9.0
+   */
+  public Boolean getSendEvents() {
+    return sendEvents;
+  }
+
+  public boolean sendEvents() {
+    return BooleanUtils.toBooleanDefaultIfNull(getSendEvents(), false);
+  }
+
+  /**
+   * Whether or not to send events for the child messages.
+   * <p>
+   * Note that even if this is set to true, because each child message has its own unique id, you
+   * will have to externally correlate the message lifecycle events together. Child messages will
+   * always have the metadata {@link com.adaptris.core.CoreConstants#PARENT_UNIQUE_ID_KEY} set with
+   * the originating message id.
+   * </p>
+   *
+   * @param b true to send events (default false)
+   * @since 3.9.0
+   */
+  public void setSendEvents(Boolean b) {
+    sendEvents = b;
+  }
+
+  protected AdaptrisMessage sendEvents(AdaptrisMessage msg) throws CoreException {
+    if (eventHandler != null && sendEvents()) {
+      eventHandler.send(msg.getMessageLifecycleEvent(), msg.getMessageHeaders());
+    }
+    return msg;
+  }
+
 }
