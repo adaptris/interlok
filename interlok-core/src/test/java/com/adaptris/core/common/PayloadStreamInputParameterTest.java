@@ -16,18 +16,15 @@
 package com.adaptris.core.common;
 
 import static org.junit.Assert.assertEquals;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.List;
-
 import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -53,6 +50,18 @@ public class PayloadStreamInputParameterTest {
     }
   }
 
+  @Test
+  public void testWrap() throws Exception {
+    PayloadStreamInputParameter p = new PayloadStreamInputParameter();
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT.getBytes());
+    try (InputStream in = p.wrap(msg)) {
+      List<String> strings = IOUtils.readLines(in, Charset.defaultCharset());
+      assertEquals(1, strings.size());
+      assertEquals(TEXT, strings.get(0));
+    }
+  }
+
+
   @Test(expected = CoreException.class)
   public void testExtractWithException() throws Exception {
     PayloadStreamInputParameter p = new PayloadStreamInputParameter();
@@ -66,6 +75,7 @@ public class PayloadStreamInputParameterTest {
       super(new GuidGenerator(), new DefectiveMessageFactory());
     }
 
+    @Override
     public InputStream getInputStream() throws IOException {
       throw new IOException("broken");
     }

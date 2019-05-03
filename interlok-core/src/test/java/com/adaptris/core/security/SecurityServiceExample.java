@@ -26,12 +26,16 @@ public abstract class SecurityServiceExample extends ServiceCase {
    */
   public static final String BASE_DIR_KEY = "SecurityServiceExamples.baseDir";
 
-  public SecurityServiceExample(String name) {
-    super(name);
+  public SecurityServiceExample() {
+    super();
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
   }
 
+  public SecurityServiceExample(String name) {
+    this();
+    setName(name);
+  }
 
 }

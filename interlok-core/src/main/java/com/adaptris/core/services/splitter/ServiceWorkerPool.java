@@ -24,7 +24,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.PooledObjectFactory;
@@ -32,7 +31,6 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMarshaller;
@@ -51,7 +49,7 @@ public class ServiceWorkerPool {
   private transient EventHandler eventHandler;
   private transient int maxThreads;
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
-  private static transient boolean warningLogged = false;
+
   public ServiceWorkerPool(Service s, EventHandler eh, int maxThreads) throws CoreException {
     try {
       this.wrappedService = Args.notNull(s, "service");
