@@ -1,7 +1,14 @@
 package com.adaptris.taglet;
 
-import com.sun.javadoc.Tag;
-import com.sun.tools.doclets.Taglet;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.lang.model.element.Element;
+
+import com.sun.source.doctree.DocTree;
+
+import jdk.javadoc.doclet.Taglet;
 
 /**
  * @author mwarman
@@ -16,33 +23,14 @@ public abstract class AbstractTaglet implements Taglet {
   public abstract String getEnd();
 
   @Override
-  public boolean inField() {
-    return false;
-  }
-
-  @Override
-  public boolean inConstructor() {
-    return true;
-  }
-
-  @Override
-  public boolean inMethod() {
-    return true;
-  }
-
-  @Override
-  public boolean inOverview() {
-    return true;
-  }
-
-  @Override
-  public boolean inPackage() {
-    return true;
-  }
-
-  @Override
-  public boolean inType() {
-    return true;
+  public Set<Taglet.Location> getAllowedLocations() {
+    Set<Taglet.Location> locs = new HashSet<>();
+    locs.add(Taglet.Location.CONSTRUCTOR);
+    locs.add(Taglet.Location.METHOD);
+    locs.add(Taglet.Location.OVERVIEW);
+    locs.add(Taglet.Location.PACKAGE);
+    locs.add(Taglet.Location.TYPE);
+    return locs;
   }
 
   @Override
@@ -51,23 +39,19 @@ public abstract class AbstractTaglet implements Taglet {
   }
 
   @Override
-  public String toString(Tag tag) {
-    return getStart() + tag.text() + getEnd();
-  }
-
-  @Override
-  public String toString(Tag[] tags) {
-    if (tags.length == 0) {
+  public String toString(List<? extends DocTree> tags, Element element) {
+    if (tags.isEmpty()) {
       return null;
     }
-    String result = getStart();
-    for (int i = 0; i < tags.length; i++) {
-      if (i > 0) {
-        result += ", ";
+    StringBuffer sb = new StringBuffer(getStart());
+    boolean c = false;
+    for (DocTree tag : tags) {
+      if (c) {
+        sb.append(", ");
       }
-      result += tags[i].text();
+      sb.append(tag.toString());
+      c = true;
     }
-    result += getEnd();
-    return result;
+    return sb.append(getEnd()).toString();
   }
 }
