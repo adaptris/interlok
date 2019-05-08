@@ -8,7 +8,6 @@ dependencies {
   compile ("commons-lang:commons-lang:2.6")
   compile ("commons-collections:commons-collections:3.2.2")
   compile ("javax.validation:validation-api:1.0.0.GA")
-  compile files("${System.getProperty('java.home')}/../lib/tools.jar")
 
   testCompile("junit:junit:4.12")
   testCompile("org.hibernate:hibernate-validator:4.3.2.Final")
@@ -49,6 +48,5 @@ uploadArchives {
     }
   }
 }
-sourceCompatibility = 1.7
 publish.dependsOn uploadArchives
 
