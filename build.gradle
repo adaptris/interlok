@@ -19,7 +19,7 @@ ext {
   componentName='Interlok'
   organizationName = "Adaptris Ltd"
   organizationUrl = "http://interlok.adaptris.net"
-  slf4jVersion = '1.7.26'
+  slf4jVersion = "1.8.0-beta4"
   log4j2Version = "2.11.2"
   xstreamVersion = '1.4.11.1'
 }
