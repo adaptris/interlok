@@ -7,7 +7,7 @@ dependencies {
   compile ("org.apache.velocity:velocity:1.7") { transitive= false}
   compile ("commons-lang:commons-lang:2.6")
   compile ("commons-collections:commons-collections:3.2.2")
-  compile ("javax.validation:validation-api:1.0.0.GA")
+  compile ("javax:javaee-api:8.0.1")
 
   testCompile("junit:junit:4.12")
   testCompile("org.hibernate:hibernate-validator:4.3.2.Final")

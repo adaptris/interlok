@@ -18,7 +18,7 @@ dependencies {
   compile "org.slf4j:slf4j-log4j12:$slf4jVersion", optional
   compile "org.slf4j:jul-to-slf4j:$slf4jVersion", optional
   compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.18.v20190429")
-  compile ("javax.servlet:javax.servlet-api:3.1.0")
+  compile ("javax:javaee-api:8.0.1")
 
   annotationProcessor project(':interlok-core-apt')
   testAnnotationProcessor project(':interlok-core-apt')
@@ -27,7 +27,6 @@ dependencies {
 
   testCompile ("log4j:log4j:1.2.17")
   testCompile ("junit:junit:4.12")
-
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
