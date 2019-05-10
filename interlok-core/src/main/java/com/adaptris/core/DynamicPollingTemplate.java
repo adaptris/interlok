@@ -27,8 +27,6 @@ import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Replaces {@link PollingTrigger#setTemplate(String)}.
- * <p>
  * This {@link MessageProvider} implementation allows you to use an implementation of
  * {@link DynamicPollingTemplate.TemplateProvider} to dynamically populate the contents of the message before submitting to a
  * workflow. At the moment only a limited subset of services are enabled for this provider :

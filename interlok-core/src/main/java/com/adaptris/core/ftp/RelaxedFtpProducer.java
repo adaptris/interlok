@@ -61,7 +61,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @see FileNameCreator
  * @see FtpConnection
- * @see SftpConnection
  * @see FileTransferConnection
  * @see ProduceDestination
  * @author lchan

@@ -52,7 +52,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config relaxed-ftp-consumer
  * 
  * @see FtpConnection
- * @see SftpConnection
  * @see FileTransferConnection
  * @see com.adaptris.core.ConsumeDestination
  */

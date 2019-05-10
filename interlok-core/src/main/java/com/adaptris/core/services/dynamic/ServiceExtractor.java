@@ -34,8 +34,7 @@ public interface ServiceExtractor extends ComponentLifecycle {
    * 
    * @param m the adaptris message.
    * @return an input stream.
-   * @deprecated since 3.8.4 use {@link #getService(AdaptrisMessage)} or
-   *             {@link #getService(AdaptrisMessage, AdaptrisMarshaller)} instead.
+   * @deprecated since 3.8.4 use {@link #getService(AdaptrisMessage, AdaptrisMarshaller)} instead.
    */
   @Deprecated
   @Removal(version = "3.11.0")

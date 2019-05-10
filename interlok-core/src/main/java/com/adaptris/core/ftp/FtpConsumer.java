@@ -60,7 +60,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config ftp-consumer
  * 
  * @see FtpConnection
- * @see SftpConnection
  * @see FileTransferConnection
  * @see com.adaptris.core.ConsumeDestination
  * @author lchan
