@@ -76,6 +76,7 @@ public class XmlHelper {
    * @throws CoreException if the msg does not contain valid XML.
    * @deprecated Consider using {@link #createXmlUtils(AdaptrisMessage, NamespaceContext)} instead.
    */
+  @Deprecated
   public static XmlUtils createXmlUtils(AdaptrisMessage msg) throws CoreException {
     return createXmlUtils(msg, null);
   }
