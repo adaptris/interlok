@@ -162,6 +162,7 @@ task unitTestStubsJar(type: Jar, dependsOn: compileTestJava) {
   include   '**/core/services/cache/*Example*'
   include   '**/core/services/mime/MimeJunitHelper*'
   include   '**/core/jdbc/JdbcServiceCase*'
+  include   '**/core/jdbc/DatabaseConnectionCase*'
   include   '**/core/runtime/ComponentManagerCase*'
   include   '**/stubs/**'
   include   '**/util/system/*'
