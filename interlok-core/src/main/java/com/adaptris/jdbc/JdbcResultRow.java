@@ -62,7 +62,7 @@ public class JdbcResultRow {
   }
 
   /**
-   * @deprecated since 3.8.3 use {@link #setFieldValue(String, Object, int)} instead to add
+   * @deprecated since 3.8.3 use {@link #setFieldValue(String, Object, Integer)} instead to add
    *             additional Type information.
    */
   @Deprecated

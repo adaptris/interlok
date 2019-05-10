@@ -188,7 +188,7 @@ public interface InterlokMessage {
    * </p>
    * 
    * @param s string to resolve.
-   * @param multiline whether to resolve in {@link Pattern#DOTALL} mode, allowing you to match against multiple lines.
+   * @param multiline whether to resolve in {@link java.util.regex.Pattern#DOTALL} mode, allowing you to match against multiple lines.
    * @return the original string, an item of metadata, or null (if the metadata key does not exist).
    */
   String resolve(String s, boolean multiline);
