@@ -134,7 +134,7 @@ public abstract class KeystoreFactory {
    * Create a KeyStoreLocation instance.
    * <p>
    * Valid URLS are in the form <br />
-   * <code>[protocol]://[server]:[port]/[path]?keystoreType=[type]&
+   * <code>[protocol]://[server]:[port]/[path]?keystoreType=[type]&amp;
    * keystorePassword=[password]</code>
    * <ul>
    * <li>protocol - the protocol to use, e.g. http</li>
@@ -146,9 +146,9 @@ public abstract class KeystoreFactory {
    * </ul>
    * </p>
    * <p>
-   * An example would be <code>http://www.adaptris.com/my.ks?keystoreType=JKS&
+   * An example would be <code>http://www.adaptris.com/my.ks?keystoreType=JKS&amp;
    * keystorePassword=ABCDE</code>
-   * or <code>file://localhost/c:/my.ks?keystoreType=JKS&
+   * or <code>file://localhost/c:/my.ks?keystoreType=JKS&amp;
    * keystorePassword=ABCDE</code>
    * </p>
    * @param url the url that contains the keystore. They keystore is required to

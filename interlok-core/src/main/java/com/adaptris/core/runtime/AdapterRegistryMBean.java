@@ -212,7 +212,7 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
    * Remove the URL that was used to create the adapter associated with the ObjectName.
    * <p>
    * Note that calling either {@linkplain #destroyAdapter(AdapterManagerMBean)} or {@linkplain #destroyAdapter(ObjectName)} will
-   * <strong>NOT</strong remove the URL from the internal map (as you are likely to invoke those methods to stop/close the adapter
+   * <strong>NOT</strong> remove the URL from the internal map (as you are likely to invoke those methods to stop/close the adapter
    * prior to creating a new one), so this method is available for you to manually clean up if desired.
    * </p>
    * 

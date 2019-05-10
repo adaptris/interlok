@@ -119,7 +119,7 @@ public abstract class CoreSecurityService extends ServiceImp {
    * Add an url to the list.
    * <p>
    * Valid URLS are in the form <br />
-   * <code>[protocol]://[server]:[port]/[path]?keystoreType=[type]&
+   * <code>[protocol]://[server]:[port]/[path]?keystoreType=[type]&amp;
    * keystorePassword=[password]</code>
    * <ul>
    * <li>protocol - the protocol to use, e.g. http</li>
@@ -131,14 +131,15 @@ public abstract class CoreSecurityService extends ServiceImp {
    * </ul>
    * </p>
    * <p>
-   * An example would be <code>http://www.adaptris.com/my.ks?keystoreType=JKS&
+   * An example would be <code>http://www.adaptris.com/my.ks?keystoreType=JKS&amp;
    * keystorePassword=ABCDE</code> or
-   * <code>file://localhost/c:/my.ks?keystoreType=JKS&
+   * <code>file://localhost/c:/my.ks?keystoreType=JKS&amp;
    * keystorePassword=ABCDE</code>
    * </p>
    * <p>
-   * For the purposes of security each of the keystores will be searched in turn for the matching partner information. Only the
-   * first matching partner will be used.
+   * For the purposes of security each of the keystores will be searched in turn
+   * for the matching partner information. Only the first matching partner will be
+   * used.
    * </p>
    *
    * @param url an individual url

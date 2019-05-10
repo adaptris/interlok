@@ -72,7 +72,7 @@ import org.slf4j.LoggerFactory;
  * </pre>
  * 
  * <p>
- * With each additional call to <code>addPart()>/code> an additional mime
+ * With each additional call to <code>addPart()</code> an additional mime
  *  bodypart is created.  Repeated calls to <code>getBytes()</code> will return the latest version of the MimeMultiPart as written
  * out. There is no guarantee that this is the same as the last call to <code>getBytes()</code> as the part id's may change.
  * </p>

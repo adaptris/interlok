@@ -355,7 +355,7 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
    * class does not consume messages from Queues / Topics as expected try setting a higher value.
    * </p>
    *
-   * @param l the period that this class should wait for the broker to deliver a message, if < 0 then the default (2secs) will be
+   * @param l the period that this class should wait for the broker to deliver a message, if &lt; 0 then the default (2secs) will be
    *          used.
    */
   public void setReceiveTimeout(TimeInterval l) {

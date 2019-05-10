@@ -32,7 +32,7 @@ import com.adaptris.annotation.Removal;
  * A Simple URL parser, that can parse any given URL into it's constituent parts.
  * <p>
  * A URL should be in the form
- * <code> &lt;protocol>://&lt;user:password>@&lt;host:port>/&lt;path>#ref
+ * <code> &lt;protocol&gt;://&lt;user:password&gt;@&lt;host:port&gt;/&lt;path&gt;#ref
  *  </code> Example:
  * <ul>
  * <li>smtp://user%40btinternet.com:password@mail.btinternet.com/</li>

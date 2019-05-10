@@ -26,7 +26,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Extension of <code>DefaultServiceNameProvider</code> which strips the following characters from
  * any component of the Trading Relationship:
  * <p>
- * <code>/,\,?,*,:,|, ,&,",&lt;,&gt;,'</code>
+ * <code>/,\,?,*,:,|, ,&amp;,",&lt;,&gt;,'</code>
  * </p>
  * Of particular use for ebXML where it is feasible that URLs might be used to identify the parties
  * or message type.

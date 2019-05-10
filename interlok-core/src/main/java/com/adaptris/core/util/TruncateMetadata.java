@@ -29,7 +29,7 @@ import com.adaptris.util.NumberUtils;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * MessageLogger & MetadataLogger implementation that that logs unique-id and metadata but truncates metadata at the
+ * MessageLogger &ampl; MetadataLogger implementation that that logs unique-id and metadata but truncates metadata at the
  * configured length.
  * 
  * @config message-logging-with-truncated-metadata

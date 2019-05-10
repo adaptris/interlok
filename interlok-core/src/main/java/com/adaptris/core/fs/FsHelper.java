@@ -88,7 +88,7 @@ public abstract class FsHelper {
    * Creates a {@link URL} based on the passed destination.
    * <p>
    * If a {@code scheme} is present and is equal to {@code file} then the URL is deemed to be <strong>absolute</strong> and is used
-   * as is. If the {@code scheme} is null then the URL is considered a {@code "file"} URL, and <strong>relative</strong>> to the
+   * as is. If the {@code scheme} is null then the URL is considered a {@code "file"} URL, and <strong>relative</strong> to the
    * current working directory.
    * </p>
    * <p>
@@ -111,7 +111,7 @@ public abstract class FsHelper {
    * Creates a {@link URL} based on the passed destination.
    * <p>
    * If a {@code scheme} is present and is equal to {@code file} then the URL is deemed to be <strong>absolute</strong> and is used
-   * as is. If the {@code scheme} is null then the URL is considered a {@code "file"} URL, and <strong>relative</strong>> to the
+   * as is. If the {@code scheme} is null then the URL is considered a {@code "file"} URL, and <strong>relative</strong> to the
    * current working directory.
    * </p>
    * 

@@ -32,10 +32,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <li>source</li>
  * <li>destination</li>
  * <li>type</li>
- * <li>source & destination</li>
- * <li>destination & type</li>
- * <li>source & type</li>
- * <li>source, destinatio & type</li>
+ * <li>source &amp; destination</li>
+ * <li>destination &amp; type</li>
+ * <li>source &amp; type</li>
+ * <li>source, destination &amp; type</li>
  * </ul>
  * </p>
  * <p>

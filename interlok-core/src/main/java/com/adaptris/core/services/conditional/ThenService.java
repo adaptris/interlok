@@ -33,7 +33,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * <p>
  * This service holder is used to hold the service or list of services that will be executed by logical expressions, such as {@link IfElse} and {@link While}, should configured {@link Condition}'s pass.
- * </p>>
+ * </p>
  * @author amcgrath
  *
  */
