@@ -147,10 +147,12 @@ public abstract class AdaptrisMessageFactoryImplCase {
     orig.addMetadata(new MetadataElement("key2", "val2"));
     orig.addEvent(new MessageEventGenerator() {
 
+      @Override
       public String createName() {
         return "event";
       }
 
+      @Override
       public String createQualifier() {
         return "qualifier";
       }
@@ -158,19 +160,9 @@ public abstract class AdaptrisMessageFactoryImplCase {
         return Boolean.FALSE;
       }
 
-      public Boolean getIsConfirmation() {
-        return Boolean.FALSE;
-      }
-
-      public boolean isConfirmation() {
-        return false;
-      }
-
+      @Override
       public boolean isTrackingEndpoint() {
         return false;
-      }
-
-      public void setIsConfirmation(Boolean b) {
       }
 
       public void setIsTrackingEndpoint(Boolean b) {
@@ -203,10 +195,12 @@ public abstract class AdaptrisMessageFactoryImplCase {
     orig.addMetadata(new MetadataElement("key2", "val2"));
     orig.addEvent(new MessageEventGenerator() {
 
+      @Override
       public String createName() {
         return "event";
       }
 
+      @Override
       public String createQualifier() {
         return "qualifier";
       }
@@ -215,20 +209,10 @@ public abstract class AdaptrisMessageFactoryImplCase {
         return Boolean.FALSE;
       }
 
-      public Boolean getIsConfirmation() {
-        return Boolean.FALSE;
-      }
-
-      public boolean isConfirmation() {
-        return false;
-      }
-
+      @Override
       public boolean isTrackingEndpoint() {
         return false;
       }
-
-      public void setIsConfirmation(Boolean b) {}
-
       public void setIsTrackingEndpoint(Boolean b) {}
     }, true);
 

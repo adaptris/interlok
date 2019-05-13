@@ -80,7 +80,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
   public void testFileFilterImp() throws Exception {
     FtpConsumer ftpConsumer = new FtpConsumer();
     assertNull(ftpConsumer.getFileFilterImp());
-    assertEquals(GlobFilenameFilter.class.getCanonicalName(), ftpConsumer.fileFilterImp());
+    assertEquals(RegexFileFilter.class.getCanonicalName(), ftpConsumer.fileFilterImp());
 
     ftpConsumer.setFileFilterImp("ABCDE");
     assertEquals("ABCDE", ftpConsumer.getFileFilterImp());
@@ -88,7 +88,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
     
     ftpConsumer.setFileFilterImp(null);
     assertNull(ftpConsumer.getFileFilterImp());
-    assertEquals(GlobFilenameFilter.class.getCanonicalName(), ftpConsumer.fileFilterImp());
+    assertEquals(RegexFileFilter.class.getCanonicalName(), ftpConsumer.fileFilterImp());
   }
 
   public void testWipSuffix() throws Exception {
@@ -191,7 +191,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
     try {
       ConfiguredConsumeDestination ccd = new ConfiguredConsumeDestination(SERVER_ADDRESS, "*.txt", "testConsumeWithFilter");
       FtpConsumer ftpConsumer = createForTests(listener, ccd);
-      ftpConsumer.setFileFilterImp("org.apache.oro.io.GlobFilenameFilter");
+      ftpConsumer.setFileFilterImp(GlobFilenameFilter.class.getCanonicalName());
       FtpConnection consumeConnection = create(server);
       sc = new StandaloneConsumer(consumeConnection, ftpConsumer);
       start(sc);

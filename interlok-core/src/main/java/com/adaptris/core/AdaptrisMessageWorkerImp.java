@@ -49,9 +49,7 @@ public abstract class AdaptrisMessageWorkerImp implements AdaptrisMessageWorker 
   @AdvancedConfig
   @InputFieldDefault(value = "false")
   private Boolean isTrackingEndpoint;
-  @AdvancedConfig
-  @InputFieldDefault(value = "false")
-  private Boolean isConfirmation;
+
   @AdvancedConfig
   private AdaptrisMessageFactory messageFactory;
   private String uniqueId;
@@ -160,19 +158,6 @@ public abstract class AdaptrisMessageWorkerImp implements AdaptrisMessageWorker 
 
   public void setIsTrackingEndpoint(Boolean b) {
     isTrackingEndpoint = b;
-  }
-
-  public Boolean getIsConfirmation() {
-    return isConfirmation;
-  }
-
-  public void setIsConfirmation(Boolean b) {
-    isConfirmation = b;
-  }
-
-  @Override
-  public boolean isConfirmation() {
-    return BooleanUtils.toBooleanDefaultIfNull(getIsConfirmation(), false);
   }
 
   @Override

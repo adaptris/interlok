@@ -100,13 +100,6 @@ public class JettyHelper {
     return consumer;
   }
 
-  public static MessageConsumer createDeprecatedConsumer(String dest) {
-    MessageConsumer consumer = new MessageConsumer();
-    consumer.setAdditionalDebug(true);
-    consumer.setDestination(new ConfiguredConsumeDestination(dest));
-    return consumer;
-  }
-
   private static EventHandler createEventHandler() throws Exception {
     DefaultEventHandler sch = new DefaultEventHandler();
     sch.requestStart();

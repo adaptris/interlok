@@ -31,7 +31,6 @@ import com.adaptris.core.stubs.ExampleBranchingService;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
 
-@SuppressWarnings("deprecation")
 public class StatelessServiceWrapperTest extends GeneralServiceExample {
 
   public StatelessServiceWrapperTest(java.lang.String testName) {
@@ -45,13 +44,10 @@ public class StatelessServiceWrapperTest extends GeneralServiceExample {
   public void testNoWrappedService() throws Exception {
     StatelessServiceWrapper ws = new StatelessServiceWrapper();
     ws.setContinueOnFail(true);
-    ws.setIsConfirmation(true);
     ws.setIsTrackingEndpoint(true);
     ws.setUniqueId(ws.getClass().getSimpleName());
     assertNotNull(ws.getContinueOnFail());
-    assertNotNull(ws.getIsConfirmation());
     assertNotNull(ws.getIsTrackingEndpoint());
-    assertEquals(true, ws.isConfirmation());
     assertEquals(true, ws.isTrackingEndpoint());
     assertEquals(true, ws.continueOnFailure());
     assertNull(ws.getService());
@@ -66,13 +62,10 @@ public class StatelessServiceWrapperTest extends GeneralServiceExample {
     ServiceList ws = new ServiceList();
     ws.setUniqueId(ServiceList.class.getSimpleName());
     ws.setContinueOnFail(true);
-    ws.setIsConfirmation(true);
     ws.setIsTrackingEndpoint(true);
     StatelessServiceWrapper s = new StatelessServiceWrapper(ws);
     s.setUniqueId(StatelessServiceWrapper.class.getSimpleName());
-    assertNotNull(ws.getIsConfirmation());
     assertNotNull(ws.getIsTrackingEndpoint());
-    assertEquals(ws.isConfirmation(), s.isConfirmation());
     assertEquals(ws.isTrackingEndpoint(), s.isTrackingEndpoint());
     assertEquals(ws.isBranching(), s.isBranching());
     assertEquals(ws.createName(), s.createName());
@@ -86,13 +79,9 @@ public class StatelessServiceWrapperTest extends GeneralServiceExample {
     StatelessServiceWrapper s = new StatelessServiceWrapper(ws);
     s.setUniqueId(StatelessServiceWrapper.class.getSimpleName());
     s.setContinueOnFail(true);
-    s.setIsConfirmation(true);
     s.setIsTrackingEndpoint(true);
-    assertNotNull(ws.getIsConfirmation());
     assertNotNull(ws.getIsTrackingEndpoint());
     assertEquals(s.getIsTrackingEndpoint(), ws.getIsTrackingEndpoint());
-    assertEquals(s.getIsConfirmation(), ws.getIsConfirmation());
-    assertEquals(ws.isConfirmation(), s.isConfirmation());
     assertEquals(ws.isTrackingEndpoint(), s.isTrackingEndpoint());
   }
 
@@ -100,13 +89,10 @@ public class StatelessServiceWrapperTest extends GeneralServiceExample {
     ExampleBranchingService ws = new ExampleBranchingService();
     ws.setUniqueId(ExampleBranchingService.class.getSimpleName());
     ws.setContinueOnFail(true);
-    ws.setIsConfirmation(true);
     ws.setIsTrackingEndpoint(true);
     StatelessServiceWrapper s = new StatelessServiceWrapper(ws);
     s.setUniqueId(StatelessServiceWrapper.class.getSimpleName());
-    assertNotNull(ws.getIsConfirmation());
     assertNotNull(ws.getIsTrackingEndpoint());
-    assertEquals(ws.isConfirmation(), s.isConfirmation());
     assertEquals(ws.isTrackingEndpoint(), s.isTrackingEndpoint());
     assertEquals(ws.isBranching(), s.isBranching());
     assertEquals(ws.createName(), s.createName());
@@ -125,13 +111,9 @@ public class StatelessServiceWrapperTest extends GeneralServiceExample {
     StatelessServiceWrapper s = new StatelessServiceWrapper(ws);
     s.setUniqueId(StatelessServiceWrapper.class.getSimpleName());
     s.setContinueOnFail(true);
-    s.setIsConfirmation(true);
     s.setIsTrackingEndpoint(true);
-    assertNotNull(ws.getIsConfirmation());
     assertNotNull(ws.getIsTrackingEndpoint());
     assertEquals(s.getIsTrackingEndpoint(), ws.getIsTrackingEndpoint());
-    assertEquals(s.getIsConfirmation(), ws.getIsConfirmation());
-    assertEquals(ws.isConfirmation(), s.isConfirmation());
     assertEquals(ws.isTrackingEndpoint(), s.isTrackingEndpoint());
 
   }
@@ -181,7 +163,6 @@ public class StatelessServiceWrapperTest extends GeneralServiceExample {
     assertEquals(false, sw.isTrackingEndpoint());
     assertEquals(false, sw.continueOnFailure());
     assertEquals(false, sw.isBranching());
-    assertEquals(false, sw.isConfirmation());
   }
 
   public void testTryInitNoWrappedService() throws Exception {

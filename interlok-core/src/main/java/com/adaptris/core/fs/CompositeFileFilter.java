@@ -25,8 +25,6 @@ import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.adaptris.annotation.Removal;
-
 /**
  * A {@link FileFilter} that contains other filters.
  * 
@@ -47,9 +45,6 @@ import com.adaptris.annotation.Removal;
  * <li>SizeLT is equivalent to using {@link SizeLessThan}</li>
  * <li>SizeLTE is equivalent to using {@link SizeLessThanOrEqual}</li>
  * <li>Regex is equivalent to using {@code org.apache.commons.io.filefilter.RegexFileFilter} - since 3.7.0</li>
- * <li>Perl is equivalent to using org.apache.oro.io.Perl5FilenameFilter - <strong>deprecated since 3.7.0</strong></li>
- * <li>Awk is equivalent to using org.apache.oro.io.AwkFilenameFilter - <strong>deprecated since 3.7.0</strong></li>
- * <li>Glob is equivalent to using org.apache.oro.io.GlobFilenameFilter - <strong>deprecated since 3.7.0</strong></li>
  * </ul>
  * <p>
  * In the event of a unknown filter type being used, it will be assumed to be a fully qualified classname which will be constructed
@@ -114,32 +109,6 @@ public class CompositeFileFilter implements FileFilter {
       @Override
       String filterImpl() {
         return RegexFileFilter.class.getCanonicalName();
-      }
-    },
-
-    @Deprecated
-    @Removal(version = "3.9.0", message = "Removed w/o replacement")
-    Perl {
-      @Override
-      String filterImpl() {
-        return "org.apache.oro.io.Perl5FilenameFilter";
-
-      }
-    },
-    @Deprecated
-    @Removal(version = "3.9.0", message = "Removed w/o replacement")
-    Awk {
-      @Override
-      String filterImpl() {
-        return "org.apache.oro.io.AwkFilenameFilter";
-      }
-    },
-    @Deprecated
-    @Removal(version = "3.9.0", message = "Removed w/o replacement")
-    Glob {
-      @Override
-      String filterImpl() {
-        return "org.apache.oro.io.GlobFilenameFilter";
       }
     };
     abstract String filterImpl();

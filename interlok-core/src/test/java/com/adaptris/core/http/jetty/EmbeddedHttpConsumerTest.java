@@ -43,7 +43,6 @@ import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.stubs.StaticMockMessageProducer;
 import com.adaptris.util.TimeInterval;
 
-@SuppressWarnings("deprecation")
 public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
 
   static final String METADATA_VALUE2 = "value2";
@@ -137,15 +136,19 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
 
     MockMessageProducer mockProducer = new MockMessageProducer();
     EmbeddedConnection embedded = new EmbeddedConnection();
-    HashUserRealmProxy hr = new HashUserRealmProxy();
-    hr.setFilename(PROPERTIES.getProperty(HttpConsumerTest.JETTY_USER_REALM));
+    ConfigurableSecurityHandler csh = new ConfigurableSecurityHandler();
+    HashLoginServiceFactory hsl =
+        new HashLoginServiceFactory("InterlokJetty", PROPERTIES.getProperty(HttpConsumerTest.JETTY_USER_REALM));
+    csh.setLoginService(hsl);
 
     SecurityConstraint securityConstraint = new SecurityConstraint();
     securityConstraint.setMustAuthenticate(true);
     securityConstraint.setRoles("user");
+    securityConstraint.setPaths(Arrays.asList("/"));
 
-    hr.setSecurityConstraints(Arrays.asList(securityConstraint));
-    embedded.setSecurityHandler(hr);
+    csh.setSecurityConstraints(Arrays.asList(securityConstraint));
+
+    embedded.setSecurityHandler(csh);
     Channel channel = JettyHelper.createChannel(embedded, JettyHelper.createConsumer(URL_TO_POST_TO), mockProducer);
     try {
       start(channel);

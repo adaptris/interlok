@@ -148,7 +148,6 @@ public class ClobColumnTranslatorTest {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public InputStream getAsciiStream() throws SQLException {
       return new ReaderInputStream(getCharacterStream());
     }

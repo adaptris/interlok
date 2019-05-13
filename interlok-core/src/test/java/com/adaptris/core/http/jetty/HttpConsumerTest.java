@@ -99,22 +99,6 @@ public class HttpConsumerTest extends HttpConsumerExample {
     assertEquals(true, consumer.additionalDebug());
   }
 
-  public void testSetWarnAfter() throws Exception {
-    JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
-    assertNull(consumer.getWarnAfterMessageHangMillis());
-    assertNull(consumer.getWarnAfter());
-
-    assertEquals(Long.MAX_VALUE, consumer.warnAfter());
-    consumer.setWarnAfterMessageHangMillis(10L);
-    assertNull(consumer.getWarnAfter());
-    assertEquals(10, consumer.warnAfter());
-
-    consumer.setWarnAfterMessageHangMillis(null);
-    consumer.setWarnAfter(new TimeInterval(10L, TimeUnit.MILLISECONDS));
-    assertNotNull(consumer.getWarnAfter());
-    assertEquals(10, consumer.warnAfter());
-  }
-
   public void testSetSendProcessingInterval() throws Exception {
     JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
     assertNull(consumer.getSendProcessingInterval());
@@ -125,19 +109,6 @@ public class HttpConsumerTest extends HttpConsumerExample {
     consumer.setSendProcessingInterval(t);
     assertEquals(t, consumer.getSendProcessingInterval());
     assertEquals(10, consumer.sendProcessingInterval());
-  }
-
-  public void testSetMaxWaitTime() throws Exception {
-    MessageConsumer consumer = JettyHelper.createDeprecatedConsumer(URL_TO_POST_TO);
-    consumer.setMaxWaitTime(null);
-    assertNull(consumer.getMaxWaitTime());
-    assertNotNull(consumer.timeoutAction());
-    assertEquals(TimeUnit.MINUTES.toMillis(10L), consumer.timeoutAction().maxWaitTime());
-    TimeInterval t = new TimeInterval(100L, TimeUnit.SECONDS);
-    consumer.setMaxWaitTime(t);
-    assertEquals(t, consumer.getMaxWaitTime());
-    assertNotNull(consumer.timeoutAction());
-    assertEquals(t.toMilliseconds(), consumer.timeoutAction().maxWaitTime());
   }
 
   public void testSetTimeoutAction() throws Exception {
@@ -791,49 +762,11 @@ public class HttpConsumerTest extends HttpConsumerExample {
     }
   }
 
-  public void testConsume_WithACL_HashUserRealmProxy() throws Exception {
-    String threadName = Thread.currentThread().getName();
-    Thread.currentThread().setName(getName());
-    HashUserRealmProxy hr = new HashUserRealmProxy();
-    hr.setFilename(PROPERTIES.getProperty(JETTY_USER_REALM));
-
-    SecurityConstraint securityConstraint = new SecurityConstraint();
-    securityConstraint.setMustAuthenticate(true);
-    securityConstraint.setRoles("user");
-
-    hr.setSecurityConstraints(Arrays.asList(securityConstraint));
-
-    HttpConnection connection = createConnection(hr);
-    MockMessageProducer mockProducer = new MockMessageProducer();
-    JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
-    Channel adapter = JettyHelper.createChannel(connection, consumer, mockProducer);
-
-    try {
-      adapter.requestStart();
-      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
-      msg.addMetadata("content.type", "text/xml");
-      httpProducer.setUserName("user");
-      httpProducer.setPassword("password");
-      start(httpProducer);
-      AdaptrisMessage reply = httpProducer.request(msg, createProduceDestination(connection.getPort()));
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
-      doAssertions(mockProducer);
-    }
-    finally {
-      stop(httpProducer);
-      adapter.requestClose();
-      Thread.currentThread().setName(threadName);
-      PortManager.release(connection.getPort());
-      assertEquals(0, AdapterResourceAuthenticator.getInstance().currentAuthenticators().size());
-    }
-  }
-
   public void testConsume_WithACL() throws Exception {
     String threadName = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
     ConfigurableSecurityHandler csh = new ConfigurableSecurityHandler();
     HashLoginServiceFactory hsl = new HashLoginServiceFactory("InterlokJetty", PROPERTIES.getProperty(JETTY_USER_REALM));
-    hsl.setRefreshInterval(100);
     csh.setLoginService(hsl);
     SecurityConstraint securityConstraint = new SecurityConstraint();
     securityConstraint.setMustAuthenticate(true);

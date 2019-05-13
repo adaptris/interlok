@@ -17,27 +17,21 @@
 package com.adaptris.core.services.jdbc;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang.BooleanUtils;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.JdbcUtil;
-import com.adaptris.core.util.LoggingHelper;
 
 /**
  * Base implementation for capturing data from an {@linkplain com.adaptris.core.AdaptrisMessage} and storing it in a jdbc database.
@@ -51,14 +45,6 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
   @AdvancedConfig
   @InputFieldDefault(value = "false")
   private Boolean saveReturnedKeys = null;
-  @AdvancedConfig
-  @Deprecated
-  @Removal(version = "3.9.0")
-  private String saveReturnedKeysColumn = null;
-  @AdvancedConfig
-  @Deprecated
-  @Removal(version = "3.9.0")
-  private String saveReturnedKeysTable = null;
   @InputFieldDefault(value = "")
   @InputFieldHint(style = "BLANKABLE")
   @AffectsMetadata
@@ -66,26 +52,16 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
 
   protected transient DatabaseActor actor;
 
-  private static transient boolean warningLogged = false;
-
   public JdbcDataCaptureServiceImpl() {
     super();
     actor = new DatabaseActor();
   }
 
   @Override
-  protected void initJdbcService() throws CoreException {
-    if (!isBlank(getSaveReturnedKeysColumn()) || !isBlank(getSaveReturnedKeysTable())) {
-      LoggingHelper.logWarning(warningLogged, () -> {
-        warningLogged = true;
-      }, "saveReturnedKeysColumn/saveReturnedKeysTable is deprecated; surely your JDBC driver supports Statement#RETURN_GENERATED_KEYS by now");
-    }
-  }
+  protected void initJdbcService() throws CoreException {}
 
   @Override
-  protected void startService() throws CoreException {
-
-  }
+  protected void startService() throws CoreException {}
 
   @Override
   protected void stopService() {
@@ -137,71 +113,6 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
     return saveReturnedKeys;
   }
 
-  /**
-   * The column that forms the return value for the SQL statement.
-   * <p>
-   * This is only applicable of the JDBC driver in question doesn't support {@link Statement#RETURN_GENERATED_KEYS}
-   * </p>
-   *
-   * @param col the column
-   * @deprecated since 3.6.2 {@link Statement#RETURN_GENERATED_KEYS} has been available since java 1.4, surely your JDBC driver is
-   *             newer than that!
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public void setSaveReturnedKeysColumn(String col) {
-    saveReturnedKeysColumn = col;
-  }
-
-  /**
-   * Return the column that forms the return value for the SQL statement.
-   * <p>
-   * This is only applicable of the JDBC driver in question doesn't support {@link Statement#RETURN_GENERATED_KEYS}
-   * </p>
-   *
-   * @return the column
-   * @deprecated since 3.6.2 {@link Statement#RETURN_GENERATED_KEYS} has been available since java 1.4, surely your JDBC driver is
-   *             newer than that!
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public String getSaveReturnedKeysColumn() {
-    return saveReturnedKeysColumn;
-  }
-
-  /**
-   * The table the contains the return value for the SQL statement.
-   *
-   * <p>
-   * This is only applicable of the JDBC driver in question doesn't support {@link Statement#RETURN_GENERATED_KEYS}
-   * </p>
-   *
-   * @param table the table
-   * @deprecated since 3.6.2 {@link Statement#RETURN_GENERATED_KEYS} has been available since java 1.4, surely your JDBC driver is
-   *             newer than that!
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public void setSaveReturnedKeysTable(String table) {
-    saveReturnedKeysTable = table;
-  }
-
-  /**
-   * Get the table that contains the return value.
-   * <p>
-   * This is only applicable of the JDBC driver in question doesn't support {@link Statement#RETURN_GENERATED_KEYS}
-   * </p>
-   *
-   * @return the table.
-   * @deprecated since 3.6.2 {@link Statement#RETURN_GENERATED_KEYS} has been available since java 1.4, surely your JDBC driver is
-   *             newer than that!
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public String getSaveReturnedKeysTable() {
-    return saveReturnedKeysTable;
-  }
-
 
   public String getRowsUpdatedMetadataKey() {
     return rowsUpdatedMetadataKey;
@@ -241,13 +152,6 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
             String value = rs.getObject(name).toString();
             msg.addMetadata(name, value);
           }
-        }
-        else {
-          savedKeysQuery = createStatement(actor.getSqlConnection());
-          rs = savedKeysQuery.executeQuery("select max(" + saveReturnedKeysColumn + ") from " + saveReturnedKeysTable + ";");
-          rs.next();
-          String value = rs.getObject(saveReturnedKeysColumn).toString();
-          msg.addMetadata(saveReturnedKeysColumn, value);
         }
       }
     }

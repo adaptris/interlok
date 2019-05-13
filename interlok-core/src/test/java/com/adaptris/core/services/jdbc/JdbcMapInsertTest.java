@@ -93,10 +93,12 @@ public class JdbcMapInsertTest extends JdbcMapInsertCase {
     }
   }
 
+  @Override
   protected InsertProperties createService() {
     return new InsertProperties();
   }
 
+  @SuppressWarnings("deprecation")
   protected class InsertProperties extends JdbcMapInsert {
 
     @Override

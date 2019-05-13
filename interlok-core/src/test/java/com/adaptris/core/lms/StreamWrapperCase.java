@@ -47,7 +47,6 @@ public abstract class StreamWrapperCase {
   }
 
   @Test
-  @SuppressWarnings("deprecation")
   public void testInputStream_Available() throws Exception {
     StreamWrapper wrapper = createWrapper(false);
     File file = writeFile(TempFileUtils.createTrackedFile(wrapper));

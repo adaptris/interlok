@@ -518,11 +518,6 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
         return false;
       }
 
-      @Override
-      public boolean isConfirmation() {
-        return false;
-      }
-
     }, false);
     return msg;
   }

@@ -74,11 +74,11 @@ public class JdbcRawDataCaptureService extends JdbcDataCaptureServiceImpl {
       rowsUpdated += insert.executeUpdate();
       // Will only store the generated keys from the last query
       saveKeys(msg, insert);
-      commit(conn, msg);
+      JdbcUtil.commit(conn, msg);
       updateMetadata(msg, rowsUpdated);
     }
     catch (Exception e) {
-      rollback(conn, msg);
+      JdbcUtil.rollback(conn, msg);
       throw ExceptionHelper.wrapServiceException(e);
     } finally {
       JdbcUtil.closeQuietly(conn);

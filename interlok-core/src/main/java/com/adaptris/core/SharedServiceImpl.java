@@ -53,6 +53,7 @@ public abstract class SharedServiceImpl extends SharedComponent implements Servi
     return (Service) marshaller.unmarshal(marshaller.marshal(lookedUpService));
   }
 
+  @Override
   public String getLookupName() {
     return lookupName;
   }
@@ -61,6 +62,7 @@ public abstract class SharedServiceImpl extends SharedComponent implements Servi
     this.lookupName = lookupName;
   }
   
+  @Override
   public void registerEventHandler(EventHandler eh) {
     eventHandler = eh;
   }
@@ -95,10 +97,12 @@ public abstract class SharedServiceImpl extends SharedComponent implements Servi
     serviceState.requestClose(this);
   }
 
+  @Override
   public String getUniqueId() {
     return uniqueId;
   }
 
+  @Override
   public void setUniqueId(String uniqueId) {
     this.uniqueId = Args.notBlank(uniqueId, "uniqueId");
   }
@@ -106,11 +110,6 @@ public abstract class SharedServiceImpl extends SharedComponent implements Servi
   @Override
   public boolean isTrackingEndpoint() {
     return BooleanUtils.toBooleanDefaultIfNull(getIsTrackingEndpoint(), false);
-  }
-
-  @Override
-  public boolean isConfirmation() {
-    return false;
   }
 
   @Override

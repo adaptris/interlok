@@ -19,7 +19,6 @@ package com.adaptris.core.services.metadata;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -85,15 +84,6 @@ public class AddTimestampMetadataServiceTest extends MetadataServiceExample {
     assertTrue(m.getMetadataValue(DEFAULT_METADATA_KEY) != null);
   }
 
-  @SuppressWarnings("deprecation")
-  public void testService_Legacy() throws Exception {
-    AdaptrisMessage m = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    AddTimestampMetadataService service = new AddTimestampMetadataService();
-    service.setDateFormat(DateFormatBuilder.DEFAULT_DATE_FORMAT);
-    execute(service, m);
-    assertTrue(m.headersContainsKey(DEFAULT_METADATA_KEY));
-    assertTrue(m.getMetadataValue(DEFAULT_METADATA_KEY) != null);
-  }
 
   public void testSetAlwaysReplace() throws Exception {
     AddTimestampMetadataService service = new AddTimestampMetadataService();
@@ -144,36 +134,6 @@ public class AddTimestampMetadataServiceTest extends MetadataServiceExample {
     catch (ParseException e) {
       fail("Failed to parse " + key2);
     }
-  }
-
-  @SuppressWarnings("deprecation")
-  public void testLegacyOffset() throws Exception {
-    AdaptrisMessage m = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    Date now = new Date();
-    AddTimestampMetadataService service = new AddTimestampMetadataService(DEFAULT_TS_FORMAT, KEY1, false);
-    service.setOffset("P30D");
-    service.setTimestampGenerator(null);
-    execute(service, m);
-    assertTrue(m.headersContainsKey(KEY1));
-    SimpleDateFormat sdf = new SimpleDateFormat(DEFAULT_TS_FORMAT);
-    String date1 = m.getMetadataValue(KEY1);
-    try {
-      Date d = sdf.parse(date1);
-      assertTrue(d.after(now));
-    }
-    catch (ParseException e) {
-    }
-  }
-
-
-  @SuppressWarnings("deprecation")
-  public void testLegacyEmptyOffset() throws Exception {
-    AdaptrisMessage m = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    AddTimestampMetadataService service = new AddTimestampMetadataService(DEFAULT_TS_FORMAT, KEY1, false);
-    service.setOffset("");
-    execute(service, m);
-    assertTrue(m.headersContainsKey(DEFAULT_METADATA_KEY));
-    assertTrue(m.getMetadataValue(DEFAULT_METADATA_KEY) != null);
   }
 
   public void testOffset() throws Exception {

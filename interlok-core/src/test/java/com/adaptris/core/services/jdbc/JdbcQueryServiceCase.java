@@ -220,42 +220,6 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
     }
     
     objects.add(service);
-    
-    JdbcDataQueryService service2 = new JdbcDataQueryService();
-    try {
-      JdbcConnection connection = new JdbcConnection("jdbc:mysql://localhost:3306/mydatabase", "com.mysql.jdbc.Driver");
-      KeyValuePairSet connectionProperties = new KeyValuePairSet();
-      connectionProperties.add(new KeyValuePair("useCompression", "true"));
-      connection.setConnectionProperties(connectionProperties);
-      connection.setConnectionAttempts(2);
-      connection.setConnectionRetryInterval(new TimeInterval(3L, "SECONDS"));
-      service2.setConnection(connection);
-      service2.setParameterApplicator(new NamedParameterApplicator());
-      service2.setResultSetTranslator(configureForExample(createTranslatorForConfig()));
-
-      String additionalParams = "";
-      boolean first = true;
-      int count = 0;
-      for (QueryClasses qc : QueryClasses.values()) {
-        count ++;
-        NamedStatementParameter statementParameter = qc.create();
-        statementParameter.setName("param" + count);
-        service2.addStatementParameter(statementParameter);
-        if (first) {
-          additionalParams += qc.name() + "=#param" + count;
-          first = false;
-        }
-        else 
-          additionalParams += " AND " + qc.name() + "=#param" + count;
-      }
-      service2.setStatement("SELECT StringColumn1, DateColumn2, IntegerColumn3, BlobColumn, ClobColumn FROM tablename WHERE " + additionalParams);
-    }
-    catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-    
-    objects.add(service2);
-    
     return objects;
   }
 
@@ -299,27 +263,10 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
     }
   }
 
-  public void testInit_Statement_NoCreator() throws Exception {
+  public void testInit_NoCreator() throws Exception {
     createDatabase();
     JdbcDataQueryService s = createMessageIdService();
     s.setStatementCreator(null);
-    s.setStatement(QUERY_SQL);
-    try {
-      LifecycleHelper.init(s);
-      assertNotNull(s.getStatementCreator());
-      assertEquals(QUERY_SQL, s.getStatementCreator().createStatement(AdaptrisMessageFactory.getDefaultInstance().newMessage()));
-    } finally {
-      LifecycleHelper.close(s);
-
-    }
-
-  }
-
-  public void testInit_NoStatement_NoCreator() throws Exception {
-    createDatabase();
-    JdbcDataQueryService s = createMessageIdService();
-    s.setStatementCreator(null);
-    s.setStatement(null);
     try {
       LifecycleHelper.init(s);
       fail();

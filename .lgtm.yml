@@ -6,6 +6,11 @@ extraction:
 
 path_classifiers:
   docs:
-  - "LICENSE*"
-  - "*.md"
-  - "*.html"
+    - "LICENSE*"
+    - "*.md"
+    - "*.html"
+  ci:
+    - "appveyor.yml"
+    - ".codecov.yml"
+    - ".travis.yml"
+    - ".circleci"

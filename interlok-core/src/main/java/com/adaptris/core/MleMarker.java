@@ -44,9 +44,11 @@ public class MleMarker implements Cloneable, Serializable {
   private String uniqueId;
   private String name;
   private String qualifier;
+  @Deprecated
   private String confirmationId;
   private boolean wasSuccessful;
   private boolean isTrackingEndpoint;
+  @Deprecated
   private boolean isConfirmation;
   private long sequenceNumber;
   private long creationTime;
@@ -62,18 +64,17 @@ public class MleMarker implements Cloneable, Serializable {
     setCreationTime(System.currentTimeMillis());
     setWasSuccessful(false);
     setSequenceNumber(-1);
+    setConfirmationId(null);
   }
 
-  public MleMarker(MessageEventGenerator meg, boolean success, long seq, String uniqueId, String confirmationId) {
+  public MleMarker(MessageEventGenerator meg, boolean success, long seq, String uniqueId) {
     this();
     setName(meg.createName());
     setQualifier(meg.createQualifier());
-    setIsConfirmation(meg.isConfirmation());
     setIsTrackingEndpoint(meg.isTrackingEndpoint());
     setWasSuccessful(success);
     setSequenceNumber(seq);
     setUniqueId(uniqueId);
-    setConfirmationId(confirmationId);
   }
 
   /**
@@ -255,7 +256,9 @@ public class MleMarker implements Cloneable, Serializable {
    * </p>
    *
    * @return the optional confirmation ID
+   * @deprecated since 3.6.2 since {@code MessageEventGenerator#isConfirmation()} is deprecated
    */
+  @Deprecated
   public String getConfirmationId() {
     return confirmationId;
   }
@@ -267,7 +270,9 @@ public class MleMarker implements Cloneable, Serializable {
    * </p>
    *
    * @param s the optional confirmation ID
+   * @deprecated since 3.6.2 since {@code MessageEventGenerator#isConfirmation()} is deprecated
    */
+  @Deprecated
   public void setConfirmationId(String s) {
     confirmationId = s;
   }
@@ -278,7 +283,9 @@ public class MleMarker implements Cloneable, Serializable {
    * </p>
    *
    * @return true if this is a confirmation otherwise false.
+   * @deprecated since 3.6.2 since {@code MessageEventGenerator#isConfirmation()} is deprecated
    */
+  @Deprecated
   public boolean getIsConfirmation() {
     return isConfirmation;
   }
@@ -289,7 +296,9 @@ public class MleMarker implements Cloneable, Serializable {
    * </p>
    *
    * @param b this is a confirmation (for the given confirmation id)
+   * @deprecated since 3.6.2 since {@code MessageEventGenerator#isConfirmation()} is deprecated
    */
+  @Deprecated
   public void setIsConfirmation(boolean b) {
     isConfirmation = b;
   }

@@ -192,4 +192,21 @@ public interface InterlokMessage {
    * @return the original string, an item of metadata, or null (if the metadata key does not exist).
    */
   String resolve(String s, boolean multiline);
+
+
+  /**
+   * Wrap the interlok message as another type of thing.
+   * 
+   * @param wrapper an implementation of {@link MessageWrapper}
+   * @return the wrapped object
+   * @throws Exception
+   */
+  default <T extends Object> T wrap(MessageWrapper<T> wrapper) throws Exception {
+    return wrapper.wrap(this);
+  }
+
+  @FunctionalInterface
+  public interface MessageWrapper<T> {
+    T wrap(InterlokMessage m) throws Exception;
+  }
 }

@@ -35,6 +35,7 @@ public class SharedServiceTest extends ServiceCase {
     return new SharedService("example-shared-service");
   }
 
+  @Override
   protected Service retrieveObjectForCastorRoundTrip() {
     // bit of a frig really, but otherwise we can't "lookup" in JNDI
     SharedService sharedService = new SharedService(getName());
@@ -42,24 +43,24 @@ public class SharedServiceTest extends ServiceCase {
     return sharedService;
   }
 
+  @Override
   protected String getExampleCommentHeader(Object object) {
     return super.getExampleCommentHeader(object)
         + "<!--\n\n  Note that you need to have configured a shared-component with the name 'example-shared-service'\n\n-->\n";
   }
 
+  @Override
   protected String createBaseFileName(Object object) {
     return SharedService.class.getName();
   }
 
+  @Override
   public void setUp() throws Exception {
   }
 
+  @Override
   public void tearDown() throws Exception {
 
-  }
-
-  public void testIsConfirmation() {
-    assertFalse(new SharedService(getName()).isConfirmation());
   }
 
   public void testContinueOnFail() {

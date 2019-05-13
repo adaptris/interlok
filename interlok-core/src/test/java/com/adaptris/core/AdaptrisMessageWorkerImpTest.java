@@ -64,16 +64,6 @@ public class AdaptrisMessageWorkerImpTest extends BaseCase {
     assertTrue(worker.isTrackingEndpoint());
   }
 
-  public void testIsConfirmation() throws Exception {
-    MockMessageProducer worker = new MockMessageProducer();
-    assertFalse(worker.isConfirmation());
-    worker.setIsConfirmation(Boolean.FALSE);
-    assertEquals(Boolean.FALSE, worker.getIsConfirmation());
-    assertFalse(worker.isConfirmation());
-    worker.setIsConfirmation(Boolean.TRUE);
-    assertTrue(worker.isConfirmation());
-  }
-
   public void testCreateName() throws Exception {
     MockMessageProducer worker = new MockMessageProducer();
     assertEquals(MockMessageProducer.class.getName(), worker.createName());

@@ -18,14 +18,10 @@ package com.adaptris.core.services.metadata;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.validation.Valid;
-
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AffectsMetadata;
@@ -33,7 +29,6 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataCollection;
@@ -41,12 +36,9 @@ import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.metadata.MetadataFilter;
-import com.adaptris.core.metadata.MetadataFilterImpl;
-import com.adaptris.core.util.Args;
+import com.adaptris.core.metadata.RemoveAllMetadataFilter;
 import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.core.util.LoggingHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
  * Service that creates a URL query string from the specified metadata keys.
@@ -63,12 +55,6 @@ public class CreateQueryStringFromMetadata extends ServiceImp {
 
   private static final String AMPERSAND = "&";
 
-  private static boolean warningLogged = false;
-
-  @XStreamImplicit(itemFieldName = "metadata-key")
-  @Deprecated
-  @Removal(version = "3.9.0", message = "Use metadata-filter")
-  private List<String> metadataKeys;
   @NotBlank
   @AffectsMetadata
   private String resultKey;
@@ -79,10 +65,10 @@ public class CreateQueryStringFromMetadata extends ServiceImp {
   @InputFieldDefault(value = "true")
   private Boolean includeQueryPrefix;
   @Valid
+  @InputFieldDefault(value = "RemoveAllMetadataFilter")
   private MetadataFilter metadataFilter;
 
   public CreateQueryStringFromMetadata() {
-    metadataKeys = new ArrayList<String>();
   }
 
   @Override
@@ -114,15 +100,10 @@ public class CreateQueryStringFromMetadata extends ServiceImp {
 
 
   @Override
-  protected void initService() throws CoreException {
-    if (getMetadataKeys().size() > 0 && getMetadataFilter() == null) {
-      LoggingHelper.logDeprecation(warningLogged, ()-> { warningLogged=true;}, "metadata-keys", "metadata-filter");
-    }
-  }
+  protected void initService() throws CoreException {}
 
   @Override
   protected void closeService() {
-
   }
 
   public MetadataFilter getMetadataFilter() {
@@ -134,40 +115,7 @@ public class CreateQueryStringFromMetadata extends ServiceImp {
   }
 
   private MetadataFilter metadataFilter() {
-    if (getMetadataFilter() != null) {
-      return getMetadataFilter();
-    }
-    return new LegacyFilter();
-  }
-
-  /**
-   * 
-   * @deprecated since 3.7.1 use a metadata-filter instead
-   */
-  @Deprecated
-  @Removal(version = "3.9.0", message = "Use metadata-filter")
-  public void addMetadataKey(String key) {
-    metadataKeys.add(Args.notBlank(key, "key"));
-  }
-
-  /**
-   * 
-   * @deprecated since 3.7.1 use a metadata-filter instead
-   */
-  @Deprecated
-  @Removal(version = "3.9.0", message = "Use metadata-filter")
-  public List<String> getMetadataKeys() {
-    return metadataKeys;
-  }
-
-  /**
-   * 
-   * @deprecated since 3.7.1 use a metadata-filter instead
-   */
-  @Deprecated
-  @Removal(version = "3.9.0", message = "Use metadata-filter")
-  public void setMetadataKeys(List<String> metadataKeys) {
-    this.metadataKeys = Args.notNull(metadataKeys, "metadataKeys");
+    return ObjectUtils.defaultIfNull(getMetadataFilter(), new RemoveAllMetadataFilter());
   }
 
   public String getResultKey() {
@@ -229,20 +177,5 @@ public class CreateQueryStringFromMetadata extends ServiceImp {
 
   boolean includeQueryPrefix() {
     return BooleanUtils.toBooleanDefaultIfNull(getIncludeQueryPrefix(), true);
-  }
-
-  private class LegacyFilter extends MetadataFilterImpl {
-
-    @Override
-    public MetadataCollection filter(MetadataCollection original) {
-      MetadataCollection result = new MetadataCollection();
-      for (MetadataElement e : original) {
-        if (getMetadataKeys().contains(e.getKey())) {
-          result.add(e);
-        }
-      }
-      return result;
-    }
-
   }
 }

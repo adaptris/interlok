@@ -19,22 +19,20 @@ package com.adaptris.core.transform;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
-
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.stubs.MessageHelper;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.XmlHelper;
@@ -43,7 +41,6 @@ import com.adaptris.util.text.xml.StxTransformerFactory;
 import com.adaptris.util.text.xml.XPath;
 import com.adaptris.util.text.xml.XmlTransformerFactory;
 import com.adaptris.util.text.xml.XsltTransformerFactory;
-
 import net.sf.saxon.serialize.MessageWarner;
 
 @SuppressWarnings("deprecation")
@@ -82,6 +79,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
   private enum FactoryConfig {
     STX(new StxTransformerFactory()),
     XSLT(new XsltTransformerFactory()) {
+      @Override
       XmlTransformService configure(XmlTransformService s) {
         DocumentBuilderFactoryBuilder dbfb = new DocumentBuilderFactoryBuilder();
         dbfb.getFeatures().add(new KeyValuePair("http://xml.org/sax/features/external-general-entities", "false"));
@@ -380,8 +378,8 @@ public class XmlTransformServiceTest extends TransformServiceExample {
   }
 
   public void testOutputWithCache() throws Exception {
-    AdaptrisMessage m1 = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
-    AdaptrisMessage m2 = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    AdaptrisMessage m1 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    AdaptrisMessage m2 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
 
     XmlTransformService service = new XmlTransformService();
     service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL));
@@ -398,8 +396,8 @@ public class XmlTransformServiceTest extends TransformServiceExample {
   }
 
   public void testOutputWithNoCache() throws Exception {
-    AdaptrisMessage m1 = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
-    AdaptrisMessage m2 = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    AdaptrisMessage m1 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    AdaptrisMessage m2 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
 
     XmlTransformService service = new XmlTransformService();
     service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL));
@@ -417,7 +415,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
   }
 
   public void testXSLTOutput() throws Exception {
-    AdaptrisMessage m1 = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    AdaptrisMessage m1 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     XmlTransformService service = new XmlTransformService();
     service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL));
     execute(service, m1);
@@ -426,7 +424,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
 
 
   public void testXSLTOutput_NamedXsltTransformFactory() throws Exception {
-    AdaptrisMessage m1 = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    AdaptrisMessage m1 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     XmlTransformService service = new XmlTransformService();
     XsltTransformerFactory fac = new XsltTransformerFactory(net.sf.saxon.TransformerFactoryImpl.class.getCanonicalName());
     service.setXmlTransformerFactory(fac);
@@ -436,7 +434,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
   }
 
   public void testSTXOutput() throws Exception {
-    AdaptrisMessage m1 = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    AdaptrisMessage m1 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     XmlTransformService service = new XmlTransformService();
     service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_STX_TRANSFORM_URL));
 
@@ -447,7 +445,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
   }
   
   public void testXSLT_RecoverableError() throws Exception {
-    AdaptrisMessage m1 = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    AdaptrisMessage m1 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     String oldName = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
     XmlTransformService service = new XmlTransformService();
@@ -465,7 +463,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
   }
 
   public void testXSLT_RecoverableError_NoFail() throws Exception {
-    AdaptrisMessage m1 = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    AdaptrisMessage m1 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     String oldName = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
     XmlTransformService service = new XmlTransformService();
@@ -484,7 +482,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
   }
 
   public void testXSLT_FatalError() throws Exception {
-    AdaptrisMessage m1 = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    AdaptrisMessage m1 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     XmlTransformService service = new XmlTransformService();
     service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_FATAL_TRANSFORM_URL));
     try {
@@ -496,7 +494,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
   }
 
   public void testSingleParameter_XSLTOutput() throws Exception {
-    AdaptrisMessage msg = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     msg.addMetadata("world", "World");
     XmlTransformService service = new XmlTransformService();
     service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL));
@@ -508,7 +506,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
   }
 
   public void testObjectMetadataParameter_XSLTOutput() throws Exception {
-    AdaptrisMessage msg = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     msg.addObjectHeader("myDocumentObject", XmlHelper.createDocument("<data>World</data>"));
     msg.addObjectHeader("anotherDocument", XmlHelper.createDocument("<data>GoodBye</data>"));
     XmlTransformService service = new XmlTransformService();
@@ -521,7 +519,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
   }
 
   public void testObjectMetadataParameter_NoRegexp() throws Exception {
-    AdaptrisMessage msg = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     msg.addObjectHeader("myDocumentObject", XmlHelper.createDocument("<data>World</data>"));
     msg.addObjectHeader("anotherDocument", XmlHelper.createDocument("<data>GoodBye</data>"));
     XmlTransformService service = new XmlTransformService();
@@ -537,7 +535,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
   }
 
   public void testParameterBuilder_XSLTOutput() throws Exception {
-    AdaptrisMessage msg = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     msg.addMetadata("world", "World");
     XmlTransformService service = new XmlTransformService();
     service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL));
@@ -549,7 +547,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
   }
 
   public void testParameterBuilder_ObjectMetadata_XSLTOutput() throws Exception {
-    AdaptrisMessage msg = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     msg.addMetadata("key", "value");
     msg.addObjectHeader("myDocumentObject", XmlHelper.createDocument("<data>World</data>"));
     XmlTransformService service = new XmlTransformService();
@@ -562,7 +560,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
   }
 
   public void testSingleParameter_STXOutput() throws Exception {
-    AdaptrisMessage msg = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     msg.addMetadata("world", "World");
     XmlTransformService service = new XmlTransformService();
     service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_STX_TRANSFORM_URL));
@@ -574,7 +572,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
   }
 
   public void testMultipleParameters_XSLTOutput() throws Exception {
-    AdaptrisMessage msg = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     msg.addMetadata("world", "World");
     msg.addMetadata("one", "World");
     msg.addMetadata("two", "World");
@@ -590,7 +588,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
   }
 
   public void testMultipleParameters_STXOutput() throws Exception {
-    AdaptrisMessage msg = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     msg.addMetadata("world", "World");
     msg.addMetadata("one", "World");
     msg.addMetadata("two", "World");
@@ -608,7 +606,8 @@ public class XmlTransformServiceTest extends TransformServiceExample {
   public void testIssue2641() throws Exception {
     DefaultMessageFactory factory = new DefaultMessageFactory();
     factory.setDefaultCharEncoding("ISO-8859-1");
-    AdaptrisMessage msg = TransformHelper.createMessage(factory, PROPERTIES.getProperty(KEY_ISSUE2641_INPUT));
+    AdaptrisMessage msg =
+        MessageHelper.createMessage(factory, PROPERTIES.getProperty(KEY_ISSUE2641_INPUT));
     Document srcXml = createDocument(msg.getPayload());
     XPath srcXpath = new XPath();
     String srcValue = srcXpath.selectSingleTextItem(srcXml, ISSUE2641_SRC_XPATH);
@@ -635,7 +634,8 @@ public class XmlTransformServiceTest extends TransformServiceExample {
   public void testIssue2641_NoOutputMessageEncoding() throws Exception {
     DefaultMessageFactory factory = new DefaultMessageFactory();
     factory.setDefaultCharEncoding("ISO-8859-1");
-    AdaptrisMessage msg = TransformHelper.createMessage(factory, PROPERTIES.getProperty(KEY_ISSUE2641_INPUT));
+    AdaptrisMessage msg =
+        MessageHelper.createMessage(factory, PROPERTIES.getProperty(KEY_ISSUE2641_INPUT));
     Document srcXml = createDocument(msg.getPayload());
     XPath srcXpath = new XPath();
     String srcValue = srcXpath.selectSingleTextItem(srcXml, ISSUE2641_SRC_XPATH);
@@ -658,7 +658,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
   }
 
   public void testXSLT_XslMessageTerminate() throws Exception {
-    AdaptrisMessage m1 = TransformHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    AdaptrisMessage m1 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     XmlTransformService service = new XmlTransformService();
     XsltTransformerFactory fac = new XsltTransformerFactory();
     fac.getTransformerFactoryAttributes()

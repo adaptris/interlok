@@ -17,7 +17,6 @@
 package com.adaptris.core;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -31,12 +30,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-
 import javax.management.MalformedObjectNameException;
-
-import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.runtime.ParentRuntimeInfoComponent;
 import com.adaptris.core.runtime.RuntimeInfoComponent;
 import com.adaptris.core.runtime.RuntimeInfoComponentFactory;
@@ -60,10 +55,6 @@ public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExce
   @InputFieldDefault(value = "10")
   private Integer retryLimit;
 
-  @AdvancedConfig
-  @Deprecated
-  @Removal(version = "3.9.0")
-  private TimeInterval lockTimeout;
   @InputFieldDefault(value = "10 minutes")
   private TimeInterval retryInterval;
 
@@ -107,18 +98,11 @@ public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExce
       md.put(IS_RETRY_KEY, "true");
       md.put(RETRY_COUNT_KEY, String.valueOf(count));
     }
-    log.trace("Next retry on [{}] is retry {}", msg.getUniqueId(), (count + 1));
+    log.trace("Next retry on [{}] is retry {}", msg.getUniqueId(), count + 1);
     int rl = retryLimit();
     return rl <= 0 ? false : count >= rl;
   }
 
-  @Override
-  public void init() throws CoreException {
-    super.init();
-    if (getLockTimeout() != null) {
-      log.warn("lock-timeout is deprecated with no replacement");
-    }
-  }
 
   @Override
   public void start() throws CoreException {
@@ -175,28 +159,6 @@ public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExce
 
   long retryIntervalMs() {
     return TimeInterval.toMillisecondsDefaultIfNull(getRetryInterval(), DEFAULT_RETRY_INTERVAL);
-  }
-
-
-  /**
-   * @deprecated since 3.6.6 has no effect.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public TimeInterval getLockTimeout() {
-    return lockTimeout;
-  }
-
-  /**
-   * Set the interval when trying to lock to re-submit a message.
-   *
-   * @param interval the interval; default is 1 second if not explicitly configured.
-   * @deprecated since 3.6.6 has no effect.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public void setLockTimeout(TimeInterval interval) {
-    lockTimeout = interval;
   }
 
   public TimeInterval getRetryInterval() {
@@ -307,6 +269,7 @@ public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExce
       }
     }
 
+    @Override
     public String toString() {
       return "RetryMessageErrorHandler#RetryThread";
     }
