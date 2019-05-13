@@ -98,12 +98,6 @@ public abstract class HttpRequestServiceImpl extends ServiceImp {
     setContentType("text/plain");
     setMethod("POST");
   }
-  
-  public HttpRequestServiceImpl(String url) {
-    this();
-    setUrl(url);
-  }
-
 
   @Override
   public void prepare() throws CoreException {

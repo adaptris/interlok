@@ -151,8 +151,7 @@ public class BranchingHttpRequestService extends HttpRequestServiceImpl {
    * 
    */
   public BranchingHttpRequestService withStatusMatches(StatusEvaluator... matchers) {
-    setStatusMatches(new ArrayList(Arrays.asList(matchers)));
-    return this;
+    return withStatusMatches(new ArrayList(Arrays.asList(matchers)));
   }
 
   /**

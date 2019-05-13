@@ -19,7 +19,7 @@ package com.adaptris.core.http.client.net;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
+import org.apache.commons.lang3.ObjectUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.AdaptrisMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -64,6 +64,7 @@ public class ResponseHeadersAsMetadata extends MetadataResponseHeaderImpl {
   }
 
 
+  @Override
   protected void addMetadata(Map<String, List<String>> headers, AdaptrisMessage reply) {
     for (String key : headers.keySet()) {
       List<String> list = headers.get(key);
@@ -100,6 +101,6 @@ public class ResponseHeadersAsMetadata extends MetadataResponseHeaderImpl {
   }
 
   String metadataSeparator() {
-    return getMetadataSeparator() != null ? getMetadataSeparator() : DEFAULT_SEPARATOR_CHAR;
+    return ObjectUtils.defaultIfNull(getMetadataSeparator(), DEFAULT_SEPARATOR_CHAR);
   }
 }
