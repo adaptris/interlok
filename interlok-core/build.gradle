@@ -154,8 +154,6 @@ task unitTestStubsJar(type: Jar, dependsOn: compileTestJava) {
   include   '**/core/jms/MessageTypeTranslatorCase*'
   include   '**/core/jms/JmsConfig*'
   include   '**/core/http/HttpProducer.class'
-  include   '**/core/http/jetty/ResponseProducer.class'
-  include   '**/core/http/JdkHttpProducer.class'
   include   '**/core/jms/**/JndiImplementationCase*'
   include   '**/core/jms/ActiveJmsConnectionErrorHandlerCase*'
   include   '**/core/transform/TransformServiceExample*'
