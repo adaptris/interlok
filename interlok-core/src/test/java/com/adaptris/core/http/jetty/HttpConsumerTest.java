@@ -21,17 +21,14 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.NullConnection;
 import com.adaptris.core.PoolingWorkflow;
 import com.adaptris.core.PortManager;
 import com.adaptris.core.ProduceException;
@@ -41,7 +38,6 @@ import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.Workflow;
 import com.adaptris.core.http.HttpConsumerExample;
 import com.adaptris.core.http.HttpProducer;
-import com.adaptris.core.http.JdkHttpProducer;
 import com.adaptris.core.http.auth.AdapterResourceAuthenticator;
 import com.adaptris.core.http.jetty.HttpConnection.HttpConfigurationProperty;
 import com.adaptris.core.http.jetty.HttpConnection.ServerConnectorProperty;
@@ -54,6 +50,7 @@ import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.stubs.MockWorkflowInterceptor;
 import com.adaptris.core.stubs.StaticMockMessageProducer;
 import com.adaptris.core.stubs.StubMessageFactory;
+import com.adaptris.http.legacy.HttpProduceConnection;
 import com.adaptris.http.legacy.SimpleHttpProducer;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.TimeInterval;
@@ -145,7 +142,8 @@ public class HttpConsumerTest extends HttpConsumerExample {
     JettyMessageConsumer consumer1 = JettyHelper.createConsumer(URL_TO_POST_TO);
     StandardWorkflow workflow1 = new StandardWorkflow();
     workflow1.setConsumer(consumer1);
-    workflow1.getServiceCollection().add(new StandaloneProducer(new ResponseProducer(HttpStatus.OK_200)));
+    workflow1.getServiceCollection()
+        .add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200)));
     Channel channel = JettyHelper.createChannel(connection, workflow1);
     try {
       channel.requestStart();
@@ -173,13 +171,15 @@ public class HttpConsumerTest extends HttpConsumerExample {
     JettyMessageConsumer consumer1 = JettyHelper.createConsumer(URL_TO_POST_TO);
     StandardWorkflow workflow1 = new StandardWorkflow();
     workflow1.setConsumer(consumer1);
-    workflow1.getServiceCollection().add(new StandaloneProducer(new ResponseProducer(HttpStatus.OK_200)));
+    workflow1.getServiceCollection()
+        .add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200)));
     Channel channel = JettyHelper.createChannel(connection, workflow1);
 
     JettyMessageConsumer consumer2 = JettyHelper.createConsumer("/some/other/urlmapping/");
     StandardWorkflow workflow2 = new StandardWorkflow();
     workflow2.setConsumer(consumer2);
-    workflow2.getServiceCollection().add(new StandaloneProducer(new ResponseProducer(HttpStatus.OK_200)));
+    workflow2.getServiceCollection()
+        .add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200)));
     channel.getWorkflowList().add(workflow2);
 
     try {
@@ -210,7 +210,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
     consumer.setWarnAfter(new TimeInterval(10L, TimeUnit.MILLISECONDS));
     PoolingWorkflow workflow = new PoolingWorkflow();
-    ResponseProducer responder = new ResponseProducer(HttpStatus.OK_200);
+    StandardResponseProducer responder = new StandardResponseProducer(HttpStatus.OK_200);
     workflow.setConsumer(consumer);
     workflow.getServiceCollection().add(new WaitService(new TimeInterval(1L, TimeUnit.SECONDS)));
     workflow.getServiceCollection().add(new StandaloneProducer(mockProducer));
@@ -241,7 +241,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     PoolingWorkflow workflow = new PoolingWorkflow();
     workflow.addInterceptor(new MockWorkflowInterceptor());
     workflow.setShutdownWaitTime(new TimeInterval(100L, TimeUnit.MILLISECONDS));
-    ResponseProducer responder = new ResponseProducer(HttpStatus.OK_200);
+    StandardResponseProducer responder = new StandardResponseProducer(HttpStatus.OK_200);
     workflow.setConsumer(consumer);
     workflow.getServiceCollection().add(new WaitService(new TimeInterval(1L, TimeUnit.SECONDS)));
     workflow.getServiceCollection().add(new StandaloneProducer(mockProducer));
@@ -271,7 +271,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     consumer.setTimeoutAction(new TimeoutAction(new TimeInterval(100L, TimeUnit.MILLISECONDS)));
     PoolingWorkflow workflow = new PoolingWorkflow();
     workflow.setShutdownWaitTime(new TimeInterval(100L, TimeUnit.MILLISECONDS));
-    ResponseProducer responder = new ResponseProducer(HttpStatus.OK_200);
+    StandardResponseProducer responder = new StandardResponseProducer(HttpStatus.OK_200);
     workflow.setConsumer(consumer);
     workflow.getServiceCollection().add(new WaitService(new TimeInterval(5L, TimeUnit.SECONDS)));
     workflow.getServiceCollection().add(new StandaloneProducer(mockProducer));
@@ -327,19 +327,9 @@ public class HttpConsumerTest extends HttpConsumerExample {
       msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
       // we should default to post, so restricted to GET/HEAD/OPTIONS will cause a 405...
       httpProducer.setIgnoreReplyMetadata(false);
-      if (httpProducer instanceof JdkHttpProducer) {
-        ((JdkHttpProducer) httpProducer).setReplyHttpHeadersAsMetadata(true);
-        ((JdkHttpProducer) httpProducer).setReplyMetadataPrefix(null);
-      }
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg, createProduceDestination(connection.getPort()));
       assertEquals("405", reply.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
-      if (httpProducer instanceof JdkHttpProducer) {
-        List<String> methods = Arrays.asList(reply.getMetadataValue("Allow").split(","));
-        assertTrue(methods.contains("GET"));
-        assertTrue(methods.contains("HEAD"));
-        assertTrue(methods.contains("OPTIONS"));
-      }
     }
     finally {
       stop(httpProducer);
@@ -358,22 +348,12 @@ public class HttpConsumerTest extends HttpConsumerExample {
       channel.requestStart();
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
       httpProducer.setIgnoreReplyMetadata(false);
-      if (httpProducer instanceof JdkHttpProducer) {
-        ((JdkHttpProducer) httpProducer).setMethod("OPTIONS");
-        ((JdkHttpProducer) httpProducer).setReplyHttpHeadersAsMetadata(true);
-        ((JdkHttpProducer) httpProducer).setReplyMetadataPrefix(null);
-      } else {
+      if (httpProducer instanceof SimpleHttpProducer) {
         ((SimpleHttpProducer) httpProducer).setMethod("OPTIONS");
       }
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg, createProduceDestination(connection.getPort()));
       assertEquals("200", reply.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
-      if (httpProducer instanceof JdkHttpProducer) {
-        List<String> methods = Arrays.asList(reply.getMetadataValue("Allow").split(","));
-        assertTrue(methods.contains("GET"));
-        assertTrue(methods.contains("HEAD"));
-        assertTrue(methods.contains("OPTIONS"));
-      }
     } finally {
       stop(httpProducer);
       channel.requestClose();
@@ -1061,10 +1041,10 @@ public class HttpConsumerTest extends HttpConsumerExample {
   }
 
   protected HttpProducer createProducer() {
-    JdkHttpProducer p = new JdkHttpProducer();
+    SimpleHttpProducer p = new SimpleHttpProducer();
+    p.registerConnection(new HttpProduceConnection());
     p.setContentTypeKey("content.type");
     p.setIgnoreServerResponseCode(true);
-    p.registerConnection(new NullConnection());
     return p;
   }
 

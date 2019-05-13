@@ -19,18 +19,15 @@ import static com.adaptris.core.http.jetty.HttpConsumerTest.JETTY_HTTP_PORT;
 import static com.adaptris.core.http.jetty.HttpConsumerTest.URL_TO_POST_TO;
 import static com.adaptris.core.http.jetty.HttpConsumerTest.XML_PAYLOAD;
 import static com.adaptris.core.http.jetty.JettyHelper.createConnection;
-import static com.adaptris.core.http.jetty.JettyHelper.createProduceDestination;
-import static com.adaptris.core.http.jetty.JettyHelper.createProducer;
-
 import java.util.concurrent.TimeUnit;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
 import com.adaptris.core.PoolingWorkflow;
+import com.adaptris.core.ServiceCase;
 import com.adaptris.core.StandaloneProducer;
-import com.adaptris.core.http.HttpProducer;
 import com.adaptris.core.http.HttpServiceExample;
+import com.adaptris.core.http.client.net.HttpRequestService;
 import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.services.WaitService;
 import com.adaptris.core.stubs.MockMessageProducer;
@@ -56,7 +53,7 @@ public class ShortCutJettyResponseTest extends HttpServiceExample {
     JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
     PoolingWorkflow workflow = new PoolingWorkflow();
     workflow.setShutdownWaitTime(new TimeInterval(1L, TimeUnit.SECONDS));
-    ResponseProducer responder = new ResponseProducer(HttpStatus.OK_200);
+    StandardResponseProducer responder = new StandardResponseProducer(HttpStatus.OK_200);
     workflow.setConsumer(consumer);
     workflow.getServiceCollection().add(new WaitService(new TimeInterval(1L, TimeUnit.SECONDS)));
     workflow.getServiceCollection().add(new StandaloneProducer(mockProducer));
@@ -66,20 +63,17 @@ public class ShortCutJettyResponseTest extends HttpServiceExample {
     workflow.getServiceCollection().add(new WaitService(new TimeInterval(10L, TimeUnit.SECONDS)));
     workflow.addInterceptor(new JettyPoolingWorkflowInterceptor());
     Channel channel = JettyHelper.createChannel(connection, workflow);
-    HttpProducer httpProducer = createProducer();
+    HttpRequestService service = JettyHelper.createService(connection.getPort());
     try {
       start(channel);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
       msg.addMetadata(HttpConsumerTest.CONTENT_TYPE_METADATA_KEY, "text/xml");
-      start(httpProducer);
       long start = System.currentTimeMillis();
-      AdaptrisMessage reply = httpProducer.request(msg, createProduceDestination(connection.getPort()));
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
+      ServiceCase.execute(service, msg);;
       long end = System.currentTimeMillis();
-      assertTrue((end - start) < TimeUnit.SECONDS.toMillis(10));
+      assertTrue(end - start < TimeUnit.SECONDS.toMillis(10));
     }
     finally {
-      stop(httpProducer);
       stop(channel);
     }
   }

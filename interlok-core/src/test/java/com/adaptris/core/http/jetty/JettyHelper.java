@@ -17,15 +17,12 @@
 package com.adaptris.core.http.jetty;
 
 import static com.adaptris.core.http.jetty.HttpConsumerTest.URL_TO_POST_TO;
-
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessageProducer;
 import com.adaptris.core.Channel;
 import com.adaptris.core.ConfiguredConsumeDestination;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.DefaultEventHandler;
 import com.adaptris.core.EventHandler;
-import com.adaptris.core.NullConnection;
 import com.adaptris.core.NullProcessingExceptionHandler;
 import com.adaptris.core.PortManager;
 import com.adaptris.core.Service;
@@ -33,8 +30,7 @@ import com.adaptris.core.ServiceList;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.Workflow;
-import com.adaptris.core.http.HttpProducer;
-import com.adaptris.core.http.JdkHttpProducer;
+import com.adaptris.core.http.client.net.HttpRequestService;
 import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.stubs.MockChannel;
 
@@ -65,14 +61,6 @@ public class JettyHelper {
 
   public static Workflow createWorkflow(JettyMessageConsumer consumer, AdaptrisMessageProducer producer) {
     return createWorkflow(consumer, producer, new StandardResponseProducer(HttpStatus.OK_200));
-  }
-
-  public static Workflow createWorkflow(JettyMessageConsumer consumer, AdaptrisMessageProducer producer,
-                                        ResponseProducer responder) {
-    return createWorkflow(consumer, producer, new ServiceList(new Service[]
-    {
-      new StandaloneProducer(responder)
-    }));
   }
 
   public static Workflow createWorkflow(JettyMessageConsumer consumer, AdaptrisMessageProducer producer,
@@ -113,16 +101,11 @@ public class JettyHelper {
     return c;
   }
 
-  protected static HttpProducer createProducer() {
-    JdkHttpProducer p = new JdkHttpProducer();
-    p.setContentTypeKey("content.type");
-    p.setIgnoreServerResponseCode(true);
-    p.registerConnection(new NullConnection());
-    return p;
+  protected static HttpRequestService createService(int port) {
+    return new HttpRequestService().withUrl(url(port));
   }
 
-  protected static ConfiguredProduceDestination createProduceDestination(int port) {
-    ConfiguredProduceDestination d = new ConfiguredProduceDestination("http://localhost:" + port + URL_TO_POST_TO);
-    return d;
+  protected static String url(int port) {
+    return "http://localhost:" + port + URL_TO_POST_TO;
   }
 }

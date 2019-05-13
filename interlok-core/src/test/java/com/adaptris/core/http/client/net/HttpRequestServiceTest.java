@@ -19,9 +19,7 @@ package com.adaptris.core.http.client.net;
 import static com.adaptris.core.http.jetty.JettyHelper.createChannel;
 import static com.adaptris.core.http.jetty.JettyHelper.createConsumer;
 import static com.adaptris.core.http.jetty.JettyHelper.createWorkflow;
-
 import java.util.Arrays;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
@@ -79,8 +77,9 @@ public class HttpRequestServiceTest extends HttpServiceExample {
   public void testService_WithContentTypeMetadata() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     Channel c = HttpHelper.createAndStartChannel(mock);
-    HttpRequestService service = new HttpRequestService(HttpHelper.createProduceDestination(c).getDestination());
-    service.setContentType("%message{" + HttpHelper.CONTENT_TYPE + "}");
+    HttpRequestService service =
+        new HttpRequestService(HttpHelper.createProduceDestination(c).getDestination())
+            .withContentType("%message{" + HttpHelper.CONTENT_TYPE + "}");
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
     msg.addMetadata(HttpHelper.CONTENT_TYPE, "text/complicated");
     try {
@@ -100,8 +99,9 @@ public class HttpRequestServiceTest extends HttpServiceExample {
   public void testService_MetadataRequestHeaders() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     Channel c = HttpHelper.createAndStartChannel(mock);
-    HttpRequestService service = new HttpRequestService(HttpHelper.createProduceDestination(c).getDestination());
-    service.setRequestHeaderProvider(new MetadataRequestHeaders(new RegexMetadataFilter()));
+    HttpRequestService service =
+        new HttpRequestService().withUrl(HttpHelper.createProduceDestination(c).getDestination())
+            .withRequestHeaderProvider(new MetadataRequestHeaders(new RegexMetadataFilter()));
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
     msg.addMetadata(getName(), getName());
     try {
@@ -127,8 +127,9 @@ public class HttpRequestServiceTest extends HttpServiceExample {
             new PayloadFromMetadataService(TEXT), new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200))
           })));
 
-    HttpRequestService service = new HttpRequestService(HttpHelper.createProduceDestination(c).getDestination());
-    service.setMethod("%message{httpMethod}");
+    HttpRequestService service =
+        new HttpRequestService(HttpHelper.createProduceDestination(c).getDestination())
+            .withMethod("%message{httpMethod}");
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage();
     msg.addMetadata("httpMethod", "get");
     try {
@@ -154,8 +155,9 @@ public class HttpRequestServiceTest extends HttpServiceExample {
             new PayloadFromMetadataService(TEXT), new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200))
         })));
 
-    HttpRequestService service = new HttpRequestService(HttpHelper.createProduceDestination(c).getDestination());
-    service.setMethod("GET");
+    HttpRequestService service =
+        new HttpRequestService(HttpHelper.createProduceDestination(c).getDestination())
+            .withMethod("GET");
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage();
     try {
       start(c);
@@ -180,8 +182,9 @@ public class HttpRequestServiceTest extends HttpServiceExample {
             new PayloadFromMetadataService(TEXT), new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200))
         })));
 
-    HttpRequestService service = new HttpRequestService(HttpHelper.createProduceDestination(c).getDestination());
-    service.setMethod("POST");
+    HttpRequestService service =
+        new HttpRequestService(HttpHelper.createProduceDestination(c).getDestination())
+            .withMethod("POST");
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage();
     try {
       start(c);
@@ -208,9 +211,9 @@ public class HttpRequestServiceTest extends HttpServiceExample {
         new StandaloneProducer(responder)
     })));
 
-    HttpRequestService service = new HttpRequestService(HttpHelper.createProduceDestination(c).getDestination());
-    service.setMethod("POST");
-
+    HttpRequestService service =
+        new HttpRequestService(HttpHelper.createProduceDestination(c).getDestination())
+            .withMethod("POST");
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
     try {
       start(c);
@@ -230,9 +233,10 @@ public class HttpRequestServiceTest extends HttpServiceExample {
   public void testRequest_MetadataResponseHeaders() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     Channel c = HttpHelper.createAndStartChannel(mock);
-    HttpRequestService service = new HttpRequestService(HttpHelper.createProduceDestination(c).getDestination());
-    service.setContentType("%message{" + HttpHelper.CONTENT_TYPE + "}");
-    service.setResponseHeaderHandler(new ResponseHeadersAsMetadata("", "|"));
+    HttpRequestService service =
+        new HttpRequestService(HttpHelper.createProduceDestination(c).getDestination())
+            .withContentType("%message{" + HttpHelper.CONTENT_TYPE + "}")
+            .withResponseHeaderHandler(new ResponseHeadersAsMetadata("", "|"));
 
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
     msg.addMetadata(HttpHelper.CONTENT_TYPE, "text/complicated");
@@ -256,9 +260,9 @@ public class HttpRequestServiceTest extends HttpServiceExample {
     MockMessageProducer mock = new MockMessageProducer();
     Channel c = HttpHelper.createAndStartChannel(mock);
 
-    HttpRequestService service = new HttpRequestService(HttpHelper.createProduceDestination(c).getDestination());
-    service.setContentType("%message{" + HttpHelper.CONTENT_TYPE + "}");
-    service.setResponseHeaderHandler(new ResponseHeadersAsObjectMetadata());
+    HttpRequestService service = new HttpRequestService(HttpHelper.createProduceDestination(c).getDestination())
+            .withContentType("%message{" + HttpHelper.CONTENT_TYPE + "}")
+            .withResponseHeaderHandler(new ResponseHeadersAsObjectMetadata());
 
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
     msg.addMetadata(HttpHelper.CONTENT_TYPE, "text/complicated");
@@ -283,8 +287,8 @@ public class HttpRequestServiceTest extends HttpServiceExample {
         new PayloadFromMetadataService(TEXT), new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200))
     })));
 
-    HttpRequestService service = new HttpRequestService(HttpHelper.createProduceDestination(c).getDestination());
-    service.setMethod("GET");
+    HttpRequestService service = new HttpRequestService(HttpHelper.createProduceDestination(c).getDestination())
+            .withMethod("GET");
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("Hello World");
     try {
       start(c);
@@ -309,9 +313,9 @@ public class HttpRequestServiceTest extends HttpServiceExample {
     {
         new PayloadFromMetadataService(TEXT), new StandaloneProducer(new StandardResponseProducer(HttpStatus.UNAUTHORIZED_401))
     })));
-    HttpRequestService service = new HttpRequestService(HttpHelper.createProduceDestination(c).getDestination());
-    service.setMethod("GET");
-
+    HttpRequestService service =
+        new HttpRequestService(HttpHelper.createProduceDestination(c).getDestination())
+            .withMethod("GET");
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
     try {
       start(c);
@@ -354,9 +358,9 @@ public class HttpRequestServiceTest extends HttpServiceExample {
 
     HttpAuthenticator auth = buildAuthenticator(getName(), getName());
     
-    HttpRequestService service = new HttpRequestService(HttpHelper.createProduceDestination(channel).getDestination());
-    service.setMethod("POST");
-    service.setAuthenticator(auth);
+    HttpRequestService service =
+        new HttpRequestService(HttpHelper.createProduceDestination(channel).getDestination())
+            .withAuthenticator(auth).withMethod("POST");
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
     try {
       start(channel);
