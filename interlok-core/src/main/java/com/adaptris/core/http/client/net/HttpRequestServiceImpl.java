@@ -16,15 +16,11 @@
 package com.adaptris.core.http.client.net;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.net.Authenticator;
 import java.net.HttpURLConnection;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
@@ -102,12 +98,6 @@ public abstract class HttpRequestServiceImpl extends ServiceImp {
     setContentType("text/plain");
     setMethod("POST");
   }
-  
-  public HttpRequestServiceImpl(String url) {
-    this();
-    setUrl(url);
-  }
-
 
   @Override
   public void prepare() throws CoreException {
@@ -154,6 +144,16 @@ public abstract class HttpRequestServiceImpl extends ServiceImp {
     this.responseHeaderHandler = Args.notNull(handler, "ResponseHeaderHandler");
   }
 
+  /**
+   * @since 3.9.0
+   * 
+   */
+  public <T extends HttpRequestServiceImpl> T withResponseHeaderHandler(
+      ResponseHeaderHandler<HttpURLConnection> s) {
+    setResponseHeaderHandler(s);
+    return (T) this;
+  }
+
   public RequestHeaderProvider<HttpURLConnection> getRequestHeaderProvider() {
     return requestHeaderProvider;
   }
@@ -167,6 +167,15 @@ public abstract class HttpRequestServiceImpl extends ServiceImp {
     this.requestHeaderProvider = Args.notNull(handler, "Request Header Provider");
   }
 
+  /**
+   * @since 3.9.0
+   * 
+   */
+  public <T extends HttpRequestServiceImpl> T withRequestHeaderProvider(
+      RequestHeaderProvider<HttpURLConnection> s) {
+    setRequestHeaderProvider(s);
+    return (T) this;
+  }
 
   /**
    * @return the url
@@ -180,6 +189,15 @@ public abstract class HttpRequestServiceImpl extends ServiceImp {
    */
   public void setUrl(String s) {
     this.url = s;
+  }
+
+  /**
+   * @since 3.9.0
+   * 
+   */
+  public <T extends HttpRequestServiceImpl> T withUrl(String s) {
+    setUrl(s);
+    return (T) this;
   }
 
   /**
@@ -198,6 +216,15 @@ public abstract class HttpRequestServiceImpl extends ServiceImp {
   }
 
   /**
+   * @since 3.9.0
+   * 
+   */
+  public <T extends HttpRequestServiceImpl> T withContentType(String s) {
+    setContentType(s);
+    return (T) this;
+  }
+
+  /**
    * @return the method
    */
   public String getMethod() {
@@ -210,6 +237,15 @@ public abstract class HttpRequestServiceImpl extends ServiceImp {
    */
   public void setMethod(String m) {
     this.method = m;
+  }
+
+  /**
+   * @since 3.9.0
+   * 
+   */
+  public <T extends HttpRequestServiceImpl> T withMethod(String s) {
+    setMethod(s);
+    return (T) this;
   }
 
   /**
@@ -226,4 +262,12 @@ public abstract class HttpRequestServiceImpl extends ServiceImp {
     this.authenticator = auth;
   }
 
+  /**
+   * @since 3.9.0
+   * 
+   */
+  public <T extends HttpRequestServiceImpl> T withAuthenticator(HttpAuthenticator auth) {
+    setAuthenticator(auth);
+    return (T) this;
+  }
 }

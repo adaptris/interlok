@@ -52,9 +52,9 @@ public class BranchingHttpRequestServiceTest extends HttpServiceExample {
   public void testService_Error() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     Channel c = HttpHelper.createAndStartChannel(mock);
-    BranchingHttpRequestService service = new BranchingHttpRequestService(HttpHelper.createProduceDestination(c).getDestination());
-    service.setContentType("text/complicated");
-    service.setDefaultServiceId("DefaultServiceId");
+    BranchingHttpRequestService service =
+        new BranchingHttpRequestService(HttpHelper.createProduceDestination(c).getDestination())
+            .withDefaultServiceId("DefaultServiceId").withContentType("text/complicated");
     AdaptrisMessage msg = new DefectiveMessageFactory().newMessage(TEXT);
     try {
       c.requestStart();
@@ -71,9 +71,12 @@ public class BranchingHttpRequestServiceTest extends HttpServiceExample {
   public void testService_DefaultServiceId() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     Channel c = HttpHelper.createAndStartChannel(mock);
-    BranchingHttpRequestService service = new BranchingHttpRequestService(HttpHelper.createProduceDestination(c).getDestination());
+    BranchingHttpRequestService service =
+        new BranchingHttpRequestService()
+            .withDefaultServiceId("DefaultServiceId")
+            .withUrl(HttpHelper.createProduceDestination(c).getDestination())
+            .withContentType("text/complicated");
 
-    service.setContentType("text/complicated");
     service.setDefaultServiceId("DefaultServiceId");
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
     try {
@@ -91,12 +94,12 @@ public class BranchingHttpRequestServiceTest extends HttpServiceExample {
   public void testService_ExactMatch() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     Channel c = HttpHelper.createAndStartChannel(mock, getName());
-    BranchingHttpRequestService service = new BranchingHttpRequestService(HttpHelper.createProduceDestination(c).getDestination());
-
-    service.setContentType("text/complicated");
-    service.setDefaultServiceId("DefaultServiceId");
-    service.getStatusMatches().add(new ExactMatch(500, "500 Server Error"));
-    service.getStatusMatches().add(new ExactMatch(200, "200 OK"));
+    BranchingHttpRequestService service =
+        new BranchingHttpRequestService(HttpHelper.createProduceDestination(c).getDestination())
+            .withDefaultServiceId("DefaultServiceId")
+            .withStatusMatches(new ExactMatch(500, "500 Server Error"),
+                new ExactMatch(200, "200 OK"))
+            .withContentType("text/complicated");
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
     try {
       c.requestStart();
@@ -114,12 +117,12 @@ public class BranchingHttpRequestServiceTest extends HttpServiceExample {
   public void testService_ExactMatch_WithError() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     Channel c = HttpHelper.createAndStartChannel(mock, "This is the reply body", HttpStatus.INTERNAL_ERROR_500);
-    BranchingHttpRequestService service = new BranchingHttpRequestService(HttpHelper.createProduceDestination(c).getDestination());
-
-    service.setContentType("text/complicated");
-    service.setDefaultServiceId("DefaultServiceId");
-    service.getStatusMatches().add(new ExactMatch(500, "500 Server Error"));
-    service.getStatusMatches().add(new ExactMatch(200, "200 OK"));
+    BranchingHttpRequestService service =
+        new BranchingHttpRequestService(HttpHelper.createProduceDestination(c).getDestination())
+            .withDefaultServiceId("DefaultServiceId")
+            .withStatusMatches(new ExactMatch(500, "500 Server Error"),
+                new ExactMatch(200, "200 OK"))
+            .withContentType("text/complicated");
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
     try {
       c.requestStart();
@@ -137,13 +140,12 @@ public class BranchingHttpRequestServiceTest extends HttpServiceExample {
   public void testService_RangeMatch() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     Channel c = HttpHelper.createAndStartChannel(mock);
-    BranchingHttpRequestService service = new BranchingHttpRequestService(HttpHelper.createProduceDestination(c).getDestination());
-
-    service.setContentType("text/complicated");
-    service.setDefaultServiceId("DefaultServiceId");
-    service.getStatusMatches().add(new RangeMatch(100, 199, "1XX Informational"));
-    service.getStatusMatches().add(new RangeMatch(300, 399, "3XX Moved"));
-    service.getStatusMatches().add(new RangeMatch(200, 299, "2XX OK"));
+    BranchingHttpRequestService service =
+        new BranchingHttpRequestService(HttpHelper.createProduceDestination(c).getDestination())
+    .withDefaultServiceId("DefaultServiceId")
+            .withStatusMatches(new RangeMatch(100, 199, "1XX Informational"),
+                new RangeMatch(300, 399, "3XX Moved"), new RangeMatch(200, 299, "2XX OK"))
+    .withContentType("text/complicated");
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
     try {
       c.requestStart();

@@ -16,11 +16,10 @@
 package com.adaptris.core.http.client.net;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
@@ -139,6 +138,23 @@ public class BranchingHttpRequestService extends HttpRequestServiceImpl {
   }
 
   /**
+   * @since 3.9.0
+   * 
+   */
+  public BranchingHttpRequestService withStatusMatches(List<StatusEvaluator> matchers) {
+    setStatusMatches(matchers);
+    return this;
+  }
+
+  /**
+   * @since 3.9.0
+   * 
+   */
+  public BranchingHttpRequestService withStatusMatches(StatusEvaluator... matchers) {
+    return withStatusMatches(new ArrayList(Arrays.asList(matchers)));
+  }
+
+  /**
    * @return the defaultServiceId
    */
   public String getDefaultServiceId() {
@@ -152,4 +168,12 @@ public class BranchingHttpRequestService extends HttpRequestServiceImpl {
     this.defaultServiceId = s;
   }
 
+  /**
+   * @since 3.9.0
+   * 
+   */
+  public BranchingHttpRequestService withDefaultServiceId(String s) {
+    setDefaultServiceId(s);
+    return this;
+  }
 }
