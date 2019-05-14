@@ -16,15 +16,19 @@
 
 package com.adaptris.core.common;
 
+import static com.adaptris.util.URLHelper.connect;
 import java.io.IOException;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import java.io.InputStream;
+import java.io.StringWriter;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.MessageDrivenDestination;
-import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
+import com.adaptris.interlok.types.InterlokMessage.MessageWrapper;
 import com.adaptris.util.URLString;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -35,12 +39,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  *
  */
 @XStreamAlias("file-data-input-parameter")
-@DisplayOrder(order = {"destination","url"})
-public class FileDataInputParameter extends FileInputParameterImpl {
-
-  @Valid
-  @NotNull(message = "destination may not be null")
-  private MessageDrivenDestination destination;
+@DisplayOrder(order = {"destination"})
+public class FileDataInputParameter extends FileParameter
+    implements DataInputParameter<String>, MessageWrapper<InputStream> {
+  private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   public FileDataInputParameter() {
 
@@ -49,33 +51,25 @@ public class FileDataInputParameter extends FileInputParameterImpl {
   @Override
   public String extract(InterlokMessage message) throws CoreException {
     try {
-      return this.load(new URLString(this.url(message)), message.getContentEncoding());
+      return load(new URLString(url(message)), message.getContentEncoding());
     } catch (IOException ex) {
-      throw new CoreException(ex);
+      throw ExceptionHelper.wrapCoreException(ex);
     }
   }
 
-  protected String url(InterlokMessage msg) throws CoreException {
-    Args.notNull(getDestination(), "destination");
-    if (msg instanceof AdaptrisMessage) {
-      return getDestination().getDestination((AdaptrisMessage) msg);
-    } else {
-      throw new RuntimeException("Message is not instance of Adaptris Message");
+  @Override
+  public InputStream wrap(InterlokMessage m) throws Exception {
+    return connect(new URLString(url(m)));
+  }
+
+  protected String load(URLString loc, String encoding) throws IOException {
+    String content = null;
+
+    try (InputStream inputStream = connect(loc)) {
+      StringWriter writer = new StringWriter();
+      IOUtils.copy(inputStream, writer, encoding);
+      content = writer.toString();
     }
+    return content;
   }
-
-
-  public MessageDrivenDestination getDestination() {
-    return destination;
-  }
-
-  /**
-   * Set the destination for the file data input.
-   *
-   * @param d the destination.
-   */
-  public void setDestination(MessageDrivenDestination d) {
-    destination = Args.notNull(d, "destination");
-  }
-
 }

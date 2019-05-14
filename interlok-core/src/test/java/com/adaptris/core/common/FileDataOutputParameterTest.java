@@ -16,11 +16,15 @@
 package com.adaptris.core.common;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import java.io.File;
+import java.io.OutputStream;
 import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
 import org.junit.Test;
@@ -74,6 +78,19 @@ public class FileDataOutputParameterTest {
     // It doesn't insert into the msg; so message should still be blank
     assertNotSame(TEXT, msg.getContent());
     assertEquals(TEXT, FileUtils.readFileToString(f));
+  }
+
+  @Test
+  public void testWrap() throws Exception {
+    FileDataOutputParameter p = new FileDataOutputParameter();
+    File f = TempFileUtils.createTrackedFile(testName.getMethodName(), "", p);
+    assertFalse(f.exists());
+    p.withDestination(new ConfiguredDestination("file:///" + f.getCanonicalPath()));
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    try (OutputStream out = p.wrap(msg)) {
+      assertNotNull(out);
+    }
+    assertTrue(f.exists());
   }
 
   @Test
