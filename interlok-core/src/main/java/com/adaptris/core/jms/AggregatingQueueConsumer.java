@@ -24,9 +24,6 @@ import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.validation.constraints.NotNull;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
@@ -63,7 +60,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class AggregatingQueueConsumer extends AggregatingConsumerImpl<AggregatingJmsConsumeService> implements
     AggregatingJmsConsumer {
 
-  private transient Logger log = LoggerFactory.getLogger(this.getClass());
   private static final TimeInterval DEFAULT_TIMEOUT = new TimeInterval(30L, TimeUnit.SECONDS);
 
   @NotNull

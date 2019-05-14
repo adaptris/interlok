@@ -75,7 +75,7 @@ public class ActiveJmsConnectionErrorHandler extends JmsConnectionErrorHandlerIm
       boolean actuallyStarted = verifierThreadGate.await(DEFAULT_MAX_WAIT_FOR_START.toMilliseconds(), TimeUnit.MILLISECONDS);
       if (!actuallyStarted) {
         if (handler.hasError()) {
-          ExceptionHelper.rethrowCoreException(handler.lastCaughtException);
+          ExceptionHelper.rethrowCoreException(handler.lastException());
         }
         else {
           throw new CoreException("Failed to start connection error handler");

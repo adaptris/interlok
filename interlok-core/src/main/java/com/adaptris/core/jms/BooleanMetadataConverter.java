@@ -62,6 +62,9 @@ public class BooleanMetadataConverter extends MetadataConverter {
   }
 
   private class NotBooleanException extends Exception {
+
+    private static final long serialVersionUID = 2443244004703212227L;
+
     public NotBooleanException(String msg) {
       super(msg);
     }

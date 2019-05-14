@@ -128,7 +128,7 @@ public class CachedDestinationJndiImplementation extends StandardJndiImplementat
     }
 
     @Override
-    protected boolean removeEldestEntry(Map.Entry eldest) {
+    protected boolean removeEldestEntry(Map.Entry<K,V> eldest) {
       return size() > maxDestinationCacheSize();
     }
   }

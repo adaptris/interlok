@@ -541,6 +541,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
   /**
    * @param b the transacted to set
    */
+  @SuppressWarnings("unused")
   private void setTransacted(boolean b) {
     transactedSession = b;
   }
@@ -552,6 +553,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
   /**
    * @return the rollbackTimeout
    */
+  @SuppressWarnings("unused")
   private long getRollbackTimeout() {
     return rollbackTimeout;
   }
@@ -561,6 +563,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
    * 
    * @param l the rollbackTimeout to set
    */
+  @SuppressWarnings("unused")
   private void setRollbackTimeout(long l) {
     rollbackTimeout = l;
   }

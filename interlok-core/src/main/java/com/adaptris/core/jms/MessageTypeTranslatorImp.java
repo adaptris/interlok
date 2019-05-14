@@ -265,7 +265,7 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
 
   @Override
   public List<MetadataConverter> metadataConverters(){
-    return getMetadataConverters() != null ? getMetadataConverters() : Collections.EMPTY_LIST;
+    return getMetadataConverters() != null ? getMetadataConverters() : Collections.emptyList();
   }
 
   /**
