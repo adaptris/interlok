@@ -45,7 +45,7 @@ public abstract class MessageLoggerImpl implements MessageLogger {
 
   protected Collection<MetadataElement> format(Collection<MetadataElement> set) {
     MetadataCollection metadata = new MetadataCollection();
-    set.parallelStream().forEach(e -> {
+    set.stream().forEach(e -> {
       metadata.add(wrap(e.getKey(), e.getValue()));
     });
     return metadata;
