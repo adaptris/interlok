@@ -50,6 +50,8 @@ subprojects { subproject ->
     apply plugin: "jacoco"
   }
 
+  sourceCompatibility = 1.8
+  targetCompatibility = 1.8
   group   = 'com.adaptris'
   version = releaseVersion
   def versionDir = "$buildDir/version"

@@ -24,9 +24,11 @@ import org.eclipse.jetty.security.SecurityHandler;
  * Generally you will configure a {@link com.adaptris.core.http.jetty.ConfigurableSecurityHandler} in your config file to create a
  * {@code SecurityHandler} at the right time.
  * </p>
- * 
+ *
  * @author lchan
- * 
+ *
+ * <!-- NB Cannot fix the warning about the link "reference not found"
+ * above because of the way the dependencies go -->
  */
 public interface SecurityHandlerWrapper {
 
