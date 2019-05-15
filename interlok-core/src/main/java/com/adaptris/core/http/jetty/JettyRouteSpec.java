@@ -16,22 +16,23 @@
 package com.adaptris.core.http.jetty;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
-
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.MetadataElement;
+import com.adaptris.core.ServiceException;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -95,7 +96,7 @@ public class JettyRouteSpec {
    * @param urlPattern the pattern.
    */
   public void setUrlPattern(String urlPattern) {
-    this.urlPattern = urlPattern;
+    this.urlPattern = Args.notBlank(urlPattern, "urlPattern");
   }
 
   public String getMethod() {
@@ -113,6 +114,10 @@ public class JettyRouteSpec {
 
   public List<String> getMetadataKeys() {
     return metadataKeys;
+  }
+
+  private List<String> metadataKeys() {
+    return ObjectUtils.defaultIfNull(getMetadataKeys(), Collections.emptyList());
   }
 
   /**
@@ -135,7 +140,7 @@ public class JettyRouteSpec {
     this.serviceId = serviceId;
   }
 
-  public RouteMatch build(String method, String uri) {
+  public RouteMatch build(String method, String uri) throws ServiceException {
     int expected = (isBlank(getMethod()) ? 0 : 1) + 1;
     int rc = 0;
     Set<MetadataElement> matchedMetadata = new HashSet<>();
@@ -158,10 +163,17 @@ public class JettyRouteSpec {
     return matcher;
   }
 
-  private Set<MetadataElement> createMetadata(Matcher matcher) {
+  private Set<MetadataElement> createMetadata(Matcher matcher) throws ServiceException {
     Set<MetadataElement> result = new HashSet<>();
+    List<String> keys = Collections.unmodifiableList(metadataKeys());
+    if (matcher.groupCount() > keys.size()) {
+      String msg = String.format("'%s' has %d match-groups, but only %d metadata keys defined",
+          matcher.pattern().pattern(), matcher.groupCount(), keys.size());
+      log.error(msg);
+      throw new ServiceException(msg);
+    }
     for (int i = 1; i <= matcher.groupCount(); i++) {
-        result.add(new MetadataElement(getMetadataKeys().get(i - 1), matcher.group(i)));
+      result.add(new MetadataElement(keys.get(i - 1), matcher.group(i)));
     }
     return result;
   }
