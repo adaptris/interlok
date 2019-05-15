@@ -236,7 +236,9 @@ public class JmsConnection extends AllowsRetriesConnection implements JmsConnect
 
   @Override
   protected void prepareConnection() throws CoreException {
+    getVendorImplementation().prepare();
   }
+
 
   @Override
   public boolean connectionEquals(JmsConnection connection) {

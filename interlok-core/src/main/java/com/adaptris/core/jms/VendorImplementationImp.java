@@ -30,6 +30,7 @@ import javax.jms.Topic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.adaptris.core.ConsumeDestination;
+import com.adaptris.core.CoreException;
 import com.adaptris.core.jms.JmsDestination.DestinationType;
 import com.adaptris.util.URLHelper;
 
@@ -53,6 +54,8 @@ public abstract class VendorImplementationImp implements VendorImplementation {
 
   public VendorImplementationImp() {}
 
+  @Override
+  public void prepare() throws CoreException {}
   /**
    * @see com.adaptris.core.jms.VendorImplementation #retrieveBrokerDetailsForLogging()
    */
