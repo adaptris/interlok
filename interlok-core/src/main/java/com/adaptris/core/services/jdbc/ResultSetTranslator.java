@@ -17,7 +17,6 @@
 package com.adaptris.core.services.jdbc;
 
 import java.sql.SQLException;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ComponentLifecycle;
 import com.adaptris.core.ComponentLifecycleExtension;

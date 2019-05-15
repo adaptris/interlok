@@ -17,11 +17,9 @@
 package com.adaptris.core;
 
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -273,8 +271,8 @@ public class StandaloneConsumer implements AdaptrisMessageConsumer, StateManaged
 
   @Override
   public void prepare() throws CoreException {
-    getConnection().prepare();
-    getConsumer().prepare();
+    LifecycleHelper.prepare(getConnection());
+    LifecycleHelper.prepare(getConsumer());
   }
 
 

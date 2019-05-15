@@ -18,12 +18,10 @@ package com.adaptris.core.jms;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.validation.constraints.NotNull;
-
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
@@ -77,6 +75,7 @@ public class AggregatingQueueConsumer extends AggregatingConsumerImpl<Aggregatin
     setDestination(d);
   }
 
+  @Override
   public void aggregateMessages(AdaptrisMessage msg, AggregatingJmsConsumeService cfg) throws ServiceException {
     ConsumeDestination dest = getDestination().generate(msg);
     MessageConsumer consumer = null;
@@ -115,10 +114,6 @@ public class AggregatingQueueConsumer extends AggregatingConsumerImpl<Aggregatin
     return consumer.receive(timeoutMs());
   }
 
-  @Override
-  public void prepare() throws CoreException {
-  }
-
   /**
    * @return the timeout
    */
@@ -142,7 +137,6 @@ public class AggregatingQueueConsumer extends AggregatingConsumerImpl<Aggregatin
   protected void startMessageTranslator(JmsActorConfig cfg, AdaptrisMessageFactory factory) throws CoreException {
     messageTranslator.registerSession(cfg.currentSession());
     messageTranslator.registerMessageFactory(factory);
-    messageTranslator.prepare();
     start(messageTranslator);
   }
 

@@ -17,7 +17,6 @@
 package com.adaptris.core.fs;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileFilter;
@@ -27,9 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
 import javax.validation.Valid;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
@@ -96,7 +93,7 @@ public class AggregatingFsConsumer extends AggregatingConsumerImpl<AggregatingFs
     ConsumeDestination dest = getDestination().generate(msg);
     List<AdaptrisMessage> result = new ArrayList<>();
     try {
-      result = (isEmpty(dest.getFilterExpression())) ? readSingleFile(dest, msg.getFactory()) : readMultipleFiles(dest,
+      result = isEmpty(dest.getFilterExpression()) ? readSingleFile(dest, msg.getFactory()) : readMultipleFiles(dest,
           msg.getFactory());
       getMessageAggregator().joinMessage(msg, result);
     }
@@ -124,7 +121,7 @@ public class AggregatingFsConsumer extends AggregatingConsumerImpl<AggregatingFs
     for (AdaptrisMessage m : msgs) {
       Map<?,?> objectMetadata = m.getObjectHeaders();
       if (objectMetadata.containsKey(OBJ_METADATA_KEY_FILE)) {
-        File f = ((File) objectMetadata.get(OBJ_METADATA_KEY_FILE));
+        File f = (File) objectMetadata.get(OBJ_METADATA_KEY_FILE);
         File parent = f.getParentFile();
         String name = f.getName().replaceAll(wipSuffix().replaceAll("\\.", "\\\\."), "");
         log.trace("Will Rename " + f.getName() + " back to " + name);
@@ -288,7 +285,5 @@ public class AggregatingFsConsumer extends AggregatingConsumerImpl<AggregatingFs
     return getDeleteAggregatedFiles() == null ? true : getDeleteAggregatedFiles();
   }
 
-  @Override
-  public void prepare() throws CoreException {}
 
 }

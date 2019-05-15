@@ -18,7 +18,6 @@ package com.adaptris.core.services.jdbc;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.CoreException;
 
 public abstract class ResultSetTranslatorBase implements ResultSetTranslator {
@@ -28,20 +27,7 @@ public abstract class ResultSetTranslatorBase implements ResultSetTranslator {
     super();
   }
 
-
   @Override
-  public void init() throws CoreException {  }
-
-  @Override
-  public void start() throws CoreException {  }
-
-  @Override
-  public void stop() {  }
-
-  @Override
-  public void close() {  }
-
-  @Override
-  public void prepare() throws CoreException {  }
+  public void prepare() throws CoreException {}
 
 }

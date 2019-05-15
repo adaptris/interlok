@@ -26,14 +26,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.oro.io.Perl5FilenameFilter;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.CoreConstants;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.PollerImp;
 import com.adaptris.core.StandaloneConsumer;
@@ -402,26 +399,6 @@ public class NonDeletingFsConsumerTest extends FsConsumerCase {
   }
   
   private class Never extends PollerImp {
-
-    @Override
-    public void init() throws CoreException {
-    }
-
-    @Override
-    public void start() throws CoreException {
-    }
-
-    @Override
-    public void stop() {
-    }
-
-    @Override
-    public void close() {
-    }
-
-    @Override
-    public void prepare() throws CoreException {
-    }
     
   }
 }

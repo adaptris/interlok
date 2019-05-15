@@ -20,9 +20,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-
 import javax.validation.Valid;
-
 import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
@@ -62,9 +60,7 @@ public abstract class JdbcService extends ServiceImp implements ConnectedService
 
   @Override
   public final void prepare() throws CoreException {
-    if (connection != null) {
-      connection.prepare();
-    }
+    LifecycleHelper.prepare(getConnection());
     prepareService();
   }
 

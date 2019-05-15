@@ -35,6 +35,7 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.CastorizedList;
+import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -90,7 +91,7 @@ public class ChannelList extends AbstractCollection<Channel>
     for (Channel c : channels) {
       // Register the channel against the addressable channel list.
       register(c);
-      c.prepare();
+      LifecycleHelper.prepare(c);
     }
   }
 

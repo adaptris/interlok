@@ -18,19 +18,15 @@ package com.adaptris.core;
 
 import static com.adaptris.core.CoreConstants.UNIQUE_ID_JMX_PATTERN;
 import static org.apache.commons.lang.StringUtils.isBlank;
-
 import java.util.Date;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
@@ -116,9 +112,9 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
       w.registerChannel(this);
       w.registerEventHandler(ehToUse);
     }
-    consumeConnection.prepare();
-    produceConnection.prepare();
-    workflowList.prepare();
+    LifecycleHelper.prepare(consumeConnection);
+    LifecycleHelper.prepare(produceConnection);
+    LifecycleHelper.prepare(workflowList);
     prepared = true;
   }
 

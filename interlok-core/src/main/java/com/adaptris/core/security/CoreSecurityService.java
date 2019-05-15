@@ -17,14 +17,11 @@
 package com.adaptris.core.security;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
@@ -249,7 +246,6 @@ public abstract class CoreSecurityService extends ServiceImp {
       if (factory == null) {
         factory = SecurityServiceFactory.defaultInstance();
       }
-      factory.prepare();
       service = factory.createService();
       for (Iterator i = keystoreUrls.iterator(); i.hasNext();) {
         ConfiguredKeystore url = (ConfiguredKeystore) i.next();

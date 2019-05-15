@@ -17,11 +17,9 @@
 package com.adaptris.core.jms;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.net.URI;
 import java.net.URLDecoder;
 import java.util.Map;
-
 import javax.jms.Connection;
 import javax.jms.Destination;
 import javax.jms.JMSException;
@@ -29,12 +27,9 @@ import javax.jms.MessageConsumer;
 import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.Topic;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.ConsumeDestination;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.jms.JmsDestination.DestinationType;
 import com.adaptris.util.URLHelper;
 
@@ -132,11 +127,8 @@ public abstract class VendorImplementationImp implements VendorImplementation {
    */
   public void applyVendorSessionProperties(Session s) throws JMSException {}
 
+
   @Override
-  public void prepare() throws CoreException {
-  }
-
-
   public JmsDestination createDestination(String destination, JmsActorConfig c) throws JMSException {
     JmsDestinationImpl jmsDest = new JmsDestinationImpl();
     try {

@@ -18,16 +18,13 @@ package com.adaptris.core.jms;
 
 import java.util.Collections;
 import java.util.List;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
 import javax.validation.Valid;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.AutoPopulated;
@@ -124,6 +121,7 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
   }
 
 
+  @Override
   public void registerSession(Session s) {
     session = s;
   }
@@ -215,10 +213,6 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
   @Override
   public void close() {
 
-  }
-
-  @Override
-  public void prepare() throws CoreException {
   }
 
   /**

@@ -18,7 +18,6 @@ package com.adaptris.core;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
@@ -148,8 +147,8 @@ public class DefaultEventHandler extends EventHandlerBase {
 
   @Override
   public void prepare() throws CoreException {
-    getConnection().prepare();
-    getProducer().prepare();
+    LifecycleHelper.prepare(getConnection());
+    LifecycleHelper.prepare(getProducer());
   }
 
 }

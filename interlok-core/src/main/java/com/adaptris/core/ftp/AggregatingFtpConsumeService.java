@@ -18,7 +18,6 @@ package com.adaptris.core.ftp;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -105,14 +104,15 @@ public class AggregatingFtpConsumeService extends AggregatingConsumeServiceImpl<
 
   @Override
   public void prepare() throws CoreException {
-    if (getConsumer() != null) getConsumer().prepare();
-    if (getConnection() != null) getConnection().prepare();
+    LifecycleHelper.prepare(getConnection());
   }
 
+  @Override
   public AdaptrisConnection getConnection() {
     return connection;
   }
 
+  @Override
   public void setConnection(AdaptrisConnection connection) {
     this.connection = connection;
   }

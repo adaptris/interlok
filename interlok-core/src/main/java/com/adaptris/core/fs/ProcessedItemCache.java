@@ -17,7 +17,6 @@
 package com.adaptris.core.fs;
 
 import com.adaptris.core.ComponentLifecycle;
-import com.adaptris.core.ComponentLifecycleExtension;
 
 /**
  * Simple interface to track items that have been processed for {@link NonDeletingFsConsumer}
@@ -25,7 +24,7 @@ import com.adaptris.core.ComponentLifecycleExtension;
  * @author lchan
  * @author $Author: lchan $
  */
-public interface ProcessedItemCache extends ComponentLifecycle, ComponentLifecycleExtension {
+public interface ProcessedItemCache extends ComponentLifecycle {
 
   /**
    * Update the cache with the tracked item.

@@ -20,7 +20,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.TimeInterval;
@@ -41,9 +40,11 @@ public abstract class ScheduledTaskPoller extends PollerImp {
   public ScheduledTaskPoller() {
   }
 
+  @Override
   public void init() throws CoreException {
   }
 
+  @Override
   public void start() throws CoreException {
     executor = Executors.newSingleThreadScheduledExecutor(new ManagedThreadFactory(getClass().getSimpleName()));
     scheduleTask();
@@ -51,6 +52,7 @@ public abstract class ScheduledTaskPoller extends PollerImp {
 
   protected abstract void scheduleTask();
 
+  @Override
   public void stop() {
     cancelTask();
     shutdownExecutor();
@@ -68,6 +70,7 @@ public abstract class ScheduledTaskPoller extends PollerImp {
     }
   }
 
+  @Override
   public void close() {
     cancelTask();
     shutdownExecutor();
@@ -107,6 +110,4 @@ public abstract class ScheduledTaskPoller extends PollerImp {
     shutdownWaitTime = interval;
   }
 
-  @Override
-  public void prepare() throws CoreException {}
 }

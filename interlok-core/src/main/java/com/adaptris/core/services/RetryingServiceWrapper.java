@@ -17,14 +17,10 @@
 package com.adaptris.core.services;
 
 import static com.adaptris.core.util.ServiceUtil.discardNulls;
-
 import java.util.concurrent.TimeUnit;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -105,8 +101,8 @@ public class RetryingServiceWrapper extends ServiceImp implements EventHandlerAw
     int currentRetries = 0;
     int maxRetries = numRetries();
     // Also test the "started" state of this service, in case we are trying to shutdown the Adapter, we then need to break this loop. 
-    while (((this.getNumRetries() == 0) || (currentRetries <= maxRetries))
-        && (this.retrieveComponentState().equals(StartedState.getInstance()))) {
+    while ((this.getNumRetries() == 0 || currentRetries <= maxRetries)
+        && this.retrieveComponentState().equals(StartedState.getInstance())) {
       try {
         this.getService().doService(msg);
         break;
@@ -121,7 +117,7 @@ public class RetryingServiceWrapper extends ServiceImp implements EventHandlerAw
           this.initAndStartQuietly();
         }
         
-        if (!((maxRetries == 0) || (currentRetries <= maxRetries)))
+        if (!(maxRetries == 0 || currentRetries <= maxRetries))
             throw new ServiceException(ex);
         
         try {
@@ -136,7 +132,7 @@ public class RetryingServiceWrapper extends ServiceImp implements EventHandlerAw
 
   @Override
   public void prepare() throws CoreException {
-    getService().prepare();
+    LifecycleHelper.prepare(getService());
   }
 
   private void stopAndCloseQuietly() {

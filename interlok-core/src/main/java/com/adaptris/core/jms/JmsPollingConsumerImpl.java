@@ -18,9 +18,7 @@ package com.adaptris.core.jms;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 import static com.adaptris.core.jms.NullCorrelationIdSource.defaultIfNull;
-
 import java.util.concurrent.TimeUnit;
-
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.IllegalStateException;
@@ -31,10 +29,8 @@ import javax.jms.Session;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
@@ -115,8 +111,6 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
 
   @Override
   public void prepareConsumer() throws CoreException {
-    getMessageTranslator().prepare();
-    getVendorImplementation().prepare();
   }
 
   @Override
@@ -161,7 +155,7 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
     LifecycleHelper.init(messageTranslator);
     LifecycleHelper.start(messageTranslator);
     if (additionalDebug()) {
-      log.trace("connected to broker in {}ms", (System.currentTimeMillis() - start));
+      log.trace("connected to broker in {}ms", System.currentTimeMillis() - start);
     }
   }
 
@@ -231,7 +225,7 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
     messageConsumer = null;
     session = null;
     if (additionalDebug()) {
-      log.trace("disconnected from broker in [{}]", (System.currentTimeMillis() - start));
+      log.trace("disconnected from broker in [{}]", System.currentTimeMillis() - start);
     }
   }
 
