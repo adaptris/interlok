@@ -57,7 +57,7 @@ public abstract class PasswordMetadataFilter extends MetadataFilterImpl {
     }
     patternPasswords = validatePatterns(getPasswordPatterns(), patternPasswords);
     MetadataCollection result = new MetadataCollection();
-    result.addAll(original.parallelStream().map(e -> {
+    result.addAll(original.stream().map(e -> {
       return matches(e, patternPasswords) ? rebuild(e) : e;
     }).collect(Collectors.toList()));
     return result;

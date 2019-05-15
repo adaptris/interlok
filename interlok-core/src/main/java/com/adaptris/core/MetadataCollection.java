@@ -16,13 +16,23 @@
 
 package com.adaptris.core;
 
-import java.util.*;
+
 
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.core.util.MetadataHelper;
 import com.adaptris.util.KeyValuePairBag;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * A container class for handling a {@link Collection} of {@link MetadataElement} instance.
@@ -43,7 +53,7 @@ public class MetadataCollection extends ArrayList<MetadataElement> {
     super();
   }
 
-  public MetadataCollection(@NotNull Set<MetadataElement> elements) {   
+  public MetadataCollection(@NotNull Set<MetadataElement> elements) {
     super(Objects.requireNonNull(elements));
   }
 

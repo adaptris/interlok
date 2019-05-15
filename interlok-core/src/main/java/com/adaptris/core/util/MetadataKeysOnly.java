@@ -39,7 +39,7 @@ public class MetadataKeysOnly implements MetadataLogger {
 
   private Collection<MetadataElement> format(Collection<MetadataElement> set) {
     MetadataCollection metadata = new MetadataCollection();
-    set.parallelStream().forEach(e -> {
+    set.stream().forEach(e -> {
       metadata.add(new KeysOnly(e.getKey(), e.getValue()));
     });
     return metadata;
