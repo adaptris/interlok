@@ -17,10 +17,8 @@
 package com.adaptris.core.fs;
 
 import java.io.File;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -136,7 +134,6 @@ public class NonDeletingFsConsumer extends FsConsumerImpl {
 
   @Override
   protected void prepareConsumer() throws CoreException {
-    getProcessedItemCache().prepare();
   }
 
   /**

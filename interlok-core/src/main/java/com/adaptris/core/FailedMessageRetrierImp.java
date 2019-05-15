@@ -21,13 +21,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
@@ -192,6 +189,7 @@ public abstract class FailedMessageRetrierImp implements FailedMessageRetrier {
   /**
    * @return the uniqueId
    */
+  @Override
   public String getUniqueId() {
     return uniqueId;
   }
@@ -205,7 +203,7 @@ public abstract class FailedMessageRetrierImp implements FailedMessageRetrier {
 
   @Override
   public void prepare() throws CoreException {
-    getStandaloneConsumer().prepare();
+    LifecycleHelper.prepare(getStandaloneConsumer());
   }
 
 

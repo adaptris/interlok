@@ -18,10 +18,8 @@ package com.adaptris.core.services;
 
 import static com.adaptris.core.util.ServiceUtil.discardNulls;
 import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
@@ -171,9 +169,7 @@ public class StatelessServiceWrapper extends ServiceImp implements EventHandlerA
 
   @Override
   public void prepare() throws CoreException {
-    if (getService() != null) {
-      getService().prepare();
-    }
+    LifecycleHelper.prepare(getService());
   }
 
 

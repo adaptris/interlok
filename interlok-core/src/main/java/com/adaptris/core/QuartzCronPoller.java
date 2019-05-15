@@ -21,13 +21,11 @@ import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.JobKey.jobKey;
 import static org.quartz.TriggerBuilder.newTrigger;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -40,7 +38,6 @@ import org.quartz.SchedulerException;
 import org.quartz.SchedulerFactory;
 import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
@@ -253,9 +250,6 @@ public class QuartzCronPoller extends PollerImp {
     setUseCustomThreadPool(useCustomThreadPool);
   }
 
-  @Override
-  public void prepare() throws CoreException {
-  }
 
   /** @see com.adaptris.core.AdaptrisComponent#init() */
   @Override

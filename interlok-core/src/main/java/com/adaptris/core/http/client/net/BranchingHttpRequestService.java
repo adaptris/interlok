@@ -91,11 +91,6 @@ public class BranchingHttpRequestService extends HttpRequestServiceImpl {
   }
 
   @Override
-  public void prepare() throws CoreException {
-    super.prepare();
-  }
-
-  @Override
   public boolean isBranching() {
     return true;
   }

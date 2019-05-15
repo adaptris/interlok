@@ -151,7 +151,6 @@ public class SplittingXmlPayloadTranslator extends XmlPayloadTranslatorImpl {
 
   @Override
   public void prepare() throws CoreException {
-    super.prepare();
     LifecycleHelper.prepare(getConnection());
     LifecycleHelper.prepare(getProducer());
   }

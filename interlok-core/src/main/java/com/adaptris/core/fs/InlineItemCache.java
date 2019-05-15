@@ -136,6 +136,4 @@ public class InlineItemCache implements ProcessedItemCache {
     ageBeforeEviction = interval;
   }
 
-  @Override
-  public void prepare() throws CoreException {}
 }

@@ -17,15 +17,12 @@
 package com.adaptris.core.jms;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.Session;
 import javax.validation.Valid;
-
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -239,9 +236,9 @@ public class JmsConnection extends AllowsRetriesConnection implements JmsConnect
 
   @Override
   protected void prepareConnection() throws CoreException {
-    getVendorImplementation().prepare();
   }
 
+  @Override
   public boolean connectionEquals(JmsConnection connection) {
     return this.getVendorImplementation().connectionEquals(connection.getVendorImplementation());
   }

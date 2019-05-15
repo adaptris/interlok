@@ -18,7 +18,6 @@ package com.adaptris.core.transform;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.CoreException;
 
 public abstract class MessageValidatorImpl implements MessageValidator {

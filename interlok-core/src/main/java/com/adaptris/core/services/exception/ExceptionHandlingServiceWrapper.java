@@ -17,13 +17,10 @@
 package com.adaptris.core.services.exception;
 
 import static com.adaptris.core.util.ServiceUtil.discardNulls;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
@@ -102,6 +99,7 @@ public class ExceptionHandlingServiceWrapper extends ServiceImp implements Event
   }
 
   /** @see com.adaptris.core.Service#doService(com.adaptris.core.AdaptrisMessage) */
+  @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     try {
       service.doService(msg);
@@ -203,8 +201,8 @@ public class ExceptionHandlingServiceWrapper extends ServiceImp implements Event
 
   @Override
   public void prepare() throws CoreException {
-    getExceptionHandlingService().prepare();
-    getService().prepare();
+    LifecycleHelper.prepare(getExceptionHandlingService());
+    LifecycleHelper.prepare(getService());
   }
 
   @Override
