@@ -17,12 +17,10 @@
 package com.adaptris.core.ftp;
 
 import static com.adaptris.core.ftp.FtpHelper.FORWARD_SLASH;
-
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageConsumer;
@@ -90,8 +88,9 @@ public abstract class FtpConsumerImpl extends AdaptrisPollingConsumer {
     return result;
   }
 
-  protected AdaptrisMessage addStandardMetadata(AdaptrisMessage msg, String filename) {
+  protected AdaptrisMessage addStandardMetadata(AdaptrisMessage msg, String filename, String dir) {
     msg.addMetadata(CoreConstants.ORIGINAL_NAME_KEY, filename);
+    msg.addMetadata(CoreConstants.FS_CONSUME_DIRECTORY, dir);
     msg.addMetadata(CoreConstants.FS_FILE_SIZE, "" + msg.getSize());
     return msg;
   }

@@ -17,10 +17,8 @@
 package com.adaptris.core.ftp;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -93,7 +91,8 @@ public class RelaxedFtpConsumer extends FtpConsumerImpl {
     try (EncoderWrapper wrapper = encWrapper) {
       ftpClient.get(wrapper, fullPath);
     }
-    AdaptrisMessage adpMsg = addStandardMetadata(encWrapper.build(), filename);
+    AdaptrisMessage adpMsg =
+        addStandardMetadata(encWrapper.build(), filename, FtpHelper.getDirectory(fullPath));
     retrieveAdaptrisMessageListener().onAdaptrisMessage(adpMsg);
     try {
       ftpClient.delete(fullPath);

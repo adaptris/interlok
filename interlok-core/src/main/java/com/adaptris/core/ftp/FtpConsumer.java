@@ -19,12 +19,9 @@ package com.adaptris.core.ftp;
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 import static com.adaptris.core.ftp.FtpHelper.FORWARD_SLASH;
 import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.io.File;
 import java.io.FileFilter;
-
 import javax.validation.constraints.NotNull;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -109,6 +106,7 @@ public class FtpConsumer extends FtpConsumerImpl {
     }
   }
 
+  @Override
   protected String configureWorkDir(String path) {
     if (!isEmpty(getWorkDirectory())) {
       return path + getWorkDirectory();
@@ -116,6 +114,7 @@ public class FtpConsumer extends FtpConsumerImpl {
     return super.configureWorkDir(path);
   }
 
+  @Override
   protected boolean accept(String path) throws Exception {
     if (path.endsWith(wipSuffix())) {
       log.warn("[{}] matches [{}], assuming part processed and ignoring", path, wipSuffix());
@@ -145,7 +144,8 @@ public class FtpConsumer extends FtpConsumerImpl {
     try (EncoderWrapper wrapper = encWrapper) {
       ftpClient.get(wrapper, wipFile);
     }
-    AdaptrisMessage adpMsg = addStandardMetadata(encWrapper.build(), filename);
+    AdaptrisMessage adpMsg =
+        addStandardMetadata(encWrapper.build(), filename, FtpHelper.getDirectory(fullPath));
     retrieveAdaptrisMessageListener().onAdaptrisMessage(adpMsg);
 
     if (procDir != null) {
