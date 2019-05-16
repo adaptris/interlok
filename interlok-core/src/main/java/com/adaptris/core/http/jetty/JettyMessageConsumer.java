@@ -28,6 +28,7 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.io.IOUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -86,11 +87,13 @@ public class JettyMessageConsumer extends BasicJettyConsumer {
   @Valid
   @NotNull
   @AdvancedConfig
+  @AffectsMetadata
   private ParameterHandler<HttpServletRequest> parameterHandler;
   @AutoPopulated
   @Valid
   @NotNull
   @AdvancedConfig
+  @AffectsMetadata
   private HeaderHandler<HttpServletRequest> headerHandler;
 
   public JettyMessageConsumer() {
