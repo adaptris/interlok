@@ -22,7 +22,6 @@ import static com.adaptris.core.CoreConstants.FS_CONSUME_PARENT_DIR;
 import static com.adaptris.core.CoreConstants.FS_FILE_SIZE;
 import static com.adaptris.core.CoreConstants.ORIGINAL_NAME_KEY;
 import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -30,13 +29,10 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 import javax.management.MalformedObjectNameException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
@@ -366,6 +362,18 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
     return verifyDirectory().listFiles(FsHelper.createFilter(getDestination().getFilterExpression(), fileFilterImp())).length;
 
   }
+
+  /**
+   * Provides the metadata key '{@value CoreConstants.FS_CONSUME_DIRECTORY}' that contains the
+   * directory (if not null) where the file was read from.
+   * 
+   * @since 3.9.0
+   */
+  @Override
+  public String consumeLocationKey() {
+    return FS_CONSUME_DIRECTORY;
+  }
+
   private static class JmxFactory extends RuntimeInfoComponentFactory {
 
     @Override

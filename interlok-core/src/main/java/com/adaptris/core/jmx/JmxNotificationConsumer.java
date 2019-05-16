@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanServerConnection;
 import javax.management.Notification;
@@ -27,9 +26,7 @@ import javax.management.NotificationListener;
 import javax.management.ObjectName;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -54,6 +51,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
     recommended = {JmxConnection.class})
 @DisplayOrder(order = {"serializer"})
 public class JmxNotificationConsumer extends AdaptrisMessageConsumerImp implements NotificationListener {
+
+  private static final String JMX_NOTIF_SOURCE = "jmxNotificationSource";
 
   private static final TimeInterval DEFAULT_INTERVAL = new TimeInterval(60L, TimeUnit.SECONDS);
   @NotNull
@@ -122,6 +121,7 @@ public class JmxNotificationConsumer extends AdaptrisMessageConsumerImp implemen
   private AdaptrisMessage createMessage(Notification n) throws CoreException, IOException {
     AdaptrisMessageFactory fac = AdaptrisMessageFactory.defaultIfNull(getMessageFactory());
     AdaptrisMessage msg = getSerializer().serialize(n, fac.newMessage());
+    msg.addMessageHeader(JMX_NOTIF_SOURCE, n.getSource().toString());
     return msg;
   }
 
@@ -226,6 +226,17 @@ public class JmxNotificationConsumer extends AdaptrisMessageConsumerImp implemen
 
   long retryInterval() {
     return TimeInterval.toMillisecondsDefaultIfNull(getRetryInterval(), DEFAULT_INTERVAL);
+  }
+
+  /**
+   * Provides the metadata key '{@value #JMX_NOTIF_SOURCE}' that contains the source of the
+   * notifcation.
+   * 
+   * @since 3.9.0
+   */
+  @Override
+  public String consumeLocationKey() {
+    return JMX_NOTIF_SOURCE;
   }
 
 }
