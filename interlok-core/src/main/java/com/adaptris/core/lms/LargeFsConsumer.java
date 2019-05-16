@@ -17,18 +17,16 @@
 package com.adaptris.core.lms;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
-
 import java.io.File;
 import java.io.IOException;
-
 import org.apache.commons.io.FileCleaningTracker;
 import org.apache.commons.io.FileDeleteStrategy;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConsumeDestination;
+import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.NullConnection;
 import com.adaptris.core.fs.FsConsumer;
@@ -68,7 +66,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Pickup messages from the filesystem with large message support", tag = "consumer,fs,filesystem", metadata =
 {
-    "originalname", "lastmodified", "fsFileSize", "fsConsumeDir", "fsParentDir"
+        CoreConstants.ORIGINAL_NAME_KEY, CoreConstants.FS_FILE_SIZE,
+        CoreConstants.FILE_LAST_MODIFIED_KEY, CoreConstants.FS_CONSUME_DIRECTORY,
+        CoreConstants.MESSAGE_CONSUME_LOCATION, CoreConstants.FS_CONSUME_PARENT_DIR
 }, recommended =
 {
     NullConnection.class

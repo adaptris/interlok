@@ -25,6 +25,7 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreConstants;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -58,7 +59,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Pickup messages from an FTP/SFTP server without renaming the file first", metadata =
 {
-    "originalname", "fsFileSize"
+        CoreConstants.ORIGINAL_NAME_KEY, CoreConstants.FS_FILE_SIZE,
+        CoreConstants.FS_CONSUME_DIRECTORY, CoreConstants.MESSAGE_CONSUME_LOCATION
 }, 
     tag = "consumer,ftp,ftps,sftp", recommended = {FileTransferConnection.class})
 @DisplayOrder(order =

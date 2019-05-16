@@ -48,11 +48,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("jmx-notification-consumer")
 @AdapterComponent
 @ComponentProfile(summary = "Listen for notifications against the specified ObjectName", tag = "consumer,jmx",
+    metadata = {com.adaptris.core.jmx.JmxNotificationConsumer.JMX_NOTIF_SOURCE},
     recommended = {JmxConnection.class})
 @DisplayOrder(order = {"serializer"})
 public class JmxNotificationConsumer extends AdaptrisMessageConsumerImp implements NotificationListener {
 
-  private static final String JMX_NOTIF_SOURCE = "jmxNotificationSource";
+  public static final String JMX_NOTIF_SOURCE = "jmxNotificationSource";
 
   private static final TimeInterval DEFAULT_INTERVAL = new TimeInterval(60L, TimeUnit.SECONDS);
   @NotNull
