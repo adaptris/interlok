@@ -16,6 +16,7 @@
 
 package com.adaptris.core.ftp;
 
+import static com.adaptris.core.CoreConstants.FS_CONSUME_DIRECTORY;
 import static com.adaptris.core.ftp.FtpHelper.FORWARD_SLASH;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -225,4 +226,14 @@ public abstract class FtpConsumerImpl extends AdaptrisPollingConsumer {
     quietInterval = interval;
   }
 
+  /**
+   * Provides the metadata key '{@value CoreConstants.FS_CONSUME_DIRECTORY}' that contains the
+   * directory (if not null) where the file was read from.
+   * 
+   * @since 3.9.0
+   */
+  @Override
+  public String consumeLocationKey() {
+    return FS_CONSUME_DIRECTORY;
+  }
 }
