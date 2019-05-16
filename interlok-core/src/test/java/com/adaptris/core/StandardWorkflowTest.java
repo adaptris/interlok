@@ -24,10 +24,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
 import com.adaptris.core.services.metadata.AddMetadataService;
@@ -39,6 +37,7 @@ import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.stubs.MockSkipProducerService;
 import com.adaptris.core.stubs.MockWorkflowInterceptor;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.MinimalMessageLogger;
 import com.adaptris.util.TimeInterval;
 
@@ -441,31 +440,34 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
   public void testOnMessage_SkipProducer() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
     MockMessageProducer serviceProducer = new MockMessageProducer();
-    MockChannel channel = createChannel(producer, Arrays.asList(new Service[]
-    {
-        new StandaloneProducer(serviceProducer), new MockSkipProducerService()
-    }));
+    MockChannel channel = createChannel(producer, Arrays.asList(
+        new Service[] {new StandaloneProducer(serviceProducer), new MockSkipProducerService()}));
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD_1);
     StandardWorkflow workflow = (StandardWorkflow) channel.getWorkflowList().get(0);
-    channel.prepare();
-    start(channel);
-    workflow.onAdaptrisMessage(msg);
-    assertEquals(1, serviceProducer.messageCount());
-    assertEquals(0, producer.messageCount());
+    try {
+      start(channel);
+      workflow.onAdaptrisMessage(msg);
+      assertEquals(1, serviceProducer.messageCount());
+      assertEquals(0, producer.messageCount());
+    } finally {
+      stop(channel);
+    }
   }
 
 
   public void testOnMessage_LogPayload() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
-    MockChannel channel = createChannel(producer, Arrays.asList(
-        new Service[] {new NullService()}));
+    MockChannel channel = createChannel(producer, Arrays.asList(new Service[] {new NullService()}));
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD_1);
     StandardWorkflow workflow = (StandardWorkflow) channel.getWorkflowList().get(0);
     workflow.setLogPayload(true);
-    channel.prepare();
-    start(channel);
-    workflow.onAdaptrisMessage(msg);
-    assertEquals(1, producer.messageCount());
+    try {
+      start(channel);
+      workflow.onAdaptrisMessage(msg);
+      assertEquals(1, producer.messageCount());
+    } finally {
+      stop(channel);
+    }
   }
 
   public void testOnMessage_MessageLogger() throws Exception {
@@ -474,12 +476,50 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD_1);
     StandardWorkflow workflow = (StandardWorkflow) channel.getWorkflowList().get(0);
     workflow.setMessageLogger(new MinimalMessageLogger());
-    channel.prepare();
-    start(channel);
-    workflow.onAdaptrisMessage(msg);
-    assertEquals(1, producer.messageCount());
+    try {
+      start(channel);
+      workflow.onAdaptrisMessage(msg);
+      assertEquals(1, producer.messageCount());
+    } finally {
+      stop(channel);
+    }
   }
 
+
+  public void testOnMessage_withConsumeLocation() throws Exception {
+    MockMessageProducer producer = new MockMessageProducer();
+    MockChannel channel = createChannel(producer, Arrays.asList(new Service[] {new NullService()}));
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD_1);
+    msg.addMessageHeader(getName(), "hello world");
+    StandardWorkflow workflow = (StandardWorkflow) channel.getWorkflowList().get(0);
+    workflow.setConsumer(new ConsumerWithLocation(getName()));
+    try {
+      start(channel);
+      workflow.onAdaptrisMessage(msg);
+      AdaptrisMessage consumed = producer.getMessages().get(0);
+      assertTrue(consumed.headersContainsKey(CoreConstants.MESSAGE_CONSUME_LOCATION));
+      assertEquals("hello world",
+          consumed.getMetadataValue(CoreConstants.MESSAGE_CONSUME_LOCATION));
+    } finally {
+      stop(channel);
+    }
+  }
+
+  public void testOnMessage_withConsumeLocation_NoMatch() throws Exception {
+    MockMessageProducer producer = new MockMessageProducer();
+    MockChannel channel = createChannel(producer, Arrays.asList(new Service[] {new NullService()}));
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD_1);
+    StandardWorkflow workflow = (StandardWorkflow) channel.getWorkflowList().get(0);
+    workflow.setConsumer(new ConsumerWithLocation(getName()));
+    try {
+      start(channel);
+      workflow.onAdaptrisMessage(msg);
+      AdaptrisMessage consumed = producer.getMessages().get(0);
+      assertFalse(consumed.headersContainsKey(CoreConstants.MESSAGE_CONSUME_LOCATION));
+    } finally {
+      stop(channel);
+    }
+  }
 
   @Override
   protected Object retrieveObjectForSampleConfig() {
@@ -520,5 +560,18 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
     wf.setConsumer(consumer);
     wf.setProducer(new NullMessageProducer());
     return wf;
+  }
+
+  private class ConsumerWithLocation extends NullMessageConsumer {
+    private String metadataKey;
+
+    public ConsumerWithLocation(String key) {
+      metadataKey = Args.notBlank(key, "metadataKey");
+    }
+
+    @Override
+    public String consumeLocationKey() {
+      return metadataKey;
+    }
   }
 }

@@ -388,5 +388,20 @@ public abstract class CoreConstants {
    */
   public static final String UNIQUE_ID_JMX_PATTERN = "[^,\\*\\?=:\"\\\\@]+";
 
+  /**
+   * Metadata key that stores the location where the message was consumed from if available.
+   * <p>
+   * This will have different meanings based on the consumer; for JMS consumers it might be
+   * {@link javax.jms.Message#getJMSDestination()}; for a file system consumer, it will be the
+   * directory from which it was consumed from.
+   * </p>
+   * <p>
+   * Note that this metadata key may not always be populated and is reliant on the
+   * {@link AdaptrisMessageConsumer#consumeLocationKey()} returning a non-null value.
+   * </p>
+   * 
+   * @since 3.9.0
+   */
+  public static final String MESSAGE_CONSUME_LOCATION = "_interlokMessageConsumedFrom";
 
 }

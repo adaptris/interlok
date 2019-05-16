@@ -31,6 +31,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -822,5 +823,16 @@ public abstract class WorkflowImp implements Workflow {
       };
     }
     return ObjectUtils.defaultIfNull(getMessageLogger(), DEFAULT_MSG_LOGGER);
+  }
+
+  protected AdaptrisMessage addConsumeLocation(AdaptrisMessage msg) {
+    String key = getConsumer().consumeLocationKey();
+    if (!StringUtils.isBlank(key)) {
+      String consumeLocation = msg.getMetadataValue(key);
+      if (!StringUtils.isEmpty(consumeLocation)) {
+        msg.addMessageHeader(CoreConstants.MESSAGE_CONSUME_LOCATION, consumeLocation);
+      }
+    }
+    return msg;
   }
 }

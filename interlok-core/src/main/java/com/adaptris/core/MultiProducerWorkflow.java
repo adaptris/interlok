@@ -92,7 +92,7 @@ public class MultiProducerWorkflow extends StandardWorkflow {
   }
 
   private void onMessage(final AdaptrisMessage msg) {
-    AdaptrisMessage wip = null;
+    AdaptrisMessage wip = addConsumeLocation(msg);
     workflowStart(msg);
     try {
       long start = System.currentTimeMillis();
