@@ -269,7 +269,7 @@ public abstract class CoreConstants {
   /**
    * Metadata key that is used to key the object metadata that contains the raw socket.
    * 
-   * @deprecated since 3.9.0 check the optional oftp package for the appropriate value.
+   * @deprecated since 3.9.0 check the optional socket package for the appropriate value.
    */
   @Deprecated
   @Removal(version = "3.11.0")
@@ -283,7 +283,7 @@ public abstract class CoreConstants {
   /**
    * Metadata key for the transaction id sent to and from the business connector.
    * 
-   * @deprecated since 3.9.0 check the optional oftp package for the appropriate value.
+   * @deprecated since 3.9.0 check the optional SAP package for the appropriate value.
    */
   @Deprecated
   @Removal(version = "3.11.0")
@@ -330,7 +330,7 @@ public abstract class CoreConstants {
    * This is the value of the field <code>IDOCTYP</code>.
    * </p>
    *
-   * @deprecated since 3.9.0 check the optional oftp package for the appropriate value.
+   * @deprecated since 3.9.0 check the optional SAP package for the appropriate value.
    */
   @Deprecated
   @Removal(version = "3.11.0")
