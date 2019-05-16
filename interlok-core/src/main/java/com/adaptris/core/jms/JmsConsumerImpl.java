@@ -307,6 +307,8 @@ public abstract class JmsConsumerImpl extends AdaptrisMessageConsumerImp impleme
   /**
    * Provides the metadata key {@value JmsConstants#JMS_DESTINATION} which will only be populated if
    * {@link MessageTypeTranslatorImp#getMoveJmsHeaders()} is true.
+   * 
+   * @since 3.9.0
    */
   @Override
   public String consumeLocationKey() {
