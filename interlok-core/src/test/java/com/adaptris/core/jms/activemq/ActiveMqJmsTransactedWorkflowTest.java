@@ -18,7 +18,6 @@ package com.adaptris.core.jms.activemq;
 
 import static com.adaptris.core.jms.JmsConfig.DEFAULT_PAYLOAD;
 import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.createSafeUniqueId;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,10 +25,8 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.BaseCase;
@@ -574,7 +571,7 @@ public class ActiveMqJmsTransactedWorkflowTest extends BaseCase {
     workflow.setProducer(new MockMessageProducer());
     JmsConsumerImpl jmsCons = isPtp ? new PtpConsumer(new ConfiguredConsumeDestination(target, null, threadName)) : new PasConsumer(
         new ConfiguredConsumeDestination(target, null, threadName));
-    jmsCons.setMessageTranslator(new TextMessageTranslator(true));
+    jmsCons.setMessageTranslator(new TextMessageTranslator().withMoveJmsHeaders(true));
     workflow.setConsumer(jmsCons);
     return workflow;
   }
@@ -591,7 +588,7 @@ public class ActiveMqJmsTransactedWorkflowTest extends BaseCase {
     BasicActiveMqImplementation vendorImpl = new BasicActiveMqImplementation();
     JmsConnection jmsConn = mq.getJmsConnection(vendorImpl, true);
     jmsCons.setVendorImplementation(jmsConn.getVendorImplementation());
-    jmsCons.setMessageTranslator(new TextMessageTranslator(true));
+    jmsCons.setMessageTranslator(new TextMessageTranslator().withMoveJmsHeaders(true));
     jmsCons.setClientId(jmsConn.getClientId());
     workflow.setConsumer(jmsCons);
     return workflow;
@@ -606,6 +603,7 @@ public class ActiveMqJmsTransactedWorkflowTest extends BaseCase {
   }
 
   private class RandomlyFail extends ServiceImp {
+    @Override
     public void doService(AdaptrisMessage msg) throws ServiceException {
       int i = new Random().nextInt(20) + 1;
       if ((i & i - 1) == 0) {

@@ -16,6 +16,8 @@
 
 package com.adaptris.core.jms;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import javax.jms.JMSException;
@@ -23,6 +25,7 @@ import javax.jms.Message;
 import javax.jms.Session;
 import javax.validation.Valid;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.AdvancedConfig;
@@ -89,11 +92,6 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
   public MessageTypeTranslatorImp() {
     registerMessageFactory(new DefaultMessageFactory());
     helper = new MetadataHandler(this);
-  }
-
-  public MessageTypeTranslatorImp(boolean moveJmsHeaders) {
-    this();
-    setMoveJmsHeaders(moveJmsHeaders);
   }
 
   /**
@@ -180,42 +178,6 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
   }
 
   /**
-   *
-   * @see com.adaptris.core.AdaptrisComponent#init()
-   */
-  @Override
-  public void init() throws CoreException {
-
-  }
-
-  /**
-   *
-   * @see com.adaptris.core.AdaptrisComponent#start()
-   */
-  @Override
-  public void start() throws CoreException {
-
-  }
-
-  /**
-   *
-   * @see com.adaptris.core.AdaptrisComponent#stop()
-   */
-  @Override
-  public void stop() {
-
-  }
-
-  /**
-   *
-   * @see com.adaptris.core.AdaptrisComponent#close()
-   */
-  @Override
-  public void close() {
-
-  }
-
-  /**
    * Report all non-critical errors with a stacktrace.
    * <p>
    * When moving JMS Headers, it is possible depending on the vendor that some exceptions are thrown when attempting to get standard
@@ -254,13 +216,40 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
 
   @Override
   public MetadataFilter metadataFilter() {
-    return getMetadataFilter() != null ? getMetadataFilter() : DEFAULT_FILTER;
+    return ObjectUtils.defaultIfNull(getMetadataFilter(), DEFAULT_FILTER);
   }
 
   @Override
   public List<MetadataConverter> metadataConverters(){
-    return getMetadataConverters() != null ? getMetadataConverters() : Collections.emptyList();
+    return ObjectUtils.defaultIfNull(getMetadataConverters(), Collections.emptyList());
   }
+
+  public <T extends MessageTypeTranslatorImp> T withMetadataConverters(
+      List<MetadataConverter> list) {
+    setMetadataConverters(list);
+    return (T) this;
+  }
+
+  public <T extends MessageTypeTranslatorImp> T withMetadataConverters(
+      MetadataConverter... list) {
+    return withMetadataConverters(new ArrayList<>(Arrays.asList(list)));
+  }
+
+  public <T extends MessageTypeTranslatorImp> T withReportAllErrors(Boolean b) {
+    setReportAllErrors(b);
+    return (T) this;
+  }
+
+  public <T extends MessageTypeTranslatorImp> T withMoveJmsHeaders(Boolean b) {
+    setMoveJmsHeaders(b);
+    return (T) this;
+  }
+
+  public <T extends MessageTypeTranslatorImp> T withMetadataFilter(MetadataFilter f) {
+    setMetadataFilter(f);
+    return (T) this;
+  }
+
 
   /**
    * Convenience method to translate a {@link Message} into a {@link com.adaptris.core.AdaptrisMessage}.
