@@ -67,7 +67,7 @@ public class Matches implements Operator {
   /**
    * Set the value to match against.
    * 
-   * @param value the value which conforms to a {@link java.util.Pattern}.
+   * @param value the value which conforms to a {@link java.util.regex.Pattern}.
    */
   public void setValue(String value) {
     this.value = value;

@@ -17,10 +17,8 @@
 package com.adaptris.core.ftp;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -52,7 +50,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config relaxed-ftp-consumer
  * 
  * @see FtpConnection
- * @see SftpConnection
  * @see FileTransferConnection
  * @see com.adaptris.core.ConsumeDestination
  */

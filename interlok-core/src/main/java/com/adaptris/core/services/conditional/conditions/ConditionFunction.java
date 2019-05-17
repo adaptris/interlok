@@ -5,9 +5,7 @@ import javax.script.Invocable;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
-
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.MarshallingCDATA;
@@ -22,10 +20,13 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * A javascript condition.
  * 
  * <p>
- * This makes use of the {@link Invocable} extension to {@link ScriptEngine}, to allow you to define the function that will be
- * executed to evaluate the condition. The function name should always be {@code evaluateScript}; take a single parameter (in this
- * case it will be the current {@link AdaptrisMessage}; and return {@code true or false}. For instance to check a specific metadata
- * value then you might have this function definition<pre>
+ * This makes use of the {@link Invocable} extension to {@link ScriptEngine}, to allow you to define
+ * the function that will be executed to evaluate the condition. The function name should always be
+ * {@code evaluateScript}; take a single parameter (in this case it will be the current
+ * {@link AdaptrisMessage}; and return {@code true or false}. For instance to check a specific
+ * metadata value then you might have this function definition
+ * 
+ * <pre>
  * {@code
      function evaluateScript(message) { 
        return message.getMetadataValue('myMetadataKey').equals('myValue'); 
@@ -34,7 +35,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </pre>
  * </p>
  * <p>
- * Similar to {@link com.adaptris.core.service.EmbeddedScriptingService}; the logger is bound as {@code log}.
+ * Similar to {@link com.adaptris.core.services.EmbeddedScriptingService}; the logger is bound as
+ * {@code log}.
  * </p>
  * 
  * @config function

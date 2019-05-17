@@ -17,9 +17,7 @@
 package com.adaptris.core.ftp;
 
 import java.io.InputStream;
-
 import javax.validation.Valid;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
@@ -61,7 +59,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @see FileNameCreator
  * @see FtpConnection
- * @see SftpConnection
  * @see FileTransferConnection
  * @see ProduceDestination
  * @author lchan

@@ -19,12 +19,9 @@ package com.adaptris.core.ftp;
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 import static com.adaptris.core.ftp.FtpHelper.FORWARD_SLASH;
 import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.io.File;
 import java.io.FileFilter;
-
 import javax.validation.constraints.NotNull;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -60,7 +57,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config ftp-consumer
  * 
  * @see FtpConnection
- * @see SftpConnection
  * @see FileTransferConnection
  * @see com.adaptris.core.ConsumeDestination
  * @author lchan
@@ -109,6 +105,7 @@ public class FtpConsumer extends FtpConsumerImpl {
     }
   }
 
+  @Override
   protected String configureWorkDir(String path) {
     if (!isEmpty(getWorkDirectory())) {
       return path + getWorkDirectory();
@@ -116,6 +113,7 @@ public class FtpConsumer extends FtpConsumerImpl {
     return super.configureWorkDir(path);
   }
 
+  @Override
   protected boolean accept(String path) throws Exception {
     if (path.endsWith(wipSuffix())) {
       log.warn("[{}] matches [{}], assuming part processed and ignoring", path, wipSuffix());

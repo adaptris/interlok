@@ -252,7 +252,7 @@ public class XmlSchemaValidator extends MessageValidatorImpl {
    * Returns the (optional) metadata key against which a schema can be provided at run time.
    * 
    * @return the (optional) metadata key against which a schema can be provided at run time
-   * @deprecated since 3.8.4 use an expression based {@link setSchema(String)} instead.
+   * @deprecated since 3.8.4 use an expression based {@link #setSchema(String)} instead.
    */
   @Deprecated
   @Removal(version = "3.11.0", message = "use an expression based schema value instead.")
@@ -264,7 +264,7 @@ public class XmlSchemaValidator extends MessageValidatorImpl {
    * Sets the (optional) metadata key against which a schema can be provided at run time
    * 
    * @param s the (optional) metadata key against which a schema can be provided at run time
-   * @deprecated since 3.8.4 use an expression based {@link setSchema(String)} instead.
+   * @deprecated since 3.8.4 use an expression based {@link #setSchema(String)} instead.
    */
   @Deprecated
   @Removal(version = "3.11.0", message = "use an expression based schema value instead.")

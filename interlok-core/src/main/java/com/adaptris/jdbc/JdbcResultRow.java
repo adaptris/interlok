@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import com.adaptris.annotation.Removal;
 
 public class JdbcResultRow {
@@ -62,7 +61,7 @@ public class JdbcResultRow {
   }
 
   /**
-   * @deprecated since 3.8.3 use {@link #setFieldValue(String, Object, int)} instead to add
+   * @deprecated since 3.8.3 use {@link #setFieldValue(String, Object, Integer)} instead to add
    *             additional Type information.
    */
   @Deprecated

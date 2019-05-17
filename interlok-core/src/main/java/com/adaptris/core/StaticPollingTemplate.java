@@ -20,7 +20,7 @@ import com.adaptris.annotation.MarshallingCDATA;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Replaces {@link PollingTrigger#setTemplate(String)}.
+ * Provides a static template for {@link PollingTrigger}.
  * 
  * @config static-polling-trigger-template
  */

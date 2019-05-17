@@ -17,14 +17,10 @@
 package com.adaptris.core.ftp;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
-
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import javax.validation.Valid;
-
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -85,7 +81,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @see CoreConstants#FTP_REPLYTO_NAME
  * @see FileNameCreator
  * @see FtpConnection
- * @see SftpConnection
  * @see FileTransferConnection
  * @see ProduceDestination
  * @author lchan
