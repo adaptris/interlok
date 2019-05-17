@@ -52,7 +52,7 @@ public class DiscardValuesTooLongFilter extends MetadataFilterImpl {
   public MetadataCollection filter(MetadataCollection original) {
     MetadataCollection result = new MetadataCollection();
     int maxLen = maxLength();
-    result.addAll(original.parallelStream().filter(e -> e.getValue().length() <= maxLen)
+    result.addAll(original.stream().filter(e -> e.getValue().length() <= maxLen)
         .collect(Collectors.toList()));
     return result;
   }

@@ -101,7 +101,7 @@ public class RegexMetadataFilter extends MetadataFilterImpl {
     }
     initialisePatterns();
     MetadataCollection toBeRemoved = new MetadataCollection();
-    toBeRemoved.addAll(metadataCollection.parallelStream().filter(e -> matches(e, patternExcludes)).collect(Collectors.toList()));
+    toBeRemoved.addAll(metadataCollection.stream().filter(e -> matches(e, patternExcludes)).collect(Collectors.toList()));
     metadataCollection.removeAll(toBeRemoved);
     return metadataCollection;
   }
@@ -119,7 +119,7 @@ public class RegexMetadataFilter extends MetadataFilterImpl {
     }
     initialisePatterns();
     MetadataCollection result = new MetadataCollection();
-    result.addAll(metadataCollection.parallelStream().filter(e -> matches(e, patternIncludes)).collect(Collectors.toList()));
+    result.addAll(metadataCollection.stream().filter(e -> matches(e, patternIncludes)).collect(Collectors.toList()));
     return result;
   }
 
