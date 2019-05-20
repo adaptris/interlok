@@ -4,6 +4,7 @@ import org.apache.tools.ant.filters.*
 ext {
   componentName='Base Interlok'
   activeMqVersion='5.15.9'
+  artemisVersion='2.7.0'
   bouncyCastleVersion='1.61'
   verboseTests= project.hasProperty('verboseTests') ? project.getProperty('verboseTests') : "false"
   classesToTest = project.hasProperty("junit.test.classes") ? project.getProperty("junit.test.classes") : "**/*Test*"
@@ -54,6 +55,7 @@ dependencies {
   compile ("org.apache.activemq:activemq-client:$activeMqVersion") {
     exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_1.1_spec"
   }
+  compile ("org.apache.activemq:artemis-jms-client:$artemisVersion")
   compile ("org.apache.geronimo.specs:geronimo-jms_2.0_spec:1.0-alpha-2")
   compile ("javax.validation:validation-api:1.0.0.GA")
   compile ("javax.el:javax.el-api:2.2.4")
@@ -96,10 +98,11 @@ dependencies {
 
   testCompile ("log4j:log4j:1.2.17")
   testCompile ("junit:junit:4.12")
-  testCompile ("org.apache.activemq:activemq-broker:$activeMqVersion")
-  testCompile ("org.apache.activemq:activemq-jaas:$activeMqVersion")
-  testCompile ("org.apache.activemq:activemq-kahadb-store:$activeMqVersion")
-  testCompile ("org.apache.activemq.protobuf:activemq-protobuf:1.1")
+  testCompile ("org.apache.activemq:artemis-jms-server:$artemisVersion")
+  //testCompile ("org.apache.activemq:activemq-broker:$activeMqVersion")
+  //testCompile ("org.apache.activemq:activemq-jaas:$activeMqVersion")
+  //testCompile ("org.apache.activemq:activemq-kahadb-store:$activeMqVersion")
+  //testCompile ("org.apache.activemq.protobuf:activemq-protobuf:1.1")
   testCompile ("org.jruby:jruby-complete:9.2.7.0")
   testCompile ("org.mockftpserver:MockFtpServer:2.7.1")
   testCompile ("org.mockito:mockito-all:1.10.19")
