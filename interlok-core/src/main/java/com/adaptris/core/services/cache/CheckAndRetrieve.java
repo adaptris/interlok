@@ -31,7 +31,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("check-cache-and-retrieve")
 @AdapterComponent
-@ComponentProfile(summary = "Check the cache for a key and retrieve it if it exists", tag = "service,cache", branchSelector = true, since = "3.6.4")
+@ComponentProfile(summary = "Check the cache for a key and retrieve it if it exists", tag = "service,cache", branchSelector = true,
+    since = "3.6.4", recommended = {CacheConnection.class})
 @DisplayOrder(order = { "keysFoundServiceId", "keysNotFoundServiceId" })
 public class CheckAndRetrieve extends CheckCacheService {
 

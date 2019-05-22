@@ -36,7 +36,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("check-cache")
 @AdapterComponent
-@ComponentProfile(summary = "Check the cache for a key", tag = "service,cache", branchSelector = true, since = "3.5.1")
+@ComponentProfile(summary = "Check the cache for a key", tag = "service,cache", branchSelector = true, since = "3.5.1",
+    recommended = {CacheConnection.class})
 @DisplayOrder(order = { "keysFoundServiceId", "keysNotFoundServiceId" })
 public class CheckCacheService extends CacheServiceBase {
 

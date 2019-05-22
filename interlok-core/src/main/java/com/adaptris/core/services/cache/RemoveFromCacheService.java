@@ -34,7 +34,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("remove-from-cache")
 @AdapterComponent
-@ComponentProfile(summary = "Retrieve values from a cache, and remove those values from the cache", tag = "service,cache")
+@ComponentProfile(summary = "Retrieve values from a cache, and remove those values from the cache", tag = "service,cache", recommended = {CacheConnection.class}))
 public class RemoveFromCacheService extends RetrieveFromCacheService {
 
   /**
