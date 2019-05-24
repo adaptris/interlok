@@ -32,28 +32,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(summary = "Default NO-OP consumer implementation", tag = "consumer,base", recommended = {NullConnection.class})
 public class NullMessageConsumer extends AdaptrisMessageConsumerImp {
 	
-	public NullMessageConsumer() {
-		setMessageFactory(null);
-	}
-
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
-  public void close() {
-    // do nothing
-  }
-
-  /** @see com.adaptris.core.AdaptrisComponent#init() */
-  public void init() throws CoreException {
-    // do nothing
-  }
-
-  /** @see com.adaptris.core.AdaptrisComponent#start() */
-  public void start() throws CoreException {
-    // do nothing
-  }
-
-  /** @see com.adaptris.core.AdaptrisComponent#stop() */
-  public void stop() {
-    // do nothing
+  public NullMessageConsumer() {
+    setMessageFactory(null);
   }
 
   @Override

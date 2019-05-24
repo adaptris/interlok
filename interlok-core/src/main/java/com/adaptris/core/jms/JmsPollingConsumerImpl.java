@@ -152,8 +152,7 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
     messageConsumer = createConsumer();
     messageTranslator.registerSession(session);
     messageTranslator.registerMessageFactory(defaultIfNull(getMessageFactory()));
-    LifecycleHelper.init(messageTranslator);
-    LifecycleHelper.start(messageTranslator);
+    LifecycleHelper.initAndStart(messageTranslator);
     if (additionalDebug()) {
       log.trace("connected to broker in {}ms", System.currentTimeMillis() - start);
     }
@@ -216,8 +215,7 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
     }
     long start = System.currentTimeMillis();
     messageTranslator.registerSession(null);
-    LifecycleHelper.stop(messageTranslator);
-    LifecycleHelper.close(messageTranslator);
+    LifecycleHelper.stopAndClose(messageTranslator);
     JmsUtils.closeQuietly(messageConsumer);
     JmsUtils.closeQuietly(session);
     JmsUtils.closeQuietly(connection, true);
@@ -469,4 +467,14 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
     return managedTransaction;
   }
 
+  /**
+   * Provides the metadata key {@value JmsConstants#JMS_DESTINATION} which will only be populated if
+   * {@link MessageTypeTranslatorImp#getMoveJmsHeaders()} is true.
+   * 
+   * @since 3.9.0
+   */
+  @Override
+  public String consumeLocationKey() {
+    return JmsConstants.JMS_DESTINATION;
+  }
 }

@@ -19,7 +19,6 @@ package com.adaptris.core.jms;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.TextMessage;
-
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -44,10 +43,6 @@ public final class TextMessageTranslator extends MessageTypeTranslatorImp {
     super();
   }
 
-  public TextMessageTranslator(boolean moveJmsHeaders) {
-    super(moveJmsHeaders);
-  }
-
   /**
    * <p>
    * Translates an <code>AdaptrisMessage</code> into a <code>TextMessage</code>
@@ -58,6 +53,7 @@ public final class TextMessageTranslator extends MessageTypeTranslatorImp {
    * @return a new <code>TextMessage</code>
    * @throws JMSException
    */
+  @Override
   public Message translate(AdaptrisMessage msg) throws JMSException {
     return helper.moveMetadata(msg, session.createTextMessage(msg.getContent()));
   }
@@ -72,6 +68,7 @@ public final class TextMessageTranslator extends MessageTypeTranslatorImp {
    * @return an <code>AdaptrisMessage</code>
    * @throws JMSException
    */
+  @Override
   public AdaptrisMessage translate(Message msg) throws JMSException {
     AdaptrisMessage result = currentMessageFactory().newMessage(((TextMessage) msg).getText());
     return helper.moveMetadata(msg, result);

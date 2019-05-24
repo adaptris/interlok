@@ -19,7 +19,6 @@ package com.adaptris.core;
 import static com.adaptris.core.PoolingWorkflow.DEFAULT_MAX_IDLE;
 import static com.adaptris.core.PoolingWorkflow.DEFAULT_MAX_POOLSIZE;
 import static com.adaptris.core.PoolingWorkflow.DEFAULT_MIN_IDLE;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,7 +29,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-
 import com.adaptris.core.services.WaitService;
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
@@ -41,6 +39,7 @@ import com.adaptris.core.stubs.MockSkipProducerService;
 import com.adaptris.core.stubs.MockWorkflowInterceptor;
 import com.adaptris.core.stubs.StaticMockMessageProducer;
 import com.adaptris.core.stubs.XmlRoundTripService;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 
@@ -510,6 +509,47 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+
+
+  public void testOnMessage_WithConsumeLocation() throws Exception {
+    MockChannel channel = createChannel();
+    PoolingWorkflow wf = (PoolingWorkflow) channel.getWorkflowList().get(0);
+    MockMessageProducer prod = (MockMessageProducer) wf.getProducer();
+    wf.setConsumer(new ConsumerWithLocation(getName()));
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    msg.addMessageHeader(getName(), "hello world");
+    try {
+      start(channel);
+      MockMessageConsumer m = (MockMessageConsumer) wf.getConsumer();
+      m.submitMessage(msg);
+      waitForMessages(prod, 1);
+      AdaptrisMessage consumed = prod.getMessages().get(0);
+      assertTrue(consumed.headersContainsKey(CoreConstants.MESSAGE_CONSUME_LOCATION));
+      assertEquals("hello world",
+          consumed.getMetadataValue(CoreConstants.MESSAGE_CONSUME_LOCATION));
+    } finally {
+      stop(channel);
+    }
+  }
+
+  public void testOnMessage_WithConsumeLocation_NoMatch() throws Exception {
+    MockChannel channel = createChannel();
+    PoolingWorkflow wf = (PoolingWorkflow) channel.getWorkflowList().get(0);
+    MockMessageProducer prod = (MockMessageProducer) wf.getProducer();
+    wf.setConsumer(new ConsumerWithLocation(getName()));
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    try {
+      start(channel);
+      MockMessageConsumer m = (MockMessageConsumer) wf.getConsumer();
+      m.submitMessage(msg);
+      waitForMessages(prod, 1);
+      AdaptrisMessage consumed = prod.getMessages().get(0);
+      assertFalse(consumed.headersContainsKey(CoreConstants.MESSAGE_CONSUME_LOCATION));
+    } finally {
+      stop(channel);
+    }
+  }
+
   private void submitMessages(PoolingWorkflow wf, int number) throws Exception {
     MockMessageConsumer m = (MockMessageConsumer) wf.getConsumer();
     for (int i = 0; i < number; i++) {
@@ -590,6 +630,19 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
       Integer m1count = Integer.valueOf(((AdaptrisMessage) arg1).getMetadataValue(COUNT));
       Integer m2count = Integer.valueOf(((AdaptrisMessage) arg2).getMetadataValue(COUNT));
       return m1count.compareTo(m2count);
+    }
+  }
+
+  private class ConsumerWithLocation extends MockMessageConsumer {
+    private String metadataKey;
+
+    public ConsumerWithLocation(String key) {
+      metadataKey = Args.notBlank(key, "metadataKey");
+    }
+
+    @Override
+    public String consumeLocationKey() {
+      return metadataKey;
     }
   }
 }

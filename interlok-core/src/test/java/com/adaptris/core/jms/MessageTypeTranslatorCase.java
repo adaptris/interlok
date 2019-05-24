@@ -26,14 +26,11 @@ import static com.adaptris.core.jms.JmsConstants.JMS_REDELIVERED;
 import static com.adaptris.core.jms.JmsConstants.JMS_REPLY_TO;
 import static com.adaptris.core.jms.JmsConstants.JMS_TIMESTAMP;
 import static com.adaptris.core.jms.JmsConstants.JMS_TYPE;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -89,10 +86,9 @@ public abstract class MessageTypeTranslatorCase extends BaseCase {
   }
 
   public void testRoundTrip() throws Exception {
-    MessageTypeTranslatorImp translator = createTranslator();
-    translator.setMoveJmsHeaders(true);
-    translator.setMetadataFilter(new NoOpMetadataFilter());
-    translator.setReportAllErrors(true);
+    MessageTypeTranslatorImp translator =
+        createTranslator().withMoveJmsHeaders(true).withMetadataFilter(new NoOpMetadataFilter())
+            .withReportAllErrors(true);
     StandaloneProducer p1 = createProducer(translator);
     StandaloneProducer p2 = roundTrip(p1);
     assertRoundtripEquality(p1, p2);
@@ -239,7 +235,7 @@ public abstract class MessageTypeTranslatorCase extends BaseCase {
 
   public void testMoveJmsHeadersAdaptrisMessageToJmsMessage() throws Exception {
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    MessageTypeTranslatorImp trans = createTranslator();
+    MessageTypeTranslatorImp trans = createTranslator().withMoveJmsHeaders(true);
     try {
       broker.start();
       Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
@@ -248,7 +244,6 @@ public abstract class MessageTypeTranslatorCase extends BaseCase {
       addMetadata(msg);
       addRedundantJmsHeaders(msg);
 
-      trans.setMoveJmsHeaders(true);
       start(trans, session);
 
       Message jmsMsg = trans.translate(msg);
@@ -291,8 +286,8 @@ public abstract class MessageTypeTranslatorCase extends BaseCase {
 
   public void testMoveMetadata_AdaptrisMessageToJmsMessage_RemoveAll() throws Exception {
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    MessageTypeTranslatorImp trans = createTranslator();
-    trans.setMetadataFilter(new RemoveAllMetadataFilter());
+    MessageTypeTranslatorImp trans =
+        createTranslator().withMetadataFilter(new RemoveAllMetadataFilter());
     try {
       broker.start();
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();

@@ -15,7 +15,7 @@
 */
 package com.adaptris.core.ftp;
 
-public class FtpHelper {
+public abstract class FtpHelper {
   public static final String FORWARD_SLASH = "/";
   public static final String BACK_SLASH = "\\";
 
@@ -28,21 +28,36 @@ public class FtpHelper {
    */
   public static String getFilename(String s, boolean windowsWorkaround) {
     String result = s;
-    int slashPos = -1;
-    if (windowsWorkaround) {
-      slashPos = s.lastIndexOf(BACK_SLASH);
-    }
-    else {
-      slashPos = s.lastIndexOf(FORWARD_SLASH);
-    }
+    int slashPos = lastSlash(s, windowsWorkaround);
     if (slashPos >= 0 && s.length() > slashPos) {
       result = s.substring(slashPos + 1);
     }
     return result;
   }
 
+  public static String getDirectory(String s, boolean windows) {
+    String result = s;
+    int slashPos = lastSlash(s, windows);
+    if (slashPos >= 0) {
+      result = s.substring(0, slashPos);
+    }
+    return result;
+  }
+
+  private static int lastSlash(String s, boolean windows) {
+    if (windows) {
+      return s.lastIndexOf(BACK_SLASH);
+    } else {
+      return s.lastIndexOf(FORWARD_SLASH);
+    }
+  }
+
   public static String getFilename(String fullPath) {
     return getFilename(fullPath, false);
+  }
+
+  public static String getDirectory(String fullPath) {
+    return getDirectory(fullPath, false);
   }
 
 }

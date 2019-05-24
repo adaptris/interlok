@@ -28,6 +28,7 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
@@ -65,7 +66,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Pickup messages from an FTP or SFTP server", tag = "consumer,ftp,ftps,sftp", metadata =
 {
-    "originalname", "fsFileSize"
+        CoreConstants.ORIGINAL_NAME_KEY, CoreConstants.FS_FILE_SIZE,
+        CoreConstants.FS_CONSUME_DIRECTORY, CoreConstants.MESSAGE_CONSUME_LOCATION
 }, 
     recommended = {FileTransferConnection.class})
 @DisplayOrder(order = {"poller", "workDirectory", "fileFilterImp", "procDirectory", "wipSuffix", "quietInterval"})
@@ -143,7 +145,8 @@ public class FtpConsumer extends FtpConsumerImpl {
     try (EncoderWrapper wrapper = encWrapper) {
       ftpClient.get(wrapper, wipFile);
     }
-    AdaptrisMessage adpMsg = addStandardMetadata(encWrapper.build(), filename);
+    AdaptrisMessage adpMsg =
+        addStandardMetadata(encWrapper.build(), filename, FtpHelper.getDirectory(fullPath));
     retrieveAdaptrisMessageListener().onAdaptrisMessage(adpMsg);
 
     if (procDir != null) {

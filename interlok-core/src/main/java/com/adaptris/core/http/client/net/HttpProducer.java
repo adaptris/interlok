@@ -21,13 +21,11 @@ import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
@@ -66,6 +64,7 @@ public abstract class HttpProducer<A, B> extends RequestReplyProducerImp {
   @Valid
   @NotNull
   @AutoPopulated
+  @AffectsMetadata
   private ResponseHeaderHandler<B> responseHeaderHandler;
 
   @AdvancedConfig
