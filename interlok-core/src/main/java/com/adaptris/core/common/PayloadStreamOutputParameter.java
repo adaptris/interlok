@@ -19,15 +19,17 @@ package com.adaptris.core.common;
 import static com.adaptris.util.stream.StreamUtil.copyAndClose;
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 import static org.apache.commons.lang.StringUtils.isEmpty;
+
 import java.io.IOException;
 import java.io.OutputStream;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.interlok.InterlokException;
 import com.adaptris.interlok.config.DataOutputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
-import com.adaptris.interlok.types.InterlokMessage.MessageWrapper;
+import com.adaptris.interlok.types.MessageWrapper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**

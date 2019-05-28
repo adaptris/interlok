@@ -17,18 +17,21 @@
 package com.adaptris.core.common;
 
 import static com.adaptris.util.URLHelper.connect;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
-import com.adaptris.interlok.types.InterlokMessage.MessageWrapper;
+import com.adaptris.interlok.types.MessageWrapper;
 import com.adaptris.util.URLString;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 

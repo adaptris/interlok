@@ -18,11 +18,12 @@ package com.adaptris.core.common;
 
 import java.io.IOException;
 import java.io.InputStream;
+
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.interlok.InterlokException;
 import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
-import com.adaptris.interlok.types.InterlokMessage.MessageWrapper;
+import com.adaptris.interlok.types.MessageWrapper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**

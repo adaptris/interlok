@@ -18,21 +18,24 @@ package com.adaptris.core.common;
 
 import static com.adaptris.core.common.MetadataDataOutputParameter.DEFAULT_METADATA_KEY;
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
+
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringWriter;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.commons.io.output.WriterOutputStream;
+
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.interlok.InterlokException;
 import com.adaptris.interlok.config.DataOutputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
-import com.adaptris.interlok.types.InterlokMessage.MessageWrapper;
+import com.adaptris.interlok.types.MessageWrapper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**

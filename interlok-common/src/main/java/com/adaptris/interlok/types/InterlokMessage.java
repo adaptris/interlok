@@ -208,8 +208,4 @@ public interface InterlokMessage {
     return wrapper.wrap(this);
   }
 
-  @FunctionalInterface
-  public interface MessageWrapper<T> {
-    T wrap(InterlokMessage m) throws Exception;
-  }
 }

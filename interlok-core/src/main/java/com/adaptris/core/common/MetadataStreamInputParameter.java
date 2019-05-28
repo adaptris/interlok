@@ -17,15 +17,18 @@
 package com.adaptris.core.common;
 
 import static com.adaptris.core.common.MetadataDataInputParameter.DEFAULT_METADATA_KEY;
+
 import java.io.InputStream;
 import java.io.StringReader;
+
 import org.apache.commons.io.input.ReaderInputStream;
+
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.util.Args;
 import com.adaptris.interlok.InterlokException;
 import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
-import com.adaptris.interlok.types.InterlokMessage.MessageWrapper;
+import com.adaptris.interlok.types.MessageWrapper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**

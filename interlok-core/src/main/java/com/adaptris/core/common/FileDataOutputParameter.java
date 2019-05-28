@@ -19,14 +19,16 @@ package com.adaptris.core.common;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.net.URL;
+
 import org.apache.commons.io.IOUtils;
+
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.fs.FsHelper;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.interlok.config.DataOutputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
-import com.adaptris.interlok.types.InterlokMessage.MessageWrapper;
+import com.adaptris.interlok.types.MessageWrapper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
