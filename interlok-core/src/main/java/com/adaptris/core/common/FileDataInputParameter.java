@@ -31,7 +31,6 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
-import com.adaptris.interlok.types.MessageWrapper;
 import com.adaptris.util.URLString;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -44,7 +43,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("file-data-input-parameter")
 @DisplayOrder(order = {"destination"})
 public class FileDataInputParameter extends FileParameter
-    implements DataInputParameter<String>, MessageWrapper<InputStream> {
+    implements DataInputParameter<String> {
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   public FileDataInputParameter() {
@@ -58,11 +57,6 @@ public class FileDataInputParameter extends FileParameter
     } catch (IOException ex) {
       throw ExceptionHelper.wrapCoreException(ex);
     }
-  }
-
-  @Override
-  public InputStream wrap(InterlokMessage m) throws Exception {
-    return connect(new URLString(url(m)));
   }
 
   protected String load(URLString loc, String encoding) throws IOException {

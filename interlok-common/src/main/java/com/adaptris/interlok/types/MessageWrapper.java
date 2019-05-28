@@ -1,5 +1,8 @@
 package com.adaptris.interlok.types;
 
+/**
+ * @since 3.9.0
+ */
 @FunctionalInterface
 public interface MessageWrapper<T> {
   /**

@@ -23,7 +23,6 @@ import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.interlok.InterlokException;
 import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
-import com.adaptris.interlok.types.MessageWrapper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -35,8 +34,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("stream-payload-input-parameter")
-public class PayloadStreamInputParameter
-    implements DataInputParameter<InputStream>, MessageWrapper<InputStream> {
+public class PayloadStreamInputParameter implements DataInputParameter<InputStream> {
 
   public PayloadStreamInputParameter() {
     
@@ -51,11 +49,6 @@ public class PayloadStreamInputParameter
       throw ExceptionHelper.wrapCoreException(e);
     }
     return result;
-  }
-
-  @Override
-  public InputStream wrap(InterlokMessage m) throws Exception {
-    return extract(m);
   }
 
 }

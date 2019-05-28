@@ -28,7 +28,6 @@ import com.adaptris.core.util.Args;
 import com.adaptris.interlok.InterlokException;
 import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
-import com.adaptris.interlok.types.MessageWrapper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -40,7 +39,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("metadata-stream-input-parameter")
 @DisplayOrder(order = {"metadataKey", "contentEncoding"})
 public class MetadataStreamInputParameter extends MetadataStreamParameter
-    implements DataInputParameter<InputStream>, MessageWrapper<InputStream> {
+    implements DataInputParameter<InputStream> {
 
   public MetadataStreamInputParameter() {
     this.setMetadataKey(DEFAULT_METADATA_KEY);
@@ -56,11 +55,6 @@ public class MetadataStreamInputParameter extends MetadataStreamParameter
     Args.notBlank(getMetadataKey(), "metadataKey");
     String data= m.getMessageHeaders().get(getMetadataKey());
     return new ReaderInputStream(new StringReader(data), charset(getContentEncoding()));
-  }
-
-  @Override
-  public InputStream wrap(InterlokMessage m) throws Exception {
-    return extract(m);
   }
 
 }
