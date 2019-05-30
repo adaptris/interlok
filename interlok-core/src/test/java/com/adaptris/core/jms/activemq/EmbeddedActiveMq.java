@@ -25,7 +25,6 @@ import static com.adaptris.core.jms.JmsConfig.HIGHEST_PRIORITY;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import javax.jms.DeliveryMode;
 import javax.jms.JMSException;
@@ -33,8 +32,6 @@ import javax.naming.Context;
 
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.activemq.artemis.core.server.embedded.EmbeddedActiveMQ;
-import org.apache.activemq.artemis.jms.server.embedded.EmbeddedJMS;
 import org.apache.activemq.broker.Broker;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.broker.region.Destination;
@@ -42,7 +39,6 @@ import org.apache.activemq.command.ActiveMQDestination;
 import org.apache.activemq.jndi.ActiveMQInitialContextFactory;
 import org.apache.activemq.store.memory.MemoryPersistenceAdapter;
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -57,13 +53,9 @@ import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.PlainIdGenerator;
 
 public class EmbeddedActiveMq {
-  
-  // Found in the src/test/resources/broker.xml
-  private static final String ARTEMIS_BROKER_NAME = "artemis-embedded-junit";
 
   private static final String DEF_URL_PREFIX = "tcp://localhost:";
-  private static Logger log = Logger.getLogger(EmbeddedActiveMq.class);
-  private EmbeddedActiveMQ embeddedJMS;
+  private BrokerService broker = null;
   private String brokerName;
   private File brokerDataDir;
   private Integer port;
@@ -78,7 +70,6 @@ public class EmbeddedActiveMq {
     }
   }
 
-  // but this is the time in the future
   public EmbeddedActiveMq() throws Exception {
     brokerName = createSafeUniqueId(this);
     port = nextUnusedPort(61616);
@@ -90,13 +81,27 @@ public class EmbeddedActiveMq {
 
   public void start() throws Exception {
     brokerDataDir = createTempFile(true);
-    embeddedJMS = createBroker();
-    embeddedJMS.start();
-    embeddedJMS.waitClusterForming(1l, TimeUnit.SECONDS, 60, 1);
+    broker = createBroker();
+    broker.start();
+    while (!broker.isStarted()) {
+      Thread.sleep(100);
+    }
   }
 
-  public EmbeddedActiveMQ createBroker() throws Exception {
-    return new EmbeddedActiveMQ();
+  public BrokerService createBroker() throws Exception {
+    BrokerService br = new BrokerService();
+    br.setBrokerName(brokerName);
+    br.addConnector(DEF_URL_PREFIX + port);
+    br.setUseJmx(false);
+    br.setDeleteAllMessagesOnStartup(true);
+    br.setDataDirectoryFile(brokerDataDir);
+    br.setPersistent(false);
+    br.setPersistenceAdapter(new MemoryPersistenceAdapter());
+    br.getSystemUsage().getMemoryUsage().setLimit(1024L * 1024 * 20);
+    br.getSystemUsage().getTempUsage().setLimit(1024L * 1024 * 20);
+    br.getSystemUsage().getStoreUsage().setLimit(1024L * 1024 * 20);
+    br.getSystemUsage().getJobSchedulerUsage().setLimit(1024L * 1024 * 20);
+    return br;
   }
 
   private File createTempFile(boolean isDir) throws IOException {
@@ -125,8 +130,9 @@ public class EmbeddedActiveMq {
   }
 
   public void stop() throws Exception {
-    if (embeddedJMS != null) {
-      embeddedJMS.stop();
+    if (broker != null) {
+      broker.stop();
+      broker.waitUntilStopped();
       FileUtils.deleteDirectory(brokerDataDir);
     }
   }
@@ -225,7 +231,6 @@ public class EmbeddedActiveMq {
   }
 
   public long messagesOnQueue(String queueName) throws Exception {
-    org.apache.activemq.artemis.api.core.management.ResourceNames.
     Broker b = broker.getBroker();
 
     Map<ActiveMQDestination, Destination> map = b.getDestinationMap();
