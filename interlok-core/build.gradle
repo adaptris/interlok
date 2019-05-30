@@ -55,7 +55,6 @@ dependencies {
   compile ("org.apache.activemq:activemq-client:$activeMqVersion") {
     exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_1.1_spec"
   }
-  compile ("org.apache.activemq:artemis-jms-client:$artemisVersion")
   compile ("org.apache.geronimo.specs:geronimo-jms_2.0_spec:1.0-alpha-2")
   compile ("javax.validation:validation-api:1.0.0.GA")
   compile ("javax.el:javax.el-api:2.2.4")
