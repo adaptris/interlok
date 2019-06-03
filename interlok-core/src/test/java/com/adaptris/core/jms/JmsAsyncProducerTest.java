@@ -23,6 +23,7 @@ import com.adaptris.core.NullConnection;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandardProcessingExceptionHandler;
 import com.adaptris.core.fs.FsProducer;
+import com.adaptris.core.jms.activemq.EmbeddedArtemis;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.KeyValuePair;
@@ -148,15 +149,69 @@ public class JmsAsyncProducerTest extends JmsProducerExample {
     
     verify(mockExceptionHandler, times(0)).handleProcessingException(any(AdaptrisMessage.class));
   }
+  
+  public void testEmbeddedSuccessHandler() throws Exception {
+    EmbeddedArtemis broker = new EmbeddedArtemis();
+    JmsAsyncProducer producer = new JmsAsyncProducer();
+    producer.setAsyncMessageErrorHandler(mockExceptionHandler);
+    
+    producer.setDestination(new ConfiguredProduceDestination("jms:topic:myTopicName?priority=4"));
+    AdaptrisMessage message = DefaultMessageFactory.getDefaultInstance().newMessage("Some message content");
+    StandaloneProducer standaloneProducer = new StandaloneProducer();
+    
+    try {
+      broker.start();
+  
+      standaloneProducer.setConnection(broker.getJmsConnection());
+      standaloneProducer.setProducer(producer);
+    
+      LifecycleHelper.initAndStart(standaloneProducer);
+    
+      standaloneProducer.doService(message);
+      
+    } finally {
+      LifecycleHelper.stopAndClose(standaloneProducer);
+      broker.destroy();
+    }
+    
+    verify(mockExceptionHandler, times(0)).handleProcessingException(any(AdaptrisMessage.class));
+  }
+  
+  public void testEmbeddedJmsException() throws Exception {
+    EmbeddedArtemis broker = new EmbeddedArtemis();
+    JmsAsyncProducer producer = new JmsAsyncProducer();
+    producer.setAsyncMessageErrorHandler(mockExceptionHandler);
+    
+    producer.setDestination(new ConfiguredProduceDestination("{}"));
+    AdaptrisMessage message = DefaultMessageFactory.getDefaultInstance().newMessage("Some message content");
+    StandaloneProducer standaloneProducer = new StandaloneProducer();
+    
+    try {
+      broker.start();
+  
+      standaloneProducer.setConnection(broker.getJmsConnection());
+      standaloneProducer.setProducer(producer);
+    
+      LifecycleHelper.initAndStart(standaloneProducer);
+    
+      try {
+        standaloneProducer.doService(message);
+        fail("Should fail, the destination is not allowed.");
+      } catch (CoreException ex) {
+        // expected
+      }
+      
+    } finally {
+      LifecycleHelper.stopAndClose(standaloneProducer);
+      broker.destroy();
+    }
+    
+    verify(mockExceptionHandler, times(0)).handleProcessingException(any(AdaptrisMessage.class));
+  }
 
   @Override
   protected Object retrieveObjectForSampleConfig() {
-    StandardJndiImplementation jndiImplementation = new StandardJndiImplementation();
-    jndiImplementation.setJndiName("ConnectionFactory");
-    jndiImplementation.getJndiParams().addKeyValuePair(new KeyValuePair("java.naming.factory.initial", "org.apache.activemq.artemis.jndi.ActiveMQInitialContextFactory"));
-    jndiImplementation.getJndiParams().addKeyValuePair(new KeyValuePair("java.naming.provider.url", "tcp://localhost:61616?type=CF"));
-    
-    JmsConnection c = new JmsConnection(jndiImplementation);
+    JmsConnection c = createArtemisConnection();
     ConfiguredProduceDestination dest = new ConfiguredProduceDestination("jms:topic:myTopicName?priority=4");
 
     JmsAsyncProducer asyncProducer = new JmsAsyncProducer();
@@ -177,6 +232,15 @@ public class JmsAsyncProducerTest extends JmsProducerExample {
     result.setProducer(asyncProducer);
 
     return result;
+  }
+  
+  protected JmsConnection createArtemisConnection() {
+    StandardJndiImplementation jndiImplementation = new StandardJndiImplementation();
+    jndiImplementation.setJndiName("ConnectionFactory");
+    jndiImplementation.getJndiParams().addKeyValuePair(new KeyValuePair("java.naming.factory.initial", "org.apache.activemq.artemis.jndi.ActiveMQInitialContextFactory"));
+    jndiImplementation.getJndiParams().addKeyValuePair(new KeyValuePair("java.naming.provider.url", "tcp://localhost:61616?type=CF"));
+    
+    return new JmsConnection(jndiImplementation);
   }
 
 }

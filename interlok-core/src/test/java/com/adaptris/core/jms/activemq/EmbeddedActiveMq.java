@@ -39,7 +39,6 @@ import org.apache.activemq.command.ActiveMQDestination;
 import org.apache.activemq.jndi.ActiveMQInitialContextFactory;
 import org.apache.activemq.store.memory.MemoryPersistenceAdapter;
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -56,7 +55,6 @@ import com.adaptris.util.PlainIdGenerator;
 public class EmbeddedActiveMq {
 
   private static final String DEF_URL_PREFIX = "tcp://localhost:";
-  private static Logger log = Logger.getLogger(EmbeddedActiveMq.class);
   private BrokerService broker = null;
   private String brokerName;
   private File brokerDataDir;
