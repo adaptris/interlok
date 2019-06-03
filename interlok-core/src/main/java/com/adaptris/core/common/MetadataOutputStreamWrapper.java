@@ -48,11 +48,6 @@ public class MetadataOutputStreamWrapper extends MetadataStreamOutputParameter
     this.setMetadataKey(DEFAULT_METADATA_KEY);
   }
   
-  public MetadataOutputStreamWrapper(String key) {
-    this();
-    setMetadataKey(key);
-  }
-
   @Override
   public OutputStream wrap(InterlokMessage m) throws Exception {
     return new MetadataOutputStream(m, new StringWriter());
