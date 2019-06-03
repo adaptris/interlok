@@ -16,13 +16,16 @@ package com.adaptris.core.common;
 import static com.adaptris.core.common.MetadataDataInputParameter.DEFAULT_METADATA_KEY;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.List;
+
 import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 
@@ -76,7 +79,7 @@ public class MetadataStreamDataInputParameterTest {
 
   @Test
   public void testWrap() throws Exception {
-    MetadataStreamInputParameter p = new MetadataStreamInputParameter(METADATA_KEY);
+    MetadataInputStreamWrapper p = new MetadataInputStreamWrapper(METADATA_KEY);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata(METADATA_KEY, TEXT);
     try (InputStream in = msg.wrap(p)) {
@@ -88,8 +91,7 @@ public class MetadataStreamDataInputParameterTest {
 
   @Test
   public void testWrap_WithContentEncoding() throws Exception {
-    MetadataStreamInputParameter p =
-        new MetadataStreamInputParameter().withMetadataKey(METADATA_KEY).withContentEncoding(UTF_8);
+    MetadataInputStreamWrapper p = new MetadataInputStreamWrapper().withMetadataKey(METADATA_KEY).withContentEncoding(UTF_8);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata(METADATA_KEY, TEXT);
     try (InputStream in = msg.wrap(p)) {

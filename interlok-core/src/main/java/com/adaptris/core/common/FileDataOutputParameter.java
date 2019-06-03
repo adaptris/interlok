@@ -19,14 +19,15 @@ package com.adaptris.core.common;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.net.URL;
+
 import org.apache.commons.io.IOUtils;
+
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.fs.FsHelper;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.interlok.config.DataOutputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
-import com.adaptris.interlok.types.InterlokMessage.MessageWrapper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -37,7 +38,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("file-data-output-parameter")
 @DisplayOrder(order = {"destination"})
 public class FileDataOutputParameter extends FileParameter
-    implements DataOutputParameter<String>, MessageWrapper<OutputStream> {
+    implements DataOutputParameter<String> {
 
   public FileDataOutputParameter() {
 
@@ -53,12 +54,6 @@ public class FileDataOutputParameter extends FileParameter
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
-  }
-
-  @Override
-  public OutputStream wrap(InterlokMessage m) throws Exception {
-    return new FileOutputStream(
-        FsHelper.createFileReference(FsHelper.createUrlFromString(url(m), true)));
   }
 
 }

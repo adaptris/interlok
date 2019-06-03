@@ -17,18 +17,20 @@
 package com.adaptris.core.common;
 
 import static com.adaptris.util.URLHelper.connect;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
-import com.adaptris.interlok.types.InterlokMessage.MessageWrapper;
 import com.adaptris.util.URLString;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -41,7 +43,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("file-data-input-parameter")
 @DisplayOrder(order = {"destination"})
 public class FileDataInputParameter extends FileParameter
-    implements DataInputParameter<String>, MessageWrapper<InputStream> {
+    implements DataInputParameter<String> {
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   public FileDataInputParameter() {
@@ -55,11 +57,6 @@ public class FileDataInputParameter extends FileParameter
     } catch (IOException ex) {
       throw ExceptionHelper.wrapCoreException(ex);
     }
-  }
-
-  @Override
-  public InputStream wrap(InterlokMessage m) throws Exception {
-    return connect(new URLString(url(m)));
   }
 
   protected String load(URLString loc, String encoding) throws IOException {

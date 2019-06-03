@@ -2,19 +2,22 @@ package com.adaptris.core.security;
 
 import java.security.SecureRandom;
 import java.util.Arrays;
+
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+
 import org.junit.Before;
 import org.junit.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceCase;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.common.ConstantDataInputParameter;
-import com.adaptris.core.common.PayloadStreamInputParameter;
-import com.adaptris.core.common.PayloadStreamOutputParameter;
+import com.adaptris.core.common.PayloadInputStreamWrapper;
+import com.adaptris.core.common.PayloadOutputStreamWrapper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.text.Conversion;
 
@@ -96,8 +99,8 @@ public class SymmetricKeyCryptographyServiceTest extends SecurityServiceExample 
     service.setOperationMode(SymmetricKeyCryptographyService.OpMode.ENCRYPT);
     service.setKey(new ConstantDataInputParameter(Conversion.byteArrayToBase64String(key)));
     service.setInitialVector(new ConstantDataInputParameter(Conversion.byteArrayToBase64String(iv)));
-    service.setSource(new PayloadStreamInputParameter());
-    service.setTarget(new PayloadStreamOutputParameter());
+    service.setSource(new PayloadInputStreamWrapper());
+    service.setTarget(new PayloadOutputStreamWrapper());
     AdaptrisMessage message = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD);
     ServiceCase.execute(service, message);
     assertTrue(Arrays.equals(encryptedPayload, message.getPayload()));
@@ -105,15 +108,14 @@ public class SymmetricKeyCryptographyServiceTest extends SecurityServiceExample 
 
 
   @Override
-  protected Object retrieveObjectForSampleConfig() {
+  protected SymmetricKeyCryptographyService retrieveObjectForSampleConfig() {
     return new SymmetricKeyCryptographyService()
         .withAlgorithm(ALGORITHM)
         .withCipherTransformation(CIPHER)
         .withKey(new ConstantDataInputParameter(Conversion.byteArrayToBase64String(generateRandomEncodedByteArray(32))))
         .withInitialVector(new ConstantDataInputParameter(
             Conversion.byteArrayToBase64String(generateRandomEncodedByteArray(16))))
-        .withSource(new PayloadStreamInputParameter())
-        .withTarget(new PayloadStreamOutputParameter());
+        .withSource(new PayloadInputStreamWrapper()).withTarget(new PayloadOutputStreamWrapper());
   }
 
   private byte[] generateRandomEncodedByteArray(int size) {

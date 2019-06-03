@@ -20,14 +20,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
+
 import java.io.ByteArrayInputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+
 import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -111,9 +114,10 @@ public class MetadataStreamDataOutputParameterTest {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testWrap() throws Exception {
-    MetadataStreamOutputParameter p =
-        new MetadataStreamOutputParameter().withMetadataKey("myMetadataKey");
+    MetadataOutputStreamWrapper p =
+        new MetadataOutputStreamWrapper().withMetadataKey("myMetadataKey");
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     try (OutputStream out = msg.wrap(p)) {
       IOUtils.write(TEXT, out);
@@ -123,8 +127,7 @@ public class MetadataStreamDataOutputParameterTest {
 
   @Test
   public void testWrap_WithCharset() throws Exception {
-    MetadataStreamOutputParameter p =
-        new MetadataStreamOutputParameter().withMetadataKey("myMetadataKey")
+    MetadataOutputStreamWrapper p = new MetadataOutputStreamWrapper().withMetadataKey("myMetadataKey")
             .withContentEncoding(UTF_8);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     try (OutputStream out = msg.wrap(p)) {

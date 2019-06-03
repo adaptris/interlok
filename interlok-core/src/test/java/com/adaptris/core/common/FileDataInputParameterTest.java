@@ -20,15 +20,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.InputStream;
 import java.util.List;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
 import org.mockito.Mockito;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
@@ -97,21 +100,6 @@ public class FileDataInputParameterTest {
     String result = p.extract(m);
   }
 
-  @Test
-  public void testWrap() throws Exception {
-    FileDataInputParameter p = new FileDataInputParameter();
-    File f = TempFileUtils.createTrackedFile(testName.getMethodName(), "", p);
-    p.withDestination(new ConfiguredDestination("file:///" + f.getCanonicalPath()));
-    FileUtils.write(f, TEXT, false);
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    try (InputStream in = p.wrap(msg)) {
-      assertNotNull(in);
-      List<String> content = IOUtils.readLines(in);
-      assertEquals(1, content.size());
-      assertEquals(TEXT, content.get(0));
-    }
-  }
-
 
   @Test
   public void testExtract() throws Exception {
@@ -159,6 +147,21 @@ public class FileDataInputParameterTest {
     } finally {
       LifecycleHelper.stopAndClose(channel);
       helper.stopServer();
+    }
+  }
+
+  @Test
+  public void testWrap() throws Exception {
+    FileInputMessageWrapper p = new FileInputMessageWrapper();
+    File f = TempFileUtils.createTrackedFile(testName.getMethodName(), "", p);
+    p.withDestination(new ConfiguredDestination("file:///" + f.getCanonicalPath()));
+    FileUtils.write(f, TEXT, false);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    try (InputStream in = p.wrap(msg)) {
+      assertNotNull(in);
+      List<String> content = IOUtils.readLines(in);
+      assertEquals(1, content.size());
+      assertEquals(TEXT, content.get(0));
     }
   }
 }
