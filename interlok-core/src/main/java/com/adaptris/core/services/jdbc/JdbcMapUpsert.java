@@ -61,18 +61,20 @@ public abstract class JdbcMapUpsert extends JdbcMapInsert {
     this.idField = elem;
   }
 
-  public JdbcMapUpsert withId(String elem) {
+  public <T extends JdbcMapUpsert> T withId(String elem) {
     setIdField(elem);
-    return this;
+    return (T) this;
   }
 
   protected String idField() {
     return getIdField() != null ? getIdField() : DEFAULT_ID_FIELD;
   }
 
-  protected void handleUpsert(String tablename, Connection conn, Map<String, String> object) throws ServiceException {
+  protected int handleUpsert(String tablename, Connection conn, Map<String, String> object) throws ServiceException {
     PreparedStatement selectStmt = null, insertStmt = null, updateStmt = null;
     ResultSet rs = null;
+    int rowsAffected = 0;
+
     try {
       InsertWrapper inserter = new InsertWrapper(tablename, object);
       SelectWrapper selector = new SelectWrapper(tablename, object);
@@ -84,11 +86,11 @@ public abstract class JdbcMapUpsert extends JdbcMapInsert {
       rs = selectStmt.executeQuery();
       if (rs.next()) {
         updateStmt = updater.addParams(prepareStatement(conn, updater.statement()), object);
-        updateStmt.executeUpdate();
+        rowsAffected = updateStmt.executeUpdate();
       }
       else {
         insertStmt = inserter.addParams(prepareStatement(conn, inserter.statement()), object);
-        insertStmt.executeUpdate();
+        rowsAffected = insertStmt.executeUpdate();
       }
     }
     catch (SQLException e) {
@@ -100,6 +102,7 @@ public abstract class JdbcMapUpsert extends JdbcMapInsert {
       JdbcUtil.closeQuietly(insertStmt);
       JdbcUtil.closeQuietly(updateStmt);
     }
+    return rowsAffected;
   }
 
   public class UpdateWrapper implements StatementWrapper {
