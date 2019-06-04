@@ -15,83 +15,74 @@
  *******************************************************************************/
 package com.adaptris.core.http.jetty;
 
-import static org.junit.Assert.assertEquals;
+import static com.adaptris.core.http.jetty.JettyRouteConditionTest.RECORD_ID;
+import static com.adaptris.core.http.jetty.JettyRouteConditionTest.REGEX_WITH_GROUP;
+import static com.adaptris.core.http.jetty.JettyRouteConditionTest.URI;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+
 import org.junit.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.http.jetty.JettyRouteSpec.RouteMatch;
+import com.adaptris.core.http.jetty.JettyRouteCondition.JettyRoute;
+import com.adaptris.core.util.LifecycleHelper;
 
+@SuppressWarnings("deprecation")
 public class JettyRouteSpecTest {
-
   private static final String NEXT_SERVICE_ID = "nextServiceId";
-  private static final String RECORD_ID_VALUE = "123";
-  private static final String RECORD_ID = "recordID";
-  private static final String URI = "/record/123";
-  private static final String REGEX_WITH_GROUP = "^/record/(.*)$";
-  private static final String ALT_REGEX_WITH_GROUP = "^/record/123$";
 
   @Test
   public void testBuild_Match_ChangedPattern() throws Exception {
     JettyRouteSpec spec =
-        new JettyRouteSpec(ALT_REGEX_WITH_GROUP, "POST", Arrays.asList(RECORD_ID), NEXT_SERVICE_ID);
-    assertNotNull(spec.build("GET", URI));
-    spec.setUrlPattern(REGEX_WITH_GROUP);
-    RouteMatch match = spec.build("POST", URI);
-    assertTrue(match.matches());
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    match.apply(msg);
-    assertTrue(msg.headersContainsKey(RECORD_ID));
-    assertEquals(RECORD_ID_VALUE, msg.getMetadataValue(RECORD_ID));
-    assertEquals(NEXT_SERVICE_ID, msg.getNextServiceId());
+        LifecycleHelper.initAndStart(new JettyRouteSpec(REGEX_WITH_GROUP, "POST", Arrays.asList(RECORD_ID), NEXT_SERVICE_ID));
+    assertNotNull(spec.build("POST", URI));
+    // Changing the URL pattern has no effect; since lifecycle.
+    spec.setUrlPattern("/hello/world");
+    JettyRoute match = spec.build("POST", "/hello/world");
+    assertFalse(match.matches());
   }
 
   @Test
   public void testBuild_Match_Method_URI() throws Exception {
     JettyRouteSpec spec =
-        new JettyRouteSpec(REGEX_WITH_GROUP, "POST", Arrays.asList(RECORD_ID), NEXT_SERVICE_ID);
+        LifecycleHelper.initAndStart(new JettyRouteSpec(REGEX_WITH_GROUP, "POST", Arrays.asList(RECORD_ID), NEXT_SERVICE_ID));
     assertNotNull(spec.build("GET", URI));
-    RouteMatch match = spec.build("POST", URI);
+    JettyRoute match = spec.build("POST", URI);
     assertTrue(match.matches());
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    match.apply(msg);
-    assertTrue(msg.headersContainsKey(RECORD_ID));
-    assertEquals(RECORD_ID_VALUE, msg.getMetadataValue(RECORD_ID));
-    assertEquals(NEXT_SERVICE_ID, msg.getNextServiceId());
+    assertTrue(match.metadata().contains(new MetadataElement(RECORD_ID, "")));
   }
 
   @Test
   public void testBuild_Match_URI() throws Exception {
     JettyRouteSpec spec =
-        new JettyRouteSpec(REGEX_WITH_GROUP, "", Arrays.asList(RECORD_ID), NEXT_SERVICE_ID);
-    RouteMatch match = spec.build("POST", URI);
+        LifecycleHelper.initAndStart(new JettyRouteSpec(REGEX_WITH_GROUP, "", Arrays.asList(RECORD_ID), NEXT_SERVICE_ID));
+    JettyRoute match = spec.build("POST", URI);
     assertTrue(match.matches());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    match.apply(msg);
-    assertTrue(msg.headersContainsKey(RECORD_ID));
-    assertEquals(RECORD_ID_VALUE, msg.getMetadataValue(RECORD_ID));
-    assertEquals(NEXT_SERVICE_ID, msg.getNextServiceId());
+    assertTrue(match.metadata().contains(new MetadataElement(RECORD_ID, "")));
   }
 
 
   @Test
   public void testBuild_NoMatch_Method_URI() throws Exception {
     JettyRouteSpec spec =
-        new JettyRouteSpec(REGEX_WITH_GROUP, "POST", Arrays.asList(RECORD_ID), NEXT_SERVICE_ID);
-    RouteMatch match = spec.build("GET", URI);
+        LifecycleHelper.initAndStart(new JettyRouteSpec(REGEX_WITH_GROUP, "POST", Arrays.asList(RECORD_ID), NEXT_SERVICE_ID));
+    JettyRoute match = spec.build("GET", URI);
     assertFalse(match.matches());
   }
 
   @Test
   public void testBuild_NoMatch_URI() throws Exception {
     JettyRouteSpec spec =
-        new JettyRouteSpec(REGEX_WITH_GROUP, "", Arrays.asList(RECORD_ID), NEXT_SERVICE_ID);
-    RouteMatch match = spec.build("GET", "/does/not/match");
+        LifecycleHelper.initAndStart(new JettyRouteSpec(REGEX_WITH_GROUP, "", Arrays.asList(RECORD_ID), NEXT_SERVICE_ID));
+    JettyRoute match = spec.build("GET", "/does/not/match");
     assertFalse(match.matches());
   }
 
@@ -99,7 +90,26 @@ public class JettyRouteSpecTest {
   @Test(expected = ServiceException.class)
   public void testBuild_MetadataMismatch() throws Exception {
     JettyRouteSpec spec =
-        new JettyRouteSpec(REGEX_WITH_GROUP, "POST", new ArrayList(), NEXT_SERVICE_ID);
-    RouteMatch match = spec.build("POST", URI);
+        LifecycleHelper.initAndStart(new JettyRouteSpec(REGEX_WITH_GROUP, "POST", new ArrayList(), NEXT_SERVICE_ID));
+    JettyRoute match = spec.build("POST", URI);
+  }
+
+  @Test
+  public void testMatch_WithCondition() throws Exception {
+    JettyRouteSpec spec =
+        LifecycleHelper.initAndStart(new JettyRouteSpec().withCondition(new JettyRouteCondition().withMetadataKeys(RECORD_ID)
+        .withMethod("POST").withUrlPattern(REGEX_WITH_GROUP)
+        ).withServiceId(NEXT_SERVICE_ID));
+    assertNotNull(spec.build("GET", URI));
+    JettyRoute match = spec.build("POST", URI);
+    assertTrue(match.matches());
+    assertTrue(match.metadata().contains(new MetadataElement(RECORD_ID, "")));
+  }
+
+  @Test
+  public void testtToString() throws Exception {
+    assertNotNull(new JettyRouteSpec()
+        .withCondition(new JettyRouteCondition().withMetadataKeys(RECORD_ID).withMethod("POST").withUrlPattern(REGEX_WITH_GROUP))
+        .withServiceId(NEXT_SERVICE_ID).toString());
   }
 }

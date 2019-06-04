@@ -17,6 +17,7 @@
 package com.adaptris.core.services.conditional.operator;
 
 import org.apache.commons.lang3.StringUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
@@ -29,7 +30,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * This {@link Operator} simply tests a single value is null.
  * </p>
  * <p>
- * The value used in the not-null test is the {@link Condition} that this {@link Operator} is
+ * The value used in the null test is the {@link Condition} that this {@link Operator} is
  * configured for; which could be the message payload or a metadata item for example. <br/>
  * </p>
  * 

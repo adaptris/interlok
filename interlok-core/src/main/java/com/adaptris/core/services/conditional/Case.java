@@ -81,6 +81,8 @@ public class Case implements ComponentLifecycle, ComponentLifecycleExtension {
     LifecycleHelper.close(getCondition(), getService());
   }
 
+  // Same method sig as Condition but we don't want to implement that since that would just cause
+  // confusion in config.
   public boolean evaluate(AdaptrisMessage msg) throws CoreException {
     return getCondition().evaluate(msg);
   }

@@ -31,10 +31,12 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.BranchingServiceCollection;
 import com.adaptris.core.BranchingServiceImp;
+import com.adaptris.core.ComponentLifecycle;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.http.jetty.JettyRouteSpec.RouteMatch;
+import com.adaptris.core.http.jetty.JettyRouteCondition.JettyRoute;
+import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -82,10 +84,11 @@ public class JettyRoutingService extends BranchingServiceImp {
     String uri = msg.getMetadataValue(JETTY_URI);
     boolean matched = false;
     for (JettyRouteSpec route : routes) {
-      RouteMatch m = route.build(method, uri);
+      JettyRoute m = route.build(method, uri);
       if (m.matches()) {
-        log.trace("[{}][{}], matched by [{}][{}]", method, uri, route.getMethod(), route.getUrlPattern());
-        m.apply(msg);
+        log.trace("[{}][{}], matched by {}", method, uri, route);
+        msg.setMetadata(m.metadata());
+        msg.setNextServiceId(route.getServiceId());
         matched = true;
         break;
       }
@@ -98,14 +101,29 @@ public class JettyRoutingService extends BranchingServiceImp {
 
   @Override
   public void prepare() throws CoreException {
+    LifecycleHelper.prepare(getRoutes().toArray(new ComponentLifecycle[0]));
   }
 
   @Override
   protected void initService() throws CoreException {
+    LifecycleHelper.init(getRoutes().toArray(new ComponentLifecycle[0]));
+  }
+
+  @Override
+  public void start() throws CoreException {
+    LifecycleHelper.start(getRoutes().toArray(new ComponentLifecycle[0]));
+    super.start();
+  }
+
+  @Override
+  public void stop() {
+    super.stop();
+    LifecycleHelper.stop(getRoutes().toArray(new ComponentLifecycle[0]));
   }
 
   @Override
   protected void closeService() {
+    LifecycleHelper.close(getRoutes().toArray(new ComponentLifecycle[0]));
   }
 
   public List<JettyRouteSpec> getRoutes() {
