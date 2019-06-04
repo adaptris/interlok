@@ -17,6 +17,7 @@
 package com.adaptris.core.services.conditional.conditions;
 
 import java.util.ArrayList;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
@@ -36,7 +37,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("or")
 @AdapterComponent
-@ComponentProfile(summary = "Allows you to test multiple conditions, where only one has to return true.", tag = "condition,service")
+@ComponentProfile(summary = "Allows you to test multiple conditions, where only one has to return true.", tag = "condition")
 public class ConditionOr extends ConditionListImpl {
 
   public ConditionOr() {
