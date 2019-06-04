@@ -24,6 +24,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * Condition that is never true.
  * 
+ * <p>
+ * This is included for completeness; it will never fire as a condition, so will be useless at runtime. You could use it to
+ * temporarily exclude switch cases from executing.
+ * </p>
+ * 
  * @config never
  */
 @XStreamAlias("never")

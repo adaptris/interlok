@@ -17,7 +17,6 @@
 package com.adaptris.core.http.jetty;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.adaptris.core.AdaptrisMessage;
@@ -64,7 +63,9 @@ public class JettyRoutingServiceTest extends BranchingServiceExample {
   public void testMatchedRoute_NoMethod() throws Exception {
     JettyRoutingService service = new JettyRoutingService("NotHandled", createRoutes());
     try {
-      JettyRouteSpec noMethodMatch = new JettyRouteSpec("^/records$", null, new ArrayList<String>(), "listAll");
+      
+      JettyRouteSpec noMethodMatch =
+          new JettyRouteSpec().withCondition(new JettyRouteCondition().withUrlPattern("^/record.*$")).withServiceId("listAll");
       service.getRoutes().add(noMethodMatch);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
       msg.addMetadata(JettyConstants.JETTY_URI, "/records");
@@ -76,7 +77,6 @@ public class JettyRoutingServiceTest extends BranchingServiceExample {
       msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
       msg.addMetadata(JettyConstants.JETTY_URI, "/records");
       msg.addMetadata(CoreConstants.HTTP_METHOD, "GET");
-      noMethodMatch.setUrlPattern("^/record.*$");
 
       service.doService(msg);
       assertEquals("listAll", msg.getNextServiceId());
@@ -119,10 +119,19 @@ public class JettyRoutingServiceTest extends BranchingServiceExample {
 
   private List<JettyRouteSpec> createRoutes() {
     List<JettyRouteSpec> result = new ArrayList<>();
-    result.add(new JettyRouteSpec("^/record/(.*)$", "POST", Arrays.asList("recId"), "handleInsert"));
-    result.add(new JettyRouteSpec("^/record/(.*)$", "DELETE", Arrays.asList("recId"), "handleDelete"));
-    result.add(new JettyRouteSpec("^/record/(.*)/(.*)$", "GET", Arrays.asList("recId", "outputFormat"), "handleGet"));
-    result.add(new JettyRouteSpec("^/record/(.*)$", "PATCH", Arrays.asList("recId"), "handleUpdate"));
+    result.add(new JettyRouteSpec()
+        .withCondition(new JettyRouteCondition().withUrlPattern("^/record/(.*)$").withMethod("POST").withMetadataKeys("recId"))
+        .withServiceId("handleInsert"));
+    result.add(new JettyRouteSpec()
+        .withCondition(new JettyRouteCondition().withUrlPattern("^/record/(.*)$").withMethod("DELETE").withMetadataKeys("recId"))
+        .withServiceId("handleDelete"));
+    result.add(new JettyRouteSpec()
+        .withCondition(new JettyRouteCondition().withUrlPattern("^/record/(.*)/(.*)$").withMethod("GET").withMetadataKeys("recId",
+            "outputFormat"))
+        .withServiceId("handleGet"));
+    result.add(new JettyRouteSpec()
+        .withCondition(new JettyRouteCondition().withUrlPattern("^/record/(.*)$").withMethod("PATCH").withMetadataKeys("recId"))
+        .withServiceId("handleUpdate"));
     return result;
   }
 }

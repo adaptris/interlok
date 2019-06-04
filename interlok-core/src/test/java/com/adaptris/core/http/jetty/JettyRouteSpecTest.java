@@ -29,8 +29,8 @@ import org.junit.Test;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
-import com.adaptris.core.ServiceException;
 import com.adaptris.core.http.jetty.JettyRouteCondition.JettyRoute;
 import com.adaptris.core.util.LifecycleHelper;
 
@@ -87,7 +87,7 @@ public class JettyRouteSpecTest {
   }
 
 
-  @Test(expected = ServiceException.class)
+  @Test(expected = CoreException.class)
   public void testBuild_MetadataMismatch() throws Exception {
     JettyRouteSpec spec =
         LifecycleHelper.initAndStart(new JettyRouteSpec(REGEX_WITH_GROUP, "POST", new ArrayList(), NEXT_SERVICE_ID));

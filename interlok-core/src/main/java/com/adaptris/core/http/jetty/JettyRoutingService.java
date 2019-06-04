@@ -36,6 +36,7 @@ import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.http.jetty.JettyRouteCondition.JettyRoute;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
@@ -80,22 +81,26 @@ public class JettyRoutingService extends BranchingServiceImp {
 
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    String method = msg.getMetadataValue(HTTP_METHOD);
-    String uri = msg.getMetadataValue(JETTY_URI);
-    boolean matched = false;
-    for (JettyRouteSpec route : routes) {
-      JettyRoute m = route.build(method, uri);
-      if (m.matches()) {
-        log.trace("[{}][{}], matched by {}", method, uri, route);
-        msg.setMetadata(m.metadata());
-        msg.setNextServiceId(route.getServiceId());
-        matched = true;
-        break;
+    try {
+      String method = msg.getMetadataValue(HTTP_METHOD);
+      String uri = msg.getMetadataValue(JETTY_URI);
+      boolean matched = false;
+      for (JettyRouteSpec route : routes) {
+        JettyRoute m = route.build(method, uri);
+        if (m.matches()) {
+          log.trace("[{}][{}], matched by {}", method, uri, route);
+          msg.setMetadata(m.metadata());
+          msg.setNextServiceId(route.getServiceId());
+          matched = true;
+          break;
+        }
       }
-    }
-    if (!matched) {
-      log.debug("No Matches from configured routes, using {}", getDefaultServiceId());
-      msg.setNextServiceId(getDefaultServiceId());
+      if (!matched) {
+        log.debug("No Matches from configured routes, using {}", getDefaultServiceId());
+        msg.setNextServiceId(getDefaultServiceId());
+      }
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapServiceException(e);
     }
   }
 

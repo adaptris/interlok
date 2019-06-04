@@ -40,10 +40,11 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
-import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.conditional.Switch;
 import com.adaptris.core.services.conditional.conditions.ConditionImpl;
+import com.adaptris.core.services.metadata.ExtractMetadataService;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.MetadataHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -171,7 +172,7 @@ public class JettyRouteCondition extends ConditionImpl {
     return ObjectUtils.defaultIfNull(getMetadataKeys(), Collections.emptyList());
   }
 
-  public JettyRoute build(String method, String uri) throws ServiceException {
+  public JettyRoute build(String method, String uri) throws CoreException {
     int expected = (isBlank(getMethod()) ? 0 : 1) + 1;
     int rc = 0;
     Set<MetadataElement> matchedMetadata = new HashSet<>();
@@ -181,24 +182,9 @@ public class JettyRouteCondition extends ConditionImpl {
     Matcher matcher = _urlPattern.matcher(uri);
     if (matcher.matches()) {
       rc++;
-      matchedMetadata = createMetadata(matcher);
+      matchedMetadata = MetadataHelper.metadataFromMatchGroups(matcher, metadataKeys());
     }
     return new JettyRoute(rc == expected, matchedMetadata);
-  }
-
-  private Set<MetadataElement> createMetadata(Matcher matcher) throws ServiceException {
-    Set<MetadataElement> result = new HashSet<>();
-    List<String> keys = Collections.unmodifiableList(metadataKeys());
-    if (matcher.groupCount() > keys.size()) {
-      String msg = String.format("'%s' has %d match-groups, but only %d metadata keys defined", matcher.pattern().pattern(),
-          matcher.groupCount(), keys.size());
-      log.error(msg);
-      throw new ServiceException(msg);
-    }
-    for (int i = 1; i <= matcher.groupCount(); i++) {
-      result.add(new MetadataElement(keys.get(i - 1), matcher.group(i)));
-    }
-    return result;
   }
 
   public class JettyRoute {

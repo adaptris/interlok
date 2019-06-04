@@ -31,8 +31,8 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.Removal;
 import com.adaptris.core.ComponentLifecycle;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.ServiceException;
 import com.adaptris.core.http.jetty.JettyRouteCondition.JettyRoute;
+import com.adaptris.core.services.metadata.ExtractMetadataService;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.LoggingHelper;
@@ -60,6 +60,8 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
       </jetty-route-spec>
    }
  * </pre>
+ * You could achieve the same effect with a {@link ExtractMetadataService} as part of your normal service execution chain.
+ * </p>
  */
 @DisplayOrder(order =
 {
@@ -240,7 +242,7 @@ public class JettyRouteSpec implements ComponentLifecycle {
     return getCondition();
   }
 
-  public JettyRoute build(String method, String uri) throws ServiceException {
+  public JettyRoute build(String method, String uri) throws CoreException {
     return conditionToUse.build(method, uri);
   }
 

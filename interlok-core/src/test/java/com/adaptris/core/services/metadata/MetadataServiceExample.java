@@ -26,11 +26,16 @@ public abstract class MetadataServiceExample extends ServiceCase {
    */
   public static final String BASE_DIR_KEY = "MetadataServiceExamples.baseDir";
 
-  public MetadataServiceExample(String name) {
-    super(name);
+  public MetadataServiceExample() {
+    super();
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
+  }
+
+  public MetadataServiceExample(String name) {
+    this();
+    setName(name);
   }
 
 }

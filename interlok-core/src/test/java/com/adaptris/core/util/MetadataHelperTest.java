@@ -20,13 +20,19 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataCollection;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.util.KeyValuePair;
@@ -70,4 +76,19 @@ public class MetadataHelperTest extends MetadataHelper {
     assertEquals(elements, c.toSet());
   }
 
+  @Test
+  public void testMetadataFromMatchGroups() throws Exception {
+    List<String> keys = Arrays.asList(new String[] {"key1", "key2"});
+    Matcher matcher = Pattern.compile("/path/(.*)/(.*)").matcher("/path/value1/value2");
+    matcher.matches();
+    Set<MetadataElement> metadata = metadataFromMatchGroups(matcher, keys);
+    assertEquals(2, metadata.size());
+  }
+
+  @Test(expected = CoreException.class)
+  public void testMetadataFromMatchGroups_Mismatch() throws Exception {
+    Matcher matcher = Pattern.compile("^/path/(.*)/(.*)$").matcher("/path/value1/value2");
+    matcher.matches();
+    Set<MetadataElement> metadata = metadataFromMatchGroups(matcher, Collections.emptyList());
+  }
 }
