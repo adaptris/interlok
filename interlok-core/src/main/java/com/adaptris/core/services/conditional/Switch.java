@@ -18,10 +18,8 @@ package com.adaptris.core.services.conditional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
@@ -66,6 +64,7 @@ public class Switch extends ServiceImp {
       for (Case c : getCases()) {
         if (c.evaluate(msg)) {
           c.execute(msg);
+          break;
         }
       }
     } catch (Exception e) {
