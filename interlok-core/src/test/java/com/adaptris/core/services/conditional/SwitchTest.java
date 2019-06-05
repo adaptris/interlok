@@ -21,7 +21,7 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceCase;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.services.conditional.conditions.ConditionAlways;
+import com.adaptris.core.services.conditional.conditions.CaseDefault;
 import com.adaptris.core.services.conditional.conditions.ConditionExpression;
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
@@ -45,7 +45,8 @@ public class SwitchTest  extends ServiceCase {
 
   public void testService_Failure() throws Exception {
     Switch service = createForTests();
-    service.getCases().add(new Case().withCondition(new ConditionAlways())
+    service.getCases().add(
+        new Case().withCondition(new CaseDefault())
         .withService(new ThrowExceptionService(new ConfiguredException("always-fail"))));
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     try {

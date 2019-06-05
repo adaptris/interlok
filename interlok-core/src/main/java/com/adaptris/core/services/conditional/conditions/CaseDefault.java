@@ -30,11 +30,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * {@link Case} configuration in your {@link Switch} service to have a default set of services that are executed.
  * </p>
  * 
- * @config always
+ * @config case-default
  */
-@XStreamAlias("always")
+@XStreamAlias("case-default")
 @ComponentProfile(summary = "condition that is always true.", tag = "condition", since = "3.9.0")
-public class ConditionAlways implements Condition {
+public class CaseDefault implements Condition {
 
   @Override
   public boolean evaluate(AdaptrisMessage message) throws CoreException {

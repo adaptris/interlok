@@ -27,7 +27,7 @@ public class AlwaysNeverTest {
   
   @Test
   public void testAlways() throws Exception {
-    ConditionAlways condition = new ConditionAlways();
+    CaseDefault condition = new CaseDefault();
     assertTrue(condition.evaluate(AdaptrisMessageFactory.getDefaultInstance().newMessage()));
   }
 
