@@ -18,7 +18,6 @@ package com.adaptris.core.http.jetty;
 import static com.adaptris.core.CoreConstants.HTTP_METHOD;
 import static com.adaptris.core.http.jetty.JettyConstants.JETTY_URI;
 import static org.apache.commons.lang.StringUtils.isBlank;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,12 +26,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AdapterComponent;
-import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -69,7 +65,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @XStreamAlias("jetty-route-condition")
 @AdapterComponent
 @ComponentProfile(summary = "Condition that evaluates based on the jettyURI and method", tag = "condition,jetty", since = "3.9.0")
-@DisplayOrder(order = {"route"})
+@DisplayOrder(order = {"method", "urlPattern", "metadataKeys"})
 public class JettyRouteCondition extends ConditionImpl {
 
   @NotBlank
@@ -77,7 +73,6 @@ public class JettyRouteCondition extends ConditionImpl {
   private String method;
   @XStreamImplicit(itemFieldName = "metadata-key")
   @AffectsMetadata
-  @AdvancedConfig
   private List<String> metadataKeys;
 
   private transient Pattern _urlPattern;
