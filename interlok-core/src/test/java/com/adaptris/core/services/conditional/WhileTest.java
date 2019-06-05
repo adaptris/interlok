@@ -20,26 +20,21 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.Service;
-import com.adaptris.core.ServiceCase;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.LogMessageService;
-import com.adaptris.core.services.conditional.Condition;
-import com.adaptris.core.services.conditional.ThenService;
-import com.adaptris.core.services.conditional.While;
 import com.adaptris.core.services.conditional.conditions.ConditionMetadata;
 import com.adaptris.core.services.conditional.conditions.ConditionOr;
-import com.adaptris.core.services.conditional.operator.NotNull;
 import com.adaptris.core.services.conditional.operator.IsNull;
+import com.adaptris.core.services.conditional.operator.NotNull;
 import com.adaptris.core.util.LifecycleHelper;
 
-public class WhileTest extends ServiceCase {
+public class WhileTest extends ConditionalServiceExample {
 
   private While logicalExpression;
 
@@ -51,6 +46,7 @@ public class WhileTest extends ServiceCase {
   
   @Mock private Condition mockCondition;
   
+  @Override
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
     
@@ -67,6 +63,7 @@ public class WhileTest extends ServiceCase {
 
   }
   
+  @Override
   public void tearDown() throws Exception {
     this.StopMe(logicalExpression);
   }

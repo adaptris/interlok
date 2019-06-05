@@ -20,7 +20,6 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import com.adaptris.core.AdaptrisMessage;
@@ -28,13 +27,8 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.NullService;
 import com.adaptris.core.Service;
-import com.adaptris.core.ServiceCase;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.LogMessageService;
-import com.adaptris.core.services.conditional.Condition;
-import com.adaptris.core.services.conditional.ElseService;
-import com.adaptris.core.services.conditional.IfElse;
-import com.adaptris.core.services.conditional.ThenService;
 import com.adaptris.core.services.conditional.conditions.ConditionAnd;
 import com.adaptris.core.services.conditional.conditions.ConditionExpression;
 import com.adaptris.core.services.conditional.conditions.ConditionFunction;
@@ -44,7 +38,7 @@ import com.adaptris.core.services.conditional.operator.Equals;
 import com.adaptris.core.services.conditional.operator.NotNull;
 import com.adaptris.core.util.LifecycleHelper;
 
-public class IfElseTest  extends ServiceCase {
+public class IfElseTest extends ConditionalServiceExample {
 
   private IfElse logicalExpression;
 
@@ -60,6 +54,7 @@ public class IfElseTest  extends ServiceCase {
   
   @Mock private Condition mockCondition;
   
+  @Override
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
     
@@ -79,6 +74,7 @@ public class IfElseTest  extends ServiceCase {
     LifecycleHelper.initAndStart(logicalExpression);
   }
   
+  @Override
   public void tearDown() throws Exception {
     LifecycleHelper.stopAndClose(logicalExpression);
   }

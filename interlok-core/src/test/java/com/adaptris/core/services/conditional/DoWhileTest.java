@@ -29,19 +29,15 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.Service;
-import com.adaptris.core.ServiceCase;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.LogMessageService;
-import com.adaptris.core.services.conditional.Condition;
-import com.adaptris.core.services.conditional.DoWhile;
-import com.adaptris.core.services.conditional.ThenService;
 import com.adaptris.core.services.conditional.conditions.ConditionMetadata;
 import com.adaptris.core.services.conditional.conditions.ConditionOr;
-import com.adaptris.core.services.conditional.operator.NotNull;
 import com.adaptris.core.services.conditional.operator.IsNull;
+import com.adaptris.core.services.conditional.operator.NotNull;
 import com.adaptris.core.util.LifecycleHelper;
 
-public class DoWhileTest extends ServiceCase {
+public class DoWhileTest extends ConditionalServiceExample {
 
   private DoWhile doWhile;
 
@@ -53,6 +49,7 @@ public class DoWhileTest extends ServiceCase {
   
   @Mock private Condition mockCondition;
   
+  @Override
   @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
@@ -70,6 +67,7 @@ public class DoWhileTest extends ServiceCase {
 
   }
   
+  @Override
   @After
   public void tearDown() throws Exception {
     LifecycleHelper.stopAndClose(doWhile);
