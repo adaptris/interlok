@@ -5,7 +5,7 @@ ext {
   componentName='Base Interlok'
   activeMqVersion='5.15.9'
   artemisVersion='2.9.0'
-  bouncyCastleVersion='1.61'
+  bouncyCastleVersion='1.62'
   verboseTests= project.hasProperty('verboseTests') ? project.getProperty('verboseTests') : "false"
   classesToTest = project.hasProperty("junit.test.classes") ? project.getProperty("junit.test.classes") : "**/*Test*"
   maxThreads = project.hasProperty("junit.threads") ? project.getProperty("junit.threads") : 1
