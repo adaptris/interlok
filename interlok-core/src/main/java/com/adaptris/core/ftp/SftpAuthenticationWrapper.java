@@ -19,11 +19,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.BooleanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.ftp.FileTransferConnection.UserInfo;
 import com.adaptris.filetransfer.FileTransferException;
 import com.adaptris.security.exc.PasswordException;
@@ -38,6 +43,8 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * @config sftp-authentication-wrapper
  */
 @XStreamAlias("sftp-authentication-wrapper")
+@ComponentProfile(summary = "SFTP Authentication Provider that wraps other providers.")
+@DisplayOrder(order = {"providers"})
 public class SftpAuthenticationWrapper implements SftpAuthenticationProvider {
 
   @NotNull
@@ -46,6 +53,11 @@ public class SftpAuthenticationWrapper implements SftpAuthenticationProvider {
   @XStreamImplicit
   private List<SftpAuthenticationProvider> providers;
 
+  @AdvancedConfig
+  @InputFieldDefault(value = "false")
+  private Boolean logExceptions;
+
+  private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   public SftpAuthenticationWrapper() {
     setProviders(new ArrayList<SftpAuthenticationProvider>());
@@ -66,7 +78,7 @@ public class SftpAuthenticationWrapper implements SftpAuthenticationProvider {
       }
     }
     if (!connected) {
-      throw new FileTransferException("Failed to connect to via any configured authentication mechanisms");
+      throw new FileTransferException("Failed to connect to via any configured authentication providers");
     }
     return sftp;
   }
@@ -78,6 +90,10 @@ public class SftpAuthenticationWrapper implements SftpAuthenticationProvider {
       connected = true;
     }
     catch (Exception e) {
+      log.warn("Failed to connect using {}", prov.getClass().getCanonicalName());
+      if (logExceptions()) {
+        log.trace("Exception message from {}", prov.getClass().getCanonicalName(), e);
+      }
     }
     return connected;
   }
@@ -97,4 +113,20 @@ public class SftpAuthenticationWrapper implements SftpAuthenticationProvider {
     this.providers = list;
   }
 
+  public Boolean getLogExceptions() {
+    return logExceptions;
+  }
+
+  /**
+   * Whether or not to log exceptions from each provider.
+   * 
+   * @param b true to enable logging, default is false if not otherwise specified.
+   */
+  public void setLogExceptions(Boolean b) {
+    this.logExceptions = b;
+  }
+
+  private boolean logExceptions() {
+    return BooleanUtils.toBooleanDefaultIfNull(getLogExceptions(), false);
+  }
 }
