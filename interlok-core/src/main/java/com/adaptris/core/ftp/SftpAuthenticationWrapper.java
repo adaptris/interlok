@@ -78,7 +78,7 @@ public class SftpAuthenticationWrapper implements SftpAuthenticationProvider {
       }
     }
     if (!connected) {
-      throw new FileTransferException("Failed to connect to via any configured authentication providers");
+      throw new FileTransferException("Failed to connect via any configured authentication providers");
     }
     return sftp;
   }
