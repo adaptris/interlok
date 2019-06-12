@@ -83,6 +83,7 @@ junit.XmlServiceExamples.baseDir=${junit.ServiceCase.baseDir}/xml
 junit.RegexpServiceExamples.baseDir=${junit.ServiceCase.baseDir}/regexp
 junit.TranscodingServiceExamples.baseDir=${junit.ServiceCase.baseDir}/transcoding
 junit.CacheServiceExamples.baseDir=${junit.ServiceCase.baseDir}/cache
+junit.ConditionalServiceExamples.baseDir=${junit.ServiceCase.baseDir}/conditional
 
 
 junit.XmlValidationServiceTest.schemaUrl=file://localhost/@BASE_DIR@/src/test/resources/transform/schema-simple.xsd

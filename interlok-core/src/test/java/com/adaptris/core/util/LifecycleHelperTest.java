@@ -56,6 +56,7 @@ public class LifecycleHelperTest extends LifecycleHelper {
   @Test(expected = CoreException.class)
   public void testLifecycle_Failure() throws Exception {
     StateManagedComponent failingService = new NullService() {
+      @Override
       public void start() throws CoreException {
         throw new CoreException();
       }
@@ -78,7 +79,7 @@ public class LifecycleHelperTest extends LifecycleHelper {
   @Test
   public void testPrepare() throws Exception {
     prepare(new NullService());
-    prepare(null);
+    prepare((ComponentLifecycle) null);
     prepare(new EmptyIdentityBuilder());
   }
 }

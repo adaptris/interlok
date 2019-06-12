@@ -14,26 +14,26 @@
  * limitations under the License.
 */
 
-package com.adaptris.core.services.metadata;
+package com.adaptris.core.services.conditional;
 
 import com.adaptris.core.ServiceCase;
 
-public abstract class MetadataServiceExample extends ServiceCase {
+public abstract class ConditionalServiceExample extends ServiceCase {
 
   /**
    * Key in unit-test.properties that defines where example goes unless overriden {@link #setBaseDir(String)}.
    * 
    */
-  public static final String BASE_DIR_KEY = "MetadataServiceExamples.baseDir";
+  public static final String BASE_DIR_KEY = "ConditionalServiceExamples.baseDir";
 
-  public MetadataServiceExample() {
+  public ConditionalServiceExample() {
     super();
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
   }
 
-  public MetadataServiceExample(String name) {
+  public ConditionalServiceExample(String name) {
     this();
     setName(name);
   }
