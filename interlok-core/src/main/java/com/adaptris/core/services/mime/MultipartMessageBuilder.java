@@ -58,6 +58,9 @@ public class MultipartMessageBuilder extends ServiceImp {
   @InputFieldDefault(value = "the messages unique-id")
   @InputFieldHint(expression = true)
   private String contentId;
+  @InputFieldDefault(value = "mixed")
+  @InputFieldHint(expression = true)
+  private String mimeContentSubType;
   @AdvancedConfig
   @Valid
   @InputFieldDefault(value = "RemoveAllMetadataFilter")
@@ -98,7 +101,7 @@ public class MultipartMessageBuilder extends ServiceImp {
 
   protected MultiPartOutput createOutputPart(AdaptrisMessage msg)
       throws Exception {
-    MultiPartOutput output = new MultiPartOutput(contentId(msg));
+    MultiPartOutput output = new MultiPartOutput(contentId(msg), mimeContentSubType(msg));
     MetadataCollection metadata = mimeHeaderFilter().filter(msg);
     metadata.forEach((e) -> {
       output.setHeader(e.getKey(), e.getValue());
@@ -138,13 +141,28 @@ public class MultipartMessageBuilder extends ServiceImp {
   }
 
   /**
-   * Set the Content-ID for the part,
+   * Set the Content-ID for the Multipart,
    * 
    * @param s the Content-ID, which supports the {@code %message{}} syntax to resolve metadata;
    *        defaults to the messages unique id if no value is specified.
    */
   public void setContentId(String contentId) {
     this.contentId = contentId;
+  }
+
+
+  public String getMimeContentSubType() {
+    return mimeContentSubType;
+  }
+
+  /**
+   * Set the sub type for the Multipart
+   * 
+   * @param s the content subtype, which supports the {@code %message{}} syntax to resolve metadata;
+   *        defaults to 'mixed' if not specified.
+   */
+  public void setMimeContentSubType(String sub) {
+    this.mimeContentSubType = sub;
   }
 
   public MultipartMessageBuilder withMimeHeaderFilter(MetadataFilter filter) {
@@ -166,6 +184,11 @@ public class MultipartMessageBuilder extends ServiceImp {
     return this;
   }
 
+  public MultipartMessageBuilder withMimeContentSubType(String s) {
+    setMimeContentSubType(s);
+    return this;
+  }
+
   private String contentId(AdaptrisMessage msg) {
     return StringUtils.defaultIfBlank(msg.resolve(getContentId()), msg.getUniqueId());
   }
@@ -174,5 +197,9 @@ public class MultipartMessageBuilder extends ServiceImp {
     return ObjectUtils.defaultIfNull(getMimeHeaderFilter(), new RemoveAllMetadataFilter());
   }
 
+  private String mimeContentSubType(AdaptrisMessage msg) {
+    String sub = msg.resolve(getMimeContentSubType());
+    return StringUtils.defaultIfBlank(sub, "mixed");
+  }
 
 }

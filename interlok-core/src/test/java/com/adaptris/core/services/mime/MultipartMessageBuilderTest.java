@@ -72,6 +72,16 @@ public class MultipartMessageBuilderTest extends MimeServiceExample {
     assertTrue(payload.contains(msg.getMetadataValue("customContentId")));
   }
 
+  public void testService_WithSubType() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("Hello World");
+    MultipartMessageBuilder service = new MultipartMessageBuilder()
+        .withMimeParts(new InlineMimePartBuilder()).withMimeContentSubType("form-data");
+    ServiceCase.execute(service, msg);
+    String payload = msg.getContent();
+    System.err.println(payload);
+    assertTrue(payload.contains("multipart/form-data"));
+  }
+
   public void testService_WithHeader() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("Hello World");
     msg.addMetadata("X-Interlok-Mime", "yes");
