@@ -2,11 +2,8 @@ package com.adaptris.core.config;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
-
 import java.util.Properties;
-
 import org.junit.Test;
-
 import com.adaptris.core.management.BootstrapProperties;
 import com.adaptris.core.stubs.JunitBootstrapProperties;
 
@@ -14,6 +11,7 @@ public class ConfigPreProcessorImplTest {
 
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testConfiguration() {
     BootstrapProperties props = new JunitBootstrapProperties(new Properties());
     DummyConfigurationPreProcessor p = new DummyConfigurationPreProcessor(props);
