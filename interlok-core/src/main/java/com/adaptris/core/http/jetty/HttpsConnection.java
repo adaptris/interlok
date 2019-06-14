@@ -89,7 +89,7 @@ public class HttpsConnection extends HttpConnection {
      */
     KeyStorePath {
       @Override
-      void applyProperty(SslContextFactory sslContextFactory, String value) {
+      void applyProperty(SslContextFactory.Server sslContextFactory, String value) {
         sslContextFactory.setKeyStorePath(value);
       }
     },
@@ -104,7 +104,8 @@ public class HttpsConnection extends HttpConnection {
      */
     KeyStorePassword {
       @Override
-      void applyProperty(SslContextFactory sslContextFactory, String value) throws PasswordException {
+      void applyProperty(SslContextFactory.Server sslContextFactory, String value)
+          throws PasswordException {
         sslContextFactory.setKeyStorePassword(Password.decode(value));
       }
     },
@@ -114,7 +115,7 @@ public class HttpsConnection extends HttpConnection {
      */
     KeyStoreType {
       @Override
-      void applyProperty(SslContextFactory sslContextFactory, String value) {
+      void applyProperty(SslContextFactory.Server sslContextFactory, String value) {
         sslContextFactory.setKeyStoreType(value);
       }
     },
@@ -123,7 +124,7 @@ public class HttpsConnection extends HttpConnection {
      */
     KeyStoreProvider {
       @Override
-      void applyProperty(SslContextFactory sslContextFactory, String value) {
+      void applyProperty(SslContextFactory.Server sslContextFactory, String value) {
         sslContextFactory.setKeyStoreProvider(value);
       }
     },
@@ -133,7 +134,7 @@ public class HttpsConnection extends HttpConnection {
      */
     TrustStorePath {
       @Override
-      void applyProperty(SslContextFactory sslContextFactory, String value) {
+      void applyProperty(SslContextFactory.Server sslContextFactory, String value) {
         sslContextFactory.setTrustStorePath(value);
       }
     },
@@ -148,7 +149,8 @@ public class HttpsConnection extends HttpConnection {
      */
     TrustStorePassword {
       @Override
-      void applyProperty(SslContextFactory sslContextFactory, String value) throws PasswordException {
+      void applyProperty(SslContextFactory.Server sslContextFactory, String value)
+          throws PasswordException {
         sslContextFactory.setTrustStorePassword(Password.decode(value));
       }
     },
@@ -158,7 +160,7 @@ public class HttpsConnection extends HttpConnection {
      */
     TrustStoreType {
       @Override
-      void applyProperty(SslContextFactory sslContextFactory, String value) {
+      void applyProperty(SslContextFactory.Server sslContextFactory, String value) {
         sslContextFactory.setTrustStoreType(value);
       }
     },
@@ -167,7 +169,7 @@ public class HttpsConnection extends HttpConnection {
      */
     TrustStoreProvider {
       @Override
-      void applyProperty(SslContextFactory sslContextFactory, String value) {
+      void applyProperty(SslContextFactory.Server sslContextFactory, String value) {
         sslContextFactory.setTrustStoreProvider(value);
       }
     },
@@ -182,7 +184,8 @@ public class HttpsConnection extends HttpConnection {
      */
     KeyManagerPassword {
       @Override
-      void applyProperty(SslContextFactory sslContextFactory, String value) throws PasswordException {
+      void applyProperty(SslContextFactory.Server sslContextFactory, String value)
+          throws PasswordException {
         sslContextFactory.setKeyManagerPassword(Password.decode(value));
       }
     },
@@ -194,7 +197,7 @@ public class HttpsConnection extends HttpConnection {
      */
     ExcludeCipherSuites {
       @Override
-      void applyProperty(SslContextFactory sslContextFactory, String value) {
+      void applyProperty(SslContextFactory.Server sslContextFactory, String value) {
         sslContextFactory.setExcludeCipherSuites(asArray(value));
       }
     },
@@ -205,7 +208,7 @@ public class HttpsConnection extends HttpConnection {
      */
     IncludeCipherSuites {
       @Override
-      void applyProperty(SslContextFactory sslContextFactory, String value) {
+      void applyProperty(SslContextFactory.Server sslContextFactory, String value) {
         sslContextFactory.setIncludeCipherSuites(asArray(value));
       }
     },
@@ -216,7 +219,7 @@ public class HttpsConnection extends HttpConnection {
      */
     ExcludeProtocols {
       @Override
-      void applyProperty(SslContextFactory sslContextFactory, String value) {
+      void applyProperty(SslContextFactory.Server sslContextFactory, String value) {
         sslContextFactory.setExcludeProtocols(asArray(value));
       }
     },
@@ -227,7 +230,7 @@ public class HttpsConnection extends HttpConnection {
      */
     IncludeProtocols {
       @Override
-      void applyProperty(SslContextFactory sslContextFactory, String value) {
+      void applyProperty(SslContextFactory.Server sslContextFactory, String value) {
         sslContextFactory.setIncludeProtocols(asArray(value));
       }
     },
@@ -237,7 +240,7 @@ public class HttpsConnection extends HttpConnection {
      */
     SecureRandomAlgorithm {
       @Override
-      void applyProperty(SslContextFactory sslContextFactory, String value) {
+      void applyProperty(SslContextFactory.Server sslContextFactory, String value) {
         sslContextFactory.setSecureRandomAlgorithm(value);
       }
     },
@@ -246,7 +249,7 @@ public class HttpsConnection extends HttpConnection {
      */
     SessionCachingEnabled {
       @Override
-      void applyProperty(SslContextFactory sslContextFactory, String value) {
+      void applyProperty(SslContextFactory.Server sslContextFactory, String value) {
         sslContextFactory.setSessionCachingEnabled(Boolean.valueOf(value).booleanValue());
       }
     },
@@ -255,7 +258,7 @@ public class HttpsConnection extends HttpConnection {
      */
     MaxCertPathLength {
       @Override
-      void applyProperty(SslContextFactory sslContextFactory, String value) {
+      void applyProperty(SslContextFactory.Server sslContextFactory, String value) {
         sslContextFactory.setMaxCertPathLength(Integer.parseInt(value));
       }
     },
@@ -264,7 +267,8 @@ public class HttpsConnection extends HttpConnection {
      */
     NeedClientAuth {
       @Override
-      void applyProperty(SslContextFactory sslContextFactory, String value) {
+      @SuppressWarnings("deprecation")
+      void applyProperty(SslContextFactory.Server sslContextFactory, String value) {
         sslContextFactory.setNeedClientAuth(Boolean.valueOf(value).booleanValue());
       }
     },
@@ -273,7 +277,7 @@ public class HttpsConnection extends HttpConnection {
      */
     OcspResponderURL {
       @Override
-      void applyProperty(SslContextFactory sslContextFactory, String value) {
+      void applyProperty(SslContextFactory.Server sslContextFactory, String value) {
         sslContextFactory.setOcspResponderURL(value);
       }
     },
@@ -282,7 +286,7 @@ public class HttpsConnection extends HttpConnection {
      */
     SslSessionTimeout {
       @Override
-      void applyProperty(SslContextFactory sslContextFactory, String value) {
+      void applyProperty(SslContextFactory.Server sslContextFactory, String value) {
         sslContextFactory.setSslSessionTimeout(Integer.parseInt(value));
       }
     },
@@ -291,7 +295,7 @@ public class HttpsConnection extends HttpConnection {
      */
     TrustAll {
       @Override
-      void applyProperty(SslContextFactory sslContextFactory, String value) {
+      void applyProperty(SslContextFactory.Server sslContextFactory, String value) {
         sslContextFactory.setTrustAll(Boolean.valueOf(value).booleanValue());
       }
     },
@@ -300,7 +304,7 @@ public class HttpsConnection extends HttpConnection {
      */
     TrustManagerFactoryAlgorithm {
       @Override
-      void applyProperty(SslContextFactory sslContextFactory, String value) {
+      void applyProperty(SslContextFactory.Server sslContextFactory, String value) {
         sslContextFactory.setTrustManagerFactoryAlgorithm(value);
       }
     },
@@ -309,7 +313,7 @@ public class HttpsConnection extends HttpConnection {
      */
     ValidateCerts {
       @Override
-      void applyProperty(SslContextFactory sslContextFactory, String value) {
+      void applyProperty(SslContextFactory.Server sslContextFactory, String value) {
         sslContextFactory.setValidateCerts(Boolean.valueOf(value).booleanValue());
       }
     },
@@ -318,7 +322,7 @@ public class HttpsConnection extends HttpConnection {
      */
     ValidatePeerCerts {
       @Override
-      void applyProperty(SslContextFactory sslContextFactory, String value) {
+      void applyProperty(SslContextFactory.Server sslContextFactory, String value) {
         sslContextFactory.setValidatePeerCerts(Boolean.valueOf(value).booleanValue());
       }
     },
@@ -328,12 +332,13 @@ public class HttpsConnection extends HttpConnection {
      */
     WantClientAuth {
       @Override
-      void applyProperty(SslContextFactory sslContextFactory, String value) {
+      void applyProperty(SslContextFactory.Server sslContextFactory, String value) {
         sslContextFactory.setWantClientAuth(Boolean.valueOf(value).booleanValue());
       }
     };
 
-    abstract void applyProperty(SslContextFactory sslContextFactory, String value) throws Exception;
+    abstract void applyProperty(SslContextFactory.Server sslContextFactory, String value)
+        throws Exception;
     
   }
 
@@ -361,7 +366,7 @@ public class HttpsConnection extends HttpConnection {
   }
 
   SslContextFactory createSslContext() throws Exception {
-    SslContextFactory sslContextFactory = new SslContextFactory.Server();
+    SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
     for (KeyValuePair kvp : getSslProperties().getKeyValuePairs()) {
       boolean matched = false;
       for (SslProperty sp : SslProperty.values()) {

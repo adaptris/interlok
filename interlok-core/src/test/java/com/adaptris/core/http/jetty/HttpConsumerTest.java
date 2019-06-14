@@ -125,7 +125,6 @@ public class HttpConsumerTest extends HttpConsumerExample {
   public void testConnection_NonDefaults() throws Exception {
     HttpConnection connection = createConnection(null);
     connection.getServerConnectorProperties().addKeyValuePair(new KeyValuePair(ServerConnectorProperty.AcceptQueueSize.name(), "10"));
-    connection.getServerConnectorProperties().addKeyValuePair(new KeyValuePair(ServerConnectorProperty.SoLingerTime.name(), "-1"));
     connection.getServerConnectorProperties().addKeyValuePair(new KeyValuePair(ServerConnectorProperty.ReuseAaddress.name(), "true"));
     Channel channel = JettyHelper.createChannel(connection, JettyHelper.createConsumer(URL_TO_POST_TO), new MockMessageProducer());
     try {
@@ -1022,7 +1021,6 @@ public class HttpConsumerTest extends HttpConsumerExample {
     }
 
     http.getServerConnectorProperties().clear();
-    http.getServerConnectorProperties().add(new KeyValuePair(ServerConnectorProperty.SoLingerTime.name(), "-1"));
     http.getServerConnectorProperties().add(new KeyValuePair(ServerConnectorProperty.ReuseAaddress.name(), "true"));
     http.getServerConnectorProperties().add(new KeyValuePair("WillNotMatch", "true"));
 
@@ -1051,7 +1049,6 @@ public class HttpConsumerTest extends HttpConsumerExample {
   @Override
   protected Object retrieveObjectForSampleConfig() {
     HttpConnection connection = createConnection(createSecurityHandlerExample());
-    connection.getServerConnectorProperties().add(new KeyValuePair(ServerConnectorProperty.SoLingerTime.name(), "-1"));
     connection.getServerConnectorProperties().add(new KeyValuePair(ServerConnectorProperty.ReuseAaddress.name(), "true"));
     JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
     StandaloneConsumer result = new StandaloneConsumer(connection, consumer);

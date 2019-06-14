@@ -156,7 +156,6 @@ public class HttpsConsumerTest extends HttpConsumerTest {
     int port = PortManager.nextUnusedPort(Integer.parseInt(PROPERTIES.getProperty(JETTY_HTTPS_PORT)));
     https.setPort(port);
     https.getServerConnectorProperties().clear();
-    https.getServerConnectorProperties().add(new KeyValuePair(ServerConnectorProperty.SoLingerTime.name(), "-1"));
     https.getServerConnectorProperties().add(new KeyValuePair(ServerConnectorProperty.ReuseAaddress.name(), "true"));
 
     https.getSslProperties().clear();
