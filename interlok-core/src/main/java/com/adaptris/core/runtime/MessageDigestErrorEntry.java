@@ -19,17 +19,14 @@ package com.adaptris.core.runtime;
 import static com.adaptris.core.CoreConstants.FS_PRODUCE_DIRECTORY;
 import static com.adaptris.core.CoreConstants.OBJ_METADATA_EXCEPTION;
 import static com.adaptris.core.CoreConstants.PRODUCED_NAME_KEY;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Date;
 import java.util.Map;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.MessageLifecycleEvent;
 
@@ -132,8 +129,8 @@ public class MessageDigestErrorEntry extends MessageDigestEntry {
 
   private void addFileSystemLocation(AdaptrisMessage msg) {
     try {
-      if (msg.containsKey(PRODUCED_NAME_KEY)) {
-        if (msg.containsKey(FS_PRODUCE_DIRECTORY)) {
+      if (msg.headersContainsKey(PRODUCED_NAME_KEY)) {
+        if (msg.headersContainsKey(FS_PRODUCE_DIRECTORY)) {
           setFileSystemFile(new File(msg.getMetadataValue(FS_PRODUCE_DIRECTORY), msg.getMetadataValue(PRODUCED_NAME_KEY)));
         }
         else {

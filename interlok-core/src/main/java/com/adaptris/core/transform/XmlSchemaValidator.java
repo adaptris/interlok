@@ -177,7 +177,7 @@ public class XmlSchemaValidator extends MessageValidatorImpl {
       LoggingHelper.logWarning(warningLogged, () -> {
         warningLogged = true;
       }, "schema-metadata-metadata is deprecated, use expression based schema URL instead.");
-      if (msg.containsKey(getSchemaMetadataKey())) {
+      if (msg.headersContainsKey(getSchemaMetadataKey())) {
         schemaUrl = msg.getMetadataValue(getSchemaMetadataKey());
       }
     }

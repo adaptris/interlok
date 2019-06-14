@@ -21,12 +21,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.AutoPopulated;
@@ -77,7 +74,7 @@ public class MapMetadataService extends MetadataServiceImpl {
    */
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    if (metadataKey == null || !msg.containsKey(metadataKey)) {
+    if (metadataKey == null || !msg.headersContainsKey(metadataKey)) {
       log.debug("Message does not contain metadatakey [" + metadataKey + "]");
       return;
     }

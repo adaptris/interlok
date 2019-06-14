@@ -17,7 +17,6 @@
 package com.adaptris.core.jdbc;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.jdbc.ParameterValueType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -50,7 +49,7 @@ public class JdbcMetadataParameter extends NullableParameter {
   public Object applyInputParam(AdaptrisMessage msg) throws JdbcParameterException {
     this.checkMetadataKey();
     
-    if(!msg.containsKey(this.getMetadataKey()))
+    if (!msg.headersContainsKey(this.getMetadataKey()))
       throw new JdbcParameterException("Metadata does not exist for key: " + this.getMetadataKey());
     
     return normalize(msg.getMetadataValue(getMetadataKey()));
