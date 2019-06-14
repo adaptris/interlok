@@ -21,17 +21,17 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import javax.mail.internet.MimeBodyPart;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
+import com.adaptris.core.metadata.NoOpMetadataFilter;
 import com.adaptris.core.services.metadata.AddMetadataService;
 import com.adaptris.core.stubs.DefectiveMessageFactory;
 import com.adaptris.util.text.mime.BodyPartIterator;
 
+@SuppressWarnings("deprecation")
 public abstract class MimeAggregatorCase extends AggregatorCase {
 
   protected static final String PAYLOAD = "Pack my box with five dozen liquor jugs.";
@@ -109,11 +109,27 @@ public abstract class MimeAggregatorCase extends AggregatorCase {
     }
   }
 
+  public void testJoinMessage_ContentTypeExpression() throws Exception {
+    MimeAggregator aggr = createAggregatorForTests().withPartContentType("%message{MyContentType}");
+    Set<MetadataElement> metadata = new HashSet<>();
+    metadata.add(new MetadataElement("MyContentType", "application/xml"));
+    AdaptrisMessage original = AdaptrisMessageFactory.getDefaultInstance().newMessage("<envelope/>",
+        null, new HashSet<>(metadata));
+    AdaptrisMessage s1 = AdaptrisMessageFactory.getDefaultInstance()
+        .newMessage("<document>hello</document>", null, new HashSet<>(metadata));
+    AdaptrisMessage s2 = AdaptrisMessageFactory.getDefaultInstance()
+        .newMessage("<document>world</document>", null, new HashSet<>(metadata));
+    aggr.joinMessage(original, Arrays.asList(new AdaptrisMessage[] {s1, s2}));
+    BodyPartIterator m = new BodyPartIterator(original.getInputStream());
+    for (int i = 0; i < m.size(); i++) {
+      MimeBodyPart part = m.getBodyPart(i);
+      assertEquals("application/xml", part.getContentType());
+    }
+  }
+
   public void testJoinMessage_ContentId() throws Exception {
     MimeAggregator aggr = createAggregatorForTests();
     aggr.setPartContentIdMetadataKey("MyContentId");
-    Set<MetadataElement> metadata = new HashSet<>();
-    metadata.add(new MetadataElement("MyContentId", "application/xml"));
     AdaptrisMessage original = AdaptrisMessageFactory.getDefaultInstance().newMessage("<envelope/>", null,
         new HashSet<>(Arrays.asList(new MetadataElement[] {
             new MetadataElement("MyContentId", getName() + "_original")
@@ -140,6 +156,30 @@ public abstract class MimeAggregatorCase extends AggregatorCase {
     }
   }
 
+  public void testJoinMessage_ContentIdExpression() throws Exception {
+    MimeAggregator aggr = createAggregatorForTests().withPartContentId("%message{MyContentId}");
+    aggr.setPartContentIdMetadataKey("MyContentId");
+    AdaptrisMessage original = AdaptrisMessageFactory.getDefaultInstance().newMessage("<envelope/>",
+        null, new HashSet<>(Arrays.asList(
+            new MetadataElement[] {new MetadataElement("MyContentId", getName() + "_original")})));
+
+    original.addMetadata("originalKey", "originalValue");
+    AdaptrisMessage s1 = AdaptrisMessageFactory.getDefaultInstance()
+        .newMessage("<document>hello</document>", null, new HashSet<>(Arrays.asList(
+            new MetadataElement[] {new MetadataElement("MyContentId", getName() + "_split1")})));
+    AdaptrisMessage s2 = AdaptrisMessageFactory.getDefaultInstance()
+        .newMessage("<document>world</document>", null, new HashSet<>(Arrays.asList(
+            new MetadataElement[] {new MetadataElement("MyContentId", getName() + "_split2")})));
+
+    List<String> expectedContentIDs = new ArrayList<>(Arrays.asList(
+        new String[] {getName() + "_original", getName() + "_split1", getName() + "_split2"}));
+    aggr.joinMessage(original, Arrays.asList(new AdaptrisMessage[] {s1, s2}));
+    BodyPartIterator m = new BodyPartIterator(original.getInputStream());
+    for (int i = 0; i < m.size(); i++) {
+      MimeBodyPart part = m.getBodyPart(i);
+      assertTrue(expectedContentIDs.contains(part.getContentID()));
+    }
+  }
 
   public void testJoinMessage_Fails() throws Exception {
     MimeAggregator aggr = createAggregatorForTests();
@@ -156,6 +196,58 @@ public abstract class MimeAggregatorCase extends AggregatorCase {
     catch (CoreException expected) {
 
     }
+  }
+
+  public void testJoinMessage_PartHeaderFilter() throws Exception {
+    MimeAggregator aggr = createAggregatorForTests().withPartHeaderFilter(new NoOpMetadataFilter());
+    AdaptrisMessage original = AdaptrisMessageFactory.getDefaultInstance().newMessage("<envelope/>",
+        null,
+        new HashSet<>(Arrays.asList(new MetadataElement("X-Interlok-Test", "ZZLC-original"))));
+    AdaptrisMessage s1 = AdaptrisMessageFactory.getDefaultInstance()
+        .newMessage("<document>hello</document>", null,
+            new HashSet<>(Arrays.asList(new MetadataElement("X-Interlok-Test", "ZZLC-split1"))));
+    AdaptrisMessage s2 = AdaptrisMessageFactory.getDefaultInstance()
+        .newMessage("<document>world</document>", null,
+            new HashSet<>(Arrays.asList(new MetadataElement("X-Interlok-Test", "ZZLC-split2"))));
+    aggr.joinMessage(original, Arrays.asList(s1, s2));
+    String payload = original.getContent();
+    assertTrue(payload.contains("ZZLC-split1"));
+    assertTrue(payload.contains("ZZLC-split2"));
+  }
+
+  public void testJoinMessage_MimeHeaderFilter() throws Exception {
+    MimeAggregator aggr = createAggregatorForTests().withMimeHeaderFilter(new NoOpMetadataFilter());
+    AdaptrisMessage original =
+        AdaptrisMessageFactory.getDefaultInstance().newMessage("<envelope/>", null,
+            new HashSet<>(Arrays.asList(new MetadataElement("X-Interlok-Test", "ZZLC-original"))));
+    AdaptrisMessage s1 =
+        AdaptrisMessageFactory.getDefaultInstance().newMessage("<document>hello</document>", null,
+            new HashSet<>(Arrays.asList(new MetadataElement("X-Interlok-Test", "ZZLC-split1"))));
+    AdaptrisMessage s2 =
+        AdaptrisMessageFactory.getDefaultInstance().newMessage("<document>world</document>", null,
+            new HashSet<>(Arrays.asList(new MetadataElement("X-Interlok-Test", "ZZLC-split2"))));
+    aggr.joinMessage(original, Arrays.asList(s1, s2));
+    String payload = original.getContent();
+    assertTrue(payload.contains("ZZLC-original"));
+    assertFalse(payload.contains("ZZLC-split1"));
+    assertFalse(payload.contains("ZZLC-split2"));
+  }
+
+  public void testJoinMessage_WithSubType() throws Exception {
+    MimeAggregator aggr = createAggregatorForTests().withMimeContentSubType("form-data");
+    AdaptrisMessage original =
+        AdaptrisMessageFactory.getDefaultInstance().newMessage("<envelope/>", null,
+            new HashSet<>(Arrays.asList(new MetadataElement("X-Interlok-Test", "ZZLC-original"))));
+    AdaptrisMessage s1 =
+        AdaptrisMessageFactory.getDefaultInstance().newMessage("<document>hello</document>", null,
+            new HashSet<>(Arrays.asList(new MetadataElement("X-Interlok-Test", "ZZLC-split1"))));
+    AdaptrisMessage s2 =
+        AdaptrisMessageFactory.getDefaultInstance().newMessage("<document>world</document>", null,
+            new HashSet<>(Arrays.asList(new MetadataElement("X-Interlok-Test", "ZZLC-split2"))));
+    aggr.joinMessage(original, Arrays.asList(s1, s2));
+    String payload = original.getContent();
+    System.err.println(payload);
+    assertTrue(payload.contains("multipart/form-data"));
   }
 
   @Override
