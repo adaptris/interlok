@@ -19,14 +19,12 @@ package com.adaptris.core.services.metadata;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.StringReader;
-
+import java.nio.charset.Charset;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeUtility;
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.io.input.ReaderInputStream;
 import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
@@ -85,7 +83,8 @@ public class MetadataToPayloadService extends ServiceImp {
       InputStream getInputStream(AdaptrisMessage msg, String key) throws MessagingException {
         String resolvedKey = MetadataResolver.resolveKey(msg, key);
         if(msg.headersContainsKey(resolvedKey))
-          return new ReaderInputStream(new StringReader(msg.getMetadataValue(resolvedKey)));
+          return new ReaderInputStream(new StringReader(msg.getMetadataValue(resolvedKey)),
+              Charset.defaultCharset());
         else
           throw new UnresolvedMetadataException("Metadata key (" + resolvedKey + ") does not exist.");
       }
@@ -119,6 +118,7 @@ public class MetadataToPayloadService extends ServiceImp {
     Quoted_Printable("quoted-printable"),
     UUEncode("uuencode"),
     None(null) {
+      @Override
       InputStream unwrap(InputStream orig) {
         return orig;
       }
@@ -164,7 +164,7 @@ public class MetadataToPayloadService extends ServiceImp {
   public void doService(AdaptrisMessage msg) throws ServiceException {
     // MimeUtility should return the original InputStream stream if getContentEncoding is null.
     try {
-      StreamUtil.copyAndClose(getEncoding().unwrap((getMetadataSource().getInputStream(msg, getKey()))),  msg.getOutputStream());
+      StreamUtil.copyAndClose(getEncoding().unwrap(getMetadataSource().getInputStream(msg, getKey())),  msg.getOutputStream());
     } catch (Exception e) {
       ExceptionHelper.rethrowServiceException(e);
     }
