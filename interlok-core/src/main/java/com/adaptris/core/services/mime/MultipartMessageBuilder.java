@@ -158,8 +158,8 @@ public class MultipartMessageBuilder extends ServiceImp {
   /**
    * Set the sub type for the Multipart
    * 
-   * @param s the content subtype, which supports the {@code %message{}} syntax to resolve metadata;
-   *        defaults to 'mixed' if not specified.
+   * @param sub the content subtype, which supports the {@code %message{}} syntax to resolve
+   *        metadata; defaults to 'mixed' if not specified.
    */
   public void setMimeContentSubType(String sub) {
     this.mimeContentSubType = sub;
