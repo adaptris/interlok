@@ -364,8 +364,8 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
   }
 
   /**
-   * Provides the metadata key '{@value CoreConstants.FS_CONSUME_DIRECTORY}' that contains the
-   * directory (if not null) where the file was read from.
+   * Provides the metadata key '{@value com.adaptris.core.CoreConstants#FS_CONSUME_DIRECTORY}' that
+   * contains the directory (if not null) where the file was read from.
    * 
    * @since 3.9.0
    */

@@ -53,8 +53,8 @@ public interface AdaptrisMessageConsumer extends AdaptrisMessageWorker {
    * Return the specific metadata key that contains the consume location.
    * <p>
    * if specified; then the workflow will attempt to set
-   * {@value CoreConstants#MESSAGE_CONSUME_LOCATION} as a standard metadata key. If not explicitly
-   * overriden, then this metadata key is not available.
+   * {@value com.adaptris.core.CoreConstants#MESSAGE_CONSUME_LOCATION} as a standard metadata key.
+   * If not explicitly overriden, then this metadata key is not available.
    * </p>
    * 
    * @implSpec The default implementation returns null, indicating there is no way to standardise

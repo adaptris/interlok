@@ -300,8 +300,8 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   }
 
   /**
-   * Provides the metadata key '{@value JettyConstants.JETTY_URI}' that contains the URI which
-   * triggered the consumer.
+   * Provides the metadata key '{@value com.adaptris.core.http.jetty.JettyConstants#JETTY_URI}' that
+   * contains the URI which triggered the consumer.
    * 
    * @since 3.9.0
    */
