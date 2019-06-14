@@ -146,8 +146,8 @@ public class MultipartMessageBuilder extends ServiceImp {
    * @param s the Content-ID, which supports the {@code %message{}} syntax to resolve metadata;
    *        defaults to the messages unique id if no value is specified.
    */
-  public void setContentId(String contentId) {
-    this.contentId = contentId;
+  public void setContentId(String s) {
+    this.contentId = s;
   }
 
 
