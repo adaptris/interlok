@@ -468,8 +468,8 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
   }
 
   /**
-   * Provides the metadata key {@value JmsConstants#JMS_DESTINATION} which will only be populated if
-   * {@link MessageTypeTranslatorImp#getMoveJmsHeaders()} is true.
+   * Provides the metadata key {@value com.adaptris.core.jms.JmsConstants#JMS_DESTINATION} which
+   * will only be populated if {@link MessageTypeTranslatorImp#getMoveJmsHeaders()} is true.
    * 
    * @since 3.9.0
    */
