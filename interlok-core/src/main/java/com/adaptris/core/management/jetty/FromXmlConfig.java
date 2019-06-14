@@ -16,18 +16,15 @@
 package com.adaptris.core.management.jetty;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
-
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Map;
 import java.util.Properties;
-
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.xml.XmlConfiguration;
-
 import com.adaptris.core.management.jetty.WebServerProperties.WebServerPropertiesEnum;
 import com.adaptris.core.util.PropertyHelper;
 
@@ -52,14 +49,10 @@ final class FromXmlConfig extends ServerBuilder {
 
   @Override
   Server build() throws Exception {
-    Server server = null;
     log.trace("Create Server from XML");
-    try (InputStream in = open(jettyConfigUrl)) {
-      final XmlConfiguration xmlConfiguration = new XmlConfiguration(in);
-      xmlConfiguration.getProperties().putAll(mergeWithSystemProperties());
-      server = (Server) xmlConfiguration.configure();
-    }
-    return server;
+    final XmlConfiguration xmlConfiguration = new XmlConfiguration(toResource(jettyConfigUrl));
+    xmlConfiguration.getProperties().putAll(mergeWithSystemProperties());
+    return (Server) xmlConfiguration.configure();
   }
 
   private Map<String, String> mergeWithSystemProperties() {
@@ -69,10 +62,10 @@ final class FromXmlConfig extends ServerBuilder {
     return result;
   }
 
-  private InputStream open(String urlString) throws Exception {
+  private Resource toResource(String urlString) throws Exception {
     final URL url = createUrlFromString(urlString);
     log.trace("Connecting to configured URL {}", url.toString());
-    return url.openConnection().getInputStream();
+    return Resource.newResource(url);
   }
 
   private static URL createUrlFromString(String s) throws Exception {
