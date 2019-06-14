@@ -2,9 +2,7 @@ package com.adaptris.core;
 
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
-
 import javax.validation.Valid;
-
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -44,11 +42,9 @@ public class GaussianIntervalPoller extends ScheduledTaskPoller  {
    * Creates a new instance.  Default mean is 0 seconds and standard deviation is 20 seconds.
    * </p>
    */
-  @SuppressWarnings("WeakerAccess")
   public GaussianIntervalPoller() {
   }
 
-  @SuppressWarnings("WeakerAccess")
   public GaussianIntervalPoller(TimeInterval meanInterval, TimeInterval standardDeviationInterval) {
     setMeanInterval(meanInterval);
     setStandardDeviationInterval(standardDeviationInterval);
@@ -64,6 +60,7 @@ public class GaussianIntervalPoller extends ScheduledTaskPoller  {
     }
   }
 
+  @Override
   protected void scheduleTask() {
     long delay = delay();
     pollerTask = executor.schedule(new GaussianIntervalPollerTask(), delay, TimeUnit.MILLISECONDS);
@@ -91,7 +88,6 @@ public class GaussianIntervalPoller extends ScheduledTaskPoller  {
     return TimeInterval.toMillisecondsDefaultIfNull(getMeanInterval(), DEFAULT_MEAN_INTERVAL);
   }
 
-  @SuppressWarnings("WeakerAccess")
   public TimeInterval getMeanInterval() {
     return meanInterval;
   }
@@ -101,7 +97,6 @@ public class GaussianIntervalPoller extends ScheduledTaskPoller  {
    *
    * @param meanInterval the mean interval (default 0 seconds)
    */
-  @SuppressWarnings("WeakerAccess")
   public void setMeanInterval(TimeInterval meanInterval) {
     this.meanInterval = meanInterval;
   }
@@ -111,7 +106,6 @@ public class GaussianIntervalPoller extends ScheduledTaskPoller  {
         DEFAULT_STANDARD_DEVIATION_INTERVAL);
   }
 
-  @SuppressWarnings("WeakerAccess")
   public TimeInterval getStandardDeviationInterval() {
     return standardDeviationInterval;
   }
@@ -121,7 +115,6 @@ public class GaussianIntervalPoller extends ScheduledTaskPoller  {
    *
    * @param standardDeviationInterval the standard deviation interval (default 20 seconds)
    */
-  @SuppressWarnings("WeakerAccess")
   public void setStandardDeviationInterval(TimeInterval standardDeviationInterval) {
     this.standardDeviationInterval = standardDeviationInterval;
   }
