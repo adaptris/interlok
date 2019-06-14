@@ -17,12 +17,12 @@
 package com.adaptris.core.services.aggregator;
 
 import java.io.IOException;
-
 import javax.mail.MessagingException;
-
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
+import com.adaptris.core.MetadataCollection;
 import com.adaptris.util.text.mime.MultiPartOutput;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -48,11 +48,20 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("ignore-original-mime-aggregator")
-@DisplayOrder(order = {"encoding", "overwriteMetadata", "partContentIdMetadataKey"})
+@DisplayOrder(order = {"encoding", "mimeContentSubType", "mimeHeaderFilter", "overwriteMetadata",
+    "partContentId", "partContentType", "partHeaderFilter"})
+@ComponentProfile(
+    summary = "Aggregator implementation that creates a new mime part for each message that needs to be joined up")
 public class IgnoreOriginalMimeAggregator extends MimeAggregator {
 
   @Override
   protected MultiPartOutput createInitialPart(AdaptrisMessage original) throws MessagingException, IOException {
-    return new MultiPartOutput(original.getUniqueId());
+    MultiPartOutput output =
+        new MultiPartOutput(original.getUniqueId(), mimeContentSubType(original));
+    MetadataCollection metadata = mimeHeaderFilter().filter(original);
+    metadata.forEach((e) -> {
+      output.setHeader(e.getKey(), e.getValue());
+    });
+    return output;
   }
 }
