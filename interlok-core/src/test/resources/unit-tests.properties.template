@@ -145,6 +145,8 @@ junit.adp.https.port=58443
 junit.jetty.http.port=58080
 junit.jetty.https.port=58443
 junit.jetty.user.realm.properties=@BASE_DIR@/src/test/resources/realm.properties
+junit.jetty.mgmt.config.absolute=file:///@BASE_DIR@/src/test/resources/jetty/jetty.xml
+junit.jetty.mgmt.config.relative=./src/test/resources/jetty/jetty.xml
 
 
 junit.DuplicateMessageRoutingService.store=file:///@BUILD_DIR@/DMR.dat

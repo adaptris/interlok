@@ -23,11 +23,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
@@ -170,7 +168,7 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
     ResultSet rs = null;
     DatabaseActor actor = null;
 
-    if (!alwaysReplaceMetadata() && msg.containsKey(getMetadataKey())) {
+    if (!alwaysReplaceMetadata() && msg.headersContainsKey(getMetadataKey())) {
       log.debug("{} already exists, not updating", getMetadataKey());
       return;
     }

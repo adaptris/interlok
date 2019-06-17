@@ -23,10 +23,8 @@ import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Properties;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AffectsMetadata;
@@ -148,8 +146,8 @@ public class SimpleSequenceNumberService extends ServiceImp {
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     NumberFormat formatter = new DecimalFormat(getNumberFormat());
-    if (!alwaysReplaceMetadata() && msg.containsKey(getMetadataKey())) {
-      log.debug(getMetadataKey() + " already exists, not updating");
+    if (!alwaysReplaceMetadata() && msg.headersContainsKey(getMetadataKey())) {
+      log.debug("{} already exists, not updating", getMetadataKey());
       return;
     }
     try {

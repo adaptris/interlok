@@ -2,11 +2,11 @@ package com.adaptris.core.services.cache.translators;
 
 import javax.jms.JMSException;
 import javax.jms.Queue;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.jms.JmsConstants;
 import com.adaptris.core.services.cache.CacheValueTranslator;
 
+@SuppressWarnings("deprecation")
 public class JmsReplyToCacheValueTranslatorTest extends CacheValueTranslatorBaseCase {
 
 

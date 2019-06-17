@@ -18,10 +18,9 @@ package com.adaptris.core.services.jdbc.types;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.sql.SQLException;
-
 import org.apache.commons.io.IOUtils;
-
 import com.adaptris.jdbc.JdbcResultRow;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -53,13 +52,13 @@ public class StringColumnTranslator extends FormattableColumnTranslator implemen
   @Override
   public void write(JdbcResultRow rs, int column, OutputStream out)
       throws SQLException, IOException {
-    IOUtils.write(toString(rs.getFieldValue(column)), out);
+    IOUtils.write(toString(rs.getFieldValue(column)), out, Charset.defaultCharset());
   }
 
   @Override
   public void write(JdbcResultRow rs, String columnName, OutputStream out)
       throws SQLException, IOException {
-    IOUtils.write(toString(rs.getFieldValue(columnName)), out);
+    IOUtils.write(toString(rs.getFieldValue(columnName)), out, Charset.defaultCharset());
   }
 
 }

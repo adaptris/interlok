@@ -16,9 +16,7 @@
 package com.adaptris.core.management.jetty;
 
 import static com.adaptris.core.management.jetty.JettyServerComponent.DEFAULT_JETTY_PORT;
-
 import java.util.Properties;
-
 import org.eclipse.jetty.deploy.DeploymentManager;
 import org.eclipse.jetty.deploy.providers.WebAppProvider;
 import org.eclipse.jetty.http.HttpCompliance;
@@ -31,7 +29,6 @@ import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
-
 import com.adaptris.core.management.jetty.WebServerProperties.WebServerPropertiesEnum;
 
 /**
@@ -116,7 +113,9 @@ final class FromProperties extends ServerBuilder {
     httpConfig.setHeaderCacheSize(512);
     httpConfig.setDelayDispatchUntilContent(true);
     httpConfig.setMaxErrorDispatches(10);
-    httpConfig.setBlockingTimeout(-1);
+    // httpConfig.setBlockingTimeout(-1);
+    httpConfig.setMinRequestDataRate(-1);
+    httpConfig.setMinResponseDataRate(-1);
     httpConfig.setPersistentConnectionsEnabled(true);
     return httpConfig;
   }

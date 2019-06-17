@@ -259,7 +259,7 @@ public class FtpProducer extends RequestReplyProducerImp {
       // Remember that replyDirectory will have automatically had a "/" added to it.
       String replyDir = dirRoot + replyDirectory;
       String replyToName = null;
-      if (msg.containsKey(CoreConstants.FTP_REPLYTO_NAME)) {
+      if (msg.headersContainsKey(CoreConstants.FTP_REPLYTO_NAME)) {
         replyToName = msg.getMetadataValue(CoreConstants.FTP_REPLYTO_NAME);
       }
       else {

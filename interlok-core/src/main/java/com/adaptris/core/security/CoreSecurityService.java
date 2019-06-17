@@ -280,7 +280,7 @@ public abstract class CoreSecurityService extends ServiceImp {
 
   final Alias retrieveRemotePartner(AdaptrisMessage m) throws AdaptrisSecurityException {
     Alias rpa = remotePartnerAlias;
-    if (m.containsKey(getRemotePartnerMetadataKey())) {
+    if (m.headersContainsKey(getRemotePartnerMetadataKey())) {
       String aliasName = m.getMetadataValue(getRemotePartnerMetadataKey());
       log.debug("Message metadata overrides configured remote partner with [" + aliasName + "]");
       rpa = new Alias(aliasName);

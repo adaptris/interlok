@@ -2,6 +2,7 @@ package com.adaptris.core.services.cache.translators;
 
 import com.adaptris.core.AdaptrisMessage;
 
+@SuppressWarnings("deprecation")
 public class StringPayloadCacheValueTranslatorTest extends CacheValueTranslatorBaseCase {
 
   public StringPayloadCacheValueTranslatorTest(String s) {

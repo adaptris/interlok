@@ -59,6 +59,7 @@ public class MimeAggregatorTest extends MimeAggregatorCase {
     assertEquals(11, input.size());
   }
 
+  @SuppressWarnings("deprecation")
   public void testService_ContentIdProvided() throws Exception {
     // This is a 100 line message, so we expect to get 11 parts.
     AdaptrisMessage msg = SplitterCase.createLineCountMessageInput();
