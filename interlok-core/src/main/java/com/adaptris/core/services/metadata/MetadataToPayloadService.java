@@ -22,11 +22,10 @@ import java.io.StringReader;
 import java.nio.charset.Charset;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeUtility;
-import javax.validation.constraints.NotNull;
 import org.apache.commons.io.input.ReaderInputStream;
+import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.validator.constraints.NotBlank;
 import com.adaptris.annotation.AdapterComponent;
-import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
@@ -45,15 +44,20 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * Takes a metadata value and sets that as the payload.
  * 
- * <p>This can be treated as a simplified form of {@link PayloadFromMetadataService} which does not have a template and just uses
- * the actual metadata value as the payload. It is also designed as the reverse form of {@link PayloadToMetadataService} and allows
- * you to take a piece of object metadata containing {@code byte[]} and make it the payload.
+ * <p>
+ * This can be treated as a simplified form of {@link PayloadFromMetadataService} which does not
+ * have a template and just uses the actual metadata value as the payload. It is also designed as
+ * the reverse form of {@link PayloadToMetadataService} and allows you to take a piece of object
+ * metadata containing {@code byte[]} and make it the payload.
  * </p>
  * <p>
- * This service will throw an error if the target metadata item does not exist.  
+ * This service will throw an error if the target metadata item does not exist.
  * </p>
  * <p>
- * This service also supports a resolvable metadata key.  {@link com.adaptris.core.metadata.MetadataResolver}
+ * This service also supports a resolvable metadata key via
+ * {@link com.adaptris.core.metadata.MetadataResolver}; and if the metadata source is
+ * {@link MetadataSource#Standard} then an additional
+ * {@link AdaptrisMessage#resolve(String, boolean)} step is executed.
  * </p>
  * 
  * @config metadata-to-payload
@@ -82,11 +86,12 @@ public class MetadataToPayloadService extends ServiceImp {
       @Override
       InputStream getInputStream(AdaptrisMessage msg, String key) throws MessagingException {
         String resolvedKey = MetadataResolver.resolveKey(msg, key);
-        if(msg.headersContainsKey(resolvedKey))
-          return new ReaderInputStream(new StringReader(msg.getMetadataValue(resolvedKey)),
-              Charset.defaultCharset());
-        else
-          throw new UnresolvedMetadataException("Metadata key (" + resolvedKey + ") does not exist.");
+        String value = msg.resolve(msg.getMetadataValue(resolvedKey), true);
+        if (value == null) {
+          throw new UnresolvedMetadataException(
+              "Metadata key (" + resolvedKey + ") does not exist.");
+        }
+        return new ReaderInputStream(new StringReader(value), Charset.defaultCharset());
       }
     },
     /**
@@ -139,18 +144,12 @@ public class MetadataToPayloadService extends ServiceImp {
   @NotBlank
   @InputFieldHint(expression = true)
   private String key;
-  @NotNull
   @InputFieldDefault(value = "Standard")
-  @AutoPopulated
   private MetadataSource metadataSource;
-  @NotNull
-  @AutoPopulated
   @InputFieldDefault(value = "None")
   private Encoding encoding;
 
   public MetadataToPayloadService() {
-    setEncoding(Encoding.None);
-    setMetadataSource(MetadataSource.Standard);
   }
 
   public MetadataToPayloadService(String metadataKey, MetadataSource target) {
@@ -164,9 +163,10 @@ public class MetadataToPayloadService extends ServiceImp {
   public void doService(AdaptrisMessage msg) throws ServiceException {
     // MimeUtility should return the original InputStream stream if getContentEncoding is null.
     try {
-      StreamUtil.copyAndClose(getEncoding().unwrap(getMetadataSource().getInputStream(msg, getKey())),  msg.getOutputStream());
+      StreamUtil.copyAndClose(encoding().unwrap(source().getInputStream(msg, getKey())),
+          msg.getOutputStream());
     } catch (Exception e) {
-      ExceptionHelper.rethrowServiceException(e);
+      throw ExceptionHelper.wrapServiceException(e);
     }
   }
 
@@ -192,6 +192,10 @@ public class MetadataToPayloadService extends ServiceImp {
 
   public void setMetadataSource(MetadataSource t) {
     this.metadataSource = Args.notNull(t, "Metadata Source");
+  }
+
+  private MetadataSource source() {
+    return ObjectUtils.defaultIfNull(getMetadataSource(), MetadataSource.Standard);
   }
 
   public String getKey() {
@@ -220,4 +224,7 @@ public class MetadataToPayloadService extends ServiceImp {
     this.encoding = enc;
   }
 
+  private Encoding encoding() {
+    return ObjectUtils.defaultIfNull(getEncoding(), Encoding.None);
+  }
 }
