@@ -98,12 +98,12 @@ dependencies {
   testCompile ("log4j:log4j:1.2.17")
   testCompile ("junit:junit:4.12")
   testCompile ("org.apache.activemq:artemis-jms-server:$artemisVersion")
-  
+
   testCompile ("org.apache.activemq:activemq-broker:$activeMqVersion")
   testCompile ("org.apache.activemq:activemq-jaas:$activeMqVersion")
   testCompile ("org.apache.activemq:activemq-kahadb-store:$activeMqVersion")
   testCompile ("org.apache.activemq.protobuf:activemq-protobuf:1.1")
-  
+
   testCompile ("org.jruby:jruby-complete:9.2.7.0")
   testCompile ("org.mockftpserver:MockFtpServer:2.7.1")
   testCompile ("org.mockito:mockito-all:1.10.19")
@@ -320,7 +320,8 @@ uploadArchives {
       }
       configuration = configurations.mavenDeploy
       pom.withXml {
-        asNode().appendNode("description", "Core Interlok Framework")
+        asNode().appendNode("description", "The Core Interlok framework component; this is your must have")
+        asNode().appendNode("name", "Interlok Core")
         def properties = asNode().appendNode("properties")
         properties.appendNode("target", "3.8.0+")
         properties.appendNode("license", "false")
@@ -339,9 +340,11 @@ uploadUnitTestStubs {
       configuration = configurations.mavenDeploy
       pom.artifactId = "interlok-stubs"
       pom.withXml {
+        asNode().appendNode("name", "Interlok Test Scaffolding")
         asNode().appendNode("description", "Test Scaffolding for custom Interlok components")
         def properties = asNode().appendNode("properties")
         properties.appendNode("target", "3.8.0+")
+        properties.appendNode("tags", "junit")
         properties.appendNode("license", "false")
       }
 
