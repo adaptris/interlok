@@ -16,6 +16,8 @@
 
 package com.adaptris.core.stubs;
 
+import java.util.EnumSet;
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 
@@ -32,20 +34,44 @@ import com.adaptris.core.DefaultMessageFactory;
 public final class DefectiveMessageFactory extends DefaultMessageFactory {
 
   public static enum WhenToBreak {
+    /** Break when getInputStream() is called */
     INPUT,
+    /** Break when getOutputStream() is called */
     OUTPUT,
+    /**
+     * Break when either getInputStream() or getOutputStream() is called
+     * 
+     */
     BOTH,
-    NEVER
+    /**
+     * Never break when getInputStream() or getOutputStream() is called
+     * 
+     */
+    NEVER, 
+    /**
+     * Break when getting metadata
+     * 
+     */
+    METADATA_GET, 
+    /**
+     * Break when setting metadata
+     * 
+     */
+    METADATA_SET
   };
 
-  private transient WhenToBreak whenToBreak;
+  private transient EnumSet<WhenToBreak> whenToBreak;
 
   public DefectiveMessageFactory() {
-    whenToBreak = WhenToBreak.BOTH;
+    this(EnumSet.of(WhenToBreak.INPUT, WhenToBreak.OUTPUT));
+  }
+
+  public DefectiveMessageFactory(EnumSet<WhenToBreak> set) {
+    whenToBreak = set;
   }
 
   public DefectiveMessageFactory(WhenToBreak wtb) {
-    whenToBreak = wtb;
+    this(asEnumSet(wtb));
   }
 
   @Override
@@ -55,10 +81,28 @@ public final class DefectiveMessageFactory extends DefaultMessageFactory {
   }
 
   boolean brokenInput() {
-    return (whenToBreak == WhenToBreak.INPUT) || (whenToBreak == WhenToBreak.BOTH);
+    return BooleanUtils.or(new boolean[] {whenToBreak.contains(WhenToBreak.INPUT)});
   }
 
   boolean brokenOutput() {
-    return (whenToBreak == WhenToBreak.OUTPUT) || (whenToBreak == WhenToBreak.BOTH);
+    return BooleanUtils.or(new boolean[] {whenToBreak.contains(WhenToBreak.OUTPUT)});
+  }
+
+  boolean brokenMetadataGet() {
+    return BooleanUtils.or(new boolean[] {whenToBreak.contains(WhenToBreak.METADATA_GET)});
+  }
+
+  boolean brokenMetadataSet() {
+    return BooleanUtils.or(new boolean[] {whenToBreak.contains(WhenToBreak.METADATA_SET)});
+  }
+
+  private static EnumSet<WhenToBreak> asEnumSet(WhenToBreak wtb) {
+    if (wtb == WhenToBreak.NEVER) {
+      return EnumSet.noneOf(WhenToBreak.class);
+    }
+    if (wtb == WhenToBreak.BOTH) {
+      return EnumSet.of(WhenToBreak.INPUT, WhenToBreak.OUTPUT);
+    }
+    return EnumSet.of(wtb);
   }
 }

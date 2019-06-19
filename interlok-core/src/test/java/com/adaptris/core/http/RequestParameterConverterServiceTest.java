@@ -20,12 +20,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.Properties;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.http.Http;
 
+@SuppressWarnings("deprecation")
 public class RequestParameterConverterServiceTest extends HttpServiceExample {
 
   private static final String TEST_VALUE = "the quick brown fox jumps over the lazy dog";

@@ -36,15 +36,18 @@ public class CreateQueryStringFromMetadataTest extends MetadataServiceExample {
 
   public void testQuerySeparator() throws Exception {
     CreateQueryStringFromMetadata service = new CreateQueryStringFromMetadata();
-    assertNull(service.getQuerySeparator());
-    assertEquals("&", service.querySeparator());
-    service.setQuerySeparator(",");
-    assertEquals(",", service.querySeparator());
-    assertEquals(",", service.getQuerySeparator());
+    assertNull(service.getSeparator());
+    assertEquals("&", service.separator());
+    service.setSeparator(",");
+    assertEquals(",", service.separator());
+    assertEquals(",", service.getSeparator());
 
-    service.setQuerySeparator(null);
-    assertEquals("&", service.querySeparator());
+    service.setSeparator(null);
     service.setQuerySeparator(",");
+
+    assertEquals(",", service.separator());
+    service.setQuerySeparator(null);
+    assertEquals("&", service.separator());
   }
 
   public void testService_SimpleQueryString() throws Exception {
