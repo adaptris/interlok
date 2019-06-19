@@ -24,9 +24,6 @@ import com.adaptris.util.text.mime.BodyPartIterator;
 
 public class FlattenMimePartTest extends MimeServiceExample {
 
-  public FlattenMimePartTest(java.lang.String testName) {
-    super(testName);
-  }
 
   @Override
   protected void setUp() throws Exception {

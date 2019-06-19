@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Adaptris Ltd.
+ * Copyright 2019 Adaptris Ltd.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,30 +12,15 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
-
+ */
 package com.adaptris.core.services.mime;
 
-import com.adaptris.core.ServiceCase;
+import javax.mail.internet.MimeBodyPart;
+import com.adaptris.core.AdaptrisMessage;
 
-public abstract class MimeServiceExample extends ServiceCase {
-
-  /**
-   * Key in unit-test.properties that defines where example goes unless overriden {@link #setBaseDir(String)}.
-   * 
-   */
-  public static final String BASE_DIR_KEY = "MimeServiceExamples.baseDir";
-
-  public MimeServiceExample() {
-    super();
-    if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
-      setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
-    }
-  }
-
-  public MimeServiceExample(String name) {
-    this();
-    setName(name);
-  }
+@FunctionalInterface
+public interface MimePartBuilder {
+  /** Build the body part */
+  MimeBodyPart build(AdaptrisMessage msg) throws Exception;
 
 }
