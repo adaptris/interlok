@@ -16,11 +16,14 @@
 package com.adaptris.core.services.mime;
 
 import static com.adaptris.util.text.mime.MimeConstants.HEADER_CONTENT_TYPE;
+
 import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeBodyPart;
 import javax.validation.Valid;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -28,6 +31,9 @@ import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.MetadataCollection;
+import com.adaptris.core.common.ByteArrayFromMetadata;
+import com.adaptris.core.common.ByteArrayFromObjectMetadata;
+import com.adaptris.core.common.ByteArrayFromPayload;
 import com.adaptris.core.metadata.MetadataFilter;
 import com.adaptris.core.metadata.RemoveAllMetadataFilter;
 import com.adaptris.core.util.Args;
@@ -37,7 +43,18 @@ import com.adaptris.util.text.mime.MimeUtils;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Builds a MIME Body part using byte arrays
+ * Builds a MIME Body part by rendering a byte array as the content of the part.
+ * 
+ * <p>
+ * Used as part of a {@link MultipartMessageBuilder} service; this constructs a {@link MimeBodyPart} from the configured
+ * {@code body} configuration. Depending on your use case you might opt to use {@link ByteArrayFromPayload} or
+ * {@link ByteArrayFromMetadata} to generate the actual contents for the part.
+ * </p>
+ * <p>
+ * You can also specify the various headers that will be associated with the {@link MimeBodyPart} such as the {@code Content-ID},
+ * {@code Content-Type} or {@code Content-Transfer-Encoding}. Additional non standard headers can be added by configuring a
+ * {@link #setPartHeaderFilter(MetadataFilter)} to filter out metadata to include as part of the MimeBodyPart headers.
+ * </p>
  * 
  * @config inline-mime-body-part-builder
  * @since 3.9.0
@@ -92,6 +109,14 @@ public class InlineMimePartBuilder implements MimePartBuilder {
     return body;
   }
 
+  /**
+   * Set where the body of the MimeBodyPart is going to come from.
+   * 
+   * @param body the location of the body for the mime part; the default if not specified is the payload as a byte-array.
+   * @see ByteArrayFromMetadata
+   * @see ByteArrayFromObjectMetadata
+   * @see ByteArrayFromPayload
+   */
   public void setBody(MessageWrapper<byte[]> body) {
     this.body = Args.notNull(body, "body");
   }
