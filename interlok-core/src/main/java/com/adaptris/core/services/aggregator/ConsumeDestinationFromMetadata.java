@@ -17,7 +17,6 @@
 package com.adaptris.core.services.aggregator;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
@@ -106,7 +105,7 @@ public class ConsumeDestinationFromMetadata implements ConsumeDestinationGenerat
 
   private String getMetadataValue(AdaptrisMessage msg, String key, String defaultValue) {
     String result = defaultValue;
-    if (!isEmpty(key) && msg.containsKey(key)) {
+    if (!isEmpty(key) && msg.headersContainsKey(key)) {
       result = msg.getMetadataValue(key);
     }
     return result;

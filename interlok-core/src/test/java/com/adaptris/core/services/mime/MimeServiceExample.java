@@ -26,11 +26,16 @@ public abstract class MimeServiceExample extends ServiceCase {
    */
   public static final String BASE_DIR_KEY = "MimeServiceExamples.baseDir";
 
-  public MimeServiceExample(String name) {
-    super(name);
+  public MimeServiceExample() {
+    super();
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
+  }
+
+  public MimeServiceExample(String name) {
+    this();
+    setName(name);
   }
 
 }

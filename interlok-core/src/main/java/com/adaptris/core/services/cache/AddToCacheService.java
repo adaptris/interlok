@@ -46,7 +46,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("add-to-cache")
 @AdapterComponent
-@ComponentProfile(summary = "Add values to a cache", tag = "service,cache")
+@ComponentProfile(summary = "Add values to a cache", tag = "service,cache", recommended = {CacheConnection.class})
 @DisplayOrder(order = { "enforceSerializable" })
 public class AddToCacheService extends CacheServiceBase {
 

@@ -17,13 +17,11 @@
 package com.adaptris.http.legacy;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.Properties;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -31,7 +29,6 @@ import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.http.HttpProducer;
-import com.adaptris.core.http.JdkHttpProducer;
 import com.adaptris.http.Http;
 import com.adaptris.http.HttpClientTransport;
 import com.adaptris.http.HttpException;

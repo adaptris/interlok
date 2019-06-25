@@ -108,7 +108,7 @@ public abstract class ExampleConfigCase extends BaseCase {
 
   private Object roundTrip(Object input, AdaptrisMarshaller m) throws Exception {
     String xml = m.marshal(input);
-    log.trace("Marshalled XML " + xml);
+    System.err.println("Marshalled XML " + xml);
     return m.unmarshal(xml);
   }
 

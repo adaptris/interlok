@@ -37,7 +37,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("payload")
 @AdapterComponent
-@ComponentProfile(summary = "Tests a payload against a configured operator.", tag = "condition,payload")
+@ComponentProfile(summary = "Tests a payload against a configured operator.", tag = "condition")
 @DisplayOrder(order = {"operator"})
 public class ConditionPayload extends ConditionWithOperator {
   

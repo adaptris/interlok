@@ -25,26 +25,6 @@ public abstract class MessageValidatorImpl implements MessageValidator {
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
   @Override
-  public void prepare() throws CoreException {
-  }
-
-
-  @Override
-  public void init() throws CoreException {
-  }
-
-  @Override
-  public void start() throws CoreException {
-  }
-
-  @Override
-  public void stop() {
-
-  }
-
-  @Override
-  public void close() {
-
-  }
+  public void prepare() throws CoreException {}
 
 }

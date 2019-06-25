@@ -33,6 +33,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.util.CastorizedList;
+import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -109,7 +110,7 @@ public final class WorkflowList extends AbstractCollection<Workflow>
   @Override
   public void prepare() throws CoreException {
     for (Workflow w : workflows) {
-      w.prepare();
+      LifecycleHelper.prepare(w);
     }
   }
 

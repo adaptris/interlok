@@ -28,6 +28,7 @@ public class LoggingServiceTest extends GeneralServiceExample {
     return new LoggingService(LoggingLevel.DEBUG, "Using Metadata [%message{the-metadata-key}] to as the lookup");
   }
 
+  @SuppressWarnings("deprecation")
   public void testLogging() throws Exception {
     LoggingService s1 = new LoggingService(LoggingLevel.FATAL, "Metadata key set to [%message{the-metadata-key}]");
     LoggingService s2 = new LoggingService(LoggingLevel.DEBUG, "Metadata key set to [%message{the-metadata-key}]")

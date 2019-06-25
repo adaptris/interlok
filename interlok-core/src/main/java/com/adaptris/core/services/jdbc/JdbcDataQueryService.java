@@ -21,13 +21,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.xml.namespace.NamespaceContext;
-
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -118,22 +115,22 @@ public class JdbcDataQueryService extends JdbcServiceWithParameters implements D
 
   @Override
   protected void prepareService() throws CoreException {
-    getResultSetTranslator().prepare();
+    LifecycleHelper.prepare(getResultSetTranslator());
   }
 
   @Override
   public void startService() throws CoreException {
-    LifecycleHelper.start(resultSetTranslator);
+    LifecycleHelper.start(getResultSetTranslator());
   }
 
   @Override
   protected void closeJdbcService() {
-    LifecycleHelper.close(resultSetTranslator);
+    LifecycleHelper.close(getResultSetTranslator());
   }
 
   @Override
   public void stopService() {
-    LifecycleHelper.stop(resultSetTranslator);
+    LifecycleHelper.stop(getResultSetTranslator());
     actor.destroy();
   }
 

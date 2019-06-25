@@ -40,7 +40,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("retrieve-from-cache")
 @AdapterComponent
-@ComponentProfile(summary = "Retrieve values from the cache", tag = "service,cache")
+@ComponentProfile(summary = "Retrieve values from the cache", tag = "service,cache", recommended = {CacheConnection.class})
 public class RetrieveFromCacheService extends CacheServiceBase {
 
   private Boolean exceptionIfNotFound;

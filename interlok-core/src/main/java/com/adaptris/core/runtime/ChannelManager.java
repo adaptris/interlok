@@ -17,21 +17,17 @@
 package com.adaptris.core.runtime;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
-
 import javax.management.MBeanNotificationInfo;
 import javax.management.MalformedObjectNameException;
 import javax.management.Notification;
 import javax.management.ObjectName;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-
 import com.adaptris.core.Channel;
 import com.adaptris.core.ClosedState;
 import com.adaptris.core.ComponentState;
@@ -39,6 +35,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.Workflow;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.LifecycleHelper;
 
 /**
  * Base implementation of {@link ChannelManagerMBean}.
@@ -307,7 +304,7 @@ public class ChannelManager extends ComponentManagerImpl<Channel> implements Cha
     ensureState(ClosedState.getInstance());
     Workflow newWorkflow = (Workflow) DefaultMarshaller.getDefaultMarshaller().unmarshal(xml);
     WorkflowManager workflowManager = new WorkflowManager(newWorkflow, this);
-    newWorkflow.prepare();
+    LifecycleHelper.prepare(newWorkflow);
     // We don't need to "store" the XML at this point, as channelManager will eventually call
     // addChild() and that's when that happens.
     // marshalAndSendNotification();

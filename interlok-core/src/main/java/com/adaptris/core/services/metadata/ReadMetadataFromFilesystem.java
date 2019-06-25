@@ -17,19 +17,15 @@
 package com.adaptris.core.services.metadata;
 
 import static com.adaptris.core.util.MetadataHelper.convertFromProperties;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.Set;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -127,7 +123,7 @@ public class ReadMetadataFromFilesystem extends MetadataServiceImpl {
       try (InputStream in = new FileInputStream(fileToRead)) {
         Set<MetadataElement> set = getStyle(getInputStyle()).load(in);
         for (MetadataElement e : set) {
-          if (overwriteExistingMetadata() || !msg.containsKey(e.getKey())) {
+          if (overwriteExistingMetadata() || !msg.headersContainsKey(e.getKey())) {
             msg.addMetadata(e);
           }
         }

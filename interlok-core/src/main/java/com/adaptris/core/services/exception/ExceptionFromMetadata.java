@@ -17,7 +17,6 @@
 package com.adaptris.core.services.exception;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
-
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
@@ -75,9 +74,11 @@ public class ExceptionFromMetadata extends ExceptionFromMetadataImpl {
     defaultExceptionMessage = s;
   }
 
+  @Override
   public ServiceException create(AdaptrisMessage msg) {
     String message = getDefaultExceptionMessage();
-    if (getExceptionMessageMetadataKey() != null && msg.containsKey(getExceptionMessageMetadataKey())) {
+    if (getExceptionMessageMetadataKey() != null
+        && msg.headersContainsKey(getExceptionMessageMetadataKey())) {
       message = isBlank(msg.getMetadataValue(getExceptionMessageMetadataKey())) ? message : msg
           .getMetadataValue(getExceptionMessageMetadataKey());
     }

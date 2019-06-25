@@ -25,11 +25,14 @@ import com.adaptris.core.CoreException;
  * Conditions are used with logical expressions in configuration such as {@link IfElse} and {@link While}.
  * </p>
  * <p>
- * Logical expressions allow us to branch through services based on the results of Conditions.  Conditions generally test for equality, nulls and not-nulls against a message payload or metadata item.
+ * Logical expressions allow us to branch through services based on the results of Conditions.
+ * Conditions generally test for equality, nulls and not-nulls against a message payload or metadata item.
  * </p>
+ * 
  * @author amcgrath
  *
  */
+@FunctionalInterface
 public interface Condition extends ComponentLifecycle {
   
   public boolean evaluate(AdaptrisMessage message) throws CoreException;

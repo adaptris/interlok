@@ -17,10 +17,8 @@
 package com.adaptris.core;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
@@ -84,6 +82,7 @@ public class StandaloneProducer extends ServiceImp implements AdaptrisMessageSen
     getProducer().produce(msg, dest);
   }
 
+  @Override
   protected void initService() throws CoreException {
     connection.addExceptionListener(this);
     connection.addMessageProducer(producer);
@@ -106,6 +105,7 @@ public class StandaloneProducer extends ServiceImp implements AdaptrisMessageSen
 
   }
 
+  @Override
   protected void closeService() {
     LifecycleHelper.close(producer);
     LifecycleHelper.close(connection);
@@ -113,8 +113,8 @@ public class StandaloneProducer extends ServiceImp implements AdaptrisMessageSen
 
   @Override
   public void prepare() throws CoreException {
-    getConnection().prepare();
-    getProducer().prepare();
+    LifecycleHelper.prepare(getConnection());
+    LifecycleHelper.prepare(getProducer());
   }
 
 
@@ -127,6 +127,7 @@ public class StandaloneProducer extends ServiceImp implements AdaptrisMessageSen
    *
    * @return the connection to use
    */
+  @Override
   public AdaptrisConnection getConnection() {
     return connection;
   }
@@ -149,6 +150,7 @@ public class StandaloneProducer extends ServiceImp implements AdaptrisMessageSen
    *
    * @param conn the connection to use, may not be null
    */
+  @Override
   public void setConnection(AdaptrisConnection conn) {
     connection = Args.notNull(conn, "connection");
   }
@@ -167,6 +169,7 @@ public class StandaloneProducer extends ServiceImp implements AdaptrisMessageSen
   /**
    * @see com.adaptris.core.Service #doService(com.adaptris.core.AdaptrisMessage)
    */
+  @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     try {
       this.produce(msg);

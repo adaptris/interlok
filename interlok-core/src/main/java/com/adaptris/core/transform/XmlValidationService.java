@@ -19,10 +19,8 @@ package com.adaptris.core.transform;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
@@ -75,6 +73,7 @@ public class XmlValidationService extends ServiceImp {
     }
   }
 
+  @Override
   public void start() throws CoreException {
     super.start();
     for (MessageValidator v : getValidators()) {
@@ -82,6 +81,7 @@ public class XmlValidationService extends ServiceImp {
     }
   }
 
+  @Override
   public void stop() {
     for (MessageValidator v : getValidators()) {
       LifecycleHelper.stop(v);
@@ -89,6 +89,7 @@ public class XmlValidationService extends ServiceImp {
     super.stop();
   }
 
+  @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     try {
       for (MessageValidator v : getValidators()) {
@@ -103,7 +104,7 @@ public class XmlValidationService extends ServiceImp {
   @Override
   public void prepare() throws CoreException {
     for (MessageValidator v : getValidators()) {
-      v.prepare();
+      LifecycleHelper.prepare(v);
     }
   }
 

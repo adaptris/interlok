@@ -16,6 +16,7 @@
 
 package com.adaptris.core;
 
+@SuppressWarnings("deprecation")
 public class MessageEventGeneratorTest extends BaseCase {
 
   public MessageEventGeneratorTest(String name) {

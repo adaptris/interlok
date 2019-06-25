@@ -15,6 +15,9 @@
 */
 package com.adaptris.core.services.jdbc;
 
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -27,7 +30,6 @@ import javax.validation.Valid;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.CharUtils;
-import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdvancedConfig;
@@ -200,6 +202,9 @@ public abstract class JdbcMapInsert extends JdbcService {
   @AdvancedConfig
   private Character columnBookendCharacter;
 
+  @InputFieldDefault(value = "")
+  private String rowsAffectedMetadataKey;
+
   public JdbcMapInsert() {
     super();
   }
@@ -222,9 +227,9 @@ public abstract class JdbcMapInsert extends JdbcService {
     return msg.resolve(getTable());
   }
 
-  public JdbcMapInsert withTable(String s) {
+  public <T extends JdbcMapInsert> T withTable(String s) {
     setTable(s);
-    return this;
+    return (T) this;
   }
 
 
@@ -252,9 +257,9 @@ public abstract class JdbcMapInsert extends JdbcService {
     return getFieldMappings() != null ? getFieldMappings() : EMPTY_SET;
   }
 
-  public JdbcMapInsert withMappings(KeyValuePairSet s) {
+  public <T extends JdbcMapInsert> T withMappings(KeyValuePairSet s) {
     setFieldMappings(s);
-    return this;
+    return (T) this;
   }
 
   protected StatementParam buildStatementParam(String key, final String value) {
@@ -307,13 +312,14 @@ public abstract class JdbcMapInsert extends JdbcService {
   protected void stopService() {
   }
 
-  protected void handleInsert(String tableName, Connection conn, Map<String, String> obj) throws ServiceException {
+  protected int handleInsert(String tableName, Connection conn, Map<String, String> obj) throws ServiceException {
     PreparedStatement insertStmt = null;
+    int rowsAffected = 0;
     try {
       InsertWrapper inserter = new InsertWrapper(tableName, obj);
       log.trace("INSERT [{}]", inserter.statement);
       insertStmt = inserter.addParams(prepareStatement(conn, inserter.statement), obj);
-      insertStmt.executeUpdate();
+      rowsAffected = insertStmt.executeUpdate();
     }
     catch (SQLException e) {
       throw ExceptionHelper.wrapServiceException(e);
@@ -321,6 +327,14 @@ public abstract class JdbcMapInsert extends JdbcService {
     finally {
       JdbcUtil.closeQuietly(insertStmt);
     }
+    return rowsAffected;
+  }
+
+  protected AdaptrisMessage addUpdatedMetadata(int count, AdaptrisMessage msg) {
+    if (!isBlank(getRowsAffectedMetadataKey())) {
+      msg.addMessageHeader(getRowsAffectedMetadataKey(), String.valueOf(count));
+    }
+    return msg;
   }
 
   public interface StatementWrapper {
@@ -355,10 +369,12 @@ public abstract class JdbcMapInsert extends JdbcService {
       return sb.toString();
     }
 
+    @Override
     public String statement() {
       return statement;
     }
 
+    @Override
     public PreparedStatement addParams(PreparedStatement statement, Map<String, String> obj) throws SQLException {
       int paramIndex = 1;
       statement.clearParameters();
@@ -405,17 +421,38 @@ public abstract class JdbcMapInsert extends JdbcService {
     this.columnBookendCharacter = c;
   }
 
-  public JdbcMapInsert withColumnBookend(Character c) {
+  public <T extends JdbcMapInsert> T withColumnBookend(Character c) {
     setColumnBookendCharacter(c);
-    return this;
+    return (T) this;
   }
 
   protected String columnBookend() {
-    return StringUtils.defaultIfEmpty(CharUtils.toString(getColumnBookendCharacter()), "");
+    return defaultIfEmpty(CharUtils.toString(getColumnBookendCharacter()), "");
   }
   
+
+  public String getRowsAffectedMetadataKey() {
+    return rowsAffectedMetadataKey;
+  }
+
+  /**
+   * Set the metadata that will contain the number of rows inserted/updated by this service.
+   * 
+   * @param key defaults to the empty string, and if not set, no metadata will be set.
+   * @since 3.9.0
+   */
+  public void setRowsAffectedMetadataKey(String key) {
+    this.rowsAffectedMetadataKey = key;
+  }
+
+  public <T extends JdbcMapInsert> T withRowsAffectedMetadataKey(String s) {
+    setRowsAffectedMetadataKey(s);
+    return (T) this;
+  }
+
   @FunctionalInterface
   protected interface StatementParam {
     void apply(int index, PreparedStatement statement) throws SQLException;
   }
+
 }

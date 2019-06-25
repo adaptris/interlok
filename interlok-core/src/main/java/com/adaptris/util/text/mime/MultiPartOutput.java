@@ -17,7 +17,6 @@
 package com.adaptris.util.text.mime;
 
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,14 +30,13 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
-
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,19 +80,21 @@ import org.slf4j.LoggerFactory;
  * </p>
  */
 public class MultiPartOutput implements MimeConstants {
+  private static final String DEFAULT_SUB_TYPE = "mixed";
 
   // private MimeMultipart multipart;
   private String messageId;
   private transient Logger logR = LoggerFactory.getLogger(this.getClass());
   private InternetHeaders mimeHeader;
   private List<KeyedBodyPart> parts;
-  private String subType;
+  private String subType = "mixed";
 
   private MultiPartOutput() throws MessagingException {
     // multipart = new MimeMultipart();
     mimeHeader = new InternetHeaders();
     mimeHeader.setHeader(HEADER_MIME_VERSION, "1.0");
     parts = new ArrayList<KeyedBodyPart>();
+    subType = DEFAULT_SUB_TYPE;
   }
 
   /**
@@ -108,7 +108,7 @@ public class MultiPartOutput implements MimeConstants {
    */
   public MultiPartOutput(String mimeId) throws MessagingException {
     this();
-    if ((mimeId != null) && !mimeId.equals("")) {
+    if (mimeId != null && !mimeId.equals("")) {
       mimeHeader.setHeader(HEADER_MESSAGE_ID, mimeId);
     }
     else {
@@ -125,7 +125,7 @@ public class MultiPartOutput implements MimeConstants {
    */
   public MultiPartOutput(String mimeId, String subtype) throws MessagingException {
     this(mimeId);
-    this.subType = subtype;
+    this.subType = StringUtils.defaultIfBlank(subtype, DEFAULT_SUB_TYPE);
   }
 
   /**
@@ -262,7 +262,7 @@ public class MultiPartOutput implements MimeConstants {
   private void writeViaTempfile(OutputStream out, File tempFile) throws MessagingException, IOException {
     try (FileOutputStream fileOut = new FileOutputStream(tempFile);
         CountingOutputStream counter = new CountingOutputStream(fileOut)) {
-      MimeMultipart multipart = new MimeMultipart();
+      MimeMultipart multipart = new MimeMultipart(subType);
       mimeHeader.setHeader(HEADER_CONTENT_TYPE, multipart.getContentType());
       // Write the part out to the stream first.
       for (KeyedBodyPart kbp : parts) {
@@ -280,7 +280,7 @@ public class MultiPartOutput implements MimeConstants {
 
 
   private void inMemoryWrite(OutputStream out) throws MessagingException, IOException {
-    MimeMultipart multipart = new MimeMultipart();
+    MimeMultipart multipart = new MimeMultipart(subType);
     ByteArrayOutputStream partOut = new ByteArrayOutputStream();
     mimeHeader.setHeader(HEADER_CONTENT_TYPE, multipart.getContentType());
     // Write the part out to the stream first.
@@ -327,7 +327,7 @@ public class MultiPartOutput implements MimeConstants {
    */
   private static byte[] encodeData(byte[] data, String encoding, InternetHeaders header) throws MessagingException, IOException {
 
-    byte[] toEncode = (data == null) ? new byte[0] : data;
+    byte[] toEncode = data == null ? new byte[0] : data;
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     try (OutputStream encodedOut = wrap(out, encoding, header)) {
       encodedOut.write(toEncode);
@@ -396,18 +396,21 @@ public class MultiPartOutput implements MimeConstants {
       super(out);
     }
 
+    @Override
     public void write(int b) throws IOException {
       out.write(b);
       count += 1;
     }
 
+    @Override
     public void write(byte b[]) throws IOException {
       out.write(b, 0, b.length);
       count += b.length;
     }
 
+    @Override
     public void write(byte b[], int off, int len) throws IOException {
-      if ((off | len | (b.length - (len + off)) | (off + len)) < 0) throw new IndexOutOfBoundsException();
+      if ((off | len | b.length - (len + off) | off + len) < 0) throw new IndexOutOfBoundsException();
       out.write(b, off, len);
       count += len;
     }

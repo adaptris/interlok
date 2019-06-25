@@ -20,9 +20,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-
 import javax.validation.Valid;
-
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
@@ -38,6 +37,7 @@ import com.adaptris.util.TimeInterval;
  * Provides database connection for JDBC-based {@link com.adaptris.core.Service} implementations.
  * </p>
  */
+@ComponentProfile(recommended = {DatabaseConnection.class}, tag = "jdbc")
 public abstract class JdbcService extends ServiceImp implements ConnectedService {
 
   // marshalled...
@@ -62,9 +62,7 @@ public abstract class JdbcService extends ServiceImp implements ConnectedService
 
   @Override
   public final void prepare() throws CoreException {
-    if (connection != null) {
-      connection.prepare();
-    }
+    LifecycleHelper.prepare(getConnection());
     prepareService();
   }
 

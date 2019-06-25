@@ -22,22 +22,19 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
-
-import javax.validation.constraints.NotNull;
+import javax.validation.Valid;
 import javax.xml.XMLConstants;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
-
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
-
 import com.adaptris.annotation.AdvancedConfig;
-import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
@@ -82,6 +79,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class XmlSchemaValidator extends MessageValidatorImpl {
 
   private static final int DEFAULT_CACHE_SIZE = 16;
+  private static final TimeInterval DEFAULT_CACHE_TTL = new TimeInterval(2L, TimeUnit.HOURS);
 
   @InputFieldHint(expression = true)
   // this will force rfc2396 style validation but we don't know how many people are using
@@ -93,18 +91,16 @@ public class XmlSchemaValidator extends MessageValidatorImpl {
   @Removal(version = "3.11.0")
   private String schemaMetadataKey;
   @InputFieldDefault(value = "expiring-map-cache, 16 entries, 2 hours")
-  @NotNull
-  @AutoPopulated
   @AdvancedConfig
+  @Valid
   private AdaptrisConnection schemaCache;
 
   // transient
   private transient SchemaFactory schemaFactory;
   private transient boolean warningLogged;
+  private transient AdaptrisConnection schemaCacheConnection;
 
   public XmlSchemaValidator() {
-    setSchemaCache(new CacheConnection(
-        new ExpiringMapCache().withExpiration(new TimeInterval(2L, TimeUnit.HOURS)).withMaxEntries(DEFAULT_CACHE_SIZE)));
   }
 
   public XmlSchemaValidator(String schema) {
@@ -135,12 +131,21 @@ public class XmlSchemaValidator extends MessageValidatorImpl {
   }
 
   @Override
+  public void prepare() throws CoreException {
+    schemaCacheConnection = ObjectUtils.defaultIfNull(getSchemaCache(), new CacheConnection(
+        new ExpiringMapCache().withExpiration(DEFAULT_CACHE_TTL).withMaxEntries(DEFAULT_CACHE_SIZE)));
+    LifecycleHelper.prepare(schemaCacheConnection);
+  }
+
+  @Override
   public void init() throws CoreException {
     try {
+      super.init();
+      Args.notNull(schemaCacheConnection, "schemaCache");
       if (StringUtils.isBlank(getSchema()) && StringUtils.isBlank(getSchemaMetadataKey())) {
         throw new CoreException("metadata-key & schema are blank");
       }
-      LifecycleHelper.init(getSchemaCache());
+      LifecycleHelper.init(schemaCacheConnection);
       schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
     }
     catch (Exception e) {
@@ -150,17 +155,20 @@ public class XmlSchemaValidator extends MessageValidatorImpl {
 
   @Override
   public void start() throws CoreException {
-    LifecycleHelper.start(getSchemaCache());
+    super.start();
+    LifecycleHelper.start(schemaCacheConnection);
   }
 
   @Override
   public void stop() {
-    LifecycleHelper.stop(getSchemaCache());
+    super.stop();
+    LifecycleHelper.stop(schemaCacheConnection);
   }
 
   @Override
   public void close() {
-    LifecycleHelper.close(getSchemaCache());
+    super.close();
+    LifecycleHelper.close(schemaCacheConnection);
   }
 
   private Schema obtainSchemaToUse(AdaptrisMessage msg) throws Exception {
@@ -169,7 +177,7 @@ public class XmlSchemaValidator extends MessageValidatorImpl {
       LoggingHelper.logWarning(warningLogged, () -> {
         warningLogged = true;
       }, "schema-metadata-metadata is deprecated, use expression based schema URL instead.");
-      if (msg.containsKey(getSchemaMetadataKey())) {
+      if (msg.headersContainsKey(getSchemaMetadataKey())) {
         schemaUrl = msg.getMetadataValue(getSchemaMetadataKey());
       }
     }
@@ -177,7 +185,7 @@ public class XmlSchemaValidator extends MessageValidatorImpl {
   }
 
   private Schema resolve(String urlString) throws Exception {
-    Cache cache = getSchemaCache().retrieveConnection(CacheConnection.class).retrieveCache();
+    Cache cache = schemaCacheConnection.retrieveConnection(CacheConnection.class).retrieveCache();
     Schema schema = (Schema) cache.get(urlString);
     if (schema == null) {
       schema = schemaFactory.newSchema(toURL(urlString));
@@ -201,16 +209,19 @@ public class XmlSchemaValidator extends MessageValidatorImpl {
    */
   private class ErrorHandlerImp implements ErrorHandler {
 
+    @Override
     public void error(SAXParseException e) throws SAXException {
       log.debug(e.getMessage());
       throw e;
     }
 
+    @Override
     public void warning(SAXParseException e) throws SAXException {
       log.debug(e.getMessage());
       throw e;
     }
 
+    @Override
     public void fatalError(SAXParseException e) throws SAXException {
       log.error(e.getMessage());
       throw e;
@@ -241,7 +252,7 @@ public class XmlSchemaValidator extends MessageValidatorImpl {
    * Returns the (optional) metadata key against which a schema can be provided at run time.
    * 
    * @return the (optional) metadata key against which a schema can be provided at run time
-   * @deprecated since 3.8.4 use an expression based {@link setSchema(String)} instead.
+   * @deprecated since 3.8.4 use an expression based {@link #setSchema(String)} instead.
    */
   @Deprecated
   @Removal(version = "3.11.0", message = "use an expression based schema value instead.")
@@ -253,7 +264,7 @@ public class XmlSchemaValidator extends MessageValidatorImpl {
    * Sets the (optional) metadata key against which a schema can be provided at run time
    * 
    * @param s the (optional) metadata key against which a schema can be provided at run time
-   * @deprecated since 3.8.4 use an expression based {@link setSchema(String)} instead.
+   * @deprecated since 3.8.4 use an expression based {@link #setSchema(String)} instead.
    */
   @Deprecated
   @Removal(version = "3.11.0", message = "use an expression based schema value instead.")

@@ -17,7 +17,6 @@
 package com.adaptris.core;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FilterOutputStream;
@@ -25,10 +24,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.Arrays;
-
 import org.apache.commons.lang3.StringUtils;
-
 import com.adaptris.util.IdGenerator;
 
 /**
@@ -111,20 +109,13 @@ public class DefaultAdaptrisMessageImp extends AdaptrisMessageImp {
   }
   
   /** @see AdaptrisMessage#setContent(String, String) */
+  @Override
   public void setContent(String payloadString, String charEnc) {
     if (payloadString != null) {
-      try {
-        if (!isEmpty(charEnc)) {
-          payload = payloadString.getBytes(charEnc);
-        }
-        else {
-          payload = payloadString.getBytes();
-        }
+        Charset charset =
+            Charset.forName(StringUtils.defaultIfBlank(charEnc, Charset.defaultCharset().name()));
+        payload = payloadString.getBytes(charset);
         setContentEncoding(charEnc);
-      }
-      catch (UnsupportedEncodingException e) {
-        throw new RuntimeException(e);
-      }
     }
     else {
       payload = new byte[0];

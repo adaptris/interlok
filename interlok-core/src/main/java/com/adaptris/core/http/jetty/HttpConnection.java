@@ -18,7 +18,6 @@ package com.adaptris.core.http.jetty;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.eclipse.jetty.http.HttpCompliance;
 import org.eclipse.jetty.security.SecurityHandler;
 import org.eclipse.jetty.server.AbstractConnector;
@@ -30,7 +29,6 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.servlet.ServletContextHandler;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -127,16 +125,6 @@ public class HttpConnection extends JettyConnection {
       @Override
       void applyProperty(ServerConnector connector, String value) throws Exception {
         connector.setInheritChannel(Boolean.valueOf(value).booleanValue());
-      }
-    },
-    /**
-     * @see ServerConnector#setSoLingerTime(int)
-     * 
-     */
-    SoLingerTime {
-      @Override
-      void applyProperty(ServerConnector connector, String value) throws Exception {
-        connector.setSoLingerTime(Integer.parseInt(value));
       }
     },
     /**
@@ -291,15 +279,6 @@ public class HttpConnection extends JettyConnection {
       }
     },
     /**
-     * @see HttpConfiguration#setBlockingTimeout(long)
-     */
-    BlockingTimeout {
-      @Override
-      void applyProperty(HttpConfiguration config, String value) throws Exception {
-        config.setBlockingTimeout(Long.parseLong(value));
-      }
-    },
-    /**
      * @see HttpConfiguration#setMinRequestDataRate(long)
      */
     MinRequestDataRate {
@@ -307,6 +286,12 @@ public class HttpConnection extends JettyConnection {
       void applyProperty(HttpConfiguration config, String value) throws Exception {
         config.setMinRequestDataRate(Long.parseLong(value));
       }
+    },
+    MinResponseDataRate {
+      @Override
+      void applyProperty(HttpConfiguration config, String value) throws Exception {
+        config.setMinResponseDataRate(Long.parseLong(value));
+      }      
     },
     /**
      * @see HttpConfiguration#setPersistentConnectionsEnabled(boolean)

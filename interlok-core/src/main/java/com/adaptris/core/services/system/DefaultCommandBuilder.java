@@ -17,20 +17,16 @@
 package com.adaptris.core.services.system;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.Executor;
 import org.apache.commons.lang.BooleanUtils;
 import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
@@ -80,6 +76,7 @@ public class DefaultCommandBuilder implements CommandBuilder {
     setArguments(new ArrayList<CommandArgument>());
   }
 
+  @Override
   public CommandLine createCommandLine(AdaptrisMessage msg) {
     CommandLine commandLine = new CommandLine(getExecutablePath());
     for (CommandArgument argument : getArguments()) {
@@ -88,19 +85,21 @@ public class DefaultCommandBuilder implements CommandBuilder {
     return commandLine;
   }
 
+  @Override
   public Map<String, String> createEnvironment(AdaptrisMessage msg) {
     Map<String, String> env = new HashMap<String, String>();
     for (KeyValuePair kvp : getEnvironmentProperties()) {
       env.put(kvp.getKey(), kvp.getValue());
     }
     for (String key : environmentMetadataKeys) {
-      if (msg.containsKey(key)) {
+      if (msg.headersContainsKey(key)) {
         env.put(key, msg.getMetadataValue(key));
       }
     }
     return env.size() == 0 ? null : env;
   }
 
+  @Override
   public Executor configure(Executor exe) {
     if (!isEmpty(getWorkingDirectory())) {
       File wd = new File(getWorkingDirectory());

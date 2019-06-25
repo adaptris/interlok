@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,7 +24,7 @@ import java.io.Writer;
 import java.util.Map;
 
 public interface InterlokMessage {
-  
+
   /**
    * <p>
    * Returns a unique identifier for this message. The uniqueness of this
@@ -67,7 +67,7 @@ public interface InterlokMessage {
    * {@link #addMessageHeader(String, String)} or {@link #removeMessageHeader(String)} to manipulate
    * individual headers.
    * </p>
-   * 
+   *
    * @return a read only view of the messages.
    */
   public Map<String, String> getMessageHeaders();
@@ -77,7 +77,7 @@ public interface InterlokMessage {
    * <p>
    * Clear and overwrite all the headers
    * </p>
-   * 
+   *
    * @param metadata
    */
   public void setMessageHeaders(Map<String, String> metadata);
@@ -89,7 +89,7 @@ public interface InterlokMessage {
   public String getContentEncoding();
 
   public void setContentEncoding(String payloadEncoding);
-  
+
   /**
    * Return a reader representation of the payload.
    *
@@ -132,7 +132,7 @@ public interface InterlokMessage {
    */
   OutputStream getOutputStream() throws IOException;
 
-  
+
   /**
    * <p>
    * Adds an <code>Object</code> to this message as metadata. Object metadata is
@@ -153,7 +153,7 @@ public interface InterlokMessage {
    * @return the <code>Map</code> of <code>Object</code> metadata
    */
   Map<Object,Object> getObjectHeaders();
-  
+
   /**
    * <p>
    * Returns true if the message contains metadata against the passed key.
@@ -166,7 +166,7 @@ public interface InterlokMessage {
 
   /**
    * Resolve against this message's metadata.
-   * 
+   *
    * @param s string to resolve.
    * @return the original string, an item of metadata, or null (if the metadata key does not exist).
    * @see #resolve(String, boolean)
@@ -178,17 +178,20 @@ public interface InterlokMessage {
 
   /**
    * Resolve against this message's metadata.
-   * 
+   *
    * <p>
-   * This is a helper method that allows you to pass in {@code %message{key1}} and get the metadata associated with {@code key1}.
-   * Strings that do not match that format will be returned as is. Support for punctuation characters is down to the implementation;
-   * the standard implementations only support a limited subset of punctuation characters in addition to standard word characters
-   * ({@code [a-zA-Z_0-9]}); They are {@code _!"#&'+,-.:=}. The magic values {@code %message{%uniqueId}} and {@code %message{%size}}
-   * should return the message unique-id and message size respectively
+   * This is a helper method that allows you to pass in {@code %message{key1}} and get the metadata
+   * associated with {@code key1}. Strings that do not match that format will be returned as is.
+   * Support for punctuation characters is down to the implementation; the standard implementations
+   * only support a limited subset of punctuation characters in addition to standard word characters
+   * ({@code [a-zA-Z_0-9]}); They are {@code _!"#&'+,-.:=}. The magic values
+   * {@code %message{%uniqueId}} and {@code %message{%size}} should return the message unique-id and
+   * message size respectively
    * </p>
-   * 
+   *
    * @param s string to resolve.
-   * @param multiline whether to resolve in {@link java.util.regex.Pattern#DOTALL} mode, allowing you to match against multiple lines.
+   * @param multiline whether to resolve in {@link java.util.regex.Pattern#DOTALL} mode, allowing
+   *        you to match against multiple lines.
    * @return the original string, an item of metadata, or null (if the metadata key does not exist).
    */
   String resolve(String s, boolean multiline);
@@ -196,7 +199,7 @@ public interface InterlokMessage {
 
   /**
    * Wrap the interlok message as another type of thing.
-   * 
+   *
    * @param wrapper an implementation of {@link MessageWrapper}
    * @return the wrapped object
    * @throws Exception
@@ -205,8 +208,4 @@ public interface InterlokMessage {
     return wrapper.wrap(this);
   }
 
-  @FunctionalInterface
-  public interface MessageWrapper<T> {
-    T wrap(InterlokMessage m) throws Exception;
-  }
 }

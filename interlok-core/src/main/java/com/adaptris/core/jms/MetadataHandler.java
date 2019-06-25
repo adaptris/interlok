@@ -221,7 +221,7 @@ public class MetadataHandler {
 
   private MetadataCollection createMetadataCollection(Message in) throws JMSException {
     MetadataCollection result = new MetadataCollection();
-    Enumeration props = in.getPropertyNames();
+    Enumeration<?> props = in.getPropertyNames();
     while (props.hasMoreElements()) {
       String key = (String) props.nextElement();
       String value = in.getStringProperty(key); // converts all to Strings

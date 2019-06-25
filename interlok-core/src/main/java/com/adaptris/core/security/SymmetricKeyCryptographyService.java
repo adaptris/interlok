@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
@@ -12,8 +13,10 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.validator.constraints.NotBlank;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
@@ -28,8 +31,7 @@ import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.interlok.resolver.ExternalResolver;
-import com.adaptris.interlok.types.InterlokMessage;
-import com.adaptris.interlok.types.InterlokMessage.MessageWrapper;
+import com.adaptris.interlok.types.MessageWrapper;
 import com.adaptris.security.password.Password;
 import com.adaptris.util.stream.StreamUtil;
 import com.adaptris.util.text.Conversion;
@@ -266,12 +268,11 @@ public class SymmetricKeyCryptographyService extends ServiceImp {
    * 
    * @param source the source.
    */
-  public void setSource(InterlokMessage.MessageWrapper<InputStream> source) {
+  public void setSource(MessageWrapper<InputStream> source) {
     this.source = source;
   }
 
-  public SymmetricKeyCryptographyService withSource(
-      MessageWrapper<InputStream> source) {
+  public SymmetricKeyCryptographyService withSource(MessageWrapper<InputStream> source) {
     setSource(source);
     return this;
   }
@@ -295,8 +296,7 @@ public class SymmetricKeyCryptographyService extends ServiceImp {
     this.target = target;
   }
 
-  public SymmetricKeyCryptographyService withTarget(
-      InterlokMessage.MessageWrapper<OutputStream> target) {
+  public SymmetricKeyCryptographyService withTarget(MessageWrapper<OutputStream> target) {
     setTarget(target);
     return this;
   }

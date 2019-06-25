@@ -18,6 +18,7 @@ package com.adaptris.core.services.metadata;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.metadata.MetadataToPayloadService.Encoding;
 import com.adaptris.core.services.metadata.MetadataToPayloadService.MetadataSource;
 import com.adaptris.util.text.Conversion;
@@ -65,7 +66,7 @@ public class MetadataToPayloadTest extends MetadataServiceExample {
     try {
       execute(service, msg);
       fail("Should fail with no key found");
-    } catch (Exception ex) {
+    } catch (ServiceException ex) {
       // expected.
     }
   }
@@ -76,7 +77,7 @@ public class MetadataToPayloadTest extends MetadataServiceExample {
     try {
       execute(service, msg);
       fail("Should fail with no key found");
-    } catch (Exception ex) {
+    } catch (ServiceException ex) {
       // expected.
     }
   }

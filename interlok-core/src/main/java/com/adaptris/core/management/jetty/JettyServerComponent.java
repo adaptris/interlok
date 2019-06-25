@@ -19,11 +19,9 @@ package com.adaptris.core.management.jetty;
 import java.util.Properties;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
-
 import org.eclipse.jetty.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.management.ManagementComponent;
 import com.adaptris.core.management.webserver.JettyServerManager;
 import com.adaptris.core.management.webserver.WebServerManagementUtil;

@@ -17,10 +17,8 @@
 package com.adaptris.core.services.splitter;
 
 import java.util.concurrent.Future;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
@@ -132,6 +130,7 @@ public class BasicMessageSplitterService extends MessageSplitterServiceImp imple
    * @param conn the <code>AdaptrisConnection</code> to use for producing split
    *          messages, may not be null
    */
+  @Override
   public void setConnection(AdaptrisConnection conn) {
     connection = Args.notNull(conn, "connection");
   }
@@ -145,6 +144,7 @@ public class BasicMessageSplitterService extends MessageSplitterServiceImp imple
    * @return the <code>AdaptrisConnection</code> to use for producing split
    *         messages
    */
+  @Override
   public AdaptrisConnection getConnection() {
     return connection;
   }
@@ -177,8 +177,8 @@ public class BasicMessageSplitterService extends MessageSplitterServiceImp imple
 
   @Override
   public void prepare() throws CoreException {
-    getConnection().prepare();
-    getProducer().prepare();
+    LifecycleHelper.prepare(getConnection());
+    LifecycleHelper.prepare(getProducer());
   }
 
 }

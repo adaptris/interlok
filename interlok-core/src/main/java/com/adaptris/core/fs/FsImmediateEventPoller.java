@@ -18,7 +18,6 @@ package com.adaptris.core.fs;
 
 import static com.adaptris.core.fs.FsHelper.createFileReference;
 import static com.adaptris.core.fs.FsHelper.createUrlFromString;
-
 import java.io.File;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -27,10 +26,8 @@ import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.CoreException;
@@ -78,9 +75,6 @@ public class FsImmediateEventPoller extends PollerImp {
   
 
   @Override
-  public void prepare() throws CoreException {}
-
-  @Override
   public void init() throws CoreException {
     if(!(this.retrieveConsumer() instanceof FsConsumer))
       throw new CoreException("You cannot configure a file system event poller with any non file system consumer.");
@@ -114,6 +108,7 @@ public class FsImmediateEventPoller extends PollerImp {
   private Thread createThread() {
     return new Thread("FsImmediateEventPollerThread") {
       
+      @Override
       @SuppressWarnings("unchecked")
       public void run() {
         try {

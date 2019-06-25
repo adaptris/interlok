@@ -18,15 +18,11 @@ package com.adaptris.core.ftp;
 
 import static com.adaptris.core.ftp.FtpHelper.FORWARD_SLASH;
 import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import javax.validation.Valid;
-
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
@@ -35,7 +31,6 @@ import com.adaptris.core.AdaptrisMessageEncoder;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreConstants;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.fs.FsHelper;
 import com.adaptris.core.services.aggregator.AggregatingConsumerImpl;
@@ -91,16 +86,12 @@ public class AggregatingFtpConsumer extends AggregatingConsumerImpl<AggregatingF
   }
 
   @Override
-  public void prepare() throws CoreException {
-  }
-
-  @Override
   public void aggregateMessages(AdaptrisMessage msg, AggregatingFtpConsumeService service) throws ServiceException {
     List<AdaptrisMessage> result = new ArrayList<>();
     ConfigWrapper cfg = new ConfigWrapper(service.getConnection().retrieveConnection(FileTransferConnection.class),
         getDestination().generate(msg));
     try {
-      result = (isEmpty(cfg.dest.getFilterExpression())) ? single(cfg, msg.getFactory()) : multiple(cfg, msg.getFactory());
+      result = isEmpty(cfg.dest.getFilterExpression()) ? single(cfg, msg.getFactory()) : multiple(cfg, msg.getFactory());
       getMessageAggregator().joinMessage(msg, result);
       if (deleteAggregatedFiles()) {
         deleteFilesQuietly(result, cfg);

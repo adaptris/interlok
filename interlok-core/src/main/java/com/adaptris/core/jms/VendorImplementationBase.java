@@ -6,11 +6,11 @@ import javax.jms.MessageConsumer;
 import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.Topic;
-
 import com.adaptris.core.ComponentLifecycleExtension;
 import com.adaptris.core.ConsumeDestination;
 
-public interface VendorImplementationBase extends ComponentLifecycleExtension, ConnectionComparator<VendorImplementationBase> {
+public interface VendorImplementationBase
+    extends ComponentLifecycleExtension, ConnectionComparator<VendorImplementationBase> {
 
   /**
    * <p>

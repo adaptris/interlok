@@ -21,23 +21,20 @@ import static com.adaptris.core.CoreConstants.OBJ_METADATA_EXCEPTION;
 import static com.adaptris.core.CoreConstants.OBJ_METADATA_EXCEPTION_CAUSE;
 import static com.adaptris.core.CoreConstants.UNIQUE_ID_JMX_PATTERN;
 import static org.apache.commons.lang.StringUtils.isBlank;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
@@ -172,11 +169,11 @@ public abstract class WorkflowImp implements Workflow {
     for (WorkflowInterceptor wi : getInterceptors()) {
       wi.registerParentChannel(obtainChannel());
       wi.registerParentWorkflow(this);
-      wi.prepare();
+      LifecycleHelper.prepare(wi);
     }
-    getProducer().prepare();
-    getConsumer().prepare();
-    getServiceCollection().prepare();
+    LifecycleHelper.prepare(getProducer());
+    LifecycleHelper.prepare(getServiceCollection());
+    LifecycleHelper.prepare(getConsumer());
     prepareWorkflow();
     prepared = true;
   }
@@ -826,5 +823,16 @@ public abstract class WorkflowImp implements Workflow {
       };
     }
     return ObjectUtils.defaultIfNull(getMessageLogger(), DEFAULT_MSG_LOGGER);
+  }
+
+  protected AdaptrisMessage addConsumeLocation(AdaptrisMessage msg) {
+    String key = getConsumer().consumeLocationKey();
+    if (!StringUtils.isBlank(key)) {
+      String consumeLocation = msg.getMetadataValue(key);
+      if (!StringUtils.isEmpty(consumeLocation)) {
+        msg.addMessageHeader(CoreConstants.MESSAGE_CONSUME_LOCATION, consumeLocation);
+      }
+    }
+    return msg;
   }
 }

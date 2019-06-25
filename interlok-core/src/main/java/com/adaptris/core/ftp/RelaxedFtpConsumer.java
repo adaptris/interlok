@@ -17,16 +17,15 @@
 package com.adaptris.core.ftp;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreConstants;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -59,7 +58,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Pickup messages from an FTP/SFTP server without renaming the file first", metadata =
 {
-    "originalname", "fsFileSize"
+        CoreConstants.ORIGINAL_NAME_KEY, CoreConstants.FS_FILE_SIZE,
+        CoreConstants.FS_CONSUME_DIRECTORY, CoreConstants.MESSAGE_CONSUME_LOCATION
 }, 
     tag = "consumer,ftp,ftps,sftp", recommended = {FileTransferConnection.class})
 @DisplayOrder(order =
@@ -92,7 +92,8 @@ public class RelaxedFtpConsumer extends FtpConsumerImpl {
     try (EncoderWrapper wrapper = encWrapper) {
       ftpClient.get(wrapper, fullPath);
     }
-    AdaptrisMessage adpMsg = addStandardMetadata(encWrapper.build(), filename);
+    AdaptrisMessage adpMsg =
+        addStandardMetadata(encWrapper.build(), filename, FtpHelper.getDirectory(fullPath));
     retrieveAdaptrisMessageListener().onAdaptrisMessage(adpMsg);
     try {
       ftpClient.delete(fullPath);

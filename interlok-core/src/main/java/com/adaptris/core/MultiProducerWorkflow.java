@@ -18,12 +18,9 @@ package com.adaptris.core;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -95,7 +92,7 @@ public class MultiProducerWorkflow extends StandardWorkflow {
   }
 
   private void onMessage(final AdaptrisMessage msg) {
-    AdaptrisMessage wip = null;
+    AdaptrisMessage wip = addConsumeLocation(msg);
     workflowStart(msg);
     try {
       long start = System.currentTimeMillis();
@@ -252,7 +249,7 @@ public class MultiProducerWorkflow extends StandardWorkflow {
   @Override
   protected void prepareWorkflow() throws CoreException {
     for (StandaloneProducer p : getStandaloneProducers()) {
-      p.prepare();
+      LifecycleHelper.prepare(p);
     }
   }
 }

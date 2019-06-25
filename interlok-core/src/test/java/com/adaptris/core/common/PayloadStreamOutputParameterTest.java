@@ -17,12 +17,15 @@ package com.adaptris.core.common;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+
 import java.io.ByteArrayInputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -138,7 +141,7 @@ public class PayloadStreamOutputParameterTest {
 
   @Test
   public void testWrap() throws Exception {
-    PayloadStreamOutputParameter p = new PayloadStreamOutputParameter();
+    PayloadOutputStreamWrapper p = new PayloadOutputStreamWrapper();
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     try (OutputStream out = p.wrap(msg)) {
 

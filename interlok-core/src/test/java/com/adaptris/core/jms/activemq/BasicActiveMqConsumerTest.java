@@ -20,7 +20,6 @@ import static com.adaptris.core.jms.JmsProducerCase.assertMessages;
 import static com.adaptris.core.jms.activemq.AdvancedActiveMqImplementationTest.createImpl;
 import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.addBlobUrlRef;
 import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.createMessage;
-
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
@@ -29,6 +28,7 @@ import com.adaptris.core.ChannelList;
 import com.adaptris.core.ClosedState;
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.ConfiguredProduceDestination;
+import com.adaptris.core.CoreConstants;
 import com.adaptris.core.NullProcessingExceptionHandler;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandaloneProducer;
@@ -120,6 +120,9 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
           new PasProducer(new ConfiguredProduceDestination(getName())));
       execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
       assertMessages(jms, 1);
+      AdaptrisMessage consumed = jms.getMessages().get(0);
+      // Since it's not a workflow; this will be false.
+      assertFalse(consumed.headersContainsKey(CoreConstants.MESSAGE_CONSUME_LOCATION));
     }
     finally {
       activeMqBroker.destroy();

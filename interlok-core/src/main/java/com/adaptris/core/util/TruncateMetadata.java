@@ -16,12 +16,11 @@
 package com.adaptris.core.util;
 
 import java.util.Collection;
-
 import org.apache.commons.lang.StringUtils;
-
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.MessageLogger;
 import com.adaptris.core.MessageLoggerImpl;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.MetadataLogger;

@@ -20,9 +20,12 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
+import java.util.Map;
+import java.util.Set;
+import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.DefaultAdaptrisMessageImp;
+import com.adaptris.core.MetadataElement;
 import com.adaptris.util.IdGenerator;
 
 /**
@@ -53,6 +56,72 @@ public class DefectiveAdaptrisMessage extends DefaultAdaptrisMessageImp {
     }
     return super.getOutputStream();
   }
+
+  @Override
+  public boolean containsKey(String key) {
+    return headersContainsKey(key);
+  }
+
+  /** @see AdaptrisMessage#headersContainsKey(String) */
+  @Override
+  public boolean headersContainsKey(String key) {
+    if (((DefectiveMessageFactory) getFactory()).brokenMetadataGet()) {
+      throw new RuntimeException();
+    }
+    return super.headersContainsKey(key);
+  }
+
+  /** @see AdaptrisMessage#addMetadata(MetadataElement) */
+  @Override
+  public synchronized void addMetadata(MetadataElement e) {
+    if (((DefectiveMessageFactory) getFactory()).brokenMetadataSet()) {
+      throw new RuntimeException();
+    }
+    super.addMetadata(e);
+  }
+
+  /** @see AdaptrisMessage#removeMetadata(MetadataElement) */
+  @Override
+  public void removeMetadata(MetadataElement element) {
+    if (((DefectiveMessageFactory) getFactory()).brokenMetadataSet()) {
+      throw new RuntimeException();
+    }
+    super.removeMetadata(element);
+  }
+
+  /** @see AdaptrisMessage#removeMessageHeader(String) */
+  @Override
+  public void removeMessageHeader(String key) {
+    if (((DefectiveMessageFactory) getFactory()).brokenMetadataSet()) {
+      throw new RuntimeException();
+    }
+    super.removeMessageHeader(key);
+  }
+
+  @Override
+  public synchronized void clearMetadata() {
+    if (((DefectiveMessageFactory) getFactory()).brokenMetadataSet()) {
+      throw new RuntimeException();
+    }
+    super.clearMetadata();
+  }
+
+  @Override
+  public Map<String, String> getMessageHeaders() {
+    if (((DefectiveMessageFactory) getFactory()).brokenMetadataGet()) {
+      throw new RuntimeException();
+    }
+    return super.getMessageHeaders();
+  }
+
+  @Override
+  public Set<MetadataElement> getMetadata() { // lgtm [java/unsynchronized-getter]
+    if (((DefectiveMessageFactory) getFactory()).brokenMetadataGet()) {
+      throw new RuntimeException();
+    }
+    return super.getMetadata();
+  }
+
 
   private class ErroringOutputStream extends OutputStream {
 

@@ -23,7 +23,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
 import com.adaptris.core.services.metadata.PayloadFromMetadataService;
@@ -31,6 +30,7 @@ import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.stubs.MockSkipProducerService;
 import com.adaptris.core.stubs.MockWorkflowInterceptor;
+import com.adaptris.core.util.Args;
 import com.adaptris.util.TimeInterval;
 
 public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
@@ -374,6 +374,43 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  public void testOnMessage_withConsumeLocation() throws Exception {
+    MockMessageProducer producer = new MockMessageProducer();
+    MockChannel channel = createChannel(Arrays.asList( new AdaptrisMessageProducer[] {
+        producer}), Arrays.asList(new Service[] {new NullService()}));
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD_1);
+    msg.addMessageHeader(getName(), "hello world");
+    MultiProducerWorkflow workflow = (MultiProducerWorkflow) channel.getWorkflowList().get(0);
+    workflow.setConsumer(new ConsumerWithLocation(getName()));
+    try {
+      start(channel);
+      workflow.onAdaptrisMessage(msg);
+      AdaptrisMessage consumed = producer.getMessages().get(0);
+      assertTrue(consumed.headersContainsKey(CoreConstants.MESSAGE_CONSUME_LOCATION));
+      assertEquals("hello world",
+          consumed.getMetadataValue(CoreConstants.MESSAGE_CONSUME_LOCATION));
+    } finally {
+      stop(channel);
+    }
+  }
+
+  public void testOnMessage_withConsumeLocation_NoMatch() throws Exception {
+    MockMessageProducer producer = new MockMessageProducer();
+    MockChannel channel = createChannel(Arrays.asList(new AdaptrisMessageProducer[] {producer}),
+        Arrays.asList(new Service[] {new NullService()}));
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD_1);
+    MultiProducerWorkflow workflow = (MultiProducerWorkflow) channel.getWorkflowList().get(0);
+    workflow.setConsumer(new ConsumerWithLocation(getName()));
+    try {
+      start(channel);
+      workflow.onAdaptrisMessage(msg);
+      AdaptrisMessage consumed = producer.getMessages().get(0);
+      assertFalse(consumed.headersContainsKey(CoreConstants.MESSAGE_CONSUME_LOCATION));
+    } finally {
+      stop(channel);
+    }
+  }
+
   private MockChannel createChannel(List<AdaptrisMessageProducer> list, List<Service> services) throws Exception {
     MockChannel channel = new MockChannel();
     MultiProducerWorkflow workflow = new MultiProducerWorkflow();
@@ -439,4 +476,16 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
     assertEquals(1, wf.getStandaloneProducers().size());
   }
 
+  private class ConsumerWithLocation extends NullMessageConsumer {
+    private String metadataKey;
+
+    public ConsumerWithLocation(String key) {
+      metadataKey = Args.notBlank(key, "metadataKey");
+    }
+
+    @Override
+    public String consumeLocationKey() {
+      return metadataKey;
+    }
+  }
 }

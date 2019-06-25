@@ -18,7 +18,6 @@ package com.adaptris.core.services.conditional;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
@@ -28,6 +27,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceList;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -53,27 +53,27 @@ public class ElseService implements ComponentLifecycle, ComponentLifecycleExtens
 
   @Override
   public void prepare() throws CoreException {
-      service.prepare();
+    LifecycleHelper.prepare(getService());
   }
 
   @Override
   public void init() throws CoreException {
-      service.init();
+    LifecycleHelper.init(getService());
   }
 
   @Override
   public void start() throws CoreException {
-      service.start();
+    LifecycleHelper.start(getService());
   }
 
   @Override
   public void stop() {
-      service.stop();
+    LifecycleHelper.stop(getService());
   }
 
   @Override
   public void close() {
-      service.close();
+    LifecycleHelper.close(getService());
   }
 
   public Service getService() {

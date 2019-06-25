@@ -18,9 +18,7 @@ package com.adaptris.core.jms;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 import static com.adaptris.core.jms.NullCorrelationIdSource.defaultIfNull;
-
 import java.util.concurrent.TimeUnit;
-
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.IllegalStateException;
@@ -31,10 +29,8 @@ import javax.jms.Session;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
@@ -115,8 +111,6 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
 
   @Override
   public void prepareConsumer() throws CoreException {
-    getMessageTranslator().prepare();
-    getVendorImplementation().prepare();
   }
 
   @Override
@@ -158,10 +152,9 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
     messageConsumer = createConsumer();
     messageTranslator.registerSession(session);
     messageTranslator.registerMessageFactory(defaultIfNull(getMessageFactory()));
-    LifecycleHelper.init(messageTranslator);
-    LifecycleHelper.start(messageTranslator);
+    LifecycleHelper.initAndStart(messageTranslator);
     if (additionalDebug()) {
-      log.trace("connected to broker in {}ms", (System.currentTimeMillis() - start));
+      log.trace("connected to broker in {}ms", System.currentTimeMillis() - start);
     }
   }
 
@@ -222,8 +215,7 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
     }
     long start = System.currentTimeMillis();
     messageTranslator.registerSession(null);
-    LifecycleHelper.stop(messageTranslator);
-    LifecycleHelper.close(messageTranslator);
+    LifecycleHelper.stopAndClose(messageTranslator);
     JmsUtils.closeQuietly(messageConsumer);
     JmsUtils.closeQuietly(session);
     JmsUtils.closeQuietly(connection, true);
@@ -231,7 +223,7 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
     messageConsumer = null;
     session = null;
     if (additionalDebug()) {
-      log.trace("disconnected from broker in [{}]", (System.currentTimeMillis() - start));
+      log.trace("disconnected from broker in [{}]", System.currentTimeMillis() - start);
     }
   }
 
@@ -475,4 +467,14 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
     return managedTransaction;
   }
 
+  /**
+   * Provides the metadata key {@value com.adaptris.core.jms.JmsConstants#JMS_DESTINATION} which
+   * will only be populated if {@link MessageTypeTranslatorImp#getMoveJmsHeaders()} is true.
+   * 
+   * @since 3.9.0
+   */
+  @Override
+  public String consumeLocationKey() {
+    return JmsConstants.JMS_DESTINATION;
+  }
 }

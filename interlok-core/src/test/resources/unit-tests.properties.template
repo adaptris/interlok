@@ -83,6 +83,7 @@ junit.XmlServiceExamples.baseDir=${junit.ServiceCase.baseDir}/xml
 junit.RegexpServiceExamples.baseDir=${junit.ServiceCase.baseDir}/regexp
 junit.TranscodingServiceExamples.baseDir=${junit.ServiceCase.baseDir}/transcoding
 junit.CacheServiceExamples.baseDir=${junit.ServiceCase.baseDir}/cache
+junit.ConditionalServiceExamples.baseDir=${junit.ServiceCase.baseDir}/conditional
 
 
 junit.XmlValidationServiceTest.schemaUrl=file://localhost/@BASE_DIR@/src/test/resources/transform/schema-simple.xsd
@@ -144,6 +145,8 @@ junit.adp.https.port=58443
 junit.jetty.http.port=58080
 junit.jetty.https.port=58443
 junit.jetty.user.realm.properties=@BASE_DIR@/src/test/resources/realm.properties
+junit.jetty.mgmt.config.absolute=file:///@BASE_DIR@/src/test/resources/jetty/jetty.xml
+junit.jetty.mgmt.config.relative=./src/test/resources/jetty/jetty.xml
 
 
 junit.DuplicateMessageRoutingService.store=file:///@BUILD_DIR@/DMR.dat

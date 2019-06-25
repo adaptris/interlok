@@ -17,6 +17,7 @@
 package com.adaptris.core.services.conditional.conditions;
 
 import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -26,6 +27,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.conditional.Condition;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
 import bsh.Interpreter;
 
 /**
@@ -99,4 +101,8 @@ public class ConditionExpression extends ConditionImpl {
     this.algorithm = algorithm;
   }
 
+  public ConditionExpression withAlgorithm(String s) {
+    setAlgorithm(s);
+    return this;
+  }
 }

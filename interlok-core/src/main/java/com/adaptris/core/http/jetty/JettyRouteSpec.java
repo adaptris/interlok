@@ -15,23 +15,27 @@
 */
 package com.adaptris.core.http.jetty;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
-
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+import javax.validation.Valid;
+
+import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.MetadataElement;
+import com.adaptris.annotation.Removal;
+import com.adaptris.core.ComponentLifecycle;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.http.jetty.JettyRouteCondition.JettyRoute;
+import com.adaptris.core.services.metadata.ExtractMetadataService;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.core.util.LoggingHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -45,38 +49,53 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * </p>
  * <pre>
    {@code
-      <url-pattern>^/record/(.*)/(.*)$</url-pattern>
-      <method>POST</method>
-      <metadata-key>parentId</metadata-key>
-      <metadata-key>childId</metadata-key>
-      <service-id>handleInsert</service-id>   
+      <jetty-route-spec>
+        <condition>
+          <url-pattern>^/record/(.*)/(.*)$</url-pattern>
+          <method>POST</method>
+          <metadata-key>parentId</metadata-key>
+          <metadata-key>childId</metadata-key>
+        </condition>
+        <service-id>handleInsert</service-id>   
+      </jetty-route-spec>
    }
  * </pre>
+ * You could achieve the same effect with a {@link ExtractMetadataService} as part of your normal service execution chain.
+ * </p>
  */
 @DisplayOrder(order =
 {
-    "method", "urlPattern", "serviceId", "metadataKeys"
+    "condition", "method", "urlPattern", "serviceId", "metadataKeys"
 })
 @XStreamAlias("jetty-route-spec")
-public class JettyRouteSpec {
+public class JettyRouteSpec implements ComponentLifecycle {
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
-  @NotBlank
+  @Deprecated
+  @Removal(version = "3.12.0", message = "Use a condition instead")
   private String urlPattern;
+  @Deprecated
+  @Removal(version = "3.12.0", message = "Use a condition instead")
   private String method;
   @XStreamImplicit(itemFieldName = "metadata-key")
   @AffectsMetadata
+  @Deprecated
+  @Removal(version = "3.12.0", message = "Use a condition instead")
   private List<String> metadataKeys;
   @NotBlank
   private String serviceId;
+  @Valid
+  private JettyRouteCondition condition;
 
-  private transient Pattern _urlPattern;
+  private transient boolean warningLogged;
+  private transient JettyRouteCondition conditionToUse = null;
 
   public JettyRouteSpec() {
     setMetadataKeys(new ArrayList<String>());
   }
 
+  @Deprecated
   public JettyRouteSpec(String urlPattern, String method, List<String> keys, String serviceId) {
     this();
     setUrlPattern(urlPattern);
@@ -85,6 +104,33 @@ public class JettyRouteSpec {
     setServiceId(serviceId);
   }
 
+  @Override
+  public void init() throws CoreException {
+    conditionToUse = build();
+    LifecycleHelper.init(conditionToUse);
+  }
+
+  @Override
+  public void start() throws CoreException {
+    LifecycleHelper.start(conditionToUse);
+  }
+
+  @Override
+  public void stop() {
+    LifecycleHelper.stop(conditionToUse);
+  }
+
+  @Override
+  public void close() {
+    LifecycleHelper.close(conditionToUse);
+  }
+
+  /**
+   * 
+   * @deprecated since 3.9.0 use a condition instead
+   */
+  @Deprecated
+  @Removal(version = "3.12.0", message = "Use a condition instead")
   public String getUrlPattern() {
     return urlPattern;
   }
@@ -93,11 +139,24 @@ public class JettyRouteSpec {
    * Set the URL pattern that you want to match against.
    * 
    * @param urlPattern the pattern.
+   * @deprecated since 3.9.0 use a condition instead
    */
+  @Deprecated
+  @Removal(version = "3.12.0", message = "Use a condition instead")
   public void setUrlPattern(String urlPattern) {
-    this.urlPattern = urlPattern;
+    this.urlPattern = Args.notBlank(urlPattern, "urlPattern");
   }
 
+  private String urlPattern() {
+    return Args.notBlank(urlPattern, "urlPattern");
+  }
+
+  /**
+   * 
+   * @deprecated since 3.9.0 use a condition instead
+   */
+  @Deprecated
+  @Removal(version = "3.12.0", message = "Use a condition instead")
   public String getMethod() {
     return method;
   }
@@ -105,14 +164,26 @@ public class JettyRouteSpec {
   /**
    * Specify a method to match against (optional).
    * 
-   * @param method
+   * @deprecated since 3.9.0 use a condition instead
    */
+  @Deprecated
+  @Removal(version = "3.12.0", message = "Use a condition instead")
   public void setMethod(String method) {
     this.method = method;
   }
 
+  /**
+   * 
+   * @deprecated since 3.9.0 use a condition instead
+   */
+  @Deprecated
+  @Removal(version = "3.12.0", message = "Use a condition instead")
   public List<String> getMetadataKeys() {
     return metadataKeys;
+  }
+
+  private List<String> metadataKeys() {
+    return ObjectUtils.defaultIfNull(getMetadataKeys(), Collections.emptyList());
   }
 
   /**
@@ -131,59 +202,54 @@ public class JettyRouteSpec {
     return serviceId;
   }
 
+  /**
+   * Set the service-id that will be used if the route matches.
+   */
   public void setServiceId(String serviceId) {
     this.serviceId = serviceId;
   }
 
-  public RouteMatch build(String method, String uri) {
-    int expected = (isBlank(getMethod()) ? 0 : 1) + 1;
-    int rc = 0;
-    Set<MetadataElement> matchedMetadata = new HashSet<>();
-    if (!isBlank(getMethod())) {
-      rc += getMethod().equalsIgnoreCase(method) ? 1 : 0;
-    }
-    Matcher matcher = createMatcher(uri);
-    if (matcher.matches()) {
-      rc++;
-      matchedMetadata = createMetadata(matcher);
-    }
-    return new RouteMatch(rc == expected, matchedMetadata);
+  public JettyRouteSpec withServiceId(String s) {
+    setServiceId(s);
+    return this;
   }
 
-  private Matcher createMatcher(String uri) {
-    if (_urlPattern == null || !_urlPattern.pattern().equals(getUrlPattern())) {
-      _urlPattern = Pattern.compile(getUrlPattern());
-    }
-    Matcher matcher = _urlPattern.matcher(uri);
-    return matcher;
+  public JettyRouteCondition getCondition() {
+    return condition;
   }
 
-  private Set<MetadataElement> createMetadata(Matcher matcher) {
-    Set<MetadataElement> result = new HashSet<>();
-    for (int i = 1; i <= matcher.groupCount(); i++) {
-        result.add(new MetadataElement(getMetadataKeys().get(i - 1), matcher.group(i)));
-    }
-    return result;
+  /**
+   * Specify the conditions for the route.
+   * 
+   * @param condition the condition.
+   */
+  public void setCondition(JettyRouteCondition condition) {
+    this.condition = condition;
   }
 
-  protected class RouteMatch {
-    private boolean match;
-    private Set<MetadataElement> metadata;
+  public JettyRouteSpec withCondition(JettyRouteCondition condition) {
+    setCondition(condition);
+    return this;
+  }
 
-    RouteMatch(boolean match, Set<MetadataElement> metadata) {
-      this.match = match;
-      this.metadata = metadata;
+  private JettyRouteCondition build() {
+    if (getCondition() == null) {
+      LoggingHelper.logWarning(warningLogged, () -> {
+        warningLogged = true;
+      }, "Direct use of urlPattern/metadataKeys/method is deprecated; use a condition instead");
+      return new JettyRouteCondition().withMetadataKeys(metadataKeys()).withMethod(getMethod()).withUrlPattern(urlPattern());
     }
+    return getCondition();
+  }
 
-    public boolean matches() {
-      return match;
-    }
+  public JettyRoute build(String method, String uri) throws CoreException {
+    return conditionToUse.build(method, uri);
+  }
 
-    public void apply(AdaptrisMessage msg) {
-      log.trace("Adding [{}] as metadata", metadata);
-      log.trace("nextServiceID={}", getServiceId());
-      msg.setMetadata(metadata);
-      msg.setNextServiceId(getServiceId());
-    }
+
+  @Override
+  public String toString() {
+    JettyRouteCondition condition = build();
+    return String.format("[%s][%s]", condition.getMethod(), condition.getUrlPattern());
   }
 }

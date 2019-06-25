@@ -16,7 +16,6 @@
 
 package com.adaptris.core;
 
-
 /**
  * <p>
  * Implementations of <code>AdaptrisMessageConsumer</code>
@@ -49,4 +48,23 @@ public interface AdaptrisMessageConsumer extends AdaptrisMessageWorker {
    * @param destination the name of the destination
    */
   void setDestination(ConsumeDestination destination);
+
+  /**
+   * Return the specific metadata key that contains the consume location.
+   * <p>
+   * if specified; then the workflow will attempt to set
+   * {@value com.adaptris.core.CoreConstants#MESSAGE_CONSUME_LOCATION} as a standard metadata key.
+   * If not explicitly overriden, then this metadata key is not available.
+   * </p>
+   * 
+   * @implSpec The default implementation returns null, indicating there is no way to standardise
+   *           the consume location.
+   * 
+   * @return the metadata key;
+   * @since 3.9.0
+   */
+  default String consumeLocationKey() {
+    return null;
+  }
+
 }

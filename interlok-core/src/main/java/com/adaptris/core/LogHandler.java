@@ -26,19 +26,6 @@ import java.io.IOException;
 public interface LogHandler extends AdaptrisComponent {
 
   /**
-   * Standard types of logfile.
-   *
-   */
-  public static enum LogFileType {
-    /** Standard log file */
-    Standard,
-    /** Statistics */
-    Statistics,
-    /** Google graph API log file. */
-    Graphing
-  }
-
-  /**
    * Clean up any logfiles.
    *
    * @throws IOException if there was an error.

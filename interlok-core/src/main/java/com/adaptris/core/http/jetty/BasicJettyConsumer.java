@@ -22,7 +22,6 @@ import static com.adaptris.core.http.jetty.JettyConstants.JETTY_URI;
 import static com.adaptris.core.http.jetty.JettyConstants.JETTY_URL;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.apache.commons.lang.StringUtils.join;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -40,17 +39,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
@@ -303,6 +299,17 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
         DEFAULT_EXPECT_INTERVAL);
   }
 
+  /**
+   * Provides the metadata key '{@value com.adaptris.core.http.jetty.JettyConstants#JETTY_URI}' that
+   * contains the URI which triggered the consumer.
+   * 
+   * @since 3.9.0
+   */
+  @Override
+  public String consumeLocationKey() {
+    return JettyConstants.JETTY_URI;
+  }
+
   protected class BasicServlet extends HttpServlet {
 
     private static final long serialVersionUID = 2007082301L;
@@ -403,9 +410,9 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
         catch (TimeoutException e) {
           timeout.handleTimeout(response);
         }
-        if ((monitor.getEndTime() - monitor.getStartTime()) > warnAfter()) {
+        if (monitor.getEndTime() - monitor.getStartTime() > warnAfter()) {
           log.warn("Message ({}) took longer than expected; {}ms", loggingId,
-              ((monitor.getEndTime() - monitor.getStartTime())));
+              monitor.getEndTime() - monitor.getStartTime());
         }
       }
     }

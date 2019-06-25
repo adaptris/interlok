@@ -86,9 +86,6 @@ public class NoCache implements ProcessedItemCache {
   }
 
   @Override
-  public void prepare() throws CoreException {}
-
-  @Override
   public void save() {
   }
 

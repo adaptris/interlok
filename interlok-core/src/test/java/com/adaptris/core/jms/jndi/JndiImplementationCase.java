@@ -26,6 +26,7 @@ import com.adaptris.core.jms.JmsConnectionConfig;
 import com.adaptris.core.jms.PasProducer;
 import com.adaptris.core.jms.VendorImplementation;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
+import com.adaptris.core.jms.activemq.EmbeddedArtemis;
 import com.adaptris.core.jms.activemq.RequiresCredentialsBroker;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.security.password.Password;
@@ -140,6 +141,24 @@ public abstract class JndiImplementationCase extends BaseCase {
     catch (IllegalArgumentException expected) {
     }
     assertEquals(set, jv.getJndiParams());
+  }
+  
+  public void testInitialiseDefaultArtemisBroker() throws Exception {
+    EmbeddedArtemis broker = new EmbeddedArtemis();
+    String topicName = getName() + "_topic";
+    
+    PasProducer producer = new PasProducer(new ConfiguredProduceDestination(topicName));
+    JmsConnection c = broker.getJmsConnection();
+    StandaloneProducer standaloneProducer = new StandaloneProducer(c, producer);
+    
+    try {
+      broker.start();
+      LifecycleHelper.init(standaloneProducer);
+    }
+    finally {
+      LifecycleHelper.close(standaloneProducer);
+      broker.destroy();
+    }
   }
 
   public void testInitialiseWithCredentials() throws Exception {

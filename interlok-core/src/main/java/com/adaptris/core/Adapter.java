@@ -19,7 +19,6 @@ package com.adaptris.core;
 import static com.adaptris.core.CoreConstants.UNIQUE_ID_JMX_PATTERN;
 import static com.adaptris.core.util.LoggingHelper.friendlyName;
 import static org.apache.commons.lang.StringUtils.isBlank;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
@@ -28,15 +27,12 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Timer;
 import java.util.concurrent.TimeUnit;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-
 import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -156,7 +152,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
     if (isBlank(uniqueId)) {
       throw new CoreException("invalid unique id [" + uniqueId + "]");
     }
-    getSharedComponents().prepare();
+    LifecycleHelper.prepare(getSharedComponents());
     try {
       logHandler().clean();
     } catch (IOException i) {
@@ -167,7 +163,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
     for (Channel c : getChannelList()) {
       LifecycleHelper.registerEventHandler(c, getEventHandler());
     }
-    channelList.prepare();
+    LifecycleHelper.prepare(getChannelList());
     getMessageErrorHandler().registerDigester(getMessageErrorDigester());
     injectErrorHandler();
     registerWorkflowsInRetrier();
