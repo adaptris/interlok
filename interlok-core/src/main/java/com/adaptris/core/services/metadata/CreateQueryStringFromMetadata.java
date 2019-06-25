@@ -16,37 +16,22 @@
 
 package com.adaptris.core.services.metadata;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.validation.Valid;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.MetadataCollection;
-import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.ServiceImp;
-import com.adaptris.core.metadata.MetadataFilter;
-import com.adaptris.core.metadata.MetadataFilterImpl;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LoggingHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
  * Service that creates a URL query string from the specified metadata keys.
@@ -58,116 +43,54 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @XStreamAlias("create-query-string-from-metadata")
 @AdapterComponent
 @ComponentProfile(summary = "Create the query portion of a URL from metadata", tag = "service,metadata,http,https")
-@DisplayOrder(order = {"metadata-filter", "metadataKeys", "resultKey", "querySeparator"})
-public class CreateQueryStringFromMetadata extends ServiceImp {
+@DisplayOrder(order = {"metadata-filter", "resultKey", "separator", "includeQueryPrefix"})
+public class CreateQueryStringFromMetadata extends UrlEncodedMetadataValues {
 
-  private static final String AMPERSAND = "&";
-
-  private static boolean warningLogged = false;
-
-  @XStreamImplicit(itemFieldName = "metadata-key")
-  @Deprecated
-  @Removal(version = "3.9.0", message = "Use metadata-filter")
-  private List<String> metadataKeys;
   @NotBlank
   @AffectsMetadata
   private String resultKey;
   @AdvancedConfig
-  @InputFieldHint(style = "BLANKABLE")
-  private String querySeparator;
-  @AdvancedConfig
   @InputFieldDefault(value = "true")
   private Boolean includeQueryPrefix;
-  @Valid
-  private MetadataFilter metadataFilter;
+  @Deprecated
+  @Removal(version = "3.11.0", message = "use separator instead")
+  private String querySeparator;
+  private transient boolean warningLogged = false;
 
   public CreateQueryStringFromMetadata() {
-    metadataKeys = new ArrayList<String>();
+  }
+
+  @Override
+  public void prepare() throws CoreException {
+    Args.notBlank(resultKey, "resultKey");
   }
 
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    StringBuilder queryString = new StringBuilder(includeQueryPrefix() ? "?" : "");
-
-    MetadataCollection filtered = metadataFilter().filter(msg);
-    for (MetadataElement e : filtered) {
+    try {
+      StringBuilder queryString = new StringBuilder(includeQueryPrefix() ? "?" : "");
+      queryString.append(buildEncodedString(msg));
       if (queryString.length() > 1) {
-        // This is not the first parameter so add a separator
-        queryString.append(querySeparator());
+        // We have added some parameters
+        msg.addMetadata(getResultKey(), queryString.toString());
+      } else {
+        // No params - return an empty string
+        msg.addMetadata(getResultKey(), "");
       }
-      try {
-        queryString.append(e.getKey()).append("=").append(URLEncoder.encode(e.getValue(), "UTF-8"));
-      } catch (UnsupportedEncodingException ex) {
-        // This will not occur, but we will deal with it nonetheless.
-        throw ExceptionHelper.wrapServiceException(ex);
-      }
-    }
-    if (queryString.length() > 1) {
-      // We have added some parameters
-      msg.addMetadata(getResultKey(), queryString.toString());
-    }
-    else {
-      // No params - return an empty string
-      msg.addMetadata(getResultKey(), "");
-    }
-  }
-
-
-  @Override
-  protected void initService() throws CoreException {
-    if (getMetadataKeys().size() > 0 && getMetadataFilter() == null) {
-      LoggingHelper.logDeprecation(warningLogged, ()-> { warningLogged=true;}, "metadata-keys", "metadata-filter");
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapServiceException(e);
     }
   }
 
   @Override
-  protected void closeService() {
-
-  }
-
-  public MetadataFilter getMetadataFilter() {
-    return metadataFilter;
-  }
-
-  public void setMetadataFilter(MetadataFilter metadataFilter) {
-    this.metadataFilter = metadataFilter;
-  }
-
-  private MetadataFilter metadataFilter() {
-    if (getMetadataFilter() != null) {
-      return getMetadataFilter();
+  protected String separator() {
+    if (getQuerySeparator() != null) {
+      LoggingHelper.logWarning(warningLogged, () -> {
+        warningLogged = true;
+      }, "query-separator deprecated; use a separator instead");
+      return getQuerySeparator();
     }
-    return new LegacyFilter();
-  }
-
-  /**
-   * 
-   * @deprecated since 3.7.1 use a metadata-filter instead
-   */
-  @Deprecated
-  @Removal(version = "3.9.0", message = "Use metadata-filter")
-  public void addMetadataKey(String key) {
-    metadataKeys.add(Args.notBlank(key, "key"));
-  }
-
-  /**
-   * 
-   * @deprecated since 3.7.1 use a metadata-filter instead
-   */
-  @Deprecated
-  @Removal(version = "3.9.0", message = "Use metadata-filter")
-  public List<String> getMetadataKeys() {
-    return metadataKeys;
-  }
-
-  /**
-   * 
-   * @deprecated since 3.7.1 use a metadata-filter instead
-   */
-  @Deprecated
-  @Removal(version = "3.9.0", message = "Use metadata-filter")
-  public void setMetadataKeys(List<String> metadataKeys) {
-    this.metadataKeys = Args.notNull(metadataKeys, "metadataKeys");
+    return super.separator();
   }
 
   public String getResultKey() {
@@ -178,41 +101,6 @@ public class CreateQueryStringFromMetadata extends ServiceImp {
     this.resultKey = resultKey;
   }
 
-  /**
-   * @return the querySeparator
-   */
-  public String getQuerySeparator() {
-    return querySeparator;
-  }
-
-  /**
-   * Set the separator to be used in between each parameter in the query String..
-   * 
-   * <p>
-   * Although '&amp;' is the conventional standard (or even a semi-colon ';'), there isn't a formal standard for separating query
-   * parameters; RFC3986 simply states:
-   * </p>
-   * 
-   * <pre>
-   * {@code
-   *    URI           = scheme ":" hier-part [ "?" query ] [ "#" fragment ]
-   *    query         = *( pchar / "/" / "?" )
-   * }
-   * </pre>
-   * 
-   * @param s the querySeparator to set, defaults to null which indicates '&amp;'.
-   */
-  public void setQuerySeparator(String s) {
-    querySeparator = s;
-  }
-
-  String querySeparator() {
-    return getQuerySeparator() == null ? AMPERSAND : getQuerySeparator();
-  }
-
-  @Override
-  public void prepare() throws CoreException {
-  }
 
   public Boolean getIncludeQueryPrefix() {
     return includeQueryPrefix;
@@ -227,22 +115,19 @@ public class CreateQueryStringFromMetadata extends ServiceImp {
     this.includeQueryPrefix = b;
   }
 
-  boolean includeQueryPrefix() {
+  private boolean includeQueryPrefix() {
     return BooleanUtils.toBooleanDefaultIfNull(getIncludeQueryPrefix(), true);
   }
 
-  private class LegacyFilter extends MetadataFilterImpl {
+  @Deprecated
+  @Removal(version = "3.11.0", message = "use separator instead")
+  public String getQuerySeparator() {
+    return querySeparator;
+  }
 
-    @Override
-    public MetadataCollection filter(MetadataCollection original) {
-      MetadataCollection result = new MetadataCollection();
-      for (MetadataElement e : original) {
-        if (getMetadataKeys().contains(e.getKey())) {
-          result.add(e);
-        }
-      }
-      return result;
-    }
-
+  @Deprecated
+  @Removal(version = "3.11.0", message = "use separator instead")
+  public void setQuerySeparator(String s) {
+    this.querySeparator = s;
   }
 }

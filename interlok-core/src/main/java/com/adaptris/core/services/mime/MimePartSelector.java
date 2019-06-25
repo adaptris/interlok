@@ -17,16 +17,12 @@
 package com.adaptris.core.services.mime;
 
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
-
 import java.util.Enumeration;
-
 import javax.mail.Header;
 import javax.mail.internet.MimeBodyPart;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -100,7 +96,7 @@ public class MimePartSelector extends ServiceImp {
         }
         StreamUtil.copyAndClose(part.getInputStream(), msg.getOutputStream());
         if (markAsNonMime()) {
-          if (msg.containsKey(CoreConstants.MSG_MIME_ENCODED)) {
+          if (msg.headersContainsKey(CoreConstants.MSG_MIME_ENCODED)) {
             msg.removeMetadata(msg.getMetadata(CoreConstants.MSG_MIME_ENCODED));
           }
         }

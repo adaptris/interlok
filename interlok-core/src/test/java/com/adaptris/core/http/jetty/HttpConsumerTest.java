@@ -21,17 +21,14 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.NullConnection;
 import com.adaptris.core.PoolingWorkflow;
 import com.adaptris.core.PortManager;
 import com.adaptris.core.ProduceException;
@@ -41,7 +38,6 @@ import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.Workflow;
 import com.adaptris.core.http.HttpConsumerExample;
 import com.adaptris.core.http.HttpProducer;
-import com.adaptris.core.http.JdkHttpProducer;
 import com.adaptris.core.http.auth.AdapterResourceAuthenticator;
 import com.adaptris.core.http.jetty.HttpConnection.HttpConfigurationProperty;
 import com.adaptris.core.http.jetty.HttpConnection.ServerConnectorProperty;
@@ -54,6 +50,7 @@ import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.stubs.MockWorkflowInterceptor;
 import com.adaptris.core.stubs.StaticMockMessageProducer;
 import com.adaptris.core.stubs.StubMessageFactory;
+import com.adaptris.http.legacy.HttpProduceConnection;
 import com.adaptris.http.legacy.SimpleHttpProducer;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.TimeInterval;
@@ -99,22 +96,6 @@ public class HttpConsumerTest extends HttpConsumerExample {
     assertEquals(true, consumer.additionalDebug());
   }
 
-  public void testSetWarnAfter() throws Exception {
-    JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
-    assertNull(consumer.getWarnAfterMessageHangMillis());
-    assertNull(consumer.getWarnAfter());
-
-    assertEquals(Long.MAX_VALUE, consumer.warnAfter());
-    consumer.setWarnAfterMessageHangMillis(10L);
-    assertNull(consumer.getWarnAfter());
-    assertEquals(10, consumer.warnAfter());
-
-    consumer.setWarnAfterMessageHangMillis(null);
-    consumer.setWarnAfter(new TimeInterval(10L, TimeUnit.MILLISECONDS));
-    assertNotNull(consumer.getWarnAfter());
-    assertEquals(10, consumer.warnAfter());
-  }
-
   public void testSetSendProcessingInterval() throws Exception {
     JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
     assertNull(consumer.getSendProcessingInterval());
@@ -125,19 +106,6 @@ public class HttpConsumerTest extends HttpConsumerExample {
     consumer.setSendProcessingInterval(t);
     assertEquals(t, consumer.getSendProcessingInterval());
     assertEquals(10, consumer.sendProcessingInterval());
-  }
-
-  public void testSetMaxWaitTime() throws Exception {
-    MessageConsumer consumer = JettyHelper.createDeprecatedConsumer(URL_TO_POST_TO);
-    consumer.setMaxWaitTime(null);
-    assertNull(consumer.getMaxWaitTime());
-    assertNotNull(consumer.timeoutAction());
-    assertEquals(TimeUnit.MINUTES.toMillis(10L), consumer.timeoutAction().maxWaitTime());
-    TimeInterval t = new TimeInterval(100L, TimeUnit.SECONDS);
-    consumer.setMaxWaitTime(t);
-    assertEquals(t, consumer.getMaxWaitTime());
-    assertNotNull(consumer.timeoutAction());
-    assertEquals(t.toMilliseconds(), consumer.timeoutAction().maxWaitTime());
   }
 
   public void testSetTimeoutAction() throws Exception {
@@ -157,7 +125,6 @@ public class HttpConsumerTest extends HttpConsumerExample {
   public void testConnection_NonDefaults() throws Exception {
     HttpConnection connection = createConnection(null);
     connection.getServerConnectorProperties().addKeyValuePair(new KeyValuePair(ServerConnectorProperty.AcceptQueueSize.name(), "10"));
-    connection.getServerConnectorProperties().addKeyValuePair(new KeyValuePair(ServerConnectorProperty.SoLingerTime.name(), "-1"));
     connection.getServerConnectorProperties().addKeyValuePair(new KeyValuePair(ServerConnectorProperty.ReuseAaddress.name(), "true"));
     Channel channel = JettyHelper.createChannel(connection, JettyHelper.createConsumer(URL_TO_POST_TO), new MockMessageProducer());
     try {
@@ -174,7 +141,8 @@ public class HttpConsumerTest extends HttpConsumerExample {
     JettyMessageConsumer consumer1 = JettyHelper.createConsumer(URL_TO_POST_TO);
     StandardWorkflow workflow1 = new StandardWorkflow();
     workflow1.setConsumer(consumer1);
-    workflow1.getServiceCollection().add(new StandaloneProducer(new ResponseProducer(HttpStatus.OK_200)));
+    workflow1.getServiceCollection()
+        .add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200)));
     Channel channel = JettyHelper.createChannel(connection, workflow1);
     try {
       channel.requestStart();
@@ -202,13 +170,15 @@ public class HttpConsumerTest extends HttpConsumerExample {
     JettyMessageConsumer consumer1 = JettyHelper.createConsumer(URL_TO_POST_TO);
     StandardWorkflow workflow1 = new StandardWorkflow();
     workflow1.setConsumer(consumer1);
-    workflow1.getServiceCollection().add(new StandaloneProducer(new ResponseProducer(HttpStatus.OK_200)));
+    workflow1.getServiceCollection()
+        .add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200)));
     Channel channel = JettyHelper.createChannel(connection, workflow1);
 
     JettyMessageConsumer consumer2 = JettyHelper.createConsumer("/some/other/urlmapping/");
     StandardWorkflow workflow2 = new StandardWorkflow();
     workflow2.setConsumer(consumer2);
-    workflow2.getServiceCollection().add(new StandaloneProducer(new ResponseProducer(HttpStatus.OK_200)));
+    workflow2.getServiceCollection()
+        .add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200)));
     channel.getWorkflowList().add(workflow2);
 
     try {
@@ -239,7 +209,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
     consumer.setWarnAfter(new TimeInterval(10L, TimeUnit.MILLISECONDS));
     PoolingWorkflow workflow = new PoolingWorkflow();
-    ResponseProducer responder = new ResponseProducer(HttpStatus.OK_200);
+    StandardResponseProducer responder = new StandardResponseProducer(HttpStatus.OK_200);
     workflow.setConsumer(consumer);
     workflow.getServiceCollection().add(new WaitService(new TimeInterval(1L, TimeUnit.SECONDS)));
     workflow.getServiceCollection().add(new StandaloneProducer(mockProducer));
@@ -270,7 +240,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     PoolingWorkflow workflow = new PoolingWorkflow();
     workflow.addInterceptor(new MockWorkflowInterceptor());
     workflow.setShutdownWaitTime(new TimeInterval(100L, TimeUnit.MILLISECONDS));
-    ResponseProducer responder = new ResponseProducer(HttpStatus.OK_200);
+    StandardResponseProducer responder = new StandardResponseProducer(HttpStatus.OK_200);
     workflow.setConsumer(consumer);
     workflow.getServiceCollection().add(new WaitService(new TimeInterval(1L, TimeUnit.SECONDS)));
     workflow.getServiceCollection().add(new StandaloneProducer(mockProducer));
@@ -300,7 +270,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     consumer.setTimeoutAction(new TimeoutAction(new TimeInterval(100L, TimeUnit.MILLISECONDS)));
     PoolingWorkflow workflow = new PoolingWorkflow();
     workflow.setShutdownWaitTime(new TimeInterval(100L, TimeUnit.MILLISECONDS));
-    ResponseProducer responder = new ResponseProducer(HttpStatus.OK_200);
+    StandardResponseProducer responder = new StandardResponseProducer(HttpStatus.OK_200);
     workflow.setConsumer(consumer);
     workflow.getServiceCollection().add(new WaitService(new TimeInterval(5L, TimeUnit.SECONDS)));
     workflow.getServiceCollection().add(new StandaloneProducer(mockProducer));
@@ -356,19 +326,9 @@ public class HttpConsumerTest extends HttpConsumerExample {
       msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
       // we should default to post, so restricted to GET/HEAD/OPTIONS will cause a 405...
       httpProducer.setIgnoreReplyMetadata(false);
-      if (httpProducer instanceof JdkHttpProducer) {
-        ((JdkHttpProducer) httpProducer).setReplyHttpHeadersAsMetadata(true);
-        ((JdkHttpProducer) httpProducer).setReplyMetadataPrefix(null);
-      }
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg, createProduceDestination(connection.getPort()));
       assertEquals("405", reply.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
-      if (httpProducer instanceof JdkHttpProducer) {
-        List<String> methods = Arrays.asList(reply.getMetadataValue("Allow").split(","));
-        assertTrue(methods.contains("GET"));
-        assertTrue(methods.contains("HEAD"));
-        assertTrue(methods.contains("OPTIONS"));
-      }
     }
     finally {
       stop(httpProducer);
@@ -387,22 +347,12 @@ public class HttpConsumerTest extends HttpConsumerExample {
       channel.requestStart();
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
       httpProducer.setIgnoreReplyMetadata(false);
-      if (httpProducer instanceof JdkHttpProducer) {
-        ((JdkHttpProducer) httpProducer).setMethod("OPTIONS");
-        ((JdkHttpProducer) httpProducer).setReplyHttpHeadersAsMetadata(true);
-        ((JdkHttpProducer) httpProducer).setReplyMetadataPrefix(null);
-      } else {
+      if (httpProducer instanceof SimpleHttpProducer) {
         ((SimpleHttpProducer) httpProducer).setMethod("OPTIONS");
       }
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg, createProduceDestination(connection.getPort()));
       assertEquals("200", reply.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
-      if (httpProducer instanceof JdkHttpProducer) {
-        List<String> methods = Arrays.asList(reply.getMetadataValue("Allow").split(","));
-        assertTrue(methods.contains("GET"));
-        assertTrue(methods.contains("HEAD"));
-        assertTrue(methods.contains("OPTIONS"));
-      }
     } finally {
       stop(httpProducer);
       channel.requestClose();
@@ -791,49 +741,11 @@ public class HttpConsumerTest extends HttpConsumerExample {
     }
   }
 
-  public void testConsume_WithACL_HashUserRealmProxy() throws Exception {
-    String threadName = Thread.currentThread().getName();
-    Thread.currentThread().setName(getName());
-    HashUserRealmProxy hr = new HashUserRealmProxy();
-    hr.setFilename(PROPERTIES.getProperty(JETTY_USER_REALM));
-
-    SecurityConstraint securityConstraint = new SecurityConstraint();
-    securityConstraint.setMustAuthenticate(true);
-    securityConstraint.setRoles("user");
-
-    hr.setSecurityConstraints(Arrays.asList(securityConstraint));
-
-    HttpConnection connection = createConnection(hr);
-    MockMessageProducer mockProducer = new MockMessageProducer();
-    JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
-    Channel adapter = JettyHelper.createChannel(connection, consumer, mockProducer);
-
-    try {
-      adapter.requestStart();
-      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
-      msg.addMetadata("content.type", "text/xml");
-      httpProducer.setUserName("user");
-      httpProducer.setPassword("password");
-      start(httpProducer);
-      AdaptrisMessage reply = httpProducer.request(msg, createProduceDestination(connection.getPort()));
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
-      doAssertions(mockProducer);
-    }
-    finally {
-      stop(httpProducer);
-      adapter.requestClose();
-      Thread.currentThread().setName(threadName);
-      PortManager.release(connection.getPort());
-      assertEquals(0, AdapterResourceAuthenticator.getInstance().currentAuthenticators().size());
-    }
-  }
-
   public void testConsume_WithACL() throws Exception {
     String threadName = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
     ConfigurableSecurityHandler csh = new ConfigurableSecurityHandler();
     HashLoginServiceFactory hsl = new HashLoginServiceFactory("InterlokJetty", PROPERTIES.getProperty(JETTY_USER_REALM));
-    hsl.setRefreshInterval(100);
     csh.setLoginService(hsl);
     SecurityConstraint securityConstraint = new SecurityConstraint();
     securityConstraint.setMustAuthenticate(true);
@@ -1109,7 +1021,6 @@ public class HttpConsumerTest extends HttpConsumerExample {
     }
 
     http.getServerConnectorProperties().clear();
-    http.getServerConnectorProperties().add(new KeyValuePair(ServerConnectorProperty.SoLingerTime.name(), "-1"));
     http.getServerConnectorProperties().add(new KeyValuePair(ServerConnectorProperty.ReuseAaddress.name(), "true"));
     http.getServerConnectorProperties().add(new KeyValuePair("WillNotMatch", "true"));
 
@@ -1128,17 +1039,16 @@ public class HttpConsumerTest extends HttpConsumerExample {
   }
 
   protected HttpProducer createProducer() {
-    JdkHttpProducer p = new JdkHttpProducer();
+    SimpleHttpProducer p = new SimpleHttpProducer();
+    p.registerConnection(new HttpProduceConnection());
     p.setContentTypeKey("content.type");
     p.setIgnoreServerResponseCode(true);
-    p.registerConnection(new NullConnection());
     return p;
   }
 
   @Override
   protected Object retrieveObjectForSampleConfig() {
     HttpConnection connection = createConnection(createSecurityHandlerExample());
-    connection.getServerConnectorProperties().add(new KeyValuePair(ServerConnectorProperty.SoLingerTime.name(), "-1"));
     connection.getServerConnectorProperties().add(new KeyValuePair(ServerConnectorProperty.ReuseAaddress.name(), "true"));
     JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
     StandaloneConsumer result = new StandaloneConsumer(connection, consumer);

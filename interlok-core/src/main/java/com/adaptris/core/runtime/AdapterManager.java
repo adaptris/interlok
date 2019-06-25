@@ -17,7 +17,6 @@
 package com.adaptris.core.runtime;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -25,15 +24,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-
 import javax.management.MBeanNotificationInfo;
 import javax.management.MalformedObjectNameException;
 import javax.management.Notification;
 import javax.management.ObjectName;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdapterLifecycleEvent;
 import com.adaptris.core.AdaptrisComponent;
@@ -50,6 +46,7 @@ import com.adaptris.core.Service;
 import com.adaptris.core.StartedState;
 import com.adaptris.core.StoppedState;
 import com.adaptris.core.management.VersionReport;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
 
 /**
@@ -415,7 +412,7 @@ public class AdapterManager extends ComponentManagerImpl<Adapter> implements Ada
   public void setMessageErrorHandler(String xml) throws CoreException {
     ensureState(ClosedState.getInstance());
     ProcessingExceptionHandler obj = (ProcessingExceptionHandler) DefaultMarshaller.getDefaultMarshaller().unmarshal(xml);
-    obj.prepare();
+    LifecycleHelper.prepare(obj);
     getWrappedComponent().setMessageErrorHandler(obj);
     registerChildRuntime(obj);
     marshalAndSendNotification();
@@ -426,7 +423,7 @@ public class AdapterManager extends ComponentManagerImpl<Adapter> implements Ada
   public void setFailedMessageRetrier(String xml) throws CoreException {
     ensureState(ClosedState.getInstance());
     FailedMessageRetrier obj = (FailedMessageRetrier) DefaultMarshaller.getDefaultMarshaller().unmarshal(xml);
-    obj.prepare();
+    LifecycleHelper.prepare(obj);
     getWrappedComponent().setFailedMessageRetrier(obj);
     registerChildRuntime(obj);
     marshalAndSendNotification();

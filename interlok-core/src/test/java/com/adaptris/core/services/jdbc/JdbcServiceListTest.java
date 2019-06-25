@@ -56,17 +56,6 @@ public class JdbcServiceListTest extends ServiceCollectionCase {
   public void setUp() throws Exception {
   }
 
-  public void testSetDatabaseConnection() {
-    JdbcConnection connection = new JdbcConnection();
-    JdbcServiceList list = new JdbcServiceList();
-    assertNull(list.getDatabaseConnection());
-    list.setDatabaseConnection(connection);
-    assertEquals(connection, list.connection());
-    assertEquals(connection, list.getDatabaseConnection());
-    list.setDatabaseConnection(null);
-    assertEquals(null, list.getDatabaseConnection());
-    assertNull(list.connection());
-  }
 
   public void testSetConnection() {
     JdbcConnection connection = new JdbcConnection();

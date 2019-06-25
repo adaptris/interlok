@@ -56,7 +56,7 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
     try {
       setupSession(msg);
       Destination replyTo = null;
-      if (msg.containsKey(JMS_ASYNC_STATIC_REPLY_TO)) {
+      if (msg.headersContainsKey(JMS_ASYNC_STATIC_REPLY_TO)) {
         replyTo = createDestination(msg.getMetadataValue(JMS_ASYNC_STATIC_REPLY_TO));
       }
       doProduce(msg, destination, replyTo);
@@ -146,7 +146,7 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
     try {
       setupSession(msg);
       getMessageTranslator().registerSession(producerSession.getSession());
-      if (msg.containsKey(JMS_ASYNC_STATIC_REPLY_TO)) {
+      if (msg.headersContainsKey(JMS_ASYNC_STATIC_REPLY_TO)) {
         replyTo = createDestination(msg.getMetadataValue(JMS_ASYNC_STATIC_REPLY_TO));
       }
       else {

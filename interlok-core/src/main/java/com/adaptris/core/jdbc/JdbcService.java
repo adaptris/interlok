@@ -21,6 +21,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.validation.Valid;
+import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConnectedService;
@@ -35,6 +37,7 @@ import com.adaptris.util.TimeInterval;
  * Provides database connection for JDBC-based {@link com.adaptris.core.Service} implementations.
  * </p>
  */
+@ComponentProfile(recommended = {DatabaseConnection.class}, tag = "jdbc")
 public abstract class JdbcService extends ServiceImp implements ConnectedService {
 
   // marshalled...
@@ -59,9 +62,7 @@ public abstract class JdbcService extends ServiceImp implements ConnectedService
 
   @Override
   public final void prepare() throws CoreException {
-    if (connection != null) {
-      connection.prepare();
-    }
+    LifecycleHelper.prepare(getConnection());
     prepareService();
   }
 
@@ -145,7 +146,10 @@ public abstract class JdbcService extends ServiceImp implements ConnectedService
    *
    * @param sqlConnection the database connection.
    * @param msg the AdaptrisMessage
+   * @deprecated use {@link JdbcUtil#rollback(Connection, AdaptrisMessage)} instead, will be removed in 3.11.0
    */
+  @Deprecated
+  @Removal(version = "3.11.0")
   protected void rollback(Connection sqlConnection, AdaptrisMessage msg) {
     JdbcUtil.rollback(sqlConnection, msg);
   }
@@ -160,8 +164,10 @@ public abstract class JdbcService extends ServiceImp implements ConnectedService
    * @param sqlConnection the SQL Connection
    * @param msg the AdaptrisMessage currently being processed.
    * @throws SQLException if the commit fails.
+   * @deprecated use {@link JdbcUtil#commit(Connection, AdaptrisMessage)} instead, will be removed in 3.11.0
    */
   @Deprecated
+  @Removal(version = "3.11.0")
   protected void commit(Connection sqlConnection, AdaptrisMessage msg) throws SQLException {
     JdbcUtil.commit(sqlConnection, msg);
   }

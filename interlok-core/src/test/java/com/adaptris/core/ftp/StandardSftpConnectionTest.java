@@ -16,15 +16,15 @@
 
 package com.adaptris.core.ftp;
 
-import static com.adaptris.core.ftp.SftpConnectionTest.CFG_PASSWORD;
-import static com.adaptris.core.ftp.SftpKeyAuthConnectionTest.CFG_HOST;
-import static com.adaptris.core.ftp.SftpKeyAuthConnectionTest.CFG_KNOWN_HOSTS_FILE;
-import static com.adaptris.core.ftp.SftpKeyAuthConnectionTest.CFG_PRIVATE_KEY_FILE;
-import static com.adaptris.core.ftp.SftpKeyAuthConnectionTest.CFG_PRIVATE_KEY_PW;
-import static com.adaptris.core.ftp.SftpKeyAuthConnectionTest.CFG_REMOTE_DIR;
-import static com.adaptris.core.ftp.SftpKeyAuthConnectionTest.CFG_TEMP_HOSTS_FILE;
-import static com.adaptris.core.ftp.SftpKeyAuthConnectionTest.CFG_UNKNOWN_HOSTS_FILE;
-import static com.adaptris.core.ftp.SftpKeyAuthConnectionTest.CFG_USER;
+import static com.adaptris.core.ftp.SftpExampleHelper.CFG_HOST;
+import static com.adaptris.core.ftp.SftpExampleHelper.CFG_KNOWN_HOSTS_FILE;
+import static com.adaptris.core.ftp.SftpExampleHelper.CFG_PASSWORD;
+import static com.adaptris.core.ftp.SftpExampleHelper.CFG_PRIVATE_KEY_FILE;
+import static com.adaptris.core.ftp.SftpExampleHelper.CFG_PRIVATE_KEY_PW;
+import static com.adaptris.core.ftp.SftpExampleHelper.CFG_REMOTE_DIR;
+import static com.adaptris.core.ftp.SftpExampleHelper.CFG_TEMP_HOSTS_FILE;
+import static com.adaptris.core.ftp.SftpExampleHelper.CFG_UNKNOWN_HOSTS_FILE;
+import static com.adaptris.core.ftp.SftpExampleHelper.CFG_USER;
 
 import java.io.File;
 import java.io.IOException;
@@ -298,6 +298,7 @@ public class StandardSftpConnectionTest extends FtpConnectionCase {
   }
 
 
+  @Override
   protected void assertDefaultControlPort(int defaultControlPort) {
     assertEquals(22, defaultControlPort);
   }

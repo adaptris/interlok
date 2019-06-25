@@ -98,8 +98,8 @@ public final class MapMessageTranslator extends MessageTypeTranslatorImp {
     MapMessage jmsMsg = session.createMapMessage();
     jmsMsg.setString(getKeyForPayload(), msg.getContent());
     if (treatMetadataAsPartOfMessage()) {
-      Set metadata = msg.getMetadata();
-      for (Iterator itr = metadata.iterator(); itr.hasNext();) {
+      Set<MetadataElement> metadata = msg.getMetadata();
+      for (Iterator<MetadataElement> itr = metadata.iterator(); itr.hasNext();) {
         MetadataElement element = (MetadataElement) itr.next();
         if (!isReserved(element.getKey())) {
           jmsMsg.setString(element.getKey(), element.getValue());
@@ -122,7 +122,7 @@ public final class MapMessageTranslator extends MessageTypeTranslatorImp {
   public AdaptrisMessage translate(Message msg) throws JMSException {
     MapMessage jmsMsg = (MapMessage) msg;
     AdaptrisMessage result = currentMessageFactory().newMessage(jmsMsg.getString(getKeyForPayload()));
-    Enumeration e = jmsMsg.getMapNames();
+    Enumeration<?> e = jmsMsg.getMapNames();
     while (e.hasMoreElements()) {
       String mapName = (String) e.nextElement();
       if (!mapName.equals(getKeyForPayload())) {

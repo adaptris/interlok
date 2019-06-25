@@ -17,25 +17,23 @@
 package com.adaptris.core.http.jetty;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.io.IOUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.http.server.HeaderHandler;
 import com.adaptris.core.http.server.ParameterHandler;
@@ -76,7 +74,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Listen for HTTP traffic on the specified URI", tag = "consumer,http,https", metadata =
 {
-    "jettyURI", "jettyURL", "jettyQueryString", "httpmethod"
+        JettyConstants.JETTY_QUERY_STRING, JettyConstants.JETTY_URI, JettyConstants.JETTY_URL,
+        CoreConstants.HTTP_METHOD, CoreConstants.MESSAGE_CONSUME_LOCATION
 }, recommended =
 {
     EmbeddedConnection.class, JettyConnection.class
@@ -88,11 +87,13 @@ public class JettyMessageConsumer extends BasicJettyConsumer {
   @Valid
   @NotNull
   @AdvancedConfig
+  @AffectsMetadata
   private ParameterHandler<HttpServletRequest> parameterHandler;
   @AutoPopulated
   @Valid
   @NotNull
   @AdvancedConfig
+  @AffectsMetadata
   private HeaderHandler<HttpServletRequest> headerHandler;
 
   public JettyMessageConsumer() {

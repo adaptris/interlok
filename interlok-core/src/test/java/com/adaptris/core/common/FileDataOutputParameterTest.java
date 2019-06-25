@@ -16,27 +16,29 @@
 package com.adaptris.core.common;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 import java.io.File;
+import java.io.OutputStream;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
-import org.mockito.Mockito;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.ConfiguredDestination;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.stubs.TempFileUtils;
-import com.adaptris.interlok.types.InterlokMessage;
 
 @SuppressWarnings("deprecation")
 public class FileDataOutputParameterTest {
@@ -47,30 +49,17 @@ public class FileDataOutputParameterTest {
   @Rule
   public TestName testName = new TestName();
 
-  @Test
-  public void testUrl() throws Exception {
-    AdaptrisMessage m = new DefaultMessageFactory().newMessage();
-    FileDataOutputParameter p = new FileDataOutputParameter();
-    assertNull(p.url(m));
-    p.setUrl("file:////tmp/abc");
-    assertEquals("file:////tmp/abc", p.url(m));
-    p.setDestination(new ConfiguredProduceDestination("file:////tmp/destination"));
-    assertEquals("file:////tmp/destination", p.url(m));
-    InterlokMessage msg = Mockito.mock(InterlokMessage.class);
-    try {
-      p.url(msg);
-      fail();
-    }
-    catch (RuntimeException expected) {
-
-    }
-  }
 
   @Test
   public void testDestination() throws Exception {
     AdaptrisMessage m = new DefaultMessageFactory().newMessage();
     FileDataOutputParameter p = new FileDataOutputParameter();
-    assertNull(p.url(m));
+    try {
+      p.url(m);
+      fail();
+    } catch (IllegalArgumentException e) {
+      // ok
+    }
     p.setDestination(new ConfiguredProduceDestination("file:////tmp/abc"));
     assertEquals("file:////tmp/abc", p.url(m));
     try {
@@ -86,7 +75,7 @@ public class FileDataOutputParameterTest {
   public void testInsert() throws Exception {
     FileDataOutputParameter p = new FileDataOutputParameter();
     File f = TempFileUtils.createTrackedFile(testName.getMethodName(), "", p);
-    p.setUrl("file:///" + f.getCanonicalPath());
+    p.setDestination(new ConfiguredDestination("file:///" + f.getCanonicalPath()));
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     p.insert(TEXT, msg);
     // It doesn't insert into the msg; so message should still be blank
@@ -122,4 +111,16 @@ public class FileDataOutputParameterTest {
     }
   }
 
+  @Test
+  public void testWrap() throws Exception {
+    FileOutputMessageWrapper p = new FileOutputMessageWrapper();
+    File f = TempFileUtils.createTrackedFile(testName.getMethodName(), "", p);
+    assertFalse(f.exists());
+    p.withDestination(new ConfiguredDestination("file:///" + f.getCanonicalPath()));
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    try (OutputStream out = p.wrap(msg)) {
+      assertNotNull(out);
+    }
+    assertTrue(f.exists());
+  }
 }

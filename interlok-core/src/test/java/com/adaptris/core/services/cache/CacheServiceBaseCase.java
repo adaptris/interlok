@@ -73,29 +73,7 @@ public abstract class CacheServiceBaseCase extends CacheServiceExample {
 
   protected abstract CacheServiceBase createService();
 
-  @SuppressWarnings("deprecation")
-  public void testSetCache() throws Exception {
-    CacheServiceBase service = createService();
-    assertNull(service.getCache());
-    NullCacheImplementation newImp = new NullCacheImplementation();
-    service.setCache(newImp);
-    assertEquals(newImp, service.getCache());
-  }
 
-  @SuppressWarnings("deprecation")
-  public void testRetrieveCache_Legacy() throws Exception {
-    CacheServiceBase service = createService();
-    try {
-      service.setCache(new ExpiringMapCache());
-      LifecycleHelper.initAndStart(service);
-      assertEquals(ExpiringMapCache.class, service.retrieveCache().getClass());
-    }
-    finally {
-      LifecycleHelper.stopAndClose(service);
-    }
-  }
-
-  @SuppressWarnings("deprecation")
   public void testPrepare() throws Exception {
     CacheServiceBase service = createService();
     try {
@@ -105,9 +83,6 @@ public abstract class CacheServiceBaseCase extends CacheServiceExample {
     catch (CoreException expected) {
 
     }
-    service = createService();
-    service.setCache(new ExpiringMapCache());
-    LifecycleHelper.prepare(service);
     service = createService();
     service.setConnection(new CacheConnection());
     LifecycleHelper.prepare(service);

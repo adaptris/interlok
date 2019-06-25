@@ -30,6 +30,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.oro.io.GlobFilenameFilter;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -47,7 +48,6 @@ import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
 import com.adaptris.util.TimeInterval;
 
-@SuppressWarnings("deprecation")
 public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
   
   private static final String DIR_ROOT = "/";
@@ -70,6 +70,7 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
     super(name);
   }
   
+  @Override
   public void setUp() throws Exception {
     consumer = new RelaxedFtpConsumer();
     
@@ -96,6 +97,7 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
     calendarOneYearAgo.add(Calendar.DAY_OF_YEAR, -1);
   }
   
+  @Override
   public void tearDown() throws Exception {
     LifecycleHelper.stop(consumer);
     LifecycleHelper.close(consumer);
@@ -193,7 +195,7 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
         new long[] { calendarNow.getTimeInMillis() + 100000 }
     );
     
-    consumer.setOlderThan(new TimeInterval(1L, TimeUnit.MILLISECONDS));
+    consumer.setQuietInterval(new TimeInterval(1L, TimeUnit.MILLISECONDS));
     
     LifecycleHelper.init(consumer);
     LifecycleHelper.start(consumer);
@@ -281,7 +283,7 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
     );
     
     consumer.setDestination(new ConfiguredConsumeDestination("myDestination", "myFilter"));
-    consumer.setFileFilterImp("org.apache.oro.io.GlobFilenameFilter");
+    consumer.setFileFilterImp(GlobFilenameFilter.class.getCanonicalName());
     
     LifecycleHelper.init(consumer);
     LifecycleHelper.start(consumer);

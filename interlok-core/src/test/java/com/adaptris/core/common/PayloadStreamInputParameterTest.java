@@ -53,6 +53,18 @@ public class PayloadStreamInputParameterTest {
     }
   }
 
+  @Test
+  public void testWrap() throws Exception {
+    PayloadInputStreamWrapper p = new PayloadInputStreamWrapper();
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT.getBytes());
+    try (InputStream in = p.wrap(msg)) {
+      List<String> strings = IOUtils.readLines(in, Charset.defaultCharset());
+      assertEquals(1, strings.size());
+      assertEquals(TEXT, strings.get(0));
+    }
+  }
+
+
   @Test(expected = CoreException.class)
   public void testExtractWithException() throws Exception {
     PayloadStreamInputParameter p = new PayloadStreamInputParameter();
@@ -66,6 +78,7 @@ public class PayloadStreamInputParameterTest {
       super(new GuidGenerator(), new DefectiveMessageFactory());
     }
 
+    @Override
     public InputStream getInputStream() throws IOException {
       throw new IOException("broken");
     }

@@ -17,7 +17,6 @@
 package com.adaptris.core.ftp;
 
 import static org.junit.Assert.assertTrue;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,7 +24,6 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.ResourceBundle;
-
 import org.mockftpserver.core.command.Command;
 import org.mockftpserver.core.command.ReplyCodes;
 import org.mockftpserver.core.session.Session;
@@ -37,7 +35,6 @@ import org.mockftpserver.fake.filesystem.FileEntry;
 import org.mockftpserver.fake.filesystem.FileSystem;
 import org.mockftpserver.fake.filesystem.FileSystemEntry;
 import org.mockftpserver.fake.filesystem.UnixFakeFileSystem;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 
@@ -122,7 +119,8 @@ public class EmbeddedFtpServer {
   public void assertMessages(List<AdaptrisMessage> list, int count) {
     // assertEquals("All files consumed/produced", count, list.size());
     for (AdaptrisMessage m : list) {
-      assertTrue(m.containsKey(CoreConstants.ORIGINAL_NAME_KEY));
+      assertTrue(m.headersContainsKey(CoreConstants.ORIGINAL_NAME_KEY));
+      assertTrue(m.headersContainsKey(CoreConstants.FS_CONSUME_DIRECTORY));
       // assertEquals(PAYLOAD, m.getContent().trim());
     }
   }
@@ -132,6 +130,7 @@ public class EmbeddedFtpServer {
     public MdtmCommandHandler() {
     }
 
+    @Override
     protected void handle(Command command, Session session) {
       SimpleDateFormat tsFormat = new SimpleDateFormat("yyyyMMddHHmmss");
       verifyLoggedIn(session);
@@ -147,6 +146,7 @@ public class EmbeddedFtpServer {
     }
 
     // This is to override with the mdtm resource bundle w/o having to change the resource bundle
+    @Override
     public ResourceBundle getReplyTextBundle() {
       return wrap(super.getReplyTextBundle());
     }

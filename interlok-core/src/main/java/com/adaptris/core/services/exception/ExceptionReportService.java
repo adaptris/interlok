@@ -22,18 +22,14 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdapterComponent;
-import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.util.Args;
-import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.util.text.xml.DocumentMerge;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -57,25 +53,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class ExceptionReportService extends ServiceImp {
 
   @Valid
-  @Deprecated
-  @AdvancedConfig
-  @Removal(version = "3.9.0", message = "use an ExceptionSerializer implementation")
-  private DocumentMerge documentMerge;
-  @Valid
-  @Deprecated
-  @AdvancedConfig
-  @Removal(version = "3.9.0", message = "use an ExceptionSerializer implementation")
-  private ExceptionReportGenerator exceptionGenerator;
-  @Deprecated
-  @AdvancedConfig
-  @Removal(version = "3.9.0", message = "use an ExceptionSerializer implementation")
-  private String xmlEncoding;
-  @AdvancedConfig
-  @Deprecated
-  @Removal(version = "3.9.0", message = "use an ExceptionSerializer implementation")
-  private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
-
-  @Valid
   @NotNull
   private ExceptionSerializer exceptionSerializer;
 
@@ -87,6 +64,7 @@ public class ExceptionReportService extends ServiceImp {
     setExceptionSerializer(e);
   }
 
+  @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     try {
       if (msg.getObjectHeaders().containsKey(OBJ_METADATA_EXCEPTION)) {
@@ -112,11 +90,6 @@ public class ExceptionReportService extends ServiceImp {
 
   @Override
   public void prepare() throws CoreException {
-    if (getExceptionSerializer() == null && getExceptionGenerator() != null) {
-      log.warn("exception-generator, document-merge, xml-encoding all deprecated; use a exception-serializer instead");
-      setExceptionSerializer(new ExceptionAsXml().withXmlEncoding(getXmlEncoding()).withDocumentMerge(getDocumentMerge())
-          .withExceptionGenerator(getExceptionGenerator()).withDocumentFactoryConfig(getXmlDocumentFactoryConfig()));
-    }
     try {
       Args.notNull(getExceptionSerializer(), "exceptionSerializer");
     }
@@ -130,78 +103,7 @@ public class ExceptionReportService extends ServiceImp {
   }
 
   public void setExceptionSerializer(ExceptionSerializer exceptionSerializer) {
-    this.exceptionSerializer = exceptionSerializer;
-  }
-
-  @Deprecated
-  @Removal(version = "3.9.0", message = "use an ExceptionSerializer implementation")
-  public DocumentMerge getDocumentMerge() {
-    return documentMerge;
-  }
-
-  /**
-   * Specify how to merge the exception into the AdaptrisMessage.
-   *
-   * @param m the merge implementation
-   * @deprecated since 3.6.4 use a {@link ExceptionSerializer} instead.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0", message = "use an ExceptionSerializer implementation")
-  public void setDocumentMerge(DocumentMerge m) {
-    documentMerge = m;
-  }
-
-  @Deprecated
-  @Removal(version = "3.9.0", message = "use an ExceptionSerializer implementation")
-  public ExceptionReportGenerator getExceptionGenerator() {
-    return exceptionGenerator;
-  }
-
-  /**
-   * Specify how to create the XML document from the exception.
-   *
-   * @param generator the generator.
-   * @deprecated since 3.6.4 use a {@link ExceptionSerializer} instead.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0", message = "use an ExceptionSerializer implementation")
-  public void setExceptionGenerator(ExceptionReportGenerator generator) {
-    exceptionGenerator = generator;
-  }
-
-  @Deprecated
-  @Removal(version = "3.9.0", message = "use an ExceptionSerializer implementation")
-  public String getXmlEncoding() {
-    return xmlEncoding;
-  }
-
-  /**
-   * Set the encoding for the resulting XML document.
-   *
-   * @param encoding the encoding, default is UTF-8
-   * @deprecated since 3.6.4 use a {@link ExceptionSerializer} instead.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0", message = "use an ExceptionSerializer implementation")
-  public void setXmlEncoding(String encoding) {
-    xmlEncoding = encoding;
-  }
-
-  @Deprecated
-  @Removal(version = "3.9.0", message = "use an ExceptionSerializer implementation")
-  public DocumentBuilderFactoryBuilder getXmlDocumentFactoryConfig() {
-    return xmlDocumentFactoryConfig;
-  }
-
-
-  /**
-   * 
-   * @deprecated since 3.6.4 use a {@link ExceptionSerializer} instead.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0", message = "use an ExceptionSerializer implementation")
-  public void setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder xml) {
-    this.xmlDocumentFactoryConfig = xml;
+    this.exceptionSerializer = Args.notNull(exceptionSerializer, "exceptionSerializer");
   }
 
 }

@@ -22,10 +22,8 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.oro.io.Perl5FilenameFilter;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.DefaultAdaptrisMessageImp;
@@ -134,8 +132,8 @@ public class LargeFsConsumerTest extends FsMessageConsumerTest {
     assertEquals(count, list.size());
     assertEquals(0, remaining.length);
     for (AdaptrisMessage m : list) {
-      assertTrue(m.containsKey(CoreConstants.ORIGINAL_NAME_KEY));
-      assertTrue(m.containsKey(CoreConstants.FILE_LAST_MODIFIED_KEY));
+      assertTrue(m.headersContainsKey(CoreConstants.ORIGINAL_NAME_KEY));
+      assertTrue(m.headersContainsKey(CoreConstants.FILE_LAST_MODIFIED_KEY));
     }
   }
 

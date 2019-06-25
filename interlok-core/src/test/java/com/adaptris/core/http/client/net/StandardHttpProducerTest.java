@@ -19,7 +19,6 @@ package com.adaptris.core.http.client.net;
 import static com.adaptris.core.http.jetty.JettyHelper.createChannel;
 import static com.adaptris.core.http.jetty.JettyHelper.createConsumer;
 import static com.adaptris.core.http.jetty.JettyHelper.createWorkflow;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -28,9 +27,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.io.IOUtils;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageEncoderImp;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -74,7 +71,6 @@ import com.adaptris.security.password.Password;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.TimeInterval;
 
-@SuppressWarnings("deprecation")
 public class StandardHttpProducerTest extends HttpProducerExample {
   private static final String TEXT = "ABCDEFG";
   private static final String ALT_TEXT = "HIJKLMNOP";
@@ -116,7 +112,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
   public void testProduceWithContentTypeMetadata() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     Channel c = HttpHelper.createAndStartChannel(mock);
-    StandardHttpProducer stdHttp = new StandardHttpProducer(HttpHelper.createProduceDestination(c));
+    StandardHttpProducer stdHttp = new StandardHttpProducer();
     stdHttp.setContentTypeProvider(new MetadataContentTypeProvider(HttpHelper.CONTENT_TYPE));
     StandaloneProducer producer = new StandaloneProducer(stdHttp);
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
@@ -124,7 +120,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     try {
       c.requestStart();
       start(producer);
-      producer.doService(msg);
+      producer.produce(msg, HttpHelper.createProduceDestination(c));
       waitForMessages(mock, 1);
     }
     finally {
@@ -470,7 +466,6 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     ConfigurableSecurityHandler csh = new ConfigurableSecurityHandler();
     HashLoginServiceFactory hsl = new HashLoginServiceFactory("InterlokJetty",
         PROPERTIES.getProperty(HttpConsumerTest.JETTY_USER_REALM));
-    hsl.setRefreshInterval(100);
     csh.setLoginService(hsl);
     SecurityConstraint securityConstraint = new SecurityConstraint();
     securityConstraint.setMustAuthenticate(true);
@@ -510,7 +505,6 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     ConfigurableSecurityHandler csh = new ConfigurableSecurityHandler();
     HashLoginServiceFactory hsl = new HashLoginServiceFactory("InterlokJetty",
         PROPERTIES.getProperty(HttpConsumerTest.JETTY_USER_REALM));
-    hsl.setRefreshInterval(100);
     csh.setLoginService(hsl);
     SecurityConstraint securityConstraint = new SecurityConstraint();
     securityConstraint.setMustAuthenticate(true);
@@ -554,7 +548,6 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     ConfigurableSecurityHandler csh = new ConfigurableSecurityHandler();
     HashLoginServiceFactory hsl = new HashLoginServiceFactory("InterlokJetty",
         PROPERTIES.getProperty(HttpConsumerTest.JETTY_USER_REALM));
-    hsl.setRefreshInterval(100);
     csh.setLoginService(hsl);
     SecurityConstraint securityConstraint = new SecurityConstraint();
     securityConstraint.setMustAuthenticate(true);

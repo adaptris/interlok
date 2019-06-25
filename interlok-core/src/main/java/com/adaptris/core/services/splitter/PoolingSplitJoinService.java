@@ -20,10 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
-
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.pool2.impl.GenericObjectPool;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -188,7 +186,7 @@ public class PoolingSplitJoinService extends SplitJoinService {
       } finally {
         objectPool.returnObject(w);
       }
-      return msg;
+      return sendEvents(msg);
     }
 
   }

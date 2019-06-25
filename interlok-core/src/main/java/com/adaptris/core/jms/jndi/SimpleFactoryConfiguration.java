@@ -101,7 +101,7 @@ public class SimpleFactoryConfiguration implements ExtraFactoryConfiguration {
     abstract Object convert(String s) throws Exception;
   }
 
-  private static final Class[] PRIMITIVE_ARRAY = {
+  private static final Class<?>[] PRIMITIVE_ARRAY = {
           int.class, Integer.class, boolean.class, Boolean.class, String.class, float.class, Float.class, double.class,
           Double.class, long.class, Long.class};
 
@@ -109,11 +109,11 @@ public class SimpleFactoryConfiguration implements ExtraFactoryConfiguration {
       Converter.BOOLEAN_VALUE, Converter.STRING_VALUE, Converter.FLOAT_VALUE, Converter.FLOAT_VALUE, Converter.DOUBLE_VALUE,
       Converter.DOUBLE_VALUE, Converter.LONG_VALUE, Converter.LONG_VALUE};
 
-  private static final List<Class> PRIMITIVES = Arrays.asList(PRIMITIVE_ARRAY);
-  private static final Map<Class, Converter> PRIMITIVE_CONVERTERS;
+  private static final List<Class<?>> PRIMITIVES = Arrays.asList(PRIMITIVE_ARRAY);
+  private static final Map<Class<?>, Converter> PRIMITIVE_CONVERTERS;
 
   static {
-    HashMap<Class, Converter> map = new HashMap<Class, Converter>();
+    HashMap<Class<?>, Converter> map = new HashMap<Class<?>, Converter>();
     for (int i = 0; i < PRIMITIVE_ARRAY.length; i++) {
       map.put(PRIMITIVE_ARRAY[i], CONVERTER_ARRAY[i]);
     }
@@ -187,7 +187,7 @@ public class SimpleFactoryConfiguration implements ExtraFactoryConfiguration {
     if (!validate(m, fieldname)) {
       return;
     }
-    Class clazz = m.getParameterTypes()[0];
+    Class<?> clazz = m.getParameterTypes()[0];
     Object param = PRIMITIVE_CONVERTERS.get(clazz).convert(value);
     m.invoke(obj, new Object[]
     {
@@ -207,7 +207,7 @@ public class SimpleFactoryConfiguration implements ExtraFactoryConfiguration {
     return true;
   }
 
-  private Method getSetter(Class c, String fieldName) {
+  private Method getSetter(Class<?> c, String fieldName) {
     Method result = null;
     Method[] methods = c.getMethods();
     for (Method m : methods) {

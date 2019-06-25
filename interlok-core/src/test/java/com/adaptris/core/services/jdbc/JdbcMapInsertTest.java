@@ -15,6 +15,8 @@
 */
 package com.adaptris.core.services.jdbc;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.InputStream;
@@ -39,10 +41,12 @@ public class JdbcMapInsertTest extends JdbcMapInsertCase {
   @Test
   public void testService() throws Exception {
     createDatabase();
-    InsertProperties service = configureForTests(createService());
+    InsertProperties service = configureForTests(createService()).withRowsAffectedMetadataKey("rowsInserted");
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(CONTENT);
     ServiceCase.execute(service, msg);
     doAssert(1);
+    assertTrue(msg.headersContainsKey("rowsInserted"));
+    assertEquals("1", msg.getMetadataValue("rowsInserted"));
   }
 
   @Test
@@ -93,6 +97,7 @@ public class JdbcMapInsertTest extends JdbcMapInsertCase {
     }
   }
 
+  @Override
   protected InsertProperties createService() {
     return new InsertProperties();
   }
@@ -104,11 +109,11 @@ public class JdbcMapInsertTest extends JdbcMapInsertCase {
       Connection conn = null;
       try {
         conn = getConnection(msg);
-        handleInsert(table(msg), conn, mapify(msg));
-        commit(conn, msg);
+        addUpdatedMetadata(handleInsert(table(msg), conn, mapify(msg)), msg);
+        JdbcUtil.commit(conn, msg);
       }
       catch (Exception e) {
-        rollback(conn, msg);
+        JdbcUtil.rollback(conn, msg);
         throw ExceptionHelper.wrapServiceException(e);
       }
       finally {

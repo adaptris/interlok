@@ -18,7 +18,6 @@ package com.adaptris.core.jms;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
-
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -44,9 +43,6 @@ public class BasicJavaxJmsMessageTranslator extends MessageTypeTranslatorImp {
     super();
   }
   
-  public BasicJavaxJmsMessageTranslator(boolean moveJmsHeaders) {
-    super(moveJmsHeaders);
-  }
   
   /**
    * <p>

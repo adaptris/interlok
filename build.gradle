@@ -1,12 +1,12 @@
 plugins {
   // Manage optional dependencies in maven pom.
-  id 'nebula.optional-base' version '4.0.1' apply false
-  id 'com.github.spotbugs' version '1.6.10' apply false
+  id 'nebula.optional-base' version '5.0.3' apply false
+  id 'com.github.spotbugs' version '2.0.0' apply false
 }
 
 ext {
-  interlokCoreVersion = project.hasProperty('interlokCoreVersion') ? project.getProperty('interlokCoreVersion') : '3.8-SNAPSHOT'
-  releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '3.8-SNAPSHOT'
+  interlokCoreVersion = project.hasProperty('interlokCoreVersion') ? project.getProperty('interlokCoreVersion') : '3.9-SNAPSHOT'
+  releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '3.9-SNAPSHOT'
   nexusBaseUrl = project.hasProperty('nexusBaseUrl') ? project.getProperty('nexusBaseUrl') : 'https://nexus.adaptris.net/nexus'
   mavenPublishUrl = project.hasProperty('mavenPublishUrl') ? project.getProperty('mavenPublishUrl') : nexusBaseUrl + '/content/repositories/snapshots'
   javadocsBaseUrl = nexusBaseUrl + "/content/sites/javadocs/com/adaptris"
@@ -60,8 +60,7 @@ subprojects { subproject ->
     mavenCentral()
     maven { url "$defaultNexusRepo" }
     maven { url "$nexusBaseUrl/content/groups/public" }
-    maven { url "$nexusBaseUrl/content/repositories/snapshots" }
-    maven { url "$nexusBaseUrl/content/repositories/releases" }
+    maven { url "$nexusBaseUrl/content/groups/interlok" }
   }
 
   configurations {

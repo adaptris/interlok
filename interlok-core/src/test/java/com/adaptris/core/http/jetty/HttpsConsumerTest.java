@@ -19,9 +19,7 @@ package com.adaptris.core.http.jetty;
 import static com.adaptris.core.security.JunitSecurityHelper.KEYSTORE_PATH;
 import static com.adaptris.core.security.JunitSecurityHelper.KEYSTORE_TYPE;
 import static com.adaptris.core.security.JunitSecurityHelper.SECURITY_PASSWORD;
-
 import java.net.InetAddress;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
@@ -158,7 +156,6 @@ public class HttpsConsumerTest extends HttpConsumerTest {
     int port = PortManager.nextUnusedPort(Integer.parseInt(PROPERTIES.getProperty(JETTY_HTTPS_PORT)));
     https.setPort(port);
     https.getServerConnectorProperties().clear();
-    https.getServerConnectorProperties().add(new KeyValuePair(ServerConnectorProperty.SoLingerTime.name(), "-1"));
     https.getServerConnectorProperties().add(new KeyValuePair(ServerConnectorProperty.ReuseAaddress.name(), "true"));
 
     https.getSslProperties().clear();

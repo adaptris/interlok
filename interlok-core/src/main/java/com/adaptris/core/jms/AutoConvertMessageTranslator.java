@@ -286,8 +286,8 @@ public class AutoConvertMessageTranslator extends MessageTypeTranslatorImp {
 
     public Message translate(AdaptrisMessage msg) throws JMSException {
       MapMessage jmsMsg = session.createMapMessage();
-      Set metadata = msg.getMetadata();
-      for (Iterator i = metadata.iterator(); i.hasNext();) {
+      Set<MetadataElement> metadata = msg.getMetadata();
+      for (Iterator<MetadataElement> i = metadata.iterator(); i.hasNext();) {
         MetadataElement element = (MetadataElement) i.next();
         if (!isReserved(element.getKey())) {
           jmsMsg.setString(element.getKey(), element.getValue());
@@ -300,7 +300,7 @@ public class AutoConvertMessageTranslator extends MessageTypeTranslatorImp {
     public AdaptrisMessage translate(Message msg) throws JMSException {
       AdaptrisMessage result = currentMessageFactory().newMessage();
       MapMessage jmsMsg = (MapMessage) msg;
-      for (Enumeration e = jmsMsg.getMapNames(); e.hasMoreElements();) {
+      for (Enumeration<?> e = jmsMsg.getMapNames(); e.hasMoreElements();) {
         String mapName = (String) e.nextElement();
         result.addMetadata(mapName, jmsMsg.getString(mapName));
       }

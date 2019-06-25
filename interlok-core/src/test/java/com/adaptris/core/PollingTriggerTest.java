@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 import com.adaptris.core.services.EmbeddedScriptingService;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageProducer;
@@ -53,22 +52,6 @@ public class PollingTriggerTest extends ConsumerCase {
 
   @Override
   protected void tearDown() throws Exception {
-  }
-
-  @SuppressWarnings("deprecation")
-  public void testTriggerWithNonNullMessages_Legacy() throws Exception {
-    Trigger trigger = new Trigger();
-    MockMessageProducer mockProducer = new MockMessageProducer();
-    Channel c = createChannel( new PollingTrigger(trigger, PAYLOAD), mockProducer);
-    try {
-      BaseCase.start(c);
-      trigger.fire();
-      AdaptrisMessage msg = mockProducer.getMessages().get(0);
-      assertEquals(PAYLOAD, msg.getContent());
-    }
-    finally {
-      BaseCase.stop(c);
-    }
   }
 
   public void testTriggerWithStaticTemplate() throws Exception {
@@ -179,21 +162,6 @@ public class PollingTriggerTest extends ConsumerCase {
   }
 
   private class Trigger extends PollerImp {
-
-    public void init() throws CoreException {
-    }
-
-    public void start() throws CoreException {
-    }
-
-    public void stop() {
-    }
-
-    public void close() {
-    }
-
-    public void prepare() throws CoreException {
-    }
 
     public void fire() {
       processMessages();

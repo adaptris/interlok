@@ -17,51 +17,56 @@
 package com.adaptris.core.http;
 
 import java.util.Map;
-
 import javax.mail.internet.ContentType;
-
 import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.services.metadata.FormDataToMetadata;
+import com.adaptris.core.services.metadata.MetadataToPayloadService;
 import com.adaptris.util.URLHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * Implementation of <code>Service</code> which parses the incoming HTTP Request parameters and converts all request parameters into
- * Metadata.
+ * Implementation of <code>Service</code> which parses the incoming HTTP Request parameters and
+ * converts all request parameters into Metadata.
  * </p>
  * <p>
- * If the client is sending data to the adapter, it is possible that the client will send data as though it were a standard Html
- * Form post. In situations like that, then the payload is a number of URLEncoded key value pairs. This service can be used to
- * convert all the Request parameters into metadata.
+ * If the client is sending data to the adapter, it is possible that the client will send data as
+ * though it were a standard Html Form post. In situations like that, then the payload is a number
+ * of URLEncoded key value pairs. This service can be used to convert all the Request parameters
+ * into metadata.
  * </p>
  * <p>
- * If the <code>parameterForPayload</code> field is configured and present in the request parameters, then this will become the
- * message payload, otherwise the payload remains unchanged.
+ * If the <code>parameterForPayload</code> field is configured and present in the request
+ * parameters, then this will become the message payload, otherwise the payload remains unchanged.
  * </p>
  * <p>
- * In all cases, the metadata value associated with <code>contentTypeKey</code> will be matched against the configured
- * <code>contentTypeValue</code> If the values match, then the payload is converted, otherwise no action is performed on the
- * payload. If there is a charset parameter supplied with the content type metadata, then this charset will be used to decode the
- * parameters, and used as the CharEncoding on the AdaptriMessage
+ * In all cases, the metadata value associated with <code>contentTypeKey</code> will be matched
+ * against the configured <code>contentTypeValue</code> If the values match, then the payload is
+ * converted, otherwise no action is performed on the payload. If there is a charset parameter
+ * supplied with the content type metadata, then this charset will be used to decode the parameters,
+ * and used as the CharEncoding on the AdaptriMessage
  * </p>
  * 
  * @config http-request-parameter-converter-service
  * 
- * @author lchan
+ * @deprecated since 3.9.0 use {@link FormDataToMetadata} with a {@link MetadataToPayloadService} as
+ *             required.
  */
 @XStreamAlias("http-request-parameter-converter-service")
 @AdapterComponent
 @ComponentProfile(summary = "Turn HTTP Request parameters (from a HTTP POST) into metadata", tag = "service,metadata,http,https")
 @DisplayOrder(order = {"parameterForPayload", "contentTypeKey", "contentTypeValue"})
+@Deprecated
+@Removal(version = "3.11.0", message = "Use FormDataToMetadata instead")
 public class RequestParameterConverterService extends ServiceImp {
   public static final String DEFAULT_CONTENT_TYPE_KEY = HttpConstants.CONTENT_TYPE;
   public static final String DEFAULT_CONTENT_TYPE_VALUE = HttpConstants.WWW_FORM_URLENCODE;

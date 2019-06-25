@@ -21,11 +21,6 @@ junit.FsMessageProducerTest.baseUrl=file:///@BUILD_DIR@/junit/fs-produce
 junit.FsMessageProducerTest.tempDirUrl=file:///@BUILD_DIR@/junit/fs-temp
 junit.FileSorterTest.tempDirUrl=file:///@BUILD_DIR@/junit/fs-sorter
 
-junit.FfTransformService.stylesheet=file:///@BASE_DIR@/src/test/resources/transform/ff.definition.xml
-junit.FfTransformService.inputFile=@BASE_DIR@/src/test/resources/transform/ff.input.txt
-junit.FfTransformService.inputFile_ISO_8859=@BASE_DIR@/src/test/resources/transform/ff.input.iso8859.txt
-junit.FfTransformService.issue2661.input=@BASE_DIR@/src/test/resources/transform/issue2661.csv
-junit.FfTransformService.issue2661.definition=file:///@BASE_DIR@/src/test/resources/transform/issue2661-ffdef.xml
 
 junit.XpathSyntaxIdentifierTest.inputFile=@BASE_DIR@/src/test/resources/transform/inv.xml
 junit.XpathSyntaxIdentifierTest.non_text_node_input=@BASE_DIR@/src/test/resources/transform/redmine-issue1020.xml
@@ -53,7 +48,6 @@ junit.JmsConsumerExamples.baseDir=${junit.ConsumerCase.baseDir}/jms
 junit.FtpConsumerExamples.baseDir=${junit.ConsumerCase.baseDir}/ftp
 junit.FtpsConsumerExamples.baseDir=${junit.ConsumerCase.baseDir}/ftps
 junit.SftpConsumerExamples.baseDir=${junit.ConsumerCase.baseDir}/sftp
-junit.MailConsumerExamples.baseDir=${junit.ConsumerCase.baseDir}/mail
 junit.HttpConsumerExamples.baseDir=${junit.ConsumerCase.baseDir}/http
 junit.SocketConsumerExamples.baseDir=${junit.ConsumerCase.baseDir}/socket
 junit.JmxConsumerExamples.baseDir=${junit.ConsumerCase.baseDir}/jmx
@@ -63,7 +57,6 @@ junit.JmsProducerExamples.baseDir=${junit.ProducerCase.baseDir}/jms
 junit.FtpProducerExamples.baseDir=${junit.ProducerCase.baseDir}/ftp
 junit.FtpsProducerExamples.baseDir=${junit.ProducerCase.baseDir}/ftps
 junit.SftpProducerExamples.baseDir=${junit.ProducerCase.baseDir}/sftp
-junit.MailProducerExamples.baseDir=${junit.ProducerCase.baseDir}/mail
 junit.HttpProducerExamples.baseDir=${junit.ProducerCase.baseDir}/http
 junit.JdbcProducerExamples.baseDir=${junit.ProducerCase.baseDir}/jdbc
 junit.SocketProducerExamples.baseDir=${junit.ProducerCase.baseDir}/socket
@@ -90,17 +83,7 @@ junit.XmlServiceExamples.baseDir=${junit.ServiceCase.baseDir}/xml
 junit.RegexpServiceExamples.baseDir=${junit.ServiceCase.baseDir}/regexp
 junit.TranscodingServiceExamples.baseDir=${junit.ServiceCase.baseDir}/transcoding
 junit.CacheServiceExamples.baseDir=${junit.ServiceCase.baseDir}/cache
-
-
-
-
-
-
-junit.EdiTransformServiceTest.gxml=@BASE_DIR@/src/test/resources/transform/ordersD96A.gxml
-junit.EdiTransformServiceTest.input.edi=@BASE_DIR@/src/test/resources/transform/ordersD96a.edi
-junit.EdiTransformServiceTest.input.xml=@BASE_DIR@/src/test/resources/transform/ordersD96a.xml
-junit.EdiTransformServiceTest.charset=com.adaptris.edi.parser.StandardEdifactCharacterSet
-junit.EdiTransformServiceTest.gxml.url=file:///@BASE_DIR@/src/test/resources/transform/ordersD96A.gxml
+junit.ConditionalServiceExamples.baseDir=${junit.ServiceCase.baseDir}/conditional
 
 
 junit.XmlValidationServiceTest.schemaUrl=file://localhost/@BASE_DIR@/src/test/resources/transform/schema-simple.xsd
@@ -123,10 +106,6 @@ junit.XmlTransformService.remove.namespace.mapping=file:///@BASE_DIR@/src/test/r
 
 
 junit.XpathSplitter.issue2658.input=@BASE_DIR@/src/test/resources/services/issue2658.xml
-
-
-junit.FopTransformService.inputMessage=@BASE_DIR@/src/test/resources/transform/fop/sample_input.fo
-junit.FopTransformService.outputMessage=@BASE_DIR@/src/test/resources/transform/fop/sample_output.pdf
 
 junit.StoreMetadataValueServiceTest.storeFileUrl=file:///@BASE_DIR@/src/test/resources/store
 junit.CheckMetadataValueServiceTest.storeFileUrl=file:///@BASE_DIR@/src/test/resources/store
@@ -166,13 +145,12 @@ junit.adp.https.port=58443
 junit.jetty.http.port=58080
 junit.jetty.https.port=58443
 junit.jetty.user.realm.properties=@BASE_DIR@/src/test/resources/realm.properties
+junit.jetty.mgmt.config.absolute=file:///@BASE_DIR@/src/test/resources/jetty/jetty.xml
+junit.jetty.mgmt.config.relative=./src/test/resources/jetty/jetty.xml
 
 
 junit.DuplicateMessageRoutingService.store=file:///@BUILD_DIR@/DMR.dat
 
-
-junit.mail.email.with.cd=@BASE_DIR@/src/test/resources/mail/email-with-content-disposition.txt
-junit.mail.email.without.cd=@BASE_DIR@/src/test/resources/mail/email-without-content-disposition.txt
 
 junit.jdbc.sequencenumber.url=jdbc:derby:memory:sequencenumber;create=true
 junit.jdbc.sequencenumber.driver=org.apache.derby.jdbc.EmbeddedDriver

@@ -20,13 +20,10 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-
 import javax.validation.Valid;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConnectedService;
@@ -40,7 +37,6 @@ import com.adaptris.core.jdbc.JdbcService;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.core.util.LoggingHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -89,12 +85,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 })
 public class JdbcServiceList extends ServiceList implements ConnectedService {
 
-  private static transient boolean warningLogged = false;
-
-  @Valid
-  @Deprecated
-  @Removal(version = "3.9.0", message = "Use connection instead")
-  private AdaptrisConnection databaseConnection;
   @Valid
   private AdaptrisConnection connection;
 
@@ -122,7 +112,7 @@ public class JdbcServiceList extends ServiceList implements ConnectedService {
       super.applyServices(msg);
       // We may not have a valid connection here if we're using pooled connections.  If not, then no point in committing on a new connection.
       Connection conn = (Connection) msg.getObjectHeaders().get(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY);
-      if((conn != null) && (!conn.isClosed()))
+      if(conn != null && !conn.isClosed())
         JdbcUtil.commit(conn);
     }
     catch (Exception e) {
@@ -185,33 +175,6 @@ public class JdbcServiceList extends ServiceList implements ConnectedService {
     LifecycleHelper.prepare(connection());
   }
   
-  /**
-   * Get the connection that will be used the underlying {@link JdbcService} instances.
-   *
-   * @return the connection.
-   * @deprecated since 3.7.0 use {@link #getConnection()} instead.
-   */
-  @Removal(version = "3.9.0", message = "Use connection instead")
-  public AdaptrisConnection getDatabaseConnection() {
-    return databaseConnection;
-  }
-
-  /**
-   * Set the connection that will be used by all {@link JdbcService} instances in this service list.
-   * <p>
-   * Traditionally, you would use a {@link DatabaseConnection} instance here, but it is an
-   * {@link com.adaptris.core.AdaptrisConnection} so that you can use a {@link com.adaptris.core.SharedConnection} where
-   * appropriate.
-   * </p>
-   * 
-   * @param c
-   * @deprecated since 3.7.0 use {@link #setConnection(AdaptrisConnection)} instead.
-   */
-  @Removal(version = "3.9.0", message = "Use connection instead")
-  public void setDatabaseConnection(AdaptrisConnection c) {
-    databaseConnection = c;
-  }
-
   @Override
   public AdaptrisConnection getConnection() {
     return connection;
@@ -227,10 +190,6 @@ public class JdbcServiceList extends ServiceList implements ConnectedService {
   }
 
   AdaptrisConnection connection() {
-    if (getDatabaseConnection() != null) {
-      LoggingHelper.logDeprecation(warningLogged, ()-> { warningLogged=true;}, "database-connection", "connection");      
-      return getDatabaseConnection();
-    }
     return getConnection();
   }
 }

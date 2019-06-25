@@ -67,6 +67,7 @@ public abstract class StandardWorkflowImpl extends WorkflowImp {
 
   @Override
   protected void prepareWorkflow() throws CoreException {
+    // Consumers / services / producers already prepared.
   }
 
 }

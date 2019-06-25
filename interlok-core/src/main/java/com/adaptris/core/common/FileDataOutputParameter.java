@@ -20,20 +20,11 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.net.URL;
 
-import javax.validation.Valid;
-
 import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.annotation.Removal;
-import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.MessageDrivenDestination;
 import com.adaptris.core.fs.FsHelper;
-import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.interlok.config.DataOutputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
@@ -45,18 +36,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config file-data-output-parameter
  */
 @XStreamAlias("file-data-output-parameter")
-@DisplayOrder(order = {"destination", "url"})
-public class FileDataOutputParameter implements DataOutputParameter<String> {
-  private transient Logger log = LoggerFactory.getLogger(this.getClass());
-
-  @Deprecated
-  @AdvancedConfig
-  @Removal(version = "3.9.0", message = "use destination instead")
-  private String url;
-
-  @Valid
-  private MessageDrivenDestination destination;
-
+@DisplayOrder(order = {"destination"})
+public class FileDataOutputParameter extends FileParameter
+    implements DataOutputParameter<String> {
 
   public FileDataOutputParameter() {
 
@@ -67,55 +49,11 @@ public class FileDataOutputParameter implements DataOutputParameter<String> {
     try {
       URL url = FsHelper.createUrlFromString(this.url(message), true);
       try (OutputStream out = new FileOutputStream(FsHelper.createFileReference(url))) {
-        IOUtils.write((String) data, out, message.getContentEncoding());
+        IOUtils.write(data, out, message.getContentEncoding());
       }
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
   }
-
-  protected String url(InterlokMessage msg) throws CoreException{
-    if (getDestination() != null) {
-      if (msg instanceof AdaptrisMessage) {
-        return getDestination().getDestination((AdaptrisMessage)msg);
-      } else {
-        throw new RuntimeException("Message is not instance of Adaptris Message");
-      }
-    }
-    log.warn("[url] is deprecated, use [destination] instead");
-    return getUrl();
-  }
-
-  /**
-   * @deprecated since 3.5.0 use {@link #getDestination()} instead for consistency.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0", message = "use #getDestination()")
-  public String getUrl() {
-    return url;
-  }
-
-  /**
-   * @deprecated since 3.5.0 use {@link #setDestination(MessageDrivenDestination)} instead for consistency.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0", message = "use #setDestination(MessageDrivenDestination)")
-  public void setUrl(String url) {
-    this.url = url;
-  }
-
-  public MessageDrivenDestination getDestination() {
-    return destination;
-  }
-
-  /**
-   * Set the destination for the file data output.
-   *
-   * @param d the destination.
-   */
-  public void setDestination(MessageDrivenDestination d) {
-    destination = Args.notNull(d, "destination");
-  }
-
 
 }

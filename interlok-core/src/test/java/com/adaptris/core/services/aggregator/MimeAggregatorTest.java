@@ -18,7 +18,6 @@ package com.adaptris.core.services.aggregator;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.NullService;
 import com.adaptris.core.Service;
@@ -53,14 +52,14 @@ public class MimeAggregatorTest extends MimeAggregatorCase {
     service.setService(new NullService());
     service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
     service.setSplitter(new LineCountSplitter());
-    MimeAggregator aggr = createAggregatorForTests();
-    aggr.setEncoding("base64");
+    MimeAggregator aggr = createAggregatorForTests().withEncoding("base64");
     service.setAggregator(aggr);
     execute(service, msg);
     BodyPartIterator input = MimeHelper.createBodyPartIterator(msg);
     assertEquals(11, input.size());
   }
 
+  @SuppressWarnings("deprecation")
   public void testService_ContentIdProvided() throws Exception {
     // This is a 100 line message, so we expect to get 11 parts.
     AdaptrisMessage msg = SplitterCase.createLineCountMessageInput();

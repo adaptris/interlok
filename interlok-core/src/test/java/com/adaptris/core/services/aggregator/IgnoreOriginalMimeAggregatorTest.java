@@ -18,7 +18,6 @@ package com.adaptris.core.services.aggregator;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.NullService;
 import com.adaptris.core.Service;
@@ -61,6 +60,7 @@ public class IgnoreOriginalMimeAggregatorTest extends MimeAggregatorCase {
     assertEquals(10, input.size());
   }
 
+  @SuppressWarnings("deprecation")
   public void testService_ContentIdProvided() throws Exception {
     // This is a 100 line message, so we expect to get 10 parts.
     AdaptrisMessage msg = SplitterCase.createLineCountMessageInput();

@@ -40,7 +40,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("stream-payload-output-parameter")
 @DisplayOrder(order = {"contentEncoding"})
 public class PayloadStreamOutputParameter implements DataOutputParameter<InputStreamWithEncoding> {
-
   @AdvancedConfig
   private String contentEncoding;
 
@@ -66,4 +65,5 @@ public class PayloadStreamOutputParameter implements DataOutputParameter<InputSt
   public void setContentEncoding(String contentEncoding) {
     this.contentEncoding = contentEncoding;
   }
+
 }

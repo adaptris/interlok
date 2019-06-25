@@ -16,22 +16,17 @@
 
 package com.adaptris.core.common;
 
+import static com.adaptris.core.common.MetadataDataOutputParameter.DEFAULT_METADATA_KEY;
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.StringBuilderWriter;
-import org.hibernate.validator.constraints.NotBlank;
 
-import com.adaptris.annotation.AdvancedConfig;
-import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.interlok.InterlokException;
 import com.adaptris.interlok.config.DataOutputParameter;
@@ -47,17 +42,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("metadata-stream-output-parameter")
 @DisplayOrder(order = {"metadataKey", "contentEncoding"})
-public class MetadataStreamOutputParameter implements DataOutputParameter<InputStreamWithEncoding> {
-  
-  static final String DEFAULT_METADATA_KEY = "destinationKey";
-
-  @NotBlank
-  @AutoPopulated
-  private String metadataKey;
-  @AdvancedConfig
-  private String contentEncoding;
-  
+public class MetadataStreamOutputParameter extends MetadataStreamParameter
+    implements DataOutputParameter<InputStreamWithEncoding> {
   public MetadataStreamOutputParameter() {
+    super();
     this.setMetadataKey(DEFAULT_METADATA_KEY);
   }
   
@@ -70,7 +58,9 @@ public class MetadataStreamOutputParameter implements DataOutputParameter<InputS
   public void insert(InputStreamWithEncoding data, InterlokMessage message) throws InterlokException {
     try {
       StringBuilder builder = new StringBuilder();
-      try (Reader in = getReader(data.inputStream, defaultIfEmpty(getContentEncoding(), data.encoding));
+      try (
+          Reader in = new InputStreamReader(data.inputStream,
+              charset(defaultIfEmpty(getContentEncoding(), data.encoding)));
           StringBuilderWriter out = new StringBuilderWriter(builder)) {
         IOUtils.copy(in, out);
       }
@@ -78,33 +68,6 @@ public class MetadataStreamOutputParameter implements DataOutputParameter<InputS
     } catch (IOException e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
-  }
-
-  private InputStreamReader getReader(InputStream in, String encoding) throws UnsupportedEncodingException {
-    InputStreamReader reader = null;
-    if (encoding == null) {
-      reader = new InputStreamReader(in);
-    } else {
-      reader = new InputStreamReader(in, encoding);
-    }
-    return reader;
-  }
-
-
-  public String getMetadataKey() {
-    return metadataKey;
-  }
-
-  public void setMetadataKey(String key) {
-    this.metadataKey = Args.notBlank(key, "metadata key");
-  }
-
-  public String getContentEncoding() {
-    return contentEncoding;
-  }
-
-  public void setContentEncoding(String contentEncoding) {
-    this.contentEncoding = contentEncoding;
   }
 
 }

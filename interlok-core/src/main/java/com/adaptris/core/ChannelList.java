@@ -17,7 +17,6 @@
 package com.adaptris.core;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
-
 import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,20 +25,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.CastorizedList;
+import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -68,9 +64,6 @@ public class ChannelList extends AbstractCollection<Channel>
   @AdvancedConfig
   private ChannelLifecycleStrategy lifecycleStrategy;
 
-  @Deprecated
-  @Removal(version = "3.9.0")
-  private String uniqueId;
   
   /**
    * <p>
@@ -98,7 +91,7 @@ public class ChannelList extends AbstractCollection<Channel>
     for (Channel c : channels) {
       // Register the channel against the addressable channel list.
       register(c);
-      c.prepare();
+      LifecycleHelper.prepare(c);
     }
   }
 
@@ -381,25 +374,4 @@ public class ChannelList extends AbstractCollection<Channel>
     return channels.subList(fromIndex, toIndex);
   }
 
-  /**
-   * Not required as this component doesn't need to extend {@link AdaptrisComponent}
-   * 
-   * @deprecated since 3.6.3
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public String getUniqueId() {
-    return uniqueId;
-  }
-
-  /**
-   * Not required as this component doesn't need to extend {@link AdaptrisComponent}
-   * 
-   * @deprecated since 3.6.3
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public void setUniqueId(String uniqueId) {
-    this.uniqueId = uniqueId;
-  }
 }

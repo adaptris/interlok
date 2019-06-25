@@ -20,12 +20,8 @@ import javax.jms.Connection;
 import javax.jms.JMSException;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.adaptris.annotation.Removal;
-import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.CoreException;
 
 /**
@@ -38,10 +34,6 @@ public abstract class ProducerSessionFactoryImpl implements ProducerSessionFacto
 
   protected transient Logger log = LoggerFactory.getLogger(this.getClass());
   protected transient ProducerSession session = null;
-
-  @Deprecated
-  @Removal(version = "3.9.0")
-  private String uniqueId;
   
   @Override
   public void init() throws CoreException {
@@ -61,9 +53,6 @@ public abstract class ProducerSessionFactoryImpl implements ProducerSessionFacto
   public void close() {
     closeQuietly(session);
   }
-
-  @Override
-  public void prepare() throws CoreException {}
 
   protected ProducerSession createProducerSession(JmsProducerImpl producer) throws JMSException {
     Connection conn = producer.retrieveConnection(JmsConnection.class).currentConnection();
@@ -104,6 +93,7 @@ public abstract class ProducerSessionFactoryImpl implements ProducerSessionFacto
       setProducer(p);
     }
 
+    @Override
     public Session getSession() {
       return session;
     }
@@ -112,6 +102,7 @@ public abstract class ProducerSessionFactoryImpl implements ProducerSessionFacto
       this.session = session;
     }
 
+    @Override
     public MessageProducer getProducer() {
       return producer;
     }
@@ -121,25 +112,4 @@ public abstract class ProducerSessionFactoryImpl implements ProducerSessionFacto
     }
   }
 
-  /**
-   * Not required as this component doesn't need to extend {@link AdaptrisComponent}
-   * 
-   * @deprecated since 3.6.3
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public String getUniqueId() {
-    return uniqueId;
-  }
-
-  /**
-   * Not required as this component doesn't need to extend {@link AdaptrisComponent}
-   * 
-   * @deprecated since 3.6.3
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public void setUniqueId(String uniqueId) {
-    this.uniqueId = uniqueId;
-  }
 }

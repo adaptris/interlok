@@ -22,7 +22,6 @@ import org.apache.commons.lang.StringUtils;
 
 import com.adaptris.core.AdaptrisMessage;
 
-@SuppressWarnings("deprecation")
 public class AllRowsMetadataTranslatorTest extends JdbcQueryServiceCase {
 
   private static final String ALL_ROWS_QUERY = "SELECT adapter_version, message_translator_type FROM adapter_type_version ";

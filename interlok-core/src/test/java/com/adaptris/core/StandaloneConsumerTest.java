@@ -88,7 +88,6 @@ public class StandaloneConsumerTest extends BaseCase {
     LifecycleHelper.stopAndClose(sc);
   }
 
-  @SuppressWarnings("deprecation")
   public void testPollingConsumerContinueProcessing() throws Exception {
     AdaptrisPollingConsumer consumer = new AdaptrisPollingConsumer() {
 
@@ -109,8 +108,6 @@ public class StandaloneConsumerTest extends BaseCase {
     // Not started, so should always return false.
     assertFalse(consumer.continueProcessingMessages(1));
     LifecycleHelper.initAndStart(sc);
-    assertTrue(consumer.continueProcessingMessages());
-    assertTrue(consumer.continueProcessingMessages());
     assertTrue(consumer.continueProcessingMessages(5));
     assertFalse(consumer.continueProcessingMessages(11));
     assertFalse(consumer.continueProcessingMessages(10));

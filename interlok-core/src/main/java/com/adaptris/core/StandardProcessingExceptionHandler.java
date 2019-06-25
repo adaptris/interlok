@@ -18,9 +18,7 @@ package com.adaptris.core;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.validation.Valid;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.util.LifecycleHelper;
@@ -111,9 +109,7 @@ public class StandardProcessingExceptionHandler extends RootProcessingExceptionH
 
   @Override
   public void prepare() throws CoreException {
-    if (getProcessingExceptionService() != null) {
-      getProcessingExceptionService().prepare();
-    }
+    LifecycleHelper.prepare(getProcessingExceptionService());
   }
 
 

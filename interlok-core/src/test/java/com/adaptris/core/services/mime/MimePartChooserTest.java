@@ -22,10 +22,8 @@ import static com.adaptris.core.services.mime.MimeJunitHelper.PAYLOAD_2;
 import static com.adaptris.core.services.mime.MimeJunitHelper.PAYLOAD_3;
 import static com.adaptris.core.services.mime.MimeJunitHelper.create;
 import static com.adaptris.util.text.mime.MimeConstants.HEADER_CONTENT_ENCODING;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreConstants;
@@ -52,9 +50,6 @@ public class MimePartChooserTest extends MimeServiceExample {
       new com.adaptris.util.text.mime.SelectByHeader("Content-Type", "text/xml")
   };
 
-  public MimePartChooserTest(java.lang.String testName) {
-    super(testName);
-  }
 
   @Override
   protected void setUp() throws Exception {

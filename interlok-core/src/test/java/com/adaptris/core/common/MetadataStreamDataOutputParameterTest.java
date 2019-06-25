@@ -15,7 +15,7 @@
  */
 package com.adaptris.core.common;
 
-import static com.adaptris.core.common.MetadataStreamOutputParameter.DEFAULT_METADATA_KEY;
+import static com.adaptris.core.common.MetadataDataOutputParameter.DEFAULT_METADATA_KEY;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
@@ -24,7 +24,9 @@ import static org.junit.Assert.fail;
 import java.io.ByteArrayInputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -110,4 +112,28 @@ public class MetadataStreamDataOutputParameterTest {
     };
     p.insert(new InputStreamWithEncoding(in, null), msg);
   }
+
+  @Test
+  @SuppressWarnings("deprecation")
+  public void testWrap() throws Exception {
+    MetadataOutputStreamWrapper p =
+        new MetadataOutputStreamWrapper().withMetadataKey("myMetadataKey");
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    try (OutputStream out = msg.wrap(p)) {
+      IOUtils.write(TEXT, out);
+    }
+    assertEquals(TEXT, msg.getMetadataValue("myMetadataKey"));
+  }
+
+  @Test
+  public void testWrap_WithCharset() throws Exception {
+    MetadataOutputStreamWrapper p = new MetadataOutputStreamWrapper().withMetadataKey("myMetadataKey")
+            .withContentEncoding(UTF_8);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    try (OutputStream out = msg.wrap(p)) {
+      IOUtils.write(TEXT, out, UTF_8);
+    }
+    assertEquals(TEXT, msg.getMetadataValue("myMetadataKey"));
+  }
+
 }

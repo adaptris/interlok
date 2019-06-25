@@ -18,6 +18,7 @@ package com.adaptris.core.services.splitter;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.util.CloseableIterable;
 
 /**
  * Interface for creating multiple messages from a single {@link com.adaptris.core.AdaptrisMessage} instance.

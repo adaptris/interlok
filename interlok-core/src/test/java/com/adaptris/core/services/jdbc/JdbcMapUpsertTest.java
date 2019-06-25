@@ -16,6 +16,7 @@
 package com.adaptris.core.services.jdbc;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.InputStream;
@@ -89,7 +90,7 @@ public class JdbcMapUpsertTest extends JdbcMapInsertCase {
   
   @Test
   public void testDatabaseId() {
-    JdbcMapUpsert upsert = (JdbcMapUpsert) createService();
+    JdbcMapUpsert upsert = createService();
     assertEquals(JdbcMapUpsert.DEFAULT_ID_FIELD, upsert.idField());
     assertEquals("hello", upsert.withId("hello").idField());
   }
@@ -97,11 +98,13 @@ public class JdbcMapUpsertTest extends JdbcMapInsertCase {
   @Test
   public void testService_Insert() throws Exception {
     createDatabase();
-    UpsertProperties service = configureForTests(createService());
+    UpsertProperties service = configureForTests(createService()).withRowsAffectedMetadataKey("rowsInserted");
     service.setIdField(ID_ELEMENT_VALUE);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(CONTENT);
     ServiceCase.execute(service, msg);
     doAssert(1);
+    assertTrue(msg.headersContainsKey("rowsInserted"));
+    assertEquals("1", msg.getMetadataValue("rowsInserted"));
   }
 
   @Test
@@ -133,10 +136,12 @@ public class JdbcMapUpsertTest extends JdbcMapInsertCase {
   public void testService_Update() throws Exception {
     createDatabase();
     populateDatabase();
-    UpsertProperties service = configureForTests(createService());
+    UpsertProperties service = configureForTests(createService()).withRowsAffectedMetadataKey("rowsUpdated");
     service.setIdField(ID_ELEMENT_VALUE);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(CONTENT);
     ServiceCase.execute(service, msg);
+    assertTrue(msg.headersContainsKey("rowsUpdated"));
+    assertEquals("1", msg.getMetadataValue("rowsUpdated"));
     doAssert(1);
     checkDob(ALICE, DOB);
   }
@@ -190,6 +195,7 @@ public class JdbcMapUpsertTest extends JdbcMapInsertCase {
     }
   }
   
+  @Override
   protected UpsertProperties createService() {
     return new UpsertProperties();
   }
@@ -226,11 +232,11 @@ public class JdbcMapUpsertTest extends JdbcMapInsertCase {
       Connection conn = null;
       try {
         conn = getConnection(msg);
-        handleUpsert(table(msg), conn, mapify(msg));
-        commit(conn, msg);
+        addUpdatedMetadata(handleUpsert(table(msg), conn, mapify(msg)), msg);
+        JdbcUtil.commit(conn, msg);
       }
       catch (Exception e) {
-        rollback(conn, msg);
+        JdbcUtil.rollback(conn, msg);
         throw ExceptionHelper.wrapServiceException(e);
       }
       finally {

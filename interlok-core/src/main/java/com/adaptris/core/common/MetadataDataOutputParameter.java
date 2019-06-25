@@ -17,7 +17,6 @@
 package com.adaptris.core.common;
 
 import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.util.Args;
@@ -64,5 +63,4 @@ public class MetadataDataOutputParameter implements DataOutputParameter<String> 
   public void setMetadataKey(String key) {
     this.metadataKey = Args.notBlank(key, "metadata key");
   }
-
 }

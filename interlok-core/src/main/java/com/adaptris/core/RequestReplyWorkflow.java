@@ -17,12 +17,9 @@
 package com.adaptris.core;
 
 import java.util.concurrent.TimeUnit;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -259,8 +256,8 @@ public class RequestReplyWorkflow extends StandardWorkflow {
 
   @Override
   protected void prepareWorkflow() throws CoreException {
-    getReplyProducer().prepare();
-    getReplyServiceCollection().prepare();
+    LifecycleHelper.prepare(getReplyProducer());
+    LifecycleHelper.prepare(getReplyServiceCollection());
     super.prepareWorkflow();
   }
 }

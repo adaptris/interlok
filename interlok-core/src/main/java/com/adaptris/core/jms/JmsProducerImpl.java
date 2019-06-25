@@ -45,7 +45,6 @@ import org.slf4j.Logger;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageListener;
 import com.adaptris.core.CoreException;
@@ -355,15 +354,6 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
     return ttl;
   }
 
-  /**
-   * @deprecated use {@link #getTtl()} instead.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public long getTimeToLive() {
-    return timeToLive();
-  }
-
   protected long timeToLive() {
     return NumberUtils.toLongDefaultIfNull(getTtl(), 0);
   }
@@ -551,6 +541,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
   /**
    * @param b the transacted to set
    */
+  @SuppressWarnings("unused")
   private void setTransacted(boolean b) {
     transactedSession = b;
   }
@@ -562,6 +553,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
   /**
    * @return the rollbackTimeout
    */
+  @SuppressWarnings("unused")
   private long getRollbackTimeout() {
     return rollbackTimeout;
   }
@@ -571,6 +563,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
    * 
    * @param l the rollbackTimeout to set
    */
+  @SuppressWarnings("unused")
   private void setRollbackTimeout(long l) {
     rollbackTimeout = l;
   }

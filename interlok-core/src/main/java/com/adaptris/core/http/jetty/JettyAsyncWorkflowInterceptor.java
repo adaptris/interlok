@@ -191,7 +191,7 @@ public class JettyAsyncWorkflowInterceptor extends JettyWorkflowInterceptorImpl 
    * <p>
    * Generally speaking JMS providers will assign a message-id for you when you create a {@code javax.jms.Message}; this becomes the
    * {@link AdaptrisMessage#getUniqueId()} in most cases. If Interlok is in use at all stages, then this can be left blank, as we
-   * will try as much to preserve our message unique-id across JMS providers; if there is an external application integrated with a
+   * will try as much to preserve our message unique-id across JMS providers; if there is an external application integrated with
    * JMS, then you might need to specify a value here so that the {@code JMSCorrelationID} (via
    * {@link com.adaptris.core.jms.MetadataCorrelationIdSource}) is used to key the cache when responding back to the HTTP client.
    * </p>
@@ -201,8 +201,7 @@ public class JettyAsyncWorkflowInterceptor extends JettyWorkflowInterceptorImpl 
    * {@link JettyMessageConsumer} which is not much.
    * </p>
    * 
-   * @param s the cache key e.g. %message{JMSCorrelationID} when the mode is {@link Mode#REQUEST}; dangerous to use when the mode is
-   *          {@link Mode#REQUEST}.
+   * @param s the cache key e.g. %message{JMSCorrelationID} when the mode is {@link Mode#RESPONSE};
    */
   public void setCacheKey(String s) {
     this.cacheKey = s;

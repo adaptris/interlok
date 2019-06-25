@@ -2,7 +2,6 @@ package com.adaptris.core.services.cache.translators;
 
 import javax.jms.JMSException;
 import javax.jms.Queue;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.BaseCase;
@@ -25,7 +24,7 @@ public class CacheValueTranslatorBaseCase extends BaseCase {
     AdaptrisMessage message = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD);
     message.addMetadata(KEY_ONE, VALUE_ONE);
     message.addMetadata(KEY_TWO, VALUE_TWO);
-    message.addObjectMetadata(JmsConstants.OBJ_JMS_REPLY_TO_KEY, new Queue() {
+    message.getObjectHeaders().put(JmsConstants.OBJ_JMS_REPLY_TO_KEY, new Queue() {
       @Override
       public String getQueueName() throws JMSException {
         return MY_QUEUE;

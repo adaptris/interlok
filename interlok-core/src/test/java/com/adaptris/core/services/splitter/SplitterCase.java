@@ -32,12 +32,12 @@ import com.adaptris.core.ServiceList;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.services.WaitService;
 import com.adaptris.core.stubs.StubMessageFactory;
+import com.adaptris.core.util.CloseableIterable;
 
 /**
  * @author lchan
  * @author $Author: lchan $
  */
-@SuppressWarnings("deprecation")
 public abstract class SplitterCase extends SplitterServiceExample {
 
   public static final String XML_MESSAGE = "<?xml version=\"1.0\" "
@@ -179,7 +179,7 @@ public abstract class SplitterCase extends SplitterServiceExample {
       return (List<AdaptrisMessage>)iter;
     }
     List<AdaptrisMessage> result = new ArrayList<AdaptrisMessage>();
-    try(CloseableIterable<AdaptrisMessage> messages = CloseableIterable.FACTORY.ensureCloseable(iter)) {
+    try (CloseableIterable<AdaptrisMessage> messages = CloseableIterable.ensureCloseable(iter)) {
       for(AdaptrisMessage msg: messages) {
         result.add(msg);
       }

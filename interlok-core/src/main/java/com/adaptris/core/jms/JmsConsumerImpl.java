@@ -18,7 +18,6 @@ package com.adaptris.core.jms;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 import static com.adaptris.core.jms.NullCorrelationIdSource.defaultIfNull;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
@@ -27,10 +26,8 @@ import javax.jms.Session;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-
 import org.apache.commons.lang.BooleanUtils;
 import org.slf4j.Logger;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessageConsumerImp;
@@ -305,6 +302,17 @@ public abstract class JmsConsumerImpl extends AdaptrisMessageConsumerImp impleme
   private static Session nullify(Session s) {
     JmsUtils.closeQuietly(s);
     return null;
+  }
+
+  /**
+   * Provides the metadata key {@value com.adaptris.core.jms.JmsConstants#JMS_DESTINATION} which
+   * will only be populated if {@link MessageTypeTranslatorImp#getMoveJmsHeaders()} is true.
+   * 
+   * @since 3.9.0
+   */
+  @Override
+  public String consumeLocationKey() {
+    return JmsConstants.JMS_DESTINATION;
   }
 
 }

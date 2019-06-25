@@ -18,10 +18,8 @@ package com.adaptris.core.services;
 
 import static com.adaptris.core.util.ServiceUtil.discardNulls;
 import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
@@ -75,14 +73,6 @@ public class StatelessServiceWrapper extends ServiceImp implements EventHandlerA
       Boolean getIsTrackingEndpoint(Service s) {
         return ((ServiceImp) s).getIsTrackingEndpoint();
       }
-      @Override
-      void setIsConfirmation(Service s, Boolean b) {
-        ((ServiceImp) s).setIsConfirmation(b);
-      }
-      @Override
-      Boolean getIsConfirmation(Service s) {
-        return ((ServiceImp) s).getIsConfirmation();
-      }
     },
     ServiceCollectionProxy {
       @Override
@@ -97,20 +87,10 @@ public class StatelessServiceWrapper extends ServiceImp implements EventHandlerA
       Boolean getIsTrackingEndpoint(Service s) {
         return ((ServiceCollectionImp) s).getIsTrackingEndpoint();
       }
-      @Override
-      void setIsConfirmation(Service s, Boolean b) {
-        ((ServiceCollectionImp) s).setIsConfirmation(b);
-      }
-      @Override
-      Boolean getIsConfirmation(Service s) {
-        return ((ServiceCollectionImp) s).getIsConfirmation();
-      }
     };
     abstract boolean matches(Service s);
     abstract void setIsTrackingEndpoint(Service s, Boolean b);
     abstract Boolean getIsTrackingEndpoint(Service s);
-    abstract void setIsConfirmation(Service s, Boolean b);
-    abstract Boolean getIsConfirmation(Service s);
   }
   
   @NotNull
@@ -169,14 +149,6 @@ public class StatelessServiceWrapper extends ServiceImp implements EventHandlerA
   }
 
   @Override
-  public boolean isConfirmation() {
-    if (getService() != null) {
-      return getService().isConfirmation();
-    }
-    return super.isConfirmation();
-  }
-
-  @Override
   public boolean isBranching() {
     if (getService() != null) {
       return getService().isBranching();
@@ -197,9 +169,7 @@ public class StatelessServiceWrapper extends ServiceImp implements EventHandlerA
 
   @Override
   public void prepare() throws CoreException {
-    if (getService() != null) {
-      getService().prepare();
-    }
+    LifecycleHelper.prepare(getService());
   }
 
 
@@ -263,30 +233,6 @@ public class StatelessServiceWrapper extends ServiceImp implements EventHandlerA
     }
     catch (IllegalArgumentException e) {
       super.setIsTrackingEndpoint(b);
-    }
-  }
-
-  @Override
-  @Deprecated
-  public Boolean getIsConfirmation() {
-    try {
-      MessageEventGeneratorProxy what = getProxy(getService());
-      return what.getIsConfirmation(getService());
-    }
-    catch (IllegalArgumentException e) {
-      return super.getIsConfirmation();
-    }
-  }
-
-  @Deprecated
-  @Override
-  public void setIsConfirmation(Boolean b) {
-    try {
-      MessageEventGeneratorProxy what = getProxy(getService());
-      what.setIsConfirmation(getService(), b);
-    }
-    catch (IllegalArgumentException e) {
-      super.setIsConfirmation(b);
     }
   }
 

@@ -21,6 +21,7 @@ import static org.junit.Assert.assertNull;
 import java.io.ByteArrayInputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -136,5 +137,14 @@ public class PayloadStreamOutputParameterTest {
       }
     };
     p.insert(new InputStreamWithEncoding(in, null), msg);
+  }
+
+  @Test
+  public void testWrap() throws Exception {
+    PayloadOutputStreamWrapper p = new PayloadOutputStreamWrapper();
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    try (OutputStream out = p.wrap(msg)) {
+
+    }
   }
 }

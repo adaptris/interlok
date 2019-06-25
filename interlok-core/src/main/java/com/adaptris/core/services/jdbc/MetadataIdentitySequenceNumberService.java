@@ -17,9 +17,7 @@
 package com.adaptris.core.services.jdbc;
 
 import javax.validation.constraints.NotNull;
-
 import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
@@ -74,7 +72,7 @@ public class MetadataIdentitySequenceNumberService extends AbstractJdbcSequenceN
 
   @Override
   public String getIdentity(AdaptrisMessage msg) throws ServiceException {
-    if (!msg.containsKey(getIdentityMetadataKey())) {
+    if (!msg.headersContainsKey(getIdentityMetadataKey())) {
       throw new ServiceException("Message does not contain identity metadata key - " + getIdentityMetadataKey());
     }
     return msg.getMetadataValue(getIdentityMetadataKey());

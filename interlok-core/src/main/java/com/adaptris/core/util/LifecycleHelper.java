@@ -54,8 +54,10 @@ public abstract class LifecycleHelper {
    * @see ComponentLifecycle#init()
    * @see StateManagedComponent#requestInit()
    */
-  public static final void init(ComponentLifecycle s) throws CoreException {
-    init(s, true);
+  public static final void init(ComponentLifecycle... s) throws CoreException {
+    for (ComponentLifecycle c : s) {
+      init(c, true);
+    }
   }
 
   private static void init(ComponentLifecycle s, boolean logging) throws CoreException {
@@ -77,8 +79,10 @@ public abstract class LifecycleHelper {
    * @see ComponentLifecycle#start()
    * @see StateManagedComponent#requestStart()
    */
-  public static final void start(ComponentLifecycle s) throws CoreException {
-    start(s, true);
+  public static final void start(ComponentLifecycle... s) throws CoreException {
+    for (ComponentLifecycle c : s) {
+      start(c, true);
+    }
   }
 
   private static void start(ComponentLifecycle s, boolean logging) throws CoreException {
@@ -99,8 +103,10 @@ public abstract class LifecycleHelper {
    * @see ComponentLifecycle#stop()
    * @see StateManagedComponent#requestStop()
    */
-  public static final void stop(ComponentLifecycle s) {
-    stop(s, true);
+  public static final void stop(ComponentLifecycle... s) {
+    for (ComponentLifecycle c : s) {
+      stop(c, true);
+    }
   }
 
   private static void stop(ComponentLifecycle s, boolean logging) {
@@ -121,8 +127,10 @@ public abstract class LifecycleHelper {
    * @see ComponentLifecycle#close()
    * @see StateManagedComponent#requestClose()
    */
-  public static final void close(ComponentLifecycle s) {
-    close(s, true);
+  public static final void close(ComponentLifecycle... s) {
+    for (ComponentLifecycle c : s) {
+      close(c, true);
+    }
   }
 
   private static void close(ComponentLifecycle s, boolean logging) {
@@ -151,11 +159,13 @@ public abstract class LifecycleHelper {
   /**
    * Prepare the component if it can be.
    * 
-   * @param c a service.
+   * @param s a service.
    * @throws CoreException
    */
-  public static void prepare(ComponentLifecycle c) throws CoreException {
-    prepare(c, true);
+  public static void prepare(ComponentLifecycle... s) throws CoreException {
+    for (ComponentLifecycle c : s) {
+      prepare(c, true);
+    }
   }
 
   private static void prepare(ComponentLifecycle c, boolean logging) throws CoreException {

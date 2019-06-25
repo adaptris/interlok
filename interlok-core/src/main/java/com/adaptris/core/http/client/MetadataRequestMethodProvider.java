@@ -17,9 +17,7 @@
 package com.adaptris.core.http.client;
 
 import javax.validation.constraints.NotNull;
-
 import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.util.Args;
@@ -61,7 +59,7 @@ public class MetadataRequestMethodProvider implements RequestMethodProvider {
 
   @Override
   public RequestMethod getMethod(AdaptrisMessage msg) {
-    if (msg.containsKey(getMetadataKey())) {
+    if (msg.headersContainsKey(getMetadataKey())) {
       return RequestMethod.valueOf(msg.getMetadataValue(getMetadataKey()).toUpperCase());
     }
     return getDefaultMethod();

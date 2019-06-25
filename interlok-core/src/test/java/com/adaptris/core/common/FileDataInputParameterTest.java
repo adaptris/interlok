@@ -19,12 +19,14 @@ import static com.adaptris.core.http.jetty.EmbeddedJettyHelper.URL_TO_POST_TO;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.InputStream;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -33,6 +35,7 @@ import org.mockito.Mockito;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
+import com.adaptris.core.ConfiguredDestination;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
@@ -52,20 +55,17 @@ public class FileDataInputParameterTest {
   @Rule
   public TestName testName = new TestName();
 
-  @Test
-  public void testUrl() throws Exception {
-    AdaptrisMessage m = new DefaultMessageFactory().newMessage();
-    FileDataInputParameter p = new FileDataInputParameter();
-    assertNull(p.url(m));
-    p.setUrl("file:////tmp/abc");
-    assertEquals("file:////tmp/abc", p.url(m));
-  }
 
   @Test
   public void testDestination() throws Exception {
     AdaptrisMessage m = new DefaultMessageFactory().newMessage();
     FileDataInputParameter p = new FileDataInputParameter();
-    assertNull(p.url(m));
+    try {
+      p.url(m);
+      fail();
+    } catch (IllegalArgumentException e) {
+      // ok
+    }
     p.setDestination(new ConfiguredProduceDestination("file:////tmp/abc"));
     assertEquals("file:////tmp/abc", p.url(m));
     try {
@@ -89,17 +89,23 @@ public class FileDataInputParameterTest {
   public void testNonExistingFile() throws Exception {
     AdaptrisMessage m = new DefaultMessageFactory().newMessage();
     FileDataInputParameter p = new FileDataInputParameter();
-    assertNull(p.url(m));
+    try {
+      p.url(m);
+      fail();
+    } catch (IllegalArgumentException e) {
+      // ok
+    }
     p.setDestination(new ConfiguredProduceDestination("file:////tmp/doesnotexist"));
     assertEquals("file:////tmp/doesnotexist", p.url(m));
     String result = p.extract(m);
   }
 
+
   @Test
   public void testExtract() throws Exception {
     FileDataInputParameter p = new FileDataInputParameter();
     File f = TempFileUtils.createTrackedFile(testName.getMethodName(), "", p);
-    p.setUrl("file:///" + f.getCanonicalPath());
+    p.setDestination(new ConfiguredDestination("file:///" + f.getCanonicalPath()));
     FileUtils.write(f, TEXT, false);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     assertNotSame(TEXT, msg.getContent());
@@ -141,6 +147,21 @@ public class FileDataInputParameterTest {
     } finally {
       LifecycleHelper.stopAndClose(channel);
       helper.stopServer();
+    }
+  }
+
+  @Test
+  public void testWrap() throws Exception {
+    FileInputMessageWrapper p = new FileInputMessageWrapper();
+    File f = TempFileUtils.createTrackedFile(testName.getMethodName(), "", p);
+    p.withDestination(new ConfiguredDestination("file:///" + f.getCanonicalPath()));
+    FileUtils.write(f, TEXT, false);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    try (InputStream in = p.wrap(msg)) {
+      assertNotNull(in);
+      List<String> content = IOUtils.readLines(in);
+      assertEquals(1, content.size());
+      assertEquals(TEXT, content.get(0));
     }
   }
 }

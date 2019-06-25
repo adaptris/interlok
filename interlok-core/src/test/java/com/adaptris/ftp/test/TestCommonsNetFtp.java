@@ -87,7 +87,6 @@ public class TestCommonsNetFtp extends FtpCase {
     }
   }
 
-  @SuppressWarnings("deprecation")
   public void testConnectWithTimeout() throws Exception {
     if (areTestsEnabled()) {
       String oldName = Thread.currentThread().getName();

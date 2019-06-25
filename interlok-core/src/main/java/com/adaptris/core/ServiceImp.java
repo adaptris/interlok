@@ -17,16 +17,12 @@
 package com.adaptris.core;
 
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.util.Args;
-import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.GuidGenerator;
 
 /**
@@ -54,11 +50,7 @@ public abstract class ServiceImp implements Service {
   @AdvancedConfig
   @InputFieldDefault(value = "false")
   private Boolean isTrackingEndpoint;
-  @AdvancedConfig
-  @InputFieldDefault(value = "false")
-  @Deprecated
-  @Removal(version = "3.9.0")
-  private Boolean isConfirmation;
+
 
   /**
    * <p>
@@ -70,6 +62,7 @@ public abstract class ServiceImp implements Service {
     changeState(ClosedState.getInstance());
   }
 
+  @Override
   public final void init() throws CoreException {
     if (!prepared)
       prepare();
@@ -78,6 +71,7 @@ public abstract class ServiceImp implements Service {
 
   protected abstract void initService() throws CoreException;
 
+  @Override
   public final void close() {
     closeService();
     prepared = false;
@@ -156,47 +150,10 @@ public abstract class ServiceImp implements Service {
     isTrackingEndpoint = b;
   }
 
-  /**
-   * 
-   * @deprecated since 3.6.2 No-one has ever produced a confirmation service. This will be removed.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public Boolean getIsConfirmation() {
-    return isConfirmation;
-  }
-
-  /**
-   * whether or not this service is configured a confirmation.
-   * 
-   * @param b true/false, default if not specified is false.
-   * @deprecated since 3.6.2 No-one has ever produced a confirmation service. This will be removed.
-   * 
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  public void setIsConfirmation(Boolean b) {
-    isConfirmation = b;
-  }
 
   @Override
   public boolean isTrackingEndpoint() {
     return BooleanUtils.toBooleanDefaultIfNull(getIsTrackingEndpoint(), false);
-  }
-
-  @Override
-  public boolean isConfirmation() {
-    return BooleanUtils.toBooleanDefaultIfNull(getIsConfirmation(), false);
-  }
-
-  /**
-   * @deprecated use {@link ExceptionHelper#wrapServiceException(Throwable)} or
-   *             {@link ExceptionHelper#rethrowServiceException(Throwable)} instead.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  protected static void rethrowServiceException(Throwable e) throws ServiceException {
-    throw ExceptionHelper.wrapServiceException(e);
   }
 
   /**
@@ -204,6 +161,7 @@ public abstract class ServiceImp implements Service {
    * Updates the state for the component <code>ComponentState</code>.
    * </p>
    */
+  @Override
   public void changeState(ComponentState newState) {
     serviceState = newState;
   }
@@ -214,6 +172,7 @@ public abstract class ServiceImp implements Service {
    * </p>
    * @return the current <code>ComponentState</code>
    */
+  @Override
   public ComponentState retrieveComponentState() {
     return serviceState;
   }
@@ -224,6 +183,7 @@ public abstract class ServiceImp implements Service {
    * </p>
    * @throws CoreException wrapping any underlying Exceptions
    */
+  @Override
   public void requestInit() throws CoreException {
     serviceState.requestInit(this);
   }
@@ -234,6 +194,7 @@ public abstract class ServiceImp implements Service {
    * </p>
    * @throws CoreException wrapping any underlying Exceptions
    */
+  @Override
   public void requestStart() throws CoreException {
     serviceState.requestStart(this);
   }
@@ -243,6 +204,7 @@ public abstract class ServiceImp implements Service {
    * Request this component is stopped.
    * </p>
    */
+  @Override
   public void requestStop() {
     serviceState.requestStop(this);
   }
@@ -252,10 +214,12 @@ public abstract class ServiceImp implements Service {
    * Request this component is closed.
    * </p>
    */
+  @Override
   public void requestClose() {
     serviceState.requestClose(this);
   }
 
+  @Override
   public String getLookupName() {
     return lookupName;
   }

@@ -31,7 +31,11 @@ public interface MessageEventGenerator {
    * <p>
    * Metadata key for confirmation ID.
    * </p>
+   * 
+   * @deprecated since 3.6.2 since {@code MessageEventGenerator#isConfirmation()} is deprecated
    */
+  @Deprecated
+  @Removal(version = "3.11.0", message = "Removed w/o replacement")
   String CONFIRMATION_ID_KEY = "adp.confirmation.id";
 
   /**
@@ -67,17 +71,5 @@ public interface MessageEventGenerator {
    * purposes, otherwise false
    */
   boolean isTrackingEndpoint();
-
-  /**
-   * <p>
-   * Returns true if this event is a confirmation, otherwise false.
-   * </p>
-   * 
-   * @return true if this event is a confirmation, otherwise false
-   * @deprecated since 3.6.2 No-one has ever produced a confirmation service. This will be removed.
-   */
-  @Deprecated
-  @Removal(version = "3.9.0")
-  boolean isConfirmation();
 
 }

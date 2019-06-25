@@ -24,6 +24,7 @@ import org.slf4j.MarkerFactory;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceImp;
 
@@ -35,6 +36,7 @@ public abstract class LoggingServiceImpl extends ServiceImp {
   public static enum LoggingLevel {
     /** Deprecated since 3.6.2 with no replacement */
     @Deprecated
+    @Removal(version = "3.10.0")
     FATAL {
       @Override
       void log(Logger logger, String s) {

@@ -17,10 +17,8 @@
 package com.adaptris.core.fs;
 
 import java.io.File;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -28,6 +26,7 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConsumeDestination;
+import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.NullConnection;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -62,7 +61,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Pickup messages from the filesystem without deleting them afterwards", tag = "consumer,fs,filesystem", metadata =
 {
-    "originalname", "lastmodified", "fsFileSize", "fsConsumeDir", "fsParentDir"
+        CoreConstants.ORIGINAL_NAME_KEY, CoreConstants.FS_FILE_SIZE,
+        CoreConstants.FILE_LAST_MODIFIED_KEY, CoreConstants.FS_CONSUME_DIRECTORY,
+        CoreConstants.MESSAGE_CONSUME_LOCATION, CoreConstants.FS_CONSUME_PARENT_DIR
 }, recommended =
 {
     NullConnection.class
@@ -136,7 +137,6 @@ public class NonDeletingFsConsumer extends FsConsumerImpl {
 
   @Override
   protected void prepareConsumer() throws CoreException {
-    getProcessedItemCache().prepare();
   }
 
   /**
