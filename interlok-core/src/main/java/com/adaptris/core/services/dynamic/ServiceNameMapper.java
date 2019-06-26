@@ -17,6 +17,7 @@
 package com.adaptris.core.services.dynamic;
 
 import javax.validation.constraints.NotNull;
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang3.StringUtils;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.Removal;
@@ -75,23 +76,23 @@ public class ServiceNameMapper {
     setServiceName(name);
   }
 
-  /**
-   * <p>
-   * <code>ServiceIdToNameMapper</code>s are semantically equal if there
-   * underlying <code>TradingRelationship</code>s are equal.
-   * </p>
-   *
-   * @see java.lang.Object#equals(java.lang.Object)
-   */
   @Override
-  public boolean equals(Object o) {
-    return tradingRelationship.equals(((ServiceNameMapper) o).getTradingRelationship());
+  public boolean equals(Object other) {
+    if (other == null)
+      return false;
+    if (other == this)
+      return true;
+    if (other instanceof ServiceNameMapper) {
+      ServiceNameMapper item = (ServiceNameMapper) other;
+      return new EqualsBuilder()
+          .append(item.getTradingRelationship(), this.getTradingRelationship()).isEquals();
+    }
+    return false;
   }
 
-  /** @see java.lang.Object#hashCode() */
   @Override
   public int hashCode() {
-    return tradingRelationship.hashCode();
+    return getTradingRelationship().hashCode();
   }
 
   /**
