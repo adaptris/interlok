@@ -16,24 +16,16 @@
 
 package com.adaptris.util.text;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import org.junit.Test;
 import com.adaptris.util.GuidGenerator;
 
-import junit.framework.TestCase;
+public class ByteTranslatorTest {
 
-public class ByteTranslatorTest extends TestCase {
-
-  public ByteTranslatorTest(String name) {
-    super(name);
-  }
-
-  @Override
-  protected void setUp() throws Exception {
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
-  }
-
+  @Test
   public void testBase64Translator() throws Exception {
     ByteTranslator b = new Base64ByteTranslator();
     String uniq = new GuidGenerator().getUUID();
@@ -44,6 +36,7 @@ public class ByteTranslatorTest extends TestCase {
     assertEquals(base64String, result);
   }
 
+  @Test
   public void testCharsetByteTranslatorUsingIso8859() throws Exception {
     CharsetByteTranslator b = new CharsetByteTranslator("ISO-8859-1");
     String uniq = new GuidGenerator().getUUID();
@@ -53,6 +46,7 @@ public class ByteTranslatorTest extends TestCase {
     assertEquals("ISO-8859-1", b.getCharsetEncoding());
   }
 
+  @Test
   public void testCharsetByteTranslator() throws Exception {
     CharsetByteTranslator b = new CharsetByteTranslator();
     String uniq = new GuidGenerator().getUUID();
@@ -62,6 +56,7 @@ public class ByteTranslatorTest extends TestCase {
     assertEquals(uniq, result);
   }
 
+  @Test
   public void testSimpleByteTranslator() throws Exception {
     ByteTranslator b = new SimpleByteTranslator();
     String uniq = new GuidGenerator().getUUID();
@@ -70,4 +65,10 @@ public class ByteTranslatorTest extends TestCase {
     assertEquals(uniq, result);
   }
 
+  @Test
+  public void testHexstringByteTranslator() throws Exception {
+    ByteTranslator b = new HexStringByteTranslator();
+    byte[] uniq = new GuidGenerator().getUUID().getBytes(StandardCharsets.UTF_8);
+    assertTrue(MessageDigest.isEqual(uniq, b.translate(b.translate(uniq))));
+  }
 }
