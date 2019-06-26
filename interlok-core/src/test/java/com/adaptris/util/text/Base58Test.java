@@ -46,4 +46,9 @@ public class Base58Test extends Base58 {
     assertEquals(b58, b.translate(b.translate(b58)));
   }
 
+  @Test(expected = IllegalArgumentException.class)
+  public void testTranslate_Invalid() throws Exception {
+    Base58ByteTranslator b = new Base58ByteTranslator();
+    b.translate("blahblah");
+  }
 }
