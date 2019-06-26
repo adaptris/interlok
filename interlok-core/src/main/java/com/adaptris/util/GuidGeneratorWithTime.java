@@ -13,7 +13,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * <p>
  * You can use this {@link IdGenerator} if you need to record the date that a GUID was generated.
- * The date that the GUID was generated can be found the {@link #computeTime(String)} method.
+ * The date that the GUID was generated can be found using the {@link #computeTime(String)} method.
  * </p>
  * 
  * @config guid-generator-with-time
