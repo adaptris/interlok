@@ -64,8 +64,7 @@ public class ReadFileService extends ServiceImp {
   public void doService(final AdaptrisMessage message) throws ServiceException {
     try {
       final File file = convertToFile(message.resolve(getFilePath()));
-      System.err.println("Attempting to read : " + file.getCanonicalPath());
-      log.debug("Reading file : {}", file.getCanonicalPath());
+      log.trace("Reading file : {}", file.getCanonicalPath());
       try (FileInputStream in = new FileInputStream(file);
           OutputStream out = message.getOutputStream()) {
         copy(in, out);
