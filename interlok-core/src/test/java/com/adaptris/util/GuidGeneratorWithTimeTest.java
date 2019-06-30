@@ -20,13 +20,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
+
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
+
 import org.junit.Test;
+
 import com.adaptris.util.text.Base58;
 
 public class GuidGeneratorWithTimeTest extends GuidGeneratorWithTime {
@@ -52,19 +55,20 @@ public class GuidGeneratorWithTimeTest extends GuidGeneratorWithTime {
     assertNotNull(guid.create(null));
   }
 
-  @Test
-  public void testRange_WithoutCompute() throws Exception {
-    // Since we have a possible "range" depending on the time component, let's use the
-    // first 2 characters of the the generated ID to make sure we are at least
-    // bounded.
-    GuidGeneratorWithTime guid = new GuidGeneratorWithTime();
-    String id = guid.getUUID();
-    String startingId = generateRangeBoundary(true);
-    String endingId = generateRangeBoundary(false);
-    System.err.println("Range for today is : " + startingId + " to " + endingId);
-    assertTrue(id.startsWith(startingId.substring(0, 2)));
-    assertTrue(id.startsWith(endingId.substring(0, 2)));
-  }
+  // Since 2019-06-30 This assumption has been proved false; so this part of the test isn't valid.
+  // @Test
+  // public void testRange_WithoutCompute() throws Exception {
+  // // Since we have a possible "range" depending on the time component, let's use the
+  // // first 2 characters of the the generated ID to make sure we are at least
+  // // bounded.
+  // GuidGeneratorWithTime guid = new GuidGeneratorWithTime();
+  // String id = guid.getUUID();
+  // String startingId = generateRangeBoundary(true);
+  // String endingId = generateRangeBoundary(false);
+  // System.err.println("Range for today is : " + startingId + " to " + endingId);
+  // assertTrue(id.startsWith(startingId.substring(0, 2)));
+  // assertTrue(id.startsWith(endingId.substring(0, 2)));
+  // }
 
   // Tests we can re-compute the date from the UUID.
   @Test
