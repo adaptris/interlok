@@ -144,6 +144,16 @@ public class ReadFileService extends ServiceImp {
     return contentTypeProbe;
   }
 
+  /**
+   * If {@link #setContentTypeMetadataKey(String)} is set, then this interface is used to probe the content type of the file.
+   * <p>
+   * By default {@link Files#probeContentType(java.nio.file.Path)} is used which means no additional jars are required. This
+   * implementation is platform dependent; so an alternative is available in the {@code com.adaptris:interlok-filesystem} module.
+   * </p>
+   * 
+   * @param contentTypeProbe how to probe for the content type; by default uses {@link Files#probeContentType(java.nio.file.Path)}
+   *        if not explicitly configured.
+   */
   public void setContentTypeProbe(ContentTypeProbe contentTypeProbe) {
     this.contentTypeProbe = contentTypeProbe;
   }
