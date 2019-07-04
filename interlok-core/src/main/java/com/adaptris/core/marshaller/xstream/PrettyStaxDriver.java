@@ -28,11 +28,14 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
+
 import com.adaptris.annotation.AnnotationConstants;
 import com.thoughtworks.xstream.core.util.QuickWriter;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.io.xml.PrettyPrintWriter;
-import com.thoughtworks.xstream.io.xml.StaxDriver;
+import com.thoughtworks.xstream.io.xml.StandardStaxDriver;
 
 /**
  * XML output formatter used by XStream to marshal objects.
@@ -43,17 +46,19 @@ import com.thoughtworks.xstream.io.xml.StaxDriver;
  * 
  * @author bklair
  */
-public class PrettyStaxDriver extends StaxDriver {
+public class PrettyStaxDriver extends StandardStaxDriver {
 
   private transient Set<String> cdataFields = new HashSet<String>();
+  private transient boolean jdkOnlyStax;
 
   public PrettyStaxDriver() {
-    this(new HashSet<String>());
+    this(new HashSet<String>(), true);
   }
 
-  public PrettyStaxDriver(Collection<String> pCdataFields) {
+  public PrettyStaxDriver(Collection<String> pCdataFields, boolean jdkOnlyStax) {
     super();
     this.cdataFields = new HashSet<>(pCdataFields);
+    this.jdkOnlyStax = jdkOnlyStax;
   }
 
   @Override
@@ -106,4 +111,22 @@ public class PrettyStaxDriver extends StaxDriver {
       }
     }; // End new PrettyPrintWriter
   }
+
+  @Override
+  protected XMLInputFactory createInputFactory() {
+    return jdkOnlyStax ? super.createInputFactory() : fallbackInputFactory();
+  }
+
+  @Override
+  protected XMLOutputFactory createOutputFactory() {
+    return jdkOnlyStax ? super.createOutputFactory() : XMLOutputFactory.newInstance();
+  }
+
+  // as per StaxDriver.createInputFactor()
+  private XMLInputFactory fallbackInputFactory() {
+    XMLInputFactory instance = XMLInputFactory.newInstance();
+    instance.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
+    return instance;
+  }
+
 }
