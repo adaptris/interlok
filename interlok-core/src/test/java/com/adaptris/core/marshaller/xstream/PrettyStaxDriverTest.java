@@ -46,7 +46,7 @@ public class PrettyStaxDriverTest {
 
   @Test
   public void testCreateReader() {
-    PrettyStaxDriver driver = new PrettyStaxDriver(cdata, true);
+    PrettyStaxDriver driver = new PrettyStaxDriver();
     assertNotNull(driver.createReader(new ByteArrayInputStream("<xml/>".getBytes(StandardCharsets.UTF_8))));
   }
 
