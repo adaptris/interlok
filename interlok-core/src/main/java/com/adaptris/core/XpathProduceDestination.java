@@ -17,7 +17,7 @@
 package com.adaptris.core;
 
 import static com.adaptris.core.util.XmlHelper.createXmlUtils;
-import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;

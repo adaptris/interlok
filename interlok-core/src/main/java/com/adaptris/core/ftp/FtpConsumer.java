@@ -18,7 +18,7 @@ package com.adaptris.core.ftp;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 import static com.adaptris.core.ftp.FtpHelper.FORWARD_SLASH;
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import java.io.File;
 import java.io.FileFilter;
 import javax.validation.constraints.NotNull;

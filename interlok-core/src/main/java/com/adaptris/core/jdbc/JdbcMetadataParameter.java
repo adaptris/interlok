@@ -16,7 +16,7 @@
 
 package com.adaptris.core.jdbc;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.jdbc.ParameterValueType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;

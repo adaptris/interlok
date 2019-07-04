@@ -17,7 +17,7 @@ package com.adaptris.core.management.jetty;
 
 import static com.adaptris.core.management.jetty.JettyServerComponent.ATTR_BOOTSTRAP_KEYS;
 import static com.adaptris.core.management.jetty.JettyServerComponent.ATTR_JMX_ADAPTER_UID;
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import java.util.Properties;
 

@@ -16,7 +16,7 @@
 
 package com.adaptris.core.runtime;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -28,8 +28,8 @@ import javax.management.MBeanNotificationInfo;
 import javax.management.MalformedObjectNameException;
 import javax.management.Notification;
 import javax.management.ObjectName;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdapterLifecycleEvent;
 import com.adaptris.core.AdaptrisComponent;

@@ -17,7 +17,7 @@
 package com.adaptris.core.services.dynamic;
 
 import javax.validation.constraints.NotNull;
-import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.StringUtils;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.Removal;

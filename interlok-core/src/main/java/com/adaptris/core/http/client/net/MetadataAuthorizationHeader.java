@@ -17,7 +17,7 @@ package com.adaptris.core.http.client.net;
 
 import java.net.HttpURLConnection;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.core.AdaptrisMessage;

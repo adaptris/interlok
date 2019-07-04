@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.adaptris.annotation.AutoPopulated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;

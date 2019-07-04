@@ -16,8 +16,8 @@
 
 package com.adaptris.core.util;
 
-import static org.apache.commons.lang.StringUtils.defaultIfBlank;
-import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

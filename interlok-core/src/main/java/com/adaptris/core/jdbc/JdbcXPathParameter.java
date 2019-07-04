@@ -16,7 +16,7 @@
 
 package com.adaptris.core.jdbc;
 import static com.adaptris.util.text.xml.XPath.newXPathInstance;
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import javax.validation.constraints.NotNull;
 import javax.xml.namespace.NamespaceContext;

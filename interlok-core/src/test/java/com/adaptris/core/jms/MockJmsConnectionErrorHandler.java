@@ -16,8 +16,8 @@
 
 package com.adaptris.core.jms;
 
-import static org.apache.commons.lang.StringUtils.abbreviate;
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.abbreviate;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import java.util.concurrent.CountDownLatch;
 

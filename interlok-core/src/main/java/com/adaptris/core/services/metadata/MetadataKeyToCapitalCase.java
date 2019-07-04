@@ -15,7 +15,7 @@
  */
 package com.adaptris.core.services.metadata;
 
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.text.WordUtils;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
@@ -24,8 +24,7 @@ import com.adaptris.core.ServiceException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Implementation of {@link ReformatMetadataKey} that uses {@link
- * org.apache.commons.lang.WordUtils#capitalizeFully(String)} to
+ * Implementation of {@link ReformatMetadataKey} that uses {@link WordUtils#capitalizeFully(String)} to
  * capitalize each word in the key.
  * 
  * 
