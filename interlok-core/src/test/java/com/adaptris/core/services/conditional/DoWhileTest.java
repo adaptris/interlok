@@ -20,11 +20,13 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
@@ -57,9 +59,7 @@ public class DoWhileTest extends ConditionalServiceExample {
     thenService = new ThenService();
     thenService.setService(mockService);
     
-    doWhile = new DoWhile();
-    doWhile.setThen(thenService);
-    doWhile.setCondition(mockCondition);
+    doWhile = new DoWhile().withThen(thenService).withCondition(mockCondition);
     
     message = DefaultMessageFactory.getDefaultInstance().newMessage();
     
@@ -98,11 +98,29 @@ public class DoWhileTest extends ConditionalServiceExample {
     when(mockCondition.evaluate(message))
         .thenReturn(true);
     
-    doWhile.setMaxLoops(5);
+    doWhile.withMaxLoops(5);
+    doWhile.withOnMaxLoops((e) -> {
+      return;
+    });
     doWhile.doService(message);
     
     verify(mockService, times(5)).doService(message);
   }
+
+  @Test
+  public void testMaxLoops_ThenFail() throws Exception {
+    when(mockCondition.evaluate(message)).thenReturn(true);
+
+    doWhile.withMaxLoops(5);
+    doWhile.withOnMaxLoops(new OnMaxThrowException());
+    try {
+      doWhile.doService(message);
+    } catch (ServiceException expected) {
+
+    }
+    verify(mockService, times(5)).doService(message);
+  }
+
   
   @Test
   public void testShouldRunServiceUnconfiguredFive() throws Exception {
@@ -113,7 +131,7 @@ public class DoWhileTest extends ConditionalServiceExample {
         .thenReturn(true)
         .thenReturn(true)
         .thenReturn(false);
-    doWhile.setMaxLoops(0); // loop forever
+    doWhile.withMaxLoops(0); // loop forever
     doWhile.doService(message);
     verify(mockService, times(5)).doService(message);
   }

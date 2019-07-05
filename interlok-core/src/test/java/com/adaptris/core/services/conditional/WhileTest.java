@@ -20,8 +20,11 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
@@ -53,9 +56,7 @@ public class WhileTest extends ConditionalServiceExample {
     thenService = new ThenService();
     thenService.setService(mockService);
     
-    logicalExpression = new While();
-    logicalExpression.setThen(thenService);
-    logicalExpression.setCondition(mockCondition);
+    logicalExpression = new While().withThen(thenService).withCondition(mockCondition);
     
     message = DefaultMessageFactory.getDefaultInstance().newMessage();
     
@@ -97,6 +98,20 @@ public class WhileTest extends ConditionalServiceExample {
     verify(mockService, times(5)).doService(message);
   }
   
+
+  @Test
+  public void testMaxLoops_ThenFail() throws Exception {
+    when(mockCondition.evaluate(message)).thenReturn(true);
+
+    logicalExpression.withMaxLoops(5).withOnMaxLoops(new OnMaxThrowException());
+    try {
+      logicalExpression.doService(message);
+    } catch (ServiceException expected) {
+
+    }
+    verify(mockService, times(5)).doService(message);
+  }
+
   public void testShouldRunServiceUnconfiguredFive() throws Exception {
     when(mockCondition.evaluate(message))
         .thenReturn(true)
