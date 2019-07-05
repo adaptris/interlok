@@ -28,8 +28,8 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.CharUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.CharUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AdvancedConfig;

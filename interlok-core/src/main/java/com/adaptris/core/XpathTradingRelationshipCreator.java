@@ -18,7 +18,7 @@ package com.adaptris.core;
 
 import static com.adaptris.core.util.XmlHelper.createDocument;
 import static com.adaptris.util.text.xml.XPath.newXPathInstance;
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import javax.validation.Valid;
 import javax.xml.namespace.NamespaceContext;
 import org.hibernate.validator.constraints.NotBlank;

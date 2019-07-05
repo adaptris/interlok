@@ -16,7 +16,7 @@
 
 package com.adaptris.core;
 
-import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 
 import java.util.ArrayList;
 import java.util.List;

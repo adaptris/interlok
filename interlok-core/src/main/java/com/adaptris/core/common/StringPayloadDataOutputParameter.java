@@ -16,7 +16,7 @@
 
 package com.adaptris.core.common;
 
-import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;

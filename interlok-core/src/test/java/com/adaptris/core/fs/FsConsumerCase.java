@@ -16,7 +16,7 @@
 
 package com.adaptris.core.fs;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import java.io.File;
 import java.util.ArrayList;

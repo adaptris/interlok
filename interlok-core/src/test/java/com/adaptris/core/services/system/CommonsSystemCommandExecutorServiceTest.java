@@ -16,7 +16,7 @@
 
 package com.adaptris.core.services.system;
 
-import static org.apache.commons.lang.StringUtils.strip;
+import static org.apache.commons.lang3.StringUtils.strip;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.Executor;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;

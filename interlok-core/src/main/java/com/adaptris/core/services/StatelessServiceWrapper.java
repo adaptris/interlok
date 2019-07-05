@@ -17,7 +17,7 @@
 package com.adaptris.core.services;
 
 import static com.adaptris.core.util.ServiceUtil.discardNulls;
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import com.adaptris.annotation.AdapterComponent;

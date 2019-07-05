@@ -16,7 +16,7 @@
 
 package com.adaptris.core.services.system;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,7 +25,7 @@ import java.util.Map;
 import javax.validation.constraints.NotNull;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.Executor;
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.hibernate.validator.constraints.NotBlank;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;

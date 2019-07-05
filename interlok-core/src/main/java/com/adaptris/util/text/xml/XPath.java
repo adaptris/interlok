@@ -16,8 +16,8 @@
 
 package com.adaptris.util.text.xml;
 
-import static org.apache.commons.lang.BooleanUtils.toBooleanDefaultIfNull;
-import static org.apache.commons.lang.BooleanUtils.toBooleanObject;
+import static org.apache.commons.lang3.BooleanUtils.toBooleanDefaultIfNull;
+import static org.apache.commons.lang3.BooleanUtils.toBooleanObject;
 
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilderFactory;

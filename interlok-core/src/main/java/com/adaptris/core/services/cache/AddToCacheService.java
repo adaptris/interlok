@@ -17,7 +17,7 @@ package com.adaptris.core.services.cache;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;

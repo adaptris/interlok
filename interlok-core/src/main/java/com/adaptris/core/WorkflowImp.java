@@ -20,7 +20,7 @@ import static com.adaptris.core.CoreConstants.KEY_WORKFLOW_SKIP_PRODUCER;
 import static com.adaptris.core.CoreConstants.OBJ_METADATA_EXCEPTION;
 import static com.adaptris.core.CoreConstants.OBJ_METADATA_EXCEPTION_CAUSE;
 import static com.adaptris.core.CoreConstants.UNIQUE_ID_JMX_PATTERN;
-import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

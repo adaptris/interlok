@@ -17,8 +17,8 @@
 package com.adaptris.core.common;
 
 import static com.adaptris.util.stream.StreamUtil.copyAndClose;
-import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import java.io.IOException;
 

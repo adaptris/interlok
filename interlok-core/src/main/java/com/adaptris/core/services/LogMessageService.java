@@ -16,7 +16,7 @@
 
 package com.adaptris.core.services;
 
-import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;

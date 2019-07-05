@@ -16,7 +16,7 @@
 
 package com.adaptris.core.management.properties;
 
-import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 
 import java.net.URL;
 import java.util.Enumeration;

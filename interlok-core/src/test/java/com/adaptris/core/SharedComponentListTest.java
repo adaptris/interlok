@@ -16,8 +16,8 @@
 
 package com.adaptris.core;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import java.util.ArrayList;
 import java.util.Arrays;

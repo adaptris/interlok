@@ -16,7 +16,7 @@
 
 package com.adaptris.core.http.server;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import java.net.HttpURLConnection;
 

@@ -17,7 +17,7 @@
 package com.adaptris.core;
 
 import static com.adaptris.core.util.LoggingHelper.friendlyName;
-import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import java.util.ArrayList;
 import java.util.Arrays;

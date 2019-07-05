@@ -1,7 +1,7 @@
 package com.adaptris.util.text.mime;
 
 import static com.adaptris.util.text.mime.MimeConstants.HEADER_CONTENT_ENCODING;
-import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
