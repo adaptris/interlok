@@ -54,8 +54,7 @@ public class DoWhile extends While {
       do {
         getThen().getService().doService(msg);
         loopCount++;
-        if (exceedsMax(loopCount)) {
-          log.debug("Reached maximum loops({}), breaking.", maxLoops());
+        if (!continueLooping(loopCount, msg)) {
           break;
         }
         log.trace("Testing condition for 'DO-WHILE', with condition class {}",
