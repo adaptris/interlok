@@ -29,6 +29,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisConnectionImp;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.management.webserver.JettyServerManager;
@@ -69,6 +70,8 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
   private static final TimeInterval DEFAULT_MAX_WAIT = new TimeInterval(10l, TimeUnit.MINUTES);
 
   @AdvancedConfig
+  @Deprecated
+  @Removal(version = "3.10.0", message = "Has no meaning since you must configure a security-handler")
   private Set<String> roles;
   @AdvancedConfig
   private TimeInterval maxStartupWait;
@@ -111,6 +114,12 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
   protected void prepareConnection() throws CoreException {
   }
 
+  /**
+   * 
+   * @deprecated since 3.9.1 Has had no meaning since {@link #setSecurityHandler(SecurityHandlerWrapper)} was introduced
+   */
+  @Deprecated
+  @Removal(version = "3.10.0", message = "Has no meaning since you must configure a security-handler")
   public Set<String> getRoles() {
     return roles;
   }
@@ -119,7 +128,10 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
    * Set any roles that are required to access the consumers.
    *
    * @param roles the roles.
+   * @deprecated since 3.9.1 Has had no meaning since {@link #setSecurityHandler(SecurityHandlerWrapper)} was introduced
    */
+  @Deprecated
+  @Removal(version = "3.10.0", message = "Has no meaning since you must configure a security-handler")
   public void setRoles(Set<String> roles) {
     this.roles = roles;
   }

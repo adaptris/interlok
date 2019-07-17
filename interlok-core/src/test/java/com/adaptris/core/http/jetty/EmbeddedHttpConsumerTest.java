@@ -20,6 +20,7 @@ import static com.adaptris.core.http.jetty.EmbeddedJettyHelper.URL_TO_POST_TO;
 import static com.adaptris.core.http.jetty.EmbeddedJettyHelper.XML_PAYLOAD;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -138,6 +139,7 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
 
     MockMessageProducer mockProducer = new MockMessageProducer();
     EmbeddedConnection embedded = new EmbeddedConnection();
+    embedded.setRoles(new HashSet<String>());
     ConfigurableSecurityHandler csh = new ConfigurableSecurityHandler();
     HashLoginServiceFactory hsl =
         new HashLoginServiceFactory("InterlokJetty", PROPERTIES.getProperty(HttpConsumerTest.JETTY_USER_REALM));
