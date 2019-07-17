@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jetty.util.security.Constraint;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
@@ -751,9 +753,11 @@ public class HttpConsumerTest extends HttpConsumerExample {
     ConfigurableSecurityHandler csh = new ConfigurableSecurityHandler();
     HashLoginServiceFactory hsl = new HashLoginServiceFactory("InterlokJetty", PROPERTIES.getProperty(JETTY_USER_REALM));
     csh.setLoginService(hsl);
+    csh.setAuthenticator(new BasicAuthenticatorFactory());
     SecurityConstraint securityConstraint = new SecurityConstraint();
     securityConstraint.setMustAuthenticate(true);
     securityConstraint.setRoles("user");
+    securityConstraint.setConstraintName(Constraint.__BASIC_AUTH);
     csh.setSecurityConstraints(Arrays.asList(securityConstraint));
     HttpConnection connection = createConnection(csh);
     MockMessageProducer mockProducer = new MockMessageProducer();
