@@ -102,7 +102,8 @@ public class ConfigurableSecurityHandler implements SecurityHandlerWrapper {
 
   /**
    * Sets the factory which will create the underlying LoginService
-   * @param loginService
+   * 
+   * @param loginService the login service to use.
    */
   public void setLoginService(JettyLoginServiceFactory loginService) {
     this.loginService = Args.notNull(loginService, "loginService");

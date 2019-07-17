@@ -104,7 +104,7 @@ public class SecurityConstraint {
   /**
    * Set the name of the constraint
    * 
-   * @param the name of the constraint; if not specified then defaults to 'BASIC' {@link Constraint#__BASIC_AUTH}.
+   * @param constraintName the name of the constraint; if not specified then defaults to 'BASIC' {@link Constraint#__BASIC_AUTH}.
    * @see Constraint
    */
   public void setConstraintName(String constraintName) {
