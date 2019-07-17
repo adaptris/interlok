@@ -35,6 +35,7 @@ import com.adaptris.core.PoolingWorkflow;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandardWorkflow;
+import com.adaptris.core.StartedState;
 import com.adaptris.core.Workflow;
 import com.adaptris.core.http.HttpConsumerExample;
 import com.adaptris.core.http.MetadataContentTypeProvider;
@@ -44,6 +45,7 @@ import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.services.WaitService;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.stubs.StaticMockMessageProducer;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 
 public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
@@ -84,7 +86,6 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
     assertNull(c.getMaxStartupWait());
     assertEquals(defaultInterval.toMilliseconds(), c.maxStartupWaitTimeMs());
   }
-
 
   public void testBasicConsumeWorkflow_ConsumeDestinationContainsURL() throws Exception {
     EmbeddedJettyHelper helper = new EmbeddedJettyHelper();
@@ -130,7 +131,6 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
       helper.stopServer();
     }
   }
-
 
   public void testBasicConsumeWorkflow_WithACL() throws Exception {
 
@@ -367,6 +367,26 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
     }
   }
 
+
+  public void testStart_WithWait() throws Exception {
+    EmbeddedJettyHelper helper = new EmbeddedJettyHelper();
+    EmbeddedConnection connection = new EmbeddedConnection();
+    connection.setMaxStartupWait(new TimeInterval(100L, TimeUnit.MILLISECONDS));
+    Channel channel = JettyHelper.createChannel(connection, JettyHelper.createConsumer(URL_TO_POST_TO), new MockMessageProducer());
+    try {
+      new Thread(() -> {
+        startQuietly(channel);
+      }).start();
+      LifecycleHelper.waitQuietly(250L);
+      helper.startServer();
+      LifecycleHelper.waitQuietly(600L);
+      assertEquals(StartedState.getInstance(), channel.retrieveComponentState());
+    } finally {
+      LifecycleHelper.stopAndClose(channel);
+      helper.stopServer();
+    }
+  }
+
   protected void doAssertions(MockMessageProducer mockProducer) throws Exception {
     waitForMessages(mockProducer, 1);
     assertEquals("Only 1 message consumed", 1, mockProducer.getMessages().size());
@@ -394,4 +414,25 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
   protected String createBaseFileName(Object object) {
     return super.createBaseFileName(object) + "-EmbeddedConnection";
   }
+
+  private void startQuietly(Channel c) {
+    do {
+      tryQuietly(() -> c.requestStart());
+    } while (!c.retrieveComponentState().equals(StartedState.getInstance()));
+  }
+
+  private static void tryQuietly(DoStuff l) {
+    try {
+      l.doStuff();
+    } catch (Exception e) {
+      System.err.println("Help (retrying because) : " + e.getMessage());
+      LifecycleHelper.waitQuietly(50);
+    }
+  }
+
+  @FunctionalInterface
+  protected interface DoStuff {
+    void doStuff() throws Exception;
+  }
 }
+

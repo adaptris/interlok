@@ -101,6 +101,10 @@ public class JettyServerManager implements ServerManager {
 
   @Override
   public boolean isStarted() {
+    if (servers.size() == 0) {
+      // no servers, we can't be started
+      return false;
+    }
     int result = 0;
     for (Server server : servers) {
       result += server.isStarted() ? 1 : 0;
