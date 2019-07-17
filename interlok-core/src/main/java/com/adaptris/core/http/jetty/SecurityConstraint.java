@@ -21,9 +21,15 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.eclipse.jetty.util.security.Constraint;
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -41,24 +47,23 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * @config jetty-security-constraint
  */
 @XStreamAlias("jetty-security-constraint")
+@DisplayOrder(order = {"paths", "roles", "mustAuthenticate", "constraintName"})
 public class SecurityConstraint {
   
   @NotNull
   @NotBlank
   private String roles;
-  @NotNull
-  @NotBlank
-  private boolean mustAuthenticate;
-  @NotNull
-  @NotBlank
+  @InputFieldDefault(value = "true")
+  @AdvancedConfig
+  private Boolean mustAuthenticate;
+  @InputFieldDefault(value = Constraint.__BASIC_AUTH)
+  @AdvancedConfig
   private String constraintName;
   @NotNull
   @XStreamImplicit(itemFieldName = "url-path")
   private List<String> paths;
   
   public SecurityConstraint() {
-    setConstraintName(Constraint.__BASIC_AUTH);
-    setMustAuthenticate(true);
     paths = Arrays.asList("/");
   }
   
@@ -66,32 +71,57 @@ public class SecurityConstraint {
     return roles;
   }
   
+  /**
+   * A comma separated list of roles that the user must have to satisfy the constraint.
+   * 
+   * @param roles a comma separated list of roles
+   */
   public void setRoles(String roles) {
-    this.roles = roles;
+    this.roles = Args.notBlank(roles, "roles");
   }
   
-  public boolean isMustAuthenticate() {
+  public Boolean getMustAuthenticate() {
     return mustAuthenticate;
   }
+
+  public boolean isMustAuthenticate() {
+    return BooleanUtils.toBooleanDefaultIfNull(getMustAuthenticate(), true);
+  }
   
-  public void setMustAuthenticate(boolean mustAuthenticate) {
-    this.mustAuthenticate = mustAuthenticate;
+  /**
+   * Whether or not we must authenticate.
+   * 
+   * @param b true or false, the default is true if not explicitly specified.
+   */
+  public void setMustAuthenticate(Boolean b) {
+    this.mustAuthenticate = b;
   }
   
   public String getConstraintName() {
     return constraintName;
   }
   
+  /**
+   * Set the name of the constraint
+   * 
+   * @param the name of the constraint; if not specified then defaults to 'BASIC' {@link Constraint#__BASIC_AUTH}.
+   * @see Constraint
+   */
   public void setConstraintName(String constraintName) {
     this.constraintName = constraintName;
   }
+
+  public String constraintName() {
+    return StringUtils.defaultIfBlank(getConstraintName(), Constraint.__BASIC_AUTH);
+  }
+
 
   public List<String> getPaths() {
     return paths;
   }
   
   public void setPaths(List<String> paths) {
-    this.paths = paths;
+    this.paths = Args.notNull(paths, "paths");
   }
 
 }
