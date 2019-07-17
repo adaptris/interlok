@@ -78,7 +78,7 @@ public class HashLoginServiceFactory implements JettyLoginServiceFactory {
   public LoginService retrieveLoginService() {
     HashLoginService loginService = new HashLoginService(getUserRealm(), getFilename());
     loginService.setHotReload(true);
-    return loginService;
+    return new LoginServiceProxy().withLoginService(loginService);
   }
 
   public String getUserRealm() {

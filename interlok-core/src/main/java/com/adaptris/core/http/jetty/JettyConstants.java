@@ -15,6 +15,10 @@
 */
 package com.adaptris.core.http.jetty;
 
+import javax.servlet.ServletRequest;
+
+import org.eclipse.jetty.security.LoginService;
+
 public class JettyConstants {
 
   /**
@@ -41,4 +45,19 @@ public class JettyConstants {
    * @see javax.servlet.http.HttpServletRequest#getQueryString()
    */
   public static final String JETTY_QUERY_STRING = "jettyQueryString";
+
+  /**
+   * Metadata key that contains the roles associated with a user, if available: {@value #JETTY_USER_ROLES}.
+   * 
+   */
+  public static final String JETTY_USER_ROLES = "jettyUserRoles";
+  /**
+   * Key used to store the the user roles via {@link ServletRequest#setAttribute(String, Object)} if possible.
+   * <p>
+   * This is intended for use by {@link LoginService} instances to communicate the user roles to {@link BasicJettyConsumer} which
+   * will in turn populate the {@link #JETTY_USER_ROLES} metadata key.
+   * </p>
+   */
+  public static final String JETTY_USER_ROLE_ATTR = "_interlokJettyUserRoles";
+
 }

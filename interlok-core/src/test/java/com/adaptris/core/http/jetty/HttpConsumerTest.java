@@ -21,8 +21,10 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
@@ -569,8 +571,10 @@ public class HttpConsumerTest extends HttpConsumerExample {
       msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg, createProduceDestination(connection.getPort()));
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
-      doAssertions(mockProducer);
+      AdaptrisMessage consumedMessage = doAssertions(mockProducer);
+      assertFalse(consumedMessage.headersContainsKey(JettyConstants.JETTY_USER_ROLES));
+      assertFalse(consumedMessage.headersContainsKey(JettyConstants.JETTY_QUERY_STRING));
+
     }
     finally {
       stop(httpProducer);
@@ -765,7 +769,11 @@ public class HttpConsumerTest extends HttpConsumerExample {
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg, createProduceDestination(connection.getPort()));
       assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
-      doAssertions(mockProducer);
+      AdaptrisMessage consumedMessage = doAssertions(mockProducer);
+      assertTrue(consumedMessage.headersContainsKey(JettyConstants.JETTY_USER_ROLES));
+      List<String> roles = Arrays.asList(consumedMessage.getMetadataValue(JettyConstants.JETTY_USER_ROLES).split(","));
+      assertTrue(roles.contains("user"));
+      assertTrue(roles.contains("anotherRole"));
     } finally {
       stop(httpProducer);
       adapter.requestClose();
