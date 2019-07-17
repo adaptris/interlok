@@ -36,6 +36,7 @@ import com.adaptris.core.management.webserver.JettyServerManager;
 import com.adaptris.core.management.webserver.SecurityHandlerWrapper;
 import com.adaptris.core.management.webserver.ServerManager;
 import com.adaptris.core.management.webserver.WebServerManagementUtil;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -149,7 +150,7 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
       log.trace("Added " + wrapper.getServletHolder() + " against " + wrapper.getUrl());
     }
     catch (Exception ex) {
-      rethrow(ex);
+      throw ExceptionHelper.wrapCoreException(ex);
     }
 
   }
@@ -164,15 +165,8 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
       log.trace("Removed " + wrapper.getServletHolder() + " from " + wrapper.getUrl());
     }
     catch (Exception ex) {
-      rethrow(ex);
+      throw ExceptionHelper.wrapCoreException(ex);
     }
-  }
-
-  private void rethrow(Exception e) throws CoreException {
-    if (e instanceof CoreException) {
-      throw (CoreException) e;
-    }
-    throw new CoreException(e);
   }
 
   private static void waitForJettyStart(ServerManager sm, long maxWaitTime) throws CoreException {
@@ -186,8 +180,8 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
         throw new CoreException("Max Wait time exceeded : " + maxWaitTime + "ms");
       }
     }
-    catch (InterruptedException e) {
-      throw new CoreException(e);
+    catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
