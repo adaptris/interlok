@@ -7,6 +7,7 @@ import java.util.StringTokenizer;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.jetty.security.Authenticator;
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
@@ -16,8 +17,11 @@ import org.eclipse.jetty.util.security.Constraint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.management.webserver.SecurityHandlerWrapper;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -27,6 +31,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * @author ellidges
  */
 @XStreamAlias("jetty-configurable-security-handler")
+@DisplayOrder(order = {"securityConstraints", "loginService", "authenticator"})
 public class ConfigurableSecurityHandler implements SecurityHandlerWrapper {
   
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
@@ -35,9 +40,9 @@ public class ConfigurableSecurityHandler implements SecurityHandlerWrapper {
   @Valid
   private JettyLoginServiceFactory loginService;
   
-  @NotNull
   @Valid
-  @AutoPopulated
+  @InputFieldDefault(value = "basic-authenticator-factory")
+  @AdvancedConfig
   private JettyAuthenticatorFactory authenticator;
   
   @NotNull
@@ -45,7 +50,6 @@ public class ConfigurableSecurityHandler implements SecurityHandlerWrapper {
   private List<SecurityConstraint> securityConstraints;
   
   public ConfigurableSecurityHandler() {
-    setAuthenticator(new BasicAuthenticatorFactory());
     securityConstraints = new ArrayList<>();
   }
   
@@ -55,16 +59,16 @@ public class ConfigurableSecurityHandler implements SecurityHandlerWrapper {
   @Override
   public SecurityHandler createSecurityHandler() throws Exception {
     ConstraintSecurityHandler securityHandler = new ConstraintSecurityHandler();
-    Authenticator authenticator = getAuthenticator().retrieveAuthenticator();
+    Authenticator authenticator = authenticator().retrieveAuthenticator();
     securityHandler.setAuthenticator(authenticator);
     LoginService loginService = getLoginService().retrieveLoginService();
     securityHandler.setLoginService(loginService);
     
-    log.debug("Created configurable security handler with [" + authenticator + "] [" + loginService + "]");
+    log.debug("Created configurable security handler with [{}][{}]", authenticator, loginService);
     
     for(SecurityConstraint securityConstraint : this.getSecurityConstraints()) {
       Constraint constraint = new Constraint();
-      constraint.setName(securityConstraint.getConstraintName());
+      constraint.setName(securityConstraint.constraintName());
       constraint.setRoles(asArray(securityConstraint.getRoles()));
       constraint.setAuthenticate(securityConstraint.isMustAuthenticate());
       
@@ -73,7 +77,7 @@ public class ConfigurableSecurityHandler implements SecurityHandlerWrapper {
         constraintMapping.setConstraint(constraint);
         constraintMapping.setPathSpec(path);
         
-        log.debug("Adding path [" + path + "] with constraint [" + constraint + "] to security handler");
+        log.debug("Adding path [{}] with constraint [{}] to security handler", path, constraint);
         securityHandler.addConstraintMapping(constraintMapping);
       }
     }
@@ -98,10 +102,11 @@ public class ConfigurableSecurityHandler implements SecurityHandlerWrapper {
 
   /**
    * Sets the factory which will create the underlying LoginService
-   * @param loginService
+   * 
+   * @param loginService the login service to use.
    */
   public void setLoginService(JettyLoginServiceFactory loginService) {
-    this.loginService = loginService;
+    this.loginService = Args.notNull(loginService, "loginService");
   }
 
   public JettyAuthenticatorFactory getAuthenticator() {
@@ -110,10 +115,13 @@ public class ConfigurableSecurityHandler implements SecurityHandlerWrapper {
 
   /**
    * Sets the factory which will create the underlying Authenticator
-   * @param authenticator
    */
   public void setAuthenticator(JettyAuthenticatorFactory authenticator) {
     this.authenticator = authenticator;
+  }
+
+  private JettyAuthenticatorFactory authenticator() {
+    return ObjectUtils.defaultIfNull(getAuthenticator(), new BasicAuthenticatorFactory());
   }
 
   public List<SecurityConstraint> getSecurityConstraints() {
@@ -121,7 +129,7 @@ public class ConfigurableSecurityHandler implements SecurityHandlerWrapper {
   }
 
   public void setSecurityConstraints(List<SecurityConstraint> securityConstraints) {
-    this.securityConstraints = securityConstraints;
+    this.securityConstraints = Args.notNull(securityConstraints, "securityConstraints");
   }
 
 }
