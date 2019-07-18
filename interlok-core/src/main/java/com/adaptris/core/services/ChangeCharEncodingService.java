@@ -29,7 +29,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Changes the character encoding associated with a message.
  * <p>
  * this service does nothing with the data, but simply changes the character encoding associated with the message using
- * {@link com.adaptris.core.AdaptrisMessage#setCharEncoding(String)}. If this service is used, and there is no configured character encoding then the
+ * {@link com.adaptris.core.AdaptrisMessage#setContentEncoding(String)}. If this service is used, and there is no configured
+ * character encoding then the
  * character encoding associated with the message is set to null (which forces the platform default encoding).
  * </p>
  * 

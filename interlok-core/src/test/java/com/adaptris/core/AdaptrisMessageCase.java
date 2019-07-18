@@ -34,6 +34,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -297,9 +298,18 @@ public abstract class AdaptrisMessageCase {
   public void testSetCharEncoding() throws Exception {
     AdaptrisMessage msg1 = createMessage();
 
-    msg1.setContentEncoding("ISO-8859-1");
+    msg1.setContentEncoding(StandardCharsets.ISO_8859_1.name());
 
-    assertTrue(msg1.getContentEncoding().equals("ISO-8859-1"));
+    assertEquals(Charset.forName("iso-8859-1").name(), msg1.getCharEncoding());
+    msg1.setCharEncoding("iso-8859-2");
+    assertEquals(Charset.forName("iso-8859-2").name(), msg1.getContentEncoding());
+    try {
+      msg1.setContentEncoding("well, this, should be invalid");
+      fail();
+    } catch (Exception expected) {
+
+    }
+
   }
 
   @Test
