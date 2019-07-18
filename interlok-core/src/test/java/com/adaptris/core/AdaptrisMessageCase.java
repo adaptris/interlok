@@ -303,6 +303,13 @@ public abstract class AdaptrisMessageCase {
     assertEquals(Charset.forName("iso-8859-1").name(), msg1.getCharEncoding());
     msg1.setCharEncoding("iso-8859-2");
     assertEquals(Charset.forName("iso-8859-2").name(), msg1.getContentEncoding());
+    try {
+      msg1.setContentEncoding("well, this, should be invalid");
+      fail();
+    } catch (Exception expected) {
+
+    }
+
   }
 
   @Test
