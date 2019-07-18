@@ -27,6 +27,7 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -34,9 +35,9 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,8 +64,6 @@ import com.adaptris.util.stream.StreamUtil;
  * @see DefaultMessageFactory
  * @see AdaptrisMessageFactory
  * @see AdaptrisMessage
- * @author hfraser
- * @author $Author: lchan $
  */
 public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
@@ -149,31 +148,16 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     return factory;
   }
 
-  @Override
-  public void setCharEncoding(String charEnc) {
-    contentEncoding = charEnc;
-  }
-
-  @Override
-  public String getCharEncoding() {
-    return contentEncoding;
-  }
-
   /** @see AdaptrisMessage#setContentEncoding(String) */
   @Override
   public void setContentEncoding(String charEnc) {
-    contentEncoding = charEnc;
+    contentEncoding = charEnc != null ? Charset.forName(charEnc).name() : null;
   }
 
   /** @see AdaptrisMessage#getContentEncoding() */
   @Override
   public String getContentEncoding() {
     return contentEncoding;
-  }
-
-  @Override
-  public boolean containsKey(String key) {
-    return metadata.contains(new MetadataElement(resolveKey(this, key), ""));
   }
 
   /** @see AdaptrisMessage#headersContainsKey(String) */
@@ -251,7 +235,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   public MetadataElement getMetadata(String key) { // lgtm [java/unsynchronized-getter]
     String resolved = resolveKey(this, key);
 
-    if (key != null && containsKey(resolved)) {
+    if (key != null && headersContainsKey(resolved)) {
       return new MetadataElement(resolved, getValue(resolved));
     }
     return null;
@@ -344,11 +328,6 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     return getPayload();
   }
 
-  @Override
-  public void addObjectMetadata(String key, Object object) {
-    objectMetadata.put(key, object);
-  }
-
   /**
    * <p>
    * Adds an <code>Object</code> to this message as metadata. Object metadata is intended to be used within a single
@@ -361,11 +340,6 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   @Override
   public void addObjectHeader(Object key, Object object) {
     objectMetadata.put(key, object);
-  }
-
-  @Override
-  public Map getObjectMetadata() {
-    return objectMetadata;
   }
 
   @Override
@@ -456,7 +430,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
   private long nextSequenceNumber() {
     int result = 0;
-    if (containsKey(CoreConstants.MLE_SEQUENCE_KEY)) {
+    if (headersContainsKey(CoreConstants.MLE_SEQUENCE_KEY)) {
       try {
         result = Integer.parseInt(getMetadataValue(CoreConstants.MLE_SEQUENCE_KEY));
       }

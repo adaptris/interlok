@@ -16,6 +16,9 @@
 
 package com.adaptris.core.services;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.GeneralServiceExample;
@@ -28,7 +31,7 @@ public class ChangeCharEncodingServiceTest extends GeneralServiceExample {
 
   @Override
   protected Object retrieveObjectForSampleConfig() {
-    return new ChangeCharEncodingService("iso-8859-1");
+    return new ChangeCharEncodingService(StandardCharsets.ISO_8859_1.name());
   }
 
   public void testSetCharEncoding() {
@@ -47,7 +50,7 @@ public class ChangeCharEncodingServiceTest extends GeneralServiceExample {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("Hello");
     assertNull(msg.getContentEncoding());
     execute(srv, msg);
-    assertEquals("iso-8859-1", msg.getContentEncoding());
+    assertEquals(Charset.forName("iso-8859-1"), Charset.forName(msg.getContentEncoding()));
   }
 
 }

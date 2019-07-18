@@ -17,16 +17,18 @@
 package com.adaptris.core;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+
 import org.apache.commons.lang3.StringUtils;
+
 import com.adaptris.util.IdGenerator;
 
 /**
@@ -96,18 +98,6 @@ public class DefaultAdaptrisMessageImp extends AdaptrisMessageImp {
     return payload != null ? payload.length : 0;
   }
 
-  /** @see AdaptrisMessage#setStringPayload(String) */
-  @Override
-  public void setStringPayload(String s) {
-    setStringPayload(s, null);
-  }
-
-  /** @see AdaptrisMessage#setStringPayload(String, String) */
-  @Override
-  public void setStringPayload(String payloadString, String charEnc) {
-    this.setContent(payloadString, charEnc);
-  }
-  
   /** @see AdaptrisMessage#setContent(String, String) */
   @Override
   public void setContent(String payloadString, String charEnc) {
@@ -123,14 +113,6 @@ public class DefaultAdaptrisMessageImp extends AdaptrisMessageImp {
     }
   }
   
-  
-
-  /** @see AdaptrisMessage#getStringPayload() */
-  @Override
-  public String getStringPayload() {
-    return this.getContent();
-  }
-  
   /** @see AdaptrisMessage#getContent() */
   @Override
   public String getContent() {
@@ -139,12 +121,7 @@ public class DefaultAdaptrisMessageImp extends AdaptrisMessageImp {
         return new String(payload);
       }
       else {
-        try { // want this to be runtime Exc.
-          return new String(payload, getContentEncoding());
-        }
-        catch (UnsupportedEncodingException e) {
-          throw new RuntimeException(e);
-        }
+        return new String(payload, Charset.forName(getContentEncoding()));
       }
     }
     return null;
