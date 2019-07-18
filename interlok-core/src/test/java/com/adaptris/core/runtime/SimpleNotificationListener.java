@@ -37,6 +37,7 @@ public class SimpleNotificationListener implements NotificationListener, Seriali
     notifications.add(notification);
   }
 
+  @Override
   public List<Notification> getNotifications() {
     return new ArrayList(notifications);
   }
@@ -65,6 +66,7 @@ public class SimpleNotificationListener implements NotificationListener, Seriali
   }
 
   private static class IgnoreNulls<E> extends ArrayList<E> {
+    private static final long serialVersionUID = 2019071801L;
     @Override
     public boolean add(E e) {
       if (e == null) {
