@@ -68,6 +68,7 @@ public class ServletWrapperTest {
     assertEquals(wrapper, wrapper2);
   }
 
+  @SuppressWarnings("serial")
   private class MyServlet extends HttpServlet {
 
   }
@@ -82,10 +83,12 @@ public class ServletWrapperTest {
       this.url = url;
     }
 
+    @Override
     public ServletHolder getServletHolder() {
       return servletHolder;
     }
 
+    @Override
     public String getUrl() {
       return url;
     }
