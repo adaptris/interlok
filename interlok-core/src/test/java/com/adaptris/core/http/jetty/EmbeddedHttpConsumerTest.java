@@ -132,6 +132,7 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
     }
   }
 
+  @SuppressWarnings("deprecation")
   public void testBasicConsumeWorkflow_WithACL() throws Exception {
 
     EmbeddedJettyHelper helper = new EmbeddedJettyHelper();

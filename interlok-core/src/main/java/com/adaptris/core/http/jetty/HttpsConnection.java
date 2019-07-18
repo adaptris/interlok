@@ -18,6 +18,7 @@ package com.adaptris.core.http.jetty;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.HttpConfiguration;
@@ -25,6 +26,7 @@ import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -267,7 +269,6 @@ public class HttpsConnection extends HttpConnection {
      */
     NeedClientAuth {
       @Override
-      @SuppressWarnings("deprecation")
       void applyProperty(SslContextFactory.Server sslContextFactory, String value) {
         sslContextFactory.setNeedClientAuth(Boolean.valueOf(value).booleanValue());
       }
