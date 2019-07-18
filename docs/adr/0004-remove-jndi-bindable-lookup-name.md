@@ -49,7 +49,7 @@ Chosen option: Deprecate and remove in 3.11.0
 ### Do Nothing
 
 If the user already has the extended documentation available; it already mentions.
-We would further hide the field using the new annotation that becomes available as part of [INTERLOK-2663](https://adaptris.atlassian.net/browse/INTERLOK-2872).
+We would further hide the field using the new annotation that becomes available as part of [INTERLOK-2663](https://adaptris.atlassian.net/browse/INTERLOK-2663).
 
 * Good, because we don't have to do much work.
 * Bad, because we might have to make the UI support this style of configuration.
