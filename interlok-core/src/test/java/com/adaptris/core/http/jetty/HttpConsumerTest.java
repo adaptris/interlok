@@ -1069,7 +1069,8 @@ public class HttpConsumerTest extends HttpConsumerExample {
 
   SecurityHandlerWrapper createSecurityHandlerExample() {
     ConfigurableSecurityHandler csh = new ConfigurableSecurityHandler();
-    HashLoginServiceFactory hsl = new HashLoginServiceFactory("InterlokJetty", "/path/to/realm.properties");
+    HashLoginServiceFactory hsl =
+        new HashLoginServiceFactory().withUserRealm("InterlokJetty").withFilename("/path/to/realm.properties");
     csh.setLoginService(hsl);
 
     SecurityConstraint securityConstraint = new SecurityConstraint();
