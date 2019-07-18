@@ -1,6 +1,6 @@
 ---
 layout: page
-title: template
+title: 0004-remove-jndi-bindable-lookup-name
 ---
 # Deprecate and ultimately remove JndiBindable#getLookupName()
 
