@@ -36,6 +36,7 @@ import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 
+@SuppressWarnings("deprecation")
 public class JndiHelperTest extends BaseCase {
   private Properties env = new Properties();
   public JndiHelperTest(String s) {

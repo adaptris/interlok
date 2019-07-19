@@ -35,6 +35,7 @@ import com.adaptris.naming.adapter.NamingContext;
 
 import junit.framework.TestCase;
 
+@SuppressWarnings("deprecation")
 public class JndiContextFactoryTest extends TestCase {
 
   private Properties env = new Properties();
