@@ -18,6 +18,7 @@ package com.adaptris.core;
 
 import java.util.List;
 
+import com.adaptris.core.stubs.ObjectUtils;
 import com.adaptris.core.util.LifecycleHelper;
 
 /**
@@ -219,6 +220,28 @@ public abstract class ServiceCase extends ExampleConfigCase {
       for (Object o : retrieveObjectsForSampleConfig()) {
         assertUniqueId((Service) o);
       }
+    }
+  }
+
+
+  public void testLookupName() throws Exception {
+    Object input = retrieveObjectForCastorRoundTrip();
+    if (input != null) {
+      assertLookupName((Service) input);
+    } else {
+      retrieveObjectsForSampleConfig().forEach(e -> assertLookupName((Service) e));
+    }
+  }
+
+  @SuppressWarnings("deprecation")
+  // If it has get/set Lookupname lets test it.
+  private void assertLookupName(Service s) {
+    try {
+      ObjectUtils.invokeSetter(s, s.getClass(), "setLookupName", "getLookupName", "myLookupName");
+      assertEquals("myLookupName", s.getLookupName());
+    } catch (Exception e) {
+      // method probably doesn't exist; so it's not ServiceImp?
+
     }
   }
 
