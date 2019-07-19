@@ -1,76 +1,67 @@
 ---
 layout: page
-title: template
+title: 0004-remove-jndi-bindable-lookup-name
 ---
 # Deprecate and ultimately remove JndiBindable#getLookupName()
 
-* Status: [accepted , superseeded by [ADR-0005](template.md) , deprecated , ...] <!-- optional -->
-* Deciders: [list everyone involved in the decision] <!-- optional -->
-* Date: [YYYY-MM-DD when the decision was last updated] <!-- optional -->
+* Status: Accepted
+* Deciders: Aaron McGrath, Lewin Chan, Matt Warman, Paul Higginson, (Sebastien Belin)
+* Date: 2019-07-18
 
-Technical Story: [description , ticket/issue URL] <!-- optional -->
 
 ## Context and Problem Statement
 
-[Describe the context and problem statement, e.g., in free form using two to three sentences. You may want to articulate the problem in form of a question.]
+As recorded in [INTERLOK-2872](https://adaptris.atlassian.net/browse/INTERLOK-2872) lookup-name as a field has little or no meaning within the UI; in fact, it may not be entirely supported fully within the UI.
 
-## Decision Drivers <!-- optional -->
+The background of the `lookup-name` is so that you can override the name+prefix for the shared component that is stored within the internal JNDI server. 
 
-* [driver 1, e.g., a force, facing concern, ...]
-* [driver 2, e.g., a force, facing concern, ...]
-* ... <!-- numbers of drivers can vary -->
+If you have
+
+```
+<ftp-connection>
+  <unique-id>MyFtpConnection</unique-id>
+</ftp-connection>
+```
+This would be stored in JNDI under the name of `comp/env/MyFtpConnection`; if you need to reference this in configuration then you would just use `lookup-name=MyFtpConnection` in your _SharedConnection_
+
+If you have
+
+```
+<ftp-connection>
+  <unique-id>MyFtpConnection</unique-id>
+  <lookup-name>comp/env/ftp/MyFtpConnection</lookup-name>
+</ftp-connection>
+```
+
+This would be stored in JNDI under the name of `comp/env/ftp/MyFtpConnection`; if you need to reference this in configuration then you would just use `lookup-name=comp/env/ftp/MyFtpConnection` in your _SharedConnection_; this is possibly the thing that might never have worked in the UI.
+
+There is a special case for `DatabaseConnection` subclasses; the _javax.sql.DataSource_ is bound against `comp/env/jdbc/unique_id`. Which means that you can address the datasource within _persistence.xml_ as `adapter:comp/env/jdbc/unique_id`. If lookup-name is specified then this is used to bind the _javax.sql.DataSource_ (__which might actually mean you can't ever get to the DatabaseConnection again via a SharedConnection__)
 
 ## Considered Options
 
-* [option 1]
-* [option 2]
-* [option 3]
-* ... <!-- numbers of options can vary -->
+* Do Nothing
+* Deprecate and remove in 3.11.0
 
 ## Decision Outcome
 
-Chosen option: "[option 1]", because [justification. e.g., only option, which meets k.o. criterion decision driver , which resolves force force , ... , comes out best (see below)].
+Chosen option: Deprecate and remove in 3.11.0
 
-### Positive Consequences <!-- optional -->
+### Do Nothing
 
-* [e.g., improvement of quality attribute satisfaction, follow-up decisions required, ...]
-* ...
+If the user already has the extended documentation available; it already mentions.
+We would further hide the field using the new annotation that becomes available as part of [INTERLOK-2663](https://adaptris.atlassian.net/browse/INTERLOK-2663).
 
-### Negative consequences <!-- optional -->
+* Good, because we don't have to do much work.
+* Bad, because we might have to make the UI support this style of configuration.
+* Bad, because DatabaseConnection will still have odd behaviour if you specify the lookup-name
+* Bad, because it's ambiguous in the context of configuration; regardless of how much documentation we write no-one ever reads it.
 
-* [e.g., compromising quality attribute, follow-up decisions required, ...]
-* ...
+### Deprecate
 
-## Pros and Cons of the Options <!-- optional -->
+We mark the field as deprecated in 3.9.1; with an intention to remove in 3.11.0. 
 
-### [option 1]
+* Good, because it fixes a logical flaw with DatabaseConnection when someone actually specifies lookup-name
+* Good, because the UI doesn't have to change.
+* Neutral, because there hasn't been a production instance where someone has used lookup-name!
+* Bad, because we're going to remove methods from an interface...
 
-[example , description , pointer to more information , ...] <!-- optional -->
-
-* Good, because [argument a]
-* Good, because [argument b]
-* Bad, because [argument c]
-* ... <!-- numbers of pros and cons can vary -->
-
-### [option 2]
-
-[example , description , pointer to more information , ...] <!-- optional -->
-
-* Good, because [argument a]
-* Good, because [argument b]
-* Bad, because [argument c]
-* ... <!-- numbers of pros and cons can vary -->
-
-### [option 3]
-
-[example , description , pointer to more information , ...] <!-- optional -->
-
-* Good, because [argument a]
-* Good, because [argument b]
-* Bad, because [argument c]
-* ... <!-- numbers of pros and cons can vary -->
-
-## Links <!-- optional -->
-
-* [Link type] [Link to ADR] <!-- example: Refined by [ADR-0005](0005-example.md) -->
-* ... <!-- numbers of links can vary -->
