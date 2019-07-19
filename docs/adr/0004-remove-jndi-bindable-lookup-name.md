@@ -4,7 +4,7 @@ title: 0004-remove-jndi-bindable-lookup-name
 ---
 # Deprecate and ultimately remove JndiBindable#getLookupName()
 
-* Status: DRAFT
+* Status: Accepted
 * Deciders: Aaron McGrath, Lewin Chan, Matt Warman, Paul Higginson, (Sebastien Belin)
 * Date: 2019-07-18
 
