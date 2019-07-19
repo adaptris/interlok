@@ -13,7 +13,7 @@ jobs:
     working_directory: ~/interlok
 
     environment:
-      JAVA_TOOL_OPTIONS: -Xmx2G -Djava.security.egd=file:/dev/./urandom -Djava.util.concurrent.ForkJoinPool.common.parallelism=2
+      JAVA_TOOL_OPTIONS: -Xmx2G -Djava.security.egd=file:/dev/./urandom
       TERM: dumb
 
     steps:
