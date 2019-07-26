@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.util.LifecycleHelper;
 
 /**
@@ -41,6 +42,8 @@ public abstract class AdaptrisConnectionImp implements AdaptrisConnection, State
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
   @AdvancedConfig
+  @Deprecated
+  @Removal(version = "3.11.0", message = "Will be removed to avoid JNDI ambiguity")
   private String lookupName;
   @AdvancedConfig
   @Valid
@@ -293,42 +296,59 @@ public abstract class AdaptrisConnectionImp implements AdaptrisConnection, State
     uniqueId = s;
   }
 
+  @Override
   public void changeState(ComponentState s) {
     state = s;
   }
 
   /** @see com.adaptris.core.StateManagedComponent#requestInit() */
+  @Override
   public void requestInit() throws CoreException {
     state.requestInit(this);
   }
 
   /** @see com.adaptris.core.StateManagedComponent#requestStart() */
+  @Override
   public void requestStart() throws CoreException {
     state.requestStart(this);
   }
 
   /** @see com.adaptris.core.StateManagedComponent#requestStop() */
+  @Override
   public void requestStop() {
     state.requestStop(this);
   }
 
   /** @see com.adaptris.core.StateManagedComponent#requestClose() */
+  @Override
   public void requestClose() {
     state.requestClose(this);
   }
 
+  @Override
   public ComponentState retrieveComponentState() {
     return state;
   }
 
+  @Override
+  @Deprecated
+  @Removal(version = "3.11.0", message = "Will be removed to avoid JNDI ambiguity")
   public String getLookupName() {
     return lookupName;
   }
 
+  /**
+   * 
+   * @deprecated since 3.9.1 with no replacement; and will be removed to avoid JNDI ambiguity
+   * 
+   */
+  @Deprecated
+  @Removal(version = "3.11.0", message = "Will be removed to avoid JNDI ambiguity")
   public void setLookupName(String jndiName) {
     this.lookupName = jndiName;
   }
 
+  @Override
   public AdaptrisConnection cloneForTesting() throws CoreException {
     AdaptrisMarshaller m = DefaultMarshaller.getDefaultMarshaller();
     return (AdaptrisConnection) m.unmarshal(m.marshal(this));

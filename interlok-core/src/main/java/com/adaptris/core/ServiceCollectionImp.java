@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
@@ -53,6 +54,8 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
   @AdvancedConfig
+  @Deprecated
+  @Removal(version = "3.11.0", message = "Will be removed to avoid JNDI ambiguity")
   private String lookupName;
   
   private String uniqueId;
@@ -573,10 +576,19 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   }
 
   @Override
+  @Deprecated
+  @Removal(version = "3.11.0", message = "Will be removed to avoid JNDI ambiguity")
   public String getLookupName() {
     return lookupName;
   }
 
+  /**
+   * 
+   * @deprecated since 3.9.1 with no replacement; and will be removed to avoid JNDI ambiguity
+   * 
+   */
+  @Deprecated
+  @Removal(version = "3.11.0", message = "Will be removed to avoid JNDI ambiguity")
   public void setLookupName(String lookupName) {
     this.lookupName = lookupName;
   }

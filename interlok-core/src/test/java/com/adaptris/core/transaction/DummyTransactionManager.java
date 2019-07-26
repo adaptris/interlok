@@ -22,6 +22,11 @@ public class DummyTransactionManager implements TransactionManager {
   public DummyTransactionManager() {
   }
   
+
+  public DummyTransactionManager(String uniqueId) {
+    setUniqueId(uniqueId);
+  }
+
   public DummyTransactionManager(String uniqueId, String lookupName) {
     this.setLookupName(lookupName);
     this.setUniqueId(uniqueId);
