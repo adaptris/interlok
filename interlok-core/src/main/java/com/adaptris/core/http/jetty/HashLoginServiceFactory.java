@@ -1,15 +1,10 @@
 package com.adaptris.core.http.jetty;
 
-import javax.validation.constraints.NotNull;
-
 import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.security.LoginService;
-import org.hibernate.validator.constraints.NotBlank;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.adaptris.annotation.AutoPopulated;
-import com.adaptris.core.util.Args;
+import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -49,23 +44,16 @@ CRYPT:my8hdCDBVkNU.
  * }
  * </pre>
  *
- * @author lchan
- *
+ * @config jetty-hash-login-service
  */
 @XStreamAlias("jetty-hash-login-service")
-public class HashLoginServiceFactory implements JettyLoginServiceFactory {
-  private transient Logger log = LoggerFactory.getLogger(this.getClass());
-
-  @NotNull
-  @NotBlank
-  @AutoPopulated
-  private String userRealm;
-  @NotNull
-  @NotBlank
-  private String filename;
+@DisplayOrder(order = {"userRealm", "filename"})
+@ComponentProfile(summary = "allows use of org.eclipse.jetty.security.HashLoginService to authenticate users",
+    tag = "jetty,authentication")
+public class HashLoginServiceFactory extends LoginServiceFactoryImpl {
 
   public HashLoginServiceFactory() {
-    setUserRealm("InterlokJetty");
+    super();
   }
 
   public HashLoginServiceFactory(String realm, String filename) {
@@ -75,30 +63,9 @@ public class HashLoginServiceFactory implements JettyLoginServiceFactory {
   }
 
   @Override
-  public LoginService retrieveLoginService() {
+  public LoginService retrieveLoginService() throws Exception {
     HashLoginService loginService = new HashLoginService(getUserRealm(), getFilename());
     loginService.setHotReload(true);
     return new LoginServiceProxy().withLoginService(loginService);
-  }
-
-  public String getUserRealm() {
-    return userRealm;
-  }
-
-  public void setUserRealm(String userRealm) {
-    this.userRealm = Args.notNull(userRealm, "userRealm");
-  }
-
-  public String getFilename() {
-    return filename;
-  }
-
-  /**
-   * Set the filename containing the username/password/roles.
-   * 
-   * @param filename the filename.
-   */
-  public void setFilename(String filename) {
-    this.filename = Args.notNull(filename, "filename");
   }
 }
