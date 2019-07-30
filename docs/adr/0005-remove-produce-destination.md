@@ -73,7 +73,7 @@ Finally there is a special `JmsReplyToDestination` that is in use; this uses obj
 * Neutral, because there will be crossover period where both styles need to be valid; and how do we message this change to the existing users without a massive kerfuffle.
 * Good, it ultimately simplifies the configuration
 * Good, because it allows producers to define their own configuration, in fact having a non-string based destination.
-* __*Bad, because it's a massive change*__
+* __*Neutral/Bad, because it's changes the produce/request contract in AdaptrisMessageProducer*__
 
 ### Additional ProduceDestination implementations
 
