@@ -1,76 +1,87 @@
 ---
 layout: page
-title: template
+title: 0005-remove-produce-destination
 ---
-# [short title of solved problem and solution]
+# Deprecate and ultimately remove ProduceDestination
 
-* Status: [accepted , superseeded by [ADR-0005](template.md) , deprecated , ...] <!-- optional -->
-* Deciders: [list everyone involved in the decision] <!-- optional -->
-* Date: [YYYY-MM-DD when the decision was last updated] <!-- optional -->
-
-Technical Story: [description , ticket/issue URL] <!-- optional -->
+* Status: PROPOSED
+* Deciders: Lewin Chan, Aaron McGrath, Paul Higginson, Sebastien Belin, Matt Warman
+* Date: 2019-07-30
 
 ## Context and Problem Statement
 
-[Describe the context and problem statement, e.g., in free form using two to three sentences. You may want to articulate the problem in form of a question.]
+If we consider something like `jms-topic-producer` then we have to configure a produce destination what contains the topic. Traditionally, if we wanted a metadata driven destination, then it would have to be done via a `metadata-destination` but now with the `%message{metadata-key}` expression language; we would just use configured-produce-destination everywhere. However; this isn't necessarily obvious to the user. Additionally, we cannot have a destination that isn't a String.
 
-## Decision Drivers <!-- optional -->
+There are some producers that have 2 mandatory pieces of information that would be considered the _destination_. For instance the AWS Kinesis producer requires both a _stream-name_ and a _partition-key_. This kind of requirement doesn't lend itself very well to a `produce-destination`; we can't make the destination return a delimited string since both of those values are essentially arbitrary. So we either completely ignore produce-destination, or we use the destination for the stream name, and then something else entirely for the partition key. 
 
-* [driver 1, e.g., a force, facing concern, ...]
-* [driver 2, e.g., a force, facing concern, ...]
-* ... <!-- numbers of drivers can vary -->
+There are already some producers that ignore the destination entirely: SAP Idoc producer, Jetty Response Producer are the two that immediately spring to mind. So if isn't mandatory, then why have it?
+
+## Decision Drivers 
+
+* Less confusion for new users.
+* Clean up configuration to take advantage of new features.
+* Make things more predictable.
 
 ## Considered Options
 
-* [option 1]
-* [option 2]
-* [option 3]
-* ... <!-- numbers of options can vary -->
+* The status quo is always an option.
+* Deprecate ProduceDestination
+* Introduce alternative implementations to ProduceDestination.
 
 ## Decision Outcome
 
-Chosen option: "[option 1]", because [justification. e.g., only option, which meets k.o. criterion decision driver , which resolves force force , ... , comes out best (see below)].
+...
 
-### Positive Consequences <!-- optional -->
 
-* [e.g., improvement of quality attribute satisfaction, follow-up decisions required, ...]
-* ...
+### Status Quo
 
-### Negative consequences <!-- optional -->
+We're in the army now.
 
-* [e.g., compromising quality attribute, follow-up decisions required, ...]
-* ...
+#### Consequences 
 
-## Pros and Cons of the Options <!-- optional -->
+* Good, because there's no work to do, apart from new producers that don't fit the existing produce-destination paradigm.
+* Bad, because we aren't simplifying the object model and configuration.
 
-### [option 1]
+### Deprecate ProduceDestination
 
-[example , description , pointer to more information , ...] <!-- optional -->
+If we deprecate ProduceDestination, then that means marking it is deprecated in `AdaptrisProducerImp`; this means that the UI will no longer display the destination when you create a new producer in the UI; that means we need to introduce a new annotation that the UI can use that tells it whether to display the deprecated ProduceDestination. There will be consequences to this, the deprecation warning notices in the settings editor for instance, would have to be disabled for ProduceDestination if there's no annotation.
 
-* Good, because [argument a]
-* Good, because [argument b]
-* Bad, because [argument c]
-* ... <!-- numbers of pros and cons can vary -->
+#### Annotation for the UI.
 
-### [option 2]
+```java
+@OverridesProduceDestination
+public class JmsTopicProducer {
+  
+  private String topicName
+}
+```
 
-[example , description , pointer to more information , ...] <!-- optional -->
+If the OverridesProduceDestination exists, then the UI can safely hide the produce destination in the settings editor. If there is no such annotation, then it has to display the destination still. 
 
-* Good, because [argument a]
-* Good, because [argument b]
-* Bad, because [argument c]
-* ... <!-- numbers of pros and cons can vary -->
+That means we can have a phased approach to fully removing the produce destination.
 
-### [option 3]
+#### JmsReplyToDestination
 
-[example , description , pointer to more information , ...] <!-- optional -->
+Finally there is a special `JmsReplyToDestination` that is in use; this uses object metadata to derive the `javax.jms.Destination` (and is handled specially by the JMS Producer Impls).
 
-* Good, because [argument a]
-* Good, because [argument b]
-* Bad, because [argument c]
-* ... <!-- numbers of pros and cons can vary -->
+* Change the JMS Producer implementations so that if the object metadata exists (use-jms-reply-to-if-available=true), then it uses the JmsReplyTo value.
+* Deprecate JmsReplyToDestination
 
-## Links <!-- optional -->
+#### Consequences 
 
-* [Link type] [Link to ADR] <!-- example: Refined by [ADR-0005](0005-example.md) -->
-* ... <!-- numbers of links can vary -->
+* Bad, because synchronisation between the UI and core releases...
+* Neutral, because there will be crossover period where both styles need to be valid; and it's a messaging thing for the existing users.
+* Good, it ultimately simplifies the configuration
+* Good, because it allows producers to define their own configuration, in fact having a non-string based destination.
+* __*Bad, because it's a massive change*__
+
+### Additional ProduceDestination implementations
+
+For the Kinesis produce we could introduce a new `KinesisProduceDestination` that contains an additional getPartitionKey() method (or we make it generic, and add a getQualifier() method).
+
+#### Consequences 
+
+* Good, because we aren't modifying the object model
+* Bad, because we have to cast ProduceDestination
+* Bad, because we still have to support the situation where the user has only configured a ConfiguredProduceDestination or similar.
+
