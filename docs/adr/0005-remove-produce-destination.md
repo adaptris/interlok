@@ -70,7 +70,7 @@ Finally there is a special `JmsReplyToDestination` that is in use; this uses obj
 #### Consequences 
 
 * Bad, because synchronisation between the UI and core releases...
-* Neutral, because there will be crossover period where both styles need to be valid; and it's a messaging thing for the existing users.
+* Neutral, because there will be crossover period where both styles need to be valid; and how do we message this change to the existing users without a massive kerfuffle.
 * Good, it ultimately simplifies the configuration
 * Good, because it allows producers to define their own configuration, in fact having a non-string based destination.
 * __*Bad, because it's a massive change*__
