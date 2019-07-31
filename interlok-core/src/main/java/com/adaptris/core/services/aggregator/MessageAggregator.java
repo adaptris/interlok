@@ -50,8 +50,8 @@ public interface MessageAggregator {
    * down to the implementation.
    * </p>
    * 
-   * @param msg the msg to insert all the messages into
-   * @param msgs the list of messages to join.
+   * @param original the msg to insert all the messages into
+   * @param messages the list of messages to join.
    * @param filter a condition to filter messages for inclusion or not.
    * @throws CoreException wrapping any other exception
    * @since 3.9.1
