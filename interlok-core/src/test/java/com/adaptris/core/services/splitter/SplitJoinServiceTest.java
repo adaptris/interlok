@@ -26,15 +26,18 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -122,7 +125,7 @@ public class SplitJoinServiceTest {
   public void testService_WithException() throws Exception {
     // This is a 100 line message, so we expect to get 11 parts.
     AdaptrisMessage msg = SplitterCase.createLineCountMessageInput();
-    SplitJoinService service = createServiceForTests();
+    SplitJoinService service = createServiceForTests().withCondition((m) -> true);
     // The service doesn't actually matter right now.
     service.setService(asCollection(new ThrowExceptionService(new ConfiguredException(testName.getMethodName()))));
     service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
@@ -231,7 +234,7 @@ public class SplitJoinServiceTest {
   public void testService_WithXmlJoiner() throws Exception {
     // This is a XML doc with 3 iterable elements...
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(SplitterCase.XML_MESSAGE);
-    SplitJoinService service = createServiceForTests();
+    SplitJoinService service = createServiceForTests().withCondition((m) -> true);
     // The service doesn't actually matter right now.
     service.setService(asCollection(new NullService()));
     service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
