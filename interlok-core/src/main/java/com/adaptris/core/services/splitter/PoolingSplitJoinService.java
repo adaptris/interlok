@@ -20,8 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
+
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.pool2.impl.GenericObjectPool;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -56,7 +58,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(summary = "Split a message and then execute the associated services on the split items, aggregating the split messages afterwards", tag = "service,splitjoin", since = "3.7.1")
 @DisplayOrder(order =
 {
-    "splitter", "service", "aggregator", "maxThreads", "timeout", "warmStart"
+    "splitter", "service", "aggregator", "condition", "maxThreads", "timeout", "warmStart"
 })
 public class PoolingSplitJoinService extends SplitJoinService {
 

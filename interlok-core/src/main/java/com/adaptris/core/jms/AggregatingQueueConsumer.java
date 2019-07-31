@@ -18,10 +18,12 @@ package com.adaptris.core.jms;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
+
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.validation.constraints.NotNull;
+
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
@@ -91,7 +93,7 @@ public class AggregatingQueueConsumer extends AggregatingConsumerImpl<Aggregatin
         result.add(getMessageTranslator().translate(next));
         next = nextMessage(consumer);
       }
-      getMessageAggregator().joinMessage(msg, result);
+      getMessageAggregator().joinMessage(msg, result, condition());
     }
     catch (CoreException | JMSException e) {
       rethrowServiceException(e);

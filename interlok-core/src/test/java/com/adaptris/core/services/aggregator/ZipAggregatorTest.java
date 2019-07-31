@@ -14,6 +14,7 @@ import java.util.zip.ZipInputStream;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Service;
+import com.adaptris.core.services.conditional.Condition;
 import com.adaptris.core.services.metadata.AddFormattedMetadataService;
 import com.adaptris.core.services.splitter.SplitByMetadata;
 import com.adaptris.core.stubs.DefectiveMessageFactory;
@@ -31,7 +32,7 @@ public class ZipAggregatorTest extends AggregatingServiceExample {
     AdaptrisMessage original = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     AdaptrisMessage splitMsg1 = AdaptrisMessageFactory.getDefaultInstance().newMessage("<document>hello</document>");
     splitMsg1.addMetadata(DEFAULT_FILENAME_METADATA, "file1.xml");
-    AdaptrisMessage splitMsg2 = new DefectiveMessageFactory().newMessage("<document>world</document>");
+    AdaptrisMessage splitMsg2 = AdaptrisMessageFactory.getDefaultInstance().newMessage("<document>world</document>");
     splitMsg2.addMetadata(DEFAULT_FILENAME_METADATA, "file2.xml");
     AdaptrisMessage willBeIgnoredMsg = new DefectiveMessageFactory().newMessage("<document>world</document>");
     aggr.joinMessage(original, Arrays.asList(splitMsg1, splitMsg2, willBeIgnoredMsg));
@@ -47,6 +48,34 @@ public class ZipAggregatorTest extends AggregatingServiceExample {
     assertTrue(results.containsKey("file2.xml"));
     assertEquals(results.get("file1.xml"), "<document>hello</document>");
     assertEquals(results.get("file2.xml"), "<document>world</document>");
+
+  }
+
+  public void testJoinMessage_WithCondition() throws Exception {
+
+    ZipAggregator aggr = new ZipAggregator();
+    AdaptrisMessage original = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    AdaptrisMessage splitMsg1 = AdaptrisMessageFactory.getDefaultInstance().newMessage("<document>hello</document>");
+    splitMsg1.addMetadata(DEFAULT_FILENAME_METADATA, "file1.xml");
+    AdaptrisMessage filteredOut = AdaptrisMessageFactory.getDefaultInstance().newMessage("<document>world</document>");
+    filteredOut.addMetadata(DEFAULT_FILENAME_METADATA, "file2.xml");
+    AdaptrisMessage filteredOut2 = AdaptrisMessageFactory.getDefaultInstance().newMessage("<document>world</document>");
+    Condition filter = (msg) -> {
+      return "file1.xml".equals(msg.getMetadataValue(DEFAULT_FILENAME_METADATA));
+    };
+
+    aggr.joinMessage(original, Arrays.asList(splitMsg1, filteredOut, filteredOut2), filter);
+
+    boolean isZipped = new ZipInputStream(new ByteArrayInputStream(original.getPayload())).getNextEntry() != null;
+
+    assertTrue(isZipped);
+
+    Map<String, String> results = zipBytesToResultsMap(original.getPayload());
+
+    assertEquals(1, results.size());
+    assertTrue(results.containsKey("file1.xml"));
+    assertFalse(results.containsKey("file2.xml"));
+    assertEquals(results.get("file1.xml"), "<document>hello</document>");
 
   }
 

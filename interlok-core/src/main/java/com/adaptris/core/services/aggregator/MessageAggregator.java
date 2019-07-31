@@ -17,9 +17,11 @@
 package com.adaptris.core.services.aggregator;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.services.conditional.Condition;
 import com.adaptris.core.services.splitter.SplitJoinService;
 
 /**
@@ -31,7 +33,8 @@ public interface MessageAggregator {
 
   /**
    * <p>
-   * Joins multiple {@link com.adaptris.core.AdaptrisMessage}s into a single AdaptrisMessage objects. Preservation of metadata is down to the
+   * Joins multiple {@link com.adaptris.core.AdaptrisMessage}s into a single AdaptrisMessage object. Preservation of metadata is
+   * down to the
    * implementation.
    * </p>
    * 
@@ -41,4 +44,29 @@ public interface MessageAggregator {
    */
   void joinMessage(AdaptrisMessage msg, Collection<AdaptrisMessage> msgs) throws CoreException;
 
+  /**
+   * <p>
+   * Joins multiple {@link com.adaptris.core.AdaptrisMessage}s into a single AdaptrisMessage object. Preservation of metadata is
+   * down to the implementation.
+   * </p>
+   * 
+   * @param msg the msg to insert all the messages into
+   * @param msgs the list of messages to join.
+   * @param filter a condition to filter messages for inclusion or not.
+   * @throws CoreException wrapping any other exception
+   * @since 3.9.1
+   */
+  default void joinMessage(AdaptrisMessage original, Collection<AdaptrisMessage> messages, Condition filter) throws CoreException {
+    Collection<AdaptrisMessage> filtered =
+        messages.stream().filter(msg -> evaluateFilter(msg, filter)).collect(Collectors.toList());
+    joinMessage(original, filtered);
+  }
+
+  static boolean evaluateFilter(AdaptrisMessage msg, Condition filter) {
+    try {
+      return filter.evaluate(msg);
+    } catch (Exception e) {
+      return false;
+    }
+  }
 }

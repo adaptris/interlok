@@ -21,6 +21,7 @@ import java.util.List;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.CoreException;
 import com.adaptris.core.Service;
 import com.adaptris.core.services.splitter.XpathDocumentCopier;
 
@@ -28,6 +29,15 @@ public class NullMessageAggregatorTest extends AggregatingServiceExample {
 
   public NullMessageAggregatorTest(String name) {
     super(name);
+  }
+
+  public void testEvaluateFilter() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("Goodbye");
+
+    assertTrue(MessageAggregator.evaluateFilter(msg, (m) -> true));
+    assertFalse(MessageAggregator.evaluateFilter(msg, (m) -> {
+      throw new CoreException();
+    }));
   }
 
   public void testJoinMessage() throws Exception {

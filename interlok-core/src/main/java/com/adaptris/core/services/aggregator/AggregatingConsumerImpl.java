@@ -18,11 +18,17 @@ package com.adaptris.core.services.aggregator;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
+import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.ComponentLifecycle;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.services.conditional.Condition;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
@@ -44,6 +50,10 @@ public abstract class AggregatingConsumerImpl<E extends AggregatingConsumeServic
   @NotNull
   @Valid
   private ConsumeDestinationGenerator destination;
+  @Valid
+  @AdvancedConfig
+  @InputFieldDefault(value = "always true")
+  private Condition condition;
   
   public AggregatingConsumerImpl() {
   }
@@ -101,13 +111,31 @@ public abstract class AggregatingConsumerImpl<E extends AggregatingConsumeServic
     this.destination = Args.notNull(cd, "destination");
   }
 
+
+  public Condition getCondition() {
+    return condition;
+  }
+
+  /**
+   * Set a condition that can be used to filter any messages when aggregating.
+   * 
+   * @param condition
+   */
+  public void setCondition(Condition condition) {
+    this.condition = condition;
+  }
+
+  protected Condition condition() {
+    return ObjectUtils.defaultIfNull(getCondition(), (msg) -> true);
+  }
+
+  public <T extends AggregatingConsumerImpl> T withCondition(Condition c) {
+    setCondition(c);
+    return (T) this;
+  }
+
   protected static void rethrowServiceException(Exception e) throws ServiceException {
-    if (e instanceof ServiceException) {
-      throw (ServiceException) e;
-    }
-    else {
-      throw new ServiceException(e);
-    }
+    throw ExceptionHelper.wrapServiceException(e);
   }
 
   protected void start(ComponentLifecycle ac) throws ServiceException {

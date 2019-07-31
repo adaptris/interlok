@@ -17,6 +17,7 @@
 package com.adaptris.core.fs;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileFilter;
@@ -26,7 +27,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
 import javax.validation.Valid;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
@@ -95,7 +98,7 @@ public class AggregatingFsConsumer extends AggregatingConsumerImpl<AggregatingFs
     try {
       result = isEmpty(dest.getFilterExpression()) ? readSingleFile(dest, msg.getFactory()) : readMultipleFiles(dest,
           msg.getFactory());
-      getMessageAggregator().joinMessage(msg, result);
+      getMessageAggregator().joinMessage(msg, result, condition());
     }
     catch (Exception e) {
       rethrowServiceException(e);
@@ -284,6 +287,5 @@ public class AggregatingFsConsumer extends AggregatingConsumerImpl<AggregatingFs
   Boolean isDeleteAggregatedFiles(){
     return getDeleteAggregatedFiles() == null ? true : getDeleteAggregatedFiles();
   }
-
 
 }

@@ -17,6 +17,7 @@
 package com.adaptris.core.services.splitter;
 
 import static com.adaptris.core.util.ServiceUtil.discardNulls;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,9 +27,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.ObjectUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -44,6 +49,7 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.ServiceWrapper;
 import com.adaptris.core.services.aggregator.MessageAggregator;
+import com.adaptris.core.services.conditional.Condition;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
@@ -72,7 +78,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(summary = "Split a message and then execute the associated services on the split items, aggregating the split messages afterwards", tag = "service,splitjoin")
 @DisplayOrder(order =
 {
-    "splitter", "service", "aggregator", "maxThreads", "timeout"
+    "splitter", "service", "aggregator", "condition", "maxThreads", "timeout"
 })
 public class SplitJoinService extends ServiceImp implements EventHandlerAware, ServiceWrapper {
 
@@ -91,6 +97,10 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
   private TimeInterval timeout;
   @InputFieldDefault(value = "false")
   private Boolean sendEvents;
+  @Valid
+  @AdvancedConfig
+  @InputFieldDefault(value = "always true")
+  private Condition condition;
 
   private transient ExecutorService executors;
   private transient EventHandler eventHandler;
@@ -115,7 +125,7 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
       Collection<Callable<AdaptrisMessage>> jobs = buildTasks(handler, splitMessages);
       submitAndWait(handler, jobs);
       msg.addMetadata(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT, Long.toString(jobs.size()));
-      getAggregator().joinMessage(msg, splitMessages);
+      getAggregator().joinMessage(msg, splitMessages, condition());
     } catch (Exception e) {
       throw ExceptionHelper.wrapServiceException(e);
     }
@@ -332,6 +342,29 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
    */
   public void setSendEvents(Boolean b) {
     sendEvents = b;
+  }
+
+
+  public Condition getCondition() {
+    return condition;
+  }
+
+  /**
+   * Set a condition that can be used to filter any messages when aggregating.
+   * 
+   * @param condition
+   */
+  public void setCondition(Condition condition) {
+    this.condition = condition;
+  }
+
+  protected Condition condition() {
+    return ObjectUtils.defaultIfNull(getCondition(), (msg) -> true);
+  }
+
+  public <T extends SplitJoinService> T withCondition(Condition c) {
+    setCondition(c);
+    return (T) this;
   }
 
   protected AdaptrisMessage sendEvents(AdaptrisMessage msg) throws CoreException {

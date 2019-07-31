@@ -42,10 +42,12 @@ public class AggregatingFsConsumeServiceTest extends AggregatingServiceExample {
     super(name);
   }
 
+  @Override
   public void setUp() throws Exception {
     super.setUp();
   }
 
+  @Override
   public void tearDown() throws Exception {
     super.tearDown();
   }
@@ -55,7 +57,7 @@ public class AggregatingFsConsumeServiceTest extends AggregatingServiceExample {
     File tempFile = TempFileUtils.createTrackedFile(o);
     String url = "file://localhost/" + tempFile.getCanonicalPath().replaceAll("\\\\", "/");
     ConsumeDestinationGenerator cdg = createConsumeDestination(url, null);
-    AggregatingFsConsumer afc = createConsumer(cdg, new ReplaceWithFirstMessage());
+    AggregatingFsConsumer afc = createConsumer(cdg, new ReplaceWithFirstMessage()).withCondition((msg) -> true);
     AggregatingFsConsumeService service = createAggregatingService(afc);
     File wipFile = new File(tempFile.getParent(), tempFile.getName() + afc.wipSuffix());
     try {

@@ -18,11 +18,15 @@ package com.adaptris.core.ftp;
 
 import static com.adaptris.core.ftp.FtpHelper.FORWARD_SLASH;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import javax.validation.Valid;
+
 import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
@@ -92,7 +96,7 @@ public class AggregatingFtpConsumer extends AggregatingConsumerImpl<AggregatingF
         getDestination().generate(msg));
     try {
       result = isEmpty(cfg.dest.getFilterExpression()) ? single(cfg, msg.getFactory()) : multiple(cfg, msg.getFactory());
-      getMessageAggregator().joinMessage(msg, result);
+      getMessageAggregator().joinMessage(msg, result, condition());
       if (deleteAggregatedFiles()) {
         deleteFilesQuietly(result, cfg);
       }
