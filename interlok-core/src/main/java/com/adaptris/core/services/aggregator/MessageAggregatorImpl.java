@@ -50,6 +50,11 @@ public abstract class MessageAggregatorImpl implements MessageAggregator {
     this.overwriteMetadata = b;
   }
 
+  public <T extends MessageAggregatorImpl> T withOverwriteMetadata(Boolean b) {
+    setOverwriteMetadata(b);
+    return (T) this;
+  }
+
   protected boolean overwriteMetadata() {
     return BooleanUtils.toBooleanDefaultIfNull(getOverwriteMetadata(), false);
   }
