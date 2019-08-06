@@ -21,8 +21,8 @@ import javax.validation.constraints.NotNull;
  */
 @XStreamAlias("not")
 @AdapterComponent
-@ComponentProfile(summary = "Allows you to negates the given condition result", tag = "condition")
-public class ConditionNot extends ConditionListImpl {
+@ComponentProfile(summary = "Allows you to negate the given condition result", tag = "condition")
+public class ConditionNot extends ConditionImpl {
   @NotNull
   @Valid
   private Condition condition;
@@ -30,7 +30,7 @@ public class ConditionNot extends ConditionListImpl {
   @Override
   public boolean evaluate(AdaptrisMessage message) throws CoreException {
     log.trace("Testing not condition");
-    return !condition.evaluate(message);
+    return !getCondition().evaluate(message);
   }
 
   public Condition getCondition() {
