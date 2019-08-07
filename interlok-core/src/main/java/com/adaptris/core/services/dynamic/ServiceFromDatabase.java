@@ -21,13 +21,12 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+
 import org.hibernate.validator.constraints.NotBlank;
+
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
-import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.jdbc.DatabaseConnection;
@@ -75,9 +74,6 @@ public class ServiceFromDatabase extends ExtractorWithConnection {
   @NotBlank
   @InputFieldHint(expression = true)
   private String query;
-  @NotNull
-  @Valid
-  private AdaptrisConnection connection;
 
   public ServiceFromDatabase() {
 
