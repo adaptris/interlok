@@ -16,10 +16,7 @@
 
 package com.adaptris.util.text.xml;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.w3c.dom.Document;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.util.KeyValuePairSet;
@@ -62,8 +59,8 @@ public abstract class XpathMergeImpl extends MergeImpl {
   }
 
   protected XmlUtils create(Document doc) throws Exception {
-    XmlUtils xml = new XmlUtils(SimpleNamespaceContext.create(getNamespaceContext()),
-        documentFactoryBuilder().configure(DocumentBuilderFactory.newInstance()));
+    DocumentBuilderFactoryBuilder builder = documentFactoryBuilder();
+    XmlUtils xml = new XmlUtils(builder.getEntityResolver(), SimpleNamespaceContext.create(getNamespaceContext()), builder.build());
     xml.setSource(doc);
     return xml;
   }
@@ -78,6 +75,6 @@ public abstract class XpathMergeImpl extends MergeImpl {
   }
 
   private DocumentBuilderFactoryBuilder documentFactoryBuilder() {
-    return DocumentBuilderFactoryBuilder.newInstance(getXmlDocumentFactoryConfig());
+    return DocumentBuilderFactoryBuilder.newInstanceIfNull(getXmlDocumentFactoryConfig());
   }
 }
