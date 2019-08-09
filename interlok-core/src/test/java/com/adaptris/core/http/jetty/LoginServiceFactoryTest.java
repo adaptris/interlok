@@ -25,14 +25,19 @@ import org.eclipse.jetty.security.JDBCLoginService;
 import org.eclipse.jetty.security.LoginService;
 import org.junit.Test;
 
+import com.adaptris.core.BaseCase;
+
 public class LoginServiceFactoryTest {
+
 
   @Test
   public void testCreateHashLoginService() throws Exception {
+    // So we don't fall foul of INTERLOK-2902
+    String realm = BaseCase.PROPERTIES.getProperty(HttpConsumerTest.JETTY_USER_REALM);
     HashLoginServiceFactory factory =
-        new HashLoginServiceFactory().withUserRealm("InterlokJetty").withFilename("/path/to/properties");
+        new HashLoginServiceFactory().withUserRealm("InterlokJetty").withFilename(realm);
     assertEquals("InterlokJetty", factory.getUserRealm());
-    assertEquals("/path/to/properties", factory.getFilename());
+    assertNotNull(factory.getFilename());
     LoginService loginService = factory.retrieveLoginService();
     assertNotNull(loginService);
     assertTrue(loginService instanceof LoginServiceProxy);
@@ -43,10 +48,13 @@ public class LoginServiceFactoryTest {
 
   @Test
   public void testCreateJdbcLoginService() throws Exception {
+    // while the realm.properties doesn't actually contain the right info, it will
+    // exist so we don't fall foul of INTERLOK-2902
+    String realm = BaseCase.PROPERTIES.getProperty(HttpConsumerTest.JETTY_USER_REALM);
     JdbcLoginServiceFactory factory =
-        new JdbcLoginServiceFactory().withUserRealm("InterlokJetty").withFilename("/path/to/properties");
+        new JdbcLoginServiceFactory().withUserRealm("InterlokJetty").withFilename(realm);
     assertEquals("InterlokJetty", factory.getUserRealm());
-    assertEquals("/path/to/properties", factory.getFilename());
+    assertNotNull(factory.getFilename());
     LoginService loginService = factory.retrieveLoginService();
     assertNotNull(loginService);
     assertTrue(loginService instanceof LoginServiceProxy);

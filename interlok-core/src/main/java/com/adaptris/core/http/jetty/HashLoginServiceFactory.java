@@ -64,7 +64,7 @@ public class HashLoginServiceFactory extends LoginServiceFactoryImpl {
 
   @Override
   public LoginService retrieveLoginService() throws Exception {
-    HashLoginService loginService = new HashLoginService(getUserRealm(), getFilename());
+    HashLoginService loginService = new HashLoginService(getUserRealm(), validateFilename());
     loginService.setHotReload(true);
     return new LoginServiceProxy().withLoginService(loginService);
   }

@@ -1,10 +1,13 @@
 package com.adaptris.core.http.jetty;
 
+import java.io.File;
+
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.Args;
+import com.adaptris.fs.FsWorker;
 
 /**
  * Abstract configuration for bundled {@code org.eclipse.jetty.security.LoginService} implementations.
@@ -45,6 +48,10 @@ public abstract class LoginServiceFactoryImpl implements JettyLoginServiceFactor
     return filename;
   }
 
+  public String validateFilename() throws Exception {
+    return FsWorker.checkReadable(new File(getFilename())).getCanonicalPath();
+  }
+
   /**
    * Set the filename containing the configuration for the concrete class.
    * <p>
@@ -63,4 +70,5 @@ public abstract class LoginServiceFactoryImpl implements JettyLoginServiceFactor
     setFilename(s);
     return (T) this;
   }
+
 }
