@@ -17,18 +17,14 @@
 package com.adaptris.core.services.splitter;
 
 import static com.adaptris.core.util.XmlHelper.createDocument;
-
 import java.io.IOException;
-
 import javax.validation.constraints.NotNull;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
-
 import org.hibernate.validator.constraints.NotBlank;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
@@ -169,6 +165,6 @@ public class XpathDocumentCopier extends MessageCopier {
   }
 
   DocumentBuilderFactoryBuilder documentFactoryBuilder() {
-    return DocumentBuilderFactoryBuilder.newInstance(getXmlDocumentFactoryConfig());
+    return DocumentBuilderFactoryBuilder.newInstanceIfNull(getXmlDocumentFactoryConfig());
   }
 }

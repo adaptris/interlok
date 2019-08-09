@@ -18,26 +18,22 @@ package com.adaptris.core.util;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.isBlank;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.StringReader;
-
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.xerces.util.XMLChar;
 import org.w3c.dom.Document;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.util.XmlUtils;
@@ -76,6 +72,7 @@ public class XmlHelper {
    * @throws CoreException if the msg does not contain valid XML.
    * @deprecated Consider using {@link #createXmlUtils(AdaptrisMessage, NamespaceContext)} instead.
    */
+  @Deprecated
   public static XmlUtils createXmlUtils(AdaptrisMessage msg) throws CoreException {
     return createXmlUtils(msg, null);
   }
@@ -107,10 +104,13 @@ public class XmlHelper {
       throws CoreException {
     XmlUtils result = null;
     DivertConsoleOutput dc = new DivertConsoleOutput();
-
+    DocumentBuilderFactoryBuilder builderToUse = copy(DocumentBuilderFactoryBuilder.newInstanceIfNull(builder));
+    if (ctx != null) {
+      builderToUse.setNamespaceAware(true);
+    }
     try (InputStream input = msg.getInputStream()) {
-      DocumentBuilderFactory dbf = DocumentBuilderFactoryBuilder.newInstance(builder).withNamespaceAware(ctx).build();
-      result = new XmlUtils(ctx, dbf);
+      DocumentBuilderFactory dbf = builderToUse.build();
+      result = new XmlUtils(builderToUse.getEntityResolver(), ctx, dbf);
       InputSource in = new InputSource(input);
       // Well what we're going to do here is annoyingly bad, but I want to eat
       // those stupid System.err messages that contain shit like
@@ -128,6 +128,20 @@ public class XmlHelper {
     }
     return result;
   }
+
+  private static DocumentBuilderFactoryBuilder copy(DocumentBuilderFactoryBuilder orig) {
+    return
+        DocumentBuilderFactoryBuilder.newInstance().withCoalescing(orig.getCoalescing())
+        .withEntityResolver(orig.getEntityResolver())
+        .withExpandEntityReferences(orig.getExpandEntityReferences())
+        .withFeatures(orig.getFeatures())
+        .withIgnoreComments(orig.getIgnoreComments())
+        .withIgnoreWhitespace(orig.getIgnoreWhitespace())
+        .withNamespaceAware(orig.getNamespaceAware())
+        .withValidating(orig.getValidating())
+        .withXIncludeAware(orig.getXincludeAware());
+  }
+
   /**
    * Create a document from an AdaptrisMessage.
    * 
@@ -189,7 +203,8 @@ public class XmlHelper {
   }
 
   private static DocumentBuilder newDocumentBuilder(DocumentBuilderFactoryBuilder cfg) throws ParserConfigurationException {
-    DocumentBuilder builder = DocumentBuilderFactoryBuilder.newInstance(cfg).build().newDocumentBuilder();
+    DocumentBuilderFactoryBuilder docBuilderFactory = DocumentBuilderFactoryBuilder.newInstanceIfNull(cfg);
+    DocumentBuilder builder = docBuilderFactory.configure(docBuilderFactory.build().newDocumentBuilder());
     builder.setErrorHandler(new DefaultErrorHandler());
     return builder;
   }
@@ -322,7 +337,7 @@ public class XmlHelper {
     if (isBlank(name)) {
       name = defaultIfBlank;
     } else {
-      if (!XMLChar.isNameStart((name.charAt(0)))) {
+      if (!XMLChar.isNameStart(name.charAt(0))) {
         name = ELEM_REPL_VALUE + name;
       }
       for (String invalid : INVALID_ELEMENT_CHARS) {

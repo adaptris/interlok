@@ -17,13 +17,10 @@ package com.adaptris.core.jmx;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
-
 import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
 import org.junit.Test;
-
 import com.adaptris.core.CoreException;
 import com.adaptris.core.PortManager;
 import com.adaptris.core.management.Constants;
@@ -48,7 +45,7 @@ public class JmxConnectionTest {
 
   @Test
   public void testRemoteJmx() throws Exception {
-    Integer port = PortManager.nextUnusedPort(5555);
+    Integer port = PortManager.nextUnusedPort(12345);
     JmxRemoteComponent jmxr = new JmxRemoteComponent();
     JmxConnection conn = new JmxConnection();
     try {
@@ -62,7 +59,7 @@ public class JmxConnectionTest {
       LifecycleHelper.init(conn);
       assertNotNull(conn.mbeanServerConnection());
     } finally {
-      conn.close();
+      LifecycleHelper.stopAndClose(conn);
       PortManager.release(port);
       destroy(jmxr);
     }
@@ -70,7 +67,7 @@ public class JmxConnectionTest {
 
   @Test
   public void testRemoteJmx_Retry() throws Exception {
-    Integer port = PortManager.nextUnusedPort(5555);
+    Integer port = PortManager.nextUnusedPort(23456);
     final JmxRemoteComponent jmxr = new JmxRemoteComponent();
     JmxConnection conn = new JmxConnection();
     try {
@@ -79,6 +76,7 @@ public class JmxConnectionTest {
       conn.setConnectionRetryInterval(new TimeInterval(1L, TimeUnit.SECONDS));
       conn.setConnectionAttempts(10);
       Executors.newSingleThreadScheduledExecutor().schedule(new Runnable() {
+        @Override
         public void run() {
           try {
             jmxr.start();
@@ -91,7 +89,7 @@ public class JmxConnectionTest {
       LifecycleHelper.init(conn);
       assertNotNull(conn.mbeanServerConnection());
     } finally {
-      conn.close();
+      LifecycleHelper.stopAndClose(conn);
       PortManager.release(port);
       destroy(jmxr);
     }
@@ -99,39 +97,27 @@ public class JmxConnectionTest {
 
   @Test
   public void testRemoteJmx_RetryAndFail() throws Exception {
-    Integer port = PortManager.nextUnusedPort(5555);
-    final JmxRemoteComponent jmxr = new JmxRemoteComponent();
+    Integer port = PortManager.nextUnusedPort(34567);
     JmxConnection conn = new JmxConnection();
     try {
-      jmxr.init(createProperties(port));
       conn.setJmxServiceUrl(JMXMP_PREFIX + port);
-      conn.setConnectionRetryInterval(new TimeInterval(1L, TimeUnit.SECONDS));
+      conn.setConnectionRetryInterval(new TimeInterval(100L, TimeUnit.MILLISECONDS));
       conn.setAdditionalDebug(true);
       conn.setConnectionAttempts(2);
-      Executors.newSingleThreadScheduledExecutor().schedule(new Runnable() {
-        public void run() {
-          try {
-            jmxr.start();
-          } catch (Exception e) {
-            throw new RuntimeException();
-          }
-        }
-      }, 5, TimeUnit.SECONDS);
-      conn.init();
+      LifecycleHelper.initAndStart(conn);
       fail();
     } catch (CoreException expected) {
 
     } finally {
-      conn.close();
+      LifecycleHelper.stopAndClose(conn);
       PortManager.release(port);
-      destroy(jmxr);
     }
   }
 
 
   @Test
   public void testRemoteJMX_WithAuthentication() throws Exception {
-    Integer port = PortManager.nextUnusedPort(5555);
+    Integer port = PortManager.nextUnusedPort(45678);
     JmxRemoteComponent jmxr = new JmxRemoteComponent();
     JmxConnection conn = new JmxConnection();
     try {
@@ -141,10 +127,11 @@ public class JmxConnectionTest {
       conn.setConnectionRetryInterval(new TimeInterval(2L, TimeUnit.SECONDS));
       conn.setAdditionalDebug(true);
       conn.setConnectionAttempts(5);
-      conn.init();
+      LifecycleHelper.prepare(conn);
+      LifecycleHelper.init(conn);
       assertNotNull(conn.mbeanServerConnection());
     } finally {
-      conn.close();
+      LifecycleHelper.stopAndClose(conn);
       PortManager.release(port);
       destroy(jmxr);
     }
@@ -152,7 +139,7 @@ public class JmxConnectionTest {
 
   @Test
   public void testRemoteJMX_WithAuthentication_AndEnv() throws Exception {
-    Integer port = PortManager.nextUnusedPort(5555);
+    Integer port = PortManager.nextUnusedPort(56789);
     JmxRemoteComponent jmxr = new JmxRemoteComponent();
     JmxConnection conn = new JmxConnection();
     conn.getJmxProperties().add(new KeyValuePair(JMX_REMOTE_PROFILES, SASL_PLAIN));
@@ -165,10 +152,11 @@ public class JmxConnectionTest {
       conn.setConnectionRetryInterval(new TimeInterval(2L, TimeUnit.SECONDS));
       conn.setAdditionalDebug(true);
       conn.setConnectionAttempts(5);
-      conn.init();
+      LifecycleHelper.prepare(conn);
+      LifecycleHelper.init(conn);
       assertNotNull(conn.mbeanServerConnection());
     } finally {
-      conn.close();
+      LifecycleHelper.stopAndClose(conn);
       PortManager.release(port);
       destroy(jmxr);
     }
