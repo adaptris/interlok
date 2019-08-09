@@ -16,6 +16,7 @@
 
 package com.adaptris.core;
 
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 
@@ -39,8 +40,7 @@ public class XpathProduceDestinationTest extends ExampleProduceDestinationCase {
   public void testSetNamespaceContext() {
     XpathProduceDestination obj = new XpathProduceDestination();
     assertNull(obj.getNamespaceContext());
-    KeyValuePairSet kvps = new KeyValuePairSet();
-    kvps.add(new KeyValuePair("hello", "world"));
+    KeyValuePairSet kvps = createContextEntries();
     obj.setNamespaceContext(kvps);
     assertEquals(kvps, obj.getNamespaceContext());
     obj.setNamespaceContext(null);
@@ -112,12 +112,14 @@ public class XpathProduceDestinationTest extends ExampleProduceDestinationCase {
 
   public void testValidXpathDestination() {
     XpathProduceDestination dest1 = new XpathProduceDestination(DEST_XPATH, DEFAULT_DEST);
+    dest1.setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder.newInstance());
     String s = dest1.getDestination(AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_DOC));
     assertEquals("Value from Xpath", "value", s);
   }
 
   public void testValidXpathFunctionDestination() {
     XpathProduceDestination dest1 = new XpathProduceDestination(DEST_XPATH_WITH_FUNCTION, DEFAULT_DEST);
+    dest1.setNamespaceContext(createContextEntries());
     String s = dest1.getDestination(AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_DOC));
     assertEquals("Value from Xpath", "root", s);
   }
@@ -157,6 +159,17 @@ public class XpathProduceDestinationTest extends ExampleProduceDestinationCase {
         + "<!--\n\nThis ProduceDestination implementation derives its destination from an XML document"
         + "\nConfigure an XPath to retrieve some data from the document, and this will be used" + "\nas the destination."
         + "\nIf the XPath cannot be evaluated then the default destination will be used" + "\n\n-->\n";
+  }
+
+  private KeyValuePairSet createContextEntries() {
+    KeyValuePairSet contextEntries = new KeyValuePairSet();
+    contextEntries.add(new KeyValuePair("svrl", "http://purl.oclc.org/dsdl/svrl"));
+    contextEntries.add(new KeyValuePair("xsd", "http://www.w3.org/2001/XMLSchema"));
+    contextEntries.add(new KeyValuePair("xs", "http://www.w3.org/2001/XMLSchema"));
+    contextEntries.add(new KeyValuePair("sch", "http://www.ascc.net/xml/schematron"));
+    contextEntries.add(new KeyValuePair("iso", "http://purl.oclc.org/dsdl/schematron"));
+    contextEntries.add(new KeyValuePair("dp", "http://www.dpawson.co.uk/ns#"));
+    return contextEntries;
   }
 
 }
