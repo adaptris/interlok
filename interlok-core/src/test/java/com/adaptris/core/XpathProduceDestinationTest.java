@@ -51,6 +51,7 @@ public class XpathProduceDestinationTest extends ExampleProduceDestinationCase {
     assertEquals(new XpathProduceDestination(), new XpathProduceDestination());
     XpathProduceDestination d1 = new XpathProduceDestination(DEST_XPATH);
     XpathProduceDestination d2 = new XpathProduceDestination(DEST_XPATH);
+    assertFalse(d1.equals(null));
     assertNotSame(new XpathProduceDestination(), d1);
     assertEquals(d1, d2);
     assertEquals(d2, d1);
