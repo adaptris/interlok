@@ -25,7 +25,7 @@ public class JdbcLoginServiceFactory extends LoginServiceFactoryImpl {
 
   @Override
   public LoginService retrieveLoginService() throws Exception {
-    JDBCLoginService loginService = new JDBCLoginService(getUserRealm(), getFilename());
+    JDBCLoginService loginService = new JDBCLoginService(getUserRealm(), validateFilename());
     return new LoginServiceProxy().withLoginService(loginService);
   }
 
