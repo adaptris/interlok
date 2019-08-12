@@ -120,7 +120,7 @@ public class MimeAggregator extends MessageAggregatorImpl {
   public void joinMessage(AdaptrisMessage original, Collection<AdaptrisMessage> messages) throws CoreException {
     try {
       MultiPartOutput output = createInitialPart(original);
-      for (AdaptrisMessage m : messages) {
+      for (AdaptrisMessage m : filter(messages)) {
         output.addPart(createBodyPart(m), contentId(m));
         overwriteMetadata(m, original);
       }

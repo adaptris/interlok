@@ -71,7 +71,7 @@ public class XmlDocumentAggregator extends MessageAggregatorImpl {
   public void joinMessage(AdaptrisMessage original, Collection<AdaptrisMessage> messages) throws CoreException {
     try {
       Document resultDoc = XmlHelper.createDocument(original, documentFactoryBuilder());
-      for (AdaptrisMessage m : messages) {
+      for (AdaptrisMessage m : filter(messages)) {
         Document mergeDoc = XmlHelper.createDocument(m, documentFactoryBuilder());
         overwriteMetadata(m, original);
         resultDoc = getMergeImplementation().merge(resultDoc, mergeDoc);

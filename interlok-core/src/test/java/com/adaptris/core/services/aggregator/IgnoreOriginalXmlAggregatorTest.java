@@ -28,6 +28,7 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.NullService;
 import com.adaptris.core.Service;
+import com.adaptris.core.services.conditional.conditions.ConditionImpl;
 import com.adaptris.core.services.splitter.SplitJoinService;
 import com.adaptris.core.services.splitter.SplitJoinServiceTest;
 import com.adaptris.core.services.splitter.SplitterCase;
@@ -108,6 +109,27 @@ public class IgnoreOriginalXmlAggregatorTest extends XmlAggregatorCase {
     }
   }
 
+  public void testSplitJoinService_withFilter() throws Exception {
+    // This is a XML doc with 3 iterable elements...
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(SplitterCase.XML_MESSAGE);
+    SplitJoinService service = new SplitJoinService();
+    // The service doesn't actually matter right now.
+    service.setService(asCollection(new NullService()));
+    service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
+    service.setSplitter(new XpathMessageSplitter(ENVELOPE_DOCUMENT, ENCODING_UTF8));
+    IgnoreOriginalXmlDocumentAggregator aggr = new IgnoreOriginalXmlDocumentAggregator("<new/>", new InsertNode("/new"));
+    aggr.setDocumentEncoding("UTF-8");
+    aggr.setFilterCondition(new EvenOddCondition());
+    service.setAggregator(aggr);
+    execute(service, msg);
+
+    // Should now be 3 document nodes
+    // because we ignore the original
+    XPath xpath = new XPath();
+    assertEquals(1, xpath.selectNodeList(XmlHelper.createDocument(msg, true), "/new/document").getLength());
+    assertEquals("UTF-8", msg.getContentEncoding());
+  }
+
   @Override
   protected String getExampleCommentHeader(Object o) {
     return super.getExampleCommentHeader(o) + "\n<!-- \n The example document for this split/join process is\n"
@@ -130,5 +152,20 @@ public class IgnoreOriginalXmlAggregatorTest extends XmlAggregatorCase {
   @Override
   protected IgnoreOriginalXmlDocumentAggregator createAggregatorForTests() {
     return new IgnoreOriginalXmlDocumentAggregator("<envelope/>");
+  }
+
+  // Have a condition that every other call passes
+  private class EvenOddCondition extends ConditionImpl {
+    private int numberOfCalls = 0;
+
+    @Override
+    public boolean evaluate(AdaptrisMessage message) throws CoreException {
+      numberOfCalls++;
+      return numberOfCalls %2 == 0;
+    }
+
+    public void close() {
+      throw new RuntimeException();
+    }
   }
 }
