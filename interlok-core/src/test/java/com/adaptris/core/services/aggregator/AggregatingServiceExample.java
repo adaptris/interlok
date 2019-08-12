@@ -35,11 +35,15 @@ public abstract class AggregatingServiceExample extends ServiceCase {
    */
   public static final String BASE_DIR_KEY = "AggregatingServiceExamples.baseDir";
 
-  public AggregatingServiceExample(String name) {
-    super(name);
+  public AggregatingServiceExample() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
+  }
+
+  public AggregatingServiceExample(String name) {
+    this();
+    setName(name);
   }
 
   protected static List<Service> createExamples(MessageSplitter splitter, MessageAggregator aggregator) {
