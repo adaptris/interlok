@@ -16,7 +16,7 @@
 
 package com.adaptris.core.stubs;
 
-import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

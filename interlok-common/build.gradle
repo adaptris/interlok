@@ -9,10 +9,11 @@ dependencies {
   compile ("com.thoughtworks.xstream:xstream:$xstreamVersion")
   compile ("commons-collections:commons-collections:3.2.2")
   compile ("commons-io:commons-io:2.6")
-  compile ("commons-lang:commons-lang:2.6")
   compile ("commons-net:commons-net:3.6")
   compile ("commons-pool:commons-pool:1.6")
-  compile ("org.apache.commons:commons-pool2:2.6.2")
+  compile ("org.apache.commons:commons-lang3:3.9")  
+  compile ("org.apache.commons:commons-pool2:2.7.0")
+
   compile ("org.slf4j:slf4j-api:$slf4jVersion")
   compile "org.slf4j:jcl-over-slf4j:$slf4jVersion", optional
   compile "org.slf4j:slf4j-log4j12:$slf4jVersion", optional

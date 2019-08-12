@@ -84,6 +84,7 @@ public class SharedConnection extends SharedComponent implements AdaptrisConnect
     // No-Op as requestXXX invokes the underlying connection
   }
 
+  @Override
   public void changeState(ComponentState newState) {
     // No-Op as requestXXX invokes the underlying connection
   }
@@ -171,10 +172,16 @@ public class SharedConnection extends SharedComponent implements AdaptrisConnect
     return (T) getProxiedConnection();
   }
 
+  @Override
   public String getLookupName() {
     return lookupName;
   }
 
+  /**
+   * Set the unique-id of the connection that we will lookup.
+   * 
+   * @param jndiName the name
+   */
   public void setLookupName(String jndiName) {
     this.lookupName = jndiName;
   }

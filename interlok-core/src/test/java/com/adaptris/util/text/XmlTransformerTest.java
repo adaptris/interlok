@@ -17,7 +17,7 @@ package com.adaptris.util.text;
 
 import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_XML_TEST_INPUT;
 import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_XML_TEST_TRANSFORM_URL;
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import java.io.InputStream;
 import java.io.OutputStream;

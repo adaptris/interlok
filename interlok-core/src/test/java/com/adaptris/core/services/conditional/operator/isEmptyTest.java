@@ -43,9 +43,20 @@ public class isEmptyTest {
   }
 
   @Test
+  public void testMatchMixedString() {
+    assertFalse(operator.apply(message, " ABC "));
+  }
+
+  @Test
   public void testMatchIgnoreFlagWhitespaceString() {
     ((IsEmpty)operator).setIgnoreWhitespace(true);
     assertTrue(operator.apply(message, "     \t"));
+  }
+
+  @Test
+  public void testMatchIgnoreFlagWhitespaceMixedString() {
+    ((IsEmpty)operator).setIgnoreWhitespace(true);
+    assertFalse(operator.apply(message, " ABC \t"));
   }
 
   @Test

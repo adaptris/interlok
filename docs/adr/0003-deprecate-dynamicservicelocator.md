@@ -4,7 +4,7 @@ title: 0003-deprecate-dynamicservicelocator
 ---
 # Deprecate DynamicServiceLocator in favour of DynamicServicExecutor
 
-* Status: Draft
+* Status: Accepted
 * Deciders: Aaron McGrath, Lewin Chan
 * Date: 2019-03-21
 

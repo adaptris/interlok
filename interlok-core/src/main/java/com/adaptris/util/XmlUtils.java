@@ -16,7 +16,7 @@
 
 package com.adaptris.util;
 
-import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 
 import java.io.InputStream;
 import java.io.OutputStream;

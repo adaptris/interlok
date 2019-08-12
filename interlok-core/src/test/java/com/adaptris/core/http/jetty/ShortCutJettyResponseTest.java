@@ -19,7 +19,9 @@ import static com.adaptris.core.http.jetty.HttpConsumerTest.JETTY_HTTP_PORT;
 import static com.adaptris.core.http.jetty.HttpConsumerTest.URL_TO_POST_TO;
 import static com.adaptris.core.http.jetty.HttpConsumerTest.XML_PAYLOAD;
 import static com.adaptris.core.http.jetty.JettyHelper.createConnection;
+
 import java.util.concurrent.TimeUnit;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
@@ -34,7 +36,6 @@ import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.stubs.StaticMockMessageProducer;
 import com.adaptris.util.TimeInterval;
 
-@SuppressWarnings("deprecation")
 public class ShortCutJettyResponseTest extends HttpServiceExample {
 
   public ShortCutJettyResponseTest(String name) {

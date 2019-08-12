@@ -16,7 +16,7 @@
 
 package com.adaptris.core.services.metadata;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.adaptris.util.KeyValuePairBag;
 import com.thoughtworks.xstream.annotations.XStreamAlias;

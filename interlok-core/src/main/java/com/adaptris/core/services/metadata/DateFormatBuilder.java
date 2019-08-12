@@ -15,7 +15,7 @@
 */
 package com.adaptris.core.services.metadata;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

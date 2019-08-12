@@ -16,8 +16,8 @@
 
 package com.adaptris.core;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -73,6 +73,8 @@ public class SharedComponentListTest extends ExampleConfigCase {
 
   private enum ConnectionBuilder {
     FtpConnectionBuilder {
+      @Override
+      @SuppressWarnings("deprecation")
       AdaptrisConnection build() {
         FtpConnection c = new FtpConnection("goofy_edison");
         c.setLookupName("adapter:comp/env/optional-lookup-name");
@@ -81,6 +83,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
       }
     },
     PooledJdbcConnectionBuilder {
+      @Override
       AdaptrisConnection build() {
         JdbcPooledConnection connection = new JdbcPooledConnection();
         connection.setUniqueId("vigilant_hypatia");
@@ -89,6 +92,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
       }
     },
     AdvancedPooledJdbcConnectionBuilder {
+      @Override
       AdaptrisConnection build() {
         AdvancedJdbcPooledConnection connection = new AdvancedJdbcPooledConnection();
         connection.setUniqueId("amused_goldberg");
@@ -163,8 +167,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
       for (ConnectionBuilder b : ConnectionBuilder.values()) {
         adapter.getSharedComponents().addConnection(b.build());
       }
-      TransactionManager transactionManager = new DummyTransactionManager("nifty_mcclintock",
-          "adapter:comp/env/myTransactionManager");
+      TransactionManager transactionManager = new DummyTransactionManager("myTransactionManager");
       adapter.getSharedComponents().setTransactionManager(transactionManager);
       Channel c = new Channel();
       c.setProduceConnection(new SharedConnection("goofy_edison"));
@@ -587,6 +590,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
     }
   }
 
+  @SuppressWarnings("deprecation")
   public void testSharedConnection_Lookup_FallbackToPlainName() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(getName());

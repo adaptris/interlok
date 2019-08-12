@@ -45,6 +45,7 @@ public abstract class ClientSettings {
      * 
      */
     AutodetectUTF8() {
+      @Override
       public void set(FTPClient s, String setting) throws IOException {
         s.setAutodetectUTF8(BooleanUtils.toBoolean(setting));
       }
@@ -54,6 +55,7 @@ public abstract class ClientSettings {
      * 
      */
     ControlEncoding() {
+      @Override
       public void set(FTPClient s, String setting) throws IOException {
         s.setControlEncoding(setting);
       }
@@ -63,6 +65,7 @@ public abstract class ClientSettings {
      * 
      */
     ListHiddenFiles() {
+      @Override
       public void set(FTPClient s, String setting) throws IOException {
         s.setListHiddenFiles(BooleanUtils.toBoolean(setting));
       }
@@ -280,6 +283,7 @@ public abstract class ClientSettings {
   }
 
   private static class InvalidSettingException extends RuntimeException {
+    private static final long serialVersionUID = 2019071801L;
     protected InvalidSettingException(Exception e) {
       super(e);
     }

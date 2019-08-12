@@ -35,6 +35,7 @@ import com.adaptris.core.JndiBindable;
 import com.adaptris.core.JndiContextFactory;
 import com.adaptris.core.jdbc.DatabaseConnection;
 
+@SuppressWarnings("deprecation")
 public class JndiHelper {
 
   private static transient Logger log = LoggerFactory.getLogger(JndiHelper.class);

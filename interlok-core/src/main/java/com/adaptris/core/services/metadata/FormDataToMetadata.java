@@ -19,7 +19,7 @@ package com.adaptris.core.services.metadata;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import javax.mail.internet.ContentType;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;

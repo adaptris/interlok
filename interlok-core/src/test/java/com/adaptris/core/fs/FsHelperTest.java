@@ -132,7 +132,6 @@ public class FsHelperTest extends FsHelper {
   }
 
   @Test
-  @SuppressWarnings("deprecation")
   public void testCreateUrlFromString() throws Exception {
 
     String urlString = "file:///c:/tmp/";

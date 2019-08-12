@@ -16,7 +16,7 @@
 
 package com.adaptris.core.fs;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileFilter;

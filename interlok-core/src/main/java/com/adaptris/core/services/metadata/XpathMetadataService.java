@@ -16,7 +16,22 @@
 
 package com.adaptris.core.services.metadata;
 
-import com.adaptris.annotation.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.xml.namespace.NamespaceContext;
+
+import org.w3c.dom.Document;
+
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
@@ -30,15 +45,6 @@ import com.adaptris.util.text.xml.SimpleNamespaceContext;
 import com.adaptris.util.text.xml.XPath;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
-import org.w3c.dom.Document;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.xml.namespace.NamespaceContext;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Store values extracted from message payload using {@link XpathQuery} as metadata.
@@ -160,6 +166,6 @@ public class XpathMetadataService extends MetadataServiceImpl {
   }
 
   DocumentBuilderFactoryBuilder documentFactoryBuilder() {
-    return DocumentBuilderFactoryBuilder.newInstance(getXmlDocumentFactoryConfig());
+    return DocumentBuilderFactoryBuilder.newInstanceIfNull(getXmlDocumentFactoryConfig());
   }
 }

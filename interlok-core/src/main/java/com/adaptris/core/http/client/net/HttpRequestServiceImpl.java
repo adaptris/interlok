@@ -15,7 +15,7 @@
 */
 package com.adaptris.core.http.client.net;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import java.net.Authenticator;
 import java.net.HttpURLConnection;
 import javax.validation.Valid;

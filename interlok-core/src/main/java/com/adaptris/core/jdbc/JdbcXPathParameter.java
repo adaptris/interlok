@@ -16,14 +16,11 @@
 
 package com.adaptris.core.jdbc;
 import static com.adaptris.util.text.xml.XPath.newXPathInstance;
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import javax.validation.constraints.NotNull;
 import javax.xml.namespace.NamespaceContext;
-
 import org.hibernate.validator.constraints.NotBlank;
 import org.w3c.dom.Document;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
@@ -138,6 +135,6 @@ public class JdbcXPathParameter extends NullableParameter {
   }
 
   DocumentBuilderFactoryBuilder documentFactoryBuilder() {
-    return DocumentBuilderFactoryBuilder.newInstance(getXmlDocumentFactoryConfig());
+    return DocumentBuilderFactoryBuilder.newInstanceIfNull(getXmlDocumentFactoryConfig());
   }
 }

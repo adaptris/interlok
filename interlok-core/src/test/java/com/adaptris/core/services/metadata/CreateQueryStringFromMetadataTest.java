@@ -34,6 +34,7 @@ public class CreateQueryStringFromMetadataTest extends MetadataServiceExample {
   }
 
 
+  @SuppressWarnings("deprecation")
   public void testQuerySeparator() throws Exception {
     CreateQueryStringFromMetadata service = new CreateQueryStringFromMetadata();
     assertNull(service.getSeparator());

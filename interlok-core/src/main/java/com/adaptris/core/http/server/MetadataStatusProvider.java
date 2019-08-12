@@ -16,8 +16,8 @@
 
 package com.adaptris.core.http.server;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.apache.commons.lang.StringUtils.isNumeric;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNumeric;
 
 import javax.validation.constraints.NotNull;
 

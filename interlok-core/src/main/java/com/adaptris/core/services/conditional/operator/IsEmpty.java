@@ -6,6 +6,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.services.conditional.Condition;
 import com.adaptris.core.services.conditional.Operator;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -26,7 +27,7 @@ import org.apache.commons.lang.StringUtils;
 @ComponentProfile(summary = "Tests that a value is null or empty", tag = "conditional,operator")
 public class IsEmpty implements Operator {
 
-  private boolean ignoreWhitespace;
+  private Boolean ignoreWhitespace;
 
   @Override
   public boolean apply(AdaptrisMessage message, String object) {
@@ -34,17 +35,17 @@ public class IsEmpty implements Operator {
     if (StringUtils.isEmpty(contentItem)) {
       return true;
     }
-    if (ignoreWhitespace && StringUtils.isBlank(message.getContent())) {
+    if (isIgnoreWhitespace() && StringUtils.isBlank(contentItem)) {
       return true;
     }
     return false;
   }
 
-  public boolean isIgnoreWhitespace() {
-    return ignoreWhitespace;
+  public Boolean isIgnoreWhitespace() {
+    return BooleanUtils.toBooleanDefaultIfNull(ignoreWhitespace, false);
   }
 
-  public void setIgnoreWhitespace(boolean ignoreWhitespace) {
+  public void setIgnoreWhitespace(Boolean ignoreWhitespace) {
     this.ignoreWhitespace = ignoreWhitespace;
   }
 }

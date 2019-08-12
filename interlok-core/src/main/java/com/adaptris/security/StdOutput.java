@@ -23,7 +23,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.net.util.Base64;
 
 import com.adaptris.security.exc.AdaptrisSecurityException;
@@ -52,6 +52,7 @@ final class StdOutput implements Output {
   /**
    * @see Output#getAsString()
    */
+  @Override
   public String getAsString() throws AdaptrisSecurityException {
     return new String(this.getBytes());
   }
@@ -60,6 +61,7 @@ final class StdOutput implements Output {
    * 
    * @see com.adaptris.security.Output#getAsString(java.lang.String)
    */
+  @Override
   public String getAsString(String charset)
       throws AdaptrisSecurityException, UnsupportedEncodingException {
     return new String(this.getBytes(), charset);
@@ -68,6 +70,7 @@ final class StdOutput implements Output {
   /**
    * @see Output#getBytes()
    */
+  @Override
   public byte[] getBytes() throws AdaptrisSecurityException {
     if (this.isEncrypted() || this.isSigned()) {
       return (this.formatBase64());
@@ -78,6 +81,7 @@ final class StdOutput implements Output {
   /**
    * @see Output#getType()
    */
+  @Override
   public int getType() {
     return type;
   }
@@ -85,6 +89,7 @@ final class StdOutput implements Output {
   /**
    * @see Output#isEncrypted()
    */
+  @Override
   public boolean isEncrypted() {
     return ((this.getType() & Output.ENCRYPTED) > 0);
   }
@@ -92,6 +97,7 @@ final class StdOutput implements Output {
   /**
    * @see Output#isPlain()
    */
+  @Override
   public boolean isPlain() {
     return ((this.getType() & Output.PLAIN) > 0);
   }
@@ -99,6 +105,7 @@ final class StdOutput implements Output {
   /**
    * @see Output#isSigned()
    */
+  @Override
   public boolean isSigned() {
     return ((this.getType() & Output.SIGNED) > 0);
   }

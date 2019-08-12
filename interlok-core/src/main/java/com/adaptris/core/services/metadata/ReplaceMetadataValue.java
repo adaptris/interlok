@@ -16,7 +16,7 @@
 
 package com.adaptris.core.services.metadata;
 
-import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

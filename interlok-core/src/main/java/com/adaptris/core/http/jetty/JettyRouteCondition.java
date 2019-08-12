@@ -17,7 +17,7 @@ package com.adaptris.core.http.jetty;
 
 import static com.adaptris.core.CoreConstants.HTTP_METHOD;
 import static com.adaptris.core.http.jetty.JettyConstants.JETTY_URI;
-import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;

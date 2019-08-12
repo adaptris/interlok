@@ -17,7 +17,7 @@
 package com.adaptris.core.ftp;
 
 import static com.adaptris.core.ftp.FtpHelper.FORWARD_SLASH;
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

@@ -16,7 +16,7 @@
 
 package com.adaptris.core.services.dynamic;
 
-import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;

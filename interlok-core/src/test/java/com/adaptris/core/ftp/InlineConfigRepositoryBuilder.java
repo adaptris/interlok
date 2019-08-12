@@ -1,6 +1,6 @@
 package com.adaptris.core.ftp;
 
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 
 import com.adaptris.sftp.ConfigBuilder;
 import com.adaptris.sftp.InlineConfigBuilder;

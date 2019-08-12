@@ -16,7 +16,7 @@
 
 package com.adaptris.transform.validate;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
