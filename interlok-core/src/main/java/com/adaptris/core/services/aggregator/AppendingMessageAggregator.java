@@ -49,7 +49,8 @@ public class AppendingMessageAggregator extends MessageAggregatorImpl {
   }
 
   @Override
-  public void joinMessage(AdaptrisMessage orig, Collection<AdaptrisMessage> msgs) throws CoreException {
+  public void joinMessage(AdaptrisMessage orig, Collection<AdaptrisMessage> toAggregate) throws CoreException {
+    Collection<AdaptrisMessage> msgs = filter(toAggregate);
     try (OutputStream out = orig.getOutputStream()) {
       try (InputStream in = orig.getInputStream()) {
         IOUtils.copy(in, out);
