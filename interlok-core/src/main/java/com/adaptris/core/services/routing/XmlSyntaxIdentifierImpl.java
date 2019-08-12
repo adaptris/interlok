@@ -18,9 +18,7 @@ package com.adaptris.core.services.routing;
 
 import javax.validation.Valid;
 import javax.xml.namespace.NamespaceContext;
-
 import org.w3c.dom.Document;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.XmlHelper;
@@ -74,6 +72,6 @@ public abstract class XmlSyntaxIdentifierImpl extends SyntaxIdentifierImpl {
   }
 
   private DocumentBuilderFactoryBuilder documentFactoryBuilder(NamespaceContext nc) {
-    return DocumentBuilderFactoryBuilder.newInstance(getXmlDocumentFactoryConfig(), nc);
+    return DocumentBuilderFactoryBuilder.newInstanceIfNull(getXmlDocumentFactoryConfig(), nc);
   }
 }

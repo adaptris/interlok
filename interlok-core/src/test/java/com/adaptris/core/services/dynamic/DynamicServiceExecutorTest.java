@@ -19,9 +19,11 @@ package com.adaptris.core.services.dynamic;
 import static com.adaptris.util.text.mime.MimeConstants.ENCODING_7BIT;
 import static com.adaptris.util.text.mime.MimeConstants.ENCODING_8BIT;
 import static com.adaptris.util.text.mime.MimeConstants.ENCODING_BASE64;
+
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.DefaultMarshaller;
@@ -30,8 +32,11 @@ import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceList;
 import com.adaptris.core.XStreamMarshaller;
+import com.adaptris.core.cache.ExpiringMapCache;
 import com.adaptris.core.common.MetadataDataInputParameter;
+import com.adaptris.core.jdbc.JdbcConnection;
 import com.adaptris.core.services.LogMessageService;
+import com.adaptris.core.services.cache.CacheConnection;
 import com.adaptris.core.services.metadata.AddMetadataService;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.text.mime.MultiPartOutput;
@@ -66,6 +71,45 @@ public class DynamicServiceExecutorTest extends DynamicServiceExample {
             {
               new LogMessageService()
             })).getContent() + "\n-->\n";
+      }
+    },
+    Cache {
+
+      @Override
+      boolean matches(ServiceExtractor e) {
+        return e instanceof ServiceFromCache;
+      }
+
+      @Override
+      ServiceExtractor create() {
+        CacheConnection connection = new CacheConnection().withCacheInstance(new ExpiringMapCache());
+        return new ServiceFromCache().withKey("%message{cache-key-part1}-%message{cache-key-part2}").withConnection(connection);
+      }
+
+      @Override
+      String getExampleCommentHeader() throws Exception {
+        return "\n<!--" + "\nUsing this extractor implementation, the expectation is that the the services"
+            + "\ncan be extracted from a database according to the query. -->";
+      }
+    },
+    Database {
+
+      @Override
+      boolean matches(ServiceExtractor e) {
+        return e instanceof ServiceFromDatabase;
+      }
+
+      @Override
+      ServiceExtractor create() {
+        JdbcConnection connection = new JdbcConnection();
+        connection.setConnectUrl("jdbc:mysql://localhost:3306/mydatabase");
+        return new ServiceFromDatabase().withQuery("SELECT * FROM MSG where ID = %message{id}").withConnection(connection);
+      }
+
+      @Override
+      String getExampleCommentHeader() throws Exception {
+        return "\n<!--" + "\nUsing this extractor implementation, the expectation is that the the services"
+            + "\ncan be extracted from a database according to the query. -->";
       }
     },
     URL {

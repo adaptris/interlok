@@ -14,3 +14,4 @@ path_classifiers:
     - ".codecov.yml"
     - ".travis.yml"
     - ".circleci"
+    - ".dependabot"

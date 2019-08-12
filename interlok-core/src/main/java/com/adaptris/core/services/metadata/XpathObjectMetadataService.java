@@ -18,13 +18,10 @@ package com.adaptris.core.services.metadata;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.xml.namespace.NamespaceContext;
-
 import org.w3c.dom.Document;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -102,6 +99,7 @@ public class XpathObjectMetadataService extends ServiceImp {
 
   }
 
+  @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     NamespaceContext namespaceCtx = SimpleNamespaceContext.create(getNamespaceContext(), msg);
     try {
@@ -172,6 +170,6 @@ public class XpathObjectMetadataService extends ServiceImp {
   }
 
   DocumentBuilderFactoryBuilder documentFactoryBuilder() {
-    return DocumentBuilderFactoryBuilder.newInstance(getXmlDocumentFactoryConfig());
+    return DocumentBuilderFactoryBuilder.newInstanceIfNull(getXmlDocumentFactoryConfig());
   }
 }

@@ -19,8 +19,10 @@ package com.adaptris.core.services.aggregator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreException;
 import com.adaptris.core.NullService;
 import com.adaptris.core.Service;
+import com.adaptris.core.services.conditional.conditions.ConditionImpl;
 import com.adaptris.core.services.mime.MimeJunitHelper;
 import com.adaptris.core.services.splitter.LineCountSplitter;
 import com.adaptris.core.services.splitter.MimePartSplitter;
@@ -92,6 +94,22 @@ public class MimeAggregatorTest extends MimeAggregatorCase {
     assertEquals(4, input.size());
   }
 
+  public void testService_withFilter() throws Exception {
+    // This is a 100 line message, so we expect to get 11 parts.
+    AdaptrisMessage msg = SplitterCase.createLineCountMessageInput();
+    SplitJoinService service = new SplitJoinService();
+    // The service doesn't actually matter right now.
+    service.setService(createAddMetadataService(getName()));
+    service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
+    service.setSplitter(new LineCountSplitter());
+    MimeAggregator aggr = createAggregatorForTests();
+    aggr.setFilterCondition(new EvenOddCondition());
+    service.setAggregator(aggr);
+    execute(service, msg);
+    BodyPartIterator input = MimeHelper.createBodyPartIterator(msg);
+    assertEquals(6, input.size());
+  }
+
   @Override
   protected List<Service> retrieveObjectsForSampleConfig() {
     return createExamples(new MimePartSplitter(), new MimeAggregator());
@@ -120,5 +138,21 @@ public class MimeAggregatorTest extends MimeAggregatorCase {
   @Override
   protected String createBaseFileName(Object object) {
     return super.createBaseFileName(object) + "-MimeAggregator";
+  }
+
+  // Have a condition that every other call passes
+
+  private class EvenOddCondition extends ConditionImpl {
+    private int numberOfCalls = 0;
+
+    @Override
+    public boolean evaluate(AdaptrisMessage message) throws CoreException {
+      numberOfCalls++;
+      return numberOfCalls %2 == 0;
+    }
+
+    public void close() {
+      throw new RuntimeException();
+    }
   }
 }

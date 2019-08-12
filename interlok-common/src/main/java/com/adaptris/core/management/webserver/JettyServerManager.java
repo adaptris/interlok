@@ -60,6 +60,16 @@ public class JettyServerManager implements ServerManager {
   private static final String DEFAULT_DESCRIPTOR_XML = "com/adaptris/core/management/webserver/jetty-webdefault-failsafe.xml";
   private static final String OVERRIDE_DESCRIPTOR_XML = "jetty-webdefault.xml";
 
+  /**
+   * System property that controls whether or not starting the {@code WebAppContext} should throw an exception or not.
+   * <p>
+   * The default is false for backwards compatibility; but can be toggled to true; it will be defaulted to true in a future release.
+   * </p>
+   */
+  public static final String SYS_PROP_THROW_UNAVAILABLE_EXCEPTION = "interlok.jetty.throw.unavailable.on.startup";
+
+  private static final boolean THROW_UNAVAILABLE_ON_START = Boolean.getBoolean(SYS_PROP_THROW_UNAVAILABLE_EXCEPTION);
+
   public static final String CONTEXT_PATH = "contextPath";
   /**
    * @deprecated since 3.9.1 has no meaning and is ignored.
@@ -140,6 +150,7 @@ public class JettyServerManager implements ServerManager {
     // Have to stop the WAR before we can reconfigure the security handler, not true if we just want
     // to add a new servlet; but it's probaby good practice to.
     rootWar.stop();
+    rootWar.setThrowUnavailableOnStartupException(THROW_UNAVAILABLE_ON_START);
     String pathSpec = (String) additionalProperties.get(CONTEXT_PATH);
     log.trace("Adding servlet to existing ROOT WebAppContext against {}", pathSpec);
     rootWar.addServlet(servlet, pathSpec);

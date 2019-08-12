@@ -1,20 +1,19 @@
 package com.adaptris.core.util;
 
 import java.util.Map;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.xml.sax.EntityResolver;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.Removal;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -166,10 +165,18 @@ public class DocumentBuilderFactoryBuilder {
    * Convenient method for null protection.
    * 
    * @param b an existing DocumentBuilderFactoryBuilder instance (or null)
-   * @return a new instance or the passed parameter.
+   * @return a new instance or the passed parameter.]
+   * @deprecated since 3.9.1 this is poorly named, use
+   *             {@link #newInstanceIfNull(DocumentBuilderFactoryBuilder)} instead.
    */
+  @Deprecated
+  @Removal(version = "3.11.0")
   public static final DocumentBuilderFactoryBuilder newInstance(DocumentBuilderFactoryBuilder b) {
-    return b == null ? newInstance() : b;
+    return newInstanceIfNull(b);
+  }
+
+  public static final DocumentBuilderFactoryBuilder newInstanceIfNull(DocumentBuilderFactoryBuilder b) {
+    return ObjectUtils.defaultIfNull(b, newInstance());
   }
 
   /**
@@ -178,21 +185,39 @@ public class DocumentBuilderFactoryBuilder {
    * @param b an existing DocumentBuilderFactoryBuilder instance (or null)
    * @return a new instance or the passed parameter.
    * @see #newRestrictedInstance()
+   * @deprecated since 3.9.1 this is poorly named, use
+   *             {@link #newRestrictedInstanceIfNull(DocumentBuilderFactoryBuilder)} instead.
    */
+  @Deprecated
+  @Removal(version = "3.11.0")
   public static final DocumentBuilderFactoryBuilder newRestrictedInstance(DocumentBuilderFactoryBuilder b) {
-    return b == null ? newRestrictedInstance() : b;
+    return newRestrictedInstanceIfNull(b);
+  }
+
+  public static final DocumentBuilderFactoryBuilder newRestrictedInstanceIfNull(DocumentBuilderFactoryBuilder b) {
+    return ObjectUtils.defaultIfNull(b, newRestrictedInstance());
   }
 
   /**
    * Convenient method for null protection.
    * 
+   * @deprecated since 3.9.1 this is poorly named, use
+   *             {@link #newInstanceIfNull(DocumentBuilderFactoryBuilder, NamespaceContext)} instead.
    */
+  @Deprecated
+  @Removal(version = "3.11.0")
   public static final DocumentBuilderFactoryBuilder newInstance(DocumentBuilderFactoryBuilder b, NamespaceContext ctx) {
+    return newInstanceIfNull(b, ctx);
+  }
+
+
+  public static final DocumentBuilderFactoryBuilder newInstanceIfNull(DocumentBuilderFactoryBuilder b, NamespaceContext ctx) {
     if (b != null) {
       return b;
     }
     return ctx == null ? newInstance() : newInstance().withNamespaceAware(true);
   }
+
 
   /**
    * Configure a document builder factory
@@ -233,6 +258,15 @@ public class DocumentBuilderFactoryBuilder {
     return configure(configure(f).newDocumentBuilder());
   }
 
+  /**
+   * Create a {@link DocumentBuilderFactory}.
+   * 
+   * <p>
+   * If all you're doing is creating a {@link DocumentBuilder} straight after calling this method,
+   * don't forget to call {@link #configure(DocumentBuilder)} to make sure you configure the
+   * underlying {@link DocumentBuilder} with any configured {@link #getEntityResolver()}.
+   * </p>
+   */
   public DocumentBuilderFactory build() throws ParserConfigurationException {
     return configure(DocumentBuilderFactory.newInstance());
   }

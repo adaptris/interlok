@@ -16,8 +16,7 @@
 
 package com.adaptris.util.text.xml;
 
-import static com.adaptris.core.util.DocumentBuilderFactoryBuilder.newInstance;
-
+import static com.adaptris.core.util.DocumentBuilderFactoryBuilder.newInstanceIfNull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -25,7 +24,6 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.Iterator;
 import java.util.Map;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Result;
@@ -33,12 +31,10 @@ import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 
 /**
@@ -149,12 +145,17 @@ public class XmlTransformer {
     transform(transformer, xmlIn, xmlOut, xsl, null);
   }
 
+  private DocumentBuilder docBuilder() throws ParserConfigurationException {
+    DocumentBuilderFactoryBuilder myBuilder = newInstanceIfNull(builder);
+    return myBuilder.newDocumentBuilder(myBuilder.build());
+  }
+
   private Source createSource(InputStream in) throws ParserConfigurationException, SAXException, IOException {
-    return createSource(newInstance(builder).build().newDocumentBuilder(), new InputSource(in));
+    return createSource(docBuilder(), new InputSource(in));
   }
 
   private Source createSource(Reader in) throws ParserConfigurationException, SAXException, IOException {
-    return createSource(newInstance(builder).build().newDocumentBuilder(), new InputSource(in));
+    return createSource(docBuilder(), new InputSource(in));
   }
 
   private Source createSource(DocumentBuilder docBuilder, InputSource source) throws SAXException, IOException {
