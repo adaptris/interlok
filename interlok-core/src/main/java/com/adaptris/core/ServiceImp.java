@@ -17,11 +17,9 @@
 package com.adaptris.core;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.Removal;
@@ -43,7 +41,7 @@ public abstract class ServiceImp implements Service {
   private transient ComponentState serviceState;
   private transient boolean prepared = false;
   
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @Deprecated
   @Removal(version = "3.11.0", message = "Will be removed to avoid JNDI ambiguity")
   private String lookupName;
@@ -52,7 +50,7 @@ public abstract class ServiceImp implements Service {
   @AdvancedConfig
   @InputFieldDefault(value = "false")
   private Boolean continueOnFail;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "false")
   private Boolean isTrackingEndpoint;
 

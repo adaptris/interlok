@@ -19,13 +19,10 @@ package com.adaptris.core;
 import java.util.Collections;
 import java.util.Set;
 import java.util.WeakHashMap;
-
 import javax.validation.Valid;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.Removal;
@@ -41,7 +38,7 @@ public abstract class AdaptrisConnectionImp implements AdaptrisConnection, State
 
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @Deprecated
   @Removal(version = "3.11.0", message = "Will be removed to avoid JNDI ambiguity")
   private String lookupName;

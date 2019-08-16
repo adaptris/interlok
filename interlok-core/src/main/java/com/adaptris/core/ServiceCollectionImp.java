@@ -18,21 +18,17 @@ package com.adaptris.core;
 
 import static com.adaptris.core.util.LoggingHelper.friendlyName;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
-
 import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
@@ -53,7 +49,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   private static final OutOfStateHandler DEFAULT_STATE_HANDLER = new RaiseExceptionOutOfStateHandler();
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @Deprecated
   @Removal(version = "3.11.0", message = "Will be removed to avoid JNDI ambiguity")
   private String lookupName;
@@ -64,7 +60,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   @AdvancedConfig
   @InputFieldDefault(value = "false")
   private Boolean continueOnFail;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "false")
   private Boolean isTrackingEndpoint;
   @AdvancedConfig
@@ -412,7 +408,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
       log.debug("Service restarts on error, restarting [{}]", serviceName);
       restartService(service);
     } 
-    if ((service != null) && (service.continueOnFailure())) {
+    if (service != null && service.continueOnFailure()) {
       log.debug("continue-on-fail is true, ignoring Exception [{}] from [{}]", e.getMessage(), serviceName);
     }
     else {
