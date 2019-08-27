@@ -17,7 +17,7 @@
 package com.adaptris.core.runtime;
 
 import static com.adaptris.core.Workflow.WORKFLOW_ID_KEY;
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import java.io.File;
 

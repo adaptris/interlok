@@ -16,7 +16,7 @@
 
 package com.adaptris.core.lms;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -98,20 +98,6 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
   public long getSize() {
     return inputFile == null ? 0 : inputFile.length();
   }
-
-  /** @see AdaptrisMessage#setStringPayload(String) */
-  @Override
-  public void setStringPayload(String s) {
-    setStringPayload(s, null);
-  }
-
-  /** @see AdaptrisMessage#setStringPayload(String, String) 
-   * @deprecated Since 3.0.6 use setContent(String, String). 
-   **/
-  @Deprecated
-  public void setStringPayload(String payloadString, String charEnc) {
-    this.setContent(payloadString, charEnc);
-  }
   
   @Override
   public void setContent(String content, String charEncoding) {
@@ -122,15 +108,6 @@ class FileBackedMessageImpl extends AdaptrisMessageImp implements FileBackedMess
         setContentEncoding(charEncoding);
       }
     });
-  }
-
-  /** @see AdaptrisMessage#getStringPayload() 
-   * @deprecated Since 3.0.6 use getContent(). 
-   **/
-  @Deprecated
-  @Override
-  public String getStringPayload() {
-    return this.getContent();
   }
   
   @Override

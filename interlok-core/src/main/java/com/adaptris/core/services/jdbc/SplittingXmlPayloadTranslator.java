@@ -25,7 +25,7 @@ import javax.validation.constraints.NotNull;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -236,7 +236,7 @@ public class SplittingXmlPayloadTranslator extends XmlPayloadTranslatorImpl {
   private DocumentBuilderFactoryBuilder documentFactoryBuilder(AdaptrisMessage msg) {
     DocumentBuilderFactoryBuilder factoryBuilder =
         (DocumentBuilderFactoryBuilder) msg.getObjectHeaders().get(JdbcDataQueryService.KEY_DOCBUILDER_FAC);
-    return DocumentBuilderFactoryBuilder.newInstance(factoryBuilder);
+    return DocumentBuilderFactoryBuilder.newInstanceIfNull(factoryBuilder);
   }
   
   public Integer getMaxRowsPerMessage() {

@@ -17,6 +17,8 @@ package com.adaptris.core.services.cache;
 
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.ObjectUtils;
+
 import com.adaptris.core.AdaptrisConnectionImp;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.cache.Cache;
@@ -81,8 +83,14 @@ public class CacheConnection extends AdaptrisConnectionImp implements CacheProvi
     this.cacheInstance = cache;
   }
 
+  public CacheConnection withCacheInstance(Cache cache) {
+    setCacheInstance(cache);
+    return this;
+  }
+
+  @Override
   public Cache retrieveCache() {
-    return getCacheInstance() != null ? getCacheInstance() : DEFAULT_CACHE_IMPL;
+    return ObjectUtils.defaultIfNull(getCacheInstance(), DEFAULT_CACHE_IMPL);
   }
 
 }

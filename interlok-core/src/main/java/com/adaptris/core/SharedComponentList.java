@@ -17,19 +17,23 @@
 package com.adaptris.core;
 
 import static com.adaptris.core.util.JndiHelper.bind;
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -542,6 +546,8 @@ public class SharedComponentList implements ComponentLifecycle, ComponentLifecyc
 
   // Sadly PredicatedList throws an IllegalArgumentException if we fail the predicate; we just want to ignore.
   private static class IgnoreNulls<E> extends ArrayList<E> {
+    private static final long serialVersionUID = 2019071801L;
+
     @Override
     public boolean add(E e) {
       if (e == null) {

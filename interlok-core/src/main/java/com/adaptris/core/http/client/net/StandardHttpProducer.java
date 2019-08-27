@@ -19,7 +19,7 @@ package com.adaptris.core.http.client.net;
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 import static com.adaptris.core.http.HttpConstants.CONTENT_TYPE;
 import static com.adaptris.util.stream.StreamUtil.copyAndClose;
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;

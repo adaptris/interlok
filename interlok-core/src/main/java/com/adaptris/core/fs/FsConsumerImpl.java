@@ -21,7 +21,7 @@ import static com.adaptris.core.CoreConstants.FS_CONSUME_DIRECTORY;
 import static com.adaptris.core.CoreConstants.FS_CONSUME_PARENT_DIR;
 import static com.adaptris.core.CoreConstants.FS_FILE_SIZE;
 import static com.adaptris.core.CoreConstants.ORIGINAL_NAME_KEY;
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;

@@ -7,7 +7,7 @@ import java.util.concurrent.Future;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;

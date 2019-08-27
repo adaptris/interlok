@@ -29,12 +29,14 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisConnectionImp;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.management.webserver.JettyServerManager;
 import com.adaptris.core.management.webserver.SecurityHandlerWrapper;
 import com.adaptris.core.management.webserver.ServerManager;
 import com.adaptris.core.management.webserver.WebServerManagementUtil;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -69,6 +71,8 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
   private static final TimeInterval DEFAULT_MAX_WAIT = new TimeInterval(10l, TimeUnit.MINUTES);
 
   @AdvancedConfig
+  @Deprecated
+  @Removal(version = "3.10.0", message = "Has no meaning since you must configure a security-handler")
   private Set<String> roles;
   @AdvancedConfig
   private TimeInterval maxStartupWait;
@@ -111,6 +115,12 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
   protected void prepareConnection() throws CoreException {
   }
 
+  /**
+   * 
+   * @deprecated since 3.9.1 Has had no meaning since {@link #setSecurityHandler(SecurityHandlerWrapper)} was introduced
+   */
+  @Deprecated
+  @Removal(version = "3.10.0", message = "Has no meaning since you must configure a security-handler")
   public Set<String> getRoles() {
     return roles;
   }
@@ -119,7 +129,10 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
    * Set any roles that are required to access the consumers.
    *
    * @param roles the roles.
+   * @deprecated since 3.9.1 Has had no meaning since {@link #setSecurityHandler(SecurityHandlerWrapper)} was introduced
    */
+  @Deprecated
+  @Removal(version = "3.10.0", message = "Has no meaning since you must configure a security-handler")
   public void setRoles(Set<String> roles) {
     this.roles = roles;
   }
@@ -137,7 +150,7 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
       log.trace("Added " + wrapper.getServletHolder() + " against " + wrapper.getUrl());
     }
     catch (Exception ex) {
-      rethrow(ex);
+      throw ExceptionHelper.wrapCoreException(ex);
     }
 
   }
@@ -152,15 +165,8 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
       log.trace("Removed " + wrapper.getServletHolder() + " from " + wrapper.getUrl());
     }
     catch (Exception ex) {
-      rethrow(ex);
+      throw ExceptionHelper.wrapCoreException(ex);
     }
-  }
-
-  private void rethrow(Exception e) throws CoreException {
-    if (e instanceof CoreException) {
-      throw (CoreException) e;
-    }
-    throw new CoreException(e);
   }
 
   private static void waitForJettyStart(ServerManager sm, long maxWaitTime) throws CoreException {
@@ -174,8 +180,8 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
         throw new CoreException("Max Wait time exceeded : " + maxWaitTime + "ms");
       }
     }
-    catch (InterruptedException e) {
-      throw new CoreException(e);
+    catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 

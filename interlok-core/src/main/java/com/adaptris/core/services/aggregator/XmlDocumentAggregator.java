@@ -17,12 +17,9 @@
 package com.adaptris.core.services.aggregator;
 
 import java.util.Collection;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.w3c.dom.Document;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
@@ -74,7 +71,7 @@ public class XmlDocumentAggregator extends MessageAggregatorImpl {
   public void joinMessage(AdaptrisMessage original, Collection<AdaptrisMessage> messages) throws CoreException {
     try {
       Document resultDoc = XmlHelper.createDocument(original, documentFactoryBuilder());
-      for (AdaptrisMessage m : messages) {
+      for (AdaptrisMessage m : filter(messages)) {
         Document mergeDoc = XmlHelper.createDocument(m, documentFactoryBuilder());
         overwriteMetadata(m, original);
         resultDoc = getMergeImplementation().merge(resultDoc, mergeDoc);
@@ -128,6 +125,6 @@ public class XmlDocumentAggregator extends MessageAggregatorImpl {
   }
 
   DocumentBuilderFactoryBuilder documentFactoryBuilder() {
-    return DocumentBuilderFactoryBuilder.newInstance(getXmlDocumentFactoryConfig());
+    return DocumentBuilderFactoryBuilder.newInstanceIfNull(getXmlDocumentFactoryConfig());
   }
 }

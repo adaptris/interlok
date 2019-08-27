@@ -72,13 +72,14 @@ public class Resolver implements EntityResolver, URIResolver {
     String key = url.toString();
     InputStream result = null;
     if (!hm.containsKey(key)) {
+      debugLog("Nothing in cache for [{}]", key);
       ByteArrayOutputStream output = new ByteArrayOutputStream();
       StreamUtil.copyAndClose(URLHelper.connect(url), output);
       hm.put(key, output);
       result = new ByteArrayInputStream(output.toByteArray());
     }
     else {
-      debugLog("Resolve from cache {}", key);
+      debugLog("Resolved from cache [{}]", key);
       result = new ByteArrayInputStream(hm.get(key).toByteArray());
     }
     return result;
@@ -123,8 +124,7 @@ public class Resolver implements EntityResolver, URIResolver {
         String url = base.substring(0, end + 1);
         myUrl = new URL(url + href);
       }
-      StreamSource ret = new StreamSource(retrieveAndCache(new URLString(myUrl)), myUrl.toExternalForm());
-      result = ret;
+      result = new StreamSource(retrieveAndCache(new URLString(myUrl)), myUrl.toExternalForm());
     }
     catch (Exception e) {
       debugLog("Couldn't handle [{}][{}], fallback to default parser behaviour", href, base);

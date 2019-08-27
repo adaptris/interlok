@@ -16,7 +16,7 @@
 
 package com.adaptris.core.services.mime;
 
-import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import java.util.Enumeration;
 import javax.mail.Header;
 import javax.mail.internet.MimeBodyPart;

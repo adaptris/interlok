@@ -19,7 +19,7 @@ package com.adaptris.core.services.dynamic;
 import static com.adaptris.fs.FsWorker.checkReadable;
 import static com.adaptris.fs.FsWorker.isDirectory;
 import static com.adaptris.fs.FsWorker.isFile;
-import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import java.io.File;
 import org.hibernate.validator.constraints.NotBlank;
 import com.adaptris.annotation.AutoPopulated;

@@ -121,7 +121,7 @@ public abstract class ExampleEventHandlerCase<T extends EventHandlerBase> extend
 
   @Test
   public void testSetMarshaller() throws Exception {
-    EventHandlerBase eventHandler = (EventHandlerBase) applyConfiguration(newEventHandler(getName()));
+    EventHandlerBase eventHandler = applyConfiguration(newEventHandler(getName()));
     
     XStreamJsonMarshaller marshaller = (XStreamJsonMarshaller) marshallerFactory.createMarshaller(MarshallingOutput.JSON);
     eventHandler.setMarshaller(marshaller);
@@ -164,7 +164,6 @@ public abstract class ExampleEventHandlerCase<T extends EventHandlerBase> extend
     }
   }
   
-  @SuppressWarnings("deprecation")
   @Test
   public void testSendEventWithDestination() throws Exception {
     Event e = EventFactory.create(AdapterCloseEvent.class);

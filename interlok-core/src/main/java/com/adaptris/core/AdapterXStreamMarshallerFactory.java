@@ -54,14 +54,25 @@ public class AdapterXStreamMarshallerFactory extends AdapterMarshallerFactory {
 
   private transient static Logger log = LoggerFactory.getLogger(AdapterXStreamMarshallerFactory.class);
 
+  /**
+   * Whether not extended debugging is emitted; defaults to false unless explicitly set via either the system property
+   * {@code interlok.xstream.debug} or {@code adp.xtream.debug}.
+   * 
+   */
   public static final transient boolean XSTREAM_DBG = Boolean.getBoolean("adp.xstream.debug")
       || Boolean.getBoolean("interlok.xstream.debug");
+  /**
+   * Whether or not we force XStream to use the JVMs internal Stax implementation; this defaults to 'true' unless explicitly
+   * set via the system property {@code interlok.xstream.jdk.stax}.
+   * 
+   */
+  public static final transient boolean XSTREAM_JDK_STAX_ONLY = Boolean.getBoolean("interlok.xstream.jdk.stax");
 
   private enum XStreamTypes {
     XML {
       @Override
       XStream createXStreamInstance() {
-        return new MyExtremeMarshaller(new PureJavaReflectionProvider(), new PrettyStaxDriver(cdataFields));
+        return new MyExtremeMarshaller(new PureJavaReflectionProvider(), new PrettyStaxDriver(cdataFields, XSTREAM_JDK_STAX_ONLY));
       }
 
       @Override

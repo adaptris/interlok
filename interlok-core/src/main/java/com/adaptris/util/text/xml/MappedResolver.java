@@ -16,7 +16,7 @@
 
 package com.adaptris.util.text.xml;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import java.io.InputStream;
 
@@ -24,6 +24,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.core.util.Args;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.URLString;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -47,6 +48,7 @@ public class MappedResolver extends Resolver {
     setMappings(new KeyValuePairSet());
   }
 
+  @Override
   protected InputStream retrieveAndCache(URLString url) throws Exception {
     String key = url.toString();
     String candidate = getMappings().getValueIgnoringKeyCase(key);
@@ -54,7 +56,7 @@ public class MappedResolver extends Resolver {
       debugLog("[{}] mapped to [{}]", key, candidate);
       return super.retrieveAndCache(new URLString(candidate));
     }
-    debugLog("No mapping for [{}]; as-is", key);
+    debugLog("No mapping for [{}]; using as-is", key);
     return super.retrieveAndCache(url);
   }
 
@@ -72,7 +74,7 @@ public class MappedResolver extends Resolver {
    * @param kvps
    */
   public void setMappings(KeyValuePairSet kvps) {
-    this.mappings = kvps;
+    this.mappings = Args.notNull(kvps, "mappings");
   }
 
 }

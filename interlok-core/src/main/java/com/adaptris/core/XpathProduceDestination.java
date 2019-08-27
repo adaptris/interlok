@@ -17,18 +17,17 @@
 package com.adaptris.core;
 
 import static com.adaptris.core.util.XmlHelper.createXmlUtils;
-import static org.apache.commons.lang.StringUtils.isBlank;
-
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.xml.namespace.NamespaceContext;
-
-import org.hibernate.validator.constraints.NotBlank;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.XmlUtils;
@@ -45,18 +44,14 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * 
  * @config xpath-produce-destination
- * @author lchan
- * @author $Author: lchan $
  */
 @XStreamAlias("xpath-produce-destination")
 @DisplayOrder(order = {"xpath", "defaultDestination", "namespaceContext", "xmlDocumentFactoryConfig"})
 public class XpathProduceDestination implements MessageDrivenDestination {
 
   @NotNull
-  @NotBlank
   private String xpath;
   @NotNull
-  @NotBlank
   private String defaultDestination;
 
   @AdvancedConfig
@@ -93,13 +88,16 @@ public class XpathProduceDestination implements MessageDrivenDestination {
    */
   @Override
   public boolean equals(Object obj) {
-    boolean rc = false;
+    if (obj == null) return false;
+    if (obj == this) return true;
     if (obj instanceof XpathProduceDestination) {
-      XpathProduceDestination x = (XpathProduceDestination) obj;
-      rc = getXpath().equals(x.getXpath())
-          && getDefaultDestination().equals(x.getDefaultDestination());
+      XpathProduceDestination item = (XpathProduceDestination) obj;
+      return new EqualsBuilder().append(item.getXpath(), this.getXpath())
+          .append(item.getDefaultDestination(), this.getDefaultDestination())
+          .append(item.getXmlDocumentFactoryConfig(), this.getXmlDocumentFactoryConfig())
+          .append(item.getNamespaceContext(), this.getNamespaceContext()).isEquals();
     }
-    return rc;
+    return false;
   }
 
   /**
@@ -108,15 +106,15 @@ public class XpathProduceDestination implements MessageDrivenDestination {
    */
   @Override
   public int hashCode() {
-    int hc = 0;
-    hc += xpath.hashCode();
-    hc += defaultDestination.hashCode();
-    return hc;
+    return new HashCodeBuilder().append(getXpath()).append(getDefaultDestination()).append(getXmlDocumentFactoryConfig())
+        .append(getNamespaceContext())
+        .toHashCode();
   }
 
   /**
    * @see ProduceDestination#getDestination(com.adaptris.core.AdaptrisMessage)
    */
+  @Override
   public String getDestination(AdaptrisMessage msg) {
     String result = defaultDestination;
     try {
@@ -128,7 +126,7 @@ public class XpathProduceDestination implements MessageDrivenDestination {
       XmlUtils xml = createXmlUtils(msg, ctx, builder);
       String s = xml.getSingleTextItem(xpath);
       if (isBlank(s)) {
-        logR.warn(xpath + " returned no results");
+        logR.warn("[{}] returned no results", xpath);
       }
       else {
         result = s;
@@ -137,7 +135,7 @@ public class XpathProduceDestination implements MessageDrivenDestination {
     catch (Exception e) {
       logR.warn("Exception caught attempting to parse message, using default destination");
     }
-    logR.trace("Returning [" + result + "]");
+    logR.trace("Returning [{}]", result);
     return result;
   }
 
@@ -158,10 +156,7 @@ public class XpathProduceDestination implements MessageDrivenDestination {
    * @param s the xpath
    */
   public void setXpath(String s) {
-    if (s == null) {
-      throw new IllegalArgumentException("Xpath may not be null");
-    }
-    xpath = s;
+    xpath = Args.notNull(s, "xpath");
   }
 
   /**
@@ -178,10 +173,7 @@ public class XpathProduceDestination implements MessageDrivenDestination {
    * @param s the defaultDestination to set
    */
   public void setDefaultDestination(String s) {
-    if (s == null) {
-      throw new IllegalArgumentException("DefaultDestination may not be null");
-    }
-    this.defaultDestination = s;
+    this.defaultDestination = Args.notNull(s, "defaultDestination");
   }
 
   /**
@@ -215,7 +207,7 @@ public class XpathProduceDestination implements MessageDrivenDestination {
   }
 
   DocumentBuilderFactoryBuilder documentFactoryBuilder() {
-    return DocumentBuilderFactoryBuilder.newInstance(getXmlDocumentFactoryConfig());
+    return DocumentBuilderFactoryBuilder.newInstanceIfNull(getXmlDocumentFactoryConfig());
   }
 
 }

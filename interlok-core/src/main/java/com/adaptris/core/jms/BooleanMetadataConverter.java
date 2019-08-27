@@ -3,7 +3,7 @@ package com.adaptris.core.jms;
 import javax.jms.JMSException;
 import javax.jms.Message;
 
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.MetadataElement;

@@ -19,7 +19,7 @@ package com.adaptris.core.runtime;
 import static com.adaptris.core.runtime.AdapterComponentMBean.ADAPTER_PREFIX;
 import static com.adaptris.core.runtime.AdapterComponentMBean.ID_PREFIX;
 import static com.adaptris.core.runtime.AdapterComponentMBean.JMX_MSG_ERR_DIGESTER_TYPE;
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import java.io.File;
 import java.nio.file.Files;

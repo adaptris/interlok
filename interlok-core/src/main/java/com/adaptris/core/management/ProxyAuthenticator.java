@@ -17,7 +17,7 @@
 package com.adaptris.core.management;
 
 import static com.adaptris.core.management.Constants.CFG_KEY_PROXY_AUTHENTICATOR;
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import java.net.Authenticator.RequestorType;
 import java.net.PasswordAuthentication;

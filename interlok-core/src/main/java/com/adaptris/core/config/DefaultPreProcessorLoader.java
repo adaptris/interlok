@@ -16,7 +16,7 @@
 
 package com.adaptris.core.config;
 import static com.adaptris.core.util.PropertyHelper.getPropertyIgnoringCase;
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import java.lang.reflect.Constructor;
 import java.util.Properties;

@@ -16,7 +16,7 @@
 
 package com.adaptris.core.services.splitter;
 
-import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 
 import java.io.IOException;
 import java.util.ArrayList;

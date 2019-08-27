@@ -17,6 +17,7 @@
 package com.adaptris.core.services.dynamic;
 
 import java.io.InputStream;
+
 import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.AdaptrisMessage;
@@ -52,7 +53,6 @@ public interface ServiceExtractor extends ComponentLifecycle {
    *           expediency but will be removed in 3.11.0. Just extend {@link ServiceExtractorImpl}
    *           for future compatibility.
    */
-  @SuppressWarnings("deprecation")
   default Service getService(AdaptrisMessage msg, AdaptrisMarshaller m) throws Exception {
     try (InputStream in = getInputStream(msg)) {
       return (Service) m.unmarshal(in);

@@ -19,8 +19,8 @@ ext {
   componentName='Interlok'
   organizationName = "Adaptris Ltd"
   organizationUrl = "http://interlok.adaptris.net"
-  slf4jVersion = '1.7.26'
-  log4j2Version = "2.11.2"
+  slf4jVersion = '1.7.28'
+  log4j2Version = "2.12.1"
   xstreamVersion = '1.4.11.1'
 }
 
@@ -78,7 +78,7 @@ subprojects { subproject ->
   }
 
   dependencies {
-    mavenDeploy ("org.apache.maven.wagon:wagon-http:3.3.2")
+    mavenDeploy ("org.apache.maven.wagon:wagon-http:3.3.3")
   }
 
   configurations.all {

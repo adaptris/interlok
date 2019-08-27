@@ -32,7 +32,7 @@ import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.SharedInputStream;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.adaptris.core.util.Args;
 

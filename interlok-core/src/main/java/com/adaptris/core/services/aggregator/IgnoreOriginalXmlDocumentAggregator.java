@@ -16,7 +16,7 @@
 
 package com.adaptris.core.services.aggregator;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import java.util.Collection;
 
@@ -73,7 +73,7 @@ public class IgnoreOriginalXmlDocumentAggregator extends XmlDocumentAggregator {
         throw new CoreException("Template is null / empty, cannot continue");
       }
       Document resultDoc = XmlHelper.createDocument(getTemplate(), documentFactoryBuilder());
-      for (AdaptrisMessage m : messages) {
+      for (AdaptrisMessage m : filter(messages)) {
         Document mergeDoc = XmlHelper.createDocument(m, documentFactoryBuilder());
         overwriteMetadata(m, original);
         resultDoc = getMergeImplementation().merge(resultDoc, mergeDoc);

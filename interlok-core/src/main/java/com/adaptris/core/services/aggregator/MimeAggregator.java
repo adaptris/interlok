@@ -18,8 +18,8 @@ package com.adaptris.core.services.aggregator;
 
 import static com.adaptris.util.text.mime.MimeConstants.HEADER_CONTENT_ENCODING;
 import static com.adaptris.util.text.mime.MimeConstants.HEADER_CONTENT_TYPE;
-import static org.apache.commons.lang.StringUtils.defaultIfBlank;
-import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -120,7 +120,7 @@ public class MimeAggregator extends MessageAggregatorImpl {
   public void joinMessage(AdaptrisMessage original, Collection<AdaptrisMessage> messages) throws CoreException {
     try {
       MultiPartOutput output = createInitialPart(original);
-      for (AdaptrisMessage m : messages) {
+      for (AdaptrisMessage m : filter(messages)) {
         output.addPart(createBodyPart(m), contentId(m));
         overwriteMetadata(m, original);
       }
