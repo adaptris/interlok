@@ -216,7 +216,7 @@ public class QuartzCronPoller extends PollerImp {
   private String quartzId;
   @AdvancedConfig
   private String schedulerGroup;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "true")
   private Boolean useCustomThreadPool;
 

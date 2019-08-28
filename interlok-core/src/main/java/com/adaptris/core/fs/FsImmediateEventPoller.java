@@ -27,9 +27,7 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import com.adaptris.annotation.AdvancedConfig;
-import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.PollerImp;
 import com.adaptris.util.TimeInterval;
@@ -61,10 +59,8 @@ public class FsImmediateEventPoller extends PollerImp {
 
   private static final long DEFAULT_CREATION_COMPLETE_CHECK_MS = 500;
   
-  @NotNull
-  @AutoPopulated
   @Valid
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private TimeInterval creationCompleteCheck;
 
   private transient boolean stopped = false;

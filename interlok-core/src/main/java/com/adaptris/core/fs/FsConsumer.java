@@ -100,9 +100,9 @@ public class FsConsumer extends FsConsumerImpl {
 
   @NotBlank
   @AutoPopulated
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private String wipSuffix;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "false")
   private Boolean resetWipFiles;
 

@@ -105,7 +105,7 @@ public abstract class WorkflowImp implements Workflow {
   @AutoPopulated
   private List<WorkflowInterceptor> interceptors;
   @Valid
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private TimeInterval channelUnavailableWaitInterval;
   @AdvancedConfig
   @InputFieldDefault(value = "message-logger-default")

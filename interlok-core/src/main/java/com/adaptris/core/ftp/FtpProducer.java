@@ -97,11 +97,11 @@ public class FtpProducer extends RequestReplyProducerImp {
 
   private String destDirectory;
   private String buildDirectory;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private String replyDirectory = null;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private String replyProcDirectory = null;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "true")
   private Boolean replyUsesEncoder;
   @Valid

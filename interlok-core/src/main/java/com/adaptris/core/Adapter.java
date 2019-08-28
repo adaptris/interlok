@@ -75,14 +75,14 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
   @NotNull
   @AutoPopulated
   @NotBlank
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private String startUpEventImp;
   @NotNull
   @AutoPopulated
   @NotBlank
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private String heartbeatEventImp;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @Valid
   private LogHandler logHandler;
   @NotNull
