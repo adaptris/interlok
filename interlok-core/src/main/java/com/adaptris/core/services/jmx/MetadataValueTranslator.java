@@ -17,12 +17,10 @@
 package com.adaptris.core.services.jmx;
 
 import java.util.Date;
-
+import javax.validation.constraints.NotBlank;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
@@ -63,6 +61,7 @@ public class MetadataValueTranslator extends ValueTranslatorImp {
     setType(type);
   }
 
+  @Override
   public Object getValue(AdaptrisMessage message) throws CoreException {
     if(!StringUtils.isEmpty(metadataKey))
       return this.convert(message.getMetadataValue(this.getMetadataKey()), this.getType());
@@ -72,6 +71,7 @@ public class MetadataValueTranslator extends ValueTranslatorImp {
     return null;
   }
 
+  @Override
   public void setValue(AdaptrisMessage message, Object value) {
     if(!StringUtils.isEmpty(metadataKey)) {
       if(this.getType().equals(Date.class.getName()))

@@ -17,14 +17,11 @@
 package com.adaptris.util.text.mime;
 
 import java.util.List;
-
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -62,7 +59,7 @@ public class SelectByHeader implements PartSelector {
     MimeBodyPart result = null;
     assertConfig();
     outer: while (m.hasNext()) {
-      MimeBodyPart p = (MimeBodyPart) m.next();
+      MimeBodyPart p = m.next();
       String[] values = p.getHeader(getHeaderName());
       if (values != null) {
         for (String value : values) {

@@ -20,11 +20,11 @@ import static com.adaptris.core.CoreConstants.UNIQUE_ID_JMX_PATTERN;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import java.util.Date;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.BooleanUtils;
-import org.hibernate.validator.constraints.NotBlank;
+import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.AdapterComponent;
@@ -46,7 +46,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 // Should probably implement EventAware...
 @XStreamAlias("channel")
 @AdapterComponent
-@ComponentProfile(summary = "The base container for workflows", tag = "base")
+@ComponentProfile(summary = "Channels bind two connections together for workflows to do their work", tag = "base")
 public class Channel implements ComponentLifecycleExtension, StateManagedComponentContainer, EventHandlerAware {
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
@@ -63,7 +63,6 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
   @Valid
   private WorkflowList workflowList;
   private ProcessingExceptionHandler messageErrorHandler;
-  @NotNull
   @NotBlank
   @Pattern(regexp = UNIQUE_ID_JMX_PATTERN)
   private String uniqueId;

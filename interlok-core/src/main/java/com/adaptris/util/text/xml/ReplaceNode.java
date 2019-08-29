@@ -16,13 +16,11 @@
 
 package com.adaptris.util.text.xml;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.validator.constraints.NotBlank;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;

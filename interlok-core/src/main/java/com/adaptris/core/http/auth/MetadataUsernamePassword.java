@@ -16,9 +16,7 @@
 package com.adaptris.core.http.auth;
 
 import java.net.PasswordAuthentication;
-
-import org.hibernate.validator.constraints.NotBlank;
-
+import javax.validation.constraints.NotBlank;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;

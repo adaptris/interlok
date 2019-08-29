@@ -18,14 +18,11 @@ package com.adaptris.core.http.jetty;
 
 import java.util.Arrays;
 import java.util.List;
-
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.eclipse.jetty.util.security.Constraint;
-import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;

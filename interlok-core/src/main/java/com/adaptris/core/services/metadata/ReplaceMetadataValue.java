@@ -17,13 +17,10 @@
 package com.adaptris.core.services.metadata;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import javax.validation.constraints.NotBlank;
 import org.apache.commons.lang3.BooleanUtils;
-import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;

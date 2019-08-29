@@ -22,12 +22,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.ObjectUtils;
-import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;

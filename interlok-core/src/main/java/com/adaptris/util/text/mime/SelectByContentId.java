@@ -18,14 +18,11 @@ package com.adaptris.util.text.mime;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.NotBlank;
-
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 

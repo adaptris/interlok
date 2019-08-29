@@ -16,7 +16,7 @@
 package com.adaptris.core.services.dynamic;
 
 import java.io.InputStream;
-import org.hibernate.validator.constraints.NotBlank;
+import javax.validation.constraints.NotBlank;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;

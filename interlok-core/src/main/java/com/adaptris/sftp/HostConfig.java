@@ -16,9 +16,7 @@
 package com.adaptris.sftp;
 
 import java.util.Arrays;
-
-import org.hibernate.validator.constraints.NotBlank;
-
+import javax.validation.constraints.NotBlank;
 import com.adaptris.core.util.Args;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;

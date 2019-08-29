@@ -16,7 +16,6 @@
 package com.adaptris.core.services.metadata;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.ParseException;
@@ -24,9 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
-
-import org.hibernate.validator.constraints.NotBlank;
-
+import javax.validation.constraints.NotBlank;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
@@ -100,11 +97,11 @@ public class DateFormatBuilder {
   private SimpleDateFormat createWithLocale(AdaptrisMessage msg) {
     String language = msg.resolve(getLanguageTag());
     String format = msg.resolve(getFormat());
-    return (!isBlank(language)) ? new SimpleDateFormat(format, Locale.forLanguageTag(language)) : new SimpleDateFormat(format);
+    return !isBlank(language) ? new SimpleDateFormat(format, Locale.forLanguageTag(language)) : new SimpleDateFormat(format);
   }
 
   private DateFormatter withTimeZone(SimpleDateFormat format, String id) {
-    format.setTimeZone((!isBlank(id)) ? TimeZone.getTimeZone(id) : TimeZone.getDefault());
+    format.setTimeZone(!isBlank(id) ? TimeZone.getTimeZone(id) : TimeZone.getDefault());
     return new SimpleDateFormatter(format);
   }
 
@@ -194,10 +191,12 @@ public class DateFormatBuilder {
 
     private SecondsSinceEpoch() {}
 
+    @Override
     public Date toDate(String stringRep) {
       return new Date(new BigDecimal(stringRep).longValue() * 1000);
     }
 
+    @Override
     public String toString(Date date) {
       return String.valueOf(new BigDecimal(date.getTime()).divide(new BigDecimal(1000), RoundingMode.HALF_UP).longValue());
     }
@@ -209,10 +208,12 @@ public class DateFormatBuilder {
     private MillisecondsSinceEpoch() {
     }
 
+    @Override
     public Date toDate(String stringRep) {
       return new Date(new BigDecimal(stringRep).longValue());
     }
 
+    @Override
     public String toString(Date date) {
       return String.valueOf(date.getTime());
     }

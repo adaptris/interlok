@@ -17,15 +17,12 @@
 package com.adaptris.core.transform;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
-
-import org.hibernate.validator.constraints.NotBlank;
+import javax.validation.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;

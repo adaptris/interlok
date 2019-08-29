@@ -16,11 +16,10 @@
 
 package com.adaptris.core.services.jmx;
 
+import javax.validation.constraints.NotBlank;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -59,6 +58,7 @@ public class ObjectMetadataValueTranslator extends ValueTranslatorImp {
     setType(type);
   }
 
+  @Override
   public Object getValue(AdaptrisMessage message) {
     if(!StringUtils.isEmpty(metadataKey))
       return message.getObjectHeaders().get(this.getMetadataKey());
@@ -68,6 +68,7 @@ public class ObjectMetadataValueTranslator extends ValueTranslatorImp {
     return null;
   }
 
+  @Override
   public void setValue(AdaptrisMessage message, Object value) {
     if(!StringUtils.isEmpty(metadataKey))
       message.addObjectHeader(this.getMetadataKey(), value);

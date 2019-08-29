@@ -27,12 +27,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.AdvancedConfig;
@@ -95,7 +95,6 @@ public abstract class WorkflowImp implements Workflow {
   @Valid
   @AdvancedConfig
   private ProduceExceptionHandler produceExceptionHandler;
-  @NotNull
   @NotBlank
   @Pattern(regexp = UNIQUE_ID_JMX_PATTERN)
   private String uniqueId;

@@ -18,13 +18,10 @@ package com.adaptris.core.services.metadata;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
-
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeUtility;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.AutoPopulated;
@@ -104,6 +101,7 @@ public class PayloadToMetadataService extends ServiceImp {
     Quoted_Printable("quoted-printable"),
     UUEncode("uuencode"),
     None(null) {
+      @Override
       OutputStream wrap(OutputStream orig) {
         return orig;
       }

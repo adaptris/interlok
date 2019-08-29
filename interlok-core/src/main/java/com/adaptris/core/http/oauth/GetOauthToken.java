@@ -1,14 +1,10 @@
 package com.adaptris.core.http.oauth;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
-
 import java.io.IOException;
-
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AffectsMetadata;
