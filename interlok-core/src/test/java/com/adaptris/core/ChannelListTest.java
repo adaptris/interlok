@@ -18,9 +18,9 @@ package com.adaptris.core;
 
 import java.util.Arrays;
 import java.util.ListIterator;
-
+import java.util.Set;
+import javax.validation.ConstraintViolation;
 import org.apache.log4j.Logger;
-
 import com.adaptris.util.IdGenerator;
 import com.adaptris.util.PlainIdGenerator;
 
@@ -490,4 +490,18 @@ public class ChannelListTest extends BaseCase {
     assertEquals(StartedState.getInstance(), testChannel.retrieveComponentState());
   }
 
+  public void testJavaxValidation() throws Exception {
+    Adapter adapter = new Adapter();
+    adapter.setUniqueId("testJavaxValidation");
+    ChannelList list = new ChannelList();
+    list.add(new Channel()); // this is invalid, cos no UID.
+    adapter.setChannelList(list);
+    Set<ConstraintViolation<Object>> violations = validate(null, adapter);
+    logViolations(violations);
+    // We expect 2 violations, one from adapter, one from channeList
+    assertEquals(2, violations.size());
+    list.clear();
+    violations = validate(null, adapter);
+    assertEquals(0, violations.size());
+  }
 }

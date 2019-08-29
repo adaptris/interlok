@@ -22,25 +22,23 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.stubs.MessageCounter;
 import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.core.stubs.ObjectUtils;
 import com.adaptris.core.util.LifecycleHelper;
-
 import junit.framework.TestCase;
 
 /**
@@ -213,17 +211,28 @@ public abstract class BaseCase extends TestCase {
 
 
   protected void doJavaxValidation(Object... objs) {
+    Validator validator = vFactory.getValidator();
     for (Object o : objs) {
-      if (o == null) continue;
-      Validator validator = vFactory.getValidator();
-      Set<ConstraintViolation<Object>> violations = validator.validate(o);
-      for (ConstraintViolation<Object> v : violations) {
-        String logString = String.format("Constraint Violation: [%1$s]=[%2$s]", v.getPropertyPath(), v.getMessage());
-        log.warn(logString);
-        System.err.println(logString);
-      }
+      Set<ConstraintViolation<Object>> violations = validate(validator, o);
+      logViolations(violations);
       assertEquals("Expected 0 Constraint Violations, got " + violations.size(), 0, violations.size());
     }
+  }
+
+  protected void logViolations(Collection<ConstraintViolation<Object>> violations) {
+    for (ConstraintViolation<Object> v : violations) {
+      String logString = String.format("Constraint Violation: [%1$s]=[%2$s]", v.getPropertyPath(), v.getMessage());
+      log.warn(logString);
+      System.err.println(logString);
+    }
+  }
+
+  protected Set<ConstraintViolation<Object>> validate(Validator v, Object o) {
+    if (o == null) {
+      return Collections.EMPTY_SET;
+    }
+    Validator validator = ObjectUtils.defaultIfNull(v, vFactory.getValidator());
+    return validator.validate(o);
   }
 
   @Deprecated
