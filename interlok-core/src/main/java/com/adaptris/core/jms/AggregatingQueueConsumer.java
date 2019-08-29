@@ -105,7 +105,7 @@ public class AggregatingQueueConsumer extends AggregatingConsumerImpl<Aggregatin
   private Message firstMessage(MessageConsumer consumer) throws JMSException, ServiceException {
     Message result = nextMessage(consumer);
     if (result == null) {
-      throw new ServiceException("No Message availabe to read within the expected timeframe");
+      throw new ServiceException("No Message available to read within the expected timeframe");
     }
     return result;
   }
