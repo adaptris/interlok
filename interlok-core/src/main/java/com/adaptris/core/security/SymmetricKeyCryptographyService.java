@@ -33,6 +33,7 @@ import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.interlok.resolver.ExternalResolver;
 import com.adaptris.interlok.types.MessageWrapper;
 import com.adaptris.security.password.Password;
+import com.adaptris.security.util.SecurityUtil;
 import com.adaptris.util.stream.StreamUtil;
 import com.adaptris.util.text.Conversion;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -111,6 +112,7 @@ public class SymmetricKeyCryptographyService extends ServiceImp {
 
 
   public SymmetricKeyCryptographyService() {
+    SecurityUtil.addProvider();
     setOperationMode(OpMode.DECRYPT);
   }
 
