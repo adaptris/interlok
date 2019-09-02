@@ -1,8 +1,8 @@
 package com.adaptris.core;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+import javax.validation.constraints.NotBlank;
 import org.apache.commons.lang3.BooleanUtils;
-import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.AdvancedConfig;

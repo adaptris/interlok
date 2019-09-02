@@ -16,13 +16,11 @@
 
 package com.adaptris.core;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
@@ -79,6 +77,7 @@ public final class MarshalledClassDestination implements MessageDrivenDestinatio
    *  </ul>
    * @see ProduceDestination#getDestination(AdaptrisMessage)
    */
+  @Override
   public String getDestination(AdaptrisMessage msg) {
     String destination = null;
     Object msgObject = null;

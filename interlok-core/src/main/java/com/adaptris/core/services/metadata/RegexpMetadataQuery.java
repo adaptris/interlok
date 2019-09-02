@@ -18,12 +18,10 @@ package com.adaptris.core.services.metadata;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import javax.validation.constraints.NotBlank;
 import org.apache.commons.lang3.BooleanUtils;
-import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.CoreException;

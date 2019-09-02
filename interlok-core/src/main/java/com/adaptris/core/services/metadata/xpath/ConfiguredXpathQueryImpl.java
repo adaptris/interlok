@@ -17,9 +17,7 @@
 package com.adaptris.core.services.metadata.xpath;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-
-import org.hibernate.validator.constraints.NotBlank;
-
+import javax.validation.constraints.NotBlank;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
@@ -56,6 +54,7 @@ public abstract class ConfiguredXpathQueryImpl extends XpathQueryImpl {
     return xpathQuery;
   }
 
+  @Override
   public void verify() throws CoreException {
     if (isEmpty(getXpathQuery())) {
       throw new CoreException("Configured Xpath is null.");

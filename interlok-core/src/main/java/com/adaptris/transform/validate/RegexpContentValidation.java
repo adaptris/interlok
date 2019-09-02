@@ -17,9 +17,7 @@
 package com.adaptris.transform.validate;
 
 import java.util.regex.Pattern;
-
-import org.hibernate.validator.constraints.NotBlank;
-
+import javax.validation.constraints.NotBlank;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -51,6 +49,7 @@ public class RegexpContentValidation implements ContentValidation {
   /**
    *  @see ContentValidation#isValid(java.lang.String)
    */
+  @Override
   public boolean isValid(String content) {
     if (regexpPattern == null) {
       regexpPattern = Pattern.compile(getPattern());
@@ -61,6 +60,7 @@ public class RegexpContentValidation implements ContentValidation {
   /**
    *  @see ContentValidation#getMessage()
    */
+  @Override
   public String getMessage() {
     return "Element contents did not validate against the pattern " + pattern;
   }

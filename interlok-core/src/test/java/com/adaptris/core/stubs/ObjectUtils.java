@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-public abstract class ObjectUtils {
+public class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
   private static final Class[] PRIMITIVE_ARRAY =
   {
       int.class, boolean.class, String.class, float.class, double.class, long.class, Integer.class, Boolean.class, Float.class,

@@ -18,14 +18,11 @@ package com.adaptris.core.http.jetty;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import javax.validation.Valid;
-
+import javax.validation.constraints.NotBlank;
 import org.apache.commons.lang3.ObjectUtils;
-import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.Removal;

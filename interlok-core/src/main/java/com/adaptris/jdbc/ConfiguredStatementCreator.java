@@ -16,8 +16,7 @@
 
 package com.adaptris.jdbc;
 
-import org.hibernate.validator.constraints.NotBlank;
-
+import javax.validation.constraints.NotBlank;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
 import com.thoughtworks.xstream.annotations.XStreamAlias;

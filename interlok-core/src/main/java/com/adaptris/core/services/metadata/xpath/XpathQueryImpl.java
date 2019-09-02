@@ -16,11 +16,10 @@
 
 package com.adaptris.core.services.metadata.xpath;
 
+import javax.validation.constraints.NotBlank;
 import org.apache.commons.lang3.BooleanUtils;
-import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.InputFieldDefault;
@@ -47,6 +46,7 @@ public abstract class XpathQueryImpl implements XpathMetadataQuery {
   }
 
 
+  @Override
   public String getMetadataKey() {
     return metadataKey;
   }

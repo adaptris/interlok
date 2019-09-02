@@ -17,11 +17,8 @@
 package com.adaptris.core.services.splitter;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;

@@ -1,11 +1,9 @@
 package com.adaptris.core.services.cache.translators;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.xml.namespace.NamespaceContext;
-
-import org.hibernate.validator.constraints.NotBlank;
 import org.w3c.dom.Document;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;

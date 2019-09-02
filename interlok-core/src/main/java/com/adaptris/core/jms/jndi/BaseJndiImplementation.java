@@ -4,18 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
-
 import javax.jms.JMSException;
 import javax.jms.Queue;
 import javax.jms.Topic;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.BooleanUtils;
-import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
@@ -35,7 +32,6 @@ public abstract class BaseJndiImplementation extends VendorImplementationImp {
   @AutoPopulated
   @Valid
   private KeyValuePairSet jndiParams;
-  @NotNull
   @NotBlank
   protected String jndiName;
   @AdvancedConfig
@@ -152,6 +148,7 @@ public abstract class BaseJndiImplementation extends VendorImplementationImp {
     return "JNDI name=" + getJndiName() + " environment=" + p;
   }
 
+  @Override
   public boolean connectionEquals(VendorImplementationBase vendorImp) {
     return this.retrieveBrokerDetailsForLogging().equals(vendorImp.retrieveBrokerDetailsForLogging());
   }

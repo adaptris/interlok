@@ -75,6 +75,7 @@ subprojects { subproject ->
     all*.exclude group: 'net.sf.saxon', module: 'saxon'
     all*.exclude group: 'org.codehaus.woodstox'
     all*.exclude group: 'org.eclipse.jetty.orbit', module: 'javax.mail.glassfish'
+    all*.exclude group: 'javax.el', module: 'javax.el-api'
   }
 
   dependencies {

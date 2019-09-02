@@ -16,10 +16,8 @@
 
 package com.adaptris.core;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.util.Args;
@@ -76,18 +74,22 @@ public class MetadataElement implements NameValuePair, Cloneable {
   }
 
 
+  @Override
   public void setKey(String key) {
     this.key = Args.notBlank(key, "key");
   }
 
+  @Override
   public String getKey() {
     return key;
   }
 
+  @Override
   public void setValue(String value) {
       this.value = Args.notNull(value, "value");
   }
 
+  @Override
   public String getValue() {
     return value;
   }

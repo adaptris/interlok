@@ -1,9 +1,7 @@
 package com.adaptris.core.http.jetty;
 
 import java.io.File;
-
-import org.hibernate.validator.constraints.NotBlank;
-
+import javax.validation.constraints.NotBlank;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.Args;
