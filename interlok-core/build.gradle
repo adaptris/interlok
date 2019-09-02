@@ -3,7 +3,7 @@ import org.apache.tools.ant.filters.*
 
 ext {
   componentName='Base Interlok'
-  activeMqVersion='5.15.9'
+  activeMqVersion='5.15.10'
   artemisVersion='2.10.0'
   bouncyCastleVersion='1.62'
   verboseTests= project.hasProperty('verboseTests') ? project.getProperty('verboseTests') : "false"
