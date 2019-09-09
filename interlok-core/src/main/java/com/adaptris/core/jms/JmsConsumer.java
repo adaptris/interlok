@@ -74,11 +74,6 @@ public class JmsConsumer extends JmsConsumerImpl {
   @AdvancedConfig
   @AutoPopulated
   @InputFieldDefault(value = "false")
-  /**
-   * Generally this will be set to false, where a standard JMS consumer will be created for you.
-   * 
-   * In some special situations non-standard JMS consumers need to be created, therefore the consumer creation is handed off to the vendor specific implementation.
-   */
   private Boolean deferConsumerCreationToVendor;
 
   public JmsConsumer() {
@@ -140,14 +135,32 @@ public class JmsConsumer extends JmsConsumerImpl {
     }
   }
 
-  public Boolean deferConsumerCreationToVendor() {
+  protected Boolean deferConsumerCreationToVendor() {
     return this.getDeferConsumerCreationToVendor() == null ? false : this.getDeferConsumerCreationToVendor();
   }
   
+  /**
+   * <p>
+   * Returns a boolean value which determines if the JMS message consumer should be created by the configured vendor implementation or not. 
+   * </p>
+   * <p>
+   * Generally this will be false or null, such is the default.  When false/null a standard JMS message consumer will be created.
+   * </p>
+   * @param boolean
+   */
   public Boolean getDeferConsumerCreationToVendor() {
     return deferConsumerCreationToVendor;
   }
 
+  /**
+   * <p>
+   * Set to true if you wish to let the JMS message consumer be created by the specific vendor implementation.
+   * </p>
+   * <p>
+   * Generally this will be false/null, such is the default.  When false/null a standard JMS message consumer will be created.
+   * </p>
+   * @param boolean
+   */
   public void setDeferConsumerCreationToVendor(Boolean deferConsumerCreationToVendor) {
     this.deferConsumerCreationToVendor = deferConsumerCreationToVendor;
   }
