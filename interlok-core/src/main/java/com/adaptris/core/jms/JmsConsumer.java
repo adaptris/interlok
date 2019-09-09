@@ -146,7 +146,6 @@ public class JmsConsumer extends JmsConsumerImpl {
    * <p>
    * Generally this will be false or null, such is the default.  When false/null a standard JMS message consumer will be created.
    * </p>
-   * @param boolean
    */
   public Boolean getDeferConsumerCreationToVendor() {
     return deferConsumerCreationToVendor;
@@ -159,7 +158,7 @@ public class JmsConsumer extends JmsConsumerImpl {
    * <p>
    * Generally this will be false/null, such is the default.  When false/null a standard JMS message consumer will be created.
    * </p>
-   * @param boolean
+   * @param Boolean
    */
   public void setDeferConsumerCreationToVendor(Boolean deferConsumerCreationToVendor) {
     this.deferConsumerCreationToVendor = deferConsumerCreationToVendor;
