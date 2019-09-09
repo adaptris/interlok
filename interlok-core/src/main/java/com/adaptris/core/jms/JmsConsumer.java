@@ -107,7 +107,7 @@ public class JmsConsumer extends JmsConsumerImpl {
           if(!isEmpty(destination.sharedConsumerId()))  {
             log.trace("Creating new shared durable consumer.");
             consumer = ((ConsumerCreator) 
-                (session, dest, filterExpression) -> session.createSharedDurableConsumer((Topic) dest.getDestination(), filterExpression)
+                (session, dest, filterExpression) -> session.createSharedDurableConsumer((Topic) dest.getDestination(), dest.subscriptionId(), filterExpression)
             ).createConsumer(currentSession(), destination, filterExp);
           }
           else {
@@ -119,7 +119,7 @@ public class JmsConsumer extends JmsConsumerImpl {
         } else if (!isEmpty(destination.sharedConsumerId())) {
           log.trace("Creating new shared consumer.");
           consumer = ((ConsumerCreator) 
-              (session, dest, filterExpression) -> session.createSharedConsumer((Topic) dest.getDestination(), filterExpression)
+              (session, dest, filterExpression) -> session.createSharedConsumer((Topic) dest.getDestination(), dest.sharedConsumerId(), filterExpression)
           ).createConsumer(currentSession(), destination, filterExp);
         }
       }
