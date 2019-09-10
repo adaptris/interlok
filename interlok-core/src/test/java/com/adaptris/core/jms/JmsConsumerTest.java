@@ -19,9 +19,19 @@ package com.adaptris.core.jms;
 import static com.adaptris.core.jms.JmsConfig.MESSAGE_TRANSLATOR_LIST;
 import static com.adaptris.core.jms.JmsProducerCase.assertMessages;
 import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.createMessage;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.jms.MessageConsumer;
+
+import org.apache.activemq.ActiveMQConnectionFactory;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.ConfiguredProduceDestination;
@@ -29,15 +39,106 @@ import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
+import com.adaptris.core.jms.activemq.EmbeddedArtemis;
 import com.adaptris.core.stubs.MockMessageListener;
+import com.adaptris.core.util.LifecycleHelper;
 
 public class JmsConsumerTest extends JmsConsumerCase {
+  
+  @Mock private BasicActiveMqImplementation mockVendor;
+  @Mock MessageConsumer mockMessageConsumer;
 
+  public void setUp() throws Exception {
+    MockitoAnnotations.initMocks(this);
+  }
+  
   public JmsConsumerTest(String name) {
     super(name);
   }
 
 
+  public void testDeferConsumerCreationToVendor() throws Exception {
+    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
+    
+    when(mockVendor.createConsumer(any(JmsDestination.class), any(String.class), any(JmsActorConfig.class)))
+        .thenReturn(mockMessageConsumer);
+    
+    when(mockVendor.getBrokerUrl())
+        .thenReturn("vm://" + activeMqBroker.getName());
+    
+    when(mockVendor.createConnectionFactory())
+        .thenReturn(new ActiveMQConnectionFactory("vm://" + activeMqBroker.getName()));
+    
+    String rfc6167 = "jms:topic:" + getName() + "?subscriptionId=" + getName();
+
+    try {
+      activeMqBroker.start();
+
+      JmsConsumer consumer = new JmsConsumer(new ConfiguredConsumeDestination(rfc6167));
+      consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
+      consumer.setDeferConsumerCreationToVendor(true);
+      
+      JmsConnection jmsConnection = activeMqBroker.getJmsConnection();
+      jmsConnection.setVendorImplementation(mockVendor);
+      
+      StandaloneConsumer standaloneConsumer = new StandaloneConsumer(jmsConnection, consumer);
+
+      MockMessageListener jms = new MockMessageListener();
+      standaloneConsumer.registerAdaptrisMessageListener(jms);
+
+      LifecycleHelper.initAndStart(standaloneConsumer);
+      
+      verify(mockVendor).createConsumer((any(JmsDestination.class)), any(String.class), any(JmsActorConfig.class));
+      
+      LifecycleHelper.stopAndClose(standaloneConsumer);
+      
+    } finally {
+      activeMqBroker.destroy();
+    }
+  }
+  
+  public void testDefaultFalseDeferConsumerCreationToVendor() throws Exception {
+    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
+    
+    when(mockVendor.createConsumer(any(JmsDestination.class), any(String.class), any(JmsActorConfig.class)))
+        .thenReturn(mockMessageConsumer);
+
+    when(mockVendor.getBrokerUrl())
+        .thenReturn("vm://" + activeMqBroker.getName());
+    
+    when(mockVendor.createConnectionFactory())
+        .thenReturn(new ActiveMQConnectionFactory("vm://" + activeMqBroker.getName()));
+
+    String rfc6167 = "jms:topic:" + getName() + "?subscriptionId=" + getName();
+
+    try {
+      activeMqBroker.start();
+
+      JmsConsumer consumer = new JmsConsumer(new ConfiguredConsumeDestination(rfc6167));
+      consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
+//      consumer.setDeferConsumerCreationToVendor(true);
+      
+      JmsConnection jmsConnection = activeMqBroker.getJmsConnection();
+      jmsConnection.setVendorImplementation(mockVendor);
+      
+      StandaloneConsumer standaloneConsumer = new StandaloneConsumer(jmsConnection, consumer);
+
+      MockMessageListener jms = new MockMessageListener();
+      standaloneConsumer.registerAdaptrisMessageListener(jms);
+
+      try {
+        LifecycleHelper.initAndStart(standaloneConsumer);
+      } catch (Exception ex) {}
+      
+      verify(mockVendor, times(0)).createConsumer((any(JmsDestination.class)), any(String.class), any(JmsActorConfig.class));
+      
+      LifecycleHelper.stopAndClose(standaloneConsumer);
+      
+    } finally {
+      activeMqBroker.destroy();
+    }
+  }
+  
   public void testDurableTopicConsume() throws Exception {
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String rfc6167 = "jms:topic:" + getName() + "?subscriptionId=" + getName();
@@ -54,6 +155,56 @@ public class JmsConsumerTest extends JmsConsumerCase {
 
       StandaloneProducer standaloneProducer =
           new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()), new JmsProducer(
+              new ConfiguredProduceDestination(rfc6167)));
+      execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
+      assertMessages(jms, 1);
+    } finally {
+      activeMqBroker.destroy();
+    }
+
+  }
+  
+  public void testSharedDurableTopicConsume() throws Exception {
+    EmbeddedArtemis activeMqBroker = new EmbeddedArtemis();
+    String rfc6167 = "jms:topic:" + getName() + "?subscriptionId=MySubId&sharedConsumerId=" + getName();
+
+    try {
+      activeMqBroker.start();
+
+      JmsConsumer consumer = new JmsConsumer(new ConfiguredConsumeDestination(rfc6167));
+      consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
+      StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
+
+      MockMessageListener jms = new MockMessageListener();
+      standaloneConsumer.registerAdaptrisMessageListener(jms);
+
+      StandaloneProducer standaloneProducer =
+          new StandaloneProducer(activeMqBroker.getJmsConnection(), new JmsProducer(
+              new ConfiguredProduceDestination(rfc6167)));
+      execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
+      assertMessages(jms, 1);
+    } finally {
+      activeMqBroker.destroy();
+    }
+
+  }
+  
+  public void testSharedTopicConsume() throws Exception {
+    EmbeddedArtemis activeMqBroker = new EmbeddedArtemis();
+    String rfc6167 = "jms:topic:" + getName() + "?sharedConsumerId=" + getName();
+
+    try {
+      activeMqBroker.start();
+
+      JmsConsumer consumer = new JmsConsumer(new ConfiguredConsumeDestination(rfc6167));
+      consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
+      StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
+
+      MockMessageListener jms = new MockMessageListener();
+      standaloneConsumer.registerAdaptrisMessageListener(jms);
+
+      StandaloneProducer standaloneProducer =
+          new StandaloneProducer(activeMqBroker.getJmsConnection(), new JmsProducer(
               new ConfiguredProduceDestination(rfc6167)));
       execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
       assertMessages(jms, 1);
@@ -119,8 +270,8 @@ public class JmsConsumerTest extends JmsConsumerCase {
 
 
   @Override
-  protected List retrieveObjectsForSampleConfig() {
-    ArrayList result = new ArrayList();
+  protected List<?> retrieveObjectsForSampleConfig() {
+    ArrayList<StandaloneConsumer> result = new ArrayList<>();
     boolean useQueue = true;
     for (MessageTypeTranslator t : MESSAGE_TRANSLATOR_LIST) {
       StandaloneConsumer p = retrieveSampleConfig(useQueue);
