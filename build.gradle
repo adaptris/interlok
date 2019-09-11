@@ -76,6 +76,7 @@ subprojects { subproject ->
     all*.exclude group: 'org.codehaus.woodstox'
     all*.exclude group: 'org.eclipse.jetty.orbit', module: 'javax.mail.glassfish'
     all*.exclude group: 'javax.el', module: 'javax.el-api'
+    all*.exclude group: 'org.hibernate', module: 'hibernate-validator'
   }
 
   dependencies {
