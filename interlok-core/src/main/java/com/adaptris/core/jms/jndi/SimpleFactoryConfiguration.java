@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -132,7 +131,7 @@ public class SimpleFactoryConfiguration implements ExtraFactoryConfiguration {
   }
 
   @Override
-  public void applyConfiguration(ConnectionFactory cf) throws JMSException {
+  public void applyConfiguration(Object cf) throws JMSException {
     applyConfig(cf);
   }
 

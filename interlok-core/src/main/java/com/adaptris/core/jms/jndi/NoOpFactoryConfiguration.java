@@ -16,8 +16,6 @@
 
 package com.adaptris.core.jms.jndi;
 
-import javax.jms.ConnectionFactory;
-
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -31,7 +29,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class NoOpFactoryConfiguration implements ExtraFactoryConfiguration {
 
   @Override
-  public void applyConfiguration(ConnectionFactory tcf) {
+  public void applyConfiguration(Object tcf) {
   }
 
 }
