@@ -55,6 +55,7 @@ public abstract class JdbcPooledConnectionImpl extends DatabaseConnection {
   }
 
   @Override
+  @SuppressWarnings("deprecation")
   protected void closeDatabaseConnection() {
     IOUtils.closeQuietly(connectionPool);
     connectionPool = null;
