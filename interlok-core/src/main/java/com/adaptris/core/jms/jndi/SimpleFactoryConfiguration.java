@@ -23,7 +23,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
+import javax.jms.XAConnectionFactory;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -132,7 +134,10 @@ public class SimpleFactoryConfiguration implements ExtraFactoryConfiguration {
 
   @Override
   public void applyConfiguration(Object cf) throws JMSException {
-    applyConfig(cf);
+    if((cf instanceof ConnectionFactory) || (cf instanceof XAConnectionFactory))
+      applyConfig(cf);
+    else
+      throw new JMSException("Object to apply configuration is not a XA/ConnectionFactory.");
   }
 
   private void applyConfig(Object cf) throws JMSException {
