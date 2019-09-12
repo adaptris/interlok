@@ -20,7 +20,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.concurrent.TimeUnit;
-
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.DefaultMarshaller;
@@ -75,7 +74,7 @@ public abstract class DatabaseConnectionCase<T extends DatabaseConnection> exten
   public void testEquality() throws Exception {
     DatabaseConnection conn1 = configure(createConnection());
     DatabaseConnection conn2 = roundTrip(conn1, DefaultMarshaller.getDefaultMarshaller());
-    assertEquals(conn1, conn2);
+    assertRoundtripEquality(conn1, conn2);
   }
 
   public void testInvalidSelectStatement() throws Exception {

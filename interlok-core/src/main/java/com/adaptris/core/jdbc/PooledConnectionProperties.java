@@ -33,12 +33,22 @@ public enum PooledConnectionProperties {
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setAcquireIncrement(Integer.parseInt(value));
     }
+
+    @Override
+    public Class propertyType() {
+      return Integer.class;
+    }
   }, 
   
   acquireRetryAttempts {
     @Override
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setAcquireRetryAttempts(Integer.parseInt(value));
+    }
+
+    @Override
+    public Class propertyType() {
+      return Integer.class;
     }
   }, 
   
@@ -47,12 +57,22 @@ public enum PooledConnectionProperties {
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setAcquireRetryDelay(Integer.parseInt(value));
     }
+
+    @Override
+    public Class propertyType() {
+      return Integer.class;
+    }
   }, 
   
   autoCommitOnClose {
     @Override
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setAutoCommitOnClose(Boolean.valueOf(value));
+    }
+
+    @Override
+    public Class propertyType() {
+      return Boolean.class;
     }
   }, 
   
@@ -61,12 +81,22 @@ public enum PooledConnectionProperties {
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setAutomaticTestTable(value);
     }
+
+    @Override
+    public Class propertyType() {
+      return String.class;
+    }
   }, 
   
   breakAfterAcquireFailure {
     @Override
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setBreakAfterAcquireFailure(Boolean.valueOf(value));
+    }
+
+    @Override
+    public Class propertyType() {
+      return Boolean.class;
     }
   }, 
   
@@ -75,33 +105,58 @@ public enum PooledConnectionProperties {
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setCheckoutTimeout(Integer.parseInt(value));
     }
+
+    @Override
+    public Class propertyType() {
+      return Integer.class;
+    }
   }, 
-  
+
   connectionCustomizerClassName {
     @Override
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setConnectionCustomizerClassName(value);
     }
-  }, 
-  
+
+    @Override
+    public Class propertyType() {
+      return String.class;
+    }
+  },
+
   connectionTesterClassName {
     @Override
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setConnectionTesterClassName(value);
     }
-  }, 
-  
+
+    @Override
+    public Class propertyType() {
+      return String.class;
+    }
+  },
+
   contextClassLoaderSource {
     @Override
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setContextClassLoaderSource(value);
     }
-  }, 
-  
+
+    @Override
+    public Class propertyType() {
+      return String.class;
+    }
+  },
+
   debugUnreturnedConnectionStackTraces {
     @Override
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setDebugUnreturnedConnectionStackTraces(Boolean.valueOf(value));
+    }
+
+    @Override
+    public Class propertyType() {
+      return Boolean.class;
     }
   }, 
   
@@ -110,12 +165,22 @@ public enum PooledConnectionProperties {
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setDescription(value);
     }
+
+    @Override
+    public Class propertyType() {
+      return String.class;
+    }
   }, 
   
   factoryClassLocation {
     @Override
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setFactoryClassLocation(value);
+    }
+
+    @Override
+    public Class propertyType() {
+      return String.class;
     }
   }, 
   
@@ -124,12 +189,22 @@ public enum PooledConnectionProperties {
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setForceIgnoreUnresolvedTransactions(Boolean.valueOf(value));
     }
+
+    @Override
+    public Class propertyType() {
+      return Boolean.class;
+    }
   }, 
   
   forceSynchronousCheckins {
     @Override
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setForceSynchronousCheckins(Boolean.valueOf(value));
+    }
+
+    @Override
+    public Class propertyType() {
+      return Boolean.class;
     }
   }, 
   
@@ -138,12 +213,22 @@ public enum PooledConnectionProperties {
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setForceUseNamedDriverClass(Boolean.valueOf(value));
     }
+
+    @Override
+    public Class propertyType() {
+      return Boolean.class;
+    }
   }, 
   
   idleConnectionTestPeriod {
     @Override
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setIdleConnectionTestPeriod(Integer.parseInt(value));
+    }
+
+    @Override
+    public Class propertyType() {
+      return Integer.class;
     }
   }, 
   
@@ -152,12 +237,23 @@ public enum PooledConnectionProperties {
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setInitialPoolSize(Integer.parseInt(value));
     }
+
+    @Override
+    public Class propertyType() {
+      return Integer.class;
+    }
   }, 
   
   maxAdministrativeTaskTime {
     @Override
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setMaxAdministrativeTaskTime(Integer.parseInt(value));
+    }
+
+
+    @Override
+    public Class propertyType() {
+      return Integer.class;
     }
   }, 
   
@@ -166,12 +262,22 @@ public enum PooledConnectionProperties {
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setMaxConnectionAge(Integer.parseInt(value));
     }
+
+    @Override
+    public Class propertyType() {
+      return Integer.class;
+    }
   }, 
   
   maxIdleTime {
     @Override
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setMaxIdleTime(Integer.parseInt(value));
+    }
+
+    @Override
+    public Class propertyType() {
+      return Integer.class;
     }
   }, 
   
@@ -180,12 +286,22 @@ public enum PooledConnectionProperties {
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setMaxIdleTimeExcessConnections(Integer.parseInt(value));
     }
+
+    @Override
+    public Class propertyType() {
+      return Integer.class;
+    }
   }, 
   
   maxPoolSize {
     @Override
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setMaxPoolSize(Integer.parseInt(value));
+    }
+
+    @Override
+    public Class propertyType() {
+      return Integer.class;
     }
   }, 
   
@@ -194,12 +310,22 @@ public enum PooledConnectionProperties {
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setMaxStatements(Integer.parseInt(value));
     }
+
+    @Override
+    public Class propertyType() {
+      return Integer.class;
+    }
   }, 
   
   maxStatementsPerConnection {
     @Override
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setMaxStatementsPerConnection(Integer.parseInt(value));
+    }
+
+    @Override
+    public Class propertyType() {
+      return Integer.class;
     }
   }, 
   
@@ -208,12 +334,22 @@ public enum PooledConnectionProperties {
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setMinPoolSize(Integer.parseInt(value));
     }
+
+    @Override
+    public Class propertyType() {
+      return Integer.class;
+    }
   }, 
   
   overrideDefaultPassword {
     @Override
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setOverrideDefaultPassword(value);
+    }
+
+    @Override
+    public Class propertyType() {
+      return String.class;
     }
   }, 
   
@@ -222,12 +358,22 @@ public enum PooledConnectionProperties {
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setOverrideDefaultUser(value);
     }
+
+    @Override
+    public Class propertyType() {
+      return String.class;
+    }
   }, 
   
   preferredTestQuery {
     @Override
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setPreferredTestQuery(value);
+    }
+
+    @Override
+    public Class propertyType() {
+      return String.class;
     }
   }, 
   
@@ -236,12 +382,22 @@ public enum PooledConnectionProperties {
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setPrivilegeSpawnedThreads(Boolean.valueOf(value));
     }
+
+    @Override
+    public Class propertyType() {
+      return Boolean.class;
+    }
   }, 
   
   propertyCycle {
     @Override
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setPropertyCycle(Integer.parseInt(value));
+    }
+
+    @Override
+    public Class propertyType() {
+      return Integer.class;
     }
   }, 
   
@@ -250,12 +406,22 @@ public enum PooledConnectionProperties {
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setStatementCacheNumDeferredCloseThreads(Integer.parseInt(value));
     }
+
+    @Override
+    public Class propertyType() {
+      return Integer.class;
+    }
   }, 
   
   testConnectionOnCheckin {
     @Override
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setTestConnectionOnCheckin(Boolean.valueOf(value));
+    }
+
+    @Override
+    public Class propertyType() {
+      return Boolean.class;
     }
   }, 
   
@@ -264,12 +430,22 @@ public enum PooledConnectionProperties {
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setTestConnectionOnCheckout(Boolean.valueOf(value));
     }
+
+    @Override
+    public Class propertyType() {
+      return Boolean.class;
+    }
   }, 
   
   unreturnedConnectionTimeout {
     @Override
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setUnreturnedConnectionTimeout(Integer.parseInt(value));
+    }
+
+    @Override
+    public Class propertyType() {
+      return Integer.class;
     }
   }, 
   
@@ -278,12 +454,22 @@ public enum PooledConnectionProperties {
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setUserOverridesAsString(value);
     }
-  }, 
-  
+
+    @Override
+    public Class propertyType() {
+      return String.class;
+    }
+  },
+
   usesTraditionalReflectiveProxies {
     @Override
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setUsesTraditionalReflectiveProxies(Boolean.valueOf(value));
+    }
+
+    @Override
+    public Class propertyType() {
+      return Boolean.class;
     }
   },
   
@@ -292,12 +478,22 @@ public enum PooledConnectionProperties {
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setLoginTimeout(Integer.parseInt(value));
     }
+
+    @Override
+    public Class propertyType() {
+      return Integer.class;
+    }
   }, 
   
   dataSourceName {
     @Override
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setDataSourceName(value);
+    }
+
+    @Override
+    public Class propertyType() {
+      return String.class;
     }
   },
   
@@ -306,6 +502,11 @@ public enum PooledConnectionProperties {
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setNumHelperThreads(Integer.parseInt(value));
     }
+
+    @Override
+    public Class propertyType() {
+      return Integer.class;
+    }
   },
   
   identityToken {
@@ -313,10 +514,17 @@ public enum PooledConnectionProperties {
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
       dataSource.setIdentityToken(value);
     }
+
+    @Override
+    public Class propertyType() {
+      return String.class;
+    }
   };
   
   abstract void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception;
   
+  public abstract Class propertyType();
+
   private static PooledConnectionProperties searchEnumIgnoreCase(String search) {
     for (PooledConnectionProperties each : PooledConnectionProperties.class.getEnumConstants()) {
       if (each.name().equalsIgnoreCase(search)) {
@@ -326,15 +534,18 @@ public enum PooledConnectionProperties {
     return null;
   }
 
-  public static void apply(KeyValuePairSet props, ComboPooledDataSource pool) throws Exception {
+  public static void apply(KeyValuePairSet props, ComboPooledDataSource pool) {
     if (props == null) return;
     for (KeyValuePair kvp : props.getKeyValuePairs()) {
       PooledConnectionProperties connectionProperty = searchEnumIgnoreCase(kvp.getKey());
-      if (connectionProperty != null) {
-        connectionProperty.applyProperty(pool, kvp.getValue());
-      }
-      else {
-        SimpleBeanUtil.callSetter(pool, "set" + kvp.getKey(), kvp.getValue());
+      try {
+        if (connectionProperty != null) {
+          connectionProperty.applyProperty(pool, kvp.getValue());
+        } else {
+          SimpleBeanUtil.callSetter(pool, "set" + kvp.getKey(), kvp.getValue());
+        }
+      } catch (Exception ignoredIntentionally) {
+
       }
     }
   }
