@@ -16,6 +16,7 @@
 
 package com.adaptris.core.jdbc;
 
+import static org.junit.Assert.assertEquals;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -61,9 +62,9 @@ public class PooledConnectionPropertiesTest {
     }
     props.add(new KeyValuePair("hello", "world"));
     ComboPooledDataSource ds = new ComboPooledDataSource();
+    PooledConnectionProperties.apply(null, ds);
     PooledConnectionProperties.apply(props, ds);
+    assertEquals(10, ds.getAcquireIncrement());
   }
-
-
 
 }

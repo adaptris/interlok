@@ -3,7 +3,6 @@ package com.adaptris.core.jdbc;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
-
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.core.util.LifecycleHelper;
@@ -16,7 +15,6 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 public class AdvancedJdbcPooledConnectionTest extends DatabaseConnectionCase<AdvancedJdbcPooledConnection> {
 
   private static final GuidGenerator GUID = new GuidGenerator();
-  private transient boolean testsEnabled = false;
 
   public AdvancedJdbcPooledConnectionTest(String arg0) {
     super(arg0);
@@ -25,13 +23,6 @@ public class AdvancedJdbcPooledConnectionTest extends DatabaseConnectionCase<Adv
   @Override
   protected AdvancedJdbcPooledConnection createConnection() {
     return new AdvancedJdbcPooledConnection();
-  }
-
-  protected void setUp() throws Exception {
-    if (Boolean.parseBoolean(PROPERTIES.getProperty(StoredProcedureProducerTest.JDBC_STOREDPROC_TESTS_ENABLED, "false"))) {
-      super.setUp();
-      testsEnabled = true;
-    }
   }
 
   @Override
@@ -100,7 +91,7 @@ public class AdvancedJdbcPooledConnectionTest extends DatabaseConnectionCase<Adv
     try {
       LifecycleHelper.initAndStart(con);
       Thread.sleep(500);
-      ComboPooledDataSource poolDs = (ComboPooledDataSource) con.asDataSource();
+      ComboPooledDataSource poolDs = ((C3P0PooledDataSource) con.asDataSource()).wrapped();
       assertEquals(0, poolDs.getNumBusyConnections());
       Connection c0 = null;
       try {

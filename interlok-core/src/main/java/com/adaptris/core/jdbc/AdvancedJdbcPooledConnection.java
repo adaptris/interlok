@@ -16,16 +16,12 @@
 package com.adaptris.core.jdbc;
 
 import java.sql.SQLException;
-
 import javax.validation.Valid;
-
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.core.CoreException;
 import com.adaptris.interlok.resolver.ExternalResolver;
 import com.adaptris.security.password.Password;
 import com.adaptris.util.KeyValuePairSet;
@@ -53,26 +49,22 @@ public class AdvancedJdbcPooledConnection extends JdbcPooledConnectionImpl {
   }
   
   
-  protected synchronized ComboPooledDataSource createPool() throws CoreException {
+  @Override
+  protected C3P0PooledDataSource createPool() throws Exception {
     ComboPooledDataSource pool = new ComboPooledDataSource();
-    try {
-      pool = new ComboPooledDataSource();
-      pool.setProperties(connectionProperties());
-      pool.setDriverClass(this.getDriverImp());
-      pool.setJdbcUrl(this.getConnectUrl());
-      pool.setUser(this.getUsername());
-      pool.setPassword(Password.decode(ExternalResolver.resolve(this.getPassword())));
+    pool = new ComboPooledDataSource();
+    pool.setProperties(connectionProperties());
+    pool.setDriverClass(this.getDriverImp());
+    pool.setJdbcUrl(this.getConnectUrl());
+    pool.setUser(this.getUsername());
+    pool.setPassword(Password.decode(ExternalResolver.resolve(this.getPassword())));
 
-      pool.setAcquireRetryDelay(Long.valueOf(connectionRetryInterval()).intValue());
-      pool.setAcquireRetryAttempts(connectionAttempts());
-      pool.setTestConnectionOnCheckin(alwaysValidateConnection());
-      pool.setTestConnectionOnCheckout(alwaysValidateConnection());
-      PooledConnectionProperties.apply(getConnectionPoolProperties(), pool);
-    }
-    catch (Exception ex) {
-      throw new CoreException(ex);
-    }
-    return pool;
+    pool.setAcquireRetryDelay(Long.valueOf(connectionRetryInterval()).intValue());
+    pool.setAcquireRetryAttempts(connectionAttempts());
+    pool.setTestConnectionOnCheckin(alwaysValidateConnection());
+    pool.setTestConnectionOnCheckout(alwaysValidateConnection());
+    PooledConnectionProperties.apply(getConnectionPoolProperties(), pool);
+    return new C3P0PooledDataSource(pool);
   }
 
   @Override
@@ -123,15 +115,15 @@ public class AdvancedJdbcPooledConnection extends JdbcPooledConnectionImpl {
   }
 
   public int currentBusyConnectionCount() throws SQLException {
-    return connectionPool.getNumBusyConnections();
+    return ((C3P0PooledDataSource) connectionPool).wrapped().getNumBusyConnections();
   }
 
   public int currentConnectionCount() throws SQLException {
-    return connectionPool.getNumConnections();
+    return ((C3P0PooledDataSource) connectionPool).wrapped().getNumConnections();
   }
 
   public int currentIdleConnectionCount() throws SQLException {
-    return connectionPool.getNumIdleConnections();
+    return ((C3P0PooledDataSource) connectionPool).wrapped().getNumIdleConnections();
   }
 
 
