@@ -89,7 +89,7 @@ public class PluggableJdbcPooledConnection extends JdbcPooledConnectionImpl {
   /**
    * Set the builder to use when creating the connection pool.
    * 
-   * @param builder
+   * @param builder the builder, if not specified, then defaults to {@link DefaultPoolFactory}.
    */
   public void setBuilder(ConnectionPoolBuilder builder) {
     this.builder = Args.notNull(builder, "builder");
