@@ -16,7 +16,6 @@
 
 package com.adaptris.core.jms.jndi;
 
-import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 
 /**
@@ -32,10 +31,10 @@ import javax.jms.JMSException;
 public interface ExtraFactoryConfiguration {
 
   /**
-   * Apply any additonal configuration to the TopicConnectionFactory.
+   * Apply any additional configuration to the XA/ConnectionFactory.
    * 
-   * @param cf the topic connection factory
+   * @param cf the connection factory
    */
-  void applyConfiguration(ConnectionFactory cf) throws JMSException;
+  void applyConfiguration(Object cf) throws JMSException;
 
 }

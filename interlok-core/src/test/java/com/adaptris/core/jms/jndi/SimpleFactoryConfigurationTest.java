@@ -19,8 +19,11 @@ package com.adaptris.core.jms.jndi;
 import javax.jms.JMSException;
 import javax.jms.QueueConnectionFactory;
 import javax.jms.TopicConnectionFactory;
+import javax.jms.XAConnectionFactory;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import com.adaptris.core.BaseCase;
 import com.adaptris.util.KeyValuePair;
@@ -54,7 +57,11 @@ public class SimpleFactoryConfigurationTest extends BaseCase {
   private static final String SOME_LONG_OBJ_VALUE = "someLongObj";
   private static final String SOME_FLOAT_OBJ_VALUE = "someFloatObj";
 
-
+  @Mock private XAConnectionFactory mockXAConnectionFactory;
+  
+  public void setUp() throws Exception {
+    MockitoAnnotations.initMocks(this);
+  }
 
   public SimpleFactoryConfigurationTest(String name) {
     super(name);
@@ -65,6 +72,21 @@ public class SimpleFactoryConfigurationTest extends BaseCase {
     DummyConnectionFactory mycf = new DummyConnectionFactory();
     extras.applyConfiguration((TopicConnectionFactory) mycf);
     doModifiedAssertions(mycf);
+  }
+  
+  public void testApplyNonConnectionFactoryConfiguration() throws Exception {
+    SimpleFactoryConfiguration extras = createBase();
+    try {
+      extras.applyConfiguration(new Object());
+      fail("Should fail, not given a XA/ConnectionFactory.");
+    } catch (Exception ex) {
+      //expected
+    }
+  }
+  
+  public void testApplyXAConnectionFactoryConfigurationNoError() throws Exception {
+    SimpleFactoryConfiguration extras = createBase();
+    extras.applyConfiguration(mockXAConnectionFactory);
   }
 
   public void testApplyQueueConnectionFactoryConfiguration() throws Exception {
