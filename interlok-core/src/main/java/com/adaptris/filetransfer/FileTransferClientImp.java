@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.HashSet;
 import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,16 +62,10 @@ public abstract class FileTransferClientImp implements FileTransferClient {
     }
   }
 
-  protected String[] filter(String[] filelist, FileFilter filter) {
-    if (filter == null)
-      return filelist;
-    HashSet<String> result = new HashSet<String>();
-    for (int i = 0; i < filelist.length; i++) {
-      if (filter.accept(new File(filelist[i]))) {
-        result.add(filelist[i]);
-      }
-    }
-    return result.toArray(new String[0]);
+  protected FileFilter ensureNotNull(FileFilter f) {
+    return ObjectUtils.defaultIfNull(f, (file) -> {
+      return true;
+    });
   }
 
   private class FilenameFilterProxy implements FileFilter {

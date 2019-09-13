@@ -27,20 +27,19 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import org.apache.commons.lang3.StringUtils;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferClientImp;
 import com.adaptris.filetransfer.FileTransferException;
+import com.adaptris.filetransfer.RemoteFile;
 import com.adaptris.ftp.FtpException;
 import com.adaptris.util.FifoMutexLock;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.ConfigRepository;
 import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Proxy;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpATTRS;
@@ -188,8 +187,8 @@ public class SftpClient extends FileTransferClientImp {
       jsch.addIdentity(user, prvKey, null, prvKeyPwd);
       connect(user, new StandardUserInfo(null));
     }
-    catch (JSchException e) {
-      throw new SftpException(e);
+    catch (Exception e) {
+      throw SftpException.wrapException(e);
     }
     finally {
       releaseLock();
@@ -215,14 +214,22 @@ public class SftpClient extends FileTransferClientImp {
       c.connect(timeout);
       sftpChannel = (ChannelSftp) c;
     }
-    catch (JSchException e) {
-      throw new SftpException(e);
+    catch (Exception e) {
+      throw SftpException.wrapException(e);
     }
   }
 
   @Override
   public String[] dir(String directory, FileFilter filter) throws FileTransferException, IOException {
-    return filter(dir(directory), filter);
+    List<File> files = toFileList(listFiles(directory));
+    List<String> output = new ArrayList<String>();
+    FileFilter filterToUse = ensureNotNull(filter);
+    for (File file : files) {
+      if (filterToUse.accept(file)) {
+        output.add(file.getName());
+      }
+    }
+    return output.toArray(new String[0]);
   }
 
   /**
@@ -231,30 +238,51 @@ public class SftpClient extends FileTransferClientImp {
    */
   @Override
   public String[] dir(String dirname, boolean full) throws IOException, FileTransferException {
-    checkConnected();
     List<String> names = new ArrayList<String>();
+    List<ChannelSftp.LsEntry> files = listFiles(dirname);
+    for (ChannelSftp.LsEntry entry : files) {
+      names.add(full ? entry.getLongname() : entry.getFilename());
+    }
+    Collections.sort(names);
+    return names.toArray(new String[0]);
+  }
+
+  private List<File> toFileList(List<ChannelSftp.LsEntry> files) {
+    ArrayList<File> result = new ArrayList<>();
+    for (ChannelSftp.LsEntry f : files) {
+      long lastModified = f.getAttrs().getMTime() * 1000L;
+      long size = f.getAttrs().getSize();
+      boolean isDir = f.getAttrs().isDir();
+      // Is a regular file a file or could it be both a file & a directory.
+      // Unix knowledge is poor.
+      boolean isFile = f.getAttrs().isReg();
+      result.add(new RemoteFile(f.getFilename()).withIsDirectory(isDir).withIsFile(isFile)
+          .withLastModified(lastModified).withLength(size));
+    }
+    return result;
+  }
+
+
+  private List<ChannelSftp.LsEntry> listFiles(String dirname) throws IOException, FileTransferException {
+    checkConnected();
+    List<ChannelSftp.LsEntry> result = new ArrayList<>();
     try {
       acquireLock();
       String path = defaultIfBlank(dirname, CURRENT_DIR);
       log("DIR {}", path);
       Vector v = sftpChannel.ls(path);
-      if (v != null) {
-        for (Iterator i = v.iterator(); i.hasNext();) {
-          ChannelSftp.LsEntry entry = (ChannelSftp.LsEntry) i.next();
-          if (!(entry.getFilename().equals(CURRENT_DIR) || entry.getFilename().equals(PARENT_DIR))) {
-            names.add(full ? entry.getLongname() : entry.getFilename());
-          }
+      for (Object o : v) {
+        ChannelSftp.LsEntry entry = (ChannelSftp.LsEntry) o;
+        if (!(entry.getFilename().equals(CURRENT_DIR) || entry.getFilename().equals(PARENT_DIR))) {
+          result.add(entry);
         }
       }
-      Collections.sort(names);
-    }
-    catch (com.jcraft.jsch.SftpException e) {
-      throw new SftpException("Could not list files in " + dirname, e);
-    }
-    finally {
+    } catch (Exception e) {
+      throw SftpException.wrapException("Could not list files in " + dirname, e);
+    } finally {
       releaseLock();
     }
-    return names.toArray(new String[0]);
+    return result;
   }
 
   /**
@@ -288,8 +316,8 @@ public class SftpClient extends FileTransferClientImp {
       log("PUT {}", remoteFile);
       sftpChannel.put(srcStream, remoteFile, append ? ChannelSftp.APPEND : ChannelSftp.OVERWRITE);
     }
-    catch (com.jcraft.jsch.SftpException e) {
-      throw new SftpException("Could not write remote file [" + remoteFile + "]", e);
+    catch (Exception e) {
+      throw SftpException.wrapException("Could not write remote file [" + remoteFile + "]", e);
     }
 
   }
@@ -306,8 +334,8 @@ public class SftpClient extends FileTransferClientImp {
       log("GET {}", remoteFile);
       sftpChannel.get(remoteFile, destStream);
     }
-    catch (com.jcraft.jsch.SftpException e) {
-      throw new SftpException("Could not retrieve remote file [" + remoteFile + "]", e);
+    catch (Exception e) {
+      throw SftpException.wrapException("Could not retrieve remote file [" + remoteFile + "]", e);
     }
     finally {
       releaseLock();
@@ -338,8 +366,8 @@ public class SftpClient extends FileTransferClientImp {
       log("RM {}", remoteFile);
       sftpChannel.rm(remoteFile);
     }
-    catch (com.jcraft.jsch.SftpException e) {
-      throw new SftpException("Could not delete remote file [" + remoteFile + "]", e);
+    catch (Exception e) {
+      throw SftpException.wrapException("Could not delete remote file [" + remoteFile + "]", e);
     }
     finally {
       releaseLock();
@@ -354,8 +382,8 @@ public class SftpClient extends FileTransferClientImp {
       log("REN {} to {}", from, to);
       sftpChannel.rename(from, to);
     }
-    catch (com.jcraft.jsch.SftpException e) {
-      throw new SftpException("Could not rename file [" + from + "] to [" + to + "]", e);
+    catch (Exception e) {
+      throw SftpException.wrapException("Could not rename file [" + from + "] to [" + to + "]", e);
     }
     finally {
       releaseLock();
@@ -370,8 +398,8 @@ public class SftpClient extends FileTransferClientImp {
       log("RMDIR {}", dir);
       sftpChannel.rmdir(dir);
     }
-    catch (com.jcraft.jsch.SftpException e) {
-      throw new SftpException("Could not remove directory [" + dir + "]", e);
+    catch (Exception e) {
+      throw SftpException.wrapException("Could not remove directory [" + dir + "]", e);
     }
     finally {
       releaseLock();
@@ -386,8 +414,8 @@ public class SftpClient extends FileTransferClientImp {
       log("MKDIR {}", dir);
       sftpChannel.mkdir(dir);
     }
-    catch (com.jcraft.jsch.SftpException e) {
-      throw new SftpException("Could not create directory [" + dir + "]", e);
+    catch (Exception e) {
+      throw SftpException.wrapException("Could not create directory [" + dir + "]", e);
     }
     finally {
       releaseLock();
@@ -402,8 +430,8 @@ public class SftpClient extends FileTransferClientImp {
       log("CD {}", dir);
       sftpChannel.cd(dir);
     }
-    catch (com.jcraft.jsch.SftpException e) {
-      throw new SftpException("Could not chdir to [" + dir + "]", e);
+    catch (Exception e) {
+      throw SftpException.wrapException("Could not chdir to [" + dir + "]", e);
     }
     finally {
       releaseLock();
@@ -432,8 +460,8 @@ public class SftpClient extends FileTransferClientImp {
       SftpATTRS attr = sftpChannel.stat(remoteFile);
       mtime = (long) attr.getMTime() * 1000;
     }
-    catch (com.jcraft.jsch.SftpException e) {
-      throw new SftpException("Could not get lastModified on [" + remoteFile + "]", e);
+    catch (Exception e) {
+      throw SftpException.wrapException("Could not get lastModified on [" + remoteFile + "]", e);
     }
     finally {
       releaseLock();
@@ -521,8 +549,8 @@ public class SftpClient extends FileTransferClientImp {
     try {
       jsch.setKnownHosts(knownHostsFilename);
     }
-    catch (JSchException e) {
-      throw new SftpException(e);
+    catch (Exception e) {
+      throw SftpException.wrapException(e);
     }
   }
 }

@@ -17,6 +17,7 @@
 package com.adaptris.ftp;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,6 +39,7 @@ import com.adaptris.core.util.Args;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferClientImp;
 import com.adaptris.filetransfer.FileTransferException;
+import com.adaptris.filetransfer.RemoteFile;
 import com.adaptris.util.FifoMutexLock;
 
 /**
@@ -238,35 +240,51 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
 
   @Override
   public String[] dir(String directory, FileFilter filter) throws FileTransferException, IOException {
-    return filter(dir(directory), filter);
+    List<File> files = toFileList(listFiles(directory));
+    List<String> output = new ArrayList<String>();
+    FileFilter filterToUse = ensureNotNull(filter);
+    for (File file : files) {
+      if (filterToUse.accept(file)) {
+        output.add(file.getName());
+      }
+    }
+    return output.toArray(new String[0]);
   }
 
-  /**
-   * list files in the current server directory
-   */
   @Override
   public String[] dir(String dirname, boolean full) throws IOException {
-    String[] listing = new String[0];
+    List<String> output = new ArrayList<String>();
+    FTPFile[] files = listFiles(dirname);
+    for (FTPFile file : files) {
+      if (full) {
+        output.add(file.toFormattedString());
+      } else {
+        output.add(file.getName());
+      }
+    }
+    return output.toArray(new String[0]);
+  }
+
+  private FTPFile[] listFiles(String dirname) throws IOException {
+    FTPFile[] results = new FTPFile[0];
     try {
       acquireLock();
       log("{} {}", FTPCmd.LIST, dirname);
-      FTPFile[] results = ftpClient().listFiles(dirname);
+      results = ftpClient().listFiles(dirname);
       logReply(ftpClient().getReplyStrings());
-      List<String> output = new ArrayList<String>();
-      for (FTPFile file : results) {
-        if (full) {
-          output.add(file.toFormattedString());
-        }
-        else {
-          output.add(file.getName());
-        }
-        listing = output.toArray(new String[output.size()]);
-      }
-    }
-    finally {
+    } finally {
       releaseLock();
     }
-    return listing;
+    return results;
+  }
+
+  private List<File> toFileList(FTPFile... files) {
+    ArrayList<File> result = new ArrayList<>();
+    for (FTPFile f : files) {
+      result.add(new RemoteFile(f.getName()).withIsDirectory(f.isDirectory()).withIsFile(f.isFile())
+          .withLastModified(f.getTimestamp().getTimeInMillis()).withLength(f.getSize()));
+    }
+    return result;
   }
 
   /**
