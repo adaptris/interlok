@@ -17,6 +17,7 @@
 package com.adaptris.ftp;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -28,13 +29,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPCmd;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
-
 import com.adaptris.core.util.Args;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferClientImp;
@@ -234,6 +233,12 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
       releaseLock();
     }
     return out.toByteArray();
+  }
+
+
+  @Override
+  public String[] dir(String directory, FileFilter filter) throws FileTransferException, IOException {
+    return filter(dir(directory), filter);
   }
 
   /**

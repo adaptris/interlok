@@ -33,6 +33,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -47,7 +48,6 @@ import java.util.TimeZone;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferClientImp;
 import com.adaptris.filetransfer.FileTransferException;
@@ -722,6 +722,11 @@ public class FtpClient extends FileTransferClientImp {
       results.add(filename);
     }
     return (String[]) results.toArray(new String[0]);
+  }
+
+  @Override
+  public String[] dir(String directory, FileFilter filter) throws FileTransferException, IOException {
+    return filter(dir(directory), filter);
   }
 
   /**

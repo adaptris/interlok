@@ -17,9 +17,9 @@
 package com.adaptris.sftp;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -30,9 +30,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
 import org.apache.commons.lang3.StringUtils;
-
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferClientImp;
 import com.adaptris.filetransfer.FileTransferException;
@@ -220,6 +218,11 @@ public class SftpClient extends FileTransferClientImp {
     catch (JSchException e) {
       throw new SftpException(e);
     }
+  }
+
+  @Override
+  public String[] dir(String directory, FileFilter filter) throws FileTransferException, IOException {
+    return filter(dir(directory), filter);
   }
 
   /**
