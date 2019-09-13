@@ -215,6 +215,13 @@ public interface FileTransferClient extends Closeable {
   /**
    * List a directory's contents
    *
+   * <p>
+   * Note that although we use a standard {@link FileFilter} interface here operating on
+   * {@link java.io.File}; it actually uses {@link RemoteFile} instead which overrides information
+   * that can be obtained from the remote server. Other standard {@link java.io.File} operations will
+   * not be supported, and may ultimately cause a runtime exception.
+   * </p>
+   * 
    * @param directory the directory to list.
    * @param filter the filefilter mask to use
    * @return an array of strings containing the listing
@@ -227,6 +234,13 @@ public interface FileTransferClient extends Closeable {
   /**
    * List a directory's contents
    *
+   * <p>
+   * Note that although we use a standard {@link FileFilter} interface here operating on
+   * {@link java.io.File}; it actually uses {@link RemoteFile} instead which overrides information
+   * that can be obtained from the remote server. Other standard {@link java.io.File} operations will
+   * not be supported, and may ultimately cause a runtime exception.
+   * </p>
+   * 
    * @param directory the directory to list.
    * @param filter the filefilter mask to use
    * @return an array of strings containing the listing
