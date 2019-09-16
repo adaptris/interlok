@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.Certificate;
-
 import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.adaptris.security.exc.KeystoreException;
 
@@ -148,7 +147,7 @@ public interface KeystoreProxy {
   /**
    * Assign the given certificate to the given alias.
    * 
-   * @implSpec The default implementation throws an instance of {@link AdaptrisSecurityException} and performs no other action.
+   * @implNote The default implementation throws an instance of {@link AdaptrisSecurityException} and performs no other action.
    * @param alias the alias of the Certificate
    * @param cert the Certificate
    * @throws AdaptrisSecurityException for any error
@@ -163,7 +162,7 @@ public interface KeystoreProxy {
    * The InputStream is expected to contain a PEM or DER encoded certificate
    * </p>
    * 
-   * @implSpec The default implementation throws an instance of {@link AdaptrisSecurityException} and performs no other action.
+   * @implNote The default implementation throws an instance of {@link AdaptrisSecurityException} and performs no other action.
    * @param alias the alias of the Certificate
    * @param in the InputStream containing the certificate
    * @throws AdaptrisSecurityException for any error
@@ -179,7 +178,7 @@ public interface KeystoreProxy {
    * The File is expected to contain a PEM or DER encoded certificate
    * </p>
    * 
-   * @implSpec The default implementation throws an instance of {@link AdaptrisSecurityException} and performs no other action.
+   * @implNote The default implementation throws an instance of {@link AdaptrisSecurityException} and performs no other action.
    * @param alias the alias of the Certificate
    * @param file the file containing the certificate
    * @throws AdaptrisSecurityException for any error
@@ -195,7 +194,7 @@ public interface KeystoreProxy {
    * The File is expected to contain a PEM or DER encoded certificate
    * </p>
    * 
-   * @implSpec The default implementation throws an instance of {@link AdaptrisSecurityException} and performs no other action.
+   * @implNote The default implementation throws an instance of {@link AdaptrisSecurityException} and performs no other action.
    * @param alias the alias of the Certificate
    * @param filename the file containing the certificate
    * @see #setCertificate(String, File)
@@ -212,7 +211,7 @@ public interface KeystoreProxy {
    * certificate chain).
    * </p>
    * 
-   * @implSpec The default implementation throws an instance of {@link AdaptrisSecurityException} and performs no other action.
+   * @implNote The default implementation throws an instance of {@link AdaptrisSecurityException} and performs no other action.
    * @param alias the alias of the Certificate
    * @param privKey the PrivateKey
    * @param keyPassword the password to protect the private key
@@ -231,7 +230,7 @@ public interface KeystoreProxy {
    * Netscape Navigator / Internet Explorer
    * </p>
    * 
-   * @implSpec The default implementation throws an instance of {@link AdaptrisSecurityException} and performs no other action.
+   * @implNote The default implementation throws an instance of {@link AdaptrisSecurityException} and performs no other action.
    * @param alias the alias of the Certificate
    * @param keyPassword the password to protect the private key
    * @param in InputStream containing the KEYSTORE_PKCS12 object
@@ -251,7 +250,7 @@ public interface KeystoreProxy {
    * Navigator / Internet Explorer
    * </p>
    * 
-   * @implSpec The default implementation throws an instance of {@link AdaptrisSecurityException} and performs no other action.
+   * @implNote The default implementation throws an instance of {@link AdaptrisSecurityException} and performs no other action.
    * @param alias the alias of the Certificate
    * @param keyPassword the password to protect the private key
    * @param file the File containing the KEYSTORE_PKCS12 object
@@ -270,7 +269,7 @@ public interface KeystoreProxy {
    * Navigator / Internet Explorer
    * </p>
    * 
-   * @implSpec The default implementation throws an instance of {@link AdaptrisSecurityException} and performs no other action.
+   * @implNote The default implementation throws an instance of {@link AdaptrisSecurityException} and performs no other action.
    * @param alias the alias of the Certificate
    * @param keyPassword the password to protect the private key
    * @param file the File containing the KEYSTORE_PKCS12 object
@@ -286,12 +285,12 @@ public interface KeystoreProxy {
   /**
    * Import a certificate chain from a file, giving it the assigned alias.
    * <p>
-   * Certificate Chains are only appropriate for keystore <code>keyEntry</code> types.
-   * This assumes that a <code>keyEntry</code> with the alias <code>alias</code> has already been created, and the secret key
-   * associated with this <code>keyEntry</code> is protected by <code>keyPassword</code>
+   * Certificate Chains are only appropriate for keystore <code>keyEntry</code> types. This assumes that a <code>keyEntry</code> with
+   * the alias <code>alias</code> has already been created, and the secret key associated with this <code>keyEntry</code> is protected
+   * by <code>keyPassword</code>
    * </p>
    * 
-   * @implSpec The default implementation throws an instance of {@link AdaptrisSecurityException} and performs no other action.
+   * @implNote The default implementation throws an instance of {@link AdaptrisSecurityException} and performs no other action.
    * @param keyPassword the password to access the private key
    * @param alias the alias to be assigned
    * @param file the Certificate Chain file to be imported
@@ -306,12 +305,12 @@ public interface KeystoreProxy {
   /**
    * Import a certificate chain from a file, giving it the assigned alias.
    * <p>
-   * Certificate Chains are only appropriate for keystore <code>keyEntry</code> types.
-   * This assumes that a <code>keyEntry</code> with the alias <code>alias</code> has already been created, and the secret key
-   * associated with this <code>keyEntry</code> is protected by <code>keyPassword</code>
+   * Certificate Chains are only appropriate for keystore <code>keyEntry</code> types. This assumes that a <code>keyEntry</code> with
+   * the alias <code>alias</code> has already been created, and the secret key associated with this <code>keyEntry</code> is protected
+   * by <code>keyPassword</code>
    * </p>
    * 
-   * @implSpec The default implementation throws an instance of {@link AdaptrisSecurityException} and performs no other action.
+   * @implNote The default implementation throws an instance of {@link AdaptrisSecurityException} and performs no other action.
    * @param keyPassword the password to access the private key
    * @param alias the alias to be assigned
    * @param f the Certificate Chain file to be imported
@@ -326,12 +325,11 @@ public interface KeystoreProxy {
    * Import a certificate chain from a file, giving it the assigned alias.
    * <p>
    * This deals with certificate chains as used by Netscape Navigator and Microsoft Internet Explorer; Certificate Chains are only
-   * appropriate for keystore <code>keyEntry</code> types. This assumes that a <code>keyEntry</code> with the alias
-   * <code>alias</code> has already been created, and the secret key associated with this <code>keyEntry</code> is protected by
-   * <code>keyPassword</code>
+   * appropriate for keystore <code>keyEntry</code> types. This assumes that a <code>keyEntry</code> with the alias <code>alias</code>
+   * has already been created, and the secret key associated with this <code>keyEntry</code> is protected by <code>keyPassword</code>
    * </p>
-   * * @implSpec The default implementation throws an instance of {@link AdaptrisSecurityException} and performs no other action.
    * 
+   * @implNote The default implementation throws an instance of {@link AdaptrisSecurityException} and performs no other action.
    * @param keyPassword the password to access the private key
    * @param alias the alias to be assigned
    * @param in the Certificate Chain file to be imported
