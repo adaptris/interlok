@@ -50,8 +50,7 @@ public interface FileTransferClient extends Closeable {
   /**
    * Put a local file onto the FTP server.
    *
-   * @implSpec The default implementation calls {@link #put(String, String, boolean)} with
-   *           {@code append=false}.
+   * @implNote The default implementation calls {@link #put(String, String, boolean)} with {@code append=false}.
    * @param remoteFile name of remote file in current directory
    * @throws FileTransferException if an FTP specific exception occurs
    * @throws IOException if a comms error occurs
@@ -63,8 +62,7 @@ public interface FileTransferClient extends Closeable {
   /**
    * Put a stream of data onto the FTP server.
    *
-   * @implSpec The default implementation calls {@link #put(String, String, boolean)} with
-   *           {@code append=false}.
+   * @implNote The default implementation calls {@link #put(String, String, boolean)} with {@code append=false}.
    * @param srcStream input stream of data to put
    * @param remoteFile name of remote file
    * @throws FileTransferException if an FTP specific exception occurs
@@ -77,8 +75,7 @@ public interface FileTransferClient extends Closeable {
   /**
    * Put a local file onto the FTP server.
    *
-   * @implSpec The default implementation calls {@link #put(InputStream, String, boolean)} with
-   *           {@code append=false}.
+   * @implNote The default implementation calls {@link #put(InputStream, String, boolean)} with {@code append=false}.
    * @param localPath path of the local file
    * @param remoteFile name of remote file
    * @param append true if appending, false otherwise
@@ -106,8 +103,7 @@ public interface FileTransferClient extends Closeable {
   /**
    * Put data onto the FTP server.
    *
-   * @implSpec The default implementation calls {@link #put(InputStream, String, boolean)} with
-   *           {@code append=false}.
+   * @implNote The default implementation calls {@link #put(InputStream, String, boolean)} with {@code append=false}.
    * @param bytes array of bytes
    * @param remoteFile name of remote file
    * @throws FileTransferException if an FTP specific exception occurs
@@ -120,7 +116,7 @@ public interface FileTransferClient extends Closeable {
   /**
    * Put data onto the FTP server.
    *
-   * @implSpec The default implementation calls {@link #put(InputStream, String, boolean)}.
+   * @implNote The default implementation calls {@link #put(InputStream, String, boolean)}.
    * @param bytes array of bytes
    * @param remoteFile name of remote file
    * @param append true if appending, false otherwise
@@ -134,7 +130,7 @@ public interface FileTransferClient extends Closeable {
   /**
    * Get data from the FTP server.
    *
-   * @implSpec The default implementation calls {@link #get(OutputStream, String)}.
+   * @implNote The default implementation calls {@link #get(OutputStream, String)}.
    * @param localPath local file to put data in
    * @param remoteFile name of remote file
    * @throws FileTransferException if an FTP specific exception occurs
@@ -171,8 +167,7 @@ public interface FileTransferClient extends Closeable {
   /**
    * List current directory's contents as an array of strings of filenames.
    *
-   * @implSpec The default implementation calls {@link #dir(String, boolean)} with
-   *           {@code dirname=null, full=false}.
+   * @implNote The default implementation calls {@link #dir(String, boolean)} with {@code dirname=null, full=false}.
    * @return an array of current directory listing strings
    * @throws FileTransferException if an FTP specific exception occurs
    * @throws IOException if a comms error occurs
@@ -184,7 +179,7 @@ public interface FileTransferClient extends Closeable {
   /**
    * List a directory's contents as an array of strings of filenames.
    * 
-   * @implSpec The default implementation calls {@link #dir(String, boolean)} with {@code full=false}.
+   * @implNote The default implementation calls {@link #dir(String, boolean)} with {@code full=false}.
    * @param dirname name of directory(<b>not</b> a file mask)
    * @return an array of directory listing strings
    * @throws FileTransferException if an FTP specific exception occurs
